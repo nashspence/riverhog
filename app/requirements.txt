@@ -1,0 +1,7 @@
+fastapi==0.115.8
+uvicorn[standard]==0.34.0
+minio==7.2.15
+python-multipart==0.0.20
+bagit==1.9.0
+opentimestamps-client==0.7.2
+requests==2.32.3

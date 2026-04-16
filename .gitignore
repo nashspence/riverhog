@@ -1,0 +1,6 @@
+/.devcontainer
+.env
+.env.*
+.devcontainer/.env
+.cache/
+__pycache__

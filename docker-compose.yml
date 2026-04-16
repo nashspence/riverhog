@@ -1,0 +1,41 @@
+services:
+  garage:
+    image: dxflrs/garage:v2.2.0
+    restart: unless-stopped
+    command: /garage server --single-node --default-bucket
+    environment:
+      GARAGE_DEFAULT_BUCKET: ${S3_BUCKET:-archive}
+      GARAGE_DEFAULT_ACCESS_KEY: ${S3_ACCESS_KEY:-GKarchive000000000000000001}
+      GARAGE_DEFAULT_SECRET_KEY: ${S3_SECRET_KEY:-0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef}
+    ports:
+      - "3900:3900"
+    volumes:
+      - ./garage/garage.toml:/etc/garage.toml:ro
+      - ./data/garage-meta:/var/lib/garage/meta
+      - ./data/garage-data:/var/lib/garage/data
+
+  archive:
+    build: ./app
+    restart: unless-stopped
+    depends_on:
+      - garage
+    environment:
+      S3_ENDPOINT: garage:3900
+      S3_SECURE: "false"
+      S3_REGION: garage
+      S3_BUCKET: ${S3_BUCKET:-archive}
+      S3_ACCESS_KEY: ${S3_ACCESS_KEY:-GKarchive000000000000000001}
+      S3_SECRET_KEY: ${S3_SECRET_KEY:-0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef}
+      AGE_RECIPIENT: ${AGE_RECIPIENT}
+      HOMEASSISTANT_WEBHOOK: ${HOMEASSISTANT_WEBHOOK:-}
+      BASE_URL: ${BASE_URL:-http://localhost:8000}
+      STAGE_THRESHOLD_BYTES: ${STAGE_THRESHOLD_BYTES:-107374182400}
+      ISO_TARGET_BYTES: ${ISO_TARGET_BYTES:-53687091200}
+      ISO_RESERVE_BYTES: ${ISO_RESERVE_BYTES:-536870912}
+      POLL_SECONDS: ${POLL_SECONDS:-60}
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./data/archive-state:/state
+      - ./data/packages:/packages
+      - ./data/rehydrated:/rehydrated
