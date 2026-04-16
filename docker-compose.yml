@@ -2,31 +2,49 @@ services:
   garage:
     image: dxflrs/garage:v2.2.0
     restart: unless-stopped
-    command: /garage server --single-node --default-bucket
+    command: /garage server
     environment:
       GARAGE_DEFAULT_BUCKET: ${S3_BUCKET:-archive}
-      GARAGE_DEFAULT_ACCESS_KEY: ${S3_ACCESS_KEY:-GKarchive000000000000000001}
+      GARAGE_DEFAULT_ACCESS_KEY: ${S3_ACCESS_KEY:-GK000000000000000000000001}
       GARAGE_DEFAULT_SECRET_KEY: ${S3_SECRET_KEY:-0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef}
     ports:
-      - "3900:3900"
+      - "${GARAGE_PORT:-3900}:3900"
     volumes:
-      - ./garage/garage.toml:/etc/garage.toml:ro
-      - ./data/garage-meta:/var/lib/garage/meta
-      - ./data/garage-data:/var/lib/garage/data
+      - ${GARAGE_CONFIG_PATH:-./garage/garage.toml}:/etc/garage.toml:ro
+      - ${GARAGE_META_DIR:-./data/garage-meta}:/var/lib/garage/meta
+      - ${GARAGE_DATA_DIR:-./data/garage-data}:/var/lib/garage/data
+
+  garage-init:
+    build: ./garage-init
+    restart: "no"
+    depends_on:
+      - garage
+    environment:
+      GARAGE_CONFIG_FILE: /etc/garage.toml
+      S3_BUCKET: ${S3_BUCKET:-archive}
+      S3_ACCESS_KEY: ${S3_ACCESS_KEY:-GK000000000000000000000001}
+      S3_SECRET_KEY: ${S3_SECRET_KEY:-0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef}
+      GARAGE_LAYOUT_ZONE: ${GARAGE_LAYOUT_ZONE:-dc1}
+      GARAGE_LAYOUT_CAPACITY: ${GARAGE_LAYOUT_CAPACITY:-1TB}
+    volumes:
+      - ${GARAGE_CONFIG_PATH:-./garage/garage.toml}:/etc/garage.toml:ro
+      - ${GARAGE_META_DIR:-./data/garage-meta}:/var/lib/garage/meta
+      - ${GARAGE_DATA_DIR:-./data/garage-data}:/var/lib/garage/data
 
   archive:
     build: ./app
     restart: unless-stopped
     depends_on:
-      - garage
+      garage-init:
+        condition: service_completed_successfully
     environment:
       S3_ENDPOINT: garage:3900
       S3_SECURE: "false"
       S3_REGION: garage
       S3_BUCKET: ${S3_BUCKET:-archive}
-      S3_ACCESS_KEY: ${S3_ACCESS_KEY:-GKarchive000000000000000001}
+      S3_ACCESS_KEY: ${S3_ACCESS_KEY:-GK000000000000000000000001}
       S3_SECRET_KEY: ${S3_SECRET_KEY:-0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef}
-      AGE_RECIPIENT: ${AGE_RECIPIENT}
+      DISC_PASSPHRASE: ${DISC_PASSPHRASE}
       HOMEASSISTANT_WEBHOOK: ${HOMEASSISTANT_WEBHOOK:-}
       BASE_URL: ${BASE_URL:-http://localhost:8000}
       STAGE_THRESHOLD_BYTES: ${STAGE_THRESHOLD_BYTES:-107374182400}
@@ -34,8 +52,8 @@ services:
       ISO_RESERVE_BYTES: ${ISO_RESERVE_BYTES:-536870912}
       POLL_SECONDS: ${POLL_SECONDS:-60}
     ports:
-      - "8000:8000"
+      - "${ARCHIVE_PORT:-8000}:8000"
     volumes:
-      - ./data/archive-state:/state
-      - ./data/packages:/packages
-      - ./data/rehydrated:/rehydrated
+      - ${ARCHIVE_STATE_DIR:-./data/archive-state}:/state
+      - ${PACKAGES_DIR:-./data/packages}:/packages
+      - ${REHYDRATED_DIR:-./data/rehydrated}:/rehydrated

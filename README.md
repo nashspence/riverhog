@@ -82,3 +82,14 @@ curl -X DELETE http://localhost:8000/rehydrated/1
 - `manifest.json` is timestamped with OpenTimestamps before the encrypted archive is sealed.
 - the public disc URL is database-backed, so it remains readable even after the local ISO has been disposed.
 - this is intentionally minimal: Garage + one small FastAPI service + SQLite.
+
+## testing
+
+The integration suite boots the real compose stack in dind with isolated temp
+storage, uploads fixture data, seals a disc, burns it, rehydrates it, and then
+verifies cleanup.
+
+```bash
+uv pip install --system -r requirements-dev.txt
+pytest tests -q
+```

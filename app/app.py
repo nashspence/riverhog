@@ -5,6 +5,7 @@ import html
 import json
 import mimetypes
 import os
+import secrets
 import shutil
 import sqlite3
 import subprocess
@@ -22,7 +23,6 @@ from fastapi.responses import FileResponse, HTMLResponse
 from minio import Minio
 from minio.deleteobjects import DeleteObject
 
-app = FastAPI(title="archive-stager", version="0.2.0")
 STATE = Path("/state")
 PACKAGES = Path("/packages")
 REHYDRATED = Path("/rehydrated")
@@ -222,7 +222,7 @@ def make_manifest(package_key: str, rows: Iterable[sqlite3.Row]) -> dict:
                 "size": row["size"],
                 "sha256": row["sha256"],
                 "object_key": row["object_key"],
-                "payload_path": f"payload/{row['sha256']}",
+                "payload_path": f"data/payload/{row['sha256']}",
             }
             for row in rows
         ],
@@ -265,7 +265,7 @@ def build_iso(rows: list[sqlite3.Row]) -> sqlite3.Row:
     passphrase = env("DISC_PASSPHRASE")
     if not passphrase:
         raise RuntimeError("DISC_PASSPHRASE is required")
-    package_key = f"pkg-{int(time.time())}"
+    package_key = f"pkg-{secrets.token_hex(6)}"
     bucket = env("S3_BUCKET", "archive")
     with tempfile.TemporaryDirectory() as td:
         td = Path(td)
@@ -277,6 +277,7 @@ def build_iso(rows: list[sqlite3.Row]) -> sqlite3.Row:
             json.dumps(make_manifest(package_key, rows), indent=2) + "\n"
         )
         run("ots", "stamp", str(manifest))
+        manifest_sha = hashlib.sha256(manifest.read_bytes()).hexdigest()
         for row in rows:
             s3().fget_object(bucket, row["object_key"], str(payload / row["sha256"]))
         bagit.make_bag(str(clear_root), checksums=["sha256"])
@@ -295,7 +296,6 @@ def build_iso(rows: list[sqlite3.Row]) -> sqlite3.Row:
             "mkisofs",
             "-R",
             "-J",
-            "-udf",
             "-V",
             package_key,
             "-o",
@@ -317,7 +317,7 @@ def build_iso(rows: list[sqlite3.Row]) -> sqlite3.Row:
                     iso_sha,
                     sum(r["size"] for r in rows),
                     len(rows),
-                    hashlib.sha256(manifest.read_bytes()).hexdigest(),
+                    manifest_sha,
                     now(),
                 ),
             )
@@ -413,7 +413,7 @@ def unpack_archive(iso_path: Path, passphrase: str) -> tuple[dict, Path]:
             raise HTTPException(400, "archive layout is invalid")
         bag = bagit.Bag(str(roots[0]))
         bag.validate()
-        manifest = json.loads((roots[0] / "manifest.json").read_text())
+        manifest = json.loads((roots[0] / "data" / "manifest.json").read_text())
         return manifest, roots[0]
 
 
@@ -429,8 +429,8 @@ def upload_rehydrated(manifest: dict, root: Path) -> None:
         )
 
 
-@app.on_event("startup")
-async def startup() -> None:
+@contextlib.asynccontextmanager
+async def lifespan(_: FastAPI):
     init_db()
     for _ in range(60):
         with contextlib.suppress(Exception):
@@ -448,7 +448,16 @@ async def startup() -> None:
                 print(f"watcher error: {e}")
             await asyncio.sleep(cfg_int("POLL_SECONDS", 60))
 
-    asyncio.create_task(watcher())
+    task = asyncio.create_task(watcher())
+    try:
+        yield
+    finally:
+        task.cancel()
+        with contextlib.suppress(asyncio.CancelledError):
+            await task
+
+
+app = FastAPI(title="archive-stager", version="0.2.0", lifespan=lifespan)
 
 
 @app.get("/health")
@@ -618,6 +627,11 @@ def unrehydrate(package_id: int) -> dict:
     return dict(row)
 
 
+@app.get("/d/{iso_sha}.json")
+def disc_json(iso_sha: str) -> dict:
+    return package_manifest(iso_sha)
+
+
 @app.get("/d/{iso_sha}", response_class=HTMLResponse)
 def disc_page(iso_sha: str) -> str:
     manifest = package_manifest(iso_sha)
@@ -662,8 +676,3 @@ def disc_page(iso_sha: str) -> str:
 </body>
 </html>
 """
-
-
-@app.get("/d/{iso_sha}.json")
-def disc_json(iso_sha: str) -> dict:
-    return package_manifest(iso_sha)
