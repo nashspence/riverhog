@@ -117,7 +117,6 @@ class ArchivePiece(Base):
     __tablename__ = "archive_pieces"
     __table_args__ = (
         UniqueConstraint("disc_id", "payload_relpath", name="uq_archive_pieces_disc_payload"),
-        Index("ix_archive_pieces_job_file_id", "job_file_id"),
     )
 
     id: Mapped[str] = mapped_column(String(36), primary_key=True, default=uuid_str)

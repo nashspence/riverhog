@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import string
 import secrets
 from datetime import datetime, timezone
 from pathlib import Path
@@ -94,8 +95,10 @@ def create_upload_slot(job_id: str, body: UploadSlotCreateRequest, db: Db) -> Up
     if existing is not None:
         raise HTTPException(status_code=409, detail="file path already exists for this job")
 
-    if not body.mode.startswith("0"):
-        raise HTTPException(status_code=400, detail="mode must be an octal string like 0644")
+    if len(body.mode) != 4 or body.mode[0] != "0" or any(char not in "01234567" for char in body.mode[1:]):
+        raise HTTPException(status_code=400, detail="mode must be a zero-prefixed octal string like 0644")
+    if body.sha256 and any(char not in string.hexdigits for char in body.sha256):
+        raise HTTPException(status_code=400, detail="sha256 must be exactly 64 hexadecimal characters")
     try:
         datetime.fromisoformat(body.mtime.replace("Z", "+00:00"))
     except ValueError as exc:

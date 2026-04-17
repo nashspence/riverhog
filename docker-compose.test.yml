@@ -1,0 +1,28 @@
+services:
+  redis:
+    image: redis:7.4-alpine
+    command: ["redis-server", "--save", "", "--appendonly", "no"]
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 2s
+      timeout: 2s
+      retries: 15
+
+  test:
+    build:
+      context: .
+      dockerfile: Dockerfile.test
+    environment:
+      API_BASE_URL: http://archive.test
+      API_TOKEN: test-api-token
+      HOOK_SECRET: test-hook-secret
+      REDIS_URL: redis://redis:6379/0
+      TUSD_BASE_URL: http://tusd.test/files
+      PARTITION_TARGET_GB: "0.0025"
+      PARTITION_FILL_GB: "0.0015"
+      PARTITION_SPILL_FILL_GB: "0.0010"
+      PARTITION_BUFFER_MAX_GB: "0.0100"
+      PYTHONWARNINGS: error
+    depends_on:
+      redis:
+        condition: service_healthy

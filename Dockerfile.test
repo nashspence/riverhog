@@ -1,0 +1,36 @@
+FROM python:3.12-slim
+
+ENV DEBIAN_FRONTEND=noninteractive \
+    PIP_DISABLE_PIP_VERSION_CHECK=1 \
+    PIP_ROOT_USER_ACTION=ignore \
+    PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1 \
+    PYTHONPATH=/workspace/api:/workspace \
+    PYTHONWARNINGS=error
+
+WORKDIR /workspace
+
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends \
+        ca-certificates \
+        xorriso \
+    && rm -rf /var/lib/apt/lists/*
+
+RUN useradd --create-home --shell /bin/bash tester
+
+COPY api/requirements.txt /tmp/requirements.txt
+COPY requirements-dev.txt /tmp/requirements-dev.txt
+
+RUN pip install --no-cache-dir \
+    -r /tmp/requirements.txt \
+    -r /tmp/requirements-dev.txt
+
+COPY --chown=tester:tester api ./api
+COPY --chown=tester:tester tests ./tests
+COPY --chown=tester:tester pytest.ini ./
+
+RUN chown -R tester:tester /workspace
+
+USER tester
+
+CMD ["pytest"]
