@@ -74,6 +74,14 @@ def test_schema_migration_adds_critical_columns(module_factory):
               iso_size_bytes INTEGER,
               created_at DATETIME NOT NULL
             );
+            CREATE TABLE disc_entries (
+              id TEXT PRIMARY KEY,
+              disc_id TEXT NOT NULL,
+              relative_path TEXT NOT NULL,
+              kind TEXT NOT NULL,
+              size_bytes INTEGER NOT NULL,
+              sha256 TEXT NOT NULL
+            );
             """
         )
         conn.commit()
@@ -87,8 +95,11 @@ def test_schema_migration_adds_critical_columns(module_factory):
         try:
             job_columns = {row[1] for row in conn.execute("PRAGMA table_info(jobs)")}
             disc_columns = {row[1] for row in conn.execute("PRAGMA table_info(discs)")}
+            disc_entry_columns = {row[1] for row in conn.execute("PRAGMA table_info(disc_entries)")}
         finally:
             conn.close()
 
         assert "keep_buffer_after_archive" in job_columns
         assert "burn_confirmed_at" in disc_columns
+        assert "stored_size_bytes" in disc_entry_columns
+        assert "stored_sha256" in disc_entry_columns

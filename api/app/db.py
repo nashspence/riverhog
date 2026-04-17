@@ -51,6 +51,36 @@ def migrate_schema() -> None:
                 )
             )
 
+        disc_entry_columns = {column["name"] for column in inspector.get_columns("disc_entries")} if inspector.has_table("disc_entries") else set()
+        if "stored_size_bytes" not in disc_entry_columns:
+            conn.execute(
+                text(
+                    "ALTER TABLE disc_entries ADD COLUMN "
+                    "stored_size_bytes BIGINT"
+                )
+            )
+            conn.execute(
+                text(
+                    "UPDATE disc_entries "
+                    "SET stored_size_bytes = size_bytes "
+                    "WHERE stored_size_bytes IS NULL"
+                )
+            )
+        if "stored_sha256" not in disc_entry_columns:
+            conn.execute(
+                text(
+                    "ALTER TABLE disc_entries ADD COLUMN "
+                    "stored_sha256 VARCHAR(64)"
+                )
+            )
+            conn.execute(
+                text(
+                    "UPDATE disc_entries "
+                    "SET stored_sha256 = sha256 "
+                    "WHERE stored_sha256 IS NULL"
+                )
+            )
+
 
 @contextmanager
 def session_scope() -> Session:

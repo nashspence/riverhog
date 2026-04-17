@@ -48,9 +48,28 @@ def test_closed_disc_can_be_cached_back_and_restore_job_reads(app_factory):
         )
         assert disc_tree.status_code == 200
         assert any(node["path"] == "MANIFEST.jsonl" for node in disc_tree.json()["nodes"])
+        assert any(node["path"] == "README.txt" for node in disc_tree.json()["nodes"])
 
         disc_roots = closed_disc_roots(harness, disc_ids)
-        assert (disc_roots[disc_id] / "MANIFEST.jsonl").exists()
+        manifest_path = disc_roots[disc_id] / "MANIFEST.jsonl"
+        sidecar_path = next((disc_roots[disc_id] / "files").glob("*.meta.yaml"))
+        readme_path = disc_roots[disc_id] / "README.txt"
+        assert manifest_path.exists()
+        assert manifest_path.read_bytes().startswith(b"age-encryption.org/")
+        assert sidecar_path.read_bytes().startswith(b"age-encryption.org/")
+        assert readme_path.read_text().startswith(f"Archive disc: {disc_id}")
+        assert "age -d -j batchpass MANIFEST.jsonl" in readme_path.read_text()
+
+        with harness.session() as session:
+            disc = session.get(harness.models.Disc, disc_id)
+            assert disc is not None
+            assert disc.cached_root_abs_path is not None
+            cached_manifest = Path(disc.cached_root_abs_path) / "MANIFEST.jsonl"
+            cached_sidecar = next((Path(disc.cached_root_abs_path) / "files").glob("*.meta.yaml"))
+            cached_readme = Path(disc.cached_root_abs_path) / "README.txt"
+            assert cached_manifest.read_text().startswith('{"t":"meta"')
+            assert cached_sidecar.read_text().startswith("schema: sidecar/v1")
+            assert cached_readme.read_text().startswith(f"Archive disc: {disc_id}")
 
 
 def test_cache_verification_rejects_mutated_partition_contents(app_factory):

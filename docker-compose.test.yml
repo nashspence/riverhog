@@ -16,6 +16,9 @@ services:
     environment:
       API_BASE_URL: http://archive.test
       API_TOKEN: test-api-token
+      AGE_BATCHPASS_MAX_WORK_FACTOR: "2"
+      AGE_BATCHPASS_PASSPHRASE: test-batchpass-passphrase
+      AGE_BATCHPASS_WORK_FACTOR: "2"
       HOOK_SECRET: test-hook-secret
       REDIS_URL: redis://redis:6379/0
       TEST_DOCKER_NETWORK: ${COMPOSE_PROJECT_NAME}_default

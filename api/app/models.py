@@ -109,6 +109,8 @@ class DiscEntry(Base):
     kind: Mapped[str] = mapped_column(String(32), nullable=False)
     size_bytes: Mapped[int] = mapped_column(BigInteger, nullable=False)
     sha256: Mapped[str] = mapped_column(String(64), nullable=False)
+    stored_size_bytes: Mapped[int | None] = mapped_column(BigInteger, nullable=True)
+    stored_sha256: Mapped[str | None] = mapped_column(String(64), nullable=True)
 
     disc: Mapped[Disc] = relationship(back_populates="entries")
 

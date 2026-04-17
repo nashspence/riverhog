@@ -72,10 +72,18 @@ The core product promise is:
 
 ### 6. Archive metadata and sidecars
 
-- Every closed partition contains a `MANIFEST.jsonl`.
+- Every closed partition contains an encrypted `MANIFEST.jsonl`.
+- Every closed partition also contains a plaintext `README.txt` with manual
+  recovery instructions for that specific disc.
 - Payload files live under `files/...`.
-- Each payload has a YAML sidecar using the requested `sidecar/v1` schema.
+- Each payload has an encrypted YAML sidecar using the requested
+  `sidecar/v1` schema.
 - Split files carry part metadata so they can be reconstructed later.
+- Except for `README.txt`, every leaf file emitted into a partition root is
+  encrypted individually with `age` plus `age-plugin-batchpass`.
+- The batchpass scrypt work factor can be tuned with
+  `AGE_BATCHPASS_WORK_FACTOR` and `AGE_BATCHPASS_MAX_WORK_FACTOR`; tests use a
+  lower factor so encrypted-disc coverage stays fast enough to run routinely.
 
 ### 7. Offline-aware file access
 
@@ -161,6 +169,7 @@ The core product promise is:
     state/state.json
     state/pool/<job_id>/...
     roots/<disc_id>/
+      README.txt
       MANIFEST.jsonl
       files/...
       files/...meta.yaml

@@ -12,6 +12,7 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session, selectinload
 
 from ..config import DOWNLOAD_CHUNK_SIZE, TUSD_BASE_URL
+from ..crypto import AgeEncryptionError, decrypt_tree
 from ..db import SessionLocal
 from ..iso import create_iso_from_partition_root
 from ..models import ArchivePiece, CacheSession, Disc, DiscEntry, DownloadSession, UploadSlot
@@ -103,7 +104,21 @@ def cache_session_expected(disc_id: str, session_id: str, db: Db):
     if session is None:
         raise HTTPException(status_code=404, detail="cache session not found")
     entries = db.execute(select(DiscEntry).where(DiscEntry.disc_id == disc_id).order_by(DiscEntry.relative_path)).scalars().all()
-    return {"disc_id": disc_id, "session_id": session_id, "entries": [{"relative_path": e.relative_path, "size_bytes": e.size_bytes, "sha256": e.sha256, "kind": e.kind} for e in entries]}
+    return {
+        "disc_id": disc_id,
+        "session_id": session_id,
+        "entries": [
+            {
+                "relative_path": e.relative_path,
+                "size_bytes": e.stored_size_bytes or e.size_bytes,
+                "sha256": e.stored_sha256 or e.sha256,
+                "kind": e.kind,
+                "logical_size_bytes": e.size_bytes,
+                "logical_sha256": e.sha256,
+            }
+            for e in entries
+        ],
+    }
 
 
 @router.post("/{disc_id}/cache/sessions/{session_id}/uploads", response_model=UploadSlotCreateResponse)
@@ -123,7 +138,15 @@ def create_cache_upload_slot(disc_id: str, session_id: str, body: CacheUploadSlo
 
     upload_id = secrets.token_hex(16)
     upload_token = secrets.token_urlsafe(32)
-    slot = UploadSlot(upload_id=upload_id, upload_token=upload_token, kind="cache_file", relative_path=rel, size_bytes=entry.size_bytes, expected_sha256=entry.sha256, cache_session_id=session_id)
+    slot = UploadSlot(
+        upload_id=upload_id,
+        upload_token=upload_token,
+        kind="cache_file",
+        relative_path=rel,
+        size_bytes=entry.stored_size_bytes or entry.size_bytes,
+        expected_sha256=(entry.stored_sha256 or entry.sha256),
+        cache_session_id=session_id,
+    )
     db.add(slot)
     session_obj.status = "uploading"
     db.commit()
@@ -144,7 +167,14 @@ def complete_cache_session(disc_id: str, session_id: str, db: Db) -> CacheSessio
         raise HTTPException(status_code=409, detail="cache session has no uploaded root")
 
     actual_hash, total_bytes, rows = canonical_tree_hash(staging)
-    expected = {(e.relative_path, e.size_bytes, e.sha256) for e in disc.entries}
+    expected = {
+        (
+            e.relative_path,
+            int(e.stored_size_bytes or e.size_bytes),
+            str(e.stored_sha256 or e.sha256),
+        )
+        for e in disc.entries
+    }
     actual = {(str(r["relative_path"]), int(r["size_bytes"]), str(r["sha256"])) for r in rows}
     if actual_hash != disc.contents_hash or actual != expected or total_bytes != disc.total_root_bytes:
         cache_session.status = "failed"
@@ -152,10 +182,30 @@ def complete_cache_session(disc_id: str, session_id: str, db: Db) -> CacheSessio
         raise HTTPException(status_code=409, detail="uploaded root does not match the known partition contents")
 
     active = active_cache_root(disc_id)
+    decrypted = active.parent / f".{disc_id}.decrypting"
+    try:
+        decrypt_tree(staging, decrypted)
+    except AgeEncryptionError as exc:
+        cache_session.status = "failed"
+        db.commit()
+        if decrypted.exists():
+            shutil.rmtree(decrypted, ignore_errors=True)
+        raise HTTPException(status_code=409, detail=f"uploaded root could not be decrypted: {exc}") from exc
+
+    _logical_hash, _logical_total_bytes, logical_rows = canonical_tree_hash(decrypted)
+    expected_logical = {(e.relative_path, e.size_bytes, e.sha256) for e in disc.entries}
+    actual_logical = {(str(r["relative_path"]), int(r["size_bytes"]), str(r["sha256"])) for r in logical_rows}
+    if actual_logical != expected_logical:
+        cache_session.status = "failed"
+        db.commit()
+        shutil.rmtree(decrypted, ignore_errors=True)
+        raise HTTPException(status_code=409, detail="decrypted root does not match the cataloged logical partition contents")
+
     if active.exists():
         shutil.rmtree(active)
     active.parent.mkdir(parents=True, exist_ok=True)
-    staging.replace(active)
+    decrypted.replace(active)
+    shutil.rmtree(staging, ignore_errors=True)
     disc.cached_root_abs_path = str(active)
     disc.status = "cached"
     cache_session.status = "completed"

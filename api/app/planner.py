@@ -15,13 +15,17 @@ from sqlalchemy.orm import Session, selectinload
 from sqlalchemy import select
 
 from .config import PARTITIONER_STATE_DIR, PARTITION_CFG, PARTITION_ROOTS_DIR
+from .crypto import encrypt_bytes_to_file, encrypt_file_span, encrypted_size_for_plaintext_size, logical_file_sha256_and_size, max_plaintext_size_for_encrypted_budget
 from .models import Disc, DiscEntry, ArchivePiece, Job, JobFile
 from .storage import canonical_tree_hash
 
 MANIFEST = "MANIFEST.jsonl"
+README = "README.txt"
 STORE = "files"
 STATE = "state.json"
-META_PAD = 512
+# Reserve space for the encrypted manifest envelope plus the plaintext
+# per-disc README so planner-selected piece sets still fit when emitted.
+META_PAD = 2048
 j = lambda x: (json.dumps(x, separators=(",", ":"), ensure_ascii=False) + "\n").encode()
 
 
@@ -158,30 +162,64 @@ def stage_pieces(state_dir: Path, job: str, files: list[dict], target: int, fixe
         raise RuntimeError(f"job manifest for {job} leaves no payload room")
     pool.mkdir(parents=True, exist_ok=True)
     for f in files:
+        sidecar_size = encrypted_size_for_plaintext_size(len(sidecar_bytes(f)))
         stub1 = put_len(job, f["rel"], 0, 1, "job")
         if f["raw"] <= target:
-            if f["raw"] + len(sidecar_bytes(f)) + stub1 > cap:
-                raise RuntimeError(f"file {f['rel']} in {job} cannot fit with required manifest overhead without forbidden chunking")
             store = pool / str(f["id"])
-            copy_span(f["src"], str(store))
-            f["pieces"] = [{"job": job, "rel": f["rel"], "file": f["id"], "store": str(store.relative_to(state_dir)), "data": f["raw"], "i": 0, "n": 1, "est": f["raw"] + len(sidecar_bytes(f)) + stub1}]
+            encrypt_file_span(Path(f["src"]), store)
+            stored_size = store.stat().st_size
+            if stored_size + sidecar_size + stub1 > cap:
+                raise RuntimeError(f"file {f['rel']} in {job} cannot fit with required manifest overhead without forbidden chunking")
+            f["pieces"] = [{"job": job, "rel": f["rel"], "file": f["id"], "store": str(store.relative_to(state_dir)), "data": f["raw"], "i": 0, "n": 1, "est": stored_size + sidecar_size + stub1}]
             continue
-        n = max(2, math.ceil(f["raw"] / max(1, cap - len(sidecar_bytes(f, 0, 2)) - put_len(job, f["rel"], 0, 2, "vol"))))
+        n = max(
+            2,
+            math.ceil(
+                f["raw"] / max(
+                    1,
+                    max_plaintext_size_for_encrypted_budget(
+                        cap
+                        - encrypted_size_for_plaintext_size(len(sidecar_bytes(f, 0, 2)))
+                        - put_len(job, f["rel"], 0, 2, "vol")
+                    ),
+                )
+            ),
+        )
         while True:
-            room = cap - len(sidecar_bytes(f, 0, n)) - put_len(job, f["rel"], 0, n, "vol")
+            room = max_plaintext_size_for_encrypted_budget(
+                cap - encrypted_size_for_plaintext_size(len(sidecar_bytes(f, 0, n))) - put_len(job, f["rel"], 0, n, "vol")
+            )
             if room <= 0:
                 raise RuntimeError(f"chunk sidecar for {f['rel']} in {job} leaves no payload room")
             nn = max(2, math.ceil(f["raw"] / room))
             if nn == n:
                 break
             n = nn
-        room, pcs, off = cap - len(sidecar_bytes(f, 0, n)) - put_len(job, f["rel"], 0, n, "vol"), [], 0
+        room, pcs, off = (
+            max_plaintext_size_for_encrypted_budget(
+                cap - encrypted_size_for_plaintext_size(len(sidecar_bytes(f, 0, n))) - put_len(job, f["rel"], 0, n, "vol")
+            ),
+            [],
+            0,
+        )
         w = max(3, len(str(n)))
         for i in range(n):
             b = min(room, f["raw"] - off)
             store = pool / f"{f['id']}.{i + 1:0{w}d}"
-            copy_span(f["src"], str(store), off, b)
-            pcs.append({"job": job, "rel": f["rel"], "file": f["id"], "store": str(store.relative_to(state_dir)), "data": b, "i": i, "n": n, "est": b + len(sidecar_bytes(f, i, n)) + put_len(job, f["rel"], i, n, "vol")})
+            encrypt_file_span(Path(f["src"]), store, off, b)
+            sidecar_part_size = encrypted_size_for_plaintext_size(len(sidecar_bytes(f, i, n)))
+            pcs.append(
+                {
+                    "job": job,
+                    "rel": f["rel"],
+                    "file": f["id"],
+                    "store": str(store.relative_to(state_dir)),
+                    "data": b,
+                    "i": i,
+                    "n": n,
+                    "est": store.stat().st_size + sidecar_part_size + put_len(job, f["rel"], i, n, "vol"),
+                }
+            )
             off += b
         f["pieces"] = pcs
 
@@ -400,17 +438,58 @@ def manifest_bytes(part: str, cfg: dict, jobs: dict, items: list[dict], fmap: di
     return b"".join(lines)
 
 
+def recovery_readme_bytes(part: str) -> bytes:
+    lines = [
+        f"Archive disc: {part}",
+        "",
+        "This README.txt is intentionally plaintext. Every other leaf file on this disc is age-encrypted.",
+        "",
+        "Requirements:",
+        "- age CLI with age-plugin-batchpass in PATH",
+        "- the archive passphrase used when this disc was created",
+        "",
+        "Set the passphrase in your shell:",
+        "  export AGE_PASSPHRASE='your-passphrase'",
+        "",
+        "Decrypt the manifest for this disc:",
+        "  age -d -j batchpass MANIFEST.jsonl > MANIFEST.dec.jsonl",
+        "",
+        "Decrypt a sidecar:",
+        "  age -d -j batchpass files/<entry>.meta.yaml > files/<entry>.meta.dec.yaml",
+        "",
+        "Decrypt a payload:",
+        "  age -d -j batchpass files/<entry> > recovered.bin",
+        "",
+        "How to recover files manually:",
+        f"- Inspect MANIFEST.dec.jsonl for put records whose \"part\" is \"{part}\".",
+        "- Each put record maps the original logical path in \"src\" to an encrypted payload path in \"f\" and an encrypted sidecar path in \"m\".",
+        "- Decrypt the payload path from \"f\" to recover that file or file chunk.",
+        "- Decrypt the sidecar path from \"m\" for metadata such as sha256, size, and split part numbering.",
+        "- If a put record has a \"chunk\" field, recover every chunk for the same source path from every required disc and concatenate them in chunk order.",
+        "",
+        "Integrity checks:",
+        "- The decrypted sidecar includes the original plaintext sha256 and size.",
+        "- The manifest records the payload path and chunk ordering exactly as archived.",
+        "",
+        "This disc can be recovered without the web service as long as you have the passphrase and the age tools above.",
+        "",
+    ]
+    return "\n".join(lines).encode("utf-8")
+
+
 def build_disc(state_dir: Path, s: dict, items: list[dict], out_dir: Path, emit=True, part: str | None = None):
     part = part or ts_name(s.get("last_closed", ""))
     pieces = [p for it in items for p in it["pieces"]]
     fmap = assign_paths(pieces)
     man = manifest_bytes(part, s["cfg"], s["jobs"], items, fmap)
+    readme = recovery_readme_bytes(part)
     payload = 0
     for it in items:
         meta = {f["id"]: f for f in s["jobs"][it["job"]]["files"]}
         for p in it["pieces"]:
-            payload += p["data"] + len(sidecar_bytes(meta[p["file"]], p["i"], p["n"]))
-    used = len(man) + payload
+            payload += (state_dir / p["store"]).stat().st_size
+            payload += encrypted_size_for_plaintext_size(len(sidecar_bytes(meta[p["file"]], p["i"], p["n"])))
+    used = encrypted_size_for_plaintext_size(len(man)) + len(readme) + payload
     if used > s["cfg"]["target"]:
         return None
     root = out_dir / part
@@ -418,14 +497,15 @@ def build_disc(state_dir: Path, s: dict, items: list[dict], out_dir: Path, emit=
     if not emit:
         return out
     (root / STORE).mkdir(parents=True, exist_ok=True)
-    (root / MANIFEST).write_bytes(man)
+    encrypt_bytes_to_file(man, root / MANIFEST)
+    (root / README).write_bytes(readme)
     for it in items:
         meta = {f["id"]: f for f in s["jobs"][it["job"]]["files"]}
         for p in it["pieces"]:
             src = state_dir / p["store"]
             f, m = fmap[(p["job"], p["file"], p["i"])]
             copy_span(str(src), str(root / f))
-            (root / m).write_bytes(sidecar_bytes(meta[p["file"]], p["i"], p["n"]))
+            encrypt_bytes_to_file(sidecar_bytes(meta[p["file"]], p["i"], p["n"]), root / m)
             out["pieces"].append({"job": p["job"], "job_file_id": p["file"], "relative_path": p["rel"], "payload_relpath": f, "sidecar_relpath": m, "payload_size_bytes": p["data"], "chunk_index": None if p["n"] == 1 else p["i"] + 1, "chunk_count": None if p["n"] == 1 else p["n"]})
     s["last_closed"] = part
     return out
@@ -580,9 +660,22 @@ def import_closed_discs(session: Session, closed: list[dict]) -> list[str]:
             rel = row["relative_path"]
             if rel == MANIFEST:
                 kind = "manifest"
+            elif rel == README:
+                kind = "readme"
             elif str(rel).endswith(".meta.yaml"):
                 kind = "sidecar"
-            session.add(DiscEntry(disc_id=disc_id, relative_path=str(rel), kind=kind, size_bytes=int(row["size_bytes"]), sha256=str(row["sha256"])))
+            logical_sha256, logical_size = logical_file_sha256_and_size(root / rel)
+            session.add(
+                DiscEntry(
+                    disc_id=disc_id,
+                    relative_path=str(rel),
+                    kind=kind,
+                    size_bytes=logical_size,
+                    sha256=logical_sha256,
+                    stored_size_bytes=int(row["size_bytes"]),
+                    stored_sha256=str(row["sha256"]),
+                )
+            )
         for p in item.get("pieces", []):
             session.add(ArchivePiece(disc_id=disc_id, job_file_id=p["job_file_id"], payload_relpath=p["payload_relpath"], sidecar_relpath=p["sidecar_relpath"], payload_size_bytes=p["payload_size_bytes"], chunk_index=p["chunk_index"], chunk_count=p["chunk_count"]))
         disc_ids.append(disc_id)

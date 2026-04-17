@@ -7,14 +7,28 @@ ENV DEBIAN_FRONTEND=noninteractive \
     PYTHONUNBUFFERED=1 \
     PYTHONPATH=/workspace/api:/workspace \
     PYTHONWARNINGS=error
+ARG AGE_VERSION=v1.3.1
 
 WORKDIR /workspace
 
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
         ca-certificates \
+        curl \
         xorriso \
     && rm -rf /var/lib/apt/lists/*
+
+RUN arch="$(dpkg --print-architecture)" \
+    && case "$arch" in \
+        amd64) age_arch=amd64 ;; \
+        arm64) age_arch=arm64 ;; \
+        *) echo "unsupported architecture: $arch" >&2; exit 1 ;; \
+    esac \
+    && curl -L "https://github.com/FiloSottile/age/releases/download/${AGE_VERSION}/age-${AGE_VERSION}-linux-${age_arch}.tar.gz" -o /tmp/age.tar.gz \
+    && tar -xzf /tmp/age.tar.gz -C /tmp \
+    && install -m 0755 /tmp/age/age /usr/local/bin/age \
+    && install -m 0755 /tmp/age/age-plugin-batchpass /usr/local/bin/age-plugin-batchpass \
+    && rm -rf /tmp/age /tmp/age.tar.gz
 
 RUN useradd --create-home --shell /bin/bash tester
 

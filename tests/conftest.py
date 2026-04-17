@@ -13,10 +13,15 @@ import pytest
 from fastapi.testclient import TestClient
 from redis import Redis as SyncRedis
 
+LOCAL_AGE_CLI = Path("/tmp/age-bin/age/age")
 
 DEFAULT_ENV = {
     "API_BASE_URL": "http://archive.test",
     "API_TOKEN": "test-api-token",
+    "AGE_BATCHPASS_PASSPHRASE": os.environ.get("AGE_BATCHPASS_PASSPHRASE", "test-batchpass-passphrase"),
+    "AGE_BATCHPASS_WORK_FACTOR": os.environ.get("AGE_BATCHPASS_WORK_FACTOR", "2"),
+    "AGE_BATCHPASS_MAX_WORK_FACTOR": os.environ.get("AGE_BATCHPASS_MAX_WORK_FACTOR", "2"),
+    "AGE_CLI": os.environ.get("AGE_CLI", str(LOCAL_AGE_CLI) if LOCAL_AGE_CLI.exists() else "age"),
     "HOOK_SECRET": "test-hook-secret",
     "PARTITION_BUFFER_MAX_GB": "0.0100",
     "PARTITION_FILL_GB": "0.0015",
