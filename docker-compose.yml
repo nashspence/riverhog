@@ -1,59 +1,38 @@
 services:
-  garage:
-    image: dxflrs/garage:v2.2.0
-    restart: unless-stopped
-    command: /garage server
-    environment:
-      GARAGE_DEFAULT_BUCKET: ${S3_BUCKET:-archive}
-      GARAGE_DEFAULT_ACCESS_KEY: ${S3_ACCESS_KEY:-GK000000000000000000000001}
-      GARAGE_DEFAULT_SECRET_KEY: ${S3_SECRET_KEY:-0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef}
+  api:
+    build:
+      context: ./api
+    env_file:
+      - .env
     ports:
-      - "${GARAGE_PORT:-3900}:3900"
+      - "${API_PORT:-8080}:8080"
     volumes:
-      - ${GARAGE_CONFIG_PATH:-./garage/garage.toml}:/etc/garage.toml:ro
-      - ${GARAGE_META_DIR:-./data/garage-meta}:/var/lib/garage/meta
-      - ${GARAGE_DATA_DIR:-./data/garage-data}:/var/lib/garage/data
-
-  garage-init:
-    build: ./garage-init
-    restart: "no"
+      - ./data/archive:/var/lib/archive
     depends_on:
-      - garage
-    environment:
-      GARAGE_CONFIG_FILE: /etc/garage.toml
-      S3_BUCKET: ${S3_BUCKET:-archive}
-      S3_ACCESS_KEY: ${S3_ACCESS_KEY:-GK000000000000000000000001}
-      S3_SECRET_KEY: ${S3_SECRET_KEY:-0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef}
-      GARAGE_LAYOUT_ZONE: ${GARAGE_LAYOUT_ZONE:-dc1}
-      GARAGE_LAYOUT_CAPACITY: ${GARAGE_LAYOUT_CAPACITY:-1TB}
-    volumes:
-      - ${GARAGE_CONFIG_PATH:-./garage/garage.toml}:/etc/garage.toml:ro
-      - ${GARAGE_META_DIR:-./data/garage-meta}:/var/lib/garage/meta
-      - ${GARAGE_DATA_DIR:-./data/garage-data}:/var/lib/garage/data
+      - redis
 
-  archive:
-    build: ./app
-    restart: unless-stopped
-    depends_on:
-      garage-init:
-        condition: service_completed_successfully
-    environment:
-      S3_ENDPOINT: garage:3900
-      S3_SECURE: "false"
-      S3_REGION: garage
-      S3_BUCKET: ${S3_BUCKET:-archive}
-      S3_ACCESS_KEY: ${S3_ACCESS_KEY:-GK000000000000000000000001}
-      S3_SECRET_KEY: ${S3_SECRET_KEY:-0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef}
-      DISC_PASSPHRASE: ${DISC_PASSPHRASE}
-      HOMEASSISTANT_WEBHOOK: ${HOMEASSISTANT_WEBHOOK:-}
-      BASE_URL: ${BASE_URL:-http://localhost:8000}
-      STAGE_THRESHOLD_BYTES: ${STAGE_THRESHOLD_BYTES:-107374182400}
-      ISO_TARGET_BYTES: ${ISO_TARGET_BYTES:-53687091200}
-      ISO_RESERVE_BYTES: ${ISO_RESERVE_BYTES:-536870912}
-      POLL_SECONDS: ${POLL_SECONDS:-60}
+  tusd:
+    image: tusproject/tusd:v2.8.0
+    command:
+      - /usr/local/bin/tusd
+      - -host=0.0.0.0
+      - -port=1080
+      - -dir=/var/lib/archive/tusd
+      - -hooks-http=http://api:8080/internal/tusd-hooks
+      - -hooks-enabled-events=pre-create,post-create,post-receive,post-finish,post-terminate
+      - -progress-hooks-interval=1s
+      - -behind-proxy
     ports:
-      - "${ARCHIVE_PORT:-8000}:8000"
+      - "${TUSD_PORT:-1080}:1080"
     volumes:
-      - ${ARCHIVE_STATE_DIR:-./data/archive-state}:/state
-      - ${PACKAGES_DIR:-./data/packages}:/packages
-      - ${REHYDRATED_DIR:-./data/rehydrated}:/rehydrated
+      - ./data/archive:/var/lib/archive
+    depends_on:
+      - api
+
+  redis:
+    image: redis:7.4-alpine
+    command: ["redis-server", "--appendonly", "yes"]
+    ports:
+      - "${REDIS_PORT:-6379}:6379"
+    volumes:
+      - ./data/redis:/data

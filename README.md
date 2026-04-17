@@ -1,95 +1,159 @@
-# cold-archive stack
+# Archive storage MVP
 
-A deliberately small self-hosted stack for your optical cold-archive workflow:
+A minimal, self-hosted archive backend with:
 
-- files are uploaded with their original names recorded in SQLite
-- payloads are renamed into conventional content-addressed object keys in Garage
-- when staged bytes exceed the threshold, the app seals one ~50 GB archival ISO
-- the full package contents are encrypted with a password using `age -p`
-- the plaintext manifest, its `.ots` proof, BagIt manifests, and payload files are all inside the encrypted archive blob
-- the ISO itself only contains that encrypted blob
-- a Home Assistant webhook is called when a disc is ready
-- each disc gets a stable manifest URL like `/d/<iso_sha256>` that works well as a QR label target
-- after you manually confirm the burn, the local ISO is deleted and the staged online copies are removed
-- you can later upload the same ISO again to re-expose the objects through the same S3 bucket/object keys until you remove it
+- resumable large file uploads through `tusd`
+- replayable real-time upload and ISO download progress streams
+- a catalog-first job view that includes offline files and explains why a file is unavailable
+- an online-only `exports/jobs/...` tree for local mounts
+- partition closure based on the provided MILP reference implementation, adapted into the service runtime
+- verified partition-root cache uploads matched against a database-stored complete root hash
 
-## quick start
+The partitioning logic in this MVP is derived from the user-provided reference implementation. fileciteturn0file0
+
+## Stack
+
+- **FastAPI** for the API
+- **tusd** for resumable uploads and hooks
+- **Redis** for SSE progress streams
+- **SQLite** for the catalog
+- **NumPy + SciPy** for the partition MILP
+- plain local files for hot buffer, cached partitions, generated partition roots, and exports
+
+## Layout
+
+```text
+/var/lib/archive/
+  catalog/
+    catalog.sqlite3
+
+  tusd/
+    incoming/
+
+  hot/
+    buffer/jobs/<job_id>/...
+    cache/staging/<session_id>/...
+    cache/discs/<disc_id>/...
+    materialized/jobs/<job_id>/...
+
+  exports/
+    jobs/<job_id>/...
+
+  partitions/
+    state/state.json
+    state/pool/<job_id>/...
+    roots/<disc_id>/
+      MANIFEST.jsonl
+      files/...
+      files/...meta.yaml
+
+  cold/
+    isos/<disc_id>.iso
+```
+
+## Run
 
 ```bash
 cp .env.example .env
-mkdir -p data/{garage-meta,garage-data,archive-state,packages,rehydrated}
-docker compose up -d --build
+docker compose up --build
 ```
 
-Exposed services:
+API docs:
 
-- Garage S3 API: `http://localhost:3900`
-- Archive API / docs: `http://localhost:8000/docs`
+- OpenAPI: `http://localhost:8080/docs`
+- tusd endpoint: `http://localhost:1080/files`
 
-## main API calls
+## Core flow
 
-Upload a file:
+### 1. Create a job
 
 ```bash
-curl -F file=@movie.mkv http://localhost:8000/ingest
+curl -X POST http://localhost:8080/v1/jobs   -H 'content-type: application/json'   -d '{"description":"photos from trip"}'
 ```
 
-Seal a disc immediately:
+### 2. Reserve file uploads
 
 ```bash
-curl -X POST http://localhost:8000/seal
+curl -X POST http://localhost:8080/v1/jobs/20260417T060811Z/uploads   -H 'content-type: application/json'   -d '{
+    "relative_path": "photos/raw/frame001.dng",
+    "size_bytes": 104857600,
+    "sha256": null,
+    "mode": "0644",
+    "mtime": "2026-04-17T06:08:11Z"
+  }'
 ```
 
-Download the ISO for package 1:
+Then upload through tus using the returned metadata.
+
+### 3. Stream upload progress
 
 ```bash
-curl -OJ http://localhost:8000/packages/1/download
+curl -N http://localhost:8080/v1/progress/uploads/<upload_id>/stream
+curl -N http://localhost:8080/v1/progress/jobs/20260417T060811Z/stream
 ```
 
-Open the QR-style manifest page for a disc:
+### 4. Seal the job and let the planner ingest it
 
 ```bash
-open http://localhost:8000/d/<iso_sha256>
+curl -X POST http://localhost:8080/v1/jobs/20260417T060811Z/seal
 ```
 
-Get the same manifest as JSON:
+This copies the uploaded job into the partition planner state, may close one or more new partitions under `/var/lib/archive/partitions/roots/<disc_id>/`, and imports every closed partition into the database. The on-disc sidecars follow the requested `sidecar/v1` schema.
+
+### 5. Browse a complete job tree, including offline files
 
 ```bash
-curl http://localhost:8000/d/<iso_sha256>.json
+curl http://localhost:8080/v1/jobs/20260417T060811Z/tree
 ```
 
-Mark package 1 as physically burned:
+### 6. Register a burnable ISO for a closed partition
+
+If an external ISO step writes `/var/lib/archive/partitions/roots/<disc_id>.iso` or another server-visible path, register it:
 
 ```bash
-curl -X POST http://localhost:8000/packages/1/burned
+curl -X POST http://localhost:8080/v1/discs/20260417T091500Z/iso/register   -H 'content-type: application/json'   -d '{"server_path":"/var/lib/archive/somewhere/20260417T091500Z.iso"}'
 ```
 
-Rehydrate from a previously burned ISO:
+Then create a tracked download session:
 
 ```bash
-curl -F file=@<iso-sha>.iso http://localhost:8000/rehydrate
+curl -X POST http://localhost:8080/v1/discs/20260417T091500Z/download-sessions
+curl -N http://localhost:8080/v1/progress/downloads/<session_id>/stream
 ```
 
-Remove a rehydrated package again:
+### 7. Cache a known partition root
+
+Create a cache session for a known partition:
 
 ```bash
-curl -X DELETE http://localhost:8000/rehydrated/1
+curl -X POST http://localhost:8080/v1/discs/20260417T091500Z/cache/sessions
 ```
 
-## notes
-
-- `DISC_PASSPHRASE` is used to encrypt and decrypt the per-disc archive blob with `age` passphrase mode.
-- `manifest.json` is timestamped with OpenTimestamps before the encrypted archive is sealed.
-- the public disc URL is database-backed, so it remains readable even after the local ISO has been disposed.
-- this is intentionally minimal: Garage + one small FastAPI service + SQLite.
-
-## testing
-
-The integration suite boots the real compose stack in dind with isolated temp
-storage, uploads fixture data, seals a disc, burns it, rehydrates it, and then
-verifies cleanup.
+Create upload slots for expected partition-root files such as `MANIFEST.jsonl`, `files/0`, or `files/0.meta.yaml`, then upload them through tus. When all files are present:
 
 ```bash
-uv pip install --system -r requirements-dev.txt
-pytest tests -q
+curl -X POST http://localhost:8080/v1/discs/20260417T091500Z/cache/sessions/<session_id>/complete
 ```
+
+The service hashes the complete uploaded root directory and rejects it unless it matches the database-stored partition contents exactly.
+
+Remove a cached partition:
+
+```bash
+curl -X DELETE http://localhost:8080/v1/discs/20260417T091500Z/cache
+```
+
+## Mounting
+
+Bind mount this read-only anywhere you want:
+
+- `/var/lib/archive/exports/jobs`
+
+Only files that are online right now appear there. Offline files remain visible through the API tree endpoints.
+
+## Explicit TODOs
+
+- actual ISO authoring from partition roots
+- authentication and authorization
+- retention / garbage collection policy for hot buffer after successful archival
+- any ingest path that uploads entire jobs as tar streams instead of file-by-file tus uploads
