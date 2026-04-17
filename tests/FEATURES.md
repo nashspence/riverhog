@@ -401,9 +401,3 @@ by feature ID:
 
 That makes it straightforward to review regressions against user-visible product
 promises rather than only against endpoint groups.
-
-## Non-Goal
-
-Still intentionally out of scope:
-
-- ingesting entire jobs as tar streams instead of file-by-file tus uploads
