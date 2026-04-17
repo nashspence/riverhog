@@ -12,17 +12,21 @@ services:
     build:
       context: .
       dockerfile: Dockerfile.test
+    user: root
     environment:
       API_BASE_URL: http://archive.test
       API_TOKEN: test-api-token
       HOOK_SECRET: test-hook-secret
       REDIS_URL: redis://redis:6379/0
+      TEST_DOCKER_NETWORK: ${COMPOSE_PROJECT_NAME}_default
       TUSD_BASE_URL: http://tusd.test/files
       PARTITION_TARGET_GB: "0.0025"
       PARTITION_FILL_GB: "0.0015"
       PARTITION_SPILL_FILL_GB: "0.0010"
       PARTITION_BUFFER_MAX_GB: "0.0100"
       PYTHONWARNINGS: error
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
     depends_on:
       redis:
         condition: service_healthy
