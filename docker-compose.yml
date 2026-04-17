@@ -18,7 +18,7 @@ services:
       - -host=0.0.0.0
       - -port=1080
       - -dir=/var/lib/archive/tusd
-      - -hooks-http=http://api:8080/internal/tusd-hooks
+      - -hooks-http=http://api:8080/internal/tusd-hooks?hook_secret=${HOOK_SECRET:-change-me}
       - -hooks-enabled-events=pre-create,post-create,post-receive,post-finish,post-terminate
       - -progress-hooks-interval=1s
       - -behind-proxy

@@ -7,11 +7,13 @@ from pydantic import BaseModel, Field
 
 class JobCreateRequest(BaseModel):
     description: str | None = None
+    keep_buffer_after_archive: bool = False
 
 
 class JobCreateResponse(BaseModel):
     job_id: str
     status: str
+    keep_buffer_after_archive: bool
 
 
 class JobDirectoryCreateRequest(BaseModel):
@@ -88,6 +90,23 @@ class CacheSessionCompleteResponse(BaseModel):
 
 class IsoRegisterRequest(BaseModel):
     server_path: str
+
+
+class IsoCreateRequest(BaseModel):
+    volume_label: str | None = None
+    overwrite: bool = False
+
+
+class IsoCreateResponse(BaseModel):
+    disc_id: str
+    iso_path: str
+    size_bytes: int
+
+
+class BurnConfirmResponse(BaseModel):
+    disc_id: str
+    burn_confirmed_at: str
+    released_job_ids: list[str] = Field(default_factory=list)
 
 
 class DownloadSessionCreateResponse(BaseModel):

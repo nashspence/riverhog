@@ -22,7 +22,9 @@ SQLITE_PATH = Path(_get_env("SQLITE_PATH", str(ARCHIVE_ROOT / "catalog" / "catal
 REDIS_URL = _get_env("REDIS_URL", "redis://redis:6379/0")
 TUSD_BASE_URL = _get_env("TUSD_BASE_URL", "http://localhost:1080/files").rstrip("/")
 API_BASE_URL = _get_env("API_BASE_URL", "http://localhost:8080").rstrip("/")
-UPLOAD_SECRET = _get_env("UPLOAD_SECRET", "change-me")
+API_TOKEN = _get_env("API_TOKEN", "change-me")
+HOOK_SECRET = _get_env("HOOK_SECRET", "change-me")
+ISO_AUTHORING_COMMAND = _get_env("ISO_AUTHORING_COMMAND", "xorriso")
 
 PARTITION_TARGET = _gb_env("PARTITION_TARGET_GB", "50")
 PARTITION_FILL = _gb_env("PARTITION_FILL_GB", "45")

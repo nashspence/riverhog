@@ -12,11 +12,27 @@ from sqlalchemy.orm import Session, selectinload
 
 from ..config import TUSD_BASE_URL
 from ..db import SessionLocal
-from ..models import ArchivePiece, Disc, Job, JobDirectory, JobFile, UploadSlot
+from ..models import ArchivePiece, Job, JobDirectory, JobFile, UploadSlot
 from ..planner import import_closed_discs, ingest_job
-from ..progress import job_stream_name, upload_stream_name
-from ..schemas import JobCreateRequest, JobCreateResponse, JobDirectoryCreateRequest, OfflineError, SealJobResponse, TreeNode, TreeResponse, UploadSlotCreateRequest, UploadSlotCreateResponse
-from ..storage import allocate_timestamp_id, normalize_relpath, path_parents, rebuild_job_export, recompute_job_file_runtime
+from ..schemas import (
+    JobCreateRequest,
+    JobCreateResponse,
+    JobDirectoryCreateRequest,
+    OfflineError,
+    SealJobResponse,
+    TreeNode,
+    TreeResponse,
+    UploadSlotCreateRequest,
+    UploadSlotCreateResponse,
+)
+from ..storage import (
+    allocate_timestamp_id,
+    normalize_relpath,
+    path_parents,
+    rebuild_job_export,
+    recompute_job_file_runtime,
+    release_job_buffer_files,
+)
 
 router = APIRouter(prefix="/v1/jobs", tags=["jobs"])
 
@@ -35,9 +51,19 @@ Db = Annotated[Session, Depends(get_db)]
 @router.post("", response_model=JobCreateResponse)
 def create_job(body: JobCreateRequest, db: Db) -> JobCreateResponse:
     job_id = allocate_timestamp_id(db, Job)
-    db.add(Job(id=job_id, description=body.description))
+    db.add(
+        Job(
+            id=job_id,
+            description=body.description,
+            keep_buffer_after_archive=body.keep_buffer_after_archive,
+        )
+    )
     db.commit()
-    return JobCreateResponse(job_id=job_id, status="open")
+    return JobCreateResponse(
+        job_id=job_id,
+        status="open",
+        keep_buffer_after_archive=body.keep_buffer_after_archive,
+    )
 
 
 @router.post("/{job_id}/directories")
@@ -197,18 +223,7 @@ def get_job_file(job_id: str, relative_path: str, db: Db):
 
 @router.post("/{job_id}/buffer/release")
 def release_job_buffer(job_id: str, db: Db):
-    job = (
-        db.execute(
-            select(Job)
-            .where(Job.id == job_id)
-            .options(selectinload(Job.files).selectinload(JobFile.archive_pieces).selectinload(ArchivePiece.disc))
-        )
-        .scalar_one_or_none()
-    )
-    if job is None:
+    if db.get(Job, job_id) is None:
         raise HTTPException(status_code=404, detail="job not found")
-    for jf in job.files:
-        jf.buffer_abs_path = None
-    db.commit()
-    rebuild_job_export(db, job_id)
+    release_job_buffer_files(db, job_id)
     return {"status": "ok", "job_id": job_id}

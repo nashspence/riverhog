@@ -98,6 +98,13 @@ def safe_remove_tree(path: Path) -> None:
         shutil.rmtree(path, ignore_errors=True)
 
 
+def safe_unlink(path: Path) -> None:
+    try:
+        path.unlink()
+    except FileNotFoundError:
+        pass
+
+
 def job_buffer_path(job_id: str, relative_path: str) -> Path:
     return HOT_BUFFER_ROOT / job_id / normalize_relpath(relative_path)
 
@@ -136,6 +143,14 @@ def partition_root(disc_id: str) -> Path:
 
 def registered_iso_storage_path(disc_id: str) -> Path:
     return COLD_ISO_ROOT / f"{disc_id}.iso"
+
+
+def iso_volume_label(name: str) -> str:
+    allowed = []
+    for char in name.upper():
+        allowed.append(char if char.isalnum() else "_")
+    label = "".join(allowed).strip("_") or "ARCHIVE"
+    return label[:32]
 
 
 def aggregate_job_progress(session: Session, job_id: str) -> tuple[int, int]:
@@ -253,6 +268,71 @@ def rebuild_job_export(session: Session, job_id: str) -> None:
             continue
         atomic_replace_file_link(root / normalize_relpath(jf.relative_path), online_path)
     session.commit()
+
+
+def release_job_buffer_files(session: Session, job_id: str) -> bool:
+    job = (
+        session.execute(
+            select(Job)
+            .where(Job.id == job_id)
+            .options(selectinload(Job.files))
+        )
+        .scalar_one_or_none()
+    )
+    if job is None:
+        return False
+
+    changed = False
+    for job_file in job.files:
+        if job_file.buffer_abs_path:
+            safe_unlink(Path(job_file.buffer_abs_path))
+            job_file.buffer_abs_path = None
+            changed = True
+    safe_remove_tree(HOT_BUFFER_ROOT / job_id)
+    session.commit()
+    rebuild_job_export(session, job_id)
+    return changed
+
+
+def maybe_release_job_buffer_after_archive(session: Session, job_id: str) -> bool:
+    job = (
+        session.execute(
+            select(Job)
+            .where(Job.id == job_id)
+            .options(
+                selectinload(Job.files).selectinload(JobFile.archive_pieces),
+            )
+        )
+        .scalar_one_or_none()
+    )
+    if job is None or job.keep_buffer_after_archive:
+        return False
+    if any(job_file.buffer_abs_path is None for job_file in job.files):
+        return False
+
+    for job_file in job.files:
+        archived_bytes = sum(
+            piece.payload_size_bytes
+            for piece in job_file.archive_pieces
+        )
+        if archived_bytes != job_file.size_bytes:
+            return False
+
+    disc_ids = {
+        piece.disc_id
+        for job_file in job.files
+        for piece in job_file.archive_pieces
+    }
+    if not disc_ids:
+        return False
+
+    discs = session.execute(
+        select(Disc).where(Disc.id.in_(disc_ids))
+    ).scalars().all()
+    if len(discs) != len(disc_ids) or any(disc.burn_confirmed_at is None for disc in discs):
+        return False
+
+    return release_job_buffer_files(session, job_id)
 
 
 def disc_tree_nodes(disc: Disc) -> list[dict[str, object]]:

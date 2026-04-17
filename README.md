@@ -2,12 +2,17 @@
 
 A minimal, self-hosted archive backend with:
 
+- a single shared bearer token for API auth plus a shared tus hook secret
 - resumable large file uploads through `tusd`
 - replayable real-time upload and ISO download progress streams
 - a catalog-first job view that includes offline files and explains why a file is unavailable
 - an online-only `exports/jobs/...` tree for local mounts
 - partition closure based on the provided MILP reference implementation, adapted into the service runtime
 - verified partition-root cache uploads matched against a database-stored complete root hash
+- ISO authoring from closed partition roots with `xorriso` using ISO9660 + Joliet + Rock
+  Ridge + UDF for broad data-disc compatibility
+- automatic hot-buffer cleanup after user-confirmed successful burns unless the job opts
+  out at creation time
 
 The partitioning logic in this MVP is derived from the user-provided reference implementation. fileciteturn0file0
 
@@ -58,6 +63,12 @@ cp .env.example .env
 docker compose up --build
 ```
 
+All public API calls require:
+
+```bash
+-H "Authorization: Bearer $API_TOKEN"
+```
+
 API docs:
 
 - OpenAPI: `http://localhost:8080/docs`
@@ -70,6 +81,9 @@ API docs:
 ```bash
 curl -X POST http://localhost:8080/v1/jobs   -H 'content-type: application/json'   -d '{"description":"photos from trip"}'
 ```
+
+Set `"keep_buffer_after_archive": true` if the original uploaded files should stay in the
+hot buffer even after their archived discs have been burned successfully.
 
 ### 2. Reserve file uploads
 
@@ -106,12 +120,25 @@ This copies the uploaded job into the partition planner state, may close one or 
 curl http://localhost:8080/v1/jobs/20260417T060811Z/tree
 ```
 
-### 6. Register a burnable ISO for a closed partition
+### 6. Author or register a burnable ISO for a closed partition
 
-If an external ISO step writes `/var/lib/archive/partitions/roots/<disc_id>.iso` or another server-visible path, register it:
+Author the ISO directly from `/var/lib/archive/partitions/roots/<disc_id>/`:
 
 ```bash
-curl -X POST http://localhost:8080/v1/discs/20260417T091500Z/iso/register   -H 'content-type: application/json'   -d '{"server_path":"/var/lib/archive/somewhere/20260417T091500Z.iso"}'
+curl -X POST http://localhost:8080/v1/discs/20260417T091500Z/iso/create \
+  -H "Authorization: Bearer $API_TOKEN" \
+  -H 'content-type: application/json' \
+  -d '{"volume_label":"ARCHIVE_20260417"}'
+```
+
+If an external ISO step writes `/var/lib/archive/partitions/roots/<disc_id>.iso` or
+another server-visible path, register it instead:
+
+```bash
+curl -X POST http://localhost:8080/v1/discs/20260417T091500Z/iso/register \
+  -H "Authorization: Bearer $API_TOKEN" \
+  -H 'content-type: application/json' \
+  -d '{"server_path":"/var/lib/archive/somewhere/20260417T091500Z.iso"}'
 ```
 
 Then create a tracked download session:
@@ -119,6 +146,14 @@ Then create a tracked download session:
 ```bash
 curl -X POST http://localhost:8080/v1/discs/20260417T091500Z/download-sessions
 curl -N http://localhost:8080/v1/progress/downloads/<session_id>/stream
+```
+
+After the user has successfully burned the ISO, confirm it so the service can release
+the hot-buffer originals for eligible jobs:
+
+```bash
+curl -X POST http://localhost:8080/v1/discs/20260417T091500Z/burn/confirm \
+  -H "Authorization: Bearer $API_TOKEN"
 ```
 
 ### 7. Cache a known partition root
@@ -150,10 +185,3 @@ Bind mount this read-only anywhere you want:
 - `/var/lib/archive/exports/jobs`
 
 Only files that are online right now appear there. Offline files remain visible through the API tree endpoints.
-
-## Explicit TODOs
-
-- actual ISO authoring from partition roots
-- authentication and authorization
-- retention / garbage collection policy for hot buffer after successful archival
-- any ingest path that uploads entire jobs as tar streams instead of file-by-file tus uploads

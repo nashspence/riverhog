@@ -10,6 +10,7 @@ from fastapi.responses import JSONResponse
 from sqlalchemy import select
 from sqlalchemy.orm import selectinload
 
+from .auth import hook_auth_ok
 from .config import INCOMING_DIR
 from .db import SessionLocal
 from .models import UploadSlot, JobFile, CacheSession
@@ -17,10 +18,6 @@ from .progress import cache_session_stream_name, job_stream_name, publish_progre
 from .storage import aggregate_cache_progress, aggregate_job_progress, cache_staging_file_path, file_sha256, job_buffer_path, normalize_relpath, rebuild_job_export
 
 router = APIRouter(prefix="/internal", tags=["internal"])
-
-
-def _hook_auth_ok(_request: Request) -> bool:
-    return True
 
 
 def _decode_metadata_value(value: Any) -> str | None:
@@ -54,8 +51,12 @@ async def _publish_aggregate(db, slot: UploadSlot) -> None:
 
 
 @router.post("/tusd-hooks")
-async def tusd_hooks(request: Request, hook_name: str | None = Header(default=None, alias="Hook-Name")):
-    if not _hook_auth_ok(request):
+async def tusd_hooks(
+    request: Request,
+    hook_name: str | None = Header(default=None, alias="Hook-Name"),
+    hook_secret: str = "",
+):
+    if not hook_auth_ok(hook_secret):
         raise HTTPException(status_code=403, detail="forbidden")
 
     payload = await request.json()

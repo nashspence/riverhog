@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import secrets
 import shutil
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Annotated
 
@@ -12,21 +13,25 @@ from sqlalchemy.orm import Session, selectinload
 
 from ..config import DOWNLOAD_CHUNK_SIZE, TUSD_BASE_URL
 from ..db import SessionLocal
+from ..iso import create_iso_from_partition_root
 from ..models import ArchivePiece, CacheSession, Disc, DiscEntry, DownloadSession, UploadSlot
 from ..planner import force_close_pending, import_closed_discs
 from ..progress import download_stream_name, publish_progress
 from ..schemas import (
+    BurnConfirmResponse,
     CacheSessionCompleteResponse,
     CacheSessionCreateResponse,
     CacheUploadSlotRequest,
     DownloadSessionCreateResponse,
+    IsoCreateRequest,
+    IsoCreateResponse,
     IsoRegisterRequest,
     OfflineError,
     TreeNode,
     TreeResponse,
     UploadSlotCreateResponse,
 )
-from ..storage import active_cache_root, cache_staging_root, canonical_tree_hash, disc_tree_nodes, normalize_relpath, rebuild_job_export, registered_iso_storage_path
+from ..storage import active_cache_root, cache_staging_root, canonical_tree_hash, disc_tree_nodes, maybe_release_job_buffer_after_archive, normalize_relpath, partition_root, rebuild_job_export, registered_iso_storage_path
 
 router = APIRouter(prefix="/v1/discs", tags=["discs"])
 
@@ -193,8 +198,66 @@ def register_iso(disc_id: str, body: IsoRegisterRequest, db: Db):
     shutil.copy2(src, dest)
     disc.iso_abs_path = str(dest)
     disc.iso_size_bytes = dest.stat().st_size
+    disc.burn_confirmed_at = None
     db.commit()
     return {"status": "ok", "disc_id": disc_id, "iso_path": str(dest), "size_bytes": disc.iso_size_bytes}
+
+
+@router.post("/{disc_id}/iso/create", response_model=IsoCreateResponse)
+def author_iso(disc_id: str, body: IsoCreateRequest, db: Db) -> IsoCreateResponse:
+    disc = db.get(Disc, disc_id)
+    if disc is None:
+        raise HTTPException(status_code=404, detail="disc not found")
+    output = registered_iso_storage_path(disc_id)
+    if output.exists() and not body.overwrite:
+        raise HTTPException(status_code=409, detail="iso already exists; pass overwrite=true to replace it")
+    try:
+        created = create_iso_from_partition_root(
+            disc_id,
+            partition_root(disc_id),
+            requested_label=body.volume_label,
+        )
+    except RuntimeError as exc:
+        raise HTTPException(status_code=500, detail=str(exc)) from exc
+
+    disc.iso_abs_path = str(created)
+    disc.iso_size_bytes = created.stat().st_size
+    disc.burn_confirmed_at = None
+    db.commit()
+    return IsoCreateResponse(
+        disc_id=disc_id,
+        iso_path=str(created),
+        size_bytes=disc.iso_size_bytes,
+    )
+
+
+@router.post("/{disc_id}/burn/confirm", response_model=BurnConfirmResponse)
+def confirm_burn(disc_id: str, db: Db) -> BurnConfirmResponse:
+    disc = db.execute(
+        select(Disc)
+        .where(Disc.id == disc_id)
+        .options(selectinload(Disc.archive_pieces).selectinload(ArchivePiece.job_file))
+    ).scalar_one_or_none()
+    if disc is None:
+        raise HTTPException(status_code=404, detail="disc not found")
+    if not disc.iso_abs_path or not Path(disc.iso_abs_path).exists():
+        raise HTTPException(status_code=409, detail="iso not registered or not online")
+
+    if disc.burn_confirmed_at is None:
+        disc.burn_confirmed_at = datetime.now(timezone.utc)
+        db.commit()
+
+    released_job_ids: list[str] = []
+    touched_jobs = sorted({piece.job_file.job_id for piece in disc.archive_pieces})
+    for job_id in touched_jobs:
+        if maybe_release_job_buffer_after_archive(db, job_id):
+            released_job_ids.append(job_id)
+
+    return BurnConfirmResponse(
+        disc_id=disc_id,
+        burn_confirmed_at=disc.burn_confirmed_at.isoformat().replace("+00:00", "Z"),
+        released_job_ids=released_job_ids,
+    )
 
 
 @router.post("/{disc_id}/download-sessions", response_model=DownloadSessionCreateResponse)

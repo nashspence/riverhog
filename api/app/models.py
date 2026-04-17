@@ -3,7 +3,7 @@ from __future__ import annotations
 from datetime import datetime, timezone
 from uuid import uuid4
 
-from sqlalchemy import BigInteger, DateTime, ForeignKey, Index, Integer, String, Text, UniqueConstraint
+from sqlalchemy import BigInteger, Boolean, DateTime, ForeignKey, Index, Integer, String, Text, UniqueConstraint
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from .db import Base
@@ -23,6 +23,11 @@ class Job(Base):
     id: Mapped[str] = mapped_column(String(64), primary_key=True)
     status: Mapped[str] = mapped_column(String(32), default="open", nullable=False)
     description: Mapped[str | None] = mapped_column(String(1024), nullable=True)
+    keep_buffer_after_archive: Mapped[bool] = mapped_column(
+        Boolean,
+        default=False,
+        nullable=False,
+    )
     sealed_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow, nullable=False)
 
@@ -83,6 +88,10 @@ class Disc(Base):
     cached_root_abs_path: Mapped[str | None] = mapped_column(String, nullable=True)
     iso_abs_path: Mapped[str | None] = mapped_column(String, nullable=True)
     iso_size_bytes: Mapped[int | None] = mapped_column(BigInteger, nullable=True)
+    burn_confirmed_at: Mapped[datetime | None] = mapped_column(
+        DateTime(timezone=True),
+        nullable=True,
+    )
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow, nullable=False)
 
     entries: Mapped[list["DiscEntry"]] = relationship(back_populates="disc", cascade="all, delete-orphan")
