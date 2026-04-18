@@ -11,6 +11,17 @@ services:
     depends_on:
       - redis
 
+  ui:
+    build:
+      context: ./ui
+    environment:
+      RIVERHOG_API_BASE_URL: http://api:8080
+      RIVERHOG_API_TOKEN: ${API_TOKEN:-change-me}
+    ports:
+      - "${UI_PORT:-8090}:8090"
+    depends_on:
+      - api
+
   tusd:
     image: tusproject/tusd:v2.8.0
     command:

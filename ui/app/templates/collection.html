@@ -1,0 +1,128 @@
+{% extends "base.html" %}
+
+{% block title %}Collection {{ collection.collection_id if collection else "" }}{% endblock %}
+
+{% block content %}
+<h1>Collection {{ collection.collection_id if collection else "" }}</h1>
+
+{% if collection_error %}
+<p class="flash error">{{ collection_error }}</p>
+{% endif %}
+
+{% if collection %}
+<section>
+  <h2>Summary</h2>
+  <table>
+    <tbody>
+      <tr><th>Status</th><td>{{ collection.status }}</td></tr>
+      <tr><th>Description</th><td>{{ collection.description or "" }}</td></tr>
+      <tr><th>Keep buffer</th><td>{{ "yes" if collection.keep_buffer_after_archive else "no" }}</td></tr>
+      <tr><th>Files</th><td>{{ collection.file_count }}</td></tr>
+      <tr><th>Directories</th><td>{{ collection.directory_count }}</td></tr>
+      <tr><th>Created</th><td><code>{{ collection.created_at }}</code></td></tr>
+      <tr><th>Sealed</th><td><code>{{ collection.sealed_at or "-" }}</code></td></tr>
+    </tbody>
+  </table>
+</section>
+
+<section>
+  <h2>Actions</h2>
+  <form method="post" action="/collections/{{ collection.collection_id }}/directories">
+    <label>
+      Relative directory path
+      <input type="text" name="relative_path" placeholder="docs/2024" {% if collection.status != "open" %}disabled{% endif %} required>
+    </label>
+    <button type="submit" {% if collection.status != "open" %}disabled{% endif %}>Create directory</button>
+  </form>
+
+  <form method="post" action="/collections/{{ collection.collection_id }}/seal">
+    <button type="submit" {% if collection.status != "open" %}disabled{% endif %}>Seal collection</button>
+  </form>
+
+  <form method="post" action="/collections/{{ collection.collection_id }}/release-buffer">
+    <button type="submit">Release buffer</button>
+  </form>
+
+  <p><a href="/collections/{{ collection.collection_id }}/hash-manifest-proof">Download hash manifest proof bundle</a></p>
+</section>
+
+<section>
+  <h2>Upload Files</h2>
+  <form
+    id="collection-upload-form"
+    action="/collections/{{ collection.collection_id }}/upload-files"
+    data-progress-url="/progress/collections/{{ collection.collection_id }}/stream"
+  >
+    <label>
+      Path prefix
+      <input type="text" name="path_prefix" placeholder="optional/subdir">
+    </label>
+    <label>
+      File mode
+      <input type="text" name="mode" value="0644">
+    </label>
+    <label>
+      UID
+      <input type="number" name="uid" min="0" step="1">
+    </label>
+    <label>
+      GID
+      <input type="number" name="gid" min="0" step="1">
+    </label>
+    <label>
+      Pick files
+      <input type="file" id="collection-files" multiple {% if collection.status != "open" %}disabled{% endif %}>
+    </label>
+    <label>
+      Pick folder
+      <input type="file" id="collection-folder" webkitdirectory directory multiple {% if collection.status != "open" %}disabled{% endif %}>
+    </label>
+    <button type="submit" {% if collection.status != "open" %}disabled{% endif %}>Upload selected files</button>
+  </form>
+  <pre id="collection-upload-status">Waiting for uploads.</pre>
+</section>
+
+<section>
+  <h2>Tree</h2>
+  {% if tree_error %}
+  <p class="flash error">{{ tree_error }}</p>
+  {% endif %}
+  <table>
+    <thead>
+      <tr>
+        <th>Path</th>
+        <th>Kind</th>
+        <th>Size</th>
+        <th>Active</th>
+        <th>Status</th>
+        <th>Source</th>
+        <th>Containers</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for node in tree %}
+      <tr>
+        <td><code>{{ node.path }}</code></td>
+        <td>{{ node.kind }}</td>
+        <td>{{ node.size_bytes|human_bytes }}</td>
+        <td>{{ "yes" if node.active else "no" }}</td>
+        <td>{{ node.status or "" }}</td>
+        <td>{{ node.source or "" }}</td>
+        <td>{{ ", ".join(node.container_ids) }}</td>
+        <td>
+          {% if node.kind == "file" and node.active %}
+          <a href="/collections/{{ collection.collection_id }}/content/{{ quote_path(node.path) }}">Download</a>
+          {% endif %}
+        </td>
+      </tr>
+      {% else %}
+      <tr>
+        <td colspan="8">No tree data available.</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</section>
+{% endif %}
+{% endblock %}

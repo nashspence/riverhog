@@ -1,0 +1,174 @@
+{% extends "base.html" %}
+
+{% block title %}Container {{ container.container_id if container else "" }}{% endblock %}
+
+{% block content %}
+<h1>Container {{ container.container_id if container else "" }}</h1>
+
+{% if container_error %}
+<p class="flash error">{{ container_error }}</p>
+{% endif %}
+
+{% if container %}
+<section>
+  <h2>Summary</h2>
+  <table>
+    <tbody>
+      <tr><th>Status</th><td>{{ container.status }}</td></tr>
+      <tr><th>Entries</th><td>{{ container.entry_count }}</td></tr>
+      <tr><th>Root bytes</th><td>{{ container.total_root_bytes|human_bytes }}</td></tr>
+      <tr><th>Active root</th><td>{{ "yes" if container.active_root_present else "no" }}</td></tr>
+      <tr><th>ISO present</th><td>{{ "yes" if container.iso_present else "no" }}</td></tr>
+      <tr><th>ISO size</th><td>{{ container.iso_size_bytes|human_bytes }}</td></tr>
+      <tr><th>Burn confirmed</th><td><code>{{ container.burn_confirmed_at or "-" }}</code></td></tr>
+      <tr><th>Created</th><td><code>{{ container.created_at }}</code></td></tr>
+      <tr><th>Contents hash</th><td><code>{{ container.contents_hash }}</code></td></tr>
+    </tbody>
+  </table>
+</section>
+
+<section>
+  <h2>Activation</h2>
+  <form method="post" action="/containers/{{ container.container_id }}/activation-sessions">
+    <button type="submit">Create activation session</button>
+  </form>
+
+  {% if activation_session %}
+  <p>Current activation session: <code>{{ activation_session }}</code></p>
+  <p><a href="/progress/activation-sessions/{{ activation_session }}/stream">Open activation progress stream</a></p>
+  {% if activation_error %}
+  <p class="flash error">{{ activation_error }}</p>
+  {% endif %}
+  {% if activation_expected %}
+  <form
+    id="activation-upload-form"
+    action="/containers/{{ container.container_id }}/activation-sessions/{{ activation_session }}/upload-files"
+    data-complete-url="/containers/{{ container.container_id }}/activation-sessions/{{ activation_session }}/complete"
+    data-progress-url="/progress/activation-sessions/{{ activation_session }}/stream"
+  >
+    <label>
+      Pick restored container root
+      <input type="file" id="activation-folder" webkitdirectory directory multiple required>
+    </label>
+    <button type="submit">Upload activation root and complete</button>
+  </form>
+  <pre id="activation-upload-status">Waiting for activation upload.</pre>
+  <script id="activation-expected-json" type="application/json">{{ activation_expected|tojson }}</script>
+
+  <details>
+    <summary>Expected entries</summary>
+    <table>
+      <thead>
+        <tr>
+          <th>Path</th>
+          <th>Kind</th>
+          <th>Stored bytes</th>
+          <th>Stored sha256</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for entry in activation_expected.entries %}
+        <tr>
+          <td><code>{{ entry.relative_path }}</code></td>
+          <td>{{ entry.kind }}</td>
+          <td>{{ entry.size_bytes|human_bytes }}</td>
+          <td><code>{{ entry.sha256 }}</code></td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </details>
+  {% endif %}
+  {% endif %}
+
+  <form method="post" action="/containers/{{ container.container_id }}/deactivate">
+    <button type="submit">Deactivate container</button>
+  </form>
+</section>
+
+<section>
+  <h2>ISO</h2>
+  <form method="post" action="/containers/{{ container.container_id }}/iso/register">
+    <label>
+      Server path
+      <input type="text" name="server_path" placeholder="/srv/archive/container.iso" required>
+    </label>
+    <button type="submit">Register existing ISO</button>
+  </form>
+
+  <form method="post" action="/containers/{{ container.container_id }}/iso/create">
+    <label>
+      Volume label
+      <input type="text" name="volume_label" placeholder="optional label">
+    </label>
+    <label class="checkbox">
+      <input type="checkbox" name="overwrite" value="true">
+      Overwrite existing ISO
+    </label>
+    <button type="submit">Create ISO</button>
+  </form>
+
+  <p><a href="/containers/{{ container.container_id }}/iso/content">Download registered ISO</a></p>
+</section>
+
+<section>
+  <h2>Burn And Download</h2>
+  <form method="post" action="/containers/{{ container.container_id }}/burn/confirm">
+    <button type="submit">Confirm burn</button>
+  </form>
+
+  <form method="post" action="/containers/{{ container.container_id }}/download-sessions">
+    <button type="submit">Create download session</button>
+  </form>
+
+  {% if download_session %}
+  <p>Current download session: <code>{{ download_session }}</code></p>
+  <p><a href="/downloads/{{ download_session }}/content">Download via session</a></p>
+  <p><a href="/progress/downloads/{{ download_session }}/stream">Open download progress stream</a></p>
+  {% endif %}
+</section>
+
+<section>
+  <h2>Tree</h2>
+  {% if tree_error %}
+  <p class="flash error">{{ tree_error }}</p>
+  {% endif %}
+  <table>
+    <thead>
+      <tr>
+        <th>Path</th>
+        <th>Kind</th>
+        <th>Size</th>
+        <th>Active</th>
+        <th>Status</th>
+        <th>Source</th>
+        <th>Containers</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for node in tree %}
+      <tr>
+        <td><code>{{ node.path }}</code></td>
+        <td>{{ node.kind }}</td>
+        <td>{{ node.size_bytes|human_bytes }}</td>
+        <td>{{ "yes" if node.active else "no" }}</td>
+        <td>{{ node.status or "" }}</td>
+        <td>{{ node.source or "" }}</td>
+        <td>{{ ", ".join(node.container_ids) }}</td>
+        <td>
+          {% if node.kind == "file" and node.active %}
+          <a href="/containers/{{ container.container_id }}/content/{{ quote_path(node.path) }}">Download</a>
+          {% endif %}
+        </td>
+      </tr>
+      {% else %}
+      <tr>
+        <td colspan="8">No tree data available.</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</section>
+{% endif %}
+{% endblock %}

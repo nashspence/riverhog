@@ -3,6 +3,7 @@ FROM python:3.12-slim
 ENV DEBIAN_FRONTEND=noninteractive \
     PIP_DISABLE_PIP_VERSION_CHECK=1 \
     PIP_ROOT_USER_ACTION=ignore \
+    PLAYWRIGHT_BROWSERS_PATH=/ms-playwright \
     PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
     PYTHONPATH=/workspace/api:/workspace \
@@ -33,13 +34,19 @@ RUN arch="$(dpkg --print-architecture)" \
 RUN useradd --create-home --shell /bin/bash tester
 
 COPY api/requirements.txt /tmp/requirements.txt
+COPY ui/requirements.txt /tmp/ui-requirements.txt
 COPY requirements-dev.txt /tmp/requirements-dev.txt
 
 RUN pip install --no-cache-dir \
     -r /tmp/requirements.txt \
+    -r /tmp/ui-requirements.txt \
     -r /tmp/requirements-dev.txt
 
+RUN python -m playwright install --with-deps chromium
+RUN chmod -R a+rX "${PLAYWRIGHT_BROWSERS_PATH}"
+
 COPY --chown=tester:tester api ./api
+COPY --chown=tester:tester ui ./ui
 COPY --chown=tester:tester tests ./tests
 COPY --chown=tester:tester pytest.ini ./
 

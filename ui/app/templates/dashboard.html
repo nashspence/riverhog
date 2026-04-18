@@ -1,0 +1,123 @@
+{% extends "base.html" %}
+
+{% block title %}Riverhog Dashboard{% endblock %}
+
+{% block content %}
+<h1>Riverhog</h1>
+
+<section>
+  <h2>Create Collection</h2>
+  <form method="post" action="/collections">
+    <label>
+      Root node name
+      <input type="text" name="root_node_name" required>
+    </label>
+    <label>
+      Description
+      <input type="text" name="description">
+    </label>
+    <label class="checkbox">
+      <input type="checkbox" name="keep_buffer_after_archive" value="true">
+      Keep buffer after archive
+    </label>
+    <button type="submit">Create collection</button>
+  </form>
+</section>
+
+<section>
+  <h2>Container Ops</h2>
+  <form method="post" action="/containers/flush">
+    <label class="checkbox">
+      <input type="checkbox" name="force" value="true">
+      Force close pending containers
+    </label>
+    <button type="submit">Flush containers</button>
+  </form>
+
+  <form method="post" action="/containers/finalization-webhooks">
+    <label>
+      Webhook URL
+      <input type="url" name="webhook_url" placeholder="https://example.test/hook" required>
+    </label>
+    <label>
+      Reminder interval seconds
+      <input type="number" name="reminder_interval_seconds" min="1" step="1">
+    </label>
+    <button type="submit">Create finalization webhook</button>
+  </form>
+</section>
+
+<section>
+  <h2>Collections</h2>
+  {% if collections_error %}
+  <p class="flash error">{{ collections_error }}</p>
+  {% endif %}
+  <table>
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Status</th>
+        <th>Description</th>
+        <th>Files</th>
+        <th>Directories</th>
+        <th>Keep Buffer</th>
+        <th>Created</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for collection in collections %}
+      <tr>
+        <td><a href="/collections/{{ collection.collection_id }}">{{ collection.collection_id }}</a></td>
+        <td>{{ collection.status }}</td>
+        <td>{{ collection.description or "" }}</td>
+        <td>{{ collection.file_count }}</td>
+        <td>{{ collection.directory_count }}</td>
+        <td>{{ "yes" if collection.keep_buffer_after_archive else "no" }}</td>
+        <td><code>{{ collection.created_at }}</code></td>
+      </tr>
+      {% else %}
+      <tr>
+        <td colspan="7">No collections yet.</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</section>
+
+<section>
+  <h2>Containers</h2>
+  {% if containers_error %}
+  <p class="flash error">{{ containers_error }}</p>
+  {% endif %}
+  <table>
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Status</th>
+        <th>Entries</th>
+        <th>Root Bytes</th>
+        <th>ISO</th>
+        <th>Burn Confirmed</th>
+        <th>Created</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for container in containers %}
+      <tr>
+        <td><a href="/containers/{{ container.container_id }}">{{ container.container_id }}</a></td>
+        <td>{{ container.status }}</td>
+        <td>{{ container.entry_count }}</td>
+        <td>{{ container.total_root_bytes|human_bytes }}</td>
+        <td>{{ "yes" if container.iso_present else "no" }}</td>
+        <td><code>{{ container.burn_confirmed_at or "-" }}</code></td>
+        <td><code>{{ container.created_at }}</code></td>
+      </tr>
+      {% else %}
+      <tr>
+        <td colspan="7">No containers yet.</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</section>
+{% endblock %}

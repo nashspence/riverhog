@@ -36,8 +36,10 @@ from ..schemas import (
     ActivationSessionCompleteResponse,
     ActivationSessionCreateResponse,
     ActivationUploadSlotRequest,
+    ContainerListResponse,
     ContainerFinalizationWebhookCreateRequest,
     ContainerFinalizationWebhookCreateResponse,
+    ContainerSummary,
     DownloadSessionCreateResponse,
     IsoCreateRequest,
     IsoCreateResponse,
@@ -61,6 +63,37 @@ def get_db():
 
 
 Db = Annotated[Session, Depends(get_db)]
+
+
+@router.get("", response_model=ContainerListResponse)
+def list_containers(db: Db) -> ContainerListResponse:
+    containers = (
+        db.execute(
+            select(Container)
+            .options(selectinload(Container.entries))
+            .order_by(Container.created_at.desc(), Container.id.asc())
+        )
+        .scalars()
+        .all()
+    )
+    return ContainerListResponse(
+        containers=[
+            ContainerSummary(
+                container_id=container.id,
+                status=container.status,
+                description=container.description,
+                total_root_bytes=container.total_root_bytes,
+                contents_hash=container.contents_hash,
+                entry_count=len(container.entries),
+                active_root_present=bool(container.active_root_abs_path),
+                iso_present=bool(container.iso_abs_path and Path(container.iso_abs_path).exists()),
+                iso_size_bytes=container.iso_size_bytes,
+                burn_confirmed_at=isoformat_z(container.burn_confirmed_at),
+                created_at=isoformat_z(container.created_at) or "",
+            )
+            for container in containers
+        ]
+    )
 
 
 @router.post("/finalization-webhooks", response_model=ContainerFinalizationWebhookCreateResponse)

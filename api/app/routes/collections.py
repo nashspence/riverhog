@@ -15,10 +15,13 @@ from ..config import TUSD_BASE_URL
 from ..db import SessionLocal
 from ..models import ArchivePiece, Collection, CollectionDirectory, CollectionFile, UploadSlot
 from ..planner import import_closed_containers, ingest_collection
+from ..notifications import isoformat_z
 from ..schemas import (
     CollectionCreateRequest,
     CollectionCreateResponse,
     CollectionDirectoryCreateRequest,
+    CollectionListResponse,
+    CollectionSummary,
     InactiveError,
     SealCollectionResponse,
     TreeNode,
@@ -49,6 +52,34 @@ def get_db():
 
 
 Db = Annotated[Session, Depends(get_db)]
+
+
+@router.get("", response_model=CollectionListResponse)
+def list_collections(db: Db) -> CollectionListResponse:
+    collections = (
+        db.execute(
+            select(Collection)
+            .options(selectinload(Collection.files), selectinload(Collection.directories))
+            .order_by(Collection.created_at.desc(), Collection.id.asc())
+        )
+        .scalars()
+        .all()
+    )
+    return CollectionListResponse(
+        collections=[
+            CollectionSummary(
+                collection_id=collection.id,
+                status=collection.status,
+                description=collection.description,
+                keep_buffer_after_archive=collection.keep_buffer_after_archive,
+                file_count=len(collection.files),
+                directory_count=len(collection.directories),
+                created_at=isoformat_z(collection.created_at) or "",
+                sealed_at=isoformat_z(collection.sealed_at),
+            )
+            for collection in collections
+        ]
+    )
 
 
 @router.post("", response_model=CollectionCreateResponse)

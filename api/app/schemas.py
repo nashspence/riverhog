@@ -17,6 +17,21 @@ class CollectionCreateResponse(BaseModel):
     keep_buffer_after_archive: bool
 
 
+class CollectionSummary(BaseModel):
+    collection_id: str
+    status: str
+    description: str | None = None
+    keep_buffer_after_archive: bool
+    file_count: int
+    directory_count: int
+    created_at: str
+    sealed_at: str | None = None
+
+
+class CollectionListResponse(BaseModel):
+    collections: list[CollectionSummary]
+
+
 class CollectionDirectoryCreateRequest(BaseModel):
     relative_path: str
 
@@ -102,6 +117,24 @@ class IsoCreateResponse(BaseModel):
     container_id: str
     iso_path: str
     size_bytes: int
+
+
+class ContainerSummary(BaseModel):
+    container_id: str
+    status: str
+    description: str | None = None
+    total_root_bytes: int
+    contents_hash: str
+    entry_count: int
+    active_root_present: bool
+    iso_present: bool
+    iso_size_bytes: int | None = None
+    burn_confirmed_at: str | None = None
+    created_at: str
+
+
+class ContainerListResponse(BaseModel):
+    containers: list[ContainerSummary]
 
 
 class BurnConfirmResponse(BaseModel):
