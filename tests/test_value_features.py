@@ -1,0 +1,246 @@
+from __future__ import annotations
+
+from pathlib import Path
+
+from .helpers import cache_disc_from_root, create_iso, create_job, force_flush, seal_job, upload_job_file
+from .mock_data import MockFile, document_archive_files, patterned_bytes
+
+
+def test_catalog_tree_keeps_explicit_and_derived_directories(app_factory):
+    with app_factory() as harness:
+        job_id = create_job(harness, description="catalog coverage archive")
+
+        created = harness.client.post(
+            f"/v1/jobs/{job_id}/directories",
+            headers=harness.auth_headers(),
+            json={"relative_path": "scans/2025/receipts"},
+        )
+        assert created.status_code == 200, created.text
+
+        sample = MockFile(
+            "scans/2025/passports/alex/passport.pdf",
+            patterned_bytes("passport-scan", 24_000),
+        )
+        upload_job_file(harness, job_id, sample)
+
+        tree = harness.client.get(
+            f"/v1/jobs/{job_id}/tree",
+            headers=harness.auth_headers(),
+        )
+        assert tree.status_code == 200, tree.text
+
+        directories = {node["path"] for node in tree.json()["nodes"] if node["kind"] == "directory"}
+        assert directories == {
+            "scans",
+            "scans/2025",
+            "scans/2025/passports",
+            "scans/2025/passports/alex",
+            "scans/2025/receipts",
+        }
+
+        file_nodes = [node for node in tree.json()["nodes"] if node["kind"] == "file"]
+        assert file_nodes == [
+            {
+                "path": sample.relative_path,
+                "kind": "file",
+                "size_bytes": sample.size_bytes,
+                "online": True,
+                "source": "buffer",
+                "disc_ids": [],
+                "status": "online",
+                "extra": None,
+            }
+        ]
+
+
+def test_upload_mtime_must_be_rfc3339_utc(app_factory):
+    with app_factory() as harness:
+        job_id = create_job(harness, description="timestamp validation archive")
+        sample = document_archive_files()[0]
+        payload = sample.upload_payload()
+
+        for bad_mtime in ("2026-04-17T10:15:30+02:00", "2026-04-17T10:15:30"):
+            response = harness.client.post(
+                f"/v1/jobs/{job_id}/uploads",
+                headers=harness.auth_headers(),
+                json={**payload, "relative_path": f"bad/{bad_mtime[-6:].replace(':', '-')}.pdf", "mtime": bad_mtime},
+            )
+            assert response.status_code == 400
+            assert response.json()["detail"] == "mtime must be an RFC3339 UTC timestamp"
+
+        accepted = harness.client.post(
+            f"/v1/jobs/{job_id}/uploads",
+            headers=harness.auth_headers(),
+            json=payload,
+        )
+        assert accepted.status_code == 200, accepted.text
+
+
+def test_sealed_job_rejects_new_mutations(app_factory):
+    with app_factory() as harness:
+        sample = document_archive_files()[0]
+        job_id = create_job(harness, description="sealed archive behavior")
+        upload_job_file(harness, job_id, sample)
+        seal_job(harness, job_id)
+
+        add_directory = harness.client.post(
+            f"/v1/jobs/{job_id}/directories",
+            headers=harness.auth_headers(),
+            json={"relative_path": "late-arrival"},
+        )
+        assert add_directory.status_code == 409
+        assert add_directory.json()["detail"] == "job is sealed"
+
+        add_upload = harness.client.post(
+            f"/v1/jobs/{job_id}/uploads",
+            headers=harness.auth_headers(),
+            json=sample.upload_payload(),
+        )
+        assert add_upload.status_code == 409
+        assert add_upload.json()["detail"] == "job is sealed"
+
+        reseal = harness.client.post(
+            f"/v1/jobs/{job_id}/seal",
+            headers=harness.auth_headers(),
+        )
+        assert reseal.status_code == 409
+        assert reseal.json()["detail"] == "job already sealed"
+
+        bundle = harness.client.get(
+            f"/v1/jobs/{job_id}/hash-manifest-proof",
+            headers=harness.auth_headers(),
+        )
+        assert bundle.status_code == 200
+
+
+def test_disc_cache_and_evict_toggle_disc_and_job_visibility(app_factory):
+    with app_factory() as harness:
+        samples = document_archive_files()
+        job_id = create_job(harness, description="cache visibility archive")
+        for sample in samples:
+            upload_job_file(harness, job_id, sample)
+
+        sealed = seal_job(harness, job_id)
+        disc_id = (sealed["closed_discs"] or force_flush(harness))[0]
+
+        release = harness.client.post(
+            f"/v1/jobs/{job_id}/buffer/release",
+            headers=harness.auth_headers(),
+        )
+        assert release.status_code == 200, release.text
+
+        with harness.session() as session:
+            disc_entry = (
+                session.query(harness.models.DiscEntry)
+                .filter_by(disc_id=disc_id, kind="payload")
+                .order_by(harness.models.DiscEntry.relative_path.asc())
+                .first()
+            )
+            assert disc_entry is not None
+            disc_relpath = disc_entry.relative_path
+
+        offline_disc = harness.client.get(
+            f"/v1/discs/{disc_id}/content/{disc_relpath}",
+            headers=harness.auth_headers(),
+        )
+        assert offline_disc.status_code == 409
+        assert offline_disc.json()["error"] == "disc_offline"
+
+        _, complete = cache_disc_from_root(harness, disc_id)
+        assert complete.status_code == 200, complete.text
+
+        online_disc = harness.client.get(
+            f"/v1/discs/{disc_id}/content/{disc_relpath}",
+            headers=harness.auth_headers(),
+        )
+        assert online_disc.status_code == 200
+
+        online_job = harness.client.get(
+            f"/v1/jobs/{job_id}/content/{samples[0].relative_path}",
+            headers=harness.auth_headers(),
+        )
+        assert online_job.status_code == 200
+        assert online_job.content == samples[0].content
+
+        evict = harness.client.delete(
+            f"/v1/discs/{disc_id}/cache",
+            headers=harness.auth_headers(),
+        )
+        assert evict.status_code == 200, evict.text
+
+        disc_tree = harness.client.get(
+            f"/v1/discs/{disc_id}/tree",
+            headers=harness.auth_headers(),
+        )
+        assert disc_tree.status_code == 200
+        assert all(node["online"] is False for node in disc_tree.json()["nodes"] if node["kind"] == "file")
+
+        offline_again = harness.client.get(
+            f"/v1/jobs/{job_id}/content/{samples[0].relative_path}",
+            headers=harness.auth_headers(),
+        )
+        assert offline_again.status_code == 409
+        assert offline_again.json()["error"] == "offline_on_disc"
+        assert offline_again.json()["disc_ids"] == [disc_id]
+
+
+def test_iso_overwrite_and_burn_confirmation_are_idempotent(app_factory):
+    with app_factory() as harness:
+        job_id = create_job(harness, description="iso lifecycle archive")
+        for sample in document_archive_files():
+            upload_job_file(harness, job_id, sample)
+
+        sealed = seal_job(harness, job_id)
+        disc_id = (sealed["closed_discs"] or force_flush(harness))[0]
+
+        first_iso = create_iso(harness, disc_id, volume_label="FIRST LABEL")
+        assert Path(first_iso["iso_path"]).exists()
+
+        conflict = harness.client.post(
+            f"/v1/discs/{disc_id}/iso/create",
+            headers=harness.auth_headers(),
+            json={"overwrite": False},
+        )
+        assert conflict.status_code == 409
+        assert conflict.json()["detail"] == "iso already exists; pass overwrite=true to replace it"
+
+        replaced_iso = create_iso(harness, disc_id, overwrite=True, volume_label="SECOND LABEL")
+        assert replaced_iso["iso_path"] == first_iso["iso_path"]
+        assert replaced_iso["size_bytes"] == Path(replaced_iso["iso_path"]).stat().st_size
+
+        confirmed_once = harness.client.post(
+            f"/v1/discs/{disc_id}/burn/confirm",
+            headers=harness.auth_headers(),
+        )
+        assert confirmed_once.status_code == 200, confirmed_once.text
+
+        confirmed_twice = harness.client.post(
+            f"/v1/discs/{disc_id}/burn/confirm",
+            headers=harness.auth_headers(),
+        )
+        assert confirmed_twice.status_code == 200, confirmed_twice.text
+        assert confirmed_twice.json()["burn_confirmed_at"] == confirmed_once.json()["burn_confirmed_at"]
+        assert confirmed_twice.json()["released_job_ids"] == []
+
+
+def test_webhook_subscription_backfills_existing_unconfirmed_discs(app_factory):
+    with app_factory() as harness:
+        job_id = create_job(harness, description="notification backfill archive")
+        for sample in document_archive_files():
+            upload_job_file(harness, job_id, sample)
+
+        sealed = seal_job(harness, job_id)
+        disc_id = (sealed["closed_discs"] or force_flush(harness))[0]
+
+        subscribe = harness.client.post(
+            "/v1/discs/finalization-webhooks",
+            headers=harness.auth_headers(),
+            json={"webhook_url": "http://example.test/archive-hook"},
+        )
+        assert subscribe.status_code == 200, subscribe.text
+        assert subscribe.json()["pending_disc_count"] == 1
+
+        with harness.session() as session:
+            notification = session.query(harness.models.DiscFinalizationNotification).filter_by(disc_id=disc_id).one()
+            assert notification.status == "pending"
+            assert notification.next_attempt_at is not None

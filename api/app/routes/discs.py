@@ -27,6 +27,7 @@ from ..models import (
 from ..notifications import (
     backfill_disc_finalization_notifications_for_subscription,
     complete_disc_finalization_notifications,
+    isoformat_z,
 )
 from ..planner import force_close_pending, import_closed_discs
 from ..progress import download_stream_name, publish_progress
@@ -356,7 +357,7 @@ def confirm_burn(disc_id: str, db: Db) -> BurnConfirmResponse:
 
     return BurnConfirmResponse(
         disc_id=disc_id,
-        burn_confirmed_at=disc.burn_confirmed_at.isoformat().replace("+00:00", "Z"),
+        burn_confirmed_at=isoformat_z(disc.burn_confirmed_at) or "",
         released_job_ids=released_job_ids,
     )
 

@@ -52,7 +52,7 @@ At a high level, the service helps you do this:
 2. upload files into it
 3. organize those files into disc-sized groups
 4. prepare those groups for offline storage
-5. optionally create ISO images for burning
+5. create ISO images for burning when you're ready
 6. keep a record of what ended up in the archive
 7. later bring a known archived disc back online when you need something from it
 
@@ -122,7 +122,7 @@ A typical flow looks like this:
 3. Upload files.
 4. Finalize the batch.
 5. Let the service group the files into disc-sized archive sets.
-6. Create an ISO if you want one.
+6. Create an ISO when you are ready.
 7. Burn or store the archive offline.
 8. Later, bring that archive set back online if you need to recover files.
 

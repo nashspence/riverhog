@@ -1,7 +1,7 @@
 from __future__ import annotations
 
-import string
 import secrets
+import string
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Annotated
@@ -104,9 +104,11 @@ def create_upload_slot(job_id: str, body: UploadSlotCreateRequest, db: Db) -> Up
     if body.sha256 and any(char not in string.hexdigits for char in body.sha256):
         raise HTTPException(status_code=400, detail="sha256 must be exactly 64 hexadecimal characters")
     try:
-        datetime.fromisoformat(body.mtime.replace("Z", "+00:00"))
+        parsed_mtime = datetime.fromisoformat(body.mtime.replace("Z", "+00:00"))
     except ValueError as exc:
         raise HTTPException(status_code=400, detail="mtime must be an RFC3339 UTC timestamp") from exc
+    if parsed_mtime.tzinfo is None or parsed_mtime.utcoffset() != timezone.utc.utcoffset(parsed_mtime):
+        raise HTTPException(status_code=400, detail="mtime must be an RFC3339 UTC timestamp")
 
     job_file = JobFile(
         job_id=job_id,
