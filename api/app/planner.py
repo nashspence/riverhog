@@ -4,6 +4,7 @@ import json
 import math
 import os
 import shutil
+import tempfile
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
@@ -15,7 +16,8 @@ from sqlalchemy.orm import Session, selectinload
 from sqlalchemy import select
 
 from .config import PARTITIONER_STATE_DIR, PARTITION_CFG, PARTITION_ROOTS_DIR
-from .crypto import encrypt_bytes_to_file, encrypt_file_span, encrypted_size_for_plaintext_size, logical_file_sha256_and_size, max_plaintext_size_for_encrypted_budget
+from .crypto import encrypt_bytes_to_file, encrypt_file_span, encrypted_size_for_plaintext_size, logical_file_sha256_and_size
+from .iso import estimate_iso_size_from_partition_root
 from .models import Disc, DiscEntry, ArchivePiece, Job, JobFile
 from .storage import canonical_tree_hash, cold_job_hash_manifest_path, cold_job_hash_proof_path, job_disc_artifact_relpaths
 
@@ -220,7 +222,8 @@ def put_len(job: str, rel: str, i: int, n: int, why: str = "___"):
     return _SPLIT_CHUNK_BUDGET if n > 1 else _UNSPLIT_ARCHIVE_BUDGET
 
 
-def stage_pieces(state_dir: Path, job: str, files: list[dict], target: int, fixed: int):
+def stage_pieces(state_dir: Path, job: str, files: list[dict], target: int, fixed: int, artifacts: list[dict] | None = None):
+    artifacts = artifacts or []
     pool, cap = state_dir / "pool" / job, target - META_PAD - fixed
     if cap <= 0:
         raise RuntimeError(f"job manifest for {job} leaves no payload room")
@@ -229,6 +232,8 @@ def stage_pieces(state_dir: Path, job: str, files: list[dict], target: int, fixe
         sidecar_size = encrypted_size_for_plaintext_size(len(sidecar_bytes(f)))
         stub1 = put_len(job, f["rel"], 0, 1, "job")
         if f["raw"] <= target:
+            if not _piece_fits_iso_target(state_dir, target, job, files, f, 1, f["raw"], artifacts):
+                raise RuntimeError(f"file {f['rel']} in {job} cannot fit with required manifest overhead without forbidden chunking")
             store = pool / str(f["id"])
             encrypt_file_span(Path(f["src"]), store)
             stored_size = store.stat().st_size
@@ -236,36 +241,16 @@ def stage_pieces(state_dir: Path, job: str, files: list[dict], target: int, fixe
                 raise RuntimeError(f"file {f['rel']} in {job} cannot fit with required manifest overhead without forbidden chunking")
             f["pieces"] = [{"job": job, "rel": f["rel"], "file": f["id"], "store": str(store.relative_to(state_dir)), "data": f["raw"], "i": 0, "n": 1, "est": stored_size + sidecar_size + stub1}]
             continue
-        n = max(
-            2,
-            math.ceil(
-                f["raw"] / max(
-                    1,
-                    max_plaintext_size_for_encrypted_budget(
-                        cap
-                        - encrypted_size_for_plaintext_size(len(sidecar_bytes(f, 0, 2)))
-                        - put_len(job, f["rel"], 0, 2, "vol")
-                    ),
-                )
-            ),
-        )
+        n = 2
         while True:
-            room = max_plaintext_size_for_encrypted_budget(
-                cap - encrypted_size_for_plaintext_size(len(sidecar_bytes(f, 0, n))) - put_len(job, f["rel"], 0, n, "vol")
-            )
+            room = _max_piece_plaintext_size_for_iso_target(state_dir, target, job, files, f, n, artifacts)
             if room <= 0:
                 raise RuntimeError(f"chunk sidecar for {f['rel']} in {job} leaves no payload room")
             nn = max(2, math.ceil(f["raw"] / room))
             if nn == n:
                 break
             n = nn
-        room, pcs, off = (
-            max_plaintext_size_for_encrypted_budget(
-                cap - encrypted_size_for_plaintext_size(len(sidecar_bytes(f, 0, n))) - put_len(job, f["rel"], 0, n, "vol")
-            ),
-            [],
-            0,
-        )
+        room, pcs, off = (_max_piece_plaintext_size_for_iso_target(state_dir, target, job, files, f, n, artifacts), [], 0)
         w = max(3, len(str(n)))
         for i in range(n):
             b = min(room, f["raw"] - off)
@@ -558,41 +543,225 @@ def recovery_readme_bytes(part: str) -> bytes:
     return "\n".join(lines).encode("utf-8")
 
 
-def build_disc(state_dir: Path, s: dict, items: list[dict], out_dir: Path, emit=True, part: str | None = None):
-    part = part or ts_name(s.get("last_closed", ""))
+def _piece_manifest_bytes(job: str, files: list[dict], target_file_id: int, n: int):
+    manifest_files = []
+    for file_meta in sorted(files, key=lambda x: x["rel"]):
+        archive = _MISSING
+        if file_meta["id"] == target_file_id:
+            archive = (
+                MANIFEST_PLACEHOLDER_ARCHIVE
+                if n == 1
+                else {"count": n, "chunks": [MANIFEST_PLACEHOLDER_ARCHIVE]}
+            )
+        manifest_files.append(manifest_file_entry(file_meta["rel"], file_meta["sha256"], archive))
+    return manifest_dump(
+        MANIFEST_PLACEHOLDER_PARTITION,
+        [{"name": job, "files": manifest_files}],
+    )
+
+
+def _piece_fits_iso_target(
+    state_dir: Path,
+    target: int,
+    job: str,
+    files: list[dict],
+    file_meta: dict,
+    n: int,
+    payload_plaintext_size: int,
+    artifacts: list[dict],
+) -> bool:
+    manifest_size = encrypted_size_for_plaintext_size(len(_piece_manifest_bytes(job, files, file_meta["id"], n)))
+    sidecar_size = encrypted_size_for_plaintext_size(len(sidecar_bytes(file_meta, 0, n)))
+    payload_size = encrypted_size_for_plaintext_size(payload_plaintext_size)
+    readme_size = len(recovery_readme_bytes(MANIFEST_PLACEHOLDER_PARTITION))
+    placeholder_entries = [
+        {"relpath": MANIFEST, "size": manifest_size},
+        {"relpath": README, "size": readme_size},
+        {"relpath": MANIFEST_PLACEHOLDER_ARCHIVE, "size": payload_size},
+        {"relpath": f"{MANIFEST_PLACEHOLDER_ARCHIVE}.meta.yaml", "size": sidecar_size},
+        *(
+            {"relpath": artifact["disc_relpath"], "size": artifact["encrypted_size"]}
+            for artifact in artifacts
+        ),
+    ]
+    fallback = sum(entry["size"] for entry in placeholder_entries)
+    with tempfile.TemporaryDirectory(prefix=".piece-preview-", dir=state_dir) as tmp_dir:
+        root = Path(tmp_dir) / MANIFEST_PLACEHOLDER_PARTITION
+        for entry in placeholder_entries:
+            _write_placeholder_file(root / entry["relpath"], entry["size"])
+        used = _estimate_iso_size_bytes(root, MANIFEST_PLACEHOLDER_PARTITION, fallback)
+    return used <= target
+
+
+def _max_piece_plaintext_size_for_iso_target(
+    state_dir: Path,
+    target: int,
+    job: str,
+    files: list[dict],
+    file_meta: dict,
+    n: int,
+    artifacts: list[dict],
+) -> int:
+    low, high = 0, file_meta["raw"]
+    while low < high:
+        mid = (low + high + 1) // 2
+        if _piece_fits_iso_target(state_dir, target, job, files, file_meta, n, mid, artifacts):
+            low = mid
+        else:
+            high = mid - 1
+    return low
+
+
+def _build_disc_layout(state_dir: Path, s: dict, items: list[dict], part: str) -> dict:
     pieces = [p for it in items for p in it["pieces"]]
     jobs_on_disc = sorted({x["job"] for x in items})
     fmap = assign_paths(pieces)
     man = manifest_bytes(part, s["cfg"], s["jobs"], items, fmap)
     readme = recovery_readme_bytes(part)
-    evidence_payload = sum(entry["encrypted_size"] for job in jobs_on_disc for entry in s["jobs"][job]["artifacts"])
-    payload = 0
+    payload_entries: list[dict] = [
+        {
+            "kind": "manifest",
+            "relpath": MANIFEST,
+            "size": encrypted_size_for_plaintext_size(len(man)),
+            "plaintext": man,
+        },
+        {
+            "kind": "readme",
+            "relpath": README,
+            "size": len(readme),
+            "plaintext": readme,
+        },
+    ]
+    piece_records: list[dict] = []
     for it in items:
         meta = {f["id"]: f for f in s["jobs"][it["job"]]["files"]}
         for p in it["pieces"]:
-            payload += (state_dir / p["store"]).stat().st_size
-            payload += encrypted_size_for_plaintext_size(len(sidecar_bytes(meta[p["file"]], p["i"], p["n"])))
-    used = encrypted_size_for_plaintext_size(len(man)) + len(readme) + payload + evidence_payload
-    if used > s["cfg"]["target"]:
-        return None
-    root = out_dir / part
-    out = {"name": part, "path": str(root.resolve()), "used": used, "free": s["cfg"]["target"] - used, "jobs": jobs_on_disc, "items": [x["id"] for x in items], "pieces": []}
-    if not emit:
-        return out
-    (root / STORE).mkdir(parents=True, exist_ok=True)
-    encrypt_bytes_to_file(man, root / MANIFEST)
-    (root / README).write_bytes(readme)
+            payload_relpath, sidecar_relpath = fmap[(p["job"], p["file"], p["i"])]
+            payload_entries.append(
+                {
+                    "kind": "payload",
+                    "relpath": payload_relpath,
+                    "size": (state_dir / p["store"]).stat().st_size,
+                    "source": state_dir / p["store"],
+                }
+            )
+            sidecar_plaintext = sidecar_bytes(meta[p["file"]], p["i"], p["n"])
+            payload_entries.append(
+                {
+                    "kind": "sidecar",
+                    "relpath": sidecar_relpath,
+                    "size": encrypted_size_for_plaintext_size(len(sidecar_plaintext)),
+                    "plaintext": sidecar_plaintext,
+                }
+            )
+            piece_records.append(
+                {
+                    "job": p["job"],
+                    "job_file_id": p["file"],
+                    "relative_path": p["rel"],
+                    "payload_relpath": payload_relpath,
+                    "sidecar_relpath": sidecar_relpath,
+                    "payload_size_bytes": p["data"],
+                    "chunk_index": None if p["n"] == 1 else p["i"] + 1,
+                    "chunk_count": None if p["n"] == 1 else p["n"],
+                }
+            )
     for job_id in jobs_on_disc:
         for artifact in s["jobs"][job_id]["artifacts"]:
-            encrypt_bytes_to_file(Path(artifact["source"]).read_bytes(), root / artifact["disc_relpath"])
-    for it in items:
-        meta = {f["id"]: f for f in s["jobs"][it["job"]]["files"]}
-        for p in it["pieces"]:
-            src = state_dir / p["store"]
-            f, m = fmap[(p["job"], p["file"], p["i"])]
-            copy_span(str(src), str(root / f))
-            encrypt_bytes_to_file(sidecar_bytes(meta[p["file"]], p["i"], p["n"]), root / m)
-            out["pieces"].append({"job": p["job"], "job_file_id": p["file"], "relative_path": p["rel"], "payload_relpath": f, "sidecar_relpath": m, "payload_size_bytes": p["data"], "chunk_index": None if p["n"] == 1 else p["i"] + 1, "chunk_count": None if p["n"] == 1 else p["n"]})
+            payload_entries.append(
+                {
+                    "kind": "artifact",
+                    "relpath": artifact["disc_relpath"],
+                    "size": artifact["encrypted_size"],
+                    "source": Path(artifact["source"]),
+                }
+            )
+    return {
+        "jobs": jobs_on_disc,
+        "items": [x["id"] for x in items],
+        "entries": payload_entries,
+        "pieces": piece_records,
+        "root_used": sum(entry["size"] for entry in payload_entries),
+    }
+
+
+def _write_placeholder_file(path: Path, size: int) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with path.open("wb") as handle:
+        handle.truncate(size)
+
+
+def _materialize_preview_root(root: Path, layout: dict) -> None:
+    root.mkdir(parents=True, exist_ok=True)
+    for entry in layout["entries"]:
+        _write_placeholder_file(root / entry["relpath"], entry["size"])
+
+
+def _materialize_disc_root(root: Path, layout: dict) -> None:
+    root.mkdir(parents=True, exist_ok=True)
+    for entry in layout["entries"]:
+        dest = root / entry["relpath"]
+        kind = entry["kind"]
+        if kind == "readme":
+            dest.parent.mkdir(parents=True, exist_ok=True)
+            dest.write_bytes(entry["plaintext"])
+        elif kind in {"manifest", "sidecar"}:
+            encrypt_bytes_to_file(entry["plaintext"], dest)
+        elif kind == "artifact":
+            encrypt_bytes_to_file(Path(entry["source"]).read_bytes(), dest)
+        elif kind == "payload":
+            copy_span(str(entry["source"]), str(dest))
+        else:
+            raise RuntimeError(f"unsupported disc entry kind {kind}")
+
+
+def _estimate_iso_size_bytes(root: Path, part: str, fallback: int) -> int:
+    try:
+        return estimate_iso_size_from_partition_root(root, requested_label=part)
+    except RuntimeError as exc:
+        if str(exc).endswith("is not installed"):
+            return fallback
+        raise
+
+
+def _disc_result(part: str, out_dir: Path, target: int, layout: dict, used: int) -> dict:
+    return {
+        "name": part,
+        "path": str((out_dir / part).resolve()),
+        "used": used,
+        "root_used": layout["root_used"],
+        "iso_overhead": used - layout["root_used"],
+        "free": target - used,
+        "jobs": layout["jobs"],
+        "items": layout["items"],
+        "pieces": layout["pieces"],
+    }
+
+
+def preview_disc(state_dir: Path, s: dict, items: list[dict], out_dir: Path, part: str | None = None) -> dict:
+    part = part or ts_name(s.get("last_closed", ""))
+    layout = _build_disc_layout(state_dir, s, items, part)
+    with tempfile.TemporaryDirectory(prefix=".preview-", dir=out_dir) as tmp_dir:
+        root = Path(tmp_dir) / part
+        _materialize_preview_root(root, layout)
+        used = _estimate_iso_size_bytes(root, part, layout["root_used"])
+    return _disc_result(part, out_dir, s["cfg"]["target"], layout, used)
+
+
+def build_disc(state_dir: Path, s: dict, items: list[dict], out_dir: Path, emit=True, part: str | None = None):
+    if not emit:
+        return preview_disc(state_dir, s, items, out_dir, part)
+    part = part or ts_name(s.get("last_closed", ""))
+    layout = _build_disc_layout(state_dir, s, items, part)
+    root = out_dir / part
+    if root.exists():
+        shutil.rmtree(root)
+    _materialize_disc_root(root, layout)
+    used = _estimate_iso_size_bytes(root, part, layout["root_used"])
+    if used > s["cfg"]["target"]:
+        shutil.rmtree(root, ignore_errors=True)
+        return None
+    out = _disc_result(part, out_dir, s["cfg"]["target"], layout, used)
     s["last_closed"] = part
     return out
 
@@ -613,6 +782,30 @@ def gc_state(state_dir: Path, s: dict, done: list[dict]):
             del s["jobs"][job]
 
 
+def fit_candidate_to_target(state_dir: Path, s: dict, items: list[dict], out_dir: Path, part: str, force=False):
+    target = s["cfg"]["target"]
+    seen: set[tuple[str, ...]] = set()
+    cand = items
+    while cand:
+        key = tuple(x["id"] for x in cand)
+        if key in seen:
+            cand = cand[:-1]
+            continue
+        seen.add(key)
+        preview = preview_disc(state_dir, s, cand, out_dir, part)
+        if preview["used"] <= target:
+            return cand, preview
+        overshoot = preview["used"] - target
+        next_cap = preview["root_used"] - max(1, overshoot)
+        if next_cap > META_PAD:
+            alt = pick(s["items"], s["jobs"], next_cap, s["cfg"]["fill"], s["cfg"]["spill_fill"], force)
+            if alt and tuple(x["id"] for x in alt) not in seen:
+                cand = alt
+                continue
+        cand = cand[:-1]
+    return [], None
+
+
 def flush(state_dir: Path, s: dict, out_dir: Path, force=False):
     out = []
     while True:
@@ -623,21 +816,23 @@ def flush(state_dir: Path, s: dict, out_dir: Path, force=False):
         if not cand:
             break
         part = ts_name(s.get("last_closed", ""))
+        made = None
         while cand:
-            made = build_disc(state_dir, s, cand, out_dir, False, part)
-            if made:
+            cand, preview = fit_candidate_to_target(state_dir, s, cand, out_dir, part, forced)
+            if not cand or preview is None:
+                break
+            req = close_threshold(cand, s["cfg"]["fill"], s["cfg"]["spill_fill"])
+            if not forced and preview["used"] < req:
+                cand = []
+                break
+            made = build_disc(state_dir, s, cand, out_dir, True, part)
+            if made is not None:
                 break
             cand = cand[:-1]
-        if not cand:
+        if made is None:
             break
-        req = close_threshold(cand, s["cfg"]["fill"], s["cfg"]["spill_fill"])
-        if not forced and made["used"] < req:
-            break
-        made = build_disc(state_dir, s, cand, out_dir, True, part)
         out.append(made)
         gc_state(state_dir, s, cand)
-        if not force:
-            continue
     return out
 
 
@@ -713,7 +908,7 @@ def ingest_job(session: Session, job_id: str):
     ]
 
     fixed = manifest_job_budget(job_id, files) + sum(item["encrypted_size"] for item in artifacts)
-    stage_pieces(state_dir, job_id, files, s["cfg"]["target"], fixed)
+    stage_pieces(state_dir, job_id, files, s["cfg"]["target"], fixed, artifacts)
     s["jobs"][job_id] = {
         "files": [
             {

@@ -1,12 +1,39 @@
 from __future__ import annotations
 
+import importlib
+import random
 import sqlite3
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from urllib.parse import urlparse
 
-from .helpers import create_job, force_flush, register_iso, seal_job, upload_job_file
-from .mock_data import document_archive_files
+from .helpers import create_iso, create_job, force_flush, register_iso, seal_job, upload_job_file
+from .mock_data import MockFile, document_archive_files, patterned_bytes
+
+
+def _stress_files(seed: int, *, count: int, oversized_bytes: int | None = None) -> list[MockFile]:
+    rng = random.Random(seed)
+    files: list[MockFile] = []
+    for index in range(count):
+        depth = 1 + rng.randrange(4)
+        parents = [f"collection-{seed:02d}"] + [f"tier-{level}-{rng.randrange(5)}" for level in range(depth)]
+        stem = f"asset-{index:02d}-" + ("segment-" * (1 + rng.randrange(3))) + f"{rng.randrange(10_000):04d}"
+        ext = (".bin", ".pdf", ".mp4")[index % 3]
+        size_bytes = rng.randint(18_000, 165_000)
+        files.append(
+            MockFile(
+                "/".join([*parents, f"{stem}{ext}"]),
+                patterned_bytes(f"stress-{seed}-{index}", size_bytes),
+            )
+        )
+    if oversized_bytes is not None:
+        files.append(
+            MockFile(
+                f"collection-{seed:02d}/oversized/master-reel-{seed:02d}.mov",
+                patterned_bytes(f"stress-large-{seed}", oversized_bytes),
+            )
+        )
+    return files
 
 
 def test_registered_iso_download_tracks_progress(app_factory):
@@ -48,6 +75,62 @@ def test_registered_iso_download_tracks_progress(app_factory):
             assert download_session is not None
             assert download_session.status == "completed"
             assert download_session.bytes_sent == len(iso_bytes)
+
+
+def test_iso_size_estimate_matches_authored_iso_bytes(module_factory):
+    with module_factory() as modules:
+        iso_module = importlib.import_module("app.iso")
+        cases = [
+            document_archive_files(),
+            _stress_files(7, count=18),
+            _stress_files(19, count=28),
+        ]
+
+        for index, files in enumerate(cases, start=1):
+            disc_id = f"ESTIMATE-{index:02d}"
+            root = modules.archive_root / "iso-estimate-cases" / disc_id
+            for sample in files:
+                path = root / sample.relative_path
+                path.parent.mkdir(parents=True, exist_ok=True)
+                path.write_bytes(sample.content)
+
+            estimated = iso_module.estimate_iso_size_from_partition_root(root, requested_label=disc_id)
+            authored = iso_module.create_iso_from_partition_root(disc_id, root, requested_label=disc_id)
+
+            assert authored.stat().st_size == estimated
+
+
+def test_partitioning_never_overshoots_target_when_authoring_isos(app_factory):
+    with app_factory(
+        PARTITION_TARGET_GB="0.0014",
+        PARTITION_FILL_GB="0.0013",
+        PARTITION_SPILL_FILL_GB="0.0011",
+        PARTITION_BUFFER_MAX_GB="0.0045",
+    ) as harness:
+        iso_module = importlib.import_module("app.iso")
+        closed_disc_ids: list[str] = []
+
+        for index, seed in enumerate((5, 11, 23), start=1):
+            job_id = create_job(harness, description=f"partition stress archive {index}")
+            for sample in _stress_files(seed, count=14, oversized_bytes=1_050_000 + (index * 90_000)):
+                upload_job_file(harness, job_id, sample)
+            closed_disc_ids.extend(seal_job(harness, job_id)["closed_discs"])
+
+        closed_disc_ids.extend(force_flush(harness))
+        deduped_disc_ids = list(dict.fromkeys(closed_disc_ids))
+        assert len(deduped_disc_ids) >= 4
+
+        for disc_id in deduped_disc_ids:
+            with harness.session() as session:
+                disc = session.get(harness.models.Disc, disc_id)
+                assert disc is not None
+                root = Path(disc.root_abs_path)
+
+            estimated = iso_module.estimate_iso_size_from_partition_root(root, requested_label=disc_id)
+            created = create_iso(harness, disc_id)
+
+            assert estimated == created["size_bytes"]
+            assert created["size_bytes"] <= harness.config.PARTITION_TARGET
 
 
 def test_disc_finalization_webhook_payload_includes_disc_and_download_url(app_factory, monkeypatch):

@@ -156,3 +156,16 @@ def register_iso(harness, disc_id: str, content: bytes) -> dict:
     )
     assert response.status_code == 200, response.text
     return response.json()
+
+
+def create_iso(harness, disc_id: str, *, overwrite: bool = False, volume_label: str | None = None) -> dict:
+    payload: dict[str, object] = {"overwrite": overwrite}
+    if volume_label is not None:
+        payload["volume_label"] = volume_label
+    response = harness.client.post(
+        f"/v1/discs/{disc_id}/iso/create",
+        headers=harness.auth_headers(),
+        json=payload,
+    )
+    assert response.status_code == 200, response.text
+    return response.json()

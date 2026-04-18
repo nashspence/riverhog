@@ -118,9 +118,9 @@ def test_cache_verification_rejects_mutated_partition_contents(app_factory):
 
 def test_split_file_materializes_only_when_all_required_discs_are_cached(app_factory):
     with app_factory(
-        PARTITION_TARGET_GB="0.0015",
-        PARTITION_FILL_GB="0.0009",
-        PARTITION_SPILL_FILL_GB="0.0008",
+        PARTITION_TARGET_GB="0.0005",
+        PARTITION_FILL_GB="0.00035",
+        PARTITION_SPILL_FILL_GB="0.00030",
         PARTITION_BUFFER_MAX_GB="0.0040",
     ) as harness:
         master = oversized_master_reel()
@@ -167,9 +167,9 @@ def test_split_file_materializes_only_when_all_required_discs_are_cached(app_fac
 
 def test_buffer_cleanup_waits_for_all_disc_burns_and_respects_retention_override(app_factory):
     with app_factory(
-        PARTITION_TARGET_GB="0.0015",
-        PARTITION_FILL_GB="0.0009",
-        PARTITION_SPILL_FILL_GB="0.0008",
+        PARTITION_TARGET_GB="0.0005",
+        PARTITION_FILL_GB="0.00035",
+        PARTITION_SPILL_FILL_GB="0.00030",
         PARTITION_BUFFER_MAX_GB="0.0040",
     ) as harness:
         master = oversized_master_reel()
