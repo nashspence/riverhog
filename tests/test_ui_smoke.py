@@ -56,6 +56,86 @@ def test_dashboard_and_detail_pages_render_with_api_data(monkeypatch):
         "next_container_collection_count": None,
         "next_container_piece_group_count": None,
     }
+    plan = {
+        "target_bytes": 2048,
+        "fill_bytes": 1536,
+        "spill_fill_bytes": 1024,
+        "buffer_planned_bytes": 1024,
+        "buffer_payload_bytes": 900,
+        "closed_disc_count": 0,
+        "planned_disc_count": 1,
+        "discs": [
+            {
+                "rank": 1,
+                "name": "PLAN001",
+                "status": "planned_partial",
+                "target_bytes": 2048,
+                "used_bytes": 1024,
+                "root_used_bytes": 900,
+                "iso_overhead_bytes": 124,
+                "free_bytes": 1024,
+                "payload_bytes": 900,
+                "stored_payload_on_disc_bytes": 900,
+                "overhead_on_disc_bytes": 124,
+                "close_threshold_bytes": 1536,
+                "meets_close_threshold": False,
+                "fullness_ratio": 0.5,
+                "overhead": {
+                    "manifest_on_disc_bytes": 24,
+                    "sidecar_on_disc_bytes": 40,
+                    "readme_on_disc_bytes": 20,
+                    "collection_artifacts_on_disc_bytes": 10,
+                    "iso_filesystem_overhead_bytes": 30,
+                    "root_non_payload_on_disc_bytes": 94,
+                    "total_non_payload_on_disc_bytes": 124,
+                },
+                "collections": [
+                    {
+                        "collection": "demo-collection",
+                        "planned_bytes": 1024,
+                        "payload_bytes": 900,
+                        "stored_payload_on_disc_bytes": 900,
+                        "total_collection_payload_bytes": 900,
+                        "is_partial_collection": False,
+                        "overhead_on_disc_bytes": 124,
+                        "overhead": {
+                            "sidecar_on_disc_bytes": 40,
+                            "collection_artifacts_on_disc_bytes": 10,
+                            "attributed_manifest_on_disc_bytes": 74,
+                        },
+                        "items": [
+                            {
+                                "item_id": "00000001",
+                                "collection": "demo-collection",
+                                "kind": "collection",
+                                "why": "collection",
+                                "planned_bytes": 1024,
+                                "payload_bytes": 900,
+                                "stored_payload_on_disc_bytes": 900,
+                                "sidecar_on_disc_bytes": 40,
+                                "total_on_disc_bytes": 940,
+                                "files": [
+                                    {
+                                        "file_id": 1,
+                                        "path": "docs/file.txt",
+                                        "payload_bytes": 900,
+                                        "stored_payload_on_disc_bytes": 900,
+                                        "sidecar_on_disc_bytes": 40,
+                                        "total_file_payload_bytes": 900,
+                                        "piece_count": 1,
+                                        "parts": [],
+                                        "part_count_on_disc": 1,
+                                        "is_partial_file": False,
+                                        "total_on_disc_bytes": 940,
+                                    }
+                                ],
+                            }
+                        ],
+                    }
+                ],
+            }
+        ],
+    }
 
     def fake_load_json(path: str):
         if path == "/v1/collections":
@@ -64,6 +144,8 @@ def test_dashboard_and_detail_pages_render_with_api_data(monkeypatch):
             return {"containers": [container]}, None
         if path == "/v1/containers/pool":
             return pool, None
+        if path == "/v1/containers/plan":
+            return plan, None
         if path == "/v1/collections/demo-collection/tree":
             return {
                 "nodes": [
@@ -113,6 +195,10 @@ def test_dashboard_and_detail_pages_render_with_api_data(monkeypatch):
         assert "waiting" in dashboard.text.lower()
         assert "/var/lib/uploads/demo-collection" in dashboard.text
         assert "Seal upload directory" in dashboard.text
+        assert "Current Plan" in dashboard.text
+        assert "PLAN001" in dashboard.text
+        assert "demo-collection" in dashboard.text
+        assert "Needs more buffered data before close." in dashboard.text
 
         collection_page = client.get("/collections/demo-collection")
         assert collection_page.status_code == 200
@@ -170,6 +256,17 @@ def test_collection_urls_are_percent_encoded_for_collection_ids_with_spaces(monk
                 "next_container_free_bytes": None,
                 "next_container_collection_count": None,
                 "next_container_piece_group_count": None,
+            }, None
+        if path == "/v1/containers/plan":
+            return {
+                "target_bytes": 1,
+                "fill_bytes": 1,
+                "spill_fill_bytes": 1,
+                "buffer_planned_bytes": 0,
+                "buffer_payload_bytes": 0,
+                "closed_disc_count": 0,
+                "planned_disc_count": 0,
+                "discs": [],
             }, None
         if path == "/v1/collections/demo%20collection/tree":
             return {"nodes": []}, None

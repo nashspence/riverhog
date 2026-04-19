@@ -55,11 +55,23 @@ class InactiveError(BaseModel):
     container_ids: list[str] = Field(default_factory=list)
 
 
+class IngestPlanResponse(BaseModel):
+    target_bytes: int
+    fill_bytes: int
+    spill_fill_bytes: int
+    buffer_planned_bytes: int
+    buffer_payload_bytes: int
+    closed_disc_count: int
+    planned_disc_count: int
+    discs: list[dict[str, Any]] = Field(default_factory=list)
+
+
 class SealCollectionResponse(BaseModel):
     collection_id: str
     status: str
     closed_containers: list[str]
     buffer_bytes: int
+    plan: IngestPlanResponse
 
 
 class ActivationSessionCreateResponse(BaseModel):

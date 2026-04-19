@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from .helpers import flush_containers, register_iso, seal_collection, stage_collection_files
-from .mock_data import family_archive_files
+from .mock_data import document_archive_files, family_archive_files
 
 
 def test_collection_and_container_list_endpoints_surface_summary_state(app_factory):
@@ -65,3 +65,50 @@ def test_collection_and_container_list_endpoints_surface_summary_state(app_facto
         pool = harness.client.get("/v1/containers/pool", headers=harness.auth_headers())
         assert pool.status_code == 200, pool.text
         assert pool.json()["state"] in {"empty", "ready", "waiting", "over-buffer"}
+
+
+def test_plan_endpoint_and_seal_response_surface_current_disc_allocation_plan(app_factory):
+    with app_factory(
+        CONTAINER_FILL_GB="0.00075",
+        CONTAINER_SPILL_FILL_GB="0.00070",
+        CONTAINER_TARGET_GB="0.00080",
+        CONTAINER_BUFFER_MAX_GB="0.0100",
+    ) as harness:
+        upload_path = "planned-financial-archive"
+        stage_collection_files(harness, upload_path, document_archive_files())
+
+        sealed = seal_collection(
+            harness,
+            upload_path,
+            description="planned financial archive",
+        )
+        collection_id = sealed["collection_id"]
+        plan = sealed["plan"]
+
+        assert plan["target_bytes"] > 0
+        assert plan["planned_disc_count"] == 1
+        assert plan["closed_disc_count"] == 0
+        assert plan["buffer_planned_bytes"] > 0
+        assert plan["buffer_payload_bytes"] > 0
+        assert len(plan["discs"]) == 1
+
+        disc = plan["discs"][0]
+        assert disc["name"] == "PLAN001"
+        assert disc["status"] == "planned_partial"
+        assert disc["meets_close_threshold"] is False
+        assert disc["used_bytes"] > 0
+        assert disc["payload_bytes"] > 0
+        assert disc["collections"][0]["collection"] == collection_id
+        assert disc["collections"][0]["is_partial_collection"] is False
+        assert {
+            file_summary["path"]
+            for item in disc["collections"][0]["items"]
+            for file_summary in item["files"]
+        } == {sample.relative_path for sample in document_archive_files()}
+
+        current_plan = harness.client.get(
+            "/v1/containers/plan",
+            headers=harness.auth_headers(),
+        )
+        assert current_plan.status_code == 200, current_plan.text
+        assert current_plan.json() == plan

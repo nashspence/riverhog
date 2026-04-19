@@ -15,6 +15,7 @@ from ..schemas import (
     CollectionListResponse,
     CollectionSealRequest,
     CollectionSummary,
+    IngestPlanResponse,
     SealCollectionResponse,
     TreeNode,
     TreeResponse,
@@ -128,6 +129,7 @@ def seal_collection(body: CollectionSealRequest, db: Db) -> SealCollectionRespon
         status="sealed",
         closed_containers=closed_ids,
         buffer_bytes=result["buffer_bytes"],
+        plan=IngestPlanResponse(**result["plan"]),
     )
 
 

@@ -16,10 +16,20 @@ from sqlalchemy.orm import Session, selectinload
 from sqlalchemy import select
 
 from .config import CONTAINER_STATE_DIR, CONTAINER_CFG, CONTAINER_ROOTS_DIR
-from .crypto import encrypt_bytes_to_file, encrypt_file_span, encrypted_size_for_plaintext_size, logical_file_sha256_and_size
+from .crypto import (
+    encrypt_bytes_to_file,
+    encrypt_file_span,
+    encrypted_size_for_plaintext_size,
+    logical_file_sha256_and_size,
+)
 from .iso import estimate_iso_size_from_container_root
 from .models import Container, ContainerEntry, ArchivePiece, Collection, CollectionFile
-from .storage import canonical_tree_hash, inactive_collection_hash_manifest_path, inactive_collection_hash_proof_path, collection_container_artifact_relpaths
+from .storage import (
+    canonical_tree_hash,
+    inactive_collection_hash_manifest_path,
+    inactive_collection_hash_proof_path,
+    collection_container_artifact_relpaths,
+)
 
 MANIFEST = "MANIFEST.yml"
 README = "README.txt"
@@ -112,7 +122,9 @@ def sidecar_dict(f: dict, i: int = 0, n: int = 1):
 
 
 def sidecar_bytes(f: dict, i: int = 0, n: int = 1):
-    return yaml.safe_dump(sidecar_dict(f, i, n), sort_keys=False, allow_unicode=True).encode()
+    return yaml.safe_dump(
+        sidecar_dict(f, i, n), sort_keys=False, allow_unicode=True
+    ).encode()
 
 
 def yaml_bytes(obj) -> bytes:
@@ -148,7 +160,10 @@ _BASELINE_FILE_ENTRY = manifest_file_entry(
 _ONE_CHUNK_FILE_ENTRY = manifest_file_entry(
     "placeholder",
     "0" * 64,
-    {"count": MANIFEST_PLACEHOLDER_CHUNK_COUNT, "chunks": [MANIFEST_PLACEHOLDER_ARCHIVE]},
+    {
+        "count": MANIFEST_PLACEHOLDER_CHUNK_COUNT,
+        "chunks": [MANIFEST_PLACEHOLDER_ARCHIVE],
+    },
 )
 _UNSPLIT_FILE_ENTRY = manifest_file_entry(
     "placeholder",
@@ -161,12 +176,20 @@ _BASELINE_FILE_SIZE = len(
         [{"name": MANIFEST_PLACEHOLDER_CONTAINER, "files": [_BASELINE_FILE_ENTRY]}],
     )
 )
-_SPLIT_CHUNK_BUDGET = len(
-    manifest_dump(
-        MANIFEST_PLACEHOLDER_CONTAINER,
-        [{"name": MANIFEST_PLACEHOLDER_CONTAINER, "files": [_ONE_CHUNK_FILE_ENTRY]}],
+_SPLIT_CHUNK_BUDGET = (
+    len(
+        manifest_dump(
+            MANIFEST_PLACEHOLDER_CONTAINER,
+            [
+                {
+                    "name": MANIFEST_PLACEHOLDER_CONTAINER,
+                    "files": [_ONE_CHUNK_FILE_ENTRY],
+                }
+            ],
+        )
     )
-) - _BASELINE_FILE_SIZE
+    - _BASELINE_FILE_SIZE
+)
 _UNSPLIT_ARCHIVE_BUDGET = max(
     0,
     len(
@@ -198,65 +221,109 @@ def tree_plan(kids: dict, sizes: dict, cap: int):
 
 
 def manifest_collection_budget(collection: str, files: list[dict]) -> int:
-    return len(
-        manifest_dump(
-            MANIFEST_PLACEHOLDER_CONTAINER,
-            [
-                {
-                    "name": collection,
-                    "files": [
-                        manifest_file_entry(
-                            f["rel"],
-                            f["sha256"],
-                            {"count": MANIFEST_PLACEHOLDER_CHUNK_COUNT, "chunks": []},
-                        )
-                        for f in sorted(files, key=lambda x: x["rel"])
-                    ],
-                }
-            ],
+    return (
+        len(
+            manifest_dump(
+                MANIFEST_PLACEHOLDER_CONTAINER,
+                [
+                    {
+                        "name": collection,
+                        "files": [
+                            manifest_file_entry(
+                                f["rel"],
+                                f["sha256"],
+                                {
+                                    "count": MANIFEST_PLACEHOLDER_CHUNK_COUNT,
+                                    "chunks": [],
+                                },
+                            )
+                            for f in sorted(files, key=lambda x: x["rel"])
+                        ],
+                    }
+                ],
+            )
         )
-    ) - EMPTY_MANIFEST_SIZE
+        - EMPTY_MANIFEST_SIZE
+    )
 
 
 def put_len(collection: str, rel: str, i: int, n: int, why: str = "___"):
     return _SPLIT_CHUNK_BUDGET if n > 1 else _UNSPLIT_ARCHIVE_BUDGET
 
 
-def stage_pieces(state_dir: Path, collection: str, files: list[dict], target: int, fixed: int, artifacts: list[dict] | None = None):
+def stage_pieces(
+    state_dir: Path,
+    collection: str,
+    files: list[dict],
+    target: int,
+    fixed: int,
+    artifacts: list[dict] | None = None,
+):
     artifacts = artifacts or []
     pool, cap = state_dir / "pool" / collection, target - META_PAD - fixed
     if cap <= 0:
-        raise RuntimeError(f"collection manifest for {collection} leaves no payload room")
+        raise RuntimeError(
+            f"collection manifest for {collection} leaves no payload room"
+        )
     pool.mkdir(parents=True, exist_ok=True)
     for f in files:
         sidecar_size = encrypted_size_for_plaintext_size(len(sidecar_bytes(f)))
         stub1 = put_len(collection, f["rel"], 0, 1, "collection")
         if f["raw"] <= target:
-            if not _piece_fits_iso_target(state_dir, target, collection, files, f, 1, f["raw"], artifacts):
-                raise RuntimeError(f"file {f['rel']} in {collection} cannot fit with required manifest overhead without forbidden chunking")
+            if not _piece_fits_iso_target(
+                state_dir, target, collection, files, f, 1, f["raw"], artifacts
+            ):
+                raise RuntimeError(
+                    f"file {f['rel']} in {collection} cannot fit with required manifest overhead without forbidden chunking"
+                )
             store = pool / str(f["id"])
             encrypt_file_span(Path(f["src"]), store)
             stored_size = store.stat().st_size
             if stored_size + sidecar_size + stub1 > cap:
-                raise RuntimeError(f"file {f['rel']} in {collection} cannot fit with required manifest overhead without forbidden chunking")
-            f["pieces"] = [{"collection": collection, "rel": f["rel"], "file": f["id"], "store": str(store.relative_to(state_dir)), "data": f["raw"], "i": 0, "n": 1, "est": stored_size + sidecar_size + stub1}]
+                raise RuntimeError(
+                    f"file {f['rel']} in {collection} cannot fit with required manifest overhead without forbidden chunking"
+                )
+            f["pieces"] = [
+                {
+                    "collection": collection,
+                    "rel": f["rel"],
+                    "file": f["id"],
+                    "store": str(store.relative_to(state_dir)),
+                    "data": f["raw"],
+                    "i": 0,
+                    "n": 1,
+                    "est": stored_size + sidecar_size + stub1,
+                }
+            ]
             continue
         n = 2
         while True:
-            room = _max_piece_plaintext_size_for_iso_target(state_dir, target, collection, files, f, n, artifacts)
+            room = _max_piece_plaintext_size_for_iso_target(
+                state_dir, target, collection, files, f, n, artifacts
+            )
             if room <= 0:
-                raise RuntimeError(f"chunk sidecar for {f['rel']} in {collection} leaves no payload room")
+                raise RuntimeError(
+                    f"chunk sidecar for {f['rel']} in {collection} leaves no payload room"
+                )
             nn = max(2, math.ceil(f["raw"] / room))
             if nn == n:
                 break
             n = nn
-        room, pcs, off = (_max_piece_plaintext_size_for_iso_target(state_dir, target, collection, files, f, n, artifacts), [], 0)
+        room, pcs, off = (
+            _max_piece_plaintext_size_for_iso_target(
+                state_dir, target, collection, files, f, n, artifacts
+            ),
+            [],
+            0,
+        )
         w = max(3, len(str(n)))
         for i in range(n):
             b = min(room, f["raw"] - off)
             store = pool / f"{f['id']}.{i + 1:0{w}d}"
             encrypt_file_span(Path(f["src"]), store, off, b)
-            sidecar_part_size = encrypted_size_for_plaintext_size(len(sidecar_bytes(f, i, n)))
+            sidecar_part_size = encrypted_size_for_plaintext_size(
+                len(sidecar_bytes(f, i, n))
+            )
             pcs.append(
                 {
                     "collection": collection,
@@ -266,7 +333,9 @@ def stage_pieces(state_dir: Path, collection: str, files: list[dict], target: in
                     "data": b,
                     "i": i,
                     "n": n,
-                    "est": store.stat().st_size + sidecar_part_size + put_len(collection, f["rel"], i, n, "vol"),
+                    "est": store.stat().st_size
+                    + sidecar_part_size
+                    + put_len(collection, f["rel"], i, n, "vol"),
                 }
             )
             off += b
@@ -283,8 +352,14 @@ def leaves(node, kids):
             stack.extend(reversed(kids[n]))
 
 
-def split_collection(files: list[dict], kids: dict[str, list[str]], dirs: list[str], cap: int):
-    kids, sizes, by_rel = ({k: v[:] for k, v in kids.items()}, {}, {f["rel"]: f for f in files})
+def split_collection(
+    files: list[dict], kids: dict[str, list[str]], dirs: list[str], cap: int
+):
+    kids, sizes, by_rel = (
+        {k: v[:] for k, v in kids.items()},
+        {},
+        {f["rel"]: f for f in files},
+    )
     for f in files:
         sizes[f["rel"]] = sum(p["est"] for p in f["pieces"])
         if len(f["pieces"]) > 1:
@@ -300,8 +375,22 @@ def split_collection(files: list[dict], kids: dict[str, list[str]], dirs: list[s
         cur = {"pieces": [], "bytes": 0, "why": q["why"]}
         for node, why in q.get("nodes", []):
             for leaf in leaves(node, kids):
-                f, p = by_leaf[leaf] if leaf in by_leaf else (by_rel[leaf], by_rel[leaf]["pieces"][0])
-                cur["pieces"].append({"collection": f["collection"], "file": f["id"], "rel": f["rel"], "store": p["store"], "data": p["data"], "i": p["i"], "n": p["n"]})
+                f, p = (
+                    by_leaf[leaf]
+                    if leaf in by_leaf
+                    else (by_rel[leaf], by_rel[leaf]["pieces"][0])
+                )
+                cur["pieces"].append(
+                    {
+                        "collection": f["collection"],
+                        "file": f["id"],
+                        "rel": f["rel"],
+                        "store": p["store"],
+                        "data": p["data"],
+                        "i": p["i"],
+                        "n": p["n"],
+                    }
+                )
                 cur["bytes"] += p["est"]
                 if p["n"] > 1:
                     cur["why"] = "vol"
@@ -315,7 +404,9 @@ def close_threshold(items: list[dict], fill: int, spill: int):
     return spill if any(x["priority"] for x in items) else fill
 
 
-def _solve(items: list[dict], collections: dict, cap: int, fill: int, spill: int, force=False):
+def _solve(
+    items: list[dict], collections: dict, cap: int, fill: int, spill: int, force=False
+):
     js = sorted({x["collection"] for x in items})
     n, m = len(items), len(js)
     jix = {j: i for i, j in enumerate(js)}
@@ -390,7 +481,9 @@ def _solve(items: list[dict], collections: dict, cap: int, fill: int, spill: int
     if force:
         integrality[idd] = 0
         bounds_hi[idd] = np.inf
-    cons = LinearConstraint(A.tocsr(), np.array(lo, dtype=np.float64), np.array(hi, dtype=np.float64))
+    cons = LinearConstraint(
+        A.tocsr(), np.array(lo, dtype=np.float64), np.array(hi, dtype=np.float64)
+    )
     bounds = Bounds(bounds_lo, bounds_hi)
 
     def run(c, extra=()):
@@ -401,11 +494,21 @@ def _solve(items: list[dict], collections: dict, cap: int, fill: int, spill: int
                 aa[rr] = vec
                 lo2.append(a)
                 hi2.append(b)
-            ec = LinearConstraint(aa.tocsr(), np.array(lo2, dtype=np.float64), np.array(hi2, dtype=np.float64))
+            ec = LinearConstraint(
+                aa.tocsr(),
+                np.array(lo2, dtype=np.float64),
+                np.array(hi2, dtype=np.float64),
+            )
             lc = (cons, ec)
         else:
             lc = cons
-        res = milp(c=np.array(c, dtype=np.float64), constraints=lc, integrality=integrality, bounds=bounds, options={"mip_rel_gap": 0})
+        res = milp(
+            c=np.array(c, dtype=np.float64),
+            constraints=lc,
+            integrality=integrality,
+            bounds=bounds,
+            options={"mip_rel_gap": 0},
+        )
         if not res.success or res.x is None:
             return None
         x = np.rint(res.x).astype(int)
@@ -456,12 +559,17 @@ def _solve(items: list[dict], collections: dict, cap: int, fill: int, spill: int
     return c["selected"] if c else b["selected"]
 
 
-def pick(items: list[dict], collections: dict, cap: int, fill: int, spill: int, force=False):
+def pick(
+    items: list[dict], collections: dict, cap: int, fill: int, spill: int, force=False
+):
     return _solve(items, collections, cap, fill, spill, force) if items else []
 
 
 def assign_paths(pieces: list[dict]):
-    files = sorted({(p["collection"], p["file"], p["rel"]) for p in pieces}, key=lambda x: (x[0], x[2], str(x[1])))
+    files = sorted(
+        {(p["collection"], p["file"], p["rel"]) for p in pieces},
+        key=lambda x: (x[0], x[2], str(x[1])),
+    )
     base = {(j, fid): i for i, (j, fid, _) in enumerate(files)}
     out = {}
     for p in pieces:
@@ -471,16 +579,22 @@ def assign_paths(pieces: list[dict]):
     return out
 
 
-def manifest_bytes(part: str, cfg: dict, collections: dict, items: list[dict], fmap: dict):
+def manifest_bytes(
+    part: str, cfg: dict, collections: dict, items: list[dict], fmap: dict
+):
     pieces_by_file: dict[tuple[str, int], list[dict]] = {}
     for item in items:
         for piece in item["pieces"]:
-            pieces_by_file.setdefault((piece["collection"], piece["file"]), []).append(piece)
+            pieces_by_file.setdefault((piece["collection"], piece["file"]), []).append(
+                piece
+            )
 
     manifest_collections: list[dict] = []
     for collection in sorted({x["collection"] for x in items}):
         collection_files = []
-        for file_meta in sorted(collections[collection]["files"], key=lambda x: x["rel"]):
+        for file_meta in sorted(
+            collections[collection]["files"], key=lambda x: x["rel"]
+        ):
             present = sorted(
                 pieces_by_file.get((collection, file_meta["id"]), []),
                 key=lambda x: x["i"],
@@ -488,9 +602,14 @@ def manifest_bytes(part: str, cfg: dict, collections: dict, items: list[dict], f
             if file_meta["piece_count"] > 1:
                 archive = {
                     "count": file_meta["piece_count"],
-                    "chunks": [fmap[(collection, file_meta["id"], piece["i"])][0] for piece in present],
+                    "chunks": [
+                        fmap[(collection, file_meta["id"], piece["i"])][0]
+                        for piece in present
+                    ],
                 }
-                collection_files.append(manifest_file_entry(file_meta["rel"], file_meta["sha256"], archive))
+                collection_files.append(
+                    manifest_file_entry(file_meta["rel"], file_meta["sha256"], archive)
+                )
             elif present:
                 collection_files.append(
                     manifest_file_entry(
@@ -500,7 +619,9 @@ def manifest_bytes(part: str, cfg: dict, collections: dict, items: list[dict], f
                     )
                 )
             else:
-                collection_files.append(manifest_file_entry(file_meta["rel"], file_meta["sha256"]))
+                collection_files.append(
+                    manifest_file_entry(file_meta["rel"], file_meta["sha256"])
+                )
         manifest_collections.append({"name": collection, "files": collection_files})
 
     return manifest_dump(part, manifest_collections)
@@ -542,7 +663,9 @@ def recovery_readme_bytes(part: str) -> bytes:
     return "\n".join(lines).encode("utf-8")
 
 
-def _piece_manifest_bytes(collection: str, files: list[dict], target_file_id: int, n: int):
+def _piece_manifest_bytes(
+    collection: str, files: list[dict], target_file_id: int, n: int
+):
     manifest_files = []
     for file_meta in sorted(files, key=lambda x: x["rel"]):
         archive = _MISSING
@@ -552,7 +675,9 @@ def _piece_manifest_bytes(collection: str, files: list[dict], target_file_id: in
                 if n == 1
                 else {"count": n, "chunks": [MANIFEST_PLACEHOLDER_ARCHIVE]}
             )
-        manifest_files.append(manifest_file_entry(file_meta["rel"], file_meta["sha256"], archive))
+        manifest_files.append(
+            manifest_file_entry(file_meta["rel"], file_meta["sha256"], archive)
+        )
     return manifest_dump(
         MANIFEST_PLACEHOLDER_CONTAINER,
         [{"name": collection, "files": manifest_files}],
@@ -569,8 +694,12 @@ def _piece_fits_iso_target(
     payload_plaintext_size: int,
     artifacts: list[dict],
 ) -> bool:
-    manifest_size = encrypted_size_for_plaintext_size(len(_piece_manifest_bytes(collection, files, file_meta["id"], n)))
-    sidecar_size = encrypted_size_for_plaintext_size(len(sidecar_bytes(file_meta, 0, n)))
+    manifest_size = encrypted_size_for_plaintext_size(
+        len(_piece_manifest_bytes(collection, files, file_meta["id"], n))
+    )
+    sidecar_size = encrypted_size_for_plaintext_size(
+        len(sidecar_bytes(file_meta, 0, n))
+    )
     payload_size = encrypted_size_for_plaintext_size(payload_plaintext_size)
     readme_size = len(recovery_readme_bytes(MANIFEST_PLACEHOLDER_CONTAINER))
     placeholder_entries = [
@@ -579,12 +708,17 @@ def _piece_fits_iso_target(
         {"relpath": MANIFEST_PLACEHOLDER_ARCHIVE, "size": payload_size},
         {"relpath": f"{MANIFEST_PLACEHOLDER_ARCHIVE}.meta.yaml", "size": sidecar_size},
         *(
-            {"relpath": artifact["container_relpath"], "size": artifact["encrypted_size"]}
+            {
+                "relpath": artifact["container_relpath"],
+                "size": artifact["encrypted_size"],
+            }
             for artifact in artifacts
         ),
     ]
     fallback = sum(entry["size"] for entry in placeholder_entries)
-    with tempfile.TemporaryDirectory(prefix=".piece-preview-", dir=state_dir) as tmp_dir:
+    with tempfile.TemporaryDirectory(
+        prefix=".piece-preview-", dir=state_dir
+    ) as tmp_dir:
         root = Path(tmp_dir) / MANIFEST_PLACEHOLDER_CONTAINER
         for entry in placeholder_entries:
             _write_placeholder_file(root / entry["relpath"], entry["size"])
@@ -604,14 +738,18 @@ def _max_piece_plaintext_size_for_iso_target(
     low, high = 0, file_meta["raw"]
     while low < high:
         mid = (low + high + 1) // 2
-        if _piece_fits_iso_target(state_dir, target, collection, files, file_meta, n, mid, artifacts):
+        if _piece_fits_iso_target(
+            state_dir, target, collection, files, file_meta, n, mid, artifacts
+        ):
             low = mid
         else:
             high = mid - 1
     return low
 
 
-def _build_container_layout(state_dir: Path, s: dict, items: list[dict], part: str) -> dict:
+def _build_container_layout(
+    state_dir: Path, s: dict, items: list[dict], part: str
+) -> dict:
     pieces = [p for it in items for p in it["pieces"]]
     collections_on_container = sorted({x["collection"] for x in items})
     fmap = assign_paths(pieces)
@@ -635,21 +773,27 @@ def _build_container_layout(state_dir: Path, s: dict, items: list[dict], part: s
     for it in items:
         meta = {f["id"]: f for f in s["collections"][it["collection"]]["files"]}
         for p in it["pieces"]:
-            payload_relpath, sidecar_relpath = fmap[(p["collection"], p["file"], p["i"])]
+            payload_relpath, sidecar_relpath = fmap[
+                (p["collection"], p["file"], p["i"])
+            ]
+            stored_payload_on_disc_bytes = (state_dir / p["store"]).stat().st_size
             payload_entries.append(
                 {
                     "kind": "payload",
                     "relpath": payload_relpath,
-                    "size": (state_dir / p["store"]).stat().st_size,
+                    "size": stored_payload_on_disc_bytes,
                     "source": state_dir / p["store"],
                 }
             )
             sidecar_plaintext = sidecar_bytes(meta[p["file"]], p["i"], p["n"])
+            sidecar_on_disc_bytes = encrypted_size_for_plaintext_size(
+                len(sidecar_plaintext)
+            )
             payload_entries.append(
                 {
                     "kind": "sidecar",
                     "relpath": sidecar_relpath,
-                    "size": encrypted_size_for_plaintext_size(len(sidecar_plaintext)),
+                    "size": sidecar_on_disc_bytes,
                     "plaintext": sidecar_plaintext,
                 }
             )
@@ -661,6 +805,8 @@ def _build_container_layout(state_dir: Path, s: dict, items: list[dict], part: s
                     "payload_relpath": payload_relpath,
                     "sidecar_relpath": sidecar_relpath,
                     "payload_size_bytes": p["data"],
+                    "stored_payload_on_disc_bytes": stored_payload_on_disc_bytes,
+                    "sidecar_on_disc_bytes": sidecar_on_disc_bytes,
                     "chunk_index": None if p["n"] == 1 else p["i"] + 1,
                     "chunk_count": None if p["n"] == 1 else p["n"],
                 }
@@ -723,8 +869,275 @@ def _estimate_iso_size_bytes(root: Path, part: str, fallback: int) -> int:
         raise
 
 
-def _container_result(part: str, out_dir: Path, target: int, layout: dict, used: int) -> dict:
+def _allocate_bytes_proportionally(
+    total: int, weights: dict[str, int]
+) -> dict[str, int]:
+    if total <= 0 or not weights:
+        return {key: 0 for key in weights}
+    positive = {key: value for key, value in weights.items() if value > 0}
+    if not positive:
+        keys = sorted(weights)
+        base, extra = divmod(total, len(keys))
+        return {key: base + (1 if i < extra else 0) for i, key in enumerate(keys)}
+    scale = float(sum(positive.values()))
+    raw = {key: (total * value / scale) for key, value in positive.items()}
+    out = {key: int(math.floor(value)) for key, value in raw.items()}
+    remaining = total - sum(out.values())
+    for key, _ in sorted(
+        ((key, raw[key] - out[key]) for key in positive), key=lambda x: (-x[1], x[0])
+    )[:remaining]:
+        out[key] += 1
+    for key in weights:
+        out.setdefault(key, 0)
+    return out
+
+
+def _collection_manifest_weight(
+    collection_id: str, collection_meta: dict, items: list[dict]
+) -> int:
+    pieces_by_file: dict[int, list[dict]] = {}
+    for item in items:
+        for piece in item["pieces"]:
+            pieces_by_file.setdefault(piece["file"], []).append(piece)
+    manifest_files = []
+    for file_meta in sorted(collection_meta["files"], key=lambda x: x["rel"]):
+        present = sorted(pieces_by_file.get(file_meta["id"], []), key=lambda x: x["i"])
+        archive = _MISSING
+        if file_meta["piece_count"] > 1:
+            archive = {
+                "count": file_meta["piece_count"],
+                "chunks": [MANIFEST_PLACEHOLDER_ARCHIVE for _ in present],
+            }
+        elif present:
+            archive = MANIFEST_PLACEHOLDER_ARCHIVE
+        manifest_files.append(
+            manifest_file_entry(file_meta["rel"], file_meta["sha256"], archive)
+        )
+    return (
+        len(
+            manifest_dump(
+                MANIFEST_PLACEHOLDER_CONTAINER,
+                [{"name": collection_id, "files": manifest_files}],
+            )
+        )
+        - EMPTY_MANIFEST_SIZE
+    )
+
+
+def _file_plan_summary(
+    collection_files: dict[int, dict],
+    pieces: list[dict],
+    piece_lookup: dict[tuple[str, int, int], dict],
+) -> list[dict]:
+    files: dict[str, dict] = {}
+    for piece in sorted(pieces, key=lambda x: (x["rel"], x["i"], x["file"])):
+        meta = collection_files[piece["file"]]
+        stored = piece_lookup[(piece["collection"], piece["file"], piece["i"])]
+        entry = files.setdefault(
+            piece["rel"],
+            {
+                "file_id": piece["file"],
+                "path": piece["rel"],
+                "payload_bytes": 0,
+                "stored_payload_on_disc_bytes": 0,
+                "sidecar_on_disc_bytes": 0,
+                "total_file_payload_bytes": meta["raw"],
+                "piece_count": meta["piece_count"],
+                "parts": [],
+            },
+        )
+        entry["payload_bytes"] += piece["data"]
+        entry["stored_payload_on_disc_bytes"] += stored["stored_payload_on_disc_bytes"]
+        entry["sidecar_on_disc_bytes"] += stored["sidecar_on_disc_bytes"]
+        if piece["n"] > 1:
+            entry["parts"].append(
+                {
+                    "index": piece["i"] + 1,
+                    "count": piece["n"],
+                    "payload_bytes": piece["data"],
+                    "stored_payload_on_disc_bytes": stored[
+                        "stored_payload_on_disc_bytes"
+                    ],
+                    "sidecar_on_disc_bytes": stored["sidecar_on_disc_bytes"],
+                    "total_on_disc_bytes": stored["stored_payload_on_disc_bytes"]
+                    + stored["sidecar_on_disc_bytes"],
+                }
+            )
+    out = []
+    for path in sorted(files):
+        entry = files[path]
+        entry["part_count_on_disc"] = (
+            len(entry["parts"])
+            if entry["parts"]
+            else (1 if entry["payload_bytes"] else 0)
+        )
+        entry["is_partial_file"] = (
+            entry["payload_bytes"] < entry["total_file_payload_bytes"]
+        )
+        entry["total_on_disc_bytes"] = (
+            entry["stored_payload_on_disc_bytes"] + entry["sidecar_on_disc_bytes"]
+        )
+        out.append(entry)
+    return out
+
+
+def _item_plan_summary(
+    collection_id: str,
+    collection_files: dict[int, dict],
+    item: dict,
+    piece_lookup: dict[tuple[str, int, int], dict],
+) -> dict:
+    payload_bytes = sum(piece["data"] for piece in item["pieces"])
+    stored_payload_on_disc_bytes = sum(
+        piece_lookup[(piece["collection"], piece["file"], piece["i"])][
+            "stored_payload_on_disc_bytes"
+        ]
+        for piece in item["pieces"]
+    )
+    sidecar_on_disc_bytes = sum(
+        piece_lookup[(piece["collection"], piece["file"], piece["i"])][
+            "sidecar_on_disc_bytes"
+        ]
+        for piece in item["pieces"]
+    )
     return {
+        "item_id": item["id"],
+        "collection": collection_id,
+        "kind": item["kind"],
+        "why": item["why"],
+        "planned_bytes": item["bytes"],
+        "payload_bytes": payload_bytes,
+        "stored_payload_on_disc_bytes": stored_payload_on_disc_bytes,
+        "sidecar_on_disc_bytes": sidecar_on_disc_bytes,
+        "total_on_disc_bytes": stored_payload_on_disc_bytes + sidecar_on_disc_bytes,
+        "files": _file_plan_summary(collection_files, item["pieces"], piece_lookup),
+    }
+
+
+def _disc_plan_view(s: dict, result: dict, items: list[dict], status: str) -> dict:
+    piece_lookup = {
+        (
+            piece["collection"],
+            piece["collection_file_id"],
+            (piece["chunk_index"] - 1) if piece["chunk_index"] is not None else 0,
+        ): piece
+        for piece in result["pieces"]
+    }
+    entry_bytes = result.get("entry_bytes", {})
+    manifest_on_disc_bytes = entry_bytes.get("manifest", 0)
+    sidecar_on_disc_bytes = entry_bytes.get("sidecar", 0)
+    readme_on_disc_bytes = entry_bytes.get("readme", 0)
+    artifact_on_disc_bytes = entry_bytes.get("artifact", 0)
+    stored_payload_on_disc_bytes = entry_bytes.get("payload", 0)
+
+    collection_ids = sorted({item["collection"] for item in items})
+    manifest_weights = {
+        collection_id: _collection_manifest_weight(
+            collection_id,
+            s["collections"][collection_id],
+            [item for item in items if item["collection"] == collection_id],
+        )
+        for collection_id in collection_ids
+    }
+    manifest_shares = _allocate_bytes_proportionally(
+        manifest_on_disc_bytes, manifest_weights
+    )
+
+    collections_view = []
+    for collection_id in collection_ids:
+        collection_items = [
+            item for item in items if item["collection"] == collection_id
+        ]
+        collection_meta = s["collections"][collection_id]
+        collection_files = {meta["id"]: meta for meta in collection_meta["files"]}
+        item_views = [
+            _item_plan_summary(collection_id, collection_files, item, piece_lookup)
+            for item in collection_items
+        ]
+        payload_bytes = sum(item_view["payload_bytes"] for item_view in item_views)
+        planned_bytes = sum(item_view["planned_bytes"] for item_view in item_views)
+        stored_payload_bytes = sum(
+            item_view["stored_payload_on_disc_bytes"] for item_view in item_views
+        )
+        collection_sidecar_on_disc_bytes = sum(
+            item_view["sidecar_on_disc_bytes"] for item_view in item_views
+        )
+        collection_artifact_on_disc_bytes = sum(
+            artifact["encrypted_size"] for artifact in collection_meta["artifacts"]
+        )
+        attributed_manifest_on_disc_bytes = manifest_shares.get(collection_id, 0)
+        total_payload_bytes = sum(meta["raw"] for meta in collection_meta["files"])
+        collections_view.append(
+            {
+                "collection": collection_id,
+                "planned_bytes": planned_bytes,
+                "payload_bytes": payload_bytes,
+                "stored_payload_on_disc_bytes": stored_payload_bytes,
+                "total_collection_payload_bytes": total_payload_bytes,
+                "is_partial_collection": payload_bytes < total_payload_bytes,
+                "overhead_on_disc_bytes": collection_sidecar_on_disc_bytes
+                + collection_artifact_on_disc_bytes
+                + attributed_manifest_on_disc_bytes,
+                "overhead": {
+                    "sidecar_on_disc_bytes": collection_sidecar_on_disc_bytes,
+                    "collection_artifacts_on_disc_bytes": collection_artifact_on_disc_bytes,
+                    "attributed_manifest_on_disc_bytes": attributed_manifest_on_disc_bytes,
+                },
+                "items": item_views,
+            }
+        )
+    collections_view.sort(key=lambda x: (-x["planned_bytes"], x["collection"]))
+    close_at = (
+        close_threshold(items, s["cfg"]["fill"], s["cfg"]["spill_fill"])
+        if items
+        else s["cfg"]["fill"]
+    )
+    payload_bytes = sum(collection["payload_bytes"] for collection in collections_view)
+    return {
+        "name": result["name"],
+        "status": status,
+        "target_bytes": s["cfg"]["target"],
+        "used_bytes": result["used"],
+        "root_used_bytes": result["root_used"],
+        "iso_overhead_bytes": result["iso_overhead"],
+        "free_bytes": result["free"],
+        "payload_bytes": payload_bytes,
+        "stored_payload_on_disc_bytes": stored_payload_on_disc_bytes,
+        "overhead_on_disc_bytes": result["used"] - stored_payload_on_disc_bytes,
+        "close_threshold_bytes": close_at,
+        "meets_close_threshold": result["used"] >= close_at,
+        "fullness_ratio": (result["used"] / s["cfg"]["target"])
+        if s["cfg"]["target"]
+        else 0.0,
+        "overhead": {
+            "manifest_on_disc_bytes": manifest_on_disc_bytes,
+            "sidecar_on_disc_bytes": sidecar_on_disc_bytes,
+            "readme_on_disc_bytes": readme_on_disc_bytes,
+            "collection_artifacts_on_disc_bytes": artifact_on_disc_bytes,
+            "iso_filesystem_overhead_bytes": result["iso_overhead"],
+            "root_non_payload_on_disc_bytes": result["root_used"]
+            - stored_payload_on_disc_bytes,
+            "total_non_payload_on_disc_bytes": result["used"]
+            - stored_payload_on_disc_bytes,
+        },
+        "collections": collections_view,
+    }
+
+
+def _container_result(
+    part: str,
+    out_dir: Path,
+    target: int,
+    layout: dict,
+    used: int,
+    s: dict | None = None,
+    items: list[dict] | None = None,
+    status: str | None = None,
+) -> dict:
+    entry_bytes: dict[str, int] = {}
+    for entry in layout["entries"]:
+        entry_bytes[entry["kind"]] = entry_bytes.get(entry["kind"], 0) + entry["size"]
+    out = {
         "name": part,
         "path": str((out_dir / part).resolve()),
         "used": used,
@@ -734,20 +1147,35 @@ def _container_result(part: str, out_dir: Path, target: int, layout: dict, used:
         "collections": layout["collections"],
         "items": layout["items"],
         "pieces": layout["pieces"],
+        "entry_bytes": entry_bytes,
     }
+    if s is not None and items is not None:
+        out["plan_view"] = _disc_plan_view(s, out, items, status or "planned")
+    return out
 
 
-def preview_container(state_dir: Path, s: dict, items: list[dict], out_dir: Path, part: str | None = None) -> dict:
+def preview_container(
+    state_dir: Path, s: dict, items: list[dict], out_dir: Path, part: str | None = None
+) -> dict:
     part = part or ts_name(s.get("last_closed", ""))
     layout = _build_container_layout(state_dir, s, items, part)
     with tempfile.TemporaryDirectory(prefix=".preview-", dir=out_dir) as tmp_dir:
         root = Path(tmp_dir) / part
         _materialize_preview_root(root, layout)
         used = _estimate_iso_size_bytes(root, part, layout["root_used"])
-    return _container_result(part, out_dir, s["cfg"]["target"], layout, used)
+    return _container_result(
+        part, out_dir, s["cfg"]["target"], layout, used, s, items, "planned"
+    )
 
 
-def build_container(state_dir: Path, s: dict, items: list[dict], out_dir: Path, emit=True, part: str | None = None):
+def build_container(
+    state_dir: Path,
+    s: dict,
+    items: list[dict],
+    out_dir: Path,
+    emit=True,
+    part: str | None = None,
+):
     if not emit:
         return preview_container(state_dir, s, items, out_dir, part)
     part = part or ts_name(s.get("last_closed", ""))
@@ -760,7 +1188,9 @@ def build_container(state_dir: Path, s: dict, items: list[dict], out_dir: Path, 
     if used > s["cfg"]["target"]:
         shutil.rmtree(root, ignore_errors=True)
         return None
-    out = _container_result(part, out_dir, s["cfg"]["target"], layout, used)
+    out = _container_result(
+        part, out_dir, s["cfg"]["target"], layout, used, s, items, "closed"
+    )
     s["last_closed"] = part
     return out
 
@@ -781,7 +1211,15 @@ def gc_state(state_dir: Path, s: dict, done: list[dict]):
             del s["collections"][collection]
 
 
-def fit_candidate_to_target(state_dir: Path, s: dict, items: list[dict], out_dir: Path, part: str):
+def _fit_candidate_to_target_from_pool(
+    state_dir: Path,
+    s: dict,
+    pool_items: list[dict],
+    items: list[dict],
+    out_dir: Path,
+    part: str,
+    force=False,
+):
     target = s["cfg"]["target"]
     seen: set[tuple[str, ...]] = set()
     cand = items
@@ -797,7 +1235,14 @@ def fit_candidate_to_target(state_dir: Path, s: dict, items: list[dict], out_dir
         overshoot = preview["used"] - target
         next_cap = preview["root_used"] - max(1, overshoot)
         if next_cap > META_PAD:
-            alt = pick(s["items"], s["collections"], next_cap, s["cfg"]["fill"], s["cfg"]["spill_fill"], False)
+            alt = pick(
+                pool_items,
+                s["collections"],
+                next_cap,
+                s["cfg"]["fill"],
+                s["cfg"]["spill_fill"],
+                force,
+            )
             if alt and tuple(x["id"] for x in alt) not in seen:
                 cand = alt
                 continue
@@ -805,10 +1250,25 @@ def fit_candidate_to_target(state_dir: Path, s: dict, items: list[dict], out_dir
     return [], None
 
 
+def fit_candidate_to_target(
+    state_dir: Path, s: dict, items: list[dict], out_dir: Path, part: str
+):
+    return _fit_candidate_to_target_from_pool(
+        state_dir, s, s["items"], items, out_dir, part, False
+    )
+
+
 def flush(state_dir: Path, s: dict, out_dir: Path):
     out = []
     while True:
-        cand = pick(s["items"], s["collections"], s["cfg"]["target"], s["cfg"]["fill"], s["cfg"]["spill_fill"], False)
+        cand = pick(
+            s["items"],
+            s["collections"],
+            s["cfg"]["target"],
+            s["cfg"]["fill"],
+            s["cfg"]["spill_fill"],
+            False,
+        )
         if not cand:
             break
         part = ts_name(s.get("last_closed", ""))
@@ -832,6 +1292,87 @@ def flush(state_dir: Path, s: dict, out_dir: Path):
     return out
 
 
+def plan_current_pool(state_dir: Path, s: dict, out_dir: Path) -> list[dict]:
+    remaining = list(s["items"])
+    planned: list[dict] = []
+    idx = 0
+    while remaining:
+        idx += 1
+        part = f"PLAN{idx:03d}"
+        cand = pick(
+            remaining,
+            s["collections"],
+            s["cfg"]["target"],
+            s["cfg"]["fill"],
+            s["cfg"]["spill_fill"],
+            False,
+        )
+        preview = None
+        forced = False
+        if cand:
+            cand, preview = _fit_candidate_to_target_from_pool(
+                state_dir, s, remaining, cand, out_dir, part, False
+            )
+            if (
+                not cand
+                or preview is None
+                or preview["used"]
+                < close_threshold(cand, s["cfg"]["fill"], s["cfg"]["spill_fill"])
+            ):
+                cand, preview = [], None
+        if not cand:
+            cand = pick(
+                remaining,
+                s["collections"],
+                s["cfg"]["target"],
+                s["cfg"]["fill"],
+                s["cfg"]["spill_fill"],
+                True,
+            )
+            if not cand:
+                break
+            forced = True
+            cand, preview = _fit_candidate_to_target_from_pool(
+                state_dir, s, remaining, cand, out_dir, part, True
+            )
+            if not cand or preview is None:
+                break
+        disc_view = dict(preview["plan_view"])
+        disc_view["status"] = "planned_partial" if forced else "planned"
+        planned.append(disc_view)
+        dead = {item["id"] for item in cand}
+        remaining = [item for item in remaining if item["id"] not in dead]
+    planned.sort(key=lambda x: (-x["used_bytes"], -x["payload_bytes"], x["name"]))
+    for rank, disc in enumerate(planned, start=1):
+        disc["rank"] = rank
+    return planned
+
+
+def build_ingest_plan(
+    state_dir: Path, s: dict, out_dir: Path, closed: list[dict]
+) -> dict:
+    discs = [
+        dict(item["plan_view"]) for item in closed if item.get("plan_view")
+    ] + plan_current_pool(state_dir, s, out_dir)
+    discs.sort(key=lambda x: (-x["used_bytes"], -x["payload_bytes"], x["name"]))
+    for rank, disc in enumerate(discs, start=1):
+        disc["rank"] = rank
+    return {
+        "target_bytes": s["cfg"]["target"],
+        "fill_bytes": s["cfg"]["fill"],
+        "spill_fill_bytes": s["cfg"]["spill_fill"],
+        "buffer_planned_bytes": sum(item["bytes"] for item in s["items"]),
+        "buffer_payload_bytes": sum(
+            piece["data"] for item in s["items"] for piece in item["pieces"]
+        ),
+        "closed_disc_count": len(closed),
+        "planned_disc_count": len(
+            [disc for disc in discs if disc["status"] != "closed"]
+        ),
+        "discs": discs,
+    }
+
+
 def build_collection_structures(collection: Collection):
     files = []
     kids: dict[str, list] = {"": []}
@@ -843,11 +1384,28 @@ def build_collection_structures(collection: Collection):
             dirs.add("/".join(parts[:i]))
     for jf in sorted(collection.files, key=lambda x: x.relative_path):
         if not jf.buffer_abs_path or not Path(jf.buffer_abs_path).exists():
-            raise RuntimeError(f"collection file {jf.relative_path} is not present in active buffer")
+            raise RuntimeError(
+                f"collection file {jf.relative_path} is not present in active buffer"
+            )
         rel = jf.relative_path
-        for parent in [""] + ["/".join(rel.split("/")[:i]) for i in range(1, len(rel.split("/")) )]:
+        for parent in [""] + [
+            "/".join(rel.split("/")[:i]) for i in range(1, len(rel.split("/")))
+        ]:
             dirs.add(parent)
-        files.append({"id": jf.id, "collection": collection.id, "src": jf.buffer_abs_path, "rel": rel, "raw": jf.size_bytes, "mode": jf.mode, "mtime": jf.mtime, "uid": jf.uid, "gid": jf.gid, "sha256": jf.actual_sha256 or jf.expected_sha256})
+        files.append(
+            {
+                "id": jf.id,
+                "collection": collection.id,
+                "src": jf.buffer_abs_path,
+                "rel": rel,
+                "raw": jf.size_bytes,
+                "mode": jf.mode,
+                "mtime": jf.mtime,
+                "uid": jf.uid,
+                "gid": jf.gid,
+                "sha256": jf.actual_sha256 or jf.expected_sha256,
+            }
+        )
     for d in sorted(dirs, key=lambda x: (x.count("/"), x)):
         kids.setdefault(d, [])
     for d in sorted(dirs):
@@ -868,7 +1426,11 @@ def build_collection_structures(collection: Collection):
 
 
 def ingest_collection(session: Session, collection_id: str):
-    collection = session.execute(select(Collection).where(Collection.id == collection_id).options(selectinload(Collection.directories), selectinload(Collection.files))).scalar_one()
+    collection = session.execute(
+        select(Collection)
+        .where(Collection.id == collection_id)
+        .options(selectinload(Collection.directories), selectinload(Collection.files))
+    ).scalar_one()
     if collection.status == "sealed":
         raise RuntimeError(f"collection {collection_id} already sealed")
     files, kids, dirs = build_collection_structures(collection)
@@ -877,38 +1439,65 @@ def ingest_collection(session: Session, collection_id: str):
     s = load_state(state_dir, CONTAINER_CFG)
     if s["cfg"] != CONTAINER_CFG:
         raise RuntimeError("container state config mismatch")
-    if collection_id in s["collections"] or any(x["collection"] == collection_id for x in s["items"]):
+    if collection_id in s["collections"] or any(
+        x["collection"] == collection_id for x in s["items"]
+    ):
         raise RuntimeError(f"duplicate collection {collection_id}")
     if not files:
         collection.status = "sealed"
         collection.sealed_at = datetime.now(timezone.utc)
         save_state(state_dir, s)
-        return {"collection": collection_id, "closed": [], "buffer_bytes": sum(x["bytes"] for x in s["items"])}
+        return {
+            "collection": collection_id,
+            "closed": [],
+            "buffer_bytes": sum(x["bytes"] for x in s["items"]),
+            "plan": build_ingest_plan(state_dir, s, out_dir, []),
+        }
 
     manifest_artifact = inactive_collection_hash_manifest_path(collection_id)
     proof_artifact = inactive_collection_hash_proof_path(collection_id)
     if not manifest_artifact.exists() or not proof_artifact.exists():
         raise RuntimeError(f"collection hash artifacts are missing for {collection_id}")
-    manifest_relpath, proof_relpath = collection_container_artifact_relpaths(collection_id)
+    manifest_relpath, proof_relpath = collection_container_artifact_relpaths(
+        collection_id
+    )
     artifacts = [
         {
             "source": str(manifest_artifact),
             "container_relpath": manifest_relpath,
-            "encrypted_size": encrypted_size_for_plaintext_size(manifest_artifact.stat().st_size),
+            "encrypted_size": encrypted_size_for_plaintext_size(
+                manifest_artifact.stat().st_size
+            ),
         },
         {
             "source": str(proof_artifact),
             "container_relpath": proof_relpath,
-            "encrypted_size": encrypted_size_for_plaintext_size(proof_artifact.stat().st_size),
+            "encrypted_size": encrypted_size_for_plaintext_size(
+                proof_artifact.stat().st_size
+            ),
         },
     ]
 
-    fixed = manifest_collection_budget(collection_id, files) + sum(item["encrypted_size"] for item in artifacts)
+    fixed = manifest_collection_budget(collection_id, files) + sum(
+        item["encrypted_size"] for item in artifacts
+    )
     stage_pieces(state_dir, collection_id, files, s["cfg"]["target"], fixed, artifacts)
     s["collections"][collection_id] = {
         "files": [
             {
-                **{k: f[k] for k in ("id", "rel", "raw", "mode", "mtime", "uid", "gid", "sha256")},
+                **{
+                    k: f[k]
+                    for k in (
+                        "id",
+                        "rel",
+                        "raw",
+                        "mode",
+                        "mtime",
+                        "uid",
+                        "gid",
+                        "sha256",
+                    )
+                },
                 "piece_count": len(f["pieces"]),
             }
             for f in files
@@ -919,19 +1508,58 @@ def ingest_collection(session: Session, collection_id: str):
 
     def add_item(kind, priority, why, pieces, b):
         s["next_item"] += 1
-        s["items"].append({"id": f"{s['next_item']:08d}", "collection": collection_id, "kind": kind, "priority": priority, "why": why, "pieces": pieces, "bytes": b})
+        s["items"].append(
+            {
+                "id": f"{s['next_item']:08d}",
+                "collection": collection_id,
+                "kind": kind,
+                "priority": priority,
+                "why": why,
+                "pieces": pieces,
+                "bytes": b,
+            }
+        )
 
     total = META_PAD + fixed + sum(p["est"] for f in files for p in f["pieces"])
-    if total <= s["cfg"]["target"] and all(f["raw"] <= s["cfg"]["target"] for f in files):
-        add_item("collection", False, "collection", [{"collection": collection_id, "file": p["file"], "rel": p["rel"], "store": p["store"], "data": p["data"], "i": p["i"], "n": p["n"]} for f in files for p in f["pieces"]], sum(p["est"] for f in files for p in f["pieces"]))
+    if total <= s["cfg"]["target"] and all(
+        f["raw"] <= s["cfg"]["target"] for f in files
+    ):
+        add_item(
+            "collection",
+            False,
+            "collection",
+            [
+                {
+                    "collection": collection_id,
+                    "file": p["file"],
+                    "rel": p["rel"],
+                    "store": p["store"],
+                    "data": p["data"],
+                    "i": p["i"],
+                    "n": p["n"],
+                }
+                for f in files
+                for p in f["pieces"]
+            ],
+            sum(p["est"] for f in files for p in f["pieces"]),
+        )
     else:
-        for q in split_collection(files, kids, dirs, s["cfg"]["target"] - META_PAD - fixed):
+        for q in split_collection(
+            files, kids, dirs, s["cfg"]["target"] - META_PAD - fixed
+        ):
             add_item("rem", True, q["why"], q["pieces"], q["bytes"])
     closed = flush(state_dir, s, out_dir)
     collection.status = "sealed"
     collection.sealed_at = datetime.now(timezone.utc)
     save_state(state_dir, s)
-    return {"collection": collection_id, "closed": closed, "buffer_bytes": sum(x["bytes"] for x in s["items"])}
+    return {
+        "collection": collection_id,
+        "closed": closed,
+        "buffer_bytes": sum(x["bytes"] for x in s["items"]),
+        "plan": build_ingest_plan(state_dir, s, out_dir, closed),
+    }
+
+
 def import_closed_containers(session: Session, closed: list[dict]) -> list[str]:
     from .notifications import schedule_container_finalization_notification
 
@@ -942,15 +1570,25 @@ def import_closed_containers(session: Session, closed: list[dict]) -> list[str]:
         contents_hash, total_bytes, rows = canonical_tree_hash(root)
         container = session.get(Container, container_id)
         if container is None:
-            container = Container(id=container_id, status="inactive", root_abs_path=str(root), contents_hash=contents_hash, total_root_bytes=total_bytes)
+            container = Container(
+                id=container_id,
+                status="inactive",
+                root_abs_path=str(root),
+                contents_hash=contents_hash,
+                total_root_bytes=total_bytes,
+            )
             session.add(container)
         else:
             container.root_abs_path = str(root)
             container.contents_hash = contents_hash
             container.total_root_bytes = total_bytes
         session.flush()
-        session.query(ContainerEntry).filter(ContainerEntry.container_id == container_id).delete()
-        session.query(ArchivePiece).filter(ArchivePiece.container_id == container_id).delete()
+        session.query(ContainerEntry).filter(
+            ContainerEntry.container_id == container_id
+        ).delete()
+        session.query(ArchivePiece).filter(
+            ArchivePiece.container_id == container_id
+        ).delete()
         for row in rows:
             kind = "payload"
             rel = row["relative_path"]
@@ -960,9 +1598,13 @@ def import_closed_containers(session: Session, closed: list[dict]) -> list[str]:
                 kind = "readme"
             elif str(rel).endswith(".meta.yaml"):
                 kind = "sidecar"
-            elif str(rel).startswith("collections/") and str(rel).endswith("/HASHES.yml"):
+            elif str(rel).startswith("collections/") and str(rel).endswith(
+                "/HASHES.yml"
+            ):
                 kind = "collection_hash_manifest"
-            elif str(rel).startswith("collections/") and str(rel).endswith("/HASHES.yml.ots"):
+            elif str(rel).startswith("collections/") and str(rel).endswith(
+                "/HASHES.yml.ots"
+            ):
                 kind = "collection_hash_proof"
             logical_sha256, logical_size = logical_file_sha256_and_size(root / rel)
             session.add(
@@ -977,7 +1619,17 @@ def import_closed_containers(session: Session, closed: list[dict]) -> list[str]:
                 )
             )
         for p in item.get("pieces", []):
-            session.add(ArchivePiece(container_id=container_id, collection_file_id=p["collection_file_id"], payload_relpath=p["payload_relpath"], sidecar_relpath=p["sidecar_relpath"], payload_size_bytes=p["payload_size_bytes"], chunk_index=p["chunk_index"], chunk_count=p["chunk_count"]))
+            session.add(
+                ArchivePiece(
+                    container_id=container_id,
+                    collection_file_id=p["collection_file_id"],
+                    payload_relpath=p["payload_relpath"],
+                    sidecar_relpath=p["sidecar_relpath"],
+                    payload_size_bytes=p["payload_size_bytes"],
+                    chunk_index=p["chunk_index"],
+                    chunk_count=p["chunk_count"],
+                )
+            )
         schedule_container_finalization_notification(session, container_id)
         container_ids.append(container_id)
     session.commit()

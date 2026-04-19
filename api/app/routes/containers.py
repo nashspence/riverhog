@@ -16,7 +16,15 @@ from ..db import SessionLocal
 from ..iso import create_iso_from_container_root
 from ..models import ArchivePiece, ActivationSession, Container, ContainerEntry
 from ..notifications import complete_container_finalization_notifications, isoformat_z
-from ..planner import flush, import_closed_containers, load_state, pick, preview_container, save_state
+from ..planner import (
+    build_ingest_plan,
+    flush,
+    import_closed_containers,
+    load_state,
+    pick,
+    preview_container,
+    save_state,
+)
 from ..schemas import (
     ActivationSessionCompleteResponse,
     ActivationSessionCreateResponse,
@@ -26,6 +34,7 @@ from ..schemas import (
     IsoCreateRequest,
     IsoCreateResponse,
     IsoRegisterRequest,
+    IngestPlanResponse,
     PartitioningPoolStatusResponse,
     TreeNode,
     TreeResponse,
@@ -163,6 +172,16 @@ def list_containers(db: Db) -> ContainerListResponse:
 @router.get("/pool", response_model=PartitioningPoolStatusResponse)
 def partitioning_pool_status() -> PartitioningPoolStatusResponse:
     return _partitioning_pool_status()
+
+
+@router.get("/plan", response_model=IngestPlanResponse)
+def container_plan() -> IngestPlanResponse:
+    state = load_state(CONTAINER_STATE_DIR, CONTAINER_CFG)
+    if state["cfg"] != CONTAINER_CFG:
+        raise RuntimeError("container state config mismatch")
+    return IngestPlanResponse(
+        **build_ingest_plan(CONTAINER_STATE_DIR, state, CONTAINER_ROOTS_DIR, [])
+    )
 
 
 @router.post("/flush")

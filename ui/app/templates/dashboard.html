@@ -76,6 +76,61 @@
 </section>
 
 <section>
+  <h2>Current Plan</h2>
+  {% if container_plan_error %}
+  <p class="flash error">{{ container_plan_error }}</p>
+  {% elif container_plan %}
+  <div class="metric-grid">
+    <div>
+      <span class="metric-label">Planned discs</span>
+      <strong>{{ container_plan.planned_disc_count }}</strong>
+    </div>
+    <div>
+      <span class="metric-label">Buffered planned bytes</span>
+      <strong>{{ container_plan.buffer_planned_bytes|human_bytes }}</strong>
+    </div>
+    <div>
+      <span class="metric-label">Buffered payload bytes</span>
+      <strong>{{ container_plan.buffer_payload_bytes|human_bytes }}</strong>
+    </div>
+  </div>
+  {% if container_plan.discs %}
+  <div class="plan-grid">
+    {% for disc in container_plan.discs %}
+    <article class="plan-card">
+      <div class="plan-card-header">
+        <h3><code>{{ disc.name }}</code></h3>
+        <span class="plan-chip">{{ disc.status.replace("_", " ")|title }}</span>
+      </div>
+      <p>
+        {{ disc.used_bytes|human_bytes }} used of {{ disc.target_bytes|human_bytes }},
+        {{ disc.payload_bytes|human_bytes }} payload,
+        {{ disc.free_bytes|human_bytes }} free.
+      </p>
+      <p class="muted">
+        Close threshold {{ disc.close_threshold_bytes|human_bytes }}.
+        {{ "Ready to close." if disc.meets_close_threshold else "Needs more buffered data before close." }}
+      </p>
+      <ul class="plan-collections">
+        {% for collection in disc.collections %}
+        <li>
+          <strong>{{ collection.collection }}</strong>:
+          {{ collection.payload_bytes|human_bytes }} payload,
+          {{ collection.overhead_on_disc_bytes|human_bytes }} overhead
+          {% if collection.is_partial_collection %}(partial){% endif %}
+        </li>
+        {% endfor %}
+      </ul>
+    </article>
+    {% endfor %}
+  </div>
+  {% else %}
+  <p class="muted">No buffered disc allocation plan right now.</p>
+  {% endif %}
+  {% endif %}
+</section>
+
+<section>
   <h2>Container Ops</h2>
   <form method="post" action="/containers/flush">
     <button type="submit">Flush containers</button>

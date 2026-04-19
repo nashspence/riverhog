@@ -139,3 +139,49 @@ pre {
   background: #f8f2df;
   border-left-color: #8a6d1f;
 }
+
+.plan-grid {
+  display: grid;
+  gap: 0.75rem;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+}
+
+.plan-card {
+  background: #faf6ed;
+  border: 1px solid #d7d0c3;
+  border-radius: 0.75rem;
+  padding: 1rem;
+}
+
+.plan-card h3 {
+  margin: 0;
+}
+
+.plan-card p {
+  margin: 0.5rem 0 0;
+}
+
+.plan-card-header {
+  align-items: center;
+  display: flex;
+  gap: 0.75rem;
+  justify-content: space-between;
+}
+
+.plan-chip {
+  background: #e7dcc6;
+  border-radius: 999px;
+  color: #5d4a24;
+  font-size: 0.85rem;
+  padding: 0.2rem 0.6rem;
+  white-space: nowrap;
+}
+
+.plan-collections {
+  margin: 0.75rem 0 0;
+  padding-left: 1.25rem;
+}
+
+.plan-collections li + li {
+  margin-top: 0.35rem;
+}

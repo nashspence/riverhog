@@ -207,6 +207,7 @@ def dashboard(request: Request) -> HTMLResponse:
     collections_payload, collections_error = _load_json("/v1/collections")
     containers_payload, containers_error = _load_json("/v1/containers")
     pool_payload, pool_error = _load_json("/v1/containers/pool")
+    plan_payload, plan_error = _load_json("/v1/containers/plan")
     return _render(
         request,
         "dashboard.html",
@@ -214,6 +215,8 @@ def dashboard(request: Request) -> HTMLResponse:
         containers=(containers_payload or {}).get("containers", []),
         partitioning_pool=pool_payload,
         partitioning_pool_error=pool_error,
+        container_plan=plan_payload,
+        container_plan_error=plan_error,
         collections_error=collections_error,
         containers_error=containers_error,
     )
