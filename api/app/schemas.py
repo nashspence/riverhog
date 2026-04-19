@@ -5,29 +5,24 @@ from typing import Any
 from pydantic import BaseModel, Field
 
 
-class CollectionCreateRequest(BaseModel):
-    root_node_name: str
+class CollectionSealRequest(BaseModel):
+    upload_path: str
     description: str | None = None
     keep_buffer_after_archive: bool = False
-
-
-class CollectionCreateResponse(BaseModel):
-    collection_id: str
-    status: str
-    keep_buffer_after_archive: bool
-    intake_path: str
 
 
 class CollectionSummary(BaseModel):
     collection_id: str
     status: str
+    upload_relative_path: str
+    upload_path: str
+    buffer_path: str | None = None
     description: str | None = None
     keep_buffer_after_archive: bool
     file_count: int
     directory_count: int
     created_at: str
     sealed_at: str | None = None
-    intake_path: str | None = None
     export_path: str
     hash_manifest_path: str | None = None
     hash_proof_path: str | None = None
@@ -134,7 +129,6 @@ class PartitioningPoolStatusResponse(BaseModel):
     fill_bytes: int
     spill_fill_bytes: int
     buffer_max_bytes: int
-    force_close_required: bool
     closeable_now: bool
     next_container_id: str | None = None
     next_container_bytes: int | None = None

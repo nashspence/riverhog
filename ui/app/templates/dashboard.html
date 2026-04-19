@@ -6,12 +6,12 @@
 <h1>Riverhog</h1>
 
 <section>
-  <h2>Create Collection</h2>
-  <p>Collection names become directory names under the bind-mounted intake root, so they must already be safe single path segments.</p>
-  <form method="post" action="/collections">
+  <h2>Seal Upload Directory</h2>
+  <p>Place a full collection tree anywhere under the uploads mount, then seal it by providing the directory path relative to that uploads root.</p>
+  <form method="post" action="/collections/seal">
     <label>
-      Collection name
-      <input type="text" name="root_node_name" required>
+      Upload path
+      <input type="text" name="upload_path" placeholder="family-archive/2024-drop" required>
     </label>
     <label>
       Description
@@ -21,7 +21,7 @@
       <input type="checkbox" name="keep_buffer_after_archive" value="true">
       Keep buffer after archive
     </label>
-    <button type="submit">Create collection</button>
+    <button type="submit">Seal upload directory</button>
   </form>
 </section>
 
@@ -78,10 +78,6 @@
 <section>
   <h2>Container Ops</h2>
   <form method="post" action="/containers/flush">
-    <label class="checkbox">
-      <input type="checkbox" name="force" value="true">
-      Force close pending containers
-    </label>
     <button type="submit">Flush containers</button>
   </form>
 </section>
@@ -96,10 +92,11 @@
       <tr>
         <th>ID</th>
         <th>Status</th>
+        <th>Upload Path</th>
+        <th>Buffered Path</th>
         <th>Description</th>
         <th>Files</th>
         <th>Directories</th>
-        <th>Intake Path</th>
         <th>Export Path</th>
         <th>Keep Buffer</th>
         <th>Created</th>
@@ -110,17 +107,18 @@
       <tr>
         <td><a href="/collections/{{ quote_path_segment(collection.collection_id) }}">{{ collection.collection_id }}</a></td>
         <td>{{ collection.status }}</td>
+        <td><code>{{ collection.upload_path }}</code></td>
+        <td><code>{{ collection.buffer_path or "-" }}</code></td>
         <td>{{ collection.description or "" }}</td>
         <td>{{ collection.file_count }}</td>
         <td>{{ collection.directory_count }}</td>
-        <td><code>{{ collection.intake_path or "-" }}</code></td>
         <td><code>{{ collection.export_path }}</code></td>
         <td>{{ "yes" if collection.keep_buffer_after_archive else "no" }}</td>
         <td><code>{{ collection.created_at }}</code></td>
       </tr>
       {% else %}
       <tr>
-        <td colspan="9">No collections yet.</td>
+        <td colspan="10">No collections yet.</td>
       </tr>
       {% endfor %}
     </tbody>

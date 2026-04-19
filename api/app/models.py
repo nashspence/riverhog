@@ -21,7 +21,8 @@ class Collection(Base):
     __tablename__ = "collections"
 
     id: Mapped[str] = mapped_column(String(64), primary_key=True)
-    status: Mapped[str] = mapped_column(String(32), default="open", nullable=False)
+    status: Mapped[str] = mapped_column(String(32), default="sealed", nullable=False)
+    upload_relpath: Mapped[str] = mapped_column(String(1024), nullable=False)
     description: Mapped[str | None] = mapped_column(String(1024), nullable=True)
     keep_buffer_after_archive: Mapped[bool] = mapped_column(
         Boolean,

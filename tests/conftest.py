@@ -27,10 +27,10 @@ DEFAULT_ENV = {
     "AGE_BATCHPASS_MAX_WORK_FACTOR": os.environ.get("AGE_BATCHPASS_MAX_WORK_FACTOR", "2"),
     "AGE_CLI": os.environ.get("AGE_CLI", str(LOCAL_AGE_CLI) if LOCAL_AGE_CLI.exists() else "age"),
     "OTS_CLIENT_COMMAND": f"python {API_ROOT / 'app' / 'ots_stub.py'}",
-    "CONTAINER_BUFFER_MAX_GB": "0.0100",
-    "CONTAINER_FILL_GB": "0.0015",
-    "CONTAINER_SPILL_FILL_GB": "0.0010",
-    "CONTAINER_TARGET_GB": "0.0025",
+    "CONTAINER_BUFFER_MAX_GB": "0.0025",
+    "CONTAINER_FILL_GB": "0.00010",
+    "CONTAINER_SPILL_FILL_GB": "0.00009",
+    "CONTAINER_TARGET_GB": "0.00080",
     "PREFERRED_UID": str(os.getuid()),
     "PREFERRED_GID": str(os.getgid()),
 }
@@ -55,6 +55,7 @@ class LoadedModules:
     notifications: ModuleType
     storage: ModuleType
     archive_root: Path
+    uploads_root: Path
     sqlite_path: Path
     env: dict[str, str]
 
@@ -71,6 +72,10 @@ class AppHarness:
     @property
     def sqlite_path(self) -> Path:
         return self.modules.sqlite_path
+
+    @property
+    def uploads_root(self) -> Path:
+        return self.modules.uploads_root
 
     @property
     def config(self) -> ModuleType:
@@ -116,13 +121,14 @@ def _load_modules_with_env(
 ) -> Iterator[LoadedModules]:
     base_dir = tmp_path_factory.mktemp("archive-suite")
     archive_root = base_dir / "archive"
+    uploads_root = base_dir / "uploads"
     sqlite_path = archive_root / "catalog" / "catalog.sqlite3"
 
     env = dict(DEFAULT_ENV)
     env.update(
         {
             "ARCHIVE_ROOT": str(archive_root),
-            "COLLECTION_INTAKE_ROOT": str(base_dir / "uploads" / "collections"),
+            "UPLOADS_ROOT": str(uploads_root),
             "SQLITE_PATH": str(sqlite_path),
         }
     )
@@ -147,6 +153,7 @@ def _load_modules_with_env(
             notifications=importlib.import_module("app.notifications"),
             storage=importlib.import_module("app.storage"),
             archive_root=Path(env["ARCHIVE_ROOT"]),
+            uploads_root=Path(env["UPLOADS_ROOT"]),
             sqlite_path=Path(env["SQLITE_PATH"]),
             env=env,
         )

@@ -7,34 +7,32 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy import select
 from sqlalchemy.orm import Session, selectinload
 
-from ..config import ACTIVE_BUFFER_ROOT, ensure_managed_directory
 from ..db import SessionLocal
 from ..models import ArchivePiece, Collection, CollectionFile
 from ..notifications import isoformat_z
 from ..planner import import_closed_containers, ingest_collection
 from ..schemas import (
-    CollectionCreateRequest,
-    CollectionCreateResponse,
     CollectionListResponse,
+    CollectionSealRequest,
     CollectionSummary,
     SealCollectionResponse,
     TreeNode,
     TreeResponse,
 )
 from ..storage import (
-    collection_intake_root,
-    collection_live_counts,
-    collection_tree_nodes_from_root,
+    buffered_collection_root,
+    collection_id_from_upload_path,
     export_collection_root,
     inactive_collection_hash_manifest_path,
     inactive_collection_hash_proof_path,
-    normalize_root_node_name,
-    rebuild_collection_export,
     recompute_collection_file_runtime,
+    rebuild_collection_export,
     refresh_collection_hash_artifacts,
     release_collection_buffer_files,
     sync_collection_from_buffer,
+    upload_collection_root,
 )
+from ..transfers import sync_tree
 
 router = APIRouter(prefix="/v1/collections", tags=["collections"])
 
@@ -50,13 +48,6 @@ def get_db():
 Db = Annotated[Session, Depends(get_db)]
 
 
-def _open_collection_counts(collection_id: str) -> tuple[int, int]:
-    try:
-        return collection_live_counts(collection_id)
-    except ValueError:
-        return 0, 0
-
-
 @router.get("", response_model=CollectionListResponse)
 def list_collections(db: Db) -> CollectionListResponse:
     collections = (
@@ -69,99 +60,67 @@ def list_collections(db: Db) -> CollectionListResponse:
         .all()
     )
 
-    summaries: list[CollectionSummary] = []
-    for collection in collections:
-        intake_path = str(collection_intake_root(collection.id)) if collection.status == "open" else None
-        hash_manifest_path = None
-        hash_proof_path = None
-        if collection.status != "open":
-            hash_manifest_path = str(inactive_collection_hash_manifest_path(collection.id))
-            hash_proof_path = str(inactive_collection_hash_proof_path(collection.id))
-        if collection.status == "open":
-            file_count, directory_count = _open_collection_counts(collection.id)
-        else:
-            file_count, directory_count = len(collection.files), len(collection.directories)
-        summaries.append(
-            CollectionSummary(
-                collection_id=collection.id,
-                status=collection.status,
-                description=collection.description,
-                keep_buffer_after_archive=collection.keep_buffer_after_archive,
-                file_count=file_count,
-                directory_count=directory_count,
-                created_at=isoformat_z(collection.created_at) or "",
-                sealed_at=isoformat_z(collection.sealed_at),
-                intake_path=intake_path,
-                export_path=str(export_collection_root(collection.id)),
-                hash_manifest_path=hash_manifest_path,
-                hash_proof_path=hash_proof_path,
-            )
+    summaries = [
+        CollectionSummary(
+            collection_id=collection.id,
+            status=collection.status,
+            upload_relative_path=collection.upload_relpath,
+            upload_path=str(upload_collection_root(collection.upload_relpath)),
+            buffer_path=str(buffered_collection_root(collection.id)) if buffered_collection_root(collection.id).exists() else None,
+            description=collection.description,
+            keep_buffer_after_archive=collection.keep_buffer_after_archive,
+            file_count=len(collection.files),
+            directory_count=len(collection.directories),
+            created_at=isoformat_z(collection.created_at) or "",
+            sealed_at=isoformat_z(collection.sealed_at),
+            export_path=str(export_collection_root(collection.id)),
+            hash_manifest_path=str(inactive_collection_hash_manifest_path(collection.id)),
+            hash_proof_path=str(inactive_collection_hash_proof_path(collection.id)),
         )
+        for collection in collections
+    ]
     return CollectionListResponse(collections=summaries)
 
 
-@router.post("", response_model=CollectionCreateResponse)
-def create_collection(body: CollectionCreateRequest, db: Db) -> CollectionCreateResponse:
-    collection_id = normalize_root_node_name(body.root_node_name)
-    intake_root = collection_intake_root(collection_id)
-    active_root = ACTIVE_BUFFER_ROOT / collection_id
+@router.post("/seal", response_model=SealCollectionResponse)
+def seal_collection(body: CollectionSealRequest, db: Db) -> SealCollectionResponse:
+    upload_relpath = body.upload_path
+    source_root = upload_collection_root(upload_relpath)
+    if not source_root.exists() or not source_root.is_dir():
+        raise HTTPException(status_code=404, detail="upload directory not found")
 
-    if db.get(Collection, collection_id) is not None or intake_root.exists() or active_root.exists():
-        raise HTTPException(status_code=409, detail="collection name already exists")
+    collection_id = collection_id_from_upload_path(upload_relpath)
+    if db.get(Collection, collection_id) is not None:
+        raise HTTPException(status_code=409, detail="collection already exists for this upload path")
 
-    ensure_managed_directory(intake_root)
-    db.add(
-        Collection(
+    buffered_root = buffered_collection_root(collection_id)
+    buffered_root.parent.mkdir(parents=True, exist_ok=True)
+
+    try:
+        sync_tree(source_root, buffered_root)
+        collection = Collection(
             id=collection_id,
+            status="buffered",
+            upload_relpath=upload_relpath,
             description=body.description,
             keep_buffer_after_archive=body.keep_buffer_after_archive,
         )
-    )
-    db.commit()
-    return CollectionCreateResponse(
-        collection_id=collection_id,
-        status="open",
-        keep_buffer_after_archive=body.keep_buffer_after_archive,
-        intake_path=str(intake_root),
-    )
-
-
-@router.post("/{collection_id}/seal", response_model=SealCollectionResponse)
-def seal_collection(collection_id: str, db: Db) -> SealCollectionResponse:
-    collection = (
-        db.execute(
-            select(Collection)
-            .where(Collection.id == collection_id)
-            .options(selectinload(Collection.files), selectinload(Collection.directories))
-        )
-        .scalar_one_or_none()
-    )
-    if collection is None:
-        raise HTTPException(status_code=404, detail="collection not found")
-    if collection.status != "open":
-        raise HTTPException(status_code=409, detail="collection already sealed")
-
-    intake_root = collection_intake_root(collection_id)
-    if not intake_root.exists() or not intake_root.is_dir():
-        raise HTTPException(status_code=409, detail="collection intake directory is missing")
-
-    claimed_root = ACTIVE_BUFFER_ROOT / collection_id
-    if claimed_root.exists():
-        raise HTTPException(status_code=409, detail="collection buffer already exists")
-
-    claimed_root.parent.mkdir(parents=True, exist_ok=True)
-    try:
-        shutil.move(str(intake_root), str(claimed_root))
+        db.add(collection)
+        db.flush()
         sync_collection_from_buffer(db, collection_id)
         refresh_collection_hash_artifacts(db, collection_id)
         result = ingest_collection(db, collection_id)
         closed_ids = import_closed_containers(db, result["closed"])
         rebuild_collection_export(db, collection_id)
+        shutil.rmtree(source_root, ignore_errors=True)
+    except ValueError as exc:
+        db.rollback()
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+    except RuntimeError as exc:
+        db.rollback()
+        raise HTTPException(status_code=409, detail=str(exc)) from exc
     except Exception:
         db.rollback()
-        if claimed_root.exists() and not intake_root.exists():
-            intake_root.parent.mkdir(parents=True, exist_ok=True)
-            shutil.move(str(claimed_root), str(intake_root))
         raise
 
     return SealCollectionResponse(
@@ -189,10 +148,6 @@ def collection_tree(collection_id: str, db: Db) -> TreeResponse:
     )
     if collection is None:
         raise HTTPException(status_code=404, detail="collection not found")
-
-    if collection.status == "open":
-        nodes = [TreeNode(**node) for node in collection_tree_nodes_from_root(collection_intake_root(collection_id), source="intake", status="open")]
-        return TreeResponse(root_id=collection_id, root_kind="collection", nodes=nodes)
 
     nodes: list[TreeNode] = []
     explicit_dirs = {d.relative_path for d in collection.directories}

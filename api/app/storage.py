@@ -2,10 +2,11 @@ from __future__ import annotations
 
 import hashlib
 import os
-import stat
-import shutil
 import shlex
+import shutil
+import stat
 import subprocess
+from hashlib import sha1
 from datetime import datetime, timezone
 from pathlib import Path, PurePosixPath
 from tempfile import mkdtemp
@@ -15,16 +16,16 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session, selectinload
 
 from .config import (
-    ACTIVE_BUFFER_ROOT,
-    ACTIVE_CONTAINER_ROOT,
-    ACTIVE_MATERIALIZED_ROOT,
-    ACTIVE_STAGING_ROOT,
-    COLLECTION_INTAKE_ROOT,
+    ACTIVATION_STAGING_ROOT,
+    ACTIVE_CONTAINERS_ROOT,
+    BUFFERED_COLLECTIONS_ROOT,
+    COLLECTION_EXPORTS_ROOT,
+    COLLECTION_HASHES_ROOT,
     CONTAINER_ROOTS_DIR,
-    EXPORT_COLLECTIONS_ROOT,
-    INACTIVE_COLLECTION_ROOT,
-    INACTIVE_ISO_ROOT,
     OTS_CLIENT_COMMAND,
+    REGISTERED_ISOS_ROOT,
+    UPLOADS_ROOT,
+    MATERIALIZED_COLLECTIONS_ROOT,
     ensure_managed_directory,
 )
 from .models import ArchivePiece, Container, ContainerEntry, Collection, CollectionDirectory, CollectionFile
@@ -63,6 +64,15 @@ def normalize_root_node_name(raw: str) -> str:
     if normalized in {".", ".."}:
         raise ValueError("root node name must not be . or ..")
     return normalized
+
+
+def collection_id_from_upload_path(raw: str) -> str:
+    normalized = normalize_relpath(raw)
+    stem = normalized.replace("/", "--")
+    digest = sha1(normalized.encode("utf-8")).hexdigest()[:8]
+    max_prefix = 64 - len(digest) - 1
+    prefix = stem[:max_prefix].rstrip("-._") or "collection"
+    return f"{prefix}-{digest}"
 
 
 def path_parents(relpath: str) -> list[str]:
@@ -124,16 +134,20 @@ def safe_unlink(path: Path) -> None:
         pass
 
 
-def collection_intake_root(collection_id: str) -> Path:
-    return COLLECTION_INTAKE_ROOT / normalize_root_node_name(collection_id)
+def upload_collection_root(upload_relpath: str) -> Path:
+    return UPLOADS_ROOT / normalize_relpath(upload_relpath)
+
+
+def buffered_collection_root(collection_id: str) -> Path:
+    return BUFFERED_COLLECTIONS_ROOT / normalize_root_node_name(collection_id)
 
 
 def collection_buffer_path(collection_id: str, relative_path: str) -> Path:
-    return ACTIVE_BUFFER_ROOT / collection_id / normalize_relpath(relative_path)
+    return buffered_collection_root(collection_id) / normalize_relpath(relative_path)
 
 
 def activation_staging_root(session_id: str) -> Path:
-    return ACTIVE_STAGING_ROOT / session_id
+    return ACTIVATION_STAGING_ROOT / session_id
 
 
 def activation_staging_file_path(session_id: str, relative_path: str) -> Path:
@@ -141,7 +155,7 @@ def activation_staging_file_path(session_id: str, relative_path: str) -> Path:
 
 
 def active_container_root(container_id: str) -> Path:
-    return ACTIVE_CONTAINER_ROOT / container_id
+    return ACTIVE_CONTAINERS_ROOT / container_id
 
 
 def active_container_file_path(container_id: str, relative_path: str) -> Path:
@@ -149,7 +163,7 @@ def active_container_file_path(container_id: str, relative_path: str) -> Path:
 
 
 def materialized_collection_root(collection_id: str) -> Path:
-    return ACTIVE_MATERIALIZED_ROOT / collection_id
+    return MATERIALIZED_COLLECTIONS_ROOT / collection_id
 
 
 def materialized_collection_file_path(collection_id: str, relative_path: str) -> Path:
@@ -157,7 +171,7 @@ def materialized_collection_file_path(collection_id: str, relative_path: str) ->
 
 
 def export_collection_root(collection_id: str) -> Path:
-    return EXPORT_COLLECTIONS_ROOT / collection_id
+    return COLLECTION_EXPORTS_ROOT / collection_id
 
 
 def container_root(container_id: str) -> Path:
@@ -165,11 +179,11 @@ def container_root(container_id: str) -> Path:
 
 
 def registered_iso_storage_path(container_id: str) -> Path:
-    return INACTIVE_ISO_ROOT / f"{container_id}.iso"
+    return REGISTERED_ISOS_ROOT / f"{container_id}.iso"
 
 
 def inactive_collection_artifact_root(collection_id: str) -> Path:
-    return INACTIVE_COLLECTION_ROOT / normalize_root_node_name(collection_id)
+    return COLLECTION_HASHES_ROOT / normalize_root_node_name(collection_id)
 
 
 def inactive_collection_hash_manifest_path(collection_id: str) -> Path:
@@ -279,11 +293,6 @@ def collection_tree_nodes_from_root(root: Path, *, source: str, status: str) -> 
     return nodes
 
 
-def collection_live_counts(collection_id: str) -> tuple[int, int]:
-    directories, files = scan_collection_root(collection_intake_root(collection_id))
-    return len(files), len(directories)
-
-
 def sync_collection_from_buffer(session: Session, collection_id: str) -> tuple[int, int]:
     collection = (
         session.execute(
@@ -293,7 +302,7 @@ def sync_collection_from_buffer(session: Session, collection_id: str) -> tuple[i
         )
         .scalar_one()
     )
-    root = ACTIVE_BUFFER_ROOT / collection_id
+    root = BUFFERED_COLLECTIONS_ROOT / collection_id
     directories, files = scan_collection_root(root)
 
     for directory in list(collection.directories):
@@ -504,7 +513,7 @@ def release_collection_buffer_files(session: Session, collection_id: str) -> boo
             safe_unlink(Path(collection_file.buffer_abs_path))
             collection_file.buffer_abs_path = None
             changed = True
-    safe_remove_tree(ACTIVE_BUFFER_ROOT / collection_id)
+    safe_remove_tree(BUFFERED_COLLECTIONS_ROOT / collection_id)
     session.commit()
     rebuild_collection_export(session, collection_id)
     return changed

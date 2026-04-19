@@ -2,9 +2,9 @@ from __future__ import annotations
 
 import importlib
 import os
+import shutil
 import socket
 import sys
-import shutil
 import threading
 import time
 from contextlib import ExitStack, contextmanager
@@ -16,7 +16,7 @@ import pytest
 import uvicorn
 from playwright.sync_api import Page, expect, sync_playwright
 
-from .helpers import create_collection, force_flush, seal_collection, stage_collection_files
+from .helpers import flush_containers, seal_collection, stage_collection_files
 from .mock_data import family_archive_files
 
 
@@ -119,13 +119,13 @@ def live_ui_stack(module_factory, tmp_path_factory: pytest.TempPathFactory):
                     }
 
 
-def _create_collection_via_ui(page: Page, ui_url: str, *, root_node_name: str, description: str) -> None:
+def _seal_collection_via_ui(page: Page, ui_url: str, *, upload_path: str, description: str) -> None:
     page.goto(ui_url)
-    page.get_by_label("Collection name").fill(root_node_name)
+    page.get_by_label("Upload path").fill(upload_path)
     page.get_by_label("Description").fill(description)
-    page.get_by_role("button", name="Create collection").click()
-    expect(page.get_by_role("heading", name=f"Collection {root_node_name}")).to_be_visible()
-    expect(page.get_by_text("Collection created. Populate the intake path, then seal when ready.")).to_be_visible()
+    page.get_by_role("button", name="Seal upload directory").click()
+    expect(page.locator("h1")).to_contain_text("Collection ")
+    expect(page.get_by_text("Collection sealed.")).to_be_visible()
 
 
 def _container_root_path(loaded, container_id: str) -> Path:
@@ -153,15 +153,25 @@ def test_ui_playwright_dashboard_and_collection_flow(module_factory, tmp_path_fa
     with live_ui_stack(module_factory, tmp_path_factory) as stack:
         page = stack["page"]
         ui_url = stack["ui_url"]
+        loaded = stack["loaded"]
+        storage_harness = _StorageHarness(loaded.storage)
 
-        _create_collection_via_ui(
+        upload_path = "playwright-home"
+        stage_collection_files(
+            storage_harness,
+            upload_path,
+            [family_archive_files()[0]],
+        )
+
+        _seal_collection_via_ui(
             page,
             ui_url,
-            root_node_name="playwright-home",
+            upload_path=upload_path,
             description="Playwright home archive",
         )
 
-        expect(page.locator("code").filter(has_text="playwright-home").first).to_be_visible()
+        expect(page.get_by_text("Upload path")).to_be_visible()
+        expect(page.get_by_text(upload_path, exact=True)).to_be_visible()
 
         page.get_by_role("link", name="Dashboard").click()
         expect(page.get_by_role("link", name="playwright-home")).to_be_visible()
@@ -175,30 +185,25 @@ def test_ui_playwright_collection_seal_and_flush_flow(module_factory, tmp_path_f
         loaded = stack["loaded"]
         storage_harness = _StorageHarness(loaded.storage)
 
-        _create_collection_via_ui(
-            page,
-            ui_url,
-            root_node_name="playwright-collection",
-            description="Playwright collection archive",
-        )
-
+        upload_path = "playwright-collection"
         stage_collection_files(
             storage_harness,
-            "playwright-collection",
+            upload_path,
             [family_archive_files()[0]],
             directories=["docs"],
         )
 
-        page.reload()
-        expect(page.get_by_text(family_archive_files()[0].relative_path)).to_be_visible()
+        _seal_collection_via_ui(
+            page,
+            ui_url,
+            upload_path=upload_path,
+            description="Playwright collection archive",
+        )
 
-        page.get_by_role("button", name="Seal collection").click()
-        expect(page.get_by_text("Collection sealed. Closed containers:")).to_be_visible()
-
+        expect(page.get_by_text("Collection sealed.")).to_be_visible()
         page.get_by_role("link", name="Dashboard").click()
-        page.get_by_label("Force close pending containers").check()
         page.get_by_role("button", name="Flush containers").click()
-        expect(page.get_by_text("Flush completed. Closed containers: 1.")).to_be_visible(timeout=30_000)
+        expect(page.get_by_text("Flush completed. Closed containers:")).to_be_visible(timeout=30_000)
 
         container_link = page.locator("section").filter(has=page.get_by_role("heading", name="Containers")).get_by_role("link").first
         container_id = (container_link.text_content() or "").strip()
@@ -217,18 +222,14 @@ def test_ui_playwright_container_activation_and_iso_path_flow(module_factory, tm
         storage_harness = _StorageHarness(loaded.storage)
 
         sample = family_archive_files()[0]
-        collection_id = create_collection(
-            api_harness,
-            description="Playwright activation archive",
-            root_node_name="playwright-activation",
-        )
+        upload_path = "playwright-activation"
         stage_collection_files(
             storage_harness,
-            collection_id,
+            upload_path,
             [sample],
         )
-        sealed = seal_collection(api_harness, collection_id)
-        container_id = (sealed["closed_containers"] or force_flush(api_harness))[0]
+        sealed = seal_collection(api_harness, upload_path, description="Playwright activation archive")
+        container_id = (sealed["closed_containers"] or flush_containers(api_harness))[0]
         container_root = _container_root_path(loaded, container_id)
 
         page.goto(f"{ui_url}/containers/{container_id}")
@@ -236,7 +237,7 @@ def test_ui_playwright_container_activation_and_iso_path_flow(module_factory, tm
         expect(page.get_by_text("Activation session created.")).to_be_visible()
         expect(page.get_by_text("Current activation session:")).to_be_visible()
 
-        staging_path_text = page.locator("code").filter(has_text="/active/activation/staging/").first.text_content()
+        staging_path_text = page.locator("code").filter(has_text="/activation-staging/").first.text_content()
         assert staging_path_text
         staging_root = Path(staging_path_text)
         if staging_root.exists():

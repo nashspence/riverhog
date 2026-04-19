@@ -7,7 +7,7 @@ ARG AGE_VERSION=v1.3.1
 WORKDIR /app
 
 RUN apt-get update \
-    && apt-get install -y --no-install-recommends ca-certificates curl util-linux xorriso \
+    && apt-get install -y --no-install-recommends ca-certificates curl rsync util-linux xorriso \
     && rm -rf /var/lib/apt/lists/*
 
 RUN arch="$(dpkg --print-architecture)" \

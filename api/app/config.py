@@ -25,7 +25,6 @@ def _gb_env(name: str, default: str) -> int:
 
 ARCHIVE_ROOT = Path(_get_env("ARCHIVE_ROOT", "/var/lib/archive"))
 UPLOADS_ROOT = Path(_get_env("UPLOADS_ROOT", "/var/lib/uploads"))
-COLLECTION_INTAKE_ROOT = Path(_get_env("COLLECTION_INTAKE_ROOT", "/var/lib/uploads/collections"))
 SQLITE_PATH = Path(_get_env("SQLITE_PATH", str(ARCHIVE_ROOT / "catalog" / "catalog.sqlite3")))
 API_BASE_URL = _get_env("API_BASE_URL", "http://localhost:8080").rstrip("/")
 API_TOKEN = _get_env("API_TOKEN", "change-me")
@@ -45,15 +44,15 @@ CONTAINER_BUFFER_MAX = _gb_env("CONTAINER_BUFFER_MAX_GB", "250")
 
 CATALOG_DIR = SQLITE_PATH.parent
 
-ACTIVE_BUFFER_ROOT = ARCHIVE_ROOT / "active" / "buffer" / "collections"
-ACTIVE_STAGING_ROOT = ARCHIVE_ROOT / "active" / "activation" / "staging"
-ACTIVE_CONTAINER_ROOT = ARCHIVE_ROOT / "active" / "activation" / "containers"
-ACTIVE_MATERIALIZED_ROOT = ARCHIVE_ROOT / "active" / "materialized" / "collections"
-EXPORT_COLLECTIONS_ROOT = ARCHIVE_ROOT / "exports" / "collections"
-CONTAINER_STATE_DIR = ARCHIVE_ROOT / "containers" / "state"
-CONTAINER_ROOTS_DIR = ARCHIVE_ROOT / "containers" / "roots"
-INACTIVE_ISO_ROOT = ARCHIVE_ROOT / "inactive" / "isos"
-INACTIVE_COLLECTION_ROOT = ARCHIVE_ROOT / "inactive" / "collections"
+BUFFERED_COLLECTIONS_ROOT = ARCHIVE_ROOT / "buffered-collections"
+ACTIVATION_STAGING_ROOT = ARCHIVE_ROOT / "activation-staging"
+ACTIVE_CONTAINERS_ROOT = ARCHIVE_ROOT / "activated-containers"
+MATERIALIZED_COLLECTIONS_ROOT = ARCHIVE_ROOT / "materialized-collections"
+COLLECTION_EXPORTS_ROOT = ARCHIVE_ROOT / "collection-exports"
+CONTAINER_STATE_DIR = ARCHIVE_ROOT / "container-state"
+CONTAINER_ROOTS_DIR = ARCHIVE_ROOT / "container-roots"
+REGISTERED_ISOS_ROOT = ARCHIVE_ROOT / "registered-isos"
+COLLECTION_HASHES_ROOT = ARCHIVE_ROOT / "collection-hashes"
 
 CONTAINER_FINALIZATION_WEBHOOK_URL = _get_optional_env("CONTAINER_FINALIZATION_WEBHOOK_URL")
 CONTAINER_FINALIZATION_REMINDER_INTERVAL_SECONDS = (
@@ -86,16 +85,15 @@ def ensure_managed_directory(path: Path) -> None:
 def ensure_directories() -> None:
     for path in [
         UPLOADS_ROOT,
-        COLLECTION_INTAKE_ROOT,
         CATALOG_DIR,
-        ACTIVE_BUFFER_ROOT,
-        ACTIVE_STAGING_ROOT,
-        ACTIVE_CONTAINER_ROOT,
-        ACTIVE_MATERIALIZED_ROOT,
-        EXPORT_COLLECTIONS_ROOT,
+        BUFFERED_COLLECTIONS_ROOT,
+        ACTIVATION_STAGING_ROOT,
+        ACTIVE_CONTAINERS_ROOT,
+        MATERIALIZED_COLLECTIONS_ROOT,
+        COLLECTION_EXPORTS_ROOT,
         CONTAINER_STATE_DIR,
         CONTAINER_ROOTS_DIR,
-        INACTIVE_ISO_ROOT,
-        INACTIVE_COLLECTION_ROOT,
+        REGISTERED_ISOS_ROOT,
+        COLLECTION_HASHES_ROOT,
     ]:
         ensure_managed_directory(path)

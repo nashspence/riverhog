@@ -4,17 +4,18 @@ from pathlib import Path
 
 import yaml
 
-from .helpers import activation_container_from_root, closed_container_roots, create_collection, force_flush, register_iso, seal_collection, stage_collection_files
+from .helpers import activation_container_from_root, closed_container_roots, flush_containers, register_iso, seal_collection, stage_collection_files
 from .mock_data import document_archive_files, family_archive_files, oversized_master_reel
 
 
 def test_closed_container_can_be_activated_and_restore_collection_reads(app_factory):
     with app_factory() as harness:
-        collection_id = create_collection(harness, description="family and finance archive")
-        stage_collection_files(harness, collection_id, family_archive_files())
+        upload_path = "family-and-finance-archive"
+        stage_collection_files(harness, upload_path, family_archive_files())
 
-        sealed = seal_collection(harness, collection_id)
-        container_ids = sealed["closed_containers"] or force_flush(harness)
+        sealed = seal_collection(harness, upload_path, description="family and finance archive")
+        collection_id = sealed["collection_id"]
+        container_ids = sealed["closed_containers"] or flush_containers(harness)
         assert len(container_ids) == 1
         container_id = container_ids[0]
 
@@ -84,11 +85,11 @@ def test_closed_container_can_be_activated_and_restore_collection_reads(app_fact
 
 def test_activation_verification_rejects_mutated_container_contents(app_factory):
     with app_factory() as harness:
-        collection_id = create_collection(harness, description="financial document set")
-        stage_collection_files(harness, collection_id, document_archive_files())
+        upload_path = "financial-document-set"
+        stage_collection_files(harness, upload_path, document_archive_files())
 
-        sealed = seal_collection(harness, collection_id)
-        container_id = (sealed["closed_containers"] or force_flush(harness))[0]
+        sealed = seal_collection(harness, upload_path, description="financial document set")
+        container_id = (sealed["closed_containers"] or flush_containers(harness))[0]
 
         def mutate(relpath: str, content: bytes) -> bytes:
             if relpath.endswith(".meta.yaml"):
@@ -113,11 +114,12 @@ def test_split_file_materializes_only_when_all_required_containers_are_active(ap
         CONTAINER_BUFFER_MAX_GB="0.0040",
     ) as harness:
         master = oversized_master_reel()
-        collection_id = create_collection(harness, description="master home video reel")
-        stage_collection_files(harness, collection_id, [master])
+        upload_path = "master-home-video-reel"
+        stage_collection_files(harness, upload_path, [master])
 
-        sealed = seal_collection(harness, collection_id)
-        container_ids = sealed["closed_containers"] + force_flush(harness)
+        sealed = seal_collection(harness, upload_path, description="master home video reel")
+        collection_id = sealed["collection_id"]
+        container_ids = sealed["closed_containers"] + flush_containers(harness)
         assert len(container_ids) >= 2
 
         release = harness.client.post(
@@ -153,10 +155,11 @@ def test_buffer_cleanup_waits_for_all_container_burns_and_respects_retention_ove
         CONTAINER_BUFFER_MAX_GB="0.0040",
     ) as harness:
         master = oversized_master_reel()
-        collection_id = create_collection(harness, description="critical family reel")
-        stage_collection_files(harness, collection_id, [master])
-        sealed = seal_collection(harness, collection_id)
-        container_ids = sealed["closed_containers"] + force_flush(harness)
+        upload_path = "critical-family-reel"
+        stage_collection_files(harness, upload_path, [master])
+        sealed = seal_collection(harness, upload_path, description="critical family reel")
+        collection_id = sealed["collection_id"]
+        container_ids = sealed["closed_containers"] + flush_containers(harness)
         assert len(container_ids) >= 2
 
         for container_id in container_ids:
@@ -187,15 +190,17 @@ def test_buffer_cleanup_waits_for_all_container_burns_and_respects_retention_ove
             assert collection_file.buffer_abs_path is None
 
     with app_factory() as retained_harness:
-        collection_id = create_collection(
+        upload_path = "archive-with-retention-lock"
+        stage_collection_files(retained_harness, upload_path, document_archive_files())
+
+        sealed = seal_collection(
             retained_harness,
+            upload_path,
             description="archive with retention lock",
             keep_buffer_after_archive=True,
         )
-        stage_collection_files(retained_harness, collection_id, document_archive_files())
-
-        sealed = seal_collection(retained_harness, collection_id)
-        container_ids = sealed["closed_containers"] or force_flush(retained_harness)
+        collection_id = sealed["collection_id"]
+        container_ids = sealed["closed_containers"] or flush_containers(retained_harness)
         for container_id in container_ids:
             register_iso(retained_harness, container_id, f"iso-{container_id}".encode())
             confirm = retained_harness.client.post(

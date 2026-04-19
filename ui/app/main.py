@@ -219,18 +219,18 @@ def dashboard(request: Request) -> HTMLResponse:
     )
 
 
-@app.post("/collections")
-def create_collection(
-    root_node_name: str = Form(...),
+@app.post("/collections/seal")
+def seal_uploaded_collection(
+    upload_path: str = Form(...),
     description: str = Form(""),
     keep_buffer_after_archive: bool = Form(False),
 ):
     try:
         payload = _api_json(
             "POST",
-            "/v1/collections",
+            "/v1/collections/seal",
             json={
-                "root_node_name": root_node_name,
+                "upload_path": upload_path,
                 "description": description or None,
                 "keep_buffer_after_archive": keep_buffer_after_archive,
             },
@@ -239,14 +239,14 @@ def create_collection(
         return _redirect("/", error=exc.message)
     return _redirect(
         _collection_ui_path(payload["collection_id"]),
-        message="Collection created. Populate the intake path, then seal when ready.",
+        message="Collection sealed.",
     )
 
 
 @app.post("/containers/flush")
-def flush_containers(force: bool = Form(False)):
+def flush_containers():
     try:
-        payload = _api_json("POST", f"/v1/containers/flush?force={'true' if force else 'false'}")
+        payload = _api_json("POST", "/v1/containers/flush")
     except ApiError as exc:
         return _redirect("/", error=exc.message)
     count = len(payload.get("closed_containers", []))

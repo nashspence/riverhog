@@ -2,13 +2,13 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from .helpers import activation_container_from_root, create_iso, create_collection, force_flush, seal_collection, stage_collection_files
+from .helpers import activation_container_from_root, create_iso, flush_containers, seal_collection, stage_collection_files
 from .mock_data import MockFile, document_archive_files, patterned_bytes
 
 
-def test_open_collection_tree_keeps_explicit_and_derived_directories(app_factory):
+def test_sealed_collection_tree_keeps_explicit_and_derived_directories(app_factory):
     with app_factory() as harness:
-        collection_id = create_collection(harness, description="catalog coverage archive")
+        upload_path = "catalog-coverage-archive"
 
         sample = MockFile(
             "scans/2025/passports/alex/passport.pdf",
@@ -16,10 +16,13 @@ def test_open_collection_tree_keeps_explicit_and_derived_directories(app_factory
         )
         stage_collection_files(
             harness,
-            collection_id,
+            upload_path,
             [sample],
             directories=["scans/2025/receipts"],
         )
+
+        sealed = seal_collection(harness, upload_path, description="catalog coverage archive")
+        collection_id = sealed["collection_id"]
 
         tree = harness.client.get(
             f"/v1/collections/{collection_id}/tree",
@@ -43,38 +46,40 @@ def test_open_collection_tree_keeps_explicit_and_derived_directories(app_factory
                 "kind": "file",
                 "size_bytes": sample.size_bytes,
                 "active": True,
-                "source": "intake",
+                "source": "buffer",
                 "container_ids": [],
-                "status": "open",
+                "status": "active",
                 "extra": None,
             }
         ]
 
 
-def test_open_collection_content_is_available_on_the_filesystem(app_factory):
+def test_uploaded_collection_content_is_available_before_seal(app_factory):
     with app_factory() as harness:
         sample = document_archive_files()[0]
-        collection_id = create_collection(harness, description="open intake reads")
-        intake_root = stage_collection_files(harness, collection_id, [sample])
+        upload_path = "open-upload-reads"
+        upload_root = stage_collection_files(harness, upload_path, [sample])
 
-        content_path = intake_root / sample.relative_path
+        content_path = upload_root / sample.relative_path
         assert content_path.exists()
         assert content_path.read_bytes() == sample.content
 
 
-def test_sealed_collection_rejects_new_seal_attempt_and_writes_hash_artifacts(app_factory):
+def test_sealed_upload_path_cannot_be_sealed_twice_and_writes_hash_artifacts(app_factory):
     with app_factory() as harness:
         sample = document_archive_files()[0]
-        collection_id = create_collection(harness, description="sealed archive behavior")
-        stage_collection_files(harness, collection_id, [sample])
-        seal_collection(harness, collection_id)
+        upload_path = "sealed-archive-behavior"
+        stage_collection_files(harness, upload_path, [sample])
+        sealed = seal_collection(harness, upload_path, description="sealed archive behavior")
+        collection_id = sealed["collection_id"]
 
         reseal = harness.client.post(
-            f"/v1/collections/{collection_id}/seal",
+            "/v1/collections/seal",
             headers=harness.auth_headers(),
+            json={"upload_path": upload_path, "description": "sealed archive behavior"},
         )
-        assert reseal.status_code == 409
-        assert reseal.json()["detail"] == "collection already sealed"
+        assert reseal.status_code == 404
+        assert reseal.json()["detail"] == "upload directory not found"
 
         assert harness.storage.inactive_collection_hash_manifest_path(collection_id).exists()
         assert harness.storage.inactive_collection_hash_proof_path(collection_id).exists()
@@ -83,11 +88,12 @@ def test_sealed_collection_rejects_new_seal_attempt_and_writes_hash_artifacts(ap
 def test_container_activation_and_evict_toggle_container_and_collection_visibility(app_factory):
     with app_factory() as harness:
         samples = document_archive_files()
-        collection_id = create_collection(harness, description="activation visibility archive")
-        stage_collection_files(harness, collection_id, samples)
+        upload_path = "activation-visibility-archive"
+        stage_collection_files(harness, upload_path, samples)
 
-        sealed = seal_collection(harness, collection_id)
-        container_id = (sealed["closed_containers"] or force_flush(harness))[0]
+        sealed = seal_collection(harness, upload_path, description="activation visibility archive")
+        collection_id = sealed["collection_id"]
+        container_id = (sealed["closed_containers"] or flush_containers(harness))[0]
 
         release = harness.client.post(
             f"/v1/collections/{collection_id}/buffer/release",
@@ -135,11 +141,11 @@ def test_container_activation_and_evict_toggle_container_and_collection_visibili
 
 def test_iso_overwrite_and_burn_confirmation_are_idempotent(app_factory):
     with app_factory() as harness:
-        collection_id = create_collection(harness, description="iso lifecycle archive")
-        stage_collection_files(harness, collection_id, document_archive_files())
+        upload_path = "iso-lifecycle-archive"
+        stage_collection_files(harness, upload_path, document_archive_files())
 
-        sealed = seal_collection(harness, collection_id)
-        container_id = (sealed["closed_containers"] or force_flush(harness))[0]
+        sealed = seal_collection(harness, upload_path, description="iso lifecycle archive")
+        container_id = (sealed["closed_containers"] or flush_containers(harness))[0]
 
         first_iso = create_iso(harness, container_id, volume_label="FIRST LABEL")
         assert Path(first_iso["iso_path"]).exists()
@@ -173,11 +179,11 @@ def test_iso_overwrite_and_burn_confirmation_are_idempotent(app_factory):
 
 def test_env_configured_webhook_backfills_existing_unconfirmed_containers(app_factory):
     with app_factory(CONTAINER_FINALIZATION_WEBHOOK_URL="http://example.test/archive-hook") as harness:
-        collection_id = create_collection(harness, description="notification backfill archive")
-        stage_collection_files(harness, collection_id, document_archive_files())
+        upload_path = "notification-backfill-archive"
+        stage_collection_files(harness, upload_path, document_archive_files())
 
-        sealed = seal_collection(harness, collection_id)
-        container_id = (sealed["closed_containers"] or force_flush(harness))[0]
+        sealed = seal_collection(harness, upload_path, description="notification backfill archive")
+        container_id = (sealed["closed_containers"] or flush_containers(harness))[0]
 
         with harness.session() as session:
             container = session.get(harness.models.Container, container_id)

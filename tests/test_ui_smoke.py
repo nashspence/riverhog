@@ -9,17 +9,19 @@ from ui.app import main as ui_main
 def test_dashboard_and_detail_pages_render_with_api_data(monkeypatch):
     collection = {
         "collection_id": "demo-collection",
-        "status": "open",
+        "status": "sealed",
+        "upload_relative_path": "demo-collection",
+        "upload_path": "/var/lib/uploads/demo-collection",
+        "buffer_path": "/var/lib/archive/buffered-collections/demo-collection",
         "description": "demo collection",
         "keep_buffer_after_archive": False,
         "file_count": 2,
         "directory_count": 1,
         "created_at": "2026-04-18T00:00:00Z",
-        "sealed_at": None,
-        "intake_path": "/var/lib/uploads/collections/demo-collection",
-        "export_path": "/var/lib/archive/exports/collections/demo-collection",
-        "hash_manifest_path": None,
-        "hash_proof_path": None,
+        "sealed_at": "2026-04-18T00:00:01Z",
+        "export_path": "/var/lib/archive/collection-exports/demo-collection",
+        "hash_manifest_path": "/var/lib/archive/collection-hashes/demo-collection/HASHES.yml",
+        "hash_proof_path": "/var/lib/archive/collection-hashes/demo-collection/HASHES.yml.ots",
     }
     container = {
         "container_id": "DEMO-001",
@@ -31,9 +33,9 @@ def test_dashboard_and_detail_pages_render_with_api_data(monkeypatch):
         "active_root_present": False,
         "iso_present": True,
         "iso_size_bytes": 4096,
-        "root_path": "/var/lib/archive/containers/roots/DEMO-001",
+        "root_path": "/var/lib/archive/container-roots/DEMO-001",
         "active_root_path": None,
-        "iso_path": "/var/lib/archive/inactive/isos/DEMO-001.iso",
+        "iso_path": "/var/lib/archive/registered-isos/DEMO-001.iso",
         "burn_confirmed_at": None,
         "created_at": "2026-04-18T00:00:00Z",
     }
@@ -47,7 +49,6 @@ def test_dashboard_and_detail_pages_render_with_api_data(monkeypatch):
         "fill_bytes": 1536,
         "spill_fill_bytes": 1024,
         "buffer_max_bytes": 4096,
-        "force_close_required": False,
         "closeable_now": False,
         "next_container_id": None,
         "next_container_bytes": None,
@@ -71,9 +72,9 @@ def test_dashboard_and_detail_pages_render_with_api_data(monkeypatch):
                         "kind": "file",
                         "size_bytes": 10,
                         "active": True,
-                        "source": "intake",
+                        "source": "buffer",
                         "container_ids": [],
-                        "status": "open",
+                        "status": "active",
                     }
                 ]
             }, None
@@ -95,7 +96,7 @@ def test_dashboard_and_detail_pages_render_with_api_data(monkeypatch):
             return {
                 "session_id": "session-123",
                 "container_id": "DEMO-001",
-                "staging_path": "/var/lib/archive/active/activation/staging/session-123",
+                "staging_path": "/var/lib/archive/activation-staging/session-123",
                 "entries": [],
             }, None
         return None, "missing"
@@ -110,38 +111,41 @@ def test_dashboard_and_detail_pages_render_with_api_data(monkeypatch):
         assert "demo-collection" in dashboard.text
         assert "DEMO-001" in dashboard.text
         assert "waiting" in dashboard.text.lower()
-        assert "/var/lib/uploads/collections/demo-collection" in dashboard.text
+        assert "/var/lib/uploads/demo-collection" in dashboard.text
+        assert "Seal upload directory" in dashboard.text
 
         collection_page = client.get("/collections/demo-collection")
         assert collection_page.status_code == 200
         assert "docs/file.txt" in collection_page.text
-        assert "Place the full collection tree under" in collection_page.text
-        assert "/var/lib/archive/exports/collections/demo-collection" in collection_page.text
-        assert "/var/lib/uploads/collections/demo-collection" in collection_page.text
+        assert "/var/lib/archive/collection-exports/demo-collection" in collection_page.text
+        assert "/var/lib/uploads/demo-collection" in collection_page.text
+        assert "Release buffer" in collection_page.text
 
         container_page = client.get("/containers/DEMO-001?activation_session=session-123")
         assert container_page.status_code == 200
         assert "README.txt" in container_page.text
         assert "Create activation session" in container_page.text
         assert "Complete activation" in container_page.text
-        assert "/var/lib/archive/inactive/isos/DEMO-001.iso" in container_page.text
-        assert "/var/lib/archive/active/activation/staging/session-123" in container_page.text
+        assert "/var/lib/archive/registered-isos/DEMO-001.iso" in container_page.text
+        assert "/var/lib/archive/activation-staging/session-123" in container_page.text
 
 
 def test_collection_urls_are_percent_encoded_for_collection_ids_with_spaces(monkeypatch):
     collection = {
         "collection_id": "demo collection",
-        "status": "open",
+        "status": "sealed",
+        "upload_relative_path": "demo collection",
+        "upload_path": "/var/lib/uploads/demo collection",
+        "buffer_path": "/var/lib/archive/buffered-collections/demo collection",
         "description": "demo collection",
         "keep_buffer_after_archive": False,
         "file_count": 0,
         "directory_count": 0,
         "created_at": "2026-04-18T00:00:00Z",
-        "sealed_at": None,
-        "intake_path": "/var/lib/uploads/collections/demo collection",
-        "export_path": "/var/lib/archive/exports/collections/demo collection",
-        "hash_manifest_path": None,
-        "hash_proof_path": None,
+        "sealed_at": "2026-04-18T00:00:01Z",
+        "export_path": "/var/lib/archive/collection-exports/demo collection",
+        "hash_manifest_path": "/var/lib/archive/collection-hashes/demo collection/HASHES.yml",
+        "hash_proof_path": "/var/lib/archive/collection-hashes/demo collection/HASHES.yml.ots",
     }
 
     def fake_load_json(path: str):
@@ -160,7 +164,6 @@ def test_collection_urls_are_percent_encoded_for_collection_ids_with_spaces(monk
                 "fill_bytes": 1,
                 "spill_fill_bytes": 1,
                 "buffer_max_bytes": 1,
-                "force_close_required": False,
                 "closeable_now": False,
                 "next_container_id": None,
                 "next_container_bytes": None,
@@ -182,7 +185,7 @@ def test_collection_urls_are_percent_encoded_for_collection_ids_with_spaces(monk
 
         collection_page = client.get("/collections/demo%20collection")
         assert collection_page.status_code == 200
-        assert '/collections/demo%20collection/seal' in collection_page.text
+        assert "Release buffer" in collection_page.text
 
 
 def test_iso_download_forwards_range_requests(monkeypatch):

@@ -61,35 +61,20 @@ def test_api_dockerfile_builds_and_serves_real_container():
         _wait_for_health(base_url)
 
         unauthorized = httpx.post(
-            f"{base_url}/v1/collections",
-            json={"description": "blocked"},
+            f"{base_url}/v1/collections/seal",
+            json={"upload_path": "blocked"},
             timeout=5.0,
         )
         assert unauthorized.status_code == 401
 
-        authorized = httpx.post(
-            f"{base_url}/v1/collections",
-            headers={"Authorization": f"Bearer {api_token}"},
-            json={
-                "root_node_name": "real-image-runtime-check",
-                "description": "real image runtime check",
-            },
-            timeout=5.0,
-        )
-        assert authorized.status_code == 200, authorized.text
-        body = authorized.json()
-        assert body["status"] == "open"
-        assert body["keep_buffer_after_archive"] is False
-        assert body["collection_id"] == "real-image-runtime-check"
-        intake_path = body["intake_path"]
-
+        upload_path = "real-image-runtime-check"
         exit_code, output = container.exec_run(
             [
                 "sh",
                 "-lc",
                 (
-                    f"mkdir -p {shlex.quote(intake_path)} "
-                    f"&& printf 'runtime image seal check\\n' > {shlex.quote(intake_path)}/sample.txt"
+                    f"mkdir -p /var/lib/uploads/{shlex.quote(upload_path)} "
+                    f"&& printf 'runtime image seal check\\n' > /var/lib/uploads/{shlex.quote(upload_path)}/sample.txt"
                 ),
             ],
             user="1000:1000",
@@ -97,8 +82,12 @@ def test_api_dockerfile_builds_and_serves_real_container():
         assert exit_code == 0, output.decode()
 
         sealed = httpx.post(
-            f"{base_url}/v1/collections/real-image-runtime-check/seal",
+            f"{base_url}/v1/collections/seal",
             headers={"Authorization": f"Bearer {api_token}"},
+            json={
+                "upload_path": upload_path,
+                "description": "real image runtime check",
+            },
             timeout=20.0,
         )
         assert sealed.status_code == 200, sealed.text
@@ -112,6 +101,7 @@ def test_api_dockerfile_builds_and_serves_real_container():
                     "test -d /var/lib/archive/runtime-home "
                     "&& test -d /var/lib/archive/runtime-home/.cache "
                     "&& test -d /var/lib/archive/runtime-home/.config "
+                    "&& test -d /var/lib/archive/buffered-collections "
                     "&& find /var/lib/archive/runtime-home/.cache -maxdepth 2 -type d | sort"
                 ),
             ]

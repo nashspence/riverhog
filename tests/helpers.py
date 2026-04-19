@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import os
-import re
 import shutil
 from datetime import datetime
 from pathlib import Path
@@ -10,34 +9,14 @@ from typing import Callable, Iterable
 from .mock_data import MockFile
 
 
-def _default_root_node_name(description: str | None) -> str:
-    base = (description or "archive-collection").strip().lower()
-    slug = re.sub(r"[^a-z0-9._-]+", "-", base).strip("-")
-    return slug or "archive-collection"
-
-
-def create_collection(harness, *, description: str, keep_buffer_after_archive: bool = False, root_node_name: str | None = None) -> str:
-    response = harness.client.post(
-        "/v1/collections",
-        headers=harness.auth_headers(),
-        json={
-            "root_node_name": root_node_name or _default_root_node_name(description),
-            "description": description,
-            "keep_buffer_after_archive": keep_buffer_after_archive,
-        },
-    )
-    assert response.status_code == 200, response.text
-    return response.json()["collection_id"]
-
-
 def stage_collection_files(
     harness,
-    collection_id: str,
+    upload_path: str,
     files: Iterable[MockFile],
     *,
     directories: Iterable[str] = (),
 ) -> Path:
-    root = harness.storage.collection_intake_root(collection_id)
+    root = harness.storage.upload_collection_root(upload_path)
     root.mkdir(parents=True, exist_ok=True)
 
     for rel in directories:
@@ -53,18 +32,29 @@ def stage_collection_files(
     return root
 
 
-def seal_collection(harness, collection_id: str) -> dict:
+def seal_collection(
+    harness,
+    upload_path: str,
+    *,
+    description: str,
+    keep_buffer_after_archive: bool = False,
+) -> dict:
     response = harness.client.post(
-        f"/v1/collections/{collection_id}/seal",
+        "/v1/collections/seal",
         headers=harness.auth_headers(),
+        json={
+            "upload_path": upload_path,
+            "description": description,
+            "keep_buffer_after_archive": keep_buffer_after_archive,
+        },
     )
     assert response.status_code == 200, response.text
     return response.json()
 
 
-def force_flush(harness) -> list[str]:
+def flush_containers(harness) -> list[str]:
     response = harness.client.post(
-        "/v1/containers/flush?force=true",
+        "/v1/containers/flush",
         headers=harness.auth_headers(),
     )
     assert response.status_code == 200, response.text

@@ -16,7 +16,7 @@ from ..db import SessionLocal
 from ..iso import create_iso_from_container_root
 from ..models import ArchivePiece, ActivationSession, Container, ContainerEntry
 from ..notifications import complete_container_finalization_notifications, isoformat_z
-from ..planner import force_close_pending, import_closed_containers, load_state, pick, preview_container
+from ..planner import flush, import_closed_containers, load_state, pick, preview_container, save_state
 from ..schemas import (
     ActivationSessionCompleteResponse,
     ActivationSessionCreateResponse,
@@ -40,6 +40,7 @@ from ..storage import (
     rebuild_collection_export,
     registered_iso_storage_path,
 )
+from ..transfers import sync_file, sync_tree
 
 router = APIRouter(prefix="/v1/containers", tags=["containers"])
 
@@ -63,8 +64,8 @@ def _pool_status_message(state: str, *, fill_bytes: int, spill_fill_bytes: int) 
             "The partitioning pool can close another container now. "
             f"Collections with priority splits close at {spill_fill_bytes} bytes; others close at {fill_bytes} bytes."
         )
-    if state == "overflow":
-        return "The partitioning pool is above its buffer cap and needs a forced close to keep moving."
+    if state == "over-buffer":
+        return "The partitioning pool is above its buffer cap but only closes automatically once a full container can be formed."
     return "The partitioning pool is waiting for more sealed collection data before it can close another container."
 
 
@@ -83,20 +84,7 @@ def _partitioning_pool_status() -> PartitioningPoolStatusResponse:
         state["cfg"]["spill_fill"],
         False,
     )
-    overflow_candidate: list[dict] = []
-    force_close_required = False
-    if not ready_candidate and pending_items and pending_bytes > state["cfg"]["buffer_max"]:
-        overflow_candidate = pick(
-            pending_items,
-            state["collections"],
-            state["cfg"]["target"],
-            state["cfg"]["fill"],
-            state["cfg"]["spill_fill"],
-            True,
-        )
-        force_close_required = bool(overflow_candidate)
-
-    candidate = ready_candidate or overflow_candidate
+    candidate = ready_candidate
     preview = None
     if candidate:
         preview = preview_container(
@@ -110,8 +98,8 @@ def _partitioning_pool_status() -> PartitioningPoolStatusResponse:
         status = "empty"
     elif ready_candidate:
         status = "ready"
-    elif force_close_required:
-        status = "overflow"
+    elif pending_bytes > state["cfg"]["buffer_max"]:
+        status = "over-buffer"
     else:
         status = "waiting"
 
@@ -129,7 +117,6 @@ def _partitioning_pool_status() -> PartitioningPoolStatusResponse:
         fill_bytes=state["cfg"]["fill"],
         spill_fill_bytes=state["cfg"]["spill_fill"],
         buffer_max_bytes=state["cfg"]["buffer_max"],
-        force_close_required=force_close_required,
         closeable_now=bool(ready_candidate),
         next_container_id=preview["name"] if preview else None,
         next_container_bytes=preview["used"] if preview else None,
@@ -179,8 +166,20 @@ def partitioning_pool_status() -> PartitioningPoolStatusResponse:
 
 
 @router.post("/flush")
-def flush_pending(force: bool = False, db: Session = Depends(get_db)):
-    closed = force_close_pending(db) if force else []
+def flush_pending(db: Session = Depends(get_db)):
+    state = load_state(CONTAINER_STATE_DIR, CONTAINER_CFG)
+    closed = []
+    candidate = pick(
+        state["items"],
+        state["collections"],
+        state["cfg"]["target"],
+        state["cfg"]["fill"],
+        state["cfg"]["spill_fill"],
+        False,
+    )
+    if candidate:
+        closed = flush(CONTAINER_STATE_DIR, state, CONTAINER_ROOTS_DIR)
+        save_state(CONTAINER_STATE_DIR, state)
     container_ids = import_closed_containers(db, closed) if closed else []
     touched_collections: set[str] = set()
     for container_id in container_ids:
@@ -325,6 +324,7 @@ def complete_activation_session(container_id: str, session_id: str, db: Db) -> A
 
     active = active_container_root(container_id)
     decrypted = active.parent / f".{container_id}.decrypting"
+    staged_active = active.parent / f".{container_id}.activating"
     try:
         decrypt_tree(staging, decrypted)
     except AgeEncryptionError as exc:
@@ -346,10 +346,14 @@ def complete_activation_session(container_id: str, session_id: str, db: Db) -> A
         shutil.rmtree(decrypted, ignore_errors=True)
         raise HTTPException(status_code=409, detail="decrypted root does not match the cataloged logical container contents")
 
-    if active.exists():
-        shutil.rmtree(active)
+    if staged_active.exists():
+        shutil.rmtree(staged_active, ignore_errors=True)
     ensure_managed_directory(active.parent)
-    decrypted.replace(active)
+    sync_tree(decrypted, staged_active)
+    if active.exists():
+        shutil.rmtree(active, ignore_errors=True)
+    staged_active.replace(active)
+    shutil.rmtree(decrypted, ignore_errors=True)
     shutil.rmtree(staging, ignore_errors=True)
     container.active_root_abs_path = str(active)
     container.status = "active"
@@ -402,7 +406,7 @@ def register_iso(container_id: str, body: IsoRegisterRequest, db: Db):
         raise HTTPException(status_code=404, detail="server_path not found")
     dest = registered_iso_storage_path(container_id)
     ensure_managed_directory(dest.parent)
-    shutil.copy2(src, dest)
+    sync_file(src, dest)
     container.iso_abs_path = str(dest)
     container.iso_size_bytes = dest.stat().st_size
     container.burn_confirmed_at = None

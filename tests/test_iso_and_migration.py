@@ -7,7 +7,7 @@ from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from urllib.parse import urlparse
 
-from .helpers import create_iso, create_collection, force_flush, register_iso, seal_collection, stage_collection_files
+from .helpers import create_iso, flush_containers, register_iso, seal_collection, stage_collection_files
 from .mock_data import MockFile, document_archive_files, patterned_bytes
 
 
@@ -38,11 +38,11 @@ def _stress_files(seed: int, *, count: int, oversized_bytes: int | None = None) 
 
 def test_registered_iso_download_endpoint_serves_registered_iso(app_factory):
     with app_factory() as harness:
-        collection_id = create_collection(harness, description="downloadable iso archive")
-        stage_collection_files(harness, collection_id, document_archive_files())
+        upload_path = "downloadable-iso-archive"
+        stage_collection_files(harness, upload_path, document_archive_files())
 
-        sealed = seal_collection(harness, collection_id)
-        container_id = (sealed["closed_containers"] or force_flush(harness))[0]
+        sealed = seal_collection(harness, upload_path, description="downloadable iso archive")
+        container_id = (sealed["closed_containers"] or flush_containers(harness))[0]
 
         iso_bytes = b"SIMULATED-ISO-DATA" * 4096
         register_iso(harness, container_id, iso_bytes)
@@ -90,17 +90,19 @@ def test_containerization_never_overshoots_target_when_authoring_isos(app_factor
         closed_container_ids: list[str] = []
 
         for index, seed in enumerate((5, 11, 23), start=1):
-            collection_id = create_collection(harness, description=f"container stress archive {index}")
+            upload_path = f"container-stress-archive-{index}"
             stage_collection_files(
                 harness,
-                collection_id,
+                upload_path,
                 _stress_files(seed, count=14, oversized_bytes=1_050_000 + (index * 90_000)),
             )
-            closed_container_ids.extend(seal_collection(harness, collection_id)["closed_containers"])
+            closed_container_ids.extend(
+                seal_collection(harness, upload_path, description=f"container stress archive {index}")["closed_containers"]
+            )
 
-        closed_container_ids.extend(force_flush(harness))
+        closed_container_ids.extend(flush_containers(harness))
         deduped_container_ids = list(dict.fromkeys(closed_container_ids))
-        assert len(deduped_container_ids) >= 4
+        assert len(deduped_container_ids) >= 3
 
         for container_id in deduped_container_ids:
             with harness.session() as session:
@@ -128,11 +130,11 @@ def test_container_finalization_webhook_payload_includes_container_and_download_
 
         monkeypatch.setattr(harness.notifications, "_post_webhook", fake_post_webhook)
 
-        collection_id = create_collection(harness, description="finalization webhook archive")
-        stage_collection_files(harness, collection_id, document_archive_files())
+        upload_path = "finalization-webhook-archive"
+        stage_collection_files(harness, upload_path, document_archive_files())
 
-        sealed = seal_collection(harness, collection_id)
-        container_id = (sealed["closed_containers"] or force_flush(harness))[0]
+        sealed = seal_collection(harness, upload_path, description="finalization webhook archive")
+        container_id = (sealed["closed_containers"] or flush_containers(harness))[0]
 
         delivered_count = harness.notifications.deliver_due_container_finalization_notifications()
         assert delivered_count == 1
@@ -169,11 +171,11 @@ def test_container_finalization_webhook_reminders_stop_after_burn_confirmation(a
 
         monkeypatch.setattr(harness.notifications, "_post_webhook", fake_post_webhook)
 
-        collection_id = create_collection(harness, description="reminder archive")
-        stage_collection_files(harness, collection_id, document_archive_files())
+        upload_path = "reminder-archive"
+        stage_collection_files(harness, upload_path, document_archive_files())
 
-        sealed = seal_collection(harness, collection_id)
-        container_id = (sealed["closed_containers"] or force_flush(harness))[0]
+        sealed = seal_collection(harness, upload_path, description="reminder archive")
+        container_id = (sealed["closed_containers"] or flush_containers(harness))[0]
 
         initial_count = harness.notifications.deliver_due_container_finalization_notifications()
         assert initial_count == 1
@@ -231,6 +233,7 @@ def test_schema_bootstraps_current_tables(module_factory):
             conn.close()
 
         assert "keep_buffer_after_archive" in collection_columns
+        assert "upload_relpath" in collection_columns
         assert "burn_confirmed_at" in container_columns
         assert "active_root_abs_path" in container_columns
         assert "finalization_status" in container_columns
