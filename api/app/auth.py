@@ -5,7 +5,7 @@ import secrets
 from fastapi import Depends, HTTPException, status
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 
-from .config import API_TOKEN, HOOK_SECRET
+from .config import API_TOKEN
 
 _bearer = HTTPBearer(auto_error=False)
 
@@ -20,7 +20,3 @@ def require_api_auth(
             detail="invalid api token",
             headers={"WWW-Authenticate": "Bearer"},
         )
-
-
-def hook_auth_ok(hook_secret: str) -> bool:
-    return secrets.compare_digest(hook_secret, HOOK_SECRET)

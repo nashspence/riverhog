@@ -4,15 +4,14 @@ from pathlib import Path
 
 import yaml
 
-from .helpers import activation_container_from_root, closed_container_roots, create_collection, force_flush, register_iso, seal_collection, upload_collection_file
+from .helpers import activation_container_from_root, closed_container_roots, create_collection, force_flush, register_iso, seal_collection, stage_collection_files
 from .mock_data import document_archive_files, family_archive_files, oversized_master_reel
 
 
 def test_closed_container_can_be_activated_and_restore_collection_reads(app_factory):
     with app_factory() as harness:
         collection_id = create_collection(harness, description="family and finance archive")
-        for sample in family_archive_files():
-            upload_collection_file(harness, collection_id, sample)
+        stage_collection_files(harness, collection_id, family_archive_files())
 
         sealed = seal_collection(harness, collection_id)
         container_ids = sealed["closed_containers"] or force_flush(harness)
@@ -95,8 +94,7 @@ def test_closed_container_can_be_activated_and_restore_collection_reads(app_fact
 def test_activation_verification_rejects_mutated_container_contents(app_factory):
     with app_factory() as harness:
         collection_id = create_collection(harness, description="financial document set")
-        for sample in document_archive_files():
-            upload_collection_file(harness, collection_id, sample)
+        stage_collection_files(harness, collection_id, document_archive_files())
 
         sealed = seal_collection(harness, collection_id)
         container_id = (sealed["closed_containers"] or force_flush(harness))[0]
@@ -108,7 +106,7 @@ def test_activation_verification_rejects_mutated_container_contents(app_factory)
 
         _, complete = activation_container_from_root(harness, container_id, mutate=mutate)
         assert complete.status_code == 409
-        assert complete.json()["detail"] == "uploaded root does not match the known container contents"
+        assert complete.json()["detail"] == "staged root does not match the known container contents"
 
         with harness.session() as session:
             activation_session = session.query(harness.models.ActivationSession).order_by(harness.models.ActivationSession.created_at.desc()).first()
@@ -125,7 +123,7 @@ def test_split_file_materializes_only_when_all_required_containers_are_active(ap
     ) as harness:
         master = oversized_master_reel()
         collection_id = create_collection(harness, description="master home video reel")
-        upload_collection_file(harness, collection_id, master)
+        stage_collection_files(harness, collection_id, [master])
 
         sealed = seal_collection(harness, collection_id)
         container_ids = sealed["closed_containers"] + force_flush(harness)
@@ -174,7 +172,7 @@ def test_buffer_cleanup_waits_for_all_container_burns_and_respects_retention_ove
     ) as harness:
         master = oversized_master_reel()
         collection_id = create_collection(harness, description="critical family reel")
-        upload_collection_file(harness, collection_id, master)
+        stage_collection_files(harness, collection_id, [master])
         sealed = seal_collection(harness, collection_id)
         container_ids = sealed["closed_containers"] + force_flush(harness)
         assert len(container_ids) >= 2
@@ -212,8 +210,7 @@ def test_buffer_cleanup_waits_for_all_container_burns_and_respects_retention_ove
             description="archive with retention lock",
             keep_buffer_after_archive=True,
         )
-        for sample in document_archive_files():
-            upload_collection_file(retained_harness, collection_id, sample)
+        stage_collection_files(retained_harness, collection_id, document_archive_files())
 
         sealed = seal_collection(retained_harness, collection_id)
         container_ids = sealed["closed_containers"] or force_flush(retained_harness)

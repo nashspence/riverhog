@@ -17,6 +17,7 @@
       <tr><th>Status</th><td>{{ collection.status }}</td></tr>
       <tr><th>Description</th><td>{{ collection.description or "" }}</td></tr>
       <tr><th>Keep buffer</th><td>{{ "yes" if collection.keep_buffer_after_archive else "no" }}</td></tr>
+      <tr><th>Intake path</th><td><code>{{ collection.intake_path or "-" }}</code></td></tr>
       <tr><th>Files</th><td>{{ collection.file_count }}</td></tr>
       <tr><th>Directories</th><td>{{ collection.directory_count }}</td></tr>
       <tr><th>Created</th><td><code>{{ collection.created_at }}</code></td></tr>
@@ -27,13 +28,9 @@
 
 <section>
   <h2>Actions</h2>
-  <form method="post" action="/collections/{{ quote_path_segment(collection.collection_id) }}/directories">
-    <label>
-      Relative directory path
-      <input type="text" name="relative_path" placeholder="docs/2024" {% if collection.status != "open" %}disabled{% endif %} required>
-    </label>
-    <button type="submit" {% if collection.status != "open" %}disabled{% endif %}>Create directory</button>
-  </form>
+  {% if collection.status == "open" %}
+  <p>Place the full collection tree under <code>{{ collection.intake_path }}</code>. When everything is in place, seal it so Riverhog can claim the files and archive them.</p>
+  {% endif %}
 
   <form method="post" action="/collections/{{ quote_path_segment(collection.collection_id) }}/seal">
     <button type="submit" {% if collection.status != "open" %}disabled{% endif %}>Seal collection</button>
@@ -44,68 +41,6 @@
   </form>
 
   <p><a href="/collections/{{ quote_path_segment(collection.collection_id) }}/hash-manifest-proof">Download hash manifest proof bundle</a></p>
-</section>
-
-<section>
-  <h2>Upload Files</h2>
-  <form
-    id="collection-upload-form"
-    action="/collections/{{ quote_path_segment(collection.collection_id) }}/upload-files"
-    data-progress-url="/progress/collections/{{ quote_path_segment(collection.collection_id) }}/stream"
-  >
-    <label>
-      Path prefix
-      <input type="text" name="path_prefix" placeholder="optional/subdir">
-    </label>
-    <label>
-      Upload parallelism
-      <input
-        type="number"
-        id="collection-upload-parallelism"
-        name="parallelism"
-        min="1"
-        max="16"
-        step="1"
-        inputmode="numeric"
-        {% if collection.status != "open" %}disabled{% endif %}
-      >
-      <span class="help-text">Default is tuned for modern MacBook Pro and Wi-Fi 6 uploads. Lower it for slower media like Blu-ray drives.</span>
-    </label>
-    <label>
-      Directory upload behavior
-      <select id="collection-folder-mode" name="folder_mode" {% if collection.status != "open" %}disabled{% endif %}>
-        <option value="contents-only" selected>Upload only the selected directory contents</option>
-        <option value="include-root">Keep the selected directory name</option>
-      </select>
-    </label>
-    <label>
-      File mode
-      <input type="text" name="mode" value="0644">
-    </label>
-    <label>
-      UID
-      <input type="number" name="uid" min="0" step="1">
-    </label>
-    <label>
-      GID
-      <input type="number" name="gid" min="0" step="1">
-    </label>
-    <label>
-      Pick files
-      <input type="file" id="collection-files" multiple {% if collection.status != "open" %}disabled{% endif %}>
-    </label>
-    <label>
-      Pick folder
-      <input type="file" id="collection-folder" webkitdirectory directory multiple {% if collection.status != "open" %}disabled{% endif %}>
-    </label>
-    <button type="button" id="collection-upload-submit" {% if collection.status != "open" %}disabled{% endif %}>Upload selected files</button>
-  </form>
-  <div class="upload-progress">
-    <progress id="collection-upload-progress" value="0" max="1"></progress>
-    <p id="collection-upload-summary">Waiting for uploads.</p>
-    <p id="collection-upload-detail" class="muted">Choose files or a directory to start a batch upload.</p>
-    <p id="collection-upload-error" class="flash error hidden"></p>
-  </div>
 </section>
 
 <section>

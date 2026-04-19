@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import secrets
 import shutil
 from datetime import datetime, timezone
 from pathlib import Path
@@ -11,7 +10,7 @@ from fastapi.responses import FileResponse, JSONResponse, StreamingResponse
 from sqlalchemy import select
 from sqlalchemy.orm import Session, selectinload
 
-from ..config import DOWNLOAD_CHUNK_SIZE, TUSD_BASE_URL
+from ..config import DOWNLOAD_CHUNK_SIZE
 from ..crypto import AgeEncryptionError, decrypt_tree
 from ..db import SessionLocal
 from ..iso import create_iso_from_container_root
@@ -22,7 +21,6 @@ from ..models import (
     ContainerEntry,
     ContainerFinalizationWebhookSubscription,
     DownloadSession,
-    UploadSlot,
 )
 from ..notifications import (
     backfill_container_finalization_notifications_for_subscription,
@@ -35,7 +33,6 @@ from ..schemas import (
     BurnConfirmResponse,
     ActivationSessionCompleteResponse,
     ActivationSessionCreateResponse,
-    ActivationUploadSlotRequest,
     ContainerListResponse,
     ContainerFinalizationWebhookCreateRequest,
     ContainerFinalizationWebhookCreateResponse,
@@ -47,7 +44,6 @@ from ..schemas import (
     InactiveError,
     TreeNode,
     TreeResponse,
-    UploadSlotCreateResponse,
 )
 from ..storage import active_container_root, activation_staging_root, canonical_tree_hash, container_tree_nodes, maybe_release_collection_buffer_after_archive, normalize_relpath, container_root, rebuild_collection_export, registered_iso_storage_path
 
@@ -163,8 +159,19 @@ def create_activation_session(container_id: str, db: Db) -> ActivationSessionCre
         raise HTTPException(status_code=404, detail="container not found")
     session = ActivationSession(container_id=container_id, expected_total_bytes=container.total_root_bytes)
     db.add(session)
+    db.flush()
+    staging_root = activation_staging_root(session.id)
+    if staging_root.exists():
+        shutil.rmtree(staging_root, ignore_errors=True)
+    staging_root.mkdir(parents=True, exist_ok=True)
     db.commit()
-    return ActivationSessionCreateResponse(session_id=session.id, container_id=container_id, expected_total_bytes=container.total_root_bytes, expected_files=len(container.entries), progress_stream_url=f"/v1/progress/activation-sessions/{session.id}/stream")
+    return ActivationSessionCreateResponse(
+        session_id=session.id,
+        container_id=container_id,
+        expected_total_bytes=container.total_root_bytes,
+        expected_files=len(container.entries),
+        staging_path=str(staging_root),
+    )
 
 
 @router.get("/{container_id}/activation/sessions/{session_id}/expected")
@@ -176,6 +183,7 @@ def activation_session_expected(container_id: str, session_id: str, db: Db):
     return {
         "container_id": container_id,
         "session_id": session_id,
+        "staging_path": str(activation_staging_root(session_id)),
         "entries": [
             {
                 "relative_path": e.relative_path,
@@ -190,38 +198,6 @@ def activation_session_expected(container_id: str, session_id: str, db: Db):
     }
 
 
-@router.post("/{container_id}/activation/sessions/{session_id}/uploads", response_model=UploadSlotCreateResponse)
-def create_activation_upload_slot(container_id: str, session_id: str, body: ActivationUploadSlotRequest, db: Db) -> UploadSlotCreateResponse:
-    session_obj = db.execute(select(ActivationSession).where(ActivationSession.id == session_id, ActivationSession.container_id == container_id)).scalar_one_or_none()
-    if session_obj is None:
-        raise HTTPException(status_code=404, detail="activation session not found")
-    if session_obj.status not in {"open", "uploading"}:
-        raise HTTPException(status_code=409, detail="activation session is closed")
-    rel = normalize_relpath(body.relative_path)
-    entry = db.execute(select(ContainerEntry).where(ContainerEntry.container_id == container_id, ContainerEntry.relative_path == rel)).scalar_one_or_none()
-    if entry is None:
-        raise HTTPException(status_code=409, detail="path is not part of the known container root")
-    existing = db.execute(select(UploadSlot).where(UploadSlot.activation_session_id == session_id, UploadSlot.relative_path == rel)).scalar_one_or_none()
-    if existing and existing.status == "completed":
-        raise HTTPException(status_code=409, detail="path already uploaded for this activation session")
-
-    upload_id = secrets.token_hex(16)
-    upload_token = secrets.token_urlsafe(32)
-    slot = UploadSlot(
-        upload_id=upload_id,
-        upload_token=upload_token,
-        kind="activation_file",
-        relative_path=rel,
-        size_bytes=entry.stored_size_bytes or entry.size_bytes,
-        expected_sha256=(entry.stored_sha256 or entry.sha256),
-        activation_session_id=session_id,
-    )
-    db.add(slot)
-    session_obj.status = "uploading"
-    db.commit()
-    return UploadSlotCreateResponse(upload_id=upload_id, upload_token=upload_token, tus_create_url=TUSD_BASE_URL, tus_metadata={"upload_id": upload_id, "upload_token": upload_token, "relative_path": rel}, upload_stream_url=f"/v1/progress/uploads/{upload_id}/stream", aggregate_stream_url=f"/v1/progress/activation-sessions/{session_id}/stream")
-
-
 @router.post("/{container_id}/activation/sessions/{session_id}/complete", response_model=ActivationSessionCompleteResponse)
 def complete_activation_session(container_id: str, session_id: str, db: Db) -> ActivationSessionCompleteResponse:
     container = db.execute(select(Container).where(Container.id == container_id).options(selectinload(Container.entries), selectinload(Container.archive_pieces).selectinload(ArchivePiece.collection_file))).scalar_one_or_none()
@@ -230,10 +206,12 @@ def complete_activation_session(container_id: str, session_id: str, db: Db) -> A
     activation_session = db.execute(select(ActivationSession).where(ActivationSession.id == session_id, ActivationSession.container_id == container_id)).scalar_one_or_none()
     if activation_session is None:
         raise HTTPException(status_code=404, detail="activation session not found")
+    if activation_session.status != "open":
+        raise HTTPException(status_code=409, detail="activation session is closed")
 
     staging = activation_staging_root(session_id)
     if not staging.exists():
-        raise HTTPException(status_code=409, detail="activation session has no uploaded root")
+        raise HTTPException(status_code=409, detail="activation session staging directory is missing")
 
     actual_hash, total_bytes, rows = canonical_tree_hash(staging)
     expected = {
@@ -248,7 +226,7 @@ def complete_activation_session(container_id: str, session_id: str, db: Db) -> A
     if actual_hash != container.contents_hash or actual != expected or total_bytes != container.total_root_bytes:
         activation_session.status = "failed"
         db.commit()
-        raise HTTPException(status_code=409, detail="uploaded root does not match the known container contents")
+        raise HTTPException(status_code=409, detail="staged root does not match the known container contents")
 
     active = active_container_root(container_id)
     decrypted = active.parent / f".{container_id}.decrypting"
@@ -259,7 +237,7 @@ def complete_activation_session(container_id: str, session_id: str, db: Db) -> A
         db.commit()
         if decrypted.exists():
             shutil.rmtree(decrypted, ignore_errors=True)
-        raise HTTPException(status_code=409, detail=f"uploaded root could not be decrypted: {exc}") from exc
+        raise HTTPException(status_code=409, detail=f"staged root could not be decrypted: {exc}") from exc
 
     _logical_hash, _logical_total_bytes, logical_rows = canonical_tree_hash(decrypted)
     expected_logical = {(e.relative_path, e.size_bytes, e.sha256) for e in container.entries}

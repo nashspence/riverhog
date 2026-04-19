@@ -15,6 +15,7 @@ class CollectionCreateResponse(BaseModel):
     collection_id: str
     status: str
     keep_buffer_after_archive: bool
+    intake_path: str
 
 
 class CollectionSummary(BaseModel):
@@ -26,33 +27,11 @@ class CollectionSummary(BaseModel):
     directory_count: int
     created_at: str
     sealed_at: str | None = None
+    intake_path: str | None = None
 
 
 class CollectionListResponse(BaseModel):
     collections: list[CollectionSummary]
-
-
-class CollectionDirectoryCreateRequest(BaseModel):
-    relative_path: str
-
-
-class UploadSlotCreateRequest(BaseModel):
-    relative_path: str
-    size_bytes: int = Field(gt=0)
-    sha256: str | None = Field(default=None, min_length=64, max_length=64)
-    mode: str = Field(default="0644")
-    mtime: str
-    uid: int | None = Field(default=None, ge=0)
-    gid: int | None = Field(default=None, ge=0)
-
-
-class UploadSlotCreateResponse(BaseModel):
-    upload_id: str
-    upload_token: str
-    tus_create_url: str
-    tus_metadata: dict[str, str]
-    upload_stream_url: str
-    aggregate_stream_url: str
 
 
 class TreeNode(BaseModel):
@@ -90,11 +69,7 @@ class ActivationSessionCreateResponse(BaseModel):
     container_id: str
     expected_total_bytes: int
     expected_files: int
-    progress_stream_url: str
-
-
-class ActivationUploadSlotRequest(BaseModel):
-    relative_path: str
+    staging_path: str
 
 
 class ActivationSessionCompleteResponse(BaseModel):

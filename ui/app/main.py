@@ -1,14 +1,13 @@
 from __future__ import annotations
 
-import base64
 import json
 from pathlib import Path
-from typing import Any, BinaryIO
-from urllib.parse import parse_qsl, quote, urlencode, urljoin, urlsplit, urlunsplit
+from typing import Any
+from urllib.parse import parse_qsl, quote, urlencode, urlsplit, urlunsplit
 
 import httpx
-from fastapi import FastAPI, File, Form, HTTPException, Request, UploadFile
-from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse, Response, StreamingResponse
+from fastapi import FastAPI, Form, HTTPException, Request
+from fastapi.responses import HTMLResponse, RedirectResponse, Response, StreamingResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
@@ -55,8 +54,6 @@ def quote_path_segment(value: str) -> str:
 templates.env.filters["human_bytes"] = human_bytes
 templates.env.globals["quote_path"] = quote_path
 templates.env.globals["quote_path_segment"] = quote_path_segment
-
-ALREADY_UPLOADED_DETAIL = "file already uploaded for this collection"
 
 
 def _auth_headers() -> dict[str, str]:
@@ -131,55 +128,6 @@ def _render(request: Request, template_name: str, **context: Any) -> HTMLRespons
             **context,
         },
     )
-
-
-def _tus_metadata_header(metadata: dict[str, str]) -> str:
-    items = []
-    for key, value in metadata.items():
-        encoded = base64.b64encode(value.encode("utf-8")).decode("ascii")
-        items.append(f"{key} {encoded}")
-    return ",".join(items)
-
-
-def _uploaded_file_size(handle: BinaryIO) -> int:
-    original_offset = handle.tell()
-    handle.seek(0, 2)
-    size = handle.tell()
-    handle.seek(original_offset)
-    return size
-
-
-def _upload_to_tusd(slot: dict[str, Any], payload: BinaryIO, payload_size: int) -> None:
-    payload.seek(0)
-    headers = {
-        "Tus-Resumable": "1.0.0",
-        "Upload-Length": str(payload_size),
-        "Upload-Metadata": _tus_metadata_header(slot["tus_metadata"]),
-    }
-    try:
-        with httpx.Client(timeout=REQUEST_TIMEOUT_SECONDS, follow_redirects=True) as client:
-            create_response = client.post(slot["tus_create_url"], headers=headers)
-            if create_response.status_code >= 400:
-                raise ApiError(create_response.status_code, _error_message(create_response))
-
-            location = create_response.headers.get("Location")
-            if not location:
-                raise ApiError(502, "tusd did not return an upload location")
-            upload_url = urljoin(slot["tus_create_url"], location)
-
-            patch_response = client.patch(
-                upload_url,
-                headers={
-                    "Tus-Resumable": "1.0.0",
-                    "Content-Type": "application/offset+octet-stream",
-                    "Upload-Offset": "0",
-                },
-                content=payload,
-            )
-            if patch_response.status_code >= 400:
-                raise ApiError(patch_response.status_code, _error_message(patch_response))
-    except httpx.HTTPError as exc:
-        raise ApiError(502, f"could not reach tusd upload service at {slot['tus_create_url']}") from exc
 
 
 def _proxy_stream(path: str, request: Request | None = None) -> Response:
@@ -292,7 +240,10 @@ def create_collection(
         )
     except ApiError as exc:
         return _redirect("/", error=exc.message)
-    return _redirect(_collection_ui_path(payload["collection_id"]), message="Collection created.")
+    return _redirect(
+        _collection_ui_path(payload["collection_id"]),
+        message="Collection created. Populate the intake path, then seal when ready.",
+    )
 
 
 @app.post("/containers/flush")
@@ -336,15 +287,6 @@ def collection_page(request: Request, collection_id: str) -> HTMLResponse:
     )
 
 
-@app.post("/collections/{collection_id}/directories")
-def add_collection_directory(collection_id: str, relative_path: str = Form(...)):
-    try:
-        _api_json("POST", _collection_api_path(collection_id, "/directories"), json={"relative_path": relative_path})
-    except ApiError as exc:
-        return _redirect(_collection_ui_path(collection_id), error=exc.message)
-    return _redirect(_collection_ui_path(collection_id), message="Directory created.")
-
-
 @app.post("/collections/{collection_id}/seal")
 def seal_collection(collection_id: str):
     try:
@@ -362,41 +304,6 @@ def release_collection_buffer(collection_id: str):
     except ApiError as exc:
         return _redirect(_collection_ui_path(collection_id), error=exc.message)
     return _redirect(_collection_ui_path(collection_id), message="Collection buffer released.")
-
-
-@app.post("/collections/{collection_id}/upload-files")
-async def upload_collection_file(
-    collection_id: str,
-    file: UploadFile = File(...),
-    relative_path: str = Form(...),
-    size_bytes: int = Form(...),
-    mode: str = Form("0644"),
-    mtime: str = Form(...),
-    uid: int | None = Form(None),
-    gid: int | None = Form(None),
-):
-    actual_size = _uploaded_file_size(file.file)
-    if actual_size != size_bytes:
-        return JSONResponse(status_code=400, content={"detail": "uploaded bytes did not match the declared size"})
-    try:
-        slot = _api_json(
-            "POST",
-            _collection_api_path(collection_id, "/uploads"),
-            json={
-                "relative_path": relative_path,
-                "size_bytes": size_bytes,
-                "mode": mode,
-                "mtime": mtime,
-                "uid": uid,
-                "gid": gid,
-            },
-        )
-        _upload_to_tusd(slot, file.file, actual_size)
-    except ApiError as exc:
-        if exc.status_code == 409 and exc.message == ALREADY_UPLOADED_DETAIL:
-            return JSONResponse({"status": "skipped", "relative_path": relative_path, "detail": exc.message})
-        return JSONResponse(status_code=exc.status_code, content={"detail": exc.message})
-    return JSONResponse({"status": "ok", "relative_path": relative_path})
 
 
 @app.api_route("/collections/{collection_id}/content/{relative_path:path}", methods=["GET", "HEAD"])
@@ -452,38 +359,14 @@ def create_activation_session(container_id: str):
     )
 
 
-@app.post("/containers/{container_id}/activation-sessions/{session_id}/upload-files")
-async def upload_activation_file(
-    container_id: str,
-    session_id: str,
-    file: UploadFile = File(...),
-    relative_path: str = Form(...),
-):
-    try:
-        slot = _api_json(
-            "POST",
-            f"/v1/containers/{container_id}/activation/sessions/{session_id}/uploads",
-            json={"relative_path": relative_path},
-        )
-        _upload_to_tusd(slot, file.file, _uploaded_file_size(file.file))
-    except ApiError as exc:
-        return JSONResponse(status_code=exc.status_code, content={"detail": exc.message})
-    return JSONResponse({"status": "ok", "relative_path": relative_path})
-
-
 @app.post("/containers/{container_id}/activation-sessions/{session_id}/complete")
 def complete_activation_session(container_id: str, session_id: str):
+    target = f"/containers/{container_id}?{urlencode({'activation_session': session_id})}"
     try:
-        payload = _api_json("POST", f"/v1/containers/{container_id}/activation/sessions/{session_id}/complete")
+        _api_json("POST", f"/v1/containers/{container_id}/activation/sessions/{session_id}/complete")
     except ApiError as exc:
-        return JSONResponse(status_code=exc.status_code, content={"detail": exc.message})
-    return JSONResponse(
-        {
-            "status": "ok",
-            "redirect_url": f"/containers/{container_id}?message={quote('Activation completed.', safe='')}",
-            "result": payload,
-        }
-    )
+        return _redirect(target, error=exc.message)
+    return _redirect(f"/containers/{container_id}", message="Activation completed.")
 
 
 @app.post("/containers/{container_id}/deactivate")
@@ -551,21 +434,6 @@ def download_registered_iso(request: Request, container_id: str):
 @app.api_route("/downloads/{session_id}/content", methods=["GET", "HEAD"])
 def download_session_content(request: Request, session_id: str):
     return _proxy_stream(f"/v1/containers/downloads/{session_id}/content", request)
-
-
-@app.get("/progress/uploads/{upload_id}/stream")
-def upload_progress(upload_id: str):
-    return _proxy_stream(f"/v1/progress/uploads/{upload_id}/stream")
-
-
-@app.get("/progress/collections/{collection_id}/stream")
-def collection_progress(collection_id: str):
-    return _proxy_stream(f"/v1/progress/collections/{quote_path_segment(collection_id)}/stream")
-
-
-@app.get("/progress/activation-sessions/{session_id}/stream")
-def activation_progress(session_id: str):
-    return _proxy_stream(f"/v1/progress/activation-sessions/{session_id}/stream")
 
 
 @app.get("/progress/downloads/{session_id}/stream")

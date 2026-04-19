@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import hashlib
 import os
+import stat
 import shutil
 import shlex
 import subprocess
@@ -11,11 +12,11 @@ from pathlib import Path, PurePosixPath
 from tempfile import mkdtemp
 
 import yaml
-from sqlalchemy import func, select
+from sqlalchemy import select
 from sqlalchemy.orm import Session, selectinload
 
-from .config import INACTIVE_ISO_ROOT, INACTIVE_COLLECTION_ROOT, EXPORT_COLLECTIONS_ROOT, ACTIVE_BUFFER_ROOT, ACTIVE_CONTAINER_ROOT, ACTIVE_STAGING_ROOT, ACTIVE_MATERIALIZED_ROOT, OTS_CLIENT_COMMAND, CONTAINER_ROOTS_DIR
-from .models import ArchivePiece, ActivationSession, Container, ContainerEntry, Collection, CollectionDirectory, CollectionFile, UploadSlot
+from .config import COLLECTION_INTAKE_ROOT, INACTIVE_ISO_ROOT, INACTIVE_COLLECTION_ROOT, EXPORT_COLLECTIONS_ROOT, ACTIVE_BUFFER_ROOT, ACTIVE_CONTAINER_ROOT, ACTIVE_STAGING_ROOT, ACTIVE_MATERIALIZED_ROOT, OTS_CLIENT_COMMAND, CONTAINER_ROOTS_DIR
+from .models import ArchivePiece, Container, ContainerEntry, Collection, CollectionDirectory, CollectionFile
 
 COLLECTION_HASH_MANIFEST_NAME = "HASHES.yml"
 COLLECTION_HASH_PROOF_NAME = f"{COLLECTION_HASH_MANIFEST_NAME}.ots"
@@ -113,6 +114,10 @@ def safe_unlink(path: Path) -> None:
         pass
 
 
+def collection_intake_root(collection_id: str) -> Path:
+    return COLLECTION_INTAKE_ROOT / normalize_root_node_name(collection_id)
+
+
 def collection_buffer_path(collection_id: str, relative_path: str) -> Path:
     return ACTIVE_BUFFER_ROOT / collection_id / normalize_relpath(relative_path)
 
@@ -182,18 +187,137 @@ def collection_container_artifact_relpaths(collection_id: str) -> tuple[str, str
     return f"collections/{name}/{COLLECTION_HASH_MANIFEST_NAME}", f"collections/{name}/{COLLECTION_HASH_PROOF_NAME}"
 
 
-def aggregate_collection_progress(session: Session, collection_id: str) -> tuple[int, int]:
-    total_size = session.scalar(select(func.coalesce(func.sum(CollectionFile.size_bytes), 0)).where(CollectionFile.collection_id == collection_id)) or 0
-    current = session.scalar(
-        select(func.coalesce(func.sum(UploadSlot.current_offset), 0)).join(CollectionFile, UploadSlot.collection_file_id == CollectionFile.id).where(CollectionFile.collection_id == collection_id)
-    ) or 0
-    return int(current), int(total_size)
+def _mode_string(mode: int) -> str:
+    return f"{stat.S_IMODE(mode):04o}"
 
 
-def aggregate_activation_progress(session: Session, activation_session_id: str) -> tuple[int, int]:
-    total = session.scalar(select(ActivationSession.expected_total_bytes).where(ActivationSession.id == activation_session_id)) or 0
-    current = session.scalar(select(func.coalesce(func.sum(UploadSlot.current_offset), 0)).where(UploadSlot.activation_session_id == activation_session_id)) or 0
-    return int(current), int(total)
+def _mtime_string(seconds: float) -> str:
+    return datetime.fromtimestamp(seconds, tz=timezone.utc).isoformat().replace("+00:00", "Z")
+
+
+def scan_collection_root(root: Path) -> tuple[list[str], list[dict[str, object]]]:
+    if not root.exists():
+        raise ValueError(f"collection source directory is missing: {root}")
+    if not root.is_dir():
+        raise ValueError(f"collection source is not a directory: {root}")
+
+    directories: list[str] = []
+    files: list[dict[str, object]] = []
+
+    for current_root, dirnames, filenames in os.walk(root, topdown=True, followlinks=False):
+        current_path = Path(current_root)
+        dirnames.sort()
+        filenames.sort()
+
+        for dirname in list(dirnames):
+            candidate = current_path / dirname
+            details = os.lstat(candidate)
+            if stat.S_ISLNK(details.st_mode):
+                rel = candidate.relative_to(root).as_posix()
+                raise ValueError(f"symlinks are not supported in collections: {rel}")
+            if not stat.S_ISDIR(details.st_mode):
+                rel = candidate.relative_to(root).as_posix()
+                raise ValueError(f"unsupported directory entry in collection: {rel}")
+            directories.append(normalize_relpath(candidate.relative_to(root).as_posix()))
+
+        for filename in filenames:
+            candidate = current_path / filename
+            details = os.lstat(candidate)
+            rel = normalize_relpath(candidate.relative_to(root).as_posix())
+            if stat.S_ISLNK(details.st_mode):
+                raise ValueError(f"symlinks are not supported in collections: {rel}")
+            if not stat.S_ISREG(details.st_mode):
+                raise ValueError(f"unsupported file entry in collection: {rel}")
+            files.append(
+                {
+                    "relative_path": rel,
+                    "abs_path": candidate,
+                    "size_bytes": details.st_size,
+                    "mode": _mode_string(details.st_mode),
+                    "mtime": _mtime_string(details.st_mtime),
+                    "uid": details.st_uid,
+                    "gid": details.st_gid,
+                    "sha256": file_sha256(candidate),
+                }
+            )
+
+    return directories, files
+
+
+def collection_tree_nodes_from_root(root: Path, *, source: str, status: str) -> list[dict[str, object]]:
+    directories, files = scan_collection_root(root)
+    nodes: list[dict[str, object]] = [
+        {
+            "path": rel,
+            "kind": "directory",
+            "active": True,
+            "source": source,
+            "container_ids": [],
+            "status": status,
+        }
+        for rel in directories
+    ]
+    nodes.extend(
+        {
+            "path": str(item["relative_path"]),
+            "kind": "file",
+            "size_bytes": int(item["size_bytes"]),
+            "active": True,
+            "source": source,
+            "container_ids": [],
+            "status": status,
+            "extra": None,
+        }
+        for item in files
+    )
+    return nodes
+
+
+def collection_live_counts(collection_id: str) -> tuple[int, int]:
+    directories, files = scan_collection_root(collection_intake_root(collection_id))
+    return len(files), len(directories)
+
+
+def sync_collection_from_buffer(session: Session, collection_id: str) -> tuple[int, int]:
+    collection = (
+        session.execute(
+            select(Collection)
+            .where(Collection.id == collection_id)
+            .options(selectinload(Collection.directories), selectinload(Collection.files))
+        )
+        .scalar_one()
+    )
+    root = ACTIVE_BUFFER_ROOT / collection_id
+    directories, files = scan_collection_root(root)
+
+    for directory in list(collection.directories):
+        session.delete(directory)
+    for collection_file in list(collection.files):
+        session.delete(collection_file)
+    session.flush()
+
+    for rel in directories:
+        session.add(CollectionDirectory(collection_id=collection_id, relative_path=rel))
+    for item in files:
+        session.add(
+            CollectionFile(
+                collection_id=collection_id,
+                relative_path=str(item["relative_path"]),
+                size_bytes=int(item["size_bytes"]),
+                expected_sha256=str(item["sha256"]),
+                actual_sha256=str(item["sha256"]),
+                mode=str(item["mode"]),
+                mtime=str(item["mtime"]),
+                uid=int(item["uid"]),
+                gid=int(item["gid"]),
+                buffer_abs_path=str(item["abs_path"]),
+                status="active",
+                error_message=None,
+            )
+        )
+    session.flush()
+    session.expire(collection, ["directories", "files"])
+    return len(files), len(directories)
 
 
 def collection_hash_manifest_payload(collection: Collection) -> bytes:
@@ -206,8 +330,6 @@ def collection_hash_manifest_payload(collection: Collection) -> bytes:
         for collection_file in sorted(collection.files, key=lambda item: item.relative_path)
         if collection_file.actual_sha256
     ]
-    if not files:
-        raise RuntimeError(f"collection {collection.id} has no uploaded files to hash")
     return yaml.safe_dump(
         {
             "schema": COLLECTION_HASH_MANIFEST_SCHEMA,
@@ -285,8 +407,7 @@ def recompute_collection_file_runtime(collection_file: CollectionFile) -> tuple[
 
     pieces = sorted(collection_file.archive_pieces, key=lambda p: (p.chunk_index or 0, p.container_id))
     if not pieces:
-        if collection_file.status not in {"pending_upload", "uploading", "failed"}:
-            collection_file.status = "inactive"
+        collection_file.status = "inactive"
         return None, None, []
 
     unsplit_paths = []

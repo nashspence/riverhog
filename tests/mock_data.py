@@ -27,17 +27,6 @@ class MockFile:
     def sha256(self) -> str:
         return sha256(self.content).hexdigest()
 
-    def upload_payload(self) -> dict[str, object]:
-        return {
-            "relative_path": self.relative_path,
-            "size_bytes": self.size_bytes,
-            "sha256": self.sha256,
-            "mode": self.mode,
-            "mtime": self.mtime,
-            "uid": self.uid,
-            "gid": self.gid,
-        }
-
 
 def family_archive_files() -> list[MockFile]:
     return [

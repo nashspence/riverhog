@@ -35,25 +35,14 @@
 
   {% if activation_session %}
   <p>Current activation session: <code>{{ activation_session }}</code></p>
-  <p><a href="/progress/activation-sessions/{{ activation_session }}/stream">Open activation progress stream</a></p>
   {% if activation_error %}
   <p class="flash error">{{ activation_error }}</p>
   {% endif %}
   {% if activation_expected %}
-  <form
-    id="activation-upload-form"
-    action="/containers/{{ container.container_id }}/activation-sessions/{{ activation_session }}/upload-files"
-    data-complete-url="/containers/{{ container.container_id }}/activation-sessions/{{ activation_session }}/complete"
-    data-progress-url="/progress/activation-sessions/{{ activation_session }}/stream"
-  >
-    <label>
-      Pick restored container root
-      <input type="file" id="activation-folder" webkitdirectory directory multiple required>
-    </label>
-    <button type="submit">Upload activation root and complete</button>
+  <p>Copy the encrypted container root into <code>{{ activation_expected.staging_path }}</code>, preserving the full directory structure.</p>
+  <form method="post" action="/containers/{{ container.container_id }}/activation-sessions/{{ activation_session }}/complete">
+    <button type="submit">Complete activation</button>
   </form>
-  <pre id="activation-upload-status">Waiting for activation upload.</pre>
-  <script id="activation-expected-json" type="application/json">{{ activation_expected|tojson }}</script>
 
   <details>
     <summary>Expected entries</summary>

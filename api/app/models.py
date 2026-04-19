@@ -66,16 +66,13 @@ class CollectionFile(Base):
     gid: Mapped[int | None] = mapped_column(Integer, nullable=True)
     buffer_abs_path: Mapped[str | None] = mapped_column(String, nullable=True)
     materialized_abs_path: Mapped[str | None] = mapped_column(String, nullable=True)
-    status: Mapped[str] = mapped_column(String(32), default="pending_upload", nullable=False)
+    status: Mapped[str] = mapped_column(String(32), default="inactive", nullable=False)
     error_message: Mapped[str | None] = mapped_column(Text, nullable=True)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow, nullable=False)
     updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow, onupdate=utcnow, nullable=False)
 
     collection: Mapped[Collection] = relationship(back_populates="files")
     archive_pieces: Mapped[list["ArchivePiece"]] = relationship(back_populates="collection_file", cascade="all, delete-orphan")
-    uploads: Mapped[list["UploadSlot"]] = relationship(back_populates="collection_file")
-
-
 class Container(Base):
     __tablename__ = "containers"
 
@@ -151,39 +148,6 @@ class ActivationSession(Base):
     updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow, onupdate=utcnow, nullable=False)
 
     container: Mapped[Container] = relationship(back_populates="activation_sessions")
-    uploads: Mapped[list["UploadSlot"]] = relationship(back_populates="activation_session")
-
-
-class UploadSlot(Base):
-    __tablename__ = "upload_slots"
-    __table_args__ = (
-        UniqueConstraint("upload_id", name="uq_upload_slots_upload_id"),
-        UniqueConstraint("upload_token", name="uq_upload_slots_upload_token"),
-        Index("ix_upload_slots_collection_file_id", "collection_file_id"),
-        Index("ix_upload_slots_activation_session_id", "activation_session_id"),
-    )
-
-    id: Mapped[str] = mapped_column(String(36), primary_key=True, default=uuid_str)
-    upload_id: Mapped[str] = mapped_column(String(64), nullable=False)
-    upload_token: Mapped[str] = mapped_column(String(255), nullable=False)
-    kind: Mapped[str] = mapped_column(String(32), nullable=False)
-    status: Mapped[str] = mapped_column(String(32), default="pending", nullable=False)
-    relative_path: Mapped[str] = mapped_column(String, nullable=False)
-    size_bytes: Mapped[int] = mapped_column(BigInteger, nullable=False)
-    expected_sha256: Mapped[str | None] = mapped_column(String(64), nullable=True)
-    actual_sha256: Mapped[str | None] = mapped_column(String(64), nullable=True)
-    current_offset: Mapped[int] = mapped_column(BigInteger, default=0, nullable=False)
-    final_abs_path: Mapped[str | None] = mapped_column(String, nullable=True)
-    error_message: Mapped[str | None] = mapped_column(Text, nullable=True)
-    collection_file_id: Mapped[str | None] = mapped_column(ForeignKey("collection_files.id", ondelete="CASCADE"), nullable=True)
-    activation_session_id: Mapped[str | None] = mapped_column(ForeignKey("activation_sessions.id", ondelete="CASCADE"), nullable=True)
-    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow, nullable=False)
-    updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow, onupdate=utcnow, nullable=False)
-
-    collection_file: Mapped[CollectionFile | None] = relationship(back_populates="uploads")
-    activation_session: Mapped[ActivationSession | None] = relationship(back_populates="uploads")
-
-
 class DownloadSession(Base):
     __tablename__ = "download_sessions"
     __table_args__ = (Index("ix_download_sessions_container_id", "container_id"),)

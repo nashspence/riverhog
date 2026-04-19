@@ -31,7 +31,6 @@ def test_api_dockerfile_builds_and_serves_real_container():
     image_tag = f"riverhog-api-test:{uuid.uuid4().hex[:12]}"
     container_name = f"riverhog-api-{uuid.uuid4().hex[:12]}"
     api_token = "runtime-api-token"
-    hook_secret = "runtime-hook-secret"
     base_url = f"http://{container_name}:8080"
     client = docker.from_env()
     container = None
@@ -52,7 +51,6 @@ def test_api_dockerfile_builds_and_serves_real_container():
             network=network,
             environment={
                 "API_TOKEN": api_token,
-                "HOOK_SECRET": hook_secret,
                 "REDIS_URL": "redis://redis:6379/0",
                 "API_BASE_URL": base_url,
             },

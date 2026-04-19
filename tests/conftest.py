@@ -27,14 +27,12 @@ DEFAULT_ENV = {
     "AGE_BATCHPASS_WORK_FACTOR": os.environ.get("AGE_BATCHPASS_WORK_FACTOR", "2"),
     "AGE_BATCHPASS_MAX_WORK_FACTOR": os.environ.get("AGE_BATCHPASS_MAX_WORK_FACTOR", "2"),
     "AGE_CLI": os.environ.get("AGE_CLI", str(LOCAL_AGE_CLI) if LOCAL_AGE_CLI.exists() else "age"),
-    "HOOK_SECRET": "test-hook-secret",
     "OTS_CLIENT_COMMAND": f"python {API_ROOT / 'app' / 'ots_stub.py'}",
     "CONTAINER_BUFFER_MAX_GB": "0.0100",
     "CONTAINER_FILL_GB": "0.0015",
     "CONTAINER_SPILL_FILL_GB": "0.0010",
     "CONTAINER_TARGET_GB": "0.0025",
     "REDIS_URL": os.environ.get("REDIS_URL", "redis://127.0.0.1:6379/0"),
-    "TUSD_BASE_URL": "http://tusd.test/files",
 }
 
 
@@ -103,18 +101,8 @@ class AppHarness:
     def api_token(self) -> str:
         return self.modules.env["API_TOKEN"]
 
-    @property
-    def hook_secret(self) -> str:
-        return self.modules.env["HOOK_SECRET"]
-
     def auth_headers(self) -> dict[str, str]:
         return {"Authorization": f"Bearer {self.api_token}"}
-
-    def hook_headers(self, hook_name: str) -> dict[str, str]:
-        return {"Hook-Name": hook_name}
-
-    def hook_url(self) -> str:
-        return f"/internal/tusd-hooks?hook_secret={self.hook_secret}"
 
     def redis_flush(self) -> None:
         client = SyncRedis.from_url(self.modules.env["REDIS_URL"], decode_responses=True)
@@ -153,6 +141,7 @@ def _load_modules_with_env(
     env.update(
         {
             "ARCHIVE_ROOT": str(archive_root),
+            "COLLECTION_INTAKE_ROOT": str(base_dir / "uploads" / "collections"),
             "SQLITE_PATH": str(sqlite_path),
         }
     )

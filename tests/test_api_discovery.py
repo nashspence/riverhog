@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from .helpers import create_collection, force_flush, register_iso, seal_collection, upload_collection_file
+from .helpers import create_collection, force_flush, register_iso, seal_collection, stage_collection_files
 from .mock_data import family_archive_files
 
 
@@ -12,7 +12,7 @@ def test_collection_and_container_list_endpoints_surface_summary_state(app_facto
             description="discovery archive",
             keep_buffer_after_archive=True,
         )
-        upload_collection_file(harness, collection_id, sample)
+        stage_collection_files(harness, collection_id, [sample])
 
         collections = harness.client.get("/v1/collections", headers=harness.auth_headers())
         assert collections.status_code == 200, collections.text
@@ -28,6 +28,7 @@ def test_collection_and_container_list_endpoints_surface_summary_state(app_facto
             "directory_count": len(sample.relative_path.split("/")) - 1,
             "created_at": body["collections"][0]["created_at"],
             "sealed_at": None,
+            "intake_path": str(harness.storage.collection_intake_root(collection_id)),
         }
         assert body["collections"][0]["created_at"].endswith("Z")
 

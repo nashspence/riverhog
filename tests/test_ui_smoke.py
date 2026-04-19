@@ -16,6 +16,7 @@ def test_dashboard_and_detail_pages_render_with_api_data(monkeypatch):
         "directory_count": 1,
         "created_at": "2026-04-18T00:00:00Z",
         "sealed_at": None,
+        "intake_path": "/var/lib/uploads/collections/demo-collection",
     }
     container = {
         "container_id": "DEMO-001",
@@ -44,9 +45,9 @@ def test_dashboard_and_detail_pages_render_with_api_data(monkeypatch):
                         "kind": "file",
                         "size_bytes": 10,
                         "active": True,
-                        "source": "buffer",
+                        "source": "intake",
                         "container_ids": [],
-                        "status": "active",
+                        "status": "open",
                     }
                 ]
             }, None
@@ -64,6 +65,13 @@ def test_dashboard_and_detail_pages_render_with_api_data(monkeypatch):
                     }
                 ]
             }, None
+        if path == "/v1/containers/DEMO-001/activation/sessions/session-123/expected":
+            return {
+                "session_id": "session-123",
+                "container_id": "DEMO-001",
+                "staging_path": "/var/lib/archive/active/activation/staging/session-123",
+                "entries": [],
+            }, None
         return None, "missing"
 
     monkeypatch.setattr(ui_main, "_load_json", fake_load_json)
@@ -75,18 +83,20 @@ def test_dashboard_and_detail_pages_render_with_api_data(monkeypatch):
         assert dashboard.status_code == 200
         assert "demo-collection" in dashboard.text
         assert "DEMO-001" in dashboard.text
+        assert "/var/lib/uploads/collections/demo-collection" in dashboard.text
 
         collection_page = client.get("/collections/demo-collection")
         assert collection_page.status_code == 200
         assert "docs/file.txt" in collection_page.text
-        assert "Upload Files" in collection_page.text
-        assert "Upload parallelism" in collection_page.text
-        assert "Upload only the selected directory contents" in collection_page.text
+        assert "Place the full collection tree under" in collection_page.text
+        assert "/var/lib/uploads/collections/demo-collection" in collection_page.text
 
-        container_page = client.get("/containers/DEMO-001")
+        container_page = client.get("/containers/DEMO-001?activation_session=session-123")
         assert container_page.status_code == 200
         assert "README.txt" in container_page.text
         assert "Create activation session" in container_page.text
+        assert "Complete activation" in container_page.text
+        assert "/var/lib/archive/active/activation/staging/session-123" in container_page.text
 
 
 def test_collection_urls_are_percent_encoded_for_collection_ids_with_spaces(monkeypatch):
@@ -99,6 +109,7 @@ def test_collection_urls_are_percent_encoded_for_collection_ids_with_spaces(monk
         "directory_count": 0,
         "created_at": "2026-04-18T00:00:00Z",
         "sealed_at": None,
+        "intake_path": "/var/lib/uploads/collections/demo collection",
     }
 
     def fake_load_json(path: str):
@@ -120,74 +131,8 @@ def test_collection_urls_are_percent_encoded_for_collection_ids_with_spaces(monk
 
         collection_page = client.get("/collections/demo%20collection")
         assert collection_page.status_code == 200
-        assert '/collections/demo%20collection/upload-files' in collection_page.text
-        assert '/progress/collections/demo%20collection/stream' in collection_page.text
         assert '/collections/demo%20collection/hash-manifest-proof' in collection_page.text
-
-
-def test_collection_upload_returns_502_when_tusd_is_unreachable(monkeypatch):
-    monkeypatch.setattr(
-        ui_main,
-        "_api_json",
-        lambda method, path, **kwargs: {
-            "tus_create_url": "http://tusd:1080/files",
-            "tus_metadata": {"upload_id": "demo-upload", "upload_token": "demo-token"},
-        },
-    )
-
-    class FailingTusClient:
-        def __enter__(self):
-            return self
-
-        def __exit__(self, exc_type, exc, tb):
-            return False
-
-        def post(self, *args, **kwargs):
-            request = httpx.Request("POST", args[0])
-            raise httpx.ConnectError("connection refused", request=request)
-
-    monkeypatch.setattr(ui_main.httpx, "Client", lambda *args, **kwargs: FailingTusClient())
-
-    with TestClient(ui_main.app) as client:
-        response = client.post(
-            "/collections/demo-collection/upload-files",
-            files={"file": ("notes.txt", b"hello riverhog", "text/plain")},
-            data={
-                "relative_path": "notes.txt",
-                "size_bytes": str(len(b"hello riverhog")),
-                "mode": "0644",
-                "mtime": "2026-04-18T00:00:00Z",
-            },
-        )
-
-    assert response.status_code == 502
-    assert response.json() == {"detail": "could not reach tusd upload service at http://tusd:1080/files"}
-
-
-def test_collection_upload_skips_already_uploaded_file(monkeypatch):
-    def fake_api_json(method: str, path: str, **kwargs):
-        raise ui_main.ApiError(409, ui_main.ALREADY_UPLOADED_DETAIL)
-
-    monkeypatch.setattr(ui_main, "_api_json", fake_api_json)
-
-    with TestClient(ui_main.app) as client:
-        response = client.post(
-            "/collections/demo-collection/upload-files",
-            files={"file": ("notes.txt", b"hello riverhog", "text/plain")},
-            data={
-                "relative_path": "notes.txt",
-                "size_bytes": str(len(b"hello riverhog")),
-                "mode": "0644",
-                "mtime": "2026-04-18T00:00:00Z",
-            },
-        )
-
-    assert response.status_code == 200
-    assert response.json() == {
-        "status": "skipped",
-        "relative_path": "notes.txt",
-        "detail": "file already uploaded for this collection",
-    }
+        assert '/collections/demo%20collection/seal' in collection_page.text
 
 
 def test_collection_download_forwards_range_requests(monkeypatch):

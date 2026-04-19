@@ -7,7 +7,7 @@ from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from urllib.parse import urlparse
 
-from .helpers import create_iso, create_collection, force_flush, register_iso, seal_collection, upload_collection_file
+from .helpers import create_iso, create_collection, force_flush, register_iso, seal_collection, stage_collection_files
 from .mock_data import MockFile, document_archive_files, patterned_bytes
 
 
@@ -39,8 +39,7 @@ def _stress_files(seed: int, *, count: int, oversized_bytes: int | None = None) 
 def test_registered_iso_download_tracks_progress(app_factory):
     with app_factory() as harness:
         collection_id = create_collection(harness, description="downloadable iso archive")
-        for sample in document_archive_files():
-            upload_collection_file(harness, collection_id, sample)
+        stage_collection_files(harness, collection_id, document_archive_files())
 
         sealed = seal_collection(harness, collection_id)
         container_id = (sealed["closed_containers"] or force_flush(harness))[0]
@@ -112,8 +111,11 @@ def test_containerization_never_overshoots_target_when_authoring_isos(app_factor
 
         for index, seed in enumerate((5, 11, 23), start=1):
             collection_id = create_collection(harness, description=f"container stress archive {index}")
-            for sample in _stress_files(seed, count=14, oversized_bytes=1_050_000 + (index * 90_000)):
-                upload_collection_file(harness, collection_id, sample)
+            stage_collection_files(
+                harness,
+                collection_id,
+                _stress_files(seed, count=14, oversized_bytes=1_050_000 + (index * 90_000)),
+            )
             closed_container_ids.extend(seal_collection(harness, collection_id)["closed_containers"])
 
         closed_container_ids.extend(force_flush(harness))
@@ -151,8 +153,7 @@ def test_container_finalization_webhook_payload_includes_container_and_download_
         assert subscribe.json()["pending_container_count"] == 0
 
         collection_id = create_collection(harness, description="finalization webhook archive")
-        for sample in document_archive_files():
-            upload_collection_file(harness, collection_id, sample)
+        stage_collection_files(harness, collection_id, document_archive_files())
 
         sealed = seal_collection(harness, collection_id)
         container_id = (sealed["closed_containers"] or force_flush(harness))[0]
@@ -196,8 +197,7 @@ def test_container_finalization_webhook_reminders_stop_after_burn_confirmation(a
         assert subscribe.status_code == 200, subscribe.text
 
         collection_id = create_collection(harness, description="reminder archive")
-        for sample in document_archive_files():
-            upload_collection_file(harness, collection_id, sample)
+        stage_collection_files(harness, collection_id, document_archive_files())
 
         sealed = seal_collection(harness, collection_id)
         container_id = (sealed["closed_containers"] or force_flush(harness))[0]

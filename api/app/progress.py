@@ -41,17 +41,5 @@ def progress_stream(stream_name: str) -> StreamingResponse:
     return StreamingResponse(event_iter(), media_type="text/event-stream")
 
 
-def upload_stream_name(upload_id: str) -> str:
-    return f"progress:uploads:{upload_id}"
-
-
-def collection_stream_name(collection_id: str) -> str:
-    return f"progress:collections:{collection_id}"
-
-
-def activation_session_stream_name(session_id: str) -> str:
-    return f"progress:activation-sessions:{session_id}"
-
-
 def download_stream_name(session_id: str) -> str:
     return f"progress:downloads:{session_id}"

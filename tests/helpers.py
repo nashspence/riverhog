@@ -1,8 +1,11 @@
 from __future__ import annotations
 
-from pathlib import Path
+import os
 import re
-from typing import Callable
+import shutil
+from datetime import datetime
+from pathlib import Path
+from typing import Callable, Iterable
 
 from .mock_data import MockFile
 
@@ -27,49 +30,27 @@ def create_collection(harness, *, description: str, keep_buffer_after_archive: b
     return response.json()["collection_id"]
 
 
-def reserve_collection_upload(harness, collection_id: str, sample: MockFile) -> dict:
-    response = harness.client.post(
-        f"/v1/collections/{collection_id}/uploads",
-        headers=harness.auth_headers(),
-        json=sample.upload_payload(),
-    )
-    assert response.status_code == 200, response.text
-    return response.json()
+def stage_collection_files(
+    harness,
+    collection_id: str,
+    files: Iterable[MockFile],
+    *,
+    directories: Iterable[str] = (),
+) -> Path:
+    root = harness.storage.collection_intake_root(collection_id)
+    root.mkdir(parents=True, exist_ok=True)
 
+    for rel in directories:
+        (root / rel).mkdir(parents=True, exist_ok=True)
 
-def simulate_tusd_upload(harness, slot: dict, content: bytes) -> None:
-    payload = {
-        "ID": slot["upload_id"],
-        "Size": len(content),
-        "MetaData": slot["tus_metadata"],
-    }
-    precreate = harness.client.post(
-        harness.hook_url(),
-        headers=harness.hook_headers("pre-create"),
-        json=payload,
-    )
-    assert precreate.status_code == 200, precreate.text
-    incoming_path = Path(precreate.json()["ChangeFileInfo"]["Storage"]["Path"])
-    incoming_path.parent.mkdir(parents=True, exist_ok=True)
-    incoming_path.write_bytes(content)
-
-    for hook_name, body in [
-        ("post-create", {"ID": slot["upload_id"]}),
-        ("post-receive", {"ID": slot["upload_id"], "Offset": len(content)}),
-        ("post-finish", {"ID": slot["upload_id"]}),
-    ]:
-        response = harness.client.post(
-            harness.hook_url(),
-            headers=harness.hook_headers(hook_name),
-            json=body,
-        )
-        assert response.status_code == 200, response.text
-
-
-def upload_collection_file(harness, collection_id: str, sample: MockFile) -> dict:
-    slot = reserve_collection_upload(harness, collection_id, sample)
-    simulate_tusd_upload(harness, slot, sample.content)
-    return slot
+    for sample in files:
+        target = root / sample.relative_path
+        target.parent.mkdir(parents=True, exist_ok=True)
+        target.write_bytes(sample.content)
+        os.chmod(target, int(sample.mode, 8))
+        unix_time = datetime.fromisoformat(sample.mtime.replace("Z", "+00:00")).timestamp()
+        os.utime(target, (unix_time, unix_time))
+    return root
 
 
 def seal_collection(harness, collection_id: str) -> dict:
@@ -123,20 +104,17 @@ def activation_container_from_root(
     with harness.session() as session:
         container = session.get(harness.models.Container, container_id)
         assert container is not None
-        root = Path(container.root_abs_path)
+        source_root = Path(container.root_abs_path)
 
-    for entry in expected.json()["entries"]:
-        relpath = entry["relative_path"]
-        content = (root / relpath).read_bytes()
-        if mutate is not None:
-            content = mutate(relpath, content)
-        slot_response = harness.client.post(
-            f"/v1/containers/{container_id}/activation/sessions/{session_id}/uploads",
-            headers=harness.auth_headers(),
-            json={"relative_path": relpath},
-        )
-        assert slot_response.status_code == 200, slot_response.text
-        simulate_tusd_upload(harness, slot_response.json(), content)
+    staging_root = Path(expected.json()["staging_path"])
+    if staging_root.exists():
+        shutil.rmtree(staging_root, ignore_errors=True)
+    shutil.copytree(source_root, staging_root)
+
+    if mutate is not None:
+        for path in sorted(p for p in staging_root.rglob("*") if p.is_file()):
+            relpath = path.relative_to(staging_root).as_posix()
+            path.write_bytes(mutate(relpath, path.read_bytes()))
 
     complete = harness.client.post(
         f"/v1/containers/{container_id}/activation/sessions/{session_id}/complete",

@@ -18,12 +18,11 @@ def _gb_env(name: str, default: str) -> int:
 
 
 ARCHIVE_ROOT = Path(_get_env("ARCHIVE_ROOT", "/var/lib/archive"))
+COLLECTION_INTAKE_ROOT = Path(_get_env("COLLECTION_INTAKE_ROOT", "/var/lib/uploads/collections"))
 SQLITE_PATH = Path(_get_env("SQLITE_PATH", str(ARCHIVE_ROOT / "catalog" / "catalog.sqlite3")))
 REDIS_URL = _get_env("REDIS_URL", "redis://redis:6379/0")
-TUSD_BASE_URL = _get_env("TUSD_BASE_URL", "http://localhost:1080/files").rstrip("/")
 API_BASE_URL = _get_env("API_BASE_URL", "http://localhost:8080").rstrip("/")
 API_TOKEN = _get_env("API_TOKEN", "change-me")
-HOOK_SECRET = _get_env("HOOK_SECRET", "change-me")
 ISO_AUTHORING_COMMAND = _get_env("ISO_AUTHORING_COMMAND", "xorriso")
 AGE_CLI = _get_env("AGE_CLI", "age")
 AGE_BATCHPASS_PASSPHRASE = _get_env("AGE_BATCHPASS_PASSPHRASE", "change-me")
@@ -37,8 +36,6 @@ CONTAINER_SPILL_FILL = _gb_env("CONTAINER_SPILL_FILL_GB", "35")
 CONTAINER_BUFFER_MAX = _gb_env("CONTAINER_BUFFER_MAX_GB", "250")
 
 CATALOG_DIR = SQLITE_PATH.parent
-TUSD_DIR = ARCHIVE_ROOT / "tusd"
-INCOMING_DIR = TUSD_DIR / "incoming"
 
 ACTIVE_BUFFER_ROOT = ARCHIVE_ROOT / "active" / "buffer" / "collections"
 ACTIVE_STAGING_ROOT = ARCHIVE_ROOT / "active" / "activation" / "staging"
@@ -67,8 +64,8 @@ CONTAINER_CFG = {
 
 def ensure_directories() -> None:
     for path in [
+        COLLECTION_INTAKE_ROOT,
         CATALOG_DIR,
-        INCOMING_DIR,
         ACTIVE_BUFFER_ROOT,
         ACTIVE_STAGING_ROOT,
         ACTIVE_CONTAINER_ROOT,

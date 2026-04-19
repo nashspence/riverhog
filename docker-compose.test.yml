@@ -22,10 +22,8 @@ services:
       AGE_BATCHPASS_MAX_WORK_FACTOR: "2"
       AGE_BATCHPASS_PASSPHRASE: test-batchpass-passphrase
       AGE_BATCHPASS_WORK_FACTOR: "2"
-      HOOK_SECRET: test-hook-secret
       REDIS_URL: redis://redis:6379/0
       TEST_DOCKER_NETWORK: ${COMPOSE_PROJECT_NAME}_default
-      TUSD_BASE_URL: http://tusd.test/files
       CONTAINER_TARGET_GB: "0.0025"
       CONTAINER_FILL_GB: "0.0015"
       CONTAINER_SPILL_FILL_GB: "0.0010"
@@ -33,6 +31,7 @@ services:
       PYTHONWARNINGS: error
       PYTEST_ADDOPTS: -o cache_dir=/tmp/pytest-cache
     volumes:
+      - .:/workspace
       - /var/run/docker.sock:/var/run/docker.sock
     depends_on:
       redis:
