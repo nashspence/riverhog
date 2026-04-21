@@ -100,4 +100,3 @@ boundary.
 - a full web file browser
 - direct user mutation of the hot tree
 - exposing internal database schema
-- specifying the on-disc format beyond what the fetch manifest needs

@@ -104,6 +104,11 @@ Returns one fetch summary.
 
 Returns a stable manifest for the fetch lifetime.
 
+- the fetch manifest is the source of truth for automated multipart recovery
+- multipart logical files include part-level recovery hints
+- those hints drive disc sequencing and local resumable recovery state in `arc-disc`
+- the API still accepts one final plaintext upload per logical file
+
 #### `PUT /v1/fetches/{fetch_id}/files/{entry_id}`
 
 Uploads one recovered plaintext file and verifies it against the expected hash.
@@ -149,7 +154,10 @@ The `arc` CLI is a thin API client and should provide at least:
 
 The `arc-disc` CLI is a fetch-fulfillment client for a machine with an optical drive and should provide:
 
-- `arc-disc fetch FETCH_ID [--device DEVICE]`
+- `arc-disc fetch FETCH_ID --state-dir PATH [--device DEVICE]`
+
+For multipart recovery, one invocation should continue across successive discs until every required
+part has been staged, reconstructed, verified, and uploaded.
 
 ## Behavioral invariants
 

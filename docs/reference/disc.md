@@ -106,21 +106,25 @@ This lets a person or tool verify reconstructed files against the collection-lev
 
 ## `arc-disc` Expectations
 
-`arc-disc` should treat the API fetch manifest and the disc manifest as complementary:
+Automated multipart recovery uses the fetch manifest as its recovery contract.
 
-- the fetch manifest says which logical files are needed and which copies may satisfy them
-- the disc manifest says where this image stores the encrypted objects for those logical files
-- the sidecar says how to restore metadata and, for split files, how each object participates in the full plaintext
+- the fetch manifest is the source of truth for automated recovery orchestration
+- multipart logical files include part-level recovery hints in the fetch manifest
+- `DISC.yml.age` is the durable media contract for manual recovery, validation, and offline
+  inspection
+- the sidecar says how to restore metadata and, for split files, how each object participates in the
+  full plaintext
 
-Expected flow:
+Expected multipart flow:
 
 1. read the fetch manifest from the API
-2. load and decrypt `DISC.yml.age` from the inserted disc
-3. resolve each required logical file to one `object` or to `parts.present[]`
-4. decrypt the payload object(s) and sidecar object(s)
-5. concatenate plaintext parts in ascending `index` order when the file is split
-6. verify the final plaintext against the expected `sha256`
-7. upload the recovered plaintext back to the API
+2. create or resume a user-specified local recovery state location for this fetch
+3. determine which disc is needed next from the manifest's part-level recovery hints
+4. prompt for successive disc insertions until every required part has been staged locally
+5. read and decrypt the hinted payload object(s) and sidecar object(s) from each disc
+6. concatenate plaintext parts in ascending `index` order when a logical file is split
+7. verify the final plaintext against the expected `sha256`
+8. upload one final plaintext file per logical file back to the API
 
 ## Manual Recovery
 
