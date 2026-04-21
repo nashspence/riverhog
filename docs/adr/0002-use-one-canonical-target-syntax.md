@@ -19,6 +19,8 @@ Use one target string syntax everywhere:
 <collection>:/dir/file.ext
 ```
 
+The `<collection>` component is a canonical slash-delimited relative path and may itself contain `/`.
+
 Reject `.` and `..` segments and repeated `/` separators for MVP.
 
 ## Consequences

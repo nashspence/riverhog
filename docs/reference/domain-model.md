@@ -17,6 +17,12 @@ Use these five nouns consistently:
 A logical namespace closed from a staged directory. A collection has a stable id and contains many files at stable
 relative paths.
 
+Collection-id rules:
+
+- the id is the canonical relative path beneath the staging root for the closed directory
+- the id may contain `/`, for example `photos/2024`
+- no collection id may be an ancestor or descendant of another collection id
+
 ### File
 
 A logical file identified by `(collection_id, path)`.

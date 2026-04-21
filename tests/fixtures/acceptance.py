@@ -39,6 +39,7 @@ from arc_core.domain.types import (
     Sha256Hex,
     TargetStr,
 )
+from arc_core.fs_paths import derive_collection_id_from_staging_path, find_collection_id_conflict, normalize_collection_id
 from arc_core.services.planning import ImageRootPlanningService, ImageRootRecord
 from tests.fixtures.data import (
     DEFAULT_COPY_CREATED_AT,
@@ -48,6 +49,8 @@ from tests.fixtures.data import (
     MIN_FILL_BYTES,
     PHOTOS_2024_FILES,
     PHOTOS_COLLECTION_ID,
+    PHOTOS_NESTED_COLLECTION_ID,
+    PHOTOS_PARENT_COLLECTION_ID,
     SPLIT_COPY_ONE_ID,
     SPLIT_COPY_ONE_LOCATION,
     SPLIT_COPY_TWO_ID,
@@ -55,9 +58,9 @@ from tests.fixtures.data import (
     SPLIT_FILE_PARTS,
     SPLIT_FILE_RELPATH,
     SPLIT_IMAGE_FIXTURES,
-    STAGING_PATH,
     TARGET_BYTES,
     build_file_copy,
+    staging_path_for_collection,
     split_fixture_plaintext,
     write_tree,
 )
@@ -197,7 +200,11 @@ class AcceptanceState:
         copies_by_path: Mapping[str, list[dict[str, object]]] | None = None,
     ) -> None:
         copies_by_path = copies_by_path or {}
-        collection_key = CollectionId(collection_id)
+        normalized_collection_id = normalize_collection_id(collection_id)
+        conflict = find_collection_id_conflict((str(current) for current in self.files_by_collection), normalized_collection_id)
+        if CollectionId(normalized_collection_id) not in self.files_by_collection and conflict is not None:
+            raise Conflict(f"collection id conflicts with existing collection: {conflict}")
+        collection_key = CollectionId(normalized_collection_id)
         records: dict[str, StoredFile] = {}
         for relative_path, content in sorted(files.items()):
             normalized = relative_path.lstrip("/")
@@ -297,9 +304,12 @@ class AcceptanceCollectionService:
         root = self.state.staged_directories.get(staging_path)
         if root is None:
             raise NotFound(f"staged directory not found: {staging_path}")
-        collection_id = root.name
+        collection_id = derive_collection_id_from_staging_path(staging_path)
         if CollectionId(collection_id) in self.state.files_by_collection:
             raise Conflict(f"collection already exists: {collection_id}")
+        conflict = find_collection_id_conflict((str(current) for current in self.state.files_by_collection), collection_id)
+        if conflict is not None:
+            raise Conflict(f"collection id conflicts with existing collection: {conflict}")
         files = {
             path.relative_to(root).as_posix(): path.read_bytes()
             for path in sorted(root.rglob("*"))
@@ -851,13 +861,33 @@ class AcceptanceSystem:
             check=False,
         )
 
+    def seed_staged_collection(self, collection_id: str, files: Mapping[str, bytes] | None = None) -> None:
+        normalized_collection_id = normalize_collection_id(collection_id)
+        root = write_tree(self.workspace / "staging" / normalized_collection_id, files or PHOTOS_2024_FILES)
+        self.state.register_staged_directory(staging_path_for_collection(normalized_collection_id), root)
+
     def seed_staged_photos(self) -> None:
-        root = write_tree(self.workspace / "staging" / PHOTOS_COLLECTION_ID, PHOTOS_2024_FILES)
-        self.state.register_staged_directory(STAGING_PATH, root)
+        self.seed_staged_collection(PHOTOS_COLLECTION_ID, PHOTOS_2024_FILES)
 
     def seed_photos_hot(self) -> None:
         self.state.seed_collection(
             PHOTOS_COLLECTION_ID,
+            PHOTOS_2024_FILES,
+            hot_paths=set(PHOTOS_2024_FILES),
+            archived_paths=set(),
+        )
+
+    def seed_nested_photos_hot(self) -> None:
+        self.state.seed_collection(
+            PHOTOS_NESTED_COLLECTION_ID,
+            PHOTOS_2024_FILES,
+            hot_paths=set(PHOTOS_2024_FILES),
+            archived_paths=set(),
+        )
+
+    def seed_parent_photos_hot(self) -> None:
+        self.state.seed_collection(
+            PHOTOS_PARENT_COLLECTION_ID,
             PHOTOS_2024_FILES,
             hot_paths=set(PHOTOS_2024_FILES),
             archived_paths=set(),

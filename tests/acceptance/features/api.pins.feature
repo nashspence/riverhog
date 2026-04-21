@@ -62,6 +62,7 @@ Feature: Pins API
       Examples:
         | target       |
         | docs:        |
+        | docs//2022   |
         | docs:raw/    |
         | docs:/a/../b |
         | docs://raw/  |
@@ -74,6 +75,7 @@ Feature: Pins API
       Examples:
         | target       |
         | docs:        |
+        | docs//2022   |
         | docs:raw/    |
         | docs:/a/../b |
         | docs://raw/  |

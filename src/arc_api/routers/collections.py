@@ -18,7 +18,7 @@ def close_collection(
     return CloseCollectionResponse(collection=CollectionSummaryOut.model_validate(map_collection(summary)))
 
 
-@router.get("/collections/{collection_id}", response_model=CollectionSummaryOut)
+@router.get("/collections/{collection_id:path}", response_model=CollectionSummaryOut)
 def get_collection(
     collection_id: str,
     container: ServiceContainer = Depends(get_container),

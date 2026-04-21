@@ -4,6 +4,7 @@ import os
 from collections.abc import Mapping
 from pathlib import Path
 from typing import Any
+from urllib.parse import quote
 
 import httpx
 
@@ -55,7 +56,7 @@ class ApiClient:
         return self._json("GET", "/v1/search", params={"q": query, "limit": limit})
 
     def get_collection(self, collection_id: str) -> dict[str, Any]:
-        return self._json("GET", f"/v1/collections/{collection_id}")
+        return self._json("GET", f"/v1/collections/{quote(collection_id, safe='/')}")
 
     def get_plan(self) -> dict[str, Any]:
         return self._json("GET", "/v1/plan")

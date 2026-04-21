@@ -1,23 +1,29 @@
 from __future__ import annotations
 
-import re
 from pathlib import PurePosixPath
 
 from arc_core.domain.errors import InvalidTarget
 from arc_core.domain.models import Target
 from arc_core.domain.types import CollectionId
+from arc_core.fs_paths import PathNormalizationError, normalize_collection_id
 
-_TARGET_COLLECTION_RE = re.compile(r"^[^:/][^:]*$")
-_TARGET_WITH_PATH_RE = re.compile(r"^(?P<collection>[^:/][^:]*):(?P<path>/.*)$")
+
+def _parse_collection_id(raw: str) -> CollectionId:
+    try:
+        return CollectionId(normalize_collection_id(raw))
+    except PathNormalizationError as exc:
+        raise InvalidTarget(str(exc)) from exc
 
 
 def parse_target(raw: str) -> Target:
-    match = _TARGET_WITH_PATH_RE.match(raw)
-    if match:
-        collection = CollectionId(match.group("collection"))
-        raw_path = match.group("path")
+    collection_raw, separator, remainder = raw.partition(":")
+    if separator:
+        collection = _parse_collection_id(collection_raw)
+        raw_path = remainder
         if raw_path in {"/", ""}:
             raise InvalidTarget("empty path")
+        if not raw_path.startswith("/"):
+            raise InvalidTarget("invalid target syntax")
         if "//" in raw_path:
             raise InvalidTarget("repeated slash")
         is_dir = raw_path.endswith("/")
@@ -29,7 +35,4 @@ def parse_target(raw: str) -> Target:
             raise InvalidTarget("dot segments not allowed")
         return Target(collection_id=collection, path=path, is_dir=is_dir)
 
-    if _TARGET_COLLECTION_RE.match(raw):
-        return Target(collection_id=CollectionId(raw), path=None, is_dir=False)
-
-    raise InvalidTarget("invalid target syntax")
+    return Target(collection_id=_parse_collection_id(raw), path=None, is_dir=False)

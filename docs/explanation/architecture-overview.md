@@ -25,7 +25,7 @@ The collection-shaped hot tree is generated from metadata and points into the ho
 A representative layout is:
 
 ```text
-/hot/view/<collection>/original/path/file.ext -> ../../../objects/ab/cd/<sha256>
+/hot/view/tax/2022/original/path/file.ext -> ../../../../objects/ab/cd/<sha256>
 ```
 
 ## Why pins exist

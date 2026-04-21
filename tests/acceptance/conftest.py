@@ -13,6 +13,7 @@ import pytest
 from pytest_bdd import given, parsers, then, when
 
 from arc_core.domain.selectors import parse_target
+from arc_core.fs_paths import derive_collection_id_from_staging_path
 from tests.fixtures.disc_contracts import (
     InspectedIso,
     assert_collection_manifest_semantics,
@@ -36,9 +37,10 @@ from tests.fixtures.data import (
     PHOTOS_2024_FILE_COUNT,
     PHOTOS_2024_TOTAL_BYTES,
     PHOTOS_COLLECTION_ID,
+    PHOTOS_NESTED_COLLECTION_ID,
+    PHOTOS_PARENT_COLLECTION_ID,
     SPLIT_FILE_PARTS,
     SPLIT_FILE_RELPATH,
-    STAGING_PATH,
     TAX_DIRECTORY_TARGET,
 )
 
@@ -146,6 +148,12 @@ def _ensure_collection_fixture(acceptance_system: AcceptanceSystem, collection_i
     if collection_id == PHOTOS_COLLECTION_ID:
         acceptance_system.seed_photos_hot()
         return
+    if collection_id == PHOTOS_NESTED_COLLECTION_ID:
+        acceptance_system.seed_nested_photos_hot()
+        return
+    if collection_id == PHOTOS_PARENT_COLLECTION_ID:
+        acceptance_system.seed_parent_photos_hot()
+        return
     raise AssertionError(f"unsupported collection fixture: {collection_id}")
 
 
@@ -222,8 +230,7 @@ def given_staged_directory(
     acceptance_system: AcceptanceSystem,
     collection_id: str,
 ) -> None:
-    assert collection_id == PHOTOS_COLLECTION_ID
-    acceptance_system.seed_staged_photos()
+    acceptance_system.seed_staged_collection(collection_id)
 
 
 @given(parsers.parse('the staged directory "{staging_path}" was already closed'))
@@ -231,8 +238,7 @@ def given_staged_directory_already_closed(
     acceptance_system: AcceptanceSystem,
     staging_path: str,
 ) -> None:
-    assert staging_path == STAGING_PATH
-    acceptance_system.seed_staged_photos()
+    acceptance_system.seed_staged_collection(derive_collection_id_from_staging_path(staging_path))
     response = acceptance_system.request("POST", "/v1/collections/close", json_body={"path": staging_path})
     assert response.status_code == 200
 

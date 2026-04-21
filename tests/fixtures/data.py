@@ -25,6 +25,8 @@ from arc_core.planner.manifest import (
 
 STAGING_PATH = "/staging/photos-2024"
 PHOTOS_COLLECTION_ID = "photos-2024"
+PHOTOS_PARENT_COLLECTION_ID = "photos"
+PHOTOS_NESTED_COLLECTION_ID = "photos/2024"
 DOCS_COLLECTION_ID = "docs"
 
 INVOICE_TARGET = "docs:/tax/2022/invoice-123.pdf"
@@ -423,3 +425,7 @@ def write_tree(root: Path, files: Mapping[str, bytes]) -> Path:
         file_path.parent.mkdir(parents=True, exist_ok=True)
         file_path.write_bytes(content)
     return root
+
+
+def staging_path_for_collection(collection_id: str) -> str:
+    return f"/staging/{collection_id}"

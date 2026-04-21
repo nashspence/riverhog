@@ -20,6 +20,7 @@ paths:
               properties:
                 path:
                   type: string
+                  description: Absolute path to the staged directory. The collection id is the canonical relative path beneath the staging root.
       responses:
         "200":
           description: Collection created
@@ -72,6 +73,7 @@ paths:
         - in: path
           name: collection_id
           required: true
+          description: Canonical collection id. Slash-bearing ids occupy multiple path segments under `/collections/`.
           schema: { type: string }
       responses:
         "200":
@@ -349,7 +351,7 @@ components:
   schemas:
     Target:
       type: string
-      description: Canonical target string selecting a collection, directory target, or file target.
+      description: Canonical target string selecting a collection, directory target, or file target. The collection component may itself contain `/`.
     FetchState:
       type: string
       enum: [waiting_media, uploading, verifying, done, failed]
@@ -357,7 +359,9 @@ components:
       type: object
       required: [id, files, bytes, hot_bytes, archived_bytes, pending_bytes]
       properties:
-        id: { type: string }
+        id:
+          type: string
+          description: Canonical collection id. May contain `/` and is prefix-free with every other collection id.
         files: { type: integer }
         bytes: { type: integer }
         hot_bytes: { type: integer }

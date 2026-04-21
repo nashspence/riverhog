@@ -17,13 +17,16 @@ Request body:
 
 ```json
 {
-  "path": "/srv/archive/staging/photos-2024"
+  "path": "/srv/archive/staging/photos/2024"
 }
 ```
 
 Required behavior:
 
 - scans and freezes the staged directory
+- derives the collection id from the canonical relative path beneath the staging root
+- allows slash-bearing collection ids such as `/staging/photos/2024 -> photos/2024`
+- rejects a collection id if it would be an ancestor or descendant of an existing collection id
 - creates one new collection
 - materializes all files into hot storage immediately
 - makes the collection eligible for planning
@@ -46,6 +49,11 @@ Required behavior:
 #### `GET /v1/collections/{collection_id}`
 
 Returns a collection summary with byte coverage values.
+
+Required behavior:
+
+- collection ids may span multiple path segments, for example `GET /v1/collections/photos/2024`
+- API and CLI collection lookup treat slash-bearing ids as first-class
 
 ### Planning
 
@@ -169,4 +177,5 @@ part has been staged, reconstructed, verified, and uploaded.
 - immediately after collection close, every file in the collection is hot
 - a file restored by a completed fetch is hot
 - registering a copy cannot reduce archived coverage
+- no collection id is an ancestor or descendant of another collection id
 - the same canonical target string means the same file set everywhere in API and CLI

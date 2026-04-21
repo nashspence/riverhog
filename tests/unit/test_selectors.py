@@ -10,9 +10,11 @@ from arc_core.domain.selectors import parse_target
     ("raw", "canonical"),
     [
         ("photos-2024", "photos-2024"),
+        ("tax/2022", "tax/2022"),
         ("photos-2024:/raw/", "photos-2024:/raw/"),
         ("photos-2024:/raw/file.jpg", "photos-2024:/raw/file.jpg"),
         ("photos-2024:/raw", "photos-2024:/raw"),
+        ("tax/2022:/invoice.pdf", "tax/2022:/invoice.pdf"),
     ],
 )
 def test_parse_target_valid(raw: str, canonical: str) -> None:
@@ -26,6 +28,9 @@ def test_parse_target_valid(raw: str, canonical: str) -> None:
         "photos-2024:raw/",
         "photos-2024:/a/../b",
         "photos-2024://raw/",
+        "tax//2022",
+        "tax/./2022",
+        "/tax/2022",
     ],
 )
 def test_parse_target_invalid(raw: str) -> None:
