@@ -40,6 +40,18 @@ Feature: Fetches API
       And both manifests contain the same entry ids
       And both manifests contain the same logical file set
 
+  Rule: Split fetch manifests expose part-level recovery hints
+    Background:
+      Given split archived fetch "fx-1" exists for target "docs:/tax/2022/invoice-123.pdf"
+
+    Scenario: Read a split manifest
+      When the client gets "/v1/fetches/fx-1/manifest"
+      Then the response status is 200
+      And fetch manifest entry "e1" lists split parts 0 and 1
+      And fetch manifest entry "e1" part 0 is recoverable from copy "copy-docs-split-1"
+      And fetch manifest entry "e1" part 1 is recoverable from copy "copy-docs-split-2"
+      And fetch manifest entry "e1" part hashes match the published split fixture
+
   Rule: Fetch upload and completion are hash-verified
     Background:
       Given fetch "fx-1" exists with entry "e1"

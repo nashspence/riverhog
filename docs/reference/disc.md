@@ -1,6 +1,12 @@
 # Disc Format Reference
 
 This document is normative for any ISO returned by `GET /v1/images/{image_id}/iso`.
+The machine-readable contract files live in `contracts/disc/`:
+
+- `root-layout.json`
+- `disc-manifest.schema.json`
+- `file-sidecar.schema.json`
+- `collection-hash-manifest.schema.json`
 
 ## Commitment
 
@@ -32,6 +38,7 @@ Rules:
 - `collections/*.yml.age` decrypt to the collection hash manifest for one represented collection
 - `collections/*.ots.age` decrypt to the OpenTimestamps proof for that collection hash manifest
 - split files use `NNNNNN.PPP` stems, where `PP` is the 1-based part index on that image
+- no other leaf paths are valid contract output
 
 ## Disc Manifest
 
@@ -66,6 +73,7 @@ collections:
 Rules:
 
 - `collections[].id + files[].path` is the canonical logical path
+- `collections[]` and each `files[]` list are lexically sorted for deterministic images
 - whole files use `object` plus `sidecar`
 - split files use `parts.count` plus `parts.present[]`
 - `parts.present[]` lists only the parts physically present on this image
@@ -93,6 +101,36 @@ Rules:
 
 - `part` is omitted for unsplit files
 - the sidecar must contain enough metadata to restore the file without the API
+
+## Collection Hash Manifest
+
+Each `collections/*.yml.age` decrypts to YAML with schema `collection-hash-manifest/v1`.
+
+```yaml
+schema: collection-hash-manifest/v1
+collection: docs
+generated_at: 2026-04-20T12:00:00Z
+tree:
+  sha256: ...
+  total_bytes: 54
+directories:
+  - letters
+  - tax
+  - tax/2022
+files:
+  - relative_path: letters/cover.txt
+    size_bytes: 13
+    sha256: ...
+  - relative_path: tax/2022/invoice-123.pdf
+    size_bytes: 21
+    sha256: ...
+```
+
+Rules:
+
+- the manifest covers the whole represented collection, not only the files present on the current disc
+- `directories[]` and `files[].relative_path` are lexically sorted for deterministic media
+- `tree.total_bytes` is the sum of every `files[].size_bytes`
 
 ## Collection Artifacts
 

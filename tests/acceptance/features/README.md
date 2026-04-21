@@ -13,8 +13,4 @@ Conventions:
   - archived vs hot coverage
   - fetch lifecycle and hash verification
 - `arc` and `arc-disc` acceptance cases are contract tests for CLI behavior, not internal command structure.
-
-Important implementation note:
-
-- If hot reconciliation after release is eventually consistent, concrete tests should use a bounded helper such as
-  `wait_until_hot_matches_pins()` before asserting the final hot set.
+- disc-media scenarios should validate against the machine-readable contracts in `contracts/disc/`, not duplicate ad hoc path and schema rules in steps.

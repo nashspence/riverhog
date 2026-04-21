@@ -1,0 +1,79 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://riverhog.dev/contracts/disc/collection-hash-manifest.schema.json",
+  "title": "collection-hash-manifest/v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "collection",
+    "directories",
+    "files",
+    "generated_at",
+    "schema",
+    "tree"
+  ],
+  "properties": {
+    "schema": {
+      "const": "collection-hash-manifest/v1"
+    },
+    "collection": {
+      "type": "string",
+      "minLength": 1
+    },
+    "generated_at": {
+      "type": "string",
+      "minLength": 1
+    },
+    "tree": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "sha256",
+        "total_bytes"
+      ],
+      "properties": {
+        "sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "total_bytes": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "directories": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "files": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "relative_path",
+          "sha256",
+          "size_bytes"
+        ],
+        "properties": {
+          "relative_path": {
+            "type": "string",
+            "pattern": "^[^/].*$"
+          },
+          "size_bytes": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "sha256": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          }
+        }
+      }
+    }
+  }
+}

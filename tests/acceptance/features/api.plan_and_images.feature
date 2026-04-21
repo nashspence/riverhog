@@ -27,6 +27,41 @@ Feature: Plan and images API
     Then the response status is 200
     And the response body is binary ISO content
 
+  Rule: Downloaded ISOs match the published disc contracts
+    Scenario: A ready image uses the canonical disc layout and metadata contracts
+      Given image "img_2026-04-20_01" has iso_ready true
+      When the client downloads and inspects ISO for image "img_2026-04-20_01"
+      Then the response status is 200
+      And the downloaded ISO passes xorriso verification
+      And the extracted ISO root matches the disc layout contract
+      And the decrypted disc manifest matches the disc manifest contract
+      And every referenced collection manifest matches the collection hash manifest contract
+      And every referenced file sidecar matches the file sidecar contract
+      And the current ISO README documents split-file recovery
+      And the current ISO payload for "docs:/tax/2022/invoice-123.pdf" decrypts to the original plaintext
+
+    Scenario: Split image parts are listed per disc and reconstruct the logical file
+      Given an archive with split planner fixtures
+      When the client downloads and inspects ISO for image "img_2026-04-20_03"
+      Then the response status is 200
+      And the downloaded ISO passes xorriso verification
+      And the extracted ISO root matches the disc layout contract
+      And the decrypted disc manifest matches the disc manifest contract
+      And every referenced collection manifest matches the collection hash manifest contract
+      And every referenced file sidecar matches the file sidecar contract
+      And the current ISO lists split file "/tax/2022/invoice-123.pdf" part 1 of 2
+      And the current split payload for "/tax/2022/invoice-123.pdf" is recorded
+      When the client downloads and inspects ISO for image "img_2026-04-20_04"
+      Then the response status is 200
+      And the downloaded ISO passes xorriso verification
+      And the extracted ISO root matches the disc layout contract
+      And the decrypted disc manifest matches the disc manifest contract
+      And every referenced collection manifest matches the collection hash manifest contract
+      And every referenced file sidecar matches the file sidecar contract
+      And the current ISO lists split file "/tax/2022/invoice-123.pdf" part 2 of 2
+      And the current split payload for "/tax/2022/invoice-123.pdf" is recorded
+      And the recorded split payloads for "docs:/tax/2022/invoice-123.pdf" reconstruct the original plaintext
+
   Rule: Registering a copy increases archived coverage
     Background:
       Given image "img_2026-04-20_01" covers bytes from collection "docs"

@@ -25,3 +25,4 @@ collections after reconstruction.
 - `arc-disc` can recover files directly from disc-local metadata instead of depending on filename conventions
 - manual recovery remains possible with only the disc contents and decryption capability
 - split collections can be reassembled deterministically by collection id, logical path, and part index
+- the published YAML shapes are stable enough to carry machine-readable schema contracts under `contracts/disc/`

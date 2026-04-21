@@ -11,6 +11,9 @@ Run the acceptance contract directly with pytest:
 pytest tests/acceptance
 ```
 
+The ISO scenarios invoke `xorriso`. If you want the full suite directly on the host, make sure `xorriso` is
+installed first.
+
 Run the same acceptance contract inside the deterministic test container:
 
 ```bash
@@ -22,6 +25,5 @@ Run the same acceptance contract inside the deterministic test container:
 - `tests/acceptance/features/` contains the normative external scenarios.
 - `tests/acceptance/test_bdd_acceptance.py` loads those features through `pytest-bdd`.
 - `tests/acceptance/conftest.py` provides the shared step definitions.
-- `tests/integration/` keeps deeper regression checks that are useful but are not currently part of the published acceptance contract.
-
-If a regression test in `tests/integration/` becomes part of the public product contract, add or update the matching `.feature` scenario first and then move the executable coverage into the acceptance layer.
+- `contracts/disc/` holds the machine-readable ISO layout and YAML schema contracts that the acceptance scenarios verify directly.
+- `tests/integration/` is reserved for non-contract regressions when the suite needs them.

@@ -23,3 +23,4 @@ that `arc-disc` can automate against, while still remaining understandable if a 
 - partial filesystem survival still leaves individually recoverable objects
 - a person can inspect the disc structure without learning logical filenames from the directory tree
 - the API, planner, and `arc-disc` can all target the same durable disc contract
+- the canonical root layout is published as a machine-readable contract under `contracts/disc/`

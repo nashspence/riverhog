@@ -106,6 +106,8 @@ Returns a stable manifest for the fetch lifetime.
 
 - the fetch manifest is the source of truth for automated multipart recovery
 - multipart logical files include part-level recovery hints
+- `entries[].parts[]` are ordered by zero-based `index`
+- every part hint includes exact plaintext `bytes`, plaintext `sha256`, and at least one candidate recovery copy
 - those hints drive disc sequencing and local resumable recovery state in `arc-disc`
 - the API still accepts one final plaintext upload per logical file
 

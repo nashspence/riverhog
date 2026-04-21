@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import hashlib
 import json
 import shlex
 from dataclasses import dataclass, field
@@ -12,6 +13,18 @@ import pytest
 from pytest_bdd import given, parsers, then, when
 
 from arc_core.domain.selectors import parse_target
+from tests.fixtures.disc_contracts import (
+    InspectedIso,
+    assert_collection_manifest_semantics,
+    assert_contract_schema,
+    assert_disc_manifest_semantics,
+    assert_root_layout_contract,
+    assert_sidecar_semantics,
+    decrypt_yaml_file,
+    inspect_downloaded_iso,
+    manifest_entry_by_path,
+    payload_bytes,
+)
 from tests.fixtures.acceptance import (
     AcceptanceSystem,
     acceptance_system,  # noqa: F401
@@ -23,6 +36,7 @@ from tests.fixtures.data import (
     PHOTOS_2024_FILE_COUNT,
     PHOTOS_2024_TOTAL_BYTES,
     PHOTOS_COLLECTION_ID,
+    SPLIT_FILE_PARTS,
     SPLIT_FILE_RELPATH,
     STAGING_PATH,
     TAX_DIRECTORY_TARGET,
@@ -42,6 +56,9 @@ class AcceptanceScenarioContext:
     before_collections: dict[str, dict[str, Any]] = field(default_factory=dict)
     after_collections: dict[str, dict[str, Any]] = field(default_factory=dict)
     tracked_collection_id: str | None = None
+    inspected_isos: dict[str, InspectedIso] = field(default_factory=dict)
+    current_iso: InspectedIso | None = None
+    recorded_split_payloads: dict[str, dict[int, bytes]] = field(default_factory=dict)
 
 
 @pytest.fixture
@@ -59,6 +76,12 @@ def _require_command(context: AcceptanceScenarioContext) -> Any:
     if context.command is None:  # pragma: no cover - defensive guard
         raise AssertionError("no command has been recorded for this scenario")
     return context.command
+
+
+def _require_inspected_iso(context: AcceptanceScenarioContext) -> InspectedIso:
+    if context.current_iso is None:  # pragma: no cover - defensive guard
+        raise AssertionError("no ISO has been inspected for this scenario")
+    return context.current_iso
 
 
 def _json_payload(response: httpx.Response) -> dict[str, Any]:
@@ -92,6 +115,28 @@ def _set_response(context: AcceptanceScenarioContext, response: httpx.Response, 
     else:
         context.responses = [response]
     context.response = response
+
+
+def _response_manifest_entry(
+    context: AcceptanceScenarioContext,
+    entry_id: str,
+) -> dict[str, Any]:
+    response = _json_payload(_require_response(context))
+    for entry in response["entries"]:
+        if entry["id"] == entry_id:
+            return entry
+    raise AssertionError(f"manifest entry not found: {entry_id}")
+
+
+def _command_state_dir(
+    acceptance_system: AcceptanceSystem,
+    context: AcceptanceScenarioContext,
+) -> Path:
+    argv = context.command_argv
+    for index, arg in enumerate(argv):
+        if arg == "--state-dir":
+            return acceptance_system.workspace / argv[index + 1].lstrip("/")
+    raise AssertionError("the recorded command did not include --state-dir")
 
 
 def _ensure_collection_fixture(acceptance_system: AcceptanceSystem, collection_id: str) -> None:
@@ -210,6 +255,11 @@ def given_archive_with_planner_fixtures(acceptance_system: AcceptanceSystem) -> 
     acceptance_system.seed_planner_fixtures()
 
 
+@given("an archive with split planner fixtures")
+def given_archive_with_split_planner_fixtures(acceptance_system: AcceptanceSystem) -> None:
+    acceptance_system.seed_split_planner_fixtures()
+
+
 @given("the planner has at least one candidate image")
 def given_planner_has_candidate_image(acceptance_system: AcceptanceSystem) -> None:
     plan = acceptance_system.planning.get_plan()
@@ -257,6 +307,27 @@ def given_file_is_archived(acceptance_system: AcceptanceSystem, target: str) -> 
 def given_file_is_not_hot(acceptance_system: AcceptanceSystem, target: str) -> None:
     acceptance_system.seed_docs_archive()
     assert acceptance_system.state.is_hot(target) is False
+
+
+@given(parsers.parse('split archived fetch "{fetch_id}" exists for target "{target}"'))
+def given_split_archived_fetch_exists(
+    acceptance_system: AcceptanceSystem,
+    fetch_id: str,
+    target: str,
+) -> None:
+    acceptance_system.seed_docs_archive_with_split_invoice()
+    acceptance_system.seed_fetch(fetch_id, target)
+
+
+@given(parsers.parse('split archived target "{target}" is pinned with fetch "{fetch_id}"'))
+def given_split_archived_target_is_pinned_with_fetch(
+    acceptance_system: AcceptanceSystem,
+    target: str,
+    fetch_id: str,
+) -> None:
+    acceptance_system.seed_docs_archive_with_split_invoice()
+    acceptance_system.seed_pin(target)
+    acceptance_system.seed_fetch(fetch_id, target)
 
 
 @given(parsers.parse('fetch "{fetch_id}" already exists for target "{target}"'))
@@ -311,6 +382,15 @@ def given_arc_disc_crypto_failure_fixture(acceptance_system: AcceptanceSystem) -
         fetch_id="fx-1",
         corrupt_path=SPLIT_FILE_RELPATH,
     )
+
+
+@given(parsers.parse('the optical reader fixture fails for copy id "{copy_id}"'))
+@when(parsers.parse('the optical reader fixture fails for copy id "{copy_id}"'))
+def given_arc_disc_reader_failure_for_copy(
+    acceptance_system: AcceptanceSystem,
+    copy_id: str,
+) -> None:
+    acceptance_system.configure_arc_disc_fixture(fetch_id="fx-1", fail_copy_ids={copy_id})
 
 
 @given(parsers.parse('fetch "{fetch_id}" exists with entry "{entry_id}"'))
@@ -441,6 +521,23 @@ def when_client_gets_url_again(
     parts = urlsplit(url)
     response = acceptance_system.request("GET", parts.path, params=_query_params(url))
     _set_response(acceptance_context, response, append=True)
+
+
+@when(parsers.parse('the client downloads and inspects ISO for image "{image_id}"'))
+def when_client_downloads_and_inspects_iso(
+    acceptance_system: AcceptanceSystem,
+    acceptance_context: AcceptanceScenarioContext,
+    image_id: str,
+) -> None:
+    response = acceptance_system.request("GET", f"/v1/images/{image_id}/iso")
+    _set_response(acceptance_context, response)
+    inspected = inspect_downloaded_iso(
+        image_id=image_id,
+        iso_bytes=response.content,
+        workspace=acceptance_system.workspace,
+    )
+    acceptance_context.inspected_isos[image_id] = inspected
+    acceptance_context.current_iso = inspected
 
 
 @when(parsers.parse('the client posts to "{path}"'))
@@ -970,6 +1067,39 @@ def then_both_manifests_contain_same_logical_file_set(
     assert [entry["path"] for entry in first_entries] == [entry["path"] for entry in second_entries]
 
 
+@then(parsers.parse('fetch manifest entry "{entry_id}" lists split parts 0 and 1'))
+def then_fetch_manifest_entry_lists_split_parts(
+    acceptance_context: AcceptanceScenarioContext,
+    entry_id: str,
+) -> None:
+    entry = _response_manifest_entry(acceptance_context, entry_id)
+    assert [part["index"] for part in entry["parts"]] == [0, 1]
+
+
+@then(parsers.parse('fetch manifest entry "{entry_id}" part {part_index:d} is recoverable from copy "{copy_id}"'))
+def then_fetch_manifest_part_recovers_from_copy(
+    acceptance_context: AcceptanceScenarioContext,
+    entry_id: str,
+    part_index: int,
+    copy_id: str,
+) -> None:
+    entry = _response_manifest_entry(acceptance_context, entry_id)
+    part = entry["parts"][part_index]
+    assert [copy["copy"] for copy in part["copies"]] == [copy_id]
+
+
+@then(parsers.parse('fetch manifest entry "{entry_id}" part hashes match the published split fixture'))
+def then_fetch_manifest_part_hashes_match_fixture(
+    acceptance_context: AcceptanceScenarioContext,
+    entry_id: str,
+) -> None:
+    entry = _response_manifest_entry(acceptance_context, entry_id)
+    assert [part["bytes"] for part in entry["parts"]] == [len(part) for part in SPLIT_FILE_PARTS]
+    assert [part["sha256"] for part in entry["parts"]] == [
+        hashlib.sha256(part).hexdigest() for part in SPLIT_FILE_PARTS
+    ]
+
+
 @then(parsers.parse("the command exits with code {exit_code:d}"))
 def then_command_exits_with_code(
     acceptance_context: AcceptanceScenarioContext,
@@ -1043,6 +1173,146 @@ def then_target_for_fetch_is_hot(
     assert acceptance_system.state.is_hot(target) is True
 
 
+@then("the downloaded ISO passes xorriso verification")
+def then_downloaded_iso_passes_verification(
+    acceptance_context: AcceptanceScenarioContext,
+) -> None:
+    assert _require_inspected_iso(acceptance_context).iso_path.is_file()
+
+
+@then("the extracted ISO root matches the disc layout contract")
+def then_extracted_iso_root_matches_disc_layout(
+    acceptance_context: AcceptanceScenarioContext,
+) -> None:
+    assert_root_layout_contract(_require_inspected_iso(acceptance_context))
+
+
+@then("the decrypted disc manifest matches the disc manifest contract")
+def then_decrypted_disc_manifest_matches_contract(
+    acceptance_context: AcceptanceScenarioContext,
+) -> None:
+    inspected = _require_inspected_iso(acceptance_context)
+    assert_contract_schema("disc-manifest.schema.json", inspected.disc_manifest)
+    assert_disc_manifest_semantics(inspected.disc_manifest)
+
+
+@then("every referenced collection manifest matches the collection hash manifest contract")
+def then_every_collection_manifest_matches_contract(
+    acceptance_system: AcceptanceSystem,
+    acceptance_context: AcceptanceScenarioContext,
+) -> None:
+    inspected = _require_inspected_iso(acceptance_context)
+    for collection in inspected.disc_manifest["collections"]:
+        payload = decrypt_yaml_file(inspected.extract_root / collection["manifest"])
+        assert_contract_schema("collection-hash-manifest.schema.json", payload)
+        expected_files = sorted(
+            record.path for record in acceptance_system.state.collection_files(str(collection["id"]))
+        )
+        assert_collection_manifest_semantics(
+            payload,
+            expected_collection_id=str(collection["id"]),
+            expected_files=expected_files,
+        )
+
+
+@then("every referenced file sidecar matches the file sidecar contract")
+def then_every_sidecar_matches_contract(
+    acceptance_context: AcceptanceScenarioContext,
+) -> None:
+    inspected = _require_inspected_iso(acceptance_context)
+    for collection in inspected.disc_manifest["collections"]:
+        collection_id = str(collection["id"])
+        for file_entry in collection["files"]:
+            expected_part: dict[str, int] | None = None
+            sidecar_relpath: str
+            if "parts" in file_entry:
+                present = file_entry["parts"]["present"]
+                assert len(present) == 1
+                current_part = present[0]
+                sidecar_relpath = str(current_part["sidecar"])
+                expected_part = {
+                    "index": int(current_part["index"]),
+                    "count": int(file_entry["parts"]["count"]),
+                }
+            else:
+                sidecar_relpath = str(file_entry["sidecar"])
+            payload = decrypt_yaml_file(inspected.extract_root / sidecar_relpath)
+            assert_contract_schema("file-sidecar.schema.json", payload)
+            assert_sidecar_semantics(
+                payload,
+                expected_collection_id=collection_id,
+                expected_path=str(file_entry["path"]),
+                expected_bytes=int(file_entry["bytes"]),
+                expected_sha256=str(file_entry["sha256"]),
+                expected_part=expected_part,
+            )
+
+
+@then("the current ISO README documents split-file recovery")
+def then_current_iso_readme_documents_split_recovery(
+    acceptance_context: AcceptanceScenarioContext,
+) -> None:
+    readme = _require_inspected_iso(acceptance_context).readme
+    assert "arc-disc" in readme
+    assert "DISC.yml.age" in readme
+    assert "multiple discs" in readme
+
+
+@then(parsers.parse('the current ISO payload for "{target}" decrypts to the original plaintext'))
+def then_current_iso_payload_decrypts_to_original_plaintext(
+    acceptance_system: AcceptanceSystem,
+    acceptance_context: AcceptanceScenarioContext,
+    target: str,
+) -> None:
+    inspected = _require_inspected_iso(acceptance_context)
+    _, file_entry = manifest_entry_by_path(inspected.disc_manifest, parse_target(target).path)
+    assert "object" in file_entry
+    payload = payload_bytes(inspected.extract_root / file_entry["object"])
+    expected = acceptance_system.state.selected_files(target)[0].content
+    assert payload == expected
+
+
+@then(parsers.parse('the current ISO lists split file "{relpath}" part {part_index:d} of {part_count:d}'))
+def then_current_iso_lists_split_file_part(
+    acceptance_context: AcceptanceScenarioContext,
+    relpath: str,
+    part_index: int,
+    part_count: int,
+) -> None:
+    inspected = _require_inspected_iso(acceptance_context)
+    _, file_entry = manifest_entry_by_path(inspected.disc_manifest, relpath)
+    present = file_entry["parts"]["present"]
+    assert file_entry["parts"]["count"] == part_count
+    assert [part["index"] for part in present] == [part_index]
+
+
+@then(parsers.parse('the current split payload for "{relpath}" is recorded'))
+def then_current_split_payload_is_recorded(
+    acceptance_context: AcceptanceScenarioContext,
+    relpath: str,
+) -> None:
+    inspected = _require_inspected_iso(acceptance_context)
+    _, file_entry = manifest_entry_by_path(inspected.disc_manifest, relpath)
+    present = file_entry["parts"]["present"]
+    assert len(present) == 1
+    current_part = present[0]
+    payload = payload_bytes(inspected.extract_root / current_part["object"])
+    acceptance_context.recorded_split_payloads.setdefault(relpath, {})[int(current_part["index"])] = payload
+
+
+@then(parsers.parse('the recorded split payloads for "{target}" reconstruct the original plaintext'))
+def then_recorded_split_payloads_reconstruct_plaintext(
+    acceptance_system: AcceptanceSystem,
+    acceptance_context: AcceptanceScenarioContext,
+    target: str,
+) -> None:
+    relpath = str(parse_target(target).path)
+    recorded = acceptance_context.recorded_split_payloads[relpath]
+    reconstructed = b"".join(recorded[index] for index in sorted(recorded))
+    expected = acceptance_system.state.selected_files(target)[0].content
+    assert reconstructed == expected
+
+
 @then(parsers.parse('fetch "{fetch_id}" is not "{state}"'))
 def then_fetch_is_not_state(
     acceptance_system: AcceptanceSystem,
@@ -1050,3 +1320,30 @@ def then_fetch_is_not_state(
     state: str,
 ) -> None:
     assert acceptance_system.fetches.get(fetch_id).state.value != state
+
+
+@then(parsers.parse('stderr mentions copy id "{copy_id}"'))
+def then_stderr_mentions_copy_id(
+    acceptance_context: AcceptanceScenarioContext,
+    copy_id: str,
+) -> None:
+    assert copy_id in _require_command(acceptance_context).stderr
+
+
+@then(parsers.parse('stderr does not mention copy id "{copy_id}"'))
+def then_stderr_does_not_mention_copy_id(
+    acceptance_context: AcceptanceScenarioContext,
+    copy_id: str,
+) -> None:
+    assert copy_id not in _require_command(acceptance_context).stderr
+
+
+@then(parsers.parse('the recovery state directory contains staged part {part_index:d} for entry "{entry_id}"'))
+def then_recovery_state_contains_staged_part(
+    acceptance_system: AcceptanceSystem,
+    acceptance_context: AcceptanceScenarioContext,
+    part_index: int,
+    entry_id: str,
+) -> None:
+    state_dir = _command_state_dir(acceptance_system, acceptance_context)
+    assert (state_dir / "parts" / entry_id / f"{part_index:06d}.part").is_file()
