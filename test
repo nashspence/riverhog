@@ -6,6 +6,9 @@ IMAGE_NAME="${TEST_IMAGE_NAME:-archive-stack:test}"
 
 if [[ $# -eq 0 ]]; then
   set -- -q
+elif [[ "$1" == "acceptance" ]]; then
+  shift
+  set -- -q -m acceptance tests/acceptance "$@"
 fi
 
 TTY_ARGS=()

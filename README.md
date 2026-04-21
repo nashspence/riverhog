@@ -6,7 +6,7 @@ A clean starter skeleton for the riverhog described in the contract:
 - `arc` CLI
 - `arc-disc` CLI
 - shared core domain and service interfaces
-- acceptance-test-ready route and command scaffolding
+- executable pytest-bdd acceptance scenarios and route/command scaffolding
 
 ## What is implemented
 
@@ -18,7 +18,7 @@ A clean starter skeleton for the riverhog described in the contract:
 - shared HTTP client
 - Typer CLIs with `--json` output mode
 - unit tests for selector parsing and API/CLI smoke coverage
-- acceptance test skeletons for the contract
+- executable pytest-bdd acceptance scenarios for the contract
 
 ## What is intentionally stubbed
 
@@ -40,6 +40,13 @@ In another shell:
 arc --help
 arc-disc --help
 ```
+
+## Testing
+
+Run the full suite with `pytest` or `./test`.
+
+Run the executable acceptance contract with `pytest tests/acceptance` or `./test acceptance`.
+The `.feature` files under `tests/acceptance/features` are the source of truth for those scenarios.
 
 ## Environment variables
 

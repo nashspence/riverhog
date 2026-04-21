@@ -23,6 +23,7 @@ dependencies = [
 [project.optional-dependencies]
 dev = [
   "pytest>=8.2,<9.0",
+  "pytest-bdd>=8.1,<9.0",
   "pytest-cov>=5.0,<6.0",
   "ruff>=0.5,<1.0",
   "mypy>=1.10,<2.0",
@@ -53,8 +54,15 @@ target-version = "py311"
 select = ["E", "F", "I", "UP", "B"]
 
 [tool.pytest.ini_options]
-addopts = "-ra"
+addopts = "-ra --strict-markers"
 testpaths = ["tests"]
+markers = [
+  "acceptance: executable contract scenarios loaded from Gherkin features",
+  "api: API-focused contract coverage",
+  "cli: CLI-focused contract coverage",
+  "integration: non-contract regression coverage",
+  "mvp: MVP contract coverage",
+]
 
 [tool.mypy]
 python_version = "3.11"

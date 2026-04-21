@@ -13,7 +13,6 @@ Conventions:
   - archived vs hot coverage
   - fetch lifecycle and hash verification
 - `arc` and `arc-disc` acceptance cases are contract tests for CLI behavior, not internal command structure.
-- The placeholder pytest modules in `tests/acceptance/` are intentionally thin; they should later be replaced by one concrete test module per feature file or by a small adapter layer that maps scenarios to pytest tests.
 
 Important implementation note:
 

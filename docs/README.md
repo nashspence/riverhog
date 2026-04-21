@@ -10,7 +10,6 @@ architecture decision records, and historical migration notes.
 - `reference/` — normative behavior, contracts, grammars, and state models
 - `adr/` — one significant architectural or behavioral decision per file
 - `how-to/` — task-oriented usage guides
-- `archive/` — historical notes kept for context but not treated as current source of truth
 
 ## Source of truth
 
@@ -18,17 +17,6 @@ architecture decision records, and historical migration notes.
 - The current external contract lives in `reference/` and `openapi/arc.v1.yaml`
 - The project decision log lives in `adr/`
 - Historical donor/transplant notes live in `archive/`
-
-## Initial migration from the working notes
-
-The original sequential notes were reorganized as follows:
-
-- `0_PROBLEM.md` → RFC context + `explanation/problem-space.md`
-- `1_ANSWER.md` → RFC proposal + `explanation/architecture-overview.md`
-- `2_API_PLAN.md` → `reference/selector-grammar.md`, `reference/domain-model.md`, `reference/api.md`
-- `3_API_COMMITMENT.md` → `reference/api.md`, `reference/fetch-state-machine.md`, `openapi/arc.v1.yaml`, `tests/acceptance/test_mvp_contract.py`
-- `4_IMPLEMENTATION_SCAFFOLDING.md` → `explanation/codebase-layout.md` + ADRs
-- `5_ADAPTATION_NOTES.md` and `6_TRANSPLANT_NOTES.md` → `archive/`
 
 ## Conventions
 

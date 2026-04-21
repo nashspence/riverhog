@@ -1,8 +1,11 @@
 from __future__ import annotations
 
+import hashlib
+import json
 import subprocess
 from pathlib import Path
 
+import pytest
 import yaml
 
 from arc_core.planner.manifest import MANIFEST_FILENAME, README_FILENAME
@@ -11,13 +14,16 @@ from tests.fixtures.data import (
     DOCS_COLLECTION_ID,
     DOCS_FILES,
     IMAGE_ID,
+    SPLIT_COPY_ONE_ID,
+    SPLIT_COPY_TWO_ID,
     SPLIT_FILE_PARTS,
     SPLIT_FILE_RELPATH,
     SPLIT_IMAGE_ONE_ID,
     SPLIT_IMAGE_TWO_ID,
-    TARGET_BYTES,
     fixture_decrypt_bytes,
 )
+
+pytestmark = pytest.mark.integration
 
 
 def _write_downloaded_iso(iso_bytes: bytes, workspace: Path) -> Path:
@@ -75,52 +81,25 @@ def _extract_iso(iso_path: Path, workspace: Path) -> Path:
     return extract_root
 
 
-def test_read_the_current_plan(acceptance_system: AcceptanceSystem) -> None:
-    acceptance_system.seed_planner_fixtures()
+def test_split_fetch_manifest_includes_part_level_recovery_hints(
+    acceptance_system: AcceptanceSystem,
+) -> None:
+    acceptance_system.seed_docs_archive_with_split_invoice()
+    acceptance_system.seed_fetch("fx-1", "docs:/tax/2022/invoice-123.pdf")
 
-    response = acceptance_system.request("GET", "/v1/plan")
-
-    assert response.status_code == 200
-    payload = response.json()
-    assert set(payload) == {
-        "ready",
-        "target_bytes",
-        "min_fill_bytes",
-        "images",
-        "unplanned_bytes",
-        "note",
-    }
-    assert payload["ready"] is True
-    assert payload["target_bytes"] == TARGET_BYTES
-    assert payload["images"]
-    fills = []
-    for image in payload["images"]:
-        assert set(image) == {"id", "bytes", "fill", "files", "collections", "iso_ready"}
-        assert image["fill"] == image["bytes"] / payload["target_bytes"]
-        fills.append(image["fill"])
-    assert fills == sorted(fills, reverse=True)
-
-
-def test_read_one_image_summary(acceptance_system: AcceptanceSystem) -> None:
-    acceptance_system.seed_planner_fixtures()
-
-    response = acceptance_system.request("GET", f"/v1/images/{IMAGE_ID}")
+    response = acceptance_system.request("GET", "/v1/fetches/fx-1/manifest")
 
     assert response.status_code == 200
-    payload = response.json()
-    assert payload["id"] == IMAGE_ID
-    assert set(payload) == {"id", "bytes", "fill", "files", "collections", "iso_ready"}
-
-
-def test_download_an_iso_for_a_ready_image(acceptance_system: AcceptanceSystem) -> None:
-    acceptance_system.seed_planner_fixtures()
-
-    response = acceptance_system.request("GET", f"/v1/images/{IMAGE_ID}/iso")
-
-    assert response.status_code == 200
-    assert response.headers["content-type"].startswith("application/octet-stream")
-    assert response.headers["content-disposition"].endswith(f'"{IMAGE_ID}.iso"')
-    assert response.content
+    entry = response.json()["entries"][0]
+    assert [part["index"] for part in entry["parts"]] == [0, 1]
+    assert [part["copies"][0]["copy"] for part in entry["parts"]] == [
+        SPLIT_COPY_ONE_ID,
+        SPLIT_COPY_TWO_ID,
+    ]
+    assert [part["bytes"] for part in entry["parts"]] == [len(part) for part in SPLIT_FILE_PARTS]
+    assert [part["sha256"] for part in entry["parts"]] == [
+        hashlib.sha256(part).hexdigest() for part in SPLIT_FILE_PARTS
+    ]
 
 
 def test_ready_image_iso_uses_the_canonical_disc_layout(
@@ -202,28 +181,6 @@ def test_ready_image_iso_uses_the_canonical_disc_layout(
     assert "file: HASHES.yml" in proof
 
 
-def test_register_a_physical_copy(acceptance_system: AcceptanceSystem) -> None:
-    acceptance_system.seed_planner_fixtures()
-    before = acceptance_system.request("GET", f"/v1/collections/{DOCS_COLLECTION_ID}").json()
-
-    response = acceptance_system.request(
-        "POST",
-        f"/v1/images/{IMAGE_ID}/copies",
-        json_body={"id": "BR-021-A", "location": "Shelf B1"},
-    )
-
-    after = acceptance_system.request("GET", f"/v1/collections/{DOCS_COLLECTION_ID}").json()
-    assert response.status_code == 200
-    assert response.json()["copy"] == {
-        "id": "BR-021-A",
-        "image": IMAGE_ID,
-        "location": "Shelf B1",
-        "created_at": "2026-04-20T12:00:00Z",
-    }
-    assert after["archived_bytes"] > before["archived_bytes"]
-    assert after["pending_bytes"] < before["pending_bytes"]
-
-
 def test_split_file_parts_are_listed_per_disc_and_reconstruct_the_original_plaintext(
     acceptance_system: AcceptanceSystem,
     tmp_path: Path,
@@ -294,20 +251,74 @@ def test_split_file_parts_are_listed_per_disc_and_reconstruct_the_original_plain
     assert b"".join(extracted_parts) == DOCS_FILES[SPLIT_FILE_RELPATH]
 
 
-def test_reusing_a_copy_id_fails(acceptance_system: AcceptanceSystem) -> None:
-    acceptance_system.seed_planner_fixtures()
-    first = acceptance_system.request(
-        "POST",
-        f"/v1/images/{IMAGE_ID}/copies",
-        json_body={"id": "BR-021-A", "location": "Shelf B1"},
-    )
-    assert first.status_code == 200
+def test_arc_disc_fetch_recovers_a_split_file_across_successive_discs(
+    acceptance_system: AcceptanceSystem,
+) -> None:
+    acceptance_system.seed_docs_archive_with_split_invoice()
+    acceptance_system.seed_pin("docs:/tax/2022/invoice-123.pdf")
+    acceptance_system.seed_fetch("fx-1", "docs:/tax/2022/invoice-123.pdf")
+    acceptance_system.configure_arc_disc_fixture(fetch_id="fx-1")
+    state_dir = acceptance_system.workspace / "recovery-state" / "fx-1"
 
-    response = acceptance_system.request(
-        "POST",
-        f"/v1/images/{IMAGE_ID}/copies",
-        json_body={"id": "BR-021-A", "location": "Shelf B2"},
+    result = acceptance_system.run_arc_disc(
+        "fetch",
+        "fx-1",
+        "--state-dir",
+        str(state_dir),
+        "--device",
+        "/dev/fake-sr0",
+        "--json",
     )
 
-    assert response.status_code == 409
-    assert response.json()["error"]["code"] == "conflict"
+    assert result.returncode == 0
+    assert json.loads(result.stdout)["state"] == "done"
+    assert SPLIT_COPY_ONE_ID in result.stderr
+    assert SPLIT_COPY_TWO_ID in result.stderr
+    assert acceptance_system.state.is_hot("docs:/tax/2022/invoice-123.pdf") is True
+    assert (
+        acceptance_system.uploaded_entry_content("fx-1", SPLIT_FILE_RELPATH)
+        == acceptance_system.state.selected_files("docs:/tax/2022/invoice-123.pdf")[0].content
+    )
+
+
+def test_arc_disc_fetch_resumes_split_file_recovery_from_state_dir(
+    acceptance_system: AcceptanceSystem,
+) -> None:
+    acceptance_system.seed_docs_archive_with_split_invoice()
+    acceptance_system.seed_pin("docs:/tax/2022/invoice-123.pdf")
+    acceptance_system.seed_fetch("fx-1", "docs:/tax/2022/invoice-123.pdf")
+    state_dir = acceptance_system.workspace / "recovery-state" / "fx-1"
+
+    acceptance_system.configure_arc_disc_fixture(fetch_id="fx-1", fail_copy_ids={SPLIT_COPY_TWO_ID})
+    first = acceptance_system.run_arc_disc(
+        "fetch",
+        "fx-1",
+        "--state-dir",
+        str(state_dir),
+        "--device",
+        "/dev/fake-sr0",
+    )
+
+    assert first.returncode != 0
+    assert (state_dir / "parts" / "e1" / "000000.part").is_file()
+    assert acceptance_system.fetches.get("fx-1").state.value != "done"
+
+    acceptance_system.configure_arc_disc_fixture(fetch_id="fx-1", fail_copy_ids={SPLIT_COPY_ONE_ID})
+    second = acceptance_system.run_arc_disc(
+        "fetch",
+        "fx-1",
+        "--state-dir",
+        str(state_dir),
+        "--device",
+        "/dev/fake-sr0",
+        "--json",
+    )
+
+    assert second.returncode == 0
+    assert json.loads(second.stdout)["state"] == "done"
+    assert SPLIT_COPY_ONE_ID not in second.stderr
+    assert SPLIT_COPY_TWO_ID in second.stderr
+    assert (
+        acceptance_system.uploaded_entry_content("fx-1", SPLIT_FILE_RELPATH)
+        == acceptance_system.state.selected_files("docs:/tax/2022/invoice-123.pdf")[0].content
+    )
