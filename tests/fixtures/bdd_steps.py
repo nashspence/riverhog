@@ -5,7 +5,6 @@ import json
 import re
 import shlex
 from dataclasses import dataclass, field
-from pathlib import Path
 from typing import Any
 from urllib.parse import parse_qsl, urlsplit
 
@@ -164,17 +163,6 @@ def _response_manifest_entry(
     raise AssertionError(f"manifest entry not found: {entry_id}")
 
 
-def _command_state_dir(
-    acceptance_system: AcceptanceSystem,
-    context: AcceptanceScenarioContext,
-) -> Path:
-    argv = context.command_argv
-    for index, arg in enumerate(argv):
-        if arg == "--state-dir":
-            return acceptance_system.workspace / argv[index + 1].lstrip("/")
-    raise AssertionError("the recorded command did not include --state-dir")
-
-
 def _ensure_collection_fixture(acceptance_system: AcceptanceSystem, collection_id: str) -> None:
     if collection_id == DOCS_COLLECTION_ID:
         acceptance_system.seed_docs_hot()
@@ -261,20 +249,6 @@ def _prepare_arc_expectation(
         return
 
     raise AssertionError(f"unsupported arc command: {argv}")
-
-
-def _translate_arc_disc_args(args: list[str], workspace: Path) -> list[str]:
-    translated: list[str] = []
-    index = 0
-    while index < len(args):
-        arg = args[index]
-        translated.append(arg)
-        if arg == "--state-dir":
-            index += 1
-            original = args[index]
-            translated.append(str(workspace / original.lstrip("/")))
-        index += 1
-    return translated
 
 
 @given("an empty archive")
@@ -727,8 +701,7 @@ def when_operator_runs_command(
         return
 
     if argv[0] == "arc-disc":
-        translated = _translate_arc_disc_args(argv[1:], acceptance_system.workspace)
-        acceptance_context.command = acceptance_system.run_arc_disc(*translated)
+        acceptance_context.command = acceptance_system.run_arc_disc(*argv[1:])
         return
 
     raise AssertionError(f"unsupported command: {command}")
@@ -1551,13 +1524,3 @@ def then_upload_session_responses_reuse_upload_url(
     payloads = [_json_payload(response) for response in acceptance_context.responses]
     assert payloads[0]["upload_url"] == payloads[1]["upload_url"]
 
-
-@then(parsers.parse('the recovery state directory contains staged part {part_index:d} for entry "{entry_id}"'))
-def then_recovery_state_contains_staged_part(
-    acceptance_system: AcceptanceSystem,
-    acceptance_context: AcceptanceScenarioContext,
-    part_index: int,
-    entry_id: str,
-) -> None:
-    state_dir = _command_state_dir(acceptance_system, acceptance_context)
-    assert (state_dir / "parts" / entry_id / f"{part_index:06d}.part").is_file()

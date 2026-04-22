@@ -2,16 +2,16 @@ from __future__ import annotations
 
 import hashlib
 import importlib
-import json
 import os
-from dataclasses import dataclass
-from pathlib import Path
+import time
+from dataclasses import dataclass, field
 from typing import Annotated, Any
 
 import typer
 
 from arc_cli.client import ApiClient
 from arc_cli.output import emit
+from arc_core.domain.errors import ArcError
 
 app = typer.Typer(help="arc optical recovery CLI")
 
@@ -54,10 +54,6 @@ class RecoveryEntry:
     bytes: int
     sha256: str
     parts: tuple[RecoveryPartHint, ...]
-
-
-STATE_FILENAME = ".arc-disc-state.json"
-
 
 def _load_factory(spec: str) -> object:
     module_name, sep, attr_name = spec.partition(":")
@@ -136,45 +132,7 @@ def _entry_from_manifest(payload: dict[str, Any]) -> RecoveryEntry:
     )
 
 
-def _prepare_state_dir(state_dir: Path, *, fetch_id: str, manifest: dict[str, Any]) -> None:
-    state_dir.mkdir(parents=True, exist_ok=True)
-    state_path = state_dir / STATE_FILENAME
-    expected = {
-        "fetch_id": fetch_id,
-        "manifest_id": str(manifest["id"]),
-        "target": str(manifest["target"]),
-    }
-    if state_path.exists():
-        existing = json.loads(state_path.read_text(encoding="utf-8"))
-        if any(existing.get(key) != value for key, value in expected.items()):
-            raise RuntimeError(
-                f"state directory {state_dir} belongs to a different fetch and cannot be reused"
-            )
-        return
-    state_path.write_text(json.dumps(expected, indent=2, sort_keys=True) + "\n", encoding="utf-8")
-
-
-def _part_path(state_dir: Path, entry_id: str, part_index: int) -> Path:
-    return state_dir / "parts" / entry_id / f"{part_index:06d}.part"
-
-
-def _read_valid_staged_part(
-    state_dir: Path,
-    entry: RecoveryEntry,
-    part: RecoveryPartHint,
-) -> bytes | None:
-    path = _part_path(state_dir, entry.id, part.index)
-    if not path.is_file():
-        return None
-    data = path.read_bytes()
-    if len(data) != part.bytes or _sha256_bytes(data) != part.sha256:
-        path.unlink()
-        return None
-    return data
-
-
-def _write_part(
-    state_dir: Path,
+def _validate_part(
     entry: RecoveryEntry,
     part: RecoveryPartHint,
     plaintext: bytes,
@@ -183,11 +141,6 @@ def _write_part(
         raise RuntimeError(
             f"recovered part {part.index} for {entry.path} did not match the fetch manifest"
         )
-    path = _part_path(state_dir, entry.id, part.index)
-    path.parent.mkdir(parents=True, exist_ok=True)
-    tmp_path = path.with_suffix(".tmp")
-    tmp_path.write_bytes(plaintext)
-    tmp_path.replace(path)
 
 
 def _prompt_for_disc(copy: RecoveryCopyHint, *, device: str) -> None:
@@ -204,24 +157,58 @@ def _prompt_for_disc(copy: RecoveryCopyHint, *, device: str) -> None:
         raise RuntimeError("stdin closed while waiting for disc insertion") from exc
 
 
+@dataclass(slots=True)
+class ProgressReporter:
+    entries: tuple[RecoveryEntry, ...]
+    started_at: float
+    recovered_bytes_by_entry: dict[str, int] = field(default_factory=dict)
+    recovered_manifest_bytes: int = 0
+
+    @classmethod
+    def begin(cls, entries: tuple[RecoveryEntry, ...]) -> ProgressReporter:
+        return cls(entries=entries, started_at=time.monotonic())
+
+    @property
+    def manifest_total_bytes(self) -> int:
+        return sum(entry.bytes for entry in self.entries)
+
+    def record_part(self, entry: RecoveryEntry, part: RecoveryPartHint) -> None:
+        self.recovered_bytes_by_entry[entry.id] = self.recovered_bytes_by_entry.get(entry.id, 0) + part.bytes
+        self.recovered_manifest_bytes += part.bytes
+
+    def report(self, entry: RecoveryEntry) -> None:
+        entry_total = max(entry.bytes, 1)
+        manifest_total = max(self.manifest_total_bytes, 1)
+        entry_percent = (self.recovered_bytes_by_entry.get(entry.id, 0) / entry_total) * 100
+        manifest_percent = (self.recovered_manifest_bytes / manifest_total) * 100
+        elapsed = max(time.monotonic() - self.started_at, 0.001)
+        rate = self.recovered_manifest_bytes / elapsed
+        typer.echo(
+            (
+                f"current file {entry.path}: {entry_percent:.1f}% | "
+                f"manifest: {manifest_percent:.1f}% | rate: {rate:.1f} B/s"
+            ),
+            err=True,
+        )
+
+
 def _recover_pending_parts(
     entries: tuple[RecoveryEntry, ...],
     *,
-    state_dir: Path,
     reader: Any,
     crypto: Any,
     device: str,
-) -> None:
+    progress: ProgressReporter,
+) -> dict[str, dict[int, bytes]]:
     pending_by_copy: dict[
         str,
         tuple[RecoveryCopyHint, list[tuple[RecoveryEntry, RecoveryPartHint]]],
     ] = {}
     copy_order: list[str] = []
+    recovered_parts: dict[str, dict[int, bytes]] = {}
 
     for entry in entries:
         for part in entry.parts:
-            if _read_valid_staged_part(state_dir, entry, part) is not None:
-                continue
             copy = part.copies[0]
             bucket = pending_by_copy.get(copy.copy_id)
             if bucket is None:
@@ -234,17 +221,20 @@ def _recover_pending_parts(
         copy, items = pending_by_copy[copy_id]
         _prompt_for_disc(copy, device=device)
         for entry, part in items:
-            if _read_valid_staged_part(state_dir, entry, part) is not None:
-                continue
             encrypted = reader.read(copy.disc_path, device=device)
             plaintext = crypto.decrypt_entry(encrypted, copy.enc)
-            _write_part(state_dir, entry, part, plaintext)
+            _validate_part(entry, part, plaintext)
+            recovered_parts.setdefault(entry.id, {})[part.index] = plaintext
+            progress.record_part(entry, part)
+            progress.report(entry)
+    return recovered_parts
 
 
-def _reconstruct_entry(state_dir: Path, entry: RecoveryEntry) -> bytes:
+def _reconstruct_entry(recovered_parts: dict[str, dict[int, bytes]], entry: RecoveryEntry) -> bytes:
     parts: list[bytes] = []
+    entry_parts = recovered_parts.get(entry.id, {})
     for part in entry.parts:
-        plaintext = _read_valid_staged_part(state_dir, entry, part)
+        plaintext = entry_parts.get(part.index)
         if plaintext is None:
             raise RuntimeError(f"missing recovered part {part.index} for {entry.path}")
         parts.append(plaintext)
@@ -259,30 +249,35 @@ def _reconstruct_entry(state_dir: Path, entry: RecoveryEntry) -> bytes:
 @app.command("fetch")
 def fetch_cmd(
     fetch_id: Annotated[str, typer.Argument(help="Fetch id")],
-    state_dir: Annotated[Path, typer.Option("--state-dir", help="Local recovery state directory")],
     device: Annotated[str, typer.Option("--device", help="Optical device path")] = "/dev/sr0",
     json_mode: Annotated[bool, typer.Option("--json", help="Emit JSON")] = False,
 ) -> None:
-    client = ApiClient()
-    manifest = client.get_fetch_manifest(fetch_id)
-    reader = build_optical_reader()
-    crypto = build_crypto()
-    entries = tuple(_entry_from_manifest(entry) for entry in manifest.get("entries", []))
+    try:
+        client = ApiClient()
+        manifest = client.get_fetch_manifest(fetch_id)
+        reader = build_optical_reader()
+        crypto = build_crypto()
+        entries = tuple(_entry_from_manifest(entry) for entry in manifest.get("entries", []))
+        progress = ProgressReporter.begin(entries)
 
-    _prepare_state_dir(state_dir, fetch_id=fetch_id, manifest=manifest)
-    _recover_pending_parts(
-        entries,
-        state_dir=state_dir,
-        reader=reader,
-        crypto=crypto,
-        device=device,
-    )
+        recovered_parts = _recover_pending_parts(
+            entries,
+            reader=reader,
+            crypto=crypto,
+            device=device,
+            progress=progress,
+        )
 
-    for entry in entries:
-        plaintext = _reconstruct_entry(state_dir, entry)
-        client.upload_fetch_entry(fetch_id, entry.id, entry.sha256, plaintext)
+        for entry in entries:
+            plaintext = _reconstruct_entry(recovered_parts, entry)
+            client.upload_fetch_entry(fetch_id, entry.id, entry.sha256, plaintext)
+            progress.report(entry)
 
-    payload = client.complete_fetch(fetch_id)
+        payload = client.complete_fetch(fetch_id)
+    except (ArcError, RuntimeError) as exc:
+        typer.echo(f"error: {exc}", err=True)
+        raise typer.Exit(code=1) from exc
+
     emit(payload, json_mode=json_mode)
 
 
