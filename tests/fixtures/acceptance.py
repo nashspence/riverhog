@@ -193,7 +193,6 @@ class AcceptanceState:
     finalized_image_ids: set[ImageId] = field(default_factory=set)
     exact_pins: set[TargetStr] = field(default_factory=set)
     fetches: dict[FetchId, FetchRecord] = field(default_factory=dict)
-    rejected_upload_codes: list[str] = field(default_factory=list)
     next_fetch_number: int = 0
 
     def register_staged_directory(self, staging_path: str, root: Path) -> None:
@@ -586,30 +585,50 @@ class AcceptanceFetchService:
             "expires_at": entry.upload_expires_at,
         }
 
-    def upload_entry(self, fetch_id: str, entry_id: str, sha256: str, content: bytes) -> dict[str, object]:
+    def append_upload_chunk(
+        self,
+        fetch_id: str,
+        entry_id: str,
+        offset: int,
+        checksum: str,
+        content: bytes,
+    ) -> dict[str, object]:
         record = self._record(fetch_id)
         entry = record.entries.get(EntryId(entry_id))
         if entry is None:
             raise NotFound(f"entry not found: {entry_id}")
-        actual_sha = hashlib.sha256(content).hexdigest()
-        if sha256 != entry.sha256 or actual_sha != entry.sha256:
-            self.state.rejected_upload_codes.append("hash_mismatch")
-            raise HashMismatch("sha256 did not match expected entry hash")
-        if entry.upload_url is None:
-            entry.upload_url = (
-                f"{FIXTURE_UPLOAD_URL_BASE}/fetches/{record.summary.id}/entries/{entry.id}"
-            )
-        entry.uploaded_bytes = len(content)
-        entry.uploaded_content = content
-        entry.upload_expires_at = None
+        if offset != entry.uploaded_bytes:
+            raise Conflict("upload offset did not match current entry offset")
+        algorithm, separator, digest = checksum.partition(" ")
+        if separator != " " or algorithm != "sha256":
+            raise InvalidState("upload checksum must use sha256")
+        actual_digest = base64.b64encode(hashlib.sha256(content).digest()).decode("ascii")
+        if digest != actual_digest:
+            raise HashMismatch("upload checksum did not match the provided chunk")
+        next_uploaded_bytes = offset + len(content)
+        if next_uploaded_bytes > entry.bytes:
+            raise Conflict("upload chunk exceeded the expected entry length")
+
+        current_content = entry.uploaded_content or b""
+        entry.uploaded_content = current_content + content
+        entry.uploaded_bytes = next_uploaded_bytes
+
+        if entry.uploaded_bytes < entry.bytes:
+            entry.upload_expires_at = FIXTURE_UPLOAD_EXPIRES_AT
+        else:
+            actual_sha = hashlib.sha256(entry.uploaded_content).hexdigest()
+            if actual_sha != entry.sha256:
+                raise HashMismatch("sha256 did not match expected entry hash")
+            entry.upload_expires_at = None
+
         if record.summary.state == FetchState.WAITING_MEDIA:
             record.summary = self._replace_summary(record, state=FetchState.UPLOADING)
         else:
             record.summary = self._replace_summary(record)
+
         return {
-            "entry": str(entry.id),
-            "accepted": True,
-            "bytes": len(content),
+            "offset": entry.uploaded_bytes,
+            "expires_at": entry.upload_expires_at,
         }
 
     def complete(self, fetch_id: str) -> dict[str, object]:

@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import base64
+import hashlib
 import os
 from collections.abc import Mapping
 from pathlib import Path
@@ -43,11 +45,14 @@ class ApiClient:
         }
         raise exc_map.get(code, ArcError)(str(message))
 
-    def _json(self, method: str, path: str, **kwargs: Any) -> dict[str, Any]:
+    def _request(self, method: str, path: str, **kwargs: Any) -> httpx.Response:
         with self._client() as client:
             response = client.request(method, path, **kwargs)
         self._raise_for_error(response)
-        return response.json()
+        return response
+
+    def _json(self, method: str, path: str, **kwargs: Any) -> dict[str, Any]:
+        return self._request(method, path, **kwargs).json()
 
     def close_collection(self, path: str) -> dict[str, Any]:
         return self._json("POST", "/v1/collections/close", json={"path": path})
@@ -91,13 +96,34 @@ class ApiClient:
     def get_fetch_manifest(self, fetch_id: str) -> dict[str, Any]:
         return self._json("GET", f"/v1/fetches/{fetch_id}/manifest")
 
-    def upload_fetch_entry(self, fetch_id: str, entry_id: str, sha256: str, content: bytes) -> dict[str, Any]:
-        return self._json(
-            "PUT",
-            f"/v1/fetches/{fetch_id}/files/{entry_id}",
-            headers={"X-Sha256": sha256, "Content-Type": "application/octet-stream"},
+    def create_or_resume_fetch_entry_upload(self, fetch_id: str, entry_id: str) -> dict[str, Any]:
+        return self._json("POST", f"/v1/fetches/{fetch_id}/entries/{entry_id}/upload")
+
+    def append_upload_chunk(
+        self,
+        upload_url: str,
+        *,
+        offset: int,
+        checksum_algorithm: str,
+        content: bytes,
+    ) -> dict[str, Any]:
+        checksum = base64.b64encode(hashlib.new(checksum_algorithm, content).digest()).decode("ascii")
+        response = self._request(
+            "PATCH",
+            upload_url,
+            headers={
+                "Content-Type": "application/offset+octet-stream",
+                "Tus-Resumable": "1.0.0",
+                "Upload-Offset": str(offset),
+                "Upload-Checksum": f"{checksum_algorithm} {checksum}",
+            },
             content=content,
         )
+        next_offset = int(response.headers.get("Upload-Offset", offset + len(content)))
+        return {
+            "offset": next_offset,
+            "expires_at": response.headers.get("Upload-Expires"),
+        }
 
     def complete_fetch(self, fetch_id: str) -> dict[str, Any]:
         return self._json("POST", f"/v1/fetches/{fetch_id}/complete")

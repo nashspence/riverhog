@@ -13,7 +13,7 @@ class StubFetchService:
     def create_or_resume_upload(self, fetch_id: str, entry_id: str) -> object:
         raise NotYetImplemented("StubFetchService is not implemented yet")
 
-    def upload_entry(self, fetch_id: str, entry_id: str, sha256: str, content: bytes) -> object:
+    def append_upload_chunk(self, fetch_id: str, entry_id: str, offset: int, checksum: str, content: bytes) -> object:
         raise NotYetImplemented("StubFetchService is not implemented yet")
 
     def complete(self, fetch_id: str) -> object:

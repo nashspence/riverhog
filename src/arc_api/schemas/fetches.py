@@ -65,12 +65,6 @@ class FetchUploadSessionResponse(ArcModel):
     expires_at: str | None
 
 
-class UploadEntryResponse(ArcModel):
-    entry: str
-    accepted: bool
-    bytes: int
-
-
 class CompleteFetchResponse(ArcModel):
     id: str
     state: str

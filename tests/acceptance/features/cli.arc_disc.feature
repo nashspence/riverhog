@@ -36,7 +36,7 @@ Feature: arc-disc CLI
     Then the command exits non-zero
     And fetch "fx-1" is not "done"
 
-  @xfail_not_backed
+  @xfail_contract
   Scenario: arc-disc fetch resumes split recovery across repeated runs via server-side upload state
     Given the optical reader fixture fails for copy id "copy-docs-split-2"
     When the operator runs 'arc-disc fetch fx-1 --device /dev/fake-sr0'

@@ -55,6 +55,17 @@ class RecoveryEntry:
     sha256: str
     parts: tuple[RecoveryPartHint, ...]
 
+
+@dataclass(frozen=True, slots=True)
+class UploadSession:
+    entry: str
+    upload_url: str
+    offset: int
+    length: int
+    checksum_algorithm: str
+    expires_at: str | None
+
+
 def _load_factory(spec: str) -> object:
     module_name, sep, attr_name = spec.partition(":")
     if not sep:
@@ -132,6 +143,26 @@ def _entry_from_manifest(payload: dict[str, Any]) -> RecoveryEntry:
     )
 
 
+def _upload_session_from_payload(entry: RecoveryEntry, payload: dict[str, Any]) -> UploadSession:
+    if str(payload.get("entry")) != entry.id:
+        raise RuntimeError(f"upload session entry mismatch for {entry.path}")
+    if str(payload.get("protocol")) != "tus":
+        raise RuntimeError(f"upload session protocol is not tus for {entry.path}")
+    if int(payload.get("length", -1)) != entry.bytes:
+        raise RuntimeError(f"upload session length mismatch for {entry.path}")
+    offset = int(payload.get("offset", -1))
+    if offset < 0 or offset > entry.bytes:
+        raise RuntimeError(f"upload session offset is invalid for {entry.path}")
+    return UploadSession(
+        entry=entry.id,
+        upload_url=str(payload["upload_url"]),
+        offset=offset,
+        length=entry.bytes,
+        checksum_algorithm=str(payload["checksum_algorithm"]),
+        expires_at=str(payload["expires_at"]) if payload.get("expires_at") is not None else None,
+    )
+
+
 def _validate_part(
     entry: RecoveryEntry,
     part: RecoveryPartHint,
@@ -161,28 +192,39 @@ def _prompt_for_disc(copy: RecoveryCopyHint, *, device: str) -> None:
 class ProgressReporter:
     entries: tuple[RecoveryEntry, ...]
     started_at: float
-    recovered_bytes_by_entry: dict[str, int] = field(default_factory=dict)
-    recovered_manifest_bytes: int = 0
+    uploaded_bytes_by_entry: dict[str, int] = field(default_factory=dict)
+    uploaded_manifest_bytes: int = 0
 
     @classmethod
-    def begin(cls, entries: tuple[RecoveryEntry, ...]) -> ProgressReporter:
-        return cls(entries=entries, started_at=time.monotonic())
+    def begin(
+        cls,
+        entries: tuple[RecoveryEntry, ...],
+        *,
+        uploaded_bytes_by_entry: dict[str, int] | None = None,
+    ) -> ProgressReporter:
+        uploaded_bytes_by_entry = dict(uploaded_bytes_by_entry or {})
+        return cls(
+            entries=entries,
+            started_at=time.monotonic(),
+            uploaded_bytes_by_entry=uploaded_bytes_by_entry,
+            uploaded_manifest_bytes=sum(uploaded_bytes_by_entry.values()),
+        )
 
     @property
     def manifest_total_bytes(self) -> int:
         return sum(entry.bytes for entry in self.entries)
 
-    def record_part(self, entry: RecoveryEntry, part: RecoveryPartHint) -> None:
-        self.recovered_bytes_by_entry[entry.id] = self.recovered_bytes_by_entry.get(entry.id, 0) + part.bytes
-        self.recovered_manifest_bytes += part.bytes
+    def record_uploaded_bytes(self, entry: RecoveryEntry, byte_count: int) -> None:
+        self.uploaded_bytes_by_entry[entry.id] = self.uploaded_bytes_by_entry.get(entry.id, 0) + byte_count
+        self.uploaded_manifest_bytes += byte_count
 
     def report(self, entry: RecoveryEntry) -> None:
         entry_total = max(entry.bytes, 1)
         manifest_total = max(self.manifest_total_bytes, 1)
-        entry_percent = (self.recovered_bytes_by_entry.get(entry.id, 0) / entry_total) * 100
-        manifest_percent = (self.recovered_manifest_bytes / manifest_total) * 100
+        entry_percent = (self.uploaded_bytes_by_entry.get(entry.id, 0) / entry_total) * 100
+        manifest_percent = (self.uploaded_manifest_bytes / manifest_total) * 100
         elapsed = max(time.monotonic() - self.started_at, 0.001)
-        rate = self.recovered_manifest_bytes / elapsed
+        rate = self.uploaded_manifest_bytes / elapsed
         typer.echo(
             (
                 f"current file {entry.path}: {entry_percent:.1f}% | "
@@ -192,58 +234,52 @@ class ProgressReporter:
         )
 
 
-def _recover_pending_parts(
-    entries: tuple[RecoveryEntry, ...],
+def _upload_entry_from_disc(
+    entry: RecoveryEntry,
+    session: UploadSession,
     *,
+    client: ApiClient,
     reader: Any,
     crypto: Any,
     device: str,
     progress: ProgressReporter,
-) -> dict[str, dict[int, bytes]]:
-    pending_by_copy: dict[
-        str,
-        tuple[RecoveryCopyHint, list[tuple[RecoveryEntry, RecoveryPartHint]]],
-    ] = {}
-    copy_order: list[str] = []
-    recovered_parts: dict[str, dict[int, bytes]] = {}
+) -> None:
+    offset = session.offset
+    part_start = 0
 
-    for entry in entries:
-        for part in entry.parts:
-            copy = part.copies[0]
-            bucket = pending_by_copy.get(copy.copy_id)
-            if bucket is None:
-                bucket = (copy, [])
-                pending_by_copy[copy.copy_id] = bucket
-                copy_order.append(copy.copy_id)
-            bucket[1].append((entry, part))
-
-    for copy_id in copy_order:
-        copy, items = pending_by_copy[copy_id]
-        _prompt_for_disc(copy, device=device)
-        for entry, part in items:
-            encrypted = reader.read(copy.disc_path, device=device)
-            plaintext = crypto.decrypt_entry(encrypted, copy.enc)
-            _validate_part(entry, part, plaintext)
-            recovered_parts.setdefault(entry.id, {})[part.index] = plaintext
-            progress.record_part(entry, part)
-            progress.report(entry)
-    return recovered_parts
-
-
-def _reconstruct_entry(recovered_parts: dict[str, dict[int, bytes]], entry: RecoveryEntry) -> bytes:
-    parts: list[bytes] = []
-    entry_parts = recovered_parts.get(entry.id, {})
     for part in entry.parts:
-        plaintext = entry_parts.get(part.index)
-        if plaintext is None:
-            raise RuntimeError(f"missing recovered part {part.index} for {entry.path}")
-        parts.append(plaintext)
-    plaintext = b"".join(parts)
-    if len(plaintext) != entry.bytes or _sha256_bytes(plaintext) != entry.sha256:
-        raise RuntimeError(
-            f"reconstructed plaintext for {entry.path} did not match the fetch manifest"
-        )
-    return plaintext
+        part_end = part_start + part.bytes
+        if offset >= part_end:
+            part_start = part_end
+            continue
+
+        copy = part.copies[0]
+        _prompt_for_disc(copy, device=device)
+        encrypted = reader.read(copy.disc_path, device=device)
+        plaintext = crypto.decrypt_entry(encrypted, copy.enc)
+        _validate_part(entry, part, plaintext)
+
+        resume_within_part = max(offset - part_start, 0)
+        chunk = plaintext[resume_within_part:]
+        if chunk:
+            upload_result = client.append_upload_chunk(
+                session.upload_url,
+                offset=offset,
+                checksum_algorithm=session.checksum_algorithm,
+                content=chunk,
+            )
+            next_offset = int(upload_result["offset"])
+            uploaded_bytes = next_offset - offset
+            if uploaded_bytes != len(chunk):
+                raise RuntimeError(f"upload offset advanced unexpectedly for {entry.path}")
+            offset = next_offset
+            progress.record_uploaded_bytes(entry, uploaded_bytes)
+            progress.report(entry)
+
+        part_start = part_end
+
+    if offset != entry.bytes:
+        raise RuntimeError(f"upload for {entry.path} stopped at {offset} of {entry.bytes} bytes")
 
 
 @app.command("fetch")
@@ -258,20 +294,27 @@ def fetch_cmd(
         reader = build_optical_reader()
         crypto = build_crypto()
         entries = tuple(_entry_from_manifest(entry) for entry in manifest.get("entries", []))
-        progress = ProgressReporter.begin(entries)
-
-        recovered_parts = _recover_pending_parts(
+        sessions = {
+            entry.id: _upload_session_from_payload(
+                entry,
+                client.create_or_resume_fetch_entry_upload(fetch_id, entry.id),
+            )
+            for entry in entries
+        }
+        progress = ProgressReporter.begin(
             entries,
-            reader=reader,
-            crypto=crypto,
-            device=device,
-            progress=progress,
+            uploaded_bytes_by_entry={entry.id: sessions[entry.id].offset for entry in entries},
         )
-
         for entry in entries:
-            plaintext = _reconstruct_entry(recovered_parts, entry)
-            client.upload_fetch_entry(fetch_id, entry.id, entry.sha256, plaintext)
-            progress.report(entry)
+            _upload_entry_from_disc(
+                entry,
+                sessions[entry.id],
+                client=client,
+                reader=reader,
+                crypto=crypto,
+                device=device,
+                progress=progress,
+            )
 
         payload = client.complete_fetch(fetch_id)
     except (ArcError, RuntimeError) as exc:

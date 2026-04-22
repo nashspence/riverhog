@@ -662,26 +662,6 @@ def when_client_registers_copy(
         acceptance_context.after_collections[acceptance_context.tracked_collection_id] = after
 
 
-@when(
-    parsers.parse(
-        'the client puts incorrect plaintext bytes to "{path}" with header "X-Sha256: {sha256}"'
-    )
-)
-def when_client_puts_incorrect_plaintext(
-    acceptance_system: AcceptanceSystem,
-    acceptance_context: AcceptanceScenarioContext,
-    path: str,
-    sha256: str,
-) -> None:
-    response = acceptance_system.request(
-        "PUT",
-        path,
-        headers={"X-Sha256": sha256, "Content-Type": "application/octet-stream"},
-        content=b"bad plaintext bytes\n",
-    )
-    _set_response(acceptance_context, response)
-
-
 @when(parsers.parse("the operator runs '{command}'"))
 def when_operator_runs_command(
     acceptance_system: AcceptanceSystem,
@@ -1523,4 +1503,3 @@ def then_upload_session_responses_reuse_upload_url(
     assert len(acceptance_context.responses) == 2
     payloads = [_json_payload(response) for response in acceptance_context.responses]
     assert payloads[0]["upload_url"] == payloads[1]["upload_url"]
-
