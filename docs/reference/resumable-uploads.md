@@ -32,10 +32,13 @@ streams parts into the same logical-file upload in ascending order.
 
 ## Direct Streaming
 
-`arc-disc` streams recovered plaintext directly from disc to the upload resource:
+`arc-disc` streams recovered bytes from disc to the upload resource:
 
 - unsplit files stream as one continuous upload
-- split files stream sequentially into the same upload resource as successive plaintext spans become available
+- split files stream sequentially into the same upload resource as successive spans become available
+- the upload-session boundary is opaque to the CLI: the server may decrypt, transform, and validate uploaded recovery
+  bytes however it needs
+- `arc-disc` does not own decryption or final logical-file hash validation
 
 If an implementation uses temporary buffering internally, that buffering is conventional temporary storage and not a
 user-managed API or CLI surface.

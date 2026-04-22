@@ -15,15 +15,14 @@ The acceptance suite assumes three fixture families:
    - fixture_fetch_fx_1_single_file
    - fixture_fake_optical_reader_success
    - fixture_fake_optical_reader_missing_entry
-   - fixture_fake_crypto_success
-   - fixture_fake_crypto_bad_plaintext
+   - fixture_fake_optical_reader_bad_recovered_bytes
 
 Guidelines:
 
 - Every fixture must be deterministic and self-contained.
 - Every byte count used by acceptance tests must derive from real fixture files, not hand-entered constants.
 - Optical fixtures should model both successful recovery and the two important failure modes:
-  missing payload and bad plaintext hash.
+  missing payload and server-side rejection of incorrect recovered bytes.
 - If release reconciliation is asynchronous internally, acceptance helpers should provide an eventual assertion such as
   wait_until_hot_matches_pins().
 - CLI acceptance tests should use the same fixture families as the API acceptance tests instead of inventing parallel state.

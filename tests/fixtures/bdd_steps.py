@@ -408,8 +408,7 @@ def given_fetch_has_stable_manifest(
     assert first == second
 
 
-@given("a fake optical reader fixture can recover every required encrypted entry")
-@given("a fake crypto fixture can decrypt every required entry")
+@given("a fake optical reader fixture can recover every required entry")
 def given_arc_disc_success_fixture(
     acceptance_system: AcceptanceSystem,
 ) -> None:
@@ -424,8 +423,8 @@ def given_arc_disc_reader_failure_fixture(acceptance_system: AcceptanceSystem) -
     )
 
 
-@given("the crypto fixture returns incorrect plaintext for one required entry")
-def given_arc_disc_crypto_failure_fixture(acceptance_system: AcceptanceSystem) -> None:
+@given("the optical reader fixture returns incorrect recovered bytes for one required entry")
+def given_arc_disc_server_validation_failure_fixture(acceptance_system: AcceptanceSystem) -> None:
     acceptance_system.configure_arc_disc_fixture(
         fetch_id="fx-1",
         corrupt_path=SPLIT_FILE_RELPATH,

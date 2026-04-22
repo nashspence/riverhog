@@ -522,6 +522,7 @@ components:
         disc_path: { type: string }
         enc:
           type: object
+          description: Opaque recovery metadata that the server may use when binding uploaded recovery bytes back to archived objects.
           additionalProperties: true
     FetchManifestEntry:
       type: object
@@ -530,8 +531,12 @@ components:
       properties:
         id: { type: string }
         path: { type: string }
-        bytes: { type: integer }
-        sha256: { type: string }
+        bytes:
+          type: integer
+          description: Logical-file byte length used by the server when validating uploaded recovery data.
+        sha256:
+          type: string
+          description: Logical-file digest used by the server for final verification.
         upload_state:
           $ref: "#/components/schemas/FetchEntryUploadState"
         uploaded_bytes: { type: integer }
@@ -553,8 +558,12 @@ components:
       required: [index, bytes, sha256, copies]
       properties:
         index: { type: integer }
-        bytes: { type: integer }
-        sha256: { type: string }
+        bytes:
+          type: integer
+          description: Logical plaintext length for this part, used by the server when validating recovered uploads.
+        sha256:
+          type: string
+          description: Logical plaintext digest for this part, used by the server as a verification anchor.
         copies:
           type: array
           items:
@@ -637,6 +646,7 @@ components:
         checksum_algorithm:
           type: string
           const: sha256
+          description: Transport checksum algorithm for uploaded PATCH chunks, not the final logical-file digest.
         expires_at:
           oneOf:
             - type: string

@@ -31,7 +31,7 @@ One or more recovered files are being streamed directly from optical recovery in
 
 ### verifying
 
-All required files have been uploaded and are being verified and materialized.
+All required files have been uploaded and are being decrypted, verified, and materialized by the server.
 
 ### done
 

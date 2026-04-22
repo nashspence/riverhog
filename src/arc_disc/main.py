@@ -1,9 +1,9 @@
 from __future__ import annotations
 
-import hashlib
 import importlib
 import os
 import time
+from collections.abc import Iterator
 from dataclasses import dataclass, field
 from typing import Annotated, Any
 
@@ -22,13 +22,8 @@ def arc_disc_app() -> None:
 
 
 class PlaceholderOpticalReader:
-    def read(self, disc_path: str, *, device: str) -> bytes:
+    def read_iter(self, disc_path: str, *, device: str) -> Iterator[bytes]:
         raise NotImplementedError(f"optical read not implemented for {disc_path} on {device}")
-
-
-class PlaceholderCrypto:
-    def decrypt_entry(self, encrypted: bytes, enc: dict[str, Any]) -> bytes:
-        raise NotImplementedError("entry decryption is not implemented")
 
 
 @dataclass(frozen=True, slots=True)
@@ -43,7 +38,6 @@ class RecoveryCopyHint:
 class RecoveryPartHint:
     index: int
     bytes: int
-    sha256: str
     copies: tuple[RecoveryCopyHint, ...]
 
 
@@ -52,7 +46,6 @@ class RecoveryEntry:
     id: str
     path: str
     bytes: int
-    sha256: str
     parts: tuple[RecoveryPartHint, ...]
 
 
@@ -83,17 +76,6 @@ def build_optical_reader() -> object:
     return PlaceholderOpticalReader()
 
 
-def build_crypto() -> object:
-    spec = os.getenv("ARC_DISC_CRYPTO_FACTORY")
-    if spec:
-        return _load_factory(spec)
-    return PlaceholderCrypto()
-
-
-def _sha256_bytes(data: bytes) -> str:
-    return hashlib.sha256(data).hexdigest()
-
-
 def _copy_from_manifest(payload: dict[str, Any]) -> RecoveryCopyHint:
     return RecoveryCopyHint(
         copy_id=str(payload["copy"]),
@@ -110,7 +92,6 @@ def _part_from_manifest(payload: dict[str, Any]) -> RecoveryPartHint:
     return RecoveryPartHint(
         index=int(payload["index"]),
         bytes=int(payload["bytes"]),
-        sha256=str(payload["sha256"]),
         copies=copies,
     )
 
@@ -130,7 +111,6 @@ def _entry_from_manifest(payload: dict[str, Any]) -> RecoveryEntry:
             RecoveryPartHint(
                 index=0,
                 bytes=int(payload["bytes"]),
-                sha256=str(payload["sha256"]),
                 copies=copies,
             ),
         )
@@ -138,7 +118,6 @@ def _entry_from_manifest(payload: dict[str, Any]) -> RecoveryEntry:
         id=str(payload["id"]),
         path=str(payload["path"]),
         bytes=int(payload["bytes"]),
-        sha256=str(payload["sha256"]),
         parts=parts,
     )
 
@@ -161,17 +140,6 @@ def _upload_session_from_payload(entry: RecoveryEntry, payload: dict[str, Any]) 
         checksum_algorithm=str(payload["checksum_algorithm"]),
         expires_at=str(payload["expires_at"]) if payload.get("expires_at") is not None else None,
     )
-
-
-def _validate_part(
-    entry: RecoveryEntry,
-    part: RecoveryPartHint,
-    plaintext: bytes,
-) -> None:
-    if len(plaintext) != part.bytes or _sha256_bytes(plaintext) != part.sha256:
-        raise RuntimeError(
-            f"recovered part {part.index} for {entry.path} did not match the fetch manifest"
-        )
 
 
 def _prompt_for_disc(copy: RecoveryCopyHint, *, device: str) -> None:
@@ -234,13 +202,33 @@ class ProgressReporter:
         )
 
 
+def _iter_recovered_chunks(reader: Any, copy: RecoveryCopyHint, *, device: str) -> Iterator[bytes]:
+    if hasattr(reader, "read_iter"):
+        yield from reader.read_iter(copy.disc_path, device=device)
+        return
+    yield reader.read(copy.disc_path, device=device)
+
+
+def _skip_uploaded_prefix(chunks: Iterator[bytes], *, skip_bytes: int) -> Iterator[bytes]:
+    remaining = skip_bytes
+    for chunk in chunks:
+        if not chunk:
+            continue
+        if remaining >= len(chunk):
+            remaining -= len(chunk)
+            continue
+        if remaining > 0:
+            chunk = chunk[remaining:]
+            remaining = 0
+        yield chunk
+
+
 def _upload_entry_from_disc(
     entry: RecoveryEntry,
     session: UploadSession,
     *,
     client: ApiClient,
     reader: Any,
-    crypto: Any,
     device: str,
     progress: ProgressReporter,
 ) -> None:
@@ -255,13 +243,14 @@ def _upload_entry_from_disc(
 
         copy = part.copies[0]
         _prompt_for_disc(copy, device=device)
-        encrypted = reader.read(copy.disc_path, device=device)
-        plaintext = crypto.decrypt_entry(encrypted, copy.enc)
-        _validate_part(entry, part, plaintext)
-
         resume_within_part = max(offset - part_start, 0)
-        chunk = plaintext[resume_within_part:]
-        if chunk:
+        recovered_chunks = _skip_uploaded_prefix(
+            _iter_recovered_chunks(reader, copy, device=device),
+            skip_bytes=resume_within_part,
+        )
+        for chunk in recovered_chunks:
+            if not chunk:
+                continue
             upload_result = client.append_upload_chunk(
                 session.upload_url,
                 offset=offset,
@@ -292,7 +281,6 @@ def fetch_cmd(
         client = ApiClient()
         manifest = client.get_fetch_manifest(fetch_id)
         reader = build_optical_reader()
-        crypto = build_crypto()
         entries = tuple(_entry_from_manifest(entry) for entry in manifest.get("entries", []))
         sessions = {
             entry.id: _upload_session_from_payload(
@@ -311,7 +299,6 @@ def fetch_cmd(
                 sessions[entry.id],
                 client=client,
                 reader=reader,
-                crypto=crypto,
                 device=device,
                 progress=progress,
             )

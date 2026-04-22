@@ -155,6 +155,8 @@ Automated multipart recovery uses the fetch manifest as its recovery contract.
 - the sidecar says how to restore metadata and, for split files, how each object participates in the
   full plaintext
 - resumable recovery state for partially uploaded logical files is managed by the server-side fetch manifest
+- `arc-disc` does not own decryption or final logical-file hash validation; the server does that behind the upload
+  resource as needed
 - any temporary buffering used during recovery is an internal implementation detail
 - incomplete upload state expires after `INCOMPLETE_UPLOAD_TTL` since the last accepted chunk and the manifest returns to
   `waiting_media`
@@ -165,11 +167,11 @@ Expected multipart flow:
 1. read the fetch manifest from the API
 2. determine which disc is needed next from the manifest's part-level recovery hints
 3. prompt for successive disc insertions until every required part has been recovered
-4. read and decrypt the hinted payload object(s) and sidecar object(s) from each disc
-5. stream plaintext directly into the entry's resumable upload resource
+4. read the hinted payload object(s) from each disc
+5. stream recovered bytes directly into the entry's resumable upload resource
 6. if the logical file is split, continue streaming successive parts in ascending `index` order into that same upload
    resource
-7. verify the final logical file against the expected `sha256`
+7. let the server decrypt, validate, and materialize the logical file as needed
 8. rely on the manifest's resumable upload state if the process is interrupted before completion
 
 ## Manual Recovery

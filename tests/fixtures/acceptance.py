@@ -980,7 +980,6 @@ class AcceptanceSystem:
             {
                 "ARC_DISC_FIXTURE_PATH": str(self.fixture_path),
                 "ARC_DISC_READER_FACTORY": "tests.fixtures.arc_disc_fakes:FixtureOpticalReader",
-                "ARC_DISC_CRYPTO_FACTORY": "tests.fixtures.arc_disc_fakes:FixtureCrypto",
             }
         )
         return subprocess.run(
@@ -1170,8 +1169,7 @@ class AcceptanceSystem:
         files_by_path = {
             record.path: record.content for record in self.state.selected_files(str(manifest["target"]))
         }
-        encrypted_by_disc_path: dict[str, str] = {}
-        plaintext_by_fixture_key: dict[str, str] = {}
+        payload_by_disc_path: dict[str, str] = {}
         fail_disc_paths: list[str] = []
         fail_copy_ids = fail_copy_ids or set()
         corrupt_copy_ids = corrupt_copy_ids or set()
@@ -1186,23 +1184,17 @@ class AcceptanceSystem:
                 for copy_info in cast(list[dict[str, Any]], part["copies"]):
                     copy_id = str(copy_info["copy"])
                     disc_path = str(copy_info["disc_path"])
-                    fixture_key = str(copy_info["enc"]["fixture_key"])
-                    plaintext = part_plaintext
+                    payload = part_plaintext
                     if entry_path == corrupt_path or copy_id in corrupt_copy_ids:
-                        plaintext = plaintext + b"corrupted-by-fixture\n"
-                    encrypted = f"ciphertext::{fixture_key}".encode()
-                    encrypted_by_disc_path[disc_path] = base64.b64encode(encrypted).decode("ascii")
-                    plaintext_by_fixture_key[fixture_key] = base64.b64encode(plaintext).decode("ascii")
+                        payload = payload + b"corrupted-by-fixture\n"
+                    payload_by_disc_path[disc_path] = base64.b64encode(payload).decode("ascii")
                     if entry_path == fail_path or copy_id in fail_copy_ids:
                         fail_disc_paths.append(disc_path)
 
         payload = {
             "reader": {
-                "encrypted_by_disc_path": encrypted_by_disc_path,
+                "payload_by_disc_path": payload_by_disc_path,
                 "fail_disc_paths": fail_disc_paths,
-            },
-            "crypto": {
-                "plaintext_by_fixture_key": plaintext_by_fixture_key,
             },
         }
         self.fixture_path.write_text(json.dumps(payload, indent=2, sort_keys=True), encoding="utf-8")
