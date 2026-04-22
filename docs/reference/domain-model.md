@@ -2,10 +2,11 @@
 
 ## Core nouns
 
-Use these five nouns consistently:
+Use these six nouns consistently:
 
 - `collection` — the logical namespace the user thinks in
-- `image` — one provisional or finalized ISO artifact
+- `candidate` — one provisional planner proposal that may be re-allocated
+- `image` — one finalized ISO artifact
 - `copy` — one physical burned disc of an image
 - `pin` — a declared requirement to keep a target materialized in hot storage
 - `fetch` — the pin-scoped recovery manifest for one exact selector
@@ -33,18 +34,29 @@ The server-side materialized cache of file bytes currently available without opt
 
 Selectors operate over the projected hot namespace, not over literal hot-store paths on disk.
 
+### Candidate
+
+A provisional planner proposal addressed by `candidate_id`.
+
+Candidate lifecycle rules:
+
+- while a candidate appears in `GET /v1/plan`, it is provisional and its represented collections may be
+  re-allocated by the planner
+- `POST /v1/plan/candidates/{candidate_id}/finalize` explicitly finalizes that candidate allocation
+- finalized candidates do not appear in `GET /v1/plan`
+- repeated finalization of the same `candidate_id` is idempotent and returns the same finalized image
+
 ### Image
 
-A planned optical artifact addressed by stable API `image.id`.
+A finalized optical artifact addressed by finalized API `image.id`.
 
 Image lifecycle rules:
 
-- while an image appears in `GET /v1/plan`, it is provisional and its represented collections may still be
-  re-allocated by the planner
-- `POST /v1/images/{image_id}/finalize` explicitly finalizes that image allocation
-- once finalized, that image no longer appears in `GET /v1/plan`
-- finalization assigns and stores immutable `volume_id` for that `image.id`
-- `volume_id` is the media-facing identifier carried in the ISO and disc manifest
+- finalized images are created only by explicit candidate finalization
+- finalized images are not returned by `GET /v1/plan`
+- `GET /v1/images/{image_id}` addresses finalized images only
+- finalized `image.id` uses compact UTC basic form `YYYYMMDDTHHMMSSZ`
+- finalized `image.id` is the same media-facing identifier carried on the ISO and disc manifest
 
 ### Target
 
@@ -83,12 +95,22 @@ Definitions:
 - `archived_bytes` — total bytes stored on at least one registered copy
 - `pending_bytes` — `bytes - archived_bytes`
 
+### Candidate summary
+
+A candidate summary exposes at least:
+
+- `candidate_id`
+- `bytes`
+- `fill`
+- `files`
+- `collections`
+- `iso_ready`
+
 ### Image summary
 
 An image summary exposes at least:
 
 - `id`
-- `volume_id`
 - `bytes`
 - `fill`
 - `files`
@@ -100,7 +122,6 @@ An image summary exposes at least:
 A copy summary exposes at least:
 
 - `id`
-- `image`
 - `volume_id`
 - `location`
 - `created_at`

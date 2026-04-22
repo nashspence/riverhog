@@ -4,7 +4,7 @@ from arc_api.schemas.common import ArcModel
 
 
 class PlanImageOut(ArcModel):
-    id: str
+    candidate_id: str
     bytes: int
     fill: float
     collections: int

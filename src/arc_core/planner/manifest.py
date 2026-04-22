@@ -8,8 +8,7 @@ import yaml
 MANIFEST_FILENAME = "DISC.yml.age"
 README_FILENAME = "README.md"
 MANIFEST_SCHEMA = "disc-manifest/v1"
-PLACEHOLDER_IMAGE_ID = "img_00000000000000_00"
-PLACEHOLDER_VOLUME_ID = "ARC-IMG-00000000-00"
+PLACEHOLDER_IMAGE_ID = "00000000T000000Z"
 PLACEHOLDER_OBJECT = "files/999999.age"
 PLACEHOLDER_SIDECAR = "files/999999.yml.age"
 PLACEHOLDER_COLLECTION_MANIFEST = "collections/999999.yml.age"
@@ -67,20 +66,19 @@ def manifest_file_entry(
 
 
 
-def manifest_dump(image_id: str, volume_id: str, collections_payload: list[dict[str, object]]) -> bytes:
+def manifest_dump(image_id: str, collections_payload: list[dict[str, object]]) -> bytes:
     return yaml_bytes(
         {
             "schema": MANIFEST_SCHEMA,
             "image": {
                 "id": image_id,
-                "volume_id": volume_id,
             },
             "collections": collections_payload,
         }
     )
 
 
-EMPTY_MANIFEST_SIZE = len(manifest_dump(PLACEHOLDER_IMAGE_ID, PLACEHOLDER_VOLUME_ID, []))
+EMPTY_MANIFEST_SIZE = len(manifest_dump(PLACEHOLDER_IMAGE_ID, []))
 
 
 def sidecar_dict(
@@ -153,7 +151,7 @@ def manifest_collection_budget(collection_id: str, files: list[dict[str, Any]]) 
             ],
         }
     ]
-    return len(manifest_dump(PLACEHOLDER_IMAGE_ID, PLACEHOLDER_VOLUME_ID, payload)) - EMPTY_MANIFEST_SIZE
+    return len(manifest_dump(PLACEHOLDER_IMAGE_ID, payload)) - EMPTY_MANIFEST_SIZE
 
 
 

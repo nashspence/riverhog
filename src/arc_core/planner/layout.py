@@ -120,7 +120,7 @@ def manifest_bytes(
             collection_payload["manifest"] = collection_manifest_path
             collection_payload["proof"] = proof_path
         payload.append(collection_payload)
-    return manifest_dump(image_id, volume_id or image_id, payload)
+    return manifest_dump(volume_id or image_id, payload)
 
 
 

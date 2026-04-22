@@ -13,6 +13,7 @@ import pytest
 from pytest_bdd import given, parsers, then, when
 
 from arc_core.domain.selectors import parse_target
+from arc_core.domain.types import ImageId
 from arc_core.fs_paths import derive_collection_id_from_staging_path
 from tests.fixtures.disc_contracts import (
     InspectedIso,
@@ -498,26 +499,26 @@ def given_pinning_target_requires_fetch(
     acceptance_system.seed_fetch(fetch_id, target)
 
 
-@given(parsers.parse('image "{image_id}" exists'))
-def given_image_exists(acceptance_system: AcceptanceSystem, image_id: str) -> None:
-    assert image_id in {str(key) for key in acceptance_system.state.images_by_id}
+@given(parsers.parse('candidate "{candidate_id}" exists'))
+def given_candidate_exists(acceptance_system: AcceptanceSystem, candidate_id: str) -> None:
+    assert candidate_id in {str(key) for key in acceptance_system.state.candidates_by_id}
 
 
-@given(parsers.parse('image "{image_id}" has iso_ready true'))
-def given_image_has_iso_ready_true(acceptance_system: AcceptanceSystem, image_id: str) -> None:
-    image = acceptance_system.state.images_by_id[image_id]
-    assert image.iso_ready is True
+@given(parsers.parse('candidate "{candidate_id}" has iso_ready true'))
+def given_candidate_has_iso_ready_true(acceptance_system: AcceptanceSystem, candidate_id: str) -> None:
+    candidate = acceptance_system.state.candidates_by_id[ImageId(candidate_id)]
+    assert candidate.iso_ready is True
 
 
-@given(parsers.parse('image "{image_id}" covers bytes from collection "{collection_id}"'))
-def given_image_covers_collection(
+@given(parsers.parse('candidate "{candidate_id}" covers bytes from collection "{collection_id}"'))
+def given_candidate_covers_collection(
     acceptance_system: AcceptanceSystem,
     acceptance_context: AcceptanceScenarioContext,
-    image_id: str,
+    candidate_id: str,
     collection_id: str,
 ) -> None:
-    image = acceptance_system.state.images_by_id[image_id]
-    assert any(str(current_collection_id) == collection_id for current_collection_id, _ in image.covered_paths)
+    candidate = acceptance_system.state.candidates_by_id[ImageId(candidate_id)]
+    assert any(str(current_collection_id) == collection_id for current_collection_id, _ in candidate.covered_paths)
     acceptance_context.tracked_collection_id = collection_id
 
 
@@ -527,15 +528,15 @@ def given_copy_already_exists(
     copy_id: str,
 ) -> None:
     acceptance_system.planning.finalize_image(IMAGE_ID)
-    acceptance_system.copies.register(IMAGE_ID, copy_id, "Shelf B1")
+    acceptance_system.copies.register("20260420T040001Z", copy_id, "Shelf B1")
 
 
-@given(parsers.parse('image "{image_id}" is finalized'))
-def given_image_is_finalized(
+@given(parsers.parse('candidate "{candidate_id}" is finalized'))
+def given_candidate_is_finalized(
     acceptance_system: AcceptanceSystem,
-    image_id: str,
+    candidate_id: str,
 ) -> None:
-    acceptance_system.planning.finalize_image(image_id)
+    acceptance_system.planning.finalize_image(candidate_id)
 
 
 @given(parsers.parse('collection "{collection_id}" contains file "{path}"'))
@@ -1057,12 +1058,12 @@ def then_error_code_is(
     assert payload["error"]["code"] == code
 
 
-@then('each plan image contains "id", "bytes", "fill", "files", "collections", and "iso_ready"')
+@then('each plan image contains "candidate_id", "bytes", "fill", "files", "collections", and "iso_ready"')
 def then_each_plan_image_contains_expected_fields(
     acceptance_context: AcceptanceScenarioContext,
 ) -> None:
     payload = _json_payload(_require_response(acceptance_context))
-    expected = {"id", "bytes", "fill", "files", "collections", "iso_ready"}
+    expected = {"candidate_id", "bytes", "fill", "files", "collections", "iso_ready"}
     assert payload["images"]
     assert all(expected.issubset(image) for image in payload["images"])
 
@@ -1102,9 +1103,6 @@ def then_response_contains_image_id(
     image_id: str,
 ) -> None:
     payload = _json_payload(_require_response(acceptance_context))
-    if "copy" in payload:
-        assert payload["copy"]["image"] == image_id
-        return
     assert payload["id"] == image_id
 
 
@@ -1114,7 +1112,7 @@ def then_response_images_do_not_contain_image_id(
     image_id: str,
 ) -> None:
     payload = _json_payload(_require_response(acceptance_context))
-    ids = [image["id"] for image in payload["images"]]
+    ids = [image.get("candidate_id", image.get("id")) for image in payload["images"]]
     assert image_id not in ids
 
 
@@ -1144,6 +1142,15 @@ def then_response_copy_contains_fields(
 ) -> None:
     payload = _json_payload(_require_response(acceptance_context))
     assert set([first, *_quoted_values(rest)]).issubset(payload["copy"])
+
+
+@then(parsers.parse('the response does not contain field "{field}"'))
+def then_response_does_not_contain_field(
+    acceptance_context: AcceptanceScenarioContext,
+    field: str,
+) -> None:
+    payload = _json_payload(_require_response(acceptance_context))
+    assert field not in payload
 
 
 @then(parsers.parse('the response field "{field}" is null'))

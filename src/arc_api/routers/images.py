@@ -17,9 +17,9 @@ def get_image(image_id: str, container: ServiceContainer = Depends(get_container
     return ImageSummaryResponse.model_validate(payload)
 
 
-@router.post("/images/{image_id}/finalize", response_model=ImageSummaryResponse)
-def finalize_image(image_id: str, container: ServiceContainer = Depends(get_container)) -> ImageSummaryResponse:
-    payload = container.planning.finalize_image(image_id)
+@router.post("/plan/candidates/{candidate_id}/finalize", response_model=ImageSummaryResponse)
+def finalize_image(candidate_id: str, container: ServiceContainer = Depends(get_container)) -> ImageSummaryResponse:
+    payload = container.planning.finalize_image(candidate_id)
     return ImageSummaryResponse.model_validate(payload)
 
 

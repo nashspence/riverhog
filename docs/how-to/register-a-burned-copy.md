@@ -6,15 +6,16 @@ can be counted.
 CLI example:
 
 ```bash
-arc copy add img_2026-04-20_01 BR-021-A --at 'Shelf B1'
+arc copy add 20260420T040001Z BR-021-A --at 'Shelf B1'
 ```
 
-The first positional argument is the finalized `image_id`, not the `volume_id`.
+The first positional argument is the finalized `image_id`.
+Finalized image ids use compact UTC basic form `YYYYMMDDTHHMMSSZ`.
 
 Equivalent API request:
 
 ```http
-POST /v1/images/img_2026-04-20_01/copies
+POST /v1/images/20260420T040001Z/copies
 Content-Type: application/json
 ```
 
@@ -27,7 +28,7 @@ Content-Type: application/json
 
 Notes:
 
-- registration is valid only after explicit image finalization has assigned and stored its `volume_id`
+- registration is valid only after explicit image finalization has created the finalized image id
 - the physical copy identity is `(volume_id, id)`
 - the user-supplied `id` must be unique within that finalized image/`volume_id`
 - `location` is mutable metadata and is not part of the copy identity

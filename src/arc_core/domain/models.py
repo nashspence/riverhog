@@ -46,7 +46,6 @@ class ImageSummary:
 @dataclass(frozen=True)
 class CopySummary:
     id: CopyId
-    image: ImageId
     volume_id: str
     location: str
     created_at: str

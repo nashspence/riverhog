@@ -17,7 +17,6 @@ def map_collection(summary: CollectionSummary) -> dict[str, object]:
 def map_copy(summary: CopySummary) -> dict[str, object]:
     return {
         "id": str(summary.id),
-        "image": str(summary.image),
         "volume_id": summary.volume_id,
         "location": summary.location,
         "created_at": summary.created_at,

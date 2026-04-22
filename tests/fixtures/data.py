@@ -257,7 +257,7 @@ def _build_image_files_from_specs(
 
 
 IMAGE_ONE_FILES: dict[str, bytes] = _build_image_files(
-    image_id=IMAGE_ID,
+    image_id="20260420T040001Z",
     volume_id="20260420T040001Z",
     represented_paths={
         DOCS_COLLECTION_ID: (
@@ -268,7 +268,7 @@ IMAGE_ONE_FILES: dict[str, bytes] = _build_image_files(
 )
 
 IMAGE_TWO_FILES: dict[str, bytes] = _build_image_files(
-    image_id=SECOND_IMAGE_ID,
+    image_id="20260420T040002Z",
     volume_id="20260420T040002Z",
     represented_paths={
         PHOTOS_COLLECTION_ID: (
@@ -298,7 +298,7 @@ IMAGE_FIXTURES: tuple[ImageFixture, ...] = (
     ImageFixture(
         id=IMAGE_ID,
         volume_id="20260420T040001Z",
-        filename=f"{IMAGE_ID}.iso",
+        filename="20260420T040001Z.iso",
         files=IMAGE_ONE_FILES,
         bytes=8_200,
         iso_ready=True,
@@ -310,7 +310,7 @@ IMAGE_FIXTURES: tuple[ImageFixture, ...] = (
     ImageFixture(
         id=SECOND_IMAGE_ID,
         volume_id="20260420T040002Z",
-        filename=f"{SECOND_IMAGE_ID}.iso",
+        filename="20260420T040002Z.iso",
         files=IMAGE_TWO_FILES,
         bytes=6_100,
         iso_ready=False,
@@ -328,7 +328,7 @@ SPLIT_IMAGE_ONE_ID = "img_2026-04-20_03"
 SPLIT_IMAGE_TWO_ID = "img_2026-04-20_04"
 
 SPLIT_IMAGE_ONE_FILES: dict[str, bytes] = _build_image_files_from_specs(
-    image_id=SPLIT_IMAGE_ONE_ID,
+    image_id="20260420T040003Z",
     volume_id="20260420T040003Z",
     represented_specs={
         DOCS_COLLECTION_ID: (
@@ -342,7 +342,7 @@ SPLIT_IMAGE_ONE_FILES: dict[str, bytes] = _build_image_files_from_specs(
 )
 
 SPLIT_IMAGE_TWO_FILES: dict[str, bytes] = _build_image_files_from_specs(
-    image_id=SPLIT_IMAGE_TWO_ID,
+    image_id="20260420T040004Z",
     volume_id="20260420T040004Z",
     represented_specs={
         DOCS_COLLECTION_ID: (
@@ -359,7 +359,7 @@ SPLIT_IMAGE_FIXTURES: tuple[ImageFixture, ...] = (
     ImageFixture(
         id=SPLIT_IMAGE_ONE_ID,
         volume_id="20260420T040003Z",
-        filename=f"{SPLIT_IMAGE_ONE_ID}.iso",
+        filename="20260420T040003Z.iso",
         files=SPLIT_IMAGE_ONE_FILES,
         bytes=5_100,
         iso_ready=True,
@@ -368,7 +368,7 @@ SPLIT_IMAGE_FIXTURES: tuple[ImageFixture, ...] = (
     ImageFixture(
         id=SPLIT_IMAGE_TWO_ID,
         volume_id="20260420T040004Z",
-        filename=f"{SPLIT_IMAGE_TWO_ID}.iso",
+        filename="20260420T040004Z.iso",
         files=SPLIT_IMAGE_TWO_FILES,
         bytes=5_100,
         iso_ready=True,

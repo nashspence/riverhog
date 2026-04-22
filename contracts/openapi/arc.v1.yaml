@@ -94,7 +94,7 @@ paths:
   /plan:
     get:
       summary: Get current burn plan
-      description: Returns provisional planner output only. Images disappear from this plan once explicitly finalized.
+      description: Returns provisional planner output only. Finalized images do not appear in this plan.
       operationId: getPlan
       responses:
         "200":
@@ -106,7 +106,7 @@ paths:
   /images/{image_id}:
     get:
       summary: Get one image summary
-      description: Returns the stable API image handle plus its current stored `volume_id`, if the image has already been explicitly finalized.
+      description: Returns one finalized image summary. `image_id` is the compact UTC finalized id and media identifier.
       operationId: getImage
       parameters:
         - in: path
@@ -122,14 +122,14 @@ paths:
                 $ref: "#/components/schemas/ImageDetail"
         default:
           $ref: "#/components/responses/Error"
-  /images/{image_id}/finalize:
+  /plan/candidates/{candidate_id}/finalize:
     post:
-      summary: Explicitly finalize one image
-      description: Finalization is the only operation that assigns and stores immutable `volume_id` and removes the image from provisional plan output.
+      summary: Explicitly finalize one provisional candidate
+      description: Finalization is the only operation that creates a finalized image id.
       operationId: finalizeImage
       parameters:
         - in: path
-          name: image_id
+          name: candidate_id
           required: true
           schema: { type: string }
       responses:
@@ -144,7 +144,7 @@ paths:
   /images/{image_id}/iso:
     get:
       summary: Download ISO bytes for an image
-      description: Downloads ISO bytes for an already finalized image. This endpoint is retrieval-only and does not finalize the image.
+      description: Downloads ISO bytes for an already finalized image. This endpoint is retrieval-only and does not finalize a provisional candidate.
       operationId: getImageIso
       parameters:
         - in: path
@@ -164,7 +164,7 @@ paths:
   /images/{image_id}/copies:
     post:
       summary: Register a physical burned copy
-      description: Registers one burned disc for an already finalized image. The physical copy identity is `(volume_id, copy_id)` and `location` is mutable metadata, not identity.
+      description: Registers one burned disc for an already finalized image identified by `image_id`.
       operationId: createCopy
       parameters:
         - in: path
@@ -383,17 +383,12 @@ components:
         pending_bytes: { type: integer }
     ImageSummary:
       type: object
-      required: [id, volume_id, bytes, fill, files, collections, iso_ready]
+      required: [id, bytes, fill, files, collections, iso_ready]
       properties:
         id:
           type: string
-          description: Stable API handle for one known image.
-        volume_id:
-          description: Immutable media identifier stored when the image is explicitly finalized. `null` means the image is still provisional.
-          oneOf:
-            - type: string
-              pattern: "^[0-9]{8}T[0-9]{6}Z$"
-            - type: "null"
+          pattern: "^[0-9]{8}T[0-9]{6}Z$"
+          description: Canonical finalized image id and immutable media identifier.
         bytes: { type: integer }
         fill: { type: number }
         files: { type: integer }
@@ -401,17 +396,12 @@ components:
         iso_ready: { type: boolean }
     ImageDetail:
       type: object
-      required: [id, volume_id, bytes, fill, iso_ready, files, collections]
+      required: [id, bytes, fill, iso_ready, files, collections]
       properties:
         id:
           type: string
-          description: Stable API handle for one known image.
-        volume_id:
-          description: Immutable media identifier stored when the image is explicitly finalized. `null` means the image is still provisional.
-          oneOf:
-            - type: string
-              pattern: "^[0-9]{8}T[0-9]{6}Z$"
-            - type: "null"
+          pattern: "^[0-9]{8}T[0-9]{6}Z$"
+          description: Canonical finalized image id and immutable media identifier.
         bytes: { type: integer }
         fill: { type: number }
         iso_ready: { type: boolean }
@@ -435,14 +425,11 @@ components:
           description: Mutable physical location label. Not part of copy identity.
     CopySummary:
       type: object
-      required: [id, image, volume_id, location, created_at]
+      required: [id, volume_id, location, created_at]
       properties:
         id:
           type: string
           description: User-supplied copy id, unique within one finalized image/`volume_id`.
-        image:
-          type: string
-          description: Stable API image handle associated with this burned copy.
         volume_id:
           type: string
           pattern: "^[0-9]{8}T[0-9]{6}Z$"
@@ -699,9 +686,9 @@ components:
             - type: "null"
     PlanImage:
       type: object
-      required: [id, bytes, fill, collections, files, iso_ready]
+      required: [candidate_id, bytes, fill, collections, files, iso_ready]
       properties:
-        id: { type: string }
+        candidate_id: { type: string }
         bytes: { type: integer }
         fill: { type: number }
         collections: { type: integer }

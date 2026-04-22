@@ -1,6 +1,7 @@
 # Disc Format Reference
 
 This document is normative for any ISO returned by `GET /v1/images/{image_id}/iso`.
+Here `image_id` is the finalized image id in compact UTC basic form.
 The machine-readable contract files live in `contracts/disc/`:
 
 - `root-layout.json`
@@ -47,8 +48,7 @@ Rules:
 ```yaml
 schema: disc-manifest/v1
 image:
-  id: img_2026-04-20_01
-  volume_id: 20260420T040001Z
+  id: 20260420T040001Z
 collections:
   - id: docs
     manifest: collections/000001.yml.age
@@ -73,7 +73,7 @@ collections:
 Rules:
 
 - `collections[].id + files[].path` is the canonical logical path
-- `image.volume_id` is the immutable media identifier assigned when that image is explicitly finalized
+- `image.id` is the immutable finalized image id assigned when that image is explicitly finalized
 - `collections[]` and each `files[]` list are lexically sorted for deterministic images
 - whole files use `object` plus `sidecar`
 - split files use `parts.count` plus `parts.present[]`

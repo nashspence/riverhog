@@ -7,7 +7,6 @@ from arc_api.schemas.common import ArcModel
 
 class ImageSummaryResponse(ArcModel):
     id: str
-    volume_id: str | None = None
     bytes: int
     fill: float
     iso_ready: bool
@@ -22,7 +21,6 @@ class RegisterCopyRequest(ArcModel):
 
 class CopyOut(ArcModel):
     id: str
-    image: str
     volume_id: str
     location: str
     created_at: str

@@ -11,7 +11,7 @@ REQUIRED_PATHS = {
     "/v1/search",
     "/v1/plan",
     "/v1/images/{image_id}",
-    "/v1/images/{image_id}/finalize",
+    "/v1/plan/candidates/{candidate_id}/finalize",
     "/v1/images/{image_id}/iso",
     "/v1/images/{image_id}/copies",
     "/v1/pin",

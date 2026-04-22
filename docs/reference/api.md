@@ -65,10 +65,11 @@ Returns the best current provisional planner output and readiness status.
 
 Required behavior:
 
-- every image returned by the plan is still provisional
-- a provisional image may still be re-allocated by the planner
+- every returned plan entry is a provisional candidate
+- a provisional candidate may be re-allocated by the planner
 - finalized images are not returned by `GET /v1/plan`
-- plan image objects do not expose `volume_id`
+- plan candidate objects expose `candidate_id`
+- plan candidate objects do not expose `volume_id`
 
 ### Images
 
@@ -78,23 +79,24 @@ Returns one image summary.
 
 Required behavior:
 
-- `image.id` is the stable API handle for one known image, whether still provisional or already finalized
-- `volume_id` is `null` while the image remains provisional
-- after explicit finalization, the stored `volume_id` is returned for that same `image.id`
+- this endpoint returns finalized images only
+- `image.id` is the canonical finalized image id
+- finalized image ids use compact UTC basic form `YYYYMMDDTHHMMSSZ`
+- provisional plan candidates are not addressable through `GET /v1/images/{image_id}`
 
-#### `POST /v1/images/{image_id}/finalize`
+#### `POST /v1/plan/candidates/{candidate_id}/finalize`
 
-Explicitly finalizes one ready provisional image.
+Explicitly finalizes one ready provisional candidate and creates one finalized image resource.
 
 Required behavior:
 
-- this is the only operation that may assign and store `volume_id`
-- finalization assigns a unique immutable `volume_id` in UTC basic form `YYYYMMDDTHHMMSSZ`
+- this is the only operation that may create a finalized image id
+- finalization assigns a unique immutable finalized image id in UTC basic form `YYYYMMDDTHHMMSSZ`
 - if more than one image would otherwise finalize in the same second, later assignments advance in whole seconds until
-  an unused `volume_id` is found
-- after finalization, the planner must not re-allocate that image's represented bytes
-- after finalization, that image is no longer returned by `GET /v1/plan`
-- repeated finalization of the same `image.id` is idempotent and returns the same stored finalized summary
+  an unused id is found
+- after finalization, the planner must not re-allocate that finalized image's represented bytes
+- finalized candidates are not returned by `GET /v1/plan`
+- repeated finalization of the same `candidate_id` is idempotent and returns the same finalized summary
 
 #### `GET /v1/images/{image_id}/iso`
 
@@ -103,8 +105,8 @@ Returns ISO bytes if the image is ready.
 Required behavior:
 
 - ISO download does not finalize the image
-- ISO download requires the image to have already been explicitly finalized
-- subsequent downloads for the same finalized `image.id` reuse the same `volume_id` and the same represented bytes
+- ISO download requires the finalized image to already exist
+- subsequent downloads for the same finalized `image.id` reuse the same represented bytes
 
 #### `POST /v1/images/{image_id}/copies`
 
@@ -112,7 +114,8 @@ Registers a physical burned disc for an image.
 
 Required behavior:
 
-- copy registration is only valid for an image that has already been explicitly finalized and has a stored `volume_id`
+- copy registration is only valid for an already finalized image
+- the path `image_id` is the finalized image id
 - the physical copy identity is `(volume_id, copy_id)`
 - the user-supplied `copy_id` must be unique within that finalized image/`volume_id`; duplicates are rejected with
   `conflict`
@@ -237,6 +240,11 @@ The `arc` CLI is a thin API client and should provide at least:
 - files currently partial and still resumable
 - the expiry time for each partial upload
 
+For finalized-image commands:
+
+- `IMAGE_ID` means the finalized image id
+- finalized image ids use compact UTC basic form `YYYYMMDDTHHMMSSZ`
+
 ### `arc-disc`
 
 The `arc-disc` CLI is a fetch-fulfillment client for a machine with an optical drive and should provide:
@@ -270,11 +278,10 @@ Required behavior:
 - upload-state expiry for a manifest discards incomplete partial uploads and returns that manifest to `waiting_media`
 - `INCOMPLETE_UPLOAD_TTL` defaults to `24h`
 - fetch upload progress is tracked per logical file, not per disc fragment
-- every image returned by `GET /v1/plan` is provisional and omits `volume_id`
-- an explicit finalize operation is the only path that stores immutable `volume_id` for an `image.id`
-- once finalized, an image is no longer returned by `GET /v1/plan`
-- ISO download requires an already finalized image and uses the same stored `volume_id` and represented bytes on every
-  later download
+- every entry returned by `GET /v1/plan` is provisional and exposes `candidate_id`
+- explicit finalization is the only path that creates a finalized image id
+- finalized candidates are not returned by `GET /v1/plan`
+- ISO download requires an already finalized image and uses the same represented bytes on every later download
 - registering a copy cannot reduce archived coverage
 - a physical copy is identified by `(volume_id, copy_id)`, never by `location`
 - duplicate `copy_id` values are rejected within one finalized image/`volume_id`

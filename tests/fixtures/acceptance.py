@@ -113,9 +113,9 @@ class StoredFile:
 
 
 @dataclass(frozen=True, slots=True)
-class ImageRecord:
-    id: ImageId
-    volume_id: str
+class CandidateRecord:
+    candidate_id: ImageId
+    finalized_id: str
     filename: str
     image_root: Path
     bytes: int
@@ -136,7 +136,7 @@ class ImageRecord:
 
     def plan_payload(self) -> dict[str, object]:
         return {
-            "id": str(self.id),
+            "candidate_id": str(self.candidate_id),
             "bytes": self.bytes,
             "fill": self.fill,
             "files": self.files,
@@ -144,10 +144,9 @@ class ImageRecord:
             "iso_ready": self.iso_ready,
         }
 
-    def image_payload(self, *, volume_id: str | None) -> dict[str, object]:
+    def finalized_image_payload(self) -> dict[str, object]:
         return {
-            "id": str(self.id),
-            "volume_id": volume_id,
+            "id": self.finalized_id,
             "bytes": self.bytes,
             "fill": self.fill,
             "files": self.files,
@@ -157,8 +156,8 @@ class ImageRecord:
 
     def image_root_record(self) -> ImageRootRecord:
         return ImageRootRecord(
-            image_id=str(self.id),
-            volume_id=self.volume_id,
+            image_id=self.finalized_id,
+            volume_id=self.finalized_id,
             filename=self.filename,
             image_root=self.image_root,
         )
@@ -189,9 +188,9 @@ class FetchRecord:
 class AcceptanceState:
     staged_directories: dict[str, Path] = field(default_factory=dict)
     files_by_collection: dict[CollectionId, dict[str, StoredFile]] = field(default_factory=dict)
-    images_by_id: dict[ImageId, ImageRecord] = field(default_factory=dict)
+    candidates_by_id: dict[ImageId, CandidateRecord] = field(default_factory=dict)
+    finalized_images_by_id: dict[ImageId, CandidateRecord] = field(default_factory=dict)
     copy_summaries: dict[tuple[str, CopyId], CopySummary] = field(default_factory=dict)
-    finalized_image_ids: set[ImageId] = field(default_factory=set)
     exact_pins: set[TargetStr] = field(default_factory=set)
     fetches: dict[FetchId, FetchRecord] = field(default_factory=dict)
     next_fetch_number: int = 0
@@ -227,8 +226,8 @@ class AcceptanceState:
             )
         self.files_by_collection[collection_key] = records
 
-    def seed_image(self, image: ImageRecord) -> None:
-        self.images_by_id[image.id] = image
+    def seed_image(self, image: CandidateRecord) -> None:
+        self.candidates_by_id[image.candidate_id] = image
 
     def collection_files(self, collection_id: str | CollectionId) -> list[StoredFile]:
         collection_key = CollectionId(str(collection_id))
@@ -394,14 +393,14 @@ class AcceptancePlanningService:
         images = sorted(
             (
                 image
-                for image in self.state.images_by_id.values()
-                if image.id not in self.state.finalized_image_ids
+                for image in self.state.candidates_by_id.values()
+                if ImageId(image.finalized_id) not in self.state.finalized_images_by_id
             ),
-            key=lambda image: (-image.fill, str(image.id)),
+            key=lambda image: (-image.fill, str(image.candidate_id)),
         )
         covered = {
             (collection_id, path)
-            for image in self.state.images_by_id.values()
+            for image in self.state.candidates_by_id.values()
             for collection_id, path in image.covered_paths
         }
         unplanned_bytes = sum(
@@ -419,35 +418,33 @@ class AcceptancePlanningService:
         }
 
     def get_image(self, image_id: str) -> dict[str, object]:
-        image = self._image_record(image_id)
-        return image.image_payload(volume_id=self._visible_volume_id(image))
+        return self._finalized_image_record(image_id).finalized_image_payload()
 
-    def finalize_image(self, image_id: str) -> dict[str, object]:
-        image = self._image_record(image_id)
-        if not image.iso_ready:
+    def finalize_image(self, candidate_id: str) -> dict[str, object]:
+        candidate = self._candidate_record(candidate_id)
+        if not candidate.iso_ready:
             raise InvalidState("image must be ISO-ready before finalization")
-        self.state.finalized_image_ids.add(ImageId(image_id))
-        return image.image_payload(volume_id=image.volume_id)
+        finalized_key = ImageId(candidate.finalized_id)
+        self.state.finalized_images_by_id.setdefault(finalized_key, candidate)
+        return self.state.finalized_images_by_id[finalized_key].finalized_image_payload()
 
     async def get_iso_stream(self, image_id: str) -> object:
-        image = self._image_record(image_id)
-        if image.id not in self.state.finalized_image_ids:
-            raise InvalidState("image must be explicitly finalized before ISO download")
         return await self._iso_service.get_iso_stream(image_id)
 
-    def _image_record(self, image_id: str) -> ImageRecord:
-        image = self.state.images_by_id.get(ImageId(image_id))
+    def _candidate_record(self, candidate_id: str) -> CandidateRecord:
+        image = self.state.candidates_by_id.get(ImageId(candidate_id))
+        if image is None:
+            raise NotFound(f"candidate not found: {candidate_id}")
+        return image
+
+    def _finalized_image_record(self, image_id: str) -> CandidateRecord:
+        image = self.state.finalized_images_by_id.get(ImageId(image_id))
         if image is None:
             raise NotFound(f"image not found: {image_id}")
         return image
 
     def _image_root_record(self, image_id: str) -> ImageRootRecord:
-        return self._image_record(image_id).image_root_record()
-
-    def _visible_volume_id(self, image: ImageRecord) -> str | None:
-        if image.id in self.state.finalized_image_ids:
-            return image.volume_id
-        return None
+        return self._finalized_image_record(image_id).image_root_record()
 
 
 class AcceptanceCopyService:
@@ -455,19 +452,16 @@ class AcceptanceCopyService:
         self.state = state
 
     def register(self, image_id: str, copy_id: str, location: str) -> CopySummary:
-        image = self.state.images_by_id.get(ImageId(image_id))
+        image = self.state.finalized_images_by_id.get(ImageId(image_id))
         if image is None:
             raise NotFound(f"image not found: {image_id}")
-        if image.id not in self.state.finalized_image_ids:
-            raise InvalidState("image must be explicitly finalized before copy registration")
         copy_key = CopyId(copy_id)
-        scoped_key = (image.volume_id, copy_key)
+        scoped_key = (image.finalized_id, copy_key)
         if scoped_key in self.state.copy_summaries:
             raise Conflict(f"copy already exists for volume: {copy_id}")
         summary = CopySummary(
             id=copy_key,
-            image=ImageId(image_id),
-            volume_id=image.volume_id,
+            volume_id=image.finalized_id,
             location=location,
             created_at=DEFAULT_COPY_CREATED_AT,
         )
@@ -475,12 +469,12 @@ class AcceptanceCopyService:
         for collection_id, path in image.covered_paths:
             record = self.state.files_by_collection[collection_id][path]
             record.archived = True
-            if all((existing.id, existing.volume_id) != (copy_key, image.volume_id) for existing in record.copies):
+            if all((existing.id, existing.volume_id) != (copy_key, image.finalized_id) for existing in record.copies):
                 record.copies.append(
                     AcceptanceState._copy_from_dict(
                         build_file_copy(
                             copy_id=copy_id,
-                            volume_id=image.volume_id,
+                            volume_id=image.finalized_id,
                             location=location,
                             collection_id=str(collection_id),
                             path=path,
@@ -1179,9 +1173,9 @@ class AcceptanceSystem:
         for fixture in fixtures:
             image_root = write_tree(images_root / fixture.id, fixture.files)
             self.state.seed_image(
-                ImageRecord(
-                    id=ImageId(fixture.id),
-                    volume_id=fixture.volume_id,
+                CandidateRecord(
+                    candidate_id=ImageId(fixture.id),
+                    finalized_id=fixture.volume_id,
                     filename=fixture.filename,
                     image_root=image_root,
                     bytes=fixture.bytes,
