@@ -6,7 +6,13 @@ from fastapi import APIRouter, Depends, Header, Request
 
 from arc_api.deps import ServiceContainer, get_container
 from arc_api.mappers import map_fetch
-from arc_api.schemas.fetches import CompleteFetchResponse, FetchManifestResponse, FetchSummaryOut, UploadEntryResponse
+from arc_api.schemas.fetches import (
+    CompleteFetchResponse,
+    FetchManifestResponse,
+    FetchSummaryOut,
+    FetchUploadSessionResponse,
+    UploadEntryResponse,
+)
 
 router = APIRouter(tags=["fetches"])
 
@@ -21,6 +27,16 @@ def get_fetch(fetch_id: str, container: ServiceContainer = Depends(get_container
 def get_manifest(fetch_id: str, container: ServiceContainer = Depends(get_container)) -> FetchManifestResponse:
     payload = container.fetches.manifest(fetch_id)
     return FetchManifestResponse.model_validate(payload)
+
+
+@router.post("/fetches/{fetch_id}/entries/{entry_id}/upload", response_model=FetchUploadSessionResponse)
+def create_or_resume_fetch_entry_upload(
+    fetch_id: str,
+    entry_id: str,
+    container: ServiceContainer = Depends(get_container),
+) -> FetchUploadSessionResponse:
+    payload = container.fetches.create_or_resume_upload(fetch_id=fetch_id, entry_id=entry_id)
+    return FetchUploadSessionResponse.model_validate(payload)
 
 
 @router.put("/fetches/{fetch_id}/files/{entry_id}", response_model=UploadEntryResponse)

@@ -67,6 +67,8 @@ from tests.fixtures.data import (
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 SRC_ROOT = REPO_ROOT / "src"
+FIXTURE_UPLOAD_EXPIRES_AT = "2026-04-23T00:00:00Z"
+FIXTURE_UPLOAD_URL_BASE = "https://uploads.fixture.invalid"
 
 
 @dataclass(frozen=True, slots=True)
@@ -170,7 +172,10 @@ class FetchEntryRecord:
     sha256: Sha256Hex
     content: bytes
     copies: list[FileCopy]
+    uploaded_bytes: int = 0
     uploaded_content: bytes | None = None
+    upload_expires_at: str | None = None
+    upload_url: str | None = None
 
 
 @dataclass(slots=True)
@@ -516,8 +521,10 @@ class AcceptanceFetchService:
             bytes=sum(entry.bytes for entry in entries.values()),
             copies=self._summary_copies(entries.values()),
         )
-        self.state.fetches[fetch_key] = FetchRecord(summary=summary, entries=entries)
-        return summary
+        record = FetchRecord(summary=summary, entries=entries)
+        record.summary = self._replace_summary(record, state=initial_state)
+        self.state.fetches[fetch_key] = record
+        return record.summary
 
     def find_for_target(self, target: TargetStr) -> FetchSummary:
         summary = self.find_reusable_fetch(target)
@@ -531,10 +538,13 @@ class AcceptanceFetchService:
             del self.state.fetches[fetch_id]
 
     def get(self, fetch_id: str) -> FetchSummary:
-        return self._record(fetch_id).summary
+        record = self._record(fetch_id)
+        record.summary = self._replace_summary(record)
+        return record.summary
 
     def manifest(self, fetch_id: str) -> dict[str, object]:
         record = self._record(fetch_id)
+        record.summary = self._replace_summary(record)
         return {
             "id": str(record.summary.id),
             "target": str(record.summary.target),
@@ -544,11 +554,36 @@ class AcceptanceFetchService:
                     "path": entry.path,
                     "bytes": entry.bytes,
                     "sha256": str(entry.sha256),
+                    "upload_state": self._entry_upload_state(entry),
+                    "uploaded_bytes": entry.uploaded_bytes,
+                    "upload_state_expires_at": entry.upload_expires_at,
                     "copies": [self._manifest_copy(copy) for copy in entry.copies],
                     "parts": self._manifest_parts(entry),
                 }
                 for entry in record.entries.values()
             ],
+        }
+
+    def create_or_resume_upload(self, fetch_id: str, entry_id: str) -> dict[str, object]:
+        record = self._record(fetch_id)
+        entry = record.entries.get(EntryId(entry_id))
+        if entry is None:
+            raise NotFound(f"entry not found: {entry_id}")
+        if entry.upload_url is None:
+            entry.upload_url = (
+                f"{FIXTURE_UPLOAD_URL_BASE}/fetches/{record.summary.id}/entries/{entry.id}"
+            )
+        if self._entry_upload_state(entry) != "uploaded":
+            entry.upload_expires_at = FIXTURE_UPLOAD_EXPIRES_AT
+        record.summary = self._replace_summary(record)
+        return {
+            "entry": str(entry.id),
+            "protocol": "tus",
+            "upload_url": entry.upload_url,
+            "offset": entry.uploaded_bytes,
+            "length": entry.bytes,
+            "checksum_algorithm": "sha256",
+            "expires_at": entry.upload_expires_at,
         }
 
     def upload_entry(self, fetch_id: str, entry_id: str, sha256: str, content: bytes) -> dict[str, object]:
@@ -560,9 +595,17 @@ class AcceptanceFetchService:
         if sha256 != entry.sha256 or actual_sha != entry.sha256:
             self.state.rejected_upload_codes.append("hash_mismatch")
             raise HashMismatch("sha256 did not match expected entry hash")
+        if entry.upload_url is None:
+            entry.upload_url = (
+                f"{FIXTURE_UPLOAD_URL_BASE}/fetches/{record.summary.id}/entries/{entry.id}"
+            )
+        entry.uploaded_bytes = len(content)
         entry.uploaded_content = content
+        entry.upload_expires_at = None
         if record.summary.state == FetchState.WAITING_MEDIA:
-            record.summary = self._replace_state(record.summary, FetchState.UPLOADING)
+            record.summary = self._replace_summary(record, state=FetchState.UPLOADING)
+        else:
+            record.summary = self._replace_summary(record)
         return {
             "entry": str(entry.id),
             "accepted": True,
@@ -573,11 +616,11 @@ class AcceptanceFetchService:
         record = self._record(fetch_id)
         if any(entry.uploaded_content is None for entry in record.entries.values()):
             raise InvalidState("fetch is missing required entry uploads")
-        record.summary = self._replace_state(record.summary, FetchState.VERIFYING)
+        record.summary = self._replace_summary(record, state=FetchState.VERIFYING)
         for entry in record.entries.values():
             stored = self.state.files_by_collection[entry.collection_id][entry.path]
             stored.hot = True
-        record.summary = self._replace_state(record.summary, FetchState.DONE)
+        record.summary = self._replace_summary(record, state=FetchState.DONE)
         hot = self._hot_payload(str(record.summary.target))
         return {
             "id": str(record.summary.id),
@@ -588,9 +631,13 @@ class AcceptanceFetchService:
     def upload_all_required_entries(self, fetch_id: str) -> None:
         record = self._record(fetch_id)
         for entry in record.entries.values():
+            entry.uploaded_bytes = entry.bytes
             entry.uploaded_content = entry.content
+            entry.upload_expires_at = None
         if record.summary.state == FetchState.WAITING_MEDIA:
-            record.summary = self._replace_state(record.summary, FetchState.UPLOADING)
+            record.summary = self._replace_summary(record, state=FetchState.UPLOADING)
+        else:
+            record.summary = self._replace_summary(record)
 
     def _record(self, fetch_id: str) -> FetchRecord:
         try:
@@ -598,16 +645,39 @@ class AcceptanceFetchService:
         except KeyError as exc:
             raise NotFound(f"fetch not found: {fetch_id}") from exc
 
-    @staticmethod
-    def _replace_state(summary: FetchSummary, state: FetchState) -> FetchSummary:
+    def _replace_summary(self, record: FetchRecord, *, state: FetchState | None = None) -> FetchSummary:
+        summary = record.summary
+        entries = list(record.entries.values())
+        entries_total = len(entries)
+        entries_pending = sum(1 for entry in entries if self._entry_upload_state(entry) == "pending")
+        entries_partial = sum(1 for entry in entries if self._entry_upload_state(entry) == "partial")
+        entries_uploaded = sum(1 for entry in entries if self._entry_upload_state(entry) == "uploaded")
+        uploaded_bytes = sum(entry.uploaded_bytes for entry in entries)
+        missing_bytes = max(summary.bytes - uploaded_bytes, 0)
+        upload_expiries = [entry.upload_expires_at for entry in entries if entry.upload_expires_at is not None]
         return FetchSummary(
             id=summary.id,
             target=summary.target,
-            state=state,
+            state=state or summary.state,
             files=summary.files,
             bytes=summary.bytes,
             copies=list(summary.copies),
+            entries_total=entries_total,
+            entries_pending=entries_pending,
+            entries_partial=entries_partial,
+            entries_uploaded=entries_uploaded,
+            uploaded_bytes=uploaded_bytes,
+            missing_bytes=missing_bytes,
+            upload_state_expires_at=max(upload_expiries) if upload_expiries else None,
         )
+
+    @staticmethod
+    def _entry_upload_state(entry: FetchEntryRecord) -> str:
+        if entry.uploaded_content is not None and entry.uploaded_bytes >= entry.bytes:
+            return "uploaded"
+        if entry.uploaded_bytes > 0:
+            return "partial"
+        return "pending"
 
     @staticmethod
     def _summary_copies(entries: Iterator[FetchEntryRecord]) -> list[FetchCopyHint]:

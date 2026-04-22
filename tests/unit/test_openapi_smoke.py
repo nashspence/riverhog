@@ -18,7 +18,7 @@ REQUIRED_PATHS = {
     "/v1/pins",
     "/v1/fetches/{fetch_id}",
     "/v1/fetches/{fetch_id}/manifest",
-    "/v1/fetches/{fetch_id}/files/{entry_id}",
+    "/v1/fetches/{fetch_id}/entries/{entry_id}/upload",
     "/v1/fetches/{fetch_id}/complete",
 }
 

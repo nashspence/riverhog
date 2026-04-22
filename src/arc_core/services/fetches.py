@@ -10,6 +10,9 @@ class StubFetchService:
     def manifest(self, fetch_id: str) -> object:
         raise NotYetImplemented("StubFetchService is not implemented yet")
 
+    def create_or_resume_upload(self, fetch_id: str, entry_id: str) -> object:
+        raise NotYetImplemented("StubFetchService is not implemented yet")
+
     def upload_entry(self, fetch_id: str, entry_id: str, sha256: str, content: bytes) -> object:
         raise NotYetImplemented("StubFetchService is not implemented yet")
 

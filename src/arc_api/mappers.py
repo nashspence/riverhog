@@ -31,6 +31,13 @@ def map_fetch(summary: FetchSummary) -> dict[str, object]:
         "state": summary.state.value,
         "files": summary.files,
         "bytes": summary.bytes,
+        "entries_total": summary.entries_total,
+        "entries_pending": summary.entries_pending,
+        "entries_partial": summary.entries_partial,
+        "entries_uploaded": summary.entries_uploaded,
+        "uploaded_bytes": summary.uploaded_bytes,
+        "missing_bytes": summary.missing_bytes,
+        "upload_state_expires_at": summary.upload_state_expires_at,
         "copies": [{"id": str(c.id), "volume_id": c.volume_id, "location": c.location} for c in summary.copies],
     }
 

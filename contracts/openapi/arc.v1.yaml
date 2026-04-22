@@ -484,6 +484,7 @@ components:
           entries_uploaded,
           uploaded_bytes,
           missing_bytes,
+          upload_state_expires_at,
           copies,
         ]
       properties:
@@ -524,15 +525,21 @@ components:
           additionalProperties: true
     FetchManifestEntry:
       type: object
-      required: [id, target, bytes, sha256, upload, copies]
+      required:
+        [id, path, bytes, sha256, upload_state, uploaded_bytes, upload_state_expires_at, copies]
       properties:
         id: { type: string }
-        target:
-          $ref: "#/components/schemas/Target"
+        path: { type: string }
         bytes: { type: integer }
         sha256: { type: string }
-        upload:
-          $ref: "#/components/schemas/FetchManifestEntryUpload"
+        upload_state:
+          $ref: "#/components/schemas/FetchEntryUploadState"
+        uploaded_bytes: { type: integer }
+        upload_state_expires_at:
+          oneOf:
+            - type: string
+              format: date-time
+            - type: "null"
         copies:
           type: array
           items:
@@ -552,18 +559,6 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/FetchManifestEntryCopy"
-    FetchManifestEntryUpload:
-      type: object
-      required: [state, uploaded_bytes]
-      properties:
-        state:
-          $ref: "#/components/schemas/FetchEntryUploadState"
-        uploaded_bytes: { type: integer }
-        expires_at:
-          oneOf:
-            - type: string
-              format: date-time
-            - type: "null"
     FetchManifest:
       type: object
       required: [id, target, entries]

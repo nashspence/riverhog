@@ -44,7 +44,7 @@ Feature: Fetches API
     Background:
       Given fetch "fx-1" exists for target "docs/tax/2022/invoice-123.pdf"
 
-    @xfail_not_backed
+    @xfail_contract
     Scenario: Read a fetch summary
       When the client gets "/v1/fetches/fx-1"
       Then the response status is 200
@@ -58,7 +58,7 @@ Feature: Fetches API
       And both manifests contain the same entry ids
       And both manifests contain the same logical file set
 
-    @xfail_not_backed
+    @xfail_contract
     Scenario: Read a manifest entry upload view
       When the client gets "/v1/fetches/fx-1/manifest"
       Then the response status is 200
@@ -82,13 +82,13 @@ Feature: Fetches API
       Given fetch "fx-1" exists with entry "e1"
       And entry "e1" expects sha256 "good-hash"
 
-    @xfail_not_backed
+    @xfail_contract
     Scenario: Creating or resuming an entry upload returns a resumable upload session
       When the client posts to "/v1/fetches/fx-1/entries/e1/upload"
       Then the response status is 200
       And the response contains "entry", "protocol", "upload_url", "offset", "length", "checksum_algorithm", and "expires_at"
 
-    @xfail_not_backed
+    @xfail_contract
     Scenario: Repeating upload-session creation reuses the same upload resource
       When the client posts to "/v1/fetches/fx-1/entries/e1/upload"
       And the client posts to "/v1/fetches/fx-1/entries/e1/upload" again
