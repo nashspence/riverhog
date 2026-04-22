@@ -84,7 +84,7 @@ The minimal external surface is:
 - list pins
 - inspect a fetch
 - read a fetch manifest
-- upload recovered bytes
+- upload raw encrypted recovery bytes
 - complete a fetch
 
 The same canonical target string is used everywhere in API and CLI.

@@ -56,7 +56,7 @@ def format_fetch(summary: Mapping[str, Any], manifest: Mapping[str, Any]) -> str
             if not isinstance(entry, Mapping):
                 continue
             path = str(entry.get("path", "unknown"))
-            total_bytes = int(entry.get("bytes", 0))
+            total_bytes = int(entry.get("recovery_bytes", entry.get("bytes", 0)))
             uploaded_bytes = int(entry.get("uploaded_bytes", 0))
             upload_state = str(entry.get("upload_state", "pending"))
             expires_at = str(entry.get("upload_state_expires_at", "n/a"))

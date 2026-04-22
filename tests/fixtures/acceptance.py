@@ -60,6 +60,8 @@ from tests.fixtures.data import (
     SPLIT_IMAGE_FIXTURES,
     TARGET_BYTES,
     build_file_copy,
+    fixture_decrypt_bytes,
+    fixture_encrypt_bytes,
     staging_path_for_collection,
     split_fixture_plaintext,
     write_tree,
@@ -553,10 +555,11 @@ class AcceptanceFetchService:
                     "path": entry.path,
                     "bytes": entry.bytes,
                     "sha256": str(entry.sha256),
+                    "recovery_bytes": self._entry_recovery_bytes(entry),
                     "upload_state": self._entry_upload_state(entry),
                     "uploaded_bytes": entry.uploaded_bytes,
                     "upload_state_expires_at": entry.upload_expires_at,
-                    "copies": [self._manifest_copy(copy) for copy in entry.copies],
+                    "copies": [self._manifest_copy(entry, copy) for copy in entry.copies],
                     "parts": self._manifest_parts(entry),
                 }
                 for entry in record.entries.values()
@@ -580,7 +583,7 @@ class AcceptanceFetchService:
             "protocol": "tus",
             "upload_url": entry.upload_url,
             "offset": entry.uploaded_bytes,
-            "length": entry.bytes,
+            "length": self._entry_recovery_bytes(entry),
             "checksum_algorithm": "sha256",
             "expires_at": entry.upload_expires_at,
         }
@@ -606,19 +609,17 @@ class AcceptanceFetchService:
         if digest != actual_digest:
             raise HashMismatch("upload checksum did not match the provided chunk")
         next_uploaded_bytes = offset + len(content)
-        if next_uploaded_bytes > entry.bytes:
+        if next_uploaded_bytes > self._entry_recovery_bytes(entry):
             raise Conflict("upload chunk exceeded the expected entry length")
 
         current_content = entry.uploaded_content or b""
         entry.uploaded_content = current_content + content
         entry.uploaded_bytes = next_uploaded_bytes
 
-        if entry.uploaded_bytes < entry.bytes:
+        if entry.uploaded_bytes < self._entry_recovery_bytes(entry):
             entry.upload_expires_at = FIXTURE_UPLOAD_EXPIRES_AT
         else:
-            actual_sha = hashlib.sha256(entry.uploaded_content).hexdigest()
-            if actual_sha != entry.sha256:
-                raise HashMismatch("sha256 did not match expected entry hash")
+            self._verify_uploaded_entry(entry)
             entry.upload_expires_at = None
 
         if record.summary.state == FetchState.WAITING_MEDIA:
@@ -637,6 +638,7 @@ class AcceptanceFetchService:
             raise InvalidState("fetch is missing required entry uploads")
         record.summary = self._replace_summary(record, state=FetchState.VERIFYING)
         for entry in record.entries.values():
+            self._verify_uploaded_entry(entry)
             stored = self.state.files_by_collection[entry.collection_id][entry.path]
             stored.hot = True
         record.summary = self._replace_summary(record, state=FetchState.DONE)
@@ -650,8 +652,9 @@ class AcceptanceFetchService:
     def upload_all_required_entries(self, fetch_id: str) -> None:
         record = self._record(fetch_id)
         for entry in record.entries.values():
-            entry.uploaded_bytes = entry.bytes
-            entry.uploaded_content = entry.content
+            recovery_stream = b"".join(self._entry_recovery_payloads(entry))
+            entry.uploaded_bytes = len(recovery_stream)
+            entry.uploaded_content = recovery_stream
             entry.upload_expires_at = None
         if record.summary.state == FetchState.WAITING_MEDIA:
             record.summary = self._replace_summary(record, state=FetchState.UPLOADING)
@@ -672,7 +675,7 @@ class AcceptanceFetchService:
         entries_partial = sum(1 for entry in entries if self._entry_upload_state(entry) == "partial")
         entries_uploaded = sum(1 for entry in entries if self._entry_upload_state(entry) == "uploaded")
         uploaded_bytes = sum(entry.uploaded_bytes for entry in entries)
-        missing_bytes = max(summary.bytes - uploaded_bytes, 0)
+        missing_bytes = max(sum(self._entry_recovery_bytes(entry) for entry in entries) - uploaded_bytes, 0)
         upload_expiries = [entry.upload_expires_at for entry in entries if entry.upload_expires_at is not None]
         return FetchSummary(
             id=summary.id,
@@ -690,9 +693,8 @@ class AcceptanceFetchService:
             upload_state_expires_at=max(upload_expiries) if upload_expiries else None,
         )
 
-    @staticmethod
-    def _entry_upload_state(entry: FetchEntryRecord) -> str:
-        if entry.uploaded_content is not None and entry.uploaded_bytes >= entry.bytes:
+    def _entry_upload_state(self, entry: FetchEntryRecord) -> str:
+        if entry.uploaded_content is not None and entry.uploaded_bytes >= self._entry_recovery_bytes(entry):
             return "uploaded"
         if entry.uploaded_bytes > 0:
             return "partial"
@@ -711,13 +713,15 @@ class AcceptanceFetchService:
                 out.append(copy.hint)
         return out
 
-    @staticmethod
-    def _manifest_copy(copy: FileCopy) -> dict[str, object]:
+    def _manifest_copy(self, entry: FetchEntryRecord, copy: FileCopy) -> dict[str, object]:
+        recovery_payload = self._copy_recovery_payload(entry, copy)
         return {
             "copy": str(copy.id),
             "volume_id": copy.volume_id,
             "location": copy.location,
             "disc_path": copy.disc_path,
+            "recovery_bytes": len(recovery_payload),
+            "recovery_sha256": hashlib.sha256(recovery_payload).hexdigest(),
             "enc": copy.enc,
         }
 
@@ -731,7 +735,8 @@ class AcceptanceFetchService:
                     "index": 0,
                     "bytes": entry.bytes,
                     "sha256": str(entry.sha256),
-                    "copies": [self._manifest_copy(copy) for copy in entry.copies],
+                    "recovery_bytes": self._entry_recovery_bytes(entry),
+                    "copies": [self._manifest_copy(entry, copy) for copy in entry.copies],
                 }
             ]
 
@@ -750,10 +755,48 @@ class AcceptanceFetchService:
                     "index": part_index,
                     "bytes": bytes_hint,
                     "sha256": sha256_hint,
-                    "copies": [self._manifest_copy(copy) for copy in part_copies],
+                    "recovery_bytes": len(self._copy_recovery_payload(entry, part_copies[0])),
+                    "copies": [self._manifest_copy(entry, copy) for copy in part_copies],
                 }
             )
         return parts
+
+    def _entry_recovery_payloads(self, entry: FetchEntryRecord) -> tuple[bytes, ...]:
+        if not entry.copies or all(copy.part_index is None for copy in entry.copies):
+            return (fixture_encrypt_bytes(entry.content),)
+        part_count = max((copy.part_count or 1) for copy in entry.copies)
+        return tuple(fixture_encrypt_bytes(part) for part in split_fixture_plaintext(entry.content, part_count))
+
+    def _entry_recovery_bytes(self, entry: FetchEntryRecord) -> int:
+        return sum(len(payload) for payload in self._entry_recovery_payloads(entry))
+
+    def _copy_recovery_payload(self, entry: FetchEntryRecord, copy: FileCopy) -> bytes:
+        payloads = self._entry_recovery_payloads(entry)
+        if copy.part_index is None:
+            return payloads[0]
+        return payloads[copy.part_index]
+
+    def _verify_uploaded_entry(self, entry: FetchEntryRecord) -> None:
+        if entry.uploaded_content is None:
+            raise InvalidState("fetch is missing required entry uploads")
+        recovery_payloads = self._entry_recovery_payloads(entry)
+        offset = 0
+        plaintext_parts: list[bytes] = []
+        for recovery_payload in recovery_payloads:
+            next_offset = offset + len(recovery_payload)
+            chunk = entry.uploaded_content[offset:next_offset]
+            if len(chunk) != len(recovery_payload):
+                raise HashMismatch("uploaded recovery stream did not match expected recovery boundaries")
+            try:
+                plaintext_parts.append(fixture_decrypt_bytes(chunk))
+            except ValueError as exc:
+                raise HashMismatch("uploaded recovery bytes did not decrypt cleanly") from exc
+            offset = next_offset
+        if offset != len(entry.uploaded_content):
+            raise HashMismatch("uploaded recovery stream contained trailing bytes")
+        actual_sha = hashlib.sha256(b"".join(plaintext_parts)).hexdigest()
+        if actual_sha != entry.sha256:
+            raise HashMismatch("sha256 did not match expected entry hash")
 
     def _hot_payload(self, raw_target: str) -> dict[str, object]:
         selected = self.state.selected_files(raw_target)
@@ -1184,7 +1227,7 @@ class AcceptanceSystem:
                 for copy_info in cast(list[dict[str, Any]], part["copies"]):
                     copy_id = str(copy_info["copy"])
                     disc_path = str(copy_info["disc_path"])
-                    payload = part_plaintext
+                    payload = fixture_encrypt_bytes(part_plaintext)
                     if entry_path == corrupt_path or copy_id in corrupt_copy_ids:
                         payload = payload + b"corrupted-by-fixture\n"
                     payload_by_disc_path[disc_path] = base64.b64encode(payload).decode("ascii")

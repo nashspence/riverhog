@@ -122,6 +122,12 @@ A fetch summary exposes at least:
 - `copies`
 - `upload_state_expires_at`
 
+Definitions:
+
+- `bytes` — total logical-file bytes selected by the exact pin
+- `uploaded_bytes` — accepted bytes in the fetch's ordered recovery-byte upload streams
+- `missing_bytes` — remaining bytes in those ordered recovery-byte upload streams
+
 ### Pin summary
 
 A pin summary exposes at least:

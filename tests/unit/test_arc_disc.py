@@ -5,12 +5,14 @@ import hashlib
 from typer.testing import CliRunner
 
 import arc_disc.main as arc_disc_main
+from tests.fixtures.data import fixture_encrypt_bytes
 
 runner = CliRunner()
 
 
 def _manifest_for(plaintext: bytes) -> dict[str, object]:
     sha256 = hashlib.sha256(plaintext).hexdigest()
+    recovery = fixture_encrypt_bytes(plaintext)
     return {
         "id": "fx-1",
         "target": "docs/tax/2022/invoice-123.pdf",
@@ -20,16 +22,20 @@ def _manifest_for(plaintext: bytes) -> dict[str, object]:
                 "path": "tax/2022/invoice-123.pdf",
                 "bytes": len(plaintext),
                 "sha256": sha256,
+                "recovery_bytes": len(recovery),
                 "parts": [
                     {
                         "index": 0,
                         "bytes": len(plaintext),
                         "sha256": sha256,
+                        "recovery_bytes": len(recovery),
                         "copies": [
                             {
                                 "copy": "copy-docs-1",
                                 "location": "vault-a/shelf-01",
                                 "disc_path": "disc/000001.bin",
+                                "recovery_bytes": len(recovery),
+                                "recovery_sha256": hashlib.sha256(recovery).hexdigest(),
                                 "enc": {"fixture_key": "fixture-1"},
                             }
                         ],
@@ -41,13 +47,14 @@ def _manifest_for(plaintext: bytes) -> dict[str, object]:
 
 
 def test_arc_disc_fetch_recovers_in_memory_and_reports_progress(monkeypatch) -> None:
-    recovered = b"invoice fixture bytes\n"
+    plaintext = b"invoice fixture bytes\n"
+    recovered = fixture_encrypt_bytes(plaintext)
     uploaded: list[tuple[str, int, str, bytes]] = []
 
     class FakeClient:
         def get_fetch_manifest(self, fetch_id: str) -> dict[str, object]:
             assert fetch_id == "fx-1"
-            return _manifest_for(recovered)
+            return _manifest_for(plaintext)
 
         def create_or_resume_fetch_entry_upload(self, fetch_id: str, entry_id: str) -> dict[str, object]:
             assert fetch_id == "fx-1"
@@ -111,12 +118,13 @@ def test_arc_disc_fetch_reports_clean_error_when_optical_read_fails(monkeypatch)
             return _manifest_for(b"invoice fixture bytes\n")
 
         def create_or_resume_fetch_entry_upload(self, fetch_id: str, entry_id: str) -> dict[str, object]:
+            recovery = fixture_encrypt_bytes(b"invoice fixture bytes\n")
             return {
                 "entry": entry_id,
                 "protocol": "tus",
                 "upload_url": "https://uploads.test/fx-1/e1",
                 "offset": 0,
-                "length": len(b"invoice fixture bytes\n"),
+                "length": len(recovery),
                 "checksum_algorithm": "sha256",
                 "expires_at": "2026-04-23T00:00:00Z",
             }
@@ -140,8 +148,10 @@ def test_arc_disc_fetch_reports_clean_error_when_optical_read_fails(monkeypatch)
 
 
 def test_arc_disc_fetch_resumes_split_entry_from_session_offset(monkeypatch) -> None:
-    part_one = b"invoice fixture "
-    part_two = b"bytes\n"
+    part_one_plaintext = b"invoice fixture "
+    part_two_plaintext = b"bytes\n"
+    part_one = fixture_encrypt_bytes(part_one_plaintext)
+    part_two = fixture_encrypt_bytes(part_two_plaintext)
     uploaded: list[tuple[int, bytes]] = []
 
     class FakeClient:
@@ -154,31 +164,38 @@ def test_arc_disc_fetch_resumes_split_entry_from_session_offset(monkeypatch) -> 
                     {
                         "id": "e1",
                         "path": "tax/2022/invoice-123.pdf",
-                        "bytes": len(part_one) + len(part_two),
-                        "sha256": hashlib.sha256(part_one + part_two).hexdigest(),
+                        "bytes": len(part_one_plaintext) + len(part_two_plaintext),
+                        "sha256": hashlib.sha256(part_one_plaintext + part_two_plaintext).hexdigest(),
+                        "recovery_bytes": len(part_one) + len(part_two),
                         "parts": [
                             {
                                 "index": 0,
-                                "bytes": len(part_one),
-                                "sha256": hashlib.sha256(part_one).hexdigest(),
+                                "bytes": len(part_one_plaintext),
+                                "sha256": hashlib.sha256(part_one_plaintext).hexdigest(),
+                                "recovery_bytes": len(part_one),
                                 "copies": [
                                     {
                                         "copy": "copy-docs-split-1",
                                         "location": "vault-a/shelf-01",
                                         "disc_path": "disc/000001.bin",
+                                        "recovery_bytes": len(part_one),
+                                        "recovery_sha256": hashlib.sha256(part_one).hexdigest(),
                                         "enc": {"fixture_key": "fixture-1"},
                                     }
                                 ],
                             },
                             {
                                 "index": 1,
-                                "bytes": len(part_two),
-                                "sha256": hashlib.sha256(part_two).hexdigest(),
+                                "bytes": len(part_two_plaintext),
+                                "sha256": hashlib.sha256(part_two_plaintext).hexdigest(),
+                                "recovery_bytes": len(part_two),
                                 "copies": [
                                     {
                                         "copy": "copy-docs-split-2",
                                         "location": "vault-a/shelf-02",
                                         "disc_path": "disc/000002.bin",
+                                        "recovery_bytes": len(part_two),
+                                        "recovery_sha256": hashlib.sha256(part_two).hexdigest(),
                                         "enc": {"fixture_key": "fixture-2"},
                                     }
                                 ],

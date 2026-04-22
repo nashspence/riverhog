@@ -27,6 +27,8 @@ class FetchManifestCopyOut(ArcModel):
     volume_id: str
     location: str
     disc_path: str
+    recovery_bytes: int
+    recovery_sha256: str
     enc: dict
 
 
@@ -34,6 +36,7 @@ class FetchManifestPartOut(ArcModel):
     index: int
     bytes: int
     sha256: str
+    recovery_bytes: int
     copies: list[FetchManifestCopyOut]
 
 
@@ -42,6 +45,7 @@ class FetchManifestEntryOut(ArcModel):
     path: str
     bytes: int
     sha256: str
+    recovery_bytes: int
     upload_state: str
     uploaded_bytes: int
     upload_state_expires_at: str | None

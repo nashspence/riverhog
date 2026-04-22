@@ -156,9 +156,13 @@ Returns a stable manifest for the exact pin lifetime.
 - the fetch manifest is the source of truth for automated multipart recovery
 - multipart logical files include part-level recovery hints
 - `entries[].parts[]` are ordered by zero-based `index`
-- every part hint includes exact plaintext `bytes`, plaintext `sha256`, and at least one candidate recovery copy
-- those hash and size fields are server-side verification anchors; `arc-disc` does not have to perform decryption or
-  final logical-file hash validation itself
+- every manifest entry includes logical plaintext `bytes` / `sha256` plus `recovery_bytes` for the ordered upload
+  stream
+- every part hint includes logical plaintext `bytes`, logical plaintext `sha256`, `recovery_bytes`, and at least one
+  candidate recovery copy
+- every candidate recovery copy includes `disc_path`, `recovery_bytes`, `recovery_sha256`, and opaque `enc`
+- `arc-disc` uploads the raw encrypted bytes stored at `disc_path`, not reconstructed logical plaintext
+- logical plaintext hash and size fields remain server-side verification anchors after decryption and reconstruction
 - each manifest entry exposes current upload state, uploaded bytes, and upload expiry if partial state exists
 - those hints drive disc sequencing and resumable recovery in `arc-disc`
 - incomplete upload state expires after `INCOMPLETE_UPLOAD_TTL` since the last accepted chunk and the manifest returns to
@@ -174,6 +178,7 @@ Required behavior:
 - the response returns one upload URL bound to exactly one logical file entry
 - the returned upload URL uses tus-compatible resumable upload semantics
 - the response includes current offset, total length, transport checksum algorithm, and expiry time
+- offset and length are measured in the entry's ordered recovery-byte stream
 - repeated calls while the upload remains resumable return the current upload resource rather than creating duplicates
 - the server owns any required decryption and final logical-file validation behind that upload resource
 
@@ -235,7 +240,9 @@ Required behavior:
 - complete files stream straight from optical recovery into the upload resource rather than being materialized to disk
   first
 - split files stream into the same logical-file upload resource in ascending part order
+- the upload resource receives raw encrypted recovery bytes exactly as stored in the hinted payload object(s)
 - `arc-disc` treats the upload resource as opaque and does not own decryption or final logical-file hash validation
+- resumable offsets remain valid only for the exact recovery-byte stream accepted so far for the current span
 - any temporary buffering used during recovery is an internal implementation detail
 - progress output is precise and continuous, including current transfer rate, percent complete for the current file, and
   percent complete for the whole manifest

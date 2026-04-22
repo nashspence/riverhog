@@ -14,8 +14,8 @@ The response exposes at least:
 - `entry`
 - `protocol` — always `tus`
 - `upload_url`
-- `offset`
-- `length`
+- `offset` — accepted bytes in the ordered recovery-byte stream
+- `length` — total bytes in the ordered recovery-byte stream
 - `expires_at`
 - `checksum_algorithm`
 
@@ -36,9 +36,12 @@ streams parts into the same logical-file upload in ascending order.
 
 - unsplit files stream as one continuous upload
 - split files stream sequentially into the same upload resource as successive spans become available
+- the uploaded bytes are the raw encrypted payload-object bytes read from the hinted `disc_path`
 - the upload-session boundary is opaque to the CLI: the server may decrypt, transform, and validate uploaded recovery
   bytes however it needs
 - `arc-disc` does not own decryption or final logical-file hash validation
+- if the current span switches to a candidate copy with a different advertised recovery-byte stream, the server may
+  reject resume and require that span to restart at its boundary
 
 If an implementation uses temporary buffering internally, that buffering is conventional temporary storage and not a
 user-managed API or CLI surface.

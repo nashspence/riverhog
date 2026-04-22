@@ -44,7 +44,7 @@ This keeps intent explicit and makes the system safer than inferring meaning fro
 2. The system creates or reuses one fetch manifest for that exact selector.
 3. If all selected bytes are already hot, the fetch manifest is immediately satisfied.
 4. If some bytes are archived but not hot, a companion recovery tool reads the indicated optical copy and streams
-   recovered bytes into resumable upload resources.
+   raw encrypted recovery bytes into resumable upload resources.
 5. The server handles any required decryption and file validation, materializes bytes into the hot object store, and
    updates the projected namespace.
 6. The explicit pin remains active after fetch completion, and the satisfied fetch manifest remains readable until

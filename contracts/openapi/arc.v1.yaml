@@ -494,13 +494,19 @@ components:
         state:
           $ref: "#/components/schemas/FetchState"
         files: { type: integer }
-        bytes: { type: integer }
+        bytes:
+          type: integer
+          description: Total logical-file bytes selected by the exact pin.
         entries_total: { type: integer }
         entries_pending: { type: integer }
         entries_partial: { type: integer }
         entries_uploaded: { type: integer }
-        uploaded_bytes: { type: integer }
-        missing_bytes: { type: integer }
+        uploaded_bytes:
+          type: integer
+          description: Accepted upload bytes in the ordered recovery-byte stream exposed by the manifest.
+        missing_bytes:
+          type: integer
+          description: Remaining upload bytes in the ordered recovery-byte stream exposed by the manifest.
         upload_state_expires_at:
           oneOf:
             - type: string
@@ -512,34 +518,47 @@ components:
             $ref: "#/components/schemas/FetchCopyHint"
     FetchManifestEntryCopy:
       type: object
-      required: [copy, volume_id, location, disc_path, enc]
+      required: [copy, volume_id, location, disc_path, recovery_bytes, recovery_sha256, enc]
       properties:
         copy: { type: string }
         volume_id:
           type: string
           pattern: "^[0-9]{8}T[0-9]{6}Z$"
         location: { type: string }
-        disc_path: { type: string }
+        disc_path:
+          type: string
+          description: On-disc payload-object path whose raw encrypted bytes are uploaded for this recovery candidate.
+        recovery_bytes:
+          type: integer
+          description: Exact raw encrypted byte length at `disc_path` for this recovery candidate.
+        recovery_sha256:
+          type: string
+          description: SHA-256 of the exact raw encrypted byte stream at `disc_path` for this recovery candidate.
         enc:
           type: object
-          description: Opaque recovery metadata that the server may use when binding uploaded recovery bytes back to archived objects.
+          description: Opaque server-owned recovery metadata used to bind uploaded recovery bytes back to archived objects.
           additionalProperties: true
     FetchManifestEntry:
       type: object
       required:
-        [id, path, bytes, sha256, upload_state, uploaded_bytes, upload_state_expires_at, copies]
+        [id, path, bytes, sha256, recovery_bytes, upload_state, uploaded_bytes, upload_state_expires_at, copies]
       properties:
         id: { type: string }
         path: { type: string }
         bytes:
           type: integer
-          description: Logical-file byte length used by the server when validating uploaded recovery data.
+          description: Final logical-file byte length used by the server after decrypting and reconstructing uploaded recovery data.
         sha256:
           type: string
           description: Logical-file digest used by the server for final verification.
+        recovery_bytes:
+          type: integer
+          description: Total upload length for this entry's ordered recovery-byte stream.
         upload_state:
           $ref: "#/components/schemas/FetchEntryUploadState"
-        uploaded_bytes: { type: integer }
+        uploaded_bytes:
+          type: integer
+          description: Accepted upload bytes in this entry's ordered recovery-byte stream.
         upload_state_expires_at:
           oneOf:
             - type: string
@@ -555,15 +574,18 @@ components:
             $ref: "#/components/schemas/FetchManifestPart"
     FetchManifestPart:
       type: object
-      required: [index, bytes, sha256, copies]
+      required: [index, bytes, sha256, recovery_bytes, copies]
       properties:
         index: { type: integer }
         bytes:
           type: integer
-          description: Logical plaintext length for this part, used by the server when validating recovered uploads.
+          description: Logical plaintext length for this part after decryption.
         sha256:
           type: string
           description: Logical plaintext digest for this part, used by the server as a verification anchor.
+        recovery_bytes:
+          type: integer
+          description: Raw encrypted byte length uploaded for this ordered recovery span.
         copies:
           type: array
           items:
@@ -641,8 +663,12 @@ components:
         upload_url:
           type: string
           format: uri
-        offset: { type: integer }
-        length: { type: integer }
+        offset:
+          type: integer
+          description: Current accepted byte offset in the entry's ordered recovery-byte stream.
+        length:
+          type: integer
+          description: Total byte length of the entry's ordered recovery-byte stream.
         checksum_algorithm:
           type: string
           const: sha256

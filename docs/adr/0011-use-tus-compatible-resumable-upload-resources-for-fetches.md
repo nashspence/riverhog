@@ -22,9 +22,13 @@ The transport should be commodity rather than bespoke when the protocol already 
 - the JSON API creates or resumes that resource for the caller and returns its upload URL
 - the upload URL speaks tus-compatible resumable upload semantics
 - the required protocol surface is tus core plus checksum and expiration support
-- `arc-disc` streams recovered bytes from optical media into that upload resource without owning decryption or final
-  logical-file validation
+- `arc-disc` streams raw encrypted payload-object bytes from optical media into that upload resource without owning
+  decryption or final logical-file validation
 - split logical files stream into the same upload resource in ascending part order
+- upload-session offsets, lengths, and transport checksums are measured against the ordered recovery-byte stream, not the
+  final logical-file plaintext length
+- if an operator switches to a candidate copy whose advertised recovery-byte stream differs for the current span, the
+  server may reject resume and require that span to restart at its boundary
 - if temporary buffering is needed internally, it uses conventional temporary storage as an implementation detail only
 
 ## Consequences

@@ -31,6 +31,8 @@ class RecoveryCopyHint:
     copy_id: str
     location: str
     disc_path: str
+    recovery_bytes: int
+    recovery_sha256: str
     enc: dict[str, Any]
 
 
@@ -38,6 +40,7 @@ class RecoveryCopyHint:
 class RecoveryPartHint:
     index: int
     bytes: int
+    recovery_bytes: int
     copies: tuple[RecoveryCopyHint, ...]
 
 
@@ -46,6 +49,7 @@ class RecoveryEntry:
     id: str
     path: str
     bytes: int
+    recovery_bytes: int
     parts: tuple[RecoveryPartHint, ...]
 
 
@@ -81,6 +85,8 @@ def _copy_from_manifest(payload: dict[str, Any]) -> RecoveryCopyHint:
         copy_id=str(payload["copy"]),
         location=str(payload["location"]),
         disc_path=str(payload["disc_path"]),
+        recovery_bytes=int(payload.get("recovery_bytes", payload.get("bytes", 0))),
+        recovery_sha256=str(payload.get("recovery_sha256", "")),
         enc=dict(payload["enc"]),
     )
 
@@ -92,6 +98,7 @@ def _part_from_manifest(payload: dict[str, Any]) -> RecoveryPartHint:
     return RecoveryPartHint(
         index=int(payload["index"]),
         bytes=int(payload["bytes"]),
+        recovery_bytes=int(payload.get("recovery_bytes", payload["bytes"])),
         copies=copies,
     )
 
@@ -111,6 +118,7 @@ def _entry_from_manifest(payload: dict[str, Any]) -> RecoveryEntry:
             RecoveryPartHint(
                 index=0,
                 bytes=int(payload["bytes"]),
+                recovery_bytes=int(payload.get("recovery_bytes", payload["bytes"])),
                 copies=copies,
             ),
         )
@@ -118,6 +126,7 @@ def _entry_from_manifest(payload: dict[str, Any]) -> RecoveryEntry:
         id=str(payload["id"]),
         path=str(payload["path"]),
         bytes=int(payload["bytes"]),
+        recovery_bytes=int(payload.get("recovery_bytes", payload["bytes"])),
         parts=parts,
     )
 
@@ -127,16 +136,16 @@ def _upload_session_from_payload(entry: RecoveryEntry, payload: dict[str, Any]) 
         raise RuntimeError(f"upload session entry mismatch for {entry.path}")
     if str(payload.get("protocol")) != "tus":
         raise RuntimeError(f"upload session protocol is not tus for {entry.path}")
-    if int(payload.get("length", -1)) != entry.bytes:
+    if int(payload.get("length", -1)) != entry.recovery_bytes:
         raise RuntimeError(f"upload session length mismatch for {entry.path}")
     offset = int(payload.get("offset", -1))
-    if offset < 0 or offset > entry.bytes:
+    if offset < 0 or offset > entry.recovery_bytes:
         raise RuntimeError(f"upload session offset is invalid for {entry.path}")
     return UploadSession(
         entry=entry.id,
         upload_url=str(payload["upload_url"]),
         offset=offset,
-        length=entry.bytes,
+        length=entry.recovery_bytes,
         checksum_algorithm=str(payload["checksum_algorithm"]),
         expires_at=str(payload["expires_at"]) if payload.get("expires_at") is not None else None,
     )
@@ -180,14 +189,14 @@ class ProgressReporter:
 
     @property
     def manifest_total_bytes(self) -> int:
-        return sum(entry.bytes for entry in self.entries)
+        return sum(entry.recovery_bytes for entry in self.entries)
 
     def record_uploaded_bytes(self, entry: RecoveryEntry, byte_count: int) -> None:
         self.uploaded_bytes_by_entry[entry.id] = self.uploaded_bytes_by_entry.get(entry.id, 0) + byte_count
         self.uploaded_manifest_bytes += byte_count
 
     def report(self, entry: RecoveryEntry) -> None:
-        entry_total = max(entry.bytes, 1)
+        entry_total = max(entry.recovery_bytes, 1)
         manifest_total = max(self.manifest_total_bytes, 1)
         entry_percent = (self.uploaded_bytes_by_entry.get(entry.id, 0) / entry_total) * 100
         manifest_percent = (self.uploaded_manifest_bytes / manifest_total) * 100
@@ -236,7 +245,7 @@ def _upload_entry_from_disc(
     part_start = 0
 
     for part in entry.parts:
-        part_end = part_start + part.bytes
+        part_end = part_start + part.recovery_bytes
         if offset >= part_end:
             part_start = part_end
             continue
@@ -267,8 +276,8 @@ def _upload_entry_from_disc(
 
         part_start = part_end
 
-    if offset != entry.bytes:
-        raise RuntimeError(f"upload for {entry.path} stopped at {offset} of {entry.bytes} bytes")
+    if offset != entry.recovery_bytes:
+        raise RuntimeError(f"upload for {entry.path} stopped at {offset} of {entry.recovery_bytes} bytes")
 
 
 @app.command("fetch")

@@ -40,6 +40,7 @@ from tests.fixtures.data import (
     SPLIT_FILE_PARTS,
     SPLIT_FILE_RELPATH,
     TAX_DIRECTORY_TARGET,
+    fixture_encrypt_bytes,
 )
 
 
@@ -1197,7 +1198,7 @@ def then_fetch_manifest_part_recovers_from_copy(
     assert [copy["copy"] for copy in part["copies"]] == [copy_id]
 
 
-@then(parsers.parse('fetch manifest entry "{entry_id}" part hashes match the published split fixture'))
+@then(parsers.parse('fetch manifest entry "{entry_id}" part hashes and recovery-byte hashes match the published split fixture'))
 def then_fetch_manifest_part_hashes_match_fixture(
     acceptance_context: AcceptanceScenarioContext,
     entry_id: str,
@@ -1206,6 +1207,12 @@ def then_fetch_manifest_part_hashes_match_fixture(
     assert [part["bytes"] for part in entry["parts"]] == [len(part) for part in SPLIT_FILE_PARTS]
     assert [part["sha256"] for part in entry["parts"]] == [
         hashlib.sha256(part).hexdigest() for part in SPLIT_FILE_PARTS
+    ]
+    assert [part["recovery_bytes"] for part in entry["parts"]] == [
+        len(fixture_encrypt_bytes(part)) for part in SPLIT_FILE_PARTS
+    ]
+    assert [part["copies"][0]["recovery_sha256"] for part in entry["parts"]] == [
+        hashlib.sha256(fixture_encrypt_bytes(part)).hexdigest() for part in SPLIT_FILE_PARTS
     ]
 
 
@@ -1502,3 +1509,23 @@ def then_upload_session_responses_reuse_upload_url(
     assert len(acceptance_context.responses) == 2
     payloads = [_json_payload(response) for response in acceptance_context.responses]
     assert payloads[0]["upload_url"] == payloads[1]["upload_url"]
+
+
+@then(parsers.parse('the upload-session length matches fetch "{fetch_id}" entry "{entry_id}" recovery bytes'))
+def then_upload_session_length_matches_manifest_entry_recovery_bytes(
+    acceptance_system: AcceptanceSystem,
+    acceptance_context: AcceptanceScenarioContext,
+    fetch_id: str,
+    entry_id: str,
+) -> None:
+    payload = _json_payload(_require_response(acceptance_context))
+    record = acceptance_system.state.fetches[fetch_id]
+    entry = record.entries[entry_id]
+    expected_length = sum(
+        len(fixture_encrypt_bytes(part))
+        for part in split_fixture_plaintext(
+            entry.content,
+            max((copy.part_count or 1) for copy in entry.copies) if entry.copies else 1,
+        )
+    )
+    assert payload["length"] == expected_length

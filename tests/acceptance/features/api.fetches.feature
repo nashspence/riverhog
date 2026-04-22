@@ -62,7 +62,7 @@ Feature: Fetches API
     Scenario: Read a manifest entry upload view
       When the client gets "/v1/fetches/fx-1/manifest"
       Then the response status is 200
-      And fetch manifest entry "e1" contains "upload_state", "uploaded_bytes", and "upload_state_expires_at"
+      And fetch manifest entry "e1" contains "recovery_bytes", "upload_state", "uploaded_bytes", and "upload_state_expires_at"
 
   Rule: Split fetch manifests expose part-level recovery hints
     Background:
@@ -75,7 +75,7 @@ Feature: Fetches API
       And fetch manifest entry "e1" lists split parts 0 and 1
       And fetch manifest entry "e1" part 0 is recoverable from copy "copy-docs-split-1"
       And fetch manifest entry "e1" part 1 is recoverable from copy "copy-docs-split-2"
-      And fetch manifest entry "e1" part hashes match the published split fixture
+      And fetch manifest entry "e1" part hashes and recovery-byte hashes match the published split fixture
 
   Rule: Fetch upload and completion are resumable and hash-verified
     Background:
@@ -87,6 +87,7 @@ Feature: Fetches API
       When the client posts to "/v1/fetches/fx-1/entries/e1/upload"
       Then the response status is 200
       And the response contains "entry", "protocol", "upload_url", "offset", "length", "checksum_algorithm", and "expires_at"
+      And the upload-session length matches fetch "fx-1" entry "e1" recovery bytes
 
     @xfail_contract
     Scenario: Repeating upload-session creation reuses the same upload resource

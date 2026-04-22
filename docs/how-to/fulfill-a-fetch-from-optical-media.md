@@ -6,8 +6,8 @@ The `arc-disc` CLI is the recovery client for a machine with an optical drive.
 
 1. Read the fetch manifest.
 2. Determine which disc to insert next from the manifest's part-level recovery hints.
-3. Read recovered bytes from each required optical copy.
-4. Stream those recovered bytes directly into the entry upload resource, continuing in ascending part order when the
+3. Read the raw encrypted payload-object bytes from each required optical copy.
+4. Stream those recovery bytes directly into the entry upload resource, continuing in ascending part order when the
    logical file spans multiple discs.
 5. Let the server handle any required decryption and final file validation for each manifest entry.
 6. Complete the fetch.

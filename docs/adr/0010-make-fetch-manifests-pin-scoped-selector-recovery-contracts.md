@@ -34,6 +34,13 @@ the fetch manifest is the recovery view of that pin.
 - the fetch summary exposes an audit field for that expiry boundary, for example `upload_state_expires_at`
 - the fetch summary and manifest expose enough progress state for a client to list pending files, partial files still
   inside the TTL window, and uploaded files
+- fetch manifests keep logical plaintext validation anchors (`bytes`, `sha256`) and also expose explicit
+  recovery-byte metadata for the ordered upload stream that `arc-disc` must send
+- upload offsets and resumable progress are measured against that ordered recovery-byte stream, not final logical-file
+  plaintext bytes
+- candidate copies are alternatives for a recovery span rather than a whole-file session lock, but resumable offsets are
+  only valid for the exact advertised recovery-byte stream accepted so far
+- `enc` remains opaque server-owned binding metadata rather than a public crypto sub-protocol
 - `arc-disc` reports precise progress for both the current file and the whole manifest during recovery and upload
 
 ## Consequences
@@ -42,4 +49,5 @@ the fetch manifest is the recovery view of that pin.
 - repeated pinning of the same exact selector converges on one manifest as long as the exact pin remains present
 - the fetch manifest becomes the stable orchestration contract for `arc-disc`, even when recovery pauses and resumes
 - multi-disc recovery can resume without leaving unbounded server-side partial uploads behind
+- the public contract now distinguishes logical-file validation fields from raw encrypted recovery-byte transport fields
 - users only need to understand one selector namespace: projected paths
