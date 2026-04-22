@@ -1,8 +1,9 @@
-@acceptance @cli @mvp @xfail_contract
+@acceptance @cli @mvp
 Feature: arc CLI
   The main CLI is a thin stable wrapper over the API.
 
   Rule: JSON mode mirrors API payloads
+    @xfail_not_backed
     Scenario: arc pin emits the API pin payload
       Given target "docs/tax/2022/invoice-123.pdf" is valid
       When the operator runs 'arc pin "docs/tax/2022/invoice-123.pdf" --json'
@@ -10,6 +11,7 @@ Feature: arc CLI
       And stdout is valid JSON
       And stdout matches the structure of POST "/v1/pin"
 
+    @xfail_not_backed
     Scenario: arc release emits the API release payload
       Given target "docs/tax/2022/invoice-123.pdf" is valid
       When the operator runs 'arc release "docs/tax/2022/invoice-123.pdf" --json'
@@ -17,18 +19,21 @@ Feature: arc CLI
       And stdout is valid JSON
       And stdout matches the structure of POST "/v1/release"
 
+    @xfail_contract
     Scenario: arc find emits the API search payload
       When the operator runs 'arc find "invoice" --json'
       Then the command exits with code 0
       And stdout is valid JSON
       And stdout matches the structure of GET "/v1/search"
 
+    @xfail_contract
     Scenario: arc plan emits the API plan payload
       When the operator runs 'arc plan --json'
       Then the command exits with code 0
       And stdout is valid JSON
       And stdout matches the structure of GET "/v1/plan"
 
+    @xfail_not_backed
     Scenario: arc pins emits fetch associations for active pins
       Given archived target "docs/tax/2022/invoice-123.pdf" is pinned with fetch "fx-1"
       When the operator runs 'arc pins --json'
@@ -40,6 +45,7 @@ Feature: arc CLI
       And stdout mentions "waiting_media"
 
   Rule: Non-JSON mode remains concise and stable
+    @xfail_not_backed
     Scenario: arc pin prints fetch guidance when recovery is needed
       Given pinning target "docs/tax/2022/invoice-123.pdf" requires fetch "fx-1"
       When the operator runs 'arc pin "docs/tax/2022/invoice-123.pdf"'
@@ -48,6 +54,7 @@ Feature: arc CLI
       And stdout mentions fetch id "fx-1"
       And stdout mentions at least one candidate copy id
 
+    @xfail_not_backed
     Scenario: arc fetch lists pending and partial files for one pin manifest
       Given fetch "fx-1" exists for target "docs/tax/2022/invoice-123.pdf"
       When the operator runs 'arc fetch "fx-1"'

@@ -1,4 +1,4 @@
-@acceptance @api @mvp @xfail_contract
+@acceptance @api @mvp
 Feature: Search API
   The API returns stable projected-path selectors that can be reused directly by pin and release.
 
@@ -7,6 +7,7 @@ Feature: Search API
     And collection "docs" contains file "/tax/2022/invoice-123.pdf"
     And collection "photos-2024" contains directory "/albums/japan/"
 
+  @xfail_not_backed
   Scenario: Search returns file and collection selectors
     When the client gets "/v1/search?q=invoice&limit=25"
     Then the response status is 200
@@ -16,17 +17,20 @@ Feature: Search API
     And each file result contains current hot availability
     And each file result contains available copies if archived
 
+  @xfail_contract
   Scenario: Search selectors are directly reusable
     When the client gets "/v1/search?q=japan&limit=25"
     Then the response status is 200
     And every returned target is valid input for pin
     And every returned target is valid input for release
 
+  @xfail_contract
   Scenario: Search honors limit
     When the client gets "/v1/search?q=a&limit=1"
     Then the response status is 200
     And the response contains at most 1 result
 
+  @xfail_not_backed
   Scenario: Search is case-insensitive substring match
     When the client gets "/v1/search?q=INVOICE&limit=25"
     Then the response status is 200

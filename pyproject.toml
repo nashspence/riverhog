@@ -63,7 +63,8 @@ markers = [
   "cli: CLI-focused contract coverage",
   "integration: non-contract regression coverage",
   "mvp: MVP contract coverage",
-  "xfail_contract: executable contract scenario that intentionally leads implementation",
+  "xfail_contract: executable contract scenario whose acceptance backing exists before production catches up",
+  "xfail_not_backed: contract scenario whose Gherkin exists before acceptance backing fully exists",
 ]
 
 [tool.mypy]

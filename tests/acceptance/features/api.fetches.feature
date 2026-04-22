@@ -1,4 +1,4 @@
-@acceptance @api @mvp @xfail_contract
+@acceptance @api @mvp
 Feature: Fetches API
   A fetch manifest is the recovery view of one exact pinned selector.
 
@@ -6,6 +6,7 @@ Feature: Fetches API
     Background:
       Given collection "docs" exists and is fully hot
 
+    @xfail_not_backed
     Scenario: Pinning a hot selector returns a done fetch manifest
       When the client posts to "/v1/pin" with target "docs/"
       Then the response status is 200
@@ -20,6 +21,7 @@ Feature: Fetches API
       Given file "docs/tax/2022/invoice-123.pdf" is archived
       And file "docs/tax/2022/invoice-123.pdf" is not hot
 
+    @xfail_not_backed
     Scenario: Pin a cold archived file
       When the client posts to "/v1/pin" with target "docs/tax/2022/invoice-123.pdf"
       Then the response status is 200
@@ -29,6 +31,7 @@ Feature: Fetches API
       And a fetch id is returned
       And fetch state is "waiting_media"
 
+    @xfail_not_backed
     Scenario: Repeating the same pin reuses the active fetch
       Given fetch "fx-existing" already exists for target "docs/tax/2022/invoice-123.pdf"
       And fetch "fx-existing" is not done
@@ -41,11 +44,13 @@ Feature: Fetches API
     Background:
       Given fetch "fx-1" exists for target "docs/tax/2022/invoice-123.pdf"
 
+    @xfail_not_backed
     Scenario: Read a fetch summary
       When the client gets "/v1/fetches/fx-1"
       Then the response status is 200
       And the response contains "id", "target", "state", "files", "bytes", "entries_total", "entries_pending", "entries_partial", "entries_uploaded", "uploaded_bytes", "missing_bytes", "copies", and "upload_state_expires_at"
 
+    @xfail_not_backed
     Scenario: Read the manifest twice
       When the client gets "/v1/fetches/fx-1/manifest"
       And the client gets "/v1/fetches/fx-1/manifest" again
@@ -53,6 +58,7 @@ Feature: Fetches API
       And both manifests contain the same entry ids
       And both manifests contain the same logical file set
 
+    @xfail_not_backed
     Scenario: Read a manifest entry upload view
       When the client gets "/v1/fetches/fx-1/manifest"
       Then the response status is 200
@@ -62,6 +68,7 @@ Feature: Fetches API
     Background:
       Given split archived fetch "fx-1" exists for target "docs/tax/2022/invoice-123.pdf"
 
+    @xfail_not_backed
     Scenario: Read a split manifest
       When the client gets "/v1/fetches/fx-1/manifest"
       Then the response status is 200
@@ -75,22 +82,26 @@ Feature: Fetches API
       Given fetch "fx-1" exists with entry "e1"
       And entry "e1" expects sha256 "good-hash"
 
+    @xfail_not_backed
     Scenario: Creating or resuming an entry upload returns a resumable upload session
       When the client posts to "/v1/fetches/fx-1/entries/e1/upload"
       Then the response status is 200
       And the response contains "entry", "protocol", "upload_url", "offset", "length", "checksum_algorithm", and "expires_at"
 
+    @xfail_not_backed
     Scenario: Repeating upload-session creation reuses the same upload resource
       When the client posts to "/v1/fetches/fx-1/entries/e1/upload"
       And the client posts to "/v1/fetches/fx-1/entries/e1/upload" again
       Then the response status is 200 both times
       And both upload-session responses contain the same upload url
 
+    @xfail_contract
     Scenario: Completing before all required entries are present fails
       When the client posts to "/v1/fetches/fx-1/complete"
       Then the response status is 409
       And the error code is "invalid_state"
 
+    @xfail_not_backed
     Scenario: Completing a fully uploaded fetch materializes the target
       Given every required fetch entry for "fx-1" has been uploaded with the correct bytes
       When the client posts to "/v1/fetches/fx-1/complete"

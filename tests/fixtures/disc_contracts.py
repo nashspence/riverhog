@@ -9,6 +9,7 @@ from pathlib import Path
 from typing import Any, cast
 
 import jsonschema
+import pytest
 import yaml
 
 from arc_core.planner.manifest import MANIFEST_FILENAME, README_FILENAME
@@ -16,6 +17,7 @@ from tests.fixtures.data import fixture_decrypt_bytes
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 DISC_CONTRACTS_ROOT = REPO_ROOT / "contracts" / "disc"
+XORRISO = shutil.which("xorriso")
 
 
 @dataclass(slots=True)
@@ -29,7 +31,14 @@ class InspectedIso:
     disc_manifest: dict[str, Any]
 
 
+def require_xorriso() -> str:
+    if XORRISO is None:
+        pytest.skip("xorriso is required for ISO-producing acceptance scenarios")
+    return XORRISO
+
+
 def inspect_downloaded_iso(*, image_id: str, iso_bytes: bytes, workspace: Path) -> InspectedIso:
+    require_xorriso()
     image_root = workspace / "iso-inspection" / image_id
     if image_root.exists():
         shutil.rmtree(image_root)
@@ -167,7 +176,7 @@ def assert_sidecar_semantics(
 def _verify_iso(iso_path: Path) -> None:
     proc = subprocess.run(
         [
-            "xorriso",
+            require_xorriso(),
             "-abort_on",
             "FAILURE",
             "-for_backup",
@@ -193,7 +202,7 @@ def _verify_iso(iso_path: Path) -> None:
 def _extract_iso(iso_path: Path, extract_root: Path) -> None:
     proc = subprocess.run(
         [
-            "xorriso",
+            require_xorriso(),
             "-osirrox",
             "on",
             "-indev",

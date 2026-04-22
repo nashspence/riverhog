@@ -1,4 +1,4 @@
-@acceptance @cli @mvp @xfail_contract
+@acceptance @cli @mvp @xfail_not_backed
 Feature: arc-disc CLI
   The optical CLI fulfills a fetch from disc media and completes it through the API.
 

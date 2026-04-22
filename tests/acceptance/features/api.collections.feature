@@ -1,4 +1,4 @@
-@acceptance @api @mvp
+@acceptance @api @mvp @xfail_contract
 Feature: Collections API
   The API closes staged directories into immutable logical collections.
 

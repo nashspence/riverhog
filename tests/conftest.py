@@ -13,11 +13,34 @@ if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
 
+XFAIL_REASONS = {
+    "xfail_contract": "acceptance backing exists but production is not implemented to the contract yet",
+    "xfail_not_backed": "Gherkin contract exists but acceptance backing is not implemented yet",
+}
+STRICT_XFAIL_MARKERS = {"xfail_contract", "xfail_not_backed"}
+
+
+def _uses_integration_harness(item: pytest.Item) -> bool:
+    return "tests/integration/" in item.nodeid
+
+
 def pytest_collection_modifyitems(items: list[pytest.Item]) -> None:
     for item in items:
-        if item.get_closest_marker("xfail_contract") is not None:
+        xfail_markers = {
+            marker.name for marker in item.iter_markers() if marker.name in XFAIL_REASONS
+        }
+        if _uses_integration_harness(item):
+            xfail_markers.discard("xfail_contract")
+        if len(xfail_markers) > 1:
+            names = ", ".join(sorted(xfail_markers))
+            raise pytest.UsageError(
+                f"{item.nodeid} cannot use more than one xfail readiness marker: {names}"
+            )
+        if xfail_markers:
+            marker_name = next(iter(xfail_markers))
             item.add_marker(
                 pytest.mark.xfail(
-                    reason="spec-first acceptance contract not implemented yet",
+                    reason=XFAIL_REASONS[marker_name],
+                    strict=marker_name in STRICT_XFAIL_MARKERS,
                 )
             )
