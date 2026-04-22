@@ -6,7 +6,7 @@ from typing import Annotated
 import typer
 
 from arc_cli.client import ApiClient
-from arc_cli.output import emit
+from arc_cli.output import emit, format_fetch, format_pin
 
 app = typer.Typer(help="arc archival control CLI")
 iso_app = typer.Typer(help="ISO operations")
@@ -77,7 +77,8 @@ def pin_cmd(
     target: Annotated[str, typer.Argument(help="Target selector")],
     json_mode: Annotated[bool, typer.Option("--json", help="Emit JSON")] = False,
 ) -> None:
-    emit(client().pin(target), json_mode=json_mode)
+    payload = client().pin(target)
+    emit(payload if json_mode else format_pin(payload), json_mode=json_mode)
 
 
 @app.command("release")
@@ -100,7 +101,12 @@ def fetch_cmd(
     fetch_id: Annotated[str, typer.Argument(help="Fetch id")],
     json_mode: Annotated[bool, typer.Option("--json", help="Emit JSON")] = False,
 ) -> None:
-    emit(client().get_fetch(fetch_id), json_mode=json_mode)
+    summary = client().get_fetch(fetch_id)
+    if json_mode:
+        emit(summary, json_mode=True)
+        return
+    manifest = client().get_fetch_manifest(fetch_id)
+    emit(format_fetch(summary, manifest), json_mode=False)
 
 
 def main() -> None:
