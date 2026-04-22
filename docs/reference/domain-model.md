@@ -39,9 +39,10 @@ A planned optical artifact addressed by stable API `image.id`.
 
 Image lifecycle rules:
 
-- before the first ISO download request, an image is provisional and its represented collections may still be
+- while an image appears in `GET /v1/plan`, it is provisional and its represented collections may still be
   re-allocated by the planner
-- the first ISO download request finalizes the image allocation
+- `POST /v1/images/{image_id}/finalize` explicitly finalizes that image allocation
+- once finalized, that image no longer appears in `GET /v1/plan`
 - finalization assigns and stores immutable `volume_id` for that `image.id`
 - `volume_id` is the media-facing identifier carried in the ISO and disc manifest
 

@@ -134,10 +134,9 @@ class ImageRecord:
     def fill(self) -> float:
         return self.bytes / TARGET_BYTES
 
-    def plan_payload(self, *, volume_id: str | None) -> dict[str, object]:
+    def plan_payload(self) -> dict[str, object]:
         return {
             "id": str(self.id),
-            "volume_id": volume_id,
             "bytes": self.bytes,
             "fill": self.fill,
             "files": self.files,
@@ -392,7 +391,14 @@ class AcceptancePlanningService:
         )
 
     def get_plan(self) -> dict[str, object]:
-        images = sorted(self.state.images_by_id.values(), key=lambda image: (-image.fill, str(image.id)))
+        images = sorted(
+            (
+                image
+                for image in self.state.images_by_id.values()
+                if image.id not in self.state.finalized_image_ids
+            ),
+            key=lambda image: (-image.fill, str(image.id)),
+        )
         covered = {
             (collection_id, path)
             for image in self.state.images_by_id.values()
@@ -408,7 +414,7 @@ class AcceptancePlanningService:
             "ready": bool(images),
             "target_bytes": TARGET_BYTES,
             "min_fill_bytes": MIN_FILL_BYTES,
-            "images": [image.plan_payload(volume_id=self._visible_volume_id(image)) for image in images],
+            "images": [image.plan_payload() for image in images],
             "unplanned_bytes": unplanned_bytes,
         }
 
@@ -416,8 +422,17 @@ class AcceptancePlanningService:
         image = self._image_record(image_id)
         return image.image_payload(volume_id=self._visible_volume_id(image))
 
-    async def get_iso_stream(self, image_id: str) -> object:
+    def finalize_image(self, image_id: str) -> dict[str, object]:
+        image = self._image_record(image_id)
+        if not image.iso_ready:
+            raise InvalidState("image must be ISO-ready before finalization")
         self.state.finalized_image_ids.add(ImageId(image_id))
+        return image.image_payload(volume_id=image.volume_id)
+
+    async def get_iso_stream(self, image_id: str) -> object:
+        image = self._image_record(image_id)
+        if image.id not in self.state.finalized_image_ids:
+            raise InvalidState("image must be explicitly finalized before ISO download")
         return await self._iso_service.get_iso_stream(image_id)
 
     def _image_record(self, image_id: str) -> ImageRecord:
@@ -444,7 +459,7 @@ class AcceptanceCopyService:
         if image is None:
             raise NotFound(f"image not found: {image_id}")
         if image.id not in self.state.finalized_image_ids:
-            raise InvalidState("image must be finalized by ISO download before copy registration")
+            raise InvalidState("image must be explicitly finalized before copy registration")
         copy_key = CopyId(copy_id)
         scoped_key = (image.volume_id, copy_key)
         if scoped_key in self.state.copy_summaries:

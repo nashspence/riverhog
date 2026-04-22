@@ -526,8 +526,16 @@ def given_copy_already_exists(
     acceptance_system: AcceptanceSystem,
     copy_id: str,
 ) -> None:
-    acceptance_system.state.finalized_image_ids.add(IMAGE_ID)
+    acceptance_system.planning.finalize_image(IMAGE_ID)
     acceptance_system.copies.register(IMAGE_ID, copy_id, "Shelf B1")
+
+
+@given(parsers.parse('image "{image_id}" is finalized'))
+def given_image_is_finalized(
+    acceptance_system: AcceptanceSystem,
+    image_id: str,
+) -> None:
+    acceptance_system.planning.finalize_image(image_id)
 
 
 @given(parsers.parse('collection "{collection_id}" contains file "{path}"'))
@@ -1049,14 +1057,24 @@ def then_error_code_is(
     assert payload["error"]["code"] == code
 
 
-@then('each image contains "id", "volume_id", "bytes", "fill", "files", "collections", and "iso_ready"')
-def then_each_image_contains_expected_fields(
+@then('each plan image contains "id", "bytes", "fill", "files", "collections", and "iso_ready"')
+def then_each_plan_image_contains_expected_fields(
     acceptance_context: AcceptanceScenarioContext,
 ) -> None:
     payload = _json_payload(_require_response(acceptance_context))
-    expected = {"id", "volume_id", "bytes", "fill", "files", "collections", "iso_ready"}
+    expected = {"id", "bytes", "fill", "files", "collections", "iso_ready"}
     assert payload["images"]
     assert all(expected.issubset(image) for image in payload["images"])
+
+
+@then(parsers.parse('plan images do not contain field "{field}"'))
+def then_plan_images_do_not_contain_field(
+    acceptance_context: AcceptanceScenarioContext,
+    field: str,
+) -> None:
+    payload = _json_payload(_require_response(acceptance_context))
+    assert payload["images"]
+    assert all(field not in image for image in payload["images"])
 
 
 @then("each image fill equals image bytes divided by target bytes")
@@ -1088,6 +1106,16 @@ def then_response_contains_image_id(
         assert payload["copy"]["image"] == image_id
         return
     assert payload["id"] == image_id
+
+
+@then(parsers.parse('the response images do not contain image id "{image_id}"'))
+def then_response_images_do_not_contain_image_id(
+    acceptance_context: AcceptanceScenarioContext,
+    image_id: str,
+) -> None:
+    payload = _json_payload(_require_response(acceptance_context))
+    ids = [image["id"] for image in payload["images"]]
+    assert image_id not in ids
 
 
 @then("the response body is binary ISO content")
@@ -1136,6 +1164,16 @@ def then_response_field_matches_compact_utc_timestamp(
     value = payload[field]
     assert isinstance(value, str)
     assert re.fullmatch(r"[0-9]{8}T[0-9]{6}Z", value)
+
+
+@then(parsers.parse('both responses contain the same value for field "{field}"'))
+def then_both_responses_contain_same_value_for_field(
+    acceptance_context: AcceptanceScenarioContext,
+    field: str,
+) -> None:
+    assert len(acceptance_context.responses) == 2
+    payloads = [_json_payload(response) for response in acceptance_context.responses]
+    assert payloads[0][field] == payloads[1][field]
 
 
 @then(parsers.parse('collection "{collection_id}" archived_bytes increases'))

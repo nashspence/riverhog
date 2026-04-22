@@ -23,6 +23,9 @@ def test_stub_planning_service_raises_not_yet_implemented_for_every_entrypoint()
         service.get_image("img_001")
 
     with pytest.raises(NotYetImplemented, match="StubPlanningService is not implemented yet"):
+        service.finalize_image("img_001")
+
+    with pytest.raises(NotYetImplemented, match="StubPlanningService is not implemented yet"):
         service.get_iso_stream("img_001")
 
 
@@ -50,6 +53,7 @@ def test_image_root_planning_service_delegates_lookups_and_stream_creation(
     service = ImageRootPlanningService(
         image_lookup=lambda image_id: record if image_id == "img_001" else None,
         plan_lookup=lambda: {"ready": True},
+        finalize_lookup=lambda image_id: {"id": image_id, "volume_id": record.volume_id},
     )
 
     monkeypatch.setattr(
@@ -59,6 +63,7 @@ def test_image_root_planning_service_delegates_lookups_and_stream_creation(
 
     assert service.get_plan() == {"ready": True}
     assert service.get_image("img_001") is record
+    assert service.finalize_image("img_001") == {"id": "img_001", "volume_id": record.volume_id}
     assert asyncio.run(service.get_iso_stream("img_001")) == {"filename": "img_001.iso"}
     assert calls == [(record.image_root, record.volume_id, record.filename)]
 
@@ -71,3 +76,13 @@ def test_image_root_planning_service_rejects_non_image_root_records() -> None:
 
     with pytest.raises(TypeError, match="ImageRootRecord"):
         asyncio.run(service.get_iso_stream("img_001"))
+
+
+def test_image_root_planning_service_requires_finalize_lookup_when_finalizing() -> None:
+    service = ImageRootPlanningService(
+        image_lookup=lambda _: {"image_id": "img_001"},
+        plan_lookup=lambda: {"ready": True},
+    )
+
+    with pytest.raises(NotYetImplemented, match="finalize_image is not configured"):
+        service.finalize_image("img_001")

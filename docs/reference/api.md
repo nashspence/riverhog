@@ -61,13 +61,14 @@ Required behavior:
 
 #### `GET /v1/plan`
 
-Returns the best current planner output and readiness status.
+Returns the best current provisional planner output and readiness status.
 
 Required behavior:
 
-- each image in the plan is provisional until its first ISO download request
-- before first download, a planned image may be re-allocated by the planner
-- plan responses expose `volume_id`, which is `null` until the image is finalized by first download
+- every image returned by the plan is still provisional
+- a provisional image may still be re-allocated by the planner
+- finalized images are not returned by `GET /v1/plan`
+- plan image objects do not expose `volume_id`
 
 ### Images
 
@@ -77,9 +78,23 @@ Returns one image summary.
 
 Required behavior:
 
-- `image.id` is the stable API handle for the planned image
-- `volume_id` is `null` before the first ISO download request for that image
-- after the first ISO download request, the stored `volume_id` is returned for that same `image.id`
+- `image.id` is the stable API handle for one known image, whether still provisional or already finalized
+- `volume_id` is `null` while the image remains provisional
+- after explicit finalization, the stored `volume_id` is returned for that same `image.id`
+
+#### `POST /v1/images/{image_id}/finalize`
+
+Explicitly finalizes one ready provisional image.
+
+Required behavior:
+
+- this is the only operation that may assign and store `volume_id`
+- finalization assigns a unique immutable `volume_id` in UTC basic form `YYYYMMDDTHHMMSSZ`
+- if more than one image would otherwise finalize in the same second, later assignments advance in whole seconds until
+  an unused `volume_id` is found
+- after finalization, the planner must not re-allocate that image's represented bytes
+- after finalization, that image is no longer returned by `GET /v1/plan`
+- repeated finalization of the same `image.id` is idempotent and returns the same stored finalized summary
 
 #### `GET /v1/images/{image_id}/iso`
 
@@ -87,13 +102,9 @@ Returns ISO bytes if the image is ready.
 
 Required behavior:
 
-- the first successful request finalizes that image's represented bytes for burning
-- that first successful request assigns a unique immutable `volume_id` in UTC basic form `YYYYMMDDTHHMMSSZ`
-- if more than one image would otherwise finalize in the same second, later assignments advance in whole seconds until
-  an unused `volume_id` is found
-- after finalization, subsequent downloads for the same `image.id` reuse the same `volume_id` and the same represented
-  bytes
-- after finalization, the planner must not re-allocate those represented collections away from that image
+- ISO download does not finalize the image
+- ISO download requires the image to have already been explicitly finalized
+- subsequent downloads for the same finalized `image.id` reuse the same `volume_id` and the same represented bytes
 
 #### `POST /v1/images/{image_id}/copies`
 
@@ -101,7 +112,7 @@ Registers a physical burned disc for an image.
 
 Required behavior:
 
-- copy registration is only valid for a finalized image that already has a stored `volume_id`
+- copy registration is only valid for an image that has already been explicitly finalized and has a stored `volume_id`
 - the physical copy identity is `(volume_id, copy_id)`
 - the user-supplied `copy_id` must be unique within that finalized image/`volume_id`; duplicates are rejected with
   `conflict`
@@ -259,9 +270,11 @@ Required behavior:
 - upload-state expiry for a manifest discards incomplete partial uploads and returns that manifest to `waiting_media`
 - `INCOMPLETE_UPLOAD_TTL` defaults to `24h`
 - fetch upload progress is tracked per logical file, not per disc fragment
-- before the first ISO download request, a planned image may still be re-allocated and has `volume_id = null`
-- the first successful ISO download finalizes the image allocation and stores immutable `volume_id` for that `image.id`
-- subsequent ISO downloads for the same `image.id` use the same `volume_id` and represented bytes
+- every image returned by `GET /v1/plan` is provisional and omits `volume_id`
+- an explicit finalize operation is the only path that stores immutable `volume_id` for an `image.id`
+- once finalized, an image is no longer returned by `GET /v1/plan`
+- ISO download requires an already finalized image and uses the same stored `volume_id` and represented bytes on every
+  later download
 - registering a copy cannot reduce archived coverage
 - a physical copy is identified by `(volume_id, copy_id)`, never by `location`
 - duplicate `copy_id` values are rejected within one finalized image/`volume_id`

@@ -5,7 +5,6 @@ from arc_api.schemas.common import ArcModel
 
 class PlanImageOut(ArcModel):
     id: str
-    volume_id: str | None = None
     bytes: int
     fill: float
     collections: int

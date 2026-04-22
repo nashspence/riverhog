@@ -15,6 +15,9 @@ class StubPlanningService:
     def get_image(self, image_id: str) -> object:
         raise NotYetImplemented("StubPlanningService is not implemented yet")
 
+    def finalize_image(self, image_id: str) -> object:
+        raise NotYetImplemented("StubPlanningService is not implemented yet")
+
     def get_iso_stream(self, image_id: str) -> object:
         raise NotYetImplemented("StubPlanningService is not implemented yet")
 
@@ -30,15 +33,27 @@ class ImageRootRecord:
 class ImageRootPlanningService:
     """Thin adapter for planner implementations that materialize an image root directory."""
 
-    def __init__(self, *, image_lookup: Callable[[str], object], plan_lookup: Callable[[], object]) -> None:
+    def __init__(
+        self,
+        *,
+        image_lookup: Callable[[str], object],
+        plan_lookup: Callable[[], object],
+        finalize_lookup: Callable[[str], object] | None = None,
+    ) -> None:
         self._image_lookup = image_lookup
         self._plan_lookup = plan_lookup
+        self._finalize_lookup = finalize_lookup
 
     def get_plan(self) -> object:
         return self._plan_lookup()
 
     def get_image(self, image_id: str) -> object:
         return self._image_lookup(image_id)
+
+    def finalize_image(self, image_id: str) -> object:
+        if self._finalize_lookup is None:
+            raise NotYetImplemented("ImageRootPlanningService finalize_image is not configured")
+        return self._finalize_lookup(image_id)
 
     async def get_iso_stream(self, image_id: str) -> IsoStream:
         image = self._image_lookup(image_id)

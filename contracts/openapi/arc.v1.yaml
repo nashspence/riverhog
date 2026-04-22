@@ -94,7 +94,7 @@ paths:
   /plan:
     get:
       summary: Get current burn plan
-      description: Planned images remain provisional until their first ISO download request. `volume_id` is `null` until that first successful download finalizes the image.
+      description: Returns provisional planner output only. Images disappear from this plan once explicitly finalized.
       operationId: getPlan
       responses:
         "200":
@@ -106,7 +106,7 @@ paths:
   /images/{image_id}:
     get:
       summary: Get one image summary
-      description: Returns the stable API image handle plus its current stored `volume_id`, if the image has already been finalized by a first ISO download.
+      description: Returns the stable API image handle plus its current stored `volume_id`, if the image has already been explicitly finalized.
       operationId: getImage
       parameters:
         - in: path
@@ -122,10 +122,29 @@ paths:
                 $ref: "#/components/schemas/ImageDetail"
         default:
           $ref: "#/components/responses/Error"
+  /images/{image_id}/finalize:
+    post:
+      summary: Explicitly finalize one image
+      description: Finalization is the only operation that assigns and stores immutable `volume_id` and removes the image from provisional plan output.
+      operationId: finalizeImage
+      parameters:
+        - in: path
+          name: image_id
+          required: true
+          schema: { type: string }
+      responses:
+        "200":
+          description: Image finalized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ImageDetail"
+        default:
+          $ref: "#/components/responses/Error"
   /images/{image_id}/iso:
     get:
       summary: Download ISO bytes for an image
-      description: The first successful download finalizes the image allocation, assigns and stores immutable `volume_id`, and prevents later planner re-allocation of that image's represented bytes.
+      description: Downloads ISO bytes for an already finalized image. This endpoint is retrieval-only and does not finalize the image.
       operationId: getImageIso
       parameters:
         - in: path
@@ -145,7 +164,7 @@ paths:
   /images/{image_id}/copies:
     post:
       summary: Register a physical burned copy
-      description: Registers one burned disc for a finalized image. The physical copy identity is `(volume_id, copy_id)` and `location` is mutable metadata, not identity.
+      description: Registers one burned disc for an already finalized image. The physical copy identity is `(volume_id, copy_id)` and `location` is mutable metadata, not identity.
       operationId: createCopy
       parameters:
         - in: path
@@ -368,9 +387,9 @@ components:
       properties:
         id:
           type: string
-          description: Stable API handle for the planned image.
+          description: Stable API handle for one known image.
         volume_id:
-          description: Immutable media identifier stored when the image is finalized by its first successful ISO download. `null` means the image is still provisional.
+          description: Immutable media identifier stored when the image is explicitly finalized. `null` means the image is still provisional.
           oneOf:
             - type: string
               pattern: "^[0-9]{8}T[0-9]{6}Z$"
@@ -386,9 +405,9 @@ components:
       properties:
         id:
           type: string
-          description: Stable API handle for the planned image.
+          description: Stable API handle for one known image.
         volume_id:
-          description: Immutable media identifier stored when the image is finalized by its first successful ISO download. `null` means the image is still provisional.
+          description: Immutable media identifier stored when the image is explicitly finalized. `null` means the image is still provisional.
           oneOf:
             - type: string
               pattern: "^[0-9]{8}T[0-9]{6}Z$"

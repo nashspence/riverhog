@@ -17,6 +17,12 @@ def get_image(image_id: str, container: ServiceContainer = Depends(get_container
     return ImageSummaryResponse.model_validate(payload)
 
 
+@router.post("/images/{image_id}/finalize", response_model=ImageSummaryResponse)
+def finalize_image(image_id: str, container: ServiceContainer = Depends(get_container)) -> ImageSummaryResponse:
+    payload = container.planning.finalize_image(image_id)
+    return ImageSummaryResponse.model_validate(payload)
+
+
 @router.get("/images/{image_id}/iso")
 async def get_iso(image_id: str, container: ServiceContainer = Depends(get_container)) -> StreamingResponse:
     stream = container.planning.get_iso_stream(image_id)

@@ -1,13 +1,15 @@
 # Register a burned copy
 
-Once an image has been downloaded, finalized, and burned, register the physical copy so archival coverage can be
-counted.
+Once an image has been explicitly finalized, downloaded, and burned, register the physical copy so archival coverage
+can be counted.
 
 CLI example:
 
 ```bash
 arc copy add img_2026-04-20_01 BR-021-A --at 'Shelf B1'
 ```
+
+The first positional argument is the finalized `image_id`, not the `volume_id`.
 
 Equivalent API request:
 
@@ -25,7 +27,7 @@ Content-Type: application/json
 
 Notes:
 
-- registration is valid only after the image's first ISO download has assigned and stored its `volume_id`
+- registration is valid only after explicit image finalization has assigned and stored its `volume_id`
 - the physical copy identity is `(volume_id, id)`
 - the user-supplied `id` must be unique within that finalized image/`volume_id`
 - `location` is mutable metadata and is not part of the copy identity

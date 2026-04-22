@@ -73,8 +73,7 @@ collections:
 Rules:
 
 - `collections[].id + files[].path` is the canonical logical path
-- `image.volume_id` is the immutable media identifier assigned when that image is finalized by its first ISO download
-  request
+- `image.volume_id` is the immutable media identifier assigned when that image is explicitly finalized
 - `collections[]` and each `files[]` list are lexically sorted for deterministic images
 - whole files use `object` plus `sidecar`
 - split files use `parts.count` plus `parts.present[]`
