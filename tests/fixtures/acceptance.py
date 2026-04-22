@@ -104,8 +104,8 @@ class StoredFile:
         return cast(Sha256Hex, hashlib.sha256(self.content).hexdigest())
 
     @property
-    def canonical_target(self) -> str:
-        return f"{self.collection_id}:/{self.path}"
+    def projected_target(self) -> str:
+        return f"{self.collection_id}/{self.path}"
 
 
 @dataclass(frozen=True, slots=True)
@@ -244,22 +244,16 @@ class AcceptanceState:
 
     def selected_files(self, raw_target: str, *, missing_ok: bool = False) -> list[StoredFile]:
         target = parse_target(raw_target)
-        records = self.files_by_collection.get(target.collection_id)
-        if records is None:
-            if missing_ok:
-                return []
-            raise NotFound(f"collection not found: {target.collection_id}")
-        if target.is_collection:
-            selected = list(records.values())
-        else:
-            assert target.path is not None
-            logical_path = str(target.path).lstrip("/")
-            if target.is_dir:
-                prefix = logical_path.rstrip("/") + "/"
-                selected = [record for record in records.values() if record.path.startswith(prefix)]
-            else:
-                record = records.get(logical_path)
-                selected = [] if record is None else [record]
+        selected = [
+            record
+            for collection_files in self.files_by_collection.values()
+            for record in collection_files.values()
+            if (
+                record.projected_target.startswith(target.canonical)
+                if target.is_dir
+                else record.projected_target == target.canonical
+            )
+        ]
         if not selected and not missing_ok:
             raise NotFound(f"target not found: {raw_target}")
         return selected
@@ -348,7 +342,7 @@ class AcceptanceSearchService:
                 results.append(
                     {
                         "kind": "collection",
-                        "target": collection_name,
+                        "target": f"{collection_name}/",
                         "collection": collection_name,
                         "files": summary.files,
                         "bytes": summary.bytes,
@@ -361,15 +355,15 @@ class AcceptanceSearchService:
         for collection_id in sorted(self.state.files_by_collection):
             collection_name = str(collection_id)
             for record in sorted(self.state.collection_files(collection_id), key=lambda item: item.path):
-                full_path = f"/{record.path}"
+                full_path = record.projected_target
                 if needle not in full_path.casefold():
                     continue
                 results.append(
                     {
                         "kind": "file",
-                        "target": record.canonical_target,
+                        "target": record.projected_target,
                         "collection": collection_name,
-                        "path": full_path,
+                        "path": f"/{record.path}",
                         "bytes": record.bytes,
                         "hot": record.hot,
                         "copies": [
@@ -483,12 +477,19 @@ class AcceptanceFetchService:
         for record in self.state.fetches.values():
             if record.summary.target != target:
                 continue
-            if record.summary.state in {FetchState.DONE, FetchState.FAILED}:
+            if record.summary.state == FetchState.FAILED:
                 continue
             return record.summary
         return None
 
-    def create_fetch(self, target: TargetStr, files: list[StoredFile], *, fetch_id: str | None = None) -> FetchSummary:
+    def create_fetch(
+        self,
+        target: TargetStr,
+        files: list[StoredFile],
+        *,
+        fetch_id: str | None = None,
+        initial_state: FetchState = FetchState.WAITING_MEDIA,
+    ) -> FetchSummary:
         if fetch_id is None:
             self.state.next_fetch_number += 1
             fetch_id = f"fx-{self.state.next_fetch_number}"
@@ -510,13 +511,24 @@ class AcceptanceFetchService:
         summary = FetchSummary(
             id=fetch_key,
             target=target,
-            state=FetchState.WAITING_MEDIA,
+            state=initial_state,
             files=len(entries),
             bytes=sum(entry.bytes for entry in entries.values()),
             copies=self._summary_copies(entries.values()),
         )
         self.state.fetches[fetch_key] = FetchRecord(summary=summary, entries=entries)
         return summary
+
+    def find_for_target(self, target: TargetStr) -> FetchSummary:
+        summary = self.find_reusable_fetch(target)
+        if summary is None:
+            raise NotFound(f"fetch not found for target: {target}")
+        return summary
+
+    def remove_for_target(self, target: TargetStr) -> None:
+        to_delete = [fetch_id for fetch_id, record in self.state.fetches.items() if record.summary.target == target]
+        for fetch_id in to_delete:
+            del self.state.fetches[fetch_id]
 
     def get(self, fetch_id: str) -> FetchSummary:
         return self._record(fetch_id).summary
@@ -677,21 +689,22 @@ class AcceptancePinService:
         self.state.exact_pins.add(canonical)
 
         present_bytes = sum(record.bytes for record in selected if record.hot)
-        missing = [record for record in selected if not record.hot]
-        missing_bytes = sum(record.bytes for record in missing)
-        fetch_payload: dict[str, object] | None = None
-        if missing:
-            summary = self.fetches.find_reusable_fetch(canonical)
-            if summary is None:
-                summary = self.fetches.create_fetch(canonical, missing)
-            fetch_payload = {
-                "id": str(summary.id),
-                "state": summary.state.value,
-                "copies": [
-                    {"id": str(copy.id), "volume_id": copy.volume_id, "location": copy.location}
-                    for copy in summary.copies
-                ],
-            }
+        missing_bytes = sum(record.bytes for record in selected if not record.hot)
+        summary = self.fetches.find_reusable_fetch(canonical)
+        if summary is None:
+            summary = self.fetches.create_fetch(
+                canonical,
+                selected,
+                initial_state=FetchState.DONE if missing_bytes == 0 else FetchState.WAITING_MEDIA,
+            )
+        fetch_payload = {
+            "id": str(summary.id),
+            "state": summary.state.value,
+            "copies": [
+                {"id": str(copy.id), "volume_id": copy.volume_id, "location": copy.location}
+                for copy in summary.copies
+            ],
+        }
         return {
             "target": str(canonical),
             "pin": True,
@@ -708,14 +721,19 @@ class AcceptancePinService:
         canonical = cast(TargetStr, target.canonical)
         removed = canonical in self.state.exact_pins
         self.state.exact_pins.discard(canonical)
+        if removed:
+            self.fetches.remove_for_target(canonical)
         self.state.reconcile_hot_from_pins()
         return {
             "target": str(canonical),
-            "pin": removed,
+            "pin": False,
         }
 
     def list_pins(self) -> list[PinSummary]:
-        return [PinSummary(target=target) for target in sorted(self.state.exact_pins)]
+        return [
+            PinSummary(target=target, fetch=self.fetches.find_for_target(target))
+            for target in sorted(self.state.exact_pins)
+        ]
 
 
 class _LiveServerHandle:
@@ -1029,11 +1047,11 @@ class AcceptanceSystem:
             )
 
     def seed_pin(self, raw_target: str) -> None:
-        canonical = cast(TargetStr, parse_target(raw_target).canonical)
-        self.state.exact_pins.add(canonical)
+        self.pins.pin(raw_target)
 
     def seed_fetch(self, fetch_id: str, raw_target: str) -> None:
         canonical = cast(TargetStr, parse_target(raw_target).canonical)
+        self.fetches.remove_for_target(canonical)
         files = self.state.selected_files(raw_target)
         self.fetches.create_fetch(canonical, files, fetch_id=fetch_id)
 

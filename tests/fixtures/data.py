@@ -29,9 +29,9 @@ PHOTOS_PARENT_COLLECTION_ID = "photos"
 PHOTOS_NESTED_COLLECTION_ID = "photos/2024"
 DOCS_COLLECTION_ID = "docs"
 
-INVOICE_TARGET = "docs:/tax/2022/invoice-123.pdf"
-RECEIPT_TARGET = "docs:/tax/2022/receipt-456.pdf"
-TAX_DIRECTORY_TARGET = "docs:/tax/2022/"
+INVOICE_TARGET = "docs/tax/2022/invoice-123.pdf"
+RECEIPT_TARGET = "docs/tax/2022/receipt-456.pdf"
+TAX_DIRECTORY_TARGET = "docs/tax/2022/"
 
 IMAGE_ID = "img_2026-04-20_01"
 SECOND_IMAGE_ID = "img_2026-04-20_02"

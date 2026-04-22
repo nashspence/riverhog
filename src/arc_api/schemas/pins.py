@@ -43,6 +43,7 @@ class ReleaseResponse(ArcModel):
 
 class PinSummaryOut(ArcModel):
     target: str
+    fetch: FetchHintOut
 
 
 class PinsResponse(ArcModel):

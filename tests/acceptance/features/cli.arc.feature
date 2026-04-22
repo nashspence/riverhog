@@ -3,7 +3,7 @@ Feature: arc CLI
   The main CLI is a thin stable wrapper over the API.
 
   Rule: JSON mode mirrors API payloads
-    @xfail_not_backed
+    @xfail_contract
     Scenario: arc pin emits the API pin payload
       Given target "docs/tax/2022/invoice-123.pdf" is valid
       When the operator runs 'arc pin "docs/tax/2022/invoice-123.pdf" --json'
@@ -11,7 +11,7 @@ Feature: arc CLI
       And stdout is valid JSON
       And stdout matches the structure of POST "/v1/pin"
 
-    @xfail_not_backed
+    @xfail_contract
     Scenario: arc release emits the API release payload
       Given target "docs/tax/2022/invoice-123.pdf" is valid
       When the operator runs 'arc release "docs/tax/2022/invoice-123.pdf" --json'
@@ -33,7 +33,7 @@ Feature: arc CLI
       And stdout is valid JSON
       And stdout matches the structure of GET "/v1/plan"
 
-    @xfail_not_backed
+    @xfail_contract
     Scenario: arc pins emits fetch associations for active pins
       Given archived target "docs/tax/2022/invoice-123.pdf" is pinned with fetch "fx-1"
       When the operator runs 'arc pins --json'
@@ -45,7 +45,7 @@ Feature: arc CLI
       And stdout mentions "waiting_media"
 
   Rule: Non-JSON mode remains concise and stable
-    @xfail_not_backed
+    @xfail_contract
     Scenario: arc pin prints fetch guidance when recovery is needed
       Given pinning target "docs/tax/2022/invoice-123.pdf" requires fetch "fx-1"
       When the operator runs 'arc pin "docs/tax/2022/invoice-123.pdf"'

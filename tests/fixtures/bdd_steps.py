@@ -192,9 +192,24 @@ def _ensure_collection_fixture(acceptance_system: AcceptanceSystem, collection_i
 
 
 def _ensure_target_fixture(acceptance_system: AcceptanceSystem, target: str) -> None:
-    collection_id = str(parse_target(target).collection_id)
-    if collection_id not in acceptance_system.state.files_by_collection:
-        _ensure_collection_fixture(acceptance_system, collection_id)
+    parse_target(target)
+    if acceptance_system.state.selected_files(target, missing_ok=True):
+        return
+
+    if target.startswith(f"{DOCS_COLLECTION_ID}/"):
+        _ensure_collection_fixture(acceptance_system, DOCS_COLLECTION_ID)
+        return
+    if target.startswith(f"{PHOTOS_COLLECTION_ID}/"):
+        _ensure_collection_fixture(acceptance_system, PHOTOS_COLLECTION_ID)
+        return
+    if target.startswith(f"{PHOTOS_NESTED_COLLECTION_ID}/") or target == "photos/":
+        _ensure_collection_fixture(acceptance_system, PHOTOS_NESTED_COLLECTION_ID)
+        return
+    if target.startswith(f"{PHOTOS_PARENT_COLLECTION_ID}/"):
+        _ensure_collection_fixture(acceptance_system, PHOTOS_PARENT_COLLECTION_ID)
+        return
+
+    raise AssertionError(f"unsupported target fixture: {target}")
 
 
 def _prepare_arc_expectation(

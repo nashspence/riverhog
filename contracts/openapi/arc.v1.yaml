@@ -451,11 +451,15 @@ components:
           $ref: "#/components/schemas/FetchHint"
     FetchHint:
       type: object
-      required: [id, state]
+      required: [id, state, copies]
       properties:
         id: { type: string }
         state:
           $ref: "#/components/schemas/FetchState"
+        copies:
+          type: array
+          items:
+            $ref: "#/components/schemas/FetchCopyHint"
     FetchCopyHint:
       type: object
       required: [id, volume_id, location]

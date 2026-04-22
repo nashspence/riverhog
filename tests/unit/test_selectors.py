@@ -9,12 +9,11 @@ from arc_core.domain.selectors import parse_target
 @pytest.mark.parametrize(
     ("raw", "canonical"),
     [
-        ("photos-2024", "photos-2024"),
-        ("tax/2022", "tax/2022"),
-        ("photos-2024:/raw/", "photos-2024:/raw/"),
-        ("photos-2024:/raw/file.jpg", "photos-2024:/raw/file.jpg"),
-        ("photos-2024:/raw", "photos-2024:/raw"),
-        ("tax/2022:/invoice.pdf", "tax/2022:/invoice.pdf"),
+        ("photos-2024/", "photos-2024/"),
+        ("tax/2022/", "tax/2022/"),
+        ("photos-2024/raw/", "photos-2024/raw/"),
+        ("photos-2024/raw/file.jpg", "photos-2024/raw/file.jpg"),
+        ("tax/2022/invoice.pdf", "tax/2022/invoice.pdf"),
     ],
 )
 def test_parse_target_valid(raw: str, canonical: str) -> None:
@@ -24,10 +23,11 @@ def test_parse_target_valid(raw: str, canonical: str) -> None:
 @pytest.mark.parametrize(
     "raw",
     [
-        "photos-2024:",
-        "photos-2024:raw/",
-        "photos-2024:/a/../b",
-        "photos-2024://raw/",
+        "",
+        "photos-2024",
+        "photos-2024/./raw/",
+        "photos-2024/a/../b",
+        "photos-2024//raw/",
         "tax//2022",
         "tax/./2022",
         "/tax/2022",

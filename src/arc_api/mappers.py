@@ -35,5 +35,15 @@ def map_fetch(summary: FetchSummary) -> dict[str, object]:
     }
 
 
-def map_pin(summary: PinSummary) -> dict[str, str]:
-    return {"target": str(summary.target)}
+def map_pin(summary: PinSummary) -> dict[str, object]:
+    return {
+        "target": str(summary.target),
+        "fetch": {
+            "id": str(summary.fetch.id),
+            "state": summary.fetch.state.value,
+            "copies": [
+                {"id": str(copy.id), "volume_id": copy.volume_id, "location": copy.location}
+                for copy in summary.fetch.copies
+            ],
+        },
+    }

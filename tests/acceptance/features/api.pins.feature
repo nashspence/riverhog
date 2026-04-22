@@ -6,7 +6,7 @@ Feature: Pins API
     Background:
       Given collection "docs" exists and is fully hot
 
-    @xfail_not_backed
+    @xfail_contract
     Scenario: Pin a whole collection that is already hot
       When the client posts to "/v1/pin" with target "docs/"
       Then the response status is 200
@@ -16,7 +16,7 @@ Feature: Pins API
       And a fetch id is returned
       And fetch state is "done"
 
-    @xfail_not_backed
+    @xfail_contract
     Scenario: Pin a single file that is already hot
       When the client posts to "/v1/pin" with target "docs/tax/2022/invoice-123.pdf"
       Then the response status is 200
@@ -26,7 +26,7 @@ Feature: Pins API
       And a fetch id is returned
       And fetch state is "done"
 
-    @xfail_not_backed
+    @xfail_contract
     Scenario: Repeating the same pin does not create duplicates
       Given target "docs/" is already pinned
       When the client posts to "/v1/pin" with target "docs/"
@@ -38,7 +38,7 @@ Feature: Pins API
       Given target "docs/tax/" is pinned
       And target "docs/tax/2022/invoice-123.pdf" is pinned
 
-    @xfail_not_backed
+    @xfail_contract
     Scenario: Releasing a broader pin leaves the narrower pin intact
       When the client posts to "/v1/release" with target "docs/tax/"
       Then the response status is 200
@@ -46,7 +46,7 @@ Feature: Pins API
       And "/v1/pins" still contains target "docs/tax/2022/invoice-123.pdf"
       And file "docs/tax/2022/invoice-123.pdf" remains hot
 
-    @xfail_not_backed
+    @xfail_contract
     Scenario: Releasing a narrower pin leaves the broader pin intact
       When the client posts to "/v1/release" with target "docs/tax/2022/invoice-123.pdf"
       Then the response status is 200
@@ -54,7 +54,7 @@ Feature: Pins API
       And "/v1/pins" does not contain target "docs/tax/2022/invoice-123.pdf"
       And file "docs/tax/2022/invoice-123.pdf" remains hot
 
-    @xfail_not_backed
+    @xfail_contract
     Scenario: Releasing a missing pin is a successful no-op
       Given target "docs/missing/" is not pinned
       When the client posts to "/v1/release" with target "docs/missing/"
@@ -65,7 +65,7 @@ Feature: Pins API
     Background:
       Given archived target "docs/tax/2022/invoice-123.pdf" is pinned with fetch "fx-1"
 
-    @xfail_not_backed
+    @xfail_contract
     Scenario: Listing pins includes fetch id and state for each exact pin
       When the client gets "/v1/pins"
       Then the response status is 200
@@ -73,7 +73,7 @@ Feature: Pins API
       And "/v1/pins" entry for target "docs/tax/2022/invoice-123.pdf" contains fetch state "waiting_media"
 
   Rule: Releasing the last exact pin reconciles hot storage and fetch state
-    @xfail_not_backed
+    @xfail_contract
     Scenario: Releasing the last covering pin removes the file from hot storage
       Given collection "docs" exists and is fully hot
       And target "docs/tax/2022/invoice-123.pdf" is pinned
@@ -81,7 +81,7 @@ Feature: Pins API
       Then the response status is 200
       And file "docs/tax/2022/invoice-123.pdf" is not hot
 
-    @xfail_not_backed
+    @xfail_contract
     Scenario: Releasing the last exact pin removes the associated fetch manifest
       Given archived target "docs/tax/2022/invoice-123.pdf" is pinned with fetch "fx-1"
       When the client posts to "/v1/release" with target "docs/tax/2022/invoice-123.pdf"
@@ -89,7 +89,7 @@ Feature: Pins API
       And fetch "fx-1" no longer exists
 
   Rule: Selectors are canonical and precise
-    @xfail_not_backed
+    @xfail_contract
     Scenario: A projected parent directory selector is valid for pin
       Given collection "photos/2024" exists and is fully hot
       When the client posts to "/v1/pin" with target "photos/"
@@ -106,17 +106,13 @@ Feature: Pins API
       And the error code is "invalid_target"
 
       @xfail_contract
-      Examples: Acceptance backing already rejects these invalid paths
+      Examples: Canonical invalid targets are rejected
         | target       |
         | /docs/       |
         | docs//2022/  |
         | docs/./tax/  |
         | docs/../tax/ |
-
-      @xfail_not_backed
-      Examples: Acceptance backing still accepts bare collection selectors
-        | target |
-        | docs   |
+        | docs         |
 
     Scenario Outline: Invalid targets are rejected for release
       When the client posts to "/v1/release" with target "<target>"
@@ -124,14 +120,10 @@ Feature: Pins API
       And the error code is "invalid_target"
 
       @xfail_contract
-      Examples: Acceptance backing already rejects these invalid paths
+      Examples: Canonical invalid targets are rejected
         | target       |
         | /docs/       |
         | docs//2022/  |
         | docs/./tax/  |
         | docs/../tax/ |
-
-      @xfail_not_backed
-      Examples: Acceptance backing still accepts bare collection selectors
-        | target |
-        | docs   |
+        | docs         |

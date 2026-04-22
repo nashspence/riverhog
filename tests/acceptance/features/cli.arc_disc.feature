@@ -1,4 +1,4 @@
-@acceptance @cli @mvp @xfail_not_backed
+@acceptance @cli @mvp
 Feature: arc-disc CLI
   The optical CLI fulfills a fetch from disc media and completes it through the API.
 
@@ -8,6 +8,7 @@ Feature: arc-disc CLI
     And a fake optical reader fixture can recover every required encrypted entry
     And a fake crypto fixture can decrypt every required entry
 
+  @xfail_not_backed
   Scenario: arc-disc fetch completes a recoverable fetch
     When the operator runs 'arc-disc fetch fx-1 --device /dev/fake-sr0 --json'
     Then the command exits with code 0
@@ -17,11 +18,13 @@ Feature: arc-disc CLI
     And stderr mentions copy id "copy-docs-split-2"
     And target for fetch "fx-1" is hot
 
+  @xfail_not_backed
   Scenario: arc-disc fetch help omits the removed state-dir option
     When the operator runs 'arc-disc fetch --help'
     Then the command exits with code 0
     And stdout does not mention "--state-dir"
 
+  @xfail_not_backed
   Scenario: arc-disc fetch reports precise progress while streaming uploads
     When the operator runs 'arc-disc fetch fx-1 --device /dev/fake-sr0 --json'
     Then the command exits with code 0
@@ -30,12 +33,14 @@ Feature: arc-disc CLI
     And stderr mentions "%"
     And stderr mentions "/s"
 
+  @xfail_contract
   Scenario: arc-disc fetch fails if optical recovery fails
     Given the optical reader fixture fails for one required entry
     When the operator runs 'arc-disc fetch fx-1 --device /dev/fake-sr0'
     Then the command exits non-zero
     And fetch "fx-1" is not "done"
 
+  @xfail_not_backed
   Scenario: arc-disc fetch resumes split recovery
     Given the optical reader fixture fails for copy id "copy-docs-split-2"
     When the operator runs 'arc-disc fetch fx-1 --device /dev/fake-sr0'
@@ -50,6 +55,7 @@ Feature: arc-disc CLI
     And stderr mentions copy id "copy-docs-split-2"
     And target for fetch "fx-1" is hot
 
+  @xfail_contract
   Scenario: arc-disc fetch fails if decrypted bytes do not match the expected hash
     Given the crypto fixture returns incorrect plaintext for one required entry
     When the operator runs 'arc-disc fetch fx-1 --device /dev/fake-sr0'

@@ -9,22 +9,15 @@ from arc_core.domain.types import CollectionId, CopyId, FetchId, ImageId, Sha256
 
 @dataclass(frozen=True)
 class Target:
-    collection_id: CollectionId
-    path: PurePosixPath | None
+    path: PurePosixPath
     is_dir: bool
 
     @property
-    def is_collection(self) -> bool:
-        return self.path is None
-
-    @property
     def canonical(self) -> str:
-        if self.path is None:
-            return str(self.collection_id)
-        suffix = str(self.path)
-        if self.is_dir and not suffix.endswith("/"):
-            suffix += "/"
-        return f"{self.collection_id}:{suffix}"
+        canonical = str(self.path)
+        if self.is_dir:
+            canonical += "/"
+        return canonical
 
 
 @dataclass(frozen=True)
@@ -79,6 +72,7 @@ class FetchSummary:
 @dataclass(frozen=True)
 class PinSummary:
     target: TargetStr
+    fetch: FetchSummary
 
 
 @dataclass(frozen=True)

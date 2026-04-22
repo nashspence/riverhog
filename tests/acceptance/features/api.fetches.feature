@@ -6,7 +6,7 @@ Feature: Fetches API
     Background:
       Given collection "docs" exists and is fully hot
 
-    @xfail_not_backed
+    @xfail_contract
     Scenario: Pinning a hot selector returns a done fetch manifest
       When the client posts to "/v1/pin" with target "docs/"
       Then the response status is 200
@@ -21,7 +21,7 @@ Feature: Fetches API
       Given file "docs/tax/2022/invoice-123.pdf" is archived
       And file "docs/tax/2022/invoice-123.pdf" is not hot
 
-    @xfail_not_backed
+    @xfail_contract
     Scenario: Pin a cold archived file
       When the client posts to "/v1/pin" with target "docs/tax/2022/invoice-123.pdf"
       Then the response status is 200
@@ -31,7 +31,7 @@ Feature: Fetches API
       And a fetch id is returned
       And fetch state is "waiting_media"
 
-    @xfail_not_backed
+    @xfail_contract
     Scenario: Repeating the same pin reuses the active fetch
       Given fetch "fx-existing" already exists for target "docs/tax/2022/invoice-123.pdf"
       And fetch "fx-existing" is not done
@@ -50,7 +50,7 @@ Feature: Fetches API
       Then the response status is 200
       And the response contains "id", "target", "state", "files", "bytes", "entries_total", "entries_pending", "entries_partial", "entries_uploaded", "uploaded_bytes", "missing_bytes", "copies", and "upload_state_expires_at"
 
-    @xfail_not_backed
+    @xfail_contract
     Scenario: Read the manifest twice
       When the client gets "/v1/fetches/fx-1/manifest"
       And the client gets "/v1/fetches/fx-1/manifest" again
@@ -68,7 +68,7 @@ Feature: Fetches API
     Background:
       Given split archived fetch "fx-1" exists for target "docs/tax/2022/invoice-123.pdf"
 
-    @xfail_not_backed
+    @xfail_contract
     Scenario: Read a split manifest
       When the client gets "/v1/fetches/fx-1/manifest"
       Then the response status is 200
@@ -101,7 +101,7 @@ Feature: Fetches API
       Then the response status is 409
       And the error code is "invalid_state"
 
-    @xfail_not_backed
+    @xfail_contract
     Scenario: Completing a fully uploaded fetch materializes the target
       Given every required fetch entry for "fx-1" has been uploaded with the correct bytes
       When the client posts to "/v1/fetches/fx-1/complete"

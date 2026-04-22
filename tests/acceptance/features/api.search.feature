@@ -7,7 +7,7 @@ Feature: Search API
     And collection "docs" contains file "/tax/2022/invoice-123.pdf"
     And collection "photos-2024" contains directory "/albums/japan/"
 
-  @xfail_not_backed
+  @xfail_contract
   Scenario: Search returns file and collection selectors
     When the client gets "/v1/search?q=invoice&limit=25"
     Then the response status is 200
@@ -30,7 +30,7 @@ Feature: Search API
     Then the response status is 200
     And the response contains at most 1 result
 
-  @xfail_not_backed
+  @xfail_contract
   Scenario: Search is case-insensitive substring match
     When the client gets "/v1/search?q=INVOICE&limit=25"
     Then the response status is 200
