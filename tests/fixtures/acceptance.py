@@ -920,7 +920,6 @@ class AcceptanceFetchService:
             "disc_path": copy.disc_path,
             "recovery_bytes": len(recovery_payload),
             "recovery_sha256": hashlib.sha256(recovery_payload).hexdigest(),
-            "enc": copy.enc,
         }
 
     def _manifest_parts(self, entry: FetchEntryRecord) -> list[dict[str, object]]:

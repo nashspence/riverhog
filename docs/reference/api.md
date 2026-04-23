@@ -226,7 +226,7 @@ Returns a stable manifest for the exact pin lifetime.
   stream
 - every part hint includes logical plaintext `bytes`, logical plaintext `sha256`, `recovery_bytes`, and at least one
   candidate recovery copy
-- every candidate recovery copy includes `disc_path`, `recovery_bytes`, `recovery_sha256`, and opaque `enc`
+- every candidate recovery copy includes `disc_path`, `recovery_bytes`, and `recovery_sha256`
 - `arc-disc` uploads the raw encrypted bytes stored at `disc_path`, not reconstructed logical plaintext
 - logical plaintext hash and size fields remain server-side verification anchors after decryption and reconstruction
 - each manifest entry exposes current upload state, uploaded bytes, and upload expiry if partial state exists

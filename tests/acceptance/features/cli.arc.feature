@@ -88,7 +88,6 @@ Feature: arc CLI
       And stdout mentions fetch id "fx-1"
       And stdout mentions at least one candidate copy id
 
-    @xfail_contract
     Scenario: arc fetch lists pending and partial files for one pin manifest
       Given fetch "fx-1" exists for target "docs/tax/2022/invoice-123.pdf"
       When the operator runs 'arc fetch "fx-1"'

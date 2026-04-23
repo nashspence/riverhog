@@ -646,7 +646,7 @@ components:
             $ref: "#/components/schemas/FetchCopyHint"
     FetchManifestEntryCopy:
       type: object
-      required: [copy, volume_id, location, disc_path, recovery_bytes, recovery_sha256, enc]
+      required: [copy, volume_id, location, disc_path, recovery_bytes, recovery_sha256]
       properties:
         copy: { type: string }
         volume_id:
@@ -662,10 +662,6 @@ components:
         recovery_sha256:
           type: string
           description: SHA-256 of the exact raw encrypted byte stream at `disc_path` for this recovery candidate.
-        enc:
-          type: object
-          description: Opaque server-owned recovery metadata used to bind uploaded recovery bytes back to archived objects.
-          additionalProperties: true
     FetchManifestEntry:
       type: object
       required:

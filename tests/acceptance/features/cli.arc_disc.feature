@@ -9,7 +9,6 @@ Feature: arc-disc CLI
     And fetch "fx-1" has a stable manifest
     And a fake optical reader fixture can recover every required entry
 
-  @xfail_contract
   Scenario: arc-disc fetch completes a recoverable fetch
     When the operator runs 'arc-disc fetch fx-1 --device /dev/fake-sr0 --json'
     Then the command exits with code 0
@@ -19,7 +18,6 @@ Feature: arc-disc CLI
     And stderr mentions copy id "copy-docs-split-2"
     And target for fetch "fx-1" is hot
 
-  @xfail_contract
   Scenario: arc-disc fetch reports precise progress while streaming uploads
     When the operator runs 'arc-disc fetch fx-1 --device /dev/fake-sr0 --json'
     Then the command exits with code 0
@@ -28,14 +26,12 @@ Feature: arc-disc CLI
     And stderr mentions "%"
     And stderr mentions "/s"
 
-  @xfail_contract
   Scenario: arc-disc fetch fails if optical recovery fails
     Given the optical reader fixture fails for one required entry
     When the operator runs 'arc-disc fetch fx-1 --device /dev/fake-sr0'
     Then the command exits non-zero
     And fetch "fx-1" is not "done"
 
-  @xfail_contract
   Scenario: arc-disc fetch resumes split recovery across repeated runs via server-side upload state
     Given the optical reader fixture fails for copy id "copy-docs-split-2"
     When the operator runs 'arc-disc fetch fx-1 --device /dev/fake-sr0'
@@ -50,7 +46,6 @@ Feature: arc-disc CLI
     And stderr mentions copy id "copy-docs-split-2"
     And target for fetch "fx-1" is hot
 
-  @xfail_contract
   Scenario: arc-disc fetch fails if the server rejects incorrect recovered bytes
     Given the optical reader fixture returns incorrect recovered bytes for one required entry
     When the operator runs 'arc-disc fetch fx-1 --device /dev/fake-sr0'

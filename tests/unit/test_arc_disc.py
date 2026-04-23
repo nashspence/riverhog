@@ -36,7 +36,6 @@ def _manifest_for(plaintext: bytes) -> dict[str, object]:
                                 "disc_path": "disc/000001.bin",
                                 "recovery_bytes": len(recovery),
                                 "recovery_sha256": hashlib.sha256(recovery).hexdigest(),
-                                "enc": {"fixture_key": "fixture-1"},
                             }
                         ],
                     }
@@ -188,7 +187,6 @@ def test_arc_disc_fetch_resumes_split_entry_from_session_offset(monkeypatch) -> 
                                         "disc_path": "disc/000001.bin",
                                         "recovery_bytes": len(part_one),
                                         "recovery_sha256": hashlib.sha256(part_one).hexdigest(),
-                                        "enc": {"fixture_key": "fixture-1"},
                                     }
                                 ],
                             },
@@ -204,7 +202,6 @@ def test_arc_disc_fetch_resumes_split_entry_from_session_offset(monkeypatch) -> 
                                         "disc_path": "disc/000002.bin",
                                         "recovery_bytes": len(part_two),
                                         "recovery_sha256": hashlib.sha256(part_two).hexdigest(),
-                                        "enc": {"fixture_key": "fixture-2"},
                                     }
                                 ],
                             },

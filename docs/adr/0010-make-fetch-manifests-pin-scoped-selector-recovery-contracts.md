@@ -40,7 +40,7 @@ the fetch manifest is the recovery view of that pin.
   plaintext bytes
 - candidate copies are alternatives for a recovery span rather than a whole-file session lock, but resumable offsets are
   only valid for the exact advertised recovery-byte stream accepted so far
-- `enc` remains opaque server-owned binding metadata rather than a public crypto sub-protocol
+- `enc` is server-owned internal binding metadata and is not exposed in the public manifest response
 - `arc-disc` reports precise progress for both the current file and the whole manifest during recovery and upload
 
 ## Consequences

@@ -10,6 +10,7 @@ from arc_core.domain.models import FetchCopyHint, FetchSummary, PinSummary
 from arc_core.domain.selectors import parse_target
 from arc_core.domain.types import CopyId, FetchId, TargetStr
 from arc_core.runtime_config import RuntimeConfig
+from arc_core.services.fetches import delete_fetch_entries
 from arc_core.sqlite_db import Base, make_session_factory, session_scope
 
 
@@ -79,6 +80,7 @@ class SqlAlchemyPinService:
         with session_scope(self._session_factory) as session:
             pin_record = session.get(ActivePinRecord, canonical)
             if pin_record is not None:
+                delete_fetch_entries(session, pin_record.fetch_id)
                 session.delete(pin_record)
                 session.flush()
             _reconcile_hot_from_pins(session)

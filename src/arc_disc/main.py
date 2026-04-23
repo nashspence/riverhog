@@ -33,7 +33,6 @@ class RecoveryCopyHint:
     disc_path: str
     recovery_bytes: int
     recovery_sha256: str
-    enc: dict[str, Any]
 
 
 @dataclass(frozen=True, slots=True)
@@ -87,7 +86,6 @@ def _copy_from_manifest(payload: dict[str, Any]) -> RecoveryCopyHint:
         disc_path=str(payload["disc_path"]),
         recovery_bytes=int(payload.get("recovery_bytes", payload.get("bytes", 0))),
         recovery_sha256=str(payload.get("recovery_sha256", "")),
-        enc=dict(payload["enc"]),
     )
 
 

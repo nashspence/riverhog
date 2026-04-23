@@ -41,13 +41,11 @@ Feature: Fetches API
     Background:
       Given fetch "fx-1" exists for target "docs/tax/2022/invoice-123.pdf"
 
-    @xfail_contract
     Scenario: Read a fetch summary
       When the client gets "/v1/fetches/fx-1"
       Then the response status is 200
       And the response contains "id", "target", "state", "files", "bytes", "entries_total", "entries_pending", "entries_partial", "entries_uploaded", "uploaded_bytes", "missing_bytes", "copies", and "upload_state_expires_at"
 
-    @xfail_contract
     Scenario: Read the manifest twice
       When the client gets "/v1/fetches/fx-1/manifest"
       And the client gets "/v1/fetches/fx-1/manifest" again
@@ -55,14 +53,12 @@ Feature: Fetches API
       And both manifests contain the same entry ids
       And both manifests contain the same logical file set
 
-    @xfail_contract
     Scenario: Read a manifest entry upload view
       When the client gets "/v1/fetches/fx-1/manifest"
       Then the response status is 200
       And fetch manifest entry "e1" contains "recovery_bytes", "upload_state", "uploaded_bytes", and "upload_state_expires_at"
 
   Rule: Active fetches survive service restarts
-    @xfail_contract
     Scenario: Restarting the API preserves an active pin-scoped fetch
       Given archived target "docs/tax/2022/invoice-123.pdf" is pinned with fetch "fx-1"
       When the API process restarts
@@ -78,7 +74,6 @@ Feature: Fetches API
     Background:
       Given split archived fetch "fx-1" exists for target "docs/tax/2022/invoice-123.pdf"
 
-    @xfail_contract
     Scenario: Read a split manifest
       When the client gets "/v1/fetches/fx-1/manifest"
       Then the response status is 200
@@ -92,27 +87,23 @@ Feature: Fetches API
       Given fetch "fx-1" exists with entry "e1"
       And entry "e1" expects sha256 "good-hash"
 
-    @xfail_contract
     Scenario: Creating or resuming an entry upload returns a resumable upload session
       When the client posts to "/v1/fetches/fx-1/entries/e1/upload"
       Then the response status is 200
       And the response contains "entry", "protocol", "upload_url", "offset", "length", "checksum_algorithm", and "expires_at"
       And the upload-session length matches fetch "fx-1" entry "e1" recovery bytes
 
-    @xfail_contract
     Scenario: Repeating upload-session creation reuses the same upload resource
       When the client posts to "/v1/fetches/fx-1/entries/e1/upload"
       And the client posts to "/v1/fetches/fx-1/entries/e1/upload" again
       Then the response status is 200 both times
       And both upload-session responses contain the same upload url
 
-    @xfail_contract
     Scenario: Completing before all required entries are present fails
       When the client posts to "/v1/fetches/fx-1/complete"
       Then the response status is 409
       And the error code is "invalid_state"
 
-    @xfail_contract
     Scenario: Completing a fully uploaded fetch materializes the target
       Given every required fetch entry for "fx-1" has been uploaded with the correct bytes
       When the client posts to "/v1/fetches/fx-1/complete"

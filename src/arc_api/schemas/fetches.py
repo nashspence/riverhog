@@ -29,7 +29,6 @@ class FetchManifestCopyOut(ArcModel):
     disc_path: str
     recovery_bytes: int
     recovery_sha256: str
-    enc: dict
 
 
 class FetchManifestPartOut(ArcModel):
