@@ -3,12 +3,14 @@ info:
   title: ARC API
   version: 1.0.0
   summary: MVP API for hot/cold archival storage
+  description: Authoritative archive resources are durable across service restarts unless a specific contract explicitly expires or releases them.
 servers:
   - url: /v1
 paths:
   /collections/close:
     post:
       summary: Close a staged directory into a collection
+      description: Creates one durable collection resource from the staged directory and materializes it into hot storage.
       operationId: closeCollection
       requestBody:
         required: true
@@ -209,7 +211,7 @@ paths:
   /plan/candidates/{candidate_id}/finalize:
     post:
       summary: Explicitly finalize one provisional candidate
-      description: Finalization is the only operation that creates a finalized image id.
+      description: Finalization is the only operation that creates a finalized image id, and the resulting finalized image remains addressable across service restarts.
       operationId: finalizeImage
       parameters:
         - in: path
@@ -248,7 +250,7 @@ paths:
   /images/{image_id}/copies:
     post:
       summary: Register a physical burned copy
-      description: Registers one burned disc for an already finalized image identified by `image_id`.
+      description: Registers one durable burned-disc record for an already finalized image identified by `image_id`.
       operationId: createCopy
       parameters:
         - in: path
@@ -285,6 +287,7 @@ paths:
   /pin:
     post:
       summary: Pin a target into hot storage
+      description: Creates or reuses one exact pin that remains active until release, including across service restarts.
       operationId: pinTarget
       requestBody:
         required: true
@@ -338,6 +341,7 @@ paths:
   /pins:
     get:
       summary: List active pins
+      description: Lists durable exact pins that remain active until release.
       operationId: listPins
       responses:
         "200":
@@ -355,6 +359,7 @@ paths:
   /fetches/{fetch_id}:
     get:
       summary: Get fetch summary
+      description: Returns one durable pin-scoped fetch summary while the exact pin remains active.
       operationId: getFetch
       parameters:
         - in: path
@@ -373,6 +378,7 @@ paths:
   /fetches/{fetch_id}/manifest:
     get:
       summary: Get fetch manifest
+      description: Returns the stable fetch manifest and any unexpired upload progress for one active exact pin.
       operationId: getFetchManifest
       parameters:
         - in: path
@@ -391,6 +397,7 @@ paths:
   /fetches/{fetch_id}/entries/{entry_id}/upload:
     post:
       summary: Create or resume one fetch-entry upload resource
+      description: Creates or resumes one restart-safe upload resource for the fetch entry until the published expiry time discards incomplete state.
       operationId: createOrResumeFetchEntryUpload
       parameters:
         - in: path

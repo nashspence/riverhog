@@ -37,6 +37,15 @@ class ProductionSystem:
     def close(self) -> None:
         self.server.close()
 
+    def restart(self) -> None:
+        self.server.close()
+        app = create_app()
+        with _reserve_local_port() as reserved:
+            server = _LiveServerHandle(app, host="127.0.0.1", port=reserved.port)
+        server.start()
+        self.server = server
+        self.base_url = server.base_url
+
     def request(
         self,
         method: str,

@@ -4,8 +4,8 @@ The system uses three layers.
 
 ## Catalog
 
-The catalog is the authoritative metadata layer. It tracks collections, logical files, file hashes, archival coverage,
-pins, fetches, and hot presence.
+The catalog is the durable authoritative metadata layer. It tracks collections, logical files, file hashes, archival
+coverage, pins, fetches, and hot presence across service restarts.
 
 ## Hot object store
 
@@ -27,6 +27,8 @@ A representative layout is:
 ```text
 /hot/view/docs/tax/2022/original/path/file.ext -> ../../../../objects/ab/cd/<sha256>
 ```
+
+This projected namespace may be regenerated during startup while keeping the same externally visible hot state.
 
 ## Why pins exist
 

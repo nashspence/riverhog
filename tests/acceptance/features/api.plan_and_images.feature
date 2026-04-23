@@ -169,3 +169,11 @@ Feature: Plan and images API
       When the client posts to "/v1/images/20260420T040001Z/copies" with id "BR-021-A" and location "Shelf B2"
       Then the response status is 409
       And the error code is "conflict"
+
+    Scenario: Restarting the API preserves finalized images and registered copies
+      Given copy "BR-021-A" already exists
+      When the API process restarts
+      And the client gets "/v1/images?has_copies=true"
+      Then the response status is 200
+      And the response finalized images contain only "20260420T040001Z"
+      And each finalized image has copy_count greater than 0

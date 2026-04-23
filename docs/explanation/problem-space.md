@@ -14,6 +14,7 @@ The product goal is therefore:
 - permit restore and release at collection, directory, and file granularity
 - keep the web UI focused on search, summaries, and actions rather than browsing
 - make hot storage a projection of system state rather than a writable source of intent
+- keep authoritative archive state durable across service restarts
 
 That means the system should treat the API state and catalog as authoritative, and the visible hot tree as generated.
 

@@ -8,6 +8,10 @@ This document summarizes the MVP HTTP and CLI contract. The canonical machine-re
 All JSON endpoints are under `/v1`. Requests and responses use JSON unless otherwise specified.
 Resumable fetch-entry upload URLs are returned by the JSON API and use tus-compatible transport semantics.
 
+Unless this contract explicitly says otherwise, authoritative resources created through the API remain addressable across
+service restarts, including collections, finalized images, registered copies, active pins, active fetch manifests, and
+unexpired upload progress.
+
 ### Collections
 
 #### `POST /v1/collections/close`
@@ -30,6 +34,7 @@ Required behavior:
 - rejects a collection id if it would be an ancestor or descendant of an existing collection id
 - creates one new collection
 - materializes all files into hot storage immediately
+- persists the collection so it remains addressable after service restart
 - makes the collection eligible for planning
 
 ### Search
@@ -141,6 +146,7 @@ Required behavior:
 - after finalization, the planner must not re-allocate that finalized image's represented bytes
 - finalized candidates are not returned by `GET /v1/plan`
 - repeated finalization of the same `candidate_id` is idempotent and returns the same finalized summary
+- the finalized image record remains addressable after service restart
 
 #### `GET /v1/images/{image_id}/iso`
 
@@ -164,6 +170,7 @@ Required behavior:
 - the user-supplied `copy_id` must be unique within that finalized image/`volume_id`; duplicates are rejected with
   `conflict`
 - `location` is mutable operational metadata and is never part of copy identity
+- successful registration persists across service restart
 
 ### Pins
 
@@ -180,6 +187,7 @@ Required behavior:
 - if some targeted bytes are archived but not hot, the returned fetch manifest is created or reused in a non-`done`
   state
 - repeated pin of the same canonical selector is idempotent
+- a successful pin remains active across service restart until explicitly released
 
 #### `POST /v1/release`
 
@@ -226,6 +234,7 @@ Returns a stable manifest for the exact pin lifetime.
 - incomplete upload state expires after `INCOMPLETE_UPLOAD_TTL` since the last accepted chunk and the manifest returns to
   `waiting_media`
 - fetch summaries expose an audit field such as `upload_state_expires_at`
+- the fetch manifest and any unexpired upload progress survive service restart while the exact pin remains active
 
 #### `POST /v1/fetches/{fetch_id}/entries/{entry_id}/upload`
 

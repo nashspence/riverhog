@@ -64,6 +64,19 @@ Feature: Fetches API
       Then the response status is 200
       And fetch manifest entry "e1" contains "recovery_bytes", "upload_state", "uploaded_bytes", and "upload_state_expires_at"
 
+  Rule: Active fetches survive service restarts
+    @xfail_contract
+    Scenario: Restarting the API preserves an active pin-scoped fetch
+      Given archived target "docs/tax/2022/invoice-123.pdf" is pinned with fetch "fx-1"
+      When the API process restarts
+      And the client gets "/v1/pins"
+      Then the response status is 200
+      And "/v1/pins" entry for target "docs/tax/2022/invoice-123.pdf" contains fetch id "fx-1"
+      And "/v1/pins" entry for target "docs/tax/2022/invoice-123.pdf" contains fetch state "waiting_media"
+      When the client gets "/v1/fetches/fx-1/manifest"
+      Then the response status is 200
+      And fetch manifest entry "e1" contains "recovery_bytes", "upload_state", "uploaded_bytes", and "upload_state_expires_at"
+
   Rule: Split fetch manifests expose part-level recovery hints
     Background:
       Given split archived fetch "fx-1" exists for target "docs/tax/2022/invoice-123.pdf"

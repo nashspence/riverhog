@@ -34,6 +34,19 @@ The server-side materialized cache of file bytes currently available without opt
 
 Selectors operate over the projected hot namespace, not over literal hot-store paths on disk.
 
+### Durable authoritative state
+
+The authoritative archive state survives service restarts.
+
+This includes at least:
+
+- collections and their coverage summaries
+- finalized images and registered copies
+- exact pins and their fetch manifests
+- hot-residency state and any unexpired resumable-upload progress
+
+Implementations may rebuild derived projections during restart while keeping the same authoritative state.
+
 ### Candidate
 
 A provisional planner proposal addressed by `candidate_id`.

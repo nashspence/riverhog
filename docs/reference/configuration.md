@@ -8,6 +8,8 @@
 This controls how long incomplete server-side upload state for one fetch-manifest entry may remain resumable after the
 last successfully accepted chunk.
 
+Service restart does not shorten this TTL or discard unexpired upload state by itself.
+
 When the TTL expires:
 
 - incomplete upload bytes are discarded

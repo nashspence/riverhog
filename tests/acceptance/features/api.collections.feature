@@ -73,3 +73,20 @@ Feature: Collections API
       When the client gets "/v1/collections/missing"
       Then the response status is 404
       And the error code is "not_found"
+
+  Rule: Closed collections remain addressable after restart
+    Background:
+      Given an empty archive
+      And a staged directory "photos-2024" with deterministic fixture contents
+
+    Scenario: Restarting the API preserves a closed collection
+      When the client posts to "/v1/collections/close" with path "/staging/photos-2024"
+      Then the response status is 200
+      And the response contains collection id "photos-2024"
+      When the API process restarts
+      And the client gets "/v1/collections/photos-2024"
+      Then the response status is 200
+      And the response contains "id", "files", "bytes", "hot_bytes", "archived_bytes", and "pending_bytes"
+      And collection "photos-2024" has hot_bytes equal to bytes
+      And collection "photos-2024" has archived_bytes equal to 0
+      And collection "photos-2024" has pending_bytes equal to bytes

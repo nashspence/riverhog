@@ -763,6 +763,11 @@ def when_client_registers_copy(
         acceptance_context.after_collections[acceptance_context.tracked_collection_id] = after
 
 
+@when("the API process restarts")
+def when_api_process_restarts(acceptance_system: AcceptanceSystem) -> None:
+    acceptance_system.restart()
+
+
 @when(parsers.parse("the operator runs '{command}'"))
 def when_operator_runs_command(
     acceptance_system: AcceptanceSystem,

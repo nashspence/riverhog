@@ -26,6 +26,7 @@ The upload resource must support:
 - offset-based resume
 - expiration
 - checksum validation on streamed chunks
+- restart-safe resume until the published expiry time discards incomplete state
 
 The upload resource is for one logical file only. Split files do not create one upload per disc part; `arc-disc`
 streams parts into the same logical-file upload in ascending order.
@@ -45,3 +46,5 @@ streams parts into the same logical-file upload in ascending order.
 
 If an implementation uses temporary buffering internally, that buffering is conventional temporary storage and not a
 user-managed API or CLI surface.
+
+Service restart does not by itself abandon an unexpired upload session or reset its accepted offset.

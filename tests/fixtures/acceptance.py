@@ -1143,6 +1143,10 @@ class AcceptanceSystem:
     @classmethod
     def create(cls, workspace: Path) -> AcceptanceSystem:
         state = AcceptanceState()
+        return cls._create_with_state(workspace, state)
+
+    @classmethod
+    def _create_with_state(cls, workspace: Path, state: AcceptanceState) -> AcceptanceSystem:
         collections = AcceptanceCollectionService(state)
         search = AcceptanceSearchService(state)
         planning = AcceptancePlanningService(state)
@@ -1179,6 +1183,20 @@ class AcceptanceSystem:
             pins=pins,
             fetches=fetches,
         )
+
+    def restart(self) -> None:
+        self.app.dependency_overrides.clear()
+        self.server.close()
+        restarted = self._create_with_state(self.workspace, self.state)
+        self.app = restarted.app
+        self.server = restarted.server
+        self.base_url = restarted.base_url
+        self.collections = restarted.collections
+        self.search = restarted.search
+        self.planning = restarted.planning
+        self.copies = restarted.copies
+        self.pins = restarted.pins
+        self.fetches = restarted.fetches
 
     def close(self) -> None:
         self.app.dependency_overrides.clear()
