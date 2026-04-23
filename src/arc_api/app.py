@@ -5,6 +5,7 @@ from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
 
 from arc_api.auth import api_auth_dependencies
+from arc_api.deps import default_container, get_container
 from arc_api.routers.collections import router as collections_router
 from arc_api.routers.fetches import router as fetches_router
 from arc_api.routers.images import router as images_router
@@ -17,6 +18,8 @@ from arc_core.domain.errors import ArcError
 
 def create_app() -> FastAPI:
     app = FastAPI(title="arc API", version="0.1.0")
+    container = default_container()
+    app.dependency_overrides[get_container] = lambda: container
 
     @app.exception_handler(ArcError)
     async def handle_arc_error(_: Request, exc: ArcError) -> JSONResponse:

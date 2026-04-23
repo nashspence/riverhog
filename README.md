@@ -30,7 +30,7 @@ contract and implementation crisp while giving you a runnable app and installabl
 ```bash
 python -m venv .venv
 source .venv/bin/activate
-pip install -e .[dev]
+pip install -e .[dev,db]
 uvicorn arc_api.app:create_app --factory --reload
 ```
 
@@ -52,6 +52,8 @@ The `.feature` files under `tests/acceptance/features` are the source of truth f
 
 - `ARC_BASE_URL` default: `http://127.0.0.1:8000`
 - `ARC_TOKEN` optional bearer token
+- `ARC_STAGING_ROOT` default: `/staging`
+- `ARC_DB_PATH` default: `.arc/state.sqlite3`
 
 ## Suggested implementation order
 

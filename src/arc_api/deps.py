@@ -5,7 +5,8 @@ from typing import Annotated
 
 from fastapi import Depends
 
-from arc_core.services.collections import StubCollectionService
+from arc_core.runtime_config import load_runtime_config
+from arc_core.services.collections import SqlAlchemyCollectionService
 from arc_core.services.contracts import (
     CollectionService,
     CopyService,
@@ -32,8 +33,9 @@ class ServiceContainer:
 
 
 def default_container() -> ServiceContainer:
+    config = load_runtime_config()
     return ServiceContainer(
-        collections=StubCollectionService(),
+        collections=SqlAlchemyCollectionService(config),
         search=StubSearchService(),
         planning=StubPlanningService(),
         copies=StubCopyService(),

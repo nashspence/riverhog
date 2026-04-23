@@ -15,6 +15,10 @@ WORKDIR /app
 COPY requirements-test.txt ./
 RUN pip install --no-cache-dir --require-hashes -r requirements-test.txt
 
+COPY pyproject.toml README.md ./
+COPY src ./src
+RUN pip install --no-cache-dir -e .[db]
+
 COPY . .
 
 ENTRYPOINT ["python", "-m", "pytest"]

@@ -1,5 +1,22 @@
 # Configuration Reference
 
+## `ARC_STAGING_ROOT`
+
+- type: absolute path
+- default: `/staging`
+
+This is the filesystem directory the API treats as the backing root for logical request paths beneath `/staging/...`.
+
+For example, with `ARC_STAGING_ROOT=/srv/archive/staging`, the request path `/staging/photos/2024` resolves to the
+real directory `/srv/archive/staging/photos/2024`.
+
+## `ARC_DB_PATH`
+
+- type: absolute or relative path
+- default: `.arc/state.sqlite3`
+
+This is the SQLite catalog path used for durable authoritative API state.
+
 ## `INCOMPLETE_UPLOAD_TTL`
 
 - type: duration
