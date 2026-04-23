@@ -79,6 +79,38 @@ def format_fetch(summary: Mapping[str, Any], manifest: Mapping[str, Any]) -> str
     return "\n".join(lines)
 
 
+def format_images(payload: Mapping[str, Any]) -> str:
+    lines = [
+        "images: "
+        f'page {payload.get("page", 1)}/{payload.get("pages", 0)} '
+        f'per_page={payload.get("per_page", 25)} '
+        f'total={payload.get("total", 0)} '
+        f'sort={payload.get("sort", "finalized_at")} '
+        f'order={payload.get("order", "desc")}'
+    ]
+
+    images = payload.get("images")
+    if not isinstance(images, Sequence) or not images:
+        lines.append("- none")
+        return "\n".join(lines)
+
+    for image in images:
+        if not isinstance(image, Mapping):
+            continue
+        collection_ids = image.get("collection_ids")
+        collection_text = ", ".join(str(item) for item in collection_ids) if isinstance(collection_ids, Sequence) else ""
+        lines.extend(
+            [
+                f'- {image.get("id", "unknown")} ({image.get("filename", "unknown")})',
+                f'  finalized_at: {image.get("finalized_at", "unknown")}',
+                f'  copies: {image.get("copy_count", 0)}',
+                f'  collections: {image.get("collections", 0)} [{collection_text}]',
+            ]
+        )
+
+    return "\n".join(lines)
+
+
 def emit(payload: Any, *, json_mode: bool) -> None:
     if json_mode:
         typer.echo(json.dumps(payload, indent=2, sort_keys=True))

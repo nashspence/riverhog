@@ -35,6 +35,46 @@ Feature: Plan and images API
     And the response contains image id "20260420T040001Z"
     And the response does not contain field "volume_id"
 
+  Scenario: List finalized images separately from the provisional plan
+    Given an archive with split planner fixtures
+    And candidate "img_2026-04-20_01" is finalized
+    And candidate "img_2026-04-20_03" is finalized
+    And candidate "img_2026-04-20_04" is finalized
+    When the client gets "/v1/images"
+    Then the response status is 200
+    And the response contains "page", "per_page", "total", "pages", "sort", "order", and "images"
+    And each finalized image contains "id", "filename", "finalized_at", "bytes", "fill", "files", "collections", "collection_ids", "iso_ready", and "copy_count"
+    And finalized images are returned newest-first
+    And each finalized image is iso-ready
+
+  Scenario: Finalized image listing honors pagination
+    Given an archive with split planner fixtures
+    And candidate "img_2026-04-20_01" is finalized
+    And candidate "img_2026-04-20_03" is finalized
+    And candidate "img_2026-04-20_04" is finalized
+    When the client gets "/v1/images?page=1&per_page=2"
+    Then the response status is 200
+    And the response pagination is page 1 with per_page 2 and total 3 and pages 2
+    And the response contains 2 finalized images
+    And the response finalized images include "20260420T040004Z" and "20260420T040003Z"
+
+  Scenario: Finalized image listing can filter by copy presence
+    Given an archive with split planner fixtures
+    And candidate "img_2026-04-20_01" is finalized
+    And candidate "img_2026-04-20_03" is finalized
+    And copy "BR-021-A" already exists
+    When the client gets "/v1/images?has_copies=true"
+    Then the response status is 200
+    And the response finalized images contain only "20260420T040001Z"
+    And each finalized image has copy_count greater than 0
+
+  Scenario: Finalized image listing can filter by filename query and contained collection
+    Given candidate "img_2026-04-20_01" is finalized
+    And fixture finalized image "20260420T040002Z" exists for collection "photos-2024"
+    When the client gets "/v1/images?q=040002Z.iso&collection=photos-2024"
+    Then the response status is 200
+    And the response finalized images contain only "20260420T040002Z"
+
   Scenario: Repeating candidate finalization reuses the same finalized image id
     Given candidate "img_2026-04-20_01" exists
     When the client posts to "/v1/plan/candidates/img_2026-04-20_01/finalize"

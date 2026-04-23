@@ -38,6 +38,7 @@ from tests.fixtures.data import (
     PHOTOS_COLLECTION_ID,
     PHOTOS_NESTED_COLLECTION_ID,
     PHOTOS_PARENT_COLLECTION_ID,
+    SECOND_IMAGE_ID,
     SPLIT_FILE_PARTS,
     SPLIT_FILE_RELPATH,
     TAX_DIRECTORY_TARGET,
@@ -134,12 +135,34 @@ def _quoted_values(text: str) -> list[str]:
 
 
 def _coerce_query_value(value: str) -> object:
+    lowered = value.lower()
+    if lowered == "true":
+        return True
+    if lowered == "false":
+        return False
     return int(value) if value.isdigit() else value
 
 
 def _query_params(url: str) -> dict[str, object]:
     parts = urlsplit(url)
     return {key: _coerce_query_value(value) for key, value in parse_qsl(parts.query, keep_blank_values=True)}
+
+
+def _arc_option_value(argv: list[str], option: str, default: object | None = None) -> object | None:
+    if option not in argv:
+        return default
+    index = argv.index(option)
+    if index + 1 >= len(argv):
+        raise AssertionError(f"missing value for CLI option: {option}")
+    return _coerce_query_value(argv[index + 1])
+
+
+def _arc_bool_flag(argv: list[str], positive: str, negative: str) -> bool | None:
+    if positive in argv:
+        return True
+    if negative in argv:
+        return False
+    return None
 
 
 def _maybe_skip_xorriso_for_url(url: str) -> None:
@@ -241,6 +264,30 @@ def _prepare_arc_expectation(
     if argv[1] == "plan":
         context.expected_api_endpoint = ("GET", "/v1/plan")
         context.expected_api_payload = acceptance_system.request("GET", "/v1/plan").json()
+        return
+
+    if argv[1] == "images":
+        context.expected_api_endpoint = ("GET", "/v1/images")
+        params = {
+            "page": _arc_option_value(argv, "--page", 1),
+            "per_page": _arc_option_value(argv, "--per-page", 25),
+            "sort": _arc_option_value(argv, "--sort", "finalized_at"),
+            "order": _arc_option_value(argv, "--order", "desc"),
+        }
+        query = _arc_option_value(argv, "--query")
+        collection = _arc_option_value(argv, "--collection")
+        has_copies = _arc_bool_flag(argv, "--has-copies", "--no-copies")
+        if query is not None:
+            params["q"] = query
+        if collection is not None:
+            params["collection"] = collection
+        if has_copies is not None:
+            params["has_copies"] = has_copies
+        context.expected_api_payload = acceptance_system.request(
+            "GET",
+            "/v1/images",
+            params=params,
+        ).json()
         return
 
     if argv[1] == "pins":
@@ -537,6 +584,13 @@ def given_candidate_is_finalized(
     candidate_id: str,
 ) -> None:
     acceptance_system.planning.finalize_image(candidate_id)
+
+
+@given('fixture finalized image "20260420T040002Z" exists for collection "photos-2024"')
+def given_fixture_finalized_image_exists_for_photos(
+    acceptance_system: AcceptanceSystem,
+) -> None:
+    acceptance_system.seed_finalized_image(SECOND_IMAGE_ID, force_ready=True)
 
 
 @given(parsers.parse('collection "{collection_id}" contains file "{path}"'))
@@ -1095,6 +1149,100 @@ def then_images_are_returned_in_best_first_order(
     payload = _json_payload(_require_response(acceptance_context))
     fills = [image["fill"] for image in payload["images"]]
     assert fills == sorted(fills, reverse=True)
+
+
+@then(
+    'each finalized image contains "id", "filename", "finalized_at", "bytes", "fill", "files", "collections", '
+    '"collection_ids", "iso_ready", and "copy_count"'
+)
+def then_each_finalized_image_contains_expected_fields(
+    acceptance_context: AcceptanceScenarioContext,
+) -> None:
+    payload = _json_payload(_require_response(acceptance_context))
+    expected = {
+        "id",
+        "filename",
+        "finalized_at",
+        "bytes",
+        "fill",
+        "files",
+        "collections",
+        "collection_ids",
+        "iso_ready",
+        "copy_count",
+    }
+    assert all(expected.issubset(image) for image in payload["images"])
+
+
+@then("finalized images are returned newest-first")
+def then_finalized_images_are_returned_newest_first(
+    acceptance_context: AcceptanceScenarioContext,
+) -> None:
+    payload = _json_payload(_require_response(acceptance_context))
+    ids = [image["id"] for image in payload["images"]]
+    assert ids == sorted(ids, reverse=True)
+
+
+@then("each finalized image is iso-ready")
+def then_each_finalized_image_is_iso_ready(
+    acceptance_context: AcceptanceScenarioContext,
+) -> None:
+    payload = _json_payload(_require_response(acceptance_context))
+    assert all(image["iso_ready"] is True for image in payload["images"])
+
+
+@then(parsers.parse("the response contains {count:d} finalized images"))
+def then_response_contains_finalized_image_count(
+    acceptance_context: AcceptanceScenarioContext,
+    count: int,
+) -> None:
+    payload = _json_payload(_require_response(acceptance_context))
+    assert len(payload["images"]) == count
+
+
+@then(parsers.parse('the response pagination is page {page:d} with per_page {per_page:d} and total {total:d} and pages {pages:d}'))
+def then_response_pagination_matches(
+    acceptance_context: AcceptanceScenarioContext,
+    page: int,
+    per_page: int,
+    total: int,
+    pages: int,
+) -> None:
+    payload = _json_payload(_require_response(acceptance_context))
+    assert payload["page"] == page
+    assert payload["per_page"] == per_page
+    assert payload["total"] == total
+    assert payload["pages"] == pages
+
+
+@then(parsers.re(r'the response finalized images include "(?P<first>[^"]+)"(?P<rest>.*)'))
+def then_response_finalized_images_include(
+    acceptance_context: AcceptanceScenarioContext,
+    first: str,
+    rest: str,
+) -> None:
+    payload = _json_payload(_require_response(acceptance_context))
+    ids = [image["id"] for image in payload["images"]]
+    for image_id in [first, *_quoted_values(rest)]:
+        assert image_id in ids
+
+
+@then(parsers.parse('the response finalized images contain only "{image_id}"'))
+def then_response_finalized_images_contain_only(
+    acceptance_context: AcceptanceScenarioContext,
+    image_id: str,
+) -> None:
+    payload = _json_payload(_require_response(acceptance_context))
+    assert [image["id"] for image in payload["images"]] == [image_id]
+
+
+@then("each finalized image has copy_count greater than 0")
+def then_each_finalized_image_has_copy_count(
+    acceptance_context: AcceptanceScenarioContext,
+) -> None:
+    payload = _json_payload(_require_response(acceptance_context))
+    assert payload["images"]
+    assert all(image["copy_count"] > 0 for image in payload["images"])
 
 
 @then(parsers.parse('the response contains image id "{image_id}"'))

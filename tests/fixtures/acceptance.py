@@ -3,6 +3,7 @@ from __future__ import annotations
 import base64
 import hashlib
 import json
+import math
 import os
 import socket
 import subprocess
@@ -134,6 +135,13 @@ class CandidateRecord:
     def fill(self) -> float:
         return self.bytes / TARGET_BYTES
 
+    @property
+    def finalized_at(self) -> str:
+        return (
+            f"{self.finalized_id[0:4]}-{self.finalized_id[4:6]}-{self.finalized_id[6:8]}"
+            f"T{self.finalized_id[9:11]}:{self.finalized_id[11:13]}:{self.finalized_id[13:15]}Z"
+        )
+
     def plan_payload(self) -> dict[str, object]:
         return {
             "candidate_id": str(self.candidate_id),
@@ -144,14 +152,18 @@ class CandidateRecord:
             "iso_ready": self.iso_ready,
         }
 
-    def finalized_image_payload(self) -> dict[str, object]:
+    def finalized_image_payload(self, *, copy_count: int = 0) -> dict[str, object]:
         return {
             "id": self.finalized_id,
+            "filename": self.filename,
+            "finalized_at": self.finalized_at,
             "bytes": self.bytes,
             "fill": self.fill,
             "files": self.files,
-            "collections": self.collections,
-            "iso_ready": self.iso_ready,
+            "collections": len(self.collections),
+            "collection_ids": self.collections,
+            "iso_ready": True,
+            "copy_count": copy_count,
         }
 
     def image_root_record(self) -> ImageRootRecord:
@@ -386,6 +398,7 @@ class AcceptancePlanningService:
         self.state = state
         self._iso_service = ImageRootPlanningService(
             image_lookup=self._image_root_record,
+            list_lookup=self.list_images,
             plan_lookup=self.get_plan,
         )
 
@@ -417,8 +430,62 @@ class AcceptancePlanningService:
             "unplanned_bytes": unplanned_bytes,
         }
 
+    def list_images(
+        self,
+        *,
+        page: int,
+        per_page: int,
+        sort: str,
+        order: str,
+        q: str | None,
+        collection: str | None,
+        has_copies: bool | None,
+    ) -> dict[str, object]:
+        images = list(self.state.finalized_images_by_id.values())
+        if q:
+            needle = q.casefold()
+            images = [
+                image
+                for image in images
+                if needle in image.finalized_id.casefold()
+                or needle in image.filename.casefold()
+                or any(needle in collection_id.casefold() for collection_id in image.collections)
+            ]
+        if collection:
+            images = [image for image in images if collection in image.collections]
+        if has_copies is not None:
+            images = [
+                image
+                for image in images
+                if (self._copy_count(image) > 0) is has_copies
+            ]
+
+        reverse = order == "desc"
+        sort_key = {
+            "finalized_at": lambda image: (image.finalized_id, image.filename),
+            "bytes": lambda image: (image.bytes, image.finalized_id),
+            "copy_count": lambda image: (self._copy_count(image), image.finalized_id),
+        }[sort]
+        images = sorted(images, key=sort_key, reverse=reverse)
+
+        total = len(images)
+        pages = math.ceil(total / per_page) if total else 0
+        start = (page - 1) * per_page
+        stop = start + per_page
+        page_images = images[start:stop]
+        return {
+            "page": page,
+            "per_page": per_page,
+            "total": total,
+            "pages": pages,
+            "sort": sort,
+            "order": order,
+            "images": [image.finalized_image_payload(copy_count=self._copy_count(image)) for image in page_images],
+        }
+
     def get_image(self, image_id: str) -> dict[str, object]:
-        return self._finalized_image_record(image_id).finalized_image_payload()
+        image = self._finalized_image_record(image_id)
+        return image.finalized_image_payload(copy_count=self._copy_count(image))
 
     def finalize_image(self, candidate_id: str) -> dict[str, object]:
         candidate = self._candidate_record(candidate_id)
@@ -426,7 +493,8 @@ class AcceptancePlanningService:
             raise InvalidState("image must be ISO-ready before finalization")
         finalized_key = ImageId(candidate.finalized_id)
         self.state.finalized_images_by_id.setdefault(finalized_key, candidate)
-        return self.state.finalized_images_by_id[finalized_key].finalized_image_payload()
+        image = self.state.finalized_images_by_id[finalized_key]
+        return image.finalized_image_payload(copy_count=self._copy_count(image))
 
     async def get_iso_stream(self, image_id: str) -> object:
         return await self._iso_service.get_iso_stream(image_id)
@@ -445,6 +513,9 @@ class AcceptancePlanningService:
 
     def _image_root_record(self, image_id: str) -> ImageRootRecord:
         return self._finalized_image_record(image_id).image_root_record()
+
+    def _copy_count(self, image: CandidateRecord) -> int:
+        return sum(1 for volume_id, _copy_id in self.state.copy_summaries if volume_id == image.finalized_id)
 
 
 class AcceptanceCopyService:
@@ -1014,6 +1085,22 @@ class AcceptanceSystem:
                     raise
                 time.sleep(0.05)
         raise RuntimeError("unreachable")
+
+    def seed_finalized_image(self, candidate_id: str, *, force_ready: bool = False) -> None:
+        candidate_key = ImageId(candidate_id)
+        candidate = self.state.candidates_by_id[candidate_key]
+        if force_ready and not candidate.iso_ready:
+            candidate = CandidateRecord(
+                candidate_id=candidate.candidate_id,
+                finalized_id=candidate.finalized_id,
+                filename=candidate.filename,
+                image_root=candidate.image_root,
+                bytes=candidate.bytes,
+                iso_ready=True,
+                covered_paths=candidate.covered_paths,
+            )
+            self.state.candidates_by_id[candidate_key] = candidate
+        self.state.finalized_images_by_id[ImageId(candidate.finalized_id)] = candidate
 
     def run_arc(self, *args: str) -> subprocess.CompletedProcess[str]:
         return subprocess.run(

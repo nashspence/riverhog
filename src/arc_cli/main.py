@@ -6,7 +6,7 @@ from typing import Annotated
 import typer
 
 from arc_cli.client import ApiClient
-from arc_cli.output import emit, format_fetch, format_pin
+from arc_cli.output import emit, format_fetch, format_images, format_pin
 
 app = typer.Typer(help="arc archival control CLI")
 iso_app = typer.Typer(help="ISO operations")
@@ -49,6 +49,29 @@ def plan_cmd(
     json_mode: Annotated[bool, typer.Option("--json", help="Emit JSON")] = False,
 ) -> None:
     emit(client().get_plan(), json_mode=json_mode)
+
+
+@app.command("images")
+def images_cmd(
+    page: Annotated[int, typer.Option("--page", min=1)] = 1,
+    per_page: Annotated[int, typer.Option("--per-page", min=1, max=100)] = 25,
+    sort: Annotated[str, typer.Option("--sort", help="Sort field")] = "finalized_at",
+    order: Annotated[str, typer.Option("--order", help="Sort order")] = "desc",
+    query: Annotated[str | None, typer.Option("--query", help="Substring match over id, filename, and collection ids")] = None,
+    collection: Annotated[str | None, typer.Option("--collection", help="Filter by exact contained collection id")] = None,
+    has_copies: Annotated[bool | None, typer.Option("--has-copies/--no-copies", help="Filter by whether the image has registered copies")] = None,
+    json_mode: Annotated[bool, typer.Option("--json", help="Emit JSON")] = False,
+) -> None:
+    payload = client().list_images(
+        page=page,
+        per_page=per_page,
+        sort=sort,
+        order=order,
+        query=query,
+        collection=collection,
+        has_copies=has_copies,
+    )
+    emit(payload if json_mode else format_images(payload), json_mode=json_mode)
 
 
 @iso_app.command("get")

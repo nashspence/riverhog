@@ -32,7 +32,11 @@ The contract also needs a stable identifier for provisional planner entries.
 - after finalization, the planner must not re-allocate that finalized image's represented bytes
 - `GET /v1/images/{image_id}`, ISO download, copy registration, ready-image webhooks, and future finalized-image
   listing all use the finalized image `id`
+- `GET /v1/images` lists finalized images only and never re-exposes provisional candidates
+- finalized-image listing uses conventional pagination, sorting, and filtering over finalized-image metadata
+- finalized-image listing and finalized-image lookup expose the same finalized-image summary shape
 - the finalized image summary exposes that canonical id as `id`
+- the finalized image summary also exposes `filename`, `finalized_at`, `collection_ids`, and `copy_count`
 - a registered physical disc is identified by the tuple `(volume_id, copy_id)`
 - `copy_id` is an arbitrary operator-supplied string scoped to one `volume_id`
 - registering a `copy_id` that already exists for the same finalized image and `volume_id` is rejected
@@ -44,7 +48,8 @@ The contract also needs a stable identifier for provisional planner entries.
 - planner output uses candidate summaries and finalized-image output uses image summaries
 - operators have one finalized identifier to use across API calls, disc labels, burned-copy registration, and webhook
   notifications
-- finalized-image list APIs can key directly on the same identifier that appears on the disc
+- finalized-image list APIs can key directly on the same identifier that appears on the disc while also supporting
+  operator workflows such as finding images by filename, contained collection, and copy presence
 - copy and fetch contracts continue to expose the physical-media identifier in fields named `volume_id`
 - follow-on implementation work must update the production planning/image/ISO/copy slice to use the new provisional
   finalization route and finalized-only image lookup semantics

@@ -73,6 +73,29 @@ Required behavior:
 
 ### Images
 
+#### `GET /v1/images`
+
+Lists finalized images.
+
+Supported query parameters:
+
+- `page` — 1-based page number, default `1`
+- `per_page` — page size, default `25`
+- `sort` — one of `finalized_at`, `bytes`, or `copy_count`
+- `order` — `asc` or `desc`
+- `q` — case-insensitive substring filter over finalized image id, ISO filename, and contained collection ids
+- `collection` — exact collection-id filter over contained collection ids
+- `has_copies` — filters finalized images by whether at least one burned copy has been registered
+
+Required behavior:
+
+- this endpoint returns finalized images only
+- provisional plan candidates are never returned by `GET /v1/images`
+- default ordering is latest finalized image first using `sort=finalized_at&order=desc`
+- the response includes pagination metadata and finalized-image summaries
+- finalized-image summaries expose `filename`, `finalized_at`, `collection_ids`, and `copy_count`
+- finalized-image summaries always report `iso_ready = true`
+
 #### `GET /v1/images/{image_id}`
 
 Returns one image summary.
@@ -82,6 +105,8 @@ Required behavior:
 - this endpoint returns finalized images only
 - `image.id` is the canonical finalized image id
 - finalized image ids use compact UTC basic form `YYYYMMDDTHHMMSSZ`
+- the response uses the same finalized-image summary shape returned by `GET /v1/images`
+- finalized image summaries always report `iso_ready = true`
 - provisional plan candidates are not addressable through `GET /v1/images/{image_id}`
 
 #### `POST /v1/plan/candidates/{candidate_id}/finalize`
@@ -227,6 +252,7 @@ The `arc` CLI is a thin API client and should provide at least:
 - `arc find QUERY`
 - `arc show COLLECTION`
 - `arc plan`
+- `arc images [--page N] [--per-page N] [--sort FIELD] [--order asc|desc] [--query TEXT] [--collection ID] [--has-copies|--no-copies]`
 - `arc iso get IMAGE_ID [-o FILE]`
 - `arc copy add IMAGE_ID COPY_ID --at LOCATION`
 - `arc pin TARGET`
@@ -244,6 +270,9 @@ For finalized-image commands:
 
 - `IMAGE_ID` means the finalized image id
 - finalized image ids use compact UTC basic form `YYYYMMDDTHHMMSSZ`
+- `arc images --json` mirrors the `GET /v1/images` response payload
+- non-JSON `arc images` output stays concise and line-oriented while surfacing finalized id, filename, copy count,
+  and contained collections
 
 ### `arc-disc`
 

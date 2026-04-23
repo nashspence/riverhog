@@ -103,6 +103,55 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/PlanResponse"
+  /images:
+    get:
+      summary: List finalized images
+      description: Returns finalized images only, with conventional pagination, sorting, and filtering over finalized-image metadata.
+      operationId: listImages
+      parameters:
+        - in: query
+          name: page
+          required: false
+          schema: { type: integer, minimum: 1, default: 1 }
+        - in: query
+          name: per_page
+          required: false
+          schema: { type: integer, minimum: 1, maximum: 100, default: 25 }
+        - in: query
+          name: sort
+          required: false
+          schema:
+            type: string
+            enum: [finalized_at, bytes, copy_count]
+            default: finalized_at
+        - in: query
+          name: order
+          required: false
+          schema:
+            type: string
+            enum: [asc, desc]
+            default: desc
+        - in: query
+          name: q
+          required: false
+          schema: { type: string }
+        - in: query
+          name: collection
+          required: false
+          schema: { type: string }
+        - in: query
+          name: has_copies
+          required: false
+          schema: { type: boolean }
+      responses:
+        "200":
+          description: Finalized image list
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FinalizedImageListResponse"
+        default:
+          $ref: "#/components/responses/Error"
   /images/{image_id}:
     get:
       summary: Get one image summary
@@ -119,7 +168,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ImageDetail"
+                $ref: "#/components/schemas/FinalizedImageSummary"
         default:
           $ref: "#/components/responses/Error"
   /plan/candidates/{candidate_id}/finalize:
@@ -138,7 +187,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ImageDetail"
+                $ref: "#/components/schemas/FinalizedImageSummary"
         default:
           $ref: "#/components/responses/Error"
   /images/{image_id}/iso:
@@ -381,34 +430,65 @@ components:
         hot_bytes: { type: integer }
         archived_bytes: { type: integer }
         pending_bytes: { type: integer }
-    ImageSummary:
+    FinalizedImageSummary:
       type: object
-      required: [id, bytes, fill, files, collections, iso_ready]
+      required: [id, filename, finalized_at, bytes, fill, files, collections, collection_ids, iso_ready, copy_count]
       properties:
         id:
           type: string
           pattern: "^[0-9]{8}T[0-9]{6}Z$"
           description: Canonical finalized image id and immutable media identifier.
-        bytes: { type: integer }
-        fill: { type: number }
-        files: { type: integer }
-        collections: { type: integer }
-        iso_ready: { type: boolean }
-    ImageDetail:
-      type: object
-      required: [id, bytes, fill, iso_ready, files, collections]
-      properties:
-        id:
+        filename:
           type: string
-          pattern: "^[0-9]{8}T[0-9]{6}Z$"
-          description: Canonical finalized image id and immutable media identifier.
+          description: Stable ISO filename for the finalized image artifact.
+        finalized_at:
+          type: string
+          format: date-time
+          description: Expanded UTC timestamp encoded by the finalized image id.
         bytes: { type: integer }
         fill: { type: number }
-        iso_ready: { type: boolean }
         files: { type: integer }
         collections:
+          type: integer
+          description: Count of collection ids represented by the finalized image.
+        collection_ids:
           type: array
           items: { type: string }
+          description: Lexically sorted contained collection ids.
+        iso_ready:
+          type: boolean
+          const: true
+          description: Finalized images are always ISO-ready.
+        copy_count:
+          type: integer
+          minimum: 0
+          description: Number of registered physical copies for this finalized image.
+    FinalizedImageListResponse:
+      type: object
+      required: [page, per_page, total, pages, sort, order, images]
+      properties:
+        page:
+          type: integer
+          minimum: 1
+        per_page:
+          type: integer
+          minimum: 1
+        total:
+          type: integer
+          minimum: 0
+        pages:
+          type: integer
+          minimum: 0
+        sort:
+          type: string
+          enum: [finalized_at, bytes, copy_count]
+        order:
+          type: string
+          enum: [asc, desc]
+        images:
+          type: array
+          items:
+            $ref: "#/components/schemas/FinalizedImageSummary"
     CopyRef:
       type: object
       required: [id, volume_id, location]

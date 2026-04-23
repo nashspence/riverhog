@@ -12,6 +12,19 @@ class StubPlanningService:
     def get_plan(self) -> object:
         raise NotYetImplemented("StubPlanningService is not implemented yet")
 
+    def list_images(
+        self,
+        *,
+        page: int,
+        per_page: int,
+        sort: str,
+        order: str,
+        q: str | None,
+        collection: str | None,
+        has_copies: bool | None,
+    ) -> object:
+        raise NotYetImplemented("StubPlanningService is not implemented yet")
+
     def get_image(self, image_id: str) -> object:
         raise NotYetImplemented("StubPlanningService is not implemented yet")
 
@@ -37,15 +50,40 @@ class ImageRootPlanningService:
         self,
         *,
         image_lookup: Callable[[str], object],
+        list_lookup: Callable[..., object] | None = None,
         plan_lookup: Callable[[], object],
         finalize_lookup: Callable[[str], object] | None = None,
     ) -> None:
         self._image_lookup = image_lookup
+        self._list_lookup = list_lookup
         self._plan_lookup = plan_lookup
         self._finalize_lookup = finalize_lookup
 
     def get_plan(self) -> object:
         return self._plan_lookup()
+
+    def list_images(
+        self,
+        *,
+        page: int,
+        per_page: int,
+        sort: str,
+        order: str,
+        q: str | None,
+        collection: str | None,
+        has_copies: bool | None,
+    ) -> object:
+        if self._list_lookup is None:
+            raise NotYetImplemented("ImageRootPlanningService list_images is not configured")
+        return self._list_lookup(
+            page=page,
+            per_page=per_page,
+            sort=sort,
+            order=order,
+            q=q,
+            collection=collection,
+            has_copies=has_copies,
+        )
 
     def get_image(self, image_id: str) -> object:
         return self._image_lookup(image_id)

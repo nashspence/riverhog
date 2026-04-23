@@ -36,11 +36,15 @@ class CollectionSummary:
 @dataclass(frozen=True)
 class ImageSummary:
     id: ImageId
+    filename: str
+    finalized_at: str
     bytes: int
     fill: float
     files: int
     collections: int
+    collection_ids: list[str]
     iso_ready: bool
+    copy_count: int
 
 
 @dataclass(frozen=True)

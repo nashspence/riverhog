@@ -111,11 +111,23 @@ A candidate summary exposes at least:
 An image summary exposes at least:
 
 - `id`
+- `filename`
+- `finalized_at`
 - `bytes`
 - `fill`
 - `files`
 - `collections`
+- `collection_ids`
 - `iso_ready`
+- `copy_count`
+
+Finalized-image summary rules:
+
+- `collections` is the count of contained collection ids
+- `collection_ids` is the lexically sorted list of contained collection ids
+- `finalized_at` is the UTC timestamp encoded by finalized `image.id`
+- finalized images always report `iso_ready = true`
+- `copy_count` is the number of registered physical copies for that finalized image
 
 ### Copy summary
 

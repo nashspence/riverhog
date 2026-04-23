@@ -34,6 +34,19 @@ Feature: arc CLI
       And stdout matches the structure of GET "/v1/plan"
 
     @xfail_contract
+    Scenario: arc images emits the finalized-image listing payload
+      Given an archive with planner fixtures
+      And an archive with split planner fixtures
+      And candidate "img_2026-04-20_01" is finalized
+      And candidate "img_2026-04-20_03" is finalized
+      And copy "BR-021-A" already exists
+      When the operator runs 'arc images --page 1 --per-page 2 --sort finalized_at --order desc --has-copies --query 040001Z --collection docs --json'
+      Then the command exits with code 0
+      And stdout is valid JSON
+      And stdout matches the structure of GET "/v1/images"
+      And stdout mentions "20260420T040001Z"
+
+    @xfail_contract
     Scenario: arc pins emits fetch associations for active pins
       Given archived target "docs/tax/2022/invoice-123.pdf" is pinned with fetch "fx-1"
       When the operator runs 'arc pins --json'
@@ -45,6 +58,18 @@ Feature: arc CLI
       And stdout mentions "waiting_media"
 
   Rule: Non-JSON mode remains concise and stable
+    @xfail_contract
+    Scenario: arc images prints finalized ids, filenames, and copy counts
+      Given an archive with planner fixtures
+      And candidate "img_2026-04-20_01" is finalized
+      And copy "BR-021-A" already exists
+      When the operator runs 'arc images --has-copies'
+      Then the command exits with code 0
+      And stdout mentions "20260420T040001Z"
+      And stdout mentions "20260420T040001Z.iso"
+      And stdout mentions "copies: 1"
+      And stdout mentions "collections: 1 [docs]"
+
     @xfail_contract
     Scenario: arc pin prints fetch guidance when recovery is needed
       Given pinning target "docs/tax/2022/invoice-123.pdf" requires fetch "fx-1"

@@ -20,6 +20,17 @@ def test_stub_planning_service_raises_not_yet_implemented_for_every_entrypoint()
         service.get_plan()
 
     with pytest.raises(NotYetImplemented, match="StubPlanningService is not implemented yet"):
+        service.list_images(
+            page=1,
+            per_page=25,
+            sort="finalized_at",
+            order="desc",
+            q=None,
+            collection=None,
+            has_copies=None,
+        )
+
+    with pytest.raises(NotYetImplemented, match="StubPlanningService is not implemented yet"):
         service.get_image("img_001")
 
     with pytest.raises(NotYetImplemented, match="StubPlanningService is not implemented yet"):
@@ -52,6 +63,7 @@ def test_image_root_planning_service_delegates_lookups_and_stream_creation(
     )
     service = ImageRootPlanningService(
         image_lookup=lambda image_id: record if image_id == "img_001" else None,
+        list_lookup=lambda **kwargs: {"images": [], **kwargs},
         plan_lookup=lambda: {"ready": True},
         finalize_lookup=lambda image_id: {"id": image_id, "volume_id": record.volume_id},
     )
@@ -62,6 +74,24 @@ def test_image_root_planning_service_delegates_lookups_and_stream_creation(
     )
 
     assert service.get_plan() == {"ready": True}
+    assert service.list_images(
+        page=1,
+        per_page=25,
+        sort="finalized_at",
+        order="desc",
+        q=None,
+        collection=None,
+        has_copies=None,
+    ) == {
+        "images": [],
+        "page": 1,
+        "per_page": 25,
+        "sort": "finalized_at",
+        "order": "desc",
+        "q": None,
+        "collection": None,
+        "has_copies": None,
+    }
     assert service.get_image("img_001") is record
     assert service.finalize_image("img_001") == {"id": "img_001", "volume_id": record.volume_id}
     assert asyncio.run(service.get_iso_stream("img_001")) == {"filename": "img_001.iso"}
@@ -86,3 +116,21 @@ def test_image_root_planning_service_requires_finalize_lookup_when_finalizing() 
 
     with pytest.raises(NotYetImplemented, match="finalize_image is not configured"):
         service.finalize_image("img_001")
+
+
+def test_image_root_planning_service_requires_list_lookup_when_listing_images() -> None:
+    service = ImageRootPlanningService(
+        image_lookup=lambda _: {"image_id": "img_001"},
+        plan_lookup=lambda: {"ready": True},
+    )
+
+    with pytest.raises(NotYetImplemented, match="list_images is not configured"):
+        service.list_images(
+            page=1,
+            per_page=25,
+            sort="finalized_at",
+            order="desc",
+            q=None,
+            collection=None,
+            has_copies=None,
+        )

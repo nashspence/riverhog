@@ -66,6 +66,31 @@ class ApiClient:
     def get_plan(self) -> dict[str, Any]:
         return self._json("GET", "/v1/plan")
 
+    def list_images(
+        self,
+        *,
+        page: int = 1,
+        per_page: int = 25,
+        sort: str = "finalized_at",
+        order: str = "desc",
+        query: str | None = None,
+        collection: str | None = None,
+        has_copies: bool | None = None,
+    ) -> dict[str, Any]:
+        params: dict[str, Any] = {
+            "page": page,
+            "per_page": per_page,
+            "sort": sort,
+            "order": order,
+        }
+        if query:
+            params["q"] = query
+        if collection:
+            params["collection"] = collection
+        if has_copies is not None:
+            params["has_copies"] = has_copies
+        return self._json("GET", "/v1/images", params=params)
+
     def get_image(self, image_id: str) -> dict[str, Any]:
         return self._json("GET", f"/v1/images/{image_id}")
 
