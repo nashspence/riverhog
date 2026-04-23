@@ -64,3 +64,12 @@ class FileCopyRecord(Base):
     )
 
     file: Mapped[CollectionFileRecord] = relationship(back_populates="copies")
+
+
+class ActivePinRecord(Base):
+    __tablename__ = "active_pins"
+
+    target: Mapped[str] = mapped_column(String, primary_key=True)
+    fetch_id: Mapped[str] = mapped_column(String, unique=True)
+    fetch_order: Mapped[int] = mapped_column(Integer, unique=True)
+    fetch_state: Mapped[str] = mapped_column(String)

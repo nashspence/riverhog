@@ -16,7 +16,6 @@ Feature: Search API
     And each file result contains current hot availability
     And each file result contains available copies if archived
 
-  @xfail_contract
   Scenario: Search selectors are directly reusable
     When the client gets "/v1/search?q=japan&limit=25"
     Then the response status is 200

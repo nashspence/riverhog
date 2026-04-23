@@ -6,7 +6,6 @@ Feature: Fetches API
     Background:
       Given collection "docs" exists and is fully hot
 
-    @xfail_contract
     Scenario: Pinning a hot selector returns a done fetch manifest
       When the client posts to "/v1/pin" with target "docs/"
       Then the response status is 200
@@ -21,7 +20,6 @@ Feature: Fetches API
       Given file "docs/tax/2022/invoice-123.pdf" is archived
       And file "docs/tax/2022/invoice-123.pdf" is not hot
 
-    @xfail_contract
     Scenario: Pin a cold archived file
       When the client posts to "/v1/pin" with target "docs/tax/2022/invoice-123.pdf"
       Then the response status is 200
@@ -31,7 +29,6 @@ Feature: Fetches API
       And a fetch id is returned
       And fetch state is "waiting_media"
 
-    @xfail_contract
     Scenario: Repeating the same pin reuses the active fetch
       Given fetch "fx-existing" already exists for target "docs/tax/2022/invoice-123.pdf"
       And fetch "fx-existing" is not done
