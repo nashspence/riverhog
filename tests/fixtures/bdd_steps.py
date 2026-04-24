@@ -64,6 +64,7 @@ class AcceptanceScenarioContext:
     current_iso: InspectedIso | None = None
     recorded_split_payloads: dict[str, dict[int, bytes]] = field(default_factory=dict)
     recorded_upload_offset: int | None = None
+    last_fetch_id: str | None = None
 
 
 @pytest.fixture
@@ -1063,7 +1064,38 @@ def then_missing_bytes_is_greater_than_zero(
 @then("a fetch id is returned")
 def then_fetch_id_is_returned(acceptance_context: AcceptanceScenarioContext) -> None:
     payload = _json_payload(_require_response(acceptance_context))
-    assert payload["fetch"]["id"]
+    fetch_id = payload["fetch"]["id"]
+    assert fetch_id
+    acceptance_context.last_fetch_id = str(fetch_id)
+
+
+@when("the client gets the manifest for the returned fetch")
+def when_client_gets_manifest_for_returned_fetch(
+    acceptance_system: AcceptanceSystem,
+    acceptance_context: AcceptanceScenarioContext,
+) -> None:
+    assert acceptance_context.last_fetch_id is not None, "no fetch id was captured"
+    response = acceptance_system.request(
+        "GET", f"/v1/fetches/{acceptance_context.last_fetch_id}/manifest"
+    )
+    _set_response(acceptance_context, response)
+
+
+@then(parsers.parse('fetch manifest entry "{entry_id}" has at least one copy with a disc_path'))
+def then_fetch_manifest_entry_has_copies_with_disc_path(
+    acceptance_context: AcceptanceScenarioContext,
+    entry_id: str,
+) -> None:
+    entry = _response_manifest_entry(acceptance_context, entry_id)
+    copies: list[object] = []
+    for part in entry.get("parts", []):
+        copies.extend(part.get("copies", []))  # type: ignore[arg-type]
+    if not copies:
+        copies = list(entry.get("copies", []))
+    assert copies, f"manifest entry {entry_id} has no copies"
+    assert all(c.get("disc_path") for c in copies), (  # type: ignore[union-attr]
+        f"manifest entry {entry_id} has copies with missing disc_path"
+    )
 
 
 @then("fetch is null")
@@ -1873,13 +1905,6 @@ def then_upload_session_length_matches_manifest_entry_recovery_bytes(
     entry_id: str,
 ) -> None:
     payload = _json_payload(_require_response(acceptance_context))
-    record = acceptance_system.state.fetches[fetch_id]
-    entry = record.entries[entry_id]
-    expected_length = sum(
-        len(fixture_encrypt_bytes(part))
-        for part in split_fixture_plaintext(
-            entry.content,
-            max((copy.part_count or 1) for copy in entry.copies) if entry.copies else 1,
-        )
-    )
-    assert payload["length"] == expected_length
+    manifest = acceptance_system.fetches.manifest(fetch_id)
+    manifest_entry = next(e for e in manifest["entries"] if e["id"] == entry_id)
+    assert payload["length"] == manifest_entry["recovery_bytes"]

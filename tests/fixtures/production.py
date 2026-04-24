@@ -20,6 +20,7 @@ from arc_core.catalog_models import (
     ActivePinRecord,
     CandidateCoveredPathRecord,
     CollectionFileRecord,
+    CollectionRecord,
     FetchEntryRecord,
     FileCopyRecord,
     FinalizedImageCoveredPathRecord,
@@ -153,7 +154,6 @@ class ProductionFetchCopyView:
 @dataclass(frozen=True, slots=True)
 class ProductionFetchEntryView:
     sha256: str
-    content: bytes
     copies: tuple[ProductionFetchCopyView, ...]
 
 
@@ -294,7 +294,6 @@ class ProductionStateFetchesProxy:
                 ).all()
                 entries[entry.entry_id] = ProductionFetchEntryView(
                     sha256=entry.sha256,
-                    content=entry.content,
                     copies=tuple(
                         ProductionFetchCopyView(part_count=copy.part_count) for copy in copy_records
                     ),
@@ -716,8 +715,8 @@ class ProductionSystem:
                 session["offset"] = result["offset"]
 
     def upload_partial_entry(self, fetch_id: str, entry_id: str) -> int:
-        entry_view = self.state.fetches[fetch_id].entries[entry_id]
-        full_payload = fixture_encrypt_bytes(entry_view.content)
+        content = self._fetch_entry_file_bytes(fetch_id, entry_id)
+        full_payload = fixture_encrypt_bytes(content)
         partial_payload = full_payload[: max(1, len(full_payload) // 2)]
         session_info = self.fetches.create_or_resume_upload(fetch_id, entry_id)
         result = self.fetches.append_upload_chunk(
@@ -726,6 +725,19 @@ class ProductionSystem:
             content=partial_payload,
         )
         return int(result["offset"])
+
+    def _fetch_entry_file_bytes(self, fetch_id: str, entry_id: str) -> bytes:
+        with session_scope(make_session_factory(str(self.db_path))) as session:
+            entry_records = session.scalars(
+                select(FetchEntryRecord).where(
+                    FetchEntryRecord.fetch_id == fetch_id,
+                    FetchEntryRecord.entry_id == entry_id,
+                )
+            ).all()
+            assert len(entry_records) == 1, f"entry not found: {entry_id} in {fetch_id}"
+            collection_id = entry_records[0].collection_id
+            path = entry_records[0].path
+        return self._file_bytes(collection_id, path)
 
     def configure_arc_disc_fixture(
         self,
@@ -850,15 +862,12 @@ class ProductionSystem:
 
     def _file_bytes(self, collection_id: str, path: str) -> bytes:
         with session_scope(make_session_factory(str(self.db_path))) as session:
-            record = session.get(
-                CollectionFileRecord,
-                {
-                    "collection_id": collection_id,
-                    "path": path,
-                },
-            )
-            assert record is not None
-            return record.content
+            collection = session.get(CollectionRecord, collection_id)
+            assert collection is not None, f"collection not found: {collection_id}"
+            source_staging_path = collection.source_staging_path
+        # source_staging_path is like "/staging/docs"; staging root is workspace/staging
+        rel_parts = source_staging_path.lstrip("/").split("/")
+        return self.workspace.joinpath(*rel_parts).joinpath(path).read_bytes()
 
     def _file_part_bytes(self, path: str, part_index: int, part_count: int) -> bytes:
         return split_fixture_plaintext(

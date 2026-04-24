@@ -60,7 +60,6 @@ class SqlAlchemyCollectionService:
                         path=path,
                         bytes=len(content),
                         sha256=_sha256_hex(content),
-                        content=content,
                         hot=True,
                         archived=False,
                     )

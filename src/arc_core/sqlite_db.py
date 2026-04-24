@@ -21,8 +21,8 @@ else:
 # Each entry is a list of (table, column, sql_type) tuples for columns to add if missing.
 # New tables are handled by create_all; only column additions need explicit migration.
 _COLUMN_MIGRATIONS: list[list[tuple[str, str, str]]] = [
+    # version 1
     [
-        ("collection_files", "content", "BLOB"),
         ("file_copies", "disc_path", "TEXT"),
         ("file_copies", "enc_json", "TEXT"),
         ("file_copies", "part_index", "INTEGER"),

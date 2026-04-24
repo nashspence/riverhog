@@ -27,7 +27,7 @@ class CollectionFileRecord(Base):
     path: Mapped[str] = mapped_column(String, primary_key=True)
     bytes: Mapped[int] = mapped_column(Integer)
     sha256: Mapped[str] = mapped_column(String(64))
-    content: Mapped[bytes] = mapped_column(LargeBinary)
+    content: Mapped[bytes | None] = mapped_column(LargeBinary, nullable=True)
     hot: Mapped[bool] = mapped_column(Boolean, default=True)
     archived: Mapped[bool] = mapped_column(Boolean, default=False)
 
@@ -185,9 +185,8 @@ class FetchEntryRecord(Base):
     path: Mapped[str] = mapped_column(String)
     bytes: Mapped[int] = mapped_column(Integer)
     sha256: Mapped[str] = mapped_column(String(64))
-    content: Mapped[bytes] = mapped_column(LargeBinary)
+    recovery_bytes: Mapped[int] = mapped_column(Integer, default=0)
     uploaded_bytes: Mapped[int] = mapped_column(Integer, default=0)
-    uploaded_content: Mapped[bytes | None] = mapped_column(LargeBinary, nullable=True)
     upload_expires_at: Mapped[str | None] = mapped_column(String, nullable=True)
 
     __table_args__ = (

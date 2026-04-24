@@ -170,6 +170,16 @@ Feature: Plan and images API
       Then the response status is 409
       And the error code is "conflict"
 
+    Scenario: Registering a copy writes physical disc paths to the fetch manifest
+      When the client posts to "/v1/images/20260420T040001Z/copies" with id "BR-021-A" and location "Shelf B1"
+      Then the response status is 200
+      When the client posts to "/v1/pin" with target "docs/tax/2022/invoice-123.pdf"
+      Then the response status is 200
+      And a fetch id is returned
+      When the client gets the manifest for the returned fetch
+      Then the response status is 200
+      And fetch manifest entry "e1" has at least one copy with a disc_path
+
     Scenario: Restarting the API preserves finalized images and registered copies
       Given copy "BR-021-A" already exists
       When the API process restarts
