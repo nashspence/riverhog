@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from sqlalchemy import Boolean, ForeignKeyConstraint, Integer, LargeBinary, String
+from sqlalchemy import Boolean, ForeignKeyConstraint, Integer, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from arc_core.sqlite_db import Base
@@ -27,7 +27,6 @@ class CollectionFileRecord(Base):
     path: Mapped[str] = mapped_column(String, primary_key=True)
     bytes: Mapped[int] = mapped_column(Integer)
     sha256: Mapped[str] = mapped_column(String(64))
-    content: Mapped[bytes | None] = mapped_column(LargeBinary, nullable=True)
     hot: Mapped[bool] = mapped_column(Boolean, default=True)
     archived: Mapped[bool] = mapped_column(Boolean, default=False)
 
