@@ -94,12 +94,7 @@ def _selected_relpath_for_target(
     acceptance_system: AcceptanceSystem,
     target: str,
 ) -> str:
-    matches = [
-        record
-        for collection_files in acceptance_system.state.files_by_collection.values()
-        for record in collection_files.values()
-        if f"{record.collection_id}/{record.path}" == target
-    ]
+    matches = acceptance_system.state.selected_files(target, missing_ok=True)
     if len(matches) != 1:
         raise AssertionError(f"expected exactly one projected file target match for {target!r}")
     return matches[0].path
@@ -109,15 +104,11 @@ def _selected_content_for_target(
     acceptance_system: AcceptanceSystem,
     target: str,
 ) -> bytes:
-    matches = [
-        record.content
-        for collection_files in acceptance_system.state.files_by_collection.values()
-        for record in collection_files.values()
-        if f"{record.collection_id}/{record.path}" == target
-    ]
+    matches = acceptance_system.state.selected_files(target, missing_ok=True)
     if len(matches) != 1:
         raise AssertionError(f"expected exactly one projected file target match for {target!r}")
-    return matches[0]
+    record = matches[0]
+    return acceptance_system.state.file_content(record.collection_id, record.path)
 
 
 def _json_payload(response: httpx.Response) -> dict[str, Any]:

@@ -262,6 +262,16 @@ class AcceptanceState:
             raise NotFound(f"collection not found: {collection_key}")
         return list(records.values())
 
+    def file_content(self, collection_id: str | CollectionId, path: str) -> bytes:
+        collection_key = CollectionId(str(collection_id))
+        records = self.files_by_collection.get(collection_key)
+        if records is None:
+            raise NotFound(f"collection not found: {collection_key}")
+        record = records.get(path)
+        if record is None:
+            raise NotFound(f"file not found in {collection_key}: {path}")
+        return record.content
+
     def collection_summary(self, collection_id: str | CollectionId) -> CollectionSummary:
         records = self.collection_files(collection_id)
         return CollectionSummary(

@@ -193,7 +193,7 @@ async def _stream_process(cmd: list[str], *, filename: str) -> IsoStream:
             if proc.returncode is None:
                 await _kill_proc(proc)
             stderr_task.cancel()
-            with contextlib.suppress(Exception):
+            with contextlib.suppress(asyncio.CancelledError, Exception):
                 await stderr_task
 
     return IsoStream(

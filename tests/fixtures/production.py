@@ -363,6 +363,9 @@ class ProductionStateClient:
             raise AssertionError(f"target not found: {raw_target}")
         return selected
 
+    def file_content(self, collection_id: str, path: str) -> bytes:
+        return self._system._file_bytes(str(collection_id), path)
+
     def is_hot(self, raw_target: str) -> bool:
         selected = self.selected_files(raw_target, missing_ok=True)
         return bool(selected) and all(record.hot for record in selected)
