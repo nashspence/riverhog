@@ -38,7 +38,6 @@ from tests.fixtures.data import (
     DOCS_COLLECTION_ID,
     DOCS_FILES,
     IMAGE_FIXTURES,
-    INVOICE_TARGET,
     MIN_FILL_BYTES,
     PHOTOS_2024_FILES,
     SPLIT_COPY_ONE_ID,
@@ -48,8 +47,6 @@ from tests.fixtures.data import (
     SPLIT_FILE_PARTS,
     SPLIT_FILE_RELPATH,
     SPLIT_IMAGE_FIXTURES,
-    SPLIT_IMAGE_ONE_ID,
-    SPLIT_IMAGE_TWO_ID,
     TARGET_BYTES,
     ImageFixture,
     build_file_copy,
@@ -616,34 +613,36 @@ class ProductionSystem:
         )
 
     def seed_api_registered_split_archive(self, fetch_id: str, target: str) -> None:
+        target_path = parse_target(target).path
+        collection_id = target_path.parts[0]
+        file_path = str(target_path.relative_to(collection_id))
+
+        covering_fixtures = [
+            f for f in SPLIT_IMAGE_FIXTURES
+            if any(coll == collection_id and p == file_path for coll, p in f.covered_paths)
+        ]
+        assert covering_fixtures, (
+            f"no SPLIT_IMAGE_FIXTURES cover {collection_id}/{file_path}"
+        )
+
         self.seed_split_planner_fixtures()
 
-        resp = self.request("POST", f"/v1/plan/candidates/{SPLIT_IMAGE_ONE_ID}/finalize")
-        assert resp.status_code == 200, resp.text
-        image_one_id = resp.json()["id"]
+        for i, fixture in enumerate(covering_fixtures, start=1):
+            resp = self.request("POST", f"/v1/plan/candidates/{fixture.id}/finalize")
+            assert resp.status_code == 200, resp.text
+            image_id = resp.json()["id"]
 
-        resp = self.request("POST", f"/v1/plan/candidates/{SPLIT_IMAGE_TWO_ID}/finalize")
-        assert resp.status_code == 200, resp.text
-        image_two_id = resp.json()["id"]
-
-        resp = self.request(
-            "POST",
-            f"/v1/images/{image_one_id}/copies",
-            json_body={"id": "api-split-copy-1", "location": "vault-api/shelf-01"},
-        )
-        assert resp.status_code == 200, resp.text
-
-        resp = self.request(
-            "POST",
-            f"/v1/images/{image_two_id}/copies",
-            json_body={"id": "api-split-copy-2", "location": "vault-api/shelf-02"},
-        )
-        assert resp.status_code == 200, resp.text
+            resp = self.request(
+                "POST",
+                f"/v1/images/{image_id}/copies",
+                json_body={"id": f"api-split-copy-{i}", "location": f"vault-api/shelf-{i:02d}"},
+            )
+            assert resp.status_code == 200, resp.text
 
         with session_scope(make_session_factory(str(self.db_path))) as session:
             record = session.get(
                 CollectionFileRecord,
-                {"collection_id": DOCS_COLLECTION_ID, "path": SPLIT_FILE_RELPATH},
+                {"collection_id": collection_id, "path": file_path},
             )
             assert record is not None
             record.hot = False
@@ -746,18 +745,29 @@ class ProductionSystem:
 
     def upload_required_entries(self, fetch_id: str) -> None:
         manifest = self.fetches.manifest(fetch_id)
+        with session_scope(make_session_factory(str(self.db_path))) as db_session:
+            entry_records = db_session.scalars(
+                select(FetchEntryRecord).where(FetchEntryRecord.fetch_id == fetch_id)
+            ).all()
+            collection_id_by_path = {r.path: r.collection_id for r in entry_records}
         for entry in manifest["entries"]:
-            session = self.fetches.create_or_resume_upload(fetch_id, entry["id"])
+            upload = self.fetches.create_or_resume_upload(fetch_id, entry["id"])
+            entry_collection_id = collection_id_by_path[str(entry["path"])]
             for part in entry["parts"]:
                 payload = fixture_encrypt_bytes(
-                    self._file_part_bytes(entry["path"], int(part["index"]), len(entry["parts"]))
+                    self._file_part_bytes(
+                        entry_collection_id,
+                        str(entry["path"]),
+                        int(part["index"]),
+                        len(entry["parts"]),
+                    )
                 )
                 result = self.fetches.append_upload_chunk(
-                    session["upload_url"],
-                    offset=int(session["offset"]),
+                    upload["upload_url"],
+                    offset=int(upload["offset"]),
                     content=payload,
                 )
-                session["offset"] = result["offset"]
+                upload["offset"] = result["offset"]
 
     def upload_partial_entry(self, fetch_id: str, entry_id: str) -> int:
         content = self._fetch_entry_file_bytes(fetch_id, entry_id)
@@ -919,9 +929,9 @@ class ProductionSystem:
         rel_parts = source_staging_path.lstrip("/").split("/")
         return self.workspace.joinpath(*rel_parts).joinpath(path).read_bytes()
 
-    def _file_part_bytes(self, path: str, part_index: int, part_count: int) -> bytes:
+    def _file_part_bytes(self, collection_id: str, path: str, part_index: int, part_count: int) -> bytes:
         return split_fixture_plaintext(
-            self._file_bytes(DOCS_COLLECTION_ID, path),
+            self._file_bytes(collection_id, path),
             part_count,
         )[part_index]
 
