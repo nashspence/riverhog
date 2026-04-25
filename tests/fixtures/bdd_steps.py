@@ -523,7 +523,7 @@ def given_split_archived_target_pinned_via_api_copies(
     target: str,
     fetch_id: str,
 ) -> None:
-    acceptance_system.seed_api_registered_split_archive(fetch_id)
+    acceptance_system.seed_api_registered_split_archive(fetch_id, target)
 
 
 @given("the optical reader fixture fails for one required entry")

@@ -615,7 +615,7 @@ class ProductionSystem:
             ],
         )
 
-    def seed_api_registered_split_archive(self, fetch_id: str) -> None:
+    def seed_api_registered_split_archive(self, fetch_id: str, target: str) -> None:
         self.seed_split_planner_fixtures()
 
         resp = self.request("POST", f"/v1/plan/candidates/{SPLIT_IMAGE_ONE_ID}/finalize")
@@ -648,7 +648,7 @@ class ProductionSystem:
             assert record is not None
             record.hot = False
 
-        self.seed_fetch(fetch_id, INVOICE_TARGET)
+        self.seed_fetch(fetch_id, target)
 
     def seed_docs_archive_with_split_invoice(self) -> None:
         self.seed_docs_hot()
@@ -794,6 +794,11 @@ class ProductionSystem:
         corrupt_copy_ids: set[str] | None = None,
     ) -> None:
         manifest = self.fetches.manifest(fetch_id)
+        with session_scope(make_session_factory(str(self.db_path))) as session:
+            entry_records = session.scalars(
+                select(FetchEntryRecord).where(FetchEntryRecord.fetch_id == fetch_id)
+            ).all()
+            collection_id_by_path = {r.path: r.collection_id for r in entry_records}
         payload_by_disc_path: dict[str, str] = {}
         fail_disc_paths: list[str] = []
         fail_copy_ids = fail_copy_ids or set()
@@ -803,7 +808,7 @@ class ProductionSystem:
             entry_path = str(entry["path"])
             parts = entry["parts"]
             plaintext_parts = split_fixture_plaintext(
-                self._file_bytes(DOCS_COLLECTION_ID, entry_path),
+                self._file_bytes(collection_id_by_path[entry_path], entry_path),
                 len(parts),
             )
             for part in parts:

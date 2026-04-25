@@ -1488,10 +1488,8 @@ class AcceptanceSystem:
         corrupt_copy_ids: set[str] | None = None,
     ) -> None:
         manifest = cast(dict[str, Any], self.fetches.manifest(fetch_id))
-        files_by_path = {
-            record.path: record.content
-            for record in self.state.selected_files(str(manifest["target"]))
-        }
+        fetch_record = self.state.fetches[FetchId(fetch_id)]
+        content_by_path = {entry.path: entry.content for entry in fetch_record.entries.values()}
         payload_by_disc_path: dict[str, str] = {}
         fail_disc_paths: list[str] = []
         fail_copy_ids = fail_copy_ids or set()
@@ -1500,7 +1498,7 @@ class AcceptanceSystem:
         for entry in cast(list[dict[str, Any]], manifest["entries"]):
             entry_path = str(entry["path"])
             parts = cast(list[dict[str, Any]], entry["parts"])
-            plaintext_parts = split_fixture_plaintext(files_by_path[entry_path], len(parts))
+            plaintext_parts = split_fixture_plaintext(content_by_path[entry_path], len(parts))
             for part in parts:
                 part_index = int(part["index"])
                 part_plaintext = plaintext_parts[part_index]
