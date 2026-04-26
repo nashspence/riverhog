@@ -22,11 +22,13 @@ from arc_core.catalog_models import (
     ActivePinRecord,
     CandidateCoveredPathRecord,
     CollectionFileRecord,
+    CollectionRecord,
     CollectionUploadFileRecord,
     FetchEntryRecord,
     FileCopyRecord,
     FinalizedImageCoveredPathRecord,
     FinalizedImageRecord,
+    ImageCopyRecord,
     PlannedCandidateRecord,
 )
 from arc_core.domain.enums import FetchState
@@ -708,12 +710,52 @@ class ProductionSystem:
                     str(upload["upload_url"]),
                     offset=int(upload["offset"]),
                     content=content,
-                )
+            )
             return self.request("GET", f"/v1/collections/{normalized_collection_id}").json()
+
+    def _seed_collection_hot(
+        self, collection_id: str, files: Mapping[str, bytes], *, ingest_source: str | None = None
+    ) -> dict[str, object]:
+        normalized_collection_id = normalize_collection_id(collection_id)
+        self.seed_collection_source(normalized_collection_id, files)
+        source_root = (self.workspace / "collections-src" / normalized_collection_id).resolve()
+        with session_scope(make_session_factory(str(self.db_path))) as session:
+            if session.get(CollectionRecord, normalized_collection_id) is None:
+                session.add(
+                    CollectionRecord(
+                        id=normalized_collection_id,
+                        ingest_source=ingest_source or str(source_root),
+                    )
+                )
+                for path, content in sorted(files.items()):
+                    response = self.filer_request(
+                        "PUT",
+                        f"/collections/{normalized_collection_id}/{path}",
+                        content=content,
+                    )
+                    response.raise_for_status()
+                    session.add(
+                        CollectionFileRecord(
+                            collection_id=normalized_collection_id,
+                            path=path,
+                            bytes=len(content),
+                            sha256=hashlib.sha256(content).hexdigest(),
+                            hot=True,
+                            archived=False,
+                        )
+                    )
+        return self.request("GET", f"/v1/collections/{normalized_collection_id}").json()
+
+    def _seed_image_copy(self, image_id: str, copy_id: str, location: str) -> None:
+        with session_scope(make_session_factory(str(self.db_path))) as session:
+            if session.get(ImageCopyRecord, {"image_id": image_id, "copy_id": copy_id}) is not None:
+                return
+        self.copies.register(image_id, copy_id, location)
 
     def seed_photos_hot(self) -> None:
         with time_block("fixture.seed_photos_hot"):
-            self.upload_collection_source("photos-2024", PHOTOS_2024_FILES)
+            if not self._collection_exists("photos-2024"):
+                self._seed_collection_hot("photos-2024", PHOTOS_2024_FILES)
 
     def seed_planner_fixtures(self) -> None:
         with time_block("fixture.seed_planner_fixtures"):
@@ -784,16 +826,18 @@ class ProductionSystem:
 
     def seed_nested_photos_hot(self) -> None:
         with time_block("fixture.seed_nested_photos_hot"):
-            self.upload_collection_source("photos/2024", PHOTOS_2024_FILES)
+            if not self._collection_exists("photos/2024"):
+                self._seed_collection_hot("photos/2024", PHOTOS_2024_FILES)
 
     def seed_parent_photos_hot(self) -> None:
         with time_block("fixture.seed_parent_photos_hot"):
-            self.upload_collection_source("photos", PHOTOS_2024_FILES)
+            if not self._collection_exists("photos"):
+                self._seed_collection_hot("photos", PHOTOS_2024_FILES)
 
     def seed_docs_hot(self) -> None:
         with time_block("fixture.seed_docs_hot"):
             if not self._collection_exists("docs"):
-                self.upload_collection_source("docs", DOCS_FILES)
+                self._seed_collection_hot("docs", DOCS_FILES)
 
     def seed_docs_archive(self) -> None:
         with time_block("fixture.seed_docs_archive"):
@@ -804,14 +848,8 @@ class ProductionSystem:
                 return
             self.seed_docs_hot()
             self.seed_image_fixtures((IMAGE_FIXTURES[0],))
-            resp = self.request("POST", f"/v1/plan/candidates/{IMAGE_FIXTURES[0].id}/finalize")
-            assert resp.status_code == 200, resp.text
-            image_id = resp.json()["id"]
-            resp = self.request(
-                "POST", f"/v1/images/{image_id}/copies",
-                json_body={"id": "copy-docs-1", "location": "vault-a/shelf-01"},
-            )
-            assert resp.status_code == 200, resp.text
+            self.seed_finalized_image(IMAGE_FIXTURES[0].id)
+            self._seed_image_copy(IMAGE_FIXTURES[0].volume_id, "copy-docs-1", "vault-a/shelf-01")
             with session_scope(make_session_factory(str(self.db_path))) as session:
                 record = session.get(
                     CollectionFileRecord,
@@ -835,14 +873,8 @@ class ProductionSystem:
                 (SPLIT_COPY_ONE_LOCATION, SPLIT_COPY_TWO_LOCATION),
                 strict=True,
             ):
-                resp = self.request("POST", f"/v1/plan/candidates/{fixture.id}/finalize")
-                assert resp.status_code == 200, resp.text
-                image_id = resp.json()["id"]
-                resp = self.request(
-                    "POST", f"/v1/images/{image_id}/copies",
-                    json_body={"id": copy_id, "location": location},
-                )
-                assert resp.status_code == 200, resp.text
+                self.seed_finalized_image(fixture.id)
+                self._seed_image_copy(fixture.volume_id, copy_id, location)
             with session_scope(make_session_factory(str(self.db_path))) as session:
                 record = session.get(
                     CollectionFileRecord,
