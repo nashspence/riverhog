@@ -29,7 +29,6 @@ from arc_core.services.resumable_uploads import (
     expire_upload_state,
     sync_upload_state,
     upload_expiry_timestamp,
-    upload_state_name,
 )
 from arc_core.sqlite_db import make_session_factory, session_scope
 
@@ -79,7 +78,12 @@ class SqlAlchemyFetchService:
                 "id": pin_record.fetch_id,
                 "target": pin_record.target,
                 "entries": [
-                    _manifest_entry_payload(self._hot_store, session, entry)
+                    _manifest_entry_payload(
+                        self._hot_store,
+                        session,
+                        entry,
+                        fetch_state=FetchState(pin_record.fetch_state),
+                    )
                     for entry in entries
                 ],
             }
@@ -87,6 +91,8 @@ class SqlAlchemyFetchService:
     def create_or_resume_upload(self, fetch_id: str, entry_id: str) -> dict[str, object]:
         with session_scope(self._session_factory) as session:
             pin_record = _get_pin_record(session, fetch_id)
+            if pin_record.fetch_state == FetchState.DONE.value:
+                raise InvalidState("fetch is already complete")
             entries = _ensure_fetch_entries(session, pin_record, self._hot_store)
             _sync_upload_progress(pin_record, entries, self._upload_store)
             _expire_incomplete_uploads(pin_record, entries, self._upload_store)
@@ -209,7 +215,18 @@ class SqlAlchemyFetchService:
             _sync_upload_progress(pin_record, entries, self._upload_store)
             _expire_incomplete_uploads(pin_record, entries, self._upload_store)
 
-            if any(_entry_upload_state(entry) != "uploaded" for entry in entries):
+            if pin_record.fetch_state == FetchState.DONE.value:
+                return {
+                    "id": pin_record.fetch_id,
+                    "state": pin_record.fetch_state,
+                    "hot": _hot_payload(session, pin_record.target),
+                }
+
+            if any(
+                _entry_upload_state(entry, fetch_state=FetchState(pin_record.fetch_state))
+                != "byte_complete"
+                for entry in entries
+            ):
                 raise InvalidState("fetch is missing required entry uploads")
 
             pin_record.fetch_state = FetchState.VERIFYING.value
@@ -240,7 +257,17 @@ class SqlAlchemyFetchService:
                     raise HashMismatch("sha256 did not match")
 
                 self._hot_store.put_collection_file(entry.collection_id, entry.path, plaintext)
+                if entry.tus_url is not None:
+                    self._upload_store.cancel_upload(entry.tus_url)
                 self._upload_store.delete_target(target_path)
+                _apply_entry_upload_lifecycle_state(
+                    entry,
+                    UploadLifecycleState(
+                        tus_url=None,
+                        uploaded_bytes=entry.recovery_bytes,
+                        upload_expires_at=None,
+                    ),
+                )
 
                 file_record = session.get(
                     CollectionFileRecord,
@@ -344,10 +371,22 @@ def _summary_from_records(
     pin_record: ActivePinRecord,
     entries: list[FetchEntryRecord],
 ) -> FetchSummary:
+    fetch_state = FetchState(pin_record.fetch_state)
     entries_total = len(entries)
-    entries_pending = sum(1 for entry in entries if _entry_upload_state(entry) == "pending")
-    entries_partial = sum(1 for entry in entries if _entry_upload_state(entry) == "partial")
-    entries_uploaded = sum(1 for entry in entries if _entry_upload_state(entry) == "uploaded")
+    entries_pending = sum(
+        1 for entry in entries if _entry_upload_state(entry, fetch_state=fetch_state) == "pending"
+    )
+    entries_partial = sum(
+        1 for entry in entries if _entry_upload_state(entry, fetch_state=fetch_state) == "partial"
+    )
+    entries_byte_complete = sum(
+        1
+        for entry in entries
+        if _entry_upload_state(entry, fetch_state=fetch_state) == "byte_complete"
+    )
+    entries_uploaded = sum(
+        1 for entry in entries if _entry_upload_state(entry, fetch_state=fetch_state) == "uploaded"
+    )
     uploaded_bytes = sum(entry.uploaded_bytes for entry in entries)
     missing_bytes = max(sum(_entry_recovery_bytes(entry) for entry in entries) - uploaded_bytes, 0)
     expiries = [entry.upload_expires_at for entry in entries if entry.upload_expires_at is not None]
@@ -362,6 +401,7 @@ def _summary_from_records(
         entries_total=entries_total,
         entries_pending=entries_pending,
         entries_partial=entries_partial,
+        entries_byte_complete=entries_byte_complete,
         entries_uploaded=entries_uploaded,
         uploaded_bytes=uploaded_bytes,
         missing_bytes=missing_bytes,
@@ -383,7 +423,11 @@ def _summary_copies(entries: list[FetchEntryRecord]) -> list[FetchCopyHint]:
 
 
 def _manifest_entry_payload(
-    hot_store: HotStore, session, entry: FetchEntryRecord
+    hot_store: HotStore,
+    session,
+    entry: FetchEntryRecord,
+    *,
+    fetch_state: FetchState,
 ) -> dict[str, object]:
     return {
         "id": entry.entry_id,
@@ -391,7 +435,7 @@ def _manifest_entry_payload(
         "bytes": entry.bytes,
         "sha256": entry.sha256,
         "recovery_bytes": _entry_recovery_bytes(entry),
-        "upload_state": _entry_upload_state(entry),
+        "upload_state": _entry_upload_state(entry, fetch_state=fetch_state),
         "uploaded_bytes": entry.uploaded_bytes,
         "upload_state_expires_at": entry.upload_expires_at,
         "copies": [
@@ -519,8 +563,14 @@ def _copy_recovery_payload(
     return payloads[copy.part_index]
 
 
-def _entry_upload_state(entry: FetchEntryRecord) -> str:
-    return upload_state_name(uploaded_bytes=entry.uploaded_bytes, length=entry.recovery_bytes)
+def _entry_upload_state(entry: FetchEntryRecord, *, fetch_state: FetchState) -> str:
+    if entry.recovery_bytes > 0 and entry.uploaded_bytes >= entry.recovery_bytes:
+        if fetch_state == FetchState.DONE:
+            return "uploaded"
+        return "byte_complete"
+    if entry.uploaded_bytes > 0:
+        return "partial"
+    return "pending"
 
 
 def _entry_recovery_bytes(entry: FetchEntryRecord) -> int:

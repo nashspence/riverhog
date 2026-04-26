@@ -73,6 +73,7 @@ class FetchSummary:
     entries_total: int = 0
     entries_pending: int = 0
     entries_partial: int = 0
+    entries_byte_complete: int = 0
     entries_uploaded: int = 0
     uploaded_bytes: int = 0
     missing_bytes: int = 0

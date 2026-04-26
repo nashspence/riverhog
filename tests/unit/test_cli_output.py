@@ -53,6 +53,15 @@ def test_format_fetch_lists_pending_partial_and_expiry() -> None:
                     "upload_state": "partial",
                     "upload_state_expires_at": "2026-04-23T00:00:00Z",
                 },
+                {
+                    "id": "e3",
+                    "path": "tax/2022/check-789.pdf",
+                    "bytes": 12,
+                    "recovery_bytes": 12,
+                    "uploaded_bytes": 12,
+                    "upload_state": "byte_complete",
+                    "upload_state_expires_at": None,
+                },
             ],
         },
     )
@@ -63,3 +72,5 @@ def test_format_fetch_lists_pending_partial_and_expiry() -> None:
     assert "partial" in rendered
     assert "tax/2022/receipt-456.pdf" in rendered
     assert "expires 2026-04-23T00:00:00Z" in rendered
+    assert "byte-complete" in rendered
+    assert "tax/2022/check-789.pdf" in rendered

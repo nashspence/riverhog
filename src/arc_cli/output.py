@@ -47,6 +47,7 @@ def format_pin(payload: Mapping[str, Any]) -> str:
 def format_fetch(summary: Mapping[str, Any], manifest: Mapping[str, Any]) -> str:
     pending: list[str] = []
     partial: list[str] = []
+    byte_complete: list[str] = []
 
     entries = manifest.get("entries")
     if isinstance(entries, Sequence):
@@ -59,7 +60,10 @@ def format_fetch(summary: Mapping[str, Any], manifest: Mapping[str, Any]) -> str
             upload_state = str(entry.get("upload_state", "pending"))
             expires_at = str(entry.get("upload_state_expires_at", "n/a"))
 
-            if upload_state == "uploaded" or (total_bytes > 0 and uploaded_bytes >= total_bytes):
+            if upload_state == "uploaded":
+                continue
+            if upload_state == "byte_complete" or (total_bytes > 0 and uploaded_bytes >= total_bytes):
+                byte_complete.append(f"- {path} ({uploaded_bytes}/{total_bytes} bytes)")
                 continue
             if upload_state == "partial" or uploaded_bytes > 0:
                 partial.append(
@@ -76,6 +80,8 @@ def format_fetch(summary: Mapping[str, Any], manifest: Mapping[str, Any]) -> str
     lines.extend(pending or ["- none"])
     lines.append("partial:")
     lines.extend(partial or ["- none", "expires: n/a"])
+    lines.append("byte-complete:")
+    lines.extend(byte_complete or ["- none"])
     return "\n".join(lines)
 
 

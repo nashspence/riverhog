@@ -72,5 +72,7 @@ published `upload_url`.
 
 Fetch uploads measure offsets against the ordered recovery-byte stream for that manifest entry. Fetch upload resources
 expose Riverhog-managed tus-compatible `HEAD`/`PATCH`/`DELETE`/`OPTIONS` semantics on the published `upload_url`.
+Once the recovery-byte stream reaches full length, the manifest entry becomes `byte_complete`; it does not become
+`uploaded` until `POST /v1/fetches/{fetch_id}/complete` verifies and materializes the recovered logical file.
 Split files still use one upload resource per logical file; `arc-disc` streams parts into that one resource in
 ascending order.

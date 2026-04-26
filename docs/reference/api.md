@@ -329,10 +329,13 @@ Returns a stable manifest for the exact pin lifetime.
 - `arc-disc` uploads the raw encrypted bytes stored at `disc_path`, not reconstructed logical plaintext
 - logical plaintext hash and size fields remain server-side verification anchors after decryption and reconstruction
 - each manifest entry exposes current upload state, uploaded bytes, and upload expiry if partial state exists
+- fetch entry upload states distinguish `pending`, `partial`, `byte_complete`, and `uploaded`
+- `byte_complete` means the full ordered recovery-byte stream has been accepted but `POST /complete` has not yet finished server-side verification and materialization
 - those hints drive disc sequencing and resumable recovery in `arc-disc`
 - incomplete upload state expires after `INCOMPLETE_UPLOAD_TTL` since the last accepted chunk and the manifest returns to
   `waiting_media`
 - fetch summaries expose an audit field such as `upload_state_expires_at`
+- fetch summaries expose separate `entries_byte_complete` and `entries_uploaded` counts
 - the fetch manifest and any unexpired upload progress survive service restart while the exact pin remains active
 
 #### `POST /v1/fetches/{fetch_id}/entries/{entry_id}/upload`

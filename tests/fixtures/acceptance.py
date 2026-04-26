@@ -1121,7 +1121,10 @@ class AcceptanceFetchService:
                     "bytes": entry.bytes,
                     "sha256": str(entry.sha256),
                     "recovery_bytes": self._entry_recovery_bytes(entry),
-                    "upload_state": self._entry_upload_state(entry),
+                    "upload_state": self._entry_upload_state(
+                        entry,
+                        fetch_state=record.summary.state,
+                    ),
                     "uploaded_bytes": entry.uploaded_bytes,
                     "upload_state_expires_at": entry.upload_expires_at,
                     "copies": [self._manifest_copy(entry, copy) for copy in entry.copies],
@@ -1134,6 +1137,8 @@ class AcceptanceFetchService:
     def create_or_resume_upload(self, fetch_id: str, entry_id: str) -> dict[str, object]:
         record = self._record(fetch_id)
         self._expire_stale_upload_record(record)
+        if record.summary.state == FetchState.DONE:
+            raise InvalidState("fetch is already complete")
         entry = record.entries.get(EntryId(entry_id))
         if entry is None:
             raise NotFound(f"entry not found: {entry_id}")
@@ -1142,7 +1147,10 @@ class AcceptanceFetchService:
                 f"/v1/fetches/{quote(str(record.summary.id), safe='/')}/entries/"
                 f"{quote(str(entry.id), safe='/')}/upload"
             )
-        if self._entry_upload_state(entry) != "uploaded":
+        if self._entry_upload_state(entry, fetch_state=record.summary.state) in {
+            "pending",
+            "partial",
+        }:
             entry.upload_expires_at = FIXTURE_UPLOAD_EXPIRES_AT
         record.summary = self._replace_summary(record)
         return self._entry_upload_payload(entry)
@@ -1179,7 +1187,6 @@ class AcceptanceFetchService:
         if entry.uploaded_bytes < self._entry_recovery_bytes(entry):
             entry.upload_expires_at = FIXTURE_UPLOAD_EXPIRES_AT
         else:
-            self._verify_uploaded_entry(entry)
             entry.upload_expires_at = None
 
         if record.summary.state == FetchState.WAITING_MEDIA:
@@ -1227,13 +1234,24 @@ class AcceptanceFetchService:
 
     def complete(self, fetch_id: str) -> dict[str, object]:
         record = self._record(fetch_id)
-        if any(entry.uploaded_content is None for entry in record.entries.values()):
+        if record.summary.state == FetchState.DONE:
+            return {
+                "id": str(record.summary.id),
+                "state": record.summary.state.value,
+                "hot": self._hot_payload(str(record.summary.target)),
+            }
+        if any(
+            self._entry_upload_state(entry, fetch_state=record.summary.state) != "byte_complete"
+            for entry in record.entries.values()
+        ):
             raise InvalidState("fetch is missing required entry uploads")
         record.summary = self._replace_summary(record, state=FetchState.VERIFYING)
         for entry in record.entries.values():
             self._verify_uploaded_entry(entry)
             stored = self.state.files_by_collection[entry.collection_id][entry.path]
             stored.hot = True
+            entry.upload_url = None
+            entry.upload_expires_at = None
         record.summary = self._replace_summary(record, state=FetchState.DONE)
         hot = self._hot_payload(str(record.summary.target))
         return {
@@ -1281,15 +1299,27 @@ class AcceptanceFetchService:
     ) -> FetchSummary:
         summary = record.summary
         entries = list(record.entries.values())
+        effective_state = state or summary.state
         entries_total = len(entries)
         entries_pending = sum(
-            1 for entry in entries if self._entry_upload_state(entry) == "pending"
+            1
+            for entry in entries
+            if self._entry_upload_state(entry, fetch_state=effective_state) == "pending"
         )
         entries_partial = sum(
-            1 for entry in entries if self._entry_upload_state(entry) == "partial"
+            1
+            for entry in entries
+            if self._entry_upload_state(entry, fetch_state=effective_state) == "partial"
+        )
+        entries_byte_complete = sum(
+            1
+            for entry in entries
+            if self._entry_upload_state(entry, fetch_state=effective_state) == "byte_complete"
         )
         entries_uploaded = sum(
-            1 for entry in entries if self._entry_upload_state(entry) == "uploaded"
+            1
+            for entry in entries
+            if self._entry_upload_state(entry, fetch_state=effective_state) == "uploaded"
         )
         uploaded_bytes = sum(entry.uploaded_bytes for entry in entries)
         missing_bytes = max(
@@ -1301,13 +1331,14 @@ class AcceptanceFetchService:
         return FetchSummary(
             id=summary.id,
             target=summary.target,
-            state=state or summary.state,
+            state=effective_state,
             files=summary.files,
             bytes=summary.bytes,
             copies=list(summary.copies),
             entries_total=entries_total,
             entries_pending=entries_pending,
             entries_partial=entries_partial,
+            entries_byte_complete=entries_byte_complete,
             entries_uploaded=entries_uploaded,
             uploaded_bytes=uploaded_bytes,
             missing_bytes=missing_bytes,
@@ -1333,12 +1364,13 @@ class AcceptanceFetchService:
         else:
             record.summary = self._replace_summary(record)
 
-    def _entry_upload_state(self, entry: FetchEntryRecord) -> str:
-        if (
-            entry.uploaded_content is not None
-            and entry.uploaded_bytes >= self._entry_recovery_bytes(entry)
-        ):
-            return "uploaded"
+    def _entry_upload_state(self, entry: FetchEntryRecord, *, fetch_state: FetchState) -> str:
+        if entry.uploaded_bytes >= self._entry_recovery_bytes(entry) and self._entry_recovery_bytes(
+            entry
+        ) > 0:
+            if fetch_state == FetchState.DONE:
+                return "uploaded"
+            return "byte_complete"
         if entry.uploaded_bytes > 0:
             return "partial"
         return "pending"

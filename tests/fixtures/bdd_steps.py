@@ -1926,6 +1926,16 @@ def then_response_field_is_null(
     assert payload[field] is None
 
 
+@then(parsers.parse('the response field "{field}" is {value:d}'))
+def then_response_field_is_int(
+    acceptance_context: AcceptanceScenarioContext,
+    field: str,
+    value: int,
+) -> None:
+    payload = _json_payload(_require_response(acceptance_context))
+    assert int(payload[field]) == value
+
+
 @then(parsers.parse('the response field "{field}" matches compact UTC timestamp'))
 def then_response_field_matches_compact_utc_timestamp(
     acceptance_context: AcceptanceScenarioContext,

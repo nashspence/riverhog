@@ -827,7 +827,7 @@ components:
       enum: [waiting_media, uploading, verifying, done, failed]
     FetchEntryUploadState:
       type: string
-      enum: [pending, partial, uploaded]
+      enum: [pending, partial, byte_complete, uploaded]
     CollectionSummary:
       type: object
       required: [id, files, bytes, hot_bytes, archived_bytes, pending_bytes]
@@ -1096,6 +1096,7 @@ components:
           entries_total,
           entries_pending,
           entries_partial,
+          entries_byte_complete,
           entries_uploaded,
           uploaded_bytes,
           missing_bytes,
@@ -1115,6 +1116,7 @@ components:
         entries_total: { type: integer }
         entries_pending: { type: integer }
         entries_partial: { type: integer }
+        entries_byte_complete: { type: integer }
         entries_uploaded: { type: integer }
         uploaded_bytes:
           type: integer

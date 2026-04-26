@@ -15,6 +15,7 @@ class FetchSummaryOut(ArcModel):
     entries_total: int
     entries_pending: int
     entries_partial: int
+    entries_byte_complete: int
     entries_uploaded: int
     uploaded_bytes: int
     missing_bytes: int

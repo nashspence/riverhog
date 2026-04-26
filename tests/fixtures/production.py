@@ -230,6 +230,7 @@ class ProductionFetchesClient:
             entries_total=payload["entries_total"],
             entries_pending=payload["entries_pending"],
             entries_partial=payload["entries_partial"],
+            entries_byte_complete=payload["entries_byte_complete"],
             entries_uploaded=payload["entries_uploaded"],
             uploaded_bytes=payload["uploaded_bytes"],
             missing_bytes=payload["missing_bytes"],

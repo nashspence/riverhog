@@ -42,7 +42,7 @@ Feature: Fetches API
     Scenario: Read a fetch summary
       When the client gets "/v1/fetches/fx-1"
       Then the response status is 200
-      And the response contains "id", "target", "state", "files", "bytes", "entries_total", "entries_pending", "entries_partial", "entries_uploaded", "uploaded_bytes", "missing_bytes", "copies", and "upload_state_expires_at"
+      And the response contains "id", "target", "state", "files", "bytes", "entries_total", "entries_pending", "entries_partial", "entries_byte_complete", "entries_uploaded", "uploaded_bytes", "missing_bytes", "copies", and "upload_state_expires_at"
 
     Scenario: Read the manifest twice
       When the client gets "/v1/fetches/fx-1/manifest"
@@ -140,6 +140,22 @@ Feature: Fetches API
       When the client posts to "/v1/fetches/fx-1/complete"
       Then the response status is 409
       And the error code is "invalid_state"
+
+    Scenario: Byte-complete entries are not uploaded until completion verifies them
+      Given every required fetch entry for "fx-1" has been uploaded with the correct bytes
+      When the client gets "/v1/fetches/fx-1"
+      Then the response status is 200
+      And the response field "entries_byte_complete" is 1
+      And the response field "entries_uploaded" is 0
+      When the client gets "/v1/fetches/fx-1/manifest"
+      Then the response status is 200
+      And fetch manifest entry "e1" upload state is "byte_complete"
+      When the client posts to "/v1/fetches/fx-1/complete"
+      Then the response status is 200
+      And fetch state is "done"
+      When the client gets "/v1/fetches/fx-1/manifest"
+      Then the response status is 200
+      And fetch manifest entry "e1" upload state is "uploaded"
 
     Scenario: Completing a fully uploaded fetch materializes the target
       Given every required fetch entry for "fx-1" has been uploaded with the correct bytes

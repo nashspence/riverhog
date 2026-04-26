@@ -170,6 +170,7 @@ A fetch summary exposes at least:
 - `entries_total`
 - `entries_pending`
 - `entries_partial`
+- `entries_byte_complete`
 - `entries_uploaded`
 - `uploaded_bytes`
 - `missing_bytes`

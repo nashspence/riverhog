@@ -33,6 +33,7 @@ def map_fetch(summary: FetchSummary) -> dict[str, object]:
         "entries_total": summary.entries_total,
         "entries_pending": summary.entries_pending,
         "entries_partial": summary.entries_partial,
+        "entries_byte_complete": summary.entries_byte_complete,
         "entries_uploaded": summary.entries_uploaded,
         "uploaded_bytes": summary.uploaded_bytes,
         "missing_bytes": summary.missing_bytes,
