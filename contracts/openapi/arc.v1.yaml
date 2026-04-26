@@ -50,7 +50,7 @@ paths:
   /collection-uploads/{collection_id}/files/{path}/upload:
     post:
       summary: Create or resume one collection-file upload resource
-      description: Creates or resumes the resumable upload resource for one logical collection file until the published expiry time discards incomplete state.
+      description: Creates or resumes one Riverhog-managed tus-compatible upload resource for one logical collection file until the published expiry time discards incomplete state.
       operationId: createOrResumeCollectionFileUpload
       parameters:
         - in: path
@@ -66,6 +66,19 @@ paths:
       responses:
         "200":
           description: Collection-file upload session
+          headers:
+            Tus-Resumable:
+              schema: { type: string }
+            Cache-Control:
+              schema: { type: string }
+            Upload-Offset:
+              schema: { type: integer, minimum: 0 }
+            Upload-Length:
+              schema: { type: integer, minimum: 0 }
+            Upload-Expires:
+              schema: { type: string, format: date-time }
+            Location:
+              schema: { type: string }
           content:
             application/json:
               schema:
@@ -106,10 +119,103 @@ paths:
         "204":
           description: Chunk accepted
           headers:
+            Tus-Resumable:
+              schema: { type: string }
+            Cache-Control:
+              schema: { type: string }
             Upload-Offset:
+              schema: { type: integer, minimum: 0 }
+            Upload-Length:
               schema: { type: integer, minimum: 0 }
             Upload-Expires:
               schema: { type: string, format: date-time }
+        default:
+          $ref: "#/components/responses/Error"
+    head:
+      summary: Read one collection-file upload resource state
+      description: Returns the current tus-style offset and metadata for one existing Riverhog-managed collection-file upload resource. Returns `not_found` once the upload resource no longer exists.
+      operationId: headCollectionFileUpload
+      parameters:
+        - in: path
+          name: collection_id
+          required: true
+          description: Explicit canonical collection id. Slash-bearing ids occupy multiple path segments.
+          schema: { type: string }
+        - in: path
+          name: path
+          required: true
+          description: Relative logical file path within the collection.
+          schema: { type: string }
+      responses:
+        "204":
+          description: Current collection-file upload resource state
+          headers:
+            Tus-Resumable:
+              schema: { type: string }
+            Cache-Control:
+              schema: { type: string }
+            Upload-Offset:
+              schema: { type: integer, minimum: 0 }
+            Upload-Length:
+              schema: { type: integer, minimum: 0 }
+            Upload-Expires:
+              schema: { type: string, format: date-time }
+            Location:
+              schema: { type: string }
+        default:
+          $ref: "#/components/responses/Error"
+    delete:
+      summary: Cancel one collection-file upload resource
+      description: Cancels one existing Riverhog-managed collection-file upload resource, deletes any incomplete server-side bytes for that file, and resets that file back to `pending`.
+      operationId: deleteCollectionFileUpload
+      parameters:
+        - in: path
+          name: collection_id
+          required: true
+          description: Explicit canonical collection id. Slash-bearing ids occupy multiple path segments.
+          schema: { type: string }
+        - in: path
+          name: path
+          required: true
+          description: Relative logical file path within the collection.
+          schema: { type: string }
+      responses:
+        "204":
+          description: Upload resource canceled
+          headers:
+            Tus-Resumable:
+              schema: { type: string }
+            Cache-Control:
+              schema: { type: string }
+        default:
+          $ref: "#/components/responses/Error"
+    options:
+      summary: Describe collection-file upload resource capabilities
+      description: Returns the tus-compatible capability headers Riverhog supports for collection-file upload resources.
+      operationId: optionsCollectionFileUpload
+      parameters:
+        - in: path
+          name: collection_id
+          required: true
+          description: Explicit canonical collection id. Slash-bearing ids occupy multiple path segments.
+          schema: { type: string }
+        - in: path
+          name: path
+          required: true
+          description: Relative logical file path within the collection.
+          schema: { type: string }
+      responses:
+        "204":
+          description: Upload resource capabilities
+          headers:
+            Tus-Resumable:
+              schema: { type: string }
+            Tus-Version:
+              schema: { type: string }
+            Tus-Extension:
+              schema: { type: string }
+            Tus-Checksum-Algorithm:
+              schema: { type: string }
         default:
           $ref: "#/components/responses/Error"
   /search:
@@ -534,7 +640,7 @@ paths:
   /fetches/{fetch_id}/entries/{entry_id}/upload:
     post:
       summary: Create or resume one fetch-entry upload resource
-      description: Creates or resumes one restart-safe upload resource for the fetch entry until the published expiry time discards incomplete state.
+      description: Creates or resumes one restart-safe storage-owned tus upload resource for the fetch entry until the published expiry time discards incomplete state.
       operationId: createOrResumeFetchEntryUpload
       parameters:
         - in: path

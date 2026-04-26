@@ -6,7 +6,7 @@ This document summarizes the MVP HTTP and CLI contract. The canonical machine-re
 ## HTTP API
 
 All JSON endpoints are under `/v1`. Requests and responses use JSON unless otherwise specified.
-Resumable fetch-entry upload URLs are returned by the JSON API and use tus-compatible transport semantics.
+Resumable fetch-entry upload URLs are returned by the JSON API and point at storage-owned tus resources.
 
 Unless this contract explicitly says otherwise, authoritative resources created through the API remain addressable across
 service restarts, including collections, finalized images, registered copies, active pins, active fetch manifests, and
@@ -59,11 +59,45 @@ Creates or resumes the resumable upload resource for one logical collection file
 
 Required behavior:
 
-- the returned upload URL uses tus-compatible resumable upload semantics
+- the returned `upload_url` is a Riverhog-managed tus-compatible upload resource for that logical collection file
 - repeated calls while the file remains resumable return the current upload resource rather than creating duplicates
+- the response includes tus-style status headers such as `Tus-Resumable`, `Upload-Offset`, `Upload-Length`, and `Location`
 - offsets and checksums are measured against the logical file byte stream for that file
 - the terminal successful upload chunk finalizes the collection immediately once every required file has uploaded and verified successfully
 - incomplete upload state expires after `INCOMPLETE_UPLOAD_TTL`; once the last resumable file state expires, Riverhog forgets the upload session entirely and later retries start a fresh session
+
+#### `HEAD /v1/collection-uploads/{collection_id}/files/{path}/upload`
+
+Reads the current tus-style state for one existing collection-file upload resource.
+
+Required behavior:
+
+- returns `204`
+- exposes `Tus-Resumable`, `Upload-Offset`, `Upload-Length`, and `Location`
+- exposes `Upload-Expires` while the file still has incomplete resumable state
+- returns `not_found` after the upload resource has been canceled, expired, or finalized away with the collection session
+
+#### `DELETE /v1/collection-uploads/{collection_id}/files/{path}/upload`
+
+Cancels one existing collection-file upload resource.
+
+Required behavior:
+
+- returns `204`
+- cancels the current upload resource for that logical file
+- deletes any incomplete server-side bytes for that file
+- resets that file back to `pending`
+
+#### `OPTIONS /v1/collection-uploads/{collection_id}/files/{path}/upload`
+
+Describes the Riverhog-managed collection-file upload resource capabilities.
+
+Required behavior:
+
+- returns `204`
+- exposes `Tus-Version`
+- exposes `Tus-Extension`
+- exposes `Tus-Checksum-Algorithm`
 
 ### Search
 
@@ -308,7 +342,7 @@ Creates or resumes the resumable upload resource for one manifest entry.
 Required behavior:
 
 - the response returns one upload URL bound to exactly one logical file entry
-- the returned upload URL uses tus-compatible resumable upload semantics
+- the returned upload URL is storage-owned and uses tus-compatible resumable upload semantics directly
 - the response includes current offset, total length, transport checksum algorithm, and expiry time
 - offset and length are measured in the entry's ordered recovery-byte stream
 - repeated calls while the upload remains resumable return the current upload resource rather than creating duplicates

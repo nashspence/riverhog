@@ -117,6 +117,22 @@ class SqlAlchemyFetchService:
                 "expires_at": entry.upload_expires_at,
             }
 
+    def expire_stale_uploads(self) -> None:
+        with session_scope(self._session_factory) as session:
+            pin_records = session.scalars(
+                select(ActivePinRecord).where(ActivePinRecord.fetch_id.is_not(None))
+            ).all()
+            for pin_record in pin_records:
+                entries = session.scalars(
+                    select(FetchEntryRecord)
+                    .where(FetchEntryRecord.fetch_id == pin_record.fetch_id)
+                    .order_by(FetchEntryRecord.entry_order)
+                ).all()
+                if not entries:
+                    continue
+                _sync_upload_progress(pin_record, entries, self._upload_store)
+                _expire_incomplete_uploads(pin_record, entries, self._upload_store)
+
     def complete(self, fetch_id: str) -> dict[str, object]:
         with session_scope(self._session_factory) as session:
             pin_record = _get_pin_record(session, fetch_id)

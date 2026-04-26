@@ -24,19 +24,23 @@ class RuntimeConfig:
     seaweedfs_filer_url: str
     sqlite_path: Path
     incomplete_upload_ttl: timedelta = field(default_factory=lambda: timedelta(hours=24))
+    upload_expiry_sweep_interval: timedelta = field(default_factory=lambda: timedelta(seconds=30))
 
 
 def load_runtime_config() -> RuntimeConfig:
     filer_url = os.getenv("ARC_SEAWEEDFS_FILER_URL", "http://localhost:8888")
     sqlite_path_raw = os.getenv("ARC_DB_PATH", ".arc/state.sqlite3")
     ttl_raw = os.getenv("INCOMPLETE_UPLOAD_TTL", "24h")
+    sweep_raw = os.getenv("UPLOAD_EXPIRY_SWEEP_INTERVAL", "30s")
 
     sqlite_path = Path(sqlite_path_raw).expanduser().resolve()
     sqlite_path.parent.mkdir(parents=True, exist_ok=True)
     incomplete_upload_ttl = _parse_duration(ttl_raw)
+    upload_expiry_sweep_interval = _parse_duration(sweep_raw)
 
     return RuntimeConfig(
         seaweedfs_filer_url=filer_url,
         sqlite_path=sqlite_path,
         incomplete_upload_ttl=incomplete_upload_ttl,
+        upload_expiry_sweep_interval=upload_expiry_sweep_interval,
     )

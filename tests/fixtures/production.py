@@ -57,6 +57,7 @@ from tests.fixtures.data import (
 
 _SEAWEEDFS_START_TIMEOUT = 15.0
 _SEAWEEDFS_REQUEST_TIMEOUT = 5.0
+_UPLOAD_EXPIRY_SWEEP_INTERVAL_SECONDS = 0.05
 
 
 @dataclass(slots=True)
@@ -534,7 +535,7 @@ class ProductionSystem:
         filer_url = f"{seaweedfs.base_url}/test-fixtures/{workspace.name}"
         os.environ["ARC_SEAWEEDFS_FILER_URL"] = filer_url
         os.environ["ARC_DB_PATH"] = str((workspace / ".arc" / "state.sqlite3").resolve())
-        app = create_app()
+        app = create_app(upload_expiry_reaper_interval=_UPLOAD_EXPIRY_SWEEP_INTERVAL_SECONDS)
         fixture_path = workspace / "arc_disc_fixture.json"
         with _reserve_local_port() as reserved:
             server = _LiveServerHandle(app, host="127.0.0.1", port=reserved.port)
@@ -567,7 +568,7 @@ class ProductionSystem:
 
     def restart(self) -> None:
         self.server.close()
-        app = create_app()
+        app = create_app(upload_expiry_reaper_interval=_UPLOAD_EXPIRY_SWEEP_INTERVAL_SECONDS)
         with _reserve_local_port() as reserved:
             server = _LiveServerHandle(app, host="127.0.0.1", port=reserved.port)
         server.start()
@@ -948,6 +949,59 @@ class ProductionSystem:
             assert records, f"collection upload not found: {normalized_collection_id}"
             for record in records:
                 record.upload_expires_at = "2000-01-01T00:00:00Z"
+
+    def expire_fetch_upload(self, fetch_id: str, entry_id: str) -> None:
+        with session_scope(make_session_factory(str(self.db_path))) as session:
+            record = session.get(
+                FetchEntryRecord,
+                {
+                    "fetch_id": fetch_id,
+                    "entry_id": entry_id,
+                },
+            )
+            assert record is not None, f"fetch entry not found: {fetch_id}/{entry_id}"
+            record.upload_expires_at = "2000-01-01T00:00:00Z"
+
+    def wait_for_collection_upload_cleanup(self, collection_id: str, timeout: float = 5.0) -> None:
+        normalized_collection_id = normalize_collection_id(collection_id)
+        deadline = time.monotonic() + timeout
+        while time.monotonic() < deadline:
+            with session_scope(make_session_factory(str(self.db_path))) as session:
+                remaining = session.scalars(
+                    select(CollectionUploadFileRecord).where(
+                        CollectionUploadFileRecord.collection_id == normalized_collection_id
+                    )
+                ).all()
+            if not remaining:
+                return
+            time.sleep(0.05)
+        raise AssertionError(f"timed out waiting for collection upload cleanup: {collection_id}")
+
+    def wait_for_fetch_upload_cleanup(
+        self,
+        fetch_id: str,
+        entry_id: str,
+        timeout: float = 5.0,
+    ) -> None:
+        deadline = time.monotonic() + timeout
+        while time.monotonic() < deadline:
+            with session_scope(make_session_factory(str(self.db_path))) as session:
+                record = session.get(
+                    FetchEntryRecord,
+                    {
+                        "fetch_id": fetch_id,
+                        "entry_id": entry_id,
+                    },
+                )
+                assert record is not None, f"fetch entry not found: {fetch_id}/{entry_id}"
+                if (
+                    record.tus_url is None
+                    and record.uploaded_bytes == 0
+                    and record.upload_expires_at is None
+                ):
+                    return
+            time.sleep(0.05)
+        raise AssertionError(f"timed out waiting for fetch upload cleanup: {fetch_id}/{entry_id}")
 
     def _subprocess_env(self, extra: Mapping[str, str] | None = None) -> dict[str, str]:
         env = os.environ.copy()

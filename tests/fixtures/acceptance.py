@@ -79,6 +79,7 @@ REPO_ROOT = Path(__file__).resolve().parents[2]
 SRC_ROOT = REPO_ROOT / "src"
 FIXTURE_UPLOAD_EXPIRES_AT = "2099-12-31T23:59:59Z"
 FIXTURE_UPLOAD_URL_BASE = "/__fixture_uploads"
+_UPLOAD_EXPIRY_SWEEP_INTERVAL_SECONDS = 0.05
 
 
 @dataclass(frozen=True, slots=True)
@@ -505,7 +506,63 @@ class AcceptanceCollectionService:
         if self._is_complete(upload):
             self._finalize_upload(upload)
 
-        return {"offset": file_record.uploaded_bytes, "expires_at": file_record.upload_expires_at}
+        return {
+            "offset": file_record.uploaded_bytes,
+            "length": file_record.bytes,
+            "expires_at": file_record.upload_expires_at,
+        }
+
+    def get_file_upload(self, collection_id: str, path: str) -> dict[str, object]:
+        normalized_collection_id = normalize_collection_id(collection_id)
+        normalized_path = normalize_relpath(path)
+        upload = self.state.collection_uploads.get(CollectionId(normalized_collection_id))
+        if upload is None:
+            raise NotFound(f"collection upload not found: {normalized_collection_id}")
+        upload = self._expire_upload(upload)
+        if upload is None:
+            raise NotFound(f"collection upload not found: {normalized_collection_id}")
+        try:
+            file_record = upload.files[normalized_path]
+        except KeyError as exc:
+            raise NotFound(f"collection upload file not found: {normalized_path}") from exc
+        if file_record.upload_url is None:
+            raise NotFound(f"collection upload file is not resumable: {normalized_path}")
+        return {
+            "path": file_record.path,
+            "protocol": "tus",
+            "upload_url": file_record.upload_url,
+            "offset": file_record.uploaded_bytes,
+            "length": file_record.bytes,
+            "checksum_algorithm": "sha256",
+            "expires_at": file_record.upload_expires_at,
+        }
+
+    def cancel_file_upload(self, collection_id: str, path: str) -> None:
+        normalized_collection_id = normalize_collection_id(collection_id)
+        normalized_path = normalize_relpath(path)
+        upload = self.state.collection_uploads.get(CollectionId(normalized_collection_id))
+        if upload is None:
+            raise NotFound(f"collection upload not found: {normalized_collection_id}")
+        upload = self._expire_upload(upload)
+        if upload is None:
+            raise NotFound(f"collection upload not found: {normalized_collection_id}")
+        try:
+            file_record = upload.files[normalized_path]
+        except KeyError as exc:
+            raise NotFound(f"collection upload file not found: {normalized_path}") from exc
+        if file_record.upload_url is None:
+            raise NotFound(f"collection upload file is not resumable: {normalized_path}")
+        file_record.upload_url = None
+        file_record.uploaded_bytes = 0
+        file_record.uploaded_content = None
+        file_record.upload_expires_at = None
+
+    def expire_stale_uploads(self) -> None:
+        for collection_id in list(self.state.collection_uploads):
+            upload = self.state.collection_uploads.get(collection_id)
+            if upload is None:
+                continue
+            self._expire_upload(upload)
 
     def get(self, collection_id: str) -> CollectionSummary:
         return self.state.collection_summary(collection_id)
@@ -1048,11 +1105,13 @@ class AcceptanceFetchService:
 
     def get(self, fetch_id: str) -> FetchSummary:
         record = self._record(fetch_id)
+        self._expire_stale_upload_record(record)
         record.summary = self._replace_summary(record)
         return record.summary
 
     def manifest(self, fetch_id: str) -> dict[str, object]:
         record = self._record(fetch_id)
+        self._expire_stale_upload_record(record)
         record.summary = self._replace_summary(record)
         return {
             "id": str(record.summary.id),
@@ -1076,6 +1135,7 @@ class AcceptanceFetchService:
 
     def create_or_resume_upload(self, fetch_id: str, entry_id: str) -> dict[str, object]:
         record = self._record(fetch_id)
+        self._expire_stale_upload_record(record)
         entry = record.entries.get(EntryId(entry_id))
         if entry is None:
             raise NotFound(f"entry not found: {entry_id}")
@@ -1105,6 +1165,7 @@ class AcceptanceFetchService:
         content: bytes,
     ) -> dict[str, object]:
         record = self._record(fetch_id)
+        self._expire_stale_upload_record(record)
         entry = record.entries.get(EntryId(entry_id))
         if entry is None:
             raise NotFound(f"entry not found: {entry_id}")
@@ -1139,6 +1200,10 @@ class AcceptanceFetchService:
             "offset": entry.uploaded_bytes,
             "expires_at": entry.upload_expires_at,
         }
+
+    def expire_stale_uploads(self) -> None:
+        for record in self.state.fetches.values():
+            self._expire_stale_upload_record(record)
 
     def complete(self, fetch_id: str) -> dict[str, object]:
         record = self._record(fetch_id)
@@ -1228,6 +1293,25 @@ class AcceptanceFetchService:
             missing_bytes=missing_bytes,
             upload_state_expires_at=max(upload_expiries) if upload_expiries else None,
         )
+
+    def _expire_stale_upload_record(self, record: FetchRecord) -> None:
+        now = datetime.now(UTC)
+        expired = False
+        for entry in record.entries.values():
+            if entry.upload_expires_at is None:
+                continue
+            expires_at = datetime.fromisoformat(entry.upload_expires_at.replace("Z", "+00:00"))
+            if expires_at > now:
+                continue
+            expired = True
+            entry.upload_url = None
+            entry.uploaded_bytes = 0
+            entry.uploaded_content = None
+            entry.upload_expires_at = None
+        if expired and record.summary.state == FetchState.UPLOADING:
+            record.summary = self._replace_summary(record, state=FetchState.WAITING_MEDIA)
+        else:
+            record.summary = self._replace_summary(record)
 
     def _entry_upload_state(self, entry: FetchEntryRecord) -> str:
         if (
@@ -1547,7 +1631,6 @@ class AcceptanceSystem:
         pins = AcceptancePinService(state, fetches)
         files = AcceptanceFileService(state)
 
-        app = create_app()
         container = ServiceContainer(
             collections=collections,
             search=search,
@@ -1556,6 +1639,10 @@ class AcceptanceSystem:
             pins=pins,
             fetches=fetches,
             files=files,
+        )
+        app = create_app(
+            container=container,
+            upload_expiry_reaper_interval=_UPLOAD_EXPIRY_SWEEP_INTERVAL_SECONDS,
         )
         app.dependency_overrides[get_container] = lambda: container
 
@@ -1723,6 +1810,46 @@ class AcceptanceSystem:
         upload = self.state.collection_uploads[CollectionId(normalize_collection_id(collection_id))]
         for file_record in upload.files.values():
             file_record.upload_expires_at = "2000-01-01T00:00:00Z"
+
+    def expire_fetch_upload(self, fetch_id: str, entry_id: str) -> None:
+        record = self.state.fetches[FetchId(fetch_id)]
+        entry = record.entries[EntryId(entry_id)]
+        entry.upload_expires_at = "2000-01-01T00:00:00Z"
+
+    def wait_for_collection_upload_cleanup(self, collection_id: str, timeout: float = 2.0) -> None:
+        normalized_collection_id = CollectionId(normalize_collection_id(collection_id))
+        deadline = time.monotonic() + timeout
+        while time.monotonic() < deadline:
+            if normalized_collection_id not in self.state.collection_uploads:
+                return
+            time.sleep(0.05)
+        raise AssertionError(f"timed out waiting for collection upload cleanup: {collection_id}")
+
+    def wait_for_fetch_upload_cleanup(
+        self,
+        fetch_id: str,
+        entry_id: str,
+        timeout: float = 2.0,
+    ) -> None:
+        fetch_key = FetchId(fetch_id)
+        entry_key = EntryId(entry_id)
+        deadline = time.monotonic() + timeout
+        while time.monotonic() < deadline:
+            record = self.state.fetches.get(fetch_key)
+            if record is None:
+                raise AssertionError(f"fetch not found while waiting for cleanup: {fetch_id}")
+            entry = record.entries.get(entry_key)
+            if entry is None:
+                raise AssertionError(f"entry not found while waiting for cleanup: {fetch_id}/{entry_id}")
+            if (
+                entry.upload_url is None
+                and entry.uploaded_bytes == 0
+                and entry.uploaded_content is None
+                and entry.upload_expires_at is None
+            ):
+                return
+            time.sleep(0.05)
+        raise AssertionError(f"timed out waiting for fetch upload cleanup: {fetch_id}/{entry_id}")
 
     def seed_collection_source(
         self, collection_id: str, files: Mapping[str, bytes] | None = None

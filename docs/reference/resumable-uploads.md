@@ -3,7 +3,7 @@
 Riverhog uses the same resumable-upload lifecycle for collection ingest and fetch recovery:
 
 - the JSON API binds uploads to a server-owned domain resource
-- the returned upload resource uses tus-compatible resumable upload semantics
+- the returned upload resource uses tus-compatible resumable upload semantics within the contract published for that workflow
 - upload state survives service restart until `INCOMPLETE_UPLOAD_TTL` expires
 - expiry cancels the upload resource, deletes incomplete server-side bytes, and resets the domain resource cleanly
 
@@ -16,6 +16,13 @@ For collection ingest specifically:
 
 `POST /v1/collection-uploads/{collection_id}/files/{path}/upload` creates or resumes the upload resource for one logical
 collection file.
+
+The returned `upload_url` is a Riverhog-managed tus-compatible upload resource for that logical file. Riverhog supports:
+
+- `HEAD` to read `Upload-Offset`, `Upload-Length`, `Upload-Expires`, and `Location`
+- `PATCH` to append bytes using `Tus-Resumable`, `Upload-Offset`, and `Upload-Checksum`
+- `DELETE` to cancel the current upload resource and reset that file back to `pending`
+- `OPTIONS` to advertise the supported tus capability headers
 
 The response exposes at least:
 
@@ -31,6 +38,9 @@ The response exposes at least:
 
 `POST /v1/fetches/{fetch_id}/entries/{entry_id}/upload` creates or resumes the upload resource for one recovery-manifest
 entry.
+
+The returned `upload_url` is storage-owned rather than Riverhog-managed. Today Riverhog hands clients the underlying
+tus resource URL directly for fetch recovery.
 
 The response exposes at least:
 
@@ -52,6 +62,8 @@ Every upload resource must support:
 - restart-safe resume until the published expiry time discards incomplete state
 
 Collection uploads measure offsets against the logical file byte stream for that file.
+Collection upload resources expose Riverhog-managed tus-compatible `HEAD`/`PATCH`/`DELETE`/`OPTIONS` semantics on the
+published `upload_url`.
 
 Fetch uploads measure offsets against the ordered recovery-byte stream for that manifest entry. Split files still use
 one upload resource per logical file; `arc-disc` streams parts into that one resource in ascending order.

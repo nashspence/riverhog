@@ -31,3 +31,11 @@ def test_openapi_contains_required_paths() -> None:
     client = TestClient(app)
     data = client.get("/openapi.json").json()
     assert REQUIRED_PATHS.issubset(set(data["paths"].keys()))
+
+
+def test_collection_upload_resource_openapi_exposes_tus_methods() -> None:
+    app = create_app()
+    client = TestClient(app)
+    data = client.get("/openapi.json").json()
+    methods = set(data["paths"]["/v1/collection-uploads/{collection_id}/files/{path}/upload"])
+    assert {"post", "patch", "head", "delete", "options"}.issubset(methods)

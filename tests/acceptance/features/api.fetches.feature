@@ -76,6 +76,18 @@ Feature: Fetches API
       Then the response status is 200
       And the returned offset matches the previously uploaded bytes
 
+    Scenario: Expired partial upload state resets without a follow-up fetch request
+      Given fetch "fx-1" has expired partial upload state for entry "e1"
+      When background expiry cleanup resets fetch "fx-1" entry "e1"
+      And the client gets "/v1/fetches/fx-1"
+      Then the response status is 200
+      And fetch state is "waiting_media"
+      When the client gets "/v1/fetches/fx-1/manifest"
+      Then the response status is 200
+      And fetch manifest entry "e1" contains "recovery_bytes", "upload_state", "uploaded_bytes", and "upload_state_expires_at"
+      And fetch manifest entry "e1" upload state is "pending"
+      And fetch manifest entry "e1" uploaded bytes is 0
+
   Rule: Split fetch manifests expose part-level recovery hints
     Background:
       Given split archived fetch "fx-1" exists for target "docs/tax/2022/invoice-123.pdf"

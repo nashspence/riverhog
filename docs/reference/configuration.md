@@ -36,3 +36,14 @@ When the TTL expires:
 - the fetch entry returns to `pending`
 - the fetch manifest returns to `waiting_media` if any selected bytes are still not hot
 - `upload_state_expires_at` becomes `null` until a new upload session is opened
+
+## `UPLOAD_EXPIRY_SWEEP_INTERVAL`
+
+- type: duration
+- default: `30s`
+
+This controls how often Riverhog's background expiry reaper sweeps collection-upload and fetch-upload state looking
+for entries whose published `INCOMPLETE_UPLOAD_TTL` has already elapsed.
+
+Lower values reduce how long expired upload state may remain present after its TTL boundary. Higher values reduce
+background sweep frequency at the cost of slower cleanup after expiry.

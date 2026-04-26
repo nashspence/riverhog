@@ -489,6 +489,22 @@ def given_collection_upload_has_expired_partial_state(
     acceptance_system.expire_collection_upload(collection_id)
 
 
+@given(parsers.parse('fetch "{fetch_id}" has expired partial upload state for entry "{entry_id}"'))
+def given_fetch_has_expired_partial_upload_state(
+    acceptance_system: AcceptanceSystem,
+    acceptance_context: AcceptanceScenarioContext,
+    fetch_id: str,
+    entry_id: str,
+) -> None:
+    given_fetch_has_partial_upload_in_progress(
+        acceptance_system,
+        acceptance_context,
+        fetch_id,
+        entry_id,
+    )
+    acceptance_system.expire_fetch_upload(fetch_id, entry_id)
+
+
 @given(parsers.parse('an archive containing collection "{collection_id}"'))
 def given_archive_containing_collection(
     acceptance_system: AcceptanceSystem,
@@ -850,6 +866,28 @@ def when_client_gets_url(
     _set_response(acceptance_context, response)
 
 
+@when(parsers.parse('the client sends HEAD to "{url}"'))
+def when_client_heads_url(
+    acceptance_system: AcceptanceSystem,
+    acceptance_context: AcceptanceScenarioContext,
+    url: str,
+) -> None:
+    parts = urlsplit(url)
+    response = acceptance_system.request("HEAD", parts.path, params=_query_params(url))
+    _set_response(acceptance_context, response)
+
+
+@when(parsers.parse('the client sends DELETE to "{url}"'))
+def when_client_deletes_url(
+    acceptance_system: AcceptanceSystem,
+    acceptance_context: AcceptanceScenarioContext,
+    url: str,
+) -> None:
+    parts = urlsplit(url)
+    response = acceptance_system.request("DELETE", parts.path, params=_query_params(url))
+    _set_response(acceptance_context, response)
+
+
 @when(parsers.parse('the client gets "{url}" again'))
 def when_client_gets_url_again(
     acceptance_system: AcceptanceSystem,
@@ -908,6 +946,23 @@ def when_client_creates_or_resumes_collection_upload(
 ) -> None:
     response = _start_collection_upload(acceptance_system, collection_id)
     _set_response(acceptance_context, response)
+
+
+@when(parsers.parse('background expiry cleanup removes collection upload "{collection_id}"'))
+def when_background_cleanup_removes_collection_upload(
+    acceptance_system: AcceptanceSystem,
+    collection_id: str,
+) -> None:
+    acceptance_system.wait_for_collection_upload_cleanup(collection_id)
+
+
+@when(parsers.parse('background expiry cleanup resets fetch "{fetch_id}" entry "{entry_id}"'))
+def when_background_cleanup_resets_fetch_entry(
+    acceptance_system: AcceptanceSystem,
+    fetch_id: str,
+    entry_id: str,
+) -> None:
+    acceptance_system.wait_for_fetch_upload_cleanup(fetch_id, entry_id)
 
 
 @when(parsers.parse('the client creates or resumes collection upload "{collection_id}" again'))
@@ -1063,6 +1118,25 @@ def then_response_status_is(
     assert _require_response(acceptance_context).status_code == status
 
 
+@then(parsers.parse('the response header "{name}" is "{value}"'))
+def then_response_header_is(
+    acceptance_context: AcceptanceScenarioContext,
+    name: str,
+    value: str,
+) -> None:
+    response = _require_response(acceptance_context)
+    assert response.headers.get(name) == value
+
+
+@then(parsers.parse('the response has header "{name}"'))
+def then_response_has_header(
+    acceptance_context: AcceptanceScenarioContext,
+    name: str,
+) -> None:
+    response = _require_response(acceptance_context)
+    assert name in response.headers
+
+
 @then(parsers.parse("the response status is {status:d} both times"))
 def then_response_status_is_both_times(
     acceptance_context: AcceptanceScenarioContext,
@@ -1139,6 +1213,28 @@ def then_collection_upload_reports_zero_uploaded_bytes(
     payload = _json_payload(_require_response(acceptance_context))
     assert payload["collection_id"] == collection_id
     assert all(int(item["uploaded_bytes"]) == 0 for item in payload["files"])
+
+
+@then(parsers.parse('fetch manifest entry "{entry_id}" upload state is "{state}"'))
+def then_fetch_manifest_entry_upload_state_is(
+    acceptance_context: AcceptanceScenarioContext,
+    entry_id: str,
+    state: str,
+) -> None:
+    payload = _json_payload(_require_response(acceptance_context))
+    entry = next(item for item in payload["entries"] if item["id"] == entry_id)
+    assert entry["upload_state"] == state
+
+
+@then(parsers.parse('fetch manifest entry "{entry_id}" uploaded bytes is {count:d}'))
+def then_fetch_manifest_entry_uploaded_bytes_is(
+    acceptance_context: AcceptanceScenarioContext,
+    entry_id: str,
+    count: int,
+) -> None:
+    payload = _json_payload(_require_response(acceptance_context))
+    entry = next(item for item in payload["entries"] if item["id"] == entry_id)
+    assert int(entry["uploaded_bytes"]) == count
 
 
 @then(parsers.parse('collection "{collection_id}" is not yet visible'))

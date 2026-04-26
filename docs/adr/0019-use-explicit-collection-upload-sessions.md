@@ -22,6 +22,7 @@ collection contract that:
   - if `tax` exists, reject `tax/2022`
   - if `tax/2022` exists, reject `tax`
 - collection ingest uses a collection-upload session plus one resumable upload resource per logical file
+- each collection-file `upload_url` is a Riverhog-managed tus-compatible resource rather than a raw storage-owned URL
 - collection-upload sessions persist enough state to survive service restart and repeated CLI runs
 - collection-upload files use the same `INCOMPLETE_UPLOAD_TTL` expiry model as fetch recovery uploads
 - a collection remains invisible until every required file upload completes and Riverhog verifies the advertised hashes

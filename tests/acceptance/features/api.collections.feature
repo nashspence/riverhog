@@ -14,6 +14,21 @@ Feature: Collections API
       And collection upload "photos-2024" state is "uploading"
       And collection "photos-2024" is not yet visible
 
+    Scenario: Collection file upload resources expose tus-style status and cancellation
+      Given collection upload "photos-2024" has a partial file upload in progress
+      When the client sends HEAD to "/v1/collection-uploads/photos-2024/files/albums/japan/day-01.txt/upload"
+      Then the response status is 204
+      And the response header "Tus-Resumable" is "1.0.0"
+      And the response has header "Upload-Offset"
+      And the response has header "Upload-Length"
+      And the response has header "Upload-Expires"
+      When the client sends DELETE to "/v1/collection-uploads/photos-2024/files/albums/japan/day-01.txt/upload"
+      Then the response status is 204
+      And the response header "Tus-Resumable" is "1.0.0"
+      When the client creates or resumes collection upload "photos-2024" again
+      Then the response status is 200
+      And collection upload "photos-2024" file "albums/japan/day-01.txt" is "pending"
+
     Scenario: Uploading every required file auto-finalizes the collection from the terminal upload step and survives restart
       Given a local collection source "photos-2024" with deterministic fixture contents
       When the client uploads every required file for collection "photos-2024"
@@ -66,7 +81,8 @@ Feature: Collections API
 
     Scenario: Expired partial upload state is forgotten completely
       Given collection upload "photos-2024" has expired partial upload state
-      When the client refreshes collection upload "photos-2024"
+      When background expiry cleanup removes collection upload "photos-2024"
+      And the client refreshes collection upload "photos-2024"
       Then the response status is 404
       And the error code is "not_found"
       And collection "photos-2024" is not yet visible
