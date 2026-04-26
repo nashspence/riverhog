@@ -2,7 +2,24 @@
 set -euo pipefail
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-IMAGE_NAME="${TEST_IMAGE_NAME:-archive-stack:test}"
+COMPOSE_FILE="${ROOT_DIR}/compose.yml"
+DEFAULT_ENV_FILE="${ROOT_DIR}/.env.compose.example"
+LOCAL_ENV_FILE="${ROOT_DIR}/.env.compose"
+
+if [[ -f "${LOCAL_ENV_FILE}" ]]; then
+  COMPOSE_ENV_FILE="${COMPOSE_ENV_FILE:-${LOCAL_ENV_FILE}}"
+else
+  COMPOSE_ENV_FILE="${COMPOSE_ENV_FILE:-${DEFAULT_ENV_FILE}}"
+fi
+
+export COMPOSE_PROJECT_NAME="${TEST_COMPOSE_PROJECT_NAME:-archive-stack-test}"
+
+compose() {
+  docker compose \
+    --file "${COMPOSE_FILE}" \
+    --env-file "${COMPOSE_ENV_FILE}" \
+    "$@"
+}
 
 usage() {
   cat <<'EOF'
@@ -22,23 +39,38 @@ Modes:
   unit        Run the unit test lane.
   fast        Run the non-production lanes together (integration + unit).
   no args     Run the canonical split test flow inside the test container.
+
+Compose env:
+  Defaults to ./.env.compose if present, otherwise ./.env.compose.example.
 EOF
 }
 
 MODE="pytest"
-DOCKER_ENV_ARGS=()
+COMPOSE_RUN_ENV_ARGS=()
+REQUIRES_SIDECARS=0
+
+cleanup() {
+  if [[ "${REQUIRES_SIDECARS}" == "1" ]]; then
+    compose down --volumes --remove-orphans >/dev/null 2>&1 || true
+  fi
+}
+
+trap cleanup EXIT
 
 if [[ $# -eq 0 ]]; then
   MODE="canonical"
+  REQUIRES_SIDECARS=1
 else
   case "$1" in
     acceptance)
       shift
+      REQUIRES_SIDECARS=1
       set -- -q -m acceptance tests/acceptance "$@"
       ;;
     acceptance-profile)
       shift
-      DOCKER_ENV_ARGS=(-e ARC_TEST_PROFILE=1)
+      REQUIRES_SIDECARS=1
+      COMPOSE_RUN_ENV_ARGS=(-e ARC_TEST_PROFILE=1)
       set -- -q --durations=0 --durations-min=0.5 -m acceptance tests/acceptance "$@"
       ;;
     spec)
@@ -60,51 +92,46 @@ else
   esac
 fi
 
-TTY_ARGS=()
-if [[ -t 0 && -t 1 ]]; then
-  TTY_ARGS=(-it)
+COMPOSE_RUN_TTY_ARGS=()
+if [[ ! -t 0 || ! -t 1 ]]; then
+  COMPOSE_RUN_TTY_ARGS=(-T)
 fi
 
-docker build \
-  --file "${ROOT_DIR}/Dockerfile.test" \
-  --tag "${IMAGE_NAME}" \
-  "${ROOT_DIR}"
+compose build test
 
-if [[ "${MODE}" == "canonical" ]]; then
-  read -r -d '' CANONICAL_SCRIPT <<'EOF' || true
-set -euo pipefail
+if [[ "${REQUIRES_SIDECARS}" == "1" ]]; then
+  compose build seaweedfs
+  compose down --volumes --remove-orphans >/dev/null 2>&1 || true
+  compose up --detach --wait seaweedfs
+fi
 
-run_phase() {
-  local label="$1"
-  shift
-  local started_at
-  started_at="$(date +%s)"
-
-  printf '\n==> %s\n' "${label}"
-  "$@"
-
-  local finished_at
-  finished_at="$(date +%s)"
-  printf '==> %s finished in %ss\n' "${label}" "$((finished_at - started_at))"
+run_test_container() {
+  compose run \
+    --rm \
+    "${COMPOSE_RUN_TTY_ARGS[@]}" \
+    "${COMPOSE_RUN_ENV_ARGS[@]}" \
+    test \
+    "$@"
 }
 
-run_phase "acceptance" python -m pytest -q -m acceptance tests/acceptance
-run_phase "integration + unit" python -m pytest -q tests/integration tests/unit
-EOF
+if [[ "${MODE}" == "canonical" ]]; then
+  run_phase() {
+    local label="$1"
+    shift
+    local started_at
+    started_at="$(date +%s)"
 
-  exec docker run \
-    --rm \
-    --init \
-    "${TTY_ARGS[@]}" \
-    --entrypoint bash \
-    "${IMAGE_NAME}" \
-    -lc "${CANONICAL_SCRIPT}"
+    printf '\n==> %s\n' "${label}"
+    "$@"
+
+    local finished_at
+    finished_at="$(date +%s)"
+    printf '==> %s finished in %ss\n' "${label}" "$((finished_at - started_at))"
+  }
+
+  run_phase "acceptance" run_test_container -q -m acceptance tests/acceptance
+  run_phase "integration + unit" run_test_container -q tests/integration tests/unit
+  exit 0
 fi
 
-exec docker run \
-  --rm \
-  --init \
-  "${TTY_ARGS[@]}" \
-  "${DOCKER_ENV_ARGS[@]}" \
-  "${IMAGE_NAME}" \
-  "$@"
+run_test_container "$@"

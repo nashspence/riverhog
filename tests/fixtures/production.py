@@ -61,20 +61,21 @@ from tests.timing_profile import time_block
 _SEAWEEDFS_START_TIMEOUT = 15.0
 _SEAWEEDFS_REQUEST_TIMEOUT = 5.0
 _UPLOAD_EXPIRY_SWEEP_INTERVAL_SECONDS = 0.05
+_EXTERNAL_SEAWEEDFS_BASE_URL_ENV = "ARC_TEST_EXTERNAL_SEAWEEDFS_BASE_URL"
 
 
 @dataclass(slots=True)
 class _SeaweedFSServerHandle:
     base_url: str
-    process: subprocess.Popen[str]
-    log_file: object
-    log_path: Path
+    process: subprocess.Popen[str] | None = None
+    log_file: object | None = None
+    log_path: Path | None = None
 
     def wait_until_ready(self) -> None:
         deadline = time.monotonic() + _SEAWEEDFS_START_TIMEOUT
         last_error: Exception | None = None
         while time.monotonic() < deadline:
-            if self.process.poll() is not None:
+            if self.process is not None and self.process.poll() is not None:
                 break
             try:
                 with httpx.Client(timeout=0.5) as client:
@@ -85,13 +86,16 @@ class _SeaweedFSServerHandle:
                 last_error = exc
             time.sleep(0.05)
         self.close()
-        log_output = self.log_path.read_text(encoding="utf-8", errors="replace")
+        if self.log_path is None:
+            log_output = "No managed SeaweedFS log was captured for this external sidecar."
+        else:
+            log_output = self.log_path.read_text(encoding="utf-8", errors="replace")
         raise RuntimeError(
             f"Timed out waiting for SeaweedFS filer at {self.base_url}\n{log_output}"
         ) from last_error
 
     def close(self) -> None:
-        if self.process.poll() is None:
+        if self.process is not None and self.process.poll() is None:
             self.process.terminate()
             try:
                 self.process.wait(timeout=5.0)
@@ -148,6 +152,20 @@ def _start_seaweedfs_server(workspace: Path) -> _SeaweedFSServerHandle:
         )
         handle.wait_until_ready()
         return handle
+
+
+def _external_seaweedfs_server() -> _SeaweedFSServerHandle | None:
+    configured_base_url = os.environ.get(_EXTERNAL_SEAWEEDFS_BASE_URL_ENV)
+    if configured_base_url is None:
+        return None
+
+    base_url = configured_base_url.rstrip("/")
+    if not base_url:
+        raise RuntimeError(f"{_EXTERNAL_SEAWEEDFS_BASE_URL_ENV} must not be empty")
+
+    handle = _SeaweedFSServerHandle(base_url=base_url)
+    handle.wait_until_ready()
+    return handle
 
 
 class ProductionCollectionsClient:
@@ -1148,7 +1166,9 @@ class ProductionSystem:
 
 @pytest.fixture(scope="session")
 def seaweedfs_server(tmp_path_factory: pytest.TempPathFactory) -> Iterator[_SeaweedFSServerHandle]:
-    server = _start_seaweedfs_server(tmp_path_factory.mktemp("seaweedfs"))
+    server = _external_seaweedfs_server()
+    if server is None:
+        server = _start_seaweedfs_server(tmp_path_factory.mktemp("seaweedfs"))
     try:
         yield server
     finally:

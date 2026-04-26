@@ -1,0 +1,48 @@
+services:
+  seaweedfs:
+    build:
+      context: .
+      dockerfile: Dockerfile.seaweedfs
+    entrypoint: ["/bin/sh", "-lc"]
+    command:
+      - "mkdir -p /data/master /data/volume && exec weed server -ip=seaweedfs -ip.bind=0.0.0.0 -filer -master.port=9333 -volume.port=8080 -filer.port=8888 -master.dir=/data/master -dir=/data/volume"
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://127.0.0.1:8888/"]
+      interval: 2s
+      timeout: 2s
+      retries: 30
+      start_period: 2s
+    ports:
+      - "${ARC_SEAWEEDFS_HOST_PORT:-8888}:8888"
+    volumes:
+      - seaweedfs-data:/data
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile.app
+    depends_on:
+      seaweedfs:
+        condition: service_healthy
+    environment:
+      ARC_SEAWEEDFS_FILER_URL: ${ARC_SEAWEEDFS_FILER_URL}
+      ARC_DB_PATH: ${ARC_DB_PATH}
+      INCOMPLETE_UPLOAD_TTL: ${INCOMPLETE_UPLOAD_TTL:-24h}
+      UPLOAD_EXPIRY_SWEEP_INTERVAL: ${UPLOAD_EXPIRY_SWEEP_INTERVAL:-30s}
+    ports:
+      - "${ARC_API_PORT:-8000}:8000"
+    volumes:
+      - .:/app
+
+  test:
+    build:
+      context: .
+      dockerfile: Dockerfile.test
+    environment:
+      ARC_TEST_EXTERNAL_SEAWEEDFS_BASE_URL: ${ARC_TEST_EXTERNAL_SEAWEEDFS_BASE_URL:-http://seaweedfs:8888}
+      PYTHONPATH: /app:/app/src
+    volumes:
+      - .:/app
+
+volumes:
+  seaweedfs-data:

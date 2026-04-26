@@ -23,6 +23,9 @@ Run the same acceptance contract inside the deterministic test container:
 ./test acceptance
 ```
 
+That path now keeps `pytest` in the canonical test container while `docker compose`
+manages the required sidecar services outside the container.
+
 Run the production-backed acceptance lane with built-in timing output for scenario and fixture hotspots:
 
 ```bash
@@ -45,6 +48,19 @@ Run the non-production lanes together:
 
 ```bash
 ./test fast
+```
+
+## Compose-backed sidecars
+
+The canonical `./test` flow reads `./.env.compose` when present, otherwise it falls
+back to `./.env.compose.example`.
+
+If you want to point a direct host-side `pytest` run at the compose-managed SeaweedFS
+sidecar instead of requiring a local `weed` binary, start the sidecar first:
+
+```bash
+docker compose --env-file .env.compose.example up -d seaweedfs
+ARC_TEST_EXTERNAL_SEAWEEDFS_BASE_URL=http://127.0.0.1:8888 pytest tests/acceptance
 ```
 
 ## What lives where

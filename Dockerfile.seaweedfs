@@ -1,0 +1,16 @@
+FROM debian:bookworm-slim
+
+ENV DEBIAN_FRONTEND=noninteractive
+
+ARG WEED_VERSION=4.21
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends ca-certificates curl \
+    && curl -fsSL \
+       "https://github.com/seaweedfs/seaweedfs/releases/download/${WEED_VERSION}/linux_amd64_full.tar.gz" \
+       | tar -xz -C /usr/local/bin weed \
+    && chmod +x /usr/local/bin/weed \
+    && rm -rf /var/lib/apt/lists/*
+
+VOLUME ["/data"]
+
+ENTRYPOINT ["weed"]
