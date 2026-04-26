@@ -28,6 +28,7 @@ from arc_core.services.resumable_uploads import (
     create_or_resume_upload_state,
     expire_upload_state,
     sync_upload_state,
+    upload_expiry_timestamp,
     upload_state_name,
 )
 from arc_core.sqlite_db import make_session_factory, session_scope
@@ -91,7 +92,7 @@ class SqlAlchemyFetchService:
             _expire_incomplete_uploads(pin_record, entries, self._upload_store)
             entry = _get_entry(entries, entry_id)
 
-            target_path = f"/.arc/recovery/{fetch_id}/{entry_id}.enc"
+            target_path = _entry_upload_target_path(entry)
             updated, tus_url = create_or_resume_upload_state(
                 current=_entry_upload_lifecycle_state(entry),
                 target_path=target_path,
@@ -107,15 +108,83 @@ class SqlAlchemyFetchService:
             ):
                 pin_record.fetch_state = FetchState.UPLOADING.value
 
+            return _entry_upload_payload(entry)
+
+    def append_upload_chunk(
+        self,
+        fetch_id: str,
+        entry_id: str,
+        *,
+        offset: int,
+        checksum: str,
+        content: bytes,
+    ) -> dict[str, object]:
+        with session_scope(self._session_factory) as session:
+            pin_record = _get_pin_record(session, fetch_id)
+            entries = _ensure_fetch_entries(session, pin_record, self._hot_store)
+            _sync_upload_progress(pin_record, entries, self._upload_store)
+            _expire_incomplete_uploads(pin_record, entries, self._upload_store)
+            entry = _get_entry(entries, entry_id)
+
+            if entry.tus_url is None:
+                raise Conflict(f"fetch entry upload is not resumable: {entry_id}")
+
+            next_offset, _ = self._upload_store.append_upload_chunk(
+                entry.tus_url,
+                offset=offset,
+                checksum=checksum,
+                content=content,
+            )
+            entry.uploaded_bytes = next_offset
+            if next_offset >= entry.recovery_bytes:
+                entry.upload_expires_at = None
+            else:
+                entry.upload_expires_at = upload_expiry_timestamp(self._upload_ttl)
+
+            if pin_record.fetch_state == FetchState.WAITING_MEDIA.value:
+                pin_record.fetch_state = FetchState.UPLOADING.value
+
             return {
-                "entry": entry.entry_id,
-                "protocol": "tus",
-                "upload_url": entry.tus_url,
                 "offset": entry.uploaded_bytes,
                 "length": entry.recovery_bytes,
-                "checksum_algorithm": "sha256",
                 "expires_at": entry.upload_expires_at,
             }
+
+    def get_entry_upload(self, fetch_id: str, entry_id: str) -> dict[str, object]:
+        with session_scope(self._session_factory) as session:
+            pin_record = _get_pin_record(session, fetch_id)
+            entries = _ensure_fetch_entries(session, pin_record, self._hot_store)
+            _sync_upload_progress(pin_record, entries, self._upload_store)
+            _expire_incomplete_uploads(pin_record, entries, self._upload_store)
+            entry = _get_entry(entries, entry_id)
+
+            if entry.tus_url is None:
+                raise NotFound(f"fetch entry upload is not resumable: {entry_id}")
+            return _entry_upload_payload(entry)
+
+    def cancel_entry_upload(self, fetch_id: str, entry_id: str) -> None:
+        with session_scope(self._session_factory) as session:
+            pin_record = _get_pin_record(session, fetch_id)
+            entries = _ensure_fetch_entries(session, pin_record, self._hot_store)
+            _sync_upload_progress(pin_record, entries, self._upload_store)
+            _expire_incomplete_uploads(pin_record, entries, self._upload_store)
+            entry = _get_entry(entries, entry_id)
+
+            if entry.tus_url is None:
+                raise NotFound(f"fetch entry upload is not resumable: {entry_id}")
+
+            self._upload_store.cancel_upload(entry.tus_url)
+            self._upload_store.delete_target(_entry_upload_target_path(entry))
+            _apply_entry_upload_lifecycle_state(
+                entry,
+                UploadLifecycleState(
+                    tus_url=None,
+                    uploaded_bytes=0,
+                    upload_expires_at=None,
+                ),
+            )
+            if pin_record.fetch_state == FetchState.UPLOADING.value:
+                pin_record.fetch_state = FetchState.WAITING_MEDIA.value
 
     def expire_stale_uploads(self) -> None:
         with session_scope(self._session_factory) as session:
@@ -145,7 +214,7 @@ class SqlAlchemyFetchService:
 
             pin_record.fetch_state = FetchState.VERIFYING.value
             for entry in entries:
-                target_path = f"/.arc/recovery/{fetch_id}/{entry.entry_id}.enc"
+                target_path = _entry_upload_target_path(entry)
                 encrypted = self._upload_store.read_target(target_path)
 
                 copies = _entry_copies(entry)
@@ -481,7 +550,7 @@ def _expire_incomplete_uploads(
 ) -> None:
     expired = False
     for entry in entries:
-        target_path = f"/.arc/recovery/{entry.fetch_id}/{entry.entry_id}.enc"
+        target_path = _entry_upload_target_path(entry)
         updated, did_expire = expire_upload_state(
             current=_entry_upload_lifecycle_state(entry),
             target_path=target_path,
@@ -502,7 +571,7 @@ def _sync_upload_progress(
 ) -> None:
     any_uploaded = False
     for entry in entries:
-        target_path = f"/.arc/recovery/{entry.fetch_id}/{entry.entry_id}.enc"
+        target_path = _entry_upload_target_path(entry)
         updated = sync_upload_state(
             current=_entry_upload_lifecycle_state(entry),
             target_path=target_path,
@@ -521,6 +590,22 @@ def _get_entry(entries: list[FetchEntryRecord], entry_id: str) -> FetchEntryReco
         if entry.entry_id == entry_id:
             return entry
     raise NotFound(f"entry not found: {entry_id}")
+
+
+def _entry_upload_payload(entry: FetchEntryRecord) -> dict[str, object]:
+    return {
+        "entry": entry.entry_id,
+        "protocol": "tus",
+        "upload_url": entry.tus_url,
+        "offset": entry.uploaded_bytes,
+        "length": entry.recovery_bytes,
+        "checksum_algorithm": "sha256",
+        "expires_at": entry.upload_expires_at,
+    }
+
+
+def _entry_upload_target_path(entry: FetchEntryRecord) -> str:
+    return f"/.arc/recovery/{entry.fetch_id}/{entry.entry_id}.enc"
 
 
 def _hot_payload(session, raw_target: str) -> dict[str, object]:

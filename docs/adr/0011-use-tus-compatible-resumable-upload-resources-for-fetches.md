@@ -25,7 +25,7 @@ The transport should be commodity rather than bespoke when the protocol already 
 
 - each collection-upload file and each fetch-manifest entry uses one resumable upload resource
 - the JSON API creates or resumes that resource for the caller and returns its upload URL
-- the upload URL speaks tus-compatible resumable upload semantics
+- the upload URL is Riverhog-managed and speaks tus-compatible resumable upload semantics
 - the required protocol surface is tus core plus checksum and expiration support
 - collection ingest streams logical file bytes into the upload resource for that file
 - `arc-disc` streams raw encrypted payload-object bytes from optical media into that upload resource without owning
@@ -40,6 +40,6 @@ The transport should be commodity rather than bespoke when the protocol already 
 ## Consequences
 
 - reliable resume does not require reimplementing upload offsets, expiry, and checksum negotiation
-- collection-upload sessions and fetch manifests remain the domain contracts while tus handles byte transport
+- collection-upload sessions and fetch manifests remain the domain contracts while Riverhog-managed tus resources handle byte transport
 - the server still owns domain-specific binding of uploads to manifest entries, any required decryption, final logical
   hash validation, and pin-based cleanup

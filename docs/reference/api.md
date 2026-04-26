@@ -6,7 +6,7 @@ This document summarizes the MVP HTTP and CLI contract. The canonical machine-re
 ## HTTP API
 
 All JSON endpoints are under `/v1`. Requests and responses use JSON unless otherwise specified.
-Resumable fetch-entry upload URLs are returned by the JSON API and point at storage-owned tus resources.
+Resumable upload URLs returned by the JSON API are Riverhog-managed tus-compatible resources.
 
 Unless this contract explicitly says otherwise, authoritative resources created through the API remain addressable across
 service restarts, including collections, finalized images, registered copies, active pins, active fetch manifests, and
@@ -342,11 +342,44 @@ Creates or resumes the resumable upload resource for one manifest entry.
 Required behavior:
 
 - the response returns one upload URL bound to exactly one logical file entry
-- the returned upload URL is storage-owned and uses tus-compatible resumable upload semantics directly
+- the returned upload URL is a Riverhog-managed tus-compatible upload resource for that manifest entry
 - the response includes current offset, total length, transport checksum algorithm, and expiry time
 - offset and length are measured in the entry's ordered recovery-byte stream
 - repeated calls while the upload remains resumable return the current upload resource rather than creating duplicates
 - the server owns any required decryption and final logical-file validation behind that upload resource
+
+#### `HEAD /v1/fetches/{fetch_id}/entries/{entry_id}/upload`
+
+Reads the current tus-style state for one existing fetch-entry upload resource.
+
+Required behavior:
+
+- returns `204`
+- exposes `Tus-Resumable`, `Upload-Offset`, `Upload-Length`, and `Location`
+- exposes `Upload-Expires` while the entry still has incomplete resumable state
+- returns `not_found` after the upload resource has been canceled or expired away
+
+#### `DELETE /v1/fetches/{fetch_id}/entries/{entry_id}/upload`
+
+Cancels one existing fetch-entry upload resource.
+
+Required behavior:
+
+- returns `204`
+- cancels the current upload resource for that manifest entry
+- deletes any incomplete server-side bytes for that entry
+- resets that entry back to `pending`
+
+#### `OPTIONS /v1/fetches/{fetch_id}/entries/{entry_id}/upload`
+
+Describes the Riverhog-managed fetch-entry upload resource capabilities.
+
+Required behavior:
+
+- returns `204`
+- exposes `Tus-Version`
+- exposes `Tus-Extension`
+- exposes `Tus-Checksum-Algorithm`
 
 #### `POST /v1/fetches/{fetch_id}/complete`
 

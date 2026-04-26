@@ -117,6 +117,25 @@ Feature: Fetches API
       Then the response status is 200 both times
       And both upload-session responses contain the same upload url
 
+    Scenario: Fetch entry upload resources expose tus-style status and cancellation
+      When the client posts to "/v1/fetches/fx-1/entries/e1/upload"
+      Then the response status is 200
+      And the response header "Tus-Resumable" is "1.0.0"
+      And the response has header "Upload-Offset"
+      And the response has header "Upload-Length"
+      And the response has header "Location"
+      When the client sends HEAD to "/v1/fetches/fx-1/entries/e1/upload"
+      Then the response status is 204
+      And the response header "Tus-Resumable" is "1.0.0"
+      And the response header "Upload-Offset" is "0"
+      When the client sends DELETE to "/v1/fetches/fx-1/entries/e1/upload"
+      Then the response status is 204
+      And the response header "Tus-Resumable" is "1.0.0"
+      When the client gets "/v1/fetches/fx-1/manifest"
+      Then the response status is 200
+      And fetch manifest entry "e1" upload state is "pending"
+      And fetch manifest entry "e1" uploaded bytes is 0
+
     Scenario: Completing before all required entries are present fails
       When the client posts to "/v1/fetches/fx-1/complete"
       Then the response status is 409

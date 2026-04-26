@@ -39,3 +39,11 @@ def test_collection_upload_resource_openapi_exposes_tus_methods() -> None:
     data = client.get("/openapi.json").json()
     methods = set(data["paths"]["/v1/collection-uploads/{collection_id}/files/{path}/upload"])
     assert {"post", "patch", "head", "delete", "options"}.issubset(methods)
+
+
+def test_fetch_upload_resource_openapi_exposes_tus_methods() -> None:
+    app = create_app()
+    client = TestClient(app)
+    data = client.get("/openapi.json").json()
+    methods = set(data["paths"]["/v1/fetches/{fetch_id}/entries/{entry_id}/upload"])
+    assert {"post", "patch", "head", "delete", "options"}.issubset(methods)

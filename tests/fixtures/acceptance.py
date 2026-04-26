@@ -15,13 +15,12 @@ from dataclasses import dataclass, field
 from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any, cast
-from urllib.parse import quote, unquote
+from urllib.parse import quote
 
 import httpx
 import pytest
 import uvicorn
 import yaml
-from fastapi import Request, Response
 
 from arc_api.app import create_app
 from arc_api.deps import ServiceContainer, get_container
@@ -78,7 +77,6 @@ from tests.fixtures.data import (
 REPO_ROOT = Path(__file__).resolve().parents[2]
 SRC_ROOT = REPO_ROOT / "src"
 FIXTURE_UPLOAD_EXPIRES_AT = "2099-12-31T23:59:59Z"
-FIXTURE_UPLOAD_URL_BASE = "/__fixture_uploads"
 _UPLOAD_EXPIRY_SWEEP_INTERVAL_SECONDS = 0.05
 
 
@@ -1141,20 +1139,13 @@ class AcceptanceFetchService:
             raise NotFound(f"entry not found: {entry_id}")
         if entry.upload_url is None:
             entry.upload_url = (
-                f"{FIXTURE_UPLOAD_URL_BASE}/fetches/{record.summary.id}/entries/{entry.id}"
+                f"/v1/fetches/{quote(str(record.summary.id), safe='/')}/entries/"
+                f"{quote(str(entry.id), safe='/')}/upload"
             )
         if self._entry_upload_state(entry) != "uploaded":
             entry.upload_expires_at = FIXTURE_UPLOAD_EXPIRES_AT
         record.summary = self._replace_summary(record)
-        return {
-            "entry": str(entry.id),
-            "protocol": "tus",
-            "upload_url": entry.upload_url,
-            "offset": entry.uploaded_bytes,
-            "length": self._entry_recovery_bytes(entry),
-            "checksum_algorithm": "sha256",
-            "expires_at": entry.upload_expires_at,
-        }
+        return self._entry_upload_payload(entry)
 
     def append_upload_chunk(
         self,
@@ -1198,8 +1189,37 @@ class AcceptanceFetchService:
 
         return {
             "offset": entry.uploaded_bytes,
+            "length": self._entry_recovery_bytes(entry),
             "expires_at": entry.upload_expires_at,
         }
+
+    def get_entry_upload(self, fetch_id: str, entry_id: str) -> dict[str, object]:
+        record = self._record(fetch_id)
+        self._expire_stale_upload_record(record)
+        entry = record.entries.get(EntryId(entry_id))
+        if entry is None:
+            raise NotFound(f"entry not found: {entry_id}")
+        if entry.upload_url is None:
+            raise NotFound(f"fetch entry upload is not resumable: {entry_id}")
+        record.summary = self._replace_summary(record)
+        return self._entry_upload_payload(entry)
+
+    def cancel_entry_upload(self, fetch_id: str, entry_id: str) -> None:
+        record = self._record(fetch_id)
+        self._expire_stale_upload_record(record)
+        entry = record.entries.get(EntryId(entry_id))
+        if entry is None:
+            raise NotFound(f"entry not found: {entry_id}")
+        if entry.upload_url is None:
+            raise NotFound(f"fetch entry upload is not resumable: {entry_id}")
+        entry.upload_url = None
+        entry.uploaded_bytes = 0
+        entry.uploaded_content = None
+        entry.upload_expires_at = None
+        if record.summary.state == FetchState.UPLOADING:
+            record.summary = self._replace_summary(record, state=FetchState.WAITING_MEDIA)
+        else:
+            record.summary = self._replace_summary(record)
 
     def expire_stale_uploads(self) -> None:
         for record in self.state.fetches.values():
@@ -1322,6 +1342,17 @@ class AcceptanceFetchService:
         if entry.uploaded_bytes > 0:
             return "partial"
         return "pending"
+
+    def _entry_upload_payload(self, entry: FetchEntryRecord) -> dict[str, object]:
+        return {
+            "entry": str(entry.id),
+            "protocol": "tus",
+            "upload_url": entry.upload_url,
+            "offset": entry.uploaded_bytes,
+            "length": self._entry_recovery_bytes(entry),
+            "checksum_algorithm": "sha256",
+            "expires_at": entry.upload_expires_at,
+        }
 
     @staticmethod
     def _summary_copies(entries: Iterator[FetchEntryRecord]) -> list[FetchCopyHint]:
@@ -1645,50 +1676,6 @@ class AcceptanceSystem:
             upload_expiry_reaper_interval=_UPLOAD_EXPIRY_SWEEP_INTERVAL_SECONDS,
         )
         app.dependency_overrides[get_container] = lambda: container
-
-        @app.patch(
-            "/__fixture_uploads/fetches/{fetch_id}/entries/{entry_id}",
-            include_in_schema=False,
-        )
-        async def fixture_upload(
-            fetch_id: str,
-            entry_id: str,
-            request: Request,
-        ) -> Response:
-            content = await request.body()
-            payload = fetches.append_upload_chunk(
-                fetch_id=fetch_id,
-                entry_id=entry_id,
-                offset=int(request.headers["Upload-Offset"]),
-                checksum=request.headers["Upload-Checksum"],
-                content=content,
-            )
-            headers = {"Upload-Offset": str(payload["offset"])}
-            if payload["expires_at"] is not None:
-                headers["Upload-Expires"] = str(payload["expires_at"])
-            return Response(status_code=204, headers=headers)
-
-        @app.patch(
-            "/__fixture_uploads/collections-file",
-            include_in_schema=False,
-        )
-        async def fixture_collection_upload(
-            request: Request,
-        ) -> Response:
-            content = await request.body()
-            collection_id = unquote(str(request.query_params["collection_id"]))
-            path = unquote(str(request.query_params["path"]))
-            payload = collections.append_upload_chunk(
-                collection_id=collection_id,
-                path=path,
-                offset=int(request.headers["Upload-Offset"]),
-                checksum=request.headers["Upload-Checksum"],
-                content=content,
-            )
-            headers = {"Upload-Offset": str(payload["offset"])}
-            if payload["expires_at"] is not None:
-                headers["Upload-Expires"] = str(payload["expires_at"])
-            return Response(status_code=204, headers=headers)
 
         fixture_path = workspace / "arc_disc_fixture.json"
         with _reserve_local_port() as reserved:

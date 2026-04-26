@@ -39,8 +39,13 @@ The response exposes at least:
 `POST /v1/fetches/{fetch_id}/entries/{entry_id}/upload` creates or resumes the upload resource for one recovery-manifest
 entry.
 
-The returned `upload_url` is storage-owned rather than Riverhog-managed. Today Riverhog hands clients the underlying
-tus resource URL directly for fetch recovery.
+The returned `upload_url` is a Riverhog-managed tus-compatible upload resource for that manifest entry. Riverhog
+supports:
+
+- `HEAD` to read `Upload-Offset`, `Upload-Length`, `Upload-Expires`, and `Location`
+- `PATCH` to append bytes using `Tus-Resumable`, `Upload-Offset`, and `Upload-Checksum`
+- `DELETE` to cancel the current upload resource and reset that manifest entry back to `pending`
+- `OPTIONS` to advertise the supported tus capability headers
 
 The response exposes at least:
 
@@ -65,5 +70,7 @@ Collection uploads measure offsets against the logical file byte stream for that
 Collection upload resources expose Riverhog-managed tus-compatible `HEAD`/`PATCH`/`DELETE`/`OPTIONS` semantics on the
 published `upload_url`.
 
-Fetch uploads measure offsets against the ordered recovery-byte stream for that manifest entry. Split files still use
-one upload resource per logical file; `arc-disc` streams parts into that one resource in ascending order.
+Fetch uploads measure offsets against the ordered recovery-byte stream for that manifest entry. Fetch upload resources
+expose Riverhog-managed tus-compatible `HEAD`/`PATCH`/`DELETE`/`OPTIONS` semantics on the published `upload_url`.
+Split files still use one upload resource per logical file; `arc-disc` streams parts into that one resource in
+ascending order.
