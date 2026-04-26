@@ -266,7 +266,10 @@ class SqlAlchemyCollectionService:
 
             if next_offset >= file_record.bytes:
                 file_record.upload_expires_at = None
-                target_path = _collection_upload_target_path(normalized_collection_id, normalized_path)
+                target_path = _collection_upload_target_path(
+                    normalized_collection_id,
+                    normalized_path,
+                )
                 content_digest = _sha256_hex(self._upload_store.read_target(target_path))
                 if content_digest != file_record.sha256:
                     raise HashMismatch("sha256 did not match expected file hash")

@@ -104,6 +104,7 @@ class StoredFile:
     content: bytes
     hot: bool
     archived: bool
+    hot_backing_missing: bool = False
     copies: list[FileCopy] = field(default_factory=list)
 
     @property
@@ -288,6 +289,8 @@ class AcceptanceState:
         record = records.get(path)
         if record is None:
             raise NotFound(f"file not found in {collection_key}: {path}")
+        if record.hot_backing_missing:
+            raise NotFound(f"file not found in hot store: {collection_key}/{path}")
         return record.content
 
     def collection_summary(self, collection_id: str | CollectionId) -> CollectionSummary:
@@ -409,7 +412,9 @@ class AcceptanceCollectionService:
                 for file_record in upload.files.values()
             ]
             if existing_manifest != normalized_files:
-                raise Conflict(f"collection upload manifest does not match: {normalized_collection_id}")
+                raise Conflict(
+                    f"collection upload manifest does not match: {normalized_collection_id}"
+                )
             upload.ingest_source = ingest_source
 
         if self._is_complete(upload):
@@ -1822,8 +1827,15 @@ class AcceptanceSystem:
             check=False,
         )
 
+    def delete_hot_backing_file(self, target: str) -> None:
+        selected = self.state.selected_files(target)
+        if len(selected) != 1:
+            raise AssertionError(f"expected exactly one file target: {target}")
+        selected[0].hot_backing_missing = True
+
     def collection_source_root(self, collection_id: str) -> Path:
-        return self.state.local_collection_sources[CollectionId(normalize_collection_id(collection_id))]
+        collection_key = CollectionId(normalize_collection_id(collection_id))
+        return self.state.local_collection_sources[collection_key]
 
     def expire_collection_upload(self, collection_id: str) -> None:
         upload = self.state.collection_uploads[CollectionId(normalize_collection_id(collection_id))]
@@ -1859,7 +1871,9 @@ class AcceptanceSystem:
                 raise AssertionError(f"fetch not found while waiting for cleanup: {fetch_id}")
             entry = record.entries.get(entry_key)
             if entry is None:
-                raise AssertionError(f"entry not found while waiting for cleanup: {fetch_id}/{entry_id}")
+                raise AssertionError(
+                    f"entry not found while waiting for cleanup: {fetch_id}/{entry_id}"
+                )
             if (
                 entry.upload_url is None
                 and entry.uploaded_bytes == 0

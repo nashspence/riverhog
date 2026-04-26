@@ -59,7 +59,7 @@ Feature: arc CLI
       When the operator runs 'arc show docs --files --json'
       Then the command exits with code 0
       And stdout is valid JSON
-      And stdout matches the structure of GET "/v1/collections/docs/files"
+      And stdout matches the structure of GET "/v1/collection-files/docs"
       And stdout mentions "invoice-123.pdf"
 
     Scenario: arc status emits the files query payload

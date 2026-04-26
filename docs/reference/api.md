@@ -126,16 +126,15 @@ Required behavior:
 
 ### File introspection
 
-#### `GET /v1/collections/{collection_id}/files`
+#### `GET /v1/collection-files/{collection_id}`
 
 Lists the logical files in one collection.
 
 Required behavior:
 
-- collection ids may span multiple path segments, for example `GET /v1/collections/photos/2024/files`
+- collection ids may span multiple path segments, for example `GET /v1/collection-files/photos/2024`
 - each returned file includes its projected path and current hot or archived state
 - each returned file includes available copies, if any
-- collection ids whose final path segment is literally `files` are reserved by this endpoint shape
 
 #### `GET /v1/files?target=<target>`
 

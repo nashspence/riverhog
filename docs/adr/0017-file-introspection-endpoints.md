@@ -21,6 +21,7 @@ The same target selector should mean the same projected file set across the API 
 - file results expose availability in terms users can act on, including hot state and available copies when applicable
 - plan visibility remains available through the existing plan endpoint
 - the CLI exposes these capabilities through `arc show --files`, `arc status`, and `arc get`
+- collection file listing uses a dedicated `/v1/collection-files/{collection_id}` path so slash-bearing ids remain first-class without reserving `files` as a collection-id segment
 
 ## Consequences
 
@@ -29,5 +30,4 @@ The same target selector should mean the same projected file set across the API 
 - hot files are easy to retrieve when they are immediately available
 - archived-only files retain a clear recovery path instead of appearing locally downloadable
 - collection lookup continues to support slash-bearing collection ids
-- collection ids ending in the literal segment `files` are reserved by this endpoint shape
 - the API and CLI expose file state as part of the product surface, not as an implementation detail

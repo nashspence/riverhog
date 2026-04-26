@@ -12,6 +12,17 @@ from arc_core.runtime_config import RuntimeConfig
 from arc_core.sqlite_db import make_session_factory, session_scope
 
 
+def _read_collection_file_content(
+    hot_store: HotStore,
+    collection_id: str,
+    path: str,
+) -> bytes:
+    try:
+        return hot_store.get_collection_file(collection_id, path)
+    except FileNotFoundError as exc:
+        raise NotFound(f"file not found in hot store: {collection_id}/{path}") from exc
+
+
 class StubFileService:
     def list_collection_files(self, collection_id: str) -> list[dict[str, object]]:
         raise NotImplementedError("StubFileService is not implemented yet")
@@ -107,4 +118,8 @@ class SqlAlchemyFileService:
             if not file_record.hot:
                 raise NotFound(f"file is not hot: {raw_target}")
 
-        return self._hot_store.get_collection_file(file_record.collection_id, file_record.path)
+        return _read_collection_file_content(
+            self._hot_store,
+            file_record.collection_id,
+            file_record.path,
+        )

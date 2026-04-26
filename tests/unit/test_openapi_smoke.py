@@ -8,6 +8,7 @@ REQUIRED_PATHS = {
     "/v1/collection-uploads",
     "/v1/collection-uploads/{collection_id}",
     "/v1/collection-uploads/{collection_id}/files/{path}/upload",
+    "/v1/collection-files/{collection_id}",
     "/v1/collections/{collection_id}",
     "/v1/search",
     "/v1/plan",

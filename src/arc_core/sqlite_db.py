@@ -127,13 +127,13 @@ def initialize_db(sqlite_path: str) -> None:
         CandidateCoveredPathRecord,
         CollectionFileRecord,
         CollectionRecord,
+        CollectionUploadFileRecord,
+        CollectionUploadRecord,
         FetchEntryRecord,
         FileCopyRecord,
         FinalizedImageCoveredPathRecord,
         FinalizedImageRecord,
         ImageCopyRecord,
-        CollectionUploadFileRecord,
-        CollectionUploadRecord,
         PlannedCandidateRecord,
     )
 

@@ -212,7 +212,7 @@ class ApiClient:
         return self._json("POST", f"/v1/fetches/{fetch_id}/complete")
 
     def list_collection_files(self, collection_id: str) -> dict[str, Any]:
-        return self._json("GET", f"/v1/collections/{quote(collection_id, safe='/')}/files")
+        return self._json("GET", f"/v1/collection-files/{quote(collection_id, safe='/')}")
 
     def query_files(self, target: str) -> dict[str, Any]:
         return self._json("GET", "/v1/files", params={"target": target})

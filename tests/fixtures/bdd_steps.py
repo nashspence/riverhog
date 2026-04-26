@@ -18,6 +18,7 @@ from arc_core.fs_paths import normalize_collection_id
 from tests.fixtures.acceptance import AcceptanceSystem
 from tests.fixtures.data import (
     DOCS_COLLECTION_ID,
+    DOCS_FILES,
     IMAGE_ID,
     INVOICE_TARGET,
     PHOTOS_2024_FILE_COUNT,
@@ -144,7 +145,9 @@ def _start_collection_upload(
         "/v1/collection-uploads",
         json_body={
             "collection_id": normalized_collection_id,
-            "ingest_source": str(acceptance_system.collection_source_root(normalized_collection_id)),
+            "ingest_source": str(
+                acceptance_system.collection_source_root(normalized_collection_id)
+            ),
             "files": _collection_source_manifest(acceptance_system, normalized_collection_id),
         },
     )
@@ -277,6 +280,9 @@ def _ensure_collection_fixture(acceptance_system: AcceptanceSystem, collection_i
     if collection_id == DOCS_COLLECTION_ID:
         acceptance_system.seed_docs_hot()
         return
+    if collection_id == "tax/files":
+        acceptance_system.upload_collection_source(collection_id, DOCS_FILES)
+        return
     if collection_id == PHOTOS_COLLECTION_ID:
         acceptance_system.seed_photos_hot()
         return
@@ -405,9 +411,9 @@ def _prepare_arc_expectation(
 
     if argv[1] == "show" and "--files" in argv:
         collection_id = argv[2]
-        context.expected_api_endpoint = ("GET", f"/v1/collections/{collection_id}/files")
+        context.expected_api_endpoint = ("GET", f"/v1/collection-files/{collection_id}")
         context.expected_api_payload = acceptance_system.request(
-            "GET", f"/v1/collections/{quote(collection_id, safe='/')}/files"
+            "GET", f"/v1/collection-files/{quote(collection_id, safe='/')}"
         ).json()
         return
 
@@ -427,7 +433,9 @@ def given_empty_archive() -> None:
     return None
 
 
-@given(parsers.parse('a local collection source "{collection_id}" with deterministic fixture contents'))
+@given(
+    parsers.parse('a local collection source "{collection_id}" with deterministic fixture contents')
+)
 def given_local_collection_source(
     acceptance_system: AcceptanceSystem,
     collection_id: str,
@@ -435,7 +443,9 @@ def given_local_collection_source(
     acceptance_system.seed_collection_source(collection_id)
 
 
-@given(parsers.parse('collection "{collection_id}" already exists from deterministic fixture contents'))
+@given(
+    parsers.parse('collection "{collection_id}" already exists from deterministic fixture contents')
+)
 def given_collection_already_uploaded(
     acceptance_system: AcceptanceSystem,
     collection_id: str,
@@ -443,7 +453,9 @@ def given_collection_already_uploaded(
     acceptance_system.upload_collection_source(collection_id)
 
 
-@given(parsers.parse('collection upload "{collection_id}" exists for deterministic fixture contents'))
+@given(
+    parsers.parse('collection upload "{collection_id}" exists for deterministic fixture contents')
+)
 def given_collection_upload_exists(
     acceptance_system: AcceptanceSystem,
     collection_id: str,
@@ -581,6 +593,15 @@ def given_file_is_not_hot(acceptance_system: AcceptanceSystem, target: str) -> N
     assert resp.status_code == 200, resp.text
     files = resp.json()["files"]
     assert not (bool(files) and all(record["hot"] for record in files))
+
+
+@given(parsers.parse('hot backing bytes for file "{target}" are missing'))
+def given_hot_backing_bytes_for_file_are_missing(
+    acceptance_system: AcceptanceSystem,
+    target: str,
+) -> None:
+    acceptance_system.seed_docs_hot()
+    acceptance_system.delete_hot_backing_file(target)
 
 
 @given(parsers.parse('archived target "{target}" is pinned with fetch "{fetch_id}"'))
@@ -831,9 +852,8 @@ def given_collection_contains_file(
     collection_id: str,
     path: str,
 ) -> None:
-    resp = acceptance_system.request(
-        "GET", f"/v1/collections/{quote(collection_id, safe='/')}/files"
-    )
+    request_path = f"/v1/collection-files/{quote(collection_id, safe='/')}"
+    resp = acceptance_system.request("GET", request_path)
     assert resp.status_code == 200, resp.text
     collection_files = {record["path"] for record in resp.json()["files"]}
     assert path.lstrip("/") in collection_files
@@ -846,9 +866,8 @@ def given_collection_contains_directory(
     path: str,
 ) -> None:
     prefix = path.strip("/").rstrip("/") + "/"
-    resp = acceptance_system.request(
-        "GET", f"/v1/collections/{quote(collection_id, safe='/')}/files"
-    )
+    request_path = f"/v1/collection-files/{quote(collection_id, safe='/')}"
+    resp = acceptance_system.request("GET", request_path)
     assert resp.status_code == 200, resp.text
     collection_files = [record["path"] for record in resp.json()["files"]]
     assert any(current.startswith(prefix) for current in collection_files)
@@ -1068,12 +1087,13 @@ def when_operator_uploads_collection_source(
     acceptance_context: AcceptanceScenarioContext,
     collection_id: str,
 ) -> None:
-    acceptance_context.command_text = f'arc upload {collection_id} "{acceptance_system.collection_source_root(collection_id)}"'
+    source_root = acceptance_system.collection_source_root(collection_id)
+    acceptance_context.command_text = f'arc upload {collection_id} "{source_root}"'
     acceptance_context.command_argv = [
         "arc",
         "upload",
         collection_id,
-        str(acceptance_system.collection_source_root(collection_id)),
+        str(source_root),
     ]
     acceptance_context.stdout_json = None
     acceptance_context.expected_api_endpoint = None
@@ -2189,9 +2209,8 @@ def then_every_collection_manifest_matches_contract(
         payload = decrypt_yaml_file(inspected.extract_root / collection["manifest"])
         assert_contract_schema("collection-hash-manifest.schema.json", payload)
         collection_id = str(collection["id"])
-        resp = acceptance_system.request(
-            "GET", f"/v1/collections/{quote(collection_id, safe='/')}/files"
-        )
+        request_path = f"/v1/collection-files/{quote(collection_id, safe='/')}"
+        resp = acceptance_system.request("GET", request_path)
         assert resp.status_code == 200, resp.text
         expected_files = sorted(record["path"] for record in resp.json()["files"])
         assert_collection_manifest_semantics(

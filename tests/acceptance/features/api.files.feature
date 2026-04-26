@@ -3,25 +3,31 @@ Feature: File introspection API
   Read-only endpoints expose per-file state and hot file bytes without requiring
   a full search query or internal state access.
 
-  Rule: GET /v1/collections/{id}/files lists every file with per-file state
+  Rule: GET /v1/collection-files/{id} lists every file with per-file state
 
     Background:
       Given an archive containing collection "docs"
 
     Scenario: List files for a known collection
-      When the client gets "/v1/collections/docs/files"
+      When the client gets "/v1/collection-files/docs"
       Then the response status is 200
       And the response contains "collection_id" and "files"
       And each file entry contains "path", "bytes", "hot", and "archived"
 
     Scenario: Unknown collection returns not found
-      When the client gets "/v1/collections/missing/files"
+      When the client gets "/v1/collection-files/missing"
       Then the response status is 404
       And the error code is "not_found"
 
     Scenario: List files for a slash-bearing collection id
       Given an archive containing collection "photos/2024"
-      When the client gets "/v1/collections/photos/2024/files"
+      When the client gets "/v1/collection-files/photos/2024"
+      Then the response status is 200
+      And the response contains "collection_id" and "files"
+
+    Scenario: List files for a collection id ending in files
+      Given an archive containing collection "tax/files"
+      When the client gets "/v1/collection-files/tax/files"
       Then the response status is 200
       And the response contains "collection_id" and "files"
 
@@ -72,6 +78,13 @@ Feature: File introspection API
       Given an archive containing collection "docs"
       When the client gets "/v1/files/docs/does-not-exist.pdf/content"
       Then the response status is 404
+
+    Scenario: Download a hot-marked file whose backing bytes are missing returns not found
+      Given an archive containing collection "docs"
+      And hot backing bytes for file "docs/tax/2022/invoice-123.pdf" are missing
+      When the client gets "/v1/files/docs/tax/2022/invoice-123.pdf/content"
+      Then the response status is 404
+      And the error code is "not_found"
 
     Scenario: Directory target returns 400
       Given an archive containing collection "docs"

@@ -7,6 +7,7 @@ pytestmark = pytest.mark.integration
 
 scenarios("../acceptance/features/api.collections.feature")
 scenarios("../acceptance/features/api.fetches.feature")
+scenarios("../acceptance/features/api.files.feature")
 scenarios("../acceptance/features/api.pins.feature")
 scenarios("../acceptance/features/api.plan_and_images.feature")
 scenarios("../acceptance/features/api.search.feature")

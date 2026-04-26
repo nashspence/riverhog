@@ -129,7 +129,10 @@ def delete_collection_file_upload(
     )
 
 
-@router.options("/collection-uploads/{collection_id:path}/files/{path:path}/upload", status_code=204)
+@router.options(
+    "/collection-uploads/{collection_id:path}/files/{path:path}/upload",
+    status_code=204,
+)
 def options_collection_file_upload() -> Response:
     return Response(
         status_code=204,

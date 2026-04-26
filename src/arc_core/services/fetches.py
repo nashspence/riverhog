@@ -3,7 +3,6 @@ from __future__ import annotations
 import hashlib
 import json
 from dataclasses import dataclass
-from datetime import timedelta
 
 from sqlalchemy import delete, select
 from sqlalchemy.orm import object_session, selectinload
@@ -15,7 +14,7 @@ from arc_core.catalog_models import (
     FileCopyRecord,
 )
 from arc_core.domain.enums import FetchState
-from arc_core.domain.errors import HashMismatch, InvalidState, NotFound
+from arc_core.domain.errors import Conflict, HashMismatch, InvalidState, NotFound
 from arc_core.domain.models import FetchCopyHint, FetchSummary
 from arc_core.domain.selectors import parse_target
 from arc_core.domain.types import CopyId, FetchId, TargetStr
@@ -31,6 +30,17 @@ from arc_core.services.resumable_uploads import (
     upload_expiry_timestamp,
 )
 from arc_core.sqlite_db import make_session_factory, session_scope
+
+
+def _read_collection_file_content(
+    hot_store: HotStore,
+    collection_id: str,
+    path: str,
+) -> bytes:
+    try:
+        return hot_store.get_collection_file(collection_id, path)
+    except FileNotFoundError as exc:
+        raise NotFound(f"file not found in hot store: {collection_id}/{path}") from exc
 
 
 @dataclass(frozen=True, slots=True)
@@ -237,8 +247,10 @@ class SqlAlchemyFetchService:
                 copies = _entry_copies(entry)
                 if copies and any(copy.part_index is not None for copy in copies):
                     part_count = max((copy.part_count or 1) for copy in copies)
-                    content = self._hot_store.get_collection_file(
-                        entry.collection_id, entry.path
+                    content = _read_collection_file_content(
+                        self._hot_store,
+                        entry.collection_id,
+                        entry.path,
                     )
                     parts = _split_plaintext(content, part_count)
                     sizes = [len(encrypt_recovery_payload(part)) for part in parts]
@@ -331,7 +343,11 @@ def _ensure_fetch_entries(
     for index, file_record in enumerate(
         sorted(selected, key=lambda item: (item.collection_id, item.path)), start=1
     ):
-        content = hot_store.get_collection_file(file_record.collection_id, file_record.path)
+        content = _read_collection_file_content(
+            hot_store,
+            file_record.collection_id,
+            file_record.path,
+        )
         copy_records = session.scalars(
             select(FileCopyRecord).where(
                 FileCopyRecord.collection_id == file_record.collection_id,
@@ -544,7 +560,7 @@ def _entry_copies(entry: FetchEntryRecord) -> list[_ManifestCopy]:
 def _entry_recovery_payloads(
     hot_store: HotStore, session, entry: FetchEntryRecord
 ) -> tuple[bytes, ...]:
-    content = hot_store.get_collection_file(entry.collection_id, entry.path)
+    content = _read_collection_file_content(hot_store, entry.collection_id, entry.path)
     copies = _entry_copies(entry)
     if not copies or all(copy.part_index is None for copy in copies):
         return (encrypt_recovery_payload(content),)

@@ -644,6 +644,18 @@ class ProductionSystem:
             check=False,
         )
 
+    def delete_hot_backing_file(self, target: str) -> None:
+        selected = self.state.selected_files(target)
+        if len(selected) != 1:
+            raise AssertionError(f"expected exactly one file target: {target}")
+        record = selected[0]
+        response = self.filer_request(
+            "DELETE",
+            f"/collections/{record.collection_id}/{record.path}",
+        )
+        if response.status_code not in (200, 204, 404):
+            response.raise_for_status()
+
     def seed_collection_source(
         self, collection_id: str, files: Mapping[str, bytes] | None = None
     ) -> None:
@@ -937,7 +949,9 @@ class ProductionSystem:
         return [item["target"] for item in self.request("GET", "/v1/pins").json()["pins"]]
 
     def collection_source_root(self, collection_id: str) -> Path:
-        return (self.workspace / "collections-src" / normalize_collection_id(collection_id)).resolve()
+        return (
+            self.workspace / "collections-src" / normalize_collection_id(collection_id)
+        ).resolve()
 
     def expire_collection_upload(self, collection_id: str) -> None:
         normalized_collection_id = normalize_collection_id(collection_id)

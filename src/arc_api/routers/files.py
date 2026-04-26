@@ -13,7 +13,7 @@ from arc_api.schemas.files import (
 router = APIRouter(tags=["files"])
 
 
-@router.get("/collections/{collection_id:path}/files", response_model=CollectionFilesResponse)
+@router.get("/collection-files/{collection_id:path}", response_model=CollectionFilesResponse)
 def list_collection_files(
     collection_id: str,
     container: ContainerDep,

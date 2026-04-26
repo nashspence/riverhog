@@ -62,7 +62,9 @@ def format_fetch(summary: Mapping[str, Any], manifest: Mapping[str, Any]) -> str
 
             if upload_state == "uploaded":
                 continue
-            if upload_state == "byte_complete" or (total_bytes > 0 and uploaded_bytes >= total_bytes):
+            if upload_state == "byte_complete" or (
+                total_bytes > 0 and uploaded_bytes >= total_bytes
+            ):
                 byte_complete.append(f"- {path} ({uploaded_bytes}/{total_bytes} bytes)")
                 continue
             if upload_state == "partial" or uploaded_bytes > 0:
