@@ -5,6 +5,8 @@ from pathlib import Path
 
 import pytest
 
+from tests.timing_profile import PROFILE
+
 ROOT = Path(__file__).resolve().parents[1]
 SRC = ROOT / "src"
 if str(SRC) not in sys.path:
@@ -46,3 +48,15 @@ def pytest_collection_modifyitems(items: list[pytest.Item]) -> None:
                     strict=marker_name in STRICT_XFAIL_MARKERS,
                 )
             )
+
+
+def pytest_runtest_logreport(report: pytest.TestReport) -> None:
+    PROFILE.record_test_phase(report.nodeid, report.when, report.duration)
+
+
+def pytest_terminal_summary(terminalreporter: pytest.TerminalReporter) -> None:
+    rendered = PROFILE.render()
+    if not rendered:
+        return
+    terminalreporter.section("acceptance profile", sep="-", blue=True, bold=True)
+    terminalreporter.write_line(rendered)

@@ -54,6 +54,7 @@ from tests.fixtures.data import (
     split_fixture_plaintext,
     write_tree,
 )
+from tests.timing_profile import time_block
 
 _SEAWEEDFS_START_TIMEOUT = 15.0
 _SEAWEEDFS_REQUEST_TIMEOUT = 5.0
@@ -101,49 +102,50 @@ class _SeaweedFSServerHandle:
 
 
 def _start_seaweedfs_server(workspace: Path) -> _SeaweedFSServerHandle:
-    weed_path = shutil.which("weed")
-    if weed_path is None:
-        pytest.skip("production acceptance tests require the SeaweedFS `weed` binary")
+    with time_block("fixture.seaweedfs.start"):
+        weed_path = shutil.which("weed")
+        if weed_path is None:
+            pytest.skip("production acceptance tests require the SeaweedFS `weed` binary")
 
-    data_root = (workspace / "seaweedfs").resolve()
-    data_root.mkdir(parents=True, exist_ok=True)
-    master_dir = data_root / "master"
-    volume_dir = data_root / "volume"
-    master_dir.mkdir(parents=True, exist_ok=True)
-    volume_dir.mkdir(parents=True, exist_ok=True)
+        data_root = (workspace / "seaweedfs").resolve()
+        data_root.mkdir(parents=True, exist_ok=True)
+        master_dir = data_root / "master"
+        volume_dir = data_root / "volume"
+        master_dir.mkdir(parents=True, exist_ok=True)
+        volume_dir.mkdir(parents=True, exist_ok=True)
 
-    with (
-        _reserve_local_port() as master_port,
-        _reserve_local_port() as volume_port,
-        _reserve_local_port() as filer_port,
-    ):
-        log_path = data_root / "seaweedfs.log"
-        log_file = log_path.open("w", encoding="utf-8")
-        process = subprocess.Popen(
-            [
-                weed_path,
-                "server",
-                "-ip=127.0.0.1",
-                "-ip.bind=127.0.0.1",
-                "-filer",
-                f"-master.port={master_port.port}",
-                f"-volume.port={volume_port.port}",
-                f"-filer.port={filer_port.port}",
-                f"-master.dir={master_dir}",
-                f"-dir={volume_dir}",
-            ],
-            stdout=log_file,
-            stderr=subprocess.STDOUT,
-            text=True,
+        with (
+            _reserve_local_port() as master_port,
+            _reserve_local_port() as volume_port,
+            _reserve_local_port() as filer_port,
+        ):
+            log_path = data_root / "seaweedfs.log"
+            log_file = log_path.open("w", encoding="utf-8")
+            process = subprocess.Popen(
+                [
+                    weed_path,
+                    "server",
+                    "-ip=127.0.0.1",
+                    "-ip.bind=127.0.0.1",
+                    "-filer",
+                    f"-master.port={master_port.port}",
+                    f"-volume.port={volume_port.port}",
+                    f"-filer.port={filer_port.port}",
+                    f"-master.dir={master_dir}",
+                    f"-dir={volume_dir}",
+                ],
+                stdout=log_file,
+                stderr=subprocess.STDOUT,
+                text=True,
+            )
+        handle = _SeaweedFSServerHandle(
+            base_url=f"http://127.0.0.1:{filer_port.port}",
+            process=process,
+            log_file=log_file,
+            log_path=log_path,
         )
-    handle = _SeaweedFSServerHandle(
-        base_url=f"http://127.0.0.1:{filer_port.port}",
-        process=process,
-        log_file=log_file,
-        log_path=log_path,
-    )
-    handle.wait_until_ready()
-    return handle
+        handle.wait_until_ready()
+        return handle
 
 
 class ProductionCollectionsClient:
@@ -531,50 +533,53 @@ class ProductionSystem:
     def create(
         cls, workspace: Path, seaweedfs: _SeaweedFSServerHandle
     ) -> ProductionSystem:
-        previous_arc_seaweedfs_filer_url = os.environ.get("ARC_SEAWEEDFS_FILER_URL")
-        previous_arc_db_path = os.environ.get("ARC_DB_PATH")
-        filer_url = f"{seaweedfs.base_url}/test-fixtures/{workspace.name}"
-        os.environ["ARC_SEAWEEDFS_FILER_URL"] = filer_url
-        os.environ["ARC_DB_PATH"] = str((workspace / ".arc" / "state.sqlite3").resolve())
-        app = create_app(upload_expiry_reaper_interval=_UPLOAD_EXPIRY_SWEEP_INTERVAL_SECONDS)
-        fixture_path = workspace / "arc_disc_fixture.json"
-        with _reserve_local_port() as reserved:
-            server = _LiveServerHandle(app, host="127.0.0.1", port=reserved.port)
-        server.start()
-        system = cls(
-            workspace=workspace,
-            filer_url=filer_url,
-            seaweedfs=seaweedfs,
-            server=server,
-            base_url=server.base_url,
-            fixture_path=fixture_path,
-            previous_arc_seaweedfs_filer_url=previous_arc_seaweedfs_filer_url,
-            previous_arc_db_path=previous_arc_db_path,
-            collections=cast(ProductionCollectionsClient, None),
-            fetches=cast(ProductionFetchesClient, None),
-            state=cast(ProductionStateClient, None),
-            planning=cast(ProductionPlanningClient, None),
-            copies=cast(ProductionCopiesClient, None),
-        )
-        system.collections = ProductionCollectionsClient(system)
-        system.fetches = ProductionFetchesClient(system)
-        system.state = ProductionStateClient(system)
-        system.planning = ProductionPlanningClient(system)
-        system.copies = ProductionCopiesClient(system)
-        return system
+        with time_block("fixture.acceptance_system.create"):
+            previous_arc_seaweedfs_filer_url = os.environ.get("ARC_SEAWEEDFS_FILER_URL")
+            previous_arc_db_path = os.environ.get("ARC_DB_PATH")
+            filer_url = f"{seaweedfs.base_url}/test-fixtures/{workspace.name}"
+            os.environ["ARC_SEAWEEDFS_FILER_URL"] = filer_url
+            os.environ["ARC_DB_PATH"] = str((workspace / ".arc" / "state.sqlite3").resolve())
+            app = create_app(upload_expiry_reaper_interval=_UPLOAD_EXPIRY_SWEEP_INTERVAL_SECONDS)
+            fixture_path = workspace / "arc_disc_fixture.json"
+            with _reserve_local_port() as reserved:
+                server = _LiveServerHandle(app, host="127.0.0.1", port=reserved.port)
+            server.start()
+            system = cls(
+                workspace=workspace,
+                filer_url=filer_url,
+                seaweedfs=seaweedfs,
+                server=server,
+                base_url=server.base_url,
+                fixture_path=fixture_path,
+                previous_arc_seaweedfs_filer_url=previous_arc_seaweedfs_filer_url,
+                previous_arc_db_path=previous_arc_db_path,
+                collections=cast(ProductionCollectionsClient, None),
+                fetches=cast(ProductionFetchesClient, None),
+                state=cast(ProductionStateClient, None),
+                planning=cast(ProductionPlanningClient, None),
+                copies=cast(ProductionCopiesClient, None),
+            )
+            system.collections = ProductionCollectionsClient(system)
+            system.fetches = ProductionFetchesClient(system)
+            system.state = ProductionStateClient(system)
+            system.planning = ProductionPlanningClient(system)
+            system.copies = ProductionCopiesClient(system)
+            return system
 
     def close(self) -> None:
-        self.server.close()
-        self._restore_environment()
+        with time_block("fixture.acceptance_system.close"):
+            self.server.close()
+            self._restore_environment()
 
     def restart(self) -> None:
-        self.server.close()
-        app = create_app(upload_expiry_reaper_interval=_UPLOAD_EXPIRY_SWEEP_INTERVAL_SECONDS)
-        with _reserve_local_port() as reserved:
-            server = _LiveServerHandle(app, host="127.0.0.1", port=reserved.port)
-        server.start()
-        self.server = server
-        self.base_url = server.base_url
+        with time_block("fixture.acceptance_system.restart"):
+            self.server.close()
+            app = create_app(upload_expiry_reaper_interval=_UPLOAD_EXPIRY_SWEEP_INTERVAL_SECONDS)
+            with _reserve_local_port() as reserved:
+                server = _LiveServerHandle(app, host="127.0.0.1", port=reserved.port)
+            server.start()
+            self.server = server
+            self.base_url = server.base_url
 
     def request(
         self,
@@ -586,15 +591,16 @@ class ProductionSystem:
         headers: Mapping[str, str] | None = None,
         content: bytes | None = None,
     ) -> httpx.Response:
-        with httpx.Client(base_url=self.base_url, timeout=5.0) as client:
-            return client.request(
-                method,
-                path,
-                params=params,
-                json=json_body,
-                headers=headers,
-                content=content,
-            )
+        with time_block(f"http {method} {path}"):
+            with httpx.Client(base_url=self.base_url, timeout=5.0) as client:
+                return client.request(
+                    method,
+                    path,
+                    params=params,
+                    json=json_body,
+                    headers=headers,
+                    content=content,
+                )
 
     def filer_request(
         self,
@@ -605,44 +611,49 @@ class ProductionSystem:
         content: bytes | None = None,
         params: Mapping[str, object] | None = None,
     ) -> httpx.Response:
-        with httpx.Client(timeout=_SEAWEEDFS_REQUEST_TIMEOUT) as client:
-            return client.request(
-                method,
-                f"{self.filer_url}/{path.lstrip('/')}",
-                headers=headers,
-                content=content,
-                params=params,
-            )
+        with time_block(f"filer {method} {path}"):
+            with httpx.Client(timeout=_SEAWEEDFS_REQUEST_TIMEOUT) as client:
+                return client.request(
+                    method,
+                    f"{self.filer_url}/{path.lstrip('/')}",
+                    headers=headers,
+                    content=content,
+                    params=params,
+                )
 
     def run_arc(self, *args: str) -> subprocess.CompletedProcess[str]:
-        return subprocess.run(
-            [sys.executable, "-m", "arc_cli.main", *args],
-            cwd=REPO_ROOT,
-            env=self._subprocess_env(),
-            capture_output=True,
-            text=True,
-            check=False,
-        )
+        with time_block("subprocess arc"):
+            return subprocess.run(
+                [sys.executable, "-m", "arc_cli.main", *args],
+                cwd=REPO_ROOT,
+                env=self._subprocess_env(),
+                capture_output=True,
+                text=True,
+                check=False,
+            )
 
     def run_arc_disc(
         self, *args: str, input_text: str = "\n" * 16
     ) -> subprocess.CompletedProcess[str]:
-        if not self.fixture_path.exists():
-            self.configure_arc_disc_fixture()
-        return subprocess.run(
-            [sys.executable, "-m", "arc_disc.main", *args],
-            cwd=REPO_ROOT,
-            env=self._subprocess_env(
-                {
-                    "ARC_DISC_FIXTURE_PATH": str(self.fixture_path),
-                    "ARC_DISC_READER_FACTORY": "tests.fixtures.arc_disc_fakes:FixtureOpticalReader",
-                }
-            ),
-            input=input_text,
-            capture_output=True,
-            text=True,
-            check=False,
-        )
+        with time_block("subprocess arc-disc"):
+            if not self.fixture_path.exists():
+                self.configure_arc_disc_fixture()
+            return subprocess.run(
+                [sys.executable, "-m", "arc_disc.main", *args],
+                cwd=REPO_ROOT,
+                env=self._subprocess_env(
+                    {
+                        "ARC_DISC_FIXTURE_PATH": str(self.fixture_path),
+                        "ARC_DISC_READER_FACTORY": (
+                            "tests.fixtures.arc_disc_fakes:FixtureOpticalReader"
+                        ),
+                    }
+                ),
+                input=input_text,
+                capture_output=True,
+                text=True,
+                check=False,
+            )
 
     def delete_hot_backing_file(self, target: str) -> None:
         selected = self.state.selected_files(target)
@@ -659,178 +670,191 @@ class ProductionSystem:
     def seed_collection_source(
         self, collection_id: str, files: Mapping[str, bytes] | None = None
     ) -> None:
-        normalized_collection_id = normalize_collection_id(collection_id)
-        write_tree(
-            self.workspace / "collections-src" / normalized_collection_id,
-            files or PHOTOS_2024_FILES,
-        )
+        with time_block("fixture.seed_collection_source"):
+            normalized_collection_id = normalize_collection_id(collection_id)
+            write_tree(
+                self.workspace / "collections-src" / normalized_collection_id,
+                files or PHOTOS_2024_FILES,
+            )
 
     def upload_collection_source(
         self, collection_id: str, files: Mapping[str, bytes] | None = None
     ) -> dict[str, object]:
-        normalized_collection_id = normalize_collection_id(collection_id)
-        source_files = files or PHOTOS_2024_FILES
-        self.seed_collection_source(normalized_collection_id, source_files)
-        root = (self.workspace / "collections-src" / normalized_collection_id).resolve()
-        manifest = [
-            {
-                "path": path,
-                "bytes": len(content),
-                "sha256": hashlib.sha256(content).hexdigest(),
-            }
-            for path, content in sorted(source_files.items())
-        ]
-        payload = self.collections.create_or_resume_upload(
-            normalized_collection_id,
-            manifest,
-            ingest_source=str(root),
-        )
-        for file_payload in payload["files"]:
-            upload = self.collections.create_or_resume_file_upload(
+        with time_block("fixture.upload_collection_source"):
+            normalized_collection_id = normalize_collection_id(collection_id)
+            source_files = files or PHOTOS_2024_FILES
+            self.seed_collection_source(normalized_collection_id, source_files)
+            root = (self.workspace / "collections-src" / normalized_collection_id).resolve()
+            manifest = [
+                {
+                    "path": path,
+                    "bytes": len(content),
+                    "sha256": hashlib.sha256(content).hexdigest(),
+                }
+                for path, content in sorted(source_files.items())
+            ]
+            payload = self.collections.create_or_resume_upload(
                 normalized_collection_id,
-                str(file_payload["path"]),
+                manifest,
+                ingest_source=str(root),
             )
-            content = source_files[str(file_payload["path"])]
-            self.collections.append_upload_chunk(
-                str(upload["upload_url"]),
-                offset=int(upload["offset"]),
-                content=content,
-            )
-        return self.request("GET", f"/v1/collections/{normalized_collection_id}").json()
+            for file_payload in payload["files"]:
+                upload = self.collections.create_or_resume_file_upload(
+                    normalized_collection_id,
+                    str(file_payload["path"]),
+                )
+                content = source_files[str(file_payload["path"])]
+                self.collections.append_upload_chunk(
+                    str(upload["upload_url"]),
+                    offset=int(upload["offset"]),
+                    content=content,
+                )
+            return self.request("GET", f"/v1/collections/{normalized_collection_id}").json()
 
     def seed_photos_hot(self) -> None:
-        self.upload_collection_source("photos-2024", PHOTOS_2024_FILES)
+        with time_block("fixture.seed_photos_hot"):
+            self.upload_collection_source("photos-2024", PHOTOS_2024_FILES)
 
     def seed_planner_fixtures(self) -> None:
-        self.seed_docs_hot()
-        self.seed_photos_hot()
-        self.seed_image_fixtures(IMAGE_FIXTURES)
+        with time_block("fixture.seed_planner_fixtures"):
+            self.seed_docs_hot()
+            self.seed_photos_hot()
+            self.seed_image_fixtures(IMAGE_FIXTURES)
 
     def seed_split_planner_fixtures(self) -> None:
-        self.seed_docs_hot()
-        self.seed_image_fixtures(SPLIT_IMAGE_FIXTURES)
+        with time_block("fixture.seed_split_planner_fixtures"):
+            self.seed_docs_hot()
+            self.seed_image_fixtures(SPLIT_IMAGE_FIXTURES)
 
     def seed_image_fixtures(self, fixtures: tuple[ImageFixture, ...]) -> None:
-        images_root = self.workspace / "images"
-        with session_scope(make_session_factory(str(self.db_path))) as session:
-            for fixture in fixtures:
-                image_root = write_tree(images_root / fixture.id, fixture.files)
-                existing = session.get(PlannedCandidateRecord, fixture.id)
+        with time_block("fixture.seed_image_fixtures"):
+            images_root = self.workspace / "images"
+            with session_scope(make_session_factory(str(self.db_path))) as session:
+                for fixture in fixtures:
+                    image_root = write_tree(images_root / fixture.id, fixture.files)
+                    existing = session.get(PlannedCandidateRecord, fixture.id)
+                    if existing is not None:
+                        continue
+                    candidate = PlannedCandidateRecord(
+                        candidate_id=fixture.id,
+                        finalized_id=fixture.volume_id,
+                        filename=fixture.filename,
+                        bytes=fixture.bytes,
+                        iso_ready=fixture.iso_ready,
+                        image_root=str(image_root),
+                        target_bytes=TARGET_BYTES,
+                        min_fill_bytes=MIN_FILL_BYTES,
+                    )
+                    session.add(candidate)
+                    for collection_id, path in fixture.covered_paths:
+                        session.add(
+                            CandidateCoveredPathRecord(
+                                candidate_id=fixture.id,
+                                collection_id=collection_id,
+                                path=path,
+                            )
+                        )
+
+    def seed_finalized_image(self, candidate_id: str, *, force_ready: bool = False) -> None:
+        with time_block("fixture.seed_finalized_image"):
+            with session_scope(make_session_factory(str(self.db_path))) as session:
+                candidate = session.get(PlannedCandidateRecord, candidate_id)
+                assert candidate is not None, f"candidate not found: {candidate_id}"
+                existing = session.get(FinalizedImageRecord, candidate.finalized_id)
                 if existing is not None:
-                    continue
-                candidate = PlannedCandidateRecord(
-                    candidate_id=fixture.id,
-                    finalized_id=fixture.volume_id,
-                    filename=fixture.filename,
-                    bytes=fixture.bytes,
-                    iso_ready=fixture.iso_ready,
-                    image_root=str(image_root),
-                    target_bytes=TARGET_BYTES,
-                    min_fill_bytes=MIN_FILL_BYTES,
+                    return
+                session.add(
+                    FinalizedImageRecord(
+                        image_id=candidate.finalized_id,
+                        candidate_id=candidate.candidate_id,
+                        filename=candidate.filename,
+                        bytes=candidate.bytes,
+                        image_root=candidate.image_root,
+                        target_bytes=candidate.target_bytes,
+                    )
                 )
-                session.add(candidate)
-                for collection_id, path in fixture.covered_paths:
+                for cp in candidate.covered_paths:
                     session.add(
-                        CandidateCoveredPathRecord(
-                            candidate_id=fixture.id,
-                            collection_id=collection_id,
-                            path=path,
+                        FinalizedImageCoveredPathRecord(
+                            image_id=candidate.finalized_id,
+                            collection_id=cp.collection_id,
+                            path=cp.path,
                         )
                     )
 
-    def seed_finalized_image(self, candidate_id: str, *, force_ready: bool = False) -> None:
-        with session_scope(make_session_factory(str(self.db_path))) as session:
-            candidate = session.get(PlannedCandidateRecord, candidate_id)
-            assert candidate is not None, f"candidate not found: {candidate_id}"
-            existing = session.get(FinalizedImageRecord, candidate.finalized_id)
-            if existing is not None:
-                return
-            session.add(
-                FinalizedImageRecord(
-                    image_id=candidate.finalized_id,
-                    candidate_id=candidate.candidate_id,
-                    filename=candidate.filename,
-                    bytes=candidate.bytes,
-                    image_root=candidate.image_root,
-                    target_bytes=candidate.target_bytes,
-                )
-            )
-            for cp in candidate.covered_paths:
-                session.add(
-                    FinalizedImageCoveredPathRecord(
-                        image_id=candidate.finalized_id,
-                        collection_id=cp.collection_id,
-                        path=cp.path,
-                    )
-                )
-
     def seed_nested_photos_hot(self) -> None:
-        self.upload_collection_source("photos/2024", PHOTOS_2024_FILES)
+        with time_block("fixture.seed_nested_photos_hot"):
+            self.upload_collection_source("photos/2024", PHOTOS_2024_FILES)
 
     def seed_parent_photos_hot(self) -> None:
-        self.upload_collection_source("photos", PHOTOS_2024_FILES)
+        with time_block("fixture.seed_parent_photos_hot"):
+            self.upload_collection_source("photos", PHOTOS_2024_FILES)
 
     def seed_docs_hot(self) -> None:
-        if not self._collection_exists("docs"):
-            self.upload_collection_source("docs", DOCS_FILES)
+        with time_block("fixture.seed_docs_hot"):
+            if not self._collection_exists("docs"):
+                self.upload_collection_source("docs", DOCS_FILES)
 
     def seed_docs_archive(self) -> None:
-        files = self.state.selected_files(
-            f"{DOCS_COLLECTION_ID}/tax/2022/invoice-123.pdf", missing_ok=True
-        )
-        if files and files[0].archived:
-            return
-        self.seed_docs_hot()
-        self.seed_image_fixtures((IMAGE_FIXTURES[0],))
-        resp = self.request("POST", f"/v1/plan/candidates/{IMAGE_FIXTURES[0].id}/finalize")
-        assert resp.status_code == 200, resp.text
-        image_id = resp.json()["id"]
-        resp = self.request(
-            "POST", f"/v1/images/{image_id}/copies",
-            json_body={"id": "copy-docs-1", "location": "vault-a/shelf-01"},
-        )
-        assert resp.status_code == 200, resp.text
-        with session_scope(make_session_factory(str(self.db_path))) as session:
-            record = session.get(
-                CollectionFileRecord,
-                {"collection_id": DOCS_COLLECTION_ID, "path": "tax/2022/invoice-123.pdf"},
+        with time_block("fixture.seed_docs_archive"):
+            files = self.state.selected_files(
+                f"{DOCS_COLLECTION_ID}/tax/2022/invoice-123.pdf", missing_ok=True
             )
-            assert record is not None
-            record.hot = False
-
-    def seed_docs_archive_with_split_invoice(self) -> None:
-        files = self.state.selected_files(
-            f"{DOCS_COLLECTION_ID}/{SPLIT_FILE_RELPATH}", missing_ok=True
-        )
-        if files and files[0].archived:
-            return
-        self.seed_docs_hot()
-        self.seed_image_fixtures(SPLIT_IMAGE_FIXTURES)
-        for fixture, copy_id, location in zip(
-            SPLIT_IMAGE_FIXTURES,
-            (SPLIT_COPY_ONE_ID, SPLIT_COPY_TWO_ID),
-            (SPLIT_COPY_ONE_LOCATION, SPLIT_COPY_TWO_LOCATION),
-            strict=True,
-        ):
-            resp = self.request("POST", f"/v1/plan/candidates/{fixture.id}/finalize")
+            if files and files[0].archived:
+                return
+            self.seed_docs_hot()
+            self.seed_image_fixtures((IMAGE_FIXTURES[0],))
+            resp = self.request("POST", f"/v1/plan/candidates/{IMAGE_FIXTURES[0].id}/finalize")
             assert resp.status_code == 200, resp.text
             image_id = resp.json()["id"]
             resp = self.request(
                 "POST", f"/v1/images/{image_id}/copies",
-                json_body={"id": copy_id, "location": location},
+                json_body={"id": "copy-docs-1", "location": "vault-a/shelf-01"},
             )
             assert resp.status_code == 200, resp.text
-        with session_scope(make_session_factory(str(self.db_path))) as session:
-            record = session.get(
-                CollectionFileRecord,
-                {"collection_id": DOCS_COLLECTION_ID, "path": SPLIT_FILE_RELPATH},
+            with session_scope(make_session_factory(str(self.db_path))) as session:
+                record = session.get(
+                    CollectionFileRecord,
+                    {"collection_id": DOCS_COLLECTION_ID, "path": "tax/2022/invoice-123.pdf"},
+                )
+                assert record is not None
+                record.hot = False
+
+    def seed_docs_archive_with_split_invoice(self) -> None:
+        with time_block("fixture.seed_docs_archive_with_split_invoice"):
+            files = self.state.selected_files(
+                f"{DOCS_COLLECTION_ID}/{SPLIT_FILE_RELPATH}", missing_ok=True
             )
-            assert record is not None
-            record.hot = False
+            if files and files[0].archived:
+                return
+            self.seed_docs_hot()
+            self.seed_image_fixtures(SPLIT_IMAGE_FIXTURES)
+            for fixture, copy_id, location in zip(
+                SPLIT_IMAGE_FIXTURES,
+                (SPLIT_COPY_ONE_ID, SPLIT_COPY_TWO_ID),
+                (SPLIT_COPY_ONE_LOCATION, SPLIT_COPY_TWO_LOCATION),
+                strict=True,
+            ):
+                resp = self.request("POST", f"/v1/plan/candidates/{fixture.id}/finalize")
+                assert resp.status_code == 200, resp.text
+                image_id = resp.json()["id"]
+                resp = self.request(
+                    "POST", f"/v1/images/{image_id}/copies",
+                    json_body={"id": copy_id, "location": location},
+                )
+                assert resp.status_code == 200, resp.text
+            with session_scope(make_session_factory(str(self.db_path))) as session:
+                record = session.get(
+                    CollectionFileRecord,
+                    {"collection_id": DOCS_COLLECTION_ID, "path": SPLIT_FILE_RELPATH},
+                )
+                assert record is not None
+                record.hot = False
 
     def seed_search_fixtures(self) -> None:
-        self.seed_docs_archive()
-        self.seed_photos_hot()
+        with time_block("fixture.seed_search_fixtures"):
+            self.seed_docs_archive()
+            self.seed_photos_hot()
 
     def seed_pin(self, target: str) -> None:
         response = self.request("POST", "/v1/pin", json_body={"target": target})
@@ -841,30 +865,31 @@ class ProductionSystem:
         return response.status_code == 404
 
     def upload_required_entries(self, fetch_id: str) -> None:
-        manifest = self.fetches.manifest(fetch_id)
-        with session_scope(make_session_factory(str(self.db_path))) as db_session:
-            entry_records = db_session.scalars(
-                select(FetchEntryRecord).where(FetchEntryRecord.fetch_id == fetch_id)
-            ).all()
-            collection_id_by_path = {r.path: r.collection_id for r in entry_records}
-        for entry in manifest["entries"]:
-            upload = self.fetches.create_or_resume_upload(fetch_id, entry["id"])
-            entry_collection_id = collection_id_by_path[str(entry["path"])]
-            for part in entry["parts"]:
-                payload = fixture_encrypt_bytes(
-                    self._file_part_bytes(
-                        entry_collection_id,
-                        str(entry["path"]),
-                        int(part["index"]),
-                        len(entry["parts"]),
+        with time_block("fixture.upload_required_entries"):
+            manifest = self.fetches.manifest(fetch_id)
+            with session_scope(make_session_factory(str(self.db_path))) as db_session:
+                entry_records = db_session.scalars(
+                    select(FetchEntryRecord).where(FetchEntryRecord.fetch_id == fetch_id)
+                ).all()
+                collection_id_by_path = {r.path: r.collection_id for r in entry_records}
+            for entry in manifest["entries"]:
+                upload = self.fetches.create_or_resume_upload(fetch_id, entry["id"])
+                entry_collection_id = collection_id_by_path[str(entry["path"])]
+                for part in entry["parts"]:
+                    payload = fixture_encrypt_bytes(
+                        self._file_part_bytes(
+                            entry_collection_id,
+                            str(entry["path"]),
+                            int(part["index"]),
+                            len(entry["parts"]),
+                        )
                     )
-                )
-                result = self.fetches.append_upload_chunk(
-                    upload["upload_url"],
-                    offset=int(upload["offset"]),
-                    content=payload,
-                )
-                upload["offset"] = result["offset"]
+                    result = self.fetches.append_upload_chunk(
+                        upload["upload_url"],
+                        offset=int(upload["offset"]),
+                        content=payload,
+                    )
+                    upload["offset"] = result["offset"]
 
     def upload_partial_entry(self, fetch_id: str, entry_id: str) -> int:
         content = self._fetch_entry_file_bytes(fetch_id, entry_id)
@@ -911,39 +936,42 @@ class ProductionSystem:
         fail_copy_ids = fail_copy_ids or set()
         corrupt_copy_ids = corrupt_copy_ids or set()
 
-        for entry in manifest["entries"]:
-            entry_path = str(entry["path"])
-            parts = entry["parts"]
-            plaintext_parts = split_fixture_plaintext(
-                self._file_bytes(collection_id_by_path[entry_path], entry_path),
-                len(parts),
-            )
-            for part in parts:
-                part_index = int(part["index"])
-                payload = fixture_encrypt_bytes(plaintext_parts[part_index])
-                for copy in part["copies"]:
-                    copy_id = str(copy["copy"])
-                    disc_path = str(copy["disc_path"])
-                    encoded = payload
-                    if entry_path == corrupt_path or copy_id in corrupt_copy_ids:
-                        encoded = payload + b"corrupted-by-fixture\n"
-                    payload_by_disc_path[disc_path] = base64.b64encode(encoded).decode("ascii")
-                    if entry_path == fail_path or copy_id in fail_copy_ids:
-                        fail_disc_paths.append(disc_path)
+        with time_block("fixture.configure_arc_disc_fixture"):
+            for entry in manifest["entries"]:
+                entry_path = str(entry["path"])
+                parts = entry["parts"]
+                plaintext_parts = split_fixture_plaintext(
+                    self._file_bytes(collection_id_by_path[entry_path], entry_path),
+                    len(parts),
+                )
+                for part in parts:
+                    part_index = int(part["index"])
+                    payload = fixture_encrypt_bytes(plaintext_parts[part_index])
+                    for copy in part["copies"]:
+                        copy_id = str(copy["copy"])
+                        disc_path = str(copy["disc_path"])
+                        encoded = payload
+                        if entry_path == corrupt_path or copy_id in corrupt_copy_ids:
+                            encoded = payload + b"corrupted-by-fixture\n"
+                        payload_by_disc_path[disc_path] = base64.b64encode(encoded).decode(
+                            "ascii"
+                        )
+                        if entry_path == fail_path or copy_id in fail_copy_ids:
+                            fail_disc_paths.append(disc_path)
 
-        self.fixture_path.write_text(
-            json.dumps(
-                {
-                    "reader": {
-                        "payload_by_disc_path": payload_by_disc_path,
-                        "fail_disc_paths": fail_disc_paths,
-                    }
-                },
-                indent=2,
-                sort_keys=True,
-            ),
-            encoding="utf-8",
-        )
+            self.fixture_path.write_text(
+                json.dumps(
+                    {
+                        "reader": {
+                            "payload_by_disc_path": payload_by_disc_path,
+                            "fail_disc_paths": fail_disc_paths,
+                        }
+                    },
+                    indent=2,
+                    sort_keys=True,
+                ),
+                encoding="utf-8",
+            )
 
     def pins_list(self) -> list[str]:
         return [item["target"] for item in self.request("GET", "/v1/pins").json()["pins"]]

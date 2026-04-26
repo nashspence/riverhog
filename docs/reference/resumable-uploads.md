@@ -65,6 +65,8 @@ Every upload resource must support:
 - expiration
 - checksum validation on streamed chunks
 - restart-safe resume until the published expiry time discards incomplete state
+- stale background sync or expiry work must not roll committed upload progress backward after a
+  request-driven transition has already verified, consumed, or reset that upload resource
 
 Collection uploads measure offsets against the logical file byte stream for that file.
 Collection upload resources expose Riverhog-managed tus-compatible `HEAD`/`PATCH`/`DELETE`/`OPTIONS` semantics on the

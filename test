@@ -9,6 +9,7 @@ usage() {
 Usage:
   ./test
   ./test acceptance [pytest args...]
+  ./test acceptance-profile [pytest args...]
   ./test spec [pytest args...]
   ./test unit [pytest args...]
   ./test fast [pytest args...]
@@ -16,6 +17,7 @@ Usage:
 
 Modes:
   acceptance  Run the production-backed BDD acceptance lane.
+  acceptance-profile  Run the production-backed acceptance lane with profiling output.
   spec        Run the fixture-backed BDD spec harness lane.
   unit        Run the unit test lane.
   fast        Run the non-production lanes together (integration + unit).
@@ -24,6 +26,7 @@ EOF
 }
 
 MODE="pytest"
+DOCKER_ENV_ARGS=()
 
 if [[ $# -eq 0 ]]; then
   MODE="canonical"
@@ -32,6 +35,11 @@ else
     acceptance)
       shift
       set -- -q -m acceptance tests/acceptance "$@"
+      ;;
+    acceptance-profile)
+      shift
+      DOCKER_ENV_ARGS=(-e ARC_TEST_PROFILE=1)
+      set -- -q --durations=0 --durations-min=0.5 -m acceptance tests/acceptance "$@"
       ;;
     spec)
       shift
@@ -97,5 +105,6 @@ exec docker run \
   --rm \
   --init \
   "${TTY_ARGS[@]}" \
+  "${DOCKER_ENV_ARGS[@]}" \
   "${IMAGE_NAME}" \
   "$@"

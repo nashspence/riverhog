@@ -23,6 +23,12 @@ Run the same acceptance contract inside the deterministic test container:
 ./test acceptance
 ```
 
+Run the production-backed acceptance lane with built-in timing output for scenario and fixture hotspots:
+
+```bash
+./test acceptance-profile
+```
+
 Run the fixture-backed spec harness lane against the same contract:
 
 ```bash
