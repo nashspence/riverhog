@@ -14,28 +14,55 @@ unexpired upload progress.
 
 ### Collections
 
-#### `POST /v1/collections/close`
+#### `POST /v1/collection-uploads`
 
-Closes a staged directory into a new collection.
+Creates or resumes one explicit collection upload session.
 
 Request body:
 
 ```json
 {
-  "path": "/srv/archive/staging/photos/2024"
+  "collection_id": "photos/2024",
+  "ingest_source": "/operator/photos/2024",
+  "files": [
+    {
+      "path": "albums/japan/day-01.txt",
+      "bytes": 18,
+      "sha256": "..."
+    }
+  ]
 }
 ```
 
 Required behavior:
 
-- scans and freezes the staged directory
-- derives the collection id from the canonical relative path beneath the staging root
-- allows slash-bearing collection ids such as `/staging/photos/2024 -> photos/2024`
+- the collection id is explicit rather than derived from any server-local path
+- collection ids may contain `/`, for example `photos/2024`
 - rejects a collection id if it would be an ancestor or descendant of an existing collection id
-- creates one new collection
-- materializes all files into hot storage immediately
-- persists the collection so it remains addressable after service restart
-- makes the collection eligible for planning
+- persists enough upload-session state to survive service restart and repeated CLI runs
+- keeps the collection invisible until every required file has uploaded and verified successfully
+- exposes per-file resumable upload state and collection-level progress
+
+#### `GET /v1/collection-uploads/{collection_id}`
+
+Returns the current upload-session state for one explicit collection id.
+
+Required behavior:
+
+- collection ids may span multiple path segments
+- the returned state includes pending, partial, and uploaded file counts plus `upload_state_expires_at`
+- once every required file is fully uploaded and verified, this refresh auto-finalizes the collection without a second explicit completion call
+
+#### `POST /v1/collection-uploads/{collection_id}/files/{path}/upload`
+
+Creates or resumes the resumable upload resource for one logical collection file.
+
+Required behavior:
+
+- the returned upload URL uses tus-compatible resumable upload semantics
+- repeated calls while the file remains resumable return the current upload resource rather than creating duplicates
+- offsets and checksums are measured against the logical file byte stream for that file
+- incomplete upload state expires after `INCOMPLETE_UPLOAD_TTL` and resets the file back to `pending`
 
 ### Search
 
@@ -313,7 +340,7 @@ Suggested error codes:
 
 The `arc` CLI is a thin API client and should provide at least:
 
-- `arc close PATH`
+- `arc upload COLLECTION_ID ROOT`
 - `arc find QUERY`
 - `arc show COLLECTION`
 - `arc show COLLECTION --files`
@@ -394,5 +421,6 @@ Required behavior:
 - a physical copy is identified by `(volume_id, copy_id)`, never by `location`
 - duplicate `copy_id` values are rejected within one finalized image/`volume_id`
 - no collection id is an ancestor or descendant of another collection id
+- collection ingest uses explicit resumable upload sessions and auto-finalizes when every required file verifies
 - the same canonical selector string means the same projected file set everywhere in API and CLI
 - file availability shown by search, file introspection, pins, and CLI status uses the same hot/archived meaning

@@ -34,6 +34,10 @@ _COLUMN_MIGRATIONS: list[list[tuple[str, str, str]]] = [
     [
         ("fetch_entries", "tus_url", "TEXT"),
     ],
+    # version 3
+    [
+        ("collections", "ingest_source", "TEXT"),
+    ],
 ]
 
 
@@ -128,6 +132,8 @@ def initialize_db(sqlite_path: str) -> None:
         FinalizedImageCoveredPathRecord,
         FinalizedImageRecord,
         ImageCopyRecord,
+        CollectionUploadFileRecord,
+        CollectionUploadRecord,
         PlannedCandidateRecord,
     )
 
@@ -141,6 +147,8 @@ def initialize_db(sqlite_path: str) -> None:
         FinalizedImageCoveredPathRecord,
         FinalizedImageRecord,
         ImageCopyRecord,
+        CollectionUploadFileRecord,
+        CollectionUploadRecord,
         PlannedCandidateRecord,
     )
     engine = create_sqlite_engine(sqlite_path)

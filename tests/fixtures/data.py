@@ -427,7 +427,3 @@ def write_tree(root: Path, files: Mapping[str, bytes]) -> Path:
         file_path.parent.mkdir(parents=True, exist_ok=True)
         file_path.write_bytes(content)
     return root
-
-
-def staging_path_for_collection(collection_id: str) -> str:
-    return f"/staging/{collection_id}"

@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import hashlib
 from pathlib import Path
 from typing import Annotated
 
@@ -9,6 +10,7 @@ from arc_cli.client import ApiClient
 from arc_cli.output import (
     emit,
     format_collection_files,
+    format_collection_upload,
     format_fetch,
     format_files,
     format_images,
@@ -32,12 +34,65 @@ def client() -> ApiClient:
     return ApiClient()
 
 
-@app.command("close")
-def close_cmd(
-    path: Annotated[str, typer.Argument(help="Path to staged collection directory")],
+def _local_collection_manifest(root: Path) -> list[dict[str, object]]:
+    files: list[dict[str, object]] = []
+    for path in sorted(root.rglob("*")):
+        if not path.is_file():
+            continue
+        content = path.read_bytes()
+        files.append(
+            {
+                "path": path.relative_to(root).as_posix(),
+                "bytes": len(content),
+                "sha256": hashlib.sha256(content).hexdigest(),
+            }
+        )
+    if not files:
+        raise typer.BadParameter("collection source must contain at least one file")
+    return files
+
+
+@app.command("upload")
+def upload_cmd(
+    collection_id: Annotated[str, typer.Argument(help="Canonical collection id")],
+    root: Annotated[Path, typer.Argument(help="Local collection root directory")],
     json_mode: Annotated[bool, typer.Option("--json", help="Emit JSON")] = False,
 ) -> None:
-    emit(client().close_collection(path), json_mode=json_mode)
+    resolved_root = root.expanduser().resolve()
+    if not resolved_root.is_dir():
+        raise typer.BadParameter("collection source must be a directory")
+
+    api = client()
+    manifest = _local_collection_manifest(resolved_root)
+    payload = api.create_or_resume_collection_upload(
+        collection_id,
+        manifest,
+        ingest_source=str(resolved_root),
+    )
+    files = {item["path"]: (resolved_root / str(item["path"])).read_bytes() for item in manifest}
+
+    for file_payload in payload["files"]:
+        if file_payload["upload_state"] == "uploaded":
+            continue
+        session = api.create_or_resume_collection_file_upload(
+            collection_id,
+            str(file_payload["path"]),
+        )
+        content = files[str(file_payload["path"])]
+        offset = int(session["offset"])
+        if offset < len(content):
+            api.append_upload_chunk(
+                str(session["upload_url"]),
+                offset=offset,
+                checksum_algorithm=str(session["checksum_algorithm"]),
+                content=content[offset:],
+            )
+
+    final_payload = api.get_collection_upload(collection_id)
+    emit(
+        final_payload if json_mode else format_collection_upload(final_payload),
+        json_mode=json_mode,
+    )
 
 
 @app.command("find")

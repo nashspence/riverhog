@@ -71,6 +71,14 @@ Feature: arc CLI
       And stdout mentions "invoice-123.pdf"
 
   Rule: Non-JSON mode remains concise and stable
+    Scenario: arc upload ingests a local collection source
+      Given a local collection source "photos-2024" with deterministic fixture contents
+      When the operator uploads collection source "photos-2024" with arc
+      Then the command exits with code 0
+      And stdout mentions "collection: photos-2024"
+      And stdout mentions "state: finalized"
+      And collection "photos-2024" has hot_bytes equal to bytes
+
     Scenario: arc plan prints candidate ids, fill, and readiness
       Given an archive with planner fixtures
       And an archive with split planner fixtures

@@ -8,7 +8,7 @@ Accepted.
 
 Riverhog needs durable byte storage for two user-visible workflows:
 
-1. Keeping hot collection files available after a collection is closed.
+1. Keeping hot collection files available after a collection upload finalizes.
 2. Accepting resumable encrypted recovery uploads while restoring archived files.
 
 The catalog remains the source of truth for collections, images, copies, pins, fetches, upload state, and verification metadata. File bytes live in SeaweedFS, addressed by stable paths through the Filer API.
@@ -29,7 +29,9 @@ Completed encrypted recovery uploads are stored at:
 /.arc/recovery/{fetch_id}/{entry_id}.enc
 ```
 
-Collection close reads files from the collection path in SeaweedFS, records their metadata in the catalog, and keeps the bytes in SeaweedFS.
+Collection ingest uploads logical file bytes through SeaweedFS TUS sessions that target the committed collection path.
+Riverhog records collection metadata in the catalog only after every required file has uploaded and verified
+successfully.
 
 Fetch recovery uploads use SeaweedFS TUS upload sessions. Riverhog creates an upload session for the recovery target path, stores the returned TUS URL on the fetch entry, and returns that URL to the client. Clients upload recovery bytes directly to SeaweedFS.
 
@@ -45,7 +47,7 @@ ARC_SEAWEEDFS_FILER_URL
 
 ## Consequences
 
-* Users can close a collection without Riverhog copying file bytes into the catalog database.
+* Users can upload a collection without Riverhog copying file bytes into the catalog database.
 * Hot files remain available through Riverhog as long as they are pinned or otherwise hot.
 * Recovery uploads can resume through SeaweedFS TUS sessions.
 * Restored files are promoted back into the same collection storage namespace.

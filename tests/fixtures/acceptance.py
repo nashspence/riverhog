@@ -12,8 +12,10 @@ import threading
 import time
 from collections.abc import Iterator, Mapping
 from dataclasses import dataclass, field
+from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any, cast
+from urllib.parse import quote, unquote
 
 import httpx
 import pytest
@@ -43,9 +45,9 @@ from arc_core.domain.types import (
     TargetStr,
 )
 from arc_core.fs_paths import (
-    derive_collection_id_from_staging_path,
     find_collection_id_conflict,
     normalize_collection_id,
+    normalize_relpath,
 )
 from arc_core.planner.manifest import MANIFEST_FILENAME
 from arc_core.services.planning import ImageRootPlanningService, ImageRootRecord
@@ -70,7 +72,6 @@ from tests.fixtures.data import (
     fixture_decrypt_bytes,
     fixture_encrypt_bytes,
     split_fixture_plaintext,
-    staging_path_for_collection,
     write_tree,
 )
 
@@ -208,18 +209,37 @@ class FetchRecord:
 
 
 @dataclass(slots=True)
+class CollectionUploadFileRecord:
+    path: str
+    bytes: int
+    sha256: Sha256Hex
+    uploaded_bytes: int = 0
+    uploaded_content: bytes | None = None
+    upload_expires_at: str | None = None
+    upload_url: str | None = None
+
+
+@dataclass(slots=True)
+class CollectionUploadRecord:
+    collection_id: CollectionId
+    ingest_source: str | None
+    files: dict[str, CollectionUploadFileRecord]
+
+
+@dataclass(slots=True)
 class AcceptanceState:
-    staged_directories: dict[str, Path] = field(default_factory=dict)
+    local_collection_sources: dict[CollectionId, Path] = field(default_factory=dict)
     files_by_collection: dict[CollectionId, dict[str, StoredFile]] = field(default_factory=dict)
     candidates_by_id: dict[ImageId, CandidateRecord] = field(default_factory=dict)
     finalized_images_by_id: dict[ImageId, CandidateRecord] = field(default_factory=dict)
     copy_summaries: dict[tuple[str, CopyId], CopySummary] = field(default_factory=dict)
     exact_pins: set[TargetStr] = field(default_factory=set)
     fetches: dict[FetchId, FetchRecord] = field(default_factory=dict)
+    collection_uploads: dict[CollectionId, CollectionUploadRecord] = field(default_factory=dict)
     next_fetch_number: int = 0
 
-    def register_staged_directory(self, staging_path: str, root: Path) -> None:
-        self.staged_directories[staging_path] = root
+    def register_local_collection_source(self, collection_id: str, root: Path) -> None:
+        self.local_collection_sources[CollectionId(collection_id)] = root
 
     def seed_collection(
         self,
@@ -338,34 +358,271 @@ class AcceptanceCollectionService:
     def __init__(self, state: AcceptanceState) -> None:
         self.state = state
 
-    def close(self, staging_path: str) -> CollectionSummary:
-        root = self.state.staged_directories.get(staging_path)
-        if root is None:
-            raise NotFound(f"staged directory not found: {staging_path}")
-        collection_id = derive_collection_id_from_staging_path(staging_path)
-        if CollectionId(collection_id) in self.state.files_by_collection:
-            raise Conflict(f"collection already exists: {collection_id}")
-        conflict = find_collection_id_conflict(
-            (str(current) for current in self.state.files_by_collection), collection_id
+    def create_or_resume_upload(
+        self,
+        *,
+        collection_id: str,
+        files: list[dict[str, object]],
+        ingest_source: str | None = None,
+    ) -> dict[str, object]:
+        normalized_collection_id = normalize_collection_id(collection_id)
+        collection_key = CollectionId(normalized_collection_id)
+        if collection_key in self.state.files_by_collection:
+            raise Conflict(f"collection already exists: {normalized_collection_id}")
+
+        normalized_files = self._normalize_files(files)
+        upload = self.state.collection_uploads.get(collection_key)
+        if upload is None:
+            conflict = find_collection_id_conflict(
+                (
+                    [
+                        *(str(current) for current in self.state.files_by_collection),
+                        *(str(current) for current in self.state.collection_uploads),
+                    ]
+                ),
+                normalized_collection_id,
+            )
+            if conflict is not None:
+                raise Conflict(f"collection id conflicts with existing collection: {conflict}")
+            upload = CollectionUploadRecord(
+                collection_id=collection_key,
+                ingest_source=ingest_source,
+                files={
+                    item["path"]: CollectionUploadFileRecord(
+                        path=item["path"],
+                        bytes=int(item["bytes"]),
+                        sha256=Sha256Hex(str(item["sha256"])),
+                    )
+                    for item in normalized_files
+                },
+            )
+            self.state.collection_uploads[collection_key] = upload
+        else:
+            existing_manifest = [
+                {
+                    "path": file_record.path,
+                    "bytes": file_record.bytes,
+                    "sha256": str(file_record.sha256),
+                }
+                for file_record in upload.files.values()
+            ]
+            if existing_manifest != normalized_files:
+                raise Conflict(f"collection upload manifest does not match: {normalized_collection_id}")
+            upload.ingest_source = ingest_source
+
+        self._expire_upload(upload)
+        if self._is_complete(upload):
+            summary = self._finalize_upload(upload)
+            return self._upload_payload(upload, state="finalized", collection=summary)
+        return self._upload_payload(upload, state="uploading", collection=None)
+
+    def get_upload(self, collection_id: str) -> dict[str, object]:
+        normalized_collection_id = normalize_collection_id(collection_id)
+        upload = self.state.collection_uploads.get(CollectionId(normalized_collection_id))
+        if upload is None:
+            raise NotFound(f"collection upload not found: {normalized_collection_id}")
+        self._expire_upload(upload)
+        if self._is_complete(upload):
+            summary = self._finalize_upload(upload)
+            return self._upload_payload(upload, state="finalized", collection=summary)
+        return self._upload_payload(upload, state="uploading", collection=None)
+
+    def create_or_resume_file_upload(self, collection_id: str, path: str) -> dict[str, object]:
+        normalized_collection_id = normalize_collection_id(collection_id)
+        normalized_path = normalize_relpath(path)
+        upload = self.state.collection_uploads.get(CollectionId(normalized_collection_id))
+        if upload is None:
+            raise NotFound(f"collection upload not found: {normalized_collection_id}")
+        self._expire_upload(upload)
+        try:
+            file_record = upload.files[normalized_path]
+        except KeyError as exc:
+            raise NotFound(f"collection upload file not found: {normalized_path}") from exc
+        if file_record.upload_url is None:
+            file_record.upload_url = (
+                f"{FIXTURE_UPLOAD_URL_BASE}/collections-file"
+                f"?collection_id={quote(normalized_collection_id, safe='')}"
+                f"&path={quote(normalized_path, safe='')}"
+            )
+        if self._file_upload_state(file_record) != "uploaded":
+            file_record.upload_expires_at = FIXTURE_UPLOAD_EXPIRES_AT
+        return {
+            "path": file_record.path,
+            "protocol": "tus",
+            "upload_url": file_record.upload_url,
+            "offset": file_record.uploaded_bytes,
+            "length": file_record.bytes,
+            "checksum_algorithm": "sha256",
+            "expires_at": file_record.upload_expires_at,
+        }
+
+    def get(self, collection_id: str) -> CollectionSummary:
+        return self.state.collection_summary(collection_id)
+
+    def append_upload_chunk(
+        self,
+        collection_id: str,
+        path: str,
+        *,
+        offset: int,
+        checksum: str,
+        content: bytes,
+    ) -> dict[str, object]:
+        normalized_collection_id = normalize_collection_id(collection_id)
+        normalized_path = normalize_relpath(path)
+        upload = self.state.collection_uploads[CollectionId(normalized_collection_id)]
+        file_record = upload.files[normalized_path]
+        if offset != file_record.uploaded_bytes:
+            raise Conflict("upload offset did not match current collection file offset")
+        algorithm, separator, digest = checksum.partition(" ")
+        if separator != " " or algorithm != "sha256":
+            raise Conflict("upload checksum must use sha256")
+        actual_digest = base64.b64encode(hashlib.sha256(content).digest()).decode("ascii")
+        if digest != actual_digest:
+            raise HashMismatch("upload checksum did not match the provided chunk")
+        next_offset = offset + len(content)
+        if next_offset > file_record.bytes:
+            raise Conflict("upload chunk exceeded the expected collection file length")
+
+        current_content = file_record.uploaded_content or b""
+        file_record.uploaded_content = current_content + content
+        file_record.uploaded_bytes = next_offset
+        if next_offset < file_record.bytes:
+            file_record.upload_expires_at = FIXTURE_UPLOAD_EXPIRES_AT
+        else:
+            actual_sha = hashlib.sha256(file_record.uploaded_content).hexdigest()
+            if actual_sha != file_record.sha256:
+                raise HashMismatch("sha256 did not match expected file hash")
+            file_record.upload_expires_at = None
+        return {"offset": file_record.uploaded_bytes, "expires_at": file_record.upload_expires_at}
+
+    @staticmethod
+    def _normalize_files(files: list[dict[str, object]]) -> list[dict[str, object]]:
+        if not files:
+            raise Conflict("collection upload must include at least one file")
+        out: list[dict[str, object]] = []
+        seen: set[str] = set()
+        for item in files:
+            path = normalize_relpath(str(item["path"]))
+            if path in seen:
+                raise Conflict(f"collection upload listed the same file more than once: {path}")
+            seen.add(path)
+            out.append(
+                {
+                    "path": path,
+                    "bytes": int(item["bytes"]),
+                    "sha256": str(item["sha256"]),
+                }
+            )
+        return sorted(out, key=lambda current: str(current["path"]))
+
+    @staticmethod
+    def _file_upload_state(file_record: CollectionUploadFileRecord) -> str:
+        if (
+            file_record.uploaded_content is not None
+            and file_record.uploaded_bytes >= file_record.bytes
+        ):
+            return "uploaded"
+        if file_record.uploaded_bytes > 0:
+            return "partial"
+        return "pending"
+
+    def _expire_upload(self, upload: CollectionUploadRecord) -> None:
+        now = datetime.now(UTC)
+        for file_record in upload.files.values():
+            if file_record.upload_expires_at is None:
+                continue
+            expires_at = datetime.fromisoformat(
+                file_record.upload_expires_at.replace("Z", "+00:00")
+            )
+            if expires_at > now:
+                continue
+            file_record.upload_url = None
+            file_record.uploaded_bytes = 0
+            file_record.uploaded_content = None
+            file_record.upload_expires_at = None
+
+    def _is_complete(self, upload: CollectionUploadRecord) -> bool:
+        return bool(upload.files) and all(
+            self._file_upload_state(file_record) == "uploaded"
+            for file_record in upload.files.values()
         )
-        if conflict is not None:
-            raise Conflict(f"collection id conflicts with existing collection: {conflict}")
+
+    def _finalize_upload(self, upload: CollectionUploadRecord) -> CollectionSummary:
         files = {
-            path.relative_to(root).as_posix(): path.read_bytes()
-            for path in sorted(root.rglob("*"))
-            if path.is_file()
+            path: file_record.uploaded_content or b""
+            for path, file_record in sorted(upload.files.items())
         }
         hot_paths = set(files)
         self.state.seed_collection(
-            collection_id,
+            str(upload.collection_id),
             files,
             hot_paths=hot_paths,
             archived_paths=set(),
         )
-        return self.state.collection_summary(collection_id)
+        summary = self.state.collection_summary(str(upload.collection_id))
+        del self.state.collection_uploads[upload.collection_id]
+        return summary
 
-    def get(self, collection_id: str) -> CollectionSummary:
-        return self.state.collection_summary(collection_id)
+    def _upload_payload(
+        self,
+        upload: CollectionUploadRecord,
+        *,
+        state: str,
+        collection: CollectionSummary | None,
+    ) -> dict[str, object]:
+        files = [upload.files[path] for path in sorted(upload.files)]
+        upload_expiries = [
+            file_record.upload_expires_at
+            for file_record in files
+            if file_record.upload_expires_at is not None
+        ]
+        return {
+            "collection_id": str(upload.collection_id),
+            "ingest_source": upload.ingest_source,
+            "state": state,
+            "files_total": len(files),
+            "files_pending": sum(
+                1 for file_record in files if self._file_upload_state(file_record) == "pending"
+            ),
+            "files_partial": sum(
+                1 for file_record in files if self._file_upload_state(file_record) == "partial"
+            ),
+            "files_uploaded": sum(
+                1 for file_record in files if self._file_upload_state(file_record) == "uploaded"
+            ),
+            "bytes_total": sum(file_record.bytes for file_record in files),
+            "uploaded_bytes": sum(file_record.uploaded_bytes for file_record in files),
+            "missing_bytes": max(
+                sum(file_record.bytes for file_record in files)
+                - sum(file_record.uploaded_bytes for file_record in files),
+                0,
+            ),
+            "upload_state_expires_at": max(upload_expiries) if upload_expiries else None,
+            "files": [
+                {
+                    "path": file_record.path,
+                    "bytes": file_record.bytes,
+                    "sha256": str(file_record.sha256),
+                    "upload_state": self._file_upload_state(file_record),
+                    "uploaded_bytes": file_record.uploaded_bytes,
+                    "upload_state_expires_at": file_record.upload_expires_at,
+                }
+                for file_record in files
+            ],
+            "collection": (
+                {
+                    "id": str(collection.id),
+                    "files": collection.files,
+                    "bytes": collection.bytes,
+                    "hot_bytes": collection.hot_bytes,
+                    "archived_bytes": collection.archived_bytes,
+                    "pending_bytes": collection.pending_bytes,
+                }
+                if collection is not None
+                else None
+            ),
+        }
 
 
 class AcceptanceSearchService:
@@ -1296,6 +1553,28 @@ class AcceptanceSystem:
                 headers["Upload-Expires"] = str(payload["expires_at"])
             return Response(status_code=204, headers=headers)
 
+        @app.patch(
+            "/__fixture_uploads/collections-file",
+            include_in_schema=False,
+        )
+        async def fixture_collection_upload(
+            request: Request,
+        ) -> Response:
+            content = await request.body()
+            collection_id = unquote(str(request.query_params["collection_id"]))
+            path = unquote(str(request.query_params["path"]))
+            payload = collections.append_upload_chunk(
+                collection_id=collection_id,
+                path=path,
+                offset=int(request.headers["Upload-Offset"]),
+                checksum=request.headers["Upload-Checksum"],
+                content=content,
+            )
+            headers = {"Upload-Offset": str(payload["offset"])}
+            if payload["expires_at"] is not None:
+                headers["Upload-Expires"] = str(payload["expires_at"])
+            return Response(status_code=204, headers=headers)
+
         fixture_path = workspace / "arc_disc_fixture.json"
         with _reserve_local_port() as reserved:
             server = _LiveServerHandle(app, host="127.0.0.1", port=reserved.port)
@@ -1409,63 +1688,99 @@ class AcceptanceSystem:
             check=False,
         )
 
-    def seed_staged_collection(
+    def collection_source_root(self, collection_id: str) -> Path:
+        return self.state.local_collection_sources[CollectionId(normalize_collection_id(collection_id))]
+
+    def expire_collection_upload(self, collection_id: str) -> None:
+        upload = self.state.collection_uploads[CollectionId(normalize_collection_id(collection_id))]
+        for file_record in upload.files.values():
+            file_record.upload_expires_at = "2000-01-01T00:00:00Z"
+
+    def seed_collection_source(
         self, collection_id: str, files: Mapping[str, bytes] | None = None
     ) -> None:
         normalized_collection_id = normalize_collection_id(collection_id)
         root = write_tree(
-            self.workspace / "staging" / normalized_collection_id, files or PHOTOS_2024_FILES
+            self.workspace / "collections-src" / normalized_collection_id,
+            files or PHOTOS_2024_FILES,
         )
-        self.state.register_staged_directory(
-            staging_path_for_collection(normalized_collection_id), root
-        )
+        self.state.register_local_collection_source(normalized_collection_id, root)
 
-    def seed_staged_photos(self) -> None:
-        self.seed_staged_collection(PHOTOS_COLLECTION_ID, PHOTOS_2024_FILES)
+    def upload_collection_source(
+        self, collection_id: str, files: Mapping[str, bytes] | None = None
+    ) -> dict[str, object]:
+        normalized_collection_id = normalize_collection_id(collection_id)
+        source_files = files or PHOTOS_2024_FILES
+        self.seed_collection_source(normalized_collection_id, source_files)
+        root = self.state.local_collection_sources[CollectionId(normalized_collection_id)]
+        manifest = []
+        for path, content in sorted(source_files.items()):
+            manifest.append(
+                {
+                    "path": path,
+                    "bytes": len(content),
+                    "sha256": hashlib.sha256(content).hexdigest(),
+                }
+            )
+        response = self.request(
+            "POST",
+            "/v1/collection-uploads",
+            json_body={
+                "collection_id": normalized_collection_id,
+                "ingest_source": str(root),
+                "files": manifest,
+            },
+        )
+        assert response.status_code == 200, response.text
+        payload = response.json()
+        for file_payload in payload["files"]:
+            upload = self.request(
+                "POST",
+                f"/v1/collection-uploads/{normalized_collection_id}/files/{file_payload['path']}/upload",
+            )
+            assert upload.status_code == 200, upload.text
+            upload_payload = upload.json()
+            content = source_files[str(file_payload["path"])]
+            response = self.request(
+                "PATCH",
+                str(upload_payload["upload_url"]),
+                headers={
+                    "Content-Type": "application/offset+octet-stream",
+                    "Tus-Resumable": "1.0.0",
+                    "Upload-Offset": str(upload_payload["offset"]),
+                    "Upload-Checksum": "sha256 "
+                    + base64.b64encode(hashlib.sha256(content).digest()).decode("ascii"),
+                },
+                content=content,
+            )
+            assert response.status_code == 204, response.text
+        final = self.request("GET", f"/v1/collection-uploads/{normalized_collection_id}")
+        assert final.status_code == 200, final.text
+        return cast(dict[str, object], final.json())
 
     def seed_photos_hot(self) -> None:
         normalized = normalize_collection_id(PHOTOS_COLLECTION_ID)
         if CollectionId(normalized) in self.state.files_by_collection:
             return
-        self.seed_staged_collection(PHOTOS_COLLECTION_ID, PHOTOS_2024_FILES)
-        resp = self.request(
-            "POST", "/v1/collections/close",
-            json_body={"path": staging_path_for_collection(normalized)},
-        )
-        assert resp.status_code == 200, resp.text
+        self.upload_collection_source(PHOTOS_COLLECTION_ID, PHOTOS_2024_FILES)
 
     def seed_nested_photos_hot(self) -> None:
         normalized = normalize_collection_id(PHOTOS_NESTED_COLLECTION_ID)
         if CollectionId(normalized) in self.state.files_by_collection:
             return
-        self.seed_staged_collection(PHOTOS_NESTED_COLLECTION_ID, PHOTOS_2024_FILES)
-        resp = self.request(
-            "POST", "/v1/collections/close",
-            json_body={"path": staging_path_for_collection(normalized)},
-        )
-        assert resp.status_code == 200, resp.text
+        self.upload_collection_source(PHOTOS_NESTED_COLLECTION_ID, PHOTOS_2024_FILES)
 
     def seed_parent_photos_hot(self) -> None:
         normalized = normalize_collection_id(PHOTOS_PARENT_COLLECTION_ID)
         if CollectionId(normalized) in self.state.files_by_collection:
             return
-        self.seed_staged_collection(PHOTOS_PARENT_COLLECTION_ID, PHOTOS_2024_FILES)
-        resp = self.request(
-            "POST", "/v1/collections/close",
-            json_body={"path": staging_path_for_collection(normalized)},
-        )
-        assert resp.status_code == 200, resp.text
+        self.upload_collection_source(PHOTOS_PARENT_COLLECTION_ID, PHOTOS_2024_FILES)
 
     def seed_docs_hot(self) -> None:
         normalized = normalize_collection_id(DOCS_COLLECTION_ID)
         if CollectionId(normalized) in self.state.files_by_collection:
             return
-        self.seed_staged_collection(DOCS_COLLECTION_ID, DOCS_FILES)
-        resp = self.request(
-            "POST", "/v1/collections/close",
-            json_body={"path": staging_path_for_collection(normalized)},
-        )
-        assert resp.status_code == 200, resp.text
+        self.upload_collection_source(DOCS_COLLECTION_ID, DOCS_FILES)
 
     def seed_docs_archive(self) -> None:
         docs_key = CollectionId(normalize_collection_id(DOCS_COLLECTION_ID))

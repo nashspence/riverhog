@@ -3,7 +3,7 @@ from __future__ import annotations
 import hashlib
 import json
 from dataclasses import dataclass
-from datetime import UTC, datetime, timedelta
+from datetime import timedelta
 
 from sqlalchemy import delete, select
 from sqlalchemy.orm import object_session, selectinload
@@ -23,6 +23,13 @@ from arc_core.ports.hot_store import HotStore
 from arc_core.ports.upload_store import UploadStore
 from arc_core.recovery_payloads import decrypt_recovery_payload, encrypt_recovery_payload
 from arc_core.runtime_config import RuntimeConfig
+from arc_core.services.resumable_uploads import (
+    UploadLifecycleState,
+    create_or_resume_upload_state,
+    expire_upload_state,
+    sync_upload_state,
+    upload_state_name,
+)
 from arc_core.sqlite_db import make_session_factory, session_scope
 
 
@@ -85,38 +92,26 @@ class SqlAlchemyFetchService:
             entry = _get_entry(entries, entry_id)
 
             target_path = f"/.arc/recovery/{fetch_id}/{entry_id}.enc"
+            updated, tus_url = create_or_resume_upload_state(
+                current=_entry_upload_lifecycle_state(entry),
+                target_path=target_path,
+                length=entry.recovery_bytes,
+                upload_store=self._upload_store,
+                ttl=self._upload_ttl,
+            )
+            _apply_entry_upload_lifecycle_state(entry, updated)
 
-            if entry.tus_url is None:
-                tus_url = self._upload_store.create_upload(target_path, entry.recovery_bytes)
-                entry.tus_url = tus_url
-                current_offset = 0
-            else:
-                current_offset = self._upload_store.get_offset(entry.tus_url)
-                if current_offset == -1:
-                    try:
-                        self._upload_store.read_target(target_path)
-                        current_offset = entry.recovery_bytes
-                    except Exception:
-                        entry.tus_url = None
-                        entry.uploaded_bytes = 0
-                        tus_url = self._upload_store.create_upload(
-                            target_path, entry.recovery_bytes
-                        )
-                        entry.tus_url = tus_url
-                        current_offset = 0
-
-            entry.uploaded_bytes = current_offset
-            if _entry_upload_state(entry) != "uploaded":
-                entry.upload_expires_at = _upload_expiry_timestamp(self._upload_ttl)
-
-            if pin_record.fetch_state == FetchState.WAITING_MEDIA.value and current_offset > 0:
+            if (
+                pin_record.fetch_state == FetchState.WAITING_MEDIA.value
+                and entry.uploaded_bytes > 0
+            ):
                 pin_record.fetch_state = FetchState.UPLOADING.value
 
             return {
                 "entry": entry.entry_id,
                 "protocol": "tus",
                 "upload_url": entry.tus_url,
-                "offset": current_offset,
+                "offset": entry.uploaded_bytes,
                 "length": entry.recovery_bytes,
                 "checksum_algorithm": "sha256",
                 "expires_at": entry.upload_expires_at,
@@ -440,15 +435,27 @@ def _copy_recovery_payload(
 
 
 def _entry_upload_state(entry: FetchEntryRecord) -> str:
-    if entry.recovery_bytes > 0 and entry.uploaded_bytes >= entry.recovery_bytes:
-        return "uploaded"
-    if entry.uploaded_bytes > 0:
-        return "partial"
-    return "pending"
+    return upload_state_name(uploaded_bytes=entry.uploaded_bytes, length=entry.recovery_bytes)
 
 
 def _entry_recovery_bytes(entry: FetchEntryRecord) -> int:
     return entry.recovery_bytes
+
+
+def _entry_upload_lifecycle_state(entry: FetchEntryRecord) -> UploadLifecycleState:
+    return UploadLifecycleState(
+        tus_url=entry.tus_url,
+        uploaded_bytes=entry.uploaded_bytes,
+        upload_expires_at=entry.upload_expires_at,
+    )
+
+
+def _apply_entry_upload_lifecycle_state(
+    entry: FetchEntryRecord, state: UploadLifecycleState
+) -> None:
+    entry.tus_url = state.tus_url
+    entry.uploaded_bytes = state.uploaded_bytes
+    entry.upload_expires_at = state.upload_expires_at
 
 
 def _expire_incomplete_uploads(
@@ -456,30 +463,17 @@ def _expire_incomplete_uploads(
     entries: list[FetchEntryRecord],
     upload_store: UploadStore,
 ) -> None:
-    now = _utc_now()
     expired = False
     for entry in entries:
-        if entry.upload_expires_at is None:
+        target_path = f"/.arc/recovery/{entry.fetch_id}/{entry.entry_id}.enc"
+        updated, did_expire = expire_upload_state(
+            current=_entry_upload_lifecycle_state(entry),
+            target_path=target_path,
+            upload_store=upload_store,
+        )
+        _apply_entry_upload_lifecycle_state(entry, updated)
+        if not did_expire:
             continue
-        if datetime.fromisoformat(entry.upload_expires_at.replace("Z", "+00:00")) > now:
-            continue
-        if entry.tus_url is not None:
-            target_path = f"/.arc/recovery/{entry.fetch_id}/{entry.entry_id}.enc"
-            offset = upload_store.get_offset(entry.tus_url)
-            if offset == -1:
-                try:
-                    upload_store.read_target(target_path)
-                except Exception:
-                    entry.tus_url = None
-                    entry.uploaded_bytes = 0
-                    entry.upload_expires_at = None
-                    expired = True
-                    continue
-            upload_store.cancel_upload(entry.tus_url)
-            upload_store.delete_target(target_path)
-            entry.tus_url = None
-        entry.uploaded_bytes = 0
-        entry.upload_expires_at = None
         expired = True
     if expired and pin_record.fetch_state == FetchState.UPLOADING.value:
         pin_record.fetch_state = FetchState.WAITING_MEDIA.value
@@ -492,20 +486,14 @@ def _sync_upload_progress(
 ) -> None:
     any_uploaded = False
     for entry in entries:
-        if entry.tus_url is None:
-            continue
-        offset = upload_store.get_offset(entry.tus_url)
-        if offset == -1:
-            target_path = f"/.arc/recovery/{entry.fetch_id}/{entry.entry_id}.enc"
-            try:
-                upload_store.read_target(target_path)
-            except Exception:
-                entry.uploaded_bytes = 0
-                continue
-            offset = entry.recovery_bytes
-        entry.uploaded_bytes = offset
-        if _entry_upload_state(entry) == "uploaded":
-            entry.upload_expires_at = None
+        target_path = f"/.arc/recovery/{entry.fetch_id}/{entry.entry_id}.enc"
+        updated = sync_upload_state(
+            current=_entry_upload_lifecycle_state(entry),
+            target_path=target_path,
+            length=entry.recovery_bytes,
+            upload_store=upload_store,
+        )
+        _apply_entry_upload_lifecycle_state(entry, updated)
         if entry.uploaded_bytes > 0:
             any_uploaded = True
     if any_uploaded and pin_record.fetch_state == FetchState.WAITING_MEDIA.value:
@@ -542,19 +530,6 @@ def _split_plaintext(content: bytes, piece_count: int) -> tuple[bytes, ...]:
         out.append(content[offset : offset + size])
         offset += size
     return tuple(out)
-
-
-def _utc_now() -> datetime:
-    return datetime.now(UTC)
-
-
-def _upload_expiry_timestamp(ttl: timedelta) -> str:
-    return (
-        (_utc_now() + ttl)
-        .replace(microsecond=0)
-        .isoformat()
-        .replace("+00:00", "Z")
-    )
 
 
 def delete_fetch_entries(session, fetch_id: str) -> None:

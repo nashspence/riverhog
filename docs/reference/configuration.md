@@ -23,15 +23,16 @@ This is the SQLite catalog path used for durable authoritative API state.
 - type: duration
 - default: `24h`
 
-This controls how long incomplete server-side upload state for one fetch-manifest entry may remain resumable after the
-last successfully accepted chunk.
+This controls how long incomplete server-side upload state for one collection-upload file or one fetch-manifest entry
+may remain resumable after the last successfully accepted chunk.
 
 Service restart does not shorten this TTL or discard unexpired upload state by itself.
 
 When the TTL expires:
 
+- for collection ingest, the incomplete collection file upload target is deleted and that file returns to `pending`
 - the pending SeaweedFS TUS session is cancelled
 - any incomplete recovery target object is deleted
-- the entry returns to `pending`
+- the fetch entry returns to `pending`
 - the fetch manifest returns to `waiting_media` if any selected bytes are still not hot
 - `upload_state_expires_at` becomes `null` until a new upload session is opened

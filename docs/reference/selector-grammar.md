@@ -17,7 +17,7 @@ The same canonical projected-path selector syntax is used in API and CLI.
 
 ## Normalization rules
 
-1. Selectors operate over the projected hot namespace, not over staging paths or literal filesystem paths.
+1. Selectors operate over the projected hot namespace.
 2. Selectors are relative to the projected hot root and must not begin with `/`.
 3. Selector spelling is case-sensitive.
 4. Directory selectors must end with `/`.

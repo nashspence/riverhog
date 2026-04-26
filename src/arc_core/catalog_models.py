@@ -10,7 +10,7 @@ class CollectionRecord(Base):
     __tablename__ = "collections"
 
     id: Mapped[str] = mapped_column(String, primary_key=True)
-    source_staging_path: Mapped[str] = mapped_column(String, unique=True)
+    ingest_source: Mapped[str | None] = mapped_column(String, nullable=True)
     files: Mapped[list[CollectionFileRecord]] = relationship(
         back_populates="collection",
         cascade="all, delete-orphan",
@@ -196,3 +196,38 @@ class FetchEntryRecord(Base):
             ondelete="CASCADE",
         ),
     )
+
+
+class CollectionUploadRecord(Base):
+    __tablename__ = "collection_uploads"
+
+    collection_id: Mapped[str] = mapped_column(String, primary_key=True)
+    ingest_source: Mapped[str | None] = mapped_column(String, nullable=True)
+
+    files: Mapped[list[CollectionUploadFileRecord]] = relationship(
+        back_populates="upload",
+        cascade="all, delete-orphan",
+    )
+
+
+class CollectionUploadFileRecord(Base):
+    __tablename__ = "collection_upload_files"
+
+    collection_id: Mapped[str] = mapped_column(String, primary_key=True)
+    path: Mapped[str] = mapped_column(String, primary_key=True)
+    file_order: Mapped[int] = mapped_column(Integer)
+    bytes: Mapped[int] = mapped_column(Integer)
+    sha256: Mapped[str] = mapped_column(String(64))
+    uploaded_bytes: Mapped[int] = mapped_column(Integer, default=0)
+    upload_expires_at: Mapped[str | None] = mapped_column(String, nullable=True)
+    tus_url: Mapped[str | None] = mapped_column(String, nullable=True)
+
+    __table_args__ = (
+        ForeignKeyConstraint(
+            ["collection_id"],
+            ["collection_uploads.collection_id"],
+            ondelete="CASCADE",
+        ),
+    )
+
+    upload: Mapped[CollectionUploadRecord] = relationship(back_populates="files")

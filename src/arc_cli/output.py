@@ -179,6 +179,40 @@ def format_collection_files(payload: Mapping[str, Any]) -> str:
     return "\n".join(lines)
 
 
+def format_collection_upload(payload: Mapping[str, Any]) -> str:
+    lines = [
+        f"collection: {payload.get('collection_id', 'unknown')}",
+        f"state: {payload.get('state', 'unknown')}",
+        "upload: "
+        f"{payload.get('files_uploaded', 0)}/{payload.get('files_total', 0)} files "
+        f"{payload.get('uploaded_bytes', 0)}/{payload.get('bytes_total', 0)} bytes",
+    ]
+    collection = payload.get("collection")
+    if isinstance(collection, Mapping):
+        lines.append(
+            "finalized: "
+            f"{collection.get('files', 0)} files {collection.get('bytes', 0)} bytes"
+        )
+        return "\n".join(lines)
+
+    files = payload.get("files")
+    if isinstance(files, Sequence):
+        pending = [
+            file
+            for file in files
+            if isinstance(file, Mapping) and file.get("upload_state") != "uploaded"
+        ]
+        lines.append("pending:")
+        if not pending:
+            lines.append("- none")
+        for file in pending:
+            lines.append(
+                f"- {file.get('path', 'unknown')} "
+                f"({file.get('uploaded_bytes', 0)}/{file.get('bytes', 0)} bytes)"
+            )
+    return "\n".join(lines)
+
+
 def format_files(payload: Mapping[str, Any]) -> str:
     files = payload.get("files")
     if not isinstance(files, Sequence) or not files:

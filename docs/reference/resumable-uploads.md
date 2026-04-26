@@ -1,50 +1,52 @@
 # Resumable Uploads Reference
 
-Fetch uploads use two layers:
+Riverhog uses the same resumable-upload lifecycle for collection ingest and fetch recovery:
 
-- the JSON API binds uploads to fetch-manifest entries
+- the JSON API binds uploads to a server-owned domain resource
 - the returned upload resource uses tus-compatible resumable upload semantics
+- upload state survives service restart until `INCOMPLETE_UPLOAD_TTL` expires
+- expiry cancels the upload resource, deletes incomplete server-side bytes, and resets the domain resource cleanly
+
+## Collection File Upload Session
+
+`POST /v1/collection-uploads/{collection_id}/files/{path}/upload` creates or resumes the upload resource for one logical
+collection file.
+
+The response exposes at least:
+
+- `path`
+- `protocol` — always `tus`
+- `upload_url`
+- `offset`
+- `length`
+- `expires_at`
+- `checksum_algorithm`
 
 ## Fetch Entry Upload Session
 
-`POST /v1/fetches/{fetch_id}/entries/{entry_id}/upload` creates or resumes the upload resource for one logical file.
+`POST /v1/fetches/{fetch_id}/entries/{entry_id}/upload` creates or resumes the upload resource for one recovery-manifest
+entry.
 
 The response exposes at least:
 
 - `entry`
 - `protocol` — always `tus`
 - `upload_url`
-- `offset` — accepted bytes in the ordered recovery-byte stream
-- `length` — total bytes in the ordered recovery-byte stream
+- `offset`
+- `length`
 - `expires_at`
 - `checksum_algorithm`
 
-## Required Transport Semantics
+## Shared Transport Semantics
 
-The upload resource must support:
+Every upload resource must support:
 
 - offset-based resume
 - expiration
 - checksum validation on streamed chunks
 - restart-safe resume until the published expiry time discards incomplete state
 
-The upload resource is for one logical file only. Split files do not create one upload per disc part; `arc-disc`
-streams parts into the same logical-file upload in ascending order.
+Collection uploads measure offsets against the logical file byte stream for that file.
 
-## Direct Streaming
-
-`arc-disc` streams recovered bytes from disc to the upload resource:
-
-- unsplit files stream as one continuous upload
-- split files stream sequentially into the same upload resource as successive spans become available
-- the uploaded bytes are the raw encrypted payload-object bytes read from the hinted `disc_path`
-- the upload-session boundary is opaque to the CLI: the server may decrypt, transform, and validate uploaded recovery
-  bytes however it needs
-- `arc-disc` does not own decryption or final logical-file hash validation
-- if the current span switches to a candidate copy with a different advertised recovery-byte stream, the server may
-  reject resume and require that span to restart at its boundary
-
-If an implementation uses temporary buffering internally, that buffering is conventional temporary storage and not a
-user-managed API or CLI surface.
-
-Service restart does not by itself abandon an unexpired upload session or reset its accepted offset.
+Fetch uploads measure offsets against the ordered recovery-byte stream for that manifest entry. Split files still use
+one upload resource per logical file; `arc-disc` streams parts into that one resource in ascending order.

@@ -44,7 +44,7 @@ def default_container() -> ServiceContainer:
     hot_store = SeaweedFSHotStore(config.seaweedfs_filer_url)
     upload_store = SeaweedFSTUSUploadStore(config.seaweedfs_filer_url)
     return ServiceContainer(
-        collections=SqlAlchemyCollectionService(config, hot_store),
+        collections=SqlAlchemyCollectionService(config, hot_store, upload_store),
         search=SqlAlchemySearchService(config),
         planning=SqlAlchemyPlanningService(config),
         copies=SqlAlchemyCopyService(config, hot_store),

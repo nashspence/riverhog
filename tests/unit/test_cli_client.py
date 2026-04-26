@@ -8,6 +8,48 @@ import httpx
 from arc_cli.client import ApiClient
 
 
+def test_create_or_resume_collection_upload_uses_collection_upload_endpoint(monkeypatch) -> None:
+    captured: list[tuple[str, str, object]] = []
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        captured.append((request.method, str(request.url), request.read().decode("utf-8")))
+        return httpx.Response(
+            200,
+            json={
+                "collection_id": "tax/2022",
+                "ingest_source": "/tmp/tax/2022",
+                "state": "uploading",
+                "files_total": 1,
+                "files_pending": 1,
+                "files_partial": 0,
+                "files_uploaded": 0,
+                "bytes_total": 12,
+                "uploaded_bytes": 0,
+                "missing_bytes": 12,
+                "upload_state_expires_at": None,
+                "files": [],
+                "collection": None,
+            },
+        )
+
+    transport = httpx.MockTransport(handler)
+
+    def fake_client(self: ApiClient) -> httpx.Client:
+        return httpx.Client(base_url=self.base_url, transport=transport)
+
+    monkeypatch.setattr(ApiClient, "_client", fake_client)
+
+    client = ApiClient(base_url="https://api.test")
+    client.create_or_resume_collection_upload(
+        "tax/2022",
+        [{"path": "invoice.pdf", "bytes": 12, "sha256": "a" * 64}],
+        ingest_source="/tmp/tax/2022",
+    )
+
+    assert captured[0][0] == "POST"
+    assert captured[0][1] == "https://api.test/v1/collection-uploads"
+
+
 def test_get_collection_quotes_reserved_characters_but_preserves_slashes(monkeypatch) -> None:
     captured: list[str] = []
 
@@ -26,6 +68,46 @@ def test_get_collection_quotes_reserved_characters_but_preserves_slashes(monkeyp
     client.get_collection("tax/2022 reports")
 
     assert captured == ["https://api.test/v1/collections/tax/2022%20reports"]
+
+
+def test_create_or_resume_collection_file_upload_quotes_collection_and_path(monkeypatch) -> None:
+    captured: list[tuple[str, str]] = []
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        captured.append((request.method, str(request.url)))
+        return httpx.Response(
+            200,
+            json={
+                "path": "tax/2022 reports/invoice 123.pdf",
+                "protocol": "tus",
+                "upload_url": "https://uploads.test/collections/tax/2022/e1",
+                "offset": 0,
+                "length": 12,
+                "checksum_algorithm": "sha256",
+                "expires_at": "2026-04-23T00:00:00Z",
+            },
+        )
+
+    transport = httpx.MockTransport(handler)
+
+    def fake_client(self: ApiClient) -> httpx.Client:
+        return httpx.Client(base_url=self.base_url, transport=transport)
+
+    monkeypatch.setattr(ApiClient, "_client", fake_client)
+
+    client = ApiClient(base_url="https://api.test")
+    payload = client.create_or_resume_collection_file_upload(
+        "tax/2022",
+        "reports/invoice 123.pdf",
+    )
+
+    assert payload["upload_url"] == "https://uploads.test/collections/tax/2022/e1"
+    assert captured == [
+        (
+            "POST",
+            "https://api.test/v1/collection-uploads/tax/2022/files/reports/invoice%20123.pdf/upload",
+        )
+    ]
 
 
 def test_create_or_resume_fetch_entry_upload_uses_manifest_entry_endpoint(monkeypatch) -> None:

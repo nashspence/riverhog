@@ -65,8 +65,29 @@ class ApiClient:
     def _json(self, method: str, path: str, **kwargs: Any) -> dict[str, Any]:
         return self._request(method, path, **kwargs).json()
 
-    def close_collection(self, path: str) -> dict[str, Any]:
-        return self._json("POST", "/v1/collections/close", json={"path": path})
+    def create_or_resume_collection_upload(
+        self,
+        collection_id: str,
+        files: list[dict[str, Any]],
+        *,
+        ingest_source: str | None = None,
+    ) -> dict[str, Any]:
+        payload: dict[str, Any] = {"collection_id": collection_id, "files": files}
+        if ingest_source is not None:
+            payload["ingest_source"] = ingest_source
+        return self._json("POST", "/v1/collection-uploads", json=payload)
+
+    def get_collection_upload(self, collection_id: str) -> dict[str, Any]:
+        return self._json("GET", f"/v1/collection-uploads/{quote(collection_id, safe='/')}")
+
+    def create_or_resume_collection_file_upload(
+        self, collection_id: str, path: str
+    ) -> dict[str, Any]:
+        return self._json(
+            "POST",
+            f"/v1/collection-uploads/{quote(collection_id, safe='/')}/files/"
+            f"{quote(path, safe='/')}/upload",
+        )
 
     def search(self, query: str, limit: int = 25) -> dict[str, Any]:
         return self._json("GET", "/v1/search", params={"q": query, "limit": limit})

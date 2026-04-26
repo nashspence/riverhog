@@ -4,7 +4,6 @@ import pytest
 
 from arc_core.fs_paths import (
     collection_id_ancestors,
-    derive_collection_id_from_staging_path,
     find_collection_id_conflict,
     normalize_collection_id,
     normalize_relpath,
@@ -35,10 +34,6 @@ def test_normalize_collection_id_rejects_non_canonical_ids(raw: str) -> None:
 def test_normalize_root_node_name_rejects_nested() -> None:
     with pytest.raises(ValueError):
         normalize_root_node_name("a/b")
-
-
-def test_derive_collection_id_from_staging_path_uses_path_beneath_staging_root() -> None:
-    assert derive_collection_id_from_staging_path("/srv/archive/staging/tax/2022") == "tax/2022"
 
 
 def test_collection_id_ancestors_list_parent_prefixes() -> None:

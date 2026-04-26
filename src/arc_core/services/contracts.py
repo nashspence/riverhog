@@ -6,7 +6,15 @@ from arc_core.domain.models import CollectionSummary, FetchSummary, PinSummary
 
 
 class CollectionService(Protocol):
-    def close(self, staging_path: str) -> CollectionSummary: ...
+    def create_or_resume_upload(
+        self,
+        *,
+        collection_id: str,
+        files: list[dict[str, object]],
+        ingest_source: str | None = None,
+    ) -> object: ...
+    def get_upload(self, collection_id: str) -> object: ...
+    def create_or_resume_file_upload(self, collection_id: str, path: str) -> object: ...
     def get(self, collection_id: str) -> CollectionSummary: ...
 
 

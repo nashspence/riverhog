@@ -15,12 +15,12 @@ Use these six nouns consistently:
 
 ### Collection
 
-A logical namespace closed from a staged directory. A collection has a stable id and contains many files at stable
+A logical namespace uploaded through an explicit collection-upload session. A collection has a stable id and contains many files at stable
 relative paths.
 
 Collection-id rules:
 
-- the id is the canonical relative path beneath the staging root for the closed directory
+- the id is explicit and canonical
 - the id may contain `/`, for example `photos/2024`
 - no collection id may be an ancestor or descendant of another collection id
 

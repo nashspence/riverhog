@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import base64
 import hashlib
 import json
 import re
@@ -13,7 +14,7 @@ import pytest
 from pytest_bdd import given, parsers, then, when
 
 from arc_core.domain.selectors import parse_target
-from arc_core.fs_paths import derive_collection_id_from_staging_path
+from arc_core.fs_paths import normalize_collection_id
 from tests.fixtures.acceptance import AcceptanceSystem
 from tests.fixtures.data import (
     DOCS_COLLECTION_ID,
@@ -111,6 +112,89 @@ def _selected_content_for_target(
             f"{resp.status_code} {resp.text}"
         )
     return resp.content
+
+
+def _collection_source_manifest(
+    acceptance_system: AcceptanceSystem,
+    collection_id: str,
+) -> list[dict[str, object]]:
+    root = acceptance_system.collection_source_root(collection_id)
+    manifest: list[dict[str, object]] = []
+    for path in sorted(root.rglob("*")):
+        if not path.is_file():
+            continue
+        content = path.read_bytes()
+        manifest.append(
+            {
+                "path": path.relative_to(root).as_posix(),
+                "bytes": len(content),
+                "sha256": hashlib.sha256(content).hexdigest(),
+            }
+        )
+    return manifest
+
+
+def _start_collection_upload(
+    acceptance_system: AcceptanceSystem,
+    collection_id: str,
+) -> httpx.Response:
+    normalized_collection_id = normalize_collection_id(collection_id)
+    return acceptance_system.request(
+        "POST",
+        "/v1/collection-uploads",
+        json_body={
+            "collection_id": normalized_collection_id,
+            "ingest_source": str(acceptance_system.collection_source_root(normalized_collection_id)),
+            "files": _collection_source_manifest(acceptance_system, normalized_collection_id),
+        },
+    )
+
+
+def _refresh_collection_upload(
+    acceptance_system: AcceptanceSystem,
+    collection_id: str,
+) -> httpx.Response:
+    normalized_collection_id = normalize_collection_id(collection_id)
+    return acceptance_system.request("GET", f"/v1/collection-uploads/{normalized_collection_id}")
+
+
+def _upload_collection_file(
+    acceptance_system: AcceptanceSystem,
+    *,
+    collection_id: str,
+    path: str,
+    offset: int = 0,
+    fraction: float = 1.0,
+) -> int:
+    normalized_collection_id = normalize_collection_id(collection_id)
+    session = acceptance_system.request(
+        "POST",
+        f"/v1/collection-uploads/{normalized_collection_id}/files/{path}/upload",
+    )
+    assert session.status_code == 200, session.text
+    upload = session.json()
+    root = acceptance_system.collection_source_root(normalized_collection_id)
+    content = (root / path).read_bytes()
+    start = int(upload["offset"])
+    end = len(content)
+    if fraction < 1.0:
+        remaining = len(content) - start
+        end = start + max(1, int(remaining * fraction))
+    chunk = content[start:end]
+    response = acceptance_system.request(
+        "PATCH",
+        str(upload["upload_url"]),
+        headers={
+            "Content-Type": "application/offset+octet-stream",
+            "Tus-Resumable": "1.0.0",
+            "Upload-Offset": str(start),
+            "Upload-Checksum": "sha256 "
+            + base64.b64encode(hashlib.sha256(chunk).digest()).decode("ascii"),
+        },
+        content=chunk,
+    )
+    assert response.status_code == 204, response.text
+    return int(response.headers["Upload-Offset"])
 
 
 def _json_payload(response: httpx.Response) -> dict[str, Any]:
@@ -316,6 +400,9 @@ def _prepare_arc_expectation(
     if argv[1] == "fetch":
         return
 
+    if argv[1] == "upload":
+        return
+
     if argv[1] == "show" and "--files" in argv:
         collection_id = argv[2]
         context.expected_api_endpoint = ("GET", f"/v1/collections/{collection_id}/files")
@@ -340,24 +427,66 @@ def given_empty_archive() -> None:
     return None
 
 
-@given(parsers.parse('a staged directory "{collection_id}" with deterministic fixture contents'))
-def given_staged_directory(
+@given(parsers.parse('a local collection source "{collection_id}" with deterministic fixture contents'))
+def given_local_collection_source(
     acceptance_system: AcceptanceSystem,
     collection_id: str,
 ) -> None:
-    acceptance_system.seed_staged_collection(collection_id)
+    acceptance_system.seed_collection_source(collection_id)
 
 
-@given(parsers.parse('the staged directory "{staging_path}" was already closed'))
-def given_staged_directory_already_closed(
+@given(parsers.parse('collection "{collection_id}" already exists from deterministic fixture contents'))
+def given_collection_already_uploaded(
     acceptance_system: AcceptanceSystem,
-    staging_path: str,
+    collection_id: str,
 ) -> None:
-    acceptance_system.seed_staged_collection(derive_collection_id_from_staging_path(staging_path))
-    response = acceptance_system.request(
-        "POST", "/v1/collections/close", json_body={"path": staging_path}
+    acceptance_system.upload_collection_source(collection_id)
+
+
+@given(parsers.parse('collection upload "{collection_id}" exists for deterministic fixture contents'))
+def given_collection_upload_exists(
+    acceptance_system: AcceptanceSystem,
+    collection_id: str,
+) -> None:
+    acceptance_system.seed_collection_source(collection_id)
+    response = _start_collection_upload(acceptance_system, collection_id)
+    assert response.status_code == 200, response.text
+
+
+@given(parsers.parse('collection upload "{collection_id}" has a partial file upload in progress'))
+def given_collection_upload_has_partial_file(
+    acceptance_system: AcceptanceSystem,
+    acceptance_context: AcceptanceScenarioContext,
+    collection_id: str,
+) -> None:
+    acceptance_system.seed_collection_source(collection_id)
+    response = _start_collection_upload(acceptance_system, collection_id)
+    assert response.status_code == 200, response.text
+    first_path = str(response.json()["files"][0]["path"])
+    acceptance_context.recorded_upload_offset = _upload_collection_file(
+        acceptance_system,
+        collection_id=collection_id,
+        path=first_path,
+        fraction=0.5,
     )
-    assert response.status_code == 200
+
+
+@given(parsers.parse('collection upload "{collection_id}" has expired partial upload state'))
+def given_collection_upload_has_expired_partial_state(
+    acceptance_system: AcceptanceSystem,
+    collection_id: str,
+) -> None:
+    acceptance_system.seed_collection_source(collection_id)
+    response = _start_collection_upload(acceptance_system, collection_id)
+    assert response.status_code == 200, response.text
+    first_path = str(response.json()["files"][0]["path"])
+    _upload_collection_file(
+        acceptance_system,
+        collection_id=collection_id,
+        path=first_path,
+        fraction=0.5,
+    )
+    acceptance_system.expire_collection_upload(collection_id)
 
 
 @given(parsers.parse('an archive containing collection "{collection_id}"'))
@@ -771,14 +900,51 @@ def when_client_posts_again(
     _set_response(acceptance_context, response, append=True)
 
 
-@when(parsers.parse('the client posts to "{path}" with path "{staging_path}"'))
-def when_client_posts_with_path(
+@when(parsers.parse('the client creates or resumes collection upload "{collection_id}"'))
+def when_client_creates_or_resumes_collection_upload(
     acceptance_system: AcceptanceSystem,
     acceptance_context: AcceptanceScenarioContext,
-    path: str,
-    staging_path: str,
+    collection_id: str,
 ) -> None:
-    response = acceptance_system.request("POST", path, json_body={"path": staging_path})
+    response = _start_collection_upload(acceptance_system, collection_id)
+    _set_response(acceptance_context, response)
+
+
+@when(parsers.parse('the client creates or resumes collection upload "{collection_id}" again'))
+def when_client_creates_or_resumes_collection_upload_again(
+    acceptance_system: AcceptanceSystem,
+    acceptance_context: AcceptanceScenarioContext,
+    collection_id: str,
+) -> None:
+    response = _start_collection_upload(acceptance_system, collection_id)
+    _set_response(acceptance_context, response, append=True)
+
+
+@when(parsers.parse('the client uploads every required file for collection "{collection_id}"'))
+def when_client_uploads_every_required_collection_file(
+    acceptance_system: AcceptanceSystem,
+    acceptance_context: AcceptanceScenarioContext,
+    collection_id: str,
+) -> None:
+    response = _start_collection_upload(acceptance_system, collection_id)
+    assert response.status_code == 200, response.text
+    for file_payload in response.json()["files"]:
+        _upload_collection_file(
+            acceptance_system,
+            collection_id=collection_id,
+            path=str(file_payload["path"]),
+        )
+    final = _refresh_collection_upload(acceptance_system, collection_id)
+    _set_response(acceptance_context, final)
+
+
+@when(parsers.parse('the client refreshes collection upload "{collection_id}"'))
+def when_client_refreshes_collection_upload(
+    acceptance_system: AcceptanceSystem,
+    acceptance_context: AcceptanceScenarioContext,
+    collection_id: str,
+) -> None:
+    response = _refresh_collection_upload(acceptance_system, collection_id)
     _set_response(acceptance_context, response)
 
 
@@ -824,6 +990,29 @@ def when_client_registers_copy(
 @when("the API process restarts")
 def when_api_process_restarts(acceptance_system: AcceptanceSystem) -> None:
     acceptance_system.restart()
+
+
+@when(parsers.parse('the operator uploads collection source "{collection_id}" with arc'))
+def when_operator_uploads_collection_source(
+    acceptance_system: AcceptanceSystem,
+    acceptance_context: AcceptanceScenarioContext,
+    collection_id: str,
+) -> None:
+    acceptance_context.command_text = f'arc upload {collection_id} "{acceptance_system.collection_source_root(collection_id)}"'
+    acceptance_context.command_argv = [
+        "arc",
+        "upload",
+        collection_id,
+        str(acceptance_system.collection_source_root(collection_id)),
+    ]
+    acceptance_context.stdout_json = None
+    acceptance_context.expected_api_endpoint = None
+    acceptance_context.expected_api_payload = None
+    acceptance_context.command = acceptance_system.run_arc(
+        "upload",
+        collection_id,
+        str(acceptance_system.collection_source_root(collection_id)),
+    )
 
 
 @when(parsers.parse("the operator runs '{command}'"))
@@ -901,6 +1090,49 @@ def then_response_contains_correct_total_bytes(
 ) -> None:
     payload = _json_payload(_require_response(acceptance_context))
     assert payload["collection"]["bytes"] == PHOTOS_2024_TOTAL_BYTES
+
+
+@then(parsers.parse('collection upload "{collection_id}" state is "{state}"'))
+def then_collection_upload_state_is(
+    acceptance_context: AcceptanceScenarioContext,
+    collection_id: str,
+    state: str,
+) -> None:
+    payload = _json_payload(_require_response(acceptance_context))
+    assert payload["collection_id"] == collection_id
+    assert payload["state"] == state
+
+
+@then(parsers.parse('collection upload "{collection_id}" file "{path}" is "{state}"'))
+def then_collection_upload_file_state_is(
+    acceptance_context: AcceptanceScenarioContext,
+    collection_id: str,
+    path: str,
+    state: str,
+) -> None:
+    payload = _json_payload(_require_response(acceptance_context))
+    assert payload["collection_id"] == collection_id
+    file_payload = next(item for item in payload["files"] if item["path"] == path)
+    assert file_payload["upload_state"] == state
+
+
+@then(parsers.parse('collection upload "{collection_id}" reports uploaded bytes 0 for every file'))
+def then_collection_upload_reports_zero_uploaded_bytes(
+    acceptance_context: AcceptanceScenarioContext,
+    collection_id: str,
+) -> None:
+    payload = _json_payload(_require_response(acceptance_context))
+    assert payload["collection_id"] == collection_id
+    assert all(int(item["uploaded_bytes"]) == 0 for item in payload["files"])
+
+
+@then(parsers.parse('collection "{collection_id}" is not yet visible'))
+def then_collection_is_not_yet_visible(
+    acceptance_system: AcceptanceSystem,
+    collection_id: str,
+) -> None:
+    response = acceptance_system.request("GET", f"/v1/collections/{quote(collection_id, safe='/')}")
+    assert response.status_code == 404
 
 
 @then(parsers.parse('collection "{collection_id}" has hot_bytes equal to bytes'))
@@ -2039,3 +2271,19 @@ def then_upload_session_length_matches_manifest_entry_recovery_bytes(
     manifest = acceptance_system.fetches.manifest(fetch_id)
     manifest_entry = next(e for e in manifest["entries"] if e["id"] == entry_id)
     assert payload["length"] == manifest_entry["recovery_bytes"]
+
+
+@then(
+    parsers.parse(
+        'the upload-session length matches collection "{collection_id}" file "{path}" bytes'
+    )
+)
+def then_upload_session_length_matches_collection_file_bytes(
+    acceptance_system: AcceptanceSystem,
+    acceptance_context: AcceptanceScenarioContext,
+    collection_id: str,
+    path: str,
+) -> None:
+    payload = _json_payload(_require_response(acceptance_context))
+    root = acceptance_system.collection_source_root(collection_id)
+    assert payload["length"] == len((root / path).read_bytes())

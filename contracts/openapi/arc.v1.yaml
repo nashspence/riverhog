@@ -7,33 +7,69 @@ info:
 servers:
   - url: /v1
 paths:
-  /collections/close:
+  /collection-uploads:
     post:
-      summary: Close a staged directory into a collection
-      description: Creates one durable collection resource from the staged directory and materializes it into hot storage.
-      operationId: closeCollection
+      summary: Create or resume one collection upload session
+      description: Creates or resumes the explicit resumable upload session for one collection id and expected logical file set.
+      operationId: createOrResumeCollectionUpload
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              type: object
-              required: [path]
-              properties:
-                path:
-                  type: string
-                  description: Absolute path to the staged directory. The collection id is the canonical relative path beneath the staging root.
+              $ref: "#/components/schemas/CollectionUploadRequest"
       responses:
         "200":
-          description: Collection created
+          description: Collection upload session state
           content:
             application/json:
               schema:
-                type: object
-                required: [collection]
-                properties:
-                  collection:
-                    $ref: "#/components/schemas/CollectionSummary"
+                $ref: "#/components/schemas/CollectionUploadSession"
+        default:
+          $ref: "#/components/responses/Error"
+  /collection-uploads/{collection_id}:
+    get:
+      summary: Get one collection upload session
+      description: Returns the current resumable upload state for one collection id and auto-finalizes the collection once every expected file has uploaded and verified successfully.
+      operationId: getCollectionUpload
+      parameters:
+        - in: path
+          name: collection_id
+          required: true
+          description: Explicit canonical collection id. Slash-bearing ids occupy multiple path segments.
+          schema: { type: string }
+      responses:
+        "200":
+          description: Collection upload session state
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CollectionUploadSession"
+        default:
+          $ref: "#/components/responses/Error"
+  /collection-uploads/{collection_id}/files/{path}/upload:
+    post:
+      summary: Create or resume one collection-file upload resource
+      description: Creates or resumes the SeaweedFS-backed resumable upload resource for one logical collection file until the published expiry time discards incomplete state.
+      operationId: createOrResumeCollectionFileUpload
+      parameters:
+        - in: path
+          name: collection_id
+          required: true
+          description: Explicit canonical collection id. Slash-bearing ids occupy multiple path segments.
+          schema: { type: string }
+        - in: path
+          name: path
+          required: true
+          description: Relative logical file path within the collection.
+          schema: { type: string }
+      responses:
+        "200":
+          description: Collection-file upload session
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CollectionFileUploadSession"
         default:
           $ref: "#/components/responses/Error"
   /search:
@@ -533,6 +569,125 @@ components:
         hot_bytes: { type: integer }
         archived_bytes: { type: integer }
         pending_bytes: { type: integer }
+    CollectionUploadFile:
+      type: object
+      required: [path, bytes, sha256]
+      properties:
+        path:
+          type: string
+          description: Relative logical file path within the collection source tree.
+        bytes: { type: integer }
+        sha256:
+          type: string
+          description: Logical-file SHA-256 digest for final verification.
+    CollectionUploadRequest:
+      type: object
+      required: [collection_id, files]
+      properties:
+        collection_id:
+          type: string
+          description: Explicit canonical collection id for this upload session.
+        ingest_source:
+          oneOf:
+            - type: string
+            - type: "null"
+          description: Descriptive source hint from the client. Never part of collection identity.
+        files:
+          type: array
+          minItems: 1
+          items:
+            $ref: "#/components/schemas/CollectionUploadFile"
+    CollectionUploadFileState:
+      type: object
+      required: [path, bytes, sha256, upload_state, uploaded_bytes, upload_state_expires_at]
+      properties:
+        path: { type: string }
+        bytes: { type: integer }
+        sha256: { type: string }
+        upload_state:
+          $ref: "#/components/schemas/FetchEntryUploadState"
+        uploaded_bytes:
+          type: integer
+          description: Accepted upload bytes for this logical file's plaintext stream.
+        upload_state_expires_at:
+          oneOf:
+            - type: string
+              format: date-time
+            - type: "null"
+    CollectionUploadSession:
+      type: object
+      required:
+        [
+          collection_id,
+          ingest_source,
+          state,
+          files_total,
+          files_pending,
+          files_partial,
+          files_uploaded,
+          bytes_total,
+          uploaded_bytes,
+          missing_bytes,
+          upload_state_expires_at,
+          files,
+          collection,
+        ]
+      properties:
+        collection_id:
+          type: string
+          description: Explicit canonical collection id for this upload session.
+        ingest_source:
+          oneOf:
+            - type: string
+            - type: "null"
+        state:
+          type: string
+          enum: [uploading, finalized]
+        files_total: { type: integer }
+        files_pending: { type: integer }
+        files_partial: { type: integer }
+        files_uploaded: { type: integer }
+        bytes_total: { type: integer }
+        uploaded_bytes: { type: integer }
+        missing_bytes: { type: integer }
+        upload_state_expires_at:
+          oneOf:
+            - type: string
+              format: date-time
+            - type: "null"
+        files:
+          type: array
+          items:
+            $ref: "#/components/schemas/CollectionUploadFileState"
+        collection:
+          oneOf:
+            - $ref: "#/components/schemas/CollectionSummary"
+            - type: "null"
+    CollectionFileUploadSession:
+      type: object
+      required: [path, protocol, upload_url, offset, length, checksum_algorithm, expires_at]
+      properties:
+        path: { type: string }
+        protocol:
+          type: string
+          const: tus
+        upload_url:
+          type: string
+          format: uri
+        offset:
+          type: integer
+          description: Current accepted byte offset in the logical file's upload stream.
+        length:
+          type: integer
+          description: Total logical-file byte length for the upload stream.
+        checksum_algorithm:
+          type: string
+          const: sha256
+        expires_at:
+          oneOf:
+            - type: string
+              format: date-time
+            - type: "null"
     FinalizedImageSummary:
       type: object
       required: [id, filename, finalized_at, bytes, fill, files, collections, collection_ids, iso_ready, copy_count]

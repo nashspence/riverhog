@@ -22,6 +22,7 @@ from arc_core.catalog_models import (
     ActivePinRecord,
     CandidateCoveredPathRecord,
     CollectionFileRecord,
+    CollectionUploadFileRecord,
     FetchEntryRecord,
     FileCopyRecord,
     FinalizedImageCoveredPathRecord,
@@ -147,6 +148,51 @@ def _start_seaweedfs_server(workspace: Path) -> _SeaweedFSServerHandle:
 class ProductionCollectionsClient:
     def __init__(self, system: ProductionSystem) -> None:
         self._system = system
+
+    def create_or_resume_upload(
+        self,
+        collection_id: str,
+        files: list[dict[str, object]],
+        *,
+        ingest_source: str | None = None,
+    ) -> dict[str, object]:
+        body: dict[str, object] = {"collection_id": collection_id, "files": files}
+        if ingest_source is not None:
+            body["ingest_source"] = ingest_source
+        return self._system.request("POST", "/v1/collection-uploads", json_body=body).json()
+
+    def get_upload(self, collection_id: str) -> dict[str, object]:
+        return self._system.request("GET", f"/v1/collection-uploads/{collection_id}").json()
+
+    def create_or_resume_file_upload(self, collection_id: str, path: str) -> dict[str, object]:
+        return self._system.request(
+            "POST",
+            f"/v1/collection-uploads/{collection_id}/files/{path}/upload",
+        ).json()
+
+    def append_upload_chunk(
+        self,
+        upload_url: str,
+        *,
+        offset: int,
+        content: bytes,
+    ) -> dict[str, object]:
+        checksum = base64.b64encode(hashlib.sha256(content).digest()).decode("ascii")
+        response = self._system.request(
+            "PATCH",
+            upload_url,
+            headers={
+                "Content-Type": "application/offset+octet-stream",
+                "Tus-Resumable": "1.0.0",
+                "Upload-Offset": str(offset),
+                "Upload-Checksum": f"sha256 {checksum}",
+            },
+            content=content,
+        )
+        return {
+            "offset": int(response.headers["Upload-Offset"]),
+            "expires_at": response.headers.get("Upload-Expires"),
+        }
 
     def get(self, collection_id: str) -> CollectionSummary:
         response = self._system.request("GET", f"/v1/collections/{collection_id}")
@@ -596,32 +642,50 @@ class ProductionSystem:
             check=False,
         )
 
-    def seed_staged_collection(
+    def seed_collection_source(
         self, collection_id: str, files: Mapping[str, bytes] | None = None
     ) -> None:
         normalized_collection_id = normalize_collection_id(collection_id)
-        for path, content in (files or PHOTOS_2024_FILES).items():
-            response = self.filer_request(
-                "PUT",
-                f"/collections/{normalized_collection_id}/{path}",
+        write_tree(
+            self.workspace / "collections-src" / normalized_collection_id,
+            files or PHOTOS_2024_FILES,
+        )
+
+    def upload_collection_source(
+        self, collection_id: str, files: Mapping[str, bytes] | None = None
+    ) -> dict[str, object]:
+        normalized_collection_id = normalize_collection_id(collection_id)
+        source_files = files or PHOTOS_2024_FILES
+        self.seed_collection_source(normalized_collection_id, source_files)
+        root = (self.workspace / "collections-src" / normalized_collection_id).resolve()
+        manifest = [
+            {
+                "path": path,
+                "bytes": len(content),
+                "sha256": hashlib.sha256(content).hexdigest(),
+            }
+            for path, content in sorted(source_files.items())
+        ]
+        payload = self.collections.create_or_resume_upload(
+            normalized_collection_id,
+            manifest,
+            ingest_source=str(root),
+        )
+        for file_payload in payload["files"]:
+            upload = self.collections.create_or_resume_file_upload(
+                normalized_collection_id,
+                str(file_payload["path"]),
+            )
+            content = source_files[str(file_payload["path"])]
+            self.collections.append_upload_chunk(
+                str(upload["upload_url"]),
+                offset=int(upload["offset"]),
                 content=content,
             )
-            assert response.status_code in {200, 201, 204}, response.text
-
-    def seed_collection_closed(
-        self, collection_id: str, files: Mapping[str, bytes]
-    ) -> None:
-        normalized_collection_id = normalize_collection_id(collection_id)
-        self.seed_staged_collection(normalized_collection_id, files)
-        response = self.request(
-            "POST",
-            "/v1/collections/close",
-            json_body={"path": f"/staging/{normalized_collection_id}"},
-        )
-        assert response.status_code == 200, response.text
+        return self.collections.get_upload(normalized_collection_id)
 
     def seed_photos_hot(self) -> None:
-        self.seed_collection_closed("photos-2024", PHOTOS_2024_FILES)
+        self.upload_collection_source("photos-2024", PHOTOS_2024_FILES)
 
     def seed_planner_fixtures(self) -> None:
         self.seed_docs_hot()
@@ -687,14 +751,14 @@ class ProductionSystem:
                 )
 
     def seed_nested_photos_hot(self) -> None:
-        self.seed_collection_closed("photos/2024", PHOTOS_2024_FILES)
+        self.upload_collection_source("photos/2024", PHOTOS_2024_FILES)
 
     def seed_parent_photos_hot(self) -> None:
-        self.seed_collection_closed("photos", PHOTOS_2024_FILES)
+        self.upload_collection_source("photos", PHOTOS_2024_FILES)
 
     def seed_docs_hot(self) -> None:
         if not self._collection_exists("docs"):
-            self.seed_collection_closed("docs", DOCS_FILES)
+            self.upload_collection_source("docs", DOCS_FILES)
 
     def seed_docs_archive(self) -> None:
         files = self.state.selected_files(
@@ -869,6 +933,21 @@ class ProductionSystem:
 
     def pins_list(self) -> list[str]:
         return [item["target"] for item in self.request("GET", "/v1/pins").json()["pins"]]
+
+    def collection_source_root(self, collection_id: str) -> Path:
+        return (self.workspace / "collections-src" / normalize_collection_id(collection_id)).resolve()
+
+    def expire_collection_upload(self, collection_id: str) -> None:
+        normalized_collection_id = normalize_collection_id(collection_id)
+        with session_scope(make_session_factory(str(self.db_path))) as session:
+            records = session.scalars(
+                select(CollectionUploadFileRecord).where(
+                    CollectionUploadFileRecord.collection_id == normalized_collection_id
+                )
+            ).all()
+            assert records, f"collection upload not found: {normalized_collection_id}"
+            for record in records:
+                record.upload_expires_at = "2000-01-01T00:00:00Z"
 
     def _subprocess_env(self, extra: Mapping[str, str] | None = None) -> dict[str, str]:
         env = os.environ.copy()
