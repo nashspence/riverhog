@@ -163,6 +163,8 @@ Finalized-image summary rules:
 - `physical_copies_registered` counts currently registered or verified physical copies
 - `physical_copies_missing` is the remaining shortfall to the required physical-copy count
 - `glacier` summarizes current Glacier archive state and metadata for that finalized image
+- `glacier.state` progresses through `pending`, `uploading`, `uploaded`, `retrying`, or `failed`
+- `glacier.object_path` uses a privacy-safe finalized-image key and never embeds collection ids or logical file paths
 
 ### Copy summary
 

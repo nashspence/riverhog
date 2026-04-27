@@ -1290,6 +1290,18 @@ def when_api_process_restarts(acceptance_system: AcceptanceSystem) -> None:
     acceptance_system.restart()
 
 
+@when(parsers.parse('the client waits for image "{image_id}" glacier state "{state}"'))
+def when_the_client_waits_for_image_glacier_state(
+    acceptance_system: AcceptanceSystem,
+    acceptance_context: AcceptanceScenarioContext,
+    image_id: str,
+    state: str,
+) -> None:
+    acceptance_system.wait_for_image_glacier_state(image_id, state)
+    response = acceptance_system.request("GET", f"/v1/images/{image_id}")
+    _set_response(acceptance_context, response)
+
+
 @when(parsers.parse('the operator uploads collection source "{collection_id}" with arc'))
 def when_operator_uploads_collection_source(
     acceptance_system: AcceptanceSystem,
@@ -2238,6 +2250,23 @@ def then_response_image_glacier_state_is(
 ) -> None:
     payload = _json_payload(_require_response(acceptance_context))
     assert payload["glacier"]["state"] == state
+
+
+@then(parsers.parse('the response image glacier object_path is "{path}"'))
+def then_response_image_glacier_object_path_is(
+    acceptance_context: AcceptanceScenarioContext,
+    path: str,
+) -> None:
+    payload = _json_payload(_require_response(acceptance_context))
+    assert payload["glacier"]["object_path"] == path
+
+
+@then("the response image glacier stored_bytes is greater than 0")
+def then_response_image_glacier_stored_bytes_is_greater_than_zero(
+    acceptance_context: AcceptanceScenarioContext,
+) -> None:
+    payload = _json_payload(_require_response(acceptance_context))
+    assert int(payload["glacier"]["stored_bytes"]) > 0
 
 
 @then(parsers.parse('the response contains image id "{image_id}"'))

@@ -22,11 +22,12 @@ from arc_core.catalog_models import (
     ImageCopyRecord,
     PlannedCandidateRecord,
 )
-from arc_core.domain.enums import CopyState, VerificationState
+from arc_core.domain.enums import CopyState, GlacierState, VerificationState
 from arc_core.domain.errors import InvalidState, NotFound, NotYetImplemented
 from arc_core.domain.models import GlacierArchiveStatus
 from arc_core.iso.streaming import IsoStream, stream_iso_from_root
 from arc_core.runtime_config import RuntimeConfig
+from arc_core.services.glacier_uploads import enqueue_glacier_upload_job
 from arc_core.sqlite_db import make_session_factory, session_scope
 
 
@@ -208,9 +209,20 @@ class SqlAlchemyPlanningService:
                         )
                     )
                 _seed_required_copy_slots(session, image)
+                enqueue_glacier_upload_job(
+                    session,
+                    image_id=candidate.finalized_id,
+                    next_attempt_at=_utc_now(),
+                )
                 session.flush()
                 session.refresh(image)
                 existing = image
+            elif normalize_glacier_state(existing.glacier_state) != GlacierState.UPLOADED:
+                enqueue_glacier_upload_job(
+                    session,
+                    image_id=candidate.finalized_id,
+                    next_attempt_at=_utc_now(),
+                )
             return _strip_internal(_finalized_image_view(existing, session))
 
     async def get_iso_stream(self, image_id: str) -> object:

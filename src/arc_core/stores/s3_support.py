@@ -16,27 +16,71 @@ def _require_boto3() -> tuple[Any, Any]:
     return boto3, Config
 
 
-def create_s3_client(config: RuntimeConfig) -> Any:
+def _create_s3_client(
+    *,
+    endpoint_url: str,
+    region: str,
+    access_key_id: str,
+    secret_access_key: str,
+    force_path_style: bool,
+) -> Any:
     boto3, Config = _require_boto3()
     return boto3.client(
         "s3",
-        endpoint_url=config.s3_endpoint_url,
-        region_name=config.s3_region,
-        aws_access_key_id=config.s3_access_key_id,
-        aws_secret_access_key=config.s3_secret_access_key,
-        config=Config(s3={"addressing_style": "path" if config.s3_force_path_style else "virtual"}),
+        endpoint_url=endpoint_url,
+        region_name=region,
+        aws_access_key_id=access_key_id,
+        aws_secret_access_key=secret_access_key,
+        config=Config(s3={"addressing_style": "path" if force_path_style else "virtual"}),
     )
 
 
-def ensure_bucket_exists(config: RuntimeConfig) -> None:
-    client = create_s3_client(config)
+def create_s3_client(config: RuntimeConfig) -> Any:
+    return _create_s3_client(
+        endpoint_url=config.s3_endpoint_url,
+        region=config.s3_region,
+        access_key_id=config.s3_access_key_id,
+        secret_access_key=config.s3_secret_access_key,
+        force_path_style=config.s3_force_path_style,
+    )
+
+
+def create_glacier_s3_client(config: RuntimeConfig) -> Any:
+    return _create_s3_client(
+        endpoint_url=config.glacier_endpoint_url,
+        region=config.glacier_region,
+        access_key_id=config.glacier_access_key_id,
+        secret_access_key=config.glacier_secret_access_key,
+        force_path_style=config.glacier_force_path_style,
+    )
+
+
+def _ensure_bucket_exists(client: Any, *, bucket: str, region: str) -> None:
     existing = client.list_buckets().get("Buckets", [])
-    if any(bucket.get("Name") == config.s3_bucket for bucket in existing):
+    if any(current.get("Name") == bucket for current in existing):
         return
-    create_kwargs: dict[str, object] = {"Bucket": config.s3_bucket}
-    if config.s3_region and config.s3_region != "us-east-1":
-        create_kwargs["CreateBucketConfiguration"] = {"LocationConstraint": config.s3_region}
+    create_kwargs: dict[str, object] = {"Bucket": bucket}
+    if region and region != "us-east-1":
+        create_kwargs["CreateBucketConfiguration"] = {"LocationConstraint": region}
     client.create_bucket(**create_kwargs)
+
+
+def ensure_bucket_exists(config: RuntimeConfig) -> None:
+    _ensure_bucket_exists(
+        create_s3_client(config),
+        bucket=config.s3_bucket,
+        region=config.s3_region,
+    )
+    if (
+        config.glacier_bucket == config.s3_bucket
+        and config.glacier_endpoint_url == config.s3_endpoint_url
+    ):
+        return
+    _ensure_bucket_exists(
+        create_glacier_s3_client(config),
+        bucket=config.glacier_bucket,
+        region=config.glacier_region,
+    )
 
 
 def delete_keys_with_prefixes(config: RuntimeConfig, prefixes: list[str]) -> None:
@@ -49,5 +93,23 @@ def delete_keys_with_prefixes(config: RuntimeConfig, prefixes: list[str]) -> Non
                 continue
             client.delete_objects(
                 Bucket=config.s3_bucket,
+                Delete={"Objects": [{"Key": entry["Key"]} for entry in contents]},
+            )
+
+    if (
+        config.glacier_bucket == config.s3_bucket
+        and config.glacier_endpoint_url == config.s3_endpoint_url
+    ):
+        return
+
+    glacier_client = create_glacier_s3_client(config)
+    for prefix in prefixes:
+        paginator = glacier_client.get_paginator("list_objects_v2")
+        for page in paginator.paginate(Bucket=config.glacier_bucket, Prefix=prefix):
+            contents = page.get("Contents", [])
+            if not contents:
+                continue
+            glacier_client.delete_objects(
+                Bucket=config.glacier_bucket,
                 Delete={"Objects": [{"Key": entry["Key"]} for entry in contents]},
             )

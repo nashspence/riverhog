@@ -161,6 +161,10 @@ def format_images(payload: Mapping[str, Any]) -> str:
                 f"  collections: {image.get('collections', 0)} [{collection_text}]",
             ]
         )
+        if isinstance(glacier, Mapping) and glacier.get("object_path"):
+            lines.append(f"  glacier_path: {glacier.get('object_path')}")
+        if isinstance(glacier, Mapping) and glacier.get("failure"):
+            lines.append(f"  glacier_failure: {glacier.get('failure')}")
 
     return "\n".join(lines)
 

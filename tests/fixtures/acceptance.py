@@ -94,6 +94,7 @@ REPO_ROOT = Path(__file__).resolve().parents[2]
 SRC_ROOT = REPO_ROOT / "src"
 FIXTURE_UPLOAD_EXPIRES_AT = "2099-12-31T23:59:59Z"
 _UPLOAD_EXPIRY_SWEEP_INTERVAL_SECONDS = 0.05
+_GLACIER_UPLOAD_SWEEP_INTERVAL_SECONDS = 1.0
 
 
 def _generated_copy_id(image_id: str, ordinal: int) -> str:
@@ -203,9 +204,14 @@ class CandidateRecord:
             "iso_ready": self.iso_ready,
         }
 
-    def finalized_image_payload(self, *, physical_copies_registered: int = 0) -> dict[str, object]:
+    def finalized_image_payload(
+        self,
+        *,
+        physical_copies_registered: int = 0,
+        glacier: GlacierArchiveStatus | None = None,
+    ) -> dict[str, object]:
         required_copy_count = normalize_required_copy_count(None)
-        glacier = GlacierArchiveStatus(state=GlacierState.PENDING)
+        glacier = glacier or GlacierArchiveStatus(state=GlacierState.PENDING)
         protection_state = image_protection_state(
             required_copy_count=required_copy_count,
             registered_copy_count=physical_copies_registered,
@@ -289,6 +295,12 @@ class CollectionUploadRecord:
 
 
 @dataclass(slots=True)
+class AcceptanceGlacierUploadJob:
+    image_id: ImageId
+    completed: bool = False
+
+
+@dataclass(slots=True)
 class AcceptanceState:
     local_collection_sources: dict[CollectionId, Path] = field(default_factory=dict)
     files_by_collection: dict[CollectionId, dict[str, StoredFile]] = field(default_factory=dict)
@@ -298,6 +310,8 @@ class AcceptanceState:
     exact_pins: set[TargetStr] = field(default_factory=set)
     fetches: dict[FetchId, FetchRecord] = field(default_factory=dict)
     collection_uploads: dict[CollectionId, CollectionUploadRecord] = field(default_factory=dict)
+    glacier_status_by_image: dict[ImageId, GlacierArchiveStatus] = field(default_factory=dict)
+    glacier_jobs_by_image: dict[ImageId, AcceptanceGlacierUploadJob] = field(default_factory=dict)
     next_fetch_number: int = 0
 
     def register_local_collection_source(self, collection_id: str, root: Path) -> None:
@@ -335,6 +349,23 @@ class AcceptanceState:
 
     def seed_image(self, image: CandidateRecord) -> None:
         self.candidates_by_id[image.candidate_id] = image
+
+    def enqueue_glacier_upload(self, image: CandidateRecord) -> None:
+        image_key = ImageId(image.finalized_id)
+        self.glacier_status_by_image.setdefault(
+            image_key,
+            GlacierArchiveStatus(state=GlacierState.PENDING),
+        )
+        self.glacier_jobs_by_image.setdefault(
+            image_key,
+            AcceptanceGlacierUploadJob(image_id=image_key),
+        )
+
+    def glacier_status(self, image_id: str) -> GlacierArchiveStatus:
+        return self.glacier_status_by_image.get(
+            ImageId(image_id),
+            GlacierArchiveStatus(state=GlacierState.PENDING),
+        )
 
     def ensure_required_copy_slots(self, image_id: str) -> None:
         image = self.finalized_images_by_id.get(ImageId(image_id))
@@ -443,7 +474,7 @@ class AcceptanceState:
                 1 for copy in copies if copy_counts_toward_protection(copy.state.value)
             )
             physical_copies_required = normalize_required_copy_count(None)
-            glacier = GlacierArchiveStatus(state=GlacierState.PENDING)
+            glacier = self.glacier_status(image.finalized_id)
             image_coverage.append(
                 CollectionCoverageImage(
                     id=ImageId(image.finalized_id),
@@ -1094,7 +1125,8 @@ class AcceptancePlanningService:
             "order": order,
             "images": [
                 image.finalized_image_payload(
-                    physical_copies_registered=self._physical_copies_registered(image)
+                    physical_copies_registered=self._physical_copies_registered(image),
+                    glacier=self.state.glacier_status(image.finalized_id),
                 )
                 for image in page_images
             ],
@@ -1103,7 +1135,8 @@ class AcceptancePlanningService:
     def get_image(self, image_id: str) -> dict[str, object]:
         image = self._finalized_image_record(image_id)
         return image.finalized_image_payload(
-            physical_copies_registered=self._physical_copies_registered(image)
+            physical_copies_registered=self._physical_copies_registered(image),
+            glacier=self.state.glacier_status(image.finalized_id),
         )
 
     def finalize_image(self, candidate_id: str) -> dict[str, object]:
@@ -1113,9 +1146,11 @@ class AcceptancePlanningService:
         finalized_key = ImageId(candidate.finalized_id)
         self.state.finalized_images_by_id.setdefault(finalized_key, candidate)
         self.state.ensure_required_copy_slots(candidate.finalized_id)
+        self.state.enqueue_glacier_upload(candidate)
         image = self.state.finalized_images_by_id[finalized_key]
         return image.finalized_image_payload(
-            physical_copies_registered=self._physical_copies_registered(image)
+            physical_copies_registered=self._physical_copies_registered(image),
+            glacier=self.state.glacier_status(image.finalized_id),
         )
 
     async def get_iso_stream(self, image_id: str) -> object:
@@ -1143,6 +1178,35 @@ class AcceptancePlanningService:
             if volume_id == image.finalized_id
             and copy_counts_toward_protection(summary.state.value)
         )
+
+
+class AcceptanceGlacierUploadService:
+    def __init__(self, state: AcceptanceState) -> None:
+        self.state = state
+
+    def process_due_uploads(self, *, limit: int = 1) -> int:
+        attempted = 0
+        for image_id, job in sorted(self.state.glacier_jobs_by_image.items()):
+            if attempted >= limit or job.completed:
+                continue
+            image = self.state.finalized_images_by_id.get(image_id)
+            if image is None:
+                continue
+            object_path = f"glacier/finalized-images/{image.finalized_id}/{image.finalized_id}.iso"
+            now = datetime.now(UTC).strftime("%Y-%m-%dT%H:%M:%SZ")
+            self.state.glacier_status_by_image[image_id] = GlacierArchiveStatus(
+                state=GlacierState.UPLOADED,
+                object_path=object_path,
+                stored_bytes=image.bytes,
+                backend="s3",
+                storage_class="DEEP_ARCHIVE",
+                last_uploaded_at=now,
+                last_verified_at=now,
+                failure=None,
+            )
+            job.completed = True
+            attempted += 1
+        return attempted
 
 
 class AcceptanceCopyService:
@@ -1971,6 +2035,7 @@ class AcceptanceSystem:
     collections: AcceptanceCollectionService
     search: AcceptanceSearchService
     planning: AcceptancePlanningService
+    glacier_uploads: AcceptanceGlacierUploadService
     copies: AcceptanceCopyService
     pins: AcceptancePinService
     fetches: AcceptanceFetchService
@@ -1986,6 +2051,7 @@ class AcceptanceSystem:
         collections = AcceptanceCollectionService(state)
         search = AcceptanceSearchService(state)
         planning = AcceptancePlanningService(state)
+        glacier_uploads = AcceptanceGlacierUploadService(state)
         copies = AcceptanceCopyService(state)
         fetches = AcceptanceFetchService(state)
         pins = AcceptancePinService(state, fetches)
@@ -1995,6 +2061,7 @@ class AcceptanceSystem:
             collections=collections,
             search=search,
             planning=planning,
+            glacier_uploads=glacier_uploads,
             copies=copies,
             pins=pins,
             fetches=fetches,
@@ -2003,6 +2070,7 @@ class AcceptanceSystem:
         app = create_app(
             container=container,
             upload_expiry_reaper_interval=_UPLOAD_EXPIRY_SWEEP_INTERVAL_SECONDS,
+            glacier_upload_reaper_interval=_GLACIER_UPLOAD_SWEEP_INTERVAL_SECONDS,
         )
         app.dependency_overrides[get_container] = lambda: container
 
@@ -2020,6 +2088,7 @@ class AcceptanceSystem:
             collections=collections,
             search=search,
             planning=planning,
+            glacier_uploads=glacier_uploads,
             copies=copies,
             pins=pins,
             fetches=fetches,
@@ -2036,6 +2105,7 @@ class AcceptanceSystem:
         self.collections = restarted.collections
         self.search = restarted.search
         self.planning = restarted.planning
+        self.glacier_uploads = restarted.glacier_uploads
         self.copies = restarted.copies
         self.pins = restarted.pins
         self.fetches = restarted.fetches
@@ -2087,6 +2157,24 @@ class AcceptanceSystem:
             )
             self.state.candidates_by_id[candidate_key] = candidate
         self.state.finalized_images_by_id[ImageId(candidate.finalized_id)] = candidate
+        self.state.enqueue_glacier_upload(candidate)
+
+    def wait_for_image_glacier_state(
+        self,
+        image_id: str,
+        state: str,
+        *,
+        timeout: float = 5.0,
+    ) -> dict[str, object]:
+        deadline = time.monotonic() + timeout
+        while time.monotonic() < deadline:
+            response = self.request("GET", f"/v1/images/{image_id}")
+            assert response.status_code == 200, response.text
+            payload = response.json()
+            if payload["glacier"]["state"] == state:
+                return payload
+            time.sleep(0.05)
+        raise AssertionError(f"timed out waiting for image glacier state {image_id} -> {state}")
 
     def run_arc(self, *args: str) -> subprocess.CompletedProcess[str]:
         return subprocess.run(

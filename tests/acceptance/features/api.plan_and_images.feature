@@ -57,6 +57,26 @@ Feature: Plan and images API
     And the response contains image id "20260420T040001Z"
     And the response does not contain field "volume_id"
 
+  Scenario: Finalizing a candidate automatically uploads the finalized image to Glacier
+    Given candidate "img_2026-04-20_01" exists
+    When the client posts to "/v1/plan/candidates/img_2026-04-20_01/finalize"
+    Then the response status is 200
+    When the client waits for image "20260420T040001Z" glacier state "uploaded"
+    Then the response status is 200
+    And the response image glacier state is "uploaded"
+    And the response image glacier object_path is "glacier/finalized-images/20260420T040001Z/20260420T040001Z.iso"
+    And the response image glacier stored_bytes is greater than 0
+
+  Scenario: Queued Glacier upload survives restart
+    Given candidate "img_2026-04-20_01" exists
+    When the client posts to "/v1/plan/candidates/img_2026-04-20_01/finalize"
+    Then the response status is 200
+    When the API process restarts
+    And the client waits for image "20260420T040001Z" glacier state "uploaded"
+    Then the response status is 200
+    And the response image glacier state is "uploaded"
+    And the response image glacier object_path is "glacier/finalized-images/20260420T040001Z/20260420T040001Z.iso"
+
   Scenario: List finalized images separately from the provisional plan
     Given an archive with split planner fixtures
     And candidate "img_2026-04-20_01" is finalized
@@ -174,13 +194,12 @@ Feature: Plan and images API
       And collection "docs" archived_bytes increases
       And collection "docs" pending_bytes decreases
 
-    Scenario: Registering one copy leaves the image partially protected while Glacier is pending
+    Scenario: Registering one copy leaves the image partially protected
       When the client posts to "/v1/images/20260420T040001Z/copies" with location "Shelf B1"
       Then the response status is 200
       When the client gets "/v1/images/20260420T040001Z"
       Then the response status is 200
       And the response image protection_state is "partially_protected"
-      And the response image glacier state is "pending"
 
     Scenario: Reusing a copy id for the same finalized image fails
       Given copy "20260420T040001Z-1" already exists

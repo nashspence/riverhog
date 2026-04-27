@@ -248,6 +248,10 @@ Required behavior:
 - finalized candidates are not returned by `GET /v1/plan`
 - repeated finalization of the same `candidate_id` is idempotent and returns the same finalized summary
 - the finalized image record remains addressable after service restart
+- finalization automatically enqueues one Glacier upload job for that finalized image
+- Glacier upload state survives restart and is reflected through the finalized-image `glacier` summary fields
+- persistent Glacier upload failures remain visible in finalized-image summaries and may notify
+  `ARC_GLACIER_FAILURE_WEBHOOK_URL` when configured
 
 #### `GET /v1/images/{image_id}/iso`
 

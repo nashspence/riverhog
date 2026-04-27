@@ -58,6 +58,109 @@ Secret key used for the S3-compatible object store.
 
 Enables path-style S3 requests for backends that require them.
 
+## `ARC_GLACIER_ENDPOINT_URL`
+
+- type: URL
+- default: `ARC_S3_ENDPOINT_URL`
+
+Base URL for the archive-upload object-store API.
+
+## `ARC_GLACIER_REGION`
+
+- type: string
+- default: `ARC_S3_REGION`
+
+Region sent to the archive-upload object-store client.
+
+## `ARC_GLACIER_BUCKET`
+
+- type: string
+- default: `ARC_S3_BUCKET`
+
+Bucket holding finalized-image Glacier uploads.
+
+## `ARC_GLACIER_ACCESS_KEY_ID`
+
+- type: string
+- default: `ARC_S3_ACCESS_KEY_ID`
+
+Access key used for Glacier uploads.
+
+## `ARC_GLACIER_SECRET_ACCESS_KEY`
+
+- type: secret string
+- default: `ARC_S3_SECRET_ACCESS_KEY`
+
+Secret key used for Glacier uploads.
+
+## `ARC_GLACIER_FORCE_PATH_STYLE`
+
+- type: boolean
+- default: `ARC_S3_FORCE_PATH_STYLE`
+
+Enables path-style requests for Glacier-upload backends that require them.
+
+## `ARC_GLACIER_PREFIX`
+
+- type: normalized path prefix
+- default: `glacier/finalized-images`
+
+Finalized-image Glacier objects use privacy-safe keys under:
+
+```text
+glacier/finalized-images/{image_id}/{image_id}.iso
+```
+
+These keys must not embed collection ids or logical file paths.
+
+## `ARC_GLACIER_BACKEND`
+
+- type: string
+- default: `s3`
+
+Opaque backend label recorded on finalized-image Glacier summaries.
+
+## `ARC_GLACIER_STORAGE_CLASS`
+
+- type: string
+- default: `DEEP_ARCHIVE`
+
+Intended Glacier storage class recorded on finalized-image Glacier summaries.
+
+## `ARC_GLACIER_UPLOAD_RETRY_LIMIT`
+
+- type: integer
+- default: `3`
+
+Maximum number of automatic Glacier upload attempts per finalized image before the
+upload becomes a persistent failure.
+
+## `ARC_GLACIER_UPLOAD_RETRY_DELAY`
+
+- type: duration
+- default: `5m`
+
+Delay between automatic retry attempts for one failed Glacier upload.
+
+## `ARC_GLACIER_UPLOAD_SWEEP_INTERVAL`
+
+- type: duration
+- default: `30s`
+
+How often Riverhog's Glacier-upload worker scans for due finalized-image uploads,
+retries, and restart-recovered work.
+
+## `ARC_GLACIER_FAILURE_WEBHOOK_URL`
+
+- type: URL
+- default: unset
+
+Optional webhook endpoint notified when one finalized-image Glacier upload reaches
+persistent failure after automatic retries.
+
+The payload includes the finalized `image_id`, failure timestamp, attempt count,
+and error context.
+
 ## `ARC_TUSD_BASE_URL`
 
 - type: URL
@@ -95,6 +198,14 @@ expose `.arc/` staging paths.
 - default: `.arc/state.sqlite3`
 
 This is the SQLite catalog path used for durable authoritative API state.
+
+## `ARC_PUBLIC_BASE_URL`
+
+- type: URL
+- default: unset
+
+Optional public API base URL used when Riverhog builds webhook links back to one
+finalized image and its ISO download.
 
 ## `INCOMPLETE_UPLOAD_TTL`
 

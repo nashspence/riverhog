@@ -46,7 +46,14 @@ def _terminate_for_restart() -> None:
 def _clear_runtime_storage() -> None:
     config = load_runtime_config()
     ensure_bucket_exists(config)
-    delete_keys_with_prefixes(config, ["collections/", ".arc/uploads/"])
+    delete_keys_with_prefixes(
+        config,
+        [
+            "collections/",
+            ".arc/uploads/",
+            f"{config.glacier_prefix}/",
+        ],
+    )
 
 
 def _reset_runtime_state() -> None:
@@ -70,6 +77,10 @@ def _sweep_expired_uploads(container: ServiceContainer) -> None:
     container.fetches.expire_stale_uploads()
 
 
+def _process_glacier_uploads(container: ServiceContainer) -> None:
+    container.glacier_uploads.process_due_uploads(limit=1)
+
+
 async def _run_upload_expiry_reaper(
     container_provider: Callable[[], ServiceContainer | None],
     *,
@@ -89,10 +100,30 @@ async def _run_upload_expiry_reaper(
             _LOG.exception("upload expiry reaper sweep failed")
 
 
+async def _run_glacier_upload_reaper(
+    container_provider: Callable[[], ServiceContainer | None],
+    *,
+    sweep_interval: timedelta,
+) -> None:
+    interval_seconds = max(sweep_interval.total_seconds(), 0.1)
+    while True:
+        try:
+            await asyncio.sleep(interval_seconds)
+            container = container_provider()
+            if container is None:
+                continue
+            await asyncio.to_thread(_process_glacier_uploads, container)
+        except asyncio.CancelledError:
+            raise
+        except Exception:  # pragma: no cover - defensive background task logging
+            _LOG.exception("glacier upload reaper sweep failed")
+
+
 def create_app(
     *,
     container: ServiceContainer | None = None,
     upload_expiry_reaper_interval: float | None = None,
+    glacier_upload_reaper_interval: float | None = None,
 ) -> FastAPI:
     config = load_runtime_config()
     app_container: ServiceContainer | None = container
@@ -100,6 +131,11 @@ def create_app(
         timedelta(seconds=upload_expiry_reaper_interval)
         if upload_expiry_reaper_interval is not None
         else config.upload_expiry_sweep_interval
+    )
+    glacier_sweep_interval = (
+        timedelta(seconds=glacier_upload_reaper_interval)
+        if glacier_upload_reaper_interval is not None
+        else config.glacier_upload_sweep_interval
     )
 
     def get_or_create_container() -> ServiceContainer:
@@ -110,18 +146,27 @@ def create_app(
 
     @contextlib.asynccontextmanager
     async def lifespan(_: FastAPI) -> AsyncIterator[None]:
-        task = asyncio.create_task(
+        upload_task = asyncio.create_task(
             _run_upload_expiry_reaper(
                 lambda: app_container,
                 sweep_interval=sweep_interval,
             )
         )
+        glacier_task = asyncio.create_task(
+            _run_glacier_upload_reaper(
+                lambda: app_container,
+                sweep_interval=glacier_sweep_interval,
+            )
+        )
         try:
             yield
         finally:
-            task.cancel()
+            upload_task.cancel()
+            glacier_task.cancel()
             with contextlib.suppress(asyncio.CancelledError):
-                await task
+                await upload_task
+            with contextlib.suppress(asyncio.CancelledError):
+                await glacier_task
 
     app = FastAPI(title="arc API", version="0.1.0", lifespan=lifespan)
     app.state.instance_id = f"{os.getpid()}-{time.time_ns()}"

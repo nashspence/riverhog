@@ -125,7 +125,7 @@ Feature: arc CLI
       Then the command exits with code 0
       And stdout mentions "20260420T040001Z"
       And stdout mentions "20260420T040001Z.iso"
-      And stdout mentions "protection: partially_protected copies=1/2 glacier=pending"
+      And stdout mentions "protection: partially_protected copies=1/2 glacier="
       And stdout mentions "collections: 1 [docs]"
 
     Scenario: arc copy add prints the generated label text and state

@@ -10,6 +10,7 @@ import sys
 import time
 from collections.abc import Iterator, Mapping
 from dataclasses import dataclass
+from datetime import UTC, datetime
 from pathlib import Path
 from typing import cast
 from urllib.parse import unquote, urlsplit
@@ -38,6 +39,7 @@ from arc_core.domain.selectors import parse_target
 from arc_core.domain.types import CollectionId, CopyId, FetchId, TargetStr
 from arc_core.fs_paths import normalize_collection_id
 from arc_core.runtime_config import load_runtime_config
+from arc_core.services.glacier_uploads import enqueue_glacier_upload_job
 from arc_core.sqlite_db import make_session_factory, session_scope
 from arc_core.stores.s3_support import create_s3_client
 from tests.fixtures.acceptance import REPO_ROOT, SRC_ROOT
@@ -957,6 +959,28 @@ class ProductionSystem:
                             path=cp.path,
                         )
                     )
+                enqueue_glacier_upload_job(
+                    session,
+                    image_id=candidate.finalized_id,
+                    next_attempt_at=datetime.now(UTC).strftime("%Y-%m-%dT%H:%M:%SZ"),
+                )
+
+    def wait_for_image_glacier_state(
+        self,
+        image_id: str,
+        state: str,
+        *,
+        timeout: float = 10.0,
+    ) -> dict[str, object]:
+        deadline = time.monotonic() + timeout
+        while time.monotonic() < deadline:
+            response = self.request("GET", f"/v1/images/{image_id}")
+            assert response.status_code == 200, response.text
+            payload = response.json()
+            if payload["glacier"]["state"] == state:
+                return payload
+            time.sleep(0.05)
+        raise AssertionError(f"timed out waiting for image glacier state {image_id} -> {state}")
 
     def seed_nested_photos_hot(self) -> None:
         with time_block("fixture.seed_nested_photos_hot"):

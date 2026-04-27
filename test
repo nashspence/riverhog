@@ -182,6 +182,7 @@ bootstrap_garage() {
 if [[ "${REQUIRES_SIDECARS}" == "1" ]]; then
   export ARC_ENABLE_TEST_CONTROL="${ARC_ENABLE_TEST_CONTROL:-1}"
   export UPLOAD_EXPIRY_SWEEP_INTERVAL="${UPLOAD_EXPIRY_SWEEP_INTERVAL:-1s}"
+  export ARC_GLACIER_UPLOAD_SWEEP_INTERVAL="${ARC_GLACIER_UPLOAD_SWEEP_INTERVAL:-1s}"
   compose build app
   compose down --volumes --remove-orphans >/dev/null 2>&1 || true
   bootstrap_garage

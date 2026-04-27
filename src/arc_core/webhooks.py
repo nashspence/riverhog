@@ -55,8 +55,16 @@ def image_iso_download_path(image_id: str) -> str:
     return f"/v1/images/{image_id}/iso"
 
 
+def image_summary_path(image_id: str) -> str:
+    return f"/v1/images/{image_id}"
+
+
 def image_iso_download_url(base_url: str, image_id: str) -> str:
     return f"{base_url.rstrip('/')}{image_iso_download_path(image_id)}"
+
+
+def image_summary_url(base_url: str, image_id: str) -> str:
+    return f"{base_url.rstrip('/')}{image_summary_path(image_id)}"
 
 
 def build_images_ready_payload(
@@ -79,6 +87,27 @@ def build_images_ready_payload(
             for image in batch.images
         ],
     }
+
+
+def build_glacier_upload_failed_payload(
+    *,
+    config: WebhookConfig,
+    image_id: str,
+    error: str,
+    attempts: int,
+    failed_at: str,
+) -> dict[str, object]:
+    payload: dict[str, object] = {
+        "event": "images.glacier_upload.failed",
+        "image_id": image_id,
+        "failed_at": failed_at,
+        "attempts": attempts,
+        "error": error,
+    }
+    if config.base_url:
+        payload["image_url"] = image_summary_url(config.base_url, image_id)
+        payload["download_url"] = image_iso_download_url(config.base_url, image_id)
+    return payload
 
 
 def post_webhook(*, config: WebhookConfig, payload: dict[str, object]) -> None:

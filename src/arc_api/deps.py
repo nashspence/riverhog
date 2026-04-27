@@ -12,6 +12,7 @@ from arc_core.services.contracts import (
     CopyService,
     FetchService,
     FileService,
+    GlacierUploadService,
     PinService,
     PlanningService,
     SearchService,
@@ -19,10 +20,12 @@ from arc_core.services.contracts import (
 from arc_core.services.copies import SqlAlchemyCopyService
 from arc_core.services.fetches import SqlAlchemyFetchService
 from arc_core.services.files import SqlAlchemyFileService
+from arc_core.services.glacier_uploads import SqlAlchemyGlacierUploadService
 from arc_core.services.pins import SqlAlchemyPinService
 from arc_core.services.planning import SqlAlchemyPlanningService
 from arc_core.services.search import SqlAlchemySearchService
 from arc_core.sqlite_db import initialize_db
+from arc_core.stores.s3_archive_store import S3ArchiveStore
 from arc_core.stores.s3_hot_store import S3HotStore
 from arc_core.stores.s3_support import ensure_bucket_exists
 from arc_core.stores.tusd_upload_store import TusdUploadStore
@@ -33,6 +36,7 @@ class ServiceContainer:
     collections: CollectionService
     search: SearchService
     planning: PlanningService
+    glacier_uploads: GlacierUploadService
     copies: CopyService
     pins: PinService
     fetches: FetchService
@@ -44,11 +48,13 @@ def default_container() -> ServiceContainer:
     initialize_db(str(config.sqlite_path))
     ensure_bucket_exists(config)
     hot_store = S3HotStore(config)
+    archive_store = S3ArchiveStore(config)
     upload_store = TusdUploadStore(config)
     return ServiceContainer(
         collections=SqlAlchemyCollectionService(config, hot_store, upload_store),
         search=SqlAlchemySearchService(config),
         planning=SqlAlchemyPlanningService(config),
+        glacier_uploads=SqlAlchemyGlacierUploadService(config, archive_store),
         copies=SqlAlchemyCopyService(config, hot_store),
         pins=SqlAlchemyPinService(config, hot_store, upload_store),
         fetches=SqlAlchemyFetchService(config, hot_store, upload_store),

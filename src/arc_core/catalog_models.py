@@ -155,6 +155,26 @@ class FinalizedImageCoveredPathRecord(Base):
     image: Mapped[FinalizedImageRecord] = relationship(back_populates="covered_paths")
 
 
+class GlacierUploadJobRecord(Base):
+    __tablename__ = "glacier_upload_jobs"
+
+    image_id: Mapped[str] = mapped_column(String, primary_key=True)
+    attempt_count: Mapped[int] = mapped_column(Integer, default=0)
+    next_attempt_at: Mapped[str | None] = mapped_column(String, nullable=True)
+    last_attempt_at: Mapped[str | None] = mapped_column(String, nullable=True)
+    last_error: Mapped[str | None] = mapped_column(String, nullable=True)
+    completed_at: Mapped[str | None] = mapped_column(String, nullable=True)
+    failed_at: Mapped[str | None] = mapped_column(String, nullable=True)
+
+    __table_args__ = (
+        ForeignKeyConstraint(
+            ["image_id"],
+            ["finalized_images.image_id"],
+            ondelete="CASCADE",
+        ),
+    )
+
+
 class ImageCopyRecord(Base):
     __tablename__ = "image_copies"
 
