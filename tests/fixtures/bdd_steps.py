@@ -2081,6 +2081,34 @@ def then_credentials_cannot_write_object_to_bucket(
     )
 
 
+@then(parsers.parse('the {credentials} credentials cannot read object "{key}" from the {storage} bucket'))
+def then_credentials_cannot_read_object_from_bucket(
+    acceptance_system: AcceptanceSystem,
+    credentials: str,
+    storage: str,
+    key: str,
+) -> None:
+    assert acceptance_system.bucket_read_is_rejected(
+        credentials=credentials,
+        storage=storage,
+        key=key,
+    )
+
+
+@then(parsers.parse('the {credentials} credentials cannot list prefix "{prefix}" in the {storage} bucket'))
+def then_credentials_cannot_list_prefix_in_bucket(
+    acceptance_system: AcceptanceSystem,
+    credentials: str,
+    storage: str,
+    prefix: str,
+) -> None:
+    assert acceptance_system.bucket_list_is_rejected(
+        credentials=credentials,
+        storage=storage,
+        prefix=prefix,
+    )
+
+
 @then(parsers.parse('target "{target}" is pinned'))
 @then(parsers.parse('target "{target}" remains pinned'))
 def then_target_is_pinned(

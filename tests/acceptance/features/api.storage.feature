@@ -40,3 +40,17 @@ Feature: Read-only hot storage browsing
       Then the hot credentials cannot write object "glacier/forbidden-hot-write.iso" to the archive bucket
       And the archive credentials cannot write object "collections/forbidden-archive-write.txt" to the hot bucket
       And the archive credentials cannot write object ".arc/uploads/forbidden-archive-write" to the hot bucket
+
+    Scenario: The canonical harness enforces least-privilege bucket reads and lists
+      Given an archive with planner fixtures
+      And collection upload "staged-photos" has a partial file upload in progress
+      And candidate "img_2026-04-20_01" exists
+      When the client posts to "/v1/plan/candidates/img_2026-04-20_01/finalize"
+      Then the response status is 200
+      When the client waits for image "20260420T040001Z" glacier state "uploaded"
+      Then the response status is 200
+      And the hot credentials cannot read object "glacier/finalized-images/20260420T040001Z/20260420T040001Z.iso" from the archive bucket
+      And the hot credentials cannot list prefix "glacier/finalized-images/" in the archive bucket
+      And the archive credentials cannot read object "collections/docs/tax/2022/invoice-123.pdf" from the hot bucket
+      And the archive credentials cannot list prefix "collections/" in the hot bucket
+      And the archive credentials cannot list prefix ".arc/uploads/" in the hot bucket

@@ -1158,6 +1158,40 @@ class ProductionSystem:
             return status in {401, 403} or code in {"AccessDenied", "Forbidden"}
         return False
 
+    def bucket_read_is_rejected(
+        self,
+        *,
+        credentials: str,
+        storage: str,
+        key: str,
+    ) -> bool:
+        bucket, _client = self._bucket_and_client(storage)
+        client = self._client_for_credentials(credentials)
+        try:
+            client.head_object(Bucket=bucket, Key=key)
+        except client.exceptions.ClientError as exc:  # type: ignore[attr-defined]
+            status = int(exc.response.get("ResponseMetadata", {}).get("HTTPStatusCode", 0))
+            code = str(exc.response.get("Error", {}).get("Code", "")).strip()
+            return status in {401, 403} or code in {"AccessDenied", "Forbidden"}
+        return False
+
+    def bucket_list_is_rejected(
+        self,
+        *,
+        credentials: str,
+        storage: str,
+        prefix: str,
+    ) -> bool:
+        bucket, _client = self._bucket_and_client(storage)
+        client = self._client_for_credentials(credentials)
+        try:
+            client.list_objects_v2(Bucket=bucket, Prefix=prefix, MaxKeys=1)
+        except client.exceptions.ClientError as exc:  # type: ignore[attr-defined]
+            status = int(exc.response.get("ResponseMetadata", {}).get("HTTPStatusCode", 0))
+            code = str(exc.response.get("Error", {}).get("Code", "")).strip()
+            return status in {401, 403} or code in {"AccessDenied", "Forbidden"}
+        return False
+
     def upload_required_entries(self, fetch_id: str) -> None:
         with time_block("fixture.upload_required_entries"):
             manifest = self.fetches.manifest(fetch_id)

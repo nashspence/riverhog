@@ -2535,6 +2535,30 @@ class AcceptanceSystem:
         assert key
         return credentials != storage
 
+    def bucket_read_is_rejected(
+        self,
+        *,
+        credentials: str,
+        storage: str,
+        key: str,
+    ) -> bool:
+        assert credentials in {"hot", "archive"}
+        assert storage in {"hot", "archive"}
+        assert key
+        return credentials != storage
+
+    def bucket_list_is_rejected(
+        self,
+        *,
+        credentials: str,
+        storage: str,
+        prefix: str,
+    ) -> bool:
+        assert credentials in {"hot", "archive"}
+        assert storage in {"hot", "archive"}
+        assert prefix
+        return credentials != storage
+
     def pins_list(self) -> list[str]:
         return [str(item.target) for item in self.pins.list_pins()]
 
