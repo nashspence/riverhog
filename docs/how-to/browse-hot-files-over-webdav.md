@@ -11,6 +11,9 @@ rclone serve webdav s3remote:riverhog/collections \
   --addr :8080
 ```
 
+The checked-in compose harness exposes this surface at
+`http://127.0.0.1:8080` by default.
+
 Rules for the supported surface:
 
 - expose only the committed `collections/` namespace

@@ -2060,6 +2060,34 @@ class AcceptanceSystem:
     def recovery_upload_absent(self, fetch_id: str) -> bool:
         return FetchId(fetch_id) not in self.state.fetches
 
+    def list_read_only_browsing_paths(self) -> set[str]:
+        return {
+            file.projected_target
+            for records in self.state.files_by_collection.values()
+            for file in records.values()
+            if file.hot and not file.hot_backing_missing
+        }
+
+    def write_through_read_only_browsing_surface(self, path: str) -> httpx.Response:
+        request = httpx.Request("PUT", f"http://fixture.invalid/{path.lstrip('/')}")
+        return httpx.Response(
+            status_code=405,
+            request=request,
+            text="read-only browsing surface rejects writes",
+        )
+
+    def storage_lifecycle_configuration(self) -> dict[str, object]:
+        return {
+            "Rules": [
+                {
+                    "ID": "abort-incomplete-riverhog-uploads",
+                    "Status": "Enabled",
+                    "Filter": {},
+                    "AbortIncompleteMultipartUpload": {"DaysAfterInitiation": 3},
+                }
+            ]
+        }
+
     def pins_list(self) -> list[str]:
         return [str(item.target) for item in self.pins.list_pins()]
 

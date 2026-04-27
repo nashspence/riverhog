@@ -48,6 +48,7 @@ EOF
 MODE="pytest"
 COMPOSE_RUN_ENV_ARGS=()
 REQUIRES_SIDECARS=0
+PROGRESS_POLL_SECONDS=60
 
 cleanup() {
   if [[ "${REQUIRES_SIDECARS}" == "1" ]]; then
@@ -99,12 +100,81 @@ fi
 
 compose build test
 
+run_with_progress() {
+  local label="$1"
+  shift
+  "$@" &
+  local pid="$!"
+  local started_at
+  started_at="$(date +%s)"
+
+  while kill -0 "${pid}" >/dev/null 2>&1; do
+    sleep "${PROGRESS_POLL_SECONDS}"
+    if kill -0 "${pid}" >/dev/null 2>&1; then
+      local now
+      now="$(date +%s)"
+      printf '... %s still running after %ss\n' "${label}" "$((now - started_at))"
+    fi
+  done
+
+  wait "${pid}"
+}
+
+garage_exec() {
+  compose exec -T garage /garage -c /etc/garage.toml "$@"
+}
+
+bootstrap_garage() {
+  local garage_node=""
+  local garage_node_id=""
+  local access_key_id="${ARC_S3_ACCESS_KEY_ID:-GK000000000000000000000001}"
+  local secret_access_key="${ARC_S3_SECRET_ACCESS_KEY:-1111111111111111111111111111111111111111111111111111111111111111}"
+  local bucket="${ARC_S3_BUCKET:-riverhog}"
+
+  run_with_progress "garage startup" compose up --detach garage
+
+  for _ in $(seq 1 60); do
+    garage_node="$(garage_exec node id 2>/dev/null | tail -n 1 || true)"
+    if [[ "${garage_node}" == *@* ]] && garage_exec -h "${garage_node}" status >/dev/null 2>&1; then
+      break
+    fi
+    sleep 1
+  done
+
+  if [[ "${garage_node}" != *@* ]]; then
+    printf 'garage bootstrap failed: could not resolve the running node id\n' >&2
+    exit 1
+  fi
+
+  garage_node_id="${garage_node%@*}"
+  run_with_progress \
+    "garage layout assign" \
+    garage_exec -h "${garage_node}" layout assign -z local -c 1GB "${garage_node_id}"
+  run_with_progress \
+    "garage layout apply" \
+    garage_exec -h "${garage_node}" layout apply --version 1
+  run_with_progress \
+    "garage key import" \
+    garage_exec -h "${garage_node}" key import --yes -n "${access_key_id}" "${access_key_id}" "${secret_access_key}"
+  run_with_progress \
+    "garage bucket create" \
+    garage_exec -h "${garage_node}" bucket create "${bucket}"
+  run_with_progress \
+    "garage bucket allow" \
+    garage_exec -h "${garage_node}" bucket allow --read --write --owner "${bucket}" --key "${access_key_id}"
+  run_with_progress \
+    "garage lifecycle configure" \
+    compose run --rm --entrypoint python "${COMPOSE_RUN_TTY_ARGS[@]}" test tests/harness/configure_garage.py
+}
+
 if [[ "${REQUIRES_SIDECARS}" == "1" ]]; then
   export ARC_ENABLE_TEST_CONTROL="${ARC_ENABLE_TEST_CONTROL:-1}"
   export UPLOAD_EXPIRY_SWEEP_INTERVAL="${UPLOAD_EXPIRY_SWEEP_INTERVAL:-1s}"
-  compose build seaweedfs app
+  compose build app
   compose down --volumes --remove-orphans >/dev/null 2>&1 || true
-  compose up --detach --wait seaweedfs app
+  bootstrap_garage
+  run_with_progress "sidecar startup" compose up --detach webdav tusd
+  run_with_progress "app startup" compose up --detach --wait app
 fi
 
 run_test_container() {
@@ -124,7 +194,7 @@ if [[ "${MODE}" == "canonical" ]]; then
     started_at="$(date +%s)"
 
     printf '\n==> %s\n' "${label}"
-    "$@"
+    run_with_progress "${label}" "$@"
 
     local finished_at
     finished_at="$(date +%s)"
@@ -136,4 +206,4 @@ if [[ "${MODE}" == "canonical" ]]; then
   exit 0
 fi
 
-run_test_container "$@"
+run_with_progress "pytest" run_test_container "$@"

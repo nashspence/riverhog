@@ -65,6 +65,7 @@ class AcceptanceScenarioContext:
     recorded_split_payloads: dict[str, dict[int, bytes]] = field(default_factory=dict)
     recorded_upload_offset: int | None = None
     last_fetch_id: str | None = None
+    read_only_browsing_paths: set[str] = field(default_factory=set)
 
 
 @pytest.fixture
@@ -1684,34 +1685,70 @@ def then_target_is_not_hot(
 
 
 @when("the client lists the read-only browsing root")
-def when_the_client_lists_the_read_only_browsing_root() -> None:
-    raise NotImplementedError("read-only browsing acceptance backing is tracked by Issue #89")
+def when_the_client_lists_the_read_only_browsing_root(
+    acceptance_system: AcceptanceSystem,
+    acceptance_context: AcceptanceScenarioContext,
+) -> None:
+    acceptance_context.read_only_browsing_paths = acceptance_system.list_read_only_browsing_paths()
 
 
 @then(parsers.parse('the read-only browsing surface exposes path "{path}"'))
-def then_the_read_only_browsing_surface_exposes_path(path: str) -> None:
-    raise NotImplementedError(
-        f"read-only browsing acceptance backing is tracked by Issue #89: {path}"
-    )
+def then_the_read_only_browsing_surface_exposes_path(
+    acceptance_context: AcceptanceScenarioContext,
+    path: str,
+) -> None:
+    assert path in acceptance_context.read_only_browsing_paths
 
 
 @then(parsers.parse('the read-only browsing surface hides path "{path}"'))
-def then_the_read_only_browsing_surface_hides_path(path: str) -> None:
-    raise NotImplementedError(
-        f"read-only browsing acceptance backing is tracked by Issue #89: {path}"
-    )
+def then_the_read_only_browsing_surface_hides_path(
+    acceptance_context: AcceptanceScenarioContext,
+    path: str,
+) -> None:
+    assert path not in acceptance_context.read_only_browsing_paths
 
 
 @when(parsers.parse('the client attempts to write "{path}" through the read-only browsing surface'))
-def when_the_client_attempts_to_write_through_the_read_only_browsing_surface(path: str) -> None:
-    raise NotImplementedError(
-        f"read-only browsing acceptance backing is tracked by Issue #89: {path}"
+def when_the_client_attempts_to_write_through_the_read_only_browsing_surface(
+    acceptance_system: AcceptanceSystem,
+    acceptance_context: AcceptanceScenarioContext,
+    path: str,
+) -> None:
+    acceptance_context.response = acceptance_system.write_through_read_only_browsing_surface(
+        path
     )
 
 
 @then("the read-only browsing write is rejected")
-def then_the_read_only_browsing_write_is_rejected() -> None:
-    raise NotImplementedError("read-only browsing acceptance backing is tracked by Issue #89")
+def then_the_read_only_browsing_write_is_rejected(
+    acceptance_context: AcceptanceScenarioContext,
+) -> None:
+    assert _require_response(acceptance_context).status_code >= 400
+
+
+@when("the client inspects the canonical storage lifecycle configuration")
+def when_the_client_inspects_the_canonical_storage_lifecycle_configuration(
+    acceptance_system: AcceptanceSystem,
+    acceptance_context: AcceptanceScenarioContext,
+) -> None:
+    acceptance_context.stdout_json = acceptance_system.storage_lifecycle_configuration()
+
+
+@then("the storage lifecycle aborts incomplete multipart uploads after 3 days")
+def then_the_storage_lifecycle_aborts_incomplete_multipart_uploads_after_3_days(
+    acceptance_context: AcceptanceScenarioContext,
+) -> None:
+    payload = acceptance_context.stdout_json
+    assert isinstance(payload, dict)
+    rules = payload.get("Rules", [])
+    assert isinstance(rules, list) and rules
+    first = rules[0]
+    assert isinstance(first, dict)
+    assert first.get("ID") == "abort-incomplete-riverhog-uploads"
+    assert first.get("Status") == "Enabled"
+    abort = first.get("AbortIncompleteMultipartUpload")
+    assert isinstance(abort, dict)
+    assert abort.get("DaysAfterInitiation") == 3
 
 
 @then(parsers.parse('target "{target}" is pinned'))

@@ -24,9 +24,14 @@ Build and run the active stack:
 docker compose --env-file .env.compose.example up --build
 ```
 
-The default example env exposes the API at `http://127.0.0.1:8000`. Storage
-sidecar wiring and related environment variables follow the active runtime
-contract documented in [Configuration Reference](../reference/configuration.md).
+The default example env exposes:
+
+- the API at `http://127.0.0.1:8000`
+- the read-only WebDAV surface at `http://127.0.0.1:8080`
+
+The checked-in harness uses Garage for S3-compatible committed storage, `tusd`
+for resumable staging uploads, and `rclone serve webdav --read-only` for
+day-to-day browsing.
 
 ## Run the canonical tests
 
@@ -39,6 +44,10 @@ the canonical test container while using the same compose surface for the checke
 ./test acceptance
 ./test unit
 ```
+
+`./test` also performs the deterministic Garage bootstrap that creates the
+canonical bucket, grants the checked-in test credentials, and verifies the
+incomplete multipart lifecycle configuration before the acceptance lane runs.
 
 ## Tear the stack down
 

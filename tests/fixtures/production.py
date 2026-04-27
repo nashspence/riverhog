@@ -12,6 +12,8 @@ from collections.abc import Iterator, Mapping
 from dataclasses import dataclass
 from pathlib import Path
 from typing import cast
+from urllib.parse import unquote, urlsplit
+from xml.etree import ElementTree
 
 import httpx
 import pytest
@@ -35,8 +37,10 @@ from arc_core.domain.models import CollectionSummary, CopySummary, FetchCopyHint
 from arc_core.domain.selectors import parse_target
 from arc_core.domain.types import CollectionId, CopyId, FetchId, TargetStr
 from arc_core.fs_paths import normalize_collection_id
+from arc_core.runtime_config import load_runtime_config
 from arc_core.sqlite_db import make_session_factory, session_scope
-from tests.fixtures.acceptance import REPO_ROOT, SRC_ROOT, _reserve_local_port
+from arc_core.stores.s3_support import create_s3_client
+from tests.fixtures.acceptance import REPO_ROOT, SRC_ROOT
 from tests.fixtures.data import (
     DOCS_COLLECTION_ID,
     DOCS_FILES,
@@ -58,124 +62,18 @@ from tests.fixtures.data import (
 from tests.timing_profile import time_block
 
 _APP_START_TIMEOUT = 15.0
-_SEAWEEDFS_START_TIMEOUT = 15.0
-_SEAWEEDFS_REQUEST_TIMEOUT = 5.0
 _APP_REQUEST_TIMEOUT = 5.0
-_EXTERNAL_SEAWEEDFS_BASE_URL_ENV = "ARC_TEST_EXTERNAL_SEAWEEDFS_BASE_URL"
+_SIDECAR_START_TIMEOUT = 15.0
 _EXTERNAL_APP_BASE_URL_ENV = "ARC_TEST_EXTERNAL_APP_BASE_URL"
 _EXTERNAL_APP_DB_PATH_ENV = "ARC_TEST_EXTERNAL_APP_DB_PATH"
-_EXTERNAL_APP_FILER_URL_ENV = "ARC_TEST_EXTERNAL_APP_FILER_URL"
+_EXTERNAL_WEBDAV_BASE_URL_ENV = "ARC_TEST_EXTERNAL_WEBDAV_BASE_URL"
 _EXTERNAL_APP_RESTART_PATH_ENV = "ARC_TEST_EXTERNAL_APP_RESTART_PATH"
 _EXTERNAL_APP_RESET_PATH_ENV = "ARC_TEST_EXTERNAL_APP_RESET_PATH"
 _DEFAULT_EXTERNAL_APP_BASE_URL = "http://app:8000"
 _DEFAULT_EXTERNAL_APP_DB_PATH = "/app/.compose/state.sqlite3"
-_DEFAULT_EXTERNAL_APP_FILER_URL = "http://seaweedfs:8888/compose-app"
+_DEFAULT_EXTERNAL_WEBDAV_BASE_URL = "http://webdav:8080"
 _DEFAULT_EXTERNAL_APP_RESTART_PATH = "/_test/restart"
 _DEFAULT_EXTERNAL_APP_RESET_PATH = "/_test/reset"
-
-
-@dataclass(slots=True)
-class _SeaweedFSServerHandle:
-    base_url: str
-    process: subprocess.Popen[str] | None = None
-    log_file: object | None = None
-    log_path: Path | None = None
-
-    def wait_until_ready(self) -> None:
-        deadline = time.monotonic() + _SEAWEEDFS_START_TIMEOUT
-        last_error: Exception | None = None
-        while time.monotonic() < deadline:
-            if self.process is not None and self.process.poll() is not None:
-                break
-            try:
-                with httpx.Client(timeout=0.5) as client:
-                    response = client.get(f"{self.base_url}/")
-                if response.status_code < 500:
-                    return
-            except Exception as exc:  # pragma: no cover - readiness race
-                last_error = exc
-            time.sleep(0.05)
-        self.close()
-        if self.log_path is None:
-            log_output = "No managed SeaweedFS log was captured for this external sidecar."
-        else:
-            log_output = self.log_path.read_text(encoding="utf-8", errors="replace")
-        raise RuntimeError(
-            f"Timed out waiting for SeaweedFS filer at {self.base_url}\n{log_output}"
-        ) from last_error
-
-    def close(self) -> None:
-        if self.process is not None and self.process.poll() is None:
-            self.process.terminate()
-            try:
-                self.process.wait(timeout=5.0)
-            except subprocess.TimeoutExpired:  # pragma: no cover - defensive cleanup
-                self.process.kill()
-                self.process.wait(timeout=5.0)
-        log_file = self.log_file
-        if hasattr(log_file, "close"):
-            log_file.close()
-
-
-def _start_seaweedfs_server(workspace: Path) -> _SeaweedFSServerHandle:
-    with time_block("fixture.seaweedfs.start"):
-        weed_path = shutil.which("weed")
-        if weed_path is None:
-            pytest.skip("production acceptance tests require the SeaweedFS `weed` binary")
-
-        data_root = (workspace / "seaweedfs").resolve()
-        data_root.mkdir(parents=True, exist_ok=True)
-        master_dir = data_root / "master"
-        volume_dir = data_root / "volume"
-        master_dir.mkdir(parents=True, exist_ok=True)
-        volume_dir.mkdir(parents=True, exist_ok=True)
-
-        with (
-            _reserve_local_port() as master_port,
-            _reserve_local_port() as volume_port,
-            _reserve_local_port() as filer_port,
-        ):
-            log_path = data_root / "seaweedfs.log"
-            log_file = log_path.open("w", encoding="utf-8")
-            process = subprocess.Popen(
-                [
-                    weed_path,
-                    "server",
-                    "-ip=127.0.0.1",
-                    "-ip.bind=127.0.0.1",
-                    "-filer",
-                    f"-master.port={master_port.port}",
-                    f"-volume.port={volume_port.port}",
-                    f"-filer.port={filer_port.port}",
-                    f"-master.dir={master_dir}",
-                    f"-dir={volume_dir}",
-                ],
-                stdout=log_file,
-                stderr=subprocess.STDOUT,
-                text=True,
-            )
-        handle = _SeaweedFSServerHandle(
-            base_url=f"http://127.0.0.1:{filer_port.port}",
-            process=process,
-            log_file=log_file,
-            log_path=log_path,
-        )
-        handle.wait_until_ready()
-        return handle
-
-
-def _external_seaweedfs_server() -> _SeaweedFSServerHandle | None:
-    configured_base_url = os.environ.get(_EXTERNAL_SEAWEEDFS_BASE_URL_ENV)
-    if configured_base_url is None:
-        return None
-
-    base_url = configured_base_url.rstrip("/")
-    if not base_url:
-        raise RuntimeError(f"{_EXTERNAL_SEAWEEDFS_BASE_URL_ENV} must not be empty")
-
-    handle = _SeaweedFSServerHandle(base_url=base_url)
-    handle.wait_until_ready()
-    return handle
 
 
 @dataclass(slots=True)
@@ -251,6 +149,83 @@ def _external_app_server() -> _ExternalAppHandle:
     )
     handle.wait_until_ready()
     return handle
+
+
+def _external_webdav_base_url() -> str:
+    base_url = os.environ.get(
+        _EXTERNAL_WEBDAV_BASE_URL_ENV, _DEFAULT_EXTERNAL_WEBDAV_BASE_URL
+    ).rstrip("/")
+    if not base_url:
+        raise RuntimeError(f"{_EXTERNAL_WEBDAV_BASE_URL_ENV} must not be empty")
+    return base_url
+
+
+def _wait_for_tusd(base_url: str) -> None:
+    deadline = time.monotonic() + _SIDECAR_START_TIMEOUT
+    last_error: Exception | None = None
+    while time.monotonic() < deadline:
+        try:
+            with httpx.Client(timeout=0.5) as client:
+                response = client.options(base_url, headers={"Tus-Resumable": "1.0.0"})
+            if response.status_code in {200, 204}:
+                return
+        except Exception as exc:  # pragma: no cover - readiness race
+            last_error = exc
+        time.sleep(0.05)
+    raise RuntimeError(f"Timed out waiting for tusd at {base_url}") from last_error
+
+
+def _wait_for_webdav(base_url: str) -> None:
+    deadline = time.monotonic() + _SIDECAR_START_TIMEOUT
+    last_error: Exception | None = None
+    while time.monotonic() < deadline:
+        try:
+            with httpx.Client(timeout=0.5) as client:
+                response = client.request("PROPFIND", base_url, headers={"Depth": "0"})
+            if response.status_code == 207:
+                return
+        except Exception as exc:  # pragma: no cover - readiness race
+            last_error = exc
+        time.sleep(0.05)
+    raise RuntimeError(f"Timed out waiting for WebDAV at {base_url}") from last_error
+
+
+def _wait_for_s3_bucket() -> None:
+    deadline = time.monotonic() + _SIDECAR_START_TIMEOUT
+    last_error: Exception | None = None
+    while time.monotonic() < deadline:
+        try:
+            config = load_runtime_config()
+            client = create_s3_client(config)
+            client.head_bucket(Bucket=config.s3_bucket)
+            return
+        except Exception as exc:  # pragma: no cover - readiness race
+            last_error = exc
+        time.sleep(0.05)
+    raise RuntimeError("Timed out waiting for Garage S3 bucket readiness") from last_error
+
+
+def _normalize_lifecycle_configuration(payload: Mapping[str, object]) -> dict[str, object]:
+    rules = []
+    raw_rules = payload.get("Rules", [])
+    if isinstance(raw_rules, list):
+        for rule in raw_rules:
+            if not isinstance(rule, dict):
+                continue
+            abort = rule.get("AbortIncompleteMultipartUpload")
+            rules.append(
+                {
+                    "ID": rule.get("ID"),
+                    "Status": rule.get("Status"),
+                    "Filter": rule.get("Filter", {}),
+                    "AbortIncompleteMultipartUpload": {
+                        "DaysAfterInitiation": abort.get("DaysAfterInitiation")
+                        if isinstance(abort, dict)
+                        else None
+                    },
+                }
+            )
+    return {"Rules": rules}
 
 
 class ProductionCollectionsClient:
@@ -617,8 +592,7 @@ class ProductionStateClient:
 @dataclass(slots=True)
 class ProductionSystem:
     workspace: Path
-    filer_url: str
-    seaweedfs: _SeaweedFSServerHandle
+    webdav_url: str
     server: _ExternalAppHandle
     base_url: str
     db_path: Path
@@ -630,20 +604,20 @@ class ProductionSystem:
     copies: ProductionCopiesClient
 
     @classmethod
-    def create(
-        cls, workspace: Path, seaweedfs: _SeaweedFSServerHandle
-    ) -> ProductionSystem:
+    def create(cls, workspace: Path) -> ProductionSystem:
         with time_block("fixture.acceptance_system.create"):
-            filer_url = os.environ.get(_EXTERNAL_APP_FILER_URL_ENV, _DEFAULT_EXTERNAL_APP_FILER_URL)
             db_path = Path(
                 os.environ.get(_EXTERNAL_APP_DB_PATH_ENV, _DEFAULT_EXTERNAL_APP_DB_PATH)
             ).expanduser().resolve()
             fixture_path = workspace / "arc_disc_fixture.json"
+            _wait_for_s3_bucket()
+            _wait_for_tusd(load_runtime_config().tusd_base_url)
             server = _external_app_server()
+            webdav_url = _external_webdav_base_url()
+            _wait_for_webdav(webdav_url)
             system = cls(
                 workspace=workspace,
-                filer_url=filer_url,
-                seaweedfs=seaweedfs,
+                webdav_url=webdav_url,
                 server=server,
                 base_url=server.base_url,
                 db_path=db_path,
@@ -697,24 +671,24 @@ class ProductionSystem:
                     content=content,
                 )
 
-    def filer_request(
+    def _s3_client(self):
+        return create_s3_client(load_runtime_config())
+
+    @staticmethod
+    def _collection_key(collection_id: str, path: str) -> str:
+        return f"collections/{normalize_collection_id(collection_id)}/{path}"
+
+    def _webdav_request(
         self,
         method: str,
-        path: str,
+        path: str = "/",
         *,
         headers: Mapping[str, str] | None = None,
         content: bytes | None = None,
-        params: Mapping[str, object] | None = None,
     ) -> httpx.Response:
-        with time_block(f"filer {method} {path}"):
-            with httpx.Client(timeout=_SEAWEEDFS_REQUEST_TIMEOUT) as client:
-                return client.request(
-                    method,
-                    f"{self.filer_url}/{path.lstrip('/')}",
-                    headers=headers,
-                    content=content,
-                    params=params,
-                )
+        with time_block(f"webdav {method} {path}"):
+            with httpx.Client(base_url=self.webdav_url, timeout=5.0) as client:
+                return client.request(method, path, headers=headers, content=content)
 
     def run_arc(self, *args: str) -> subprocess.CompletedProcess[str]:
         with time_block("subprocess arc"):
@@ -755,24 +729,23 @@ class ProductionSystem:
         if len(selected) != 1:
             raise AssertionError(f"expected exactly one file target: {target}")
         record = selected[0]
-        response = self.filer_request(
-            "DELETE",
-            f"/collections/{record.collection_id}/{record.path}",
+        self._s3_client().delete_object(
+            Bucket=load_runtime_config().s3_bucket,
+            Key=self._collection_key(record.collection_id, record.path),
         )
-        if response.status_code not in (200, 204, 404):
-            response.raise_for_status()
 
     def has_committed_collection_file(self, collection_id: str, path: str) -> bool:
-        response = self.filer_request(
-            "HEAD",
-            f"/collections/{normalize_collection_id(collection_id)}/{path}",
-        )
-        if response.status_code == 200:
+        client = self._s3_client()
+        try:
+            client.head_object(
+                Bucket=load_runtime_config().s3_bucket,
+                Key=self._collection_key(collection_id, path),
+            )
             return True
-        if response.status_code == 404:
-            return False
-        response.raise_for_status()
-        return False
+        except client.exceptions.ClientError as exc:  # type: ignore[attr-defined]
+            if exc.response.get("ResponseMetadata", {}).get("HTTPStatusCode") == 404:
+                return False
+            raise
 
     def seed_collection_source(
         self, collection_id: str, files: Mapping[str, bytes] | None = None
@@ -833,12 +806,11 @@ class ProductionSystem:
                     )
                 )
                 for path, content in sorted(files.items()):
-                    response = self.filer_request(
-                        "PUT",
-                        f"/collections/{normalized_collection_id}/{path}",
-                        content=content,
+                    self._s3_client().put_object(
+                        Bucket=load_runtime_config().s3_bucket,
+                        Key=self._collection_key(normalized_collection_id, path),
+                        Body=content,
                     )
-                    response.raise_for_status()
                     session.add(
                         CollectionFileRecord(
                             collection_id=normalized_collection_id,
@@ -998,8 +970,36 @@ class ProductionSystem:
         assert response.status_code == 200, response.text
 
     def recovery_upload_absent(self, fetch_id: str) -> bool:
-        response = self.filer_request("GET", f"/.arc/recovery/{fetch_id}/")
-        return response.status_code == 404
+        response = self._s3_client().list_objects_v2(
+            Bucket=load_runtime_config().s3_bucket,
+            Prefix=f".arc/uploads/recovery/{fetch_id}/",
+        )
+        return response.get("KeyCount", 0) == 0
+
+    def list_read_only_browsing_paths(self) -> set[str]:
+        response = self._webdav_request("PROPFIND", "/", headers={"Depth": "infinity"})
+        assert response.status_code == 207, response.text
+        root_path = urlsplit(self.webdav_url).path.rstrip("/")
+        paths: set[str] = set()
+        for href in ElementTree.fromstring(response.text).iterfind(".//{DAV:}href"):
+            raw_href = href.text or ""
+            path = unquote(urlsplit(raw_href).path)
+            if root_path and path.startswith(root_path):
+                relative = path[len(root_path) :].lstrip("/")
+            else:
+                relative = path.lstrip("/")
+            if relative:
+                paths.add(relative)
+        return paths
+
+    def write_through_read_only_browsing_surface(self, path: str) -> httpx.Response:
+        return self._webdav_request("PUT", f"/{path.lstrip('/')}", content=b"forbidden")
+
+    def storage_lifecycle_configuration(self) -> dict[str, object]:
+        payload = self._s3_client().get_bucket_lifecycle_configuration(
+            Bucket=load_runtime_config().s3_bucket
+        )
+        return _normalize_lifecycle_configuration(payload)
 
     def upload_required_entries(self, fetch_id: str) -> None:
         with time_block("fixture.upload_required_entries"):
@@ -1195,7 +1195,6 @@ class ProductionSystem:
             pythonpath_parts.append(existing)
         env["PYTHONPATH"] = os.pathsep.join(pythonpath_parts)
         env["ARC_BASE_URL"] = self.base_url
-        env["ARC_SEAWEEDFS_FILER_URL"] = self.filer_url
         env["ARC_DB_PATH"] = str(self.db_path)
         if extra:
             env.update(extra)
@@ -1214,9 +1213,11 @@ class ProductionSystem:
             return record.bytes
 
     def _file_bytes(self, collection_id: str, path: str) -> bytes:
-        response = self.filer_request("GET", f"/collections/{collection_id}/{path}")
-        assert response.status_code == 200, response.text
-        return response.content
+        response = self._s3_client().get_object(
+            Bucket=load_runtime_config().s3_bucket,
+            Key=self._collection_key(collection_id, path),
+        )
+        return response["Body"].read()
 
     def _file_part_bytes(
         self,
@@ -1243,27 +1244,16 @@ class ProductionSystem:
             f"production acceptance suite does not provide fixture-backed state for {name}"
         )
 
-
-@pytest.fixture(scope="session")
-def seaweedfs_server(tmp_path_factory: pytest.TempPathFactory) -> Iterator[_SeaweedFSServerHandle]:
-    server = _external_seaweedfs_server()
-    if server is None:
-        server = _start_seaweedfs_server(tmp_path_factory.mktemp("seaweedfs"))
-    try:
-        yield server
-    finally:
-        server.close()
-
-
 @pytest.fixture
-def acceptance_system(
-    tmp_path: Path, seaweedfs_server: _SeaweedFSServerHandle
-) -> Iterator[ProductionSystem]:
+def acceptance_system(tmp_path: Path) -> Iterator[ProductionSystem]:
     workspace = (REPO_ROOT / ".tmp" / "acceptance" / tmp_path.name).resolve()
     if workspace.exists():
         shutil.rmtree(workspace)
     workspace.mkdir(parents=True, exist_ok=True)
-    system = ProductionSystem.create(workspace, seaweedfs_server)
+    try:
+        system = ProductionSystem.create(workspace)
+    except RuntimeError as exc:
+        pytest.skip(str(exc))
     try:
         yield system
     finally:

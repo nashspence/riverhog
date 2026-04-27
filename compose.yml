@@ -1,21 +1,52 @@
 services:
-  seaweedfs:
-    build:
-      context: .
-      dockerfile: Dockerfile.seaweedfs
-    entrypoint: ["/bin/sh", "-lc"]
-    command:
-      - "mkdir -p /data/master /data/volume && exec weed server -ip=seaweedfs -ip.bind=0.0.0.0 -filer -master.port=9333 -volume.port=8080 -filer.port=8888 -master.dir=/data/master -dir=/data/volume"
-    healthcheck:
-      test: ["CMD", "curl", "-fsS", "http://127.0.0.1:8888/"]
-      interval: 2s
-      timeout: 2s
-      retries: 30
-      start_period: 2s
-    ports:
-      - "${ARC_SEAWEEDFS_HOST_PORT:-8888}:8888"
+  garage:
+    image: dxflrs/garage:b72b090a097c8ee2711c8fb065d250ed68dcd0bf
     volumes:
-      - seaweedfs-data:/data
+      - garage-data:/var/lib/garage
+      - ./tests/harness/garage.toml:/etc/garage.toml:ro
+
+  tusd:
+    image: tusproject/tusd:v2.8.0
+    depends_on:
+      - garage
+    command:
+      - "-host"
+      - "0.0.0.0"
+      - "-port"
+      - "1080"
+      - "-base-path"
+      - "/files/"
+      - "-s3-bucket"
+      - "${ARC_S3_BUCKET}"
+      - "-s3-endpoint"
+      - "http://garage:3900"
+      - "-s3-disable-ssl"
+      - "-hooks-http"
+      - "http://app:8000/internal/tusd/hooks"
+      - "-hooks-http-forward-headers"
+      - "X-Arc-Tusd-Hook-Secret"
+    environment:
+      AWS_ACCESS_KEY_ID: ${ARC_S3_ACCESS_KEY_ID}
+      AWS_SECRET_ACCESS_KEY: ${ARC_S3_SECRET_ACCESS_KEY}
+      AWS_REGION: ${ARC_S3_REGION}
+
+  webdav:
+    image: rclone/rclone:1.69.3
+    depends_on:
+      - garage
+    command:
+      - "serve"
+      - "webdav"
+      - "garage:${ARC_S3_BUCKET}/collections"
+      - "--config"
+      - "/config/rclone.conf"
+      - "--read-only"
+      - "--addr"
+      - ":8080"
+    ports:
+      - "${ARC_WEBDAV_PORT:-8080}:8080"
+    volumes:
+      - ./tests/harness/rclone.conf:/config/rclone.conf:ro
 
   app:
     build:
@@ -23,10 +54,20 @@ services:
       dockerfile: Dockerfile.app
     restart: unless-stopped
     depends_on:
-      seaweedfs:
-        condition: service_healthy
+      - garage
+      - tusd
     environment:
-      ARC_SEAWEEDFS_FILER_URL: ${ARC_SEAWEEDFS_FILER_URL}
+      ARC_OBJECT_STORE: ${ARC_OBJECT_STORE}
+      ARC_S3_ENDPOINT_URL: ${ARC_S3_ENDPOINT_URL}
+      ARC_S3_REGION: ${ARC_S3_REGION}
+      ARC_S3_BUCKET: ${ARC_S3_BUCKET}
+      ARC_S3_ACCESS_KEY_ID: ${ARC_S3_ACCESS_KEY_ID}
+      ARC_S3_SECRET_ACCESS_KEY: ${ARC_S3_SECRET_ACCESS_KEY}
+      ARC_S3_FORCE_PATH_STYLE: ${ARC_S3_FORCE_PATH_STYLE}
+      ARC_TUSD_BASE_URL: ${ARC_TUSD_BASE_URL}
+      ARC_TUSD_HOOK_SECRET: ${ARC_TUSD_HOOK_SECRET}
+      ARC_WEBDAV_ENABLED: ${ARC_WEBDAV_ENABLED}
+      ARC_WEBDAV_ADDR: ${ARC_WEBDAV_ADDR}
       ARC_DB_PATH: ${ARC_DB_PATH}
       INCOMPLETE_UPLOAD_TTL: ${INCOMPLETE_UPLOAD_TTL:-24h}
       UPLOAD_EXPIRY_SWEEP_INTERVAL: ${UPLOAD_EXPIRY_SWEEP_INTERVAL:-30s}
@@ -53,13 +94,21 @@ services:
       context: .
       dockerfile: Dockerfile.test
     environment:
-      ARC_TEST_EXTERNAL_SEAWEEDFS_BASE_URL: ${ARC_TEST_EXTERNAL_SEAWEEDFS_BASE_URL:-http://seaweedfs:8888}
+      ARC_OBJECT_STORE: ${ARC_OBJECT_STORE}
+      ARC_S3_ENDPOINT_URL: ${ARC_S3_ENDPOINT_URL}
+      ARC_S3_REGION: ${ARC_S3_REGION}
+      ARC_S3_BUCKET: ${ARC_S3_BUCKET}
+      ARC_S3_ACCESS_KEY_ID: ${ARC_S3_ACCESS_KEY_ID}
+      ARC_S3_SECRET_ACCESS_KEY: ${ARC_S3_SECRET_ACCESS_KEY}
+      ARC_S3_FORCE_PATH_STYLE: ${ARC_S3_FORCE_PATH_STYLE}
+      ARC_TUSD_BASE_URL: ${ARC_TUSD_BASE_URL}
+      ARC_TUSD_HOOK_SECRET: ${ARC_TUSD_HOOK_SECRET}
       ARC_TEST_EXTERNAL_APP_BASE_URL: ${ARC_TEST_EXTERNAL_APP_BASE_URL:-http://app:8000}
       ARC_TEST_EXTERNAL_APP_DB_PATH: ${ARC_TEST_EXTERNAL_APP_DB_PATH:-/app/.compose/state.sqlite3}
-      ARC_TEST_EXTERNAL_APP_FILER_URL: ${ARC_TEST_EXTERNAL_APP_FILER_URL:-http://seaweedfs:8888/compose-app}
+      ARC_TEST_EXTERNAL_WEBDAV_BASE_URL: ${ARC_TEST_EXTERNAL_WEBDAV_BASE_URL:-http://webdav:8080}
       PYTHONPATH: /app:/app/src
     volumes:
       - .:/app
 
 volumes:
-  seaweedfs-data:
+  garage-data:

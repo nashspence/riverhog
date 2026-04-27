@@ -1,7 +1,8 @@
 from __future__ import annotations
 
 import base64
-from urllib.parse import urljoin
+import time
+from urllib.parse import quote, urljoin, urlsplit, urlunsplit
 
 import httpx
 
@@ -10,6 +11,8 @@ from arc_core.runtime_config import RuntimeConfig
 from arc_core.stores.s3_support import create_s3_client
 
 _TIMEOUT = 30.0
+_READ_TARGET_RETRY_SECONDS = 1.0
+_READ_TARGET_RETRY_INTERVAL_SECONDS = 0.05
 _HOOK_SECRET_HEADER = "X-Arc-Tusd-Hook-Secret"
 
 
@@ -33,24 +36,44 @@ class TusdUploadStore:
         encoded = base64.b64encode(target_path.encode("utf-8")).decode("ascii")
         return f"target_path {encoded}"
 
+    def _tus_headers(self, **headers: str) -> dict[str, str]:
+        return {
+            "Tus-Resumable": "1.0.0",
+            _HOOK_SECRET_HEADER: self._hook_secret,
+            **headers,
+        }
+
+    def _normalize_tusd_location(self, location: str) -> str:
+        joined = urljoin(f"{self._tusd_base_url}/", location)
+        parsed = urlsplit(joined)
+        base_path = urlsplit(self._tusd_base_url).path.rstrip("/")
+        prefix = f"{base_path}/"
+        if not parsed.path.startswith(prefix):
+            return joined
+        upload_id = parsed.path.removeprefix(prefix)
+        normalized_path = f"{prefix}{quote(upload_id, safe='+')}"
+        return urlunsplit(
+            (parsed.scheme, parsed.netloc, normalized_path, parsed.query, parsed.fragment)
+        )
+
     def create_upload(self, target_path: str, length: int) -> str:
         with httpx.Client(timeout=_TIMEOUT) as client:
             response = client.post(
                 self._tusd_base_url,
-                headers={
-                    "Tus-Resumable": "1.0.0",
-                    "Upload-Length": str(length),
-                    "Upload-Metadata": self._metadata_header(target_path),
-                    _HOOK_SECRET_HEADER: self._hook_secret,
-                },
+                headers=self._tus_headers(
+                    **{
+                        "Upload-Length": str(length),
+                        "Upload-Metadata": self._metadata_header(target_path),
+                    }
+                ),
             )
             response.raise_for_status()
             location = response.headers["Location"]
-            return urljoin(f"{self._tusd_base_url}/", location)
+            return self._normalize_tusd_location(location)
 
     def get_offset(self, tus_url: str) -> int:
         with httpx.Client(timeout=_TIMEOUT) as client:
-            response = client.head(tus_url, headers={"Tus-Resumable": "1.0.0"})
+            response = client.head(tus_url, headers=self._tus_headers())
             if response.status_code == 404:
                 return -1
             response.raise_for_status()
@@ -67,12 +90,13 @@ class TusdUploadStore:
         with httpx.Client(timeout=_TIMEOUT) as client:
             response = client.patch(
                 tus_url,
-                headers={
-                    "Content-Type": "application/offset+octet-stream",
-                    "Tus-Resumable": "1.0.0",
-                    "Upload-Offset": str(offset),
-                    "Upload-Checksum": checksum,
-                },
+                headers=self._tus_headers(
+                    **{
+                        "Content-Type": "application/offset+octet-stream",
+                        "Upload-Offset": str(offset),
+                        "Upload-Checksum": checksum,
+                    }
+                ),
                 content=content,
             )
             response.raise_for_status()
@@ -80,13 +104,17 @@ class TusdUploadStore:
 
     def read_target(self, target_path: str) -> bytes:
         key = self._object_key(target_path)
-        try:
-            response = self._client.get_object(Bucket=self._bucket, Key=key)
-        except self._client.exceptions.ClientError as exc:  # type: ignore[attr-defined]
-            if exc.response.get("ResponseMetadata", {}).get("HTTPStatusCode") != 404:
-                raise
-            raise NotFound(f"upload target not found: {target_path}") from exc
-        return response["Body"].read()
+        deadline = time.monotonic() + _READ_TARGET_RETRY_SECONDS
+        while True:
+            try:
+                response = self._client.get_object(Bucket=self._bucket, Key=key)
+                return response["Body"].read()
+            except self._client.exceptions.ClientError as exc:  # type: ignore[attr-defined]
+                if exc.response.get("ResponseMetadata", {}).get("HTTPStatusCode") != 404:
+                    raise
+                if time.monotonic() >= deadline:
+                    raise NotFound(f"upload target not found: {target_path}") from exc
+                time.sleep(_READ_TARGET_RETRY_INTERVAL_SECONDS)
 
     def delete_target(self, target_path: str) -> None:
         key = self._object_key(target_path)
@@ -103,4 +131,4 @@ class TusdUploadStore:
 
     def cancel_upload(self, tus_url: str) -> None:
         with httpx.Client(timeout=_TIMEOUT) as client:
-            _ok_or_raise(client.delete(tus_url, headers={"Tus-Resumable": "1.0.0"}))
+            _ok_or_raise(client.delete(tus_url, headers=self._tus_headers()))
