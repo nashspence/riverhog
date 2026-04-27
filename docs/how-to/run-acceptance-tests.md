@@ -12,7 +12,8 @@ Run the same acceptance contract inside the deterministic test container:
 ```
 
 That path now keeps `pytest` in the canonical test container while `docker compose`
-manages the checked-in `app` and `seaweedfs` services outside the container.
+manages the checked-in `app` service and its storage sidecars outside the
+container.
 
 Run the production-backed acceptance lane with built-in timing output for scenario and fixture hotspots:
 

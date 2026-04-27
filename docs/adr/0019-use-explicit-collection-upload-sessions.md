@@ -10,8 +10,8 @@ Collection ingest flows through `arc`. Riverhog needs a
 collection contract that:
 
 - gives the client an explicit collection identity up front
-- supports resumable direct uploads into SeaweedFS
-- keeps collection visibility separate from in-progress upload state
+- supports resumable Riverhog-managed uploads backed by internal staging
+- keeps collection visibility separate from staged in-progress upload state
 - preserves the existing prefix-free collection-id namespace
 
 ## Decision
@@ -23,6 +23,7 @@ collection contract that:
   - if `tax/2022` exists, reject `tax`
 - collection ingest uses a collection-upload session plus one resumable upload resource per logical file
 - each collection-file `upload_url` is a Riverhog-managed tus-compatible resource rather than a raw storage-owned URL
+- incomplete collection bytes stage outside the committed `collections/{collection_id}/{path}` namespace until Riverhog verifies them
 - collection-upload sessions persist enough state to survive service restart and repeated CLI runs
 - collection-upload files use the same `INCOMPLETE_UPLOAD_TTL` expiry model as fetch recovery uploads
 - a collection remains invisible until every required file upload completes and Riverhog verifies the advertised hashes

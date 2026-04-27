@@ -150,6 +150,7 @@ Feature: Fetches API
       When the client gets "/v1/fetches/fx-1/manifest"
       Then the response status is 200
       And fetch manifest entry "e1" upload state is "byte_complete"
+      And target "docs/tax/2022/invoice-123.pdf" is not hot
       When the client posts to "/v1/fetches/fx-1/complete"
       Then the response status is 200
       And fetch state is "done"

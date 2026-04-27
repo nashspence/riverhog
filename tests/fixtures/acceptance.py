@@ -1833,6 +1833,14 @@ class AcceptanceSystem:
             raise AssertionError(f"expected exactly one file target: {target}")
         selected[0].hot_backing_missing = True
 
+    def has_committed_collection_file(self, collection_id: str, path: str) -> bool:
+        normalized_collection_id = CollectionId(normalize_collection_id(collection_id))
+        records = self.state.files_by_collection.get(normalized_collection_id)
+        if records is None:
+            return False
+        record = records.get(path)
+        return bool(record and record.hot and not record.hot_backing_missing)
+
     def collection_source_root(self, collection_id: str) -> Path:
         collection_key = CollectionId(normalize_collection_id(collection_id))
         return self.state.local_collection_sources[collection_key]

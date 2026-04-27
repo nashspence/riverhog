@@ -1,44 +1,47 @@
 # Architecture overview
 
-The system uses three layers.
+The runtime uses four cooperating surfaces.
 
 ## Catalog
 
-The catalog is the durable authoritative metadata layer. It tracks collections, logical files, file hashes, archival
-coverage, pins, fetches, and hot presence across service restarts.
+The catalog is the durable authoritative metadata layer. It tracks collections,
+logical files, file hashes, archival coverage, pins, fetches, upload state, and
+hot presence across service restarts.
 
-## Hot object store
+## Upload staging
 
-The hot object store stores immutable bytes keyed by content hash. This keeps hot storage operationally simple and makes
-deduplication and garbage collection feasible.
+Collection ingest and fetch recovery both stream bytes through Riverhog-managed
+tus-compatible upload resources. Incomplete bytes stage under `.arc/uploads/`
+inside the S3-compatible object store and remain outside the committed hot
+namespace until Riverhog verifies them.
 
-A representative layout is:
+## Committed hot storage
 
-```text
-/hot/objects/ab/cd/<sha256>
-```
-
-## Projected namespace
-
-The collection-shaped hot tree is generated from metadata and points into the hot object store.
-
-A representative layout is:
+Committed hot files live in one collection-shaped object namespace:
 
 ```text
-/hot/view/docs/tax/2022/original/path/file.ext -> ../../../../objects/ab/cd/<sha256>
+collections/{collection_id}/{path}
 ```
 
-This projected namespace may be regenerated during startup while keeping the same externally visible hot state.
+Only promoted, verified files count as hot. Staged upload keys and other `.arc/`
+paths are not committed hot files.
+
+## Read-only browsing
+
+Read-only WebDAV exposes the committed `collections/` namespace for day-to-day
+browsing and download. It must not expose `.arc/`, and it is never an upload
+surface.
 
 ## Why pins exist
 
-Users do not delete or restore by mutating the hot tree. Instead they:
+Users do not delete or restore by mutating storage surfaces. Instead they:
 
-- pin a projected-namespace selector into hot
+- pin a selector into hot
 - release a previously pinned target
 - let the system materialize or reconcile hot state based on active pins
 
-This keeps intent explicit and makes the system safer than inferring meaning from tree mutations.
+This keeps intent explicit and makes the system safer than inferring meaning
+from storage mutations.
 
 ## Restore flow
 
@@ -47,8 +50,9 @@ This keeps intent explicit and makes the system safer than inferring meaning fro
 3. If all selected bytes are already hot, the fetch manifest is immediately satisfied.
 4. If some bytes are archived but not hot, a companion recovery tool reads the indicated optical copy and streams
    raw encrypted recovery bytes into resumable upload resources.
-5. The server handles any required decryption and file validation, materializes bytes into the hot object store, and
-   updates the projected namespace.
+5. The server stages the uploaded recovery bytes under `.arc/uploads/`, verifies
+   and decrypts them, then promotes the recovered logical file into
+   `collections/{collection_id}/{path}`.
 6. The explicit pin remains active after fetch completion, and the satisfied fetch manifest remains readable until
    release.
 
@@ -56,5 +60,5 @@ This keeps intent explicit and makes the system safer than inferring meaning fro
 
 1. The user releases an exact selector.
 2. The system removes that exact pin, if present.
-3. The projected hot view is reconciled against the remaining union of pins.
-4. Unneeded hot blobs become eligible for garbage collection immediately.
+3. The committed hot namespace is reconciled against the remaining union of pins.
+4. Unneeded committed hot files become eligible for cleanup immediately.

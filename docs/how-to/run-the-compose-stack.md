@@ -16,18 +16,17 @@ cp .env.compose.example .env.compose
 The canonical `./test` script prefers `./.env.compose` when it exists and otherwise
 falls back to `./.env.compose.example`.
 
-## Start the API and SeaweedFS
+## Start the stack
 
 Build and run the active stack:
 
 ```bash
-docker compose --env-file .env.compose.example up --build app seaweedfs
+docker compose --env-file .env.compose.example up --build
 ```
 
-The default example env exposes:
-
-- the API at `http://127.0.0.1:8000`
-- the SeaweedFS filer at `http://127.0.0.1:8888`
+The default example env exposes the API at `http://127.0.0.1:8000`. Storage
+sidecar wiring and related environment variables follow the active runtime
+contract documented in [Configuration Reference](../reference/configuration.md).
 
 ## Run the canonical tests
 

@@ -762,6 +762,18 @@ class ProductionSystem:
         if response.status_code not in (200, 204, 404):
             response.raise_for_status()
 
+    def has_committed_collection_file(self, collection_id: str, path: str) -> bool:
+        response = self.filer_request(
+            "HEAD",
+            f"/collections/{normalize_collection_id(collection_id)}/{path}",
+        )
+        if response.status_code == 200:
+            return True
+        if response.status_code == 404:
+            return False
+        response.raise_for_status()
+        return False
+
     def seed_collection_source(
         self, collection_id: str, files: Mapping[str, bytes] | None = None
     ) -> None:

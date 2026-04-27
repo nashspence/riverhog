@@ -79,6 +79,11 @@ Feature: Collections API
       And the returned offset matches the previously uploaded bytes
       And the upload-session length matches collection "photos-2024" file "albums/japan/day-01.txt" bytes
 
+    @xfail_contract
+    Scenario: Partial collection upload bytes stay out of the committed hot namespace
+      Given collection upload "photos-2024" has a partial file upload in progress
+      Then collection "photos-2024" does not have committed file "albums/japan/day-01.txt"
+
     Scenario: Expired partial upload state is forgotten completely
       Given collection upload "photos-2024" has expired partial upload state
       When background expiry cleanup removes collection upload "photos-2024"

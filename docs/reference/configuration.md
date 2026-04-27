@@ -1,15 +1,93 @@
 # Configuration Reference
 
-## `ARC_SEAWEEDFS_FILER_URL`
+## `ARC_OBJECT_STORE`
+
+- type: enum
+- default: `s3`
+
+Selects the committed hot-storage adapter. The active contract is one
+S3-compatible object store for committed hot files and incomplete upload
+staging.
+
+## `ARC_S3_ENDPOINT_URL`
 
 - type: URL
-- default: `http://localhost:8888`
 
-This is the SeaweedFS Filer base URL Riverhog uses for committed collection files and fetch recovery upload targets.
+Base URL for the S3-compatible object-store API.
 
-Committed hot collection content lives at `/collections/{collection_id}/{path}` within the filer namespace.
+## `ARC_S3_REGION`
 
-Completed encrypted recovery uploads live at `/.arc/recovery/{fetch_id}/{entry_id}.enc`.
+- type: string
+
+Region sent to the S3-compatible object-store client.
+
+## `ARC_S3_BUCKET`
+
+- type: string
+
+Bucket holding both committed hot files and incomplete upload staging.
+
+Committed hot files live at:
+
+```text
+collections/{collection_id}/{path}
+```
+
+Incomplete staged uploads live at:
+
+```text
+.arc/uploads/{upload_id}
+```
+
+## `ARC_S3_ACCESS_KEY_ID`
+
+- type: string
+
+Access key used for the S3-compatible object store.
+
+## `ARC_S3_SECRET_ACCESS_KEY`
+
+- type: secret string
+
+Secret key used for the S3-compatible object store.
+
+## `ARC_S3_FORCE_PATH_STYLE`
+
+- type: boolean
+- default: implementation-defined; `true` for canonical Garage deployments
+
+Enables path-style S3 requests for backends that require them.
+
+## `ARC_TUSD_BASE_URL`
+
+- type: URL
+
+Base URL for the internal `tusd` service that owns resumable staging uploads.
+Riverhog remains the public upload contract and maps logical upload resources to
+internal `tusd` uploads.
+
+## `ARC_TUSD_HOOK_SECRET`
+
+- type: secret string
+
+Shared secret used to authenticate `tusd` hook callbacks. Hooks are
+notifications only; Riverhog's catalog state remains authoritative.
+
+## `ARC_WEBDAV_ENABLED`
+
+- type: boolean
+- default: `false`
+
+Enables the supported read-only WebDAV browsing surface for committed hot files.
+
+## `ARC_WEBDAV_ADDR`
+
+- type: address
+- default: `127.0.0.1:8080`
+
+Bind address for the read-only WebDAV sidecar when that surface is enabled.
+WebDAV must expose only the committed `collections/` namespace and must not
+expose `.arc/` staging paths.
 
 ## `ARC_DB_PATH`
 
@@ -30,9 +108,9 @@ Service restart does not shorten this TTL or discard unexpired upload state by i
 
 When the TTL expires:
 
-- for collection ingest, the incomplete collection file upload target is deleted and that file returns to `pending`
-- the pending SeaweedFS TUS session is cancelled
-- any incomplete recovery target object is deleted
+- for collection ingest, the staged upload is deleted and that file returns to `pending`
+- the pending `tusd` upload is cancelled
+- any incomplete staged recovery upload is deleted
 - the fetch entry returns to `pending`
 - the fetch manifest returns to `waiting_media` if any selected bytes are still not hot
 - `upload_state_expires_at` becomes `null` until a new upload session is opened

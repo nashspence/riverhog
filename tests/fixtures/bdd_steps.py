@@ -1662,6 +1662,15 @@ def then_target_is_hot(
     assert bool(files) and all(record["hot"] for record in files)
 
 
+@then(parsers.parse('collection "{collection_id}" does not have committed file "{path}"'))
+def then_collection_does_not_have_committed_file(
+    acceptance_system: AcceptanceSystem,
+    collection_id: str,
+    path: str,
+) -> None:
+    assert not acceptance_system.has_committed_collection_file(collection_id, path)
+
+
 @then(parsers.parse('file "{target}" is not hot'))
 @then(parsers.parse('target "{target}" is not hot'))
 def then_target_is_not_hot(
@@ -1672,6 +1681,37 @@ def then_target_is_not_hot(
     assert resp.status_code == 200, resp.text
     files = resp.json()["files"]
     assert not (bool(files) and all(record["hot"] for record in files))
+
+
+@when("the client lists the read-only browsing root")
+def when_the_client_lists_the_read_only_browsing_root() -> None:
+    raise NotImplementedError("read-only browsing acceptance backing is tracked by Issue #89")
+
+
+@then(parsers.parse('the read-only browsing surface exposes path "{path}"'))
+def then_the_read_only_browsing_surface_exposes_path(path: str) -> None:
+    raise NotImplementedError(
+        f"read-only browsing acceptance backing is tracked by Issue #89: {path}"
+    )
+
+
+@then(parsers.parse('the read-only browsing surface hides path "{path}"'))
+def then_the_read_only_browsing_surface_hides_path(path: str) -> None:
+    raise NotImplementedError(
+        f"read-only browsing acceptance backing is tracked by Issue #89: {path}"
+    )
+
+
+@when(parsers.parse('the client attempts to write "{path}" through the read-only browsing surface'))
+def when_the_client_attempts_to_write_through_the_read_only_browsing_surface(path: str) -> None:
+    raise NotImplementedError(
+        f"read-only browsing acceptance backing is tracked by Issue #89: {path}"
+    )
+
+
+@then("the read-only browsing write is rejected")
+def then_the_read_only_browsing_write_is_rejected() -> None:
+    raise NotImplementedError("read-only browsing acceptance backing is tracked by Issue #89")
 
 
 @then(parsers.parse('target "{target}" is pinned'))
