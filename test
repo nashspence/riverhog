@@ -21,6 +21,22 @@ compose() {
     "$@"
 }
 
+compose_env_value() {
+  local name="$1"
+  local default="${2-}"
+  if [[ -n "${!name-}" ]]; then
+    printf '%s' "${!name}"
+    return
+  fi
+  local line
+  line="$(grep -E "^${name}=" "${COMPOSE_ENV_FILE}" | tail -n 1 || true)"
+  if [[ -n "${line}" ]]; then
+    printf '%s' "${line#*=}"
+    return
+  fi
+  printf '%s' "${default}"
+}
+
 usage() {
   cat <<'EOF'
 Usage:
@@ -139,12 +155,20 @@ garage_exec() {
 bootstrap_garage() {
   local garage_node=""
   local garage_node_id=""
-  local access_key_id="${ARC_S3_ACCESS_KEY_ID:-GK000000000000000000000001}"
-  local secret_access_key="${ARC_S3_SECRET_ACCESS_KEY:-1111111111111111111111111111111111111111111111111111111111111111}"
-  local bucket="${ARC_S3_BUCKET:-riverhog}"
-  local glacier_access_key_id="${ARC_GLACIER_ACCESS_KEY_ID:-${access_key_id}}"
-  local glacier_secret_access_key="${ARC_GLACIER_SECRET_ACCESS_KEY:-${secret_access_key}}"
-  local glacier_bucket="${ARC_GLACIER_BUCKET:-${bucket}}"
+  local access_key_id
+  local secret_access_key
+  local bucket
+  local glacier_access_key_id
+  local glacier_secret_access_key
+  local glacier_bucket
+  access_key_id="$(compose_env_value ARC_S3_ACCESS_KEY_ID GK000000000000000000000001)"
+  secret_access_key="$(compose_env_value ARC_S3_SECRET_ACCESS_KEY 1111111111111111111111111111111111111111111111111111111111111111)"
+  bucket="$(compose_env_value ARC_S3_BUCKET riverhog)"
+  glacier_access_key_id="$(compose_env_value ARC_GLACIER_ACCESS_KEY_ID "${access_key_id}")"
+  glacier_secret_access_key="$(
+    compose_env_value ARC_GLACIER_SECRET_ACCESS_KEY "${secret_access_key}"
+  )"
+  glacier_bucket="$(compose_env_value ARC_GLACIER_BUCKET "${bucket}")"
 
   run_with_progress "garage startup" compose up --detach garage
 

@@ -41,7 +41,7 @@ from arc_core.fs_paths import normalize_collection_id
 from arc_core.runtime_config import load_runtime_config
 from arc_core.services.glacier_uploads import enqueue_glacier_upload_job
 from arc_core.sqlite_db import make_session_factory, session_scope
-from arc_core.stores.s3_support import create_s3_client
+from arc_core.stores.s3_support import create_glacier_s3_client, create_s3_client
 from tests.fixtures.acceptance import REPO_ROOT, SRC_ROOT
 from tests.fixtures.data import (
     DOCS_COLLECTION_ID,
@@ -210,8 +210,12 @@ def _wait_for_s3_bucket() -> None:
     while time.monotonic() < deadline:
         try:
             config = load_runtime_config()
-            client = create_s3_client(config)
-            client.head_bucket(Bucket=config.s3_bucket)
+            create_s3_client(config).head_bucket(Bucket=config.s3_bucket)
+            if (
+                config.glacier_bucket != config.s3_bucket
+                or config.glacier_endpoint_url != config.s3_endpoint_url
+            ):
+                create_glacier_s3_client(config).head_bucket(Bucket=config.glacier_bucket)
             return
         except Exception as exc:  # pragma: no cover - readiness race
             last_error = exc
@@ -720,9 +724,21 @@ class ProductionSystem:
     def _s3_client(self):
         return create_s3_client(load_runtime_config())
 
+    def _glacier_s3_client(self):
+        return create_glacier_s3_client(load_runtime_config())
+
     @staticmethod
     def _collection_key(collection_id: str, path: str) -> str:
         return f"collections/{normalize_collection_id(collection_id)}/{path}"
+
+    @staticmethod
+    def _bucket_and_client(storage: str):
+        config = load_runtime_config()
+        if storage == "hot":
+            return config.s3_bucket, create_s3_client(config)
+        if storage == "archive":
+            return config.glacier_bucket, create_glacier_s3_client(config)
+        raise AssertionError(f"unsupported storage bucket kind: {storage}")
 
     def _webdav_request(
         self,
@@ -1080,11 +1096,25 @@ class ProductionSystem:
     def write_through_read_only_browsing_surface(self, path: str) -> httpx.Response:
         return self._webdav_request("PUT", f"/{path.lstrip('/')}", content=b"forbidden")
 
-    def storage_lifecycle_configuration(self) -> dict[str, object]:
-        payload = self._s3_client().get_bucket_lifecycle_configuration(
-            Bucket=load_runtime_config().s3_bucket
-        )
+    def storage_lifecycle_configuration(self, *, storage: str = "hot") -> dict[str, object]:
+        bucket, client = self._bucket_and_client(storage)
+        payload = client.get_bucket_lifecycle_configuration(Bucket=bucket)
         return _normalize_lifecycle_configuration(payload)
+
+    def bucket_contains_object(self, *, storage: str, key: str) -> bool:
+        bucket, client = self._bucket_and_client(storage)
+        try:
+            client.head_object(Bucket=bucket, Key=key)
+            return True
+        except client.exceptions.ClientError as exc:  # type: ignore[attr-defined]
+            if exc.response.get("ResponseMetadata", {}).get("HTTPStatusCode") == 404:
+                return False
+            raise
+
+    def bucket_contains_prefix(self, *, storage: str, prefix: str) -> bool:
+        bucket, client = self._bucket_and_client(storage)
+        response = client.list_objects_v2(Bucket=bucket, Prefix=prefix, MaxKeys=1)
+        return response.get("KeyCount", 0) > 0
 
     def upload_required_entries(self, fetch_id: str) -> None:
         with time_block("fixture.upload_required_entries"):

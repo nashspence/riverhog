@@ -2001,7 +2001,17 @@ def when_the_client_inspects_the_canonical_storage_lifecycle_configuration(
     acceptance_system: AcceptanceSystem,
     acceptance_context: AcceptanceScenarioContext,
 ) -> None:
-    acceptance_context.stdout_json = acceptance_system.storage_lifecycle_configuration()
+    acceptance_context.stdout_json = acceptance_system.storage_lifecycle_configuration(storage="hot")
+
+
+@when("the client inspects the canonical archive-storage lifecycle configuration")
+def when_the_client_inspects_the_canonical_archive_storage_lifecycle_configuration(
+    acceptance_system: AcceptanceSystem,
+    acceptance_context: AcceptanceScenarioContext,
+) -> None:
+    acceptance_context.stdout_json = acceptance_system.storage_lifecycle_configuration(
+        storage="archive"
+    )
 
 
 @then("the storage lifecycle aborts incomplete multipart uploads after 3 days")
@@ -2019,6 +2029,42 @@ def then_the_storage_lifecycle_aborts_incomplete_multipart_uploads_after_3_days(
     abort = first.get("AbortIncompleteMultipartUpload")
     assert isinstance(abort, dict)
     assert abort.get("DaysAfterInitiation") == 3
+
+
+@then(parsers.parse('the {storage} bucket contains object "{key}"'))
+def then_bucket_contains_object(
+    acceptance_system: AcceptanceSystem,
+    storage: str,
+    key: str,
+) -> None:
+    assert acceptance_system.bucket_contains_object(storage=storage, key=key)
+
+
+@then(parsers.parse('the {storage} bucket does not contain object "{key}"'))
+def then_bucket_does_not_contain_object(
+    acceptance_system: AcceptanceSystem,
+    storage: str,
+    key: str,
+) -> None:
+    assert not acceptance_system.bucket_contains_object(storage=storage, key=key)
+
+
+@then(parsers.parse('the {storage} bucket contains prefix "{prefix}"'))
+def then_bucket_contains_prefix(
+    acceptance_system: AcceptanceSystem,
+    storage: str,
+    prefix: str,
+) -> None:
+    assert acceptance_system.bucket_contains_prefix(storage=storage, prefix=prefix)
+
+
+@then(parsers.parse('the {storage} bucket does not contain prefix "{prefix}"'))
+def then_bucket_does_not_contain_prefix(
+    acceptance_system: AcceptanceSystem,
+    storage: str,
+    prefix: str,
+) -> None:
+    assert not acceptance_system.bucket_contains_prefix(storage=storage, prefix=prefix)
 
 
 @then(parsers.parse('target "{target}" is pinned'))

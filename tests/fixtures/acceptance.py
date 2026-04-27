@@ -2465,7 +2465,8 @@ class AcceptanceSystem:
             text="read-only browsing surface rejects writes",
         )
 
-    def storage_lifecycle_configuration(self) -> dict[str, object]:
+    def storage_lifecycle_configuration(self, *, storage: str = "hot") -> dict[str, object]:
+        assert storage in {"hot", "archive"}
         return {
             "Rules": [
                 {
@@ -2476,6 +2477,51 @@ class AcceptanceSystem:
                 }
             ]
         }
+
+    def bucket_contains_object(self, *, storage: str, key: str) -> bool:
+        if storage == "archive":
+            return any(
+                status.object_path == key and status.state == GlacierState.UPLOADED
+                for status in self.state.glacier_status_by_image.values()
+            )
+        if storage != "hot":
+            raise AssertionError(f"unsupported storage bucket kind: {storage}")
+        for records in self.state.files_by_collection.values():
+            for file in records.values():
+                if (
+                    f"collections/{normalize_collection_id(str(file.collection_id))}/{file.path}" == key
+                    and file.hot
+                    and not file.hot_backing_missing
+                ):
+                    return True
+        return False
+
+    def bucket_contains_prefix(self, *, storage: str, prefix: str) -> bool:
+        if storage == "archive":
+            return any(
+                (status.object_path or "").startswith(prefix)
+                and status.state == GlacierState.UPLOADED
+                for status in self.state.glacier_status_by_image.values()
+            )
+        if storage != "hot":
+            raise AssertionError(f"unsupported storage bucket kind: {storage}")
+        if prefix == ".arc/uploads/":
+            for upload in self.state.collection_uploads.values():
+                for file_record in upload.files.values():
+                    if file_record.uploaded_bytes > 0:
+                        return True
+            for fetch in self.state.fetches.values():
+                for entry in fetch.entries.values():
+                    if entry.uploaded_bytes > 0:
+                        return True
+            return False
+        if prefix == "collections/":
+            return any(
+                file.hot and not file.hot_backing_missing
+                for records in self.state.files_by_collection.values()
+                for file in records.values()
+            )
+        return False
 
     def pins_list(self) -> list[str]:
         return [str(item.target) for item in self.pins.list_pins()]

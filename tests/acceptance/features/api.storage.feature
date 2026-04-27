@@ -17,3 +17,21 @@ Feature: Read-only hot storage browsing
     Scenario: The canonical storage bucket publishes incomplete multipart cleanup
       When the client inspects the canonical storage lifecycle configuration
       Then the storage lifecycle aborts incomplete multipart uploads after 3 days
+
+    Scenario: The canonical harness keeps hot, staging, and Glacier objects in separate buckets
+      Given an archive with planner fixtures
+      And collection upload "staged-photos" has a partial file upload in progress
+      And candidate "img_2026-04-20_01" exists
+      When the client posts to "/v1/plan/candidates/img_2026-04-20_01/finalize"
+      Then the response status is 200
+      When the client waits for image "20260420T040001Z" glacier state "uploaded"
+      Then the response status is 200
+      And the response image glacier object_path is "glacier/finalized-images/20260420T040001Z/20260420T040001Z.iso"
+      When the client inspects the canonical archive-storage lifecycle configuration
+      Then the storage lifecycle aborts incomplete multipart uploads after 3 days
+      And the hot bucket contains object "collections/docs/tax/2022/invoice-123.pdf"
+      And the archive bucket does not contain object "collections/docs/tax/2022/invoice-123.pdf"
+      And the hot bucket contains prefix ".arc/uploads/"
+      And the archive bucket does not contain prefix ".arc/uploads/"
+      And the archive bucket contains object "glacier/finalized-images/20260420T040001Z/20260420T040001Z.iso"
+      And the hot bucket does not contain object "glacier/finalized-images/20260420T040001Z/20260420T040001Z.iso"
