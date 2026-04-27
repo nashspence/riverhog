@@ -24,13 +24,22 @@ import yaml
 
 from arc_api.app import create_app
 from arc_api.deps import ServiceContainer, get_container
-from arc_core.domain.enums import FetchState
+from arc_core.archive_compliance import (
+    collection_protection_state,
+    copy_counts_toward_protection,
+    image_protection_state,
+    normalize_required_copy_count,
+    registered_copy_shortfall,
+)
+from arc_core.domain.enums import CopyState, FetchState, GlacierState, ProtectionState
 from arc_core.domain.errors import Conflict, HashMismatch, InvalidState, NotFound
 from arc_core.domain.models import (
+    CollectionCoverageImage,
     CollectionSummary,
     CopySummary,
     FetchCopyHint,
     FetchSummary,
+    GlacierArchiveStatus,
     PinSummary,
 )
 from arc_core.domain.selectors import parse_target
@@ -164,7 +173,14 @@ class CandidateRecord:
             "iso_ready": self.iso_ready,
         }
 
-    def finalized_image_payload(self, *, copy_count: int = 0) -> dict[str, object]:
+    def finalized_image_payload(self, *, physical_copies_registered: int = 0) -> dict[str, object]:
+        required_copy_count = normalize_required_copy_count(None)
+        glacier = GlacierArchiveStatus(state=GlacierState.PENDING)
+        protection_state = image_protection_state(
+            required_copy_count=required_copy_count,
+            registered_copy_count=physical_copies_registered,
+            glacier_state=glacier.state,
+        )
         return {
             "id": self.finalized_id,
             "filename": self.filename,
@@ -175,7 +191,23 @@ class CandidateRecord:
             "collections": len(self.collections),
             "collection_ids": self.collections,
             "iso_ready": True,
-            "copy_count": copy_count,
+            "protection_state": protection_state.value,
+            "physical_copies_required": required_copy_count,
+            "physical_copies_registered": physical_copies_registered,
+            "physical_copies_missing": registered_copy_shortfall(
+                required_copy_count=required_copy_count,
+                registered_copy_count=physical_copies_registered,
+            ),
+            "glacier": {
+                "state": glacier.state.value,
+                "object_path": glacier.object_path,
+                "stored_bytes": glacier.stored_bytes,
+                "backend": glacier.backend,
+                "storage_class": glacier.storage_class,
+                "last_uploaded_at": glacier.last_uploaded_at,
+                "last_verified_at": glacier.last_verified_at,
+                "failure": glacier.failure,
+            },
         }
 
     def image_root_record(self) -> ImageRootRecord:
@@ -295,13 +327,73 @@ class AcceptanceState:
 
     def collection_summary(self, collection_id: str | CollectionId) -> CollectionSummary:
         records = self.collection_files(collection_id)
+        image_coverage, covered_paths = self.collection_image_coverage(collection_id)
+        protected_bytes = 0
+        image_states = {str(image.id): image.protection_state for image in image_coverage}
+        for record in records:
+            image_ids = covered_paths.get(record.path, set())
+            if image_ids and all(image_states.get(image_id) == ProtectionState.PROTECTED for image_id in image_ids):
+                protected_bytes += record.bytes
+        archived_bytes = sum(record.bytes for record in records if record.archived)
         return CollectionSummary(
             id=CollectionId(str(collection_id)),
             files=len(records),
             bytes=sum(record.bytes for record in records),
             hot_bytes=sum(record.bytes for record in records if record.hot),
-            archived_bytes=sum(record.bytes for record in records if record.archived),
+            archived_bytes=archived_bytes,
+            protection_state=collection_protection_state(
+                bytes_total=sum(record.bytes for record in records),
+                protected_bytes=protected_bytes,
+                archived_bytes=archived_bytes,
+                image_states=(image.protection_state for image in image_coverage),
+            ),
+            protected_bytes=protected_bytes,
+            image_coverage=image_coverage,
         )
+
+    def collection_image_coverage(
+        self, collection_id: str | CollectionId
+    ) -> tuple[list[CollectionCoverageImage], dict[str, set[str]]]:
+        normalized_collection_id = CollectionId(str(collection_id))
+        covered_paths: dict[str, set[str]] = {}
+        image_coverage: list[CollectionCoverageImage] = []
+        for image in sorted(self.finalized_images_by_id.values(), key=lambda current: current.finalized_id):
+            if normalized_collection_id not in {collection_id for collection_id, _ in image.covered_paths}:
+                continue
+            for covered_collection_id, path in image.covered_paths:
+                if covered_collection_id != normalized_collection_id:
+                    continue
+                covered_paths.setdefault(path, set()).add(image.finalized_id)
+            copies = [
+                summary
+                for (volume_id, _copy_id), summary in sorted(self.copy_summaries.items())
+                if volume_id == image.finalized_id
+            ]
+            physical_copies_registered = sum(
+                1 for copy in copies if copy_counts_toward_protection(copy.state.value)
+            )
+            physical_copies_required = normalize_required_copy_count(None)
+            glacier = GlacierArchiveStatus(state=GlacierState.PENDING)
+            image_coverage.append(
+                CollectionCoverageImage(
+                    id=ImageId(image.finalized_id),
+                    filename=image.filename,
+                    protection_state=image_protection_state(
+                        required_copy_count=physical_copies_required,
+                        registered_copy_count=physical_copies_registered,
+                        glacier_state=glacier.state,
+                    ),
+                    physical_copies_required=physical_copies_required,
+                    physical_copies_registered=physical_copies_registered,
+                    physical_copies_missing=registered_copy_shortfall(
+                        required_copy_count=physical_copies_required,
+                        registered_copy_count=physical_copies_registered,
+                    ),
+                    copies=copies,
+                    glacier=glacier,
+                )
+            )
+        return image_coverage, covered_paths
 
     def selected_files(self, raw_target: str, *, missing_ok: bool = False) -> list[StoredFile]:
         target = parse_target(raw_target)
@@ -901,13 +993,20 @@ class AcceptancePlanningService:
         if collection:
             images = [image for image in images if collection in image.collections]
         if has_copies is not None:
-            images = [image for image in images if (self._copy_count(image) > 0) is has_copies]
+            images = [
+                image
+                for image in images
+                if (self._physical_copies_registered(image) > 0) is has_copies
+            ]
 
         reverse = order == "desc"
         sort_key = {
             "finalized_at": lambda image: (image.finalized_id, image.filename),
             "bytes": lambda image: (image.bytes, image.finalized_id),
-            "copy_count": lambda image: (self._copy_count(image), image.finalized_id),
+            "physical_copies_registered": lambda image: (
+                self._physical_copies_registered(image),
+                image.finalized_id,
+            ),
         }[sort]
         images = sorted(images, key=sort_key, reverse=reverse)
 
@@ -924,14 +1023,18 @@ class AcceptancePlanningService:
             "sort": sort,
             "order": order,
             "images": [
-                image.finalized_image_payload(copy_count=self._copy_count(image))
+                image.finalized_image_payload(
+                    physical_copies_registered=self._physical_copies_registered(image)
+                )
                 for image in page_images
             ],
         }
 
     def get_image(self, image_id: str) -> dict[str, object]:
         image = self._finalized_image_record(image_id)
-        return image.finalized_image_payload(copy_count=self._copy_count(image))
+        return image.finalized_image_payload(
+            physical_copies_registered=self._physical_copies_registered(image)
+        )
 
     def finalize_image(self, candidate_id: str) -> dict[str, object]:
         candidate = self._candidate_record(candidate_id)
@@ -940,7 +1043,9 @@ class AcceptancePlanningService:
         finalized_key = ImageId(candidate.finalized_id)
         self.state.finalized_images_by_id.setdefault(finalized_key, candidate)
         image = self.state.finalized_images_by_id[finalized_key]
-        return image.finalized_image_payload(copy_count=self._copy_count(image))
+        return image.finalized_image_payload(
+            physical_copies_registered=self._physical_copies_registered(image)
+        )
 
     async def get_iso_stream(self, image_id: str) -> object:
         return await self._iso_service.get_iso_stream(image_id)
@@ -960,7 +1065,7 @@ class AcceptancePlanningService:
     def _image_root_record(self, image_id: str) -> ImageRootRecord:
         return self._finalized_image_record(image_id).image_root_record()
 
-    def _copy_count(self, image: CandidateRecord) -> int:
+    def _physical_copies_registered(self, image: CandidateRecord) -> int:
         return sum(
             1
             for volume_id, _copy_id in self.state.copy_summaries
@@ -1004,6 +1109,7 @@ class AcceptanceCopyService:
             volume_id=image.finalized_id,
             location=location,
             created_at=DEFAULT_COPY_CREATED_AT,
+            state=CopyState.REGISTERED,
         )
         self.state.copy_summaries[scoped_key] = summary
         disc_info = self._read_disc_part_info(image)

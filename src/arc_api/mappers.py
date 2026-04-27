@@ -1,6 +1,26 @@
 from __future__ import annotations
 
-from arc_core.domain.models import CollectionSummary, CopySummary, FetchSummary, PinSummary
+from arc_core.domain.models import (
+    CollectionCoverageImage,
+    CollectionSummary,
+    CopySummary,
+    FetchSummary,
+    GlacierArchiveStatus,
+    PinSummary,
+)
+
+
+def map_glacier(summary: GlacierArchiveStatus) -> dict[str, object]:
+    return {
+        "state": summary.state.value,
+        "object_path": summary.object_path,
+        "stored_bytes": summary.stored_bytes,
+        "backend": summary.backend,
+        "storage_class": summary.storage_class,
+        "last_uploaded_at": summary.last_uploaded_at,
+        "last_verified_at": summary.last_verified_at,
+        "failure": summary.failure,
+    }
 
 
 def map_collection(summary: CollectionSummary) -> dict[str, object]:
@@ -11,6 +31,9 @@ def map_collection(summary: CollectionSummary) -> dict[str, object]:
         "hot_bytes": summary.hot_bytes,
         "archived_bytes": summary.archived_bytes,
         "pending_bytes": summary.pending_bytes,
+        "protection_state": summary.protection_state.value,
+        "protected_bytes": summary.protected_bytes,
+        "image_coverage": [map_collection_coverage_image(image) for image in summary.image_coverage],
     }
 
 
@@ -20,6 +43,20 @@ def map_copy(summary: CopySummary) -> dict[str, object]:
         "volume_id": summary.volume_id,
         "location": summary.location,
         "created_at": summary.created_at,
+        "state": summary.state.value,
+    }
+
+
+def map_collection_coverage_image(summary: CollectionCoverageImage) -> dict[str, object]:
+    return {
+        "id": str(summary.id),
+        "filename": summary.filename,
+        "protection_state": summary.protection_state.value,
+        "physical_copies_required": summary.physical_copies_required,
+        "physical_copies_registered": summary.physical_copies_registered,
+        "physical_copies_missing": summary.physical_copies_missing,
+        "copies": [map_copy(copy) for copy in summary.copies],
+        "glacier": map_glacier(summary.glacier),
     }
 
 

@@ -1327,6 +1327,64 @@ def then_archived_bytes_is_between_zero_and_bytes(
     assert 0 <= payload["archived_bytes"] <= payload["bytes"]
 
 
+@then(parsers.parse('collection protection_state is "{state}"'))
+def then_collection_protection_state_is(
+    acceptance_context: AcceptanceScenarioContext,
+    state: str,
+) -> None:
+    payload = _json_payload(_require_response(acceptance_context))
+    assert payload["protection_state"] == state
+
+
+@then(parsers.parse("protected_bytes is {count:d}"))
+def then_protected_bytes_is(
+    acceptance_context: AcceptanceScenarioContext,
+    count: int,
+) -> None:
+    payload = _json_payload(_require_response(acceptance_context))
+    assert payload["protected_bytes"] == count
+
+
+@then(parsers.parse('collection image coverage includes image "{image_id}"'))
+def then_collection_image_coverage_includes_image(
+    acceptance_context: AcceptanceScenarioContext,
+    image_id: str,
+) -> None:
+    payload = _json_payload(_require_response(acceptance_context))
+    ids = [image["id"] for image in payload["image_coverage"]]
+    assert image_id in ids
+
+
+@then(
+    parsers.parse(
+        'collection image coverage for image "{image_id}" includes copy "{copy_id}"'
+    )
+)
+def then_collection_image_coverage_for_image_includes_copy(
+    acceptance_context: AcceptanceScenarioContext,
+    image_id: str,
+    copy_id: str,
+) -> None:
+    payload = _json_payload(_require_response(acceptance_context))
+    image = next(image for image in payload["image_coverage"] if image["id"] == image_id)
+    assert copy_id in [copy["id"] for copy in image["copies"]]
+
+
+@then(
+    parsers.parse(
+        'collection image coverage for image "{image_id}" glacier state is "{state}"'
+    )
+)
+def then_collection_image_coverage_for_image_glacier_state_is(
+    acceptance_context: AcceptanceScenarioContext,
+    image_id: str,
+    state: str,
+) -> None:
+    payload = _json_payload(_require_response(acceptance_context))
+    image = next(image for image in payload["image_coverage"] if image["id"] == image_id)
+    assert image["glacier"]["state"] == state
+
+
 @then(parsers.parse('the response query is "{query}"'))
 def then_response_query_is(
     acceptance_context: AcceptanceScenarioContext,
@@ -1861,7 +1919,8 @@ def then_response_plan_candidates_contain_only(
 @then(
     'each finalized image contains "id", "filename", "finalized_at", "bytes", '
     '"fill", "files", "collections", '
-    '"collection_ids", "iso_ready", and "copy_count"'
+    '"collection_ids", "iso_ready", "protection_state", '
+    '"physical_copies_required", "physical_copies_registered", "physical_copies_missing", and "glacier"'
 )
 def then_each_finalized_image_contains_expected_fields(
     acceptance_context: AcceptanceScenarioContext,
@@ -1877,7 +1936,11 @@ def then_each_finalized_image_contains_expected_fields(
         "collections",
         "collection_ids",
         "iso_ready",
-        "copy_count",
+        "protection_state",
+        "physical_copies_required",
+        "physical_copies_registered",
+        "physical_copies_missing",
+        "glacier",
     }
     assert all(expected.issubset(image) for image in payload["images"])
 
@@ -1949,13 +2012,31 @@ def then_response_finalized_images_contain_only(
     assert [image["id"] for image in payload["images"]] == [image_id]
 
 
-@then("each finalized image has copy_count greater than 0")
-def then_each_finalized_image_has_copy_count(
+@then("each finalized image has physical_copies_registered greater than 0")
+def then_each_finalized_image_has_physical_copies_registered(
     acceptance_context: AcceptanceScenarioContext,
 ) -> None:
     payload = _json_payload(_require_response(acceptance_context))
     assert payload["images"]
-    assert all(image["copy_count"] > 0 for image in payload["images"])
+    assert all(image["physical_copies_registered"] > 0 for image in payload["images"])
+
+
+@then(parsers.parse('the response image protection_state is "{state}"'))
+def then_response_image_protection_state_is(
+    acceptance_context: AcceptanceScenarioContext,
+    state: str,
+) -> None:
+    payload = _json_payload(_require_response(acceptance_context))
+    assert payload["protection_state"] == state
+
+
+@then(parsers.parse('the response image glacier state is "{state}"'))
+def then_response_image_glacier_state_is(
+    acceptance_context: AcceptanceScenarioContext,
+    state: str,
+) -> None:
+    payload = _json_payload(_require_response(acceptance_context))
+    assert payload["glacier"]["state"] == state
 
 
 @then(parsers.parse('the response contains image id "{image_id}"'))

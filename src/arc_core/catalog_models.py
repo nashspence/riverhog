@@ -117,6 +117,15 @@ class FinalizedImageRecord(Base):
     bytes: Mapped[int] = mapped_column(Integer)
     image_root: Mapped[str] = mapped_column(String)
     target_bytes: Mapped[int] = mapped_column(Integer)
+    required_copy_count: Mapped[int | None] = mapped_column(Integer, default=2, nullable=True)
+    glacier_state: Mapped[str | None] = mapped_column(String, default="pending", nullable=True)
+    glacier_object_path: Mapped[str | None] = mapped_column(String, nullable=True)
+    glacier_stored_bytes: Mapped[int | None] = mapped_column(Integer, nullable=True)
+    glacier_backend: Mapped[str | None] = mapped_column(String, nullable=True)
+    glacier_storage_class: Mapped[str | None] = mapped_column(String, nullable=True)
+    glacier_last_uploaded_at: Mapped[str | None] = mapped_column(String, nullable=True)
+    glacier_last_verified_at: Mapped[str | None] = mapped_column(String, nullable=True)
+    glacier_failure: Mapped[str | None] = mapped_column(String, nullable=True)
 
     covered_paths: Mapped[list[FinalizedImageCoveredPathRecord]] = relationship(
         back_populates="image",
@@ -153,6 +162,7 @@ class ImageCopyRecord(Base):
     copy_id: Mapped[str] = mapped_column(String, primary_key=True)
     location: Mapped[str] = mapped_column(String)
     created_at: Mapped[str] = mapped_column(String)
+    state: Mapped[str | None] = mapped_column(String, default="registered", nullable=True)
 
     __table_args__ = (
         ForeignKeyConstraint(

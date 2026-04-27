@@ -115,7 +115,11 @@ def format_images(payload: Mapping[str, Any]) -> str:
             [
                 f"- {image.get('id', 'unknown')} ({image.get('filename', 'unknown')})",
                 f"  finalized_at: {image.get('finalized_at', 'unknown')}",
-                f"  copies: {image.get('copy_count', 0)}",
+                "  protection: "
+                f"{image.get('protection_state', 'unknown')} "
+                f"copies={image.get('physical_copies_registered', 0)}/"
+                f"{image.get('physical_copies_required', 0)} "
+                f"glacier={image.get('glacier', {}).get('state', 'unknown') if isinstance(image.get('glacier'), Mapping) else 'unknown'}",
                 f"  collections: {image.get('collections', 0)} [{collection_text}]",
             ]
         )

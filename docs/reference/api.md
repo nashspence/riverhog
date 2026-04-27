@@ -123,6 +123,8 @@ Required behavior:
 
 - collection ids may span multiple path segments, for example `GET /v1/collections/photos/2024`
 - API and CLI collection lookup treat slash-bearing ids as first-class
+- collection summaries expose `protection_state`, `protected_bytes`, and per-image coverage details
+- collection coverage explains which finalized images, registered copies, and Glacier state currently cover that collection
 
 ### File introspection
 
@@ -189,7 +191,7 @@ Required behavior:
 - plan candidate objects expose `candidate_id`
 - plan candidate objects expose `collection_ids`
 - plan candidate objects do not expose finalized-image fields such as finalized `id`, `filename`, `finalized_at`, or
-  `copy_count`
+  archive-protection metadata
 - plan-specific fields such as `ready`, `target_bytes`, `min_fill_bytes`, and `unplanned_bytes` remain part of the
   response alongside the paged candidate listing
 
@@ -203,7 +205,7 @@ Supported query parameters:
 
 - `page` — 1-based page number, default `1`
 - `per_page` — page size, default `25`
-- `sort` — one of `finalized_at`, `bytes`, or `copy_count`
+- `sort` — one of `finalized_at`, `bytes`, or `physical_copies_registered`
 - `order` — `asc` or `desc`
 - `q` — case-insensitive substring filter over finalized image id, ISO filename, and contained collection ids
 - `collection` — exact collection-id filter over contained collection ids
@@ -215,7 +217,8 @@ Required behavior:
 - provisional plan candidates are never returned by `GET /v1/images`
 - default ordering is latest finalized image first using `sort=finalized_at&order=desc`
 - the response includes pagination metadata and finalized-image summaries
-- finalized-image summaries expose `filename`, `finalized_at`, `collection_ids`, and `copy_count`
+- finalized-image summaries expose `filename`, `finalized_at`, `collection_ids`, `protection_state`,
+  `physical_copies_required`, `physical_copies_registered`, `physical_copies_missing`, and `glacier`
 - finalized-image summaries always report `iso_ready = true`
 
 #### `GET /v1/images/{image_id}`

@@ -1,9 +1,9 @@
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from pathlib import PurePosixPath
 
-from arc_core.domain.enums import FetchState
+from arc_core.domain.enums import CopyState, FetchState, GlacierState, ProtectionState
 from arc_core.domain.types import CollectionId, CopyId, FetchId, ImageId, Sha256Hex, TargetStr
 
 
@@ -21,12 +21,39 @@ class Target:
 
 
 @dataclass(frozen=True)
+class GlacierArchiveStatus:
+    state: GlacierState = GlacierState.PENDING
+    object_path: str | None = None
+    stored_bytes: int | None = None
+    backend: str | None = None
+    storage_class: str | None = None
+    last_uploaded_at: str | None = None
+    last_verified_at: str | None = None
+    failure: str | None = None
+
+
+@dataclass(frozen=True)
+class CollectionCoverageImage:
+    id: ImageId
+    filename: str
+    protection_state: ProtectionState
+    physical_copies_required: int
+    physical_copies_registered: int
+    physical_copies_missing: int
+    copies: list[CopySummary]
+    glacier: GlacierArchiveStatus
+
+
+@dataclass(frozen=True)
 class CollectionSummary:
     id: CollectionId
     files: int
     bytes: int
     hot_bytes: int
     archived_bytes: int
+    protection_state: ProtectionState = ProtectionState.UNPROTECTED
+    protected_bytes: int = 0
+    image_coverage: list[CollectionCoverageImage] = field(default_factory=list)
 
     @property
     def pending_bytes(self) -> int:
@@ -44,7 +71,11 @@ class ImageSummary:
     collections: int
     collection_ids: list[str]
     iso_ready: bool
-    copy_count: int
+    protection_state: ProtectionState
+    physical_copies_required: int
+    physical_copies_registered: int
+    physical_copies_missing: int
+    glacier: GlacierArchiveStatus
 
 
 @dataclass(frozen=True)
@@ -53,6 +84,7 @@ class CopySummary:
     volume_id: str
     location: str
     created_at: str
+    state: CopyState = CopyState.REGISTERED
 
 
 @dataclass(frozen=True)

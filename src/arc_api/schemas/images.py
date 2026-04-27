@@ -4,6 +4,7 @@ from typing import Literal
 
 from pydantic import Field
 
+from arc_api.schemas.archive import GlacierArchiveOut
 from arc_api.schemas.common import ArcModel
 
 
@@ -17,7 +18,11 @@ class FinalizedImageSummaryResponse(ArcModel):
     collections: int
     collection_ids: list[str]
     iso_ready: Literal[True] = True
-    copy_count: int
+    protection_state: Literal["unprotected", "partially_protected", "protected"]
+    physical_copies_required: int
+    physical_copies_registered: int
+    physical_copies_missing: int
+    glacier: GlacierArchiveOut
 
 
 class ListImagesResponse(ArcModel):
@@ -25,7 +30,7 @@ class ListImagesResponse(ArcModel):
     per_page: int
     total: int
     pages: int
-    sort: Literal["finalized_at", "bytes", "copy_count"]
+    sort: Literal["finalized_at", "bytes", "physical_copies_registered"]
     order: Literal["asc", "desc"]
     images: list[FinalizedImageSummaryResponse]
 
@@ -40,6 +45,7 @@ class CopyOut(ArcModel):
     volume_id: str
     location: str
     created_at: str
+    state: Literal["needed", "burning", "verified", "registered", "lost", "damaged", "retired"]
 
 
 class RegisterCopyResponse(ArcModel):

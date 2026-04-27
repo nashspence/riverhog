@@ -5,8 +5,8 @@ The runtime uses four cooperating surfaces.
 ## Catalog
 
 The catalog is the durable authoritative metadata layer. It tracks collections,
-logical files, file hashes, archival coverage, pins, fetches, upload state, and
-hot presence across service restarts.
+logical files, file hashes, archive-protection state, pins, fetches, upload
+state, and hot presence across service restarts.
 
 ## Upload staging
 

@@ -32,7 +32,7 @@ from arc_core.catalog_models import (
     ImageCopyRecord,
     PlannedCandidateRecord,
 )
-from arc_core.domain.enums import FetchState
+from arc_core.domain.enums import CopyState, FetchState, ProtectionState
 from arc_core.domain.models import CollectionSummary, CopySummary, FetchCopyHint, FetchSummary
 from arc_core.domain.selectors import parse_target
 from arc_core.domain.types import CollectionId, CopyId, FetchId, TargetStr
@@ -286,6 +286,8 @@ class ProductionCollectionsClient:
             bytes=payload["bytes"],
             hot_bytes=payload["hot_bytes"],
             archived_bytes=payload["archived_bytes"],
+            protection_state=ProtectionState(payload["protection_state"]),
+            protected_bytes=payload["protected_bytes"],
         )
 
 
@@ -472,6 +474,7 @@ class ProductionCopiesClient:
             volume_id=str(copy["volume_id"]),
             location=str(copy["location"]),
             created_at=str(copy["created_at"]),
+            state=CopyState(str(copy["state"])),
         )
 
 

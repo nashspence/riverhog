@@ -7,15 +7,32 @@ from collections.abc import Iterable, Sequence
 from sqlalchemy import select
 from sqlalchemy.orm import selectinload
 
+from arc_core.archive_compliance import (
+    collection_protection_state,
+    copy_counts_toward_protection,
+    image_protection_state,
+    normalize_copy_state,
+    normalize_glacier_state,
+    normalize_required_copy_count,
+    registered_copy_shortfall,
+)
 from arc_core.catalog_models import (
     CollectionFileRecord,
     CollectionRecord,
     CollectionUploadFileRecord,
     CollectionUploadRecord,
+    FinalizedImageCoveredPathRecord,
+    FinalizedImageRecord,
+    ImageCopyRecord,
 )
 from arc_core.domain.errors import BadRequest, Conflict, HashMismatch, NotFound
-from arc_core.domain.models import CollectionSummary
-from arc_core.domain.types import CollectionId, Sha256Hex
+from arc_core.domain.models import (
+    CollectionCoverageImage,
+    CollectionSummary,
+    CopySummary,
+    GlacierArchiveStatus,
+)
+from arc_core.domain.types import CollectionId, CopyId, ImageId, Sha256Hex
 from arc_core.fs_paths import (
     PathNormalizationError,
     find_collection_id_conflict,
@@ -367,7 +384,15 @@ class SqlAlchemyCollectionService:
             collection = session.get(CollectionRecord, normalized_collection_id)
             if collection is None:
                 raise NotFound(f"collection not found: {normalized_collection_id}")
-            return _summary_from_records(normalized_collection_id, collection.files)
+            image_coverage, covered_paths = _collection_image_coverage(
+                session, normalized_collection_id
+            )
+            return _summary_from_records(
+                normalized_collection_id,
+                collection.files,
+                image_coverage=image_coverage,
+                covered_paths=covered_paths,
+            )
 
 
 def _normalize_collection_id_or_raise(raw: str) -> str:
@@ -670,6 +695,39 @@ def _collection_summary_payload(summary: CollectionSummary) -> dict[str, object]
         "hot_bytes": summary.hot_bytes,
         "archived_bytes": summary.archived_bytes,
         "pending_bytes": summary.pending_bytes,
+        "protection_state": summary.protection_state.value,
+        "protected_bytes": summary.protected_bytes,
+        "image_coverage": [
+            {
+                "id": str(image.id),
+                "filename": image.filename,
+                "protection_state": image.protection_state.value,
+                "physical_copies_required": image.physical_copies_required,
+                "physical_copies_registered": image.physical_copies_registered,
+                "physical_copies_missing": image.physical_copies_missing,
+                "copies": [
+                    {
+                        "id": str(copy.id),
+                        "volume_id": copy.volume_id,
+                        "location": copy.location,
+                        "created_at": copy.created_at,
+                        "state": copy.state.value,
+                    }
+                    for copy in image.copies
+                ],
+                "glacier": {
+                    "state": image.glacier.state.value,
+                    "object_path": image.glacier.object_path,
+                    "stored_bytes": image.glacier.stored_bytes,
+                    "backend": image.glacier.backend,
+                    "storage_class": image.glacier.storage_class,
+                    "last_uploaded_at": image.glacier.last_uploaded_at,
+                    "last_verified_at": image.glacier.last_verified_at,
+                    "failure": image.glacier.failure,
+                },
+            }
+            for image in summary.image_coverage
+        ],
     }
 
 
@@ -680,11 +738,116 @@ def _sha256_hex(content: bytes) -> Sha256Hex:
 def _summary_from_records(
     collection_id: str,
     file_records: Sequence[CollectionFileRecord],
+    *,
+    image_coverage: Sequence[CollectionCoverageImage] = (),
+    covered_paths: dict[str, set[str]] | None = None,
 ) -> CollectionSummary:
+    bytes_total = sum(record.bytes for record in file_records)
+    archived_bytes = sum(record.bytes for record in file_records if record.archived)
+    protected_bytes = _protected_bytes(
+        file_records,
+        image_coverage=image_coverage,
+        covered_paths=covered_paths or {},
+    )
     return CollectionSummary(
         id=CollectionId(collection_id),
         files=len(file_records),
-        bytes=sum(record.bytes for record in file_records),
+        bytes=bytes_total,
         hot_bytes=sum(record.bytes for record in file_records if record.hot),
-        archived_bytes=sum(record.bytes for record in file_records if record.archived),
+        archived_bytes=archived_bytes,
+        protection_state=collection_protection_state(
+            bytes_total=bytes_total,
+            protected_bytes=protected_bytes,
+            archived_bytes=archived_bytes,
+            image_states=(image.protection_state for image in image_coverage),
+        ),
+        protected_bytes=protected_bytes,
+        image_coverage=list(image_coverage),
     )
+
+
+def _collection_image_coverage(
+    session,
+    collection_id: str,
+) -> tuple[list[CollectionCoverageImage], dict[str, set[str]]]:
+    images = session.scalars(
+        select(FinalizedImageRecord)
+        .join(FinalizedImageCoveredPathRecord)
+        .where(FinalizedImageCoveredPathRecord.collection_id == collection_id)
+        .options(
+            selectinload(FinalizedImageRecord.covered_paths),
+            selectinload(FinalizedImageRecord.copies),
+        )
+    ).unique().all()
+
+    covered_paths: dict[str, set[str]] = {}
+    image_coverage: list[CollectionCoverageImage] = []
+    for image in sorted(images, key=lambda current: current.image_id):
+        for covered_path in image.covered_paths:
+            if covered_path.collection_id != collection_id:
+                continue
+            covered_paths.setdefault(covered_path.path, set()).add(image.image_id)
+
+        copies = [
+            CopySummary(
+                id=CopyId(copy.copy_id),
+                volume_id=image.image_id,
+                location=copy.location,
+                created_at=copy.created_at,
+                state=normalize_copy_state(copy.state),
+            )
+            for copy in sorted(image.copies, key=lambda current: current.copy_id)
+        ]
+        required_copy_count = normalize_required_copy_count(image.required_copy_count)
+        registered_copy_count = sum(
+            1 for copy in image.copies if copy_counts_toward_protection(copy.state)
+        )
+        glacier = GlacierArchiveStatus(
+            state=normalize_glacier_state(image.glacier_state),
+            object_path=image.glacier_object_path,
+            stored_bytes=image.glacier_stored_bytes,
+            backend=image.glacier_backend,
+            storage_class=image.glacier_storage_class,
+            last_uploaded_at=image.glacier_last_uploaded_at,
+            last_verified_at=image.glacier_last_verified_at,
+            failure=image.glacier_failure,
+        )
+        image_coverage.append(
+            CollectionCoverageImage(
+                id=ImageId(image.image_id),
+                filename=image.filename,
+                protection_state=image_protection_state(
+                    required_copy_count=required_copy_count,
+                    registered_copy_count=registered_copy_count,
+                    glacier_state=glacier.state,
+                ),
+                physical_copies_required=required_copy_count,
+                physical_copies_registered=registered_copy_count,
+                physical_copies_missing=registered_copy_shortfall(
+                    required_copy_count=required_copy_count,
+                    registered_copy_count=registered_copy_count,
+                ),
+                copies=copies,
+                glacier=glacier,
+            )
+        )
+
+    return image_coverage, covered_paths
+
+
+def _protected_bytes(
+    file_records: Sequence[CollectionFileRecord],
+    *,
+    image_coverage: Sequence[CollectionCoverageImage],
+    covered_paths: dict[str, set[str]],
+) -> int:
+    if not image_coverage or not covered_paths:
+        return 0
+    image_states = {str(image.id): image.protection_state for image in image_coverage}
+    protected = 0
+    for record in file_records:
+        image_ids = covered_paths.get(record.path, set())
+        if image_ids and all(image_states.get(image_id) is not None for image_id in image_ids):
+            if all(image_states[image_id].value == "protected" for image_id in image_ids):
+                protected += record.bytes
+    return protected

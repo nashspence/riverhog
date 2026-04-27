@@ -100,6 +100,9 @@ A collection summary exposes at least:
 - `hot_bytes`
 - `archived_bytes`
 - `pending_bytes`
+- `protection_state`
+- `protected_bytes`
+- `image_coverage`
 
 Definitions:
 
@@ -107,6 +110,9 @@ Definitions:
 - `hot_bytes` — total bytes currently materialized in hot storage for files in the collection
 - `archived_bytes` — total bytes stored on at least one registered copy
 - `pending_bytes` — `bytes - archived_bytes`
+- `protected_bytes` — total logical-file bytes currently covered by protected finalized images
+- `protection_state` — one of `unprotected`, `partially_protected`, or `protected`
+- `image_coverage` — finalized-image coverage details for this collection, including registered copies and Glacier state
 
 ### Candidate summary
 
@@ -139,7 +145,11 @@ An image summary exposes at least:
 - `collections`
 - `collection_ids`
 - `iso_ready`
-- `copy_count`
+- `protection_state`
+- `physical_copies_required`
+- `physical_copies_registered`
+- `physical_copies_missing`
+- `glacier`
 
 Finalized-image summary rules:
 
@@ -147,7 +157,11 @@ Finalized-image summary rules:
 - `collection_ids` is the lexically sorted list of contained collection ids
 - `finalized_at` is the UTC timestamp encoded by finalized `image.id`
 - finalized images always report `iso_ready = true`
-- `copy_count` is the number of registered physical copies for that finalized image
+- `protection_state` is one of `unprotected`, `partially_protected`, or `protected`
+- `physical_copies_required` defaults to `2`
+- `physical_copies_registered` counts currently registered or verified physical copies
+- `physical_copies_missing` is the remaining shortfall to the required physical-copy count
+- `glacier` summarizes current Glacier archive state and metadata for that finalized image
 
 ### Copy summary
 
@@ -157,6 +171,7 @@ A copy summary exposes at least:
 - `volume_id`
 - `location`
 - `created_at`
+- `state`
 
 ### Fetch summary
 

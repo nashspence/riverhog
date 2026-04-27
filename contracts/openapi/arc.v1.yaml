@@ -402,7 +402,7 @@ paths:
           required: false
           schema:
             type: string
-            enum: [finalized_at, bytes, copy_count]
+            enum: [finalized_at, bytes, physical_copies_registered]
             default: finalized_at
         - in: query
           name: order
@@ -828,9 +828,51 @@ components:
     FetchEntryUploadState:
       type: string
       enum: [pending, partial, byte_complete, uploaded]
+    ProtectionState:
+      type: string
+      enum: [unprotected, partially_protected, protected]
+    GlacierArchive:
+      type: object
+      required:
+        [state, object_path, stored_bytes, backend, storage_class, last_uploaded_at, last_verified_at, failure]
+      properties:
+        state:
+          type: string
+          enum: [pending, uploading, uploaded, retrying, failed]
+        object_path:
+          oneOf:
+            - type: string
+            - type: "null"
+        stored_bytes:
+          oneOf:
+            - type: integer
+            - type: "null"
+        backend:
+          oneOf:
+            - type: string
+            - type: "null"
+        storage_class:
+          oneOf:
+            - type: string
+            - type: "null"
+        last_uploaded_at:
+          oneOf:
+            - type: string
+              format: date-time
+            - type: "null"
+        last_verified_at:
+          oneOf:
+            - type: string
+              format: date-time
+            - type: "null"
+        failure:
+          oneOf:
+            - type: string
+            - type: "null"
     CollectionSummary:
       type: object
-      required: [id, files, bytes, hot_bytes, archived_bytes, pending_bytes]
+      required:
+        [id, files, bytes, hot_bytes, archived_bytes, pending_bytes, protection_state, protected_bytes, image_coverage]
       properties:
         id:
           type: string
@@ -840,6 +882,14 @@ components:
         hot_bytes: { type: integer }
         archived_bytes: { type: integer }
         pending_bytes: { type: integer }
+        protection_state:
+          $ref: "#/components/schemas/ProtectionState"
+        protected_bytes:
+          type: integer
+        image_coverage:
+          type: array
+          items:
+            $ref: "#/components/schemas/CollectionCoverageImage"
     CollectionUploadFile:
       type: object
       required: [path, bytes, sha256]
@@ -961,7 +1011,23 @@ components:
             - type: "null"
     FinalizedImageSummary:
       type: object
-      required: [id, filename, finalized_at, bytes, fill, files, collections, collection_ids, iso_ready, copy_count]
+      required:
+        [
+          id,
+          filename,
+          finalized_at,
+          bytes,
+          fill,
+          files,
+          collections,
+          collection_ids,
+          iso_ready,
+          protection_state,
+          physical_copies_required,
+          physical_copies_registered,
+          physical_copies_missing,
+          glacier,
+        ]
       properties:
         id:
           type: string
@@ -988,10 +1054,19 @@ components:
           type: boolean
           const: true
           description: Finalized images are always ISO-ready.
-        copy_count:
+        protection_state:
+          $ref: "#/components/schemas/ProtectionState"
+        physical_copies_required:
+          type: integer
+          minimum: 1
+        physical_copies_registered:
           type: integer
           minimum: 0
-          description: Number of registered physical copies for this finalized image.
+        physical_copies_missing:
+          type: integer
+          minimum: 0
+        glacier:
+          $ref: "#/components/schemas/GlacierArchive"
     FinalizedImageListResponse:
       type: object
       required: [page, per_page, total, pages, sort, order, images]
@@ -1010,7 +1085,7 @@ components:
           minimum: 0
         sort:
           type: string
-          enum: [finalized_at, bytes, copy_count]
+          enum: [finalized_at, bytes, physical_copies_registered]
         order:
           type: string
           enum: [asc, desc]
@@ -1018,6 +1093,42 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/FinalizedImageSummary"
+    CollectionCoverageImage:
+      type: object
+      required:
+        [
+          id,
+          filename,
+          protection_state,
+          physical_copies_required,
+          physical_copies_registered,
+          physical_copies_missing,
+          copies,
+          glacier,
+        ]
+      properties:
+        id:
+          type: string
+          pattern: "^[0-9]{8}T[0-9]{6}Z$"
+        filename:
+          type: string
+        protection_state:
+          $ref: "#/components/schemas/ProtectionState"
+        physical_copies_required:
+          type: integer
+          minimum: 1
+        physical_copies_registered:
+          type: integer
+          minimum: 0
+        physical_copies_missing:
+          type: integer
+          minimum: 0
+        copies:
+          type: array
+          items:
+            $ref: "#/components/schemas/CopySummary"
+        glacier:
+          $ref: "#/components/schemas/GlacierArchive"
     CopyRef:
       type: object
       required: [id, volume_id, location]
@@ -1034,7 +1145,7 @@ components:
           description: Mutable physical location label. Not part of copy identity.
     CopySummary:
       type: object
-      required: [id, volume_id, location, created_at]
+      required: [id, volume_id, location, created_at, state]
       properties:
         id:
           type: string
@@ -1047,6 +1158,9 @@ components:
           type: string
           description: Mutable physical location label. Not part of copy identity.
         created_at: { type: string, format: date-time }
+        state:
+          type: string
+          enum: [needed, burning, verified, registered, lost, damaged, retired]
     HotStatus:
       type: object
       required: [state, present_bytes, missing_bytes]

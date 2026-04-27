@@ -46,6 +46,8 @@ Feature: Plan and images API
     When the client posts to "/v1/plan/candidates/img_2026-04-20_01/finalize"
     Then the response status is 200
     And the response contains image id "20260420T040001Z"
+    And the response image protection_state is "unprotected"
+    And the response image glacier state is "pending"
     And the response does not contain field "volume_id"
     When the client gets "/v1/plan"
     Then the response status is 200
@@ -63,7 +65,7 @@ Feature: Plan and images API
     When the client gets "/v1/images"
     Then the response status is 200
     And the response contains "page", "per_page", "total", "pages", "sort", "order", and "images"
-    And each finalized image contains "id", "filename", "finalized_at", "bytes", "fill", "files", "collections", "collection_ids", "iso_ready", and "copy_count"
+    And each finalized image contains "id", "filename", "finalized_at", "bytes", "fill", "files", "collections", "collection_ids", "iso_ready", "protection_state", "physical_copies_required", "physical_copies_registered", "physical_copies_missing", and "glacier"
     And finalized images are returned newest-first
     And each finalized image is iso-ready
 
@@ -86,7 +88,7 @@ Feature: Plan and images API
     When the client gets "/v1/images?has_copies=true"
     Then the response status is 200
     And the response finalized images contain only "20260420T040001Z"
-    And each finalized image has copy_count greater than 0
+    And each finalized image has physical_copies_registered greater than 0
 
   Scenario: Finalized image listing can filter by filename query and contained collection
     Given candidate "img_2026-04-20_01" is finalized
@@ -160,9 +162,17 @@ Feature: Plan and images API
       When the client posts to "/v1/images/20260420T040001Z/copies" with id "BR-021-A" and location "Shelf B1"
       Then the response status is 200
       And the response contains copy id "BR-021-A"
-      And the response copy contains "volume_id", "location", and "created_at"
+      And the response copy contains "volume_id", "location", "created_at", and "state"
       And collection "docs" archived_bytes increases
       And collection "docs" pending_bytes decreases
+
+    Scenario: Registering one copy leaves the image partially protected while Glacier is pending
+      When the client posts to "/v1/images/20260420T040001Z/copies" with id "BR-021-A" and location "Shelf B1"
+      Then the response status is 200
+      When the client gets "/v1/images/20260420T040001Z"
+      Then the response status is 200
+      And the response image protection_state is "partially_protected"
+      And the response image glacier state is "pending"
 
     Scenario: Reusing a copy id for the same finalized image fails
       Given copy "BR-021-A" already exists
@@ -186,4 +196,4 @@ Feature: Plan and images API
       And the client gets "/v1/images?has_copies=true"
       Then the response status is 200
       And the response finalized images contain only "20260420T040001Z"
-      And each finalized image has copy_count greater than 0
+      And each finalized image has physical_copies_registered greater than 0

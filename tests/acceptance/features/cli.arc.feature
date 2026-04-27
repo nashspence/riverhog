@@ -89,7 +89,7 @@ Feature: arc CLI
       And stdout mentions "iso_ready: True"
       And stdout mentions "collections: 1 [docs]"
 
-    Scenario: arc images prints finalized ids, filenames, and copy counts
+    Scenario: arc images prints finalized ids and protection progress
       Given an archive with planner fixtures
       And candidate "img_2026-04-20_01" is finalized
       And copy "BR-021-A" already exists
@@ -97,7 +97,7 @@ Feature: arc CLI
       Then the command exits with code 0
       And stdout mentions "20260420T040001Z"
       And stdout mentions "20260420T040001Z.iso"
-      And stdout mentions "copies: 1"
+      And stdout mentions "protection: partially_protected copies=1/2 glacier=pending"
       And stdout mentions "collections: 1 [docs]"
 
     Scenario: arc pin prints fetch guidance when recovery is needed

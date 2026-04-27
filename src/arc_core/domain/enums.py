@@ -11,6 +11,30 @@ class FetchState(StrEnum):
     FAILED = "failed"
 
 
+class ProtectionState(StrEnum):
+    UNPROTECTED = "unprotected"
+    PARTIALLY_PROTECTED = "partially_protected"
+    PROTECTED = "protected"
+
+
+class GlacierState(StrEnum):
+    PENDING = "pending"
+    UPLOADING = "uploading"
+    UPLOADED = "uploaded"
+    RETRYING = "retrying"
+    FAILED = "failed"
+
+
+class CopyState(StrEnum):
+    NEEDED = "needed"
+    BURNING = "burning"
+    VERIFIED = "verified"
+    REGISTERED = "registered"
+    LOST = "lost"
+    DAMAGED = "damaged"
+    RETIRED = "retired"
+
+
 class SearchKind(StrEnum):
     COLLECTION = "collection"
     FILE = "file"

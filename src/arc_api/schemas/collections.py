@@ -1,6 +1,10 @@
 from __future__ import annotations
 
+from typing import Literal
+
+from arc_api.schemas.archive import GlacierArchiveOut
 from arc_api.schemas.common import ArcModel
+from arc_api.schemas.images import CopyOut
 
 
 class CollectionUploadFileIn(ArcModel):
@@ -22,6 +26,23 @@ class CollectionSummaryOut(ArcModel):
     hot_bytes: int
     archived_bytes: int
     pending_bytes: int
+    protection_state: Literal["unprotected", "partially_protected", "protected"]
+    protected_bytes: int
+    image_coverage: list["CollectionCoverageImageOut"]
+
+
+class CollectionCoverageImageOut(ArcModel):
+    id: str
+    filename: str
+    protection_state: Literal["unprotected", "partially_protected", "protected"]
+    physical_copies_required: int
+    physical_copies_registered: int
+    physical_copies_missing: int
+    copies: list[CopyOut]
+    glacier: GlacierArchiveOut
+
+
+CollectionSummaryOut.model_rebuild()
 
 
 class CollectionUploadFileOut(ArcModel):

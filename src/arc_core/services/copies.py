@@ -8,6 +8,7 @@ from pathlib import Path
 import yaml
 from sqlalchemy import select
 
+from arc_core.domain.enums import CopyState
 from arc_core.catalog_models import (
     CollectionFileRecord,
     FileCopyRecord,
@@ -48,6 +49,7 @@ class SqlAlchemyCopyService:
                     copy_id=copy_id,
                     location=location,
                     created_at=created_at,
+                    state=CopyState.REGISTERED.value,
                 )
             )
             covered = session.scalars(
@@ -96,6 +98,7 @@ class SqlAlchemyCopyService:
                 volume_id=image_id,
                 location=location,
                 created_at=created_at,
+                state=CopyState.REGISTERED,
             )
 
 

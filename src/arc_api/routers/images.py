@@ -24,7 +24,9 @@ def list_images(
     container: ContainerDep,
     page: int = Query(1, ge=1),
     per_page: int = Query(25, ge=1, le=100),
-    sort: Literal["finalized_at", "bytes", "copy_count"] = Query("finalized_at"),
+    sort: Literal["finalized_at", "bytes", "physical_copies_registered"] = Query(
+        "finalized_at"
+    ),
     order: Literal["asc", "desc"] = Query("desc"),
     q: str | None = Query(None),
     collection: str | None = Query(None),

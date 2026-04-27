@@ -38,6 +38,19 @@ _COLUMN_MIGRATIONS: list[list[tuple[str, str, str]]] = [
     [
         ("collections", "ingest_source", "TEXT"),
     ],
+    # version 4
+    [
+        ("finalized_images", "required_copy_count", "INTEGER"),
+        ("finalized_images", "glacier_state", "TEXT"),
+        ("finalized_images", "glacier_object_path", "TEXT"),
+        ("finalized_images", "glacier_stored_bytes", "INTEGER"),
+        ("finalized_images", "glacier_backend", "TEXT"),
+        ("finalized_images", "glacier_storage_class", "TEXT"),
+        ("finalized_images", "glacier_last_uploaded_at", "TEXT"),
+        ("finalized_images", "glacier_last_verified_at", "TEXT"),
+        ("finalized_images", "glacier_failure", "TEXT"),
+        ("image_copies", "state", "TEXT"),
+    ],
 ]
 
 

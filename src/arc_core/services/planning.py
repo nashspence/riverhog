@@ -5,8 +5,15 @@ from collections.abc import Callable
 from dataclasses import dataclass
 from pathlib import Path
 
-from sqlalchemy import func, select
+from sqlalchemy import select
 
+from arc_core.archive_compliance import (
+    copy_counts_toward_protection,
+    image_protection_state,
+    normalize_glacier_state,
+    normalize_required_copy_count,
+    registered_copy_shortfall,
+)
 from arc_core.catalog_models import (
     CollectionFileRecord,
     FinalizedImageCoveredPathRecord,
@@ -15,6 +22,7 @@ from arc_core.catalog_models import (
     PlannedCandidateRecord,
 )
 from arc_core.domain.errors import InvalidState, NotFound, NotYetImplemented
+from arc_core.domain.models import GlacierArchiveStatus
 from arc_core.iso.streaming import IsoStream, stream_iso_from_root
 from arc_core.runtime_config import RuntimeConfig
 from arc_core.sqlite_db import make_session_factory, session_scope
@@ -138,13 +146,20 @@ class SqlAlchemyPlanningService:
         if collection:
             image_views = [v for v in image_views if collection in v["_collection_ids"]]
         if has_copies is not None:
-            image_views = [v for v in image_views if (v["copy_count"] > 0) is has_copies]
+            image_views = [
+                v
+                for v in image_views
+                if (v["physical_copies_registered"] > 0) is has_copies
+            ]
 
         reverse = order == "desc"
         sort_key = {
             "finalized_at": lambda v: (v["id"], v["filename"]),
             "bytes": lambda v: (v["_bytes"], v["id"]),
-            "copy_count": lambda v: (v["copy_count"], v["id"]),
+            "physical_copies_registered": lambda v: (
+                v["physical_copies_registered"],
+                v["id"],
+            ),
         }[sort]
         image_views = sorted(image_views, key=sort_key, reverse=reverse)
 
@@ -186,6 +201,8 @@ class SqlAlchemyPlanningService:
                     bytes=candidate.bytes,
                     image_root=candidate.image_root,
                     target_bytes=candidate.target_bytes,
+                    required_copy_count=2,
+                    glacier_state="pending",
                 )
                 session.add(image)
                 for cp in candidate.covered_paths:
@@ -245,11 +262,19 @@ def _finalized_image_view(
     from sqlalchemy.orm import Session  # noqa: PLC0415
 
     assert isinstance(session, Session)
-    copy_count = session.scalar(
-        select(func.count(ImageCopyRecord.copy_id)).where(
-            ImageCopyRecord.image_id == image.image_id
-        )
-    ) or 0
+    copy_rows = session.scalars(
+        select(ImageCopyRecord).where(ImageCopyRecord.image_id == image.image_id)
+    ).all()
+    registered_copy_count = sum(
+        1 for copy in copy_rows if copy_counts_toward_protection(copy.state)
+    )
+    required_copy_count = normalize_required_copy_count(image.required_copy_count)
+    glacier = _glacier_archive_status(image)
+    protection_state = image_protection_state(
+        required_copy_count=required_copy_count,
+        registered_copy_count=registered_copy_count,
+        glacier_state=glacier.state,
+    )
     collection_ids = sorted({cp.collection_id for cp in image.covered_paths})
     files = len(image.covered_paths)
     fill = image.bytes / image.target_bytes if image.target_bytes else 0.0
@@ -264,10 +289,39 @@ def _finalized_image_view(
         "collections": len(collection_ids),
         "collection_ids": collection_ids,
         "iso_ready": True,
-        "copy_count": copy_count,
+        "protection_state": protection_state.value,
+        "physical_copies_required": required_copy_count,
+        "physical_copies_registered": registered_copy_count,
+        "physical_copies_missing": registered_copy_shortfall(
+            required_copy_count=required_copy_count,
+            registered_copy_count=registered_copy_count,
+        ),
+        "glacier": {
+            "state": glacier.state.value,
+            "object_path": glacier.object_path,
+            "stored_bytes": glacier.stored_bytes,
+            "backend": glacier.backend,
+            "storage_class": glacier.storage_class,
+            "last_uploaded_at": glacier.last_uploaded_at,
+            "last_verified_at": glacier.last_verified_at,
+            "failure": glacier.failure,
+        },
         "_bytes": image.bytes,
         "_collection_ids": collection_ids,
     }
+
+
+def _glacier_archive_status(image: FinalizedImageRecord) -> GlacierArchiveStatus:
+    return GlacierArchiveStatus(
+        state=normalize_glacier_state(image.glacier_state),
+        object_path=image.glacier_object_path,
+        stored_bytes=image.glacier_stored_bytes,
+        backend=image.glacier_backend,
+        storage_class=image.glacier_storage_class,
+        last_uploaded_at=image.glacier_last_uploaded_at,
+        last_verified_at=image.glacier_last_verified_at,
+        failure=image.glacier_failure,
+    )
 
 
 def _image_id_to_finalized_at(image_id: str) -> str:
