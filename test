@@ -48,7 +48,9 @@ EOF
 MODE="pytest"
 COMPOSE_RUN_ENV_ARGS=()
 REQUIRES_SIDECARS=0
-PROGRESS_POLL_SECONDS=60
+
+PROGRESS_CHECK_SECONDS="${PROGRESS_CHECK_SECONDS:-1}"
+PROGRESS_REPORT_SECONDS="${PROGRESS_REPORT_SECONDS:-300}"
 
 cleanup() {
   if [[ "${REQUIRES_SIDECARS}" == "1" ]]; then
@@ -103,17 +105,27 @@ compose build test
 run_with_progress() {
   local label="$1"
   shift
+
   "$@" &
   local pid="$!"
   local started_at
+  local last_report_at
+  local now
+
   started_at="$(date +%s)"
+  last_report_at="${started_at}"
 
   while kill -0 "${pid}" >/dev/null 2>&1; do
-    sleep "${PROGRESS_POLL_SECONDS}"
-    if kill -0 "${pid}" >/dev/null 2>&1; then
-      local now
-      now="$(date +%s)"
+    sleep "${PROGRESS_CHECK_SECONDS}"
+
+    if ! kill -0 "${pid}" >/dev/null 2>&1; then
+      break
+    fi
+
+    now="$(date +%s)"
+    if (( now - last_report_at >= PROGRESS_REPORT_SECONDS )); then
       printf '... %s still running after %ss\n' "${label}" "$((now - started_at))"
+      last_report_at="${now}"
     fi
   done
 
@@ -201,8 +213,9 @@ if [[ "${MODE}" == "canonical" ]]; then
     printf '==> %s finished in %ss\n' "${label}" "$((finished_at - started_at))"
   }
 
+  run_phase "unit" run_test_container -q tests/unit
+  run_phase "integration" run_test_container -q tests/integration
   run_phase "acceptance" run_test_container -q -m acceptance tests/acceptance
-  run_phase "integration + unit" run_test_container -q tests/integration tests/unit
   exit 0
 fi
 
