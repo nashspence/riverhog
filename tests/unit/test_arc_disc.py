@@ -31,7 +31,7 @@ def _manifest_for(plaintext: bytes) -> dict[str, object]:
                         "recovery_bytes": len(recovery),
                         "copies": [
                             {
-                                "copy": "copy-docs-1",
+                                "copy": "20260420T040001Z-1",
                                 "location": "vault-a/shelf-01",
                                 "disc_path": "disc/000001.bin",
                                 "recovery_bytes": len(recovery),
@@ -103,7 +103,7 @@ def test_arc_disc_fetch_recovers_in_memory_and_reports_progress(monkeypatch) -> 
 
     assert result.exit_code == 0
     assert '"state": "done"' in result.stdout
-    assert "copy-docs-1" in result.stderr
+    assert "20260420T040001Z-1" in result.stderr
     assert "current file" in result.stderr
     assert "manifest" in result.stderr
     assert "/s" in result.stderr
@@ -182,7 +182,7 @@ def test_arc_disc_fetch_resumes_split_entry_from_session_offset(monkeypatch) -> 
                                 "recovery_bytes": len(part_one),
                                 "copies": [
                                     {
-                                        "copy": "copy-docs-split-1",
+                                        "copy": "20260420T040003Z-1",
                                         "location": "vault-a/shelf-01",
                                         "disc_path": "disc/000001.bin",
                                         "recovery_bytes": len(part_one),
@@ -197,7 +197,7 @@ def test_arc_disc_fetch_resumes_split_entry_from_session_offset(monkeypatch) -> 
                                 "recovery_bytes": len(part_two),
                                 "copies": [
                                     {
-                                        "copy": "copy-docs-split-2",
+                                        "copy": "20260420T040004Z-1",
                                         "location": "vault-a/shelf-02",
                                         "disc_path": "disc/000002.bin",
                                         "recovery_bytes": len(part_two),
@@ -257,8 +257,8 @@ def test_arc_disc_fetch_resumes_split_entry_from_session_offset(monkeypatch) -> 
 
     assert result.exit_code == 0
     assert '"state": "done"' in result.stdout
-    assert "copy-docs-split-1" not in result.stderr
-    assert "copy-docs-split-2" in result.stderr
+    assert "20260420T040003Z-1" not in result.stderr
+    assert "20260420T040004Z-1" in result.stderr
     assert uploaded == [
         (len(part_one), part_two[:2]),
         (len(part_one) + 2, part_two[2:]),

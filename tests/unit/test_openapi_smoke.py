@@ -18,6 +18,7 @@ REQUIRED_PATHS = {
     "/v1/plan/candidates/{candidate_id}/finalize",
     "/v1/images/{image_id}/iso",
     "/v1/images/{image_id}/copies",
+    "/v1/images/{image_id}/copies/{copy_id}",
     "/v1/pin",
     "/v1/release",
     "/v1/pins",

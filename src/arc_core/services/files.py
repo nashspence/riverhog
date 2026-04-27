@@ -68,9 +68,7 @@ class SqlAlchemyFileService:
 
         with session_scope(self._session_factory) as session:
             all_files = session.scalars(
-                select(CollectionFileRecord).options(
-                    selectinload(CollectionFileRecord.collection)
-                )
+                select(CollectionFileRecord).options(selectinload(CollectionFileRecord.collection))
             ).all()
 
         result: list[dict[str, object]] = []
@@ -102,14 +100,10 @@ class SqlAlchemyFileService:
 
         with session_scope(self._session_factory) as session:
             all_files = session.scalars(
-                select(CollectionFileRecord).options(
-                    selectinload(CollectionFileRecord.collection)
-                )
+                select(CollectionFileRecord).options(selectinload(CollectionFileRecord.collection))
             ).all()
 
-            matching = [
-                f for f in all_files if f"{f.collection_id}/{f.path}" == target.canonical
-            ]
+            matching = [f for f in all_files if f"{f.collection_id}/{f.path}" == target.canonical]
 
             if not matching:
                 raise NotFound(f"file not found: {raw_target}")

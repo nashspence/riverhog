@@ -320,8 +320,8 @@ IMAGE_FIXTURES: tuple[ImageFixture, ...] = (
 
 SPLIT_FILE_RELPATH = "tax/2022/invoice-123.pdf"
 SPLIT_FILE_PARTS = split_fixture_plaintext(DOCS_FILES[SPLIT_FILE_RELPATH], 2)
-SPLIT_COPY_ONE_ID = "copy-docs-split-1"
-SPLIT_COPY_TWO_ID = "copy-docs-split-2"
+SPLIT_COPY_ONE_ID = "20260420T040003Z-1"
+SPLIT_COPY_TWO_ID = "20260420T040004Z-1"
 SPLIT_COPY_ONE_LOCATION = "vault-a/shelf-03"
 SPLIT_COPY_TWO_LOCATION = "vault-a/shelf-04"
 SPLIT_IMAGE_ONE_ID = "img_2026-04-20_03"

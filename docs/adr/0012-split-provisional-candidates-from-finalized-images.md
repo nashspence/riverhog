@@ -37,9 +37,9 @@ The contract also needs a stable identifier for provisional planner entries.
 - finalized-image listing and finalized-image lookup expose the same finalized-image summary shape
 - the finalized image summary exposes that canonical id as `id`
 - the finalized image summary also exposes `filename`, `finalized_at`, `collection_ids`, and archive-protection metadata
-- a registered physical disc is identified by the tuple `(volume_id, copy_id)`
-- `copy_id` is an arbitrary operator-supplied string scoped to one `volume_id`
-- registering a `copy_id` that already exists for the same finalized image and `volume_id` is rejected
+- a physical disc is identified by the tuple `(volume_id, copy_id)`
+- finalization creates generated `copy_id` values scoped to one finalized `volume_id`
+- registering the same generated `copy_id` twice is rejected
 - `copy_id` and the associated `volume_id` are immutable after registration
 - `location` is not part of disc identity; it is mutable operational metadata
 

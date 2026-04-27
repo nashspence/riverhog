@@ -298,9 +298,7 @@ class SqlAlchemyFetchService:
 
 
 def _get_pin_record(session, fetch_id: str) -> ActivePinRecord:
-    pin_record = session.scalar(
-        select(ActivePinRecord).where(ActivePinRecord.fetch_id == fetch_id)
-    )
+    pin_record = session.scalar(select(ActivePinRecord).where(ActivePinRecord.fetch_id == fetch_id))
     if pin_record is None:
         raise NotFound(f"fetch not found: {fetch_id}")
     return pin_record
@@ -359,8 +357,7 @@ def _ensure_fetch_entries(
         else:
             part_count = max((r.part_count or 1) for r in copy_records)
             payloads = tuple(
-                encrypt_recovery_payload(part)
-                for part in _split_plaintext(content, part_count)
+                encrypt_recovery_payload(part) for part in _split_plaintext(content, part_count)
             )
         recovery_bytes = sum(len(p) for p in payloads)
 
@@ -455,8 +452,7 @@ def _manifest_entry_payload(
         "uploaded_bytes": entry.uploaded_bytes,
         "upload_state_expires_at": entry.upload_expires_at,
         "copies": [
-            _manifest_copy_payload(hot_store, session, entry, copy)
-            for copy in _entry_copies(entry)
+            _manifest_copy_payload(hot_store, session, entry, copy) for copy in _entry_copies(entry)
         ],
         "parts": _manifest_parts_payload(hot_store, session, entry),
     }
@@ -501,8 +497,7 @@ def _manifest_parts_payload(
                     _copy_recovery_payload(hot_store, session, entry, part_copies[0])
                 ),
                 "copies": [
-                    _manifest_copy_payload(hot_store, session, entry, copy)
-                    for copy in part_copies
+                    _manifest_copy_payload(hot_store, session, entry, copy) for copy in part_copies
                 ],
             }
         )
@@ -565,9 +560,7 @@ def _entry_recovery_payloads(
     if not copies or all(copy.part_index is None for copy in copies):
         return (encrypt_recovery_payload(content),)
     part_count = max((copy.part_count or 1) for copy in copies)
-    return tuple(
-        encrypt_recovery_payload(part) for part in _split_plaintext(content, part_count)
-    )
+    return tuple(encrypt_recovery_payload(part) for part in _split_plaintext(content, part_count))
 
 
 def _copy_recovery_payload(

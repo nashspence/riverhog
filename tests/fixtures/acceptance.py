@@ -31,11 +31,18 @@ from arc_core.archive_compliance import (
     normalize_required_copy_count,
     registered_copy_shortfall,
 )
-from arc_core.domain.enums import CopyState, FetchState, GlacierState, ProtectionState
+from arc_core.domain.enums import (
+    CopyState,
+    FetchState,
+    GlacierState,
+    ProtectionState,
+    VerificationState,
+)
 from arc_core.domain.errors import Conflict, HashMismatch, InvalidState, NotFound
 from arc_core.domain.models import (
     CollectionCoverageImage,
     CollectionSummary,
+    CopyHistoryEntry,
     CopySummary,
     FetchCopyHint,
     FetchSummary,
@@ -87,6 +94,29 @@ REPO_ROOT = Path(__file__).resolve().parents[2]
 SRC_ROOT = REPO_ROOT / "src"
 FIXTURE_UPLOAD_EXPIRES_AT = "2099-12-31T23:59:59Z"
 _UPLOAD_EXPIRY_SWEEP_INTERVAL_SECONDS = 0.05
+
+
+def _generated_copy_id(image_id: str, ordinal: int) -> str:
+    return f"{image_id}-{ordinal}"
+
+
+def _copy_history(
+    *,
+    at: str,
+    event: str,
+    state: CopyState,
+    verification_state,
+    location: str | None,
+) -> tuple[CopyHistoryEntry, ...]:
+    return (
+        CopyHistoryEntry(
+            at=at,
+            event=event,
+            state=state,
+            verification_state=verification_state,
+            location=location,
+        ),
+    )
 
 
 @dataclass(frozen=True, slots=True)
@@ -306,6 +336,38 @@ class AcceptanceState:
     def seed_image(self, image: CandidateRecord) -> None:
         self.candidates_by_id[image.candidate_id] = image
 
+    def ensure_required_copy_slots(self, image_id: str) -> None:
+        image = self.finalized_images_by_id.get(ImageId(image_id))
+        if image is None:
+            raise NotFound(f"image not found: {image_id}")
+        required_copy_count = normalize_required_copy_count(None)
+        existing_ids = {
+            str(copy_id) for volume_id, copy_id in self.copy_summaries if volume_id == image_id
+        }
+        ordinal = 1
+        while len(existing_ids) < required_copy_count:
+            copy_id = _generated_copy_id(image_id, ordinal)
+            ordinal += 1
+            if copy_id in existing_ids:
+                continue
+            self.copy_summaries[(image_id, CopyId(copy_id))] = CopySummary(
+                id=CopyId(copy_id),
+                volume_id=image_id,
+                label_text=copy_id,
+                location=None,
+                created_at=DEFAULT_COPY_CREATED_AT,
+                state=CopyState.NEEDED,
+                verification_state=VerificationState.PENDING,
+                history=_copy_history(
+                    at=DEFAULT_COPY_CREATED_AT,
+                    event="created",
+                    state=CopyState.NEEDED,
+                    verification_state=VerificationState.PENDING,
+                    location=None,
+                ),
+            )
+            existing_ids.add(copy_id)
+
     def collection_files(self, collection_id: str | CollectionId) -> list[StoredFile]:
         collection_key = CollectionId(str(collection_id))
         records = self.files_by_collection.get(collection_key)
@@ -332,7 +394,10 @@ class AcceptanceState:
         image_states = {str(image.id): image.protection_state for image in image_coverage}
         for record in records:
             image_ids = covered_paths.get(record.path, set())
-            if image_ids and all(image_states.get(image_id) == ProtectionState.PROTECTED for image_id in image_ids):
+            if image_ids and all(
+                image_states.get(image_id) == ProtectionState.PROTECTED
+                for image_id in image_ids
+            ):
                 protected_bytes += record.bytes
         archived_bytes = sum(record.bytes for record in records if record.archived)
         return CollectionSummary(
@@ -357,8 +422,13 @@ class AcceptanceState:
         normalized_collection_id = CollectionId(str(collection_id))
         covered_paths: dict[str, set[str]] = {}
         image_coverage: list[CollectionCoverageImage] = []
-        for image in sorted(self.finalized_images_by_id.values(), key=lambda current: current.finalized_id):
-            if normalized_collection_id not in {collection_id for collection_id, _ in image.covered_paths}:
+        for image in sorted(
+            self.finalized_images_by_id.values(),
+            key=lambda current: current.finalized_id,
+        ):
+            if normalized_collection_id not in {
+                collection_id for collection_id, _ in image.covered_paths
+            }:
                 continue
             for covered_collection_id, path in image.covered_paths:
                 if covered_collection_id != normalized_collection_id:
@@ -1042,6 +1112,7 @@ class AcceptancePlanningService:
             raise InvalidState("image must be ISO-ready before finalization")
         finalized_key = ImageId(candidate.finalized_id)
         self.state.finalized_images_by_id.setdefault(finalized_key, candidate)
+        self.state.ensure_required_copy_slots(candidate.finalized_id)
         image = self.state.finalized_images_by_id[finalized_key]
         return image.finalized_image_payload(
             physical_copies_registered=self._physical_copies_registered(image)
@@ -1068,8 +1139,9 @@ class AcceptancePlanningService:
     def _physical_copies_registered(self, image: CandidateRecord) -> int:
         return sum(
             1
-            for volume_id, _copy_id in self.state.copy_summaries
+            for (volume_id, _copy_id), summary in self.state.copy_summaries.items()
             if volume_id == image.finalized_id
+            and copy_counts_toward_protection(summary.state.value)
         )
 
 
@@ -1096,28 +1168,45 @@ class AcceptanceCopyService:
                     result[(coll_id, path)] = (None, None)
         return result
 
-    def register(self, image_id: str, copy_id: str, location: str) -> CopySummary:
+    def register(
+        self,
+        image_id: str,
+        location: str,
+        *,
+        copy_id: str | None = None,
+    ) -> CopySummary:
         image = self.state.finalized_images_by_id.get(ImageId(image_id))
         if image is None:
             raise NotFound(f"image not found: {image_id}")
-        copy_key = CopyId(copy_id)
-        scoped_key = (image.finalized_id, copy_key)
-        if scoped_key in self.state.copy_summaries:
-            raise Conflict(f"copy already exists for volume: {copy_id}")
+        self.state.ensure_required_copy_slots(image.finalized_id)
+        target = self._registration_target(image.finalized_id, copy_id)
         summary = CopySummary(
-            id=copy_key,
+            id=target.id,
             volume_id=image.finalized_id,
+            label_text=target.label_text,
             location=location,
-            created_at=DEFAULT_COPY_CREATED_AT,
+            created_at=target.created_at,
             state=CopyState.REGISTERED,
+            verification_state=target.verification_state,
+            history=(
+                *target.history,
+                CopyHistoryEntry(
+                    at=DEFAULT_COPY_CREATED_AT,
+                    event="registered",
+                    state=CopyState.REGISTERED,
+                    verification_state=target.verification_state,
+                    location=location,
+                ),
+            ),
         )
+        scoped_key = (image.finalized_id, target.id)
         self.state.copy_summaries[scoped_key] = summary
         disc_info = self._read_disc_part_info(image)
         for collection_id, path in image.covered_paths:
             record = self.state.files_by_collection[collection_id][path]
             record.archived = True
             if all(
-                (existing.id, existing.volume_id) != (copy_key, image.finalized_id)
+                (existing.id, existing.volume_id) != (target.id, image.finalized_id)
                 for existing in record.copies
             ):
                 part_index, part_count = disc_info.get((str(collection_id), path), (None, None))
@@ -1133,7 +1222,7 @@ class AcceptanceCopyService:
                 record.copies.append(
                     AcceptanceState._copy_from_dict(
                         build_file_copy(
-                            copy_id=copy_id,
+                            copy_id=str(target.id),
                             volume_id=image.finalized_id,
                             location=location,
                             collection_id=str(collection_id),
@@ -1143,6 +1232,102 @@ class AcceptanceCopyService:
                     )
                 )
         return summary
+
+    def list_for_image(self, image_id: str) -> list[CopySummary]:
+        self.state.ensure_required_copy_slots(image_id)
+        return [
+            summary
+            for (volume_id, _copy_id), summary in sorted(self.state.copy_summaries.items())
+            if volume_id == image_id
+        ]
+
+    def update(
+        self,
+        image_id: str,
+        copy_id: str,
+        *,
+        location: str | None = None,
+        state: str | None = None,
+        verification_state: str | None = None,
+    ) -> CopySummary:
+        self.state.ensure_required_copy_slots(image_id)
+        scoped_key = (image_id, CopyId(copy_id))
+        summary = self.state.copy_summaries.get(scoped_key)
+        if summary is None:
+            raise NotFound(f"copy not found for image: {copy_id}")
+        next_state = CopyState(state) if state is not None else summary.state
+        next_verification_state = (
+            VerificationState(verification_state)
+            if verification_state is not None
+            else summary.verification_state
+        )
+        next_location = location if location is not None else summary.location
+        updated = CopySummary(
+            id=summary.id,
+            volume_id=summary.volume_id,
+            label_text=summary.label_text,
+            location=next_location,
+            created_at=summary.created_at,
+            state=next_state,
+            verification_state=next_verification_state,
+            history=(
+                *summary.history,
+                CopyHistoryEntry(
+                    at=DEFAULT_COPY_CREATED_AT,
+                    event="updated",
+                    state=next_state,
+                    verification_state=next_verification_state,
+                    location=next_location,
+                ),
+            ),
+        )
+        self.state.copy_summaries[scoped_key] = updated
+        self._sync_file_copy_visibility(updated)
+        return updated
+
+    def _registration_target(self, image_id: str, copy_id: str | None) -> CopySummary:
+        copies = self.list_for_image(image_id)
+        if copy_id is None:
+            for summary in copies:
+                if summary.state in {CopyState.NEEDED, CopyState.BURNING}:
+                    return summary
+            raise Conflict("all required copy slots are already registered")
+        for summary in copies:
+            if str(summary.id) != copy_id:
+                continue
+            if summary.state not in {CopyState.NEEDED, CopyState.BURNING}:
+                raise Conflict(f"copy is not available for registration: {copy_id}")
+            return summary
+        raise NotFound(f"copy not found for image: {copy_id}")
+
+    def _sync_file_copy_visibility(self, summary: CopySummary) -> None:
+        for records in self.state.files_by_collection.values():
+            for record in records.values():
+                remaining_copies: list[FileCopy] = []
+                updated_existing = False
+                for copy in record.copies:
+                    if (copy.volume_id, str(copy.id)) != (summary.volume_id, str(summary.id)):
+                        remaining_copies.append(copy)
+                        continue
+                    if copy_counts_toward_protection(summary.state.value) and summary.location:
+                        remaining_copies.append(
+                            FileCopy(
+                                id=copy.id,
+                                volume_id=copy.volume_id,
+                                location=summary.location,
+                                disc_path=copy.disc_path,
+                                enc=copy.enc,
+                                part_index=copy.part_index,
+                                part_count=copy.part_count,
+                                part_bytes=copy.part_bytes,
+                                part_sha256=copy.part_sha256,
+                            )
+                        )
+                        updated_existing = True
+                record.copies = remaining_copies
+                record.archived = bool(record.copies)
+                if updated_existing and summary.location:
+                    record.archived = True
 
 
 class AcceptanceFetchService:
@@ -1476,9 +1661,10 @@ class AcceptanceFetchService:
             record.summary = self._replace_summary(record)
 
     def _entry_upload_state(self, entry: FetchEntryRecord, *, fetch_state: FetchState) -> str:
-        if entry.uploaded_bytes >= self._entry_recovery_bytes(entry) and self._entry_recovery_bytes(
-            entry
-        ) > 0:
+        if (
+            entry.uploaded_bytes >= self._entry_recovery_bytes(entry)
+            and self._entry_recovery_bytes(entry) > 0
+        ):
             if fetch_state == FetchState.DONE:
                 return "uploaded"
             return "byte_complete"
@@ -2095,8 +2281,9 @@ class AcceptanceSystem:
         assert resp.status_code == 200, resp.text
         image_id = resp.json()["id"]
         resp = self.request(
-            "POST", f"/v1/images/{image_id}/copies",
-            json_body={"id": "copy-docs-1", "location": "vault-a/shelf-01"},
+            "POST",
+            f"/v1/images/{image_id}/copies",
+            json_body={"location": "vault-a/shelf-01"},
         )
         assert resp.status_code == 200, resp.text
         self.state.files_by_collection[docs_key]["tax/2022/invoice-123.pdf"].hot = False
@@ -2109,7 +2296,7 @@ class AcceptanceSystem:
             return
         self.seed_docs_hot()
         self.seed_image_fixtures(SPLIT_IMAGE_FIXTURES)
-        for fixture, copy_id, location in zip(
+        for fixture, _copy_id, location in zip(
             SPLIT_IMAGE_FIXTURES,
             (SPLIT_COPY_ONE_ID, SPLIT_COPY_TWO_ID),
             (SPLIT_COPY_ONE_LOCATION, SPLIT_COPY_TWO_LOCATION),
@@ -2119,8 +2306,9 @@ class AcceptanceSystem:
             assert resp.status_code == 200, resp.text
             image_id = resp.json()["id"]
             resp = self.request(
-                "POST", f"/v1/images/{image_id}/copies",
-                json_body={"id": copy_id, "location": location},
+                "POST",
+                f"/v1/images/{image_id}/copies",
+                json_body={"location": location},
             )
             assert resp.status_code == 200, resp.text
         self.state.files_by_collection[docs_key][SPLIT_FILE_RELPATH].hot = False

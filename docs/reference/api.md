@@ -268,10 +268,32 @@ Required behavior:
 - copy registration is only valid for an already finalized image
 - the path `image_id` is the finalized image id
 - the physical copy identity is `(volume_id, copy_id)`
-- the user-supplied `copy_id` must be unique within that finalized image/`volume_id`; duplicates are rejected with
-  `conflict`
+- finalized images create exactly two generated copy ids by default, such as `{image_id}-1` and `{image_id}-2`
+- if no `copy_id` is supplied, registration claims the next generated copy slot still in state `needed` or `burning`
+- duplicate registration of the same generated `copy_id` is rejected with `conflict`
+- the generated `copy_id` is also the exact disc label text Riverhog expects the operator to write
 - `location` is mutable operational metadata and is never part of copy identity
 - successful registration persists across service restart
+
+#### `GET /v1/images/{image_id}/copies`
+
+Lists the generated copy slots for one finalized image.
+
+Required behavior:
+
+- finalizing an image creates exactly two required copy slots by default
+- each copy summary exposes generated identity, exact label text, current location, lifecycle state, verification state,
+  and history
+
+#### `PATCH /v1/images/{image_id}/copies/{copy_id}`
+
+Updates one generated copy record.
+
+Required behavior:
+
+- location updates never mutate copy identity
+- copy lifecycle state and verification state persist across service restart
+- every location or state change is appended to copy history
 
 ### Pins
 
@@ -422,7 +444,10 @@ The `arc` CLI is a thin API client and should provide at least:
 - `arc plan [--page N] [--per-page N] [--sort FIELD] [--order asc|desc] [--query TEXT] [--collection ID] [--iso-ready|--not-ready]`
 - `arc images [--page N] [--per-page N] [--sort FIELD] [--order asc|desc] [--query TEXT] [--collection ID] [--has-copies|--no-copies]`
 - `arc iso get IMAGE_ID [-o FILE]`
-- `arc copy add IMAGE_ID COPY_ID --at LOCATION`
+- `arc copy add IMAGE_ID --at LOCATION [--copy-id GENERATED_ID]`
+- `arc copy list IMAGE_ID`
+- `arc copy move IMAGE_ID GENERATED_ID --to LOCATION`
+- `arc copy mark IMAGE_ID GENERATED_ID --state STATE [--verification-state STATE]`
 - `arc pin TARGET`
 - `arc release TARGET`
 - `arc pins`
@@ -492,7 +517,7 @@ Required behavior:
 - ISO download requires an already finalized image and uses the same represented bytes on every later download
 - registering a copy cannot reduce archived coverage
 - a physical copy is identified by `(volume_id, copy_id)`, never by `location`
-- duplicate `copy_id` values are rejected within one finalized image/`volume_id`
+- generated `copy_id` values are stable and never mutated by location or state updates
 - no collection id is an ancestor or descendant of another collection id
 - collection ingest uses explicit resumable upload sessions and auto-finalizes when every required file verifies
 - the same canonical selector string means the same projected file set everywhere in API and CLI

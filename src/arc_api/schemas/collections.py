@@ -28,7 +28,7 @@ class CollectionSummaryOut(ArcModel):
     pending_bytes: int
     protection_state: Literal["unprotected", "partially_protected", "protected"]
     protected_bytes: int
-    image_coverage: list["CollectionCoverageImageOut"]
+    image_coverage: list[CollectionCoverageImageOut]
 
 
 class CollectionCoverageImageOut(ArcModel):

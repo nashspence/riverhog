@@ -19,6 +19,7 @@ from tests.fixtures.acceptance import AcceptanceSystem
 from tests.fixtures.data import (
     DOCS_COLLECTION_ID,
     DOCS_FILES,
+    IMAGE_FIXTURES,
     IMAGE_ID,
     INVOICE_TARGET,
     PHOTOS_2024_FILE_COUNT,
@@ -29,6 +30,7 @@ from tests.fixtures.data import (
     SECOND_IMAGE_ID,
     SPLIT_FILE_PARTS,
     SPLIT_FILE_RELPATH,
+    SPLIT_IMAGE_FIXTURES,
     TAX_DIRECTORY_TARGET,
     fixture_encrypt_bytes,
 )
@@ -110,8 +112,7 @@ def _selected_content_for_target(
     resp = acceptance_system.request("GET", f"/v1/files/{quote(target, safe='/')}/content")
     if resp.status_code != 200:
         raise AssertionError(
-            f"could not get file content for {target!r}: "
-            f"{resp.status_code} {resp.text}"
+            f"could not get file content for {target!r}: {resp.status_code} {resp.text}"
         )
     return resp.content
 
@@ -277,6 +278,22 @@ def _response_manifest_entry(
     raise AssertionError(f"manifest entry not found: {entry_id}")
 
 
+def _response_copy_payload(context: AcceptanceScenarioContext) -> dict[str, Any]:
+    payload = _json_payload(_require_response(context))
+    return payload["copy"]
+
+
+def _listed_copy_payload(
+    context: AcceptanceScenarioContext,
+    copy_id: str,
+) -> dict[str, Any]:
+    payload = _json_payload(_require_response(context))
+    for copy in payload["copies"]:
+        if copy["id"] == copy_id:
+            return copy
+    raise AssertionError(f"listed copy not found: {copy_id}")
+
+
 def _ensure_collection_fixture(acceptance_system: AcceptanceSystem, collection_id: str) -> None:
     if collection_id == DOCS_COLLECTION_ID:
         acceptance_system.seed_docs_hot()
@@ -316,6 +333,21 @@ def _ensure_target_fixture(acceptance_system: AcceptanceSystem, target: str) -> 
         return
 
     raise AssertionError(f"unsupported target fixture: {target}")
+
+
+def _ensure_candidate_fixture(
+    acceptance_system: AcceptanceSystem,
+    candidate_id: str,
+) -> None:
+    if candidate_id in {str(current) for current in acceptance_system.state.candidates_by_id}:
+        return
+    if candidate_id in {fixture.id for fixture in IMAGE_FIXTURES}:
+        acceptance_system.seed_planner_fixtures()
+        return
+    if candidate_id in {fixture.id for fixture in SPLIT_IMAGE_FIXTURES}:
+        acceptance_system.seed_split_planner_fixtures()
+        return
+    raise AssertionError(f"unsupported candidate fixture: {candidate_id}")
 
 
 def _prepare_arc_expectation(
@@ -396,6 +428,64 @@ def _prepare_arc_expectation(
             "GET",
             "/v1/images",
             params=params,
+        ).json()
+        return
+
+    if argv[1] == "copy" and argv[2] == "add":
+        image_id = argv[3]
+        context.expected_api_endpoint = ("POST", f"/v1/images/{image_id}/copies")
+        body: dict[str, object] = {"location": _arc_option_value(argv, "--at")}
+        copy_id = _arc_option_value(argv, "--copy-id")
+        if copy_id is not None:
+            body["copy_id"] = copy_id
+        context.expected_api_payload = acceptance_system.request(
+            "POST",
+            f"/v1/images/{image_id}/copies",
+            json_body=body,
+        ).json()
+        return
+
+    if argv[1] == "copy" and argv[2] == "list":
+        image_id = argv[3]
+        context.expected_api_endpoint = ("GET", f"/v1/images/{image_id}/copies")
+        context.expected_api_payload = acceptance_system.request(
+            "GET",
+            f"/v1/images/{image_id}/copies",
+        ).json()
+        return
+
+    if argv[1] == "copy" and argv[2] == "move":
+        image_id = argv[3]
+        copy_id = argv[4]
+        context.expected_api_endpoint = (
+            "PATCH",
+            f"/v1/images/{image_id}/copies/{copy_id}",
+        )
+        context.expected_api_payload = acceptance_system.request(
+            "PATCH",
+            f"/v1/images/{image_id}/copies/{copy_id}",
+            json_body={"location": _arc_option_value(argv, "--to")},
+        ).json()
+        return
+
+    if argv[1] == "copy" and argv[2] == "mark":
+        image_id = argv[3]
+        copy_id = argv[4]
+        body: dict[str, object] = {"state": _arc_option_value(argv, "--state")}
+        verification_state = _arc_option_value(argv, "--verification-state")
+        location = _arc_option_value(argv, "--at")
+        if verification_state is not None:
+            body["verification_state"] = verification_state
+        if location is not None:
+            body["location"] = location
+        context.expected_api_endpoint = (
+            "PATCH",
+            f"/v1/images/{image_id}/copies/{copy_id}",
+        )
+        context.expected_api_payload = acceptance_system.request(
+            "PATCH",
+            f"/v1/images/{image_id}/copies/{copy_id}",
+            json_body=body,
         ).json()
         return
 
@@ -670,9 +760,7 @@ def given_fetch_has_stable_manifest(
     assert first == second
 
 
-@given(
-    parsers.parse('fetch "{fetch_id}" has entry "{entry_id}" with a partial upload in progress')
-)
+@given(parsers.parse('fetch "{fetch_id}" has entry "{entry_id}" with a partial upload in progress'))
 def given_fetch_has_partial_upload_in_progress(
     acceptance_system: AcceptanceSystem,
     acceptance_context: AcceptanceScenarioContext,
@@ -828,8 +916,9 @@ def given_copy_already_exists(
     acceptance_system: AcceptanceSystem,
     copy_id: str,
 ) -> None:
+    _ensure_candidate_fixture(acceptance_system, IMAGE_ID)
     acceptance_system.planning.finalize_image(IMAGE_ID)
-    acceptance_system.copies.register("20260420T040001Z", copy_id, "Shelf B1")
+    acceptance_system.copies.register("20260420T040001Z", "Shelf B1", copy_id=copy_id)
 
 
 @given(parsers.parse('candidate "{candidate_id}" is finalized'))
@@ -837,6 +926,7 @@ def given_candidate_is_finalized(
     acceptance_system: AcceptanceSystem,
     candidate_id: str,
 ) -> None:
+    _ensure_candidate_fixture(acceptance_system, candidate_id)
     acceptance_system.planning.finalize_image(candidate_id)
 
 
@@ -1066,7 +1156,7 @@ def when_client_registers_copy(
     response = acceptance_system.request(
         "POST",
         path,
-        json_body={"id": copy_id, "location": location},
+        json_body={"copy_id": copy_id, "location": location},
     )
     _set_response(acceptance_context, response)
     if acceptance_context.tracked_collection_id is not None:
@@ -1075,6 +1165,59 @@ def when_client_registers_copy(
             f"/v1/collections/{acceptance_context.tracked_collection_id}",
         ).json()
         acceptance_context.after_collections[acceptance_context.tracked_collection_id] = after
+
+
+@when(parsers.parse('the client posts to "{path}" with location "{location}"'))
+def when_client_registers_generated_copy(
+    acceptance_system: AcceptanceSystem,
+    acceptance_context: AcceptanceScenarioContext,
+    path: str,
+    location: str,
+) -> None:
+    if acceptance_context.tracked_collection_id is not None:
+        before = acceptance_system.request(
+            "GET",
+            f"/v1/collections/{acceptance_context.tracked_collection_id}",
+        ).json()
+        acceptance_context.before_collections[acceptance_context.tracked_collection_id] = before
+    response = acceptance_system.request(
+        "POST",
+        path,
+        json_body={"location": location},
+    )
+    _set_response(acceptance_context, response)
+    if acceptance_context.tracked_collection_id is not None:
+        after = acceptance_system.request(
+            "GET",
+            f"/v1/collections/{acceptance_context.tracked_collection_id}",
+        ).json()
+        acceptance_context.after_collections[acceptance_context.tracked_collection_id] = after
+
+
+@when(
+    parsers.parse(
+        'the client patches "{path}" with location "{location}", state "{state}", '
+        'and verification_state "{verification_state}"'
+    )
+)
+def when_client_patches_copy(
+    acceptance_system: AcceptanceSystem,
+    acceptance_context: AcceptanceScenarioContext,
+    path: str,
+    location: str,
+    state: str,
+    verification_state: str,
+) -> None:
+    response = acceptance_system.request(
+        "PATCH",
+        path,
+        json_body={
+            "location": location,
+            "state": state,
+            "verification_state": verification_state,
+        },
+    )
+    _set_response(acceptance_context, response)
 
 
 @when("the API process restarts")
@@ -1355,11 +1498,7 @@ def then_collection_image_coverage_includes_image(
     assert image_id in ids
 
 
-@then(
-    parsers.parse(
-        'collection image coverage for image "{image_id}" includes copy "{copy_id}"'
-    )
-)
+@then(parsers.parse('collection image coverage for image "{image_id}" includes copy "{copy_id}"'))
 def then_collection_image_coverage_for_image_includes_copy(
     acceptance_context: AcceptanceScenarioContext,
     image_id: str,
@@ -1370,11 +1509,7 @@ def then_collection_image_coverage_for_image_includes_copy(
     assert copy_id in [copy["id"] for copy in image["copies"]]
 
 
-@then(
-    parsers.parse(
-        'collection image coverage for image "{image_id}" glacier state is "{state}"'
-    )
-)
+@then(parsers.parse('collection image coverage for image "{image_id}" glacier state is "{state}"'))
 def then_collection_image_coverage_for_image_glacier_state_is(
     acceptance_context: AcceptanceScenarioContext,
     image_id: str,
@@ -1772,9 +1907,7 @@ def when_the_client_attempts_to_write_through_the_read_only_browsing_surface(
     acceptance_context: AcceptanceScenarioContext,
     path: str,
 ) -> None:
-    acceptance_context.response = acceptance_system.write_through_read_only_browsing_surface(
-        path
-    )
+    acceptance_context.response = acceptance_system.write_through_read_only_browsing_surface(path)
 
 
 @then("the read-only browsing write is rejected")
@@ -1920,7 +2053,8 @@ def then_response_plan_candidates_contain_only(
     'each finalized image contains "id", "filename", "finalized_at", "bytes", '
     '"fill", "files", "collections", '
     '"collection_ids", "iso_ready", "protection_state", '
-    '"physical_copies_required", "physical_copies_registered", "physical_copies_missing", and "glacier"'
+    '"physical_copies_required", "physical_copies_registered", '
+    '"physical_copies_missing", and "glacier"'
 )
 def then_each_finalized_image_contains_expected_fields(
     acceptance_context: AcceptanceScenarioContext,
@@ -2072,8 +2206,7 @@ def then_response_contains_copy_id(
     acceptance_context: AcceptanceScenarioContext,
     copy_id: str,
 ) -> None:
-    payload = _json_payload(_require_response(acceptance_context))
-    assert payload["copy"]["id"] == copy_id
+    assert _response_copy_payload(acceptance_context)["id"] == copy_id
 
 
 @then(parsers.re(r'the response copy contains "(?P<first>[^"]+)"(?P<rest>.*)'))
@@ -2082,8 +2215,115 @@ def then_response_copy_contains_fields(
     first: str,
     rest: str,
 ) -> None:
+    assert set([first, *_quoted_values(rest)]).issubset(_response_copy_payload(acceptance_context))
+
+
+@then(parsers.parse('the response copy state is "{state}"'))
+def then_response_copy_state_is(
+    acceptance_context: AcceptanceScenarioContext,
+    state: str,
+) -> None:
+    assert _response_copy_payload(acceptance_context)["state"] == state
+
+
+@then(parsers.parse('the response copy verification_state is "{state}"'))
+def then_response_copy_verification_state_is(
+    acceptance_context: AcceptanceScenarioContext,
+    state: str,
+) -> None:
+    assert _response_copy_payload(acceptance_context)["verification_state"] == state
+
+
+@then(parsers.parse('the response copies contain only "{first_copy_id}" and "{second_copy_id}"'))
+def then_response_copies_contain_only(
+    acceptance_context: AcceptanceScenarioContext,
+    first_copy_id: str,
+    second_copy_id: str,
+) -> None:
     payload = _json_payload(_require_response(acceptance_context))
-    assert set([first, *_quoted_values(rest)]).issubset(payload["copy"])
+    assert [copy["id"] for copy in payload["copies"]] == [first_copy_id, second_copy_id]
+
+
+@then(
+    parsers.re(
+        r'the response copy history contains events '
+        r'"(?P<first>[^"]+)"(?P<rest>.*) in order'
+    )
+)
+def then_response_copy_history_contains_events(
+    acceptance_context: AcceptanceScenarioContext,
+    first: str,
+    rest: str,
+) -> None:
+    history = _response_copy_payload(acceptance_context)["history"]
+    assert [entry["event"] for entry in history] == [first, *_quoted_values(rest)]
+
+
+@then(
+    parsers.parse(
+        'the response copy history entry {index:d} has event "{event}", '
+        'state "{state}", verification_state "{verification_state}", '
+        'and location "{location}"'
+    )
+)
+def then_response_copy_history_entry_matches(
+    acceptance_context: AcceptanceScenarioContext,
+    index: int,
+    event: str,
+    state: str,
+    verification_state: str,
+    location: str,
+) -> None:
+    history = _response_copy_payload(acceptance_context)["history"]
+    assert history[index - 1] == {
+        "at": history[index - 1]["at"],
+        "event": event,
+        "state": state,
+        "verification_state": verification_state,
+        "location": location,
+    }
+
+
+@then(
+    parsers.re(
+        r'listed copy "(?P<copy_id>[^"]+)" history contains events '
+        r'"(?P<first>[^"]+)"(?P<rest>.*) in order'
+    )
+)
+def then_listed_copy_history_contains_events(
+    acceptance_context: AcceptanceScenarioContext,
+    copy_id: str,
+    first: str,
+    rest: str,
+) -> None:
+    history = _listed_copy_payload(acceptance_context, copy_id)["history"]
+    assert [entry["event"] for entry in history] == [first, *_quoted_values(rest)]
+
+
+@then(
+    parsers.parse(
+        'listed copy "{copy_id}" history entry {index:d} has event "{event}", '
+        'state "{state}", verification_state "{verification_state}", '
+        'and location "{location}"'
+    )
+)
+def then_listed_copy_history_entry_matches(
+    acceptance_context: AcceptanceScenarioContext,
+    copy_id: str,
+    index: int,
+    event: str,
+    state: str,
+    verification_state: str,
+    location: str,
+) -> None:
+    history = _listed_copy_payload(acceptance_context, copy_id)["history"]
+    assert history[index - 1] == {
+        "at": history[index - 1]["at"],
+        "event": event,
+        "state": state,
+        "verification_state": verification_state,
+        "location": location,
+    }
 
 
 @then(parsers.parse('the response does not contain field "{field}"'))

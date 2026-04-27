@@ -51,6 +51,12 @@ _COLUMN_MIGRATIONS: list[list[tuple[str, str, str]]] = [
         ("finalized_images", "glacier_failure", "TEXT"),
         ("image_copies", "state", "TEXT"),
     ],
+    # version 5
+    [
+        ("image_copies", "label_text", "TEXT"),
+        ("image_copies", "verification_state", "TEXT"),
+        ("image_copies", "location", "TEXT"),
+    ],
 ]
 
 
@@ -106,14 +112,10 @@ def migrate_schema(engine: Engine) -> None:
     assert text is not None
     with engine.begin() as conn:
         conn.execute(
-            text(
-                "CREATE TABLE IF NOT EXISTS schema_migrations "
-                "(version INTEGER PRIMARY KEY)"
-            )
+            text("CREATE TABLE IF NOT EXISTS schema_migrations (version INTEGER PRIMARY KEY)")
         )
         applied = {
-            row[0]
-            for row in conn.execute(text("SELECT version FROM schema_migrations")).fetchall()
+            row[0] for row in conn.execute(text("SELECT version FROM schema_migrations")).fetchall()
         }
         for version, columns in enumerate(_COLUMN_MIGRATIONS, start=1):
             if version in applied:
@@ -146,6 +148,7 @@ def initialize_db(sqlite_path: str) -> None:
         FileCopyRecord,
         FinalizedImageCoveredPathRecord,
         FinalizedImageRecord,
+        ImageCopyEventRecord,
         ImageCopyRecord,
         PlannedCandidateRecord,
     )
@@ -159,6 +162,7 @@ def initialize_db(sqlite_path: str) -> None:
         FileCopyRecord,
         FinalizedImageCoveredPathRecord,
         FinalizedImageRecord,
+        ImageCopyEventRecord,
         ImageCopyRecord,
         CollectionUploadFileRecord,
         CollectionUploadRecord,

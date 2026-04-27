@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import Literal
 
-from pydantic import Field
+from pydantic import AliasChoices, Field
 
 from arc_api.schemas.archive import GlacierArchiveOut
 from arc_api.schemas.common import ArcModel
@@ -36,17 +36,40 @@ class ListImagesResponse(ArcModel):
 
 
 class RegisterCopyRequest(ArcModel):
-    id: str
+    copy_id: str | None = Field(default=None, validation_alias=AliasChoices("copy_id", "id"))
     location: str
+
+
+class UpdateCopyRequest(ArcModel):
+    location: str | None = None
+    state: (
+        Literal["needed", "burning", "verified", "registered", "lost", "damaged", "retired"] | None
+    ) = None
+    verification_state: Literal["pending", "verified", "failed"] | None = None
+
+
+class CopyHistoryOut(ArcModel):
+    at: str
+    event: str
+    state: Literal["needed", "burning", "verified", "registered", "lost", "damaged", "retired"]
+    verification_state: Literal["pending", "verified", "failed"]
+    location: str | None
 
 
 class CopyOut(ArcModel):
     id: str
     volume_id: str
-    location: str
+    label_text: str
+    location: str | None
     created_at: str
     state: Literal["needed", "burning", "verified", "registered", "lost", "damaged", "retired"]
+    verification_state: Literal["pending", "verified", "failed"]
+    history: list[CopyHistoryOut]
 
 
 class RegisterCopyResponse(ArcModel):
     copy_: CopyOut = Field(alias="copy")
+
+
+class ListCopiesResponse(ArcModel):
+    copies: list[CopyOut]

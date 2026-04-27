@@ -24,9 +24,7 @@ def create_s3_client(config: RuntimeConfig) -> Any:
         region_name=config.s3_region,
         aws_access_key_id=config.s3_access_key_id,
         aws_secret_access_key=config.s3_secret_access_key,
-        config=Config(
-            s3={"addressing_style": "path" if config.s3_force_path_style else "virtual"}
-        ),
+        config=Config(s3={"addressing_style": "path" if config.s3_force_path_style else "virtual"}),
     )
 
 

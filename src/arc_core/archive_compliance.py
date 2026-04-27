@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from collections.abc import Iterable
 
-from arc_core.domain.enums import CopyState, GlacierState, ProtectionState
+from arc_core.domain.enums import CopyState, GlacierState, ProtectionState, VerificationState
 
 DEFAULT_REQUIRED_PHYSICAL_COPIES = 2
 
@@ -31,6 +31,15 @@ def normalize_copy_state(state: str | None) -> CopyState:
         return CopyState.REGISTERED
 
 
+def normalize_verification_state(state: str | None) -> VerificationState:
+    if state is None:
+        return VerificationState.PENDING
+    try:
+        return VerificationState(state)
+    except ValueError:
+        return VerificationState.PENDING
+
+
 def copy_counts_toward_protection(state: str | None) -> bool:
     normalized = normalize_copy_state(state)
     return normalized in {CopyState.VERIFIED, CopyState.REGISTERED}
@@ -46,10 +55,7 @@ def image_protection_state(
     registered_copy_count: int,
     glacier_state: GlacierState,
 ) -> ProtectionState:
-    if (
-        registered_copy_count >= required_copy_count
-        and glacier_state == GlacierState.UPLOADED
-    ):
+    if registered_copy_count >= required_copy_count and glacier_state == GlacierState.UPLOADED:
         return ProtectionState.PROTECTED
     if registered_copy_count > 0 or glacier_state != GlacierState.PENDING:
         return ProtectionState.PARTIALLY_PROTECTED
@@ -66,8 +72,10 @@ def collection_protection_state(
     states = tuple(image_states)
     if bytes_total > 0 and protected_bytes >= bytes_total:
         return ProtectionState.PROTECTED
-    if protected_bytes > 0 or archived_bytes > 0 or any(
-        state != ProtectionState.UNPROTECTED for state in states
+    if (
+        protected_bytes > 0
+        or archived_bytes > 0
+        or any(state != ProtectionState.UNPROTECTED for state in states)
     ):
         return ProtectionState.PARTIALLY_PROTECTED
     return ProtectionState.UNPROTECTED

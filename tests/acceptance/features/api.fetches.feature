@@ -96,8 +96,8 @@ Feature: Fetches API
       When the client gets "/v1/fetches/fx-1/manifest"
       Then the response status is 200
       And fetch manifest entry "e1" lists split parts 0 and 1
-      And fetch manifest entry "e1" part 0 is recoverable from copy "copy-docs-split-1"
-      And fetch manifest entry "e1" part 1 is recoverable from copy "copy-docs-split-2"
+      And fetch manifest entry "e1" part 0 is recoverable from copy "20260420T040003Z-1"
+      And fetch manifest entry "e1" part 1 is recoverable from copy "20260420T040004Z-1"
       And fetch manifest entry "e1" part hashes and recovery-byte hashes match the published split fixture
 
   Rule: Fetch upload and completion are resumable and hash-verified

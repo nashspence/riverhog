@@ -10,9 +10,11 @@ from arc_api.mappers import map_copy
 from arc_api.schemas.images import (
     CopyOut,
     FinalizedImageSummaryResponse,
+    ListCopiesResponse,
     ListImagesResponse,
     RegisterCopyRequest,
     RegisterCopyResponse,
+    UpdateCopyRequest,
 )
 from arc_core.iso.streaming import IsoStream
 
@@ -24,9 +26,7 @@ def list_images(
     container: ContainerDep,
     page: int = Query(1, ge=1),
     per_page: int = Query(25, ge=1, le=100),
-    sort: Literal["finalized_at", "bytes", "physical_copies_registered"] = Query(
-        "finalized_at"
-    ),
+    sort: Literal["finalized_at", "bytes", "physical_copies_registered"] = Query("finalized_at"),
     order: Literal["asc", "desc"] = Query("desc"),
     q: str | None = Query(None),
     collection: str | None = Query(None),
@@ -75,7 +75,35 @@ def register_copy(
     container: ContainerDep,
 ) -> RegisterCopyResponse:
     summary = container.copies.register(
-        image_id=image_id, copy_id=request.id, location=request.location
+        image_id=image_id, copy_id=request.copy_id, location=request.location
+    )
+    return RegisterCopyResponse.model_validate(
+        {"copy": CopyOut.model_validate(map_copy(summary)).model_dump()}
+    )
+
+
+@router.get("/images/{image_id}/copies", response_model=ListCopiesResponse)
+def list_copies(
+    image_id: str,
+    container: ContainerDep,
+) -> ListCopiesResponse:
+    copies = container.copies.list_for_image(image_id)
+    return ListCopiesResponse.model_validate({"copies": [map_copy(copy) for copy in copies]})
+
+
+@router.patch("/images/{image_id}/copies/{copy_id}", response_model=RegisterCopyResponse)
+def update_copy(
+    image_id: str,
+    copy_id: str,
+    request: UpdateCopyRequest,
+    container: ContainerDep,
+) -> RegisterCopyResponse:
+    summary = container.copies.update(
+        image_id=image_id,
+        copy_id=copy_id,
+        location=request.location,
+        state=request.state,
+        verification_state=request.verification_state,
     )
     return RegisterCopyResponse.model_validate(
         {"copy": CopyOut.model_validate(map_copy(summary)).model_dump()}

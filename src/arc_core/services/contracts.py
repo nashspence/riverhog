@@ -63,7 +63,17 @@ class PlanningService(Protocol):
 
 
 class CopyService(Protocol):
-    def register(self, image_id: str, copy_id: str, location: str) -> object: ...
+    def register(self, image_id: str, location: str, *, copy_id: str | None = None) -> object: ...
+    def list_for_image(self, image_id: str) -> list[object]: ...
+    def update(
+        self,
+        image_id: str,
+        copy_id: str,
+        *,
+        location: str | None = None,
+        state: str | None = None,
+        verification_state: str | None = None,
+    ) -> object: ...
 
 
 class PinService(Protocol):

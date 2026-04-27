@@ -157,10 +157,38 @@ class ApiClient:
             output.write_bytes(content)
         return content
 
-    def register_copy(self, image_id: str, copy_id: str, location: str) -> dict[str, Any]:
-        return self._json(
-            "POST", f"/v1/images/{image_id}/copies", json={"id": copy_id, "location": location}
-        )
+    def register_copy(
+        self,
+        image_id: str,
+        location: str,
+        *,
+        copy_id: str | None = None,
+    ) -> dict[str, Any]:
+        payload: dict[str, Any] = {"location": location}
+        if copy_id is not None:
+            payload["copy_id"] = copy_id
+        return self._json("POST", f"/v1/images/{image_id}/copies", json=payload)
+
+    def list_copies(self, image_id: str) -> dict[str, Any]:
+        return self._json("GET", f"/v1/images/{image_id}/copies")
+
+    def update_copy(
+        self,
+        image_id: str,
+        copy_id: str,
+        *,
+        location: str | None = None,
+        state: str | None = None,
+        verification_state: str | None = None,
+    ) -> dict[str, Any]:
+        payload: dict[str, Any] = {}
+        if location is not None:
+            payload["location"] = location
+        if state is not None:
+            payload["state"] = state
+        if verification_state is not None:
+            payload["verification_state"] = verification_state
+        return self._json("PATCH", f"/v1/images/{image_id}/copies/{copy_id}", json=payload)
 
     def pin(self, target: str) -> dict[str, Any]:
         return self._json("POST", "/v1/pin", json={"target": target})

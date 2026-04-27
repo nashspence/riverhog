@@ -84,7 +84,8 @@ A physical burned disc identified by `(volume_id, copy_id)`.
 
 Copy rules:
 
-- `copy_id` is operator-supplied and unique within one finalized image/`volume_id`
+- finalized images create two generated copy ids by default using `{image_id}-N`
+- the generated `copy_id` is the exact disc label text to write on media
 - `location` is mutable operational metadata
 - `location` is never part of copy identity
 
@@ -169,9 +170,11 @@ A copy summary exposes at least:
 
 - `id`
 - `volume_id`
+- `label_text`
 - `location`
 - `created_at`
 - `state`
+- `verification_state`
 
 ### Fetch summary
 

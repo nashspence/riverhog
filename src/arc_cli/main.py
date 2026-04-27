@@ -11,6 +11,8 @@ from arc_cli.output import (
     emit,
     format_collection_files,
     format_collection_upload,
+    format_copies,
+    format_copy,
     format_fetch,
     format_files,
     format_images,
@@ -261,12 +263,61 @@ def iso_get_cmd(
 
 @copy_app.command("add")
 def copy_add_cmd(
-    image_id: Annotated[str, typer.Argument(help="Image id")],
-    copy_id: Annotated[str, typer.Argument(help="Physical copy id")],
+    image_id: Annotated[str, typer.Argument(help="Finalized image id")],
     at: Annotated[str, typer.Option("--at", help="Physical location label")],
+    copy_id: Annotated[
+        str | None,
+        typer.Option("--copy-id", help="Generated copy id to claim explicitly"),
+    ] = None,
     json_mode: Annotated[bool, typer.Option("--json", help="Emit JSON")] = False,
 ) -> None:
-    emit(client().register_copy(image_id, copy_id, at), json_mode=json_mode)
+    payload = client().register_copy(image_id, at, copy_id=copy_id)
+    emit(payload if json_mode else format_copy(payload["copy"]), json_mode=json_mode)
+
+
+@copy_app.command("list")
+def copy_list_cmd(
+    image_id: Annotated[str, typer.Argument(help="Finalized image id")],
+    json_mode: Annotated[bool, typer.Option("--json", help="Emit JSON")] = False,
+) -> None:
+    payload = client().list_copies(image_id)
+    emit(payload if json_mode else format_copies(payload), json_mode=json_mode)
+
+
+@copy_app.command("move")
+def copy_move_cmd(
+    image_id: Annotated[str, typer.Argument(help="Finalized image id")],
+    copy_id: Annotated[str, typer.Argument(help="Generated copy id")],
+    to: Annotated[str, typer.Option("--to", help="New physical location label")],
+    json_mode: Annotated[bool, typer.Option("--json", help="Emit JSON")] = False,
+) -> None:
+    payload = client().update_copy(image_id, copy_id, location=to)
+    emit(payload if json_mode else format_copy(payload["copy"]), json_mode=json_mode)
+
+
+@copy_app.command("mark")
+def copy_mark_cmd(
+    image_id: Annotated[str, typer.Argument(help="Finalized image id")],
+    copy_id: Annotated[str, typer.Argument(help="Generated copy id")],
+    state: Annotated[str, typer.Option("--state", help="Copy lifecycle state")],
+    verification_state: Annotated[
+        str | None,
+        typer.Option("--verification-state", help="Verification state"),
+    ] = None,
+    at: Annotated[
+        str | None,
+        typer.Option("--at", help="Updated physical location label"),
+    ] = None,
+    json_mode: Annotated[bool, typer.Option("--json", help="Emit JSON")] = False,
+) -> None:
+    payload = client().update_copy(
+        image_id,
+        copy_id,
+        location=at,
+        state=state,
+        verification_state=verification_state,
+    )
+    emit(payload if json_mode else format_copy(payload["copy"]), json_mode=json_mode)
 
 
 @app.command("pin")

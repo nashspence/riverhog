@@ -14,4 +14,3 @@ class GlacierArchiveOut(ArcModel):
     last_uploaded_at: str | None
     last_verified_at: str | None
     failure: str | None
-

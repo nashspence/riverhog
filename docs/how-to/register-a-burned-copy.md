@@ -6,7 +6,7 @@ physical copy so archive-protection coverage can be counted.
 CLI example:
 
 ```bash
-arc copy add 20260420T040001Z BR-021-A --at 'Shelf B1'
+arc copy add 20260420T040001Z --at 'Shelf B1'
 ```
 
 The first positional argument is the finalized `image_id`.
@@ -21,7 +21,6 @@ Content-Type: application/json
 
 ```json
 {
-  "id": "BR-021-A",
   "location": "Shelf B1"
 }
 ```
@@ -29,8 +28,9 @@ Content-Type: application/json
 Notes:
 
 - registration is valid only after explicit image finalization has created the finalized image id
-- the physical copy identity is `(volume_id, id)`
-- the user-supplied `id` must be unique within that finalized image/`volume_id`
+- finalization creates exactly two generated copy slots by default, such as `20260420T040001Z-1` and `20260420T040001Z-2`
+- the generated `copy_id` is also the exact disc label text Riverhog expects the operator to write
+- the physical copy identity is `(volume_id, copy_id)`
 - `location` is mutable metadata and is not part of the copy identity
 
 Registering a copy does not change hot presence by itself. It updates archival coverage for files contained in the

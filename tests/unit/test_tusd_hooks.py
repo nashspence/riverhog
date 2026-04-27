@@ -32,9 +32,7 @@ def test_precreate_hook_assigns_custom_staging_upload_id(monkeypatch) -> None:
     )
 
     assert response.status_code == 200
-    assert response.json() == {
-        "ChangeFileInfo": {"ID": ".arc/uploads/recovery/fx-1/e1.enc"}
-    }
+    assert response.json() == {"ChangeFileInfo": {"ID": ".arc/uploads/recovery/fx-1/e1.enc"}}
 
 
 def test_precreate_hook_rejects_committed_collection_target(monkeypatch) -> None:

@@ -3,6 +3,7 @@ from __future__ import annotations
 from arc_core.domain.models import (
     CollectionCoverageImage,
     CollectionSummary,
+    CopyHistoryEntry,
     CopySummary,
     FetchSummary,
     GlacierArchiveStatus,
@@ -33,7 +34,19 @@ def map_collection(summary: CollectionSummary) -> dict[str, object]:
         "pending_bytes": summary.pending_bytes,
         "protection_state": summary.protection_state.value,
         "protected_bytes": summary.protected_bytes,
-        "image_coverage": [map_collection_coverage_image(image) for image in summary.image_coverage],
+        "image_coverage": [
+            map_collection_coverage_image(image) for image in summary.image_coverage
+        ],
+    }
+
+
+def map_copy_history(entry: CopyHistoryEntry) -> dict[str, object]:
+    return {
+        "at": entry.at,
+        "event": entry.event,
+        "state": entry.state.value,
+        "verification_state": entry.verification_state.value,
+        "location": entry.location,
     }
 
 
@@ -41,9 +54,12 @@ def map_copy(summary: CopySummary) -> dict[str, object]:
     return {
         "id": str(summary.id),
         "volume_id": summary.volume_id,
+        "label_text": summary.label_text,
         "location": summary.location,
         "created_at": summary.created_at,
         "state": summary.state.value,
+        "verification_state": summary.verification_state.value,
+        "history": [map_copy_history(entry) for entry in summary.history],
     }
 
 

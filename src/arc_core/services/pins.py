@@ -83,9 +83,7 @@ class SqlAlchemyPinService:
             if pin_record is not None:
                 fetch_id = pin_record.fetch_id
                 entries = session.scalars(
-                    select(FetchEntryRecord).where(
-                        FetchEntryRecord.fetch_id == fetch_id
-                    )
+                    select(FetchEntryRecord).where(FetchEntryRecord.fetch_id == fetch_id)
                 ).all()
                 for entry in entries:
                     if entry.tus_url is not None:

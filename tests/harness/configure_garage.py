@@ -28,9 +28,9 @@ def _normalize_lifecycle_configuration(payload: dict[str, object]) -> dict[str, 
                 "Status": rule.get("Status"),
                 "Filter": rule.get("Filter", {}),
                 "AbortIncompleteMultipartUpload": {
-                    "DaysAfterInitiation": rule.get(
-                        "AbortIncompleteMultipartUpload", {}
-                    ).get("DaysAfterInitiation")
+                    "DaysAfterInitiation": rule.get("AbortIncompleteMultipartUpload", {}).get(
+                        "DaysAfterInitiation"
+                    )
                 },
             }
         )

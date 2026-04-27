@@ -160,9 +160,11 @@ class ImageCopyRecord(Base):
 
     image_id: Mapped[str] = mapped_column(String, primary_key=True)
     copy_id: Mapped[str] = mapped_column(String, primary_key=True)
-    location: Mapped[str] = mapped_column(String)
+    label_text: Mapped[str] = mapped_column(String)
+    location: Mapped[str | None] = mapped_column(String, nullable=True)
     created_at: Mapped[str] = mapped_column(String)
     state: Mapped[str | None] = mapped_column(String, default="registered", nullable=True)
+    verification_state: Mapped[str | None] = mapped_column(String, default="pending", nullable=True)
 
     __table_args__ = (
         ForeignKeyConstraint(
@@ -173,6 +175,27 @@ class ImageCopyRecord(Base):
     )
 
     image: Mapped[FinalizedImageRecord] = relationship(back_populates="copies")
+
+
+class ImageCopyEventRecord(Base):
+    __tablename__ = "image_copy_events"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
+    image_id: Mapped[str] = mapped_column(String)
+    copy_id: Mapped[str] = mapped_column(String)
+    occurred_at: Mapped[str] = mapped_column(String)
+    event: Mapped[str] = mapped_column(String)
+    state: Mapped[str] = mapped_column(String)
+    verification_state: Mapped[str] = mapped_column(String)
+    location: Mapped[str | None] = mapped_column(String, nullable=True)
+
+    __table_args__ = (
+        ForeignKeyConstraint(
+            ["image_id", "copy_id"],
+            ["image_copies.image_id", "image_copies.copy_id"],
+            ondelete="CASCADE",
+        ),
+    )
 
 
 class ActivePinRecord(Base):

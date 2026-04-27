@@ -14,8 +14,8 @@ def test_format_pin_includes_fetch_guidance() -> None:
                 "state": "waiting_media",
                 "copies": [
                     {
-                        "id": "copy-docs-1",
-                        "volume_id": "20260419T230001Z",
+                        "id": "20260420T040001Z-1",
+                        "volume_id": "20260420T040001Z",
                         "location": "vault-a/shelf-01",
                     }
                 ],
@@ -25,7 +25,7 @@ def test_format_pin_includes_fetch_guidance() -> None:
 
     assert "docs/tax/2022/invoice-123.pdf" in rendered
     assert "fx-1" in rendered
-    assert "copy-docs-1" in rendered
+    assert "20260420T040001Z-1" in rendered
     assert "candidate copies" in rendered
 
 

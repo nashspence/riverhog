@@ -37,7 +37,7 @@ Feature: arc CLI
       And an archive with split planner fixtures
       And candidate "img_2026-04-20_01" is finalized
       And candidate "img_2026-04-20_03" is finalized
-      And copy "BR-021-A" already exists
+      And copy "20260420T040001Z-1" already exists
       When the operator runs 'arc images --page 1 --per-page 2 --sort finalized_at --order desc --has-copies --query 040001Z --collection docs --json'
       Then the command exits with code 0
       And stdout is valid JSON
@@ -70,6 +70,34 @@ Feature: arc CLI
       And stdout matches the structure of GET "/v1/files"
       And stdout mentions "invoice-123.pdf"
 
+    Scenario: arc copy add emits the generated-copy registration payload
+      Given candidate "img_2026-04-20_01" is finalized
+      When the operator runs 'arc copy add 20260420T040001Z --at "Shelf B1" --json'
+      Then the command exits with code 0
+      And stdout is valid JSON
+      And stdout mentions "20260420T040001Z-1"
+
+    Scenario: arc copy list emits the generated-copy listing payload
+      Given candidate "img_2026-04-20_01" is finalized
+      When the operator runs 'arc copy list 20260420T040001Z --json'
+      Then the command exits with code 0
+      And stdout is valid JSON
+      And stdout matches the structure of GET "/v1/images/20260420T040001Z/copies"
+
+    Scenario: arc copy move emits the copy update payload
+      Given copy "20260420T040001Z-1" already exists
+      When the operator runs 'arc copy move 20260420T040001Z 20260420T040001Z-1 --to "Shelf B2" --json'
+      Then the command exits with code 0
+      And stdout is valid JSON
+      And stdout mentions "Shelf B2"
+
+    Scenario: arc copy mark emits the copy state-transition payload
+      Given copy "20260420T040001Z-1" already exists
+      When the operator runs 'arc copy mark 20260420T040001Z 20260420T040001Z-1 --state verified --verification-state verified --json'
+      Then the command exits with code 0
+      And stdout is valid JSON
+      And stdout mentions "verified"
+
   Rule: Non-JSON mode remains concise and stable
     Scenario: arc upload ingests a local collection source
       Given a local collection source "photos-2024" with deterministic fixture contents
@@ -92,13 +120,21 @@ Feature: arc CLI
     Scenario: arc images prints finalized ids and protection progress
       Given an archive with planner fixtures
       And candidate "img_2026-04-20_01" is finalized
-      And copy "BR-021-A" already exists
+      And copy "20260420T040001Z-1" already exists
       When the operator runs 'arc images --has-copies'
       Then the command exits with code 0
       And stdout mentions "20260420T040001Z"
       And stdout mentions "20260420T040001Z.iso"
       And stdout mentions "protection: partially_protected copies=1/2 glacier=pending"
       And stdout mentions "collections: 1 [docs]"
+
+    Scenario: arc copy add prints the generated label text and state
+      Given candidate "img_2026-04-20_01" is finalized
+      When the operator runs 'arc copy add 20260420T040001Z --at "Shelf B1"'
+      Then the command exits with code 0
+      And stdout mentions "copy: 20260420T040001Z-1"
+      And stdout mentions "label: 20260420T040001Z-1"
+      And stdout mentions "state: registered"
 
     Scenario: arc pin prints fetch guidance when recovery is needed
       Given pinning target "docs/tax/2022/invoice-123.pdf" requires fetch "fx-1"

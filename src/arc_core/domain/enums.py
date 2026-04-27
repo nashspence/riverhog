@@ -35,6 +35,12 @@ class CopyState(StrEnum):
     RETIRED = "retired"
 
 
+class VerificationState(StrEnum):
+    PENDING = "pending"
+    VERIFIED = "verified"
+    FAILED = "failed"
+
+
 class SearchKind(StrEnum):
     COLLECTION = "collection"
     FILE = "file"

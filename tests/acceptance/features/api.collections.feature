@@ -112,11 +112,11 @@ Feature: Collections API
 
     Scenario: Collection summaries explain image, disc, and Glacier coverage
       Given an archive with planner fixtures
-      And copy "BR-021-A" already exists
+      And copy "20260420T040001Z-1" already exists
       When the client gets "/v1/collections/docs"
       Then the response status is 200
       And collection protection_state is "partially_protected"
       And protected_bytes is 0
       And collection image coverage includes image "20260420T040001Z"
-      And collection image coverage for image "20260420T040001Z" includes copy "BR-021-A"
+      And collection image coverage for image "20260420T040001Z" includes copy "20260420T040001Z-1"
       And collection image coverage for image "20260420T040001Z" glacier state is "pending"

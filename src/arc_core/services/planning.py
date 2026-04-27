@@ -18,9 +18,11 @@ from arc_core.catalog_models import (
     CollectionFileRecord,
     FinalizedImageCoveredPathRecord,
     FinalizedImageRecord,
+    ImageCopyEventRecord,
     ImageCopyRecord,
     PlannedCandidateRecord,
 )
+from arc_core.domain.enums import CopyState, VerificationState
 from arc_core.domain.errors import InvalidState, NotFound, NotYetImplemented
 from arc_core.domain.models import GlacierArchiveStatus
 from arc_core.iso.streaming import IsoStream, stream_iso_from_root
@@ -50,9 +52,7 @@ class SqlAlchemyPlanningService:
         iso_ready: bool | None = None,
     ) -> dict[str, object]:
         with session_scope(self._session_factory) as session:
-            finalized_ids = set(
-                session.scalars(select(FinalizedImageRecord.image_id)).all()
-            )
+            finalized_ids = set(session.scalars(select(FinalizedImageRecord.image_id)).all())
             all_candidates = session.scalars(select(PlannedCandidateRecord)).all()
             candidates = [c for c in all_candidates if c.finalized_id not in finalized_ids]
 
@@ -67,9 +67,7 @@ class SqlAlchemyPlanningService:
 
             all_files = session.scalars(select(CollectionFileRecord)).all()
             unplanned_bytes = sum(
-                f.bytes
-                for f in all_files
-                if (f.collection_id, f.path) not in covered_file_pairs
+                f.bytes for f in all_files if (f.collection_id, f.path) not in covered_file_pairs
             )
 
             candidate_views = [_candidate_plan_view(c, target_bytes) for c in candidates]
@@ -77,19 +75,16 @@ class SqlAlchemyPlanningService:
         if q:
             needle = q.casefold()
             candidate_views = [
-                v for v in candidate_views
+                v
+                for v in candidate_views
                 if needle in v["candidate_id"].casefold()
                 or any(needle in cid.casefold() for cid in v["_collections"])
                 or any(needle in pp.casefold() for pp in v["_projected_paths"])
             ]
         if collection:
-            candidate_views = [
-                v for v in candidate_views if collection in v["_collections"]
-            ]
+            candidate_views = [v for v in candidate_views if collection in v["_collections"]]
         if iso_ready is not None:
-            candidate_views = [
-                v for v in candidate_views if v["iso_ready"] is iso_ready
-            ]
+            candidate_views = [v for v in candidate_views if v["iso_ready"] is iso_ready]
 
         reverse = order == "desc"
         sort_key = {
@@ -138,7 +133,8 @@ class SqlAlchemyPlanningService:
         if q:
             needle = q.casefold()
             image_views = [
-                v for v in image_views
+                v
+                for v in image_views
                 if needle in v["id"].casefold()
                 or needle in v["filename"].casefold()
                 or any(needle in cid.casefold() for cid in v["_collection_ids"])
@@ -147,9 +143,7 @@ class SqlAlchemyPlanningService:
             image_views = [v for v in image_views if collection in v["_collection_ids"]]
         if has_copies is not None:
             image_views = [
-                v
-                for v in image_views
-                if (v["physical_copies_registered"] > 0) is has_copies
+                v for v in image_views if (v["physical_copies_registered"] > 0) is has_copies
             ]
 
         reverse = order == "desc"
@@ -213,6 +207,7 @@ class SqlAlchemyPlanningService:
                             path=cp.path,
                         )
                     )
+                _seed_required_copy_slots(session, image)
                 session.flush()
                 session.refresh(image)
                 existing = image
@@ -234,13 +229,9 @@ class SqlAlchemyPlanningService:
             )
 
 
-def _candidate_plan_view(
-    candidate: PlannedCandidateRecord, target_bytes: int
-) -> dict[str, object]:
+def _candidate_plan_view(candidate: PlannedCandidateRecord, target_bytes: int) -> dict[str, object]:
     collection_ids = sorted({cp.collection_id for cp in candidate.covered_paths})
-    projected_paths = sorted(
-        f"{cp.collection_id}/{cp.path}" for cp in candidate.covered_paths
-    )
+    projected_paths = sorted(f"{cp.collection_id}/{cp.path}" for cp in candidate.covered_paths)
     fill = candidate.bytes / target_bytes if target_bytes else 0.0
     return {
         "candidate_id": candidate.candidate_id,
@@ -256,9 +247,7 @@ def _candidate_plan_view(
     }
 
 
-def _finalized_image_view(
-    image: FinalizedImageRecord, session: object
-) -> dict[str, object]:
+def _finalized_image_view(image: FinalizedImageRecord, session: object) -> dict[str, object]:
     from sqlalchemy.orm import Session  # noqa: PLC0415
 
     assert isinstance(session, Session)
@@ -322,6 +311,53 @@ def _glacier_archive_status(image: FinalizedImageRecord) -> GlacierArchiveStatus
         last_verified_at=image.glacier_last_verified_at,
         failure=image.glacier_failure,
     )
+
+
+def _seed_required_copy_slots(session, image: FinalizedImageRecord) -> None:
+    existing_ids = {
+        copy_id
+        for copy_id in session.scalars(
+            select(ImageCopyRecord.copy_id).where(ImageCopyRecord.image_id == image.image_id)
+        ).all()
+    }
+    required_copy_count = normalize_required_copy_count(image.required_copy_count)
+    ordinal = 1
+    while len(existing_ids) < required_copy_count:
+        copy_id = f"{image.image_id}-{ordinal}"
+        ordinal += 1
+        if copy_id in existing_ids:
+            continue
+        created_at = _utc_now()
+        session.add(
+            ImageCopyRecord(
+                image_id=image.image_id,
+                copy_id=copy_id,
+                label_text=copy_id,
+                location=None,
+                created_at=created_at,
+                state=CopyState.NEEDED.value,
+                verification_state=VerificationState.PENDING.value,
+            )
+        )
+        session.flush()
+        session.add(
+            ImageCopyEventRecord(
+                image_id=image.image_id,
+                copy_id=copy_id,
+                occurred_at=created_at,
+                event="created",
+                state=CopyState.NEEDED.value,
+                verification_state=VerificationState.PENDING.value,
+                location=None,
+            )
+        )
+        existing_ids.add(copy_id)
+
+
+def _utc_now() -> str:
+    from datetime import UTC, datetime  # noqa: PLC0415
+
+    return datetime.now(UTC).strftime("%Y-%m-%dT%H:%M:%SZ")
 
 
 def _image_id_to_finalized_at(image_id: str) -> str:

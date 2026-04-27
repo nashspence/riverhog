@@ -3,7 +3,13 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from pathlib import PurePosixPath
 
-from arc_core.domain.enums import CopyState, FetchState, GlacierState, ProtectionState
+from arc_core.domain.enums import (
+    CopyState,
+    FetchState,
+    GlacierState,
+    ProtectionState,
+    VerificationState,
+)
 from arc_core.domain.types import CollectionId, CopyId, FetchId, ImageId, Sha256Hex, TargetStr
 
 
@@ -79,12 +85,24 @@ class ImageSummary:
 
 
 @dataclass(frozen=True)
+class CopyHistoryEntry:
+    at: str
+    event: str
+    state: CopyState
+    verification_state: VerificationState
+    location: str | None
+
+
+@dataclass(frozen=True)
 class CopySummary:
     id: CopyId
     volume_id: str
-    location: str
+    label_text: str
+    location: str | None
     created_at: str
     state: CopyState = CopyState.REGISTERED
+    verification_state: VerificationState = VerificationState.PENDING
+    history: tuple[CopyHistoryEntry, ...] = ()
 
 
 @dataclass(frozen=True)

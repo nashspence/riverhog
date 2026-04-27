@@ -10,8 +10,40 @@ import typer
 def _copy_label(copy: Mapping[str, object]) -> str:
     copy_id = str(copy.get("id", "unknown"))
     volume_id = str(copy.get("volume_id", "unknown"))
-    location = str(copy.get("location", "unknown"))
+    location = str(copy.get("location") or "unassigned")
     return f"{copy_id} ({volume_id} @ {location})"
+
+
+def format_copy(payload: Mapping[str, Any]) -> str:
+    history = payload.get("history")
+    lines = [
+        f"copy: {payload.get('id', 'unknown')}",
+        f"volume: {payload.get('volume_id', 'unknown')}",
+        f"label: {payload.get('label_text', 'unknown')}",
+        f"location: {payload.get('location') or 'unassigned'}",
+        f"state: {payload.get('state', 'unknown')}",
+        f"verification: {payload.get('verification_state', 'unknown')}",
+    ]
+    if isinstance(history, Sequence):
+        lines.append(f"history: {len(history)} event(s)")
+    return "\n".join(lines)
+
+
+def format_copies(payload: Mapping[str, Any]) -> str:
+    copies = payload.get("copies")
+    if not isinstance(copies, Sequence) or not copies:
+        return "copies: none"
+    lines = [f"copies: {len(copies)}"]
+    for copy in copies:
+        if not isinstance(copy, Mapping):
+            continue
+        lines.append(
+            f"- {copy.get('id', 'unknown')} "
+            f"state={copy.get('state', 'unknown')} "
+            f"verification={copy.get('verification_state', 'unknown')} "
+            f"location={copy.get('location') or 'unassigned'}"
+        )
+    return "\n".join(lines)
 
 
 def format_pin(payload: Mapping[str, Any]) -> str:
@@ -106,6 +138,12 @@ def format_images(payload: Mapping[str, Any]) -> str:
         if not isinstance(image, Mapping):
             continue
         collection_ids = image.get("collection_ids")
+        glacier = image.get("glacier")
+        glacier_state = (
+            glacier.get("state", "unknown")
+            if isinstance(glacier, Mapping)
+            else "unknown"
+        )
         collection_text = (
             ", ".join(str(item) for item in collection_ids)
             if isinstance(collection_ids, Sequence)
@@ -119,7 +157,7 @@ def format_images(payload: Mapping[str, Any]) -> str:
                 f"{image.get('protection_state', 'unknown')} "
                 f"copies={image.get('physical_copies_registered', 0)}/"
                 f"{image.get('physical_copies_required', 0)} "
-                f"glacier={image.get('glacier', {}).get('state', 'unknown') if isinstance(image.get('glacier'), Mapping) else 'unknown'}",
+                f"glacier={glacier_state}",
                 f"  collections: {image.get('collections', 0)} [{collection_text}]",
             ]
         )
@@ -202,8 +240,7 @@ def format_collection_upload(payload: Mapping[str, Any]) -> str:
     collection = payload.get("collection")
     if isinstance(collection, Mapping):
         lines.append(
-            "finalized: "
-            f"{collection.get('files', 0)} files {collection.get('bytes', 0)} bytes"
+            f"finalized: {collection.get('files', 0)} files {collection.get('bytes', 0)} bytes"
         )
         return "\n".join(lines)
 

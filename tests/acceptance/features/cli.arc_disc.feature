@@ -14,8 +14,8 @@ Feature: arc-disc CLI
     Then the command exits with code 0
     And stdout is valid JSON
     And stdout reports fetch state "done"
-    And stderr mentions copy id "copy-docs-split-1"
-    And stderr mentions copy id "copy-docs-split-2"
+    And stderr mentions copy id "20260420T040003Z-1"
+    And stderr mentions copy id "20260420T040004Z-1"
     And target for fetch "fx-1" is hot
 
   Scenario: arc-disc fetch reports precise progress while streaming uploads
@@ -33,17 +33,17 @@ Feature: arc-disc CLI
     And fetch "fx-1" is not "done"
 
   Scenario: arc-disc fetch resumes split recovery across repeated runs via server-side upload state
-    Given the optical reader fixture fails for copy id "copy-docs-split-2"
+    Given the optical reader fixture fails for copy id "20260420T040004Z-1"
     When the operator runs 'arc-disc fetch fx-1 --device /dev/fake-sr0'
     Then the command exits non-zero
     And fetch "fx-1" is not "done"
-    When the optical reader fixture fails for copy id "copy-docs-split-1"
+    When the optical reader fixture fails for copy id "20260420T040003Z-1"
     And the operator runs 'arc-disc fetch fx-1 --device /dev/fake-sr0 --json'
     Then the command exits with code 0
     And stdout is valid JSON
     And stdout reports fetch state "done"
-    And stderr does not mention copy id "copy-docs-split-1"
-    And stderr mentions copy id "copy-docs-split-2"
+    And stderr does not mention copy id "20260420T040003Z-1"
+    And stderr mentions copy id "20260420T040004Z-1"
     And target for fetch "fx-1" is hot
 
   Scenario: arc-disc fetch fails if the server rejects incorrect recovered bytes

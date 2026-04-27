@@ -14,6 +14,7 @@ from arc_core.archive_compliance import (
     normalize_copy_state,
     normalize_glacier_state,
     normalize_required_copy_count,
+    normalize_verification_state,
     registered_copy_shortfall,
 )
 from arc_core.catalog_models import (
@@ -23,7 +24,6 @@ from arc_core.catalog_models import (
     CollectionUploadRecord,
     FinalizedImageCoveredPathRecord,
     FinalizedImageRecord,
-    ImageCopyRecord,
 )
 from arc_core.domain.errors import BadRequest, Conflict, HashMismatch, NotFound
 from arc_core.domain.models import (
@@ -770,15 +770,19 @@ def _collection_image_coverage(
     session,
     collection_id: str,
 ) -> tuple[list[CollectionCoverageImage], dict[str, set[str]]]:
-    images = session.scalars(
-        select(FinalizedImageRecord)
-        .join(FinalizedImageCoveredPathRecord)
-        .where(FinalizedImageCoveredPathRecord.collection_id == collection_id)
-        .options(
-            selectinload(FinalizedImageRecord.covered_paths),
-            selectinload(FinalizedImageRecord.copies),
+    images = (
+        session.scalars(
+            select(FinalizedImageRecord)
+            .join(FinalizedImageCoveredPathRecord)
+            .where(FinalizedImageCoveredPathRecord.collection_id == collection_id)
+            .options(
+                selectinload(FinalizedImageRecord.covered_paths),
+                selectinload(FinalizedImageRecord.copies),
+            )
         )
-    ).unique().all()
+        .unique()
+        .all()
+    )
 
     covered_paths: dict[str, set[str]] = {}
     image_coverage: list[CollectionCoverageImage] = []
@@ -792,9 +796,11 @@ def _collection_image_coverage(
             CopySummary(
                 id=CopyId(copy.copy_id),
                 volume_id=image.image_id,
+                label_text=copy.label_text or copy.copy_id,
                 location=copy.location,
                 created_at=copy.created_at,
                 state=normalize_copy_state(copy.state),
+                verification_state=normalize_verification_state(copy.verification_state),
             )
             for copy in sorted(image.copies, key=lambda current: current.copy_id)
         ]

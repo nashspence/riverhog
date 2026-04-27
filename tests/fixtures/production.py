@@ -32,7 +32,7 @@ from arc_core.catalog_models import (
     ImageCopyRecord,
     PlannedCandidateRecord,
 )
-from arc_core.domain.enums import CopyState, FetchState, ProtectionState
+from arc_core.domain.enums import CopyState, FetchState, ProtectionState, VerificationState
 from arc_core.domain.models import CollectionSummary, CopySummary, FetchCopyHint, FetchSummary
 from arc_core.domain.selectors import parse_target
 from arc_core.domain.types import CollectionId, CopyId, FetchId, TargetStr
@@ -74,6 +74,18 @@ _DEFAULT_EXTERNAL_APP_DB_PATH = "/app/.compose/state.sqlite3"
 _DEFAULT_EXTERNAL_WEBDAV_BASE_URL = "http://webdav:8080"
 _DEFAULT_EXTERNAL_APP_RESTART_PATH = "/_test/restart"
 _DEFAULT_EXTERNAL_APP_RESET_PATH = "/_test/reset"
+
+
+def _copy_summary_from_payload(copy: Mapping[str, object]) -> CopySummary:
+    return CopySummary(
+        id=CopyId(str(copy["id"])),
+        volume_id=str(copy["volume_id"]),
+        label_text=str(copy["label_text"]),
+        location=cast(str | None, copy.get("location")),
+        created_at=str(copy["created_at"]),
+        state=CopyState(str(copy["state"])),
+        verification_state=VerificationState(str(copy["verification_state"])),
+    )
 
 
 @dataclass(slots=True)
@@ -133,9 +145,9 @@ class _ExternalAppHandle:
 
 
 def _external_app_server() -> _ExternalAppHandle:
-    base_url = os.environ.get(
-        _EXTERNAL_APP_BASE_URL_ENV, _DEFAULT_EXTERNAL_APP_BASE_URL
-    ).rstrip("/")
+    base_url = os.environ.get(_EXTERNAL_APP_BASE_URL_ENV, _DEFAULT_EXTERNAL_APP_BASE_URL).rstrip(
+        "/"
+    )
     if not base_url:
         raise RuntimeError(f"{_EXTERNAL_APP_BASE_URL_ENV} must not be empty")
     restart_path = os.environ.get(
@@ -410,9 +422,7 @@ class ProductionCandidatesProxy:
             record = session.get(PlannedCandidateRecord, candidate_id)
             if record is None:
                 raise KeyError(candidate_id)
-            covered = tuple(
-                (cp.collection_id, cp.path) for cp in record.covered_paths
-            )
+            covered = tuple((cp.collection_id, cp.path) for cp in record.covered_paths)
             return ProductionCandidateView(
                 candidate_id=record.candidate_id,
                 finalized_id=record.finalized_id,
@@ -462,20 +472,49 @@ class ProductionCopiesClient:
     def __init__(self, system: ProductionSystem) -> None:
         self._system = system
 
-    def register(self, image_id: str, copy_id: str, location: str) -> CopySummary:
+    def register(
+        self,
+        image_id: str,
+        location: str,
+        *,
+        copy_id: str | None = None,
+    ) -> CopySummary:
+        body: dict[str, object] = {"location": location}
+        if copy_id is not None:
+            body["copy_id"] = copy_id
         payload = self._system.request(
             "POST",
             f"/v1/images/{image_id}/copies",
-            json_body={"id": copy_id, "location": location},
+            json_body=body,
         ).json()
-        copy = payload["copy"]
-        return CopySummary(
-            id=CopyId(str(copy["id"])),
-            volume_id=str(copy["volume_id"]),
-            location=str(copy["location"]),
-            created_at=str(copy["created_at"]),
-            state=CopyState(str(copy["state"])),
-        )
+        return _copy_summary_from_payload(payload["copy"])
+
+    def list_for_image(self, image_id: str) -> list[CopySummary]:
+        payload = self._system.request("GET", f"/v1/images/{image_id}/copies").json()
+        return [_copy_summary_from_payload(copy) for copy in payload["copies"]]
+
+    def update(
+        self,
+        image_id: str,
+        copy_id: str,
+        *,
+        location: str | None = None,
+        state: str | None = None,
+        verification_state: str | None = None,
+    ) -> CopySummary:
+        body: dict[str, object] = {}
+        if location is not None:
+            body["location"] = location
+        if state is not None:
+            body["state"] = state
+        if verification_state is not None:
+            body["verification_state"] = verification_state
+        payload = self._system.request(
+            "PATCH",
+            f"/v1/images/{image_id}/copies/{copy_id}",
+            json_body=body,
+        ).json()
+        return _copy_summary_from_payload(payload["copy"])
 
 
 class ProductionStateFetchesProxy:
@@ -609,9 +648,11 @@ class ProductionSystem:
     @classmethod
     def create(cls, workspace: Path) -> ProductionSystem:
         with time_block("fixture.acceptance_system.create"):
-            db_path = Path(
-                os.environ.get(_EXTERNAL_APP_DB_PATH_ENV, _DEFAULT_EXTERNAL_APP_DB_PATH)
-            ).expanduser().resolve()
+            db_path = (
+                Path(os.environ.get(_EXTERNAL_APP_DB_PATH_ENV, _DEFAULT_EXTERNAL_APP_DB_PATH))
+                .expanduser()
+                .resolve()
+            )
             fixture_path = workspace / "arc_disc_fixture.json"
             _wait_for_s3_bucket()
             _wait_for_tusd(load_runtime_config().tusd_base_url)
@@ -791,7 +832,7 @@ class ProductionSystem:
                     str(upload["upload_url"]),
                     offset=int(upload["offset"]),
                     content=content,
-            )
+                )
             return self.request("GET", f"/v1/collections/{normalized_collection_id}").json()
 
     def _seed_collection_hot(
@@ -830,7 +871,7 @@ class ProductionSystem:
         with session_scope(make_session_factory(str(self.db_path))) as session:
             if session.get(ImageCopyRecord, {"image_id": image_id, "copy_id": copy_id}) is not None:
                 return
-        self.copies.register(image_id, copy_id, location)
+        self.copies.register(image_id, location, copy_id=copy_id)
 
     def seed_photos_hot(self) -> None:
         with time_block("fixture.seed_photos_hot"):
@@ -929,7 +970,11 @@ class ProductionSystem:
             self.seed_docs_hot()
             self.seed_image_fixtures((IMAGE_FIXTURES[0],))
             self.seed_finalized_image(IMAGE_FIXTURES[0].id)
-            self._seed_image_copy(IMAGE_FIXTURES[0].volume_id, "copy-docs-1", "vault-a/shelf-01")
+            self._seed_image_copy(
+                IMAGE_FIXTURES[0].volume_id,
+                "20260420T040001Z-1",
+                "vault-a/shelf-01",
+            )
             with session_scope(make_session_factory(str(self.db_path))) as session:
                 record = session.get(
                     CollectionFileRecord,
@@ -1093,9 +1138,7 @@ class ProductionSystem:
                         encoded = payload
                         if entry_path == corrupt_path or copy_id in corrupt_copy_ids:
                             encoded = payload + b"corrupted-by-fixture\n"
-                        payload_by_disc_path[disc_path] = base64.b64encode(encoded).decode(
-                            "ascii"
-                        )
+                        payload_by_disc_path[disc_path] = base64.b64encode(encoded).decode("ascii")
                         if entry_path == fail_path or copy_id in fail_copy_ids:
                             fail_disc_paths.append(disc_path)
 
@@ -1246,6 +1289,7 @@ class ProductionSystem:
         raise NotImplementedError(
             f"production acceptance suite does not provide fixture-backed state for {name}"
         )
+
 
 @pytest.fixture
 def acceptance_system(tmp_path: Path) -> Iterator[ProductionSystem]:
