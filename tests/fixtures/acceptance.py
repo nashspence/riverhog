@@ -49,9 +49,13 @@ from arc_core.domain.models import (
     FetchCopyHint,
     FetchSummary,
     GlacierArchiveStatus,
+    GlacierBillingActual,
     GlacierBillingActualsView,
+    GlacierBillingExportBreakdown,
     GlacierBillingExportView,
+    GlacierBillingForecast,
     GlacierBillingForecastView,
+    GlacierBillingInvoiceSummary,
     GlacierBillingInvoicesView,
     GlacierBillingSummary,
     GlacierCollectionContribution,
@@ -328,6 +332,7 @@ class AcceptanceState:
     glacier_status_by_image: dict[ImageId, GlacierArchiveStatus] = field(default_factory=dict)
     glacier_jobs_by_image: dict[ImageId, AcceptanceGlacierUploadJob] = field(default_factory=dict)
     glacier_usage_snapshots: list[GlacierUsageSnapshot] = field(default_factory=list)
+    glacier_billing_metadata_available: bool = False
     next_fetch_number: int = 0
 
     def register_local_collection_source(self, collection_id: str, root: Path) -> None:
@@ -1307,7 +1312,10 @@ class AcceptanceGlacierReportingService:
             if image_id is None and collection is None
             else ()
         )
-        billing = _acceptance_glacier_billing(include=image_id is None and collection is None)
+        billing = _acceptance_glacier_billing(
+            self.state,
+            include=image_id is None and collection is None,
+        )
         return GlacierUsageReport(
             scope=_acceptance_glacier_scope(image_id=image_id, collection=collection),
             measured_at=datetime.now(UTC).strftime("%Y-%m-%dT%H:%M:%SZ"),
@@ -1334,31 +1342,153 @@ def _acceptance_glacier_scope(*, image_id: str | None, collection: str | None) -
     return "all"
 
 
-def _acceptance_glacier_billing(*, include: bool) -> GlacierBillingSummary | None:
+def _acceptance_glacier_billing(
+    state: AcceptanceState,
+    *,
+    include: bool,
+) -> GlacierBillingSummary | None:
     if not include:
         return None
+    if not state.glacier_billing_metadata_available:
+        return GlacierBillingSummary(
+            actuals=GlacierBillingActualsView(
+                source="unavailable",
+                scope="unavailable",
+                notes=("AWS Cost Explorer billing is unavailable for this runtime.",),
+            ),
+            forecast=GlacierBillingForecastView(
+                source="unavailable",
+                scope="unavailable",
+                notes=("AWS Cost Explorer forecast is unavailable for this runtime.",),
+            ),
+            exports=GlacierBillingExportView(
+                source="unavailable",
+                scope="unavailable",
+                notes=("CUR or Data Exports billing detail is unavailable for this runtime.",),
+            ),
+            invoices=GlacierBillingInvoicesView(
+                source="unavailable",
+                scope="unavailable",
+                notes=("AWS invoice summaries are unavailable for this runtime.",),
+            ),
+            notes=("AWS Cost Explorer billing is unavailable for this runtime.",),
+        )
+    config = load_runtime_config()
     return GlacierBillingSummary(
         actuals=GlacierBillingActualsView(
-            source="unavailable",
-            scope="unavailable",
-            notes=("AWS Cost Explorer billing is unavailable for this runtime.",),
+            source="aws_cost_explorer_resource",
+            scope="bucket",
+            filter_label=config.glacier_bucket,
+            service="Amazon Simple Storage Service",
+            billing_view_arn="arn:aws:billing::123456789012:billingview/primary",
+            granularity="DAILY",
+            periods=(
+                GlacierBillingActual(
+                    start="2026-04-14",
+                    end="2026-04-15",
+                    estimated=False,
+                    unblended_cost_usd=0.44,
+                    usage_quantity=11.0,
+                    usage_unit="GB-Mo",
+                ),
+            ),
+            notes=(
+                (
+                    "Bucket-scoped Cost Explorer actuals use AWS resource-level daily "
+                    "data and are limited to the last 14 days."
+                ),
+                "Riverhog queried bucket-scoped actuals through the resolved AWS billing view.",
+            ),
         ),
         forecast=GlacierBillingForecastView(
-            source="unavailable",
-            scope="unavailable",
-            notes=("AWS Cost Explorer forecast is unavailable for this runtime.",),
+            source="aws_cost_explorer",
+            scope="service",
+            filter_label=f"Amazon Simple Storage Service in {config.glacier_pricing_region_code}",
+            service="Amazon Simple Storage Service",
+            currency_code=config.glacier_billing_currency_code,
+            granularity="MONTHLY",
+            periods=(
+                GlacierBillingForecast(
+                    start="2026-05-01",
+                    end="2026-06-01",
+                    mean_cost_usd=14.5,
+                    lower_bound_cost_usd=11.0,
+                    upper_bound_cost_usd=18.0,
+                    currency_code=config.glacier_billing_currency_code,
+                ),
+            ),
+            notes=(
+                (
+                    "AWS Cost Explorer forecast does not expose bucket-resource "
+                    "forecasting, so Riverhog falls back to tag-scoped or "
+                    "service-scoped forecast data."
+                ),
+            ),
         ),
         exports=GlacierBillingExportView(
-            source="unavailable",
-            scope="unavailable",
-            notes=("CUR or Data Exports billing detail is unavailable for this runtime.",),
+            source="aws_data_exports_s3",
+            scope="bucket",
+            filter_label=config.glacier_bucket,
+            service="Amazon Simple Storage Service",
+            export_arn="arn:aws:bcm-data-exports:us-east-1:123456789012:export/glacier",
+            export_name="glacier-export",
+            execution_id="execution-0002",
+            manifest_key="billing/glacier-export/metadata/execution-0002/manifest.json",
+            billing_period="2026-04-01..2026-05-01",
+            bucket="billing-bucket",
+            prefix="billing",
+            object_key=None,
+            exported_at="2026-04-28T08:00:00Z",
+            currency_code=config.glacier_billing_currency_code,
+            files_read=2,
+            rows_scanned=4,
+            breakdowns=(
+                GlacierBillingExportBreakdown(
+                    usage_type="TimedStorage-GlacierByteHrs",
+                    operation="StandardStorage",
+                    resource_id=f"arn:aws:s3:::{config.glacier_bucket}",
+                    tag_value=None,
+                    unblended_cost_usd=2.0,
+                    usage_quantity=150.0,
+                    usage_unit="GB-Mo",
+                ),
+            ),
+            notes=(
+                (
+                    "Riverhog selected the AWS Data Exports manifest for the latest "
+                    "successful execution."
+                ),
+            ),
         ),
         invoices=GlacierBillingInvoicesView(
-            source="unavailable",
-            scope="unavailable",
-            notes=("AWS invoice summaries are unavailable for this runtime.",),
+            source="aws_invoicing",
+            scope="account",
+            account_id="123456789012",
+            invoices=(
+                GlacierBillingInvoiceSummary(
+                    invoice_id="INV-001",
+                    account_id="123456789012",
+                    billing_period_start="2026-04-01",
+                    billing_period_end="2026-05-01",
+                    invoice_type="Invoice",
+                    invoicing_entity="Amazon Web Services, Inc.",
+                    issued_at="2026-05-01T00:00:00Z",
+                    due_at="2026-05-08T00:00:00Z",
+                    base_currency_code="USD",
+                    base_total_amount=99.5,
+                    payment_currency_code="USD",
+                    payment_total_amount=99.5,
+                    original_invoice_id=None,
+                ),
+            ),
+            notes=(
+                (
+                    "AWS invoice summaries are account-level totals and do not "
+                    "attribute cost to a single Glacier bucket."
+                ),
+            ),
         ),
-        notes=("AWS Cost Explorer billing is unavailable for this runtime.",),
+        notes=(),
     )
 
 

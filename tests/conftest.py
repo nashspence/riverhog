@@ -20,6 +20,9 @@ XFAIL_REASONS = {
     "xfail_not_backed": ("Gherkin contract exists, but prod backing is not implemented yet"),
 }
 STRICT_XFAIL_MARKERS = {"xfail_contract", "xfail_not_backed"}
+SPEC_HARNESS_ONLY_REASON = (
+    "spec-harness-only: prod harness does not use fakes or controlled external services"
+)
 
 
 def _uses_spec_harness(item: pytest.Item) -> bool:
@@ -28,6 +31,8 @@ def _uses_spec_harness(item: pytest.Item) -> bool:
 
 def pytest_collection_modifyitems(items: list[pytest.Item]) -> None:
     for item in items:
+        if not _uses_spec_harness(item) and item.get_closest_marker("spec_harness_only"):
+            item.add_marker(pytest.mark.skip(reason=SPEC_HARNESS_ONLY_REASON))
         xfail_markers = {
             marker.name for marker in item.iter_markers() if marker.name in XFAIL_REASONS
         }

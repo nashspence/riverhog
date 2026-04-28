@@ -87,3 +87,13 @@ Feature: Read-only hot storage browsing
       Then the response status is 200
       And the response Glacier collections contain only "docs"
       And the response Glacier collection "docs" attribution_state is "derived"
+
+    @spec_harness_only
+    Scenario: Glacier usage report exposes resource-level and manifest-aware billing metadata in the spec harness
+      Given an archive with split planner fixtures
+      And candidate "img_2026-04-20_03" is finalized
+      And the spec harness exposes controlled Glacier billing metadata
+      When the client waits for image "20260420T040003Z" glacier state "uploaded"
+      And the client gets "/v1/glacier"
+      Then the response status is 200
+      And the response Glacier billing surface exposes resource-level and manifest metadata

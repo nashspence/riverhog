@@ -1015,25 +1015,25 @@ def _aggregate_export_breakdowns(
     aggregates: dict[breakdown_key, _ExportBreakdownTotals] = {}
     for key in manifest.object_keys:
         payload = s3_client.get_object(Bucket=manifest.bucket, Key=key)["Body"].read()
-        text = _decode_export_object(key, payload)
-        file_rows, file_source, file_aggregates = _parse_export_rows(text, config=config)
-        rows_scanned += file_rows
-        source = file_source
-        for breakdown_key, values in file_aggregates.items():
-            current = aggregates.get(breakdown_key, _ExportBreakdownTotals())
-            current_unit = current.unit
-            next_unit = values.unit
-            merged_unit = current_unit
-            if merged_unit in (None, ""):
-                merged_unit = next_unit
-            elif next_unit not in (None, "", merged_unit):
-                merged_unit = "mixed"
-            aggregates[breakdown_key] = _ExportBreakdownTotals(
-                cost=current.cost + values.cost,
-                quantity=current.quantity + values.quantity,
-                quantity_seen=current.quantity_seen or values.quantity_seen,
-                unit=merged_unit,
-            )
+        for text in _decode_export_object_parts(key, payload):
+            file_rows, file_source, file_aggregates = _parse_export_rows(text, config=config)
+            rows_scanned += file_rows
+            source = file_source
+            for breakdown_key, values in file_aggregates.items():
+                current = aggregates.get(breakdown_key, _ExportBreakdownTotals())
+                current_unit = current.unit
+                next_unit = values.unit
+                merged_unit = current_unit
+                if merged_unit in (None, ""):
+                    merged_unit = next_unit
+                elif next_unit not in (None, "", merged_unit):
+                    merged_unit = "mixed"
+                aggregates[breakdown_key] = _ExportBreakdownTotals(
+                    cost=current.cost + values.cost,
+                    quantity=current.quantity + values.quantity,
+                    quantity_seen=current.quantity_seen or values.quantity_seen,
+                    unit=merged_unit,
+                )
     breakdowns = [
         GlacierBillingExportBreakdown(
             usage_type=usage_type,
@@ -1050,17 +1050,19 @@ def _aggregate_export_breakdowns(
     return rows_scanned, tuple(breakdowns[: config.glacier_billing_export_max_items]), source
 
 
-def _decode_export_object(key: str, payload: bytes) -> str:
+def _decode_export_object_parts(key: str, payload: bytes) -> tuple[str, ...]:
     normalized = key.casefold()
     if normalized.endswith(".zip"):
-        archive = zipfile.ZipFile(io.BytesIO(payload))
-        names = archive.namelist()
-        if not names:
-            return ""
-        return archive.read(names[0]).decode("utf-8-sig")
+        with zipfile.ZipFile(io.BytesIO(payload)) as archive:
+            parts = tuple(
+                archive.read(name).decode("utf-8-sig")
+                for name in archive.namelist()
+                if not name.endswith("/")
+            )
+        return parts
     if normalized.endswith(".gz"):
         payload = gzip.decompress(payload)
-    return payload.decode("utf-8-sig")
+    return (payload.decode("utf-8-sig"),)
 
 
 def _parse_export_rows(

@@ -149,6 +149,16 @@ Feature: arc CLI
       And stdout mentions "attribution=derived"
       And stdout mentions "estimated_monthly_cost_usd="
 
+    @spec_harness_only
+    Scenario: arc glacier prints resource-level and manifest-aware billing metadata in the spec harness
+      Given an archive with split planner fixtures
+      And candidate "img_2026-04-20_03" is finalized
+      And the spec harness exposes controlled Glacier billing metadata
+      When the client waits for image "20260420T040003Z" glacier state "uploaded"
+      And the operator runs 'arc glacier'
+      Then the command exits with code 0
+      And stdout exposes Glacier billing resource-level and manifest metadata
+
     Scenario: arc copy add prints the generated label text and state
       Given candidate "img_2026-04-20_01" is finalized
       When the operator runs 'arc copy add 20260420T040001Z --at "Shelf B1"'

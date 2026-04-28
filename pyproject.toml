@@ -59,6 +59,7 @@ markers = [
   "cli: CLI-focused contract coverage",
   "integration: non-contract regression coverage",
   "mvp: MVP contract coverage",
+  "spec_harness_only: shared scenario inventory item that is intentionally executable only in the spec harness",
   "xfail_contract: spec backing exists, but prod is not implemented to the contract yet",
   "xfail_not_backed: Gherkin contract exists, but prod backing is not implemented yet",
 ]

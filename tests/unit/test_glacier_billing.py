@@ -474,6 +474,93 @@ def test_resolve_glacier_billing_reads_data_exports_execution_manifests(
     assert "latest successful execution" in view.notes[0]
 
 
+def test_resolve_glacier_billing_aggregates_multi_entry_zip_objects(
+    tmp_path: Path,
+    monkeypatch,
+) -> None:
+    manifest = json.dumps(
+        {
+            "reportKeys": ["billing/20260401-20260501/report.zip"],
+        }
+    ).encode("utf-8")
+    report_one = "\n".join(
+        [
+            "line_item_product_code,line_item_usage_type,line_item_operation,"
+            "line_item_resource_id,line_item_unblended_cost,line_item_usage_amount,"
+            "line_item_usage_unit",
+            "AmazonS3,TimedStorage-GlacierByteHrs,StandardStorage,riverhog,1.25,100,GB-Mo",
+        ]
+    ).encode("utf-8")
+    report_two = "\n".join(
+        [
+            "line_item_product_code,line_item_usage_type,line_item_operation,"
+            "line_item_resource_id,line_item_unblended_cost,line_item_usage_amount,"
+            "line_item_usage_unit",
+            "AmazonS3,TimedStorage-GlacierByteHrs,StandardStorage,riverhog,0.75,50,GB-Mo",
+        ]
+    ).encode("utf-8")
+    archive_buffer = io.BytesIO()
+    with zipfile.ZipFile(archive_buffer, "w") as archive:
+        archive.writestr("report-0001.csv", report_one)
+        archive.writestr("report-0002.csv", report_two)
+
+    class _Body:
+        def __init__(self, payload: bytes) -> None:
+            self._payload = payload
+
+        def read(self) -> bytes:
+            return self._payload
+
+    class _Paginator:
+        def paginate(self, **kwargs):
+            return [
+                {
+                    "Contents": [
+                        {
+                            "Key": "billing/20260401-20260501/cur-manifest.json",
+                            "LastModified": datetime(2026, 4, 28, tzinfo=UTC),
+                        }
+                    ]
+                }
+            ]
+
+    class _FakeS3Client:
+        def get_paginator(self, name: str):
+            assert name == "list_objects_v2"
+            return _Paginator()
+
+        def get_object(self, **kwargs):
+            if kwargs["Key"] == "billing/20260401-20260501/cur-manifest.json":
+                return {"Body": _Body(manifest)}
+            assert kwargs["Key"] == "billing/20260401-20260501/report.zip"
+            return {"Body": _Body(archive_buffer.getvalue())}
+
+    monkeypatch.setattr(
+        "arc_core.services.glacier_billing._create_billing_s3_client",
+        lambda config: _FakeS3Client(),
+    )
+
+    view = resolve_glacier_billing(
+        _config(
+            tmp_path,
+            glacier_endpoint_url="https://s3.us-west-2.amazonaws.com",
+            glacier_backend="aws",
+            glacier_billing_export_bucket="billing-bucket",
+            glacier_billing_export_prefix="billing",
+        ),
+        include=True,
+    ).exports
+
+    assert view is not None
+    assert view.source == "aws_cur_s3"
+    assert view.object_key == "billing/20260401-20260501/report.zip"
+    assert view.files_read == 1
+    assert view.rows_scanned == 2
+    assert view.breakdowns[0].unblended_cost_usd == 2.0
+    assert view.breakdowns[0].usage_quantity == 150.0
+    assert view.breakdowns[0].usage_unit == "GB-Mo"
+
+
 def test_resolve_glacier_billing_reads_invoice_summaries(
     tmp_path: Path,
     monkeypatch,
