@@ -2,11 +2,13 @@ from __future__ import annotations
 
 import asyncio
 import contextlib
+import json
 import logging
 import os
 import time
 from collections.abc import AsyncIterator, Callable
 from datetime import timedelta
+from pathlib import Path
 
 import uvicorn
 from fastapi import BackgroundTasks, FastAPI, Request, Response
@@ -32,6 +34,8 @@ from arc_core.stores.s3_support import delete_keys_with_prefixes, ensure_bucket_
 
 _LOG = logging.getLogger(__name__)
 _TEST_CONTROL_ENV = "ARC_ENABLE_TEST_CONTROL"
+_TEST_WEBHOOK_CAPTURE_PATH_ENV = "ARC_TEST_WEBHOOK_CAPTURE_PATH"
+_DEFAULT_TEST_WEBHOOK_CAPTURE_PATH = "/app/.compose/webhook-captures.jsonl"
 
 
 def _test_control_enabled() -> bool:
@@ -43,6 +47,39 @@ def _terminate_for_restart() -> None:
     # reliably observe the restart request succeed.
     time.sleep(0.05)
     os._exit(75)
+
+
+def _test_webhook_capture_path() -> Path:
+    raw = os.getenv(_TEST_WEBHOOK_CAPTURE_PATH_ENV, _DEFAULT_TEST_WEBHOOK_CAPTURE_PATH).strip()
+    return Path(raw).expanduser()
+
+
+def _clear_test_webhook_captures() -> None:
+    path = _test_webhook_capture_path()
+    if path.exists():
+        path.unlink()
+
+
+def _append_test_webhook_capture(payload: dict[str, object]) -> None:
+    path = _test_webhook_capture_path()
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with path.open("a", encoding="utf-8") as handle:
+        handle.write(json.dumps(payload, sort_keys=True))
+        handle.write("\n")
+
+
+def _load_test_webhook_captures() -> list[dict[str, object]]:
+    path = _test_webhook_capture_path()
+    if not path.exists():
+        return []
+    deliveries: list[dict[str, object]] = []
+    for line in path.read_text(encoding="utf-8").splitlines():
+        if not line.strip():
+            continue
+        payload = json.loads(line)
+        if isinstance(payload, dict):
+            deliveries.append(payload)
+    return deliveries
 
 
 def _clear_runtime_storage() -> None:
@@ -72,6 +109,7 @@ def _reset_runtime_state() -> None:
     finally:
         engine.dispose()
     initialize_db(str(config.sqlite_path))
+    _clear_test_webhook_captures()
 
 
 def _sweep_expired_uploads(container: ServiceContainer) -> None:
@@ -179,19 +217,19 @@ def create_app(
     async def lifespan(_: FastAPI) -> AsyncIterator[None]:
         upload_task = asyncio.create_task(
             _run_upload_expiry_reaper(
-                lambda: app_container,
+                get_or_create_container,
                 sweep_interval=sweep_interval,
             )
         )
         glacier_task = asyncio.create_task(
             _run_glacier_upload_reaper(
-                lambda: app_container,
+                get_or_create_container,
                 sweep_interval=glacier_sweep_interval,
             )
         )
         glacier_recovery_task = asyncio.create_task(
             _run_glacier_recovery_reaper(
-                lambda: app_container,
+                get_or_create_container,
                 sweep_interval=glacier_recovery_sweep_interval,
             )
         )
@@ -241,6 +279,24 @@ def create_app(
         }
 
     if _test_control_enabled():
+
+        @app.post("/_test/webhooks", status_code=204, include_in_schema=False)
+        async def capture_test_webhook(request: Request) -> Response:
+            payload = await request.json()
+            if not isinstance(payload, dict):
+                return Response(status_code=400)
+            await asyncio.to_thread(_append_test_webhook_capture, payload)
+            return Response(status_code=204)
+
+        @app.get("/_test/webhooks", include_in_schema=False)
+        async def list_test_webhooks() -> dict[str, object]:
+            deliveries = await asyncio.to_thread(_load_test_webhook_captures)
+            return {"deliveries": deliveries}
+
+        @app.delete("/_test/webhooks", status_code=204, include_in_schema=False)
+        async def clear_test_webhooks() -> Response:
+            await asyncio.to_thread(_clear_test_webhook_captures)
+            return Response(status_code=204)
 
         @app.post("/_test/reset", status_code=204, include_in_schema=False)
         async def reset_under_compose() -> Response:

@@ -68,6 +68,7 @@ class AcceptanceScenarioContext:
     recorded_upload_offset: int | None = None
     last_fetch_id: str | None = None
     read_only_browsing_paths: set[str] = field(default_factory=set)
+    captured_webhook_payload: dict[str, Any] | None = None
 
 
 @pytest.fixture
@@ -91,6 +92,12 @@ def _require_inspected_iso(context: AcceptanceScenarioContext) -> InspectedIso:
     if context.current_iso is None:  # pragma: no cover - defensive guard
         raise AssertionError("no ISO has been inspected for this scenario")
     return context.current_iso
+
+
+def _require_captured_webhook_payload(context: AcceptanceScenarioContext) -> dict[str, Any]:
+    if context.captured_webhook_payload is None:  # pragma: no cover - defensive guard
+        raise AssertionError("no captured webhook payload has been recorded for this scenario")
+    return context.captured_webhook_payload
 
 
 def _selected_relpath_for_target(
@@ -1041,6 +1048,7 @@ def given_copy_already_exists(
 
 
 @given(parsers.parse('candidate "{candidate_id}" is finalized'))
+@when(parsers.parse('candidate "{candidate_id}" is finalized'))
 def given_candidate_is_finalized(
     acceptance_system: AcceptanceSystem,
     candidate_id: str,
@@ -1382,6 +1390,17 @@ def when_api_process_restarts(acceptance_system: AcceptanceSystem) -> None:
     acceptance_system.restart()
 
 
+@given(
+    parsers.parse('the glacier upload fixture fails for image "{image_id}" with error "{error}"')
+)
+def given_glacier_upload_fixture_fails_for_image(
+    acceptance_system: AcceptanceSystem,
+    image_id: str,
+    error: str,
+) -> None:
+    acceptance_system.fail_glacier_upload(image_id, error=error)
+
+
 @given(parsers.parse('the client waits for image "{image_id}" glacier state "{state}"'))
 @when(parsers.parse('the client waits for image "{image_id}" glacier state "{state}"'))
 def when_the_client_waits_for_image_glacier_state(
@@ -1406,6 +1425,24 @@ def when_the_client_waits_for_recovery_session_state(
     acceptance_system.wait_for_recovery_session_state(session_id, state)
     response = acceptance_system.request("GET", f"/v1/recovery-sessions/{session_id}")
     _set_response(acceptance_context, response)
+
+
+@given(parsers.parse('the client waits for captured webhook event "{event}"'))
+@when(parsers.parse('the client waits for captured webhook event "{event}"'))
+@then(parsers.parse('the client waits for captured webhook event "{event}"'))
+@given(parsers.parse('the client waits for captured webhook event "{event}" delivery {delivery:d}'))
+@when(parsers.parse('the client waits for captured webhook event "{event}" delivery {delivery:d}'))
+@then(parsers.parse('the client waits for captured webhook event "{event}" delivery {delivery:d}'))
+def when_the_client_waits_for_captured_webhook_event(
+    acceptance_system: AcceptanceSystem,
+    acceptance_context: AcceptanceScenarioContext,
+    event: str,
+    delivery: int = 1,
+) -> None:
+    acceptance_context.captured_webhook_payload = acceptance_system.wait_for_webhook_event(
+        event,
+        delivery=delivery,
+    )
 
 
 @when(parsers.parse('the operator uploads collection source "{collection_id}" with arc'))
@@ -2528,6 +2565,42 @@ def then_response_recovery_session_latest_message_contains(
 ) -> None:
     payload = _json_payload(_require_response(acceptance_context))
     assert text in str(payload["latest_message"])
+
+
+@then(parsers.parse('the captured webhook payload field "{field}" equals "{value}"'))
+def then_captured_webhook_payload_field_equals(
+    acceptance_context: AcceptanceScenarioContext,
+    field: str,
+    value: str,
+) -> None:
+    payload = _require_captured_webhook_payload(acceptance_context)
+    assert str(payload[field]) == value
+
+
+@then(parsers.parse('the captured webhook payload integer field "{field}" equals {value:d}'))
+def then_captured_webhook_payload_integer_field_equals(
+    acceptance_context: AcceptanceScenarioContext,
+    field: str,
+    value: int,
+) -> None:
+    payload = _require_captured_webhook_payload(acceptance_context)
+    assert int(payload[field]) == value
+
+
+@then(parsers.parse('the captured webhook payload images contain only "{image_id}"'))
+def then_captured_webhook_payload_images_contain_only(
+    acceptance_context: AcceptanceScenarioContext,
+    image_id: str,
+) -> None:
+    payload = _require_captured_webhook_payload(acceptance_context)
+    images = payload.get("images", [])
+    assert isinstance(images, list)
+    normalized_ids = [
+        str(image.get("image_id"))
+        for image in images
+        if isinstance(image, dict) and image.get("image_id") is not None
+    ]
+    assert normalized_ids == [image_id]
 
 
 @then("the response Glacier totals measured_storage_bytes is greater than 0")

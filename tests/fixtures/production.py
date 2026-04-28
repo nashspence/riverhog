@@ -1052,6 +1052,33 @@ class ProductionSystem:
             f"timed out waiting for recovery session state {session_id} -> {state}"
         )
 
+    def list_webhook_deliveries(self) -> list[dict[str, object]]:
+        response = self.request("GET", "/_test/webhooks")
+        assert response.status_code == 200, response.text
+        payload = response.json()
+        deliveries = payload.get("deliveries", [])
+        assert isinstance(deliveries, list), payload
+        return [cast(dict[str, object], item) for item in deliveries if isinstance(item, dict)]
+
+    def wait_for_webhook_event(
+        self,
+        event: str,
+        *,
+        delivery: int = 1,
+        timeout: float = 20.0,
+    ) -> dict[str, object]:
+        deadline = time.monotonic() + timeout
+        while time.monotonic() < deadline:
+            matches = [
+                payload
+                for payload in self.list_webhook_deliveries()
+                if str(payload.get("event")) == event
+            ]
+            if len(matches) >= delivery:
+                return matches[delivery - 1]
+            time.sleep(0.05)
+        raise AssertionError(f"timed out waiting for captured webhook event {event} #{delivery}")
+
     def seed_nested_photos_hot(self) -> None:
         with time_block("fixture.seed_nested_photos_hot"):
             if not self._collection_exists("photos/2024"):
