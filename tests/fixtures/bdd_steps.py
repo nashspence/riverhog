@@ -49,6 +49,8 @@ from tests.fixtures.disc_contracts import (
     require_xorriso,
 )
 
+_CAPTURED_WEBHOOK_TIMEOUT_DELAY_SECONDS = 15.0
+
 
 @dataclass(slots=True)
 class AcceptanceScenarioContext:
@@ -1429,6 +1431,25 @@ def given_captured_webhook_sink_fails_event(
     )
 
 
+@given(parsers.parse('the captured webhook sink times out event "{event}" once'))
+@given(
+    parsers.parse(
+        'the captured webhook sink times out event "{event}" for {count:d} attempts'
+    )
+)
+def given_captured_webhook_sink_times_out_event(
+    acceptance_system: AcceptanceSystem,
+    event: str,
+    count: int = 1,
+) -> None:
+    acceptance_system.configure_webhook_failure(
+        event,
+        remaining=count,
+        delay_seconds=_CAPTURED_WEBHOOK_TIMEOUT_DELAY_SECONDS,
+        mode="timeout",
+    )
+
+
 @given(parsers.parse('the client waits for image "{image_id}" glacier state "{state}"'))
 @when(parsers.parse('the client waits for image "{image_id}" glacier state "{state}"'))
 def when_the_client_waits_for_image_glacier_state(
@@ -1458,6 +1479,21 @@ def when_the_client_waits_for_recovery_session_state(
 @given(parsers.parse('the client waits for captured webhook event "{event}"'))
 @when(parsers.parse('the client waits for captured webhook event "{event}"'))
 @then(parsers.parse('the client waits for captured webhook event "{event}"'))
+@given(
+    parsers.parse(
+        'the client waits up to {timeout:d} seconds for captured webhook event "{event}"'
+    )
+)
+@when(
+    parsers.parse(
+        'the client waits up to {timeout:d} seconds for captured webhook event "{event}"'
+    )
+)
+@then(
+    parsers.parse(
+        'the client waits up to {timeout:d} seconds for captured webhook event "{event}"'
+    )
+)
 @given(parsers.parse('the client waits for captured webhook event "{event}" delivery {delivery:d}'))
 @when(parsers.parse('the client waits for captured webhook event "{event}" delivery {delivery:d}'))
 @then(parsers.parse('the client waits for captured webhook event "{event}" delivery {delivery:d}'))
@@ -1466,10 +1502,12 @@ def when_the_client_waits_for_captured_webhook_event(
     acceptance_context: AcceptanceScenarioContext,
     event: str,
     delivery: int = 1,
+    timeout: int = 5,
 ) -> None:
     acceptance_context.captured_webhook_payload = acceptance_system.wait_for_webhook_event(
         event,
         delivery=delivery,
+        timeout=float(timeout),
     )
 
 

@@ -262,6 +262,69 @@ def test_recovery_session_retries_initial_ready_notification_before_reminders(
     assert attempts == ["images.recovery_ready", "images.recovery_ready"]
 
 
+def test_recovery_session_retries_initial_ready_notification_before_expiring(
+    tmp_path: Path,
+    monkeypatch,
+) -> None:
+    sqlite_path = tmp_path / "state.sqlite3"
+    image_root = tmp_path / "image-root"
+    initialize_db(str(sqlite_path))
+    write_tree(image_root, IMAGE_ONE_FILES)
+    _seed_finalized_image(sqlite_path, image_root, glacier_state="uploaded")
+
+    config = _config(
+        sqlite_path,
+        glacier_recovery_webhook_url="http://example.invalid/webhooks/recovery",
+        glacier_recovery_restore_latency=timedelta(seconds=10),
+        glacier_recovery_ready_ttl=timedelta(seconds=10),
+        glacier_recovery_webhook_retry_delay=timedelta(seconds=1),
+        glacier_recovery_webhook_reminder_interval=timedelta(seconds=5),
+    )
+    copy_service = SqlAlchemyCopyService(config, _FakeHotStore())
+    recovery_service = SqlAlchemyRecoverySessionService(config)
+
+    copy_service.register("20260420T040001Z", "Shelf A1", copy_id="20260420T040001Z-1")
+    copy_service.register("20260420T040001Z", "Shelf B1", copy_id="20260420T040001Z-2")
+    copy_service.update("20260420T040001Z", "20260420T040001Z-1", state="lost")
+    copy_service.update("20260420T040001Z", "20260420T040001Z-2", state="lost")
+
+    attempts: list[str] = []
+
+    def _post_webhook(*, config, payload):
+        attempts.append(str(payload["event"]))
+        if len(attempts) == 1:
+            raise RuntimeError("HTTP 503")
+
+    start = datetime(2026, 4, 20, 4, 0, tzinfo=UTC)
+    monkeypatch.setattr("arc_core.services.recovery_sessions.utcnow", lambda: start)
+    monkeypatch.setattr("arc_core.services.recovery_sessions.post_webhook", _post_webhook)
+    recovery_service.approve("rs-20260420T040001Z-1")
+
+    monkeypatch.setattr(
+        "arc_core.services.recovery_sessions.utcnow",
+        lambda: start + timedelta(seconds=11),
+    )
+    assert recovery_service.process_due_sessions() == 1
+
+    failed_delivery = recovery_service.get("rs-20260420T040001Z-1")
+    assert failed_delivery.state == RecoverySessionState.READY
+    assert failed_delivery.notification.last_notified_at is None
+    assert failed_delivery.notification.next_reminder_at == "2026-04-20T04:00:12Z"
+    assert failed_delivery.restore_expires_at == "2026-04-20T04:00:21Z"
+
+    monkeypatch.setattr(
+        "arc_core.services.recovery_sessions.utcnow",
+        lambda: start + timedelta(seconds=22),
+    )
+    assert recovery_service.process_due_sessions() == 1
+
+    retried_delivery = recovery_service.get("rs-20260420T040001Z-1")
+    assert retried_delivery.state == RecoverySessionState.READY
+    assert retried_delivery.notification.last_notified_at == "2026-04-20T04:00:22Z"
+    assert retried_delivery.notification.reminder_count == 0
+    assert attempts == ["images.recovery_ready", "images.recovery_ready"]
+
+
 def test_glacier_upload_completion_backfills_recovery_session_for_unprotected_image(
     tmp_path: Path,
     monkeypatch,

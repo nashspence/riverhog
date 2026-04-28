@@ -213,19 +213,6 @@ class SqlAlchemyRecoverySessionService:
 
             if (
                 record.state == RecoverySessionState.READY.value
-                and record.restore_expires_at is not None
-                and record.restore_expires_at <= current_text
-            ):
-                record.state = RecoverySessionState.EXPIRED.value
-                record.next_reminder_at = None
-                record.latest_message = (
-                    "Restored ISO data expired and was cleaned up; re-initiate recovery to "
-                    "request a new restore."
-                )
-                return
-
-            if (
-                record.state == RecoverySessionState.READY.value
                 and record.next_reminder_at is not None
                 and record.next_reminder_at <= current_text
             ):
@@ -236,6 +223,19 @@ class SqlAlchemyRecoverySessionService:
                     config=self._config,
                     current=current,
                     reminder=initial_notification_succeeded,
+                )
+                return
+
+            if (
+                record.state == RecoverySessionState.READY.value
+                and record.restore_expires_at is not None
+                and record.restore_expires_at <= current_text
+            ):
+                record.state = RecoverySessionState.EXPIRED.value
+                record.next_reminder_at = None
+                record.latest_message = (
+                    "Restored ISO data expired and was cleaned up; re-initiate recovery to "
+                    "request a new restore."
                 )
 
 
