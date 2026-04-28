@@ -7,7 +7,7 @@ import logging
 import os
 import time
 from collections.abc import AsyncIterator, Callable
-from datetime import timedelta
+from datetime import UTC, datetime, timedelta
 from pathlib import Path
 
 import uvicorn
@@ -54,14 +54,46 @@ def _test_webhook_capture_path() -> Path:
     return Path(raw).expanduser()
 
 
+def _isoformat_z(value: datetime) -> str:
+    return value.astimezone(UTC).isoformat().replace("+00:00", "Z")
+
+
+def _test_webhook_attempt_path() -> Path:
+    return _test_webhook_capture_path().with_name("webhook-attempts.jsonl")
+
+
+def _test_webhook_behavior_path() -> Path:
+    return _test_webhook_capture_path().with_name("webhook-behaviors.json")
+
+
 def _clear_test_webhook_captures() -> None:
     path = _test_webhook_capture_path()
     if path.exists():
         path.unlink()
 
 
+def _clear_test_webhook_attempts() -> None:
+    path = _test_webhook_attempt_path()
+    if path.exists():
+        path.unlink()
+
+
+def _clear_test_webhook_behaviors() -> None:
+    path = _test_webhook_behavior_path()
+    if path.exists():
+        path.unlink()
+
+
 def _append_test_webhook_capture(payload: dict[str, object]) -> None:
     path = _test_webhook_capture_path()
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with path.open("a", encoding="utf-8") as handle:
+        handle.write(json.dumps(payload, sort_keys=True))
+        handle.write("\n")
+
+
+def _append_test_webhook_attempt(payload: dict[str, object]) -> None:
+    path = _test_webhook_attempt_path()
     path.parent.mkdir(parents=True, exist_ok=True)
     with path.open("a", encoding="utf-8") as handle:
         handle.write(json.dumps(payload, sort_keys=True))
@@ -80,6 +112,64 @@ def _load_test_webhook_captures() -> list[dict[str, object]]:
         if isinstance(payload, dict):
             deliveries.append(payload)
     return deliveries
+
+
+def _load_test_webhook_attempts() -> list[dict[str, object]]:
+    path = _test_webhook_attempt_path()
+    if not path.exists():
+        return []
+    attempts: list[dict[str, object]] = []
+    for line in path.read_text(encoding="utf-8").splitlines():
+        if not line.strip():
+            continue
+        payload = json.loads(line)
+        if isinstance(payload, dict):
+            attempts.append(payload)
+    return attempts
+
+
+def _load_test_webhook_behaviors() -> list[dict[str, object]]:
+    path = _test_webhook_behavior_path()
+    if not path.exists():
+        return []
+    payload = json.loads(path.read_text(encoding="utf-8"))
+    if not isinstance(payload, list):
+        return []
+    return [item for item in payload if isinstance(item, dict)]
+
+
+def _store_test_webhook_behaviors(behaviors: list[dict[str, object]]) -> None:
+    path = _test_webhook_behavior_path()
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(json.dumps(behaviors, sort_keys=True), encoding="utf-8")
+
+
+def _append_test_webhook_behavior(behavior: dict[str, object]) -> None:
+    behaviors = _load_test_webhook_behaviors()
+    behaviors.append(behavior)
+    _store_test_webhook_behaviors(behaviors)
+
+
+def _consume_test_webhook_behavior(event: str) -> dict[str, object] | None:
+    behaviors = _load_test_webhook_behaviors()
+    matched: dict[str, object] | None = None
+    for behavior in behaviors:
+        if str(behavior.get("event", "")).strip() != event:
+            continue
+        remaining = int(behavior.get("remaining", 0))
+        if remaining <= 0:
+            continue
+        matched = dict(behavior)
+        behavior["remaining"] = remaining - 1
+        break
+    _store_test_webhook_behaviors(behaviors)
+    return matched
+
+
+def _clear_test_webhook_state() -> None:
+    _clear_test_webhook_captures()
+    _clear_test_webhook_attempts()
+    _clear_test_webhook_behaviors()
 
 
 def _clear_runtime_storage() -> None:
@@ -109,7 +199,7 @@ def _reset_runtime_state() -> None:
     finally:
         engine.dispose()
     initialize_db(str(config.sqlite_path))
-    _clear_test_webhook_captures()
+    _clear_test_webhook_state()
 
 
 def _sweep_expired_uploads(container: ServiceContainer) -> None:
@@ -285,17 +375,79 @@ def create_app(
             payload = await request.json()
             if not isinstance(payload, dict):
                 return Response(status_code=400)
+            event = str(payload.get("event", "")).strip()
+            behavior = await asyncio.to_thread(_consume_test_webhook_behavior, event)
+            mode = str(behavior.get("mode", "status")) if behavior is not None else "status"
+            delay_seconds = (
+                max(0.0, float(behavior.get("delay_seconds", 0.0)))
+                if behavior is not None
+                else 0.0
+            )
+            status_code = (
+                int(behavior.get("status_code", 503)) if behavior is not None else 204
+            )
+            attempt_payload: dict[str, object] = {
+                "event": event,
+                "payload": payload,
+                "received_at": _isoformat_z(datetime.now(UTC)),
+                "result": "delivered",
+                "status_code": 204,
+            }
+            if behavior is not None:
+                attempt_payload["behavior"] = behavior
+            if mode == "timeout":
+                attempt_payload["result"] = "timeout"
+                attempt_payload["status_code"] = 0
+                await asyncio.to_thread(_append_test_webhook_attempt, attempt_payload)
+                if delay_seconds > 0:
+                    await asyncio.sleep(delay_seconds)
+                return Response(status_code=204)
+            if delay_seconds > 0:
+                await asyncio.sleep(delay_seconds)
+            if status_code >= 400:
+                attempt_payload["result"] = "failed"
+                attempt_payload["status_code"] = status_code
+                await asyncio.to_thread(_append_test_webhook_attempt, attempt_payload)
+                return Response(status_code=status_code)
+            await asyncio.to_thread(_append_test_webhook_attempt, attempt_payload)
             await asyncio.to_thread(_append_test_webhook_capture, payload)
             return Response(status_code=204)
 
         @app.get("/_test/webhooks", include_in_schema=False)
         async def list_test_webhooks() -> dict[str, object]:
             deliveries = await asyncio.to_thread(_load_test_webhook_captures)
-            return {"deliveries": deliveries}
+            attempts = await asyncio.to_thread(_load_test_webhook_attempts)
+            behaviors = await asyncio.to_thread(_load_test_webhook_behaviors)
+            return {
+                "deliveries": deliveries,
+                "attempts": attempts,
+                "behaviors": behaviors,
+            }
+
+        @app.post("/_test/webhooks/behaviors", status_code=201, include_in_schema=False)
+        async def add_test_webhook_behavior(request: Request) -> dict[str, object]:
+            payload = await request.json()
+            if not isinstance(payload, dict):
+                return {"error": "payload must be an object"}
+            event = str(payload.get("event", "")).strip()
+            if not event:
+                return {"error": "event is required"}
+            mode = str(payload.get("mode", "status")).strip() or "status"
+            if mode not in {"status", "timeout"}:
+                return {"error": "mode must be status or timeout"}
+            behavior = {
+                "event": event,
+                "mode": mode,
+                "remaining": max(1, int(payload.get("remaining", 1))),
+                "status_code": int(payload.get("status_code", 503)),
+                "delay_seconds": max(0.0, float(payload.get("delay_seconds", 0.0))),
+            }
+            await asyncio.to_thread(_append_test_webhook_behavior, behavior)
+            return {"behavior": behavior}
 
         @app.delete("/_test/webhooks", status_code=204, include_in_schema=False)
         async def clear_test_webhooks() -> Response:
-            await asyncio.to_thread(_clear_test_webhook_captures)
+            await asyncio.to_thread(_clear_test_webhook_state)
             return Response(status_code=204)
 
         @app.post("/_test/reset", status_code=204, include_in_schema=False)

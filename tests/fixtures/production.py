@@ -1060,6 +1060,36 @@ class ProductionSystem:
         assert isinstance(deliveries, list), payload
         return [cast(dict[str, object], item) for item in deliveries if isinstance(item, dict)]
 
+    def list_webhook_attempts(self) -> list[dict[str, object]]:
+        response = self.request("GET", "/_test/webhooks")
+        assert response.status_code == 200, response.text
+        payload = response.json()
+        attempts = payload.get("attempts", [])
+        assert isinstance(attempts, list), payload
+        return [cast(dict[str, object], item) for item in attempts if isinstance(item, dict)]
+
+    def configure_webhook_failure(
+        self,
+        event: str,
+        *,
+        status_code: int = 503,
+        remaining: int = 1,
+        delay_seconds: float = 0.0,
+        mode: str = "status",
+    ) -> None:
+        response = self.request(
+            "POST",
+            "/_test/webhooks/behaviors",
+            json_body={
+                "event": event,
+                "status_code": status_code,
+                "remaining": remaining,
+                "delay_seconds": delay_seconds,
+                "mode": mode,
+            },
+        )
+        assert response.status_code == 201, response.text
+
     def wait_for_webhook_event(
         self,
         event: str,
@@ -1078,6 +1108,28 @@ class ProductionSystem:
                 return matches[delivery - 1]
             time.sleep(0.05)
         raise AssertionError(f"timed out waiting for captured webhook event {event} #{delivery}")
+
+    def wait_for_webhook_attempt(
+        self,
+        event: str,
+        *,
+        result: str,
+        attempt: int = 1,
+        timeout: float = 20.0,
+    ) -> dict[str, object]:
+        deadline = time.monotonic() + timeout
+        while time.monotonic() < deadline:
+            matches = [
+                payload
+                for payload in self.list_webhook_attempts()
+                if str(payload.get("event")) == event and str(payload.get("result")) == result
+            ]
+            if len(matches) >= attempt:
+                return matches[attempt - 1]
+            time.sleep(0.05)
+        raise AssertionError(
+            f"timed out waiting for captured webhook attempt {event} {result} #{attempt}"
+        )
 
     def seed_nested_photos_hot(self) -> None:
         with time_block("fixture.seed_nested_photos_hot"):

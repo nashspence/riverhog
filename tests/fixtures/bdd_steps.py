@@ -6,6 +6,7 @@ import json
 import re
 import shlex
 from dataclasses import dataclass, field
+from datetime import datetime
 from typing import Any
 from urllib.parse import parse_qsl, quote, urlsplit
 
@@ -69,6 +70,7 @@ class AcceptanceScenarioContext:
     last_fetch_id: str | None = None
     read_only_browsing_paths: set[str] = field(default_factory=set)
     captured_webhook_payload: dict[str, Any] | None = None
+    captured_webhook_attempt: dict[str, Any] | None = None
 
 
 @pytest.fixture
@@ -98,6 +100,12 @@ def _require_captured_webhook_payload(context: AcceptanceScenarioContext) -> dic
     if context.captured_webhook_payload is None:  # pragma: no cover - defensive guard
         raise AssertionError("no captured webhook payload has been recorded for this scenario")
     return context.captured_webhook_payload
+
+
+def _require_captured_webhook_attempt(context: AcceptanceScenarioContext) -> dict[str, Any]:
+    if context.captured_webhook_attempt is None:  # pragma: no cover - defensive guard
+        raise AssertionError("no captured webhook attempt has been recorded for this scenario")
+    return context.captured_webhook_attempt
 
 
 def _selected_relpath_for_target(
@@ -1401,6 +1409,26 @@ def given_glacier_upload_fixture_fails_for_image(
     acceptance_system.fail_glacier_upload(image_id, error=error)
 
 
+@given(parsers.parse('the captured webhook sink fails event "{event}" with status {status:d} once'))
+@given(
+    parsers.parse(
+        'the captured webhook sink fails event "{event}" '
+        'with status {status:d} for {count:d} attempts'
+    )
+)
+def given_captured_webhook_sink_fails_event(
+    acceptance_system: AcceptanceSystem,
+    event: str,
+    status: int,
+    count: int = 1,
+) -> None:
+    acceptance_system.configure_webhook_failure(
+        event,
+        status_code=status,
+        remaining=count,
+    )
+
+
 @given(parsers.parse('the client waits for image "{image_id}" glacier state "{state}"'))
 @when(parsers.parse('the client waits for image "{image_id}" glacier state "{state}"'))
 def when_the_client_waits_for_image_glacier_state(
@@ -1442,6 +1470,41 @@ def when_the_client_waits_for_captured_webhook_event(
     acceptance_context.captured_webhook_payload = acceptance_system.wait_for_webhook_event(
         event,
         delivery=delivery,
+    )
+
+
+@given(parsers.parse('the client waits for captured webhook attempt "{event}" result "{result}"'))
+@when(parsers.parse('the client waits for captured webhook attempt "{event}" result "{result}"'))
+@then(parsers.parse('the client waits for captured webhook attempt "{event}" result "{result}"'))
+@given(
+    parsers.parse(
+        'the client waits for captured webhook attempt "{event}" '
+        'result "{result}" attempt {attempt:d}'
+    )
+)
+@when(
+    parsers.parse(
+        'the client waits for captured webhook attempt "{event}" '
+        'result "{result}" attempt {attempt:d}'
+    )
+)
+@then(
+    parsers.parse(
+        'the client waits for captured webhook attempt "{event}" '
+        'result "{result}" attempt {attempt:d}'
+    )
+)
+def when_the_client_waits_for_captured_webhook_attempt(
+    acceptance_system: AcceptanceSystem,
+    acceptance_context: AcceptanceScenarioContext,
+    event: str,
+    result: str,
+    attempt: int = 1,
+) -> None:
+    acceptance_context.captured_webhook_attempt = acceptance_system.wait_for_webhook_attempt(
+        event,
+        result=result,
+        attempt=attempt,
     )
 
 
@@ -2601,6 +2664,82 @@ def then_captured_webhook_payload_images_contain_only(
         if isinstance(image, dict) and image.get("image_id") is not None
     ]
     assert normalized_ids == [image_id]
+
+
+@then(
+    parsers.parse('captured webhook event "{event}" has {count:d} successful deliveries')
+)
+def then_captured_webhook_event_has_successful_deliveries(
+    acceptance_system: AcceptanceSystem,
+    event: str,
+    count: int,
+) -> None:
+    deliveries = [
+        payload
+        for payload in acceptance_system.list_webhook_deliveries()
+        if str(payload.get("event")) == event
+    ]
+    assert len(deliveries) == count
+
+
+@then(
+    parsers.parse('captured webhook event "{event}" has {count:d} attempts with result "{result}"')
+)
+def then_captured_webhook_event_has_attempts_with_result(
+    acceptance_system: AcceptanceSystem,
+    event: str,
+    count: int,
+    result: str,
+) -> None:
+    attempts = [
+        payload
+        for payload in acceptance_system.list_webhook_attempts()
+        if str(payload.get("event")) == event and str(payload.get("result")) == result
+    ]
+    assert len(attempts) == count
+
+
+@then(
+    parsers.parse(
+        'captured webhook attempt "{event}" result "{result}" '
+        'attempt {attempt:d} happened at least '
+        "{seconds:d} seconds after result "
+        '"{other_result}" attempt {other_attempt:d}'
+    )
+)
+def then_captured_webhook_attempt_happened_at_least_seconds_after_other_attempt(
+    acceptance_system: AcceptanceSystem,
+    event: str,
+    result: str,
+    attempt: int,
+    seconds: int,
+    other_result: str,
+    other_attempt: int,
+) -> None:
+    def _matching_attempt(target_result: str, target_attempt: int) -> dict[str, object]:
+        matches = [
+            payload
+            for payload in acceptance_system.list_webhook_attempts()
+            if str(payload.get("event")) == event and str(payload.get("result")) == target_result
+        ]
+        assert len(matches) >= target_attempt
+        return matches[target_attempt - 1]
+
+    current = _matching_attempt(result, attempt)
+    previous = _matching_attempt(other_result, other_attempt)
+    current_at = datetime.fromisoformat(str(current["received_at"]).replace("Z", "+00:00"))
+    previous_at = datetime.fromisoformat(str(previous["received_at"]).replace("Z", "+00:00"))
+    assert (current_at - previous_at).total_seconds() >= seconds
+
+
+@then(parsers.parse('the captured webhook attempt integer field "{field}" equals {value:d}'))
+def then_captured_webhook_attempt_integer_field_equals(
+    acceptance_context: AcceptanceScenarioContext,
+    field: str,
+    value: int,
+) -> None:
+    attempt = _require_captured_webhook_attempt(acceptance_context)
+    assert int(attempt[field]) == value
 
 
 @then("the response Glacier totals measured_storage_bytes is greater than 0")

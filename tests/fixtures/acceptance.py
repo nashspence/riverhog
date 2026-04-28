@@ -397,23 +397,101 @@ class AcceptanceState:
     )
     glacier_upload_failures_by_image: dict[ImageId, str] = field(default_factory=dict)
     webhook_deliveries: list[dict[str, object]] = field(default_factory=list)
+    webhook_attempts: list[dict[str, object]] = field(default_factory=list)
+    webhook_behaviors: list[dict[str, object]] = field(default_factory=list)
     public_base_url: str = ""
     glacier_billing_metadata_available: bool = False
     next_fetch_number: int = 0
 
     def clear_webhook_deliveries(self) -> None:
         self.webhook_deliveries.clear()
+        self.webhook_attempts.clear()
+        self.webhook_behaviors.clear()
 
     def record_webhook_delivery(self, payload: dict[str, object]) -> None:
         normalized = json.loads(json.dumps(payload, sort_keys=True))
         assert isinstance(normalized, dict)
         self.webhook_deliveries.append(normalized)
 
+    def record_webhook_attempt(self, payload: dict[str, object]) -> None:
+        normalized = json.loads(json.dumps(payload, sort_keys=True))
+        assert isinstance(normalized, dict)
+        self.webhook_attempts.append(normalized)
+
     def list_webhook_deliveries(self) -> list[dict[str, object]]:
         return [
             cast(dict[str, object], json.loads(json.dumps(item)))
             for item in self.webhook_deliveries
         ]
+
+    def list_webhook_attempts(self) -> list[dict[str, object]]:
+        return [
+            cast(dict[str, object], json.loads(json.dumps(item)))
+            for item in self.webhook_attempts
+        ]
+
+    def add_webhook_behavior(
+        self,
+        *,
+        event: str,
+        status_code: int = 503,
+        remaining: int = 1,
+        delay_seconds: float = 0.0,
+        mode: str = "status",
+    ) -> None:
+        self.webhook_behaviors.append(
+            {
+                "event": event,
+                "mode": mode,
+                "status_code": status_code,
+                "remaining": max(1, remaining),
+                "delay_seconds": max(0.0, delay_seconds),
+            }
+        )
+
+    def _consume_webhook_behavior(self, event: str) -> dict[str, object] | None:
+        for behavior in self.webhook_behaviors:
+            if str(behavior.get("event", "")).strip() != event:
+                continue
+            remaining = int(behavior.get("remaining", 0))
+            if remaining <= 0:
+                continue
+            behavior["remaining"] = remaining - 1
+            return cast(dict[str, object], json.loads(json.dumps(behavior)))
+        return None
+
+    def deliver_webhook_payload(
+        self,
+        payload: dict[str, object],
+        *,
+        delivered_at: datetime | None = None,
+        timeout_seconds: float = 10.0,
+    ) -> None:
+        event = str(payload.get("event", "")).strip()
+        behavior = self._consume_webhook_behavior(event)
+        attempt_payload: dict[str, object] = {
+            "event": event,
+            "payload": payload,
+            "received_at": _acceptance_isoformat(delivered_at or datetime.now(UTC)),
+            "result": "delivered",
+            "status_code": 204,
+        }
+        if behavior is not None:
+            attempt_payload["behavior"] = behavior
+            mode = str(behavior.get("mode", "status")).strip() or "status"
+            if mode == "timeout":
+                attempt_payload["result"] = "timeout"
+                attempt_payload["status_code"] = 0
+                self.record_webhook_attempt(attempt_payload)
+                raise httpx.ReadTimeout(f"test webhook sink timed out after {timeout_seconds}s")
+            status_code = int(behavior.get("status_code", 503))
+            if status_code >= 400:
+                attempt_payload["result"] = "failed"
+                attempt_payload["status_code"] = status_code
+                self.record_webhook_attempt(attempt_payload)
+                raise RuntimeError(f"test webhook sink returned HTTP {status_code}")
+        self.record_webhook_attempt(attempt_payload)
+        self.record_webhook_delivery(payload)
 
     def webhook_config(self) -> WebhookConfig:
         url = f"{self.public_base_url.rstrip('/')}/_test/webhooks" if self.public_base_url else ""
@@ -1428,14 +1506,16 @@ class AcceptanceGlacierUploadService:
                     last_verified_at=None,
                     failure=failure,
                 )
-                self.state.record_webhook_delivery(
+                self.state.deliver_webhook_payload(
                     build_glacier_upload_failed_payload(
                         config=self.state.webhook_config(),
                         image_id=image.finalized_id,
                         error=failure,
                         attempts=job.attempt_count,
                         failed_at=current_text,
-                    )
+                    ),
+                    delivered_at=datetime.now(UTC),
+                    timeout_seconds=self.state.webhook_config().timeout_seconds,
                 )
                 job.failed = True
                 attempted += 1
@@ -1558,30 +1638,44 @@ class AcceptanceRecoverySessionService:
                 record.restore_expires_at = _acceptance_isoformat(
                     current + timedelta(seconds=_GLACIER_RECOVERY_READY_TTL_SECONDS)
                 )
-                record.last_notified_at = current_text
-                record.next_reminder_at = _acceptance_isoformat(
-                    current + timedelta(seconds=_GLACIER_RECOVERY_WEBHOOK_REMINDER_INTERVAL_SECONDS)
-                )
                 record.latest_message = (
                     "Restored ISO data is ready; reopen the session to complete download, verify "
                     "the ISO, and burn replacement media before cleanup."
                 )
                 image = self.state.finalized_images_by_id[record.image_id]
-                self.state.record_webhook_delivery(
-                    build_recovery_ready_payload(
-                        config=self.state.webhook_config(),
-                        session_id=record.session_id,
-                        restore_expires_at=record.restore_expires_at,
-                        images=[
-                            {
-                                "image_id": str(record.image_id),
-                                "filename": image.filename,
-                            }
-                        ],
+                try:
+                    self.state.deliver_webhook_payload(
+                        build_recovery_ready_payload(
+                            config=self.state.webhook_config(),
+                            session_id=record.session_id,
+                            restore_expires_at=record.restore_expires_at,
+                            images=[
+                                {
+                                    "image_id": str(record.image_id),
+                                    "filename": image.filename,
+                                }
+                            ],
+                            delivered_at=current,
+                            reminder_count=record.reminder_count,
+                            reminder=False,
+                        ),
                         delivered_at=current,
-                        reminder_count=record.reminder_count,
-                        reminder=False,
+                        timeout_seconds=self.state.webhook_config().timeout_seconds,
                     )
+                except Exception as exc:
+                    record.latest_message = (
+                        "Ready notification failed and will retry: "
+                        f"{str(exc).strip() or exc.__class__.__name__}"
+                    )
+                    record.next_reminder_at = _acceptance_isoformat(
+                        current
+                        + timedelta(seconds=_GLACIER_RECOVERY_WEBHOOK_RETRY_DELAY_SECONDS)
+                    )
+                    processed += 1
+                    continue
+                record.last_notified_at = current_text
+                record.next_reminder_at = _acceptance_isoformat(
+                    current + timedelta(seconds=_GLACIER_RECOVERY_WEBHOOK_REMINDER_INTERVAL_SECONDS)
                 )
                 processed += 1
                 continue
@@ -1590,28 +1684,44 @@ class AcceptanceRecoverySessionService:
                 and record.next_reminder_at is not None
                 and record.next_reminder_at <= current_text
             ):
+                image = self.state.finalized_images_by_id[record.image_id]
+                initial_notification_succeeded = record.last_notified_at is not None
+                try:
+                    self.state.deliver_webhook_payload(
+                        build_recovery_ready_payload(
+                            config=self.state.webhook_config(),
+                            session_id=record.session_id,
+                            restore_expires_at=record.restore_expires_at,
+                            images=[
+                                {
+                                    "image_id": str(record.image_id),
+                                    "filename": image.filename,
+                                }
+                            ],
+                            delivered_at=current,
+                            reminder_count=record.reminder_count,
+                            reminder=initial_notification_succeeded,
+                        ),
+                        delivered_at=current,
+                        timeout_seconds=self.state.webhook_config().timeout_seconds,
+                    )
+                except Exception as exc:
+                    record.latest_message = (
+                        "Ready notification failed and will retry: "
+                        f"{str(exc).strip() or exc.__class__.__name__}"
+                    )
+                    record.next_reminder_at = _acceptance_isoformat(
+                        current
+                        + timedelta(seconds=_GLACIER_RECOVERY_WEBHOOK_RETRY_DELAY_SECONDS)
+                    )
+                    processed += 1
+                    continue
                 record.last_notified_at = current_text
                 record.next_reminder_at = _acceptance_isoformat(
                     current + timedelta(seconds=_GLACIER_RECOVERY_WEBHOOK_REMINDER_INTERVAL_SECONDS)
                 )
-                image = self.state.finalized_images_by_id[record.image_id]
-                self.state.record_webhook_delivery(
-                    build_recovery_ready_payload(
-                        config=self.state.webhook_config(),
-                        session_id=record.session_id,
-                        restore_expires_at=record.restore_expires_at,
-                        images=[
-                            {
-                                "image_id": str(record.image_id),
-                                "filename": image.filename,
-                            }
-                        ],
-                        delivered_at=current,
-                        reminder_count=record.reminder_count,
-                        reminder=True,
-                    )
-                )
-                record.reminder_count += 1
+                if initial_notification_succeeded:
+                    record.reminder_count += 1
                 processed += 1
                 continue
             if (
@@ -3277,6 +3387,26 @@ class AcceptanceSystem:
     def list_webhook_deliveries(self) -> list[dict[str, object]]:
         return self.state.list_webhook_deliveries()
 
+    def list_webhook_attempts(self) -> list[dict[str, object]]:
+        return self.state.list_webhook_attempts()
+
+    def configure_webhook_failure(
+        self,
+        event: str,
+        *,
+        status_code: int = 503,
+        remaining: int = 1,
+        delay_seconds: float = 0.0,
+        mode: str = "status",
+    ) -> None:
+        self.state.add_webhook_behavior(
+            event=event,
+            status_code=status_code,
+            remaining=remaining,
+            delay_seconds=delay_seconds,
+            mode=mode,
+        )
+
     def wait_for_webhook_event(
         self,
         event: str,
@@ -3295,6 +3425,28 @@ class AcceptanceSystem:
                 return matches[delivery - 1]
             time.sleep(0.05)
         raise AssertionError(f"timed out waiting for captured webhook event {event} #{delivery}")
+
+    def wait_for_webhook_attempt(
+        self,
+        event: str,
+        *,
+        result: str,
+        attempt: int = 1,
+        timeout: float = 5.0,
+    ) -> dict[str, object]:
+        deadline = time.monotonic() + timeout
+        while time.monotonic() < deadline:
+            matches = [
+                payload
+                for payload in self.list_webhook_attempts()
+                if str(payload.get("event")) == event and str(payload.get("result")) == result
+            ]
+            if len(matches) >= attempt:
+                return matches[attempt - 1]
+            time.sleep(0.05)
+        raise AssertionError(
+            f"timed out waiting for captured webhook attempt {event} {result} #{attempt}"
+        )
 
     def fail_glacier_upload(self, image_id: str, *, error: str) -> None:
         self.state.glacier_upload_failures_by_image[ImageId(image_id)] = error

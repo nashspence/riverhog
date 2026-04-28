@@ -229,12 +229,13 @@ class SqlAlchemyRecoverySessionService:
                 and record.next_reminder_at is not None
                 and record.next_reminder_at <= current_text
             ):
+                initial_notification_succeeded = record.last_notified_at is not None
                 _notify_recovery_ready(
                     session,
                     record=record,
                     config=self._config,
                     current=current,
-                    reminder=True,
+                    reminder=initial_notification_succeeded,
                 )
 
 
