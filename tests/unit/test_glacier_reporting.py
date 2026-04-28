@@ -122,7 +122,8 @@ def test_get_report_returns_totals_and_image_costs(tmp_path: Path) -> None:
     assert [image.id for image in report.images] == ["20260420T040001Z"]
     assert report.history
     assert report.billing is not None
-    assert report.billing.source == "unavailable"
+    assert report.billing.actuals is not None
+    assert report.billing.actuals.source == "unavailable"
 
 
 def test_get_report_uses_manifest_part_lengths_for_collection_filter(tmp_path: Path) -> None:

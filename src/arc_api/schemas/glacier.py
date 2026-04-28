@@ -78,6 +78,17 @@ class GlacierBillingActualOut(ArcModel):
     usage_unit: str | None = None
 
 
+class GlacierBillingActualsViewOut(ArcModel):
+    source: str
+    scope: str
+    filter_label: str | None = None
+    service: str | None = None
+    granularity: str | None = None
+    measured_at: str | None = None
+    periods: list[GlacierBillingActualOut]
+    notes: list[str]
+
+
 class GlacierBillingForecastOut(ArcModel):
     start: str
     end: str
@@ -87,16 +98,71 @@ class GlacierBillingForecastOut(ArcModel):
     currency_code: str | None = None
 
 
-class GlacierBillingSummaryOut(ArcModel):
+class GlacierBillingForecastViewOut(ArcModel):
     source: str
     scope: str
     filter_label: str | None = None
     service: str | None = None
     currency_code: str | None = None
-    history_granularity: str | None = None
-    forecast_granularity: str | None = None
-    actuals: list[GlacierBillingActualOut]
-    forecast: list[GlacierBillingForecastOut]
+    granularity: str | None = None
+    periods: list[GlacierBillingForecastOut]
+    notes: list[str]
+
+
+class GlacierBillingExportBreakdownOut(ArcModel):
+    usage_type: str | None = None
+    operation: str | None = None
+    resource_id: str | None = None
+    tag_value: str | None = None
+    unblended_cost_usd: float
+    usage_quantity: float | None = None
+    usage_unit: str | None = None
+
+
+class GlacierBillingExportViewOut(ArcModel):
+    source: str
+    scope: str
+    filter_label: str | None = None
+    service: str | None = None
+    bucket: str | None = None
+    prefix: str | None = None
+    object_key: str | None = None
+    exported_at: str | None = None
+    currency_code: str | None = None
+    rows_scanned: int
+    breakdowns: list[GlacierBillingExportBreakdownOut]
+    notes: list[str]
+
+
+class GlacierBillingInvoiceSummaryOut(ArcModel):
+    invoice_id: str | None = None
+    account_id: str | None = None
+    billing_period_start: str | None = None
+    billing_period_end: str | None = None
+    invoice_type: str | None = None
+    invoicing_entity: str | None = None
+    issued_at: str | None = None
+    due_at: str | None = None
+    base_currency_code: str | None = None
+    base_total_amount: float | None = None
+    payment_currency_code: str | None = None
+    payment_total_amount: float | None = None
+    original_invoice_id: str | None = None
+
+
+class GlacierBillingInvoicesViewOut(ArcModel):
+    source: str
+    scope: str
+    account_id: str | None = None
+    invoices: list[GlacierBillingInvoiceSummaryOut]
+    notes: list[str]
+
+
+class GlacierBillingSummaryOut(ArcModel):
+    actuals: GlacierBillingActualsViewOut | None = None
+    forecast: GlacierBillingForecastViewOut | None = None
+    exports: GlacierBillingExportViewOut | None = None
+    invoices: GlacierBillingInvoicesViewOut | None = None
     notes: list[str]
 
 

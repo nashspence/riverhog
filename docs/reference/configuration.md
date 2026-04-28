@@ -261,14 +261,47 @@ reporting.
 
 How many future monthly Cost Explorer forecast periods Riverhog requests.
 
+## `ARC_GLACIER_BILLING_EXPORT_BUCKET`
+
+- type: string
+- default: unset
+
+Optional S3 bucket that stores CUR or Data Exports files for Glacier billing
+drill-down.
+
+## `ARC_GLACIER_BILLING_EXPORT_PREFIX`
+
+- type: string
+- default: unset
+
+Optional S3 prefix inside `ARC_GLACIER_BILLING_EXPORT_BUCKET` that Riverhog
+scans for the most recent CUR or Data Exports CSV or CSV.GZ object.
+
+## `ARC_GLACIER_BILLING_EXPORT_REGION`
+
+- type: string
+- default: `us-east-1`
+
+AWS Region for the S3 bucket that stores CUR or Data Exports billing detail.
+
+## `ARC_GLACIER_BILLING_EXPORT_MAX_ITEMS`
+
+- type: integer
+- default: `10`
+
+Maximum number of aggregated CUR or Data Exports breakdown rows Riverhog emits
+in Glacier billing output.
+
 ## `ARC_GLACIER_BILLING_TAG_KEY`
 
 - type: string
 - default: unset
 
 Optional cost-allocation tag key for Glacier billing scope. When paired with
-`ARC_GLACIER_BILLING_TAG_VALUE`, Riverhog uses tag-scoped Cost Explorer history
-and forecast instead of the broader Amazon S3 service scope.
+`ARC_GLACIER_BILLING_TAG_VALUE`, Riverhog uses tag-scoped Cost Explorer
+forecast and fallback actuals instead of the broader Amazon S3 service scope.
+The same tag filter is also used for CUR or Data Exports drill-down when
+configured.
 
 ## `ARC_GLACIER_BILLING_TAG_VALUE`
 
@@ -276,6 +309,22 @@ and forecast instead of the broader Amazon S3 service scope.
 - default: unset
 
 Optional cost-allocation tag value for Glacier billing scope.
+
+## `ARC_GLACIER_BILLING_INVOICE_ACCOUNT_ID`
+
+- type: string
+- default: unset
+
+Optional AWS account ID used for invoice-summary lookup. When unset, Riverhog
+tries to resolve the caller account through STS.
+
+## `ARC_GLACIER_BILLING_INVOICE_MAX_ITEMS`
+
+- type: integer
+- default: `6`
+
+Maximum number of AWS invoice summaries Riverhog requests for Glacier billing
+output.
 
 ## `ARC_GLACIER_STORAGE_RATE_USD_PER_GIB_MONTH`
 

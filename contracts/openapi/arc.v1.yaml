@@ -1215,9 +1215,41 @@ components:
           oneOf:
             - type: string
             - type: "null"
-    GlacierBillingSummary:
+    GlacierBillingActualsView:
       type: object
-      required: [source, scope, actuals, forecast, notes]
+      required: [source, scope, periods, notes]
+      properties:
+        source:
+          type: string
+        scope:
+          type: string
+        filter_label:
+          oneOf:
+            - type: string
+            - type: "null"
+        service:
+          oneOf:
+            - type: string
+            - type: "null"
+        granularity:
+          oneOf:
+            - type: string
+            - type: "null"
+        measured_at:
+          oneOf:
+            - type: string
+            - type: "null"
+        periods:
+          type: array
+          items:
+            $ref: "#/components/schemas/GlacierBillingActual"
+        notes:
+          type: array
+          items:
+            type: string
+    GlacierBillingForecastView:
+      type: object
+      required: [source, scope, periods, notes]
       properties:
         source:
           type: string
@@ -1235,19 +1267,11 @@ components:
           oneOf:
             - type: string
             - type: "null"
-        history_granularity:
+        granularity:
           oneOf:
             - type: string
             - type: "null"
-        forecast_granularity:
-          oneOf:
-            - type: string
-            - type: "null"
-        actuals:
-          type: array
-          items:
-            $ref: "#/components/schemas/GlacierBillingActual"
-        forecast:
+        periods:
           type: array
           items:
             $ref: "#/components/schemas/GlacierBillingForecast"
@@ -1255,10 +1279,185 @@ components:
           type: array
           items:
             type: string
+    GlacierBillingExportBreakdown:
+      type: object
+      required: [unblended_cost_usd]
+      properties:
+        usage_type:
+          oneOf:
+            - type: string
+            - type: "null"
+        operation:
+          oneOf:
+            - type: string
+            - type: "null"
+        resource_id:
+          oneOf:
+            - type: string
+            - type: "null"
+        tag_value:
+          oneOf:
+            - type: string
+            - type: "null"
+        unblended_cost_usd:
+          type: number
+        usage_quantity:
+          oneOf:
+            - type: number
+            - type: "null"
+        usage_unit:
+          oneOf:
+            - type: string
+            - type: "null"
+    GlacierBillingExportView:
+      type: object
+      required: [source, scope, rows_scanned, breakdowns, notes]
+      properties:
+        source:
+          type: string
+        scope:
+          type: string
+        filter_label:
+          oneOf:
+            - type: string
+            - type: "null"
+        service:
+          oneOf:
+            - type: string
+            - type: "null"
+        bucket:
+          oneOf:
+            - type: string
+            - type: "null"
+        prefix:
+          oneOf:
+            - type: string
+            - type: "null"
+        object_key:
+          oneOf:
+            - type: string
+            - type: "null"
+        exported_at:
+          oneOf:
+            - type: string
+            - type: "null"
+        currency_code:
+          oneOf:
+            - type: string
+            - type: "null"
+        rows_scanned:
+          type: integer
+        breakdowns:
+          type: array
+          items:
+            $ref: "#/components/schemas/GlacierBillingExportBreakdown"
+        notes:
+          type: array
+          items:
+            type: string
+    GlacierBillingInvoiceSummary:
+      type: object
+      properties:
+        invoice_id:
+          oneOf:
+            - type: string
+            - type: "null"
+        account_id:
+          oneOf:
+            - type: string
+            - type: "null"
+        billing_period_start:
+          oneOf:
+            - type: string
+            - type: "null"
+        billing_period_end:
+          oneOf:
+            - type: string
+            - type: "null"
+        invoice_type:
+          oneOf:
+            - type: string
+            - type: "null"
+        invoicing_entity:
+          oneOf:
+            - type: string
+            - type: "null"
+        issued_at:
+          oneOf:
+            - type: string
+            - type: "null"
+        due_at:
+          oneOf:
+            - type: string
+            - type: "null"
+        base_currency_code:
+          oneOf:
+            - type: string
+            - type: "null"
+        base_total_amount:
+          oneOf:
+            - type: number
+            - type: "null"
+        payment_currency_code:
+          oneOf:
+            - type: string
+            - type: "null"
+        payment_total_amount:
+          oneOf:
+            - type: number
+            - type: "null"
+        original_invoice_id:
+          oneOf:
+            - type: string
+            - type: "null"
+    GlacierBillingInvoicesView:
+      type: object
+      required: [source, scope, invoices, notes]
+      properties:
+        source:
+          type: string
+        scope:
+          type: string
+        account_id:
+          oneOf:
+            - type: string
+            - type: "null"
+        invoices:
+          type: array
+          items:
+            $ref: "#/components/schemas/GlacierBillingInvoiceSummary"
+        notes:
+          type: array
+          items:
+            type: string
+    GlacierBillingSummary:
+      type: object
+      required: [notes]
+      properties:
+        actuals:
+          oneOf:
+            - $ref: "#/components/schemas/GlacierBillingActualsView"
+            - type: "null"
+        forecast:
+          oneOf:
+            - $ref: "#/components/schemas/GlacierBillingForecastView"
+            - type: "null"
+        exports:
+          oneOf:
+            - $ref: "#/components/schemas/GlacierBillingExportView"
+            - type: "null"
+        invoices:
+          oneOf:
+            - $ref: "#/components/schemas/GlacierBillingInvoicesView"
+            - type: "null"
+        notes:
+          type: array
+          items:
+            type: string
     GlacierUsageReport:
       type: object
       required:
-        [scope, measured_at, pricing_basis, totals, images, collections, history, billing]
+        [scope, measured_at, pricing_basis, totals, images, collections, history]
       properties:
         scope:
           type: string

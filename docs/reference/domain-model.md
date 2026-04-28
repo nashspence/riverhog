@@ -188,9 +188,11 @@ Glacier-usage-report rules:
 - `totals.estimated_monthly_cost_usd` is a derived estimate from the emitted pricing basis
 - `images` list current finalized-image Glacier state together with measured and estimated billing values
 - `collections` expose derived attribution from represented plaintext bytes on the finalized-image disc manifest
-- `billing` reports AWS-native actual cost periods and forecast periods separately from Riverhog's own storage
-  snapshots when Cost Explorer data is available
-- `billing.scope` records whether the AWS billing view is `tag`-scoped, `service`-scoped, or unavailable
+- `billing.actuals` reports AWS-native actual cost periods separately from Riverhog's own storage snapshots
+- `billing.actuals.scope` records whether actuals are `bucket`-scoped, `tag`-scoped, `service`-scoped, or unavailable
+- `billing.forecast` reports AWS-native forecast periods and keeps forecast scope separate from actual scope
+- `billing.exports` exposes CUR or Data Exports-derived cost breakdowns when Riverhog can inspect a configured export
+- `billing.invoices` exposes AWS invoice summaries as account-level totals rather than archive-specific attribution
 - `history` stores overall Glacier-usage snapshots rather than collection-scoped estimates
 - `pricing_basis.source` distinguishes AWS-resolved storage rates from manual fallback
 - `pricing_basis.currency_code`, `pricing_basis.region_code`, and `pricing_basis.effective_at` identify the AWS

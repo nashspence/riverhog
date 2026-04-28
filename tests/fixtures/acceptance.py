@@ -49,6 +49,10 @@ from arc_core.domain.models import (
     FetchCopyHint,
     FetchSummary,
     GlacierArchiveStatus,
+    GlacierBillingActualsView,
+    GlacierBillingExportView,
+    GlacierBillingForecastView,
+    GlacierBillingInvoicesView,
     GlacierBillingSummary,
     GlacierCollectionContribution,
     GlacierPricingBasis,
@@ -1334,8 +1338,26 @@ def _acceptance_glacier_billing(*, include: bool) -> GlacierBillingSummary | Non
     if not include:
         return None
     return GlacierBillingSummary(
-        source="unavailable",
-        scope="unavailable",
+        actuals=GlacierBillingActualsView(
+            source="unavailable",
+            scope="unavailable",
+            notes=("AWS Cost Explorer billing is unavailable for this runtime.",),
+        ),
+        forecast=GlacierBillingForecastView(
+            source="unavailable",
+            scope="unavailable",
+            notes=("AWS Cost Explorer forecast is unavailable for this runtime.",),
+        ),
+        exports=GlacierBillingExportView(
+            source="unavailable",
+            scope="unavailable",
+            notes=("CUR or Data Exports billing detail is unavailable for this runtime.",),
+        ),
+        invoices=GlacierBillingInvoicesView(
+            source="unavailable",
+            scope="unavailable",
+            notes=("AWS invoice summaries are unavailable for this runtime.",),
+        ),
         notes=("AWS Cost Explorer billing is unavailable for this runtime.",),
     )
 

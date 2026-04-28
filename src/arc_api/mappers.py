@@ -8,7 +8,13 @@ from arc_core.domain.models import (
     FetchSummary,
     GlacierArchiveStatus,
     GlacierBillingActual,
+    GlacierBillingActualsView,
+    GlacierBillingExportBreakdown,
+    GlacierBillingExportView,
     GlacierBillingForecast,
+    GlacierBillingForecastView,
+    GlacierBillingInvoiceSummary,
+    GlacierBillingInvoicesView,
     GlacierBillingSummary,
     GlacierCollectionContribution,
     GlacierPricingBasis,
@@ -122,6 +128,23 @@ def map_glacier_billing_actual(summary: GlacierBillingActual) -> dict[str, objec
     }
 
 
+def map_glacier_billing_actuals_view(
+    summary: GlacierBillingActualsView | None,
+) -> dict[str, object] | None:
+    if summary is None:
+        return None
+    return {
+        "source": summary.source,
+        "scope": summary.scope,
+        "filter_label": summary.filter_label,
+        "service": summary.service,
+        "granularity": summary.granularity,
+        "measured_at": summary.measured_at,
+        "periods": [map_glacier_billing_actual(item) for item in summary.periods],
+        "notes": list(summary.notes),
+    }
+
+
 def map_glacier_billing_forecast(summary: GlacierBillingForecast) -> dict[str, object]:
     return {
         "start": summary.start,
@@ -133,7 +156,9 @@ def map_glacier_billing_forecast(summary: GlacierBillingForecast) -> dict[str, o
     }
 
 
-def map_glacier_billing_summary(summary: GlacierBillingSummary | None) -> dict[str, object] | None:
+def map_glacier_billing_forecast_view(
+    summary: GlacierBillingForecastView | None,
+) -> dict[str, object] | None:
     if summary is None:
         return None
     return {
@@ -142,10 +167,87 @@ def map_glacier_billing_summary(summary: GlacierBillingSummary | None) -> dict[s
         "filter_label": summary.filter_label,
         "service": summary.service,
         "currency_code": summary.currency_code,
-        "history_granularity": summary.history_granularity,
-        "forecast_granularity": summary.forecast_granularity,
-        "actuals": [map_glacier_billing_actual(item) for item in summary.actuals],
-        "forecast": [map_glacier_billing_forecast(item) for item in summary.forecast],
+        "granularity": summary.granularity,
+        "periods": [map_glacier_billing_forecast(item) for item in summary.periods],
+        "notes": list(summary.notes),
+    }
+
+
+def map_glacier_billing_export_breakdown(
+    summary: GlacierBillingExportBreakdown,
+) -> dict[str, object]:
+    return {
+        "usage_type": summary.usage_type,
+        "operation": summary.operation,
+        "resource_id": summary.resource_id,
+        "tag_value": summary.tag_value,
+        "unblended_cost_usd": summary.unblended_cost_usd,
+        "usage_quantity": summary.usage_quantity,
+        "usage_unit": summary.usage_unit,
+    }
+
+
+def map_glacier_billing_export_view(
+    summary: GlacierBillingExportView | None,
+) -> dict[str, object] | None:
+    if summary is None:
+        return None
+    return {
+        "source": summary.source,
+        "scope": summary.scope,
+        "filter_label": summary.filter_label,
+        "service": summary.service,
+        "bucket": summary.bucket,
+        "prefix": summary.prefix,
+        "object_key": summary.object_key,
+        "exported_at": summary.exported_at,
+        "currency_code": summary.currency_code,
+        "rows_scanned": summary.rows_scanned,
+        "breakdowns": [map_glacier_billing_export_breakdown(item) for item in summary.breakdowns],
+        "notes": list(summary.notes),
+    }
+
+
+def map_glacier_billing_invoice(summary: GlacierBillingInvoiceSummary) -> dict[str, object]:
+    return {
+        "invoice_id": summary.invoice_id,
+        "account_id": summary.account_id,
+        "billing_period_start": summary.billing_period_start,
+        "billing_period_end": summary.billing_period_end,
+        "invoice_type": summary.invoice_type,
+        "invoicing_entity": summary.invoicing_entity,
+        "issued_at": summary.issued_at,
+        "due_at": summary.due_at,
+        "base_currency_code": summary.base_currency_code,
+        "base_total_amount": summary.base_total_amount,
+        "payment_currency_code": summary.payment_currency_code,
+        "payment_total_amount": summary.payment_total_amount,
+        "original_invoice_id": summary.original_invoice_id,
+    }
+
+
+def map_glacier_billing_invoices_view(
+    summary: GlacierBillingInvoicesView | None,
+) -> dict[str, object] | None:
+    if summary is None:
+        return None
+    return {
+        "source": summary.source,
+        "scope": summary.scope,
+        "account_id": summary.account_id,
+        "invoices": [map_glacier_billing_invoice(item) for item in summary.invoices],
+        "notes": list(summary.notes),
+    }
+
+
+def map_glacier_billing_summary(summary: GlacierBillingSummary | None) -> dict[str, object] | None:
+    if summary is None:
+        return None
+    return {
+        "actuals": map_glacier_billing_actuals_view(summary.actuals),
+        "forecast": map_glacier_billing_forecast_view(summary.forecast),
+        "exports": map_glacier_billing_export_view(summary.exports),
+        "invoices": map_glacier_billing_invoices_view(summary.invoices),
         "notes": list(summary.notes),
     }
 

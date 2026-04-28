@@ -97,6 +97,12 @@ class RuntimeConfig:
     glacier_billing_forecast_months: int = 1
     glacier_billing_tag_key: str | None = None
     glacier_billing_tag_value: str | None = None
+    glacier_billing_export_bucket: str | None = None
+    glacier_billing_export_prefix: str | None = None
+    glacier_billing_export_region: str = "us-east-1"
+    glacier_billing_export_max_items: int = 10
+    glacier_billing_invoice_account_id: str | None = None
+    glacier_billing_invoice_max_items: int = 6
     glacier_storage_rate_usd_per_gib_month: float = 0.00099
     glacier_standard_rate_usd_per_gib_month: float = 0.023
     glacier_archived_metadata_bytes_per_object: int = 32 * 1024
@@ -183,6 +189,28 @@ def load_runtime_config() -> RuntimeConfig:
     )
     glacier_billing_tag_key = os.getenv("ARC_GLACIER_BILLING_TAG_KEY", "").strip() or None
     glacier_billing_tag_value = os.getenv("ARC_GLACIER_BILLING_TAG_VALUE", "").strip() or None
+    glacier_billing_export_bucket = (
+        os.getenv("ARC_GLACIER_BILLING_EXPORT_BUCKET", "").strip() or None
+    )
+    glacier_billing_export_prefix = (
+        os.getenv("ARC_GLACIER_BILLING_EXPORT_PREFIX", "").strip().strip("/") or None
+    )
+    glacier_billing_export_region = (
+        os.getenv("ARC_GLACIER_BILLING_EXPORT_REGION", "us-east-1").strip() or "us-east-1"
+    )
+    glacier_billing_export_max_items = _parse_int(
+        os.getenv("ARC_GLACIER_BILLING_EXPORT_MAX_ITEMS", "10"),
+        name="ARC_GLACIER_BILLING_EXPORT_MAX_ITEMS",
+        minimum=1,
+    )
+    glacier_billing_invoice_account_id = (
+        os.getenv("ARC_GLACIER_BILLING_INVOICE_ACCOUNT_ID", "").strip() or None
+    )
+    glacier_billing_invoice_max_items = _parse_int(
+        os.getenv("ARC_GLACIER_BILLING_INVOICE_MAX_ITEMS", "6"),
+        name="ARC_GLACIER_BILLING_INVOICE_MAX_ITEMS",
+        minimum=1,
+    )
     glacier_storage_rate_usd_per_gib_month = _parse_float(
         os.getenv("ARC_GLACIER_STORAGE_RATE_USD_PER_GIB_MONTH", "0.00099"),
         name="ARC_GLACIER_STORAGE_RATE_USD_PER_GIB_MONTH",
@@ -253,6 +281,12 @@ def load_runtime_config() -> RuntimeConfig:
         glacier_billing_forecast_months=glacier_billing_forecast_months,
         glacier_billing_tag_key=glacier_billing_tag_key,
         glacier_billing_tag_value=glacier_billing_tag_value,
+        glacier_billing_export_bucket=glacier_billing_export_bucket,
+        glacier_billing_export_prefix=glacier_billing_export_prefix,
+        glacier_billing_export_region=glacier_billing_export_region,
+        glacier_billing_export_max_items=glacier_billing_export_max_items,
+        glacier_billing_invoice_account_id=glacier_billing_invoice_account_id,
+        glacier_billing_invoice_max_items=glacier_billing_invoice_max_items,
         glacier_storage_rate_usd_per_gib_month=glacier_storage_rate_usd_per_gib_month,
         glacier_standard_rate_usd_per_gib_month=glacier_standard_rate_usd_per_gib_month,
         glacier_archived_metadata_bytes_per_object=glacier_archived_metadata_bytes_per_object,

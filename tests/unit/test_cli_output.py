@@ -85,28 +85,70 @@ def test_format_glacier_report_surfaces_pricing_basis_and_collection_derivation(
                 }
             ],
             "billing": {
-                "source": "aws_cost_explorer",
-                "scope": "tag",
-                "filter_label": "backup_set=optical_archive",
-                "actuals": [
-                    {
-                        "start": "2026-04-01",
-                        "end": "2026-05-01",
-                        "estimated": True,
-                        "unblended_cost_usd": 12.34,
-                        "usage_quantity": 56.78,
-                        "usage_unit": "N/A",
-                    }
-                ],
-                "forecast": [
-                    {
-                        "start": "2026-05-01",
-                        "end": "2026-06-01",
-                        "mean_cost_usd": 14.5,
-                        "lower_bound_cost_usd": 11.0,
-                        "upper_bound_cost_usd": 18.0,
-                    }
-                ],
+                "actuals": {
+                    "source": "aws_cost_explorer_resource",
+                    "scope": "bucket",
+                    "filter_label": "riverhog",
+                    "granularity": "DAILY",
+                    "periods": [
+                        {
+                            "start": "2026-04-14",
+                            "end": "2026-04-15",
+                            "estimated": False,
+                            "unblended_cost_usd": 0.44,
+                            "usage_quantity": 11.0,
+                            "usage_unit": "N/A",
+                        }
+                    ],
+                    "notes": [],
+                },
+                "forecast": {
+                    "source": "aws_cost_explorer",
+                    "scope": "tag",
+                    "filter_label": "backup_set=optical_archive",
+                    "granularity": "MONTHLY",
+                    "periods": [
+                        {
+                            "start": "2026-05-01",
+                            "end": "2026-06-01",
+                            "mean_cost_usd": 14.5,
+                            "lower_bound_cost_usd": 11.0,
+                            "upper_bound_cost_usd": 18.0,
+                        }
+                    ],
+                    "notes": [],
+                },
+                "exports": {
+                    "source": "aws_cur_s3",
+                    "scope": "bucket",
+                    "filter_label": "riverhog",
+                    "object_key": "billing/export-2026-04.csv.gz",
+                    "breakdowns": [
+                        {
+                            "usage_type": "TimedStorage-GlacierByteHrs",
+                            "operation": "StandardStorage",
+                            "resource_id": "riverhog",
+                            "tag_value": None,
+                            "unblended_cost_usd": 1.25,
+                        }
+                    ],
+                    "notes": [],
+                },
+                "invoices": {
+                    "source": "aws_invoicing",
+                    "scope": "account",
+                    "account_id": "123456789012",
+                    "invoices": [
+                        {
+                            "invoice_id": "INV-001",
+                            "billing_period_start": "2026-04-01",
+                            "billing_period_end": "2026-05-01",
+                            "base_total_amount": 99.5,
+                            "payment_total_amount": 99.5,
+                        }
+                    ],
+                    "notes": [],
+                },
                 "notes": [],
             },
             "history": [],
@@ -116,7 +158,9 @@ def test_format_glacier_report_surfaces_pricing_basis_and_collection_derivation(
     assert "source=manual" in rendered
     assert "region=us-west-2" in rendered
     assert "billing:" in rendered
-    assert "source=aws_cost_explorer scope=tag" in rendered
-    assert "forecast: 2026-05-01..2026-06-01 mean_cost_usd=14.5" in rendered
+    assert "source=aws_cost_explorer_resource scope=bucket" in rendered
+    assert "source=aws_cur_s3 scope=bucket" in rendered
+    assert "source=aws_invoicing scope=account" in rendered
+    assert "period: 2026-05-01..2026-06-01 mean_cost_usd=14.5" in rendered
     assert "attribution=derived" in rendered
     assert "estimated_monthly_cost_usd=0.000192" in rendered

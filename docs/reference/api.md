@@ -250,7 +250,8 @@ Required behavior:
 #### `GET /v1/glacier`
 
 Returns Glacier usage totals, per-image archive state, derived per-collection attribution, pricing
-assumptions, AWS-native billing history/forecast when available, and overall usage snapshots.
+assumptions, AWS-native billing actuals/forecast when available, optional CUR or Data Exports
+drill-down, optional invoice summaries, and overall usage snapshots.
 
 Supported query parameters:
 
@@ -273,9 +274,13 @@ Required behavior:
   from the disc manifest's represented plaintext bytes
 - collection attribution stays explicit about being derived rather than measured directly from the archive backend
 - `billing` is separate from `history`: `history` tracks Riverhog's own stored-usage snapshots, while `billing`
-  reports AWS Cost Explorer actuals and forecast when Riverhog can resolve them
-- `billing.scope` makes the AWS billing filter explicit, such as `tag` for cost-allocation tag scope or `service`
-  when Riverhog can only report Amazon S3 service-level spend for the configured region
+  reports AWS-native billing views when Riverhog can resolve them
+- `billing.actuals` prefers bucket-scoped AWS Cost Explorer daily actuals for the archive bucket when resource-level
+  cost data is enabled, then falls back to tag-scoped or service-scoped Cost Explorer attribution
+- `billing.forecast` is separate from `billing.actuals` because AWS forecast support is broader-scope than bucket
+  resource actuals; Riverhog makes that forecast scope explicit
+- `billing.exports` exposes CUR or Data Exports-derived billing breakdowns from a configured billing-export S3 prefix
+- `billing.invoices` exposes AWS invoice summaries as account-level totals rather than archive-specific attribution
 - unfiltered `GET /v1/glacier` returns overall usage snapshots that reflect changes in total uploaded Glacier usage over
   time
 

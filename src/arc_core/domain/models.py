@@ -128,16 +128,88 @@ class GlacierBillingForecast:
 
 
 @dataclass(frozen=True)
-class GlacierBillingSummary:
+class GlacierBillingActualsView:
+    source: str
+    scope: str
+    filter_label: str | None = None
+    service: str | None = None
+    granularity: str | None = None
+    measured_at: str | None = None
+    periods: tuple[GlacierBillingActual, ...] = ()
+    notes: tuple[str, ...] = ()
+
+
+@dataclass(frozen=True)
+class GlacierBillingForecastView:
     source: str
     scope: str
     filter_label: str | None = None
     service: str | None = None
     currency_code: str | None = None
-    history_granularity: str | None = None
-    forecast_granularity: str | None = None
-    actuals: tuple[GlacierBillingActual, ...] = ()
-    forecast: tuple[GlacierBillingForecast, ...] = ()
+    granularity: str | None = None
+    periods: tuple[GlacierBillingForecast, ...] = ()
+    notes: tuple[str, ...] = ()
+
+
+@dataclass(frozen=True)
+class GlacierBillingExportBreakdown:
+    usage_type: str | None
+    operation: str | None
+    resource_id: str | None
+    tag_value: str | None
+    unblended_cost_usd: float
+    usage_quantity: float | None = None
+    usage_unit: str | None = None
+
+
+@dataclass(frozen=True)
+class GlacierBillingExportView:
+    source: str
+    scope: str
+    filter_label: str | None = None
+    service: str | None = None
+    bucket: str | None = None
+    prefix: str | None = None
+    object_key: str | None = None
+    exported_at: str | None = None
+    currency_code: str | None = None
+    rows_scanned: int = 0
+    breakdowns: tuple[GlacierBillingExportBreakdown, ...] = ()
+    notes: tuple[str, ...] = ()
+
+
+@dataclass(frozen=True)
+class GlacierBillingInvoiceSummary:
+    invoice_id: str | None
+    account_id: str | None
+    billing_period_start: str | None
+    billing_period_end: str | None
+    invoice_type: str | None
+    invoicing_entity: str | None
+    issued_at: str | None
+    due_at: str | None
+    base_currency_code: str | None = None
+    base_total_amount: float | None = None
+    payment_currency_code: str | None = None
+    payment_total_amount: float | None = None
+    original_invoice_id: str | None = None
+
+
+@dataclass(frozen=True)
+class GlacierBillingInvoicesView:
+    source: str
+    scope: str
+    account_id: str | None = None
+    invoices: tuple[GlacierBillingInvoiceSummary, ...] = ()
+    notes: tuple[str, ...] = ()
+
+
+@dataclass(frozen=True)
+class GlacierBillingSummary:
+    actuals: GlacierBillingActualsView | None = None
+    forecast: GlacierBillingForecastView | None = None
+    exports: GlacierBillingExportView | None = None
+    invoices: GlacierBillingInvoicesView | None = None
     notes: tuple[str, ...] = ()
 
 
