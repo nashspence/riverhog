@@ -48,14 +48,22 @@ the canonical test container while using the same compose surface for the checke
 `app` service and its sidecars:
 
 ```bash
+./test lint
 ./test
 ./test prod
 ./test unit
 ```
 
+`./test lint` is the canonical pre-test quality gate. It runs `ruff check .`
+and then checks strict `mypy` output against the checked-in regression
+baseline.
+
 `./test` also performs the deterministic Garage bootstrap that creates the
 canonical bucket set, grants the checked-in test credentials, and verifies the
 incomplete multipart lifecycle configuration before the prod lane runs.
+
+The no-args `./test` flow runs that lint lane before the unit, spec, and
+prod-backed acceptance phases.
 
 When `./test` starts the prod-backed lane, it layers the short recovery timing
 values from `tests/harness/prod-harness.env` over the shared compose env so

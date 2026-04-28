@@ -98,6 +98,7 @@ usage() {
   cat <<'EOF'
 Usage:
   ./test
+  ./test lint [mypy-baseline args...]
   ./test prod [pytest args...]
   ./test prod-profile [pytest args...]
   ./test spec [pytest args...]
@@ -106,6 +107,7 @@ Usage:
   ./test [pytest args...]
 
 Modes:
+  lint        Run the canonical lint flow (ruff + baseline-backed mypy).
   prod        Run the production-backed BDD harness lane.
   prod-profile  Run the production-backed harness lane with profiling output.
   spec        Run the fixture-backed BDD spec harness lane.
@@ -123,6 +125,7 @@ EOF
 
 MODE="pytest"
 COMPOSE_RUN_ENV_ARGS=()
+LINT_ARGS=()
 REQUIRES_SIDECARS=0
 
 PROGRESS_CHECK_SECONDS="${PROGRESS_CHECK_SECONDS:-1}"
@@ -143,6 +146,12 @@ if [[ $# -eq 0 ]]; then
   REQUIRES_SIDECARS=1
 else
   case "$1" in
+    lint)
+      shift
+      MODE="lint"
+      LINT_ARGS=("$@")
+      set --
+      ;;
     prod)
       shift
       REQUIRES_SIDECARS=1
@@ -308,6 +317,36 @@ run_test_container() {
     "$@"
 }
 
+run_ruff_container() {
+  compose run \
+    --rm \
+    "${COMPOSE_RUN_TTY_ARGS[@]}" \
+    --entrypoint ruff \
+    "${COMPOSE_RUN_ENV_ARGS[@]}" \
+    test \
+    check \
+    .
+}
+
+run_mypy_baseline_container() {
+  compose run \
+    --rm \
+    "${COMPOSE_RUN_TTY_ARGS[@]}" \
+    --entrypoint python \
+    "${COMPOSE_RUN_ENV_ARGS[@]}" \
+    test \
+    tests/harness/check_mypy_baseline.py \
+    "$@"
+}
+
+run_lint() {
+  local baseline_args=("$@")
+  run_with_progress "ruff" run_ruff_container
+  run_with_progress \
+    "mypy baseline" \
+    run_mypy_baseline_container "${baseline_args[@]}"
+}
+
 if [[ "${MODE}" == "canonical" ]]; then
   run_phase() {
     local label="$1"
@@ -323,9 +362,15 @@ if [[ "${MODE}" == "canonical" ]]; then
     printf '==> %s finished in %ss\n' "${label}" "$((finished_at - started_at))"
   }
 
+  run_phase "lint" run_lint
   run_phase "unit" run_test_container -q tests/unit
   run_phase "spec" run_test_container -q tests/harness/test_spec_harness.py
   run_phase "prod" run_test_container -q -m acceptance tests/harness/test_prod_harness.py
+  exit 0
+fi
+
+if [[ "${MODE}" == "lint" ]]; then
+  run_lint "${LINT_ARGS[@]}"
   exit 0
 fi
 
