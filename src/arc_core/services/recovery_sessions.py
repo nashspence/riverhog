@@ -634,6 +634,7 @@ def _webhook_config(config: RuntimeConfig) -> WebhookConfig:
     return WebhookConfig(
         url=config.glacier_recovery_webhook_url or "",
         base_url=config.public_base_url or "",
+        timeout_seconds=config.glacier_recovery_webhook_timeout.total_seconds(),
         retry_seconds=config.glacier_recovery_webhook_retry_delay.total_seconds(),
         reminder_interval_seconds=config.glacier_recovery_webhook_reminder_interval.total_seconds(),
     )

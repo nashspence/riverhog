@@ -92,6 +92,9 @@ class RuntimeConfig:
     )
     glacier_recovery_ready_ttl: timedelta = field(default_factory=lambda: timedelta(hours=24))
     glacier_recovery_webhook_url: str | None = None
+    glacier_recovery_webhook_timeout: timedelta = field(
+        default_factory=lambda: timedelta(seconds=10)
+    )
     glacier_recovery_webhook_retry_delay: timedelta = field(
         default_factory=lambda: timedelta(minutes=1)
     )
@@ -130,6 +133,19 @@ class RuntimeConfig:
     glacier_standard_metadata_bytes_per_object: int = 8 * 1024
     glacier_minimum_storage_duration_days: int = 180
     public_base_url: str | None = None
+
+    def __post_init__(self) -> None:
+        if self.glacier_recovery_webhook_url:
+            minimum_ready_ttl = (
+                self.glacier_recovery_webhook_timeout + self.glacier_recovery_webhook_retry_delay
+            )
+            if self.glacier_recovery_ready_ttl < minimum_ready_ttl:
+                raise ValueError(
+                    "invalid Glacier recovery webhook timing: "
+                    "ARC_GLACIER_RECOVERY_READY_TTL must be at least the outbound webhook "
+                    "timeout plus ARC_GLACIER_RECOVERY_WEBHOOK_RETRY_DELAY when "
+                    "ARC_GLACIER_RECOVERY_WEBHOOK_URL is configured"
+                )
 
 
 def load_runtime_config() -> RuntimeConfig:

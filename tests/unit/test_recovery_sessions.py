@@ -276,7 +276,7 @@ def test_recovery_session_retries_initial_ready_notification_before_expiring(
         sqlite_path,
         glacier_recovery_webhook_url="http://example.invalid/webhooks/recovery",
         glacier_recovery_restore_latency=timedelta(seconds=10),
-        glacier_recovery_ready_ttl=timedelta(seconds=10),
+        glacier_recovery_ready_ttl=timedelta(seconds=12),
         glacier_recovery_webhook_retry_delay=timedelta(seconds=1),
         glacier_recovery_webhook_reminder_interval=timedelta(seconds=5),
     )
@@ -310,7 +310,7 @@ def test_recovery_session_retries_initial_ready_notification_before_expiring(
     assert failed_delivery.state == RecoverySessionState.READY
     assert failed_delivery.notification.last_notified_at is None
     assert failed_delivery.notification.next_reminder_at == "2026-04-20T04:00:12Z"
-    assert failed_delivery.restore_expires_at == "2026-04-20T04:00:21Z"
+    assert failed_delivery.restore_expires_at == "2026-04-20T04:00:23Z"
 
     monkeypatch.setattr(
         "arc_core.services.recovery_sessions.utcnow",

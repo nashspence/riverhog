@@ -192,6 +192,11 @@ recovery session waits for Glacier restore completion.
 How long Riverhog keeps restored Standard-storage ISO data available after the
 archive becomes ready before automatic cleanup expires that recovery session.
 
+When `ARC_GLACIER_RECOVERY_WEBHOOK_URL` is configured, this value must be at
+least Riverhog's fixed 10-second outbound recovery-webhook timeout plus
+`ARC_GLACIER_RECOVERY_WEBHOOK_RETRY_DELAY` so one failed ready notification can
+still be retried before cleanup.
+
 ## `ARC_GLACIER_RECOVERY_WEBHOOK_URL`
 
 - type: URL
@@ -206,6 +211,10 @@ reminders are sent before cleanup expiry.
 - default: `60s`
 
 Delay before Riverhog retries a failed recovery-ready webhook delivery.
+
+With `ARC_GLACIER_RECOVERY_WEBHOOK_URL` configured, Riverhog rejects startup if
+`ARC_GLACIER_RECOVERY_READY_TTL` is shorter than the fixed 10-second outbound
+recovery-webhook timeout plus this retry delay.
 
 ## `ARC_GLACIER_RECOVERY_WEBHOOK_REMINDER_INTERVAL`
 
