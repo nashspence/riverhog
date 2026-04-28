@@ -261,6 +261,15 @@ reporting.
 
 How many future monthly Cost Explorer forecast periods Riverhog requests.
 
+## `ARC_GLACIER_BILLING_VIEW_ARN`
+
+- type: string
+- default: unset
+
+Optional AWS billing view ARN that Riverhog passes to
+`GetCostAndUsageWithResources` when resolving bucket-scoped Glacier actuals.
+When unset, Riverhog tries to discover the primary billing view automatically.
+
 ## `ARC_GLACIER_BILLING_EXPORT_BUCKET`
 
 - type: string
@@ -269,13 +278,23 @@ How many future monthly Cost Explorer forecast periods Riverhog requests.
 Optional S3 bucket that stores CUR or Data Exports files for Glacier billing
 drill-down.
 
+## `ARC_GLACIER_BILLING_EXPORT_ARN`
+
+- type: string
+- default: unset
+
+Optional AWS Data Exports ARN. When set, Riverhog selects the latest
+successful export execution, resolves its manifest, and aggregates every file
+referenced by that manifest.
+
 ## `ARC_GLACIER_BILLING_EXPORT_PREFIX`
 
 - type: string
 - default: unset
 
 Optional S3 prefix inside `ARC_GLACIER_BILLING_EXPORT_BUCKET` that Riverhog
-scans for the most recent CUR or Data Exports CSV or CSV.GZ object.
+scans for the most recent CUR or Data Exports manifest when no explicit export
+ARN is configured.
 
 ## `ARC_GLACIER_BILLING_EXPORT_REGION`
 

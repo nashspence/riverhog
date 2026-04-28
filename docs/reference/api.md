@@ -277,9 +277,11 @@ Required behavior:
   reports AWS-native billing views when Riverhog can resolve them
 - `billing.actuals` prefers bucket-scoped AWS Cost Explorer daily actuals for the archive bucket when resource-level
   cost data is enabled, then falls back to tag-scoped or service-scoped Cost Explorer attribution
+- `billing.actuals.billing_view_arn` is emitted when Riverhog resolves an AWS billing view for resource-level actuals
 - `billing.forecast` is separate from `billing.actuals` because AWS forecast support is broader-scope than bucket
   resource actuals; Riverhog makes that forecast scope explicit
-- `billing.exports` exposes CUR or Data Exports-derived billing breakdowns from a configured billing-export S3 prefix
+- `billing.exports` exposes CUR or Data Exports-derived billing breakdowns from the selected manifest and makes the
+  resolved export ARN, execution id, manifest key, billing period, and file count explicit
 - `billing.invoices` exposes AWS invoice summaries as account-level totals rather than archive-specific attribution
 - unfiltered `GET /v1/glacier` returns overall usage snapshots that reflect changes in total uploaded Glacier usage over
   time

@@ -89,6 +89,7 @@ def test_format_glacier_report_surfaces_pricing_basis_and_collection_derivation(
                     "source": "aws_cost_explorer_resource",
                     "scope": "bucket",
                     "filter_label": "riverhog",
+                    "billing_view_arn": "arn:aws:billing::123456789012:billingview/primary",
                     "granularity": "DAILY",
                     "periods": [
                         {
@@ -119,10 +120,16 @@ def test_format_glacier_report_surfaces_pricing_basis_and_collection_derivation(
                     "notes": [],
                 },
                 "exports": {
-                    "source": "aws_cur_s3",
+                    "source": "aws_data_exports_s3",
                     "scope": "bucket",
                     "filter_label": "riverhog",
-                    "object_key": "billing/export-2026-04.csv.gz",
+                    "export_arn": "arn:aws:bcm-data-exports:us-east-1:123456789012:export/glacier",
+                    "export_name": "glacier-export",
+                    "execution_id": "execution-0002",
+                    "manifest_key": "billing/glacier-export/metadata/execution-0002/manifest.json",
+                    "billing_period": "2026-04-01..2026-05-01",
+                    "object_key": None,
+                    "files_read": 2,
                     "breakdowns": [
                         {
                             "usage_type": "TimedStorage-GlacierByteHrs",
@@ -159,7 +166,13 @@ def test_format_glacier_report_surfaces_pricing_basis_and_collection_derivation(
     assert "region=us-west-2" in rendered
     assert "billing:" in rendered
     assert "source=aws_cost_explorer_resource scope=bucket" in rendered
-    assert "source=aws_cur_s3 scope=bucket" in rendered
+    assert "billing_view_arn: arn:aws:billing::123456789012:billingview/primary" in rendered
+    assert "source=aws_data_exports_s3 scope=bucket" in rendered
+    assert "export_name: glacier-export" in rendered
+    assert "execution_id: execution-0002" in rendered
+    assert "manifest_key: billing/glacier-export/metadata/execution-0002/manifest.json" in rendered
+    assert "billing_period: 2026-04-01..2026-05-01" in rendered
+    assert "files_read: 2" in rendered
     assert "source=aws_invoicing scope=account" in rendered
     assert "period: 2026-05-01..2026-06-01 mean_cost_usd=14.5" in rendered
     assert "attribution=derived" in rendered

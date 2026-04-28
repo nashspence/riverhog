@@ -190,8 +190,11 @@ Glacier-usage-report rules:
 - `collections` expose derived attribution from represented plaintext bytes on the finalized-image disc manifest
 - `billing.actuals` reports AWS-native actual cost periods separately from Riverhog's own storage snapshots
 - `billing.actuals.scope` records whether actuals are `bucket`-scoped, `tag`-scoped, `service`-scoped, or unavailable
+- `billing.actuals.billing_view_arn` records the AWS billing view Riverhog used for resource-level bucket actuals
 - `billing.forecast` reports AWS-native forecast periods and keeps forecast scope separate from actual scope
 - `billing.exports` exposes CUR or Data Exports-derived cost breakdowns when Riverhog can inspect a configured export
+- `billing.exports` records resolved export, execution, manifest, billing-period, and file-count metadata separately
+  from the aggregated breakdown rows
 - `billing.invoices` exposes AWS invoice summaries as account-level totals rather than archive-specific attribution
 - `history` stores overall Glacier-usage snapshots rather than collection-scoped estimates
 - `pricing_basis.source` distinguishes AWS-resolved storage rates from manual fallback

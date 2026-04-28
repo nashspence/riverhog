@@ -95,8 +95,10 @@ class RuntimeConfig:
     glacier_billing_currency_code: str = "USD"
     glacier_billing_lookback_months: int = 3
     glacier_billing_forecast_months: int = 1
+    glacier_billing_view_arn: str | None = None
     glacier_billing_tag_key: str | None = None
     glacier_billing_tag_value: str | None = None
+    glacier_billing_export_arn: str | None = None
     glacier_billing_export_bucket: str | None = None
     glacier_billing_export_prefix: str | None = None
     glacier_billing_export_region: str = "us-east-1"
@@ -187,8 +189,12 @@ def load_runtime_config() -> RuntimeConfig:
         name="ARC_GLACIER_BILLING_FORECAST_MONTHS",
         minimum=1,
     )
+    glacier_billing_view_arn = os.getenv("ARC_GLACIER_BILLING_VIEW_ARN", "").strip() or None
     glacier_billing_tag_key = os.getenv("ARC_GLACIER_BILLING_TAG_KEY", "").strip() or None
     glacier_billing_tag_value = os.getenv("ARC_GLACIER_BILLING_TAG_VALUE", "").strip() or None
+    glacier_billing_export_arn = (
+        os.getenv("ARC_GLACIER_BILLING_EXPORT_ARN", "").strip() or None
+    )
     glacier_billing_export_bucket = (
         os.getenv("ARC_GLACIER_BILLING_EXPORT_BUCKET", "").strip() or None
     )
@@ -279,8 +285,10 @@ def load_runtime_config() -> RuntimeConfig:
         glacier_billing_currency_code=glacier_billing_currency_code,
         glacier_billing_lookback_months=glacier_billing_lookback_months,
         glacier_billing_forecast_months=glacier_billing_forecast_months,
+        glacier_billing_view_arn=glacier_billing_view_arn,
         glacier_billing_tag_key=glacier_billing_tag_key,
         glacier_billing_tag_value=glacier_billing_tag_value,
+        glacier_billing_export_arn=glacier_billing_export_arn,
         glacier_billing_export_bucket=glacier_billing_export_bucket,
         glacier_billing_export_prefix=glacier_billing_export_prefix,
         glacier_billing_export_region=glacier_billing_export_region,

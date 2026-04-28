@@ -1231,6 +1231,10 @@ components:
           oneOf:
             - type: string
             - type: "null"
+        billing_view_arn:
+          oneOf:
+            - type: string
+            - type: "null"
         granularity:
           oneOf:
             - type: string
@@ -1325,6 +1329,26 @@ components:
           oneOf:
             - type: string
             - type: "null"
+        export_arn:
+          oneOf:
+            - type: string
+            - type: "null"
+        export_name:
+          oneOf:
+            - type: string
+            - type: "null"
+        execution_id:
+          oneOf:
+            - type: string
+            - type: "null"
+        manifest_key:
+          oneOf:
+            - type: string
+            - type: "null"
+        billing_period:
+          oneOf:
+            - type: string
+            - type: "null"
         bucket:
           oneOf:
             - type: string
@@ -1345,6 +1369,9 @@ components:
           oneOf:
             - type: string
             - type: "null"
+        files_read:
+          type: integer
+          minimum: 0
         rows_scanned:
           type: integer
         breakdowns:

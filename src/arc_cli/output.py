@@ -261,6 +261,8 @@ def format_glacier_report(payload: Mapping[str, Any]) -> str:
                 f"filter={actuals.get('filter_label') or 'none'} "
                 f"granularity={actuals.get('granularity') or 'unknown'}"
             )
+            if actuals.get("billing_view_arn"):
+                lines.append(f"    billing_view_arn: {actuals.get('billing_view_arn')}")
             periods = actuals.get("periods")
             if isinstance(periods, Sequence):
                 for actual in periods:
@@ -320,6 +322,17 @@ def format_glacier_report(payload: Mapping[str, Any]) -> str:
                 f"filter={exports.get('filter_label') or 'none'} "
                 f"object={exports.get('object_key') or 'none'}"
             )
+            if exports.get("export_arn"):
+                lines.append(f"    export_arn: {exports.get('export_arn')}")
+            if exports.get("export_name"):
+                lines.append(f"    export_name: {exports.get('export_name')}")
+            if exports.get("execution_id"):
+                lines.append(f"    execution_id: {exports.get('execution_id')}")
+            if exports.get("manifest_key"):
+                lines.append(f"    manifest_key: {exports.get('manifest_key')}")
+            if exports.get("billing_period"):
+                lines.append(f"    billing_period: {exports.get('billing_period')}")
+            lines.append(f"    files_read: {exports.get('files_read', 0)}")
             breakdowns = exports.get("breakdowns")
             if isinstance(breakdowns, Sequence):
                 for breakdown in breakdowns:

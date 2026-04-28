@@ -83,6 +83,7 @@ class GlacierBillingActualsViewOut(ArcModel):
     scope: str
     filter_label: str | None = None
     service: str | None = None
+    billing_view_arn: str | None = None
     granularity: str | None = None
     measured_at: str | None = None
     periods: list[GlacierBillingActualOut]
@@ -124,11 +125,17 @@ class GlacierBillingExportViewOut(ArcModel):
     scope: str
     filter_label: str | None = None
     service: str | None = None
+    export_arn: str | None = None
+    export_name: str | None = None
+    execution_id: str | None = None
+    manifest_key: str | None = None
+    billing_period: str | None = None
     bucket: str | None = None
     prefix: str | None = None
     object_key: str | None = None
     exported_at: str | None = None
     currency_code: str | None = None
+    files_read: int
     rows_scanned: int
     breakdowns: list[GlacierBillingExportBreakdownOut]
     notes: list[str]
