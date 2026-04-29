@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from sqlalchemy import func, select
-from sqlalchemy.orm import selectinload
+from sqlalchemy.orm import Session, selectinload
 
 from arc_core.catalog_models import (
     ActivePinRecord,
@@ -116,12 +116,12 @@ class SqlAlchemyPinService:
             return summaries
 
 
-def _next_fetch_order(session) -> int:
+def _next_fetch_order(session: Session) -> int:
     max_fetch_order = session.scalar(select(func.max(ActivePinRecord.fetch_order)))
     return int(max_fetch_order or 0) + 1
 
 
-def _selected_files(session, raw_target: str) -> list[CollectionFileRecord]:
+def _selected_files(session: Session, raw_target: str) -> list[CollectionFileRecord]:
     target = parse_target(raw_target)
     records = session.scalars(
         select(CollectionFileRecord).options(selectinload(CollectionFileRecord.copies))
@@ -187,7 +187,7 @@ def _fetch_payload(fetch_summary: FetchSummary) -> dict[str, object]:
     }
 
 
-def _reconcile_hot_from_pins(session, hot_store: HotStore) -> None:
+def _reconcile_hot_from_pins(session: Session, hot_store: HotStore) -> None:
     active_targets = session.scalars(select(ActivePinRecord.target)).all()
     selected_paths: set[tuple[str, str]] = set()
     for raw_target in active_targets:

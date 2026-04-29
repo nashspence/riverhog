@@ -55,8 +55,7 @@ the canonical test container while using the same compose surface for the checke
 ```
 
 `./test lint` is the canonical pre-test quality gate. It runs `ruff check .`
-and then checks strict `mypy` output against the checked-in regression
-baseline.
+and then runs strict `mypy` directly.
 
 `./test` also performs the deterministic Garage bootstrap that creates the
 canonical bucket set, grants the checked-in test credentials, and verifies the

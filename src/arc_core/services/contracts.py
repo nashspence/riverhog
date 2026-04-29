@@ -80,7 +80,7 @@ class CollectionService(Protocol):
 
 
 class SearchService(Protocol):
-    def search(self, query: str, limit: int) -> list[object]: ...
+    def search(self, query: str, limit: int) -> list[dict[str, object]]: ...
 
 
 class PlanningService(Protocol):

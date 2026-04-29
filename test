@@ -98,7 +98,7 @@ usage() {
   cat <<'EOF'
 Usage:
   ./test
-  ./test lint [mypy-baseline args...]
+  ./test lint [mypy args...]
   ./test prod [pytest args...]
   ./test prod-profile [pytest args...]
   ./test spec [pytest args...]
@@ -107,7 +107,7 @@ Usage:
   ./test [pytest args...]
 
 Modes:
-  lint        Run the canonical lint flow (ruff + baseline-backed mypy).
+  lint        Run the canonical lint flow (ruff + strict mypy).
   prod        Run the production-backed BDD harness lane.
   prod-profile  Run the production-backed harness lane with profiling output.
   spec        Run the fixture-backed BDD spec harness lane.
@@ -328,23 +328,27 @@ run_ruff_container() {
     .
 }
 
-run_mypy_baseline_container() {
+run_mypy_container() {
   compose run \
     --rm \
     "${COMPOSE_RUN_TTY_ARGS[@]}" \
-    --entrypoint python \
+    --entrypoint mypy \
     "${COMPOSE_RUN_ENV_ARGS[@]}" \
     test \
-    tests/harness/check_mypy_baseline.py \
+    src \
+    --show-error-codes \
+    --hide-error-context \
+    --no-error-summary \
+    --no-color-output \
     "$@"
 }
 
 run_lint() {
-  local baseline_args=("$@")
+  local mypy_args=("$@")
   run_with_progress "ruff" run_ruff_container
   run_with_progress \
-    "mypy baseline" \
-    run_mypy_baseline_container "${baseline_args[@]}"
+    "mypy" \
+    run_mypy_container "${mypy_args[@]}"
 }
 
 if [[ "${MODE}" == "canonical" ]]; then

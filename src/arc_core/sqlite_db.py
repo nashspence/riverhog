@@ -2,21 +2,15 @@ from __future__ import annotations
 
 from collections.abc import Iterator
 from contextlib import contextmanager
+from typing import Any
 
-try:
-    from sqlalchemy import create_engine, event, text
-    from sqlalchemy.engine import Engine
-    from sqlalchemy.orm import DeclarativeBase, Session, sessionmaker
-except Exception as exc:  # pragma: no cover - optional dependency path
-    create_engine = None
-    event = None
-    text = None  # type: ignore[assignment]
-    DeclarativeBase = object  # type: ignore[assignment]
-    Session = object  # type: ignore[assignment]
-    sessionmaker = None
-    _SQLALCHEMY_IMPORT_ERROR: Exception | None = exc
-else:
-    _SQLALCHEMY_IMPORT_ERROR = None
+from sqlalchemy import create_engine, event, text
+from sqlalchemy.engine import Connection, Engine
+from sqlalchemy.orm import DeclarativeBase, Session, sessionmaker
+
+
+class Base(DeclarativeBase):
+    pass
 
 # Each entry is a list of (table, column, sql_type) tuples for columns to add if missing.
 # New tables are handled by create_all; only column additions need explicit migration.
@@ -60,21 +54,7 @@ _COLUMN_MIGRATIONS: list[list[tuple[str, str, str]]] = [
 ]
 
 
-class Base(DeclarativeBase):
-    pass
-
-
-def _require_sqlalchemy() -> None:
-    if _SQLALCHEMY_IMPORT_ERROR is not None:
-        raise RuntimeError(
-            "SQLAlchemy support requires `pip install .[db]`"
-        ) from _SQLALCHEMY_IMPORT_ERROR
-
-
 def create_sqlite_engine(sqlite_path: str) -> Engine:
-    _require_sqlalchemy()
-    assert create_engine is not None
-    assert event is not None
     engine = create_engine(
         f"sqlite:///{sqlite_path}",
         connect_args={"check_same_thread": False},
@@ -82,7 +62,7 @@ def create_sqlite_engine(sqlite_path: str) -> Engine:
     )
 
     @event.listens_for(engine, "connect")
-    def set_sqlite_pragma(dbapi_connection, _connection_record) -> None:  # type: ignore[no-untyped-def]
+    def set_sqlite_pragma(dbapi_connection: Any, _connection_record: Any) -> None:
         cursor = dbapi_connection.cursor()
         cursor.execute("PRAGMA journal_mode=WAL;")
         cursor.execute("PRAGMA foreign_keys=ON;")
@@ -91,7 +71,7 @@ def create_sqlite_engine(sqlite_path: str) -> Engine:
     return engine
 
 
-def _table_exists(conn, table: str) -> bool:
+def _table_exists(conn: Connection, table: str) -> bool:
     rows = conn.execute(
         text("SELECT name FROM sqlite_master WHERE type='table' AND name=:name"),
         {"name": table},
@@ -99,7 +79,7 @@ def _table_exists(conn, table: str) -> bool:
     return bool(rows)
 
 
-def _column_exists(conn, table: str, column: str) -> bool:
+def _column_exists(conn: Connection, table: str, column: str) -> bool:
     rows = conn.execute(text(f"PRAGMA table_info({table})")).fetchall()
     return any(row[1] == column for row in rows)
 
@@ -109,7 +89,6 @@ def migrate_schema(engine: Engine) -> None:
 
     Each migration version is recorded in schema_migrations and runs at most once.
     """
-    assert text is not None
     with engine.begin() as conn:
         conn.execute(
             text("CREATE TABLE IF NOT EXISTS schema_migrations (version INTEGER PRIMARY KEY)")
@@ -181,15 +160,13 @@ def initialize_db(sqlite_path: str) -> None:
     migrate_schema(engine)
 
 
-def make_session_factory(sqlite_path: str):
-    _require_sqlalchemy()
-    assert sessionmaker is not None
+def make_session_factory(sqlite_path: str) -> sessionmaker[Session]:
     engine = create_sqlite_engine(sqlite_path)
     return sessionmaker(bind=engine, autoflush=False, autocommit=False, expire_on_commit=False)
 
 
 @contextmanager
-def session_scope(session_factory) -> Iterator[Session]:
+def session_scope(session_factory: sessionmaker[Session]) -> Iterator[Session]:
     session = session_factory()
     try:
         yield session

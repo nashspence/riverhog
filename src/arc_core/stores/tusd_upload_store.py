@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import base64
 import time
+from typing import cast
 from urllib.parse import quote, urljoin, urlsplit, urlunsplit
 
 import httpx
@@ -108,8 +109,8 @@ class TusdUploadStore:
         while True:
             try:
                 response = self._client.get_object(Bucket=self._bucket, Key=key)
-                return response["Body"].read()
-            except self._client.exceptions.ClientError as exc:  # type: ignore[attr-defined]
+                return cast(bytes, response["Body"].read())
+            except self._client.exceptions.ClientError as exc:
                 if exc.response.get("ResponseMetadata", {}).get("HTTPStatusCode") != 404:
                     raise
                 if time.monotonic() >= deadline:

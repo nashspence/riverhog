@@ -4,8 +4,7 @@
 
 Run the canonical lint flow with `./test lint`.
 
-That lane runs `ruff check .` and then checks strict `mypy` output against the
-checked-in regression baseline.
+That lane runs `ruff check .` and then runs strict `mypy` directly.
 
 ## Testing
 

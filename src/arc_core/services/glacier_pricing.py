@@ -183,7 +183,10 @@ def _latest_price_list_reference(
         RegionCode=region_code,
         EffectiveDate=utcnow(),
     )
-    price_lists = response.get("PriceLists", [])
+    raw_price_lists = response.get("PriceLists", [])
+    price_lists = [
+        entry for entry in raw_price_lists if isinstance(entry, dict)
+    ] if isinstance(raw_price_lists, list) else []
     if not price_lists:
         raise ValueError(
             f"no AWS price list found for {_S3_SERVICE_CODE} {currency_code} {region_code}"
@@ -200,7 +203,10 @@ def _latest_price_list_reference(
 
 def _download_price_list_json(url: str) -> dict[str, Any]:
     with urlopen(url, timeout=30) as response:
-        return json.load(response)
+        payload = json.load(response)
+    if not isinstance(payload, dict):
+        raise ValueError("AWS price list API returned a non-object JSON payload")
+    return payload
 
 
 def _find_standard_storage_rate(
@@ -261,20 +267,41 @@ def _iter_storage_rate_candidates(
     *,
     region_code: str,
 ) -> list[dict[str, Any]]:
-    products = price_list_document.get("products", {})
-    on_demand_terms = price_list_document.get("terms", {}).get("OnDemand", {})
+    raw_products = price_list_document.get("products", {})
+    products = raw_products if isinstance(raw_products, dict) else {}
+    raw_terms = price_list_document.get("terms", {})
+    terms = raw_terms if isinstance(raw_terms, dict) else {}
+    raw_on_demand_terms = terms.get("OnDemand", {})
+    on_demand_terms = raw_on_demand_terms if isinstance(raw_on_demand_terms, dict) else {}
     candidates: list[dict[str, Any]] = []
 
     for sku, product in products.items():
+        if not isinstance(product, dict):
+            continue
         attributes = product.get("attributes", {})
+        if not isinstance(attributes, dict):
+            continue
         if attributes.get("regionCode") != region_code:
             continue
-        for term in on_demand_terms.get(sku, {}).values():
+        raw_term_block = on_demand_terms.get(sku, {})
+        if not isinstance(raw_term_block, dict):
+            continue
+        for term in raw_term_block.values():
+            if not isinstance(term, dict):
+                continue
             effective_at = term.get("effectiveDate")
-            for dimension in term.get("priceDimensions", {}).values():
+            raw_dimensions = term.get("priceDimensions", {})
+            if not isinstance(raw_dimensions, dict):
+                continue
+            for dimension in raw_dimensions.values():
+                if not isinstance(dimension, dict):
+                    continue
                 if dimension.get("unit") != "GB-Mo":
                     continue
-                price_text = dimension.get("pricePerUnit", {}).get("USD", "")
+                raw_price_per_unit = dimension.get("pricePerUnit", {})
+                if not isinstance(raw_price_per_unit, dict):
+                    continue
+                price_text = raw_price_per_unit.get("USD", "")
                 if not price_text:
                     continue
                 candidates.append(

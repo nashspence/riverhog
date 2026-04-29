@@ -7,6 +7,7 @@ import tarfile
 from collections.abc import Callable
 from dataclasses import dataclass
 from pathlib import Path, PurePosixPath
+from typing import Any
 
 CHUNK_BYTES = 1024 * 1024
 TarMemberPredicate = Callable[[str], bool]
@@ -31,7 +32,7 @@ class QueueReader(io.RawIOBase):
     def abort(self, exc: BaseException) -> None:
         self.queue.put(exc)
 
-    def readinto(self, output: bytearray) -> int:
+    def readinto(self, output: Any) -> int:
         while not self.buffer:
             item = self.queue.get()
             if item is None:

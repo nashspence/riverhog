@@ -4,7 +4,7 @@ import subprocess
 import tempfile
 from datetime import UTC, datetime
 from pathlib import Path
-from typing import Any
+from typing import Any, cast
 
 from arc_core.iso.streaming import build_iso_cmd_from_root
 from arc_core.ports.archive_store import ArchiveUploadReceipt
@@ -28,7 +28,10 @@ class S3ArchiveStore:
 
     def _head_object(self, *, object_key: str) -> dict[str, Any] | None:
         try:
-            return self._client.head_object(Bucket=self._bucket, Key=object_key)
+            return cast(
+                dict[str, Any],
+                self._client.head_object(Bucket=self._bucket, Key=object_key),
+            )
         except Exception as exc:
             if _is_missing_object_error(exc):
                 return None
@@ -96,7 +99,10 @@ class S3ArchiveStore:
                     }
                 },
             )
-            head = self._client.head_object(Bucket=self._bucket, Key=object_key)
+            head = cast(
+                dict[str, Any],
+                self._client.head_object(Bucket=self._bucket, Key=object_key),
+            )
 
         return self._receipt_from_head(object_key=object_key, head=head, uploaded_at=uploaded_at)
 

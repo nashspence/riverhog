@@ -26,12 +26,20 @@ boto3==1.42.97 \
     --hash=sha256:2833dbeda3670ea610ad48dff7d27cdc829dbbfcdfbc6b750b673948e949b6f0 \
     --hash=sha256:966e49f0510af9a64057a902b7df53d4348c447de0d3df4cc855dfd85e058fcd
     # via arc-mvp-skeleton (pyproject.toml)
+boto3-stubs==1.42.97 \
+    --hash=sha256:47539eaab612d63b5b828657ee0977237725f7608f19563a2ae7f784042411bc \
+    --hash=sha256:f7f4775b0851ff6db0e3fb097064af6437e4de31b797d874a737104998e028c6
+    # via arc-mvp-skeleton (pyproject.toml)
 botocore==1.42.97 \
     --hash=sha256:5c0bb00e32d16ff6d278cc8c9e10dc3672d9c1d569031635ac3c908a60de8310 \
     --hash=sha256:77d2c8ce1bc592d3fbd7c01c35836f4a5b0cac2ca03ccdf6ffc60faa16b5fadc
     # via
     #   boto3
     #   s3transfer
+botocore-stubs==1.42.41 \
+    --hash=sha256:9423110fb0e391834bd2ed44ae5f879d8cb370a444703d966d30842ce2bcb5f0 \
+    --hash=sha256:dbeac2f744df6b814ce83ec3f3777b299a015cbea57a2efc41c33b8c38265825
+    # via boto3-stubs
 certifi==2026.2.25 \
     --hash=sha256:027692e4402ad994f1c42e52a4997a9763c646b73e4096e4d5d6db8af1d6f0fa \
     --hash=sha256:e887ab5cee78ea814d3472169153c2d12cd43b14bd03329a39a9c6e2e80bfba7
@@ -439,6 +447,14 @@ mypy==1.20.1 \
     --hash=sha256:f8e945b872a05f4fbefabe2249c0b07b6b194e5e11a86ebee9edf855de09806c \
     --hash=sha256:fba3fb0968a7b48806b0c90f38d39296f10766885a94c83bd21399de1e14eb28
     # via arc-mvp-skeleton (pyproject.toml)
+mypy-boto3-pricing==1.42.82 \
+    --hash=sha256:a28d8ae44fb6fa66c981cabc16304975bbae585df1f0844fac211953e325d211 \
+    --hash=sha256:cd9994fc44fc9dcfe82f79693a0a0472d8eed421fd1df4bfd75673abe94eb29e
+    # via boto3-stubs
+mypy-boto3-s3==1.42.94 \
+    --hash=sha256:1d92d722cf00573b8111e98493ab386e0c1b59a1530b7fee4af77f2d9a1c477d \
+    --hash=sha256:d7c2111396d7ae344b241958b7df8ed33d478d746721202715f5c197f9cd0c83
+    # via boto3-stubs
 mypy-extensions==1.1.0 \
     --hash=sha256:1be4cccdb0f2482337c4743e60421de3a356cd97508abadd57d47403e94f5505 \
     --hash=sha256:52e68efc3284861e772bbcd66823fde5ae21fd2fdb51c62a211403730b916558
@@ -518,7 +534,17 @@ numpy==2.4.4 \
     --hash=sha256:fcfe2045fd2e8f3cb0ce9d4ba6dba6333b8fa05bb8a4939c908cd43322d14c7e
     # via
     #   arc-mvp-skeleton (pyproject.toml)
+    #   numpy-typing-compat
+    #   optype
     #   scipy
+numpy-typing-compat==20251206.2.4 \
+    --hash=sha256:59882d23aaff054a2536da80564012cdce33487657be4d79c5925bb8705fcabc \
+    --hash=sha256:a82e723bd20efaa4cf2886709d4264c144f1f2b609bda83d1545113b7e47a5b5
+    # via optype
+optype==0.17.0 \
+    --hash=sha256:31351a1e64d9eba7bf67e14deefb286e85c66458db63c67dd5e26dd72e4664e5 \
+    --hash=sha256:8c2d88ff13149454bcf6eb47502f80d288bc542e7238fcc412ac4d222c439397
+    # via scipy-stubs
 packaging==26.1 \
     --hash=sha256:5d9c0669c6285e491e0ced2eee587eaf67b670d94a19e94e3984a481aba6802f \
     --hash=sha256:f042152b681c4bfac5cae2742a55e103d27ab2ec0f3d88037136b6bfe7c9c5de
@@ -987,6 +1013,10 @@ scipy==1.17.1 \
     --hash=sha256:f8885db0bc2bffa59d5c1b72fad7a6a92d3e80e7257f967dd81abb553a90d293 \
     --hash=sha256:fcb310ddb270a06114bb64bbe53c94926b943f5b7f0842194d585c65eb4edd76
     # via arc-mvp-skeleton (pyproject.toml)
+scipy-stubs==1.17.1.4 \
+    --hash=sha256:cae00c5207aa62ceb4bcadea202d9fbbf002e958f9e4de981720436b8d5c1802 \
+    --hash=sha256:e6e5c390fb864745bc3d5f591de81f5cb4f84403857d4f660acb5b6339956f5b
+    # via arc-mvp-skeleton (pyproject.toml)
 shellingham==1.5.4 \
     --hash=sha256:7ecfff8f2fd72616f7481040475a65b2bf8af90a56c89140852d1120324e8686 \
     --hash=sha256:8dbca0739d487e5bd35ab3ca4b36e11c4078f3a234bfce294b0a0291363404de
@@ -1054,17 +1084,29 @@ typer==0.24.1 \
     --hash=sha256:112c1f0ce578bfb4cab9ffdabc68f031416ebcc216536611ba21f04e9aa84c9e \
     --hash=sha256:e39b4732d65fbdcde189ae76cf7cd48aeae72919dea1fdfc16593be016256b45
     # via arc-mvp-skeleton (pyproject.toml)
+types-awscrt==0.31.3 \
+    --hash=sha256:09d3eaf00231e0f47e101bd9867e430873bc57040050e2a3bd8305cb4fc30865 \
+    --hash=sha256:e5ce65a00a2ab4f35eacc1e3d700d792338d56e4823ee7b4dbe017f94cfc4458
+    # via botocore-stubs
 types-pyyaml==6.0.12.20260408 \
     --hash=sha256:92a73f2b8d7f39ef392a38131f76b970f8c66e4c42b3125ae872b7c93b556307 \
     --hash=sha256:fbc42037d12159d9c801ebfcc79ebd28335a7c13b08a4cfbc6916df78fee9384
     # via arc-mvp-skeleton (pyproject.toml)
+types-s3transfer==0.16.0 \
+    --hash=sha256:1c0cd111ecf6e21437cb410f5cddb631bfb2263b77ad973e79b9c6d0cb24e0ef \
+    --hash=sha256:b4636472024c5e2b62278c5b759661efeb52a81851cde5f092f24100b1ecb443
+    # via boto3-stubs
 typing-extensions==4.15.0 \
     --hash=sha256:0cea48d173cc12fa28ecabc3b837ea3cf6f38c6d1136f85cbaaf598984861466 \
     --hash=sha256:f0fa19c6845758ab08074a0cfa8b7aecb71c999ca73d62883bc25cc018c4e548
     # via
     #   anyio
+    #   boto3-stubs
     #   fastapi
     #   mypy
+    #   mypy-boto3-pricing
+    #   mypy-boto3-s3
+    #   optype
     #   pydantic
     #   pydantic-core
     #   pytest-bdd

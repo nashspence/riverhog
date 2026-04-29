@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from typing import cast
+
 from arc_core.domain.errors import NotFound
 from arc_core.runtime_config import RuntimeConfig
 from arc_core.stores.s3_support import create_s3_client
@@ -26,17 +28,17 @@ class S3HotStore:
                 Bucket=self._bucket,
                 Key=self._key(collection_id, path),
             )
-        except self._client.exceptions.ClientError as exc:  # type: ignore[attr-defined]
+        except self._client.exceptions.ClientError as exc:
             if exc.response.get("ResponseMetadata", {}).get("HTTPStatusCode") != 404:
                 raise
             raise NotFound(f"file not found in hot store: {collection_id}/{path}") from exc
-        return response["Body"].read()
+        return cast(bytes, response["Body"].read())
 
     def has_collection_file(self, collection_id: str, path: str) -> bool:
         try:
             self._client.head_object(Bucket=self._bucket, Key=self._key(collection_id, path))
             return True
-        except self._client.exceptions.ClientError as exc:  # type: ignore[attr-defined]
+        except self._client.exceptions.ClientError as exc:
             if exc.response.get("ResponseMetadata", {}).get("HTTPStatusCode") == 404:
                 return False
             raise

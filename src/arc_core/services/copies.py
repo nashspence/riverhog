@@ -4,9 +4,11 @@ import hashlib
 import json
 from datetime import UTC, datetime
 from pathlib import Path
+from typing import cast
 
 import yaml
 from sqlalchemy import delete, select
+from sqlalchemy.orm import Session
 
 from arc_core.archive_compliance import (
     copy_counts_toward_protection,
@@ -137,22 +139,24 @@ class SqlAlchemyCopyService:
                 )
             return self._copy_summary(session, target)
 
-    def _require_image(self, session, image_id: str) -> FinalizedImageRecord:
-        image = session.get(FinalizedImageRecord, image_id)
+    def _require_image(self, session: Session, image_id: str) -> FinalizedImageRecord:
+        image = cast(FinalizedImageRecord | None, session.get(FinalizedImageRecord, image_id))
         if image is None:
             raise NotFound(f"image not found: {image_id}")
         return image
 
     def _ensure_required_copy_slots(
         self,
-        session,
+        session: Session,
         image: FinalizedImageRecord,
     ) -> list[ImageCopyRecord]:
-        copies = session.scalars(
-            select(ImageCopyRecord)
-            .where(ImageCopyRecord.image_id == image.image_id)
-            .order_by(ImageCopyRecord.copy_id)
-        ).all()
+        copies = list(
+            session.scalars(
+                select(ImageCopyRecord)
+                .where(ImageCopyRecord.image_id == image.image_id)
+                .order_by(ImageCopyRecord.copy_id)
+            ).all()
+        )
         required_copy_count = normalize_required_copy_count(image.required_copy_count)
         used_ids = {copy.copy_id for copy in copies}
 
@@ -177,7 +181,7 @@ class SqlAlchemyCopyService:
 
     def _create_generated_copy_slot(
         self,
-        session,
+        session: Session,
         image: FinalizedImageRecord,
         *,
         used_ids: set[str],
@@ -226,7 +230,7 @@ class SqlAlchemyCopyService:
 
     def _sync_file_copy_rows(
         self,
-        session,
+        session: Session,
         image: FinalizedImageRecord,
         copy: ImageCopyRecord,
     ) -> None:
@@ -300,7 +304,7 @@ class SqlAlchemyCopyService:
                 if row_key not in expected_keys:
                     session.delete(row)
 
-    def _remove_file_copy_rows(self, session, image_id: str, copy_id: str) -> None:
+    def _remove_file_copy_rows(self, session: Session, image_id: str, copy_id: str) -> None:
         impacted_rows = session.scalars(
             select(FileCopyRecord).where(
                 FileCopyRecord.volume_id == image_id,
@@ -332,7 +336,7 @@ class SqlAlchemyCopyService:
 
     def _append_history(
         self,
-        session,
+        session: Session,
         copy: ImageCopyRecord,
         *,
         event: str,
@@ -349,7 +353,7 @@ class SqlAlchemyCopyService:
             )
         )
 
-    def _copy_summary(self, session, copy: ImageCopyRecord) -> CopySummary:
+    def _copy_summary(self, session: Session, copy: ImageCopyRecord) -> CopySummary:
         history_rows = session.scalars(
             select(ImageCopyEventRecord)
             .where(
@@ -404,7 +408,7 @@ def _generated_copy_id(image_id: str, ordinal: int) -> str:
     return f"{image_id}-{ordinal}"
 
 
-def _has_recoverable_session(session, image_id: str) -> bool:
+def _has_recoverable_session(session: Session, image_id: str) -> bool:
     recoverable_states = {"restore_requested", "ready", "expired"}
     session_id = session.scalar(
         select(GlacierRecoverySessionRecord.session_id)

@@ -1,23 +1,46 @@
 from __future__ import annotations
 
-from typing import Any
+from typing import Any, TypedDict
+
+_np_import: Any
+_bounds_import: Any
+_linear_constraint_import: Any
+_milp_import: Any
+_lil_array_import: Any
 
 try:
-    import numpy as np
-    from scipy.optimize import Bounds, LinearConstraint, milp
-    from scipy.sparse import lil_array
+    import numpy as _np_import
+    from scipy.optimize import Bounds as _bounds_import
+    from scipy.optimize import LinearConstraint as _linear_constraint_import
+    from scipy.optimize import milp as _milp_import
+    from scipy.sparse import lil_array as _lil_array_import
 except Exception as exc:  # pragma: no cover - optional dependency path
-    np = None
-    Bounds = None
-    LinearConstraint = None
-    lil_array = None
     _MILP_IMPORT_ERROR: Exception | None = exc
+    _np_import = None
+    _bounds_import = None
+    _linear_constraint_import = None
+    _milp_import = None
+    _lil_array_import = None
 else:  # pragma: no cover - import success is environment-specific
     _MILP_IMPORT_ERROR = None
+
+# Preserve the historical capability probes and monkeypatch points used by
+# callers and tests while still making the optional dependency path explicit.
+np: Any = _np_import
+Bounds: Any = _bounds_import
+LinearConstraint: Any = _linear_constraint_import
+milp: Any = _milp_import
+lil_array: Any = _lil_array_import
 
 
 class PlannerDependencyError(RuntimeError):
     pass
+
+
+class _SolveResult(TypedDict):
+    x: Any
+    selected: list[dict[str, Any]]
+    used: int
 
 
 def _require_milp() -> None:
@@ -39,19 +62,29 @@ def _solve(
     assert np is not None
     assert Bounds is not None
     assert LinearConstraint is not None
+    assert milp is not None
     assert lil_array is not None
 
     collection_ids = sorted({item["collection"] for item in items})
     item_count = len(items)
     collection_count = len(collection_ids)
     collection_index = {collection_id: idx for idx, collection_id in enumerate(collection_ids)}
-    payload_bytes = np.array([item["planned_bytes"] for item in items], dtype=np.float64)
-    priority = np.array([int(item["priority"]) for item in items], dtype=np.float64)
+    payload_bytes = np.array(
+        [item["planned_bytes"] for item in items],
+        dtype=np.float64,
+    )
+    priority = np.array(
+        [int(item["priority"]) for item in items],
+        dtype=np.float64,
+    )
     fixed = np.array(
         [collections[collection_id]["fixed_bytes"] for collection_id in collection_ids],
         dtype=np.float64,
     )
-    item_collection = np.array([collection_index[item["collection"]] for item in items], dtype=int)
+    item_collection = np.array(
+        [collection_index[item["collection"]] for item in items],
+        dtype=int,
+    )
 
     meta_pad = 2048
     deviation_index = item_count + collection_count if force else None
@@ -119,15 +152,17 @@ def _solve(
         integrality[deviation_index] = 0
         bounds_hi[deviation_index] = np.inf
 
-    constraints = LinearConstraint(
-        matrix.tocsr(), np.array(lower, dtype=np.float64), np.array(upper, dtype=np.float64)
+    base_constraints = LinearConstraint(
+        matrix.tocsr(),
+        np.array(lower, dtype=np.float64),
+        np.array(upper, dtype=np.float64),
     )
     bounds = Bounds(bounds_lo, bounds_hi)
 
     def run(
         cost: list[float],
         extra: tuple[tuple[Any, float, float], ...] = (),
-    ) -> dict[str, Any] | None:
+    ) -> _SolveResult | None:
         if extra:
             extra_rows = lil_array((len(extra), variable_count), dtype=np.float64)
             extra_lower: list[float] = []
@@ -136,8 +171,8 @@ def _solve(
                 extra_rows[idx] = vec
                 extra_lower.append(lo)
                 extra_upper.append(hi)
-            local_constraints = (
-                constraints,
+            local_constraints: Any = (
+                base_constraints,
                 LinearConstraint(
                     extra_rows.tocsr(),
                     np.array(extra_lower, dtype=np.float64),
@@ -145,7 +180,7 @@ def _solve(
                 ),
             )
         else:
-            local_constraints = constraints
+            local_constraints = base_constraints
         result = milp(
             c=np.array(cost, dtype=np.float64),
             constraints=local_constraints,
