@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import base64
 import hashlib
+import inspect
 import json
 import math
 import os
@@ -16,6 +17,7 @@ from collections.abc import AsyncIterator, Callable, Iterator, Mapping, Sequence
 from dataclasses import dataclass, field
 from datetime import UTC, datetime, timedelta
 from decimal import ROUND_HALF_UP, Decimal
+from functools import wraps
 from pathlib import Path
 from typing import Any, cast
 from urllib.parse import quote
@@ -424,31 +426,36 @@ class AcceptanceState:
     next_fetch_number: int = 0
 
     def clear_webhook_deliveries(self) -> None:
-        self.webhook_deliveries.clear()
-        self.webhook_attempts.clear()
-        self.webhook_behaviors.clear()
+        with self.lock:
+            self.webhook_deliveries.clear()
+            self.webhook_attempts.clear()
+            self.webhook_behaviors.clear()
 
     def record_webhook_delivery(self, payload: dict[str, object]) -> None:
         normalized = json.loads(json.dumps(payload, sort_keys=True))
         assert isinstance(normalized, dict)
-        self.webhook_deliveries.append(normalized)
+        with self.lock:
+            self.webhook_deliveries.append(normalized)
 
     def record_webhook_attempt(self, payload: dict[str, object]) -> None:
         normalized = json.loads(json.dumps(payload, sort_keys=True))
         assert isinstance(normalized, dict)
-        self.webhook_attempts.append(normalized)
+        with self.lock:
+            self.webhook_attempts.append(normalized)
 
     def list_webhook_deliveries(self) -> list[dict[str, object]]:
-        return [
-            cast(dict[str, object], json.loads(json.dumps(item)))
-            for item in self.webhook_deliveries
-        ]
+        with self.lock:
+            return [
+                cast(dict[str, object], json.loads(json.dumps(item)))
+                for item in self.webhook_deliveries
+            ]
 
     def list_webhook_attempts(self) -> list[dict[str, object]]:
-        return [
-            cast(dict[str, object], json.loads(json.dumps(item)))
-            for item in self.webhook_attempts
-        ]
+        with self.lock:
+            return [
+                cast(dict[str, object], json.loads(json.dumps(item)))
+                for item in self.webhook_attempts
+            ]
 
     def add_webhook_behavior(
         self,
@@ -459,26 +466,28 @@ class AcceptanceState:
         delay_seconds: float = 0.0,
         mode: str = "status",
     ) -> None:
-        self.webhook_behaviors.append(
-            {
-                "event": event,
-                "mode": mode,
-                "status_code": status_code,
-                "remaining": max(1, remaining),
-                "delay_seconds": max(0.0, delay_seconds),
-            }
-        )
+        with self.lock:
+            self.webhook_behaviors.append(
+                {
+                    "event": event,
+                    "mode": mode,
+                    "status_code": status_code,
+                    "remaining": max(1, remaining),
+                    "delay_seconds": max(0.0, delay_seconds),
+                }
+            )
 
     def _consume_webhook_behavior(self, event: str) -> dict[str, object] | None:
-        for behavior in self.webhook_behaviors:
-            if str(behavior.get("event", "")).strip() != event:
-                continue
-            remaining = int(behavior.get("remaining", 0))
-            if remaining <= 0:
-                continue
-            behavior["remaining"] = remaining - 1
-            return cast(dict[str, object], json.loads(json.dumps(behavior)))
-        return None
+        with self.lock:
+            for behavior in self.webhook_behaviors:
+                if str(behavior.get("event", "")).strip() != event:
+                    continue
+                remaining = int(behavior.get("remaining", 0))
+                if remaining <= 0:
+                    continue
+                behavior["remaining"] = remaining - 1
+                return cast(dict[str, object], json.loads(json.dumps(behavior)))
+            return None
 
     def deliver_webhook_payload(
         self,
@@ -487,31 +496,34 @@ class AcceptanceState:
         delivered_at: datetime | None = None,
         timeout_seconds: float = 10.0,
     ) -> None:
-        event = str(payload.get("event", "")).strip()
-        behavior = self._consume_webhook_behavior(event)
-        attempt_payload: dict[str, object] = {
-            "event": event,
-            "payload": payload,
-            "received_at": _acceptance_isoformat(delivered_at or datetime.now(UTC)),
-            "result": "delivered",
-            "status_code": 204,
-        }
-        if behavior is not None:
-            attempt_payload["behavior"] = behavior
-            mode = str(behavior.get("mode", "status")).strip() or "status"
-            if mode == "timeout":
-                attempt_payload["result"] = "timeout"
-                attempt_payload["status_code"] = 0
-                self.record_webhook_attempt(attempt_payload)
-                raise httpx.ReadTimeout(f"test webhook sink timed out after {timeout_seconds}s")
-            status_code = int(behavior.get("status_code", 503))
-            if status_code >= 400:
-                attempt_payload["result"] = "failed"
-                attempt_payload["status_code"] = status_code
-                self.record_webhook_attempt(attempt_payload)
-                raise RuntimeError(f"test webhook sink returned HTTP {status_code}")
-        self.record_webhook_attempt(attempt_payload)
-        self.record_webhook_delivery(payload)
+        with self.lock:
+            event = str(payload.get("event", "")).strip()
+            behavior = self._consume_webhook_behavior(event)
+            attempt_payload: dict[str, object] = {
+                "event": event,
+                "payload": payload,
+                "received_at": _acceptance_isoformat(delivered_at or datetime.now(UTC)),
+                "result": "delivered",
+                "status_code": 204,
+            }
+            if behavior is not None:
+                attempt_payload["behavior"] = behavior
+                mode = str(behavior.get("mode", "status")).strip() or "status"
+                if mode == "timeout":
+                    attempt_payload["result"] = "timeout"
+                    attempt_payload["status_code"] = 0
+                    self.record_webhook_attempt(attempt_payload)
+                    raise httpx.ReadTimeout(
+                        f"test webhook sink timed out after {timeout_seconds}s"
+                    )
+                status_code = int(behavior.get("status_code", 503))
+                if status_code >= 400:
+                    attempt_payload["result"] = "failed"
+                    attempt_payload["status_code"] = status_code
+                    self.record_webhook_attempt(attempt_payload)
+                    raise RuntimeError(f"test webhook sink returned HTTP {status_code}")
+            self.record_webhook_attempt(attempt_payload)
+            self.record_webhook_delivery(payload)
 
     def webhook_config(self) -> WebhookConfig:
         url = f"{self.public_base_url.rstrip('/')}/_test/webhooks" if self.public_base_url else ""
@@ -523,7 +535,8 @@ class AcceptanceState:
         )
 
     def register_local_collection_source(self, collection_id: str, root: Path) -> None:
-        self.local_collection_sources[CollectionId(collection_id)] = root
+        with self.lock:
+            self.local_collection_sources[CollectionId(collection_id)] = root
 
     def seed_collection(
         self,
@@ -533,41 +546,44 @@ class AcceptanceState:
         hot_paths: set[str],
         archived_paths: set[str],
     ) -> None:
-        normalized_collection_id = normalize_collection_id(collection_id)
-        conflict = find_collection_id_conflict(
-            (str(current) for current in self.files_by_collection), normalized_collection_id
-        )
-        if (
-            CollectionId(normalized_collection_id) not in self.files_by_collection
-            and conflict is not None
-        ):
-            raise Conflict(f"collection id conflicts with existing collection: {conflict}")
-        collection_key = CollectionId(normalized_collection_id)
-        records: dict[str, StoredFile] = {}
-        for relative_path, content in sorted(files.items()):
-            normalized = relative_path.lstrip("/")
-            records[normalized] = StoredFile(
-                collection_id=collection_key,
-                path=normalized,
-                content=content,
-                hot=normalized in hot_paths,
-                archived=normalized in archived_paths,
+        with self.lock:
+            normalized_collection_id = normalize_collection_id(collection_id)
+            conflict = find_collection_id_conflict(
+                (str(current) for current in self.files_by_collection), normalized_collection_id
             )
-        self.files_by_collection[collection_key] = records
+            if (
+                CollectionId(normalized_collection_id) not in self.files_by_collection
+                and conflict is not None
+            ):
+                raise Conflict(f"collection id conflicts with existing collection: {conflict}")
+            collection_key = CollectionId(normalized_collection_id)
+            records: dict[str, StoredFile] = {}
+            for relative_path, content in sorted(files.items()):
+                normalized = relative_path.lstrip("/")
+                records[normalized] = StoredFile(
+                    collection_id=collection_key,
+                    path=normalized,
+                    content=content,
+                    hot=normalized in hot_paths,
+                    archived=normalized in archived_paths,
+                )
+            self.files_by_collection[collection_key] = records
 
     def seed_image(self, image: CandidateRecord) -> None:
-        self.candidates_by_id[image.candidate_id] = image
+        with self.lock:
+            self.candidates_by_id[image.candidate_id] = image
 
     def enqueue_glacier_upload(self, image: CandidateRecord) -> None:
-        image_key = ImageId(image.finalized_id)
-        self.glacier_status_by_image.setdefault(
-            image_key,
-            GlacierArchiveStatus(state=GlacierState.PENDING),
-        )
-        self.glacier_jobs_by_image.setdefault(
-            image_key,
-            AcceptanceGlacierUploadJob(image_id=image_key),
-        )
+        with self.lock:
+            image_key = ImageId(image.finalized_id)
+            self.glacier_status_by_image.setdefault(
+                image_key,
+                GlacierArchiveStatus(state=GlacierState.PENDING),
+            )
+            self.glacier_jobs_by_image.setdefault(
+                image_key,
+                AcceptanceGlacierUploadJob(image_id=image_key),
+            )
 
     def glacier_status(self, image_id: str) -> GlacierArchiveStatus:
         return self.glacier_status_by_image.get(
@@ -950,10 +966,29 @@ class AcceptanceState:
         )
 
 
+def _with_state_lock(method: Callable[..., Any]) -> Callable[..., Any]:
+    if inspect.iscoroutinefunction(method):
+
+        @wraps(method)
+        async def async_wrapper(self: Any, *args: Any, **kwargs: Any) -> Any:
+            with self.state.lock:
+                return await method(self, *args, **kwargs)
+
+        return async_wrapper
+
+    @wraps(method)
+    def wrapper(self: Any, *args: Any, **kwargs: Any) -> Any:
+        with self.state.lock:
+            return method(self, *args, **kwargs)
+
+    return wrapper
+
+
 class AcceptanceCollectionService:
     def __init__(self, state: AcceptanceState) -> None:
         self.state = state
 
+    @_with_state_lock
     def create_or_resume_upload(
         self,
         *,
@@ -1016,6 +1051,7 @@ class AcceptanceCollectionService:
             return self._upload_payload(upload, state="finalized", collection=summary)
         return self._upload_payload(upload, state="uploading", collection=None)
 
+    @_with_state_lock
     def get_upload(self, collection_id: str) -> dict[str, object]:
         normalized_collection_id = normalize_collection_id(collection_id)
         upload = self.state.collection_uploads.get(CollectionId(normalized_collection_id))
@@ -1029,6 +1065,7 @@ class AcceptanceCollectionService:
             return self._upload_payload(upload, state="finalized", collection=summary)
         return self._upload_payload(upload, state="uploading", collection=None)
 
+    @_with_state_lock
     def create_or_resume_file_upload(self, collection_id: str, path: str) -> dict[str, object]:
         normalized_collection_id = normalize_collection_id(collection_id)
         normalized_path = normalize_relpath(path)
@@ -1059,6 +1096,7 @@ class AcceptanceCollectionService:
             "expires_at": file_record.upload_expires_at,
         }
 
+    @_with_state_lock
     def append_upload_chunk(
         self,
         collection_id: str,
@@ -1109,6 +1147,7 @@ class AcceptanceCollectionService:
             "expires_at": file_record.upload_expires_at,
         }
 
+    @_with_state_lock
     def get_file_upload(self, collection_id: str, path: str) -> dict[str, object]:
         normalized_collection_id = normalize_collection_id(collection_id)
         normalized_path = normalize_relpath(path)
@@ -1134,6 +1173,7 @@ class AcceptanceCollectionService:
             "expires_at": file_record.upload_expires_at,
         }
 
+    @_with_state_lock
     def cancel_file_upload(self, collection_id: str, path: str) -> None:
         normalized_collection_id = normalize_collection_id(collection_id)
         normalized_path = normalize_relpath(path)
@@ -1154,6 +1194,7 @@ class AcceptanceCollectionService:
         file_record.uploaded_content = None
         file_record.upload_expires_at = None
 
+    @_with_state_lock
     def expire_stale_uploads(self) -> None:
         for collection_id in list(self.state.collection_uploads):
             upload = self.state.collection_uploads.get(collection_id)
@@ -1161,9 +1202,11 @@ class AcceptanceCollectionService:
                 continue
             self._expire_upload(upload)
 
+    @_with_state_lock
     def get(self, collection_id: str) -> CollectionSummary:
         return self.state.collection_summary(collection_id)
 
+    @_with_state_lock
     def list(
         self,
         *,
@@ -1357,6 +1400,7 @@ class AcceptanceSearchService:
     def __init__(self, state: AcceptanceState) -> None:
         self.state = state
 
+    @_with_state_lock
     def search(self, query: str, limit: int) -> list[dict[str, object]]:
         needle = query.casefold()
         results: list[dict[str, object]] = []
@@ -1413,6 +1457,7 @@ class AcceptancePlanningService:
     def __init__(self, state: AcceptanceState) -> None:
         self.state = state
 
+    @_with_state_lock
     def get_plan(
         self,
         *,
@@ -1512,6 +1557,7 @@ class AcceptancePlanningService:
             "unplanned_bytes": unplanned_bytes,
         }
 
+    @_with_state_lock
     def list_images(
         self,
         *,
@@ -1575,6 +1621,7 @@ class AcceptancePlanningService:
             ],
         }
 
+    @_with_state_lock
     def get_image(self, image_id: str) -> dict[str, object]:
         image = self._finalized_image_record(image_id)
         return image.finalized_image_payload(
@@ -1583,6 +1630,7 @@ class AcceptancePlanningService:
             glacier=self.state.glacier_status(image.finalized_id),
         )
 
+    @_with_state_lock
     def finalize_image(self, candidate_id: str) -> dict[str, object]:
         candidate = self._candidate_record(candidate_id)
         if not candidate.iso_ready:
@@ -1598,6 +1646,7 @@ class AcceptancePlanningService:
             glacier=self.state.glacier_status(image.finalized_id),
         )
 
+    @_with_state_lock
     async def get_iso_stream(self, image_id: str) -> IsoStream:
         image = self._finalized_image_record(image_id)
         payload = self._fixture_iso_bytes(image)
@@ -1663,6 +1712,7 @@ class AcceptanceGlacierUploadService:
     def __init__(self, state: AcceptanceState) -> None:
         self.state = state
 
+    @_with_state_lock
     def process_due_uploads(self, *, limit: int = 1) -> int:
         attempted = 0
         for image_id, job in sorted(self.state.glacier_jobs_by_image.items()):
@@ -2020,6 +2070,7 @@ class AcceptanceGlacierReportingService:
     def __init__(self, state: AcceptanceState) -> None:
         self.state = state
 
+    @_with_state_lock
     def get_report(
         self,
         *,
@@ -2596,6 +2647,7 @@ class AcceptanceCopyService:
     def __init__(self, state: AcceptanceState) -> None:
         self.state = state
 
+    @_with_state_lock
     def _read_disc_part_info(
         self, image: CandidateRecord
     ) -> dict[tuple[str, str], tuple[int, int] | tuple[None, None]]:
@@ -2615,6 +2667,7 @@ class AcceptanceCopyService:
                     result[(coll_id, path)] = (None, None)
         return result
 
+    @_with_state_lock
     def register(
         self,
         image_id: str,
@@ -2680,6 +2733,7 @@ class AcceptanceCopyService:
                 )
         return summary
 
+    @_with_state_lock
     def list_for_image(self, image_id: str) -> list[CopySummary]:
         self.state.ensure_required_copy_slots(image_id)
         return [
@@ -2688,6 +2742,7 @@ class AcceptanceCopyService:
             if volume_id == image_id
         ]
 
+    @_with_state_lock
     def update(
         self,
         image_id: str,
@@ -2795,6 +2850,7 @@ class AcceptanceFetchService:
     def __init__(self, state: AcceptanceState) -> None:
         self.state = state
 
+    @_with_state_lock
     def find_reusable_fetch(self, target: TargetStr) -> FetchSummary | None:
         for record in self.state.fetches.values():
             if record.summary.target != target:
@@ -2804,6 +2860,7 @@ class AcceptanceFetchService:
             return record.summary
         return None
 
+    @_with_state_lock
     def create_fetch(
         self,
         target: TargetStr,
@@ -2843,12 +2900,14 @@ class AcceptanceFetchService:
         self.state.fetches[fetch_key] = record
         return record.summary
 
+    @_with_state_lock
     def find_for_target(self, target: TargetStr) -> FetchSummary:
         summary = self.find_reusable_fetch(target)
         if summary is None:
             raise NotFound(f"fetch not found for target: {target}")
         return summary
 
+    @_with_state_lock
     def remove_for_target(self, target: TargetStr) -> None:
         to_delete = [
             fetch_id
@@ -2858,12 +2917,14 @@ class AcceptanceFetchService:
         for fetch_id in to_delete:
             del self.state.fetches[fetch_id]
 
+    @_with_state_lock
     def get(self, fetch_id: str) -> FetchSummary:
         record = self._record(fetch_id)
         self._expire_stale_upload_record(record)
         record.summary = self._replace_summary(record)
         return record.summary
 
+    @_with_state_lock
     def manifest(self, fetch_id: str) -> dict[str, object]:
         record = self._record(fetch_id)
         self._expire_stale_upload_record(record)
@@ -2891,6 +2952,7 @@ class AcceptanceFetchService:
             ],
         }
 
+    @_with_state_lock
     def create_or_resume_upload(self, fetch_id: str, entry_id: str) -> dict[str, object]:
         record = self._record(fetch_id)
         self._expire_stale_upload_record(record)
@@ -2912,6 +2974,7 @@ class AcceptanceFetchService:
         record.summary = self._replace_summary(record)
         return self._entry_upload_payload(entry)
 
+    @_with_state_lock
     def append_upload_chunk(
         self,
         fetch_id: str,
@@ -2957,6 +3020,7 @@ class AcceptanceFetchService:
             "expires_at": entry.upload_expires_at,
         }
 
+    @_with_state_lock
     def get_entry_upload(self, fetch_id: str, entry_id: str) -> dict[str, object]:
         record = self._record(fetch_id)
         self._expire_stale_upload_record(record)
@@ -2968,6 +3032,7 @@ class AcceptanceFetchService:
         record.summary = self._replace_summary(record)
         return self._entry_upload_payload(entry)
 
+    @_with_state_lock
     def cancel_entry_upload(self, fetch_id: str, entry_id: str) -> None:
         record = self._record(fetch_id)
         self._expire_stale_upload_record(record)
@@ -2985,10 +3050,12 @@ class AcceptanceFetchService:
         else:
             record.summary = self._replace_summary(record)
 
+    @_with_state_lock
     def expire_stale_uploads(self) -> None:
         for record in self.state.fetches.values():
             self._expire_stale_upload_record(record)
 
+    @_with_state_lock
     def complete(self, fetch_id: str) -> dict[str, object]:
         record = self._record(fetch_id)
         if record.summary.state == FetchState.DONE:
@@ -3017,6 +3084,7 @@ class AcceptanceFetchService:
             "hot": hot,
         }
 
+    @_with_state_lock
     def upload_all_required_entries(self, fetch_id: str) -> None:
         record = self._record(fetch_id)
         for entry in record.entries.values():
@@ -3029,6 +3097,7 @@ class AcceptanceFetchService:
         else:
             record.summary = self._replace_summary(record)
 
+    @_with_state_lock
     def upload_partial_entry(self, fetch_id: str, entry_id: str) -> int:
         record = self._record(fetch_id)
         entry = record.entries.get(EntryId(entry_id))
@@ -3262,6 +3331,7 @@ class AcceptancePinService:
         self.state = state
         self.fetches = fetches
 
+    @_with_state_lock
     def pin(self, raw_target: str) -> dict[str, object]:
         target = parse_target(raw_target)
         canonical = cast(TargetStr, target.canonical)
@@ -3296,6 +3366,7 @@ class AcceptancePinService:
             "fetch": fetch_payload,
         }
 
+    @_with_state_lock
     def release(self, raw_target: str) -> dict[str, object]:
         target = parse_target(raw_target)
         canonical = cast(TargetStr, target.canonical)
@@ -3309,6 +3380,7 @@ class AcceptancePinService:
             "pin": False,
         }
 
+    @_with_state_lock
     def list_pins(self) -> list[PinSummary]:
         return [
             PinSummary(target=target, fetch=self.fetches.find_for_target(target))
@@ -3320,6 +3392,7 @@ class AcceptanceFileService:
     def __init__(self, state: AcceptanceState) -> None:
         self.state = state
 
+    @_with_state_lock
     def list_collection_files(
         self,
         collection_id: str,
@@ -3351,6 +3424,7 @@ class AcceptanceFileService:
             "files": records[start : start + per_page],
         }
 
+    @_with_state_lock
     def query_by_target(
         self,
         raw_target: str,
@@ -3389,6 +3463,7 @@ class AcceptanceFileService:
             "files": result[start : start + per_page],
         }
 
+    @_with_state_lock
     def get_content(self, raw_target: str) -> bytes:
         from arc_core.domain.errors import InvalidTarget, NotFound
         from arc_core.domain.selectors import parse_target
@@ -3617,21 +3692,22 @@ class AcceptanceSystem:
         raise RuntimeError("unreachable")
 
     def seed_finalized_image(self, candidate_id: str, *, force_ready: bool = False) -> None:
-        candidate_key = ImageId(candidate_id)
-        candidate = self.state.candidates_by_id[candidate_key]
-        if force_ready and not candidate.iso_ready:
-            candidate = CandidateRecord(
-                candidate_id=candidate.candidate_id,
-                finalized_id=candidate.finalized_id,
-                filename=candidate.filename,
-                image_root=candidate.image_root,
-                bytes=candidate.bytes,
-                iso_ready=True,
-                covered_paths=candidate.covered_paths,
-            )
-            self.state.candidates_by_id[candidate_key] = candidate
-        self.state.finalized_images_by_id[ImageId(candidate.finalized_id)] = candidate
-        self.state.enqueue_glacier_upload(candidate)
+        with self.state.lock:
+            candidate_key = ImageId(candidate_id)
+            candidate = self.state.candidates_by_id[candidate_key]
+            if force_ready and not candidate.iso_ready:
+                candidate = CandidateRecord(
+                    candidate_id=candidate.candidate_id,
+                    finalized_id=candidate.finalized_id,
+                    filename=candidate.filename,
+                    image_root=candidate.image_root,
+                    bytes=candidate.bytes,
+                    iso_ready=True,
+                    covered_paths=candidate.covered_paths,
+                )
+                self.state.candidates_by_id[candidate_key] = candidate
+            self.state.finalized_images_by_id[ImageId(candidate.finalized_id)] = candidate
+            self.state.enqueue_glacier_upload(candidate)
 
     def wait_for_image_glacier_state(
         self,
@@ -3734,7 +3810,8 @@ class AcceptanceSystem:
         )
 
     def fail_glacier_upload(self, image_id: str, *, error: str) -> None:
-        self.state.glacier_upload_failures_by_image[ImageId(image_id)] = error
+        with self.state.lock:
+            self.state.glacier_upload_failures_by_image[ImageId(image_id)] = error
 
     def run_arc(self, *args: str) -> subprocess.CompletedProcess[str]:
         with time_block("subprocess arc"):
@@ -3777,25 +3854,29 @@ class AcceptanceSystem:
             )
 
     def delete_hot_backing_file(self, target: str) -> None:
-        selected = self.state.selected_files(target)
-        if len(selected) != 1:
-            raise AssertionError(f"expected exactly one file target: {target}")
-        selected[0].hot_backing_missing = True
+        with self.state.lock:
+            selected = self.state.selected_files(target)
+            if len(selected) != 1:
+                raise AssertionError(f"expected exactly one file target: {target}")
+            selected[0].hot_backing_missing = True
 
     def has_committed_collection_file(self, collection_id: str, path: str) -> bool:
-        normalized_collection_id = CollectionId(normalize_collection_id(collection_id))
-        records = self.state.files_by_collection.get(normalized_collection_id)
-        if records is None:
-            return False
-        record = records.get(path)
-        return bool(record and record.hot and not record.hot_backing_missing)
+        with self.state.lock:
+            normalized_collection_id = CollectionId(normalize_collection_id(collection_id))
+            records = self.state.files_by_collection.get(normalized_collection_id)
+            if records is None:
+                return False
+            record = records.get(path)
+            return bool(record and record.hot and not record.hot_backing_missing)
 
     def collection_source_root(self, collection_id: str) -> Path:
-        collection_key = CollectionId(normalize_collection_id(collection_id))
-        return self.state.local_collection_sources[collection_key]
+        with self.state.lock:
+            collection_key = CollectionId(normalize_collection_id(collection_id))
+            return self.state.local_collection_sources[collection_key]
 
     def inspect_downloaded_iso(self, *, image_id: str, iso_bytes: bytes) -> InspectedIso:
-        image = self.state.finalized_images_by_id.get(ImageId(image_id))
+        with self.state.lock:
+            image = self.state.finalized_images_by_id.get(ImageId(image_id))
         if image is None:
             raise AssertionError(f"image not found for inspection: {image_id}")
         return inspect_fixture_image_root(
@@ -3806,21 +3887,26 @@ class AcceptanceSystem:
         )
 
     def expire_collection_upload(self, collection_id: str) -> None:
-        upload = self.state.collection_uploads[CollectionId(normalize_collection_id(collection_id))]
-        for file_record in upload.files.values():
-            file_record.upload_expires_at = "2000-01-01T00:00:00Z"
+        with self.state.lock:
+            upload = self.state.collection_uploads[
+                CollectionId(normalize_collection_id(collection_id))
+            ]
+            for file_record in upload.files.values():
+                file_record.upload_expires_at = "2000-01-01T00:00:00Z"
 
     def expire_fetch_upload(self, fetch_id: str, entry_id: str) -> None:
-        record = self.state.fetches[FetchId(fetch_id)]
-        entry = record.entries[EntryId(entry_id)]
-        entry.upload_expires_at = "2000-01-01T00:00:00Z"
+        with self.state.lock:
+            record = self.state.fetches[FetchId(fetch_id)]
+            entry = record.entries[EntryId(entry_id)]
+            entry.upload_expires_at = "2000-01-01T00:00:00Z"
 
     def wait_for_collection_upload_cleanup(self, collection_id: str, timeout: float = 2.0) -> None:
         normalized_collection_id = CollectionId(normalize_collection_id(collection_id))
         deadline = time.monotonic() + timeout
         while time.monotonic() < deadline:
-            if normalized_collection_id not in self.state.collection_uploads:
-                return
+            with self.state.lock:
+                if normalized_collection_id not in self.state.collection_uploads:
+                    return
             time.sleep(0.05)
         raise AssertionError(f"timed out waiting for collection upload cleanup: {collection_id}")
 
@@ -3834,21 +3920,22 @@ class AcceptanceSystem:
         entry_key = EntryId(entry_id)
         deadline = time.monotonic() + timeout
         while time.monotonic() < deadline:
-            record = self.state.fetches.get(fetch_key)
-            if record is None:
-                raise AssertionError(f"fetch not found while waiting for cleanup: {fetch_id}")
-            entry = record.entries.get(entry_key)
-            if entry is None:
-                raise AssertionError(
-                    f"entry not found while waiting for cleanup: {fetch_id}/{entry_id}"
-                )
-            if (
-                entry.upload_url is None
-                and entry.uploaded_bytes == 0
-                and entry.uploaded_content is None
-                and entry.upload_expires_at is None
-            ):
-                return
+            with self.state.lock:
+                record = self.state.fetches.get(fetch_key)
+                if record is None:
+                    raise AssertionError(f"fetch not found while waiting for cleanup: {fetch_id}")
+                entry = record.entries.get(entry_key)
+                if entry is None:
+                    raise AssertionError(
+                        f"entry not found while waiting for cleanup: {fetch_id}/{entry_id}"
+                    )
+                if (
+                    entry.upload_url is None
+                    and entry.uploaded_bytes == 0
+                    and entry.uploaded_content is None
+                    and entry.upload_expires_at is None
+                ):
+                    return
             time.sleep(0.05)
         raise AssertionError(f"timed out waiting for fetch upload cleanup: {fetch_id}/{entry_id}")
 
@@ -3870,7 +3957,8 @@ class AcceptanceSystem:
             normalized_collection_id = normalize_collection_id(collection_id)
             source_files = files or PHOTOS_2024_FILES
             self.seed_collection_source(normalized_collection_id, source_files)
-            root = self.state.local_collection_sources[CollectionId(normalized_collection_id)]
+            with self.state.lock:
+                root = self.state.local_collection_sources[CollectionId(normalized_collection_id)]
             manifest = []
             for path, content in sorted(source_files.items()):
                 manifest.append(
@@ -3921,33 +4009,38 @@ class AcceptanceSystem:
 
     def seed_photos_hot(self) -> None:
         normalized = normalize_collection_id(PHOTOS_COLLECTION_ID)
-        if CollectionId(normalized) in self.state.files_by_collection:
-            return
+        with self.state.lock:
+            if CollectionId(normalized) in self.state.files_by_collection:
+                return
         self.upload_collection_source(PHOTOS_COLLECTION_ID, PHOTOS_2024_FILES)
 
     def seed_nested_photos_hot(self) -> None:
         normalized = normalize_collection_id(PHOTOS_NESTED_COLLECTION_ID)
-        if CollectionId(normalized) in self.state.files_by_collection:
-            return
+        with self.state.lock:
+            if CollectionId(normalized) in self.state.files_by_collection:
+                return
         self.upload_collection_source(PHOTOS_NESTED_COLLECTION_ID, PHOTOS_2024_FILES)
 
     def seed_parent_photos_hot(self) -> None:
         normalized = normalize_collection_id(PHOTOS_PARENT_COLLECTION_ID)
-        if CollectionId(normalized) in self.state.files_by_collection:
-            return
+        with self.state.lock:
+            if CollectionId(normalized) in self.state.files_by_collection:
+                return
         self.upload_collection_source(PHOTOS_PARENT_COLLECTION_ID, PHOTOS_2024_FILES)
 
     def seed_docs_hot(self) -> None:
         normalized = normalize_collection_id(DOCS_COLLECTION_ID)
-        if CollectionId(normalized) in self.state.files_by_collection:
-            return
+        with self.state.lock:
+            if CollectionId(normalized) in self.state.files_by_collection:
+                return
         self.upload_collection_source(DOCS_COLLECTION_ID, DOCS_FILES)
 
     def seed_docs_archive(self) -> None:
         docs_key = CollectionId(normalize_collection_id(DOCS_COLLECTION_ID))
-        docs = self.state.files_by_collection.get(docs_key, {})
-        if docs.get("tax/2022/invoice-123.pdf") and docs["tax/2022/invoice-123.pdf"].archived:
-            return
+        with self.state.lock:
+            docs = self.state.files_by_collection.get(docs_key, {})
+            if docs.get("tax/2022/invoice-123.pdf") and docs["tax/2022/invoice-123.pdf"].archived:
+                return
         self.seed_docs_hot()
         self.seed_image_fixtures((IMAGE_FIXTURES[0],))
         resp = self.request("POST", f"/v1/plan/candidates/{IMAGE_FIXTURES[0].id}/finalize")
@@ -3959,14 +4052,20 @@ class AcceptanceSystem:
             json_body={"location": "vault-a/shelf-01"},
         )
         assert resp.status_code == 200, resp.text
-        self.state.files_by_collection[docs_key]["tax/2022/invoice-123.pdf"].hot = False
+        with self.state.lock:
+            self.state.files_by_collection[docs_key]["tax/2022/invoice-123.pdf"].hot = False
 
     def seed_docs_archive_with_split_invoice(self) -> None:
         docs_key = CollectionId(normalize_collection_id(DOCS_COLLECTION_ID))
-        docs = self.state.files_by_collection.get(docs_key, {})
-        invoice = docs.get(SPLIT_FILE_RELPATH)
-        if invoice and invoice.archived and any(c.part_index is not None for c in invoice.copies):
-            return
+        with self.state.lock:
+            docs = self.state.files_by_collection.get(docs_key, {})
+            invoice = docs.get(SPLIT_FILE_RELPATH)
+            if (
+                invoice
+                and invoice.archived
+                and any(c.part_index is not None for c in invoice.copies)
+            ):
+                return
         self.seed_docs_hot()
         self.seed_image_fixtures(SPLIT_IMAGE_FIXTURES)
         for fixture, _copy_id, location in zip(
@@ -3984,7 +4083,8 @@ class AcceptanceSystem:
                 json_body={"location": location},
             )
             assert resp.status_code == 200, resp.text
-        self.state.files_by_collection[docs_key][SPLIT_FILE_RELPATH].hot = False
+        with self.state.lock:
+            self.state.files_by_collection[docs_key][SPLIT_FILE_RELPATH].hot = False
 
     def seed_search_fixtures(self) -> None:
         self.seed_docs_archive()
@@ -4007,17 +4107,18 @@ class AcceptanceSystem:
         hot: bool,
         archived: bool,
     ) -> None:
-        collection_key = CollectionId(normalize_collection_id(collection_id))
-        records = self.state.files_by_collection.get(collection_key)
-        if records is None:
-            raise NotFound(f"collection not found: {collection_key}")
-        kept_paths = {normalize_relpath(path) for path in paths}
-        for path in list(records):
-            if path not in kept_paths:
-                del records[path]
-        for record in records.values():
-            record.hot = hot
-            record.archived = archived
+        with self.state.lock:
+            collection_key = CollectionId(normalize_collection_id(collection_id))
+            records = self.state.files_by_collection.get(collection_key)
+            if records is None:
+                raise NotFound(f"collection not found: {collection_key}")
+            kept_paths = {normalize_relpath(path) for path in paths}
+            for path in list(records):
+                if path not in kept_paths:
+                    del records[path]
+            for record in records.values():
+                record.hot = hot
+                record.archived = archived
 
     def constrain_collection_to_finalized_image_coverage(
         self,
@@ -4027,12 +4128,13 @@ class AcceptanceSystem:
         hot: bool,
         archived: bool,
     ) -> None:
-        image = self.state.finalized_images_by_id[ImageId(image_id)]
-        paths = [
-            path
-            for covered_collection_id, path in image.covered_paths
-            if str(covered_collection_id) == collection_id
-        ]
+        with self.state.lock:
+            image = self.state.finalized_images_by_id[ImageId(image_id)]
+            paths = [
+                path
+                for covered_collection_id, path in image.covered_paths
+                if str(covered_collection_id) == collection_id
+            ]
         assert paths
         self.constrain_collection_to_paths(
             collection_id,
@@ -4067,15 +4169,17 @@ class AcceptanceSystem:
         return self.fetches.upload_partial_entry(fetch_id, entry_id)
 
     def recovery_upload_absent(self, fetch_id: str) -> bool:
-        return FetchId(fetch_id) not in self.state.fetches
+        with self.state.lock:
+            return FetchId(fetch_id) not in self.state.fetches
 
     def list_read_only_browsing_paths(self) -> set[str]:
-        return {
-            file.projected_target
-            for records in self.state.files_by_collection.values()
-            for file in records.values()
-            if file.hot and not file.hot_backing_missing
-        }
+        with self.state.lock:
+            return {
+                file.projected_target
+                for records in self.state.files_by_collection.values()
+                for file in records.values()
+                if file.hot and not file.hot_backing_missing
+            }
 
     def write_through_read_only_browsing_surface(self, path: str) -> httpx.Response:
         request = httpx.Request("PUT", f"http://fixture.invalid/{path.lstrip('/')}")
@@ -4099,48 +4203,51 @@ class AcceptanceSystem:
         }
 
     def bucket_contains_object(self, *, storage: str, key: str) -> bool:
-        if storage == "archive":
-            return any(
-                status.object_path == key and status.state == GlacierState.UPLOADED
-                for status in self.state.glacier_status_by_image.values()
-            )
-        if storage != "hot":
-            raise AssertionError(f"unsupported storage bucket kind: {storage}")
-        for records in self.state.files_by_collection.values():
-            for file in records.values():
-                key_for_file = (
-                    f"collections/{normalize_collection_id(str(file.collection_id))}/{file.path}"
+        with self.state.lock:
+            if storage == "archive":
+                return any(
+                    status.object_path == key and status.state == GlacierState.UPLOADED
+                    for status in self.state.glacier_status_by_image.values()
                 )
-                if key_for_file == key and file.hot and not file.hot_backing_missing:
-                    return True
-        return False
-
-    def bucket_contains_prefix(self, *, storage: str, prefix: str) -> bool:
-        if storage == "archive":
-            return any(
-                (status.object_path or "").startswith(prefix)
-                and status.state == GlacierState.UPLOADED
-                for status in self.state.glacier_status_by_image.values()
-            )
-        if storage != "hot":
-            raise AssertionError(f"unsupported storage bucket kind: {storage}")
-        if prefix == ".arc/uploads/":
-            for upload in self.state.collection_uploads.values():
-                for file_record in upload.files.values():
-                    if file_record.uploaded_bytes > 0:
-                        return True
-            for fetch in self.state.fetches.values():
-                for entry in fetch.entries.values():
-                    if entry.uploaded_bytes > 0:
+            if storage != "hot":
+                raise AssertionError(f"unsupported storage bucket kind: {storage}")
+            for records in self.state.files_by_collection.values():
+                for file in records.values():
+                    key_for_file = (
+                        f"collections/{normalize_collection_id(str(file.collection_id))}/"
+                        f"{file.path}"
+                    )
+                    if key_for_file == key and file.hot and not file.hot_backing_missing:
                         return True
             return False
-        if prefix == "collections/":
-            return any(
-                file.hot and not file.hot_backing_missing
-                for records in self.state.files_by_collection.values()
-                for file in records.values()
-            )
-        return False
+
+    def bucket_contains_prefix(self, *, storage: str, prefix: str) -> bool:
+        with self.state.lock:
+            if storage == "archive":
+                return any(
+                    (status.object_path or "").startswith(prefix)
+                    and status.state == GlacierState.UPLOADED
+                    for status in self.state.glacier_status_by_image.values()
+                )
+            if storage != "hot":
+                raise AssertionError(f"unsupported storage bucket kind: {storage}")
+            if prefix == ".arc/uploads/":
+                for upload in self.state.collection_uploads.values():
+                    for file_record in upload.files.values():
+                        if file_record.uploaded_bytes > 0:
+                            return True
+                for fetch in self.state.fetches.values():
+                    for entry in fetch.entries.values():
+                        if entry.uploaded_bytes > 0:
+                            return True
+                return False
+            if prefix == "collections/":
+                return any(
+                    file.hot and not file.hot_backing_missing
+                    for records in self.state.files_by_collection.values()
+                    for file in records.values()
+                )
+            return False
 
     def bucket_write_is_rejected(
         self,
@@ -4182,10 +4289,11 @@ class AcceptanceSystem:
         return [str(item.target) for item in self.pins.list_pins()]
 
     def uploaded_entry_content(self, fetch_id: str, entry_path: str) -> bytes | None:
-        record = self.state.fetches[FetchId(fetch_id)]
-        for entry in record.entries.values():
-            if entry.path == entry_path:
-                return entry.uploaded_content
+        with self.state.lock:
+            record = self.state.fetches[FetchId(fetch_id)]
+            for entry in record.entries.values():
+                if entry.path == entry_path:
+                    return entry.uploaded_content
         raise NotFound(f"entry not found for {fetch_id}: {entry_path}")
 
     @staticmethod
@@ -4227,8 +4335,11 @@ class AcceptanceSystem:
         corrupt_copy_ids: set[str] | None = None,
     ) -> None:
         manifest = cast(dict[str, Any], self.fetches.manifest(fetch_id))
-        fetch_record = self.state.fetches[FetchId(fetch_id)]
-        content_by_path = {entry.path: entry.content for entry in fetch_record.entries.values()}
+        with self.state.lock:
+            fetch_record = self.state.fetches[FetchId(fetch_id)]
+            content_by_path = {
+                entry.path: entry.content for entry in fetch_record.entries.values()
+            }
         payload_by_disc_path: dict[str, str] = {}
         fail_disc_paths: list[str] = []
         fail_copy_ids = fail_copy_ids or set()
