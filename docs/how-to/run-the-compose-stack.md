@@ -87,12 +87,13 @@ Explicit shared project runs keep that directory because they are intended to be
 reused across commands. There is no supported override for this state root;
 choose the Compose project name to control isolation or reuse.
 
-The checked-in Dockerfiles install package metadata and dependencies before
-copying `src/`, `contracts/`, or `tests/`, and they do not copy docs or
-prod-harness state into the images. This keeps targeted prod-backed checks from
-rebuilding dependency-install layers after source, documentation, or local
-harness-state changes while still building the app and test images before the
-prod lane runs.
+The checked-in Dockerfiles install hashed dependencies from
+`requirements-runtime.txt` and `requirements-test.txt` before copying
+`pyproject.toml`, `src/`, `contracts/`, or `tests/`, and they do not copy README
+content, docs, or prod-harness state into the dependency layers. This keeps
+targeted prod-backed checks from rebuilding dependency-install layers after
+README, source, documentation, or local harness-state changes while still
+building the app and test images before the prod lane runs.
 
 If `ARC_GLACIER_BUCKET` differs from `ARC_S3_BUCKET`, that bootstrap applies and
 verifies the same lifecycle rule on both buckets.

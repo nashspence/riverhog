@@ -418,6 +418,7 @@ class AcceptanceState:
     webhook_deliveries: list[dict[str, object]] = field(default_factory=list)
     webhook_attempts: list[dict[str, object]] = field(default_factory=list)
     webhook_behaviors: list[dict[str, object]] = field(default_factory=list)
+    lock: Any = field(default_factory=threading.RLock, repr=False)
     public_base_url: str = ""
     glacier_billing_metadata_available: bool = False
     next_fetch_number: int = 0
@@ -1735,199 +1736,209 @@ class AcceptanceRecoverySessionService:
         self.state = state
 
     def get(self, session_id: str) -> RecoverySessionSummary:
-        record = self.state.recovery_sessions_by_id.get(session_id)
-        if record is None:
-            raise NotFound(f"recovery session not found: {session_id}")
-        return self._summary(record)
+        with self.state.lock:
+            record = self.state.recovery_sessions_by_id.get(session_id)
+            if record is None:
+                raise NotFound(f"recovery session not found: {session_id}")
+            return self._summary(record)
 
     def get_for_image(self, image_id: str) -> RecoverySessionSummary:
-        record = self.state.latest_recovery_session(image_id)
-        if record is None:
-            raise NotFound(f"recovery session not found for image: {image_id}")
-        return self._summary(record)
+        with self.state.lock:
+            record = self.state.latest_recovery_session(image_id)
+            if record is None:
+                raise NotFound(f"recovery session not found for image: {image_id}")
+            return self._summary(record)
 
     def create_or_resume_for_image(self, image_id: str) -> RecoverySessionSummary:
-        image = self.state.finalized_images_by_id.get(ImageId(image_id))
-        if image is None:
-            raise NotFound(f"image not found: {image_id}")
-        active = self.state.active_recovery_session(image_id)
-        if active is not None:
-            return self._summary(active)
-        if self.state.glacier_status(image_id).state != GlacierState.UPLOADED:
-            raise InvalidState(
-                f"image archive is not uploaded and cannot be restored yet: {image_id}"
-            )
-        if self.state._protected_copy_count(image_id) > 0:
-            raise Conflict(
-                "image still has protected copies and does not require "
-                f"archive recovery: {image_id}"
-            )
-        self.state.ensure_glacier_recovery_session(image_id)
-        record = self.state.active_recovery_session(image_id)
-        assert record is not None
-        return self._summary(record)
+        with self.state.lock:
+            image = self.state.finalized_images_by_id.get(ImageId(image_id))
+            if image is None:
+                raise NotFound(f"image not found: {image_id}")
+            active = self.state.active_recovery_session(image_id)
+            if active is not None:
+                return self._summary(active)
+            if self.state.glacier_status(image_id).state != GlacierState.UPLOADED:
+                raise InvalidState(
+                    f"image archive is not uploaded and cannot be restored yet: {image_id}"
+                )
+            if self.state._protected_copy_count(image_id) > 0:
+                raise Conflict(
+                    "image still has protected copies and does not require "
+                    f"archive recovery: {image_id}"
+                )
+            self.state.ensure_glacier_recovery_session(image_id)
+            record = self.state.active_recovery_session(image_id)
+            assert record is not None
+            return self._summary(record)
 
     def approve(self, session_id: str) -> RecoverySessionSummary:
-        record = self.state.recovery_sessions_by_id.get(session_id)
-        if record is None:
-            raise NotFound(f"recovery session not found: {session_id}")
-        if record.state == RecoverySessionState.EXPIRED:
-            raise InvalidState("recovery session expired; re-initiate recovery to request restore")
-        if record.state != RecoverySessionState.PENDING_APPROVAL:
-            raise InvalidState("recovery session is not waiting for approval")
-        current = datetime.now(UTC)
-        current_text = _acceptance_isoformat(current)
-        record.state = RecoverySessionState.RESTORE_REQUESTED
-        record.approved_at = current_text
-        record.restore_requested_at = current_text
-        record.restore_ready_at = _acceptance_isoformat(
-            current + timedelta(seconds=_GLACIER_RECOVERY_RESTORE_LATENCY_SECONDS)
-        )
-        record.latest_message = (
-            "Archive restore requested; wait for the ready notification before downloading or "
-            "burning replacement media."
-        )
-        return self._summary(record)
+        with self.state.lock:
+            record = self.state.recovery_sessions_by_id.get(session_id)
+            if record is None:
+                raise NotFound(f"recovery session not found: {session_id}")
+            if record.state == RecoverySessionState.EXPIRED:
+                raise InvalidState(
+                    "recovery session expired; re-initiate recovery to request restore"
+                )
+            if record.state != RecoverySessionState.PENDING_APPROVAL:
+                raise InvalidState("recovery session is not waiting for approval")
+            current = datetime.now(UTC)
+            current_text = _acceptance_isoformat(current)
+            record.state = RecoverySessionState.RESTORE_REQUESTED
+            record.approved_at = current_text
+            record.restore_requested_at = current_text
+            record.restore_ready_at = _acceptance_isoformat(
+                current + timedelta(seconds=_GLACIER_RECOVERY_RESTORE_LATENCY_SECONDS)
+            )
+            record.latest_message = (
+                "Archive restore requested; wait for the ready notification before downloading or "
+                "burning replacement media."
+            )
+            return self._summary(record)
 
     def complete(self, session_id: str) -> RecoverySessionSummary:
-        record = self.state.recovery_sessions_by_id.get(session_id)
-        if record is None:
-            raise NotFound(f"recovery session not found: {session_id}")
-        if record.state not in {
-            RecoverySessionState.READY,
-            RecoverySessionState.EXPIRED,
-        }:
-            raise InvalidState("recovery session is not ready to complete")
-        current_text = _acceptance_isoformat(datetime.now(UTC))
-        record.state = RecoverySessionState.COMPLETED
-        record.completed_at = current_text
-        record.restore_expires_at = current_text
-        record.next_reminder_at = None
-        record.latest_message = (
-            "Recovery session completed and restored ISO data was cleaned up immediately."
-        )
-        return self._summary(record)
+        with self.state.lock:
+            record = self.state.recovery_sessions_by_id.get(session_id)
+            if record is None:
+                raise NotFound(f"recovery session not found: {session_id}")
+            if record.state not in {
+                RecoverySessionState.READY,
+                RecoverySessionState.EXPIRED,
+            }:
+                raise InvalidState("recovery session is not ready to complete")
+            current_text = _acceptance_isoformat(datetime.now(UTC))
+            record.state = RecoverySessionState.COMPLETED
+            record.completed_at = current_text
+            record.restore_expires_at = current_text
+            record.next_reminder_at = None
+            record.latest_message = (
+                "Recovery session completed and restored ISO data was cleaned up immediately."
+            )
+            return self._summary(record)
 
     def process_due_sessions(self, *, limit: int = 100) -> int:
-        if limit < 1:
-            return 0
-        current = datetime.now(UTC)
-        current_text = _acceptance_isoformat(current)
-        processed = 0
-        for record in sorted(
-            self.state.recovery_sessions_by_id.values(),
-            key=lambda current_record: (current_record.created_at, current_record.session_id),
-        ):
-            if processed >= limit:
-                break
-            if (
-                record.state == RecoverySessionState.RESTORE_REQUESTED
-                and record.restore_ready_at is not None
-                and record.restore_ready_at <= current_text
+        with self.state.lock:
+            if limit < 1:
+                return 0
+            current = datetime.now(UTC)
+            current_text = _acceptance_isoformat(current)
+            processed = 0
+            for record in sorted(
+                self.state.recovery_sessions_by_id.values(),
+                key=lambda current_record: (current_record.created_at, current_record.session_id),
             ):
-                record.state = RecoverySessionState.READY
-                record.restore_expires_at = _acceptance_isoformat(
-                    current + timedelta(seconds=_GLACIER_RECOVERY_READY_TTL_SECONDS)
-                )
-                record.latest_message = (
-                    "Restored ISO data is ready; reopen the session to complete download, verify "
-                    "the ISO, and burn replacement media before cleanup."
-                )
-                image = self.state.finalized_images_by_id[record.image_id]
-                try:
-                    self.state.deliver_webhook_payload(
-                        build_recovery_ready_payload(
-                            config=self.state.webhook_config(),
-                            session_id=record.session_id,
-                            restore_expires_at=record.restore_expires_at,
-                            images=[
-                                {
-                                    "image_id": str(record.image_id),
-                                    "filename": image.filename,
-                                }
-                            ],
-                            delivered_at=current,
-                            reminder_count=record.reminder_count,
-                            reminder=False,
-                        ),
-                        delivered_at=current,
-                        timeout_seconds=self.state.webhook_config().timeout_seconds,
+                if processed >= limit:
+                    break
+                if (
+                    record.state == RecoverySessionState.RESTORE_REQUESTED
+                    and record.restore_ready_at is not None
+                    and record.restore_ready_at <= current_text
+                ):
+                    record.state = RecoverySessionState.READY
+                    record.restore_expires_at = _acceptance_isoformat(
+                        current + timedelta(seconds=_GLACIER_RECOVERY_READY_TTL_SECONDS)
                     )
-                except Exception as exc:
                     record.latest_message = (
-                        "Ready notification failed and will retry: "
-                        f"{str(exc).strip() or exc.__class__.__name__}"
+                        "Restored ISO data is ready; reopen the session to complete download, "
+                        "verify the ISO, and burn replacement media before cleanup."
                     )
+                    image = self.state.finalized_images_by_id[record.image_id]
+                    try:
+                        self.state.deliver_webhook_payload(
+                            build_recovery_ready_payload(
+                                config=self.state.webhook_config(),
+                                session_id=record.session_id,
+                                restore_expires_at=record.restore_expires_at,
+                                images=[
+                                    {
+                                        "image_id": str(record.image_id),
+                                        "filename": image.filename,
+                                    }
+                                ],
+                                delivered_at=current,
+                                reminder_count=record.reminder_count,
+                                reminder=False,
+                            ),
+                            delivered_at=current,
+                            timeout_seconds=self.state.webhook_config().timeout_seconds,
+                        )
+                    except Exception as exc:
+                        record.latest_message = (
+                            "Ready notification failed and will retry: "
+                            f"{str(exc).strip() or exc.__class__.__name__}"
+                        )
+                        record.next_reminder_at = _acceptance_isoformat(
+                            current
+                            + timedelta(seconds=_GLACIER_RECOVERY_WEBHOOK_RETRY_DELAY_SECONDS)
+                        )
+                        processed += 1
+                        continue
+                    record.last_notified_at = current_text
                     record.next_reminder_at = _acceptance_isoformat(
                         current
-                        + timedelta(seconds=_GLACIER_RECOVERY_WEBHOOK_RETRY_DELAY_SECONDS)
+                        + timedelta(seconds=_GLACIER_RECOVERY_WEBHOOK_REMINDER_INTERVAL_SECONDS)
                     )
                     processed += 1
                     continue
-                record.last_notified_at = current_text
-                record.next_reminder_at = _acceptance_isoformat(
-                    current + timedelta(seconds=_GLACIER_RECOVERY_WEBHOOK_REMINDER_INTERVAL_SECONDS)
-                )
-                processed += 1
-                continue
-            if (
-                record.state == RecoverySessionState.READY
-                and record.next_reminder_at is not None
-                and record.next_reminder_at <= current_text
-            ):
-                image = self.state.finalized_images_by_id[record.image_id]
-                initial_notification_succeeded = record.last_notified_at is not None
-                try:
-                    self.state.deliver_webhook_payload(
-                        build_recovery_ready_payload(
-                            config=self.state.webhook_config(),
-                            session_id=record.session_id,
-                            restore_expires_at=record.restore_expires_at,
-                            images=[
-                                {
-                                    "image_id": str(record.image_id),
-                                    "filename": image.filename,
-                                }
-                            ],
+                if (
+                    record.state == RecoverySessionState.READY
+                    and record.next_reminder_at is not None
+                    and record.next_reminder_at <= current_text
+                ):
+                    image = self.state.finalized_images_by_id[record.image_id]
+                    initial_notification_succeeded = record.last_notified_at is not None
+                    try:
+                        self.state.deliver_webhook_payload(
+                            build_recovery_ready_payload(
+                                config=self.state.webhook_config(),
+                                session_id=record.session_id,
+                                restore_expires_at=record.restore_expires_at,
+                                images=[
+                                    {
+                                        "image_id": str(record.image_id),
+                                        "filename": image.filename,
+                                    }
+                                ],
+                                delivered_at=current,
+                                reminder_count=record.reminder_count,
+                                reminder=initial_notification_succeeded,
+                            ),
                             delivered_at=current,
-                            reminder_count=record.reminder_count,
-                            reminder=initial_notification_succeeded,
-                        ),
-                        delivered_at=current,
-                        timeout_seconds=self.state.webhook_config().timeout_seconds,
-                    )
-                except Exception as exc:
-                    record.latest_message = (
-                        "Ready notification failed and will retry: "
-                        f"{str(exc).strip() or exc.__class__.__name__}"
-                    )
+                            timeout_seconds=self.state.webhook_config().timeout_seconds,
+                        )
+                    except Exception as exc:
+                        record.latest_message = (
+                            "Ready notification failed and will retry: "
+                            f"{str(exc).strip() or exc.__class__.__name__}"
+                        )
+                        record.next_reminder_at = _acceptance_isoformat(
+                            current
+                            + timedelta(seconds=_GLACIER_RECOVERY_WEBHOOK_RETRY_DELAY_SECONDS)
+                        )
+                        processed += 1
+                        continue
+                    record.last_notified_at = current_text
                     record.next_reminder_at = _acceptance_isoformat(
                         current
-                        + timedelta(seconds=_GLACIER_RECOVERY_WEBHOOK_RETRY_DELAY_SECONDS)
+                        + timedelta(seconds=_GLACIER_RECOVERY_WEBHOOK_REMINDER_INTERVAL_SECONDS)
                     )
+                    if initial_notification_succeeded:
+                        record.reminder_count += 1
                     processed += 1
                     continue
-                record.last_notified_at = current_text
-                record.next_reminder_at = _acceptance_isoformat(
-                    current + timedelta(seconds=_GLACIER_RECOVERY_WEBHOOK_REMINDER_INTERVAL_SECONDS)
-                )
-                if initial_notification_succeeded:
-                    record.reminder_count += 1
-                processed += 1
-                continue
-            if (
-                record.state == RecoverySessionState.READY
-                and record.restore_expires_at is not None
-                and record.restore_expires_at <= current_text
-            ):
-                record.state = RecoverySessionState.EXPIRED
-                record.next_reminder_at = None
-                record.latest_message = (
-                    "Restored ISO data expired and was cleaned up; re-initiate recovery to "
-                    "request a new restore."
-                )
-                processed += 1
-        return processed
+                if (
+                    record.state == RecoverySessionState.READY
+                    and record.restore_expires_at is not None
+                    and record.restore_expires_at <= current_text
+                ):
+                    record.state = RecoverySessionState.EXPIRED
+                    record.next_reminder_at = None
+                    record.latest_message = (
+                        "Restored ISO data expired and was cleaned up; re-initiate recovery to "
+                        "request a new restore."
+                    )
+                    processed += 1
+            return processed
 
     def _summary(self, record: AcceptanceRecoverySessionRecord) -> RecoverySessionSummary:
         image = self.state.finalized_images_by_id[record.image_id]

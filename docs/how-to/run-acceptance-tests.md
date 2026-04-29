@@ -66,7 +66,8 @@ make bootstrap-garage
 ```
 
 The non-production lanes resolve against the checked-in `requirements-test.txt`
-set plus the editable project, so they do not require Docker or BuildKit.
+set plus the editable project, so they do not require Docker or BuildKit. That
+lock includes the `db` extra used by the prod-backed harness.
 
 Run the serial aggregate target with `make test` when you want one supported
 command to run lint, then unit, spec, and prod in order.
@@ -103,11 +104,24 @@ If you need to reuse one Compose project explicitly, export
 Do that before `make bootstrap-garage` or `make down` as well when you want
 those standalone targets to act on the same compose-managed stack.
 
-The prod-backed app image installs package metadata and dependencies from
-`pyproject.toml` and `README.md` before source files are copied. The test image
-does the same after installing `requirements-test.txt`, then copies only `src/`,
-`contracts/`, and `tests/`. Documentation edits, source edits, and prod-harness
-state under `.compose/` do not invalidate the dependency-install layers.
+The prod-backed app image installs hashed runtime dependencies from
+`requirements-runtime.txt` before source files are copied. The test image
+installs hashed test dependencies from `requirements-test.txt`, then copies
+`pyproject.toml`, `src/`, `contracts/`, and `tests/`. README edits,
+documentation edits, source edits, and prod-harness state under `.compose/` do
+not invalidate the dependency-install layers.
+
+Regenerate the runtime lock with:
+
+```bash
+uv pip compile pyproject.toml --extra db --python-version 3.11 --generate-hashes -o requirements-runtime.txt
+```
+
+Regenerate the test lock with:
+
+```bash
+uv pip compile pyproject.toml --extra dev --extra planner --extra db --python-version 3.11 --generate-hashes -o requirements-test.txt
+```
 
 
 ## What lives where

@@ -336,15 +336,41 @@ def test_dockerfiles_keep_dependency_layers_independent_of_docs_and_tests() -> N
 
     assert "COPY . ." not in app_dockerfile
     assert "COPY . ." not in test_dockerfile
-    assert app_dockerfile.index("RUN mkdir -p src/arc_api") < app_dockerfile.index(
+    assert "COPY README.md" not in app_dockerfile
+    assert "COPY README.md" not in test_dockerfile
+    assert "pip install --no-cache-dir -e" not in app_dockerfile
+    assert "pip install --no-cache-dir -e" not in test_dockerfile
+    assert app_dockerfile.index("COPY requirements-runtime.txt ./") < app_dockerfile.index(
         "COPY src ./src"
     )
-    assert test_dockerfile.index("RUN mkdir -p src/arc_api") < test_dockerfile.index(
+    assert app_dockerfile.index(
+        "pip install --no-cache-dir --require-hashes -r requirements-runtime.txt"
+    ) < app_dockerfile.index("COPY src ./src")
+    assert test_dockerfile.index("COPY requirements-test.txt ./") < test_dockerfile.index(
         "COPY src ./src"
+    )
+    assert test_dockerfile.index(
+        "pip install --no-cache-dir --require-hashes -r requirements-test.txt"
+    ) < test_dockerfile.index("COPY src ./src")
+    assert test_dockerfile.index("COPY pyproject.toml ./") < test_dockerfile.index(
+        "COPY tests ./tests"
     )
     assert "COPY tests ./tests" in test_dockerfile
     assert "COPY contracts ./contracts" in test_dockerfile
     assert "docs/" in dockerignore
+
+
+def test_locked_dependency_files_cover_runtime_and_test_db_extras() -> None:
+    runtime_requirements = (REPO_ROOT / "requirements-runtime.txt").read_text()
+    test_requirements = (REPO_ROOT / "requirements-test.txt").read_text()
+
+    assert "--extra db" in runtime_requirements.splitlines()[1]
+    assert "--extra db" in test_requirements.splitlines()[1]
+    for package in ("boto3", "fastapi", "sqlalchemy", "uvicorn"):
+        assert f"{package}==" in runtime_requirements
+        assert f"{package}==" in test_requirements
+    assert "--hash=sha256:" in runtime_requirements
+    assert "--hash=sha256:" in test_requirements
 
 
 def test_test_aggregate_runs_lint_unit_spec_then_prod(tmp_path: Path) -> None:

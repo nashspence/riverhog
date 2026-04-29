@@ -12,14 +12,8 @@ RUN apt-get update \
 
 WORKDIR /app
 
-COPY pyproject.toml README.md ./
-RUN mkdir -p src/arc_api src/arc_cli src/arc_core src/arc_disc \
-    && touch \
-        src/arc_api/__init__.py \
-        src/arc_cli/__init__.py \
-        src/arc_core/__init__.py \
-        src/arc_disc/__init__.py \
-    && pip install --no-cache-dir -e .[db]
+COPY requirements-runtime.txt ./
+RUN pip install --no-cache-dir --require-hashes -r requirements-runtime.txt
 
 COPY src ./src
 
