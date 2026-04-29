@@ -12,7 +12,8 @@ environment built from `requirements-test.txt` plus the editable project.
 For the fastest full check, run `make lint`, `make unit`, `make spec`, and
 `make prod` in separate terminals. The lint, unit, and spec lanes run
 locally in the same locked `uv` environment, and the prod-backed lane stays on
-the checked-in Compose surface.
+the checked-in Compose surface with per-run project names and ephemeral host
+ports, plus project-scoped harness state and workspaces under `.compose/`.
 
 Run the serial aggregate flow with `make test` when one command is more
 convenient. That target runs lint first, then the unit, spec, and prod-backed

@@ -98,6 +98,7 @@ services:
       INCOMPLETE_UPLOAD_TTL: ${INCOMPLETE_UPLOAD_TTL:-24h}
       UPLOAD_EXPIRY_SWEEP_INTERVAL: ${UPLOAD_EXPIRY_SWEEP_INTERVAL:-30s}
       ARC_ENABLE_TEST_CONTROL: ${ARC_ENABLE_TEST_CONTROL:-0}
+      ARC_TEST_WEBHOOK_CAPTURE_PATH: ${ARC_TEST_WEBHOOK_CAPTURE_PATH:-/app/.compose/webhook-captures.jsonl}
     healthcheck:
       test:
         [
@@ -158,6 +159,7 @@ services:
       ARC_TEST_EXTERNAL_APP_BASE_URL: ${ARC_TEST_EXTERNAL_APP_BASE_URL:-http://app:8000}
       ARC_TEST_EXTERNAL_APP_DB_PATH: ${ARC_TEST_EXTERNAL_APP_DB_PATH:-/app/.compose/state.sqlite3}
       ARC_TEST_EXTERNAL_WEBDAV_BASE_URL: ${ARC_TEST_EXTERNAL_WEBDAV_BASE_URL:-http://webdav:8080}
+      ARC_TEST_ACCEPTANCE_ROOT: ${ARC_TEST_ACCEPTANCE_ROOT:-/app/.tmp/acceptance}
       PYTHONPATH: /app:/app/src
     volumes:
       - .:/app

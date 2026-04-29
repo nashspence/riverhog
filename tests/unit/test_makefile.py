@@ -23,10 +23,16 @@ def _install_fake_command(tmp_path: Path, name: str, log_name: str) -> Path:
                     "#!/usr/bin/env bash",
                     "set -euo pipefail",
                     (
-                        "printf '%s|%s|%s\\n' "
+                        "printf '%s|%s|%s|%s|%s|%s|%s|%s|%s\\n' "
                         "\"${COMPOSE_PROJECT_NAME:-}\" "
                         "\"${ARC_ENABLE_TEST_CONTROL:-}\" "
-                        "\"$*\" >> "
+                        "\"$*\" "
+                        "\"${ARC_API_PORT:-}\" "
+                        "\"${ARC_WEBDAV_PORT:-}\" "
+                        "\"${ARC_DB_PATH:-}\" "
+                        "\"${ARC_TEST_EXTERNAL_APP_DB_PATH:-}\" "
+                        "\"${ARC_TEST_WEBHOOK_CAPTURE_PATH:-}\" "
+                        "\"${ARC_TEST_ACCEPTANCE_ROOT:-}\" >> "
                         f"{log_path}"
                     ),
                     "if [[ \"$1\" == \"image\" && \"$2\" == \"inspect\" ]]; then",
@@ -53,10 +59,16 @@ def _install_fake_command(tmp_path: Path, name: str, log_name: str) -> Path:
                     "#!/usr/bin/env bash",
                     "set -euo pipefail",
                     (
-                        "printf '%s|%s|%s\\n' "
+                        "printf '%s|%s|%s|%s|%s|%s|%s|%s|%s\\n' "
                         "\"${COMPOSE_PROJECT_NAME:-}\" "
                         "\"${ARC_ENABLE_TEST_CONTROL:-}\" "
-                        "\"$*\" >> "
+                        "\"$*\" "
+                        "\"${ARC_API_PORT:-}\" "
+                        "\"${ARC_WEBDAV_PORT:-}\" "
+                        "\"${ARC_DB_PATH:-}\" "
+                        "\"${ARC_TEST_EXTERNAL_APP_DB_PATH:-}\" "
+                        "\"${ARC_TEST_WEBHOOK_CAPTURE_PATH:-}\" "
+                        "\"${ARC_TEST_ACCEPTANCE_ROOT:-}\" >> "
                         f"{log_path}"
                     ),
                 ]
@@ -191,6 +203,24 @@ def test_prod_builds_images_and_uses_isolated_compose_project_name(
     assert " up --detach --wait app" in docker_log
     assert "tests/harness/test_prod_harness.py -k glacier" in docker_log
     assert " down --volumes --remove-orphans" in docker_log
+    for line in log_lines:
+        (
+            project,
+            _,
+            _,
+            api_port,
+            webdav_port,
+            db_path,
+            external_db_path,
+            webhook_path,
+            acceptance_root,
+        ) = line.split("|", 8)
+        assert api_port == "0"
+        assert webdav_port == "0"
+        assert db_path == f"/app/.compose/{project}/state.sqlite3"
+        assert external_db_path == db_path
+        assert webhook_path == f"/app/.compose/{project}/webhook-captures.jsonl"
+        assert acceptance_root == f"/app/.compose/{project}/acceptance"
 
 
 def test_prod_profile_enables_profile_output_and_builds_images(tmp_path: Path) -> None:
@@ -203,11 +233,30 @@ def test_prod_profile_enables_profile_output_and_builds_images(tmp_path: Path) -
 
     assert completed.returncode == 0, completed.stderr
     assert _read_log_lines(uv_log_path) == []
-    docker_log = "\n".join(_read_log_lines(docker_log_path))
+    log_lines = _read_log_lines(docker_log_path)
+    docker_log = "\n".join(log_lines)
     assert " build app" in docker_log
     assert " build test" in docker_log
     assert " -e ARC_TEST_PROFILE=1 " in docker_log
     assert " --durations=0 --durations-min=0.5 " in docker_log
+    for line in log_lines:
+        (
+            project,
+            _,
+            _,
+            api_port,
+            webdav_port,
+            db_path,
+            external_db_path,
+            webhook_path,
+            acceptance_root,
+        ) = line.split("|", 8)
+        assert api_port == "0"
+        assert webdav_port == "0"
+        assert db_path == f"/app/.compose/{project}/state.sqlite3"
+        assert external_db_path == db_path
+        assert webhook_path == f"/app/.compose/{project}/webhook-captures.jsonl"
+        assert acceptance_root == f"/app/.compose/{project}/acceptance"
 
 
 def test_test_aggregate_runs_lint_unit_spec_then_prod(tmp_path: Path) -> None:

@@ -84,7 +84,14 @@ window it needs.
 
 Each prod-backed `make ...` invocation uses its own Compose project name by
 default so independent prod-backed runs do not tear down each other's one-off
-containers, networks, or sidecars.
+containers, networks, or sidecars. The prod-backed entrypoints also publish the
+API and WebDAV services on Docker-assigned ephemeral host ports because the
+harness reaches them through the Compose network at `http://app:8000` and
+`http://webdav:8080`. That keeps overlapping prod-backed runs independent of
+whether host ports `8000` and `8080` are already occupied. Harness SQLite state
+files, webhook captures, and acceptance workspaces live under
+`/app/.compose/<compose-project>/` so the shared source bind mount does not make
+concurrent prod-backed runs share catalog files or fixture trees.
 
 If you need to reuse one Compose project explicitly, export
 `TEST_COMPOSE_PROJECT_NAME` before running `make`.

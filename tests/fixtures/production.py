@@ -82,12 +82,14 @@ _EXTERNAL_APP_DB_PATH_ENV = "ARC_TEST_EXTERNAL_APP_DB_PATH"
 _EXTERNAL_WEBDAV_BASE_URL_ENV = "ARC_TEST_EXTERNAL_WEBDAV_BASE_URL"
 _EXTERNAL_APP_RESTART_PATH_ENV = "ARC_TEST_EXTERNAL_APP_RESTART_PATH"
 _EXTERNAL_APP_RESET_PATH_ENV = "ARC_TEST_EXTERNAL_APP_RESET_PATH"
+_ACCEPTANCE_ROOT_ENV = "ARC_TEST_ACCEPTANCE_ROOT"
 _CANONICAL_TEST_ENTRYPOINT_ENV = "ARC_TEST_CANONICAL_ENTRYPOINT"
 _DEFAULT_EXTERNAL_APP_BASE_URL = "http://app:8000"
 _DEFAULT_EXTERNAL_APP_DB_PATH = "/app/.compose/state.sqlite3"
 _DEFAULT_EXTERNAL_WEBDAV_BASE_URL = "http://webdav:8080"
 _DEFAULT_EXTERNAL_APP_RESTART_PATH = "/_test/restart"
 _DEFAULT_EXTERNAL_APP_RESET_PATH = "/_test/reset"
+_DEFAULT_ACCEPTANCE_ROOT = ".tmp/acceptance"
 
 
 def _copy_summary_from_payload(copy: Mapping[str, object]) -> CopySummary:
@@ -1727,7 +1729,10 @@ class ProductionSystem:
 @pytest.fixture
 def acceptance_system(tmp_path: Path) -> Iterator[ProductionSystem]:
     _require_canonical_test_entrypoint()
-    workspace = (REPO_ROOT / ".tmp" / "acceptance" / tmp_path.name).resolve()
+    workspace_root = Path(os.environ.get(_ACCEPTANCE_ROOT_ENV, _DEFAULT_ACCEPTANCE_ROOT))
+    if not workspace_root.is_absolute():
+        workspace_root = REPO_ROOT / workspace_root
+    workspace = (workspace_root / tmp_path.name).resolve()
     if workspace.exists():
         shutil.rmtree(workspace)
     workspace.mkdir(parents=True, exist_ok=True)

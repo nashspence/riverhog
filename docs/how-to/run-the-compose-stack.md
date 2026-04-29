@@ -22,7 +22,12 @@ lane fast live only in `tests/harness/prod-harness.env`.
 
 Each prod-backed `make ...` invocation also chooses an isolated Compose
 project name by default. Export `TEST_COMPOSE_PROJECT_NAME` first if you
-intentionally want prod-backed runs to reuse one Compose project.
+intentionally want prod-backed runs to reuse one Compose project. Those
+prod-backed entrypoints use Docker-assigned ephemeral host ports for API and
+WebDAV publication; the harness reaches those services over the Compose network
+instead of through host ports. They also keep SQLite state and webhook captures
+plus acceptance workspaces under `/app/.compose/<compose-project>/` inside the
+shared source bind mount.
 
 ## Start the stack
 
@@ -72,7 +77,11 @@ lint, then unit, spec, and the prod-backed acceptance phase in order.
 When `make prod`, `make prod-profile`, or `make test` starts the prod-backed
 lane, it layers the short recovery timing values from
 `tests/harness/prod-harness.env` over the shared compose env so local compose
-runs stay aligned with product-facing defaults.
+runs stay aligned with product-facing defaults. It also overrides the host API
+and WebDAV ports with ephemeral bindings so concurrent prod-backed runs do not
+compete for `8000` or `8080`, and it scopes harness state paths to the active
+Compose project so overlapping runs do not share SQLite files, webhook files,
+or fixture workspaces.
 
 If `ARC_GLACIER_BUCKET` differs from `ARC_S3_BUCKET`, that bootstrap applies and
 verifies the same lifecycle rule on both buckets.

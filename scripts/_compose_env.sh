@@ -99,6 +99,17 @@ configure_compose_tty() {
   fi
 }
 
+isolate_test_compose_runtime() {
+  local state_root="/app/.compose/${COMPOSE_PROJECT_NAME}"
+
+  export ARC_API_PORT=0
+  export ARC_WEBDAV_PORT=0
+  export ARC_DB_PATH="${state_root}/state.sqlite3"
+  export ARC_TEST_EXTERNAL_APP_DB_PATH="${ARC_DB_PATH}"
+  export ARC_TEST_WEBHOOK_CAPTURE_PATH="${state_root}/webhook-captures.jsonl"
+  export ARC_TEST_ACCEPTANCE_ROOT="${state_root}/acceptance"
+}
+
 ensure_compose_image() {
   local service="$1"
   compose build "${service}"

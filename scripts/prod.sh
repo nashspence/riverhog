@@ -5,6 +5,7 @@ source "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/_compose_env.sh"
 
 setup_test_compose_project
 configure_compose_tty
+isolate_test_compose_runtime
 
 cleanup() {
   compose down --volumes --remove-orphans >/dev/null 2>&1 || true
