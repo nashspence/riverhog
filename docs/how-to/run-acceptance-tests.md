@@ -94,7 +94,9 @@ files, webhook captures, and acceptance workspaces live under
 concurrent prod-backed runs share catalog files or fixture trees.
 Successful isolated prod-backed runs remove that generated project directory
 after Compose teardown. Runs that explicitly set `TEST_COMPOSE_PROJECT_NAME`
-preserve the directory because they are intentionally reusing one stack.
+preserve the directory because they are intentionally reusing one stack. There
+is no supported override for this state root; choose the Compose project name to
+control isolation or reuse.
 
 If you need to reuse one Compose project explicitly, export
 `TEST_COMPOSE_PROJECT_NAME` before running `make`.

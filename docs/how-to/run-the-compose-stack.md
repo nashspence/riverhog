@@ -84,7 +84,8 @@ Compose project so overlapping runs do not share SQLite files, webhook files,
 or fixture workspaces. Successful isolated prod-backed runs remove their
 generated `.compose/<compose-project>/` directory after Compose teardown.
 Explicit shared project runs keep that directory because they are intended to be
-reused across commands.
+reused across commands. There is no supported override for this state root;
+choose the Compose project name to control isolation or reuse.
 
 The checked-in Dockerfiles install package metadata and dependencies before
 copying `src/`, `contracts/`, or `tests/`, and they do not copy docs or

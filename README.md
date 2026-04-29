@@ -15,7 +15,8 @@ locally in the same locked `uv` environment, and the prod-backed lane stays on
 the checked-in Compose surface with per-run project names and ephemeral host
 ports, plus project-scoped harness state and workspaces under `.compose/`.
 Successful isolated prod-backed runs remove their generated `.compose/` state;
-explicit shared project runs keep it.
+explicit shared project runs keep it. There is no supported override for this
+state root; use `TEST_COMPOSE_PROJECT_NAME` when you need deliberate reuse.
 
 Run the serial aggregate flow with `make test` when one command is more
 convenient. That target runs lint first, then the unit, spec, and prod-backed

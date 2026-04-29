@@ -102,10 +102,18 @@ configure_compose_tty() {
   fi
 }
 
-isolate_test_compose_runtime() {
-  local state_root="/app/.compose/${COMPOSE_PROJECT_NAME}"
+test_compose_container_state_root() {
+  printf '/app/.compose/%s' "${COMPOSE_PROJECT_NAME}"
+}
 
-  export ARC_TEST_HOST_STATE_ROOT="${ARC_TEST_HOST_STATE_ROOT:-${ROOT_DIR}/.compose/${COMPOSE_PROJECT_NAME}}"
+test_compose_host_state_root() {
+  printf '%s/.compose/%s' "${ROOT_DIR}" "${COMPOSE_PROJECT_NAME}"
+}
+
+isolate_test_compose_runtime() {
+  local state_root
+  state_root="$(test_compose_container_state_root)"
+
   export ARC_API_PORT=0
   export ARC_WEBDAV_PORT=0
   export ARC_DB_PATH="${state_root}/state.sqlite3"
@@ -119,7 +127,11 @@ cleanup_test_compose_runtime() {
   if [[ "${status}" != "0" || "${TEST_COMPOSE_PROJECT_ISOLATED:-0}" != "1" ]]; then
     return
   fi
-  if [[ -z "${ARC_TEST_HOST_STATE_ROOT:-}" || "${ARC_TEST_HOST_STATE_ROOT}" == "/" ]]; then
+  local host_state_root
+  local container_state_root
+  host_state_root="$(test_compose_host_state_root)"
+  container_state_root="$(test_compose_container_state_root)"
+  if [[ -z "${host_state_root}" || "${host_state_root}" == "/" ]]; then
     return
   fi
   docker run \
@@ -128,7 +140,7 @@ cleanup_test_compose_runtime() {
     --entrypoint rm \
     "${TEST_IMAGE_NAME}" \
     -rf \
-    "/app/.compose/${COMPOSE_PROJECT_NAME}"
+    "${container_state_root}"
 }
 
 ensure_compose_image() {

@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import os
 import re
-import shutil
 import subprocess
 from pathlib import Path
 
@@ -23,15 +22,16 @@ def _install_fake_command(tmp_path: Path, name: str, log_name: str) -> Path:
                 [
                     "#!/usr/bin/env bash",
                     "set -euo pipefail",
+                    f"fake_state_base={str(tmp_path / 'compose-state')!r}",
                     (
                         "if [[ \"${FAKE_CREATE_STATE_ROOT:-0}\" == \"1\" "
-                        "&& -n \"${ARC_TEST_HOST_STATE_ROOT:-}\" ]]; then"
+                        "&& -n \"${COMPOSE_PROJECT_NAME:-}\" ]]; then"
                     ),
-                    "  mkdir -p \"${ARC_TEST_HOST_STATE_ROOT}\"",
-                    "  touch \"${ARC_TEST_HOST_STATE_ROOT}/marker\"",
+                    "  mkdir -p \"${fake_state_base}/${COMPOSE_PROJECT_NAME}\"",
+                    "  touch \"${fake_state_base}/${COMPOSE_PROJECT_NAME}/marker\"",
                     "fi",
                     (
-                        "printf '%s|%s|%s|%s|%s|%s|%s|%s|%s|%s|%s\\n' "
+                        "printf '%s|%s|%s|%s|%s|%s|%s|%s|%s|%s\\n' "
                         "\"${COMPOSE_PROJECT_NAME:-}\" "
                         "\"${TEST_COMPOSE_PROJECT_ISOLATED:-}\" "
                         "\"${ARC_ENABLE_TEST_CONTROL:-}\" "
@@ -41,15 +41,14 @@ def _install_fake_command(tmp_path: Path, name: str, log_name: str) -> Path:
                         "\"${ARC_DB_PATH:-}\" "
                         "\"${ARC_TEST_EXTERNAL_APP_DB_PATH:-}\" "
                         "\"${ARC_TEST_WEBHOOK_CAPTURE_PATH:-}\" "
-                        "\"${ARC_TEST_ACCEPTANCE_ROOT:-}\" "
-                        "\"${ARC_TEST_HOST_STATE_ROOT:-}\" >> "
+                        "\"${ARC_TEST_ACCEPTANCE_ROOT:-}\" >> "
                         f"{log_path}"
                     ),
-                    (
-                        "if [[ \"$*\" == *\" --entrypoint rm \"* "
-                        "&& -n \"${ARC_TEST_HOST_STATE_ROOT:-}\" ]]; then"
-                    ),
-                    "  rm -rf -- \"${ARC_TEST_HOST_STATE_ROOT}\"",
+                    "if [[ \"$*\" == *\" --entrypoint rm \"* ]]; then",
+                    "  cleanup_target=\"${@: -1}\"",
+                    "  if [[ \"${cleanup_target}\" == /app/.compose/* ]]; then",
+                    "    rm -rf -- \"${fake_state_base}/${cleanup_target#/app/.compose/}\"",
+                    "  fi",
                     "fi",
                     "if [[ \"$1\" == \"image\" && \"$2\" == \"inspect\" ]]; then",
                     "  if [[ \"${FAKE_DOCKER_HAVE_IMAGES:-0}\" == \"1\" ]]; then",
@@ -75,7 +74,7 @@ def _install_fake_command(tmp_path: Path, name: str, log_name: str) -> Path:
                     "#!/usr/bin/env bash",
                     "set -euo pipefail",
                     (
-                        "printf '%s|%s|%s|%s|%s|%s|%s|%s|%s|%s|%s\\n' "
+                        "printf '%s|%s|%s|%s|%s|%s|%s|%s|%s|%s\\n' "
                         "\"${COMPOSE_PROJECT_NAME:-}\" "
                         "\"${TEST_COMPOSE_PROJECT_ISOLATED:-}\" "
                         "\"${ARC_ENABLE_TEST_CONTROL:-}\" "
@@ -85,8 +84,7 @@ def _install_fake_command(tmp_path: Path, name: str, log_name: str) -> Path:
                         "\"${ARC_DB_PATH:-}\" "
                         "\"${ARC_TEST_EXTERNAL_APP_DB_PATH:-}\" "
                         "\"${ARC_TEST_WEBHOOK_CAPTURE_PATH:-}\" "
-                        "\"${ARC_TEST_ACCEPTANCE_ROOT:-}\" "
-                        "\"${ARC_TEST_HOST_STATE_ROOT:-}\" >> "
+                        "\"${ARC_TEST_ACCEPTANCE_ROOT:-}\" >> "
                         f"{log_path}"
                     ),
                 ]
@@ -125,7 +123,7 @@ def _read_log_lines(log_path: Path) -> list[str]:
 
 
 def _split_docker_log_line(line: str) -> tuple[str, ...]:
-    return tuple(line.split("|", 10))
+    return tuple(line.split("|", 9))
 
 
 def _assert_isolated_prod_runtime(line: str) -> str:
@@ -140,7 +138,6 @@ def _assert_isolated_prod_runtime(line: str) -> str:
         external_db_path,
         webhook_path,
         acceptance_root,
-        host_state_root,
     ) = _split_docker_log_line(line)
     assert isolated == "1"
     assert api_port == "0"
@@ -149,7 +146,6 @@ def _assert_isolated_prod_runtime(line: str) -> str:
     assert external_db_path == db_path
     assert webhook_path == f"/app/.compose/{project}/webhook-captures.jsonl"
     assert acceptance_root == f"/app/.compose/{project}/acceptance"
-    assert host_state_root == str(REPO_ROOT / ".compose" / project)
     return project
 
 
@@ -255,7 +251,6 @@ def test_prod_builds_images_and_uses_isolated_compose_project_name(
 
 
 def test_prod_removes_generated_bind_mount_state_on_success(tmp_path: Path) -> None:
-    state_root = tmp_path / "generated-state"
     completed, docker_log_path, uv_log_path = _run_make(
         tmp_path,
         "prod",
@@ -263,40 +258,55 @@ def test_prod_removes_generated_bind_mount_state_on_success(tmp_path: Path) -> N
         extra_env={
             "FAKE_DOCKER_HAVE_IMAGES": "1",
             "FAKE_CREATE_STATE_ROOT": "1",
-            "ARC_TEST_HOST_STATE_ROOT": str(state_root),
         },
     )
 
     assert completed.returncode == 0, completed.stderr
     assert _read_log_lines(uv_log_path) == []
+    project = _assert_isolated_prod_runtime(_read_log_lines(docker_log_path)[0])
+    state_root = tmp_path / "compose-state" / project
     assert not state_root.exists()
 
 
 def test_prod_preserves_explicit_shared_bind_mount_state(tmp_path: Path) -> None:
     shared_project = "archive-stack-shared-unit"
-    shared_root = tmp_path / "shared-state"
-    shutil.rmtree(shared_root, ignore_errors=True)
-    try:
-        completed, docker_log_path, uv_log_path = _run_make(
-            tmp_path,
-            "prod",
-            "PYTEST_ARGS=-k glacier",
-            extra_env={
-                "FAKE_DOCKER_HAVE_IMAGES": "1",
-                "FAKE_CREATE_STATE_ROOT": "1",
-                "ARC_TEST_HOST_STATE_ROOT": str(shared_root),
-                "TEST_COMPOSE_PROJECT_NAME": shared_project,
-            },
-        )
+    completed, docker_log_path, uv_log_path = _run_make(
+        tmp_path,
+        "prod",
+        "PYTEST_ARGS=-k glacier",
+        extra_env={
+            "FAKE_DOCKER_HAVE_IMAGES": "1",
+            "FAKE_CREATE_STATE_ROOT": "1",
+            "TEST_COMPOSE_PROJECT_NAME": shared_project,
+        },
+    )
 
-        assert completed.returncode == 0, completed.stderr
-        assert _read_log_lines(uv_log_path) == []
-        log_lines = _read_log_lines(docker_log_path)
-        assert {line.split("|", 1)[0] for line in log_lines} == {shared_project}
-        assert {line.split("|", 2)[1] for line in log_lines} == {"0"}
-        assert (shared_root / "marker").exists()
-    finally:
-        shutil.rmtree(shared_root, ignore_errors=True)
+    assert completed.returncode == 0, completed.stderr
+    assert _read_log_lines(uv_log_path) == []
+    log_lines = _read_log_lines(docker_log_path)
+    assert {line.split("|", 1)[0] for line in log_lines} == {shared_project}
+    assert {line.split("|", 2)[1] for line in log_lines} == {"0"}
+    assert (tmp_path / "compose-state" / shared_project / "marker").exists()
+
+
+def test_prod_state_root_is_fixed_to_project_scoped_compose_path() -> None:
+    compose_env = (REPO_ROOT / "scripts" / "_compose_env.sh").read_text()
+    prod_docs = "\n".join(
+        [
+            (REPO_ROOT / "README.md").read_text(),
+            (REPO_ROOT / "docs" / "how-to" / "run-acceptance-tests.md").read_text(),
+            (REPO_ROOT / "docs" / "how-to" / "run-the-compose-stack.md").read_text(),
+        ]
+    )
+
+    assert "ARC_TEST_HOST_STATE_ROOT" not in compose_env
+    assert "test_compose_container_state_root" in compose_env
+    assert "test_compose_host_state_root" in compose_env
+    assert "/app/.compose/%s" in compose_env
+    assert 'printf \'%s/.compose/%s\' "${ROOT_DIR}" "${COMPOSE_PROJECT_NAME}"' in compose_env
+    assert "There is no supported override for this state root" in " ".join(
+        prod_docs.split()
+    )
 
 
 def test_prod_profile_enables_profile_output_and_builds_images(tmp_path: Path) -> None:
