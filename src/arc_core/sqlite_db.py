@@ -125,6 +125,7 @@ def initialize_db(sqlite_path: str) -> None:
         CollectionUploadRecord,
         FetchEntryRecord,
         FileCopyRecord,
+        FinalizedImageCoveragePartRecord,
         FinalizedImageCoveredPathRecord,
         FinalizedImageRecord,
         GlacierRecoverySessionImageRecord,
@@ -143,6 +144,7 @@ def initialize_db(sqlite_path: str) -> None:
         CollectionRecord,
         FetchEntryRecord,
         FileCopyRecord,
+        FinalizedImageCoveragePartRecord,
         FinalizedImageCoveredPathRecord,
         FinalizedImageRecord,
         GlacierRecoverySessionImageRecord,
@@ -158,6 +160,45 @@ def initialize_db(sqlite_path: str) -> None:
     engine = create_sqlite_engine(sqlite_path)
     Base.metadata.create_all(engine)
     migrate_schema(engine)
+    _backfill_finalized_image_coverage_parts(sqlite_path)
+
+
+def _backfill_finalized_image_coverage_parts(sqlite_path: str) -> None:
+    from arc_core.catalog_models import (  # noqa: PLC0415
+        FinalizedImageCoveragePartRecord,
+        FinalizedImageRecord,
+    )
+    from arc_core.finalized_image_coverage import (  # noqa: PLC0415
+        read_finalized_image_coverage_parts,
+    )
+
+    session_factory = make_session_factory(sqlite_path)
+    with session_scope(session_factory) as session:
+        images = session.query(FinalizedImageRecord).all()
+        for image in images:
+            existing = session.scalar(
+                text(
+                    "SELECT 1 FROM finalized_image_coverage_parts "
+                    "WHERE image_id = :image_id LIMIT 1"
+                ),
+                {"image_id": image.image_id},
+            )
+            if existing is not None:
+                continue
+            try:
+                coverage_parts = read_finalized_image_coverage_parts(image.image_root)
+            except Exception:
+                continue
+            for part in coverage_parts:
+                session.add(
+                    FinalizedImageCoveragePartRecord(
+                        image_id=image.image_id,
+                        collection_id=part.collection_id,
+                        path=part.path,
+                        part_index=part.part_index,
+                        part_count=part.part_count,
+                    )
+                )
 
 
 def make_session_factory(sqlite_path: str) -> sessionmaker[Session]:

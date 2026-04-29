@@ -4,9 +4,7 @@ import hashlib
 import re
 from collections.abc import Callable, Iterable, Sequence
 from dataclasses import dataclass
-from pathlib import Path
 
-import yaml
 from sqlalchemy import select
 from sqlalchemy.orm import Session, selectinload
 
@@ -47,10 +45,8 @@ from arc_core.fs_paths import (
     normalize_collection_id,
     normalize_relpath,
 )
-from arc_core.planner.manifest import MANIFEST_FILENAME
 from arc_core.ports.hot_store import HotStore
 from arc_core.ports.upload_store import UploadStore
-from arc_core.recovery_payloads import decrypt_recovery_payload
 from arc_core.runtime_config import RuntimeConfig
 from arc_core.services.resumable_uploads import (
     UploadLifecycleState,
@@ -893,6 +889,7 @@ def _collection_image_coverage(
             .join(FinalizedImageCoveredPathRecord)
             .where(FinalizedImageCoveredPathRecord.collection_id == collection_id)
             .options(
+                selectinload(FinalizedImageRecord.coverage_parts),
                 selectinload(FinalizedImageRecord.covered_paths),
                 selectinload(FinalizedImageRecord.copies),
             )
@@ -905,19 +902,28 @@ def _collection_image_coverage(
     recovery_parts_by_image_path: dict[tuple[str, str], _RecoveryParts] = {}
     image_coverage: list[CollectionCoverageImage] = []
     for image in sorted(images, key=lambda current: current.image_id):
-        manifest_entries = _read_collection_manifest_entries(
-            image_root=image.image_root,
-            collection_id=collection_id,
-        )
         image_paths: set[str] = set()
         for covered_path in image.covered_paths:
             if covered_path.collection_id != collection_id:
                 continue
             covered_paths.setdefault(covered_path.path, set()).add(image.image_id)
             image_paths.add(covered_path.path)
-            recovery_parts = manifest_entries.get(covered_path.path)
-            if recovery_parts is not None:
-                recovery_parts_by_image_path[(image.image_id, covered_path.path)] = recovery_parts
+        for part in image.coverage_parts:
+            if part.collection_id != collection_id:
+                continue
+            key = (image.image_id, part.path)
+            current = recovery_parts_by_image_path.get(key)
+            present_parts = frozenset({part.part_index})
+            if current is None:
+                recovery_parts_by_image_path[key] = _RecoveryParts(
+                    part_count=part.part_count,
+                    present_parts=present_parts,
+                )
+                continue
+            recovery_parts_by_image_path[key] = _RecoveryParts(
+                part_count=current.part_count,
+                present_parts=current.present_parts | present_parts,
+            )
 
         copies = [
             CopySummary(
@@ -1094,37 +1100,6 @@ def _path_is_recoverable(
             return False
         present_parts.update(recovery_parts.present_parts)
     return expected_part_count is not None and len(present_parts) == expected_part_count
-
-
-def _read_collection_manifest_entries(
-    *,
-    image_root: str,
-    collection_id: str,
-) -> dict[str, _RecoveryParts]:
-    manifest_path = Path(image_root) / MANIFEST_FILENAME
-    try:
-        manifest = yaml.safe_load(decrypt_recovery_payload(manifest_path.read_bytes()))
-    except Exception:
-        return {}
-
-    for collection in manifest.get("collections", []):
-        if str(collection.get("id")) != collection_id:
-            continue
-        entries: dict[str, _RecoveryParts] = {}
-        for file_entry in collection.get("files", []):
-            path = str(file_entry["path"]).lstrip("/")
-            parts_block = file_entry.get("parts")
-            if parts_block is None:
-                entries[path] = _RecoveryParts(part_count=1, present_parts=frozenset({0}))
-                continue
-            entries[path] = _RecoveryParts(
-                part_count=int(parts_block["count"]),
-                present_parts=frozenset(
-                    int(present["index"]) - 1 for present in parts_block.get("present", [])
-                ),
-            )
-        return entries
-    return {}
 
 
 def _recovery_coverage_state(

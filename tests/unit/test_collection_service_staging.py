@@ -4,9 +4,17 @@ import base64
 import hashlib
 from pathlib import Path
 
+from arc_core.catalog_models import (
+    CollectionFileRecord,
+    CollectionRecord,
+    FinalizedImageCoveragePartRecord,
+    FinalizedImageCoveredPathRecord,
+    FinalizedImageRecord,
+)
 from arc_core.runtime_config import RuntimeConfig
 from arc_core.services.collections import SqlAlchemyCollectionService
-from arc_core.sqlite_db import initialize_db
+from arc_core.sqlite_db import initialize_db, make_session_factory, session_scope
+from tests.fixtures.data import DOCS_FILES
 
 
 class _FakeHotStore:
@@ -95,6 +103,79 @@ def _config(sqlite_path: Path) -> RuntimeConfig:
     )
 
 
+def _seed_docs_collection_with_finalized_image(sqlite_path: Path, image_root: Path) -> None:
+    session_factory = make_session_factory(str(sqlite_path))
+    with session_scope(session_factory) as session:
+        session.add(CollectionRecord(id="docs"))
+        invoice = DOCS_FILES["tax/2022/invoice-123.pdf"]
+        session.add(
+            CollectionFileRecord(
+                collection_id="docs",
+                path="tax/2022/invoice-123.pdf",
+                bytes=len(invoice),
+                sha256=hashlib.sha256(invoice).hexdigest(),
+                hot=False,
+                archived=True,
+            )
+        )
+        session.add(
+            FinalizedImageRecord(
+                image_id="20260420T040003Z",
+                candidate_id="img_2026-04-20_03",
+                filename="20260420T040003Z.iso",
+                bytes=5100,
+                image_root=str(image_root),
+                target_bytes=10_000,
+                required_copy_count=2,
+                glacier_state="uploaded",
+            )
+        )
+        session.add(
+            FinalizedImageCoveredPathRecord(
+                image_id="20260420T040003Z",
+                collection_id="docs",
+                path="tax/2022/invoice-123.pdf",
+            )
+        )
+        session.add(
+            FinalizedImageCoveragePartRecord(
+                image_id="20260420T040003Z",
+                collection_id="docs",
+                path="tax/2022/invoice-123.pdf",
+                part_index=0,
+                part_count=2,
+            )
+        )
+        session.add(
+            FinalizedImageRecord(
+                image_id="20260420T040004Z",
+                candidate_id="img_2026-04-20_04",
+                filename="20260420T040004Z.iso",
+                bytes=5100,
+                image_root=str(image_root),
+                target_bytes=10_000,
+                required_copy_count=2,
+                glacier_state="uploaded",
+            )
+        )
+        session.add(
+            FinalizedImageCoveredPathRecord(
+                image_id="20260420T040004Z",
+                collection_id="docs",
+                path="tax/2022/invoice-123.pdf",
+            )
+        )
+        session.add(
+            FinalizedImageCoveragePartRecord(
+                image_id="20260420T040004Z",
+                collection_id="docs",
+                path="tax/2022/invoice-123.pdf",
+                part_index=1,
+                part_count=2,
+            )
+        )
+
+
 def test_partial_collection_upload_does_not_publish_committed_hot_file(tmp_path: Path) -> None:
     sqlite_path = tmp_path / "state.sqlite3"
     initialize_db(str(sqlite_path))
@@ -155,3 +236,23 @@ def test_completed_collection_upload_promotes_from_staging_and_cleans_up(tmp_pat
 
     assert hot_store.get_collection_file(collection_id, relpath) == content
     assert staging_target in upload_store.deleted_targets
+
+
+def test_collection_summary_uses_db_coverage_parts_after_manifest_is_removed(
+    tmp_path: Path,
+) -> None:
+    sqlite_path = tmp_path / "state.sqlite3"
+    initialize_db(str(sqlite_path))
+
+    hot_store = _FakeHotStore()
+    upload_store = _FakeUploadStore()
+    service = SqlAlchemyCollectionService(_config(sqlite_path), hot_store, upload_store)
+
+    image_root = tmp_path / "image-root"
+    image_root.mkdir(parents=True, exist_ok=True)
+    _seed_docs_collection_with_finalized_image(sqlite_path, image_root)
+
+    summary = service.get("docs")
+
+    assert summary.recovery.verified_physical.state.value == "none"
+    assert summary.recovery.glacier.state.value == "full"

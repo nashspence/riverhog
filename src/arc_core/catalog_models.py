@@ -131,6 +131,10 @@ class FinalizedImageRecord(Base):
         back_populates="image",
         cascade="all, delete-orphan",
     )
+    coverage_parts: Mapped[list[FinalizedImageCoveragePartRecord]] = relationship(
+        back_populates="image",
+        cascade="all, delete-orphan",
+    )
     copies: Mapped[list[ImageCopyRecord]] = relationship(
         back_populates="image",
         cascade="all, delete-orphan",
@@ -153,6 +157,26 @@ class FinalizedImageCoveredPathRecord(Base):
     )
 
     image: Mapped[FinalizedImageRecord] = relationship(back_populates="covered_paths")
+
+
+class FinalizedImageCoveragePartRecord(Base):
+    __tablename__ = "finalized_image_coverage_parts"
+
+    image_id: Mapped[str] = mapped_column(String, primary_key=True)
+    collection_id: Mapped[str] = mapped_column(String, primary_key=True)
+    path: Mapped[str] = mapped_column(String, primary_key=True)
+    part_index: Mapped[int] = mapped_column(Integer, primary_key=True)
+    part_count: Mapped[int] = mapped_column(Integer)
+
+    __table_args__ = (
+        ForeignKeyConstraint(
+            ["image_id"],
+            ["finalized_images.image_id"],
+            ondelete="CASCADE",
+        ),
+    )
+
+    image: Mapped[FinalizedImageRecord] = relationship(back_populates="coverage_parts")
 
 
 class GlacierUploadJobRecord(Base):

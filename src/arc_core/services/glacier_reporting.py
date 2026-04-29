@@ -4,15 +4,14 @@ from collections import defaultdict
 from dataclasses import dataclass
 from datetime import datetime
 from decimal import ROUND_HALF_UP, Decimal
-from pathlib import Path
 
-import yaml
 from sqlalchemy import select
 from sqlalchemy.orm import Session, selectinload
 
 from arc_core.archive_compliance import normalize_glacier_state
 from arc_core.catalog_models import (
     CollectionFileRecord,
+    FinalizedImageCoveragePartRecord,
     FinalizedImageRecord,
     GlacierUsageSnapshotRecord,
 )
@@ -28,8 +27,6 @@ from arc_core.domain.models import (
     GlacierUsageTotals,
 )
 from arc_core.domain.types import CollectionId, ImageId
-from arc_core.planner.manifest import MANIFEST_FILENAME
-from arc_core.recovery_payloads import decrypt_recovery_payload
 from arc_core.runtime_config import RuntimeConfig
 from arc_core.services.glacier_billing import resolve_glacier_billing
 from arc_core.services.glacier_pricing import resolve_glacier_pricing
@@ -76,6 +73,7 @@ class SqlAlchemyGlacierReportingService:
         with session_scope(self._session_factory) as session:
             image_records = session.scalars(
                 select(FinalizedImageRecord).options(
+                    selectinload(FinalizedImageRecord.coverage_parts),
                     selectinload(FinalizedImageRecord.covered_paths),
                 )
             ).all()
@@ -232,7 +230,7 @@ def _collection_usage_reports(
 
     for image in filtered_images:
         represented_by_collection, attribution_available = _represented_bytes_by_collection(
-            image_root=image.image_root,
+            coverage_parts=image.coverage_parts,
             file_bytes=file_bytes,
         )
         if collection_filter is not None:
@@ -338,34 +336,25 @@ def _collection_usage_reports(
 
 def _represented_bytes_by_collection(
     *,
-    image_root: str,
+    coverage_parts: list[FinalizedImageCoveragePartRecord],
     file_bytes: dict[tuple[str, str], int],
 ) -> tuple[dict[str, int], bool]:
-    manifest_path = Path(image_root) / MANIFEST_FILENAME
-    try:
-        manifest = yaml.safe_load(decrypt_recovery_payload(manifest_path.read_bytes()))
-    except Exception:
+    if not coverage_parts:
         return {}, False
 
     represented_by_collection: dict[str, int] = defaultdict(int)
-    for collection in manifest.get("collections", []):
-        collection_id = str(collection["id"])
-        for file_entry in collection.get("files", []):
-            path = str(file_entry["path"]).lstrip("/")
-            total_bytes = file_bytes.get((collection_id, path))
-            if total_bytes is None:
-                return {}, False
-            parts_block = file_entry.get("parts")
-            if parts_block is None:
-                represented_by_collection[collection_id] += total_bytes
-                continue
-            part_count = int(parts_block["count"])
-            for present in parts_block.get("present", []):
-                represented_by_collection[collection_id] += _split_part_length(
-                    total_bytes,
-                    part_count=part_count,
-                    part_index=int(present["index"]) - 1,
-                )
+    for part in coverage_parts:
+        total_bytes = file_bytes.get((part.collection_id, part.path))
+        if total_bytes is None:
+            return {}, False
+        if part.part_count == 1:
+            represented_by_collection[part.collection_id] += total_bytes
+            continue
+        represented_by_collection[part.collection_id] += _split_part_length(
+            total_bytes,
+            part_count=part.part_count,
+            part_index=part.part_index,
+        )
     return dict(represented_by_collection), True
 
 

@@ -6,9 +6,11 @@ from pathlib import Path
 from arc_core.catalog_models import (
     CollectionFileRecord,
     CollectionRecord,
+    FinalizedImageCoveragePartRecord,
     FinalizedImageCoveredPathRecord,
     FinalizedImageRecord,
 )
+from arc_core.finalized_image_coverage import read_finalized_image_coverage_parts
 from arc_core.runtime_config import RuntimeConfig
 from arc_core.services.glacier_reporting import SqlAlchemyGlacierReportingService
 from arc_core.sqlite_db import initialize_db, make_session_factory, session_scope
@@ -96,6 +98,16 @@ def _seed_uploaded_image(
                     path=path,
                 )
             )
+        for part in read_finalized_image_coverage_parts(image_root):
+            session.add(
+                FinalizedImageCoveragePartRecord(
+                    image_id=image_id,
+                    collection_id=part.collection_id,
+                    path=part.path,
+                    part_index=part.part_index,
+                    part_count=part.part_count,
+                )
+            )
 
 
 def test_get_report_returns_totals_and_image_costs(tmp_path: Path) -> None:
@@ -148,3 +160,48 @@ def test_get_report_uses_manifest_part_lengths_for_collection_filter(tmp_path: P
     assert report.collections[0].represented_bytes == len(SPLIT_FILE_PARTS[0])
     assert report.collections[0].attribution_state == "derived"
     assert report.collections[0].derived_stored_bytes > 0
+
+
+def test_initialize_db_backfills_coverage_parts_for_existing_finalized_images(
+    tmp_path: Path,
+) -> None:
+    config = _config(tmp_path)
+    _seed_docs_collection(config)
+    image_root = write_tree(tmp_path / "image-split-backfill", SPLIT_IMAGE_FIXTURES[0].files)
+
+    session_factory = make_session_factory(str(config.sqlite_path))
+    with session_scope(session_factory) as session:
+        session.add(
+            FinalizedImageRecord(
+                image_id="20260420T040003Z",
+                candidate_id=SPLIT_IMAGE_FIXTURES[0].id,
+                filename=SPLIT_IMAGE_FIXTURES[0].filename,
+                bytes=SPLIT_IMAGE_FIXTURES[0].bytes,
+                image_root=str(image_root),
+                target_bytes=SPLIT_IMAGE_FIXTURES[0].bytes,
+                required_copy_count=2,
+                glacier_state="uploaded",
+                glacier_object_path="glacier/finalized-images/20260420T040003Z/20260420T040003Z.iso",
+                glacier_stored_bytes=5100,
+                glacier_backend="s3",
+                glacier_storage_class="DEEP_ARCHIVE",
+                glacier_last_uploaded_at="2026-04-28T00:00:00Z",
+                glacier_last_verified_at="2026-04-28T00:00:00Z",
+                glacier_failure=None,
+            )
+        )
+        for collection_id, path in SPLIT_IMAGE_FIXTURES[0].covered_paths:
+            session.add(
+                FinalizedImageCoveredPathRecord(
+                    image_id="20260420T040003Z",
+                    collection_id=collection_id,
+                    path=path,
+                )
+            )
+
+    initialize_db(str(config.sqlite_path))
+    (image_root / "DISC.yml.age").unlink()
+
+    report = SqlAlchemyGlacierReportingService(config).get_report(collection=DOCS_COLLECTION_ID)
+
+    assert report.collections[0].represented_bytes == len(SPLIT_FILE_PARTS[0])

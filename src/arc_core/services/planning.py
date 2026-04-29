@@ -19,6 +19,7 @@ from arc_core.archive_compliance import (
 )
 from arc_core.catalog_models import (
     CollectionFileRecord,
+    FinalizedImageCoveragePartRecord,
     FinalizedImageCoveredPathRecord,
     FinalizedImageRecord,
     ImageCopyEventRecord,
@@ -28,6 +29,7 @@ from arc_core.catalog_models import (
 from arc_core.domain.enums import CopyState, GlacierState, VerificationState
 from arc_core.domain.errors import InvalidState, NotFound, NotYetImplemented
 from arc_core.domain.models import GlacierArchiveStatus
+from arc_core.finalized_image_coverage import read_finalized_image_coverage_parts
 from arc_core.iso.streaming import IsoStream, stream_iso_from_root
 from arc_core.runtime_config import RuntimeConfig
 from arc_core.services.contracts import PlanningIsoResult
@@ -210,6 +212,16 @@ class SqlAlchemyPlanningService:
                             image_id=candidate.finalized_id,
                             collection_id=cp.collection_id,
                             path=cp.path,
+                        )
+                    )
+                for part in read_finalized_image_coverage_parts(candidate.image_root):
+                    session.add(
+                        FinalizedImageCoveragePartRecord(
+                            image_id=candidate.finalized_id,
+                            collection_id=part.collection_id,
+                            path=part.path,
+                            part_index=part.part_index,
+                            part_count=part.part_count,
                         )
                     )
                 _seed_required_copy_slots(session, image)
