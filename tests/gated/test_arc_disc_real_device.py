@@ -262,7 +262,7 @@ def _prepare_recovery_session_with_one_real_burn_needed(
     response = acceptance_system.request("POST", f"/v1/plan/candidates/{IMAGE_ID}/finalize")
     assert response.status_code == 200, response.text
     image_id = str(_response_json(response)["id"])
-    acceptance_system.wait_for_image_glacier_state(image_id, "uploaded")
+    acceptance_system.mark_collection_archive_uploaded("docs")
     for copy_id, location in (
         (f"{image_id}-1", "fake-backed recovery shelf a"),
         (f"{image_id}-2", "fake-backed recovery shelf b"),

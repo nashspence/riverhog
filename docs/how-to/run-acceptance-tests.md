@@ -149,17 +149,16 @@ permission, media, and product regressions stay visible.
 ## Gated Glacier-restore validation
 
 `make gated-glacier-restore` is an opt-in lane for live AWS S3 Glacier restore
-behavior. The lane keeps Riverhog's API, catalog, recovery session, and fixture
-state fake-backed; AWS S3 Glacier restore is the only real service. It is not
-part of `make test`, `make spec`, or `make prod`, because it can issue real
-restore requests, depends on account permissions and object storage class, and
-may take hours before a restored object is readable.
+behavior. The lane validates the collection archive package path: archive tar,
+manifest, and OTS proof upload to the configured AWS archive bucket/storage
+class, restore request, restored-object polling, and package verification when
+AWS reports the objects are readable. It is not part of `make test`,
+`make spec`, or `make prod`, because it can issue real restore requests,
+depends on account permissions and object storage class, and may take hours
+before restored objects are readable.
 
 Restore validation requires the normal `ARC_GLACIER_*` archive backend
-configuration and explicit restore confirmation. The lane creates its own
-fixture-backed finalized image, uploads that ISO to the configured AWS archive
-bucket/storage class, records the uploaded object's checksum metadata, and uses
-that object for restore request, polling, download, and completion checks:
+configuration and explicit restore confirmation:
 
 ```bash
 export ARC_GLACIER_BACKEND=aws
@@ -167,17 +166,14 @@ export ARC_GLACIER_GATED_RESTORE_CONFIRM=request-glacier-restore
 make gated-glacier-restore
 ```
 
-If AWS reports the uploaded object is not readable yet, the restore request tests
-still pass and the download/completion checks skip with a rerun message. Rerun
-the same command after AWS completes the restore; no object path or SHA override
-is required.
-
-The lane uses a stable gated object key under the configured archive prefix so a
-rerun can observe the same AWS restore request after it becomes readable. If an
-older object at that key has the wrong real S3 storage class, the lane fails with
-a remediation message instead of treating an immediately readable object as a
-valid Glacier restore. Delete the stale object or run with a fresh
-`ARC_GLACIER_PREFIX`, then rerun the same command.
+If AWS reports the uploaded archive package is not readable yet, the restore
+request test still passes and the package verification test skips with a rerun
+message. Rerun the same command after AWS completes the restore; no object path
+or SHA override is required. If an older object at the stable gated key has the
+wrong real S3 storage class, the lane fails with a remediation message instead
+of treating an immediately readable object as a valid Glacier restore. Delete
+the stale object or run with a fresh `ARC_GLACIER_PREFIX`, then rerun the same
+command.
 
 ## Compose-backed sidecars
 

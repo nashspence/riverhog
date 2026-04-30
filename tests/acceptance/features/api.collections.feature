@@ -37,8 +37,6 @@ Feature: Collections API
       When the client sends PATCH to "/v1/collection-uploads/photos-2024/files/albums/japan/day-01.txt/upload" with upload chunk content type "application/json"
       Then the response status is 400
       And the error code is "bad_request"
-
-    @xfail_not_backed
     Scenario: Uploading every required file archives the collection before finalization and survives restart
       Given a local collection source "photos-2024" with deterministic fixture contents
       When the client uploads every required file for collection "photos-2024"
@@ -65,8 +63,7 @@ Feature: Collections API
       When the API process restarts
       And the client gets "/v1/collections/photos-2024"
       Then the response status is 200
-
-    @xfail_not_backed
+    @spec_harness_only
     Scenario: Failed Glacier archiving leaves the upload retryable and the collection invisible
       Given a local collection source "photos-2024" with deterministic fixture contents
       And collection Glacier archiving fails for "photos-2024" with error "archive bucket unavailable"
@@ -79,8 +76,6 @@ Feature: Collections API
       When the client retries collection Glacier archiving for "photos-2024"
       Then collection upload "photos-2024" state is "finalized"
       And collection "photos-2024" glacier state is "uploaded"
-
-    @xfail_not_backed
     Scenario: Slash-bearing collection ids remain first-class
       Given a local collection source "photos/2024" with deterministic fixture contents
       When the client uploads every required file for collection "photos/2024"
@@ -140,8 +135,6 @@ Feature: Collections API
       Then the response status is 200
       And the response contains "page", "per_page", "total", "pages", and "collections"
       And the response contains 2 collection summaries
-
-    @xfail_not_backed
     Scenario: Read a collection summary
       When the client gets "/v1/collections/photos-2024"
       Then the response status is 200
@@ -155,8 +148,6 @@ Feature: Collections API
       And collection disc coverage state is "none"
       And collection protection_state is "cloud_only"
       And protected_bytes is 0
-
-    @xfail_not_backed
     Scenario: Collection summaries explain collection Glacier state and physical image coverage
       Given an archive with planner fixtures
       And copy "20260420T040001Z-1" already exists
@@ -172,8 +163,6 @@ Feature: Collections API
       And collection image coverage includes image "20260420T040001Z"
       And collection image coverage for image "20260420T040001Z" includes path "tax/2022/invoice-123.pdf"
       And collection image coverage for image "20260420T040001Z" includes copy "20260420T040001Z-1"
-
-    @xfail_not_backed
     Scenario: Collection physical coverage requires every split image part
       Given an archive with split planner fixtures
       And candidate "img_2026-04-20_03" is finalized
@@ -192,8 +181,6 @@ Feature: Collections API
       And the client gets "/v1/collections/docs"
       Then the response status is 200
       And collection disc coverage state is "full"
-
-    @xfail_not_backed
     Scenario: Collection summaries can report fully protected collections
       Given an archive with planner fixtures
       And copy "20260420T040001Z-1" already exists

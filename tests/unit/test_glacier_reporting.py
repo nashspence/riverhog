@@ -22,7 +22,6 @@ from tests.fixtures.data import (
     DOCS_COLLECTION_ID,
     DOCS_FILES,
     IMAGE_FIXTURES,
-    SPLIT_FILE_PARTS,
     SPLIT_IMAGE_FIXTURES,
     write_tree,
 )
@@ -70,7 +69,6 @@ def _seed_uploaded_image(
     filename: str,
     image_root: Path,
     bytes_total: int,
-    stored_bytes: int,
     covered_paths: tuple[tuple[str, str], ...],
 ) -> None:
     session_factory = make_session_factory(str(config.sqlite_path))
@@ -84,14 +82,6 @@ def _seed_uploaded_image(
                 image_root=str(image_root),
                 target_bytes=bytes_total,
                 required_copy_count=2,
-                glacier_state="uploaded",
-                glacier_object_path=f"glacier/finalized-images/{image_id}/{image_id}.iso",
-                glacier_stored_bytes=stored_bytes,
-                glacier_backend="s3",
-                glacier_storage_class="DEEP_ARCHIVE",
-                glacier_last_uploaded_at="2026-04-28T00:00:00Z",
-                glacier_last_verified_at="2026-04-28T00:00:00Z",
-                glacier_failure=None,
             )
         )
         for collection_id, path in covered_paths:
@@ -125,7 +115,9 @@ def _seed_uploaded_image(
             )
 
 
-def test_get_report_returns_totals_and_image_costs(tmp_path: Path) -> None:
+def test_get_report_does_not_count_finalized_images_in_glacier_totals(
+    tmp_path: Path,
+) -> None:
     config = _config(tmp_path)
     _seed_docs_collection(config)
     image_root = write_tree(tmp_path / "image-1", IMAGE_FIXTURES[0].files)
@@ -136,16 +128,15 @@ def test_get_report_returns_totals_and_image_costs(tmp_path: Path) -> None:
         filename=IMAGE_FIXTURES[0].filename,
         image_root=image_root,
         bytes_total=IMAGE_FIXTURES[0].bytes,
-        stored_bytes=8200,
         covered_paths=IMAGE_FIXTURES[0].covered_paths,
     )
 
     report = SqlAlchemyGlacierReportingService(config).get_report()
 
     assert report.scope == "all"
-    assert report.totals.measured_storage_bytes == 8200
-    assert report.totals.estimated_billable_bytes == 8200 + 32768 + 8192
-    assert report.totals.estimated_monthly_cost_usd > 0
+    assert report.totals.measured_storage_bytes == 0
+    assert report.totals.estimated_billable_bytes == 0
+    assert report.totals.estimated_monthly_cost_usd == 0
     assert [image.id for image in report.images] == ["20260420T040001Z"]
     assert report.history
     assert report.billing is not None
@@ -153,7 +144,9 @@ def test_get_report_returns_totals_and_image_costs(tmp_path: Path) -> None:
     assert report.billing.actuals.source == "unavailable"
 
 
-def test_get_report_uses_manifest_part_lengths_for_collection_filter(tmp_path: Path) -> None:
+def test_get_report_does_not_derive_collection_usage_from_finalized_image_coverage(
+    tmp_path: Path,
+) -> None:
     config = _config(tmp_path)
     _seed_docs_collection(config)
     image_root = write_tree(tmp_path / "image-split", SPLIT_IMAGE_FIXTURES[0].files)
@@ -164,7 +157,6 @@ def test_get_report_uses_manifest_part_lengths_for_collection_filter(tmp_path: P
         filename=SPLIT_IMAGE_FIXTURES[0].filename,
         image_root=image_root,
         bytes_total=SPLIT_IMAGE_FIXTURES[0].bytes,
-        stored_bytes=5100,
         covered_paths=SPLIT_IMAGE_FIXTURES[0].covered_paths,
     )
 
@@ -172,9 +164,10 @@ def test_get_report_uses_manifest_part_lengths_for_collection_filter(tmp_path: P
 
     assert report.scope == "collection"
     assert [collection.id for collection in report.collections] == [DOCS_COLLECTION_ID]
-    assert report.collections[0].represented_bytes == len(SPLIT_FILE_PARTS[0])
-    assert report.collections[0].attribution_state == "derived"
-    assert report.collections[0].derived_stored_bytes > 0
+    assert report.collections[0].measured_storage_bytes == 0
+    assert report.collections[0].estimated_billable_bytes == 0
+    assert report.collections[0].images
+    assert report.collections[0].images[0].represented_bytes > 0
 
 
 def test_initialize_db_backfills_coverage_parts_for_existing_finalized_images(
@@ -195,14 +188,6 @@ def test_initialize_db_backfills_coverage_parts_for_existing_finalized_images(
                 image_root=str(image_root),
                 target_bytes=SPLIT_IMAGE_FIXTURES[0].bytes,
                 required_copy_count=2,
-                glacier_state="uploaded",
-                glacier_object_path="glacier/finalized-images/20260420T040003Z/20260420T040003Z.iso",
-                glacier_stored_bytes=5100,
-                glacier_backend="s3",
-                glacier_storage_class="DEEP_ARCHIVE",
-                glacier_last_uploaded_at="2026-04-28T00:00:00Z",
-                glacier_last_verified_at="2026-04-28T00:00:00Z",
-                glacier_failure=None,
             )
         )
         for collection_id, path in SPLIT_IMAGE_FIXTURES[0].covered_paths:
@@ -219,4 +204,5 @@ def test_initialize_db_backfills_coverage_parts_for_existing_finalized_images(
 
     report = SqlAlchemyGlacierReportingService(config).get_report(collection=DOCS_COLLECTION_ID)
 
-    assert report.collections[0].represented_bytes == len(SPLIT_FILE_PARTS[0])
+    assert report.collections[0].measured_storage_bytes == 0
+    assert report.collections[0].images[0].represented_bytes > 0

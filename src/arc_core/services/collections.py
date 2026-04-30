@@ -20,6 +20,7 @@ from arc_core.archive_compliance import (
     registered_copy_shortfall,
 )
 from arc_core.catalog_models import (
+    CollectionArchiveRecord,
     CollectionFileRecord,
     CollectionRecord,
     CollectionUploadFileRecord,
@@ -30,6 +31,7 @@ from arc_core.catalog_models import (
 from arc_core.domain.enums import GlacierState, RecoveryCoverageState
 from arc_core.domain.errors import BadRequest, Conflict, HashMismatch, NotFound
 from arc_core.domain.models import (
+    CollectionArchiveManifestStatus,
     CollectionCoverageImage,
     CollectionListPage,
     CollectionRecoverySummary,
@@ -177,18 +179,16 @@ class SqlAlchemyCollectionService:
                 upload.ingest_source = ingest_source
 
             if _collection_upload_is_complete(upload.files):
-                summary = _finalize_collection_upload(
-                    session,
-                    upload,
-                    hot_store=self._hot_store,
-                    upload_store=self._upload_store,
-                )
+                if upload.state == "failed":
+                    upload.state = "archiving"
+                    upload.archive_next_attempt_at = _utc_now()
+                _ensure_collection_upload_archiving(upload)
                 return _collection_upload_payload(
                     collection_id=normalized_collection_id,
                     ingest_source=upload.ingest_source,
                     files=upload.files,
-                    state="finalized",
-                    collection=summary,
+                    state=_collection_upload_session_state(upload),
+                    collection=None,
                 )
 
             return _collection_upload_payload(
@@ -216,18 +216,13 @@ class SqlAlchemyCollectionService:
                 raise NotFound(f"collection upload not found: {normalized_collection_id}")
 
             if _collection_upload_is_complete(upload.files):
-                summary = _finalize_collection_upload(
-                    session,
-                    upload,
-                    hot_store=self._hot_store,
-                    upload_store=self._upload_store,
-                )
+                _ensure_collection_upload_archiving(upload)
                 return _collection_upload_payload(
                     collection_id=normalized_collection_id,
                     ingest_source=upload.ingest_source,
                     files=upload.files,
-                    state="finalized",
-                    collection=summary,
+                    state=_collection_upload_session_state(upload),
+                    collection=None,
                 )
 
             return _collection_upload_payload(
@@ -318,12 +313,7 @@ class SqlAlchemyCollectionService:
                 file_record.upload_expires_at = upload_expiry_timestamp(self._upload_ttl)
 
             if _collection_upload_is_complete(upload.files):
-                _finalize_collection_upload(
-                    session,
-                    upload,
-                    hot_store=self._hot_store,
-                    upload_store=self._upload_store,
-                )
+                _ensure_collection_upload_archiving(upload)
 
             return {
                 "offset": file_record.uploaded_bytes,
@@ -414,6 +404,7 @@ class SqlAlchemyCollectionService:
             return _summary_from_records(
                 normalized_collection_id,
                 collection.files,
+                archive=collection.archive,
                 image_coverage=image_coverage,
                 covered_paths=covered_paths,
                 recovery_parts_by_image_path=recovery_parts_by_image_path,
@@ -443,6 +434,7 @@ class SqlAlchemyCollectionService:
             collections = session.scalars(
                 select(CollectionRecord)
                 .options(selectinload(CollectionRecord.files))
+                .options(selectinload(CollectionRecord.archive))
                 .order_by(CollectionRecord.id.asc())
             ).all()
 
@@ -456,6 +448,7 @@ class SqlAlchemyCollectionService:
                 summary = _summary_from_records(
                     collection.id,
                     collection.files,
+                    archive=collection.archive,
                     image_coverage=image_coverage,
                     covered_paths=covered_paths,
                     recovery_parts_by_image_path=recovery_parts_by_image_path,
@@ -672,6 +665,21 @@ def _collection_upload_is_complete(file_records: Sequence[CollectionUploadFileRe
     )
 
 
+def _collection_upload_session_state(upload: CollectionUploadRecord) -> str:
+    if not _collection_upload_is_complete(upload.files):
+        return "uploading"
+    if upload.state == "failed":
+        return "failed"
+    return "archiving"
+
+
+def _ensure_collection_upload_archiving(upload: CollectionUploadRecord) -> None:
+    if upload.state not in {"archiving", "failed"}:
+        upload.state = "archiving"
+    if upload.archive_next_attempt_at is None and upload.state == "archiving":
+        upload.archive_next_attempt_at = _utc_now()
+
+
 def _finalize_collection_upload(
     session: Session,
     upload: CollectionUploadRecord,
@@ -757,6 +765,7 @@ def _collection_upload_payload(
         "uploaded_bytes": uploaded_bytes,
         "missing_bytes": max(bytes_total - uploaded_bytes, 0),
         "upload_state_expires_at": max(expiries) if expiries else None,
+        "latest_failure": getattr(files[0].upload, "archive_failure", None) if files else None,
         "files": [
             {
                 "path": file_record.path,
@@ -782,6 +791,19 @@ def _collection_summary_payload(summary: CollectionSummary) -> dict[str, object]
         "hot_bytes": summary.hot_bytes,
         "archived_bytes": summary.archived_bytes,
         "pending_bytes": summary.pending_bytes,
+        "glacier": {
+            "state": summary.glacier.state.value,
+            "object_path": summary.glacier.object_path,
+            "stored_bytes": summary.glacier.stored_bytes,
+            "backend": summary.glacier.backend,
+            "storage_class": summary.glacier.storage_class,
+            "last_uploaded_at": summary.glacier.last_uploaded_at,
+            "last_verified_at": summary.glacier.last_verified_at,
+            "failure": summary.glacier.failure,
+        },
+        "archive_manifest": _archive_manifest_payload(summary.archive_manifest),
+        "archive_format": summary.archive_format,
+        "compression": summary.compression,
         "protection_state": summary.protection_state.value,
         "protected_bytes": summary.protected_bytes,
         "image_coverage": [
@@ -816,20 +838,29 @@ def _collection_summary_payload(summary: CollectionSummary) -> dict[str, object]
                     }
                     for copy in image.copies
                 ],
-                "glacier": {
-                    "state": image.glacier.state.value,
-                    "object_path": image.glacier.object_path,
-                    "stored_bytes": image.glacier.stored_bytes,
-                    "backend": image.glacier.backend,
-                    "storage_class": image.glacier.storage_class,
-                    "last_uploaded_at": image.glacier.last_uploaded_at,
-                    "last_verified_at": image.glacier.last_verified_at,
-                    "failure": image.glacier.failure,
-                },
             }
             for image in summary.image_coverage
         ],
     }
+
+
+def _archive_manifest_payload(
+    summary: CollectionArchiveManifestStatus | None,
+) -> dict[str, object] | None:
+    if summary is None:
+        return None
+    return {
+        "object_path": summary.object_path,
+        "sha256": summary.sha256,
+        "ots_object_path": summary.ots_object_path,
+        "ots_state": summary.ots_state,
+    }
+
+
+def _utc_now() -> str:
+    from datetime import UTC, datetime  # noqa: PLC0415
+
+    return datetime.now(UTC).strftime("%Y-%m-%dT%H:%M:%SZ")
 
 
 def _sha256_hex(content: bytes) -> Sha256Hex:
@@ -840,6 +871,7 @@ def _summary_from_records(
     collection_id: str,
     file_records: Sequence[CollectionFileRecord],
     *,
+    archive: CollectionArchiveRecord | None = None,
     image_coverage: Sequence[CollectionCoverageImage] = (),
     covered_paths: dict[str, set[str]] | None = None,
     recovery_parts_by_image_path: dict[tuple[str, str], _RecoveryParts] | None = None,
@@ -853,6 +885,7 @@ def _summary_from_records(
     )
     recovery = _collection_recovery_summary(
         file_records,
+        archive=archive,
         image_coverage=image_coverage,
         covered_paths=covered_paths or {},
         recovery_parts_by_image_path=recovery_parts_by_image_path or {},
@@ -872,6 +905,42 @@ def _summary_from_records(
         protected_bytes=protected_bytes,
         recovery=recovery,
         image_coverage=list(image_coverage),
+        glacier=_collection_glacier_status(archive),
+        archive_manifest=_collection_archive_manifest_status(archive),
+        archive_format=archive.archive_format if archive is not None else None,
+        compression=archive.compression if archive is not None else None,
+    )
+
+
+def _collection_glacier_status(archive: CollectionArchiveRecord | None) -> GlacierArchiveStatus:
+    if archive is None:
+        return GlacierArchiveStatus()
+    return GlacierArchiveStatus(
+        state=normalize_glacier_state(archive.state),
+        object_path=archive.object_path,
+        stored_bytes=archive.stored_bytes,
+        backend=archive.backend,
+        storage_class=archive.storage_class,
+        last_uploaded_at=archive.last_uploaded_at,
+        last_verified_at=archive.last_verified_at,
+        failure=archive.failure,
+    )
+
+
+def _collection_archive_manifest_status(
+    archive: CollectionArchiveRecord | None,
+) -> CollectionArchiveManifestStatus | None:
+    if archive is None:
+        return None
+    ots_state = "uploaded" if archive.ots_object_path else "pending"
+    if archive.state == "failed":
+        ots_state = "failed"
+    return CollectionArchiveManifestStatus(
+        object_path=archive.manifest_object_path,
+        sha256=archive.manifest_sha256,
+        ots_object_path=archive.ots_object_path,
+        ots_state=ots_state,
+        ots_sha256=archive.ots_sha256,
     )
 
 
@@ -949,16 +1018,6 @@ def _collection_image_coverage(
                 verification_state=copy.verification_state,
             )
         )
-        glacier = GlacierArchiveStatus(
-            state=normalize_glacier_state(image.glacier_state),
-            object_path=image.glacier_object_path,
-            stored_bytes=image.glacier_stored_bytes,
-            backend=image.glacier_backend,
-            storage_class=image.glacier_storage_class,
-            last_uploaded_at=image.glacier_last_uploaded_at,
-            last_verified_at=image.glacier_last_verified_at,
-            failure=image.glacier_failure,
-        )
         image_coverage.append(
             CollectionCoverageImage(
                 id=ImageId(image.image_id),
@@ -966,7 +1025,6 @@ def _collection_image_coverage(
                 protection_state=image_protection_state(
                     required_copy_count=required_copy_count,
                     registered_copy_count=registered_copy_count,
-                    glacier_state=glacier.state,
                 ),
                 physical_copies_required=required_copy_count,
                 physical_copies_registered=registered_copy_count,
@@ -977,7 +1035,6 @@ def _collection_image_coverage(
                 ),
                 covered_paths=sorted(image_paths),
                 copies=copies,
-                glacier=glacier,
             )
         )
 
@@ -1005,6 +1062,7 @@ def _protected_bytes(
 def _collection_recovery_summary(
     file_records: Sequence[CollectionFileRecord],
     *,
+    archive: CollectionArchiveRecord | None,
     image_coverage: Sequence[CollectionCoverageImage],
     covered_paths: dict[str, set[str]],
     recovery_parts_by_image_path: dict[tuple[str, str], _RecoveryParts],
@@ -1024,27 +1082,23 @@ def _collection_recovery_summary(
 
     image_by_id = {str(image.id): image for image in image_coverage}
     verified_physical_bytes = 0
-    glacier_bytes = 0
     total_bytes = sum(record.bytes for record in file_records)
+    archive_uploaded = (
+        archive is not None and normalize_glacier_state(archive.state) == GlacierState.UPLOADED
+    )
+    glacier_bytes = total_bytes if archive_uploaded else 0
 
     for record in file_records:
         image_ids = covered_paths.get(record.path, set())
-        if _path_is_recoverable(
+        physical_bytes = _path_recoverable_bytes(
+            record.bytes,
             record.path,
             image_ids=image_ids,
             recovery_parts_by_image_path=recovery_parts_by_image_path,
-            image_available=lambda image: image.physical_copies_verified > 0,
+            image_available=lambda image: image.physical_copies_registered > 0,
             image_by_id=image_by_id,
-        ):
-            verified_physical_bytes += record.bytes
-        if _path_is_recoverable(
-            record.path,
-            image_ids=image_ids,
-            recovery_parts_by_image_path=recovery_parts_by_image_path,
-            image_available=lambda image: image.glacier.state == GlacierState.UPLOADED,
-            image_by_id=image_by_id,
-        ):
-            glacier_bytes += record.bytes
+        )
+        verified_physical_bytes += physical_bytes
 
     verified_physical_state = _recovery_coverage_state(
         covered_bytes=verified_physical_bytes,
@@ -1100,6 +1154,47 @@ def _path_is_recoverable(
             return False
         present_parts.update(recovery_parts.present_parts)
     return expected_part_count is not None and len(present_parts) == expected_part_count
+
+
+def _path_recoverable_bytes(
+    total_bytes: int,
+    path: str,
+    *,
+    image_ids: set[str],
+    recovery_parts_by_image_path: dict[tuple[str, str], _RecoveryParts],
+    image_available: Callable[[CollectionCoverageImage], bool],
+    image_by_id: dict[str, CollectionCoverageImage],
+) -> int:
+    if _path_is_recoverable(
+        path,
+        image_ids=image_ids,
+        recovery_parts_by_image_path=recovery_parts_by_image_path,
+        image_available=image_available,
+        image_by_id=image_by_id,
+    ):
+        return total_bytes
+
+    expected_part_count: int | None = None
+    present_parts: set[int] = set()
+    for image_id in image_ids:
+        image = image_by_id.get(image_id)
+        if image is None or not image_available(image):
+            continue
+        recovery_parts = recovery_parts_by_image_path.get((image_id, path))
+        if recovery_parts is None:
+            continue
+        if expected_part_count is None:
+            expected_part_count = recovery_parts.part_count
+        elif expected_part_count != recovery_parts.part_count:
+            return 0
+        present_parts.update(recovery_parts.present_parts)
+
+    if expected_part_count is None or not present_parts:
+        return 0
+    return min(
+        total_bytes,
+        max(1, (total_bytes * len(present_parts)) // expected_part_count),
+    )
 
 
 def _recovery_coverage_state(

@@ -41,12 +41,6 @@ def _image_next_actions(image: Mapping[str, object]) -> str:
         actions.append("burn")
     if verified < required:
         actions.append("verify")
-    glacier = image.get("glacier")
-    glacier_state = (
-        str(glacier.get("state", "unknown")) if isinstance(glacier, Mapping) else "unknown"
-    )
-    if glacier_state != "uploaded":
-        actions.append(f"glacier={glacier_state}")
     return ", ".join(actions) if actions else "none"
 
 
@@ -214,29 +208,20 @@ def format_images(payload: Mapping[str, Any]) -> str:
     for image in images:
         if not isinstance(image, Mapping):
             continue
-        glacier = image.get("glacier")
-        glacier_state = (
-            glacier.get("state", "unknown") if isinstance(glacier, Mapping) else "unknown"
-        )
         lines.extend(
             [
                 f"- {image.get('id', 'unknown')} ({image.get('filename', 'unknown')})",
                 f"  finalized_at: {image.get('finalized_at', 'unknown')}",
                 "  protection: "
-                f"{image.get('protection_state', 'unknown')} "
+                f"{image.get('physical_protection_state', 'unknown')} "
                 f"registered={image.get('physical_copies_registered', 0)}/"
                 f"{image.get('physical_copies_required', 0)} "
                 f"verified={image.get('physical_copies_verified', 0)}/"
-                f"{image.get('physical_copies_required', 0)} "
-                f"glacier={glacier_state}",
+                f"{image.get('physical_copies_required', 0)}",
                 f"  collections: {image.get('collections', 0)} "
                 f"[{_collection_ids_text(image.get('collection_ids'))}]",
             ]
         )
-        if isinstance(glacier, Mapping) and glacier.get("object_path"):
-            lines.append(f"  glacier_path: {glacier.get('object_path')}")
-        if isinstance(glacier, Mapping) and glacier.get("failure"):
-            lines.append(f"  glacier_failure: {glacier.get('failure')}")
 
     return "\n".join(lines)
 
@@ -296,29 +281,20 @@ def format_archive_status(
         for image in images:
             if not isinstance(image, Mapping):
                 continue
-            glacier = image.get("glacier")
-            glacier_state = (
-                glacier.get("state", "unknown") if isinstance(glacier, Mapping) else "unknown"
-            )
             lines.extend(
                 [
                     f"- {image.get('id', 'unknown')} ({image.get('filename', 'unknown')})",
                     f"  next: {_image_next_actions(image)}",
                     "  protection: "
-                    f"{image.get('protection_state', 'unknown')} "
+                    f"{image.get('physical_protection_state', 'unknown')} "
                     f"registered={image.get('physical_copies_registered', 0)}/"
                     f"{image.get('physical_copies_required', 0)} "
                     f"verified={image.get('physical_copies_verified', 0)}/"
-                    f"{image.get('physical_copies_required', 0)} "
-                    f"glacier={glacier_state}",
+                    f"{image.get('physical_copies_required', 0)}",
                     f"  collections: {image.get('collections', 0)} "
                     f"[{_collection_ids_text(image.get('collection_ids'))}]",
                 ]
             )
-            if isinstance(glacier, Mapping) and glacier.get("object_path"):
-                lines.append(f"  glacier_path: {glacier.get('object_path')}")
-            if isinstance(glacier, Mapping) and glacier.get("failure"):
-                lines.append(f"  glacier_failure: {glacier.get('failure')}")
 
     lines.append("noncompliant_collections:")
     noncompliant_collections: list[Mapping[str, Any]] = []
@@ -385,12 +361,48 @@ def format_collection_summary(
     )
 
     collection_glacier = _find_collection_glacier_entry(collection_id, glacier_payload)
+    direct_glacier = payload.get("glacier")
+    if isinstance(direct_glacier, Mapping):
+        lines.append(
+            "glacier: "
+            f"{direct_glacier.get('state', 'unknown')} "
+            f"stored_bytes={direct_glacier.get('stored_bytes', 0)} "
+            f"backend={direct_glacier.get('backend') or 'unknown'} "
+            f"storage_class={direct_glacier.get('storage_class') or 'unknown'}"
+        )
+        if direct_glacier.get("object_path"):
+            lines.append(f"glacier_path: {direct_glacier.get('object_path')}")
+        if direct_glacier.get("failure"):
+            lines.append(f"glacier_failure: {direct_glacier.get('failure')}")
+
+    archive_manifest = payload.get("archive_manifest")
+    if isinstance(archive_manifest, Mapping):
+        lines.append(
+            "archive_manifest: "
+            f"{archive_manifest.get('object_path') or 'missing'} "
+            f"sha256={archive_manifest.get('sha256') or 'unknown'}"
+        )
+        ots_state = "uploaded" if archive_manifest.get("ots_object_path") else "missing"
+        lines.append(
+            f"ots: {ots_state} "
+            f"path={archive_manifest.get('ots_object_path') or 'missing'}"
+        )
+
+    disc_coverage = payload.get("disc_coverage")
+    if isinstance(disc_coverage, Mapping):
+        lines.append(
+            "disc_coverage="
+            f"{disc_coverage.get('state', 'unknown')} "
+            f"verified_physical_bytes={disc_coverage.get('verified_physical_bytes', 0)}"
+        )
+
     if isinstance(collection_glacier, Mapping):
         estimated_cost = collection_glacier.get("estimated_monthly_cost_usd", 0.0)
         lines.append(
             "glacier_footprint: "
-            f"represented_bytes={collection_glacier.get('represented_bytes', 0)} "
-            f"derived_stored_bytes={collection_glacier.get('derived_stored_bytes', 0)} "
+            f"bytes={collection_glacier.get('bytes', 0)} "
+            f"measured_storage_bytes={collection_glacier.get('measured_storage_bytes', 0)} "
+            f"estimated_billable_bytes={collection_glacier.get('estimated_billable_bytes', 0)} "
             f"estimated_monthly_cost_usd={estimated_cost}"
         )
 
@@ -414,34 +426,26 @@ def format_collection_summary(
         if not isinstance(image, Mapping):
             continue
         image_id = str(image.get("id", "unknown"))
-        glacier = image.get("glacier")
-        glacier_state = (
-            glacier.get("state", "unknown") if isinstance(glacier, Mapping) else "unknown"
-        )
+        protection_state = image.get("physical_protection_state", "unknown")
         covered_paths = ", ".join(str(path) for path in image.get("covered_paths", [])) or "none"
         lines.extend(
             [
                 f"- {image_id} ({image.get('filename', 'unknown')})",
                 "  protection: "
-                f"{image.get('protection_state', 'unknown')} "
-                    f"registered={image.get('physical_copies_registered', 0)}/"
-                    f"{image.get('physical_copies_required', 0)} "
-                    f"verified={image.get('physical_copies_verified', 0)}/"
-                    f"{image.get('physical_copies_required', 0)} "
-                    f"glacier={glacier_state}",
+                f"{protection_state} "
+                f"registered={image.get('physical_copies_registered', 0)}/"
+                f"{image.get('physical_copies_required', 0)} "
+                f"verified={image.get('physical_copies_verified', 0)}/"
+                f"{image.get('physical_copies_required', 0)}",
                 f"  paths: {covered_paths}",
             ]
         )
         contribution = image_costs.get(image_id)
         if isinstance(contribution, Mapping):
             lines.append(
-                "  glacier_coverage: "
-                f"derived_stored_bytes={contribution.get('derived_stored_bytes', 0)} "
-                f"represented_bytes={contribution.get('represented_bytes', 0)} "
-                f"estimated_monthly_cost_usd={contribution.get('estimated_monthly_cost_usd', 0.0)}"
+                "  collection_archive_contribution: "
+                f"represented_bytes={contribution.get('represented_bytes', 0)}"
             )
-        if isinstance(glacier, Mapping) and glacier.get("object_path"):
-            lines.append(f"  glacier_path: {glacier.get('object_path')}")
         copies = image.get("copies")
         lines.append("  copies:")
         if not isinstance(copies, Sequence) or not copies:
@@ -472,8 +476,8 @@ def format_glacier_report(payload: Mapping[str, Any]) -> str:
     if isinstance(totals, Mapping):
         lines.append(
             "totals: "
-            f"images={totals.get('images', 0)} "
-            f"uploaded={totals.get('uploaded_images', 0)} "
+            f"collections={totals.get('collections', 0)} "
+            f"uploaded_collections={totals.get('uploaded_collections', 0)} "
             f"measured_storage_bytes={totals.get('measured_storage_bytes', 0)} "
             f"estimated_billable_bytes={totals.get('estimated_billable_bytes', 0)} "
             f"estimated_monthly_cost_usd={totals.get('estimated_monthly_cost_usd', 0.0)}"
@@ -508,19 +512,10 @@ def format_glacier_report(payload: Mapping[str, Any]) -> str:
         for image in images:
             if not isinstance(image, Mapping):
                 continue
-            glacier = image.get("glacier")
-            glacier_state = (
-                glacier.get("state", "unknown") if isinstance(glacier, Mapping) else "unknown"
-            )
             lines.append(
                 f"- {image.get('id', 'unknown')} ({image.get('filename', 'unknown')}) "
-                f"glacier={glacier_state} "
-                f"measured_storage_bytes={image.get('measured_storage_bytes', 0)} "
-                f"estimated_billable_bytes={image.get('estimated_billable_bytes', 0)} "
-                f"estimated_monthly_cost_usd={image.get('estimated_monthly_cost_usd', 0.0)}"
+                f"collections=[{_collection_ids_text(image.get('collection_ids'))}]"
             )
-            if isinstance(glacier, Mapping) and glacier.get("object_path"):
-                lines.append(f"  glacier_path: {glacier.get('object_path')}")
 
     collections = payload.get("collections")
     lines.append("collections:")
@@ -530,13 +525,29 @@ def format_glacier_report(payload: Mapping[str, Any]) -> str:
         for collection in collections:
             if not isinstance(collection, Mapping):
                 continue
+            glacier = collection.get("glacier")
+            glacier_state = (
+                glacier.get("state", "unknown") if isinstance(glacier, Mapping) else "unknown"
+            )
+            manifest = collection.get("archive_manifest")
+            ots_state = (
+                "uploaded"
+                if isinstance(manifest, Mapping) and manifest.get("ots_object_path")
+                else "missing"
+            )
             lines.append(
                 f"- {collection.get('id', 'unknown')} "
-                f"attribution={collection.get('attribution_state', 'unknown')} "
-                f"represented_bytes={collection.get('represented_bytes', 0)} "
-                f"derived_stored_bytes={collection.get('derived_stored_bytes', 0)} "
+                f"bytes={collection.get('bytes', 0)} "
+                f"glacier={glacier_state} "
+                f"ots={ots_state} "
+                f"measured_storage_bytes={collection.get('measured_storage_bytes', 0)} "
+                f"estimated_billable_bytes={collection.get('estimated_billable_bytes', 0)} "
                 f"estimated_monthly_cost_usd={collection.get('estimated_monthly_cost_usd', 0.0)}"
             )
+            if isinstance(glacier, Mapping) and glacier.get("object_path"):
+                lines.append(f"  glacier_path: {glacier.get('object_path')}")
+            if isinstance(manifest, Mapping) and manifest.get("object_path"):
+                lines.append(f"  archive_manifest: {manifest.get('object_path')}")
 
     billing = payload.get("billing")
     lines.append("billing:")
@@ -687,7 +698,7 @@ def format_glacier_report(payload: Mapping[str, Any]) -> str:
                 continue
             lines.append(
                 f"- {item.get('captured_at', 'unknown')} "
-                f"uploaded={item.get('uploaded_images', 0)} "
+                f"uploaded_collections={item.get('uploaded_collections', 0)} "
                 f"measured_storage_bytes={item.get('measured_storage_bytes', 0)} "
                 f"estimated_monthly_cost_usd={item.get('estimated_monthly_cost_usd', 0.0)}"
             )
@@ -774,6 +785,9 @@ def format_collection_upload(payload: Mapping[str, Any]) -> str:
         lines.append(
             f"finalized: {collection.get('files', 0)} files {collection.get('bytes', 0)} bytes"
         )
+        glacier = collection.get("glacier")
+        if isinstance(glacier, Mapping):
+            lines.append(f"glacier: {glacier.get('state', 'unknown')}")
         return "\n".join(lines)
 
     files = payload.get("files")

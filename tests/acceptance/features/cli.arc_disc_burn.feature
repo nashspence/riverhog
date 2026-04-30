@@ -31,8 +31,6 @@ Feature: arc-disc burn CLI
     And image "20260420T040001Z" has physical_copies_registered 2
     And copy "20260420T040001Z-1" for image "20260420T040001Z" state is "lost"
     And copy "20260420T040001Z-3" for image "20260420T040001Z" state is "verified"
-
-  @xfail_not_backed
   Scenario: arc-disc burn reports image rebuild work instead of ordinary replacement backlog
     Given an archive with planner fixtures
     And collection "docs" has uploaded Glacier archive package

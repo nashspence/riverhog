@@ -48,11 +48,8 @@ REPO_ROOT = Path(__file__).resolve().parents[2]
 ACCEPTANCE_FIXTURE = REPO_ROOT / "tests" / "fixtures" / "acceptance.py"
 
 LOCKED_HELPER_STATE_ACCESS = {
-    "seed_finalized_image": "mutates finalized image and Glacier upload state directly",
-    "wait_for_image_glacier_state": "reads legacy fixture Glacier upload state directly",
-    "fail_glacier_upload": "mutates Glacier upload failure fixtures directly",
+    "seed_finalized_image": "mutates finalized image fixture state directly",
     "enable_real_iso_streams": "mutates fixture ISO stream mode directly",
-    "enable_live_recovery_archive_store": "mutates fixture recovery archive-store mode directly",
     "delete_hot_backing_file": "mutates hot backing visibility directly",
     "has_committed_collection_file": "reads committed collection file state directly",
     "collection_source_root": "reads registered collection source paths directly",
@@ -70,6 +67,15 @@ LOCKED_HELPER_STATE_ACCESS = {
     "seed_docs_archive_with_split_invoice": (
         "checks and adjusts split archive state around HTTP setup"
     ),
+    "stage_collection_upload_archiving": "drives upload state to archiving for gating setup",
+    "wait_for_collection_glacier_state": "polls collection Glacier fixture state directly",
+    "mark_collection_archive_uploaded": "mutates collection Glacier archive state directly",
+    "collection_glacier_failure_configured": "reads collection Glacier failure fixture state",
+    "fail_collection_glacier_upload": "mutates collection Glacier failure fixtures directly",
+    "clear_collection_glacier_upload_failure": "clears collection Glacier failure fixtures",
+    "start_collection_glacier_archiving": "mutates collection archive upload state directly",
+    "seed_candidate_for_collection": "mutates candidate image fixture state directly",
+    "ensure_image_rebuild_session": "mutates recovery session fixture state directly",
     "constrain_collection_to_paths": "mutates collection file projection state directly",
     "constrain_collection_to_finalized_image_coverage": "reads finalized image coverage directly",
     "recovery_upload_absent": "reads fetch existence directly",

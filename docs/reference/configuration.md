@@ -107,12 +107,12 @@ Enables path-style requests for Glacier-upload backends that require them.
 ## `ARC_GLACIER_PREFIX`
 
 - type: normalized path prefix
-- default: `glacier/collections`
+- default: `glacier`
 
-Collection Glacier archive packages use privacy-safe keys under:
+Collection Glacier archive packages use privacy-safe keys below the configured prefix:
 
 ```text
-glacier/collections/{collection_id_hash}/archive.tar.zst
+glacier/collections/{collection_id_hash}/archive.tar
 glacier/collections/{collection_id_hash}/manifest.yml
 glacier/collections/{collection_id_hash}/manifest.yml.ots
 ```

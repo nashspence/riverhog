@@ -1,7 +1,7 @@
 # Register a burned copy
 
 Once an image has been explicitly finalized, downloaded, and burned, register the
-physical copy so archive-protection coverage can be counted.
+physical copy so physical-copy coverage can be counted.
 
 CLI example:
 
@@ -33,9 +33,8 @@ Notes:
 - the physical copy identity is `(volume_id, copy_id)`
 - `location` is mutable metadata and is not part of the copy identity
 
-Registering a copy does not change hot presence by itself. It updates archival coverage for files contained in the
+Registering a copy does not change hot presence by itself. It updates physical-copy coverage for files contained in the
 image.
 
-Registering one copy does not make a finalized image fully protected by itself.
-The protection model also requires the image's default two-copy physical target
-and Glacier coverage.
+Registering one copy does not make a finalized image physically protected by itself.
+The physical protection model also requires the image's default two-copy target.

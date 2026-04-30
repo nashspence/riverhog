@@ -49,6 +49,7 @@ from arc_core.domain.enums import (
 )
 from arc_core.domain.errors import Conflict, HashMismatch, InvalidState, NotFound
 from arc_core.domain.models import (
+    CollectionArchiveManifestStatus,
     CollectionCoverageImage,
     CollectionListPage,
     CollectionRecoverySummary,
@@ -78,6 +79,7 @@ from arc_core.domain.models import (
     RecoveryCostEstimate,
     RecoveryCoverage,
     RecoveryNotificationStatus,
+    RecoverySessionCollection,
     RecoverySessionImage,
     RecoverySessionSummary,
 )
@@ -98,11 +100,9 @@ from arc_core.fs_paths import (
 )
 from arc_core.iso.streaming import IsoStream, build_iso_cmd_from_root
 from arc_core.planner.manifest import MANIFEST_FILENAME
-from arc_core.ports.archive_store import ArchiveRestoreStatus, ArchiveStore
 from arc_core.runtime_config import load_runtime_config
 from arc_core.webhooks import (
     WebhookConfig,
-    build_glacier_upload_failed_payload,
     build_recovery_ready_payload,
 )
 from tests.fixtures.data import (
@@ -292,14 +292,11 @@ class CandidateRecord:
         *,
         physical_copies_registered: int = 0,
         physical_copies_verified: int = 0,
-        glacier: GlacierArchiveStatus | None = None,
     ) -> dict[str, object]:
         required_copy_count = normalize_required_copy_count(None)
-        glacier = glacier or GlacierArchiveStatus(state=GlacierState.PENDING)
         protection_state = image_protection_state(
             required_copy_count=required_copy_count,
             registered_copy_count=physical_copies_registered,
-            glacier_state=glacier.state,
         )
         return {
             "id": self.finalized_id,
@@ -311,7 +308,7 @@ class CandidateRecord:
             "collections": len(self.collections),
             "collection_ids": self.collections,
             "iso_ready": True,
-            "protection_state": protection_state.value,
+            "physical_protection_state": protection_state.value,
             "physical_copies_required": required_copy_count,
             "physical_copies_registered": physical_copies_registered,
             "physical_copies_verified": physical_copies_verified,
@@ -319,16 +316,6 @@ class CandidateRecord:
                 required_copy_count=required_copy_count,
                 registered_copy_count=physical_copies_registered,
             ),
-            "glacier": {
-                "state": glacier.state.value,
-                "object_path": glacier.object_path,
-                "stored_bytes": glacier.stored_bytes,
-                "backend": glacier.backend,
-                "storage_class": glacier.storage_class,
-                "last_uploaded_at": glacier.last_uploaded_at,
-                "last_verified_at": glacier.last_verified_at,
-                "failure": glacier.failure,
-            },
         }
 
 
@@ -374,14 +361,9 @@ class CollectionUploadRecord:
     collection_id: CollectionId
     ingest_source: str | None
     files: dict[str, CollectionUploadFileRecord]
-
-
-@dataclass(slots=True)
-class AcceptanceGlacierUploadJob:
-    image_id: ImageId
-    attempt_count: int = 0
-    completed: bool = False
-    failed: bool = False
+    state: str = "uploading"
+    archive_attempt_count: int = 0
+    latest_failure: str | None = None
 
 
 @dataclass(slots=True)
@@ -390,6 +372,9 @@ class AcceptanceRecoverySessionRecord:
     image_id: ImageId
     state: RecoverySessionState
     created_at: str
+    type: str = "image_rebuild"
+    image_ids: tuple[ImageId, ...] = ()
+    collection_ids: tuple[CollectionId, ...] = ()
     approved_at: str | None = None
     restore_requested_at: str | None = None
     restore_ready_at: str | None = None
@@ -412,13 +397,14 @@ class AcceptanceState:
     exact_pins: set[TargetStr] = field(default_factory=set)
     fetches: dict[FetchId, FetchRecord] = field(default_factory=dict)
     collection_uploads: dict[CollectionId, CollectionUploadRecord] = field(default_factory=dict)
-    glacier_status_by_image: dict[ImageId, GlacierArchiveStatus] = field(default_factory=dict)
-    glacier_jobs_by_image: dict[ImageId, AcceptanceGlacierUploadJob] = field(default_factory=dict)
+    collection_glacier_status_by_collection: dict[CollectionId, GlacierArchiveStatus] = field(
+        default_factory=dict
+    )
     glacier_usage_snapshots: list[GlacierUsageSnapshot] = field(default_factory=list)
     recovery_sessions_by_id: dict[str, AcceptanceRecoverySessionRecord] = field(
         default_factory=dict
     )
-    glacier_upload_failures_by_image: dict[ImageId, str] = field(default_factory=dict)
+    glacier_upload_failures_by_collection: dict[CollectionId, str] = field(default_factory=dict)
     webhook_deliveries: list[dict[str, object]] = field(default_factory=list)
     webhook_attempts: list[dict[str, object]] = field(default_factory=list)
     webhook_behaviors: list[dict[str, object]] = field(default_factory=list)
@@ -426,10 +412,6 @@ class AcceptanceState:
     public_base_url: str = ""
     glacier_billing_metadata_available: bool = False
     real_iso_streams_enabled: bool = False
-    live_recovery_archive_store: ArchiveStore | None = field(default=None, repr=False)
-    live_recovery_retrieval_tier: str = "bulk"
-    live_recovery_hold_days: int = 1
-    live_recovery_poll_interval_seconds: float = 30.0
     next_fetch_number: int = 0
 
     def clear_webhook_deliveries(self) -> None:
@@ -580,26 +562,40 @@ class AcceptanceState:
         with self.lock:
             self.candidates_by_id[image.candidate_id] = image
 
-    def enqueue_glacier_upload(self, image: CandidateRecord) -> None:
-        with self.lock:
-            image_key = ImageId(image.finalized_id)
-            self.glacier_status_by_image.setdefault(
-                image_key,
-                GlacierArchiveStatus(state=GlacierState.PENDING),
-            )
-            self.glacier_jobs_by_image.setdefault(
-                image_key,
-                AcceptanceGlacierUploadJob(image_id=image_key),
-            )
-
-    def glacier_status(self, image_id: str) -> GlacierArchiveStatus:
-        return self.glacier_status_by_image.get(
-            ImageId(image_id),
+    def collection_glacier_status(self, collection_id: str) -> GlacierArchiveStatus:
+        return self.collection_glacier_status_by_collection.get(
+            CollectionId(normalize_collection_id(collection_id)),
             GlacierArchiveStatus(state=GlacierState.PENDING),
         )
 
+    def mark_collection_archive_uploaded(self, collection_id: str) -> None:
+        normalized_collection_id = normalize_collection_id(collection_id)
+        records = self.collection_files(normalized_collection_id)
+        now = DEFAULT_COPY_CREATED_AT
+        self.collection_glacier_status_by_collection[CollectionId(normalized_collection_id)] = (
+            GlacierArchiveStatus(
+                state=GlacierState.UPLOADED,
+                object_path=f"glacier/collections/{normalized_collection_id}/archive.tar",
+                stored_bytes=sum(record.bytes for record in records),
+                backend="s3",
+                storage_class="DEEP_ARCHIVE",
+                last_uploaded_at=now,
+                last_verified_at=now,
+                failure=None,
+            )
+        )
+
     def ensure_glacier_recovery_session(self, image_id: str) -> None:
-        if self.glacier_status(image_id).state != GlacierState.UPLOADED:
+        image = self.finalized_images_by_id.get(ImageId(image_id))
+        if image is None:
+            return
+        required_collection_ids = tuple(
+            sorted({collection_id for collection_id, _ in image.covered_paths})
+        )
+        if not required_collection_ids or any(
+            self.collection_glacier_status(collection_id).state != GlacierState.UPLOADED
+            for collection_id in required_collection_ids
+        ):
             return
         if self._protected_copy_count(image_id) > 0:
             return
@@ -607,16 +603,47 @@ class AcceptanceState:
             return
         if self.active_recovery_session(image_id) is not None:
             return
+        pending_rebuild = self.active_image_rebuild_session()
+        if (
+            pending_rebuild is not None
+            and pending_rebuild.state == RecoverySessionState.PENDING_APPROVAL
+        ):
+            image_key = ImageId(image_id)
+            if image_key not in pending_rebuild.image_ids:
+                pending_rebuild.image_ids = tuple(sorted((*pending_rebuild.image_ids, image_key)))
+            pending_rebuild.collection_ids = tuple(
+                sorted({*pending_rebuild.collection_ids, *required_collection_ids})
+            )
+            return
         session_id = self._generated_recovery_session_id(image_id)
+        image_key = ImageId(image_id)
         self.recovery_sessions_by_id[session_id] = AcceptanceRecoverySessionRecord(
             session_id=session_id,
-            image_id=ImageId(image_id),
+            image_id=image_key,
             state=RecoverySessionState.PENDING_APPROVAL,
             created_at=_acceptance_isoformat(datetime.now(UTC)),
+            type="image_rebuild",
+            image_ids=(image_key,),
+            collection_ids=required_collection_ids,
             latest_message=(
                 "Approve the estimated restore cost before Riverhog requests archive restore."
             ),
         )
+
+    def active_image_rebuild_session(self) -> AcceptanceRecoverySessionRecord | None:
+        active_states = {
+            RecoverySessionState.PENDING_APPROVAL,
+            RecoverySessionState.RESTORE_REQUESTED,
+            RecoverySessionState.READY,
+        }
+        sessions = [
+            record
+            for record in self.recovery_sessions_by_id.values()
+            if record.type == "image_rebuild" and record.state in active_states
+        ]
+        if not sessions:
+            return None
+        return sorted(sessions, key=lambda current: current.created_at, reverse=True)[0]
 
     def active_recovery_session(self, image_id: str) -> AcceptanceRecoverySessionRecord | None:
         active_states = {
@@ -627,7 +654,7 @@ class AcceptanceState:
         sessions = [
             record
             for record in self.recovery_sessions_by_id.values()
-            if str(record.image_id) == image_id and record.state in active_states
+            if ImageId(image_id) in self._record_image_ids(record) and record.state in active_states
         ]
         if not sessions:
             return None
@@ -637,7 +664,7 @@ class AcceptanceState:
         sessions = [
             record
             for record in self.recovery_sessions_by_id.values()
-            if str(record.image_id) == image_id
+            if ImageId(image_id) in self._record_image_ids(record)
         ]
         if not sessions:
             return None
@@ -651,10 +678,14 @@ class AcceptanceState:
         }
         ordinal = 1
         while True:
-            candidate = f"rs-{image_id}-{ordinal}"
+            candidate = f"rs-{image_id}-rebuild-{ordinal}"
             ordinal += 1
             if candidate not in existing_ids:
                 return candidate
+
+    @staticmethod
+    def _record_image_ids(record: AcceptanceRecoverySessionRecord) -> tuple[ImageId, ...]:
+        return record.image_ids or ((record.image_id,) if str(record.image_id) else ())
 
     def _protected_copy_count(self, image_id: str) -> int:
         return sum(
@@ -786,6 +817,37 @@ class AcceptanceState:
             protected_bytes=protected_bytes,
             recovery=recovery,
             image_coverage=image_coverage,
+            glacier=self._collection_glacier_status(str(collection_id), records),
+            archive_manifest=self._collection_archive_manifest_status(str(collection_id)),
+            archive_format="tar",
+            compression="none",
+        )
+
+    def _collection_glacier_status(
+        self,
+        collection_id: str,
+        records: list[StoredFile],
+    ) -> GlacierArchiveStatus:
+        _ = records
+        direct = self.collection_glacier_status(collection_id)
+        return direct
+
+    def _collection_archive_manifest_status(
+        self,
+        collection_id: str,
+    ) -> CollectionArchiveManifestStatus | None:
+        status = self._collection_glacier_status(
+            collection_id,
+            self.collection_files(collection_id),
+        )
+        if status.state != GlacierState.UPLOADED:
+            return None
+        return CollectionArchiveManifestStatus(
+            object_path=f"glacier/collections/{collection_id}/manifest.yml",
+            sha256="0" * 64,
+            ots_object_path=f"glacier/collections/{collection_id}/manifest.yml.ots",
+            ots_state="uploaded",
+            ots_sha256="1" * 64,
         )
 
     def collection_image_coverage(
@@ -835,7 +897,6 @@ class AcceptanceState:
                 )
             )
             physical_copies_required = normalize_required_copy_count(None)
-            glacier = self.glacier_status(image.finalized_id)
             image_coverage.append(
                 CollectionCoverageImage(
                     id=ImageId(image.finalized_id),
@@ -843,7 +904,6 @@ class AcceptanceState:
                     protection_state=image_protection_state(
                         required_copy_count=physical_copies_required,
                         registered_copy_count=physical_copies_registered,
-                        glacier_state=glacier.state,
                     ),
                     physical_copies_required=physical_copies_required,
                     physical_copies_registered=physical_copies_registered,
@@ -858,7 +918,6 @@ class AcceptanceState:
                         if covered_collection_id == normalized_collection_id
                     ),
                     copies=copies,
-                    glacier=glacier,
                 )
             )
         return image_coverage, covered_paths, recovery_parts_by_image_path
@@ -882,16 +941,21 @@ class AcceptanceState:
                 record.path,
                 image_ids=image_ids,
                 recovery_parts_by_image_path=recovery_parts_by_image_path,
-                image_available=lambda image: image.physical_copies_verified > 0,
+                image_available=lambda image: image.physical_copies_registered > 0,
                 image_by_id=image_by_id,
             ):
                 verified_physical_bytes += record.bytes
-            if _path_is_recoverable(
-                record.path,
-                image_ids=image_ids,
-                recovery_parts_by_image_path=recovery_parts_by_image_path,
-                image_available=lambda image: image.glacier.state == GlacierState.UPLOADED,
-                image_by_id=image_by_id,
+            else:
+                verified_physical_bytes += _partial_recoverable_bytes(
+                    record.bytes,
+                    image_ids=image_ids,
+                    recovery_parts_by_image_path=recovery_parts_by_image_path,
+                    image_available=lambda image: image.physical_copies_registered > 0,
+                    image_by_id=image_by_id,
+                )
+            if (
+                self.collection_glacier_status(str(record.collection_id)).state
+                == GlacierState.UPLOADED
             ):
                 glacier_bytes += record.bytes
 
@@ -1054,10 +1118,14 @@ class AcceptanceCollectionService:
                     f"collection upload manifest does not match: {normalized_collection_id}"
                 )
             upload.ingest_source = ingest_source
+            if upload.state == "failed":
+                upload.state = "archiving"
+                upload.latest_failure = None
 
         if self._is_complete(upload):
-            summary = self._finalize_upload(upload)
-            return self._upload_payload(upload, state="finalized", collection=summary)
+            if upload.state == "uploading":
+                upload.state = "archiving"
+            return self._upload_payload(upload, state=upload.state, collection=None)
         return self._upload_payload(upload, state="uploading", collection=None)
 
     @_with_state_lock
@@ -1070,8 +1138,9 @@ class AcceptanceCollectionService:
         if upload is None:
             raise NotFound(f"collection upload not found: {normalized_collection_id}")
         if self._is_complete(upload):
-            summary = self._finalize_upload(upload)
-            return self._upload_payload(upload, state="finalized", collection=summary)
+            if upload.state == "uploading":
+                upload.state = "archiving"
+            return self._upload_payload(upload, state=upload.state, collection=None)
         return self._upload_payload(upload, state="uploading", collection=None)
 
     @_with_state_lock
@@ -1147,8 +1216,8 @@ class AcceptanceCollectionService:
                 raise HashMismatch("sha256 did not match expected file hash")
             file_record.upload_expires_at = None
 
-        if self._is_complete(upload):
-            self._finalize_upload(upload)
+        if self._is_complete(upload) and upload.state == "uploading":
+            upload.state = "archiving"
 
         return {
             "offset": file_record.uploaded_bytes,
@@ -1330,6 +1399,7 @@ class AcceptanceCollectionService:
             archived_paths=set(),
         )
         summary = self.state.collection_summary(str(upload.collection_id))
+        self.state.mark_collection_archive_uploaded(str(upload.collection_id))
         del self.state.collection_uploads[upload.collection_id]
         return summary
 
@@ -1368,6 +1438,7 @@ class AcceptanceCollectionService:
                 0,
             ),
             "upload_state_expires_at": max(upload_expiries) if upload_expiries else None,
+            "latest_failure": upload.latest_failure,
             "files": [
                 {
                     "path": file_record.path,
@@ -1482,6 +1553,12 @@ class AcceptancePlanningService:
             image
             for image in self.state.candidates_by_id.values()
             if ImageId(image.finalized_id) not in self.state.finalized_images_by_id
+            and all(
+                CollectionId(collection_id) in self.state.files_by_collection
+                and self.state.collection_glacier_status(collection_id).state
+                == GlacierState.UPLOADED
+                for collection_id in image.collections
+            )
         ]
         covered = {
             (collection_id, path)
@@ -1624,7 +1701,6 @@ class AcceptancePlanningService:
                 image.finalized_image_payload(
                     physical_copies_registered=self._physical_copies_registered(image),
                     physical_copies_verified=self._physical_copies_verified(image),
-                    glacier=self.state.glacier_status(image.finalized_id),
                 )
                 for image in page_images
             ],
@@ -1636,7 +1712,6 @@ class AcceptancePlanningService:
         return image.finalized_image_payload(
             physical_copies_registered=self._physical_copies_registered(image),
             physical_copies_verified=self._physical_copies_verified(image),
-            glacier=self.state.glacier_status(image.finalized_id),
         )
 
     @_with_state_lock
@@ -1647,12 +1722,10 @@ class AcceptancePlanningService:
         finalized_key = ImageId(candidate.finalized_id)
         self.state.finalized_images_by_id.setdefault(finalized_key, candidate)
         self.state.ensure_required_copy_slots(candidate.finalized_id)
-        self.state.enqueue_glacier_upload(candidate)
         image = self.state.finalized_images_by_id[finalized_key]
         return image.finalized_image_payload(
             physical_copies_registered=self._physical_copies_registered(image),
             physical_copies_verified=self._physical_copies_verified(image),
-            glacier=self.state.glacier_status(image.finalized_id),
         )
 
     @_with_state_lock
@@ -1729,68 +1802,40 @@ class AcceptanceGlacierUploadService:
     @_with_state_lock
     def process_due_uploads(self, *, limit: int = 1) -> int:
         attempted = 0
-        for image_id, job in sorted(self.state.glacier_jobs_by_image.items()):
-            if attempted >= limit or job.completed or job.failed:
+        for collection_id, upload in sorted(self.state.collection_uploads.items()):
+            if attempted >= limit:
+                return attempted
+            if upload.state != "archiving" or not AcceptanceCollectionService(
+                self.state
+            )._is_complete(upload):
                 continue
-            image = self.state.finalized_images_by_id.get(image_id)
-            if image is None:
-                continue
-            failure = self.state.glacier_upload_failures_by_image.get(image_id)
-            job.attempt_count += 1
+            failure = self.state.glacier_upload_failures_by_collection.get(collection_id)
+            upload.archive_attempt_count += 1
             if failure is not None:
-                if job.attempt_count < _GLACIER_UPLOAD_RETRY_LIMIT:
-                    self.state.glacier_status_by_image[image_id] = GlacierArchiveStatus(
-                        state=GlacierState.RETRYING,
-                        object_path=None,
-                        stored_bytes=None,
-                        backend=None,
-                        storage_class=None,
-                        last_uploaded_at=None,
-                        last_verified_at=None,
-                        failure=failure,
+                upload.latest_failure = failure
+                if upload.archive_attempt_count >= _GLACIER_UPLOAD_RETRY_LIMIT:
+                    upload.state = "failed"
+                    self.state.collection_glacier_status_by_collection[collection_id] = (
+                        GlacierArchiveStatus(
+                            state=GlacierState.FAILED,
+                            failure=failure,
+                        )
                     )
-                    attempted += 1
-                    continue
-                current_text = datetime.now(UTC).strftime("%Y-%m-%dT%H:%M:%SZ")
-                self.state.glacier_status_by_image[image_id] = GlacierArchiveStatus(
-                    state=GlacierState.FAILED,
-                    object_path=None,
-                    stored_bytes=None,
-                    backend=None,
-                    storage_class=None,
-                    last_uploaded_at=None,
-                    last_verified_at=None,
-                    failure=failure,
-                )
-                self.state.deliver_webhook_payload(
-                    build_glacier_upload_failed_payload(
-                        config=self.state.webhook_config(),
-                        image_id=image.finalized_id,
-                        error=failure,
-                        attempts=job.attempt_count,
-                        failed_at=current_text,
-                    ),
-                    delivered_at=datetime.now(UTC),
-                    timeout_seconds=self.state.webhook_config().timeout_seconds,
-                )
-                job.failed = True
+                    self.state.deliver_webhook_payload(
+                        {
+                            "event": "collections.glacier_upload.failed",
+                            "collection_id": str(collection_id),
+                            "error": failure,
+                            "attempts": upload.archive_attempt_count,
+                            "failed_at": _acceptance_isoformat(datetime.now(UTC)),
+                        },
+                        delivered_at=datetime.now(UTC),
+                        timeout_seconds=self.state.webhook_config().timeout_seconds,
+                    )
                 attempted += 1
                 continue
-            object_path = f"glacier/finalized-images/{image.finalized_id}/{image.finalized_id}.iso"
-            now = datetime.now(UTC).strftime("%Y-%m-%dT%H:%M:%SZ")
-            self.state.glacier_status_by_image[image_id] = GlacierArchiveStatus(
-                state=GlacierState.UPLOADED,
-                object_path=object_path,
-                stored_bytes=image.bytes,
-                backend="s3",
-                storage_class="DEEP_ARCHIVE",
-                last_uploaded_at=now,
-                last_verified_at=now,
-                failure=None,
-            )
-            self.state.ensure_glacier_recovery_session(image.finalized_id)
+            AcceptanceCollectionService(self.state)._finalize_upload(upload)
             self.state.glacier_usage_snapshots.append(_acceptance_glacier_snapshot(self.state))
-            job.completed = True
             attempted += 1
         return attempted
 
@@ -1809,11 +1854,55 @@ class AcceptanceRecoverySessionService:
 
     @_with_state_lock
     def get_for_collection(self, collection_id: str) -> RecoverySessionSummary:
-        raise NotFound(f"recovery session not found for collection: {collection_id}")
+        normalized_collection_id = CollectionId(normalize_collection_id(collection_id))
+        sessions = [
+            record
+            for record in self.state.recovery_sessions_by_id.values()
+            if record.type == "collection_restore"
+            and normalized_collection_id in record.collection_ids
+        ]
+        if not sessions:
+            raise NotFound(f"recovery session not found for collection: {collection_id}")
+        return self._summary(sorted(sessions, key=lambda record: record.created_at)[-1])
 
     @_with_state_lock
     def create_or_resume_for_collection(self, collection_id: str) -> RecoverySessionSummary:
-        raise NotFound(f"collection restore sessions are not backed yet: {collection_id}")
+        normalized_collection_id = CollectionId(normalize_collection_id(collection_id))
+        if (
+            self.state.collection_glacier_status(str(normalized_collection_id)).state
+            != GlacierState.UPLOADED
+        ):
+            raise InvalidState(
+                "collection archive is not uploaded and cannot be restored yet: "
+                f"{normalized_collection_id}"
+            )
+        active_states = {
+            RecoverySessionState.PENDING_APPROVAL,
+            RecoverySessionState.RESTORE_REQUESTED,
+            RecoverySessionState.READY,
+        }
+        for record in self.state.recovery_sessions_by_id.values():
+            if (
+                record.type == "collection_restore"
+                and normalized_collection_id in record.collection_ids
+                and record.state in active_states
+            ):
+                return self._summary(record)
+        session_id = self._generated_collection_restore_session_id(str(normalized_collection_id))
+        record = AcceptanceRecoverySessionRecord(
+            session_id=session_id,
+            image_id=ImageId(""),
+            state=RecoverySessionState.PENDING_APPROVAL,
+            created_at=_acceptance_isoformat(datetime.now(UTC)),
+            type="collection_restore",
+            image_ids=(),
+            collection_ids=(normalized_collection_id,),
+            latest_message=(
+                "Approve the estimated restore cost before Riverhog requests archive restore."
+            ),
+        )
+        self.state.recovery_sessions_by_id[session_id] = record
+        return self._summary(record)
 
     @_with_state_lock
     def get_for_image(self, image_id: str) -> RecoverySessionSummary:
@@ -1832,9 +1921,16 @@ class AcceptanceRecoverySessionService:
             active = self.state.active_recovery_session(image_id)
             if active is not None:
                 return self._summary(active)
-            if self.state.glacier_status(image_id).state != GlacierState.UPLOADED:
+            collection_ids = tuple(
+                sorted({collection_id for collection_id, _ in image.covered_paths})
+            )
+            if not collection_ids or any(
+                self.state.collection_glacier_status(collection_id).state != GlacierState.UPLOADED
+                for collection_id in collection_ids
+            ):
                 raise InvalidState(
-                    f"image archive is not uploaded and cannot be restored yet: {image_id}"
+                    "required collection archives are not uploaded and cannot rebuild image: "
+                    f"{image_id}"
                 )
             if self.state._protected_copy_count(image_id) > 0:
                 raise Conflict(
@@ -1863,32 +1959,17 @@ class AcceptanceRecoverySessionService:
             estimated_ready_at = _acceptance_isoformat(
                 current + timedelta(seconds=_GLACIER_RECOVERY_RESTORE_LATENCY_SECONDS)
             )
-            status = self._request_live_restore(record, current_text, estimated_ready_at)
             record.state = RecoverySessionState.RESTORE_REQUESTED
             record.approved_at = current_text
             record.restore_requested_at = current_text
-            record.restore_ready_at = (
-                status.ready_at
-                if status is not None and status.ready_at is not None
-                else estimated_ready_at
-            )
-            record.restore_expires_at = (
-                status.expires_at if status is not None and status.expires_at is not None else None
-            )
-            record.restore_next_poll_at = (
-                current_text
-                if status is not None and status.state == "ready"
-                else _acceptance_isoformat(
-                    current + timedelta(seconds=self.state.live_recovery_poll_interval_seconds)
-                )
+            record.restore_ready_at = estimated_ready_at
+            record.restore_expires_at = None
+            record.restore_next_poll_at = _acceptance_isoformat(
+                current + timedelta(seconds=_GLACIER_RECOVERY_SWEEP_INTERVAL_SECONDS)
             )
             record.latest_message = (
-                status.message
-                if status is not None and status.message is not None
-                else (
-                    "Archive restore requested; wait for the ready notification before "
-                    "downloading or burning replacement media."
-                )
+                "Archive restore requested; wait for the ready notification before "
+                "downloading or burning replacement media."
             )
             return self._summary(record)
 
@@ -1903,7 +1984,6 @@ class AcceptanceRecoverySessionService:
                 RecoverySessionState.EXPIRED,
             }:
                 raise InvalidState("recovery session is not ready to complete")
-            self._cleanup_live_restore(record)
             current_text = _acceptance_isoformat(datetime.now(UTC))
             record.state = RecoverySessionState.COMPLETED
             record.completed_at = current_text
@@ -1923,26 +2003,15 @@ class AcceptanceRecoverySessionService:
                 raise NotFound(f"recovery session not found: {session_id}")
             if record.state != RecoverySessionState.READY:
                 raise InvalidState("recovery session is not ready for ISO download")
-            if str(record.image_id) != image_id:
+            if ImageId(image_id) not in self.state._record_image_ids(record):
                 raise NotFound(f"image not found in recovery session: {image_id}")
-            image = self.state.finalized_images_by_id[record.image_id]
-            live_archive_store = self.state.live_recovery_archive_store
-            if live_archive_store is not None:
-                object_path = self._live_archive_object_path(record)
-            else:
-                object_path = ""
+            image = self.state.finalized_images_by_id[ImageId(image_id)]
             if self.state.real_iso_streams_enabled:
                 image_root = image.image_root
                 volume_id = str(image.finalized_id)
             else:
                 image_root = None
                 volume_id = ""
-        if live_archive_store is not None:
-            yield from live_archive_store.iter_restored_finalized_image(
-                image_id=image_id,
-                object_path=object_path,
-            )
-            return
         if image_root is not None:
             yield _fixture_real_iso_bytes(image_root=image_root, volume_id=volume_id)
             return
@@ -1973,39 +2042,6 @@ class AcceptanceRecoverySessionService:
             ):
                 if processed >= limit:
                     break
-                if (
-                    record.state == RecoverySessionState.RESTORE_REQUESTED
-                    and self.state.live_recovery_archive_store is not None
-                    and (
-                        record.restore_next_poll_at is None
-                        or record.restore_next_poll_at <= current_text
-                    )
-                ):
-                    status = self._live_restore_status(record, current_text)
-                    if status.state == "ready":
-                        self._mark_ready(record, current, status=status)
-                    elif status.state == "expired":
-                        record.state = RecoverySessionState.EXPIRED
-                        record.next_reminder_at = None
-                        record.restore_next_poll_at = None
-                        record.latest_message = (
-                            status.message
-                            or (
-                                "Restored ISO data expired and cleanup was recorded; "
-                                "re-initiate recovery to request a new restore."
-                            )
-                        )
-                    else:
-                        record.restore_next_poll_at = _acceptance_isoformat(
-                            current
-                            + timedelta(seconds=self.state.live_recovery_poll_interval_seconds)
-                        )
-                        record.latest_message = (
-                            status.message
-                            or "Archive restore is still in progress; Riverhog will poll again."
-                        )
-                    processed += 1
-                    continue
                 if (
                     record.state == RecoverySessionState.RESTORE_REQUESTED
                     and record.restore_ready_at is not None
@@ -2065,7 +2101,6 @@ class AcceptanceRecoverySessionService:
                     and record.restore_expires_at is not None
                     and record.restore_expires_at <= current_text
                 ):
-                    self._cleanup_live_restore(record)
                     record.state = RecoverySessionState.EXPIRED
                     record.next_reminder_at = None
                     record.restore_next_poll_at = None
@@ -2076,85 +2111,24 @@ class AcceptanceRecoverySessionService:
                     processed += 1
             return processed
 
-    def _request_live_restore(
-        self,
-        record: AcceptanceRecoverySessionRecord,
-        requested_at: str,
-        estimated_ready_at: str,
-    ) -> ArchiveRestoreStatus | None:
-        archive_store = self.state.live_recovery_archive_store
-        if archive_store is None:
-            return None
-        return archive_store.request_finalized_image_restore(
-            image_id=str(record.image_id),
-            object_path=self._live_archive_object_path(record),
-            retrieval_tier=self.state.live_recovery_retrieval_tier,
-            hold_days=self.state.live_recovery_hold_days,
-            requested_at=requested_at,
-            estimated_ready_at=estimated_ready_at,
-        )
-
-    def _live_restore_status(
-        self,
-        record: AcceptanceRecoverySessionRecord,
-        current_text: str,
-    ) -> ArchiveRestoreStatus:
-        archive_store = self.state.live_recovery_archive_store
-        if archive_store is None:
-            return ArchiveRestoreStatus(state="requested")
-        return archive_store.get_finalized_image_restore_status(
-            image_id=str(record.image_id),
-            object_path=self._live_archive_object_path(record),
-            requested_at=record.restore_requested_at or current_text,
-            estimated_ready_at=record.restore_ready_at,
-            estimated_expires_at=record.restore_expires_at,
-        )
-
-    def _cleanup_live_restore(self, record: AcceptanceRecoverySessionRecord) -> None:
-        archive_store = self.state.live_recovery_archive_store
-        if archive_store is None:
-            return
-        archive_store.cleanup_finalized_image_restore(
-            image_id=str(record.image_id),
-            object_path=self._live_archive_object_path(record),
-        )
-
-    def _live_archive_object_path(self, record: AcceptanceRecoverySessionRecord) -> str:
-        object_path = self.state.glacier_status(str(record.image_id)).object_path
-        if object_path is None:
-            raise InvalidState(
-                f"image archive object path is missing and cannot be restored: {record.image_id}"
-            )
-        return object_path
-
     def _mark_ready(
         self,
         record: AcceptanceRecoverySessionRecord,
         current: datetime,
-        *,
-        status: ArchiveRestoreStatus | None = None,
     ) -> None:
         current_text = _acceptance_isoformat(current)
         record.state = RecoverySessionState.READY
-        record.restore_ready_at = (
-            status.ready_at if status is not None and status.ready_at is not None else current_text
-        )
-        record.restore_expires_at = (
-            status.expires_at
-            if status is not None and status.expires_at is not None
-            else _acceptance_isoformat(
-                current + timedelta(seconds=_GLACIER_RECOVERY_READY_TTL_SECONDS)
-            )
+        record.restore_ready_at = current_text
+        record.restore_expires_at = _acceptance_isoformat(
+            current + timedelta(seconds=_GLACIER_RECOVERY_READY_TTL_SECONDS)
         )
         record.restore_next_poll_at = None
         record.latest_message = (
-            status.message
-            if status is not None and status.message is not None
-            else (
-                "Restored ISO data is ready; reopen the session to complete download, "
-                "verify the ISO, and burn replacement media before cleanup."
-            )
+            "Restored ISO data is ready; reopen the session to complete download, "
+            "verify the ISO, and burn replacement media before cleanup."
         )
+        if record.type == "collection_restore":
+            return
         image = self.state.finalized_images_by_id[record.image_id]
         try:
             self.state.deliver_webhook_payload(
@@ -2189,11 +2163,38 @@ class AcceptanceRecoverySessionService:
             current + timedelta(seconds=_GLACIER_RECOVERY_WEBHOOK_REMINDER_INTERVAL_SECONDS)
         )
 
+    def _generated_collection_restore_session_id(self, collection_id: str) -> str:
+        existing_ids = set(self.state.recovery_sessions_by_id)
+        safe_collection_id = collection_id.replace("/", "-")
+        ordinal = 1
+        while True:
+            session_id = f"rs-{safe_collection_id}-restore-{ordinal}"
+            ordinal += 1
+            if session_id not in existing_ids:
+                return session_id
+
     def _summary(self, record: AcceptanceRecoverySessionRecord) -> RecoverySessionSummary:
-        image = self.state.finalized_images_by_id[record.image_id]
-        glacier = self.state.glacier_status(image.finalized_id)
+        images = tuple(
+            self.state.finalized_images_by_id[image_id]
+            for image_id in self.state._record_image_ids(record)
+        )
+        collection_ids = record.collection_ids or tuple(
+            sorted(
+                {
+                    collection_id
+                    for image in images
+                    for collection_id, _path in image.covered_paths
+                }
+            )
+        )
+        collection_statuses = [
+            self.state.collection_glacier_status(str(collection_id))
+            for collection_id in collection_ids
+        ]
         pricing_basis = _acceptance_pricing_basis()
-        stored_bytes = int(glacier.stored_bytes or image.bytes)
+        stored_bytes = sum(int(status.stored_bytes or 0) for status in collection_statuses)
+        if stored_bytes == 0:
+            stored_bytes = sum(image.bytes for image in images)
         total_gib = Decimal(stored_bytes) / _BYTES_PER_GIB
         hold_days = 1
         retrieval_cost = (total_gib * Decimal("0.0025")).quantize(_USD_QUANTUM)
@@ -2208,9 +2209,9 @@ class AcceptanceRecoverySessionService:
             currency_code=pricing_basis.currency_code or "USD",
             retrieval_tier="bulk",
             hold_days=hold_days,
-            image_count=1,
+            image_count=len(collection_ids),
             total_bytes=stored_bytes,
-            restore_request_count=1,
+            restore_request_count=max(1, len(collection_ids)),
             retrieval_rate_usd_per_gib=0.0025,
             request_rate_usd_per_1000=0.025,
             standard_storage_rate_usd_per_gib_month=(
@@ -2225,7 +2226,7 @@ class AcceptanceRecoverySessionService:
             assumptions=(
                 "Excludes network egress or operator-local media costs.",
                 "Uses the configured ready-to-download cleanup window.",
-                "Assumes one archive restore request per image.",
+                "Assumes one archive restore request per collection archive.",
             ),
         )
         warnings = (
@@ -2238,6 +2239,7 @@ class AcceptanceRecoverySessionService:
         )
         return RecoverySessionSummary(
             id=record.session_id,
+            type=record.type,
             state=record.state,
             created_at=record.created_at,
             approved_at=record.approved_at,
@@ -2254,13 +2256,35 @@ class AcceptanceRecoverySessionService:
                 next_reminder_at=record.next_reminder_at,
                 last_notified_at=record.last_notified_at,
             ),
+            collections=tuple(
+                RecoverySessionCollection(
+                    id=collection_id,
+                    glacier=self.state.collection_glacier_status(str(collection_id)),
+                    archive_manifest=CollectionArchiveManifestStatus(
+                        object_path=f"glacier/collections/{collection_id}/manifest.yml",
+                        sha256="0" * 64,
+                        ots_object_path=f"glacier/collections/{collection_id}/manifest.yml.ots",
+                        ots_state="uploaded",
+                        ots_sha256="1" * 64,
+                    ),
+                    stored_bytes=int(
+                        self.state.collection_glacier_status(str(collection_id)).stored_bytes or 0
+                    ),
+                )
+                for collection_id in collection_ids
+            ),
             images=(
-                RecoverySessionImage(
-                    id=record.image_id,
-                    filename=image.filename,
-                    glacier=glacier,
-                    stored_bytes=stored_bytes,
-                ),
+                tuple(
+                    RecoverySessionImage(
+                        id=image.finalized_id,
+                        filename=image.filename,
+                        collection_ids=tuple(
+                            CollectionId(collection_id) for collection_id in image.collections
+                        ),
+                        rebuild_state=_acceptance_rebuild_state(record),
+                    )
+                    for image in images
+                )
             ),
         )
 
@@ -2290,10 +2314,7 @@ class AcceptanceGlacierReportingService:
             )
         ]
         images.sort(key=lambda current: current.finalized_id, reverse=True)
-        image_reports = tuple(
-            _acceptance_glacier_image(image, self.state, pricing_basis)
-            for image in images
-        )
+        image_reports = tuple(_acceptance_glacier_image(image) for image in images)
         collection_reports = tuple(
             _acceptance_glacier_collections(
                 images=images,
@@ -2302,47 +2323,21 @@ class AcceptanceGlacierReportingService:
                 pricing_basis=pricing_basis,
             )
         )
-        if collection is None:
-            totals = GlacierUsageTotals(
-                images=len(image_reports),
-                uploaded_images=sum(
-                    1 for image in image_reports if image.measured_storage_bytes > 0
-                ),
-                measured_storage_bytes=sum(image.measured_storage_bytes for image in image_reports),
-                estimated_billable_bytes=sum(
-                    image.estimated_billable_bytes for image in image_reports
-                ),
-                estimated_monthly_cost_usd=_round_usd(
-                    sum(image.estimated_monthly_cost_usd for image in image_reports)
-                ),
-            )
-        else:
-            totals = GlacierUsageTotals(
-                images=len(
-                    {
-                        contribution.image_id
-                        for report in collection_reports
-                        for contribution in report.images
-                    }
-                ),
-                uploaded_images=len(
-                    {
-                        contribution.image_id
-                        for report in collection_reports
-                        for contribution in report.images
-                        if contribution.derived_stored_bytes is not None
-                    }
-                ),
-                measured_storage_bytes=sum(
-                    report.derived_stored_bytes for report in collection_reports
-                ),
-                estimated_billable_bytes=sum(
-                    report.derived_billable_bytes for report in collection_reports
-                ),
-                estimated_monthly_cost_usd=_round_usd(
-                    sum(report.estimated_monthly_cost_usd for report in collection_reports)
-                ),
-            )
+        totals = GlacierUsageTotals(
+            collections=len(collection_reports),
+            uploaded_collections=sum(
+                1 for report in collection_reports if report.measured_storage_bytes > 0
+            ),
+            measured_storage_bytes=sum(
+                report.measured_storage_bytes for report in collection_reports
+            ),
+            estimated_billable_bytes=sum(
+                report.estimated_billable_bytes for report in collection_reports
+            ),
+            estimated_monthly_cost_usd=_round_usd(
+                sum(report.estimated_monthly_cost_usd for report in collection_reports)
+            ),
+        )
         history = (
             tuple(self.state.glacier_usage_snapshots)
             if image_id is None and collection is None
@@ -2366,6 +2361,18 @@ class AcceptanceGlacierReportingService:
 
 def _acceptance_isoformat(value: datetime) -> str:
     return value.strftime("%Y-%m-%dT%H:%M:%SZ")
+
+
+def _acceptance_rebuild_state(record: AcceptanceRecoverySessionRecord) -> str:
+    if record.state == RecoverySessionState.PENDING_APPROVAL:
+        return "pending"
+    if record.state == RecoverySessionState.RESTORE_REQUESTED:
+        return "restoring_collections"
+    if record.state in {RecoverySessionState.READY, RecoverySessionState.COMPLETED}:
+        return "ready"
+    if record.state == RecoverySessionState.EXPIRED:
+        return "failed"
+    return "pending"
 
 
 _BYTES_PER_GIB = Decimal(1024**3)
@@ -2550,37 +2557,11 @@ def _acceptance_pricing_basis() -> GlacierPricingBasis:
     )
 
 
-def _acceptance_glacier_status(
-    state: AcceptanceState,
-    image_id: str,
-) -> GlacierArchiveStatus:
-    return state.glacier_status(image_id)
-
-
-def _acceptance_glacier_image(
-    image: CandidateRecord,
-    state: AcceptanceState,
-    pricing_basis: GlacierPricingBasis,
-) -> GlacierUsageImage:
-    glacier = _acceptance_glacier_status(state, image.finalized_id)
-    measured_storage_bytes = (
-        int(glacier.stored_bytes or 0) if glacier.state == GlacierState.UPLOADED else 0
-    )
+def _acceptance_glacier_image(image: CandidateRecord) -> GlacierUsageImage:
     return GlacierUsageImage(
         id=image.finalized_id,
         filename=image.filename,
         collection_ids=image.collections,
-        glacier=glacier,
-        measured_storage_bytes=measured_storage_bytes,
-        estimated_billable_bytes=_acceptance_billable_bytes(
-            measured_storage_bytes,
-            pricing_basis=pricing_basis,
-        ),
-        estimated_monthly_cost_usd=_acceptance_estimated_monthly_cost_usd(
-            measured_storage_bytes,
-            object_count=1 if measured_storage_bytes > 0 else 0,
-            pricing_basis=pricing_basis,
-        ),
     )
 
 
@@ -2591,13 +2572,7 @@ def _acceptance_glacier_collections(
     collection_filter: str | None,
     pricing_basis: GlacierPricingBasis,
 ) -> list[GlacierUsageCollection]:
-    collections: dict[str, list[GlacierCollectionContribution]] = defaultdict(list)
-    collection_total_bytes: dict[str, int] = {}
-    for collection_id, records in state.files_by_collection.items():
-        collection_total_bytes[str(collection_id)] = sum(
-            record.bytes for record in records.values()
-        )
-
+    contributions_by_collection: dict[str, list[GlacierCollectionContribution]] = defaultdict(list)
     for image in images:
         represented_by_collection = _acceptance_represented_bytes_by_collection(state, image)
         if collection_filter is not None:
@@ -2606,8 +2581,26 @@ def _acceptance_glacier_collections(
                 for collection_id, represented in represented_by_collection.items()
                 if collection_id == collection_filter
             }
-        total_represented_bytes = sum(represented_by_collection.values())
-        glacier = _acceptance_glacier_status(state, image.finalized_id)
+        for collection_id, represented_bytes in represented_by_collection.items():
+            contributions_by_collection[collection_id].append(
+                GlacierCollectionContribution(
+                    image_id=image.finalized_id,
+                    filename=image.filename,
+                    represented_bytes=represented_bytes,
+                )
+            )
+
+    reports: list[GlacierUsageCollection] = []
+    for collection_id, records in sorted(state.files_by_collection.items()):
+        normalized_collection_id = str(collection_id)
+        if collection_filter is not None and normalized_collection_id != collection_filter:
+            continue
+        contributions = sorted(
+            contributions_by_collection.get(normalized_collection_id, []),
+            key=lambda current: str(current.image_id),
+            reverse=True,
+        )
+        glacier = state.collection_glacier_status(normalized_collection_id)
         measured_storage_bytes = (
             int(glacier.stored_bytes or 0) if glacier.state == GlacierState.UPLOADED else 0
         )
@@ -2615,66 +2608,36 @@ def _acceptance_glacier_collections(
             measured_storage_bytes,
             pricing_basis=pricing_basis,
         )
-        for collection_id, represented_bytes in represented_by_collection.items():
-            represented_fraction = (
-                represented_bytes / total_represented_bytes if total_represented_bytes > 0 else None
-            )
-            if represented_fraction is None or measured_storage_bytes <= 0:
-                derived_stored_bytes = None
-                derived_billable_bytes = None
-                estimated_monthly_cost_usd = None
-            else:
-                derived_stored_bytes = _round_int(measured_storage_bytes * represented_fraction)
-                derived_billable_bytes = _round_int(billable_bytes * represented_fraction)
-                estimated_monthly_cost_usd = _round_usd(
-                    _acceptance_estimated_monthly_cost_usd(
-                        derived_stored_bytes,
-                        object_count=0,
-                        pricing_basis=pricing_basis,
-                        archived_metadata_bytes=pricing_basis.archived_metadata_bytes_per_object
-                        * represented_fraction,
-                        standard_metadata_bytes=pricing_basis.standard_metadata_bytes_per_object
-                        * represented_fraction,
-                    )
-                )
-            collections[collection_id].append(
-                GlacierCollectionContribution(
-                    image_id=image.finalized_id,
-                    filename=image.filename,
-                    glacier=glacier,
-                    represented_bytes=represented_bytes,
-                    represented_fraction=represented_fraction,
-                    derived_stored_bytes=derived_stored_bytes,
-                    derived_billable_bytes=derived_billable_bytes,
-                    estimated_monthly_cost_usd=estimated_monthly_cost_usd,
-                )
-            )
-
-    reports: list[GlacierUsageCollection] = []
-    for collection_id in sorted(collections):
-        contributions = sorted(
-            collections[collection_id],
-            key=lambda current: str(current.image_id),
-            reverse=True,
-        )
         reports.append(
             GlacierUsageCollection(
-                id=collection_id,
-                bytes=collection_total_bytes.get(collection_id, 0),
-                represented_bytes=sum(item.represented_bytes for item in contributions),
-                attribution_state=(
-                    "derived"
-                    if any(item.derived_stored_bytes is not None for item in contributions)
-                    else "unavailable"
-                ),
-                derived_stored_bytes=sum(item.derived_stored_bytes or 0 for item in contributions),
-                derived_billable_bytes=sum(
-                    item.derived_billable_bytes or 0 for item in contributions
-                ),
+                id=normalized_collection_id,
+                bytes=sum(record.bytes for record in records.values()),
+                measured_storage_bytes=measured_storage_bytes,
+                estimated_billable_bytes=billable_bytes,
                 estimated_monthly_cost_usd=_round_usd(
-                    sum(item.estimated_monthly_cost_usd or 0.0 for item in contributions)
+                    _acceptance_estimated_monthly_cost_usd(
+                        measured_storage_bytes,
+                        object_count=3 if measured_storage_bytes > 0 else 0,
+                        pricing_basis=pricing_basis,
+                    )
                 ),
                 images=tuple(contributions),
+                glacier=glacier,
+                archive_manifest=(
+                    CollectionArchiveManifestStatus(
+                        object_path=f"glacier/collections/{normalized_collection_id}/manifest.yml",
+                        sha256="0" * 64,
+                        ots_object_path=(
+                            f"glacier/collections/{normalized_collection_id}/manifest.yml.ots"
+                        ),
+                        ots_state="uploaded",
+                        ots_sha256="1" * 64,
+                    )
+                    if glacier.state == GlacierState.UPLOADED
+                    else None
+                ),
+                archive_format="tar" if glacier.state == GlacierState.UPLOADED else None,
+                compression="none" if glacier.state == GlacierState.UPLOADED else None,
             )
         )
     return reports
@@ -2762,23 +2725,67 @@ def _path_is_recoverable(
     return expected_part_count is not None and len(present_parts) == expected_part_count
 
 
+def _partial_recoverable_bytes(
+    total_bytes: int,
+    *,
+    image_ids: set[str],
+    recovery_parts_by_image_path: dict[tuple[str, str], _RecoveryParts],
+    image_available: Callable[[CollectionCoverageImage], bool],
+    image_by_id: dict[str, CollectionCoverageImage],
+) -> int:
+    expected_part_count: int | None = None
+    present_parts: set[int] = set()
+    for image_id in image_ids:
+        image = image_by_id.get(image_id)
+        if image is None or not image_available(image):
+            continue
+        recovery_parts = next(
+            (
+                parts
+                for (current_image_id, _path), parts in recovery_parts_by_image_path.items()
+                if current_image_id == image_id
+            ),
+            None,
+        )
+        if recovery_parts is None or recovery_parts.part_count <= 1:
+            continue
+        expected_part_count = recovery_parts.part_count
+        present_parts.update(recovery_parts.present_parts)
+    if expected_part_count is None or not present_parts:
+        return 0
+    return sum(
+        _split_part_length(
+            total_bytes,
+            part_count=expected_part_count,
+            part_index=part_index,
+        )
+        for part_index in present_parts
+    )
+
+
 def _acceptance_glacier_snapshot(state: AcceptanceState) -> GlacierUsageSnapshot:
     pricing_basis = _acceptance_pricing_basis()
-    image_reports = tuple(
-        _acceptance_glacier_image(image, state, pricing_basis)
-        for image in sorted(
-            state.finalized_images_by_id.values(),
-            key=lambda current: current.finalized_id,
-            reverse=True,
+    collection_reports = tuple(
+        _acceptance_glacier_collections(
+            images=list(state.finalized_images_by_id.values()),
+            state=state,
+            collection_filter=None,
+            pricing_basis=pricing_basis,
         )
     )
     return GlacierUsageSnapshot(
         captured_at=datetime.now(UTC).strftime("%Y-%m-%dT%H:%M:%SZ"),
-        uploaded_images=sum(1 for image in image_reports if image.measured_storage_bytes > 0),
-        measured_storage_bytes=sum(image.measured_storage_bytes for image in image_reports),
-        estimated_billable_bytes=sum(image.estimated_billable_bytes for image in image_reports),
+        uploaded_collections=sum(
+            1 for collection in collection_reports if collection.measured_storage_bytes > 0
+        ),
+        measured_storage_bytes=sum(
+            collection.measured_storage_bytes for collection in collection_reports
+        ),
+        estimated_billable_bytes=sum(
+            collection.estimated_billable_bytes for collection in collection_reports
+        ),
         estimated_monthly_cost_usd=_round_usd(
-            sum(image.estimated_monthly_cost_usd for image in image_reports)
+            sum(collection.estimated_monthly_cost_usd for collection in collection_reports)
         ),
     )
 
@@ -3920,29 +3927,99 @@ class AcceptanceSystem:
                 )
                 self.state.candidates_by_id[candidate_key] = candidate
             self.state.finalized_images_by_id[ImageId(candidate.finalized_id)] = candidate
-            self.state.enqueue_glacier_upload(candidate)
 
-    def wait_for_image_glacier_state(
+    def ensure_image_rebuild_session(self, *, session_id: str, image_id: str) -> None:
+        with self.state.lock:
+            image = self.state.finalized_images_by_id[ImageId(image_id)]
+            collection_ids = tuple(
+                sorted({collection_id for collection_id, _path in image.covered_paths})
+            )
+            for collection_id in collection_ids:
+                if (
+                    self.state.collection_glacier_status(str(collection_id)).state
+                    != GlacierState.UPLOADED
+                ):
+                    self.state.mark_collection_archive_uploaded(str(collection_id))
+            self.state.recovery_sessions_by_id[session_id] = AcceptanceRecoverySessionRecord(
+                session_id=session_id,
+                image_id=ImageId(image_id),
+                state=RecoverySessionState.PENDING_APPROVAL,
+                created_at=_acceptance_isoformat(datetime.now(UTC)),
+                type="image_rebuild",
+                image_ids=(ImageId(image_id),),
+                collection_ids=collection_ids,
+                latest_message=(
+                    "Approve the estimated restore cost before Riverhog requests archive restore."
+                ),
+            )
+
+    def wait_for_collection_glacier_state(
         self,
-        image_id: str,
+        collection_id: str,
         state: str,
         *,
         timeout: float = 5.0,
     ) -> dict[str, object]:
         deadline = time.monotonic() + timeout
         while time.monotonic() < deadline:
-            response = self.request("GET", f"/v1/images/{image_id}")
-            assert response.status_code == 200, response.text
-            payload = response.json()
-            glacier = payload.get("glacier")
-            if not isinstance(glacier, dict):
-                with self.state.lock:
-                    glacier_status = self.state.glacier_status(image_id)
-                glacier = {"state": glacier_status.state.value}
-            if glacier["state"] == state:
-                return payload
+            response = self.request(
+                "GET",
+                f"/v1/collections/{quote(normalize_collection_id(collection_id), safe='/')}",
+            )
+            if response.status_code == 200:
+                payload = response.json()
+                if payload["glacier"]["state"] == state:
+                    return payload
+            with self.state.lock:
+                status = self.state.collection_glacier_status(collection_id)
+            if status.state.value == state:
+                return {"id": normalize_collection_id(collection_id), "glacier": {"state": state}}
             time.sleep(0.05)
-        raise AssertionError(f"timed out waiting for image glacier state {image_id} -> {state}")
+        raise AssertionError(
+            f"timed out waiting for collection glacier state {collection_id} -> {state}"
+        )
+
+    def wait_for_collection_upload_state(
+        self,
+        collection_id: str,
+        state: str,
+        *,
+        timeout: float = 5.0,
+    ) -> dict[str, object]:
+        normalized_collection_id = normalize_collection_id(collection_id)
+        deadline = time.monotonic() + timeout
+        while time.monotonic() < deadline:
+            response = self.request(
+                "GET",
+                f"/v1/collection-uploads/{quote(normalized_collection_id, safe='/')}",
+            )
+            if response.status_code == 200:
+                payload = response.json()
+                if payload["state"] == state:
+                    return payload
+            if state == "finalized":
+                collection_response = self.request(
+                    "GET",
+                    f"/v1/collections/{quote(normalized_collection_id, safe='/')}",
+                )
+                if collection_response.status_code == 200:
+                    return {
+                        "collection_id": normalized_collection_id,
+                        "state": "finalized",
+                        "collection": collection_response.json(),
+                    }
+            time.sleep(0.05)
+        raise AssertionError(
+            f"timed out waiting for collection upload state {collection_id} -> {state}"
+        )
+
+    def defer_collection_glacier_archiving(
+        self,
+        collection_id: str,
+        *,
+        seconds: float = 60.0,
+    ) -> None:
+        _ = collection_id, seconds
 
     def wait_for_recovery_session_state(
         self,
@@ -4027,27 +4104,62 @@ class AcceptanceSystem:
             f"timed out waiting for captured webhook attempt {event} {result} #{attempt}"
         )
 
-    def fail_glacier_upload(self, image_id: str, *, error: str) -> None:
+    def fail_collection_glacier_upload(self, collection_id: str, *, error: str) -> None:
         with self.state.lock:
-            self.state.glacier_upload_failures_by_image[ImageId(image_id)] = error
+            self.state.glacier_upload_failures_by_collection[
+                CollectionId(normalize_collection_id(collection_id))
+            ] = error
+
+    def mark_collection_archive_uploaded(self, collection_id: str) -> None:
+        with self.state.lock:
+            self.state.mark_collection_archive_uploaded(collection_id)
+
+    def collection_glacier_failure_configured(self, collection_id: str) -> bool:
+        with self.state.lock:
+            return (
+                CollectionId(normalize_collection_id(collection_id))
+                in self.state.glacier_upload_failures_by_collection
+            )
+
+    def start_collection_glacier_archiving(self, collection_id: str) -> None:
+        normalized_collection_id = normalize_collection_id(collection_id)
+        with self.state.lock:
+            if CollectionId(normalized_collection_id) not in self.state.files_by_collection:
+                raise NotFound(f"collection not found: {normalized_collection_id}")
+        self.seed_collection_source(normalized_collection_id, {
+            record.path: record.content
+            for record in self.state.collection_files(normalized_collection_id)
+        })
+        with self.state.lock:
+            records = self.state.collection_files(normalized_collection_id)
+            self.state.collection_uploads[CollectionId(normalized_collection_id)] = (
+                CollectionUploadRecord(
+                    collection_id=CollectionId(normalized_collection_id),
+                    ingest_source=None,
+                    files={
+                        record.path: CollectionUploadFileRecord(
+                            path=record.path,
+                            bytes=record.bytes,
+                            sha256=record.sha256,
+                            uploaded_bytes=record.bytes,
+                            uploaded_content=record.content,
+                        )
+                        for record in records
+                    },
+                    state="archiving",
+                )
+            )
+
+    def clear_collection_glacier_upload_failure(self, collection_id: str) -> None:
+        with self.state.lock:
+            self.state.glacier_upload_failures_by_collection.pop(
+                CollectionId(normalize_collection_id(collection_id)),
+                None,
+            )
 
     def enable_real_iso_streams(self) -> None:
         with self.state.lock:
             self.state.real_iso_streams_enabled = True
-
-    def enable_live_recovery_archive_store(
-        self,
-        archive_store: ArchiveStore,
-        *,
-        retrieval_tier: str = "bulk",
-        hold_days: int = 1,
-        poll_interval_seconds: float = 30.0,
-    ) -> None:
-        with self.state.lock:
-            self.state.live_recovery_archive_store = archive_store
-            self.state.live_recovery_retrieval_tier = retrieval_tier
-            self.state.live_recovery_hold_days = hold_days
-            self.state.live_recovery_poll_interval_seconds = poll_interval_seconds
 
     def run_arc(self, *args: str) -> subprocess.CompletedProcess[str]:
         with time_block("subprocess arc"):
@@ -4239,9 +4351,62 @@ class AcceptanceSystem:
                     content=content,
                 )
                 assert response.status_code == 204, response.text
-            final = self.request("GET", f"/v1/collections/{normalized_collection_id}")
-            assert final.status_code == 200, final.text
-            return cast(dict[str, object], final.json())
+            final = self.wait_for_collection_upload_state(normalized_collection_id, "finalized")
+            return cast(dict[str, object], final["collection"])
+
+    def stage_collection_upload_archiving(
+        self, collection_id: str, files: Mapping[str, bytes] | None = None
+    ) -> dict[str, object]:
+        with time_block("fixture.stage_collection_upload_archiving"):
+            normalized_collection_id = normalize_collection_id(collection_id)
+            source_files = files or PHOTOS_2024_FILES
+            self.seed_collection_source(normalized_collection_id, source_files)
+            with self.state.lock:
+                root = self.state.local_collection_sources[CollectionId(normalized_collection_id)]
+            manifest = [
+                {
+                    "path": path,
+                    "bytes": len(content),
+                    "sha256": hashlib.sha256(content).hexdigest(),
+                }
+                for path, content in sorted(source_files.items())
+            ]
+            response = self.request(
+                "POST",
+                "/v1/collection-uploads",
+                json_body={
+                    "collection_id": normalized_collection_id,
+                    "ingest_source": str(root),
+                    "files": manifest,
+                },
+            )
+            assert response.status_code == 200, response.text
+            payload = response.json()
+            for file_payload in payload["files"]:
+                upload = self.request(
+                    "POST",
+                    (
+                        f"/v1/collection-uploads/{normalized_collection_id}/files/"
+                        f"{file_payload['path']}/upload"
+                    ),
+                )
+                assert upload.status_code == 200, upload.text
+                upload_payload = upload.json()
+                content = source_files[str(file_payload["path"])]
+                response = self.request(
+                    "PATCH",
+                    str(upload_payload["upload_url"]),
+                    headers={
+                        "Content-Type": "application/offset+octet-stream",
+                        "Tus-Resumable": "1.0.0",
+                        "Upload-Offset": str(upload_payload["offset"]),
+                        "Upload-Checksum": "sha256 "
+                        + base64.b64encode(hashlib.sha256(content).digest()).decode("ascii"),
+                    },
+                    content=content,
+                )
+                assert response.status_code == 204, response.text
+            return self.wait_for_collection_upload_state(normalized_collection_id, "archiving")
 
     def seed_photos_hot(self) -> None:
         normalized = normalize_collection_id(PHOTOS_COLLECTION_ID)
@@ -4398,6 +4563,42 @@ class AcceptanceSystem:
                 )
             )
 
+    def seed_candidate_for_collection(self, collection_id: str) -> None:
+        normalized_collection_id = normalize_collection_id(collection_id)
+        with self.state.lock:
+            records = self.state.collection_uploads.get(
+                CollectionId(normalized_collection_id)
+            )
+            source_files = (
+                {
+                    path: file_record.uploaded_content or b""
+                    for path, file_record in records.files.items()
+                }
+                if records is not None
+                else {
+                    record.path: record.content
+                    for record in self.state.collection_files(normalized_collection_id)
+                }
+            )
+        image_root = write_tree(
+            self.workspace / "images" / f"img_{normalized_collection_id.replace('/', '_')}",
+            source_files,
+        )
+        self.state.seed_image(
+            CandidateRecord(
+                candidate_id=ImageId(f"img_{normalized_collection_id.replace('/', '_')}"),
+                finalized_id=ImageId("20260420T050000Z"),
+                filename="20260420T050000Z.iso",
+                image_root=image_root,
+                bytes=sum(len(content) for content in source_files.values()),
+                iso_ready=True,
+                covered_paths=tuple(
+                    (CollectionId(normalized_collection_id), path)
+                    for path in sorted(source_files)
+                ),
+            )
+        )
+
     def upload_required_entries(self, fetch_id: str) -> None:
         self.fetches.upload_all_required_entries(fetch_id)
 
@@ -4443,7 +4644,7 @@ class AcceptanceSystem:
             if storage == "archive":
                 return any(
                     status.object_path == key and status.state == GlacierState.UPLOADED
-                    for status in self.state.glacier_status_by_image.values()
+                    for status in self.state.collection_glacier_status_by_collection.values()
                 )
             if storage != "hot":
                 raise AssertionError(f"unsupported storage bucket kind: {storage}")
@@ -4461,12 +4662,14 @@ class AcceptanceSystem:
         with self.state.lock:
             if storage != "archive":
                 raise AssertionError(f"unsupported object metadata bucket kind: {storage}")
-            for status in self.state.glacier_status_by_image.values():
+            for status in self.state.collection_glacier_status_by_collection.values():
                 if status.object_path == key and status.state == GlacierState.UPLOADED:
                     stored_bytes = status.stored_bytes or 0
                     return {
-                        "arc-iso-bytes": str(stored_bytes),
-                        "arc-iso-sha256": hashlib.sha256(key.encode("utf-8")).hexdigest(),
+                        "arc-archive-bytes": str(stored_bytes),
+                        "arc-archive-sha256": hashlib.sha256(key.encode("utf-8")).hexdigest(),
+                        "arc-archive-format": "tar",
+                        "arc-compression": "none",
                     }
             raise AssertionError(f"archive object not found: {key}")
 
@@ -4476,7 +4679,7 @@ class AcceptanceSystem:
                 return any(
                     (status.object_path or "").startswith(prefix)
                     and status.state == GlacierState.UPLOADED
-                    for status in self.state.glacier_status_by_image.values()
+                    for status in self.state.collection_glacier_status_by_collection.values()
                 )
             if storage != "hot":
                 raise AssertionError(f"unsupported storage bucket kind: {storage}")

@@ -52,7 +52,6 @@ def _seed_collection_state(sqlite_path: Path, *, image_root: Path) -> None:
                 image_root=str(image_root),
                 target_bytes=image.bytes,
                 required_copy_count=2,
-                glacier_state="uploaded",
             )
         )
         for collection_id, path in image.covered_paths:

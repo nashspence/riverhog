@@ -2,21 +2,22 @@ from __future__ import annotations
 
 import hashlib
 import re
-import subprocess
-import tempfile
-from collections.abc import Iterator
+from collections.abc import Iterable, Iterator
 from datetime import UTC, datetime
 from email.utils import parsedate_to_datetime
-from pathlib import Path
 from typing import Any, TypedDict, cast
 
-from arc_core.iso.streaming import build_iso_cmd_from_root, validate_iso_image
-from arc_core.ports.archive_store import ArchiveRestoreStatus, ArchiveUploadReceipt
+from arc_core.collection_archives import CollectionArchivePackage
+from arc_core.ports.archive_store import (
+    ArchiveRestoreStatus,
+    ArchiveUploadReceipt,
+    CollectionArchiveUploadReceipt,
+)
 from arc_core.runtime_config import RuntimeConfig
 from arc_core.stores.s3_support import create_glacier_s3_client
 
-ISO_BYTES_METADATA = "arc-iso-bytes"
-ISO_SHA256_METADATA = "arc-iso-sha256"
+COLLECTION_BYTES_METADATA = "arc-collection-bytes"
+COLLECTION_SHA256_METADATA = "arc-collection-sha256"
 _SHA256_RE = re.compile(r"[0-9a-f]{64}")
 
 
@@ -35,9 +36,15 @@ class S3ArchiveStore:
         self._bucket = config.glacier_bucket
         self._client = create_glacier_s3_client(config)
 
-    def _object_key(self, *, image_id: str, filename: str) -> str:
-        suffix = Path(filename).suffix or ".iso"
-        return f"{self._config.glacier_prefix}/{image_id}/{image_id}{suffix}"
+    def _collection_object_keys(self, *, collection_id: str) -> dict[str, str]:
+        collection_hash = hashlib.sha256(collection_id.encode("utf-8")).hexdigest()
+        prefix = self._config.glacier_prefix
+        collection_prefix = f"{prefix}/collections/{collection_hash}"
+        return {
+            "archive": f"{collection_prefix}/archive.tar",
+            "manifest": f"{collection_prefix}/manifest.yml",
+            "proof": f"{collection_prefix}/manifest.yml.ots",
+        }
 
     def _head_object(self, *, object_key: str) -> dict[str, Any] | None:
         try:
@@ -50,16 +57,16 @@ class S3ArchiveStore:
                 return None
             raise
 
-    def _receipt_from_head(
+    def _collection_receipt_from_head(
         self,
         *,
         object_key: str,
         head: dict[str, Any],
+        expected_bytes: int,
+        expected_sha256: str,
         uploaded_at: str | None = None,
-        expected_bytes: int | None = None,
-        expected_sha256: str | None = None,
     ) -> ArchiveUploadReceipt:
-        _validate_uploaded_iso_metadata(
+        _validate_uploaded_collection_metadata(
             object_key=object_key,
             head=head,
             expected_bytes=expected_bytes,
@@ -85,72 +92,131 @@ class S3ArchiveStore:
             verified_at=verified_at,
         )
 
-    def upload_finalized_image(
+    def upload_collection_archive_package(
         self,
         *,
-        image_id: str,
-        filename: str,
-        image_root: Path,
-    ) -> ArchiveUploadReceipt:
-        object_key = self._object_key(image_id=image_id, filename=filename)
-        existing = self._head_object(object_key=object_key)
-        if existing is not None:
-            return self._receipt_from_head(object_key=object_key, head=existing)
-
-        uploaded_at = _utc_now()
-
-        with tempfile.TemporaryDirectory(prefix="arc-glacier-upload-") as tmpdir:
-            iso_path = Path(tmpdir) / f"{image_id}.iso"
-            with iso_path.open("wb") as handle:
-                proc = subprocess.run(
-                    build_iso_cmd_from_root(image_root=image_root, volume_id=image_id),
-                    stdout=handle,
-                    stderr=subprocess.PIPE,
-                    check=False,
-                )
-            if proc.returncode != 0:
-                detail = (proc.stderr or b"").decode("utf-8", errors="replace").strip()
-                raise RuntimeError(detail or f"xorriso exited {proc.returncode}")
-            validate_iso_image(iso_path)
-            iso_bytes = iso_path.stat().st_size
-            iso_sha256 = _file_sha256(iso_path)
-
-            # The canonical Garage harness does not emulate Glacier storage-class
-            # semantics, so the runtime records the intended class in Riverhog's
-            # catalog and object metadata instead of depending on backend support.
-            extra_args: dict[str, Any] = {
-                "Metadata": {
-                    "arc-backend": self._config.glacier_backend,
-                    "arc-storage-class": self._config.glacier_storage_class,
-                    ISO_BYTES_METADATA: str(iso_bytes),
-                    ISO_SHA256_METADATA: iso_sha256,
-                }
-            }
-            if self._is_aws_restore_backend():
-                extra_args["StorageClass"] = self._config.glacier_storage_class
-            self._client.upload_file(
-                str(iso_path),
-                self._bucket,
-                object_key,
-                ExtraArgs=extra_args,
-            )
-            head = cast(
-                dict[str, Any],
-                self._client.head_object(Bucket=self._bucket, Key=object_key),
-            )
-
-        return self._receipt_from_head(
-            object_key=object_key,
-            head=head,
-            uploaded_at=uploaded_at,
-            expected_bytes=iso_bytes,
-            expected_sha256=iso_sha256,
+        collection_id: str,
+        package: CollectionArchivePackage,
+    ) -> CollectionArchiveUploadReceipt:
+        keys = self._collection_object_keys(collection_id=collection_id)
+        archive = self._put_collection_package_object(
+            object_key=keys["archive"],
+            content=package.archive_bytes,
+            sha256=package.archive_sha256,
+            kind="archive",
+            package=package,
+        )
+        manifest = self._put_collection_package_object(
+            object_key=keys["manifest"],
+            content=package.manifest_bytes,
+            sha256=package.manifest_sha256,
+            kind="manifest",
+            package=package,
+        )
+        proof = self._put_collection_package_object(
+            object_key=keys["proof"],
+            content=package.proof_bytes,
+            sha256=package.proof_sha256,
+            kind="ots-proof",
+            package=package,
+        )
+        return CollectionArchiveUploadReceipt(
+            archive=archive,
+            manifest=manifest,
+            proof=proof,
+            archive_sha256=package.archive_sha256,
+            manifest_sha256=package.manifest_sha256,
+            proof_sha256=package.proof_sha256,
+            archive_format=package.archive_format,
+            compression=package.compression,
         )
 
-    def request_finalized_image_restore(
+    def _put_collection_package_object(
         self,
         *,
-        image_id: str,
+        object_key: str,
+        content: bytes,
+        sha256: str,
+        kind: str,
+        package: CollectionArchivePackage,
+    ) -> ArchiveUploadReceipt:
+        existing = self._head_object(object_key=object_key)
+        if existing is not None:
+            return self._collection_receipt_from_head(
+                object_key=object_key,
+                head=existing,
+                expected_bytes=len(content),
+                expected_sha256=sha256,
+            )
+
+        uploaded_at = _utc_now()
+        extra_args: dict[str, Any] = {
+            "Metadata": {
+                "arc-backend": self._config.glacier_backend,
+                "arc-storage-class": self._config.glacier_storage_class,
+                "arc-object-kind": f"collection-{kind}",
+                "arc-collection-sha256": hashlib.sha256(
+                    package.collection_id.encode("utf-8")
+                ).hexdigest(),
+                "arc-archive-format": package.archive_format,
+                "arc-compression": package.compression,
+                "arc-archive-bytes": str(len(content)),
+                "arc-archive-sha256": sha256,
+                COLLECTION_BYTES_METADATA: str(len(content)),
+                COLLECTION_SHA256_METADATA: sha256,
+            }
+        }
+        if self._is_aws_restore_backend():
+            extra_args["StorageClass"] = self._config.glacier_storage_class
+        self._client.put_object(
+            Bucket=self._bucket,
+            Key=object_key,
+            Body=content,
+            **extra_args,
+        )
+        head = cast(
+            dict[str, Any],
+            self._client.head_object(Bucket=self._bucket, Key=object_key),
+        )
+        return self._collection_receipt_from_head(
+            object_key=object_key,
+            head=head,
+            expected_bytes=len(content),
+            expected_sha256=sha256,
+            uploaded_at=uploaded_at,
+        )
+
+    def request_collection_archive_restore(
+        self,
+        *,
+        collection_id: str,
+        object_path: str,
+        retrieval_tier: str,
+        hold_days: int,
+        requested_at: str,
+        estimated_ready_at: str,
+        manifest_object_path: str | None = None,
+        proof_object_path: str | None = None,
+    ) -> ArchiveRestoreStatus:
+        statuses = [
+            self._request_collection_object_restore(
+                object_path=current_object_path,
+                retrieval_tier=retrieval_tier,
+                hold_days=hold_days,
+                requested_at=requested_at,
+                estimated_ready_at=estimated_ready_at,
+            )
+            for current_object_path in _collection_restore_paths(
+                object_path=object_path,
+                manifest_object_path=manifest_object_path,
+                proof_object_path=proof_object_path,
+            )
+        ]
+        return _combine_collection_restore_statuses(statuses)
+
+    def _request_collection_object_restore(
+        self,
+        *,
         object_path: str,
         retrieval_tier: str,
         hold_days: int,
@@ -160,12 +226,12 @@ class S3ArchiveStore:
         head = self._head_object(object_key=object_path)
         if head is None:
             raise RuntimeError(f"Glacier object is missing: {object_path}")
-        _validate_uploaded_iso_metadata(object_key=object_path, head=head)
+        _validate_uploaded_collection_metadata(object_key=object_path, head=head)
         if _is_immediately_readable_storage_class(head):
             return ArchiveRestoreStatus(
                 state="ready",
                 ready_at=requested_at,
-                message="Archive object is immediately readable.",
+                message="Collection archive object is immediately readable.",
             )
         if self._restore_mode() == "auto" and not self._is_aws_restore_backend():
             raise RuntimeError(
@@ -187,22 +253,46 @@ class S3ArchiveStore:
                 return ArchiveRestoreStatus(
                     state="ready",
                     ready_at=requested_at,
-                    message="Archive object is already readable.",
+                    message="Collection archive object is already readable.",
                 )
             if restore_error != "RestoreAlreadyInProgress":
                 raise
-        return self.get_finalized_image_restore_status(
-            image_id=image_id,
+        return self._collection_object_restore_status(
             object_path=object_path,
             requested_at=requested_at,
             estimated_ready_at=estimated_ready_at,
             estimated_expires_at=None,
         )
 
-    def get_finalized_image_restore_status(
+    def get_collection_archive_restore_status(
         self,
         *,
-        image_id: str,
+        collection_id: str,
+        object_path: str,
+        requested_at: str,
+        estimated_ready_at: str | None,
+        estimated_expires_at: str | None,
+        manifest_object_path: str | None = None,
+        proof_object_path: str | None = None,
+    ) -> ArchiveRestoreStatus:
+        statuses = [
+            self._collection_object_restore_status(
+                object_path=current_object_path,
+                requested_at=requested_at,
+                estimated_ready_at=estimated_ready_at,
+                estimated_expires_at=estimated_expires_at,
+            )
+            for current_object_path in _collection_restore_paths(
+                object_path=object_path,
+                manifest_object_path=manifest_object_path,
+                proof_object_path=proof_object_path,
+            )
+        ]
+        return _combine_collection_restore_statuses(statuses)
+
+    def _collection_object_restore_status(
+        self,
+        *,
         object_path: str,
         requested_at: str,
         estimated_ready_at: str | None,
@@ -211,46 +301,47 @@ class S3ArchiveStore:
         head = self._head_object(object_key=object_path)
         if head is None:
             raise RuntimeError(f"Glacier object is missing: {object_path}")
-        _validate_uploaded_iso_metadata(object_key=object_path, head=head)
+        _validate_uploaded_collection_metadata(object_key=object_path, head=head)
         restore = _parse_restore_header(head.get("Restore"))
         if restore is None:
             if _is_immediately_readable_storage_class(head):
                 return ArchiveRestoreStatus(
                     state="ready",
                     ready_at=requested_at,
-                    message="Archive object is immediately readable.",
+                    message="Collection archive object is immediately readable.",
                 )
             return ArchiveRestoreStatus(
                 state="requested",
                 ready_at=estimated_ready_at,
-                message="Archive restore is still in progress.",
+                expires_at=estimated_expires_at,
+                message="Collection archive restore is still in progress.",
             )
         if restore["ongoing"]:
             return ArchiveRestoreStatus(
                 state="requested",
                 ready_at=estimated_ready_at,
-                expires_at=restore["expires_at"],
-                message="Archive restore is still in progress.",
+                expires_at=restore["expires_at"] or estimated_expires_at,
+                message="Collection archive restore is still in progress.",
             )
         return ArchiveRestoreStatus(
             state="ready",
             ready_at=_utc_now(),
             expires_at=restore["expires_at"],
-            message="Archive object is restored and readable.",
+            message="Collection archive object is restored and readable.",
         )
 
-    def iter_restored_finalized_image(
+    def iter_restored_collection_archive(
         self,
         *,
-        image_id: str,
+        collection_id: str,
         object_path: str,
     ) -> Iterator[bytes]:
         head = self._head_object(object_key=object_path)
         if head is None:
             raise RuntimeError(f"Glacier object is missing: {object_path}")
-        _validate_uploaded_iso_metadata(object_key=object_path, head=head)
-        status = self.get_finalized_image_restore_status(
-            image_id=image_id,
+        _validate_uploaded_collection_metadata(object_key=object_path, head=head)
+        status = self.get_collection_archive_restore_status(
+            collection_id=collection_id,
             object_path=object_path,
             requested_at=_utc_now(),
             estimated_ready_at=None,
@@ -267,15 +358,64 @@ class S3ArchiveStore:
             if callable(close):
                 close()
 
-    def cleanup_finalized_image_restore(
+    def read_restored_collection_archive_manifest(
         self,
         *,
-        image_id: str,
+        collection_id: str,
         object_path: str,
+    ) -> bytes:
+        return self._read_restored_collection_object(
+            collection_id=collection_id,
+            object_path=object_path,
+        )
+
+    def read_restored_collection_archive_proof(
+        self,
+        *,
+        collection_id: str,
+        object_path: str,
+    ) -> bytes:
+        return self._read_restored_collection_object(
+            collection_id=collection_id,
+            object_path=object_path,
+        )
+
+    def _read_restored_collection_object(
+        self,
+        *,
+        collection_id: str,
+        object_path: str,
+    ) -> bytes:
+        head = self._head_object(object_key=object_path)
+        if head is None:
+            raise RuntimeError(f"Glacier object is missing: {object_path}")
+        _validate_uploaded_collection_metadata(object_key=object_path, head=head)
+        status = self.get_collection_archive_restore_status(
+            collection_id=collection_id,
+            object_path=object_path,
+            requested_at=_utc_now(),
+            estimated_ready_at=None,
+            estimated_expires_at=None,
+        )
+        if status.state != "ready":
+            raise RuntimeError(f"Glacier object is not restored yet: {object_path}")
+        response = self._client.get_object(Bucket=self._bucket, Key=object_path)
+        body = response["Body"]
+        try:
+            return cast(bytes, body.read())
+        finally:
+            close = getattr(body, "close", None)
+            if callable(close):
+                close()
+
+    def cleanup_collection_archive_restore(
+        self,
+        *,
+        collection_id: str,
+        object_path: str,
+        manifest_object_path: str | None = None,
+        proof_object_path: str | None = None,
     ) -> None:
-        # AWS S3 does not expose deletion of only the temporary restored copy without
-        # deleting the archived object. Completion records Riverhog cleanup and lets
-        # the restore Days window/lifecycle expire the temporary Standard data.
         return
 
     def _restore_mode(self) -> str:
@@ -289,12 +429,51 @@ class S3ArchiveStore:
         return self._config.glacier_backend.casefold() == "aws" or "amazonaws.com" in endpoint
 
 
-def _file_sha256(path: Path) -> str:
-    digest = hashlib.sha256()
-    with path.open("rb") as handle:
-        while chunk := handle.read(1024 * 1024):
-            digest.update(chunk)
-    return digest.hexdigest()
+def _collection_restore_paths(
+    *,
+    object_path: str,
+    manifest_object_path: str | None,
+    proof_object_path: str | None,
+) -> tuple[str, ...]:
+    return tuple(
+        path
+        for path in (object_path, manifest_object_path, proof_object_path)
+        if path is not None
+    )
+
+
+def _combine_collection_restore_statuses(
+    statuses: list[ArchiveRestoreStatus],
+) -> ArchiveRestoreStatus:
+    if any(status.state == "expired" for status in statuses):
+        return ArchiveRestoreStatus(state="expired")
+    if statuses and all(status.state == "ready" for status in statuses):
+        return ArchiveRestoreStatus(
+            state="ready",
+            ready_at=_max_timestamp(status.ready_at for status in statuses),
+            expires_at=_min_timestamp(status.expires_at for status in statuses),
+            message="Collection archive package objects are restored and readable.",
+        )
+    return ArchiveRestoreStatus(
+        state="requested",
+        ready_at=_max_timestamp(status.ready_at for status in statuses),
+        expires_at=_min_timestamp(status.expires_at for status in statuses),
+        message="Collection archive package restore is still in progress.",
+    )
+
+
+def _max_timestamp(values: Iterable[str | None]) -> str | None:
+    candidates = [value for value in values if value is not None]
+    if not candidates:
+        return None
+    return max(candidates)
+
+
+def _min_timestamp(values: Iterable[str | None]) -> str | None:
+    candidates = [value for value in values if value is not None]
+    if not candidates:
+        return None
+    return min(candidates)
 
 
 def _head_metadata(head: dict[str, Any]) -> dict[str, str]:
@@ -304,7 +483,7 @@ def _head_metadata(head: dict[str, Any]) -> dict[str, str]:
     return {str(key).lower(): str(value) for key, value in metadata.items()}
 
 
-def _validate_uploaded_iso_metadata(
+def _validate_uploaded_collection_metadata(
     *,
     object_key: str,
     head: dict[str, Any],
@@ -313,24 +492,32 @@ def _validate_uploaded_iso_metadata(
 ) -> None:
     metadata = _head_metadata(head)
     stored_bytes = int(head.get("ContentLength", 0))
-    metadata_bytes = metadata.get(ISO_BYTES_METADATA)
-    metadata_sha256 = metadata.get(ISO_SHA256_METADATA)
+    metadata_bytes = metadata.get(COLLECTION_BYTES_METADATA)
+    metadata_sha256 = metadata.get(COLLECTION_SHA256_METADATA)
     if metadata_bytes is None or metadata_sha256 is None:
-        raise RuntimeError(f"Glacier object is missing ISO validation metadata: {object_key}")
+        raise RuntimeError(
+            f"Glacier object is missing collection validation metadata: {object_key}"
+        )
     try:
-        iso_bytes = int(metadata_bytes)
+        collection_bytes = int(metadata_bytes)
     except ValueError as exc:
         raise RuntimeError(
-            f"Glacier object has invalid ISO byte metadata: {object_key}"
+            f"Glacier object has invalid collection byte metadata: {object_key}"
         ) from exc
-    if iso_bytes != stored_bytes:
-        raise RuntimeError(f"Glacier object ISO byte metadata does not match size: {object_key}")
-    if expected_bytes is not None and iso_bytes != expected_bytes:
-        raise RuntimeError(f"Glacier object size does not match validated ISO: {object_key}")
+    if collection_bytes != stored_bytes:
+        raise RuntimeError(
+            f"Glacier object collection byte metadata does not match size: {object_key}"
+        )
+    if expected_bytes is not None and collection_bytes != expected_bytes:
+        raise RuntimeError(
+            f"Glacier object size does not match collection package member: {object_key}"
+        )
     if not _SHA256_RE.fullmatch(metadata_sha256):
-        raise RuntimeError(f"Glacier object has invalid ISO sha256 metadata: {object_key}")
+        raise RuntimeError(f"Glacier object has invalid collection sha256 metadata: {object_key}")
     if expected_sha256 is not None and metadata_sha256 != expected_sha256:
-        raise RuntimeError(f"Glacier object sha256 does not match validated ISO: {object_key}")
+        raise RuntimeError(
+            f"Glacier object sha256 does not match collection package member: {object_key}"
+        )
 
 
 def _format_s3_timestamp(value: object, *, fallback: str) -> str:
@@ -388,8 +575,7 @@ def _validate_aws_storage_class(
     raise RuntimeError(
         "existing AWS Glacier object storage class does not match configured "
         f"ARC_GLACIER_STORAGE_CLASS for {object_key}: expected {expected}, got {actual}. "
-        "Delete the stale object or choose a fresh ARC_GLACIER_PREFIX before rerunning "
-        "make gated-glacier-restore."
+        "Delete the stale object or choose a fresh ARC_GLACIER_PREFIX before rerunning."
     )
 
 

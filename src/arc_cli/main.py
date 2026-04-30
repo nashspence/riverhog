@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import hashlib
+import time
 from pathlib import Path
 from typing import Annotated, TypedDict
 
@@ -133,10 +134,27 @@ def upload_cmd(
                 content=content[offset:],
             )
 
-    try:
-        collection = api.get_collection(collection_id)
-        final_payload = _finalized_collection_upload_payload(collection_id, manifest, collection)
-    except NotFound:
+    final_payload: dict[str, object] | None = None
+    deadline = time.monotonic() + 30.0
+    while time.monotonic() < deadline:
+        try:
+            collection = api.get_collection(collection_id)
+            final_payload = _finalized_collection_upload_payload(
+                collection_id,
+                manifest,
+                collection,
+            )
+            break
+        except NotFound:
+            try:
+                final_payload = api.get_collection_upload(collection_id)
+            except NotFound:
+                time.sleep(0.2)
+                continue
+            if final_payload.get("state") == "failed":
+                break
+            time.sleep(0.2)
+    if final_payload is None:
         final_payload = api.get_collection_upload(collection_id)
     emit(
         final_payload if json_mode else format_collection_upload(final_payload),

@@ -15,7 +15,7 @@ help:
 		'  make unit              Run the unit test lane locally.' \
 		'  make spec              Run the fixture-backed spec harness locally.' \
 		'  make gated-arc-disc    Run opt-in real-device arc-disc optical validation.' \
-		'  make gated-glacier-restore Run opt-in live AWS Glacier restore validation.' \
+		'  make gated-glacier-restore Run opt-in live AWS collection archive restore validation.' \
 		'  make build-app         Build the app image.' \
 		'  make build-test        Build the test image.' \
 		'  make build             Build both app and test images.' \

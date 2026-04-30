@@ -2,14 +2,12 @@ from __future__ import annotations
 
 from typing import Literal
 
-from pydantic import AliasChoices, ConfigDict, Field
+from pydantic import AliasChoices, Field
 
 from arc_api.schemas.common import ArcModel
 
 
 class FinalizedImageSummaryResponse(ArcModel):
-    model_config = ConfigDict(extra="ignore")
-
     id: str
     filename: str
     finalized_at: str
@@ -19,11 +17,7 @@ class FinalizedImageSummaryResponse(ArcModel):
     collections: int
     collection_ids: list[str]
     iso_ready: Literal[True] = True
-    physical_protection_state: Literal[
-        "unprotected", "partially_protected", "protected"
-    ] = Field(
-        validation_alias=AliasChoices("physical_protection_state", "protection_state")
-    )
+    physical_protection_state: Literal["unprotected", "partially_protected", "protected"]
     physical_copies_required: int
     physical_copies_registered: int
     physical_copies_verified: int

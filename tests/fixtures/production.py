@@ -10,7 +10,7 @@ import sys
 import time
 from collections.abc import Iterator, Mapping, Sequence
 from dataclasses import dataclass
-from datetime import UTC, datetime
+from datetime import UTC, datetime, timedelta
 from pathlib import Path
 from typing import cast
 from urllib.parse import unquote, urlsplit
@@ -18,7 +18,7 @@ from xml.etree import ElementTree
 
 import httpx
 import pytest
-from sqlalchemy import select
+from sqlalchemy import select, update
 
 from arc_core.catalog_models import (
     ActivePinRecord,
@@ -26,6 +26,7 @@ from arc_core.catalog_models import (
     CollectionFileRecord,
     CollectionRecord,
     CollectionUploadFileRecord,
+    CollectionUploadRecord,
     FetchEntryRecord,
     FileCopyRecord,
     FinalizedImageCollectionArtifactRecord,
@@ -45,7 +46,6 @@ from arc_core.finalized_image_coverage import (
 )
 from arc_core.fs_paths import normalize_collection_id, normalize_relpath
 from arc_core.runtime_config import load_runtime_config
-from arc_core.services.glacier_uploads import enqueue_glacier_upload_job
 from arc_core.sqlite_db import make_session_factory, session_scope
 from arc_core.stores.s3_support import (
     _create_s3_client,
@@ -338,13 +338,18 @@ class ProductionCollectionsClient:
     def get(self, collection_id: str) -> CollectionSummary:
         response = self._system.request("GET", f"/v1/collections/{collection_id}")
         payload = response.json()
+        protection_state = (
+            ProtectionState(payload["protection_state"])
+            if payload["protection_state"] in {state.value for state in ProtectionState}
+            else ProtectionState.UNPROTECTED
+        )
         return CollectionSummary(
             id=CollectionId(payload["id"]),
             files=payload["files"],
             bytes=payload["bytes"],
             hot_bytes=payload["hot_bytes"],
             archived_bytes=payload["archived_bytes"],
-            protection_state=ProtectionState(payload["protection_state"]),
+            protection_state=protection_state,
             protected_bytes=payload["protected_bytes"],
         )
 
@@ -909,7 +914,54 @@ class ProductionSystem:
                     offset=int(upload["offset"]),
                     content=content,
                 )
-            return self.request("GET", f"/v1/collections/{normalized_collection_id}").json()
+            payload = self.wait_for_collection_upload_state(
+                normalized_collection_id,
+                "finalized",
+            )
+            collection = payload.get("collection")
+            if isinstance(collection, dict):
+                return collection
+            response = self.request("GET", f"/v1/collections/{normalized_collection_id}")
+            assert response.status_code == 200, response.text
+            return cast(dict[str, object], response.json())
+
+    def stage_collection_upload_archiving(
+        self, collection_id: str, files: Mapping[str, bytes] | None = None
+    ) -> dict[str, object]:
+        with time_block("fixture.stage_collection_upload_archiving"):
+            normalized_collection_id = normalize_collection_id(collection_id)
+            source_files = files or PHOTOS_2024_FILES
+            self.seed_collection_source(normalized_collection_id, source_files)
+            root = (self.workspace / "collections-src" / normalized_collection_id).resolve()
+            manifest = [
+                {
+                    "path": path,
+                    "bytes": len(content),
+                    "sha256": hashlib.sha256(content).hexdigest(),
+                }
+                for path, content in sorted(source_files.items())
+            ]
+            payload = self.collections.create_or_resume_upload(
+                normalized_collection_id,
+                manifest,
+                ingest_source=str(root),
+            )
+            self.defer_collection_glacier_archiving(normalized_collection_id)
+            for file_payload in payload["files"]:
+                upload = self.collections.create_or_resume_file_upload(
+                    normalized_collection_id,
+                    str(file_payload["path"]),
+                )
+                content = source_files[str(file_payload["path"])]
+                self.collections.append_upload_chunk(
+                    str(upload["upload_url"]),
+                    offset=int(upload["offset"]),
+                    content=content,
+                )
+            return self.wait_for_collection_upload_state(
+                normalized_collection_id,
+                "archiving",
+            )
 
     def _seed_collection_hot(
         self, collection_id: str, files: Mapping[str, bytes], *, ingest_source: str | None = None
@@ -1016,7 +1068,7 @@ class ProductionSystem:
     def seed_photos_hot(self) -> None:
         with time_block("fixture.seed_photos_hot"):
             if not self._collection_exists("photos-2024"):
-                self._seed_collection_hot("photos-2024", PHOTOS_2024_FILES)
+                self.upload_collection_source("photos-2024", PHOTOS_2024_FILES)
 
     def seed_planner_fixtures(self) -> None:
         with time_block("fixture.seed_planner_fixtures"):
@@ -1105,28 +1157,154 @@ class ProductionSystem:
                             sidecar_path=part.sidecar_path,
                         )
                     )
-                enqueue_glacier_upload_job(
-                    session,
-                    image_id=candidate.finalized_id,
-                    next_attempt_at=datetime.now(UTC).strftime("%Y-%m-%dT%H:%M:%SZ"),
-                )
 
-    def wait_for_image_glacier_state(
+    def wait_for_collection_glacier_state(
         self,
-        image_id: str,
+        collection_id: str,
         state: str,
         *,
-        timeout: float = 10.0,
+        timeout: float = 20.0,
     ) -> dict[str, object]:
+        normalized_collection_id = normalize_collection_id(collection_id)
         deadline = time.monotonic() + timeout
         while time.monotonic() < deadline:
-            response = self.request("GET", f"/v1/images/{image_id}")
-            assert response.status_code == 200, response.text
-            payload = response.json()
-            if payload["glacier"]["state"] == state:
-                return payload
+            response = self.request(
+                "GET",
+                f"/v1/collections/{normalized_collection_id}",
+            )
+            if response.status_code == 200:
+                payload = response.json()
+                if payload["glacier"]["state"] == state:
+                    return cast(dict[str, object], payload)
+            elif response.status_code != 404:
+                raise AssertionError(response.text)
             time.sleep(0.05)
-        raise AssertionError(f"timed out waiting for image glacier state {image_id} -> {state}")
+        raise AssertionError(
+            f"timed out waiting for collection glacier state {collection_id} -> {state}"
+        )
+
+    def wait_for_collection_upload_state(
+        self,
+        collection_id: str,
+        state: str,
+        *,
+        timeout: float = 20.0,
+    ) -> dict[str, object]:
+        normalized_collection_id = normalize_collection_id(collection_id)
+        deadline = time.monotonic() + timeout
+        while time.monotonic() < deadline:
+            response = self.request(
+                "GET",
+                f"/v1/collection-uploads/{normalized_collection_id}",
+            )
+            if response.status_code == 200:
+                payload = response.json()
+                if payload["state"] == state:
+                    return cast(dict[str, object], payload)
+                if state == "finalized" and payload["state"] == "archiving":
+                    self.defer_collection_glacier_archiving(
+                        normalized_collection_id,
+                        seconds=0,
+                    )
+            elif response.status_code == 404 and state == "finalized":
+                collection_response = self.request(
+                    "GET",
+                    f"/v1/collections/{normalized_collection_id}",
+                )
+                if collection_response.status_code == 200:
+                    collection = collection_response.json()
+                    return {
+                        "collection_id": normalized_collection_id,
+                        "ingest_source": collection.get("ingest_source"),
+                        "state": "finalized",
+                        "files_total": collection["files"],
+                        "files_pending": 0,
+                        "files_partial": 0,
+                        "files_uploaded": collection["files"],
+                        "bytes_total": collection["bytes"],
+                        "uploaded_bytes": collection["bytes"],
+                        "missing_bytes": 0,
+                        "upload_state_expires_at": None,
+                        "latest_failure": None,
+                        "files": [],
+                        "collection": collection,
+                    }
+            elif response.status_code != 404:
+                raise AssertionError(response.text)
+            time.sleep(0.05)
+        raise AssertionError(
+            f"timed out waiting for collection upload state {collection_id} -> {state}"
+        )
+
+    def defer_collection_glacier_archiving(
+        self,
+        collection_id: str,
+        *,
+        seconds: float = 60.0,
+    ) -> None:
+        normalized_collection_id = normalize_collection_id(collection_id)
+        next_attempt_at = (
+            datetime.now(UTC) + timedelta(seconds=seconds)
+        ).strftime("%Y-%m-%dT%H:%M:%SZ")
+        with session_scope(make_session_factory(str(self.db_path))) as session:
+            session.execute(
+                update(CollectionUploadRecord)
+                .where(CollectionUploadRecord.collection_id == normalized_collection_id)
+                .values(archive_next_attempt_at=next_attempt_at)
+            )
+
+    def mark_collection_archive_uploaded(self, collection_id: str) -> None:
+        normalized_collection_id = normalize_collection_id(collection_id)
+        if not self._collection_exists(normalized_collection_id):
+            if normalized_collection_id == DOCS_COLLECTION_ID:
+                self.upload_collection_source(normalized_collection_id, DOCS_FILES)
+            elif normalized_collection_id == "photos-2024":
+                self.upload_collection_source(normalized_collection_id, PHOTOS_2024_FILES)
+            else:
+                raise AssertionError(
+                    f"unsupported collection archive fixture: {normalized_collection_id}"
+                )
+        self.wait_for_collection_glacier_state(normalized_collection_id, "uploaded")
+
+    def collection_glacier_failure_configured(self, collection_id: str) -> bool:
+        _ = collection_id
+        return False
+
+    def seed_candidate_for_collection(self, collection_id: str) -> None:
+        normalized_collection_id = normalize_collection_id(collection_id)
+        path, content = next(iter(sorted(PHOTOS_2024_FILES.items())))
+        candidate_id = f"img_{normalized_collection_id.replace('/', '_')}_01"
+        image_id = f"{normalized_collection_id.replace('/', '_')}-image-01"
+        image_root = write_tree(
+            self.workspace / "images" / candidate_id,
+            {path: content},
+        )
+        with session_scope(make_session_factory(str(self.db_path))) as session:
+            if session.get(PlannedCandidateRecord, candidate_id) is None:
+                candidate = PlannedCandidateRecord(
+                    candidate_id=candidate_id,
+                    finalized_id=image_id,
+                    filename=f"{image_id}.iso",
+                    bytes=len(content),
+                    iso_ready=True,
+                    image_root=str(image_root),
+                    target_bytes=TARGET_BYTES,
+                    min_fill_bytes=MIN_FILL_BYTES,
+                )
+                session.add(candidate)
+                session.add(
+                    CandidateCoveredPathRecord(
+                        candidate_id=candidate_id,
+                        collection_id=normalized_collection_id,
+                        path=path,
+                    )
+                )
+
+    def ensure_image_rebuild_session(self, *, session_id: str, image_id: str) -> None:
+        response = self.request("POST", f"/v1/images/{image_id}/rebuild-session")
+        assert response.status_code == 200, response.text
+        payload = response.json()
+        assert payload["id"] == session_id
 
     def wait_for_recovery_session_state(
         self,
@@ -1229,17 +1407,17 @@ class ProductionSystem:
     def seed_nested_photos_hot(self) -> None:
         with time_block("fixture.seed_nested_photos_hot"):
             if not self._collection_exists("photos/2024"):
-                self._seed_collection_hot("photos/2024", PHOTOS_2024_FILES)
+                self.upload_collection_source("photos/2024", PHOTOS_2024_FILES)
 
     def seed_parent_photos_hot(self) -> None:
         with time_block("fixture.seed_parent_photos_hot"):
             if not self._collection_exists("photos"):
-                self._seed_collection_hot("photos", PHOTOS_2024_FILES)
+                self.upload_collection_source("photos", PHOTOS_2024_FILES)
 
     def seed_docs_hot(self) -> None:
         with time_block("fixture.seed_docs_hot"):
             if not self._collection_exists("docs"):
-                self._seed_collection_hot("docs", DOCS_FILES)
+                self.upload_collection_source("docs", DOCS_FILES)
 
     def seed_docs_archive(self) -> None:
         with time_block("fixture.seed_docs_archive"):

@@ -77,7 +77,7 @@ class RuntimeConfig:
     glacier_access_key_id: str = "minioadmin"
     glacier_secret_access_key: str = "minioadmin"
     glacier_force_path_style: bool = True
-    glacier_prefix: str = "glacier/finalized-images"
+    glacier_prefix: str = "glacier"
     glacier_backend: str = "s3"
     glacier_storage_class: str = "DEEP_ARCHIVE"
     glacier_upload_retry_limit: int = 3
@@ -345,7 +345,7 @@ def load_runtime_config() -> RuntimeConfig:
             os.getenv("ARC_GLACIER_FORCE_PATH_STYLE", str(s3_force_path_style).lower())
         ),
         glacier_prefix=_normalize_prefix(
-            os.getenv("ARC_GLACIER_PREFIX", "glacier/finalized-images")
+            os.getenv("ARC_GLACIER_PREFIX", "glacier")
         ),
         glacier_backend=os.getenv("ARC_GLACIER_BACKEND", "s3").strip() or "s3",
         glacier_storage_class=os.getenv("ARC_GLACIER_STORAGE_CLASS", "DEEP_ARCHIVE").strip()

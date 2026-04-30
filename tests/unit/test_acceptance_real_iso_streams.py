@@ -34,7 +34,7 @@ def test_acceptance_system_can_serve_real_iso_streams_from_fake_backed_state(
         assert response.status_code == 200, response.text
         assert response.content == b"real-iso"
 
-        system.wait_for_image_glacier_state(image_id, "uploaded")
+        system.mark_collection_archive_uploaded("docs")
         for copy_id, state in ((f"{image_id}-1", "lost"), (f"{image_id}-2", "damaged")):
             response = system.request(
                 "POST",

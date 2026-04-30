@@ -706,6 +706,49 @@ def given_collection_exists_and_is_fully_hot(
     _ensure_collection_fixture(acceptance_system, collection_id)
 
 
+@given(parsers.parse('collection "{collection_id}" has uploaded Glacier archive package'))
+def given_collection_has_uploaded_glacier_archive_package(
+    acceptance_system: AcceptanceSystem,
+    collection_id: str,
+) -> None:
+    _ensure_collection_fixture(acceptance_system, collection_id)
+    acceptance_system.mark_collection_archive_uploaded(collection_id)
+
+
+@given(
+    parsers.parse(
+        'collection Glacier archiving fails for "{collection_id}" with error "{error}"'
+    )
+)
+@given(
+    parsers.parse(
+        'the glacier upload fixture fails for collection "{collection_id}" with error "{error}"'
+    )
+)
+def given_collection_glacier_archiving_fails(
+    acceptance_system: AcceptanceSystem,
+    collection_id: str,
+    error: str,
+) -> None:
+    acceptance_system.fail_collection_glacier_upload(collection_id, error=error)
+
+
+@given(
+    parsers.parse(
+        'collection upload "{collection_id}" has completed file verification and is archiving'
+    )
+)
+def given_collection_upload_has_completed_verification_and_is_archiving(
+    acceptance_system: AcceptanceSystem,
+    acceptance_context: AcceptanceScenarioContext,
+    collection_id: str,
+) -> None:
+    payload = acceptance_system.stage_collection_upload_archiving(collection_id)
+    _set_response(acceptance_context, httpx.Response(200, json=payload))
+    assert payload["state"] == "archiving"
+    acceptance_system.seed_candidate_for_collection(collection_id)
+
+
 @given(parsers.parse('target "{target}" is already pinned'))
 @given(parsers.parse('target "{target}" is pinned'))
 def given_target_is_pinned(acceptance_system: AcceptanceSystem, target: str) -> None:
@@ -1074,6 +1117,15 @@ def given_fixture_finalized_image_exists_for_photos(
     acceptance_system.seed_finalized_image(SECOND_IMAGE_ID, force_ready=True)
 
 
+@given(parsers.parse('image rebuild session "{session_id}" exists for image "{image_id}"'))
+def given_image_rebuild_session_exists_for_image(
+    acceptance_system: AcceptanceSystem,
+    session_id: str,
+    image_id: str,
+) -> None:
+    acceptance_system.ensure_image_rebuild_session(session_id=session_id, image_id=image_id)
+
+
 @given(parsers.parse('collection "{collection_id}" contains file "{path}"'))
 def given_collection_contains_file(
     acceptance_system: AcceptanceSystem,
@@ -1288,23 +1340,57 @@ def when_client_uploads_every_required_collection_file(
             collection_id=collection_id,
             path=str(file_payload["path"]),
         )
-    final = acceptance_system.request(
-        "GET",
-        f"/v1/collections/{quote(normalize_collection_id(collection_id), safe='/')}",
+    normalized_collection_id = normalize_collection_id(collection_id)
+    failure_configured = acceptance_system.collection_glacier_failure_configured(
+        normalized_collection_id
     )
-    assert final.status_code == 200, final.text
-    summary = final.json()
-    _set_response(
-        acceptance_context,
-        httpx.Response(
-            200,
-            json={
-                "collection_id": normalize_collection_id(collection_id),
-                "state": "finalized",
-                "collection": summary,
-            },
-        ),
-    )
+    if failure_configured:
+        payload = acceptance_system.wait_for_collection_upload_state(collection_id, "failed")
+    elif "/" in normalized_collection_id:
+        payload = acceptance_system.wait_for_collection_upload_state(collection_id, "finalized")
+    else:
+        refresh = _refresh_collection_upload(acceptance_system, collection_id)
+        assert refresh.status_code == 200, refresh.text
+        payload = refresh.json()
+    if payload.get("state") == "archiving":
+        acceptance_system.defer_collection_glacier_archiving(collection_id)
+    _set_response(acceptance_context, httpx.Response(200, json=payload))
+
+
+@given(parsers.parse('the client waits for collection upload "{collection_id}" state "{state}"'))
+@when(parsers.parse('the client waits for collection upload "{collection_id}" state "{state}"'))
+def when_client_waits_for_collection_upload_state(
+    acceptance_system: AcceptanceSystem,
+    acceptance_context: AcceptanceScenarioContext,
+    collection_id: str,
+    state: str,
+) -> None:
+    payload = acceptance_system.wait_for_collection_upload_state(collection_id, state)
+    _set_response(acceptance_context, httpx.Response(200, json=payload))
+
+
+@when(parsers.parse('the client retries collection Glacier archiving for "{collection_id}"'))
+def when_client_retries_collection_glacier_archiving(
+    acceptance_system: AcceptanceSystem,
+    acceptance_context: AcceptanceScenarioContext,
+    collection_id: str,
+) -> None:
+    acceptance_system.clear_collection_glacier_upload_failure(collection_id)
+    response = _start_collection_upload(acceptance_system, collection_id)
+    assert response.status_code == 200, response.text
+    payload = acceptance_system.wait_for_collection_upload_state(collection_id, "finalized")
+    _set_response(acceptance_context, httpx.Response(200, json=payload))
+
+
+@when(parsers.parse('collection "{collection_id}" starts Glacier archiving'))
+def when_collection_starts_glacier_archiving(
+    acceptance_system: AcceptanceSystem,
+    acceptance_context: AcceptanceScenarioContext,
+    collection_id: str,
+) -> None:
+    acceptance_system.start_collection_glacier_archiving(collection_id)
+    payload = acceptance_system.wait_for_collection_upload_state(collection_id, "failed")
+    _set_response(acceptance_context, httpx.Response(200, json=payload))
 
 
 @when(parsers.parse('the client refreshes collection upload "{collection_id}"'))
@@ -1459,17 +1545,6 @@ def when_api_process_restarts(acceptance_system: AcceptanceSystem) -> None:
     acceptance_system.restart()
 
 
-@given(
-    parsers.parse('the glacier upload fixture fails for image "{image_id}" with error "{error}"')
-)
-def given_glacier_upload_fixture_fails_for_image(
-    acceptance_system: AcceptanceSystem,
-    image_id: str,
-    error: str,
-) -> None:
-    acceptance_system.fail_glacier_upload(image_id, error=error)
-
-
 @given(parsers.parse('the captured webhook sink fails event "{event}" with status {status:d} once'))
 @given(
     parsers.parse(
@@ -1509,17 +1584,14 @@ def given_captured_webhook_sink_times_out_event(
     )
 
 
-@given(parsers.parse('the client waits for image "{image_id}" glacier state "{state}"'))
-@when(parsers.parse('the client waits for image "{image_id}" glacier state "{state}"'))
-def when_the_client_waits_for_image_glacier_state(
+@given(parsers.parse('the client waits for collection "{collection_id}" glacier state "{state}"'))
+@when(parsers.parse('the client waits for collection "{collection_id}" glacier state "{state}"'))
+def when_the_client_waits_for_collection_glacier_state(
     acceptance_system: AcceptanceSystem,
-    acceptance_context: AcceptanceScenarioContext,
-    image_id: str,
+    collection_id: str,
     state: str,
 ) -> None:
-    acceptance_system.wait_for_image_glacier_state(image_id, state)
-    response = acceptance_system.request("GET", f"/v1/images/{image_id}")
-    _set_response(acceptance_context, response)
+    acceptance_system.wait_for_collection_glacier_state(collection_id, state)
 
 
 @given(parsers.parse('the client waits for recovery session "{session_id}" state "{state}"'))
@@ -1759,6 +1831,17 @@ def then_collection_upload_reports_zero_uploaded_bytes(
     assert all(int(item["uploaded_bytes"]) == 0 for item in payload["files"])
 
 
+@then(parsers.parse('collection upload "{collection_id}" latest failure contains "{text}"'))
+def then_collection_upload_latest_failure_contains(
+    acceptance_context: AcceptanceScenarioContext,
+    collection_id: str,
+    text: str,
+) -> None:
+    payload = _json_payload(_require_response(acceptance_context))
+    assert payload["collection_id"] == collection_id
+    assert text in str(payload.get("latest_failure"))
+
+
 @then(parsers.parse('fetch manifest entry "{entry_id}" upload state is "{state}"'))
 def then_fetch_manifest_entry_upload_state_is(
     acceptance_context: AcceptanceScenarioContext,
@@ -1784,10 +1867,32 @@ def then_fetch_manifest_entry_uploaded_bytes_is(
 @then(parsers.parse('collection "{collection_id}" is not yet visible'))
 def then_collection_is_not_yet_visible(
     acceptance_system: AcceptanceSystem,
+    acceptance_context: AcceptanceScenarioContext,
     collection_id: str,
 ) -> None:
     response = acceptance_system.request("GET", f"/v1/collections/{quote(collection_id, safe='/')}")
+    if response.status_code == 200:
+        payload = (
+            _json_payload(acceptance_context.response)
+            if acceptance_context.response is not None
+            else {}
+        )
+        if (
+            payload.get("collection_id") == collection_id
+            and payload.get("state") == "archiving"
+        ):
+            return
     assert response.status_code == 404
+
+
+@then(parsers.parse('collection "{collection_id}" is not eligible for planning'))
+def then_collection_is_not_eligible_for_planning(
+    acceptance_system: AcceptanceSystem,
+    collection_id: str,
+) -> None:
+    response = acceptance_system.request("GET", "/v1/plan", params={"collection": collection_id})
+    assert response.status_code == 200, response.text
+    assert response.json()["total"] == 0
 
 
 @then(parsers.parse('collection "{collection_id}" has hot_bytes equal to bytes'))
@@ -1824,6 +1929,52 @@ def then_collection_is_eligible_for_planning(
 ) -> None:
     payload = acceptance_system.collections.get(collection_id)
     assert payload.pending_bytes > 0
+
+
+@then(parsers.parse('collection "{collection_id}" glacier state is "{state}"'))
+def then_collection_glacier_state_is(
+    acceptance_system: AcceptanceSystem,
+    collection_id: str,
+    state: str,
+) -> None:
+    response = acceptance_system.request(
+        "GET",
+        f"/v1/collections/{quote(collection_id, safe='/')}",
+    )
+    assert response.status_code == 200, response.text
+    assert response.json()["glacier"]["state"] == state
+
+
+@then(parsers.parse('collection "{collection_id}" archive manifest state is "{state}"'))
+def then_named_collection_archive_manifest_state_is(
+    acceptance_system: AcceptanceSystem,
+    collection_id: str,
+    state: str,
+) -> None:
+    response = acceptance_system.request(
+        "GET",
+        f"/v1/collections/{quote(collection_id, safe='/')}",
+    )
+    assert response.status_code == 200, response.text
+    manifest = response.json()["archive_manifest"]
+    assert manifest is not None
+    assert ("uploaded" if manifest["object_path"] else "pending") == state
+
+
+@then(parsers.parse('collection "{collection_id}" OTS proof state is "{state}"'))
+def then_named_collection_ots_proof_state_is(
+    acceptance_system: AcceptanceSystem,
+    collection_id: str,
+    state: str,
+) -> None:
+    response = acceptance_system.request(
+        "GET",
+        f"/v1/collections/{quote(collection_id, safe='/')}",
+    )
+    assert response.status_code == 200, response.text
+    manifest = response.json()["archive_manifest"]
+    assert manifest is not None
+    assert manifest["ots_state"] == state
 
 
 @then("pending_bytes equals bytes minus archived_bytes")
@@ -1894,6 +2045,46 @@ def then_collection_glacier_recovery_state_is(
     assert payload["recovery"]["glacier"]["state"] == state, payload["recovery"]
 
 
+@then(parsers.parse('collection glacier state is "{state}"'))
+def then_response_collection_glacier_state_is(
+    acceptance_context: AcceptanceScenarioContext,
+    state: str,
+) -> None:
+    payload = _json_payload(_require_response(acceptance_context))
+    assert payload["glacier"]["state"] == state
+
+
+@then(parsers.parse('collection archive manifest state is "{state}"'))
+def then_response_collection_archive_manifest_state_is(
+    acceptance_context: AcceptanceScenarioContext,
+    state: str,
+) -> None:
+    payload = _json_payload(_require_response(acceptance_context))
+    manifest = payload["archive_manifest"]
+    assert manifest is not None
+    assert ("uploaded" if manifest["object_path"] else "pending") == state
+
+
+@then(parsers.parse('collection OTS proof state is "{state}"'))
+def then_response_collection_ots_proof_state_is(
+    acceptance_context: AcceptanceScenarioContext,
+    state: str,
+) -> None:
+    payload = _json_payload(_require_response(acceptance_context))
+    manifest = payload["archive_manifest"]
+    assert manifest is not None
+    assert manifest["ots_state"] == state
+
+
+@then(parsers.parse('collection disc coverage state is "{state}"'))
+def then_response_collection_disc_coverage_state_is(
+    acceptance_context: AcceptanceScenarioContext,
+    state: str,
+) -> None:
+    payload = _json_payload(_require_response(acceptance_context))
+    assert payload["disc_coverage"]["state"] == state, payload
+
+
 @then(parsers.parse('collection image coverage includes image "{image_id}"'))
 def then_collection_image_coverage_includes_image(
     acceptance_context: AcceptanceScenarioContext,
@@ -1924,17 +2115,6 @@ def then_collection_image_coverage_for_image_includes_path(
     payload = _json_payload(_require_response(acceptance_context))
     image = next(image for image in payload["image_coverage"] if image["id"] == image_id)
     assert path in image["covered_paths"]
-
-
-@then(parsers.parse('collection image coverage for image "{image_id}" glacier state is "{state}"'))
-def then_collection_image_coverage_for_image_glacier_state_is(
-    acceptance_context: AcceptanceScenarioContext,
-    image_id: str,
-    state: str,
-) -> None:
-    payload = _json_payload(_require_response(acceptance_context))
-    image = next(image for image in payload["image_coverage"] if image["id"] == image_id)
-    assert image["glacier"]["state"] == state
 
 
 @then(parsers.parse('the response query is "{query}"'))
@@ -2393,6 +2573,92 @@ def then_bucket_object_records_validated_iso_metadata(
     assert iso_sha256 is not None and re.fullmatch(r"[0-9a-f]{64}", iso_sha256)
 
 
+def _collection_archive_object_path(
+    acceptance_system: AcceptanceSystem,
+    collection_id: str,
+) -> str:
+    response = acceptance_system.request(
+        "GET",
+        f"/v1/collections/{quote(collection_id, safe='/')}",
+    )
+    assert response.status_code == 200, response.text
+    return str(response.json()["glacier"]["object_path"])
+
+
+@then(
+    parsers.parse(
+        'the {storage} bucket contains collection Glacier archive package for collection '
+        '"{collection_id}"'
+    )
+)
+def then_bucket_contains_collection_glacier_archive_package(
+    acceptance_system: AcceptanceSystem,
+    storage: str,
+    collection_id: str,
+) -> None:
+    assert acceptance_system.bucket_contains_object(
+        storage=storage,
+        key=_collection_archive_object_path(acceptance_system, collection_id),
+    )
+
+
+@then(
+    parsers.parse(
+        'the {storage} bucket does not contain collection Glacier archive package for collection '
+        '"{collection_id}"'
+    )
+)
+def then_bucket_does_not_contain_collection_glacier_archive_package(
+    acceptance_system: AcceptanceSystem,
+    storage: str,
+    collection_id: str,
+) -> None:
+    assert not acceptance_system.bucket_contains_object(
+        storage=storage,
+        key=_collection_archive_object_path(acceptance_system, collection_id),
+    )
+
+
+@then(
+    parsers.parse(
+        'the {storage} bucket object for collection "{collection_id}" '
+        "records validated archive metadata"
+    )
+)
+def then_bucket_object_for_collection_records_archive_metadata(
+    acceptance_system: AcceptanceSystem,
+    storage: str,
+    collection_id: str,
+) -> None:
+    metadata = acceptance_system.bucket_object_metadata(
+        storage=storage,
+        key=_collection_archive_object_path(acceptance_system, collection_id),
+    )
+    archive_bytes = metadata.get("arc-archive-bytes")
+    archive_sha256 = metadata.get("arc-archive-sha256")
+    assert archive_bytes is not None and int(archive_bytes) > 0
+    assert archive_sha256 is not None and re.fullmatch(r"[0-9a-f]{64}", archive_sha256)
+
+
+@then(
+    parsers.parse(
+        'the {credentials} credentials cannot read collection Glacier archive package '
+        'for collection "{collection_id}" from the {storage} bucket'
+    )
+)
+def then_credentials_cannot_read_collection_glacier_archive_package(
+    acceptance_system: AcceptanceSystem,
+    credentials: str,
+    collection_id: str,
+    storage: str,
+) -> None:
+    assert acceptance_system.bucket_read_is_rejected(
+        credentials=credentials,
+        storage=storage,
+        key=_collection_archive_object_path(acceptance_system, collection_id),
+    )
+
+
 @then(parsers.parse('the {storage} bucket does not contain object "{key}"'))
 def then_bucket_does_not_contain_object(
     acceptance_system: AcceptanceSystem,
@@ -2610,11 +2876,10 @@ def then_response_plan_candidates_contain_only(
 
 @then(
     'each finalized image contains "id", "filename", "finalized_at", "bytes", '
-    '"fill", "files", "collections", '
-    '"collection_ids", "iso_ready", "protection_state", '
-    '"physical_copies_required", "physical_copies_registered", '
-    '"physical_copies_verified", '
-    '"physical_copies_missing", and "glacier"'
+    '"fill", "files", "collections", "collection_ids", "iso_ready", '
+    '"physical_protection_state", "physical_copies_required", '
+    '"physical_copies_registered", "physical_copies_verified", and '
+    '"physical_copies_missing"'
 )
 def then_each_finalized_image_contains_expected_fields(
     acceptance_context: AcceptanceScenarioContext,
@@ -2630,14 +2895,15 @@ def then_each_finalized_image_contains_expected_fields(
         "collections",
         "collection_ids",
         "iso_ready",
-        "protection_state",
+        "physical_protection_state",
         "physical_copies_required",
         "physical_copies_registered",
         "physical_copies_verified",
         "physical_copies_missing",
-        "glacier",
     }
     assert all(expected.issubset(image) for image in payload["images"])
+    assert all("protection_state" not in image for image in payload["images"])
+    assert all("glacier" not in image for image in payload["images"])
 
 
 @then("finalized images are returned newest-first")
@@ -2716,39 +2982,23 @@ def then_each_finalized_image_has_physical_copies_registered(
     assert all(image["physical_copies_registered"] > 0 for image in payload["images"])
 
 
-@then(parsers.parse('the response image protection_state is "{state}"'))
-def then_response_image_protection_state_is(
+@then(parsers.parse('the response image physical_protection_state is "{state}"'))
+def then_response_image_physical_protection_state_is(
     acceptance_context: AcceptanceScenarioContext,
     state: str,
 ) -> None:
     payload = _json_payload(_require_response(acceptance_context))
-    assert payload["protection_state"] == state
+    assert payload["physical_protection_state"] == state
 
 
-@then(parsers.parse('the response image glacier state is "{state}"'))
-def then_response_image_glacier_state_is(
+@then(parsers.parse('the response collection glacier object_path is under "{prefix}"'))
+def then_response_collection_glacier_object_path_is_under(
     acceptance_context: AcceptanceScenarioContext,
-    state: str,
+    prefix: str,
 ) -> None:
     payload = _json_payload(_require_response(acceptance_context))
-    assert payload["glacier"]["state"] == state
-
-
-@then(parsers.parse('the response image glacier object_path is "{path}"'))
-def then_response_image_glacier_object_path_is(
-    acceptance_context: AcceptanceScenarioContext,
-    path: str,
-) -> None:
-    payload = _json_payload(_require_response(acceptance_context))
-    assert payload["glacier"]["object_path"] == path
-
-
-@then("the response image glacier stored_bytes is greater than 0")
-def then_response_image_glacier_stored_bytes_is_greater_than_zero(
-    acceptance_context: AcceptanceScenarioContext,
-) -> None:
-    payload = _json_payload(_require_response(acceptance_context))
-    assert int(payload["glacier"]["stored_bytes"]) > 0
+    object_path = str(payload["glacier"]["object_path"])
+    assert object_path.startswith(prefix)
 
 
 @then(parsers.parse('the response recovery session id is "{session_id}"'))
@@ -2769,6 +3019,15 @@ def then_response_recovery_session_state_is(
     assert payload["state"] == state
 
 
+@then(parsers.parse('the response recovery session type is "{session_type}"'))
+def then_response_recovery_session_type_is(
+    acceptance_context: AcceptanceScenarioContext,
+    session_type: str,
+) -> None:
+    payload = _json_payload(_require_response(acceptance_context))
+    assert payload["type"] == session_type
+
+
 @then("the response recovery session estimated cost is greater than 0")
 def then_response_recovery_session_estimated_cost_is_greater_than_zero(
     acceptance_context: AcceptanceScenarioContext,
@@ -2784,6 +3043,97 @@ def then_response_recovery_session_images_contain_only(
 ) -> None:
     payload = _json_payload(_require_response(acceptance_context))
     assert [image["id"] for image in payload["images"]] == [image_id]
+
+
+@then("the response recovery session images are empty")
+def then_response_recovery_session_images_are_empty(
+    acceptance_context: AcceptanceScenarioContext,
+) -> None:
+    payload = _json_payload(_require_response(acceptance_context))
+    assert payload["images"] == []
+
+
+@then(parsers.parse('the response recovery session collections contain only "{collection_id}"'))
+def then_response_recovery_session_collections_contain_only(
+    acceptance_context: AcceptanceScenarioContext,
+    collection_id: str,
+) -> None:
+    payload = _json_payload(_require_response(acceptance_context))
+    assert [collection["id"] for collection in payload["collections"]] == [collection_id]
+
+
+@then(parsers.parse('the response recovery session collections include "{collection_id}"'))
+def then_response_recovery_session_collections_include(
+    acceptance_context: AcceptanceScenarioContext,
+    collection_id: str,
+) -> None:
+    payload = _json_payload(_require_response(acceptance_context))
+    assert collection_id in [collection["id"] for collection in payload["collections"]]
+
+
+@then(
+    parsers.parse(
+        'the response recovery session collection "{collection_id}" glacier state is "{state}"'
+    )
+)
+def then_response_recovery_session_collection_glacier_state_is(
+    acceptance_context: AcceptanceScenarioContext,
+    collection_id: str,
+    state: str,
+) -> None:
+    payload = _json_payload(_require_response(acceptance_context))
+    collection = next(item for item in payload["collections"] if item["id"] == collection_id)
+    assert collection["glacier"]["state"] == state
+
+
+@then(
+    parsers.parse(
+        'the response recovery session collection "{collection_id}" '
+        'archive manifest state is "{state}"'
+    )
+)
+def then_response_recovery_session_collection_manifest_state_is(
+    acceptance_context: AcceptanceScenarioContext,
+    collection_id: str,
+    state: str,
+) -> None:
+    payload = _json_payload(_require_response(acceptance_context))
+    collection = next(item for item in payload["collections"] if item["id"] == collection_id)
+    manifest = collection["archive_manifest"]
+    assert manifest is not None
+    assert ("uploaded" if manifest["object_path"] else "pending") == state
+
+
+@then(
+    parsers.parse(
+        'the response recovery session collection "{collection_id}" OTS proof state is "{state}"'
+    )
+)
+def then_response_recovery_session_collection_ots_state_is(
+    acceptance_context: AcceptanceScenarioContext,
+    collection_id: str,
+    state: str,
+) -> None:
+    payload = _json_payload(_require_response(acceptance_context))
+    collection = next(item for item in payload["collections"] if item["id"] == collection_id)
+    manifest = collection["archive_manifest"]
+    assert manifest is not None
+    assert manifest["ots_state"] == state
+
+
+@then(
+    parsers.parse(
+        'the response recovery session image "{image_id}" rebuild_state is "{state}"'
+    )
+)
+def then_response_recovery_session_image_rebuild_state_is(
+    acceptance_context: AcceptanceScenarioContext,
+    image_id: str,
+    state: str,
+) -> None:
+    payload = _json_payload(_require_response(acceptance_context))
+    image = next(item for item in payload["images"] if item["id"] == image_id)
+    assert image["rebuild_state"] == state
 
 
 @then(parsers.parse('the response recovery session latest_message contains "{text}"'))
@@ -2915,23 +3265,20 @@ def then_response_glacier_totals_measured_storage_bytes_is_greater_than_zero(
     assert int(payload["totals"]["measured_storage_bytes"]) > 0
 
 
+@then("the response Glacier totals uploaded_collections is greater than 0")
+def then_response_glacier_totals_uploaded_collections_is_greater_than_zero(
+    acceptance_context: AcceptanceScenarioContext,
+) -> None:
+    payload = _json_payload(_require_response(acceptance_context))
+    assert int(payload["totals"]["uploaded_collections"]) > 0
+
+
 @then("the response Glacier totals estimated_monthly_cost_usd is greater than 0")
 def then_response_glacier_totals_estimated_monthly_cost_is_greater_than_zero(
     acceptance_context: AcceptanceScenarioContext,
 ) -> None:
     payload = _json_payload(_require_response(acceptance_context))
     assert float(payload["totals"]["estimated_monthly_cost_usd"]) > 0
-
-
-@then(parsers.parse('the response Glacier image "{image_id}" glacier state is "{state}"'))
-def then_response_glacier_image_state_is(
-    acceptance_context: AcceptanceScenarioContext,
-    image_id: str,
-    state: str,
-) -> None:
-    payload = _json_payload(_require_response(acceptance_context))
-    image = next(item for item in payload["images"] if item["id"] == image_id)
-    assert image["glacier"]["state"] == state
 
 
 @then(parsers.parse('the response Glacier images contain only "{image_id}"'))
@@ -2943,34 +3290,64 @@ def then_response_glacier_images_contain_only(
     assert [image["id"] for image in payload["images"]] == [image_id]
 
 
-@then(
-    parsers.parse(
-        'the response Glacier collection "{collection_id}" attribution_state is "{state}"'
-    )
-)
-def then_response_glacier_collection_attribution_state_is(
+@then(parsers.parse('the response Glacier collection "{collection_id}" glacier state is "{state}"'))
+def then_response_glacier_collection_glacier_state_is(
     acceptance_context: AcceptanceScenarioContext,
     collection_id: str,
     state: str,
 ) -> None:
     payload = _json_payload(_require_response(acceptance_context))
     collection = next(item for item in payload["collections"] if item["id"] == collection_id)
-    assert collection["attribution_state"] == state
+    assert collection["glacier"]["state"] == state
 
 
 @then(
     parsers.parse(
         'the response Glacier collection "{collection_id}" '
-        "derived_stored_bytes is greater than 0"
+        "measured_storage_bytes is greater than 0"
     )
 )
-def then_response_glacier_collection_derived_stored_bytes_is_greater_than_zero(
+def then_response_glacier_collection_measured_storage_bytes_is_greater_than_zero(
     acceptance_context: AcceptanceScenarioContext,
     collection_id: str,
 ) -> None:
     payload = _json_payload(_require_response(acceptance_context))
     collection = next(item for item in payload["collections"] if item["id"] == collection_id)
-    assert int(collection["derived_stored_bytes"]) > 0
+    assert int(collection["measured_storage_bytes"]) > 0
+
+
+@then(
+    parsers.parse(
+        'the response Glacier collection "{collection_id}" archive manifest state is "{state}"'
+    )
+)
+def then_response_glacier_collection_archive_manifest_state_is(
+    acceptance_context: AcceptanceScenarioContext,
+    collection_id: str,
+    state: str,
+) -> None:
+    payload = _json_payload(_require_response(acceptance_context))
+    collection = next(item for item in payload["collections"] if item["id"] == collection_id)
+    manifest = collection["archive_manifest"]
+    assert manifest is not None
+    assert ("uploaded" if manifest["object_path"] else "pending") == state
+
+
+@then(
+    parsers.parse(
+        'the response Glacier collection "{collection_id}" OTS proof state is "{state}"'
+    )
+)
+def then_response_glacier_collection_ots_state_is(
+    acceptance_context: AcceptanceScenarioContext,
+    collection_id: str,
+    state: str,
+) -> None:
+    payload = _json_payload(_require_response(acceptance_context))
+    collection = next(item for item in payload["collections"] if item["id"] == collection_id)
+    manifest = collection["archive_manifest"]
+    assert manifest is not None
+    assert manifest["ots_state"] == state
 
 
 @then(parsers.parse('the response Glacier collections contain only "{collection_id}"'))

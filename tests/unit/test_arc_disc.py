@@ -636,6 +636,7 @@ def test_discover_active_recovery_sessions_dedupes_multi_image_sessions() -> Non
     assert sessions == [
         arc_disc_main.RecoverySessionHint(
             session_id="rs-20260420T040001Z-1",
+            type="image_rebuild",
             state="pending_approval",
             latest_message=(
                 "Approve the estimated restore cost before Riverhog requests archive "
@@ -774,7 +775,7 @@ def test_arc_disc_recover_approves_waiting_session(monkeypatch, tmp_path: Path) 
     )
 
     assert result.exit_code == 0
-    assert "recovery session rs-20260420T040001Z-1 is restore_requested" in result.stdout
+    assert "rebuild session rs-20260420T040001Z-1 is restore_requested" in result.stdout
     assert "Archive restore requested" in result.stdout
 
 
@@ -937,7 +938,7 @@ def test_arc_disc_recover_ready_session_burns_replacements_and_cleans_staging(
     )
 
     assert result.exit_code == 0
-    assert "recovery session rs-20260420T040001Z-1 completed" in result.stdout
+    assert "rebuild session rs-20260420T040001Z-1 completed" in result.stdout
     assert f"{image_id}-3" in result.stdout
     assert f"{image_id}-4" in result.stdout
     assert client.completed_sessions == ["rs-20260420T040001Z-1"]
@@ -1089,7 +1090,7 @@ def test_arc_disc_recover_can_finish_expired_session_from_local_staging(
     )
 
     assert result.exit_code == 0
-    assert "recovery session rs-20260420T040001Z-1 completed" in result.stdout
+    assert "rebuild session rs-20260420T040001Z-1 completed" in result.stdout
     assert (
         "restore window expired remotely; resuming from local staged ISO artifacts"
         in result.stderr
@@ -1288,7 +1289,7 @@ def test_arc_disc_burn_reports_recovery_handoffs_when_no_standard_backlog_exists
 
     assert result.exit_code == 0
     assert "burn backlog already clear" in result.stdout
-    assert "Glacier recovery work remains" in result.stdout
+    assert "image rebuild work remains" in result.stdout
     assert "rs-20260420T040001Z-1" in result.stdout
     assert "pending_approval" in result.stdout
     assert "Approve the estimated restore cost" in result.stdout

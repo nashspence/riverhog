@@ -35,14 +35,6 @@ _COLUMN_MIGRATIONS: list[list[tuple[str, str, str]]] = [
     # version 4
     [
         ("finalized_images", "required_copy_count", "INTEGER"),
-        ("finalized_images", "glacier_state", "TEXT"),
-        ("finalized_images", "glacier_object_path", "TEXT"),
-        ("finalized_images", "glacier_stored_bytes", "INTEGER"),
-        ("finalized_images", "glacier_backend", "TEXT"),
-        ("finalized_images", "glacier_storage_class", "TEXT"),
-        ("finalized_images", "glacier_last_uploaded_at", "TEXT"),
-        ("finalized_images", "glacier_last_verified_at", "TEXT"),
-        ("finalized_images", "glacier_failure", "TEXT"),
         ("image_copies", "state", "TEXT"),
     ],
     # version 5
@@ -59,6 +51,15 @@ _COLUMN_MIGRATIONS: list[list[tuple[str, str, str]]] = [
     # version 7
     [
         ("glacier_recovery_sessions", "restore_next_poll_at", "TEXT"),
+    ],
+    # version 8
+    [
+        ("collection_uploads", "state", "TEXT"),
+        ("collection_uploads", "archive_attempt_count", "INTEGER"),
+        ("collection_uploads", "archive_next_attempt_at", "TEXT"),
+        ("collection_uploads", "archive_last_attempt_at", "TEXT"),
+        ("collection_uploads", "archive_failure", "TEXT"),
+        ("glacier_recovery_sessions", "type", "TEXT"),
     ],
 ]
 
@@ -128,6 +129,7 @@ def initialize_db(sqlite_path: str) -> None:
     from arc_core.catalog_models import (  # noqa: PLC0415 - avoid circular import at module level
         ActivePinRecord,
         CandidateCoveredPathRecord,
+        CollectionArchiveRecord,
         CollectionFileRecord,
         CollectionRecord,
         CollectionUploadFileRecord,
@@ -138,9 +140,9 @@ def initialize_db(sqlite_path: str) -> None:
         FinalizedImageCoveragePartRecord,
         FinalizedImageCoveredPathRecord,
         FinalizedImageRecord,
+        GlacierRecoverySessionCollectionRecord,
         GlacierRecoverySessionImageRecord,
         GlacierRecoverySessionRecord,
-        GlacierUploadJobRecord,
         GlacierUsageSnapshotRecord,
         ImageCopyEventRecord,
         ImageCopyRecord,
@@ -150,6 +152,7 @@ def initialize_db(sqlite_path: str) -> None:
     _ = (
         ActivePinRecord,
         CandidateCoveredPathRecord,
+        CollectionArchiveRecord,
         CollectionFileRecord,
         CollectionRecord,
         FetchEntryRecord,
@@ -159,8 +162,8 @@ def initialize_db(sqlite_path: str) -> None:
         FinalizedImageCoveredPathRecord,
         FinalizedImageRecord,
         GlacierRecoverySessionImageRecord,
+        GlacierRecoverySessionCollectionRecord,
         GlacierRecoverySessionRecord,
-        GlacierUploadJobRecord,
         GlacierUsageSnapshotRecord,
         ImageCopyEventRecord,
         ImageCopyRecord,

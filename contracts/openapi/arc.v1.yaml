@@ -1306,11 +1306,17 @@ components:
         glacier:
           $ref: "#/components/schemas/GlacierArchive"
         archive_manifest:
-          $ref: "#/components/schemas/CollectionArchiveManifest"
+          oneOf:
+            - $ref: "#/components/schemas/CollectionArchiveManifest"
+            - type: "null"
         archive_format:
-          type: string
+          oneOf:
+            - type: string
+            - type: "null"
         compression:
-          type: string
+          oneOf:
+            - type: string
+            - type: "null"
         measured_storage_bytes:
           type: integer
           minimum: 0
@@ -1840,6 +1846,11 @@ components:
             - type: string
               format: date-time
             - type: "null"
+        latest_failure:
+          oneOf:
+            - type: string
+            - type: "null"
+          description: Latest collection archive failure, when archiving exhausted retries.
         files:
           type: array
           items:

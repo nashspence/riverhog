@@ -34,8 +34,6 @@ Feature: Plan and images API
     Then the response status is 200
     And the response contains 1 plan candidates
     And the response plan candidates contain only "img_2026-04-20_02"
-
-  @xfail_not_backed
   Scenario: Plan excludes collections until Glacier archiving succeeds
     Given collection upload "staged-photos" has completed file verification and is archiving
     When the client gets "/v1/plan?collection=staged-photos"
@@ -51,8 +49,6 @@ Feature: Plan and images API
     When the client gets "/v1/images/20260420T040001Z"
     Then the response status is 404
     And the error code is "not_found"
-
-  @xfail_not_backed
   Scenario: Explicitly finalizing a candidate creates a finalized image and removes it from the plan
     Given candidate "img_2026-04-20_01" exists
     When the client posts to "/v1/plan/candidates/img_2026-04-20_01/finalize"
@@ -67,8 +63,6 @@ Feature: Plan and images API
     Then the response status is 200
     And the response contains image id "20260420T040001Z"
     And the response does not contain field "volume_id"
-
-  @xfail_not_backed
   Scenario: List finalized images separately from the provisional plan
     Given an archive with split planner fixtures
     And candidate "img_2026-04-20_01" is finalized
@@ -185,8 +179,6 @@ Feature: Plan and images API
       And the response copy verification_state is "pending"
       And collection "docs" archived_bytes increases
       And collection "docs" pending_bytes decreases
-
-    @xfail_not_backed
     Scenario: Registering one copy leaves the image partially protected
       When the client posts to "/v1/images/20260420T040001Z/copies" with location "Shelf B1"
       Then the response status is 200

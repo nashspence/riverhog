@@ -94,6 +94,7 @@ class CollectionUploadSessionOut(ArcModel):
     uploaded_bytes: int
     missing_bytes: int
     upload_state_expires_at: str | None
+    latest_failure: str | None = None
     files: list[CollectionUploadFileOut]
     collection: CollectionSummaryOut | None
 

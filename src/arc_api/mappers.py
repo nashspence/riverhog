@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from arc_core.domain.models import (
+    CollectionArchiveManifestStatus,
     CollectionCoverageImage,
     CollectionListPage,
     CollectionRecoverySummary,
@@ -29,6 +30,7 @@ from arc_core.domain.models import (
     RecoveryCostEstimate,
     RecoveryCoverage,
     RecoveryNotificationStatus,
+    RecoverySessionCollection,
     RecoverySessionImage,
     RecoverySessionSummary,
 )
@@ -44,6 +46,19 @@ def map_glacier(summary: GlacierArchiveStatus) -> dict[str, object]:
         "last_uploaded_at": summary.last_uploaded_at,
         "last_verified_at": summary.last_verified_at,
         "failure": summary.failure,
+    }
+
+
+def map_collection_archive_manifest(
+    summary: CollectionArchiveManifestStatus | None,
+) -> dict[str, object] | None:
+    if summary is None:
+        return None
+    return {
+        "object_path": summary.object_path,
+        "sha256": summary.sha256,
+        "ots_object_path": summary.ots_object_path,
+        "ots_state": summary.ots_state,
     }
 
 
@@ -66,8 +81,8 @@ def map_glacier_pricing_basis(summary: GlacierPricingBasis) -> dict[str, object]
 
 def map_glacier_usage_totals(summary: GlacierUsageTotals) -> dict[str, object]:
     return {
-        "collections": summary.images,
-        "uploaded_collections": summary.uploaded_images,
+        "collections": summary.collections,
+        "uploaded_collections": summary.uploaded_collections,
         "measured_storage_bytes": summary.measured_storage_bytes,
         "estimated_billable_bytes": summary.estimated_billable_bytes,
         "estimated_monthly_cost_usd": summary.estimated_monthly_cost_usd,
@@ -96,12 +111,12 @@ def map_glacier_usage_collection(summary: GlacierUsageCollection) -> dict[str, o
     return {
         "id": str(summary.id),
         "bytes": summary.bytes,
-        "glacier": None,
-        "archive_manifest": None,
-        "archive_format": "tar.zst",
-        "compression": "zstd",
-        "measured_storage_bytes": summary.represented_bytes,
-        "estimated_billable_bytes": summary.derived_billable_bytes,
+        "glacier": map_glacier(summary.glacier),
+        "archive_manifest": map_collection_archive_manifest(summary.archive_manifest),
+        "archive_format": summary.archive_format,
+        "compression": summary.compression,
+        "measured_storage_bytes": summary.measured_storage_bytes,
+        "estimated_billable_bytes": summary.estimated_billable_bytes,
         "estimated_monthly_cost_usd": summary.estimated_monthly_cost_usd,
         "images": [map_glacier_collection_contribution(image) for image in summary.images],
     }
@@ -110,7 +125,7 @@ def map_glacier_usage_collection(summary: GlacierUsageCollection) -> dict[str, o
 def map_glacier_usage_snapshot(summary: GlacierUsageSnapshot) -> dict[str, object]:
     return {
         "captured_at": summary.captured_at,
-        "uploaded_collections": summary.uploaded_images,
+        "uploaded_collections": summary.uploaded_collections,
         "measured_storage_bytes": summary.measured_storage_bytes,
         "estimated_billable_bytes": summary.estimated_billable_bytes,
         "estimated_monthly_cost_usd": summary.estimated_monthly_cost_usd,
@@ -273,10 +288,6 @@ def map_glacier_usage_report(summary: GlacierUsageReport) -> dict[str, object]:
 
 
 def map_collection(summary: CollectionSummary) -> dict[str, object]:
-    glacier = next(
-        (map_glacier(image.glacier) for image in summary.image_coverage),
-        None,
-    )
     return {
         "id": str(summary.id),
         "files": summary.files,
@@ -284,10 +295,10 @@ def map_collection(summary: CollectionSummary) -> dict[str, object]:
         "hot_bytes": summary.hot_bytes,
         "archived_bytes": summary.archived_bytes,
         "pending_bytes": summary.pending_bytes,
-        "glacier": glacier,
-        "archive_manifest": None,
-        "archive_format": "tar.zst",
-        "compression": "zstd",
+        "glacier": map_glacier(summary.glacier),
+        "archive_manifest": map_collection_archive_manifest(summary.archive_manifest),
+        "archive_format": summary.archive_format,
+        "compression": summary.compression,
         "disc_coverage": map_collection_disc_coverage(summary.recovery.verified_physical),
         "protection_state": map_collection_protection_state(summary),
         "protected_bytes": summary.protected_bytes,
@@ -373,15 +384,24 @@ def map_recovery_session_image(summary: RecoverySessionImage) -> dict[str, objec
     return {
         "id": str(summary.id),
         "filename": summary.filename,
-        "collection_ids": [],
-        "rebuild_state": "pending",
+        "collection_ids": [str(collection_id) for collection_id in summary.collection_ids],
+        "rebuild_state": summary.rebuild_state,
+    }
+
+
+def map_recovery_session_collection(summary: RecoverySessionCollection) -> dict[str, object]:
+    return {
+        "id": str(summary.id),
+        "glacier": map_glacier(summary.glacier),
+        "archive_manifest": map_collection_archive_manifest(summary.archive_manifest),
+        "stored_bytes": summary.stored_bytes,
     }
 
 
 def map_recovery_session(summary: RecoverySessionSummary) -> dict[str, object]:
     return {
         "id": summary.id,
-        "type": "image_rebuild",
+        "type": summary.type,
         "state": summary.state.value,
         "created_at": summary.created_at,
         "approved_at": summary.approved_at,
@@ -393,7 +413,9 @@ def map_recovery_session(summary: RecoverySessionSummary) -> dict[str, object]:
         "warnings": list(summary.warnings),
         "cost_estimate": map_recovery_cost_estimate(summary.cost_estimate),
         "notification": map_recovery_notification(summary.notification),
-        "collections": [],
+        "collections": [
+            map_recovery_session_collection(collection) for collection in summary.collections
+        ],
         "images": [map_recovery_session_image(image) for image in summary.images],
     }
 

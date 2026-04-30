@@ -3,6 +3,7 @@ from __future__ import annotations
 from pathlib import Path
 
 from arc_core.catalog_models import (
+    CollectionArchiveRecord,
     CollectionFileRecord,
     CollectionRecord,
     FileCopyRecord,
@@ -60,6 +61,16 @@ def _seed_finalized_image(sqlite_path: Path, image_root: Path) -> None:
                     archived=False,
                 )
             )
+        session.add(
+            CollectionArchiveRecord(
+                collection_id="docs",
+                state="uploaded",
+                object_path="glacier/collections/docs/archive.tar",
+                stored_bytes=123,
+                backend="s3",
+                storage_class="DEEP_ARCHIVE",
+            )
+        )
 
         session.add(
             FinalizedImageRecord(
@@ -70,7 +81,6 @@ def _seed_finalized_image(sqlite_path: Path, image_root: Path) -> None:
                 image_root=str(image_root),
                 target_bytes=10_000,
                 required_copy_count=2,
-                glacier_state="uploaded",
             )
         )
         for relative_path in (
@@ -157,7 +167,7 @@ def test_recovery_session_seeds_and_tops_up_replacement_slots_for_unprotected_im
 
     session_factory = make_session_factory(str(sqlite_path))
     with session_scope(session_factory) as session:
-        record = session.get(GlacierRecoverySessionRecord, "rs-20260420T040001Z-1")
+        record = session.get(GlacierRecoverySessionRecord, "rs-20260420T040001Z-rebuild-1")
         assert record is not None
         record.state = "ready"
         record.restore_requested_at = "2026-04-20T04:00:01Z"
@@ -167,7 +177,7 @@ def test_recovery_session_seeds_and_tops_up_replacement_slots_for_unprotected_im
             session.get(
                 GlacierRecoverySessionImageRecord,
                 {
-                    "session_id": "rs-20260420T040001Z-1",
+                    "session_id": "rs-20260420T040001Z-rebuild-1",
                     "image_id": "20260420T040001Z",
                 },
             )

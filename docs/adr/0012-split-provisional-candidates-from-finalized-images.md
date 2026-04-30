@@ -36,7 +36,7 @@ The contract also needs a stable identifier for provisional planner entries.
 - finalized-image listing uses conventional pagination, sorting, and filtering over finalized-image metadata
 - finalized-image listing and finalized-image lookup expose the same finalized-image summary shape
 - the finalized image summary exposes that canonical id as `id`
-- the finalized image summary also exposes `filename`, `finalized_at`, `collection_ids`, and archive-protection metadata
+- the finalized image summary also exposes `filename`, `finalized_at`, `collection_ids`, and physical-copy protection metadata
 - a physical disc is identified by the tuple `(volume_id, copy_id)`
 - finalization creates generated `copy_id` values scoped to one finalized `volume_id`
 - registering the same generated `copy_id` twice is rejected

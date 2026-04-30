@@ -11,8 +11,10 @@ from arc_core.catalog_models import (
     FinalizedImageCoveredPathRecord,
     FinalizedImageRecord,
 )
+from arc_core.ports.archive_store import ArchiveUploadReceipt, CollectionArchiveUploadReceipt
 from arc_core.runtime_config import RuntimeConfig
 from arc_core.services.collections import SqlAlchemyCollectionService
+from arc_core.services.glacier_uploads import SqlAlchemyGlacierUploadService
 from arc_core.sqlite_db import initialize_db, make_session_factory, session_scope
 from tests.fixtures.data import DOCS_FILES
 
@@ -88,6 +90,41 @@ class _FakeUploadStore:
         self._target_by_url.pop(tus_url, None)
 
 
+class _FakeArchiveStore:
+    def upload_collection_archive_package(self, *, collection_id, package):
+        return CollectionArchiveUploadReceipt(
+            archive=ArchiveUploadReceipt(
+                object_path=f"glacier/collections/{collection_id}/archive.tar",
+                stored_bytes=len(package.archive_bytes),
+                backend="s3",
+                storage_class="DEEP_ARCHIVE",
+                uploaded_at="2026-04-20T04:00:00Z",
+                verified_at="2026-04-20T04:00:01Z",
+            ),
+            manifest=ArchiveUploadReceipt(
+                object_path=f"glacier/collections/{collection_id}/manifest.yml",
+                stored_bytes=len(package.manifest_bytes),
+                backend="s3",
+                storage_class="DEEP_ARCHIVE",
+                uploaded_at="2026-04-20T04:00:00Z",
+                verified_at="2026-04-20T04:00:01Z",
+            ),
+            proof=ArchiveUploadReceipt(
+                object_path=f"glacier/collections/{collection_id}/manifest.yml.ots",
+                stored_bytes=len(package.proof_bytes),
+                backend="s3",
+                storage_class="DEEP_ARCHIVE",
+                uploaded_at="2026-04-20T04:00:00Z",
+                verified_at="2026-04-20T04:00:01Z",
+            ),
+            archive_sha256=package.archive_sha256,
+            manifest_sha256=package.manifest_sha256,
+            proof_sha256=package.proof_sha256,
+            archive_format=package.archive_format,
+            compression=package.compression,
+        )
+
+
 def _config(sqlite_path: Path) -> RuntimeConfig:
     return RuntimeConfig(
         object_store="s3",
@@ -127,7 +164,6 @@ def _seed_docs_collection_with_finalized_image(sqlite_path: Path, image_root: Pa
                 image_root=str(image_root),
                 target_bytes=10_000,
                 required_copy_count=2,
-                glacier_state="uploaded",
             )
         )
         session.add(
@@ -155,7 +191,6 @@ def _seed_docs_collection_with_finalized_image(sqlite_path: Path, image_root: Pa
                 image_root=str(image_root),
                 target_bytes=10_000,
                 required_copy_count=2,
-                glacier_state="uploaded",
             )
         )
         session.add(
@@ -233,12 +268,19 @@ def test_completed_collection_upload_promotes_from_staging_and_cleans_up(tmp_pat
         checksum="sha256 " + base64.b64encode(hashlib.sha256(content).digest()).decode("ascii"),
         content=content,
     )
+    upload_service = SqlAlchemyGlacierUploadService(
+        _config(sqlite_path),
+        _FakeArchiveStore(),
+        hot_store,
+        upload_store,
+    )
+    assert upload_service.process_due_uploads() == 1
 
     assert hot_store.get_collection_file(collection_id, relpath) == content
     assert staging_target in upload_store.deleted_targets
 
 
-def test_collection_summary_uses_db_coverage_parts_after_manifest_is_removed(
+def test_collection_summary_does_not_count_finalized_image_parts_as_glacier_recovery(
     tmp_path: Path,
 ) -> None:
     sqlite_path = tmp_path / "state.sqlite3"
@@ -255,4 +297,4 @@ def test_collection_summary_uses_db_coverage_parts_after_manifest_is_removed(
     summary = service.get("docs")
 
     assert summary.recovery.verified_physical.state.value == "none"
-    assert summary.recovery.glacier.state.value == "full"
+    assert summary.recovery.glacier.state.value == "none"

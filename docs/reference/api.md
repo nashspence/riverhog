@@ -247,7 +247,7 @@ Required behavior:
 - plan candidate objects expose `candidate_id`
 - plan candidate objects expose `collection_ids`
 - plan candidate objects do not expose finalized-image fields such as finalized `id`, `filename`, `finalized_at`, or
-  archive-protection metadata
+  physical-copy protection metadata
 - plan-specific fields such as `ready`, `target_bytes`, `min_fill_bytes`, and `unplanned_bytes` remain part of the
   response alongside the paged candidate listing
 

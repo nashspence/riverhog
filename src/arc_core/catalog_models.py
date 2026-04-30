@@ -15,6 +15,11 @@ class CollectionRecord(Base):
         back_populates="collection",
         cascade="all, delete-orphan",
     )
+    archive: Mapped[CollectionArchiveRecord | None] = relationship(
+        back_populates="collection",
+        cascade="all, delete-orphan",
+        uselist=False,
+    )
 
 
 class CollectionFileRecord(Base):
@@ -72,6 +77,41 @@ class FileCopyRecord(Base):
     file: Mapped[CollectionFileRecord] = relationship(back_populates="copies")
 
 
+class CollectionArchiveRecord(Base):
+    __tablename__ = "collection_archives"
+
+    collection_id: Mapped[str] = mapped_column(String, primary_key=True)
+    state: Mapped[str] = mapped_column(String, default="pending")
+    object_path: Mapped[str | None] = mapped_column(String, nullable=True)
+    stored_bytes: Mapped[int | None] = mapped_column(Integer, nullable=True)
+    sha256: Mapped[str | None] = mapped_column(String(64), nullable=True)
+    backend: Mapped[str | None] = mapped_column(String, nullable=True)
+    storage_class: Mapped[str | None] = mapped_column(String, nullable=True)
+    last_uploaded_at: Mapped[str | None] = mapped_column(String, nullable=True)
+    last_verified_at: Mapped[str | None] = mapped_column(String, nullable=True)
+    failure: Mapped[str | None] = mapped_column(String, nullable=True)
+    archive_format: Mapped[str | None] = mapped_column(String, nullable=True)
+    compression: Mapped[str | None] = mapped_column(String, nullable=True)
+    manifest_object_path: Mapped[str | None] = mapped_column(String, nullable=True)
+    manifest_sha256: Mapped[str | None] = mapped_column(String(64), nullable=True)
+    manifest_stored_bytes: Mapped[int | None] = mapped_column(Integer, nullable=True)
+    manifest_uploaded_at: Mapped[str | None] = mapped_column(String, nullable=True)
+    ots_object_path: Mapped[str | None] = mapped_column(String, nullable=True)
+    ots_sha256: Mapped[str | None] = mapped_column(String(64), nullable=True)
+    ots_stored_bytes: Mapped[int | None] = mapped_column(Integer, nullable=True)
+    ots_uploaded_at: Mapped[str | None] = mapped_column(String, nullable=True)
+
+    __table_args__ = (
+        ForeignKeyConstraint(
+            ["collection_id"],
+            ["collections.id"],
+            ondelete="CASCADE",
+        ),
+    )
+
+    collection: Mapped[CollectionRecord] = relationship(back_populates="archive")
+
+
 class PlannedCandidateRecord(Base):
     __tablename__ = "planned_candidates"
 
@@ -118,14 +158,6 @@ class FinalizedImageRecord(Base):
     image_root: Mapped[str] = mapped_column(String)
     target_bytes: Mapped[int] = mapped_column(Integer)
     required_copy_count: Mapped[int | None] = mapped_column(Integer, default=2, nullable=True)
-    glacier_state: Mapped[str | None] = mapped_column(String, default="pending", nullable=True)
-    glacier_object_path: Mapped[str | None] = mapped_column(String, nullable=True)
-    glacier_stored_bytes: Mapped[int | None] = mapped_column(Integer, nullable=True)
-    glacier_backend: Mapped[str | None] = mapped_column(String, nullable=True)
-    glacier_storage_class: Mapped[str | None] = mapped_column(String, nullable=True)
-    glacier_last_uploaded_at: Mapped[str | None] = mapped_column(String, nullable=True)
-    glacier_last_verified_at: Mapped[str | None] = mapped_column(String, nullable=True)
-    glacier_failure: Mapped[str | None] = mapped_column(String, nullable=True)
 
     covered_paths: Mapped[list[FinalizedImageCoveredPathRecord]] = relationship(
         back_populates="image",
@@ -204,26 +236,6 @@ class FinalizedImageCollectionArtifactRecord(Base):
     image: Mapped[FinalizedImageRecord] = relationship(back_populates="collection_artifacts")
 
 
-class GlacierUploadJobRecord(Base):
-    __tablename__ = "glacier_upload_jobs"
-
-    image_id: Mapped[str] = mapped_column(String, primary_key=True)
-    attempt_count: Mapped[int] = mapped_column(Integer, default=0)
-    next_attempt_at: Mapped[str | None] = mapped_column(String, nullable=True)
-    last_attempt_at: Mapped[str | None] = mapped_column(String, nullable=True)
-    last_error: Mapped[str | None] = mapped_column(String, nullable=True)
-    completed_at: Mapped[str | None] = mapped_column(String, nullable=True)
-    failed_at: Mapped[str | None] = mapped_column(String, nullable=True)
-
-    __table_args__ = (
-        ForeignKeyConstraint(
-            ["image_id"],
-            ["finalized_images.image_id"],
-            ondelete="CASCADE",
-        ),
-    )
-
-
 class GlacierUsageSnapshotRecord(Base):
     __tablename__ = "glacier_usage_snapshots"
 
@@ -244,6 +256,7 @@ class GlacierRecoverySessionRecord(Base):
     __tablename__ = "glacier_recovery_sessions"
 
     session_id: Mapped[str] = mapped_column(String, primary_key=True)
+    type: Mapped[str | None] = mapped_column(String, default="image_rebuild", nullable=True)
     state: Mapped[str] = mapped_column(String)
     created_at: Mapped[str] = mapped_column(String)
     approved_at: Mapped[str | None] = mapped_column(String, nullable=True)
@@ -262,6 +275,10 @@ class GlacierRecoverySessionRecord(Base):
     last_notified_at: Mapped[str | None] = mapped_column(String, nullable=True)
 
     images: Mapped[list[GlacierRecoverySessionImageRecord]] = relationship(
+        back_populates="session",
+        cascade="all, delete-orphan",
+    )
+    collections: Mapped[list[GlacierRecoverySessionCollectionRecord]] = relationship(
         back_populates="session",
         cascade="all, delete-orphan",
     )
@@ -288,6 +305,29 @@ class GlacierRecoverySessionImageRecord(Base):
     )
 
     session: Mapped[GlacierRecoverySessionRecord] = relationship(back_populates="images")
+
+
+class GlacierRecoverySessionCollectionRecord(Base):
+    __tablename__ = "glacier_recovery_session_collections"
+
+    session_id: Mapped[str] = mapped_column(String, primary_key=True)
+    collection_id: Mapped[str] = mapped_column(String, primary_key=True)
+    collection_order: Mapped[int] = mapped_column(Integer, default=0)
+
+    __table_args__ = (
+        ForeignKeyConstraint(
+            ["session_id"],
+            ["glacier_recovery_sessions.session_id"],
+            ondelete="CASCADE",
+        ),
+        ForeignKeyConstraint(
+            ["collection_id"],
+            ["collections.id"],
+            ondelete="CASCADE",
+        ),
+    )
+
+    session: Mapped[GlacierRecoverySessionRecord] = relationship(back_populates="collections")
 
 
 class ImageCopyRecord(Base):
@@ -371,6 +411,11 @@ class CollectionUploadRecord(Base):
 
     collection_id: Mapped[str] = mapped_column(String, primary_key=True)
     ingest_source: Mapped[str | None] = mapped_column(String, nullable=True)
+    state: Mapped[str | None] = mapped_column(String, default="uploading", nullable=True)
+    archive_attempt_count: Mapped[int | None] = mapped_column(Integer, default=0, nullable=True)
+    archive_next_attempt_at: Mapped[str | None] = mapped_column(String, nullable=True)
+    archive_last_attempt_at: Mapped[str | None] = mapped_column(String, nullable=True)
+    archive_failure: Mapped[str | None] = mapped_column(String, nullable=True)
 
     files: Mapped[list[CollectionUploadFileRecord]] = relationship(
         back_populates="upload",

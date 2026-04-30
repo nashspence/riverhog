@@ -8,7 +8,7 @@ from arc_cli.output import (
 )
 
 
-def test_format_images_surfaces_glacier_failure_context() -> None:
+def test_format_images_omits_finalized_image_glacier_context() -> None:
     rendered = format_images(
         {
             "page": 1,
@@ -24,7 +24,7 @@ def test_format_images_surfaces_glacier_failure_context() -> None:
                     "finalized_at": "2026-04-20T04:00:01Z",
                     "collections": 1,
                     "collection_ids": ["docs"],
-                    "protection_state": "partially_protected",
+                    "physical_protection_state": "partially_protected",
                     "physical_copies_registered": 1,
                     "physical_copies_verified": 0,
                     "physical_copies_required": 2,
@@ -37,9 +37,9 @@ def test_format_images_surfaces_glacier_failure_context() -> None:
             ],
         }
     )
-    assert "glacier=failed" in rendered
     assert "verified=0/2" in rendered
-    assert "glacier_failure: s3 timeout" in rendered
+    assert "glacier=" not in rendered
+    assert "glacier_failure" not in rendered
 
 
 def test_format_archive_status_surfaces_ready_backlog_and_noncompliant_collections() -> None:
@@ -76,7 +76,7 @@ def test_format_archive_status_surfaces_ready_backlog_and_noncompliant_collectio
                     "filename": "20260420T040001Z.iso",
                     "collections": 1,
                     "collection_ids": ["docs"],
-                    "protection_state": "partially_protected",
+                    "physical_protection_state": "partially_protected",
                     "physical_copies_registered": 1,
                     "physical_copies_verified": 0,
                     "physical_copies_required": 2,
@@ -128,7 +128,7 @@ def test_format_archive_status_surfaces_ready_backlog_and_noncompliant_collectio
     assert "img_2026-04-20_01" in rendered
     assert "waiting_for_future_iso:" in rendered
     assert "img_2026-04-20_02" in rendered
-    assert "next: burn, verify, glacier=pending" in rendered
+    assert "next: burn, verify" in rendered
     assert "noncompliant_collections:" in rendered
     assert "photos-2024 state=unprotected" in rendered
     assert "docs state=partially_protected" in rendered
@@ -157,17 +157,10 @@ def test_format_collection_summary_surfaces_recovery_paths_labels_and_glacier_co
                 {
                     "id": "20260420T040001Z",
                     "filename": "20260420T040001Z.iso",
-                    "protection_state": "partially_protected",
+                    "physical_protection_state": "partially_protected",
                     "physical_copies_registered": 1,
                     "physical_copies_verified": 1,
                     "physical_copies_required": 2,
-                    "glacier": {
-                        "state": "uploaded",
-                        "object_path": (
-                            "glacier/finalized-images/20260420T040001Z/"
-                            "20260420T040001Z.iso"
-                        ),
-                    },
                     "covered_paths": ["tax/2022/invoice-123.pdf"],
                     "copies": [
                         {
@@ -185,15 +178,15 @@ def test_format_collection_summary_surfaces_recovery_paths_labels_and_glacier_co
             "collections": [
                 {
                     "id": "docs",
-                    "represented_bytes": 33,
-                    "derived_stored_bytes": 8200,
+                    "bytes": 33,
+                    "measured_storage_bytes": 8200,
+                    "estimated_billable_bytes": 49160,
                     "estimated_monthly_cost_usd": 0.000192,
                     "images": [
                         {
                             "image_id": "20260420T040001Z",
+                            "filename": "20260420T040001Z.iso",
                             "represented_bytes": 33,
-                            "derived_stored_bytes": 8200,
-                            "estimated_monthly_cost_usd": 0.000192,
                         }
                     ],
                 }
@@ -203,16 +196,17 @@ def test_format_collection_summary_surfaces_recovery_paths_labels_and_glacier_co
     assert "recovery: available=glacier" in rendered
     assert "verified_physical=partial 18/33" in rendered
     assert "glacier=full 33/33" in rendered
-    assert "glacier_footprint: represented_bytes=33 derived_stored_bytes=8200" in rendered
-    assert "paths: tax/2022/invoice-123.pdf" in rendered
-    assert "label=20260420T040001Z-1" in rendered
     assert (
-        "glacier_path: glacier/finalized-images/20260420T040001Z/20260420T040001Z.iso"
-        in rendered
-    )
+        "glacier_footprint: bytes=33 measured_storage_bytes=8200 "
+        "estimated_billable_bytes=49160"
+    ) in rendered
+    assert "paths: tax/2022/invoice-123.pdf" in rendered
+    assert "collection_archive_contribution: represented_bytes=33" in rendered
+    assert "label=20260420T040001Z-1" in rendered
+    assert "glacier/finalized-images" not in rendered
 
 
-def test_format_glacier_report_surfaces_pricing_basis_and_collection_derivation() -> None:
+def test_format_glacier_report_surfaces_pricing_basis_and_collection_storage() -> None:
     rendered = format_glacier_report(
         {
             "scope": "collection",
@@ -230,8 +224,8 @@ def test_format_glacier_report_surfaces_pricing_basis_and_collection_derivation(
                 "minimum_storage_duration_days": 180,
             },
             "totals": {
-                "images": 1,
-                "uploaded_images": 1,
+                "collections": 1,
+                "uploaded_collections": 1,
                 "measured_storage_bytes": 8200,
                 "estimated_billable_bytes": 49160,
                 "estimated_monthly_cost_usd": 0.000192,
@@ -240,25 +234,30 @@ def test_format_glacier_report_surfaces_pricing_basis_and_collection_derivation(
                 {
                     "id": "20260420T040001Z",
                     "filename": "20260420T040001Z.iso",
-                    "measured_storage_bytes": 8200,
-                    "estimated_billable_bytes": 49160,
-                    "estimated_monthly_cost_usd": 0.000192,
-                    "glacier": {
-                        "state": "uploaded",
-                        "object_path": (
-                            "glacier/finalized-images/20260420T040001Z/"
-                            "20260420T040001Z.iso"
-                        ),
-                    },
+                    "collection_ids": ["docs"],
                 }
             ],
             "collections": [
                 {
                     "id": "docs",
-                    "attribution_state": "derived",
-                    "represented_bytes": 33,
-                    "derived_stored_bytes": 8200,
+                    "bytes": 33,
+                    "glacier": {"state": "uploaded"},
+                    "archive_manifest": {
+                        "object_path": "glacier/collections/abc/manifest.yml",
+                        "ots_object_path": "glacier/collections/abc/manifest.yml.ots",
+                    },
+                    "archive_format": "tar",
+                    "compression": "none",
+                    "measured_storage_bytes": 8200,
+                    "estimated_billable_bytes": 49160,
                     "estimated_monthly_cost_usd": 0.000192,
+                    "images": [
+                        {
+                            "image_id": "20260420T040001Z",
+                            "filename": "20260420T040001Z.iso",
+                            "represented_bytes": 33,
+                        }
+                    ],
                 }
             ],
             "billing": {
@@ -352,5 +351,10 @@ def test_format_glacier_report_surfaces_pricing_basis_and_collection_derivation(
     assert "files_read: 2" in rendered
     assert "source=aws_invoicing scope=account" in rendered
     assert "period: 2026-05-01..2026-06-01 mean_cost_usd=14.5" in rendered
-    assert "attribution=derived" in rendered
+    assert "collections=1 uploaded_collections=1" in rendered
+    assert "bytes=33 glacier=uploaded ots=uploaded" in rendered
+    assert "estimated_billable_bytes=49160" in rendered
     assert "estimated_monthly_cost_usd=0.000192" in rendered
+    assert "attribution=" not in rendered
+    assert "derived_stored_bytes" not in rendered
+    assert "glacier/finalized-images" not in rendered

@@ -19,6 +19,8 @@ from arc_core.archive_compliance import (
 )
 from arc_core.catalog_models import (
     CollectionFileRecord,
+    CollectionRecord,
+    CollectionUploadRecord,
     FinalizedImageCollectionArtifactRecord,
     FinalizedImageCoveragePartRecord,
     FinalizedImageCoveredPathRecord,
@@ -29,7 +31,6 @@ from arc_core.catalog_models import (
 )
 from arc_core.domain.enums import CopyState, GlacierState, VerificationState
 from arc_core.domain.errors import InvalidState, NotFound, NotYetImplemented
-from arc_core.domain.models import GlacierArchiveStatus
 from arc_core.finalized_image_coverage import (
     read_finalized_image_collection_artifacts,
     read_finalized_image_coverage_parts,
@@ -37,7 +38,6 @@ from arc_core.finalized_image_coverage import (
 from arc_core.iso.streaming import IsoStream, stream_iso_from_root
 from arc_core.runtime_config import RuntimeConfig
 from arc_core.services.contracts import PlanningIsoResult
-from arc_core.services.glacier_uploads import enqueue_glacier_upload_job
 from arc_core.sqlite_db import make_session_factory, session_scope
 
 
@@ -66,6 +66,26 @@ class SqlAlchemyPlanningService:
             finalized_ids = set(session.scalars(select(FinalizedImageRecord.image_id)).all())
             all_candidates = session.scalars(select(PlannedCandidateRecord)).all()
             candidates = [c for c in all_candidates if c.finalized_id not in finalized_ids]
+            active_upload_collection_ids = {
+                upload.collection_id
+                for upload in session.scalars(select(CollectionUploadRecord)).all()
+                if upload.state != "finalized"
+            }
+            admitted_collection_ids = {
+                collection.id
+                for collection in session.scalars(select(CollectionRecord)).all()
+                if collection.id not in active_upload_collection_ids
+                if collection.archive is not None
+                and normalize_glacier_state(collection.archive.state) == GlacierState.UPLOADED
+            }
+            candidates = [
+                candidate
+                for candidate in candidates
+                if all(
+                    covered_path.collection_id in admitted_collection_ids
+                    for covered_path in candidate.covered_paths
+                )
+            ]
 
             ref = candidates[0] if candidates else (all_candidates[0] if all_candidates else None)
             target_bytes = ref.target_bytes if ref else 0
@@ -207,7 +227,6 @@ class SqlAlchemyPlanningService:
                     image_root=candidate.image_root,
                     target_bytes=candidate.target_bytes,
                     required_copy_count=2,
-                    glacier_state="pending",
                 )
                 session.add(image)
                 for cp in candidate.covered_paths:
@@ -240,20 +259,9 @@ class SqlAlchemyPlanningService:
                         )
                     )
                 _seed_required_copy_slots(session, image)
-                enqueue_glacier_upload_job(
-                    session,
-                    image_id=candidate.finalized_id,
-                    next_attempt_at=_utc_now(),
-                )
                 session.flush()
                 session.refresh(image)
                 existing = image
-            elif normalize_glacier_state(existing.glacier_state) != GlacierState.UPLOADED:
-                enqueue_glacier_upload_job(
-                    session,
-                    image_id=candidate.finalized_id,
-                    next_attempt_at=_utc_now(),
-                )
             return _strip_internal(_finalized_image_view(existing, session))
 
     async def get_iso_stream(self, image_id: str) -> IsoStream:
@@ -295,12 +303,11 @@ class FinalizedImageView(TypedDict):
     collections: int
     collection_ids: list[str]
     iso_ready: bool
-    protection_state: str
+    physical_protection_state: str
     physical_copies_required: int
     physical_copies_registered: int
     physical_copies_verified: int
     physical_copies_missing: int
-    glacier: dict[str, object]
     _bytes: int
     _collection_ids: list[str]
 
@@ -339,11 +346,9 @@ def _finalized_image_view(image: FinalizedImageRecord, session: Session) -> Fina
         )
     )
     required_copy_count = normalize_required_copy_count(image.required_copy_count)
-    glacier = _glacier_archive_status(image)
     protection_state = image_protection_state(
         required_copy_count=required_copy_count,
         registered_copy_count=registered_copy_count,
-        glacier_state=glacier.state,
     )
     collection_ids = sorted({cp.collection_id for cp in image.covered_paths})
     files = len(image.covered_paths)
@@ -359,7 +364,7 @@ def _finalized_image_view(image: FinalizedImageRecord, session: Session) -> Fina
         "collections": len(collection_ids),
         "collection_ids": collection_ids,
         "iso_ready": True,
-        "protection_state": protection_state.value,
+        "physical_protection_state": protection_state.value,
         "physical_copies_required": required_copy_count,
         "physical_copies_registered": registered_copy_count,
         "physical_copies_verified": verified_copy_count,
@@ -367,32 +372,9 @@ def _finalized_image_view(image: FinalizedImageRecord, session: Session) -> Fina
             required_copy_count=required_copy_count,
             registered_copy_count=registered_copy_count,
         ),
-        "glacier": {
-            "state": glacier.state.value,
-            "object_path": glacier.object_path,
-            "stored_bytes": glacier.stored_bytes,
-            "backend": glacier.backend,
-            "storage_class": glacier.storage_class,
-            "last_uploaded_at": glacier.last_uploaded_at,
-            "last_verified_at": glacier.last_verified_at,
-            "failure": glacier.failure,
-        },
         "_bytes": image.bytes,
         "_collection_ids": collection_ids,
     }
-
-
-def _glacier_archive_status(image: FinalizedImageRecord) -> GlacierArchiveStatus:
-    return GlacierArchiveStatus(
-        state=normalize_glacier_state(image.glacier_state),
-        object_path=image.glacier_object_path,
-        stored_bytes=image.glacier_stored_bytes,
-        backend=image.glacier_backend,
-        storage_class=image.glacier_storage_class,
-        last_uploaded_at=image.glacier_last_uploaded_at,
-        last_verified_at=image.glacier_last_verified_at,
-        failure=image.glacier_failure,
-    )
 
 
 def _seed_required_copy_slots(session: Session, image: FinalizedImageRecord) -> None:

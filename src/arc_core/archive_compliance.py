@@ -59,11 +59,10 @@ def image_protection_state(
     *,
     required_copy_count: int,
     registered_copy_count: int,
-    glacier_state: GlacierState,
 ) -> ProtectionState:
-    if registered_copy_count >= required_copy_count and glacier_state == GlacierState.UPLOADED:
+    if registered_copy_count >= required_copy_count:
         return ProtectionState.PROTECTED
-    if registered_copy_count > 0 or glacier_state != GlacierState.PENDING:
+    if registered_copy_count > 0:
         return ProtectionState.PARTIALLY_PROTECTED
     return ProtectionState.UNPROTECTED
 

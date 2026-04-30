@@ -537,12 +537,12 @@ def create_app(
     auth_deps = list(api_auth_dependencies())
     app.include_router(internal_router)
     app.include_router(files_router, prefix="/v1", dependencies=auth_deps)
+    app.include_router(recovery_sessions_router, prefix="/v1", dependencies=auth_deps)
     app.include_router(collections_router, prefix="/v1", dependencies=auth_deps)
     app.include_router(search_router, prefix="/v1", dependencies=auth_deps)
     app.include_router(plan_router, prefix="/v1", dependencies=auth_deps)
     app.include_router(images_router, prefix="/v1", dependencies=auth_deps)
     app.include_router(glacier_router, prefix="/v1", dependencies=auth_deps)
-    app.include_router(recovery_sessions_router, prefix="/v1", dependencies=auth_deps)
     app.include_router(pins_router, prefix="/v1", dependencies=auth_deps)
     app.include_router(fetches_router, prefix="/v1", dependencies=auth_deps)
     return app

@@ -1,13 +1,26 @@
 from __future__ import annotations
 
+import hashlib
+from collections.abc import Iterator
 from dataclasses import replace
 from datetime import UTC, datetime
 from pathlib import Path
+from typing import Any, cast
 
 import pytest
 
+from arc_core.collection_archives import (
+    CollectionArchiveFile,
+    CollectionArchivePackage,
+    build_collection_archive_package,
+)
 from arc_core.runtime_config import RuntimeConfig
-from arc_core.stores.s3_archive_store import ISO_BYTES_METADATA, ISO_SHA256_METADATA, S3ArchiveStore
+from arc_core.stores.s3_archive_store import (
+    COLLECTION_BYTES_METADATA,
+    COLLECTION_SHA256_METADATA,
+    S3ArchiveStore,
+)
+from tests.fixtures.data import DOCS_FILES
 
 
 class _MissingObjectError(Exception):
@@ -15,35 +28,57 @@ class _MissingObjectError(Exception):
         self.response = {"Error": {"Code": "404"}}
 
 
+class _FakeBody:
+    def __init__(self, content: bytes) -> None:
+        self._content = content
+        self.closed = False
+
+    def iter_chunks(self, *, chunk_size: int) -> Iterator[bytes]:
+        for offset in range(0, len(self._content), chunk_size):
+            yield self._content[offset : offset + chunk_size]
+
+    def read(self) -> bytes:
+        return self._content
+
+    def close(self) -> None:
+        self.closed = True
+
+
 class _FakeS3Client:
-    def __init__(self, *, existing_head: dict[str, object] | None) -> None:
-        self._existing_head = existing_head
-        self.uploaded: list[tuple[str, str, str, dict[str, object]]] = []
+    def __init__(self) -> None:
+        self.objects: dict[str, dict[str, Any]] = {}
+        self.restore_requests: list[str] = []
 
-    def head_object(self, *, Bucket: str, Key: str) -> dict[str, object]:
-        if self._existing_head is None:
-            raise _MissingObjectError()
-        return self._existing_head
+    def head_object(self, *, Bucket: str, Key: str) -> dict[str, Any]:
+        _ = Bucket
+        try:
+            return {key: value for key, value in self.objects[Key].items() if key != "Body"}
+        except KeyError as exc:
+            raise _MissingObjectError() from exc
 
-    def upload_file(
-        self,
-        filename: str,
-        bucket: str,
-        key: str,
-        *,
-        ExtraArgs: dict[str, object],
-    ) -> None:
-        self.uploaded.append((filename, bucket, key, ExtraArgs))
-        metadata = ExtraArgs.get("Metadata", {})
-        assert isinstance(metadata, dict)
-        self._existing_head = {
-            "ContentLength": Path(filename).stat().st_size,
+    def put_object(self, *, Bucket: str, Key: str, Body: bytes, **kwargs: Any) -> None:
+        _ = Bucket
+        self.objects[Key] = {
+            "Body": Body,
+            "ContentLength": len(Body),
             "LastModified": datetime(2026, 4, 20, 4, 1, 0, tzinfo=UTC),
-            "Metadata": metadata,
+            **kwargs,
         }
-        storage_class = ExtraArgs.get("StorageClass")
-        if storage_class is not None:
-            self._existing_head["StorageClass"] = storage_class
+
+    def restore_object(
+        self,
+        *,
+        Bucket: str,
+        Key: str,
+        RestoreRequest: dict[str, object],
+    ) -> None:
+        _ = Bucket, RestoreRequest
+        self.restore_requests.append(Key)
+        self.objects[Key]["Restore"] = 'ongoing-request="true"'
+
+    def get_object(self, *, Bucket: str, Key: str) -> dict[str, object]:
+        _ = Bucket
+        return {"Body": _FakeBody(cast(bytes, self.objects[Key]["Body"]))}
 
 
 def _config(tmp_path: Path, **overrides: object) -> RuntimeConfig:
@@ -62,270 +97,105 @@ def _config(tmp_path: Path, **overrides: object) -> RuntimeConfig:
     return replace(config, **overrides)
 
 
-def test_upload_finalized_image_reuses_existing_object_without_reupload(
+def _package() -> CollectionArchivePackage:
+    return build_collection_archive_package(
+        collection_id="docs",
+        files=tuple(
+            CollectionArchiveFile(
+                path=path,
+                content=content,
+                sha256=hashlib.sha256(content).hexdigest(),
+            )
+            for path, content in sorted(DOCS_FILES.items())
+        ),
+    )
+
+
+def _store_with_client(
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path: Path,
+    client: _FakeS3Client,
+    **config_overrides: object,
+) -> S3ArchiveStore:
+    monkeypatch.setattr(
+        "arc_core.stores.s3_archive_store.create_glacier_s3_client",
+        lambda config: client,
+    )
+    return S3ArchiveStore(_config(tmp_path, **config_overrides))
+
+
+def test_upload_collection_archive_package_uploads_archive_manifest_and_proof(
     monkeypatch,
     tmp_path: Path,
 ) -> None:
-    client = _FakeS3Client(
-        existing_head={
-            "ContentLength": 456,
-            "LastModified": datetime(2026, 4, 20, 4, 1, 0, tzinfo=UTC),
-            "Metadata": {
-                ISO_BYTES_METADATA: "456",
-                ISO_SHA256_METADATA: "a" * 64,
-            },
-        }
-    )
-    monkeypatch.setattr(
-        "arc_core.stores.s3_archive_store.create_glacier_s3_client",
-        lambda config: client,
-    )
-    config = _config(tmp_path)
-    store = S3ArchiveStore(config)
+    client = _FakeS3Client()
+    store = _store_with_client(monkeypatch, tmp_path, client)
+    package = _package()
 
-    receipt = store.upload_finalized_image(
-        image_id="20260420T040001Z",
-        filename="20260420T040001Z.iso",
-        image_root=tmp_path,
-    )
+    receipt = store.upload_collection_archive_package(collection_id="docs", package=package)
 
-    assert receipt.object_path == "glacier/finalized-images/20260420T040001Z/20260420T040001Z.iso"
-    assert receipt.stored_bytes == 456
-    assert receipt.uploaded_at == "2026-04-20T04:01:00Z"
-    assert receipt.verified_at is not None
-    assert client.uploaded == []
+    assert receipt.archive.object_path.endswith("/archive.tar")
+    assert receipt.manifest.object_path.endswith("/manifest.yml")
+    assert receipt.proof.object_path.endswith("/manifest.yml.ots")
+    assert receipt.archive_format == "tar"
+    assert receipt.compression == "none"
+    archive_head = client.objects[receipt.archive.object_path]
+    archive_metadata = archive_head["Metadata"]
+    assert archive_metadata[COLLECTION_BYTES_METADATA] == str(len(package.archive_bytes))
+    assert archive_metadata[COLLECTION_SHA256_METADATA] == package.archive_sha256
+    assert archive_metadata["arc-archive-format"] == "tar"
+    assert archive_metadata["arc-compression"] == "none"
 
 
-def test_upload_finalized_image_reuses_existing_aws_object_with_matching_storage_class(
+def test_request_collection_archive_restore_requests_all_package_objects(
     monkeypatch,
     tmp_path: Path,
 ) -> None:
-    client = _FakeS3Client(
-        existing_head={
-            "ContentLength": 456,
-            "LastModified": datetime(2026, 4, 20, 4, 1, 0, tzinfo=UTC),
-            "StorageClass": "DEEP_ARCHIVE",
-            "Metadata": {
-                ISO_BYTES_METADATA: "456",
-                ISO_SHA256_METADATA: "a" * 64,
-            },
-        }
+    client = _FakeS3Client()
+    store = _store_with_client(
+        monkeypatch,
+        tmp_path,
+        client,
+        glacier_backend="aws",
+        glacier_endpoint_url="https://s3.us-west-2.amazonaws.com",
+        glacier_storage_class="DEEP_ARCHIVE",
     )
-    monkeypatch.setattr(
-        "arc_core.stores.s3_archive_store.create_glacier_s3_client",
-        lambda config: client,
-    )
-    store = S3ArchiveStore(
-        _config(
-            tmp_path,
-            glacier_backend="aws",
-            glacier_endpoint_url="https://s3.us-west-2.amazonaws.com",
-            glacier_storage_class="DEEP_ARCHIVE",
-        )
-    )
+    package = _package()
+    receipt = store.upload_collection_archive_package(collection_id="docs", package=package)
 
-    receipt = store.upload_finalized_image(
-        image_id="20260420T040001Z",
-        filename="20260420T040001Z.iso",
-        image_root=tmp_path,
+    status = store.request_collection_archive_restore(
+        collection_id="docs",
+        object_path=receipt.archive.object_path,
+        manifest_object_path=receipt.manifest.object_path,
+        proof_object_path=receipt.proof.object_path,
+        retrieval_tier="bulk",
+        hold_days=1,
+        requested_at="2026-04-20T04:00:00Z",
+        estimated_ready_at="2026-04-22T04:00:00Z",
     )
 
-    assert receipt.object_path == "glacier/finalized-images/20260420T040001Z/20260420T040001Z.iso"
-    assert receipt.stored_bytes == 456
-    assert client.uploaded == []
+    assert status.state == "requested"
+    assert client.restore_requests == [
+        receipt.archive.object_path,
+        receipt.manifest.object_path,
+        receipt.proof.object_path,
+    ]
 
 
-def test_upload_finalized_image_rejects_existing_aws_object_with_wrong_storage_class(
+def test_iter_restored_collection_archive_streams_when_ready(
     monkeypatch,
     tmp_path: Path,
 ) -> None:
-    client = _FakeS3Client(
-        existing_head={
-            "ContentLength": 456,
-            "LastModified": datetime(2026, 4, 20, 4, 1, 0, tzinfo=UTC),
-            "Metadata": {
-                ISO_BYTES_METADATA: "456",
-                ISO_SHA256_METADATA: "a" * 64,
-            },
-        }
-    )
-    monkeypatch.setattr(
-        "arc_core.stores.s3_archive_store.create_glacier_s3_client",
-        lambda config: client,
-    )
-    store = S3ArchiveStore(
-        _config(
-            tmp_path,
-            glacier_backend="aws",
-            glacier_endpoint_url="https://s3.us-west-2.amazonaws.com",
-            glacier_storage_class="DEEP_ARCHIVE",
+    client = _FakeS3Client()
+    store = _store_with_client(monkeypatch, tmp_path, client)
+    package = _package()
+    receipt = store.upload_collection_archive_package(collection_id="docs", package=package)
+
+    chunks = list(
+        store.iter_restored_collection_archive(
+            collection_id="docs",
+            object_path=receipt.archive.object_path,
         )
     )
 
-    with pytest.raises(RuntimeError, match="storage class does not match"):
-        store.upload_finalized_image(
-            image_id="20260420T040001Z",
-            filename="20260420T040001Z.iso",
-            image_root=tmp_path,
-        )
-    assert client.uploaded == []
-
-
-def test_upload_finalized_image_rejects_existing_object_without_validation_metadata(
-    monkeypatch,
-    tmp_path: Path,
-) -> None:
-    client = _FakeS3Client(
-        existing_head={
-            "ContentLength": 456,
-            "LastModified": datetime(2026, 4, 20, 4, 1, 0, tzinfo=UTC),
-        }
-    )
-    monkeypatch.setattr(
-        "arc_core.stores.s3_archive_store.create_glacier_s3_client",
-        lambda config: client,
-    )
-    store = S3ArchiveStore(_config(tmp_path))
-
-    with pytest.raises(RuntimeError, match="missing ISO validation metadata"):
-        store.upload_finalized_image(
-            image_id="20260420T040001Z",
-            filename="20260420T040001Z.iso",
-            image_root=tmp_path,
-        )
-
-
-def test_upload_finalized_image_uploads_when_object_is_missing(monkeypatch, tmp_path: Path) -> None:
-    client = _FakeS3Client(existing_head=None)
-    monkeypatch.setattr(
-        "arc_core.stores.s3_archive_store.create_glacier_s3_client",
-        lambda config: client,
-    )
-
-    def _fake_subprocess_run(*args, stdout, stderr, check):  # type: ignore[no-untyped-def]
-        stdout.write(b"iso-bytes")
-
-        class _Result:
-            returncode = 0
-            stderr = b""
-
-        return _Result()
-
-    monkeypatch.setattr("arc_core.stores.s3_archive_store.subprocess.run", _fake_subprocess_run)
-    validated: list[Path] = []
-    monkeypatch.setattr(
-        "arc_core.stores.s3_archive_store.validate_iso_image",
-        lambda iso_path: validated.append(iso_path),
-    )
-    monkeypatch.setattr(
-        "arc_core.stores.s3_archive_store.build_iso_cmd_from_root",
-        lambda *, image_root, volume_id: ["xorriso", str(image_root), volume_id],
-    )
-    monkeypatch.setattr("arc_core.stores.s3_archive_store._utc_now", lambda: "2026-04-20T04:01:00Z")
-
-    config = _config(tmp_path)
-    store = S3ArchiveStore(config)
-
-    receipt = store.upload_finalized_image(
-        image_id="20260420T040001Z",
-        filename="20260420T040001Z.iso",
-        image_root=tmp_path,
-    )
-
-    assert receipt.object_path == "glacier/finalized-images/20260420T040001Z/20260420T040001Z.iso"
-    assert receipt.stored_bytes == len(b"iso-bytes")
-    assert receipt.uploaded_at == "2026-04-20T04:01:00Z"
-    assert receipt.verified_at == "2026-04-20T04:01:00Z"
-    assert len(client.uploaded) == 1
-    assert len(validated) == 1
-    metadata = client.uploaded[0][3]["Metadata"]
-    assert isinstance(metadata, dict)
-    assert metadata[ISO_BYTES_METADATA] == str(len(b"iso-bytes"))
-    assert metadata[ISO_SHA256_METADATA] == (
-        "4bc485f29c8bda3640b8d904070e38e722d7acd9cba16f7a0ea8bedce2528178"
-    )
-    assert "StorageClass" not in client.uploaded[0][3]
-
-
-def test_upload_finalized_image_sets_aws_storage_class_when_backend_is_aws(
-    monkeypatch,
-    tmp_path: Path,
-) -> None:
-    client = _FakeS3Client(existing_head=None)
-    monkeypatch.setattr(
-        "arc_core.stores.s3_archive_store.create_glacier_s3_client",
-        lambda config: client,
-    )
-
-    def _fake_subprocess_run(*args, stdout, stderr, check):  # type: ignore[no-untyped-def]
-        stdout.write(b"iso-bytes")
-
-        class _Result:
-            returncode = 0
-            stderr = b""
-
-        return _Result()
-
-    monkeypatch.setattr("arc_core.stores.s3_archive_store.subprocess.run", _fake_subprocess_run)
-    monkeypatch.setattr(
-        "arc_core.stores.s3_archive_store.validate_iso_image",
-        lambda iso_path: None,
-    )
-    monkeypatch.setattr(
-        "arc_core.stores.s3_archive_store.build_iso_cmd_from_root",
-        lambda *, image_root, volume_id: ["xorriso", str(image_root), volume_id],
-    )
-
-    store = S3ArchiveStore(
-        _config(
-            tmp_path,
-            glacier_backend="aws",
-            glacier_endpoint_url="https://s3.us-west-2.amazonaws.com",
-            glacier_storage_class="DEEP_ARCHIVE",
-        )
-    )
-
-    store.upload_finalized_image(
-        image_id="20260420T040001Z",
-        filename="20260420T040001Z.iso",
-        image_root=tmp_path,
-    )
-
-    assert client.uploaded[0][3]["StorageClass"] == "DEEP_ARCHIVE"
-
-
-def test_upload_finalized_image_fails_before_upload_when_iso_validation_fails(
-    monkeypatch,
-    tmp_path: Path,
-) -> None:
-    client = _FakeS3Client(existing_head=None)
-    monkeypatch.setattr(
-        "arc_core.stores.s3_archive_store.create_glacier_s3_client",
-        lambda config: client,
-    )
-
-    def _fake_subprocess_run(*args, stdout, stderr, check):  # type: ignore[no-untyped-def]
-        stdout.write(b"not-an-iso")
-
-        class _Result:
-            returncode = 0
-            stderr = b""
-
-        return _Result()
-
-    monkeypatch.setattr("arc_core.stores.s3_archive_store.subprocess.run", _fake_subprocess_run)
-
-    def _fail_validation(iso_path: Path) -> None:
-        raise RuntimeError("invalid ISO")
-
-    monkeypatch.setattr("arc_core.stores.s3_archive_store.validate_iso_image", _fail_validation)
-
-    store = S3ArchiveStore(_config(tmp_path))
-
-    with pytest.raises(RuntimeError, match="invalid ISO"):
-        store.upload_finalized_image(
-            image_id="20260420T040001Z",
-            filename="20260420T040001Z.iso",
-            image_root=tmp_path,
-        )
-    assert client.uploaded == []
+    assert b"".join(chunks) == package.archive_bytes

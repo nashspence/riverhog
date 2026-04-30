@@ -20,7 +20,7 @@ def test_collection_listing_can_include_protected_collections() -> None:
                 state="verified",
                 verification_state="verified",
             )
-            assert system.glacier_uploads.process_due_uploads(limit=10) == 1
+            system.mark_collection_archive_uploaded("docs")
 
             system.constrain_collection_to_paths(
                 "docs",
@@ -74,12 +74,12 @@ def test_collection_recovery_summary_requires_all_split_parts() -> None:
                 hot=False,
                 archived=True,
             )
-            assert system.glacier_uploads.process_due_uploads(limit=10) == 1
+            system.mark_collection_archive_uploaded("docs")
 
             summary = system.request("GET", "/v1/collections/docs")
             assert summary.status_code == 200
             payload = summary.json()
-            assert payload["disc_coverage"]["state"] == "none"
+            assert payload["disc_coverage"]["state"] == "partial"
 
             system.planning.finalize_image("img_2026-04-20_04")
             system.copies.register(
@@ -93,8 +93,6 @@ def test_collection_recovery_summary_requires_all_split_parts() -> None:
                 state="verified",
                 verification_state="verified",
             )
-            assert system.glacier_uploads.process_due_uploads(limit=10) == 1
-
             summary = system.request("GET", "/v1/collections/docs")
             assert summary.status_code == 200
             payload = summary.json()

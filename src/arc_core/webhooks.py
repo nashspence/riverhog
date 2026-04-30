@@ -97,27 +97,6 @@ def build_images_ready_payload(
     }
 
 
-def build_glacier_upload_failed_payload(
-    *,
-    config: WebhookConfig,
-    image_id: str,
-    error: str,
-    attempts: int,
-    failed_at: str,
-) -> dict[str, object]:
-    payload: dict[str, object] = {
-        "event": "images.glacier_upload.failed",
-        "image_id": image_id,
-        "failed_at": failed_at,
-        "attempts": attempts,
-        "error": error,
-    }
-    if config.base_url:
-        payload["image_url"] = image_summary_url(config.base_url, image_id)
-        payload["download_url"] = image_iso_download_url(config.base_url, image_id)
-    return payload
-
-
 def build_recovery_ready_payload(
     *,
     config: WebhookConfig,
@@ -129,7 +108,8 @@ def build_recovery_ready_payload(
     reminder: bool,
 ) -> dict[str, object]:
     payload: dict[str, object] = {
-        "event": "images.recovery_ready.reminder" if reminder else "images.recovery_ready",
+        "event": "images.rebuild_ready.reminder" if reminder else "images.rebuild_ready",
+        "type": "image_rebuild",
         "session_id": session_id,
         "delivered_at": isoformat_z(delivered_at),
         "restore_expires_at": restore_expires_at,

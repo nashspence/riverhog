@@ -1,8 +1,6 @@
 @acceptance @cli @mvp
 Feature: arc-disc recover CLI
   The optical CLI discovers and resumes image rebuild sessions for finalized images that lost all protected copies.
-
-  @xfail_not_backed
   Scenario: arc-disc recover lists one multi-image pending rebuild session
     Given an archive with planner fixtures
     And an archive with split planner fixtures
@@ -24,8 +22,6 @@ Feature: arc-disc recover CLI
     And stdout mentions "pending_approval"
     And stdout mentions "20260420T040001Z"
     And stdout mentions "20260420T040003Z"
-
-  @xfail_not_backed
   @spec_harness_only
   Scenario: arc-disc recover resumes one ready multi-image rebuild session and cleans up staged ISOs
     Given an archive with planner fixtures

@@ -5,8 +5,6 @@ Feature: Recovery sessions API
   Background:
     Given an archive with planner fixtures
     And collection "docs" has uploaded Glacier archive package
-
-  @xfail_not_backed
   Scenario: Starting a collection restore creates a durable pending-approval session
     When the client posts to "/v1/collections/docs/restore-session"
     Then the response status is 200
@@ -21,8 +19,6 @@ Feature: Recovery sessions API
     Then the response status is 200
     And the response recovery session id is "rs-docs-restore-1"
     And the response recovery session state is "pending_approval"
-
-  @xfail_not_backed
   Scenario: Approving a collection restore verifies manifest and proof before completion
     Given the client posts to "/v1/collections/docs/restore-session"
     When the client posts to "/v1/recovery-sessions/rs-docs-restore-1/approve"
@@ -37,8 +33,6 @@ Feature: Recovery sessions API
     When the client posts to "/v1/recovery-sessions/rs-docs-restore-1/complete"
     Then the response status is 200
     And the response recovery session state is "completed"
-
-  @xfail_not_backed
   Scenario: Losing the last protected copy creates an image rebuild session
     Given candidate "img_2026-04-20_01" is finalized
     And the client posts to "/v1/images/20260420T040001Z/copies" with id "20260420T040001Z-1" and location "Shelf A1"
@@ -52,14 +46,14 @@ Feature: Recovery sessions API
     And the response recovery session state is "pending_approval"
     And the response recovery session collections include "docs"
     And the response recovery session images contain only "20260420T040001Z"
-
-  @xfail_not_backed
+    And the response recovery session image "20260420T040001Z" rebuild_state is "pending"
   Scenario: Image rebuild stages a rebuilt ISO from restored collection archives
     Given candidate "img_2026-04-20_01" is finalized
     And image rebuild session "rs-20260420T040001Z-rebuild-1" exists for image "20260420T040001Z"
     When the client posts to "/v1/recovery-sessions/rs-20260420T040001Z-rebuild-1/approve"
     Then the response status is 200
     And the response recovery session state is "restore_requested"
+    And the response recovery session image "20260420T040001Z" rebuild_state is "restoring_collections"
     When the client waits for recovery session "rs-20260420T040001Z-rebuild-1" state "ready"
     Then the response status is 200
     And the response recovery session type is "image_rebuild"

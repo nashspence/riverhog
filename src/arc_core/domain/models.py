@@ -41,6 +41,15 @@ class GlacierArchiveStatus:
 
 
 @dataclass(frozen=True)
+class CollectionArchiveManifestStatus:
+    object_path: str | None = None
+    sha256: str | None = None
+    ots_object_path: str | None = None
+    ots_state: str = "pending"
+    ots_sha256: str | None = None
+
+
+@dataclass(frozen=True)
 class GlacierPricingBasis:
     label: str
     storage_class: str
@@ -58,8 +67,8 @@ class GlacierPricingBasis:
 
 @dataclass(frozen=True)
 class GlacierUsageTotals:
-    images: int
-    uploaded_images: int
+    collections: int
+    uploaded_collections: int
     measured_storage_bytes: int
     estimated_billable_bytes: int
     estimated_monthly_cost_usd: float
@@ -70,40 +79,33 @@ class GlacierUsageImage:
     id: ImageId
     filename: str
     collection_ids: list[str]
-    glacier: GlacierArchiveStatus
-    measured_storage_bytes: int
-    estimated_billable_bytes: int
-    estimated_monthly_cost_usd: float
 
 
 @dataclass(frozen=True)
 class GlacierCollectionContribution:
     image_id: ImageId
     filename: str
-    glacier: GlacierArchiveStatus
     represented_bytes: int
-    represented_fraction: float | None
-    derived_stored_bytes: int | None
-    derived_billable_bytes: int | None
-    estimated_monthly_cost_usd: float | None
 
 
 @dataclass(frozen=True)
 class GlacierUsageCollection:
     id: CollectionId
     bytes: int
-    represented_bytes: int
-    attribution_state: str
-    derived_stored_bytes: int
-    derived_billable_bytes: int
+    measured_storage_bytes: int
+    estimated_billable_bytes: int
     estimated_monthly_cost_usd: float
     images: tuple[GlacierCollectionContribution, ...] = ()
+    glacier: GlacierArchiveStatus = field(default_factory=GlacierArchiveStatus)
+    archive_manifest: CollectionArchiveManifestStatus | None = None
+    archive_format: str | None = None
+    compression: str | None = None
 
 
 @dataclass(frozen=True)
 class GlacierUsageSnapshot:
     captured_at: str
-    uploaded_images: int
+    uploaded_collections: int
     measured_storage_bytes: int
     estimated_billable_bytes: int
     estimated_monthly_cost_usd: float
@@ -270,13 +272,22 @@ class RecoveryNotificationStatus:
 class RecoverySessionImage:
     id: ImageId
     filename: str
+    collection_ids: tuple[CollectionId, ...] = ()
+    rebuild_state: str = "pending"
+
+
+@dataclass(frozen=True)
+class RecoverySessionCollection:
+    id: CollectionId
     glacier: GlacierArchiveStatus
+    archive_manifest: CollectionArchiveManifestStatus | None
     stored_bytes: int
 
 
 @dataclass(frozen=True)
 class RecoverySessionSummary:
     id: str
+    type: str
     state: RecoverySessionState
     created_at: str
     approved_at: str | None
@@ -288,6 +299,7 @@ class RecoverySessionSummary:
     warnings: tuple[str, ...]
     cost_estimate: RecoveryCostEstimate
     notification: RecoveryNotificationStatus
+    collections: tuple[RecoverySessionCollection, ...]
     images: tuple[RecoverySessionImage, ...]
 
 
@@ -302,7 +314,6 @@ class CollectionCoverageImage:
     physical_copies_missing: int
     covered_paths: list[str]
     copies: list[CopySummary]
-    glacier: GlacierArchiveStatus
 
 
 @dataclass(frozen=True)
@@ -341,6 +352,10 @@ class CollectionSummary:
         )
     )
     image_coverage: list[CollectionCoverageImage] = field(default_factory=list)
+    glacier: GlacierArchiveStatus = field(default_factory=GlacierArchiveStatus)
+    archive_manifest: CollectionArchiveManifestStatus | None = None
+    archive_format: str | None = None
+    compression: str | None = None
 
     @property
     def pending_bytes(self) -> int:

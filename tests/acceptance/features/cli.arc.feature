@@ -43,8 +43,6 @@ Feature: arc CLI
       And stdout is valid JSON
       And stdout matches the structure of GET "/v1/images"
       And stdout mentions "20260420T040001Z"
-
-    @xfail_not_backed
     Scenario: arc glacier emits the collection-native Glacier usage payload
       Given an archive with planner fixtures
       And collection "docs" has uploaded Glacier archive package
@@ -109,7 +107,6 @@ Feature: arc CLI
       And stdout mentions "verified"
 
   Rule: Non-JSON mode remains concise and stable
-    @xfail_not_backed
     Scenario: arc upload ingests and archives a local collection source
       Given a local collection source "photos-2024" with deterministic fixture contents
       When the operator uploads collection source "photos-2024" with arc
@@ -146,8 +143,6 @@ Feature: arc CLI
       And stdout mentions "noncompliant_collections:"
       And stdout mentions "photos-2024 state=cloud_only"
       And stdout mentions "fully_protected_collections:"
-
-    @xfail_not_backed
     Scenario: arc show prints collection Glacier state and physical coverage
       Given an archive with planner fixtures
       And collection "docs" has uploaded Glacier archive package
@@ -165,8 +160,6 @@ Feature: arc CLI
       And stdout mentions "label=20260420T040001Z-1"
       And stdout mentions "glacier_path: glacier/collections/"
       And stdout mentions "measured_storage_bytes="
-
-    @xfail_not_backed
     Scenario: arc show does not overstate split physical coverage from one image part
       Given an archive with split planner fixtures
       And collection "docs" has uploaded Glacier archive package
@@ -178,8 +171,6 @@ Feature: arc CLI
       Then the command exits with code 0
       And stdout mentions "glacier: uploaded"
       And stdout mentions "disc_coverage=partial"
-
-    @xfail_not_backed
     Scenario: arc glacier prints pricing basis and direct collection usage
       Given an archive with split planner fixtures
       And collection "docs" has uploaded Glacier archive package
@@ -190,8 +181,6 @@ Feature: arc CLI
       And stdout mentions "glacier=uploaded"
       And stdout mentions "ots=uploaded"
       And stdout mentions "estimated_monthly_cost_usd="
-
-    @xfail_not_backed
     @spec_harness_only
     Scenario: arc glacier prints resource-level and manifest-aware billing metadata in the spec harness
       Given an archive with split planner fixtures

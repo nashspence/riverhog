@@ -166,6 +166,7 @@ class RecoverySessionImageHint:
 @dataclass(frozen=True, slots=True)
 class RecoverySessionHint:
     session_id: str
+    type: str
     state: str
     latest_message: str | None
     images: tuple[RecoverySessionImageHint, ...]
@@ -689,7 +690,7 @@ def _discover_recovery_handoffs(client: ApiClient) -> list[RecoveryHandoff]:
 def _report_recovery_handoffs(handoffs: list[RecoveryHandoff]) -> None:
     if not handoffs:
         return
-    typer.echo("ordinary burn backlog is clear, but Glacier recovery work remains")
+    typer.echo("ordinary burn backlog is clear, but image rebuild work remains")
     for handoff in handoffs:
         typer.echo(
             f"{handoff.image_id}: recovery session {handoff.session_id} is {handoff.state}"
@@ -710,6 +711,7 @@ def _recovery_session_hint_from_payload(payload: dict[str, Any]) -> RecoverySess
     )
     return RecoverySessionHint(
         session_id=str(payload["id"]),
+        type=str(payload.get("type", "image_rebuild")),
         state=str(payload["state"]),
         latest_message=(
             str(payload["latest_message"]) if payload.get("latest_message") is not None else None
@@ -740,6 +742,7 @@ def _report_recovery_sessions(sessions: list[RecoverySessionHint]) -> None:
     for session in sessions:
         image_ids = ", ".join(image.image_id for image in session.images) or "(no images)"
         typer.echo(f"recovery session {session.session_id} is {session.state}")
+        typer.echo(f"type: {session.type}")
         typer.echo(f"images: {image_ids}")
         if session.latest_message:
             typer.echo(session.latest_message)
@@ -940,6 +943,7 @@ def _process_recovery_session(
     return (
         RecoverySessionHint(
             session_id=recovery_session.session_id,
+            type=recovery_session.type,
             state="completed",
             latest_message=(
                 "Recovery session completed and restored ISO cleanup was recorded."
@@ -1421,12 +1425,22 @@ def recover_cmd(
         raise typer.Exit(code=1) from exc
 
     if recovery_session.state == "restore_requested":
-        typer.echo(f"recovery session {session_id} is restore_requested")
+        label = (
+            "rebuild session"
+            if recovery_session.type == "image_rebuild"
+            else "recovery session"
+        )
+        typer.echo(f"{label} {session_id} is restore_requested")
         if recovery_session.latest_message:
             typer.echo(recovery_session.latest_message)
         return
 
-    typer.echo(f"recovery session {session_id} completed")
+    label = (
+        "rebuild session"
+        if recovery_session.type == "image_rebuild"
+        else "recovery session"
+    )
+    typer.echo(f"{label} {session_id} completed")
     for copy_id in completed_copy_ids:
         typer.echo(copy_id)
 
