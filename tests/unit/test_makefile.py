@@ -67,6 +67,35 @@ def _install_fake_command(tmp_path: Path, name: str, log_name: str) -> Path:
             )
             + "\n"
         )
+    elif name == "pgrep":
+        command.write_text(
+            "\n".join(
+                [
+                    "#!/usr/bin/env bash",
+                    "set -euo pipefail",
+                    (
+                        "printf '%s|%s|%s|%s|%s|%s|%s|%s|%s|%s\\n' "
+                        "\"${COMPOSE_PROJECT_NAME:-}\" "
+                        "\"${TEST_COMPOSE_PROJECT_ISOLATED:-}\" "
+                        "\"${ARC_ENABLE_TEST_CONTROL:-}\" "
+                        "\"$*\" "
+                        "\"${ARC_API_PORT:-}\" "
+                        "\"${ARC_WEBDAV_PORT:-}\" "
+                        "\"${ARC_DB_PATH:-}\" "
+                        "\"${ARC_TEST_EXTERNAL_APP_DB_PATH:-}\" "
+                        "\"${ARC_TEST_WEBHOOK_CAPTURE_PATH:-}\" "
+                        "\"${ARC_TEST_ACCEPTANCE_ROOT:-}\" >> "
+                        f"{log_path}"
+                    ),
+                    "if [[ -n \"${FAKE_PGREP_OUTPUT:-}\" ]]; then",
+                    "  printf '%s\\n' \"${FAKE_PGREP_OUTPUT}\"",
+                    "  exit 0",
+                    "fi",
+                    "exit 1",
+                ]
+            )
+            + "\n"
+        )
     else:
         command.write_text(
             "\n".join(
@@ -100,6 +129,7 @@ def _run_make(
 ) -> tuple[subprocess.CompletedProcess[str], Path, Path]:
     docker_log_path = _install_fake_command(tmp_path, "docker", "docker.log")
     uv_log_path = _install_fake_command(tmp_path, "uv", "uv.log")
+    _install_fake_command(tmp_path, "pgrep", "pgrep.log")
     env = os.environ.copy()
     env["PATH"] = f"{tmp_path / 'bin'}:{env['PATH']}"
     env.pop("args", None)
@@ -410,6 +440,29 @@ def test_down_target_uses_compose_down_with_volumes(tmp_path: Path) -> None:
     assert " down --volumes --remove-orphans" in docker_log
 
 
+def test_stop_prod_targets_explicit_shared_compose_project(tmp_path: Path) -> None:
+    completed, docker_log_path, uv_log_path = _run_make(
+        tmp_path,
+        "stop-prod",
+        extra_env={"TEST_COMPOSE_PROJECT_NAME": "archive-stack-shared-unit"},
+    )
+
+    assert completed.returncode == 0, completed.stderr
+    assert _read_log_lines(uv_log_path) == []
+    docker_log = "\n".join(_read_log_lines(docker_log_path))
+    assert "archive-stack-shared-unit|0||" in docker_log
+    assert " down --volumes --remove-orphans" in docker_log
+
+
+def test_stop_spec_is_available_when_no_spec_lane_is_running(tmp_path: Path) -> None:
+    completed, docker_log_path, uv_log_path = _run_make(tmp_path, "stop-spec")
+
+    assert completed.returncode == 0, completed.stderr
+    assert "No in-flight spec harness process found." in completed.stdout
+    assert _read_log_lines(docker_log_path) == []
+    assert _read_log_lines(uv_log_path) == []
+
+
 def test_help_describes_make_targets_and_omits_fast(tmp_path: Path) -> None:
     completed, docker_log_path, uv_log_path = _run_make(tmp_path, "help")
 
@@ -417,6 +470,8 @@ def test_help_describes_make_targets_and_omits_fast(tmp_path: Path) -> None:
     assert "make bootstrap-garage" in completed.stdout
     assert "make build-app" in completed.stdout
     assert "make build-test" in completed.stdout
+    assert "make stop-spec" in completed.stdout
+    assert "make stop-prod" in completed.stdout
     assert "make test" in completed.stdout
     assert "args='...'" in completed.stdout
     assert "fast" not in completed.stdout

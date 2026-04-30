@@ -20,6 +20,14 @@ Successful isolated prod-backed runs remove their generated `.compose/` state;
 explicit shared project runs keep it. There is no supported override for this
 state root; use `TEST_COMPOSE_PROJECT_NAME` when you need deliberate reuse.
 
+If source, contract, or fixture edits are needed while a canonical spec or prod
+lane is still running, stop that lane first, make the edit, then restart the
+lane. Continuing to edit code during an in-flight canonical lane makes that run
+invalid. Use `make stop-spec` to send a clean interrupt to the local spec
+harness, and use `make stop-prod` to tear down in-flight prod-backed Compose
+projects. Set `TEST_COMPOSE_PROJECT_NAME` before `make stop-prod` when stopping a
+deliberately shared prod project.
+
 Run the serial aggregate flow with `make test` when one command is more
 convenient. That target runs lint first, then the unit, spec, and prod-backed
 acceptance lanes.
@@ -29,6 +37,7 @@ Run `make build-app`, `make build-test`, or `make build` to refresh the local Do
 Run `make bootstrap-garage` to apply the checked-in Garage bucket and key bootstrap.
 Run the production-backed harness against the executable acceptance contract with `make prod`.
 Profile the production-backed harness with `make prod-profile`.
+Stop in-flight acceptance lanes with `make stop-spec` or `make stop-prod`.
 Run the fixture-backed spec harness lane with `make spec`.
 Run the unit lane with `make unit`.
 Pass mypy or pytest selectors with `args='...'`.

@@ -74,6 +74,13 @@ to tear that same standalone stack back down later.
 Run `make test` when you want the supported serial aggregate target. It runs
 lint, then unit, spec, and the prod-backed acceptance phase in order.
 
+If you need to edit code or contract surface while a canonical acceptance lane
+is still running, stop the lane first and restart it after the edit. Do not keep
+editing during a canonical run and treat its eventual result as valid.
+`make stop-spec` interrupts local spec harness processes. `make stop-prod`
+tears down in-flight prod-backed Compose projects; export the same
+`TEST_COMPOSE_PROJECT_NAME` first when the run used an explicit shared project.
+
 When `make prod`, `make prod-profile`, or `make test` starts the prod-backed
 lane, it layers the short recovery timing values from
 `tests/harness/prod-harness.env` over the shared compose env so local compose

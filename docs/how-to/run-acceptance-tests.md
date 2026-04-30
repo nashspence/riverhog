@@ -17,6 +17,21 @@ make prod
 That keeps the local lanes and the prod-backed lane visible in parallel output
 windows without changing the checked-in test surfaces.
 
+If a canonical spec or prod lane is already running and you need to change
+source, contracts, features, fixtures, or harness code, stop the lane first,
+make the edit, then restart it. A canonical run is only valid for the checkout
+that existed when the lane started.
+
+```bash
+make stop-spec
+make stop-prod
+```
+
+`make stop-spec` sends a clean interrupt to any local spec harness process.
+`make stop-prod` tears down in-flight prod-backed Compose projects. When you
+started prod with an explicit shared project, export the same
+`TEST_COMPOSE_PROJECT_NAME` before stopping it.
+
 Run the same acceptance contract inside the deterministic test container:
 
 ```bash

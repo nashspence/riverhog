@@ -4,7 +4,7 @@ SHELL := bash
 UV_RUN = uv run --python 3.11 --isolated --with-requirements "$(CURDIR)/requirements-test.txt" --with-editable '.[db]'
 args ?=
 
-.PHONY: help ruff mypy lint unit spec gated-arc-disc gated-glacier-restore build build-app build-test bootstrap-garage down prod prod-profile test
+.PHONY: help ruff mypy lint unit spec stop-spec gated-arc-disc gated-glacier-restore build build-app build-test bootstrap-garage down prod stop-prod prod-profile test
 
 help:
 	@printf '%s\n' \
@@ -14,6 +14,7 @@ help:
 		'  make lint              Run ruff, then mypy.' \
 		'  make unit              Run the unit test lane locally.' \
 		'  make spec              Run the fixture-backed spec harness locally.' \
+		'  make stop-spec         Stop any in-flight local spec harness process.' \
 		'  make gated-arc-disc    Run opt-in real-device arc-disc optical validation.' \
 		'  make gated-glacier-restore Run opt-in live AWS collection archive restore validation.' \
 		'  make build-app         Build the app image.' \
@@ -22,6 +23,7 @@ help:
 		'  make bootstrap-garage  Start Garage and apply the checked-in bucket/key bootstrap.' \
 		'  make down              Tear the compose-managed test stack down.' \
 		'  make prod              Run the prod-backed acceptance harness.' \
+		'  make stop-prod         Stop in-flight prod-backed harness Compose projects.' \
 		'  make prod-profile      Run the prod-backed acceptance harness with pytest durations.' \
 		'  make test              Run lint, unit, spec, then prod.' \
 		'' \
@@ -43,6 +45,9 @@ unit:
 
 spec:
 	@$(UV_RUN) python -m pytest -q tests/harness/test_spec_harness.py $(args)
+
+stop-spec:
+	@./scripts/stop_spec.sh
 
 gated-arc-disc:
 	@$(UV_RUN) python -m pytest -q tests/gated/test_arc_disc_real_device.py $(args)
@@ -66,6 +71,9 @@ down:
 
 prod:
 	@./scripts/prod.sh $(args)
+
+stop-prod:
+	@./scripts/stop_prod.sh
 
 prod-profile:
 	@./scripts/prod_profile.sh $(args)
