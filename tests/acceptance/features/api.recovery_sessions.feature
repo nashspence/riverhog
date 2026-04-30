@@ -1,59 +1,69 @@
 @acceptance @api @mvp
 Feature: Recovery sessions API
-  Glacier-backed recovery sessions track operator approval and restore lifecycle once a finalized image loses all protected copies.
+  Glacier-backed recovery sessions track collection restores and image rebuilds from collection-native archive packages.
 
   Background:
     Given an archive with planner fixtures
-    And candidate "img_2026-04-20_01" is finalized
-    And the client waits for image "20260420T040001Z" glacier state "uploaded"
-    And the client posts to "/v1/images/20260420T040001Z/copies" with id "20260420T040001Z-1" and location "Shelf A1"
-    And the client posts to "/v1/images/20260420T040001Z/copies" with id "20260420T040001Z-2" and location "Shelf B1"
+    And collection "docs" has uploaded Glacier archive package
 
-  Scenario: Losing the last protected copy creates a durable pending-approval recovery session
-    When the client patches "/v1/images/20260420T040001Z/copies/20260420T040001Z-1" with state "lost"
-    And the client patches "/v1/images/20260420T040001Z/copies/20260420T040001Z-2" with state "damaged"
-    And the client gets "/v1/images/20260420T040001Z/recovery-session"
+  @xfail_not_backed
+  Scenario: Starting a collection restore creates a durable pending-approval session
+    When the client posts to "/v1/collections/docs/restore-session"
     Then the response status is 200
-    And the response recovery session id is "rs-20260420T040001Z-1"
+    And the response recovery session type is "collection_restore"
+    And the response recovery session id is "rs-docs-restore-1"
     And the response recovery session state is "pending_approval"
     And the response recovery session estimated cost is greater than 0
-    And the response recovery session images contain only "20260420T040001Z"
+    And the response recovery session collections contain only "docs"
+    And the response recovery session images are empty
     When the API process restarts
-    And the client gets "/v1/images/20260420T040001Z/recovery-session"
+    And the client gets "/v1/collections/docs/restore-session"
     Then the response status is 200
-    And the response recovery session id is "rs-20260420T040001Z-1"
+    And the response recovery session id is "rs-docs-restore-1"
     And the response recovery session state is "pending_approval"
 
-  @spec_harness_only
-  Scenario: Approving a recovery session progresses to ready and can be completed
-    Given the client patches "/v1/images/20260420T040001Z/copies/20260420T040001Z-1" with state "lost"
-    And the client patches "/v1/images/20260420T040001Z/copies/20260420T040001Z-2" with state "damaged"
-    When the client posts to "/v1/recovery-sessions/rs-20260420T040001Z-1/approve"
+  @xfail_not_backed
+  Scenario: Approving a collection restore verifies manifest and proof before completion
+    Given the client posts to "/v1/collections/docs/restore-session"
+    When the client posts to "/v1/recovery-sessions/rs-docs-restore-1/approve"
     Then the response status is 200
     And the response recovery session state is "restore_requested"
-    When the client waits for recovery session "rs-20260420T040001Z-1" state "ready"
+    When the client waits for recovery session "rs-docs-restore-1" state "ready"
     Then the response status is 200
-    And the response recovery session state is "ready"
-    And the response recovery session latest_message contains "ready"
-    When the client posts to "/v1/recovery-sessions/rs-20260420T040001Z-1/complete"
+    And the response recovery session type is "collection_restore"
+    And the response recovery session collection "docs" glacier state is "uploaded"
+    And the response recovery session collection "docs" archive manifest state is "uploaded"
+    And the response recovery session collection "docs" OTS proof state is "uploaded"
+    When the client posts to "/v1/recovery-sessions/rs-docs-restore-1/complete"
     Then the response status is 200
     And the response recovery session state is "completed"
-    And the response recovery session latest_message contains "cleanup was recorded"
 
-  @spec_harness_only
-  Scenario: An expired recovery session requires re-initiation
-    Given the client patches "/v1/images/20260420T040001Z/copies/20260420T040001Z-1" with state "lost"
+  @xfail_not_backed
+  Scenario: Losing the last protected copy creates an image rebuild session
+    Given candidate "img_2026-04-20_01" is finalized
+    And the client posts to "/v1/images/20260420T040001Z/copies" with id "20260420T040001Z-1" and location "Shelf A1"
+    And the client posts to "/v1/images/20260420T040001Z/copies" with id "20260420T040001Z-2" and location "Shelf B1"
+    When the client patches "/v1/images/20260420T040001Z/copies/20260420T040001Z-1" with state "lost"
     And the client patches "/v1/images/20260420T040001Z/copies/20260420T040001Z-2" with state "damaged"
-    And the client posts to "/v1/recovery-sessions/rs-20260420T040001Z-1/approve"
-    When the client waits for recovery session "rs-20260420T040001Z-1" state "expired"
+    And the client gets "/v1/images/20260420T040001Z/rebuild-session"
     Then the response status is 200
-    And the response recovery session state is "expired"
-    And the response recovery session latest_message contains "re-initiate recovery"
-    When the client posts to "/v1/recovery-sessions/rs-20260420T040001Z-1/approve"
-    Then the response status is 409
-    And the error code is "invalid_state"
-    And the error message contains "re-initiate recovery"
-    When the client posts to "/v1/images/20260420T040001Z/recovery-session"
-    Then the response status is 200
-    And the response recovery session id is "rs-20260420T040001Z-2"
+    And the response recovery session type is "image_rebuild"
+    And the response recovery session id is "rs-20260420T040001Z-rebuild-1"
     And the response recovery session state is "pending_approval"
+    And the response recovery session collections include "docs"
+    And the response recovery session images contain only "20260420T040001Z"
+
+  @xfail_not_backed
+  Scenario: Image rebuild stages a rebuilt ISO from restored collection archives
+    Given candidate "img_2026-04-20_01" is finalized
+    And image rebuild session "rs-20260420T040001Z-rebuild-1" exists for image "20260420T040001Z"
+    When the client posts to "/v1/recovery-sessions/rs-20260420T040001Z-rebuild-1/approve"
+    Then the response status is 200
+    And the response recovery session state is "restore_requested"
+    When the client waits for recovery session "rs-20260420T040001Z-rebuild-1" state "ready"
+    Then the response status is 200
+    And the response recovery session type is "image_rebuild"
+    And the response recovery session image "20260420T040001Z" rebuild_state is "ready"
+    When the client gets "/v1/recovery-sessions/rs-20260420T040001Z-rebuild-1/images/20260420T040001Z/iso"
+    Then the response status is 200
+    And the response body is binary ISO content

@@ -14,3 +14,10 @@ class GlacierArchiveOut(ArcModel):
     last_uploaded_at: str | None
     last_verified_at: str | None
     failure: str | None
+
+
+class CollectionArchiveManifestOut(ArcModel):
+    object_path: str | None = None
+    sha256: str | None = None
+    ots_object_path: str | None = None
+    ots_state: Literal["pending", "uploaded", "failed"] = "pending"

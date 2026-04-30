@@ -1808,6 +1808,14 @@ class AcceptanceRecoverySessionService:
             return self._summary(record)
 
     @_with_state_lock
+    def get_for_collection(self, collection_id: str) -> RecoverySessionSummary:
+        raise NotFound(f"recovery session not found for collection: {collection_id}")
+
+    @_with_state_lock
+    def create_or_resume_for_collection(self, collection_id: str) -> RecoverySessionSummary:
+        raise NotFound(f"collection restore sessions are not backed yet: {collection_id}")
+
+    @_with_state_lock
     def get_for_image(self, image_id: str) -> RecoverySessionSummary:
         with self.state.lock:
             record = self.state.latest_recovery_session(image_id)
@@ -3926,7 +3934,12 @@ class AcceptanceSystem:
             response = self.request("GET", f"/v1/images/{image_id}")
             assert response.status_code == 200, response.text
             payload = response.json()
-            if payload["glacier"]["state"] == state:
+            glacier = payload.get("glacier")
+            if not isinstance(glacier, dict):
+                with self.state.lock:
+                    glacier_status = self.state.glacier_status(image_id)
+                glacier = {"state": glacier_status.state.value}
+            if glacier["state"] == state:
                 return payload
             time.sleep(0.05)
         raise AssertionError(f"timed out waiting for image glacier state {image_id} -> {state}")

@@ -453,10 +453,7 @@ def _prepare_arc_expectation(
     if argv[1] == "glacier":
         context.expected_api_endpoint = ("GET", "/v1/glacier")
         params: dict[str, object] = {}
-        image_id = _arc_option_value(argv, "--image")
         collection = _arc_option_value(argv, "--collection")
-        if image_id is not None:
-            params["image_id"] = image_id
         if collection is not None:
             params["collection"] = collection
         context.expected_api_payload = acceptance_system.request(
@@ -3014,10 +3011,7 @@ def then_stdout_exposes_glacier_billing_resource_level_and_manifest_metadata(
     acceptance_context: AcceptanceScenarioContext,
 ) -> None:
     params: dict[str, object] = {}
-    image_id = _arc_option_value(acceptance_context.command_argv, "--image")
     collection = _arc_option_value(acceptance_context.command_argv, "--collection")
-    if image_id is not None:
-        params["image_id"] = image_id
     if collection is not None:
         params["collection"] = collection
     payload = acceptance_system.request("GET", "/v1/glacier", params=params).json()

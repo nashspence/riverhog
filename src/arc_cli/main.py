@@ -293,19 +293,19 @@ def images_cmd(
         page=page,
         per_page=per_page,
         q=collections_query,
-        protection_state="unprotected",
+        protection_state="cloud_only",
     )
     partially_protected_collections = api.list_collections(
         page=page,
         per_page=per_page,
         q=collections_query,
-        protection_state="partially_protected",
+        protection_state="under_protected",
     )
     protected_collections = api.list_collections(
         page=page,
         per_page=per_page,
         q=collections_query,
-        protection_state="protected",
+        protection_state="fully_protected",
     )
     emit(
         format_archive_status(
@@ -322,15 +322,12 @@ def images_cmd(
 
 @app.command("glacier")
 def glacier_cmd(
-    image_id: Annotated[
-        str | None, typer.Option("--image", help="Filter to one finalized image id")
-    ] = None,
     collection: Annotated[
         str | None, typer.Option("--collection", help="Filter to one exact collection id")
     ] = None,
     json_mode: Annotated[bool, typer.Option("--json", help="Emit JSON")] = False,
 ) -> None:
-    payload = client().get_glacier_report(image_id=image_id, collection=collection)
+    payload = client().get_glacier_report(collection=collection)
     emit(payload if json_mode else format_glacier_report(payload), json_mode=json_mode)
 
 

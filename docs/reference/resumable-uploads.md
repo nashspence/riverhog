@@ -5,13 +5,19 @@ Riverhog uses the same resumable-upload lifecycle for collection ingest and fetc
 - the JSON API binds uploads to a server-owned domain resource
 - the returned upload resource uses tus-compatible resumable upload semantics within the contract published for that workflow
 - incomplete bytes stage under `.arc/uploads/` rather than appearing immediately as committed hot files
-- Riverhog promotes staged bytes to `collections/{collection_id}/{path}` only after verification and workflow completion
+- Riverhog promotes staged collection bytes to `collections/{collection_id}/{path}`
+  only after file verification and collection Glacier archive verification
 - upload state survives service restart until `INCOMPLETE_UPLOAD_TTL` expires
 - expiry cancels the upload resource, deletes incomplete server-side bytes, and resets the domain resource cleanly
 
 For collection ingest specifically:
 
-- the terminal successful collection-file upload chunk finalizes the collection immediately once every required file verifies
+- the terminal successful collection-file upload chunk may move the collection
+  upload from `uploading` to `archiving` once every required file verifies
+- the collection upload reaches `finalized` only after the whole-collection
+  Glacier archive package uploads and verifies
+- an archive upload failure leaves the collection upload `failed` and keeps the
+  collection invisible until retry succeeds
 - once the last resumable collection-file state expires, Riverhog forgets the upload session instead of keeping an empty pending record
 
 ## Collection File Upload Session

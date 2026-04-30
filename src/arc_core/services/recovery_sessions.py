@@ -62,6 +62,12 @@ class SqlAlchemyRecoverySessionService:
                 raise NotFound(f"recovery session not found: {session_id}")
             return _session_summary(session, record, config=self._config)
 
+    def get_for_collection(self, collection_id: str) -> RecoverySessionSummary:
+        raise NotFound(f"recovery session not found for collection: {collection_id}")
+
+    def create_or_resume_for_collection(self, collection_id: str) -> RecoverySessionSummary:
+        raise NotFound(f"collection restore sessions are not backed yet: {collection_id}")
+
     def get_for_image(self, image_id: str) -> RecoverySessionSummary:
         with session_scope(self._session_factory) as session:
             record = _latest_session_for_image(session, image_id)

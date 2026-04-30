@@ -10,8 +10,26 @@ from arc_api.schemas.recovery_sessions import RecoverySessionOut
 router = APIRouter(tags=["recovery"])
 
 
-@router.post("/images/{image_id}/recovery-session", response_model=RecoverySessionOut)
-def create_or_resume_recovery_session(
+@router.get("/collections/{collection_id:path}/restore-session", response_model=RecoverySessionOut)
+def get_collection_restore_session(
+    collection_id: str,
+    container: ContainerDep,
+) -> RecoverySessionOut:
+    summary = container.recovery_sessions.get_for_collection(collection_id)
+    return RecoverySessionOut.model_validate(map_recovery_session(summary))
+
+
+@router.post("/collections/{collection_id:path}/restore-session", response_model=RecoverySessionOut)
+def create_or_resume_collection_restore_session(
+    collection_id: str,
+    container: ContainerDep,
+) -> RecoverySessionOut:
+    summary = container.recovery_sessions.create_or_resume_for_collection(collection_id)
+    return RecoverySessionOut.model_validate(map_recovery_session(summary))
+
+
+@router.post("/images/{image_id}/rebuild-session", response_model=RecoverySessionOut)
+def create_or_resume_image_rebuild_session(
     image_id: str,
     container: ContainerDep,
 ) -> RecoverySessionOut:
@@ -19,8 +37,8 @@ def create_or_resume_recovery_session(
     return RecoverySessionOut.model_validate(map_recovery_session(summary))
 
 
-@router.get("/images/{image_id}/recovery-session", response_model=RecoverySessionOut)
-def get_recovery_session_for_image(
+@router.get("/images/{image_id}/rebuild-session", response_model=RecoverySessionOut)
+def get_image_rebuild_session(
     image_id: str,
     container: ContainerDep,
 ) -> RecoverySessionOut:

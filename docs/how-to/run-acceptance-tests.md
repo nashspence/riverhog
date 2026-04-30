@@ -128,7 +128,7 @@ Full CLI/API workflow validation is also part of `make gated-arc-disc`. These
 tests create the API state themselves, generate real ISO bytes from fixture image
 roots, run `arc-disc` as a subprocess, burn one real disc, verify it by reading
 the device, and then read that disc back through `arc-disc fetch`. The recovery
-workflow similarly uses a fixture-backed restored ISO endpoint and burns one real
+workflow similarly uses a fixture-backed rebuilt ISO endpoint and burns one real
 replacement disc.
 
 The full workflows use `ARC_DISC_GATED_BURN_DEVICE` for both writing and reading

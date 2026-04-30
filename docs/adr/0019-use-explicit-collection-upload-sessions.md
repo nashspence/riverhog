@@ -26,8 +26,14 @@ collection contract that:
 - incomplete collection bytes stage outside the committed `collections/{collection_id}/{path}` namespace until Riverhog verifies them
 - collection-upload sessions persist enough state to survive service restart and repeated CLI runs
 - collection-upload files use the same `INCOMPLETE_UPLOAD_TTL` expiry model as fetch recovery uploads
-- a collection remains invisible until every required file upload completes and Riverhog verifies the advertised hashes
-- the terminal successful collection-file upload chunk auto-finalizes the collection without a second explicit completion operation
+- a collection remains invisible until every required file upload completes,
+  Riverhog verifies the advertised hashes, and the whole-collection Glacier
+  archive package uploads and verifies
+- the terminal successful collection-file upload chunk may auto-advance the
+  collection into `archiving`; it must not report final success before Glacier
+  archive verification
+- collection-upload state uses `uploading`, `archiving`, `finalized`, and
+  `failed`
 - once the last resumable collection-file state expires, Riverhog forgets the collection-upload session instead of keeping an empty pending record
 - optional ingest-source metadata is descriptive only and is never part of collection identity
 

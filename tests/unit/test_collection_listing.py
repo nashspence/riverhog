@@ -35,7 +35,7 @@ def test_collection_listing_can_include_protected_collections() -> None:
             listing = system.request(
                 "GET",
                 "/v1/collections",
-                params={"protection_state": "protected"},
+                params={"protection_state": "fully_protected"},
             )
             assert listing.status_code == 200
             assert [item["id"] for item in listing.json()["collections"]] == ["docs"]
@@ -43,11 +43,10 @@ def test_collection_listing_can_include_protected_collections() -> None:
             summary = system.request("GET", "/v1/collections/docs")
             assert summary.status_code == 200
             payload = summary.json()
-            assert payload["protection_state"] == "protected"
+            assert payload["protection_state"] == "fully_protected"
             assert payload["protected_bytes"] == payload["bytes"]
-            assert payload["recovery"]["verified_physical"]["state"] == "full"
-            assert payload["recovery"]["glacier"]["state"] == "full"
-            assert payload["recovery"]["available"] == ["verified_physical", "glacier"]
+            assert payload["glacier"]["state"] == "uploaded"
+            assert payload["disc_coverage"]["state"] == "full"
         finally:
             system.close()
 
@@ -80,8 +79,7 @@ def test_collection_recovery_summary_requires_all_split_parts() -> None:
             summary = system.request("GET", "/v1/collections/docs")
             assert summary.status_code == 200
             payload = summary.json()
-            assert payload["recovery"]["verified_physical"]["state"] == "none"
-            assert payload["recovery"]["glacier"]["state"] == "none"
+            assert payload["disc_coverage"]["state"] == "none"
 
             system.planning.finalize_image("img_2026-04-20_04")
             system.copies.register(
@@ -100,7 +98,6 @@ def test_collection_recovery_summary_requires_all_split_parts() -> None:
             summary = system.request("GET", "/v1/collections/docs")
             assert summary.status_code == 200
             payload = summary.json()
-            assert payload["recovery"]["verified_physical"]["state"] == "full"
-            assert payload["recovery"]["glacier"]["state"] == "full"
+            assert payload["disc_coverage"]["state"] == "full"
         finally:
             system.close()

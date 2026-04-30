@@ -1,8 +1,9 @@
 # Run a guided burn session
 
 The `arc-disc burn` command walks the current burn backlog from the fullest ready image downward.
-If a finalized image has lost all protected copies, Riverhog tracks that image through a Glacier-backed recovery
-session instead; `arc-disc burn` reports that recovery handoff and does not treat it as ordinary replacement backlog.
+If a finalized image has lost all protected copies, Riverhog tracks that image
+through an `image_rebuild` recovery session instead; `arc-disc burn` reports
+that handoff and does not treat it as ordinary replacement backlog.
 
 ## Host requirements
 
@@ -50,17 +51,18 @@ Optional staging-root example:
 arc-disc burn --device /dev/sr0 --staging-dir /operator/arc-disc-staging
 ```
 
-## Recover a Glacier-backed session
+## Recover an image rebuild session
 
-Use `arc-disc recover` when `arc-disc burn` reports that ordinary backlog is clear but Glacier-backed recovery work
-remains.
+Use `arc-disc recover` when `arc-disc burn` reports that ordinary backlog is
+clear but image rebuild work remains.
 
 1. Run `arc-disc recover` with no session id to list the active recovery sessions.
 2. Run `arc-disc recover <session-id>` once to approve the restore request if the session is still
    `pending_approval`.
 3. Wait until the session reports `ready`.
-4. Run `arc-disc recover <session-id> --device /dev/sr0` to stage the restored ISO data and burn the needed
-   replacement copies.
+4. Run `arc-disc recover <session-id> --device /dev/sr0` to rebuild and stage the
+   ISO data from restored collection archives, then burn the needed replacement
+   copies.
 5. If that run is interrupted after staging or after partial burn work, run the same command again to resume from the
    local checkpoints and staged ISO artifacts.
 
@@ -68,5 +70,5 @@ Examples:
 
 ```bash
 arc-disc recover
-arc-disc recover rs-20260420T040001Z-1 --device /dev/sr0
+arc-disc recover rs-20260420T040001Z-rebuild-1 --device /dev/sr0
 ```

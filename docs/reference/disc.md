@@ -182,8 +182,9 @@ Expected multipart flow:
 
 - the burn backlog includes ready provisional candidates plus finalized images whose required copy backlog is not yet
   complete while at least one protected copy still exists or every generated copy is still pending local burn work
-- if a finalized image loses all protected copies, Riverhog opens a Glacier-backed recovery session and removes that
-  image from the ordinary burn backlog until recovery proceeds through the recovery-session flow
+- if a finalized image loses all protected copies, Riverhog opens an
+  `image_rebuild` recovery session and removes that image from the ordinary burn
+  backlog until rebuild proceeds through the recovery-session flow
 - historical `lost` or `damaged` copy records are not burned again in place; replacement work uses fresh generated
   `copy_id` values in state `needed` or `burning`
 - the session selects the fullest ready backlog item first
@@ -206,28 +207,34 @@ Expected multipart flow:
   replacement
 - after label confirmation, `arc-disc burn` records the storage location, registers the generated copy id, and marks the
   copy verified before moving on
-- if no ordinary burn backlog remains but one or more images are waiting on Glacier-backed recovery work, `arc-disc burn`
-  reports those recovery sessions instead of treating them as ordinary replacement burns
+- if no ordinary burn backlog remains but one or more images are waiting on
+  `image_rebuild` work, `arc-disc burn` reports those recovery sessions instead
+  of treating them as ordinary replacement burns
 
 ## Recovery Sessions
 
-`arc-disc recover` is the guided workflow for Glacier-backed recovery sessions after one or more finalized images lose
-all protected copies.
+`arc-disc recover` is the guided workflow for `image_rebuild` recovery sessions
+after one or more finalized images lose all protected copies.
 
-- without a session id, `arc-disc recover` lists active recovery sessions and the finalized images attached to each one
+- without a session id, `arc-disc recover` lists active image-rebuild recovery
+  sessions and the finalized images attached to each one
 - with a session id in `pending_approval`, `arc-disc recover` approves the estimated restore cost and exits after the
   restore request is submitted
 - recovery-session readiness is driven by archive-store restore status, not only by the operator-facing latency
   estimate
-- with a session id in `ready`, `arc-disc recover` stages every still-needed image ISO in that session before burn work
-  starts so a later retry can resume from local artifacts
-- ready sessions stage ISO bytes from the restored archive object, not from the normal finalized-image ISO source
+- with a session id in `ready`, `arc-disc recover` stages every still-needed
+  rebuilt image ISO in that session before burn work starts so a later retry can
+  resume from local artifacts
+- ready sessions stage ISO bytes rebuilt from restored collection archives and
+  persisted image coverage metadata
 - if the restore window expires after local staging succeeded, `arc-disc recover` can still resume from the staged ISO
   artifacts already on disk
 - recovery burns reuse the same local checkpoint behavior as `arc-disc burn`, including resume from unfinished
   burned-media verification or label confirmation
-- when the recovery session finishes, Riverhog marks the session completed, records archive restore cleanup or lifecycle
-  handoff, and deletes the staged ISO artifacts for the recovered images immediately
+- when the recovery session finishes, Riverhog marks the session completed,
+  records archive restore cleanup or lifecycle handoff for the collection
+  archives, and deletes the staged ISO artifacts for the rebuilt images
+  immediately
 
 ## Manual Recovery
 

@@ -44,15 +44,15 @@ Feature: arc CLI
       And stdout matches the structure of GET "/v1/images"
       And stdout mentions "20260420T040001Z"
 
-    Scenario: arc glacier emits the Glacier usage payload
+    @xfail_not_backed
+    Scenario: arc glacier emits the collection-native Glacier usage payload
       Given an archive with planner fixtures
-      And candidate "img_2026-04-20_01" is finalized
-      When the client waits for image "20260420T040001Z" glacier state "uploaded"
-      And the operator runs 'arc glacier --image 20260420T040001Z --json'
+      And collection "docs" has uploaded Glacier archive package
+      When the operator runs 'arc glacier --collection docs --json'
       Then the command exits with code 0
       And stdout is valid JSON
       And stdout matches the structure of GET "/v1/glacier"
-      And stdout mentions "20260420T040001Z"
+      And stdout mentions "docs"
 
     Scenario: arc pins emits fetch associations for active pins
       Given archived target "docs/tax/2022/invoice-123.pdf" is pinned with fetch "fx-1"
@@ -109,12 +109,14 @@ Feature: arc CLI
       And stdout mentions "verified"
 
   Rule: Non-JSON mode remains concise and stable
-    Scenario: arc upload ingests a local collection source
+    @xfail_not_backed
+    Scenario: arc upload ingests and archives a local collection source
       Given a local collection source "photos-2024" with deterministic fixture contents
       When the operator uploads collection source "photos-2024" with arc
       Then the command exits with code 0
       And stdout mentions "collection: photos-2024"
       And stdout mentions "state: finalized"
+      And stdout mentions "glacier: uploaded"
       And collection "photos-2024" has hot_bytes equal to bytes
 
     Scenario: arc plan prints candidate ids, fill, and readiness
@@ -127,7 +129,7 @@ Feature: arc CLI
       And stdout mentions "iso_ready: True"
       And stdout mentions "collections: 1 [docs]"
 
-    Scenario: arc images prints archive work status
+    Scenario: arc images prints physical media work status
       Given an archive with planner fixtures
       And an archive with split planner fixtures
       And candidate "img_2026-04-20_01" is finalized
@@ -140,60 +142,62 @@ Feature: arc CLI
       And stdout mentions "img_2026-04-20_02"
       And stdout mentions "20260420T040001Z"
       And stdout mentions "next: burn, verify"
-      And stdout mentions "glacier="
       And stdout mentions "verified=0/2"
       And stdout mentions "noncompliant_collections:"
-      And stdout mentions "photos-2024 state=unprotected"
+      And stdout mentions "photos-2024 state=cloud_only"
       And stdout mentions "fully_protected_collections:"
 
-    Scenario: arc show prints collection coverage and Glacier recovery hints
+    @xfail_not_backed
+    Scenario: arc show prints collection Glacier state and physical coverage
       Given an archive with planner fixtures
+      And collection "docs" has uploaded Glacier archive package
       And candidate "img_2026-04-20_01" is finalized
       And copy "20260420T040001Z-1" already exists
       When the client patches "/v1/images/20260420T040001Z/copies/20260420T040001Z-1" with location "Shelf B1", state "verified", and verification_state "verified"
-      When the client waits for image "20260420T040001Z" glacier state "uploaded"
-      And the operator runs 'arc show docs'
+      When the operator runs 'arc show docs'
       Then the command exits with code 0
-      And stdout mentions "recovery:"
-      And stdout mentions "verified_physical=partial"
-      And stdout mentions "glacier=partial"
+      And stdout mentions "glacier: uploaded"
+      And stdout mentions "archive_manifest:"
+      And stdout mentions "ots: uploaded"
+      And stdout mentions "disc_coverage=partial"
       And stdout mentions "coverage:"
       And stdout mentions "paths: tax/2022/invoice-123.pdf"
       And stdout mentions "label=20260420T040001Z-1"
-      And stdout mentions "glacier_path: glacier/finalized-images/20260420T040001Z/20260420T040001Z.iso"
-      And stdout mentions "derived_stored_bytes="
+      And stdout mentions "glacier_path: glacier/collections/"
+      And stdout mentions "measured_storage_bytes="
 
-    Scenario: arc show does not overstate split recovery from one image part
+    @xfail_not_backed
+    Scenario: arc show does not overstate split physical coverage from one image part
       Given an archive with split planner fixtures
+      And collection "docs" has uploaded Glacier archive package
       And candidate "img_2026-04-20_03" is finalized
       And the client posts to "/v1/images/20260420T040003Z/copies" with id "20260420T040003Z-1" and location "vault-a/shelf-03"
       And the client patches "/v1/images/20260420T040003Z/copies/20260420T040003Z-1" with state "verified" and verification_state "verified"
       And collection "docs" keeps only path "tax/2022/invoice-123.pdf" and is archived
-      When the client waits for image "20260420T040003Z" glacier state "uploaded"
-      And the operator runs 'arc show docs'
+      When the operator runs 'arc show docs'
       Then the command exits with code 0
-      And stdout mentions "recovery:"
-      And stdout mentions "verified_physical=none"
-      And stdout mentions "glacier=none"
+      And stdout mentions "glacier: uploaded"
+      And stdout mentions "disc_coverage=partial"
 
-    Scenario: arc glacier prints pricing basis and derived collection attribution
+    @xfail_not_backed
+    Scenario: arc glacier prints pricing basis and direct collection usage
       Given an archive with split planner fixtures
-      And candidate "img_2026-04-20_03" is finalized
-      When the client waits for image "20260420T040003Z" glacier state "uploaded"
-      And the operator runs 'arc glacier --collection docs'
+      And collection "docs" has uploaded Glacier archive package
+      When the operator runs 'arc glacier --collection docs'
       Then the command exits with code 0
       And stdout mentions "pricing_basis:"
       And stdout mentions "billing:"
-      And stdout mentions "attribution=derived"
+      And stdout mentions "glacier=uploaded"
+      And stdout mentions "ots=uploaded"
       And stdout mentions "estimated_monthly_cost_usd="
 
+    @xfail_not_backed
     @spec_harness_only
     Scenario: arc glacier prints resource-level and manifest-aware billing metadata in the spec harness
       Given an archive with split planner fixtures
-      And candidate "img_2026-04-20_03" is finalized
+      And collection "docs" has uploaded Glacier archive package
       And the spec harness exposes controlled Glacier billing metadata
-      When the client waits for image "20260420T040003Z" glacier state "uploaded"
-      And the operator runs 'arc glacier'
+      When the operator runs 'arc glacier'
       Then the command exits with code 0
       And stdout exposes Glacier billing resource-level and manifest metadata
 

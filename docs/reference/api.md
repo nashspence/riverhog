@@ -40,8 +40,11 @@ Required behavior:
 - collection ids may contain `/`, for example `photos/2024`
 - rejects a collection id if it would be an ancestor or descendant of an existing collection id
 - persists enough upload-session state to survive service restart and repeated CLI runs
-- keeps the collection invisible until every required file has uploaded and verified successfully
+- keeps the collection invisible until every required file has uploaded,
+  verified successfully, archived to Glacier, and verified by object receipt
 - exposes per-file resumable upload state and collection-level progress
+- reports collection-upload state as `uploading`, `archiving`, `finalized`, or
+  `failed`
 
 #### `GET /v1/collection-uploads/{collection_id}`
 
@@ -51,7 +54,11 @@ Required behavior:
 
 - collection ids may span multiple path segments
 - the returned state includes pending, partial, and uploaded file counts plus `upload_state_expires_at`
-- once the collection finalizes, the upload session is deleted and later reads return `not_found`
+- an `archiving` session remains readable while Riverhog builds and uploads the
+  collection archive package
+- once the collection finalizes, the upload session is deleted and later reads
+  return `not_found`
+- a `failed` session remains retryable and the collection remains invisible
 
 #### `POST /v1/collection-uploads/{collection_id}/files/{path}/upload`
 
@@ -63,7 +70,9 @@ Required behavior:
 - repeated calls while the file remains resumable return the current upload resource rather than creating duplicates
 - the response includes tus-style status headers such as `Tus-Resumable`, `Upload-Offset`, `Upload-Length`, and `Location`
 - offsets and checksums are measured against the logical file byte stream for that file
-- the terminal successful upload chunk finalizes the collection immediately once every required file has uploaded and verified successfully
+- the terminal successful upload chunk may move the session into `archiving`,
+  but it must not report final success until the collection archive package has
+  uploaded to Glacier and verified successfully
 - incomplete upload state expires after `INCOMPLETE_UPLOAD_TTL`; once the last resumable file state expires, Riverhog forgets the upload session entirely and later retries start a fresh session
 
 #### `HEAD /v1/collection-uploads/{collection_id}/files/{path}/upload`
@@ -124,15 +133,19 @@ Supported query parameters:
 - `page` — 1-based page number, default `1`
 - `per_page` — page size, default `25`, max `100`
 - `q` — case-insensitive substring filter over collection ids
-- `protection_state` — exact filter over `unprotected`, `partially_protected`, or `protected`
+- `protection_state` — exact filter over `under_protected`, `cloud_only`,
+  `physical_only`, or `fully_protected`
 
 Required behavior:
 
 - the response includes pagination metadata and a `collections` array
 - returned collection summaries use the same shape as `GET /v1/collections/{collection_id}`
-- filtering by `protection_state=protected` can be used to answer which collections are already fully protected
-- collection summaries include a collection-level recovery summary covering verified physical-copy coverage and
-  Glacier-backed coverage
+- collection summaries are returned only for collections whose Glacier archive
+  package has uploaded and verified
+- filtering by `protection_state=fully_protected` can be used to answer which
+  collections have both verified Glacier and full physical coverage
+- collection summaries include direct collection Glacier state, archive
+  manifest/OTS proof state, physical disc coverage, and finalized-image coverage
 
 #### `GET /v1/collections/{collection_id}`
 
@@ -142,15 +155,17 @@ Required behavior:
 
 - collection ids may span multiple path segments, for example `GET /v1/collections/photos/2024`
 - API and CLI collection lookup treat slash-bearing ids as first-class
-- collection summaries expose `protection_state`, `protected_bytes`, collection-level recovery summary, and per-image
-  coverage details
-- collection-level recovery summary exposes verified physical-copy coverage, Glacier-backed coverage, and which full
-  recovery paths are currently available for the whole collection
+- collection summaries expose `glacier`, `archive_manifest`, `archive_format`,
+  `compression`, `disc_coverage`, `protection_state`, `protected_bytes`, and
+  per-image physical coverage details
+- `glacier` is direct collection archive state, not a value derived from image
+  coverage
+- `archive_manifest` exposes manifest object path, manifest SHA-256, OTS proof
+  object path, and OTS proof state
 - per-image coverage details expose `covered_paths`, `physical_copies_registered`,
-  `physical_copies_verified`, copy labels and locations, and Glacier archive metadata
-- collection coverage explains which finalized images, paths, registered copies, and Glacier state currently cover
-  that collection, and whether the collection is currently recoverable from verified physical media, Glacier, both,
-  or neither
+  `physical_copies_verified`, copy labels and locations
+- collection coverage explains which finalized images, paths, and registered
+  copies physically cover that collection
 
 ### File introspection
 
@@ -221,6 +236,8 @@ Supported query parameters:
 Required behavior:
 
 - every returned plan entry is a provisional candidate
+- every returned plan entry represents only collections whose Glacier archive
+  package has uploaded and verified
 - a provisional candidate may be re-allocated by the planner
 - finalized images are not returned by `GET /v1/plan`
 - the response includes pagination metadata and a `candidates` array
@@ -256,10 +273,11 @@ Required behavior:
 - provisional plan candidates are never returned by `GET /v1/images`
 - default ordering is latest finalized image first using `sort=finalized_at&order=desc`
 - the response includes pagination metadata and finalized-image summaries
-- finalized-image summaries expose `filename`, `finalized_at`, `collection_ids`, `protection_state`,
+- finalized-image summaries expose `filename`, `finalized_at`, `collection_ids`, `physical_protection_state`,
   `physical_copies_required`, `physical_copies_registered`, `physical_copies_verified`,
-  `physical_copies_missing`, and `glacier`
+  and `physical_copies_missing`
 - finalized-image summaries always report `iso_ready = true`
+- finalized-image summaries report physical-copy state
 
 #### `GET /v1/images/{image_id}`
 
@@ -274,34 +292,63 @@ Required behavior:
 - finalized image summaries always report `iso_ready = true`
 - provisional plan candidates are not addressable through `GET /v1/images/{image_id}`
 
-#### `GET /v1/images/{image_id}/recovery-session`
+#### `GET /v1/images/{image_id}/rebuild-session`
 
-Returns the latest Glacier recovery session for one finalized image.
+Returns the latest image-rebuild recovery session for one finalized image.
 
 Required behavior:
 
-- returns the latest durable recovery session for that finalized image, including expired or completed sessions
+- returns the latest durable `image_rebuild` recovery session for that finalized
+  image, including expired or completed sessions
 - returns `not_found` when no recovery session has been created for that image
 
-#### `POST /v1/images/{image_id}/recovery-session`
+#### `POST /v1/images/{image_id}/rebuild-session`
 
-Creates or resumes one Glacier recovery session for one finalized image.
+Creates or resumes one `image_rebuild` recovery session for one finalized image.
 
 Required behavior:
 
-- creates a new `pending_approval` session only when the finalized image has no remaining protected copies and its
-  Glacier archive is uploaded
+- creates a new `pending_approval` session only when the finalized image has no
+  remaining protected copies and the collections required to rebuild it have
+  uploaded collection Glacier archives
 - repeated calls while one active session exists return that same active session rather than creating duplicates
 - an expired or completed session does not block creating a new session id for the same image
 
+#### `GET /v1/collections/{collection_id}/restore-session`
+
+Returns the latest `collection_restore` recovery session for one collection.
+
+Required behavior:
+
+- returns the latest durable restore session for that collection, including
+  expired or completed sessions
+- returns `not_found` when no restore session has been created for that
+  collection
+
+#### `POST /v1/collections/{collection_id}/restore-session`
+
+Creates or resumes one `collection_restore` recovery session for one collection.
+
+Required behavior:
+
+- creates a new `pending_approval` session only when the collection has an
+  uploaded and verified Glacier archive package
+- repeated calls while one active session exists return that same active session
+  rather than creating duplicates
+- an expired or completed session does not block creating a new session id for
+  the same collection
+
 #### `GET /v1/recovery-sessions/{session_id}`
 
-Returns one Glacier recovery session by durable session id.
+Returns one Glacier-backed collection restore or image rebuild session by durable
+session id.
 
 Required behavior:
 
 - recovery sessions remain addressable across service restart
-- the response includes cost estimate, operator warnings, notification state, and the covered finalized image list
+- the response includes recovery `type`, cost estimate, operator warnings,
+  notification state, covered collections, and any finalized images involved in
+  an image rebuild
 
 #### `POST /v1/recovery-sessions/{session_id}/approve`
 
@@ -328,24 +375,26 @@ Required behavior:
 
 #### `GET /v1/recovery-sessions/{session_id}/images/{image_id}/iso`
 
-Downloads one restored ISO from a ready recovery session.
+Downloads one rebuilt ISO from a ready `image_rebuild` recovery session.
 
 Required behavior:
 
 - succeeds only when the recovery session is `ready`
 - the image must belong to that recovery session
-- the response streams bytes from the restored archive object
-- `arc-disc recover` uses this endpoint for replacement burns instead of `GET /v1/images/{image_id}/iso`
+- the response streams bytes from the rebuilt image artifact produced from
+  restored collection archives and persisted coverage metadata
+- `arc-disc recover` uses this endpoint for replacement burns instead of
+  `GET /v1/images/{image_id}/iso`
 
 #### `GET /v1/glacier`
 
-Returns Glacier usage totals, per-image archive state, derived per-collection attribution, pricing
-assumptions, AWS-native billing actuals/forecast when available, optional CUR or Data Exports
-drill-down, optional invoice summaries, and overall usage snapshots.
+Returns Glacier usage totals, direct per-collection archive state, collection
+manifest/OTS proof state, pricing assumptions, AWS-native billing
+actuals/forecast when available, optional CUR or Data Exports drill-down,
+optional invoice summaries, and overall usage snapshots.
 
 Supported query parameters:
 
-- `image_id` — narrows the image list to one finalized image id
 - `collection` — narrows image and collection reporting to one exact collection id
 
 Required behavior:
@@ -359,10 +408,12 @@ Required behavior:
 - `totals.measured_storage_bytes` reports measured uploaded Glacier object bytes, not billing overhead
 - `totals.estimated_billable_bytes` includes configured Glacier metadata overhead on top of measured uploaded bytes
 - `totals.estimated_monthly_cost_usd` is derived from the emitted pricing basis rather than observed cloud bills
-- each returned image exposes current Glacier state, object path, measured uploaded bytes, and estimated monthly cost
-- each returned collection exposes derived Glacier attribution only when Riverhog can attribute one image's stored bytes
-  from the disc manifest's represented plaintext bytes
-- collection attribution stays explicit about being derived rather than measured directly from the archive backend
+- `totals.collections` counts collection archive records and
+  `totals.uploaded_collections` counts those uploaded and verified
+- each returned collection exposes direct Glacier archive state, measured
+  uploaded bytes, estimated billable bytes, estimated monthly cost, manifest
+  state, and OTS proof state
+- returned image entries, when present, explain physical coverage of collections
 - `billing` is separate from `history`: `history` tracks Riverhog's own stored-usage snapshots, while `billing`
   reports AWS-native billing views when Riverhog can resolve them
 - `billing.actuals` prefers bucket-scoped AWS Cost Explorer daily actuals for the archive bucket when resource-level
@@ -390,15 +441,8 @@ Required behavior:
 - finalized candidates are not returned by `GET /v1/plan`
 - repeated finalization of the same `candidate_id` is idempotent and returns the same finalized summary
 - the finalized image record remains addressable after service restart
-- finalization automatically enqueues one Glacier upload job for that finalized image
-- Glacier upload state survives restart and is reflected through the finalized-image `glacier` summary fields
-- restart recovery resumes the durable Glacier upload job, not an in-flight multipart byte stream
-- if a restart finds the privacy-safe finalized-image object already complete at its canonical key, Riverhog reconciles that
-  completed object and records `uploaded` without writing a second object
-- if a restart finds no completed object at that canonical key, Riverhog rebuilds the ISO and starts a fresh archive-object
-  upload attempt while storage-side multipart cleanup handles abandoned remote parts
-- persistent Glacier upload failures remain visible in finalized-image summaries and may notify
-  `ARC_GLACIER_FAILURE_WEBHOOK_URL` when configured
+- finalization creates a physical image artifact and generated copy slots only
+- finalized-image summaries report physical-copy protection state
 
 #### `GET /v1/images/{image_id}/iso`
 
@@ -602,7 +646,7 @@ The `arc` CLI is a thin API client and should provide at least:
 - `arc get TARGET [-o FILE]`
 - `arc plan [--page N] [--per-page N] [--sort FIELD] [--order asc|desc] [--query TEXT] [--collection ID] [--iso-ready|--not-ready]`
 - `arc images [--page N] [--per-page N] [--sort FIELD] [--order asc|desc] [--query TEXT] [--collection ID] [--has-copies|--no-copies]`
-- `arc glacier [--image IMAGE_ID] [--collection ID]`
+- `arc glacier [--collection ID]`
 - `arc iso get IMAGE_ID [-o FILE]`
 - `arc copy add IMAGE_ID --at LOCATION [--copy-id GENERATED_ID]`
 - `arc copy list IMAGE_ID`
@@ -622,7 +666,8 @@ The `arc` CLI is a thin API client and should provide at least:
 - finalized images currently covering the collection
 - projected paths carried by each image
 - generated disc ids, exact label text, locations, and verification state
-- Glacier object paths plus any derived Glacier storage footprint or monthly cost attribution
+- direct collection Glacier object paths, manifest/OTS proof state, measured
+  storage footprint, and monthly cost estimate
 
 `arc status [TARGET]` should show file availability for either the whole projected namespace or one target selector.
 
@@ -643,12 +688,13 @@ For finalized-image commands:
 - `arc plan --json` mirrors the `GET /v1/plan` response payload
 - non-JSON `arc plan` output stays concise and line-oriented while surfacing candidate id, fill, readiness, and
   contained collections
-- non-JSON `arc images` acts as the default archive-status view and stays concise while surfacing:
+- non-JSON `arc images` acts as the default physical-media status view and stays concise while surfacing:
   ready-to-finalize provisional images, backlog still waiting for inclusion in a future ISO, finalized-image burn and
-  verification backlog, Glacier upload state, non-compliant collections, and which collections are already fully
-  protected
+  verification backlog, non-compliant collections, and which collections are
+  already fully protected
 - non-JSON `arc glacier` output stays line-oriented while surfacing measured usage totals, configured pricing basis,
-  per-image Glacier state, and derived collection attribution
+  direct collection archive state, manifest/OTS proof state, and collection
+  cost estimates
 
 ### `arc-disc`
 
@@ -677,7 +723,7 @@ Required behavior:
 - pinning the same exact selector twice reuses the same fetch manifest while that exact pin remains present
 - releasing a target not currently pinned is a successful no-op
 - a file is logically required in hot if and only if at least one active pin selects it
-- immediately after collection close, every file in the collection is hot
+- immediately after collection finalization, every file in the collection is hot
 - every active pin has exactly one associated fetch manifest, even when the selected bytes are already hot
 - a file restored by a completed fetch is hot
 - hot file content is directly downloadable when the target selects exactly one file
@@ -693,6 +739,8 @@ Required behavior:
 - a physical copy is identified by `(volume_id, copy_id)`, never by `location`
 - generated `copy_id` values are stable and never mutated by location or state updates
 - no collection id is an ancestor or descendant of another collection id
-- collection ingest uses explicit resumable upload sessions and auto-finalizes when every required file verifies
+- collection ingest uses explicit resumable upload sessions and finalizes only
+  after every required file verifies and the collection Glacier archive package
+  uploads and verifies
 - the same canonical selector string means the same projected file set everywhere in API and CLI
 - file availability shown by search, file introspection, pins, and CLI status uses the same hot/archived meaning

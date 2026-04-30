@@ -94,10 +94,10 @@ def test_list_collections_uses_collection_listing_endpoint(monkeypatch) -> None:
     monkeypatch.setattr(ApiClient, "_client", fake_client)
 
     client = ApiClient(base_url="https://api.test")
-    client.list_collections(page=1, per_page=10, q="docs", protection_state="protected")
+    client.list_collections(page=1, per_page=10, q="docs", protection_state="fully_protected")
 
     assert captured == [
-        "https://api.test/v1/collections?page=1&per_page=10&q=docs&protection_state=protected"
+        "https://api.test/v1/collections?page=1&per_page=10&q=docs&protection_state=fully_protected"
     ]
 
 
@@ -248,9 +248,9 @@ def test_get_glacier_report_uses_glacier_endpoint_with_filters(monkeypatch) -> N
     monkeypatch.setattr(ApiClient, "_client", fake_client)
 
     client = ApiClient(base_url="https://api.test")
-    client.get_glacier_report(image_id="20260420T040001Z", collection="docs")
+    client.get_glacier_report(collection="docs")
 
-    assert captured == ["https://api.test/v1/glacier?image_id=20260420T040001Z&collection=docs"]
+    assert captured == ["https://api.test/v1/glacier?collection=docs"]
 
 
 def test_create_or_resume_fetch_entry_upload_uses_manifest_entry_endpoint(monkeypatch) -> None:

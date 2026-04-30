@@ -5,8 +5,8 @@ The runtime uses four cooperating surfaces.
 ## Catalog
 
 The catalog is the durable authoritative metadata layer. It tracks collections,
-logical files, file hashes, archive-protection state, pins, fetches, upload
-state, and hot presence across service restarts.
+logical files, file hashes, collection Glacier archive state, physical copy
+coverage, pins, fetches, upload state, and hot presence across service restarts.
 
 ## Upload staging
 
@@ -14,6 +14,11 @@ Collection ingest and fetch recovery both stream bytes through Riverhog-managed
 tus-compatible upload resources. Incomplete bytes stage under `.arc/uploads/`
 inside the S3-compatible object store and remain outside the committed hot
 namespace until Riverhog verifies them.
+
+Collection ingest has two gates. The upload gate verifies every declared file.
+The archive gate builds the whole-collection Glacier archive package, uploads
+the archive, manifest, and OpenTimestamps proof, verifies the archive receipt,
+and only then admits the collection.
 
 ## Committed hot storage
 
@@ -25,6 +30,19 @@ collections/{collection_id}/{path}
 
 Only promoted, verified files count as hot. Staged upload keys and other `.arc/`
 paths are not committed hot files.
+
+Promotion happens after collection Glacier archiving succeeds. A collection still
+in `uploading`, `archiving`, or `failed` upload state is not visible in hot
+storage, search, read-only browsing, or disc planning.
+
+## Collection Glacier archive
+
+Accepted collections have a deterministic whole-collection archive package under
+the Glacier archive prefix. The package contains the compressed collection
+archive, a collection manifest, and the OpenTimestamps proof for that manifest.
+
+Glacier stores collection archives. Finalized images remain physical disc
+artifacts and do not define the cloud archive unit.
 
 ## Read-only browsing
 
@@ -48,8 +66,9 @@ from storage mutations.
 1. The user pins a target.
 2. The system creates or reuses one fetch manifest for that exact selector.
 3. If all selected bytes are already hot, the fetch manifest is immediately satisfied.
-4. If some bytes are archived but not hot, a companion recovery tool reads the indicated optical copy and streams
-   raw encrypted recovery bytes into resumable upload resources.
+4. If some bytes are archived but not hot, Riverhog can either guide optical
+   recovery from verified physical copies or start a Glacier collection-restore
+   session for the selected collection content.
 5. The server stages the uploaded recovery bytes under `.arc/uploads/`, verifies
    and decrypts them, then promotes the recovered logical file into
    `collections/{collection_id}/{path}`.

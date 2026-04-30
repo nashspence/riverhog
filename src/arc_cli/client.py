@@ -172,12 +172,9 @@ class ApiClient:
     def get_glacier_report(
         self,
         *,
-        image_id: str | None = None,
         collection: str | None = None,
     ) -> dict[str, Any]:
         params: dict[str, Any] = {}
-        if image_id:
-            params["image_id"] = image_id
         if collection:
             params["collection"] = collection
         return self._json("GET", "/v1/glacier", params=params)
@@ -191,7 +188,7 @@ class ApiClient:
     def get_recovery_session_for_image(self, image_id: str) -> dict[str, Any]:
         return self._json(
             "GET",
-            f"/v1/images/{quote(image_id, safe='/')}/recovery-session",
+            f"/v1/images/{quote(image_id, safe='/')}/rebuild-session",
         )
 
     def get_recovery_session(self, session_id: str) -> dict[str, Any]:

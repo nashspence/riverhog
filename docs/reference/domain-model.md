@@ -2,7 +2,7 @@
 
 ## Core nouns
 
-Use these six nouns consistently:
+Use these core nouns consistently:
 
 - `collection` — the logical namespace the user thinks in
 - `candidate` — one provisional planner proposal that may be re-allocated
@@ -10,19 +10,25 @@ Use these six nouns consistently:
 - `copy` — one physical burned disc of an image
 - `pin` — a declared requirement to keep a target materialized in hot storage
 - `fetch` — the pin-scoped recovery manifest for one exact selector
+- `recovery_session` — an approved Glacier restore or image rebuild workflow
 
 ## Core terms
 
 ### Collection
 
-A logical namespace uploaded through an explicit collection-upload session. A collection has a stable id and contains many files at stable
-relative paths.
+A logical namespace uploaded through an explicit collection-upload session. A
+collection has a stable id and contains many files at stable relative paths.
+
+Riverhog accepts a collection only after every uploaded file verifies and the
+whole-collection Glacier archive package has uploaded and verified.
 
 Collection-id rules:
 
 - the id is explicit and canonical
 - the id may contain `/`, for example `photos/2024`
 - no collection id may be an ancestor or descendant of another collection id
+- accepted collections are immediately Glacier-backed and eligible for hot
+  visibility and disc planning
 
 ### File
 
@@ -41,6 +47,7 @@ The authoritative archive state survives service restarts.
 This includes at least:
 
 - collections and their coverage summaries
+- collection Glacier archive package state
 - finalized images and registered copies
 - exact pins and their fetch manifests
 - hot-residency state and any unexpired resumable-upload progress
@@ -70,6 +77,8 @@ Image lifecycle rules:
 - `GET /v1/images/{image_id}` addresses finalized images only
 - finalized `image.id` uses compact UTC basic form `YYYYMMDDTHHMMSSZ`
 - finalized `image.id` is the same media-facing identifier carried on the ISO and disc manifest
+- finalized images are physical recovery artifacts; Glacier archive state belongs
+  to collections
 
 ### Target
 
@@ -101,6 +110,11 @@ A collection summary exposes at least:
 - `hot_bytes`
 - `archived_bytes`
 - `pending_bytes`
+- `glacier`
+- `archive_manifest`
+- `archive_format`
+- `compression`
+- `disc_coverage`
 - `protection_state`
 - `protected_bytes`
 - `image_coverage`
@@ -111,9 +125,17 @@ Definitions:
 - `hot_bytes` — total bytes currently materialized in hot storage for files in the collection
 - `archived_bytes` — total bytes stored on at least one registered copy
 - `pending_bytes` — `bytes - archived_bytes`
-- `protected_bytes` — total logical-file bytes currently covered by protected finalized images
-- `protection_state` — one of `unprotected`, `partially_protected`, or `protected`
-- `image_coverage` — finalized-image coverage details for this collection, including registered copies and Glacier state
+- `protected_bytes` — total logical-file bytes currently covered by enough
+  verified physical copies while the collection archive remains uploaded and
+  verified
+- `glacier` — direct collection archive state and object metadata
+- `archive_manifest` — manifest object path, manifest SHA-256, OTS proof object
+  path, and OTS proof state for the collection archive package
+- `disc_coverage` — physical media coverage state and verified physical bytes
+- `protection_state` — one of `under_protected`, `cloud_only`,
+  `physical_only`, or `fully_protected`
+- `image_coverage` — finalized-image physical coverage details for this
+  collection, including registered copies
 
 ### Candidate summary
 
@@ -146,11 +168,11 @@ An image summary exposes at least:
 - `collections`
 - `collection_ids`
 - `iso_ready`
-- `protection_state`
+- `physical_protection_state`
 - `physical_copies_required`
 - `physical_copies_registered`
+- `physical_copies_verified`
 - `physical_copies_missing`
-- `glacier`
 
 Finalized-image summary rules:
 
@@ -158,15 +180,14 @@ Finalized-image summary rules:
 - `collection_ids` is the lexically sorted list of contained collection ids
 - `finalized_at` is the UTC timestamp encoded by finalized `image.id`
 - finalized images always report `iso_ready = true`
-- `protection_state` is one of `unprotected`, `partially_protected`, or `protected`
+- `physical_protection_state` is one of `unprotected`,
+  `partially_protected`, or `protected`
 - `physical_copies_required` defaults to `2`
 - `physical_copies_registered` counts currently registered or verified physical copies
+- `physical_copies_verified` counts registered copies whose verification state is
+  `verified`
 - `physical_copies_missing` is the remaining shortfall to the required physical-copy count
-- `glacier` summarizes current Glacier archive state and metadata for that finalized image
-- `glacier.state` progresses through `pending`, `uploading`, `uploaded`, `retrying`, or `failed`
-- `glacier.object_path` uses a privacy-safe finalized-image key and never embeds collection ids or logical file paths
-- after restart, an `uploading` job either reconciles an already completed object at that privacy-safe key or starts a
-  fresh upload attempt; Riverhog does not resume one in-flight remote multipart stream
+- finalized-image protection is physical-copy state
 
 ### Glacier usage report
 
@@ -176,8 +197,8 @@ A Glacier-usage report exposes at least:
 - `measured_at`
 - `pricing_basis`
 - `totals`
-- `images`
 - `collections`
+- `images`
 - `billing`
 - `history`
 
@@ -186,8 +207,12 @@ Glacier-usage-report rules:
 - `totals.measured_storage_bytes` sums measured uploaded Glacier object bytes only
 - `totals.estimated_billable_bytes` adds configured Glacier metadata overhead to that measured storage
 - `totals.estimated_monthly_cost_usd` is a derived estimate from the emitted pricing basis
-- `images` list current finalized-image Glacier state together with measured and estimated billing values
-- `collections` expose derived attribution from represented plaintext bytes on the finalized-image disc manifest
+- `totals.collections` counts collection archive records
+- `totals.uploaded_collections` counts collection archives in `uploaded` state
+- `collections` expose direct measured usage for whole-collection Glacier
+  archives, including manifest and OTS proof state
+- `images` may explain which finalized images physically cover reported
+  collections
 - `billing.actuals` reports AWS-native actual cost periods separately from Riverhog's own storage snapshots
 - `billing.actuals.scope` records whether actuals are `bucket`-scoped, `tag`-scoped, `service`-scoped, or unavailable
 - `billing.actuals.billing_view_arn` records the AWS billing view Riverhog used for resource-level bucket actuals
@@ -202,6 +227,27 @@ Glacier-usage-report rules:
   lookup basis when Riverhog resolves live pricing
 - `pricing_basis.archived_metadata_bytes_per_object`, `pricing_basis.standard_metadata_bytes_per_object`, and
   `pricing_basis.minimum_storage_duration_days` remain explicit Glacier storage-class constants
+
+### Recovery session
+
+A recovery session exposes at least:
+
+- `id`
+- `type`
+- `state`
+- `collections`
+- `images`
+- `cost_estimate`
+- `notification`
+
+Recovery-session rules:
+
+- `type` is `collection_restore` or `image_rebuild`
+- `collection_restore` restores collection content from the collection archive,
+  manifest, and OTS proof
+- `image_rebuild` restores the collection archives needed to rebuild a lost
+  finalized image from persisted coverage metadata
+- session cost estimates count the required collection archive restores
 
 ### Copy summary
 

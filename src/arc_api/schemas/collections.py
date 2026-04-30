@@ -2,7 +2,9 @@ from __future__ import annotations
 
 from typing import Literal
 
-from arc_api.schemas.archive import GlacierArchiveOut
+from pydantic import ConfigDict
+
+from arc_api.schemas.archive import CollectionArchiveManifestOut, GlacierArchiveOut
 from arc_api.schemas.common import ArcModel
 from arc_api.schemas.images import CopyOut
 
@@ -20,40 +22,44 @@ class CreateOrResumeCollectionUploadRequest(ArcModel):
 
 
 class CollectionSummaryOut(ArcModel):
+    model_config = ConfigDict(extra="ignore")
+
     id: str
     files: int
     bytes: int
     hot_bytes: int
     archived_bytes: int
     pending_bytes: int
-    protection_state: Literal["unprotected", "partially_protected", "protected"]
+    glacier: GlacierArchiveOut | None = None
+    archive_manifest: CollectionArchiveManifestOut | None = None
+    archive_format: str | None = None
+    compression: str | None = None
+    disc_coverage: CollectionDiscCoverageOut | None = None
+    protection_state: str
     protected_bytes: int
-    recovery: CollectionRecoverySummaryOut
     image_coverage: list[CollectionCoverageImageOut]
 
 
 class CollectionCoverageImageOut(ArcModel):
+    model_config = ConfigDict(extra="ignore")
+
     id: str
     filename: str
-    protection_state: Literal["unprotected", "partially_protected", "protected"]
+    physical_protection_state: (
+        Literal["unprotected", "partially_protected", "protected"] | None
+    ) = None
     physical_copies_required: int
     physical_copies_registered: int
     physical_copies_verified: int
     physical_copies_missing: int
     covered_paths: list[str]
     copies: list[CopyOut]
-    glacier: GlacierArchiveOut
 
 
-class CollectionRecoveryCoverageOut(ArcModel):
+class CollectionDiscCoverageOut(ArcModel):
     state: Literal["none", "partial", "full"]
-    bytes: int
-
-
-class CollectionRecoverySummaryOut(ArcModel):
-    verified_physical: CollectionRecoveryCoverageOut
-    glacier: CollectionRecoveryCoverageOut
-    available: list[Literal["verified_physical", "glacier"]]
+    covered_bytes: int = 0
+    verified_physical_bytes: int = 0
 
 
 class ListCollectionsResponse(ArcModel):
@@ -79,7 +85,7 @@ class CollectionUploadFileOut(ArcModel):
 class CollectionUploadSessionOut(ArcModel):
     collection_id: str
     ingest_source: str | None
-    state: str
+    state: Literal["uploading", "archiving", "finalized", "failed"]
     files_total: int
     files_pending: int
     files_partial: int

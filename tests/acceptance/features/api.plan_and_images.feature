@@ -35,19 +35,30 @@ Feature: Plan and images API
     And the response contains 1 plan candidates
     And the response plan candidates contain only "img_2026-04-20_02"
 
+  @xfail_not_backed
+  Scenario: Plan excludes collections until Glacier archiving succeeds
+    Given collection upload "staged-photos" has completed file verification and is archiving
+    When the client gets "/v1/plan?collection=staged-photos"
+    Then the response status is 200
+    And the response contains 0 plan candidates
+    When the client waits for collection upload "staged-photos" state "finalized"
+    And the client gets "/v1/plan?collection=staged-photos"
+    Then the response status is 200
+    And the response contains 1 plan candidates
+
   Scenario: Finalized image lookup requires an existing finalized id
     Given candidate "img_2026-04-20_01" exists
     When the client gets "/v1/images/20260420T040001Z"
     Then the response status is 404
     And the error code is "not_found"
 
+  @xfail_not_backed
   Scenario: Explicitly finalizing a candidate creates a finalized image and removes it from the plan
     Given candidate "img_2026-04-20_01" exists
     When the client posts to "/v1/plan/candidates/img_2026-04-20_01/finalize"
     Then the response status is 200
     And the response contains image id "20260420T040001Z"
-    And the response image protection_state is "unprotected"
-    And the response image glacier state is "pending"
+    And the response image physical_protection_state is "unprotected"
     And the response does not contain field "volume_id"
     When the client gets "/v1/plan"
     Then the response status is 200
@@ -57,26 +68,7 @@ Feature: Plan and images API
     And the response contains image id "20260420T040001Z"
     And the response does not contain field "volume_id"
 
-  Scenario: Finalizing a candidate automatically uploads the finalized image to Glacier
-    Given candidate "img_2026-04-20_01" exists
-    When the client posts to "/v1/plan/candidates/img_2026-04-20_01/finalize"
-    Then the response status is 200
-    When the client waits for image "20260420T040001Z" glacier state "uploaded"
-    Then the response status is 200
-    And the response image glacier state is "uploaded"
-    And the response image glacier object_path is "glacier/finalized-images/20260420T040001Z/20260420T040001Z.iso"
-    And the response image glacier stored_bytes is greater than 0
-
-  Scenario: Queued Glacier upload survives restart
-    Given candidate "img_2026-04-20_01" exists
-    When the client posts to "/v1/plan/candidates/img_2026-04-20_01/finalize"
-    Then the response status is 200
-    When the API process restarts
-    And the client waits for image "20260420T040001Z" glacier state "uploaded"
-    Then the response status is 200
-    And the response image glacier state is "uploaded"
-    And the response image glacier object_path is "glacier/finalized-images/20260420T040001Z/20260420T040001Z.iso"
-
+  @xfail_not_backed
   Scenario: List finalized images separately from the provisional plan
     Given an archive with split planner fixtures
     And candidate "img_2026-04-20_01" is finalized
@@ -85,7 +77,7 @@ Feature: Plan and images API
     When the client gets "/v1/images"
     Then the response status is 200
     And the response contains "page", "per_page", "total", "pages", "sort", "order", and "images"
-    And each finalized image contains "id", "filename", "finalized_at", "bytes", "fill", "files", "collections", "collection_ids", "iso_ready", "protection_state", "physical_copies_required", "physical_copies_registered", "physical_copies_verified", "physical_copies_missing", and "glacier"
+    And each finalized image contains "id", "filename", "finalized_at", "bytes", "fill", "files", "collections", "collection_ids", "iso_ready", "physical_protection_state", "physical_copies_required", "physical_copies_registered", "physical_copies_verified", and "physical_copies_missing"
     And finalized images are returned newest-first
     And each finalized image is iso-ready
 
@@ -194,12 +186,13 @@ Feature: Plan and images API
       And collection "docs" archived_bytes increases
       And collection "docs" pending_bytes decreases
 
+    @xfail_not_backed
     Scenario: Registering one copy leaves the image partially protected
       When the client posts to "/v1/images/20260420T040001Z/copies" with location "Shelf B1"
       Then the response status is 200
       When the client gets "/v1/images/20260420T040001Z"
       Then the response status is 200
-      And the response image protection_state is "partially_protected"
+      And the response image physical_protection_state is "partially_protected"
 
     Scenario: Reusing a copy id for the same finalized image fails
       Given copy "20260420T040001Z-1" already exists

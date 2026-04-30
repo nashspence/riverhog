@@ -2,7 +2,9 @@ from __future__ import annotations
 
 from typing import Literal
 
-from arc_api.schemas.archive import GlacierArchiveOut
+from pydantic import AliasChoices, ConfigDict, Field
+
+from arc_api.schemas.archive import CollectionArchiveManifestOut, GlacierArchiveOut
 from arc_api.schemas.common import ArcModel
 
 
@@ -22,48 +24,64 @@ class GlacierPricingBasisOut(ArcModel):
 
 
 class GlacierUsageTotalsOut(ArcModel):
-    images: int
-    uploaded_images: int
+    model_config = ConfigDict(extra="ignore")
+
+    collections: int = Field(
+        default=0,
+        validation_alias=AliasChoices("collections", "images"),
+    )
+    uploaded_collections: int = Field(
+        default=0,
+        validation_alias=AliasChoices("uploaded_collections", "uploaded_images"),
+    )
     measured_storage_bytes: int
     estimated_billable_bytes: int
     estimated_monthly_cost_usd: float
 
 
 class GlacierUsageImageOut(ArcModel):
+    model_config = ConfigDict(extra="ignore")
+
     id: str
     filename: str
     collection_ids: list[str]
-    glacier: GlacierArchiveOut
-    measured_storage_bytes: int
-    estimated_billable_bytes: int
-    estimated_monthly_cost_usd: float
 
 
 class GlacierCollectionContributionOut(ArcModel):
+    model_config = ConfigDict(extra="ignore")
+
     image_id: str
     filename: str
-    glacier: GlacierArchiveOut
     represented_bytes: int
-    represented_fraction: float | None
-    derived_stored_bytes: int | None
-    derived_billable_bytes: int | None
-    estimated_monthly_cost_usd: float | None
 
 
 class GlacierUsageCollectionOut(ArcModel):
+    model_config = ConfigDict(extra="ignore")
+
     id: str
     bytes: int
-    represented_bytes: int
-    attribution_state: Literal["derived", "unavailable"]
-    derived_stored_bytes: int
-    derived_billable_bytes: int
+    glacier: GlacierArchiveOut | None = None
+    archive_manifest: CollectionArchiveManifestOut | None = None
+    archive_format: str | None = None
+    compression: str | None = None
+    measured_storage_bytes: int = Field(
+        default=0,
+        validation_alias=AliasChoices("measured_storage_bytes", "represented_bytes"),
+    )
+    estimated_billable_bytes: int = Field(
+        default=0,
+        validation_alias=AliasChoices("estimated_billable_bytes", "derived_billable_bytes"),
+    )
     estimated_monthly_cost_usd: float
     images: list[GlacierCollectionContributionOut]
 
 
 class GlacierUsageSnapshotOut(ArcModel):
     captured_at: str
-    uploaded_images: int
+    uploaded_collections: int = Field(
+        default=0,
+        validation_alias=AliasChoices("uploaded_collections", "uploaded_images"),
+    )
     measured_storage_bytes: int
     estimated_billable_bytes: int
     estimated_monthly_cost_usd: float
@@ -174,7 +192,7 @@ class GlacierBillingSummaryOut(ArcModel):
 
 
 class GlacierUsageReportOut(ArcModel):
-    scope: Literal["all", "image", "collection", "filtered"]
+    scope: Literal["all", "collection", "filtered"]
     measured_at: str
     pricing_basis: GlacierPricingBasisOut
     totals: GlacierUsageTotalsOut

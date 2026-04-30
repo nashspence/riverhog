@@ -77,7 +77,7 @@ Region sent to the archive-upload object-store client.
 - type: string
 - default: `ARC_S3_BUCKET`
 
-Bucket holding finalized-image Glacier uploads.
+Bucket holding collection-native Glacier archive packages.
 
 When this differs from `ARC_S3_BUCKET`, that separate archive bucket must publish
 the same abort-incomplete-multipart lifecycle rule as the committed hot-store
@@ -107,37 +107,40 @@ Enables path-style requests for Glacier-upload backends that require them.
 ## `ARC_GLACIER_PREFIX`
 
 - type: normalized path prefix
-- default: `glacier/finalized-images`
+- default: `glacier/collections`
 
-Finalized-image Glacier objects use privacy-safe keys under:
+Collection Glacier archive packages use privacy-safe keys under:
 
 ```text
-glacier/finalized-images/{image_id}/{image_id}.iso
+glacier/collections/{collection_id_hash}/archive.tar.zst
+glacier/collections/{collection_id_hash}/manifest.yml
+glacier/collections/{collection_id_hash}/manifest.yml.ots
 ```
 
-These keys must not embed collection ids or logical file paths.
+The hash segment is derived from the canonical collection id. These keys must
+not embed raw collection ids or logical file paths.
 
 ## `ARC_GLACIER_BACKEND`
 
 - type: string
 - default: `s3`
 
-Opaque backend label recorded on finalized-image Glacier summaries.
+Opaque backend label recorded on collection Glacier summaries.
 
 ## `ARC_GLACIER_STORAGE_CLASS`
 
 - type: string
 - default: `DEEP_ARCHIVE`
 
-Intended Glacier storage class recorded on finalized-image Glacier summaries.
+Intended Glacier storage class recorded on collection Glacier summaries.
 
 ## `ARC_GLACIER_UPLOAD_RETRY_LIMIT`
 
 - type: integer
 - default: `3`
 
-Maximum number of automatic Glacier upload attempts per finalized image before the
-upload becomes a persistent failure.
+Maximum number of automatic Glacier upload attempts per collection archive
+package before the upload becomes a persistent failure.
 
 ## `ARC_GLACIER_UPLOAD_RETRY_DELAY`
 
@@ -151,8 +154,8 @@ Delay between automatic retry attempts for one failed Glacier upload.
 - type: duration
 - default: `30s`
 
-How often Riverhog's Glacier-upload worker scans for due finalized-image uploads,
-retries, and restart-recovered work.
+How often Riverhog's Glacier-upload worker scans for due collection archive
+uploads, retries, and restart-recovered work.
 
 Restart-recovered work resumes one durable job record. It does not resume one
 interrupted multipart byte stream inside the remote object store.
@@ -162,11 +165,11 @@ interrupted multipart byte stream inside the remote object store.
 - type: URL
 - default: unset
 
-Optional webhook endpoint notified when one finalized-image Glacier upload reaches
-persistent failure after automatic retries.
+Optional webhook endpoint notified when one collection Glacier archive upload
+reaches persistent failure after automatic retries.
 
-The payload includes the finalized `image_id`, failure timestamp, attempt count,
-and error context.
+The payload includes the `collection_id`, archive package object paths, failure
+timestamp, attempt count, and error context.
 
 ## `ARC_GLACIER_RECOVERY_SWEEP_INTERVAL`
 
@@ -191,8 +194,9 @@ configured.
 - type: duration
 - default: `24h`
 
-How long Riverhog keeps restored Standard-storage ISO data available after the
-archive becomes ready before automatic cleanup expires that recovery session.
+How long Riverhog keeps restored Standard-storage collection archive data or
+rebuilt ISO staging data available after the archive becomes ready before
+automatic cleanup expires that recovery session.
 
 When `ARC_GLACIER_RECOVERY_WEBHOOK_URL` is configured, this value must be at
 least Riverhog's fixed 10-second outbound recovery-webhook timeout plus
@@ -204,8 +208,9 @@ still be retried before cleanup.
 - type: URL
 - default: unset
 
-Optional webhook endpoint notified when restored ISO data becomes ready and when
-reminders are sent before cleanup expiry.
+Optional webhook endpoint notified when restored collection archive data or image
+rebuild staging data becomes ready and when reminders are sent before cleanup
+expiry.
 
 ## `ARC_GLACIER_RECOVERY_WEBHOOK_RETRY_DELAY`
 
@@ -223,8 +228,9 @@ recovery-webhook timeout plus this retry delay.
 - type: duration
 - default: `1h`
 
-Interval between repeated ready reminders while restored ISO data remains
-available and the recovery session is still incomplete.
+Interval between repeated ready reminders while restored collection archive data
+or image rebuild staging data remains available and the recovery session is
+still incomplete.
 
 ## `ARC_GLACIER_RECOVERY_RETRIEVAL_TIER`
 
@@ -546,8 +552,9 @@ This is the SQLite catalog path used for durable authoritative API state.
 - type: URL
 - default: unset
 
-Optional public API base URL used when Riverhog builds webhook links back to one
-finalized image and its ISO download.
+Optional public API base URL used when Riverhog builds webhook links back to
+collection uploads, collection restore sessions, image rebuild sessions, and
+finalized-image ISO downloads.
 
 ## `INCOMPLETE_UPLOAD_TTL`
 

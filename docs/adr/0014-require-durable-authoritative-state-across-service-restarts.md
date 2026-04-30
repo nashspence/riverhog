@@ -15,7 +15,8 @@ Authoritative archive state is durable across service restarts.
 
 At minimum, the durable state includes:
 
-- closed collections and their coverage summaries
+- accepted collections, their Glacier archive package state, and their coverage
+  summaries
 - finalized images and registered physical copies
 - exact pins and the fetch manifests bound to those pins
 - hot-residency state and any unexpired resumable-upload progress

@@ -49,6 +49,7 @@ ACCEPTANCE_FIXTURE = REPO_ROOT / "tests" / "fixtures" / "acceptance.py"
 
 LOCKED_HELPER_STATE_ACCESS = {
     "seed_finalized_image": "mutates finalized image and Glacier upload state directly",
+    "wait_for_image_glacier_state": "reads legacy fixture Glacier upload state directly",
     "fail_glacier_upload": "mutates Glacier upload failure fixtures directly",
     "enable_real_iso_streams": "mutates fixture ISO stream mode directly",
     "enable_live_recovery_archive_store": "mutates fixture recovery archive-store mode directly",

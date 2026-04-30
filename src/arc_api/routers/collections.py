@@ -1,6 +1,7 @@
 from __future__ import annotations
 
-from typing import Literal
+from enum import StrEnum
+from typing import Annotated
 
 from fastapi import APIRouter, Query, Request, Response
 
@@ -23,21 +24,39 @@ from arc_api.tus import (
 router = APIRouter(tags=["collections"])
 
 
+class CollectionProtectionFilter(StrEnum):
+    UNDER_PROTECTED = "under_protected"
+    CLOUD_ONLY = "cloud_only"
+    PHYSICAL_ONLY = "physical_only"
+    FULLY_PROTECTED = "fully_protected"
+
+
+_LEGACY_PROTECTION_FILTERS = {
+    "under_protected": "partially_protected",
+    "cloud_only": "unprotected",
+    "physical_only": "partially_protected",
+    "fully_protected": "protected",
+}
+
+
 @router.get("/collections", response_model=ListCollectionsResponse)
 def list_collections(
     container: ContainerDep,
     page: int = Query(1, ge=1),
     per_page: int = Query(25, ge=1, le=100),
     q: str | None = Query(None),
-    protection_state: Literal["unprotected", "partially_protected", "protected"] | None = Query(
-        None
-    ),
+    protection_state: Annotated[CollectionProtectionFilter | None, Query()] = None,
 ) -> ListCollectionsResponse:
+    service_protection_state = (
+        _LEGACY_PROTECTION_FILTERS[protection_state.value]
+        if protection_state is not None
+        else None
+    )
     summary = container.collections.list(
         page=page,
         per_page=per_page,
         q=q,
-        protection_state=protection_state,
+        protection_state=service_protection_state,
     )
     return ListCollectionsResponse.model_validate(map_collection_list_page(summary))
 

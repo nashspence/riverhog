@@ -30,7 +30,7 @@ paths:
   /collection-uploads/{collection_id}:
     get:
       summary: Get one collection upload session
-      description: Returns the current resumable upload state for one collection id while it remains in progress. Once the terminal file-upload chunk finalizes the collection, this upload session is deleted and later reads return `not_found`.
+      description: Returns the current resumable upload state for one collection id while it remains in progress. The session remains visible through `uploading`, `archiving`, and `failed`; once the collection archive package has uploaded, verified, and promoted the collection, this upload session is deleted and later reads return `not_found`.
       operationId: getCollectionUpload
       parameters:
         - in: path
@@ -87,7 +87,7 @@ paths:
           $ref: "#/components/responses/Error"
     patch:
       summary: Append one collection-file upload chunk
-      description: Streams bytes into the resumable upload resource. When the final required chunk completes the last outstanding file and the full-file hashes verify, Riverhog finalizes the collection immediately and deletes the upload session.
+      description: Streams bytes into the resumable upload resource. When the final required chunk completes the last outstanding file and the full-file hashes verify, Riverhog moves the upload into `archiving`; the collection is not finalized or admitted until its whole-collection Glacier archive package uploads and verifies.
       operationId: appendCollectionFileUploadChunk
       parameters:
         - in: path
@@ -352,10 +352,10 @@ paths:
         - in: query
           name: protection_state
           required: false
-          description: Exact archive-protection filter.
+          description: Exact collection protection filter.
           schema:
             type: string
-            enum: [unprotected, partially_protected, protected]
+            enum: [under_protected, cloud_only, physical_only, fully_protected]
       responses:
         "200":
           description: Collection summary listing
@@ -382,6 +382,45 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/CollectionSummary"
+        default:
+          $ref: "#/components/responses/Error"
+  /collections/{collection_id}/restore-session:
+    get:
+      summary: Get the latest collection restore session
+      description: Returns the latest `collection_restore` recovery session for one collection, including expired or completed sessions.
+      operationId: getCollectionRestoreSession
+      parameters:
+        - in: path
+          name: collection_id
+          required: true
+          description: Canonical collection id. Slash-bearing ids occupy multiple path segments under `/collections/`.
+          schema: { type: string }
+      responses:
+        "200":
+          description: Recovery session summary
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RecoverySession"
+        default:
+          $ref: "#/components/responses/Error"
+    post:
+      summary: Create or resume one collection restore session
+      description: Creates one pending-approval `collection_restore` recovery session when the collection has an uploaded and verified Glacier archive package, or returns the active session if one already exists.
+      operationId: createOrResumeCollectionRestoreSession
+      parameters:
+        - in: path
+          name: collection_id
+          required: true
+          description: Canonical collection id. Slash-bearing ids occupy multiple path segments under `/collections/`.
+          schema: { type: string }
+      responses:
+        "200":
+          description: Recovery session summary
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RecoverySession"
         default:
           $ref: "#/components/responses/Error"
   /plan:
@@ -499,11 +538,11 @@ paths:
                 $ref: "#/components/schemas/FinalizedImageSummary"
         default:
           $ref: "#/components/responses/Error"
-  /images/{image_id}/recovery-session:
+  /images/{image_id}/rebuild-session:
     get:
-      summary: Get the latest recovery session for one image
-      description: Returns the latest Glacier recovery session for one finalized image, including expired or completed sessions.
-      operationId: getRecoverySessionForImage
+      summary: Get the latest image rebuild session for one image
+      description: Returns the latest `image_rebuild` recovery session for one finalized image, including expired or completed sessions.
+      operationId: getImageRebuildSession
       parameters:
         - in: path
           name: image_id
@@ -519,9 +558,9 @@ paths:
         default:
           $ref: "#/components/responses/Error"
     post:
-      summary: Create or resume one recovery session for an image
-      description: Creates one pending-approval Glacier recovery session when a finalized image has no remaining protected copies, or returns the active session if one already exists.
-      operationId: createOrResumeRecoverySession
+      summary: Create or resume one image rebuild session
+      description: Creates one pending-approval `image_rebuild` recovery session when a finalized image has no remaining protected copies and the required collection archives are uploaded, or returns the active session if one already exists.
+      operationId: createOrResumeImageRebuildSession
       parameters:
         - in: path
           name: image_id
@@ -539,7 +578,7 @@ paths:
   /recovery-sessions/{session_id}:
     get:
       summary: Get one recovery session
-      description: Returns one Glacier recovery session by durable session id.
+      description: Returns one Glacier-backed collection restore or image rebuild session by durable session id.
       operationId: getRecoverySession
       parameters:
         - in: path
@@ -558,7 +597,7 @@ paths:
   /recovery-sessions/{session_id}/approve:
     post:
       summary: Approve one recovery session cost estimate
-      description: Approves one pending recovery session so Riverhog can request Glacier restore work for the archived image.
+      description: Approves one pending recovery session so Riverhog can request Glacier restore work for the required collection archives.
       operationId: approveRecoverySession
       parameters:
         - in: path
@@ -595,8 +634,8 @@ paths:
           $ref: "#/components/responses/Error"
   /recovery-sessions/{session_id}/images/{image_id}/iso:
     get:
-      summary: Download one restored recovery-session ISO
-      description: Streams ISO bytes from the restored archive object for one image in a ready recovery session.
+      summary: Download one rebuilt recovery-session ISO
+      description: Streams rebuilt ISO bytes for one image in a ready `image_rebuild` recovery session.
       operationId: getRecoveredIso
       parameters:
         - in: path
@@ -609,7 +648,7 @@ paths:
           schema: { type: string }
       responses:
         "200":
-          description: Restored ISO bytes
+          description: Rebuilt ISO bytes
           content:
             application/octet-stream:
               schema:
@@ -620,13 +659,9 @@ paths:
   /glacier:
     get:
       summary: Get Glacier usage and cost reporting
-      description: Returns Glacier usage totals, per-image archive state, derived per-collection attribution, configured pricing assumptions, and overall usage snapshots.
+      description: Returns Glacier usage totals, direct per-collection archive state, collection manifest/OTS proof state, configured pricing assumptions, and overall usage snapshots.
       operationId: getGlacierReport
       parameters:
-        - in: query
-          name: image_id
-          required: false
-          schema: { type: string }
         - in: query
           name: collection
           required: false
@@ -1087,9 +1122,15 @@ components:
     FetchEntryUploadState:
       type: string
       enum: [pending, partial, byte_complete, uploaded]
-    ProtectionState:
+    PhysicalProtectionState:
       type: string
       enum: [unprotected, partially_protected, protected]
+    CollectionProtectionState:
+      type: string
+      enum: [under_protected, cloud_only, physical_only, fully_protected]
+    CoverageState:
+      type: string
+      enum: [none, partial, full]
     GlacierArchive:
       type: object
       required:
@@ -1128,6 +1169,28 @@ components:
           oneOf:
             - type: string
             - type: "null"
+    ArchiveManifestProofState:
+      type: string
+      enum: [pending, uploaded, failed]
+    CollectionArchiveManifest:
+      type: object
+      required: [object_path, sha256, ots_object_path, ots_state]
+      properties:
+        object_path:
+          oneOf:
+            - type: string
+            - type: "null"
+        sha256:
+          oneOf:
+            - type: string
+              pattern: "^[0-9a-f]{64}$"
+            - type: "null"
+        ots_object_path:
+          oneOf:
+            - type: string
+            - type: "null"
+        ots_state:
+          $ref: "#/components/schemas/ArchiveManifestProofState"
     GlacierPricingBasis:
       type: object
       required:
@@ -1171,12 +1234,12 @@ components:
     GlacierUsageTotals:
       type: object
       required:
-        [images, uploaded_images, measured_storage_bytes, estimated_billable_bytes, estimated_monthly_cost_usd]
+        [collections, uploaded_collections, measured_storage_bytes, estimated_billable_bytes, estimated_monthly_cost_usd]
       properties:
-        images:
+        collections:
           type: integer
           minimum: 0
-        uploaded_images:
+        uploaded_collections:
           type: integer
           minimum: 0
         measured_storage_bytes:
@@ -1195,10 +1258,6 @@ components:
           id,
           filename,
           collection_ids,
-          glacier,
-          measured_storage_bytes,
-          estimated_billable_bytes,
-          estimated_monthly_cost_usd,
         ]
       properties:
         id:
@@ -1208,69 +1267,34 @@ components:
         collection_ids:
           type: array
           items: { type: string }
-        glacier:
-          $ref: "#/components/schemas/GlacierArchive"
-        measured_storage_bytes:
-          type: integer
-          minimum: 0
-        estimated_billable_bytes:
-          type: integer
-          minimum: 0
-        estimated_monthly_cost_usd:
-          type: number
-          minimum: 0
     GlacierCollectionContribution:
       type: object
       required:
         [
           image_id,
           filename,
-          glacier,
           represented_bytes,
-          represented_fraction,
-          derived_stored_bytes,
-          derived_billable_bytes,
-          estimated_monthly_cost_usd,
         ]
       properties:
         image_id:
           type: string
           pattern: "^[0-9]{8}T[0-9]{6}Z$"
         filename: { type: string }
-        glacier:
-          $ref: "#/components/schemas/GlacierArchive"
         represented_bytes:
           type: integer
           minimum: 0
-        represented_fraction:
-          oneOf:
-            - type: number
-            - type: "null"
-        derived_stored_bytes:
-          oneOf:
-            - type: integer
-              minimum: 0
-            - type: "null"
-        derived_billable_bytes:
-          oneOf:
-            - type: integer
-              minimum: 0
-            - type: "null"
-        estimated_monthly_cost_usd:
-          oneOf:
-            - type: number
-              minimum: 0
-            - type: "null"
     GlacierUsageCollection:
       type: object
       required:
         [
           id,
           bytes,
-          represented_bytes,
-          attribution_state,
-          derived_stored_bytes,
-          derived_billable_bytes,
+          glacier,
+          archive_manifest,
+          archive_format,
+          compression,
+          measured_storage_bytes,
+          estimated_billable_bytes,
           estimated_monthly_cost_usd,
           images,
         ]
@@ -1279,16 +1303,18 @@ components:
         bytes:
           type: integer
           minimum: 0
-        represented_bytes:
-          type: integer
-          minimum: 0
-        attribution_state:
+        glacier:
+          $ref: "#/components/schemas/GlacierArchive"
+        archive_manifest:
+          $ref: "#/components/schemas/CollectionArchiveManifest"
+        archive_format:
           type: string
-          enum: [derived, unavailable]
-        derived_stored_bytes:
+        compression:
+          type: string
+        measured_storage_bytes:
           type: integer
           minimum: 0
-        derived_billable_bytes:
+        estimated_billable_bytes:
           type: integer
           minimum: 0
         estimated_monthly_cost_usd:
@@ -1301,12 +1327,12 @@ components:
     GlacierUsageSnapshot:
       type: object
       required:
-        [captured_at, uploaded_images, measured_storage_bytes, estimated_billable_bytes, estimated_monthly_cost_usd]
+        [captured_at, uploaded_collections, measured_storage_bytes, estimated_billable_bytes, estimated_monthly_cost_usd]
       properties:
         captured_at:
           type: string
           format: date-time
-        uploaded_images:
+        uploaded_collections:
           type: integer
           minimum: 0
         measured_storage_bytes:
@@ -1641,7 +1667,7 @@ components:
       properties:
         scope:
           type: string
-          enum: [all, image, collection, filtered]
+          enum: [all, collection, filtered]
         measured_at:
           type: string
           format: date-time
@@ -1668,7 +1694,7 @@ components:
     CollectionSummary:
       type: object
       required:
-        [id, files, bytes, hot_bytes, archived_bytes, pending_bytes, protection_state, protected_bytes, recovery, image_coverage]
+        [id, files, bytes, hot_bytes, archived_bytes, pending_bytes, glacier, archive_manifest, archive_format, compression, disc_coverage, protection_state, protected_bytes, image_coverage]
       properties:
         id:
           type: string
@@ -1678,39 +1704,36 @@ components:
         hot_bytes: { type: integer }
         archived_bytes: { type: integer }
         pending_bytes: { type: integer }
+        glacier:
+          $ref: "#/components/schemas/GlacierArchive"
+        archive_manifest:
+          $ref: "#/components/schemas/CollectionArchiveManifest"
+        archive_format:
+          type: string
+        compression:
+          type: string
+        disc_coverage:
+          $ref: "#/components/schemas/CollectionDiscCoverage"
         protection_state:
-          $ref: "#/components/schemas/ProtectionState"
+          $ref: "#/components/schemas/CollectionProtectionState"
         protected_bytes:
           type: integer
-        recovery:
-          $ref: "#/components/schemas/CollectionRecoverySummary"
         image_coverage:
           type: array
           items:
             $ref: "#/components/schemas/CollectionCoverageImage"
-    CollectionRecoveryCoverage:
+    CollectionDiscCoverage:
       type: object
-      required: [state, bytes]
+      required: [state, covered_bytes, verified_physical_bytes]
       properties:
         state:
-          type: string
-          enum: [none, partial, full]
-        bytes:
+          $ref: "#/components/schemas/CoverageState"
+        covered_bytes:
           type: integer
           minimum: 0
-    CollectionRecoverySummary:
-      type: object
-      required: [verified_physical, glacier, available]
-      properties:
-        verified_physical:
-          $ref: "#/components/schemas/CollectionRecoveryCoverage"
-        glacier:
-          $ref: "#/components/schemas/CollectionRecoveryCoverage"
-        available:
-          type: array
-          items:
-            type: string
-            enum: [verified_physical, glacier]
+        verified_physical_bytes:
+          type: integer
+          minimum: 0
     CollectionListResponse:
       type: object
       required: [page, per_page, total, pages, collections]
@@ -1804,7 +1827,7 @@ components:
             - type: "null"
         state:
           type: string
-          enum: [uploading, finalized]
+          enum: [uploading, archiving, finalized, failed]
         files_total: { type: integer }
         files_pending: { type: integer }
         files_partial: { type: integer }
@@ -1863,12 +1886,11 @@ components:
           collections,
           collection_ids,
           iso_ready,
-          protection_state,
+          physical_protection_state,
           physical_copies_required,
           physical_copies_registered,
           physical_copies_verified,
           physical_copies_missing,
-          glacier,
         ]
       properties:
         id:
@@ -1896,8 +1918,8 @@ components:
           type: boolean
           const: true
           description: Finalized images are always ISO-ready.
-        protection_state:
-          $ref: "#/components/schemas/ProtectionState"
+        physical_protection_state:
+          $ref: "#/components/schemas/PhysicalProtectionState"
         physical_copies_required:
           type: integer
           minimum: 1
@@ -1910,8 +1932,6 @@ components:
         physical_copies_missing:
           type: integer
           minimum: 0
-        glacier:
-          $ref: "#/components/schemas/GlacierArchive"
     FinalizedImageListResponse:
       type: object
       required: [page, per_page, total, pages, sort, order, images]
@@ -1944,14 +1964,13 @@ components:
         [
           id,
           filename,
-          protection_state,
+          physical_protection_state,
           physical_copies_required,
           physical_copies_registered,
           physical_copies_verified,
           physical_copies_missing,
           covered_paths,
           copies,
-          glacier,
         ]
       properties:
         id:
@@ -1959,8 +1978,8 @@ components:
           pattern: "^[0-9]{8}T[0-9]{6}Z$"
         filename:
           type: string
-        protection_state:
-          $ref: "#/components/schemas/ProtectionState"
+        physical_protection_state:
+          $ref: "#/components/schemas/PhysicalProtectionState"
         physical_copies_required:
           type: integer
           minimum: 1
@@ -1982,8 +2001,6 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/CopySummary"
-        glacier:
-          $ref: "#/components/schemas/GlacierArchive"
     CopyRef:
       type: object
       required: [id, volume_id, location]
@@ -2046,10 +2063,13 @@ components:
     RecoverySession:
       type: object
       required:
-        [id, state, created_at, warnings, cost_estimate, notification, images]
+        [id, type, state, created_at, warnings, cost_estimate, notification, collections, images]
       properties:
         id:
           type: string
+        type:
+          type: string
+          enum: [collection_restore, image_rebuild]
         state:
           type: string
           enum: [pending_approval, restore_requested, ready, expired, completed]
@@ -2093,6 +2113,10 @@ components:
           $ref: "#/components/schemas/RecoveryCostEstimate"
         notification:
           $ref: "#/components/schemas/RecoveryNotificationStatus"
+        collections:
+          type: array
+          items:
+            $ref: "#/components/schemas/RecoverySessionCollection"
         images:
           type: array
           items:
@@ -2100,7 +2124,7 @@ components:
     RecoveryCostEstimate:
       type: object
       required:
-        [currency_code, retrieval_tier, hold_days, image_count, total_bytes, restore_request_count, retrieval_rate_usd_per_gib, request_rate_usd_per_1000, standard_storage_rate_usd_per_gib_month, retrieval_cost_usd, request_fees_usd, temporary_storage_cost_usd, total_estimated_cost_usd, assumptions]
+        [currency_code, retrieval_tier, hold_days, collection_count, total_bytes, restore_request_count, retrieval_rate_usd_per_gib, request_rate_usd_per_1000, standard_storage_rate_usd_per_gib_month, retrieval_cost_usd, request_fees_usd, temporary_storage_cost_usd, total_estimated_cost_usd, assumptions]
       properties:
         currency_code:
           type: string
@@ -2109,7 +2133,7 @@ components:
           enum: [bulk, standard]
         hold_days:
           type: integer
-        image_count:
+        collection_count:
           type: integer
         total_bytes:
           type: integer
@@ -2153,14 +2177,28 @@ components:
             - type: "null"
     RecoverySessionImage:
       type: object
-      required: [id, filename, glacier, stored_bytes]
+      required: [id, filename, collection_ids, rebuild_state]
       properties:
         id:
           type: string
         filename:
           type: string
+        collection_ids:
+          type: array
+          items: { type: string }
+        rebuild_state:
+          type: string
+          enum: [pending, restoring_collections, rebuilding, ready, failed]
+    RecoverySessionCollection:
+      type: object
+      required: [id, glacier, archive_manifest, stored_bytes]
+      properties:
+        id:
+          type: string
         glacier:
           $ref: "#/components/schemas/GlacierArchive"
+        archive_manifest:
+          $ref: "#/components/schemas/CollectionArchiveManifest"
         stored_bytes:
           type: integer
     HotStatus:
