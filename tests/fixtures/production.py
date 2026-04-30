@@ -818,22 +818,6 @@ class ProductionSystem:
                 cwd=REPO_ROOT,
                 env=self._subprocess_env(
                     {
-                        "ARC_DISC_FIXTURE_PATH": str(self.fixture_path),
-                        "ARC_DISC_READER_FACTORY": (
-                            "tests.fixtures.arc_disc_fakes:FixtureOpticalReader"
-                        ),
-                        "ARC_DISC_ISO_VERIFIER_FACTORY": (
-                            "tests.fixtures.arc_disc_fakes:FixtureIsoVerifier"
-                        ),
-                        "ARC_DISC_BURNER_FACTORY": (
-                            "tests.fixtures.arc_disc_fakes:FixtureDiscBurner"
-                        ),
-                        "ARC_DISC_BURNED_MEDIA_VERIFIER_FACTORY": (
-                            "tests.fixtures.arc_disc_fakes:FixtureBurnedMediaVerifier"
-                        ),
-                        "ARC_DISC_BURN_PROMPTS_FACTORY": (
-                            "tests.fixtures.arc_disc_fakes:FixtureBurnPrompts"
-                        ),
                         "ARC_DISC_STAGING_DIR": str(self.workspace / "arc_disc_staging"),
                     }
                 ),

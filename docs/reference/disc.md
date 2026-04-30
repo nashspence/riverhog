@@ -159,6 +159,7 @@ Automated multipart recovery uses the fetch manifest as its recovery contract.
 - `arc-disc` does not own decryption or final logical-file hash validation; the server does that behind the upload
   resource as needed
 - any temporary buffering used during recovery is an internal implementation detail
+- the default recovery reader supports mounted optical filesystems directly and raw optical devices through `xorriso`
 - incomplete upload state expires after `INCOMPLETE_UPLOAD_TTL` since the last accepted chunk and the manifest returns to
   `waiting_media`
 - `arc-disc` reports precise progress for the current file and the whole manifest throughout recovery and upload
@@ -189,6 +190,9 @@ Expected multipart flow:
 - if that item is still provisional, `arc-disc burn` finalizes it before continuing
 - the session downloads and stages the image ISO locally before burn work
 - the staged ISO is verified before burn work continues
+- the default burn backend uses `xorriso -as cdrecord` against the configured optical device
+- burned-media verification reads back the staged ISO's byte length from the optical device and compares its SHA-256 to
+  the staged ISO
 - if the staged ISO is missing or no longer matches the last verified staged copy, `arc-disc burn` downloads it again
 - one physical copy is burned and burned-media-verified at a time
 - `arc-disc burn` prints the exact label text plus storage guidance before copy registration

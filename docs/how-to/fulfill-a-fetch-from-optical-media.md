@@ -2,6 +2,15 @@
 
 The `arc-disc` CLI is the recovery client for a machine with an optical drive.
 
+## Host requirements
+
+- Install `xorriso` on the operator machine.
+- Run the command as a user that can read the optical device path, such as `/dev/sr0`.
+- A mounted disc directory can be passed to `--device` instead of a raw device path. In that mode, `arc-disc` reads the
+  manifest's hinted payload object path directly from the mounted filesystem.
+- For a raw optical device, `arc-disc` uses `xorriso` to extract each hinted payload object from the inserted disc before
+  streaming it to the server.
+
 ## Flow
 
 1. Read the fetch manifest.
@@ -34,4 +43,13 @@ CLI example:
 arc-disc fetch fx_01JV8W5J8M8F3J5V4A8Q --device /dev/sr0 --json
 ```
 
+Mounted-media example:
+
+```bash
+arc-disc fetch fx_01JV8W5J8M8F3J5V4A8Q --device /media/archive-disc --json
+```
+
 The command should exit successfully only if the fetch reaches `done`.
+
+Expected failures include a missing `xorriso` executable, insufficient permission to read the device or mount, missing
+payload objects on the inserted disc, and final server-side verification rejecting the recovered bytes.

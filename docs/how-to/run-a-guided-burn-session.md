@@ -4,6 +4,14 @@ The `arc-disc burn` command walks the current burn backlog from the fullest read
 If a finalized image has lost all protected copies, Riverhog tracks that image through a Glacier-backed recovery
 session instead; `arc-disc burn` reports that recovery handoff and does not treat it as ordinary replacement backlog.
 
+## Host requirements
+
+- Install `xorriso` on the operator machine.
+- Run the command as a user that can write to and read from the optical device path, such as `/dev/sr0`.
+- Insert blank writable media when prompted. The default backend burns the staged ISO with `xorriso -as cdrecord`.
+- After burning, keep the same disc available in the drive. `arc-disc` verifies the burned media by reading the first
+  ISO-sized byte range back from the device and comparing it to the staged ISO.
+
 ## Flow
 
 1. Select the fullest ready backlog item.
@@ -25,6 +33,10 @@ Riverhog does not register or count the copy toward coverage until the operator 
 
 If the staged ISO is missing or no longer matches the last verified staged copy, `arc-disc burn` downloads the ISO
 again before continuing.
+
+Expected failures include a missing `xorriso` executable, insufficient device permissions, non-blank or incompatible
+media, a drive that cannot burn the inserted media type, and a burned-media byte comparison that does not match the
+staged ISO.
 
 CLI example:
 

@@ -6,10 +6,11 @@ import json
 import os
 import shutil
 import subprocess
+import tempfile
 import time
 from collections.abc import Iterator
 from dataclasses import dataclass, field
-from pathlib import Path
+from pathlib import Path, PurePosixPath
 from typing import Annotated, Any
 
 import typer
@@ -26,9 +27,82 @@ def arc_disc_app() -> None:
     """Keep the CLI in group mode so `arc-disc fetch ...` stays canonical."""
 
 
-class PlaceholderOpticalReader:
+_DISC_IO_CHUNK_BYTES = 1024 * 1024
+
+
+def _require_tool(name: str) -> str:
+    executable = shutil.which(name)
+    if executable is None:
+        raise RuntimeError(f"{name} is required for optical media I/O")
+    return executable
+
+
+def _run_checked(command: list[str], *, action: str) -> None:
+    try:
+        proc = subprocess.run(
+            command,
+            capture_output=True,
+            text=True,
+            check=False,
+        )
+    except FileNotFoundError as exc:
+        raise RuntimeError(f"{command[0]} is required for {action}") from exc
+    if proc.returncode == 0:
+        return
+    detail = ((proc.stderr or proc.stdout).strip() or f"{command[0]} exited {proc.returncode}")[
+        -1500:
+    ]
+    raise RuntimeError(f"{action} failed: {detail}")
+
+
+def _safe_disc_relative_path(disc_path: str) -> PurePosixPath:
+    path = PurePosixPath(disc_path)
+    parts = tuple(part for part in path.parts if part not in {"", "/"})
+    if not parts or any(part in {".", ".."} for part in parts):
+        raise RuntimeError(f"unsafe optical media path: {disc_path}")
+    return PurePosixPath(*parts)
+
+
+def _iter_file_chunks(path: Path) -> Iterator[bytes]:
+    with path.open("rb") as handle:
+        while True:
+            chunk = handle.read(_DISC_IO_CHUNK_BYTES)
+            if not chunk:
+                return
+            yield chunk
+
+
+class XorrisoOpticalReader:
     def read_iter(self, disc_path: str, *, device: str) -> Iterator[bytes]:
-        raise NotImplementedError(f"optical read not implemented for {disc_path} on {device}")
+        relative_path = _safe_disc_relative_path(disc_path)
+        device_path = Path(device)
+        if device_path.is_dir():
+            mounted_path = device_path.joinpath(*relative_path.parts).resolve()
+            mount_root = device_path.resolve()
+            if mounted_path != mount_root and mount_root not in mounted_path.parents:
+                raise RuntimeError(f"unsafe mounted optical media path: {disc_path}")
+            if not mounted_path.is_file():
+                raise RuntimeError(f"optical media file is missing: {mounted_path}")
+            yield from _iter_file_chunks(mounted_path)
+            return
+
+        xorriso = _require_tool("xorriso")
+        with tempfile.TemporaryDirectory(prefix="arc-disc-read-") as temp_root:
+            output_path = Path(temp_root) / relative_path.name
+            _run_checked(
+                [
+                    xorriso,
+                    "-osirrox",
+                    "on",
+                    "-indev",
+                    device,
+                    "-extract",
+                    f"/{relative_path.as_posix()}",
+                    str(output_path),
+                ],
+                action=f"extracting {disc_path} from {device}",
+            )
+            yield from _iter_file_chunks(output_path)
 
 
 @dataclass(frozen=True, slots=True)
@@ -211,14 +285,15 @@ def build_optical_reader() -> object:
     spec = os.getenv("ARC_DISC_READER_FACTORY")
     if spec:
         return _load_factory(spec)
-    return PlaceholderOpticalReader()
+    return XorrisoOpticalReader()
 
 
 class XorrisoIsoVerifier:
     def verify(self, iso_path: Path) -> None:
-        proc = subprocess.run(
+        xorriso = _require_tool("xorriso")
+        _run_checked(
             [
-                "xorriso",
+                xorriso,
                 "-abort_on",
                 "FAILURE",
                 "-for_backup",
@@ -234,26 +309,61 @@ class XorrisoIsoVerifier:
                 "/",
                 "--",
             ],
-            capture_output=True,
-            text=True,
-            check=False,
+            action=f"staged ISO verification for {iso_path}",
         )
-        if proc.returncode == 0:
-            return
-        detail = ((proc.stderr or proc.stdout).strip() or f"xorriso exited {proc.returncode}")[
-            -1500:
-        ]
-        raise RuntimeError(f"staged ISO verification failed for {iso_path}: {detail}")
 
 
-class PlaceholderDiscBurner:
+class XorrisoDiscBurner:
     def burn(self, iso_path: Path, *, device: str, copy_id: str) -> None:
-        raise RuntimeError(f"optical burn not implemented for {copy_id} on {device}")
+        if not iso_path.is_file():
+            raise RuntimeError(f"staged ISO is missing for {copy_id}: {iso_path}")
+        xorriso = _require_tool("xorriso")
+        _run_checked(
+            [
+                xorriso,
+                "-as",
+                "cdrecord",
+                "-v",
+                f"dev={device}",
+                str(iso_path),
+            ],
+            action=f"burning {copy_id} to {device}",
+        )
 
 
-class PlaceholderBurnedMediaVerifier:
+class RawBurnedMediaVerifier:
     def verify(self, iso_path: Path, *, device: str, copy_id: str) -> None:
-        raise RuntimeError(f"burned-media verification not implemented for {copy_id} on {device}")
+        if not iso_path.is_file():
+            raise RuntimeError(f"staged ISO is missing for {copy_id}: {iso_path}")
+        expected_size = iso_path.stat().st_size
+        expected_digest = hashlib.sha256()
+        actual_digest = hashlib.sha256()
+        remaining = expected_size
+        try:
+            with iso_path.open("rb") as expected, Path(device).open("rb") as actual:
+                while remaining > 0:
+                    expected_chunk = expected.read(min(_DISC_IO_CHUNK_BYTES, remaining))
+                    if not expected_chunk:
+                        raise RuntimeError(f"staged ISO ended unexpectedly for {copy_id}")
+                    actual_chunk = actual.read(len(expected_chunk))
+                    if len(actual_chunk) != len(expected_chunk):
+                        raise RuntimeError(
+                            f"burned media for {copy_id} ended before {expected_size} "
+                            "ISO bytes could be read"
+                        )
+                    expected_digest.update(expected_chunk)
+                    actual_digest.update(actual_chunk)
+                    remaining -= len(expected_chunk)
+        except OSError as exc:
+            raise RuntimeError(f"could not read burned media for {copy_id} from {device}") from exc
+
+        expected_sha256 = expected_digest.hexdigest()
+        actual_sha256 = actual_digest.hexdigest()
+        if actual_sha256 != expected_sha256:
+            raise RuntimeError(
+                f"burned media verification failed for {copy_id}: "
+                f"expected sha256 {expected_sha256}, read {actual_sha256}"
+            )
 
 
 class TerminalBurnPrompts:
@@ -312,14 +422,14 @@ def build_disc_burner() -> object:
     spec = os.getenv("ARC_DISC_BURNER_FACTORY")
     if spec:
         return _load_factory(spec)
-    return PlaceholderDiscBurner()
+    return XorrisoDiscBurner()
 
 
 def build_burned_media_verifier() -> object:
     spec = os.getenv("ARC_DISC_BURNED_MEDIA_VERIFIER_FACTORY")
     if spec:
         return _load_factory(spec)
-    return PlaceholderBurnedMediaVerifier()
+    return RawBurnedMediaVerifier()
 
 
 def build_burn_prompts() -> object:

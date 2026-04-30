@@ -24,6 +24,7 @@ Feature: arc-disc recover CLI
     And stdout mentions "20260420T040001Z"
     And stdout mentions "20260420T040003Z"
 
+  @spec_harness_only
   Scenario: arc-disc recover resumes one ready multi-image session and cleans up staged ISOs
     Given an archive with planner fixtures
     And an archive with split planner fixtures

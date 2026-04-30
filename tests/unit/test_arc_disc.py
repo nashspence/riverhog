@@ -3,6 +3,7 @@ from __future__ import annotations
 import hashlib
 from pathlib import Path
 
+import pytest
 from typer.testing import CliRunner
 
 import arc_disc.main as arc_disc_main
@@ -45,6 +46,127 @@ def _manifest_for(plaintext: bytes) -> dict[str, object]:
             }
         ],
     }
+
+
+def test_default_arc_disc_io_builders_use_real_backends(monkeypatch) -> None:
+    monkeypatch.delenv("ARC_DISC_READER_FACTORY", raising=False)
+    monkeypatch.delenv("ARC_DISC_BURNER_FACTORY", raising=False)
+    monkeypatch.delenv("ARC_DISC_BURNED_MEDIA_VERIFIER_FACTORY", raising=False)
+
+    assert isinstance(arc_disc_main.build_optical_reader(), arc_disc_main.XorrisoOpticalReader)
+    assert isinstance(arc_disc_main.build_disc_burner(), arc_disc_main.XorrisoDiscBurner)
+    assert isinstance(
+        arc_disc_main.build_burned_media_verifier(),
+        arc_disc_main.RawBurnedMediaVerifier,
+    )
+
+
+def test_xorriso_optical_reader_reads_from_mounted_media(tmp_path: Path) -> None:
+    payload_path = tmp_path / "disc" / "000001.bin"
+    payload_path.parent.mkdir()
+    payload_path.write_bytes(b"recovered-bytes")
+
+    chunks = list(
+        arc_disc_main.XorrisoOpticalReader().read_iter(
+            "disc/000001.bin",
+            device=str(tmp_path),
+        )
+    )
+
+    assert chunks == [b"recovered-bytes"]
+
+
+def test_xorriso_optical_reader_extracts_from_device_with_xorriso(
+    monkeypatch,
+    tmp_path: Path,
+) -> None:
+    commands: list[list[str]] = []
+
+    def fake_run(command, *, capture_output, text, check):
+        assert capture_output is True
+        assert text is True
+        assert check is False
+        commands.append(command)
+        Path(command[-1]).write_bytes(b"device-bytes")
+        return arc_disc_main.subprocess.CompletedProcess(command, 0, "", "")
+
+    monkeypatch.setattr(arc_disc_main.shutil, "which", lambda name: f"/usr/bin/{name}")
+    monkeypatch.setattr(arc_disc_main.subprocess, "run", fake_run)
+
+    chunks = list(
+        arc_disc_main.XorrisoOpticalReader().read_iter(
+            "disc/000001.bin",
+            device=str(tmp_path / "sr0"),
+        )
+    )
+
+    assert chunks == [b"device-bytes"]
+    assert commands == [
+        [
+            "/usr/bin/xorriso",
+            "-osirrox",
+            "on",
+            "-indev",
+            str(tmp_path / "sr0"),
+            "-extract",
+            "/disc/000001.bin",
+            commands[0][-1],
+        ]
+    ]
+
+
+def test_xorriso_disc_burner_invokes_xorriso_cdrecord(
+    monkeypatch,
+    tmp_path: Path,
+) -> None:
+    iso_path = tmp_path / "image.iso"
+    iso_path.write_bytes(b"iso-bytes")
+    commands: list[list[str]] = []
+
+    def fake_run(command, *, capture_output, text, check):
+        commands.append(command)
+        return arc_disc_main.subprocess.CompletedProcess(command, 0, "", "")
+
+    monkeypatch.setattr(arc_disc_main.shutil, "which", lambda name: f"/usr/bin/{name}")
+    monkeypatch.setattr(arc_disc_main.subprocess, "run", fake_run)
+
+    arc_disc_main.XorrisoDiscBurner().burn(
+        iso_path,
+        device="/dev/sr0",
+        copy_id="20260420T040001Z-1",
+    )
+
+    assert commands == [
+        [
+            "/usr/bin/xorriso",
+            "-as",
+            "cdrecord",
+            "-v",
+            "dev=/dev/sr0",
+            str(iso_path),
+        ]
+    ]
+
+
+def test_raw_burned_media_verifier_compares_the_iso_prefix(tmp_path: Path) -> None:
+    iso_path = tmp_path / "image.iso"
+    device_path = tmp_path / "sr0"
+    iso_path.write_bytes(b"iso-bytes")
+    device_path.write_bytes(b"iso-bytes" + b"\0" * 2048)
+
+    arc_disc_main.RawBurnedMediaVerifier().verify(
+        iso_path,
+        device=str(device_path),
+        copy_id="20260420T040001Z-1",
+    )
+
+    device_path.write_bytes(b"bad-bytes" + b"\0" * 2048)
+    with pytest.raises(RuntimeError, match="burned media verification failed"):
+        arc_disc_main.RawBurnedMediaVerifier().verify(
+            iso_path,
+            device=str(device_path),
+            copy_id="20260420T040001Z-1",
+        )
 
 
 def test_arc_disc_fetch_recovers_in_memory_and_reports_progress(monkeypatch) -> None:
