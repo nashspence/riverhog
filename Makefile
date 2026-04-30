@@ -4,7 +4,7 @@ SHELL := bash
 UV_RUN = uv run --python 3.11 --isolated --with-requirements "$(CURDIR)/requirements-test.txt" --with-editable '.[db]'
 args ?=
 
-.PHONY: help ruff mypy lint unit spec build build-app build-test bootstrap-garage down prod prod-profile test
+.PHONY: help ruff mypy lint unit spec gated-arc-disc build build-app build-test bootstrap-garage down prod prod-profile test
 
 help:
 	@printf '%s\n' \
@@ -14,6 +14,7 @@ help:
 		'  make lint              Run ruff, then mypy.' \
 		'  make unit              Run the unit test lane locally.' \
 		'  make spec              Run the fixture-backed spec harness locally.' \
+		'  make gated-arc-disc    Run opt-in real-device arc-disc optical validation.' \
 		'  make build-app         Build the app image.' \
 		'  make build-test        Build the test image.' \
 		'  make build             Build both app and test images.' \
@@ -41,6 +42,9 @@ unit:
 
 spec:
 	@$(UV_RUN) python -m pytest -q tests/harness/test_spec_harness.py $(args)
+
+gated-arc-disc:
+	@$(UV_RUN) python -m pytest -q tests/gated/test_arc_disc_real_device.py $(args)
 
 build-app:
 	@./scripts/build_app.sh

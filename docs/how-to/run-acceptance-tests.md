@@ -79,6 +79,52 @@ lock includes the `db` extra used by the prod-backed harness.
 Run the serial aggregate target with `make test` when you want one supported
 command to run lint, then unit, spec, and prod in order.
 
+## Gated optical-device validation
+
+`make gated-arc-disc` is an opt-in lane for real `arc-disc` optical I/O. It is
+not part of `make test`, `make spec`, or `make prod`, because it can require
+operator-provided media, device permissions, and destructive writes to optical
+media.
+
+Read-only mounted-media validation requires a mounted disc or mounted ISO
+filesystem containing one known recovery payload object:
+
+```bash
+export ARC_DISC_GATED_MOUNT_PATH=/media/archive-disc
+export ARC_DISC_GATED_PAYLOAD_PATH=disc/000001.bin
+export ARC_DISC_GATED_EXPECTED_SHA256=<sha256-of-disc/000001.bin>
+make gated-arc-disc
+```
+
+Read-only raw-device validation uses `xorriso` to extract the same object from
+an inserted optical disc. It can share the payload path and expected digest from
+the mounted-media variables, or use raw-device-specific overrides:
+
+```bash
+export ARC_DISC_GATED_RAW_DEVICE=/dev/sr0
+export ARC_DISC_GATED_RAW_PAYLOAD_PATH=disc/000001.bin
+export ARC_DISC_GATED_RAW_EXPECTED_SHA256=<sha256-of-disc/000001.bin>
+make gated-arc-disc
+```
+
+Destructive burn validation is skipped unless the confirmation variable is set
+exactly. Use blank writable media and a disposable ISO. The test burns the ISO,
+then reads the ISO-sized byte range back from the same device and compares it to
+the staged ISO.
+
+```bash
+export ARC_DISC_GATED_BURN_DEVICE=/dev/sr0
+export ARC_DISC_GATED_BURN_ISO_PATH=/operator/disposable-validation.iso
+export ARC_DISC_GATED_BURN_COPY_ID=gated-arc-disc-copy
+export ARC_DISC_GATED_BURN_CONFIRM=write-optical-media
+make gated-arc-disc
+```
+
+When a capability is not configured, the corresponding gated test skips with the
+missing env var or device requirement. Once a capability is explicitly
+configured, command failures are treated as validation failures so drive,
+permission, media, and product regressions stay visible.
+
 ## Compose-backed sidecars
 
 The checked-in test scripts read `./.env.compose` when present, otherwise they fall

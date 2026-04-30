@@ -168,6 +168,11 @@ def _assert_isolated_prod_runtime(line: str) -> str:
             ("args=-k glacier",),
             "python -m pytest -q tests/harness/test_spec_harness.py -k glacier",
         ),
+        (
+            "gated-arc-disc",
+            ("args=-k mounted_media",),
+            "python -m pytest -q tests/gated/test_arc_disc_real_device.py -k mounted_media",
+        ),
     ],
 )
 def test_atomic_local_targets_run_in_locked_uv_environment(
