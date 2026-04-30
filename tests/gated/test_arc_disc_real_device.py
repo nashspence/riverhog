@@ -128,10 +128,10 @@ def _response_json(response: object) -> Mapping[str, object]:
     return payload
 
 
-def _real_iso_bytes(image: object) -> bytes:
+def _iso_bytes_from_root(*, image_root: Path, volume_id: str) -> bytes:
     cmd = build_iso_cmd_from_root(
-        image_root=image.image_root,  # type: ignore[attr-defined]
-        volume_id=str(image.finalized_id),  # type: ignore[attr-defined]
+        image_root=image_root,
+        volume_id=volume_id,
     )
     proc = subprocess.run(cmd, capture_output=True, check=False)
     if proc.returncode == 0:
@@ -140,6 +140,33 @@ def _real_iso_bytes(image: object) -> bytes:
         f"xorriso exited {proc.returncode}"
     )
     raise RuntimeError(f"gated fake API could not build a real ISO: {detail}")
+
+
+def _real_iso_bytes(image: object) -> bytes:
+    return _iso_bytes_from_root(
+        image_root=image.image_root,  # type: ignore[attr-defined]
+        volume_id=str(image.finalized_id),  # type: ignore[attr-defined]
+    )
+
+
+def _write_disposable_validation_iso(tmp_path: Path) -> Path:
+    image_root = tmp_path / "gated-backend-iso-root"
+    image_root.mkdir()
+    (image_root / "README.txt").write_text(
+        "Disposable gated arc-disc optical backend validation ISO.\n",
+        encoding="utf-8",
+    )
+    (image_root / "payload.bin").write_bytes(
+        b"gated-arc-disc-backend-validation\n" * 128,
+    )
+    iso_path = tmp_path / "gated-backend-validation.iso"
+    iso_path.write_bytes(
+        _iso_bytes_from_root(
+            image_root=image_root,
+            volume_id="GATED_ARC_DISC",
+        )
+    )
+    return iso_path
 
 
 def _configure_fake_api_real_iso_streams(acceptance_system: AcceptanceSystem) -> None:
@@ -391,24 +418,19 @@ def test_default_reader_recovers_configured_raw_device_payload() -> None:
     assert actual_sha256 == expected_sha256
 
 
-def test_destructive_burn_backend_writes_and_verifies_configured_media() -> None:
+def test_destructive_burn_backend_writes_and_verifies_configured_media(tmp_path: Path) -> None:
     _reject_fake_factories()
     _require_xorriso(reason="destructive optical burn validation")
     _require_destructive_opt_in(reason="optical burn validation")
-    device = _required_path(
-        "ARC_DISC_GATED_BURN_DEVICE",
-        reason="destructive optical burn validation",
-    )
-    iso_path = _required_path(
-        "ARC_DISC_GATED_BURN_ISO_PATH",
-        reason="destructive optical burn validation",
-    )
-    if not iso_path.is_file():
-        pytest.skip(f"ARC_DISC_GATED_BURN_ISO_PATH must be an ISO file: {iso_path}")
-    if not os.access(device, os.R_OK | os.W_OK):
-        pytest.skip(f"ARC_DISC_GATED_BURN_DEVICE must be readable and writable: {device}")
+    device = _required_burn_device(reason="destructive optical burn validation")
+    iso_path = _write_disposable_validation_iso(tmp_path)
     copy_id = os.environ.get("ARC_DISC_GATED_BURN_COPY_ID", "gated-arc-disc-copy")
 
+    iso_verifier = arc_disc_main.build_iso_verifier()
+    if not isinstance(iso_verifier, arc_disc_main.XorrisoIsoVerifier):
+        raise AssertionError(
+            f"default ISO verifier is not the real backend: {type(iso_verifier).__name__}"
+        )
     burner = arc_disc_main.build_disc_burner()
     if not isinstance(burner, arc_disc_main.XorrisoDiscBurner):
         raise AssertionError(f"default burner is not the real backend: {type(burner).__name__}")
@@ -418,6 +440,7 @@ def test_destructive_burn_backend_writes_and_verifies_configured_media() -> None
             f"default burned-media verifier is not the real backend: {type(verifier).__name__}"
         )
 
+    iso_verifier.verify(iso_path)
     burner.burn(iso_path, device=str(device), copy_id=copy_id)
     verifier.verify(iso_path, device=str(device), copy_id=copy_id)
 

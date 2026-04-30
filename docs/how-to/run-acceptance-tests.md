@@ -113,13 +113,12 @@ make gated-arc-disc
 ```
 
 Destructive burn validation is skipped unless the confirmation variable is set
-exactly. Use blank writable media and a disposable ISO. The test burns the ISO,
-then reads the ISO-sized byte range back from the same device and compares it to
-the staged ISO.
+exactly. Use blank writable media. The test generates a disposable ISO, verifies
+it, burns it, then reads the ISO-sized byte range back from the same device and
+compares it to the staged ISO.
 
 ```bash
 export ARC_DISC_GATED_BURN_DEVICE=/dev/sr0
-export ARC_DISC_GATED_BURN_ISO_PATH=/operator/disposable-validation.iso
 export ARC_DISC_GATED_BURN_COPY_ID=gated-arc-disc-copy
 export ARC_DISC_GATED_BURN_CONFIRM=write-optical-media
 make gated-arc-disc
