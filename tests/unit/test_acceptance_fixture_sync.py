@@ -72,6 +72,7 @@ LOCKED_HELPER_STATE_ACCESS = {
     "recovery_upload_absent": "reads fetch existence directly",
     "list_read_only_browsing_paths": "reads hot file projection state directly",
     "bucket_contains_object": "reads fixture-backed bucket object state directly",
+    "bucket_object_metadata": "reads fixture-backed bucket object metadata directly",
     "bucket_contains_prefix": "reads fixture-backed bucket prefix state directly",
     "uploaded_entry_content": "reads uploaded fetch entry content directly",
     "configure_arc_disc_fixture": "reads fetch entry content directly before fixture file writes",
