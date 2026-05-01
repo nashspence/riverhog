@@ -1,13 +1,25 @@
 from __future__ import annotations
 
-import tempfile
-import uuid
 from collections.abc import Iterable
-from typing import cast
+from typing import Any, cast
 
 from arc_core.domain.errors import NotFound
 from arc_core.runtime_config import RuntimeConfig
 from arc_core.stores.s3_support import create_s3_client
+
+_MIN_MULTIPART_PART_SIZE = 5 * 1024 * 1024
+_MAX_MULTIPART_PART_SIZE = 5 * 1024 * 1024 * 1024
+_MAX_MULTIPART_PARTS = 10_000
+
+
+def _multipart_part_size(content_length: int) -> int:
+    part_size = max(
+        _MIN_MULTIPART_PART_SIZE,
+        (content_length + _MAX_MULTIPART_PARTS - 1) // _MAX_MULTIPART_PARTS,
+    )
+    if part_size > _MAX_MULTIPART_PART_SIZE:
+        raise ValueError("collection file stream exceeds S3 multipart object size limit")
+    return part_size
 
 
 class S3HotStore:
@@ -34,29 +46,101 @@ class S3HotStore:
         content_length: int,
     ) -> None:
         final_key = self._key(collection_id, path)
-        temp_key = f"tmp/collections/{collection_id}/{uuid.uuid4().hex}"
-        with tempfile.TemporaryFile() as body:
-            size = 0
-            for chunk in chunks:
-                size += len(chunk)
-                body.write(chunk)
-            if size != content_length:
+        if content_length == 0:
+            size = sum(len(chunk) for chunk in chunks)
+            if size != 0:
                 raise ValueError(f"collection file stream byte count mismatch: {path}")
-            body.seek(0)
-            try:
-                self._client.put_object(
-                    Bucket=self._bucket,
-                    Key=temp_key,
-                    Body=body,
-                    ContentLength=content_length,
+            self._client.put_object(
+                Bucket=self._bucket,
+                Key=final_key,
+                Body=b"",
+                ContentLength=0,
+            )
+            return
+
+        upload_id: str | None = None
+        part_number = 1
+        uploaded_parts: list[dict[str, object]] = []
+        buffer = bytearray()
+        part_size = _multipart_part_size(content_length)
+        size = 0
+
+        def ensure_upload() -> str:
+            nonlocal upload_id
+            if upload_id is None:
+                response = cast(
+                    dict[str, Any],
+                    self._client.create_multipart_upload(
+                        Bucket=self._bucket,
+                        Key=final_key,
+                    ),
                 )
-                self._client.copy_object(
+                upload_id = str(response["UploadId"])
+            return upload_id
+
+        def upload_part(body: bytes) -> None:
+            nonlocal part_number
+            response = cast(
+                dict[str, Any],
+                self._client.upload_part(
                     Bucket=self._bucket,
                     Key=final_key,
-                    CopySource={"Bucket": self._bucket, "Key": temp_key},
+                    UploadId=ensure_upload(),
+                    PartNumber=part_number,
+                    Body=body,
+                ),
+            )
+            uploaded_parts.append({"PartNumber": part_number, "ETag": str(response["ETag"])})
+            part_number += 1
+
+        try:
+            for chunk in chunks:
+                size += len(chunk)
+                chunk_view = memoryview(chunk)
+                offset = 0
+                while offset < len(chunk_view):
+                    bytes_to_copy = min(
+                        part_size - len(buffer),
+                        len(chunk_view) - offset,
+                    )
+                    buffer.extend(chunk_view[offset : offset + bytes_to_copy])
+                    offset += bytes_to_copy
+                    if len(buffer) == part_size:
+                        upload_part(bytes(buffer))
+                        buffer.clear()
+
+            if size != content_length:
+                raise ValueError(f"collection file stream byte count mismatch: {path}")
+            if buffer:
+                upload_part(bytes(buffer))
+                buffer.clear()
+            if upload_id is None:
+                self._client.put_object(
+                    Bucket=self._bucket,
+                    Key=final_key,
+                    Body=b"",
+                    ContentLength=0,
                 )
-            finally:
-                self._client.delete_object(Bucket=self._bucket, Key=temp_key)
+                return
+            self._client.complete_multipart_upload(
+                Bucket=self._bucket,
+                Key=final_key,
+                UploadId=upload_id,
+                MultipartUpload={"Parts": uploaded_parts},
+            )
+        except Exception as exc:
+            if upload_id is not None:
+                try:
+                    self._client.abort_multipart_upload(
+                        Bucket=self._bucket,
+                        Key=final_key,
+                        UploadId=upload_id,
+                    )
+                except Exception as cleanup_exc:
+                    exc.add_note(
+                        f"failed to abort S3 multipart upload {upload_id}: {cleanup_exc!r}"
+                    )
+            raise
 
     def get_collection_file(self, collection_id: str, path: str) -> bytes:
         try:

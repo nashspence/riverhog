@@ -8,7 +8,7 @@ from typing import Any, cast
 import pytest
 
 from arc_core.runtime_config import RuntimeConfig
-from arc_core.stores.s3_hot_store import S3HotStore
+from arc_core.stores.s3_hot_store import S3HotStore, _multipart_part_size
 
 
 class _FakeBody:
@@ -22,9 +22,11 @@ class _FakeBody:
 class _FakeS3Client:
     def __init__(self) -> None:
         self.objects: dict[str, dict[str, Any]] = {}
-        self.deleted: list[str] = []
-        self.copy_sources: list[dict[str, str]] = []
-        self.read_sizes: list[int] = []
+        self.uploads: dict[str, dict[str, Any]] = {}
+        self.uploaded_part_sizes: list[int] = []
+        self.aborted_uploads: list[str] = []
+        self.completed_uploads: list[str] = []
+        self._next_upload_id = 1
 
     def put_object(self, *, Bucket: str, Key: str, Body: object, **kwargs: Any) -> None:
         _ = Bucket
@@ -32,14 +34,7 @@ class _FakeS3Client:
             body = Body
         else:
             read = Body.read
-            parts: list[bytes] = []
-            while True:
-                chunk = cast(bytes, read(3))
-                if not chunk:
-                    break
-                self.read_sizes.append(len(chunk))
-                parts.append(chunk)
-            body = b"".join(parts)
+            body = cast(bytes, read())
         self.objects[Key] = {
             "Body": body,
             "ContentLength": len(body),
@@ -47,21 +42,58 @@ class _FakeS3Client:
             **kwargs,
         }
 
-    def copy_object(
+    def create_multipart_upload(self, *, Bucket: str, Key: str) -> dict[str, str]:
+        _ = Bucket
+        upload_id = f"upload-{self._next_upload_id}"
+        self._next_upload_id += 1
+        self.uploads[upload_id] = {"Key": Key, "Parts": {}}
+        return {"UploadId": upload_id}
+
+    def upload_part(
         self,
         *,
         Bucket: str,
         Key: str,
-        CopySource: dict[str, str],
+        UploadId: str,
+        PartNumber: int,
+        Body: bytes,
+    ) -> dict[str, str]:
+        _ = Bucket
+        upload = self.uploads[UploadId]
+        assert upload["Key"] == Key
+        upload["Parts"][PartNumber] = Body
+        self.uploaded_part_sizes.append(len(Body))
+        return {"ETag": f"etag-{UploadId}-{PartNumber}"}
+
+    def complete_multipart_upload(
+        self,
+        *,
+        Bucket: str,
+        Key: str,
+        UploadId: str,
+        MultipartUpload: dict[str, list[dict[str, object]]],
     ) -> None:
         _ = Bucket
-        self.copy_sources.append(CopySource)
-        source = self.objects[CopySource["Key"]]
-        self.objects[Key] = {**source}
+        upload = self.uploads.pop(UploadId)
+        assert upload["Key"] == Key
+        body = b"".join(
+            upload["Parts"][part["PartNumber"]]
+            for part in MultipartUpload["Parts"]
+        )
+        self.objects[Key] = {
+            "Body": body,
+            "ContentLength": len(body),
+            "LastModified": datetime(2026, 4, 20, 4, 1, 0, tzinfo=UTC),
+        }
+        self.completed_uploads.append(UploadId)
+
+    def abort_multipart_upload(self, *, Bucket: str, Key: str, UploadId: str) -> None:
+        _ = Bucket, Key
+        self.aborted_uploads.append(UploadId)
+        self.uploads.pop(UploadId, None)
 
     def delete_object(self, *, Bucket: str, Key: str) -> None:
         _ = Bucket
-        self.deleted.append(Key)
         self.objects.pop(Key, None)
 
     def get_object(self, *, Bucket: str, Key: str) -> dict[str, object]:
@@ -97,12 +129,13 @@ def _store_with_client(
     return S3HotStore(_config(tmp_path))
 
 
-def test_put_collection_file_stream_promotes_complete_temp_object(
+def test_put_collection_file_stream_completes_multipart_upload(
     monkeypatch: pytest.MonkeyPatch,
     tmp_path: Path,
 ) -> None:
     client = _FakeS3Client()
     store = _store_with_client(monkeypatch, tmp_path, client)
+    monkeypatch.setattr("arc_core.stores.s3_hot_store._MIN_MULTIPART_PART_SIZE", 4)
 
     store.put_collection_file_stream(
         "docs",
@@ -112,19 +145,19 @@ def test_put_collection_file_stream_promotes_complete_temp_object(
     )
 
     assert store.get_collection_file("docs", "large.bin") == b"abcdefghi"
-    assert client.read_sizes == [3, 3, 3]
-    assert client.copy_sources == [
-        {"Bucket": "riverhog", "Key": client.deleted[0]},
-    ]
-    assert client.deleted[0] not in client.objects
+    assert client.uploaded_part_sizes == [4, 4, 1]
+    assert client.completed_uploads == ["upload-1"]
+    assert client.aborted_uploads == []
+    assert client.uploads == {}
 
 
-def test_put_collection_file_stream_does_not_promote_failed_stream(
+def test_put_collection_file_stream_aborts_multipart_upload_after_failed_stream(
     monkeypatch: pytest.MonkeyPatch,
     tmp_path: Path,
 ) -> None:
     client = _FakeS3Client()
     store = _store_with_client(monkeypatch, tmp_path, client)
+    monkeypatch.setattr("arc_core.stores.s3_hot_store._MIN_MULTIPART_PART_SIZE", 3)
 
     def chunks() -> Iterable[bytes]:
         yield b"abc"
@@ -139,5 +172,16 @@ def test_put_collection_file_stream_does_not_promote_failed_stream(
         )
 
     assert "collections/docs/large.bin" not in client.objects
-    assert client.copy_sources == []
-    assert client.deleted == []
+    assert client.uploaded_part_sizes == [3]
+    assert client.aborted_uploads == ["upload-1"]
+    assert client.completed_uploads == []
+    assert client.uploads == {}
+
+
+def test_multipart_part_size_scales_to_s3_part_limit(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setattr("arc_core.stores.s3_hot_store._MIN_MULTIPART_PART_SIZE", 4)
+    monkeypatch.setattr("arc_core.stores.s3_hot_store._MAX_MULTIPART_PARTS", 3)
+
+    assert _multipart_part_size(13) == 5
