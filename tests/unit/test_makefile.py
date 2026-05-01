@@ -211,6 +211,12 @@ def _assert_isolated_prod_runtime(line: str) -> str:
             "python -m pytest -q -m ci_opt_in and requires_opentimestamps "
             "tests/ci_opt_in/test_opentimestamps_command.py -k proof",
         ),
+        (
+            "ci-opt-in-glacier-billing",
+            ("args=-k actuals",),
+            "python -m pytest -q -m ci_opt_in and requires_aws_billing "
+            "tests/ci_opt_in/test_glacier_billing_live.py -k actuals",
+        ),
     ],
 )
 def test_atomic_local_targets_run_in_locked_uv_environment(

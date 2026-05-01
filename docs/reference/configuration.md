@@ -149,6 +149,23 @@ invokes this command as:
 The command must create `<manifest-path>.ots`. Live external anchoring coverage is
 outside default deterministic CI and runs through `make ci-opt-in-opentimestamps`.
 
+## `ARC_OTS_VERIFY_COMMAND`
+
+- type: shell command
+- default: `ots`
+
+Command prefix used for production OpenTimestamps proof verification. Riverhog
+invokes this command as:
+
+```text
+{ARC_OTS_VERIFY_COMMAND} verify <manifest-path>.ots -f <manifest-path>
+```
+
+Collection archive restore and recovery verification first checks the stored
+proof object's SHA-256, then runs OpenTimestamps verification against the
+expected manifest bytes. Live calendar access remains outside default
+deterministic CI and is covered by `make ci-opt-in-opentimestamps`.
+
 ## `ARC_RECOVERY_PAYLOAD_COMMAND`
 
 - type: shell command
@@ -171,7 +188,24 @@ The command must be age 1.3 or newer, or another compatible age command with
 - default: development-only passphrase
 
 Passphrase supplied to age batchpass through `AGE_PASSPHRASE`. Real deployments
-must override the development default.
+must override the development default and source this value from the deployment's
+secret manager.
+
+The checked-in default value is only for local development and deterministic test
+harnesses. Do not use `archive-stack-dev-recovery-passphrase` for deployed
+archives.
+
+## `ARC_RECOVERY_PAYLOAD_REQUIRE_EXPLICIT_PASSPHRASE`
+
+- type: boolean
+- default: `false`
+
+When `true`, startup rejects configurations where
+`ARC_RECOVERY_PAYLOAD_PASSPHRASE` is missing or still set to the checked-in
+development default. Production deployments should set this to `true` and supply
+`ARC_RECOVERY_PAYLOAD_PASSPHRASE` explicitly from secrets management. Local and
+deterministic harness runs can leave it `false` to keep the checked-in test
+passphrase usable.
 
 ## `ARC_RECOVERY_PAYLOAD_WORK_FACTOR`
 

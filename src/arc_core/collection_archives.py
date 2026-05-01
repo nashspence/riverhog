@@ -11,7 +11,7 @@ from typing import Any, cast
 import yaml
 
 from arc_core.fs_paths import normalize_collection_id, normalize_relpath
-from arc_core.proofs import CommandProofStamper, ProofStamper
+from arc_core.proofs import CommandProofStamper, ProofStamper, ProofVerifier
 
 COLLECTION_ARCHIVE_MANIFEST_SCHEMA = "collection-archive-manifest/v1"
 COLLECTION_ARCHIVE_FORMAT = "tar"
@@ -202,12 +202,15 @@ def verify_collection_archive_proof(
     proof_bytes: bytes,
     expected_sha256: str,
     manifest_bytes: bytes,
+    verifier: ProofVerifier | None = None,
 ) -> None:
     digest = _sha256(proof_bytes)
     if digest != expected_sha256:
         raise ValueError("collection archive proof sha256 mismatch")
     if not proof_bytes:
         raise ValueError("collection archive proof is empty")
+    if verifier is not None:
+        verifier.verify(manifest_bytes=manifest_bytes, proof_bytes=proof_bytes)
 
 
 def iter_collection_archive_files(

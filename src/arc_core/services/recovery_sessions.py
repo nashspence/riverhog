@@ -66,7 +66,12 @@ from arc_core.planner.manifest import (
 )
 from arc_core.ports.archive_store import ArchiveRestoreStatus, ArchiveStore
 from arc_core.ports.hot_store import HotStore
-from arc_core.proofs import CommandProofStamper, ProofStamper
+from arc_core.proofs import (
+    CommandProofStamper,
+    CommandProofVerifier,
+    ProofStamper,
+    ProofVerifier,
+)
 from arc_core.recovery_payloads import (
     CommandAgeBatchpassRecoveryPayloadCodec,
     RecoveryPayloadCodec,
@@ -107,12 +112,14 @@ class SqlAlchemyRecoverySessionService:
         hot_store: HotStore | None = None,
         *,
         proof_stamper: ProofStamper | None = None,
+        proof_verifier: ProofVerifier | None = None,
         recovery_payload_codec: RecoveryPayloadCodec | None = None,
     ) -> None:
         self._config = config
         self._archive_store = archive_store
         self._hot_store = hot_store
         self._proof_stamper = proof_stamper or CommandProofStamper(config.ots_stamp_command)
+        self._proof_verifier = proof_verifier or CommandProofVerifier(config.ots_verify_command)
         self._recovery_payload_codec = (
             recovery_payload_codec
             or CommandAgeBatchpassRecoveryPayloadCodec(
@@ -258,6 +265,7 @@ class SqlAlchemyRecoverySessionService:
                     session,
                     archive_store=self._archive_store,
                     collections=collections,
+                    proof_verifier=self._proof_verifier,
                 )
                 record.archive_verification_state = "completed"
             for collection in collections:
@@ -332,6 +340,7 @@ class SqlAlchemyRecoverySessionService:
                 proof_bytes=proof_bytes,
                 expected_sha256=archive.proof_sha256,
                 manifest_bytes=manifest_bytes,
+                verifier=self._proof_verifier,
             )
             record.archive_verification_state = "completed"
             materialized: list[str] = []
@@ -408,6 +417,7 @@ class SqlAlchemyRecoverySessionService:
                     coverage_parts=coverage_parts,
                     file_lookup=file_lookup,
                     proof_stamper=self._proof_stamper,
+                    proof_verifier=self._proof_verifier,
                     recovery_payload_codec=self._recovery_payload_codec,
                 )
             raise InvalidState("recovery session has no collection archives to rebuild image")
@@ -861,6 +871,7 @@ def _iter_rebuilt_iso_from_collection_archives(
     coverage_parts: Sequence[FinalizedImageCoveragePartRecord],
     file_lookup: dict[tuple[str, str], tuple[str, int]],
     proof_stamper: ProofStamper,
+    proof_verifier: ProofVerifier,
     recovery_payload_codec: RecoveryPayloadCodec,
 ) -> Iterator[bytes]:
     with tempfile.TemporaryDirectory(prefix="arc-rebuilt-iso-") as tmpdir:
@@ -872,6 +883,7 @@ def _iter_rebuilt_iso_from_collection_archives(
             collection_archives=collection_archives,
             work_root=work_root,
             file_lookup=file_lookup,
+            proof_verifier=proof_verifier,
         )
         _write_rebuilt_collection_artifacts(
             image_root=image_root,
@@ -913,6 +925,7 @@ def _restore_collection_archives(
     collection_archives: Sequence[_CollectionArchiveObjects],
     work_root: Path,
     file_lookup: dict[tuple[str, str], tuple[str, int]],
+    proof_verifier: ProofVerifier,
 ) -> dict[tuple[str, str], bytes]:
     restored_files: dict[tuple[str, str], bytes] = {}
     for collection_archive in collection_archives:
@@ -923,6 +936,7 @@ def _restore_collection_archives(
                 file_lookup=file_lookup,
                 collection_id=collection_archive.collection_id,
             ),
+            proof_verifier=proof_verifier,
         )
         collection_root = work_root / "collections" / collection_archive.collection_id
         collection_root.mkdir(parents=True, exist_ok=True)
@@ -950,6 +964,7 @@ def _verify_restored_collection_archives(
     *,
     archive_store: ArchiveStore,
     collections: Sequence[CollectionRecord],
+    proof_verifier: ProofVerifier,
 ) -> None:
     for collection in collections:
         archive = _require_collection_archive_objects(collection)
@@ -960,6 +975,7 @@ def _verify_restored_collection_archives(
                 session,
                 collection_id=collection.id,
             ),
+            proof_verifier=proof_verifier,
         )
 
 
@@ -968,6 +984,7 @@ def _verify_restored_collection_archive(
     archive_store: ArchiveStore,
     archive: _CollectionArchiveObjects,
     expected_files: Sequence[CollectionArchiveExpectedFile],
+    proof_verifier: ProofVerifier,
 ) -> None:
     manifest_bytes = archive_store.read_restored_collection_archive_manifest(
         collection_id=archive.collection_id,
@@ -987,6 +1004,7 @@ def _verify_restored_collection_archive(
         proof_bytes=proof_bytes,
         expected_sha256=archive.proof_sha256,
         manifest_bytes=manifest_bytes,
+        verifier=proof_verifier,
     )
     verify_collection_archive_files(
         chunks=archive_store.iter_restored_collection_archive(

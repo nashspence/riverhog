@@ -20,6 +20,10 @@ The checked-in example env now keeps product-facing Glacier recovery timing
 defaults. The short recovery timing values that keep the prod-backed acceptance
 lane fast live only in `tests/harness/prod-harness.env`.
 
+The checked-in recovery payload passphrase is development/test only. Production
+Compose deployments should set `ARC_RECOVERY_PAYLOAD_REQUIRE_EXPLICIT_PASSPHRASE=true`
+and provide `ARC_RECOVERY_PAYLOAD_PASSPHRASE` from deployment secrets.
+
 Each prod-backed `make ...` invocation also chooses an isolated Compose
 project name by default. Export `TEST_COMPOSE_PROJECT_NAME` first if you
 intentionally want prod-backed runs to reuse one Compose project. Those

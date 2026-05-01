@@ -41,3 +41,11 @@ class FixtureProofStamper:
             encoding="utf-8",
         )
         return proof_path
+
+
+@dataclass(frozen=True, slots=True)
+class FixtureProofVerifier:
+    def verify(self, *, manifest_bytes: bytes, proof_bytes: bytes) -> None:
+        digest = hashlib.sha256(manifest_bytes).hexdigest().encode()
+        if digest not in proof_bytes:
+            raise ValueError("fixture proof does not match manifest")

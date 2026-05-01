@@ -19,9 +19,10 @@ from arc_core.collection_archives import (
     verify_collection_archive_manifest,
     verify_collection_archive_proof,
 )
-from tests.fixtures.crypto import FixtureProofStamper
+from tests.fixtures.crypto import FixtureProofStamper, FixtureProofVerifier
 
 _PROOF_STAMPER = FixtureProofStamper()
+_PROOF_VERIFIER = FixtureProofVerifier()
 
 
 def test_collection_archive_package_uses_plain_tar_contract() -> None:
@@ -79,6 +80,7 @@ def test_manifest_and_proof_verification_use_catalog_and_manifest_digest() -> No
         proof_bytes=package.proof_bytes,
         expected_sha256=package.proof_sha256,
         manifest_bytes=package.manifest_bytes,
+        verifier=_PROOF_VERIFIER,
     )
 
     bad_proof = b""

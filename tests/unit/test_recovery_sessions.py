@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import hashlib
+import sys
 from collections.abc import Iterator
 from dataclasses import replace
 from datetime import UTC, datetime, timedelta
@@ -157,6 +158,7 @@ def _config(sqlite_path: Path, **overrides: object) -> RuntimeConfig:
         tusd_base_url="http://example.invalid:1080/files",
         tusd_hook_secret="hook-secret",
         sqlite_path=sqlite_path,
+        ots_verify_command=(sys.executable, "-m", "tests.fixtures.ots_stamp_command"),
     )
     return replace(config, **overrides)
 

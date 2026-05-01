@@ -193,11 +193,40 @@ of treating an immediately readable object as a valid Glacier restore. Delete
 the stale object or run with a fresh `ARC_GLACIER_PREFIX`, then rerun the same
 command.
 
+## CI opt-in Glacier-billing validation
+
+`make ci-opt-in-glacier-billing` is an opt-in lane for live AWS Billing and Cost
+Explorer behavior. It is selected with `ci_opt_in and requires_aws_billing` and
+is not part of `make test`, `make spec`, or `make prod`, because it uses real AWS
+account billing APIs, account-specific Cost Explorer state, optional billing
+views, and optional CUR or Data Exports locations.
+
+The lane requires AWS credentials with the billing permissions needed by the
+configured account. It skips with explicit reasons when credentials or billing
+capabilities are unavailable, and treats unexpected API errors as regressions.
+
+```bash
+export ARC_GLACIER_BILLING_CI_OPT_IN_CONFIRM=live-aws-billing
+export ARC_GLACIER_BILLING_MODE=aws
+make ci-opt-in-glacier-billing
+```
+
+To validate live CUR or Data Exports discovery and aggregation, also configure
+the export location:
+
+```bash
+export ARC_GLACIER_BILLING_EXPORT_BUCKET=<billing-export-bucket>
+export ARC_GLACIER_BILLING_EXPORT_PREFIX=<billing-export-prefix>
+make ci-opt-in-glacier-billing args='-k export'
+```
+
 ## CI opt-in OpenTimestamps validation
 
 `make ci-opt-in-opentimestamps` is an opt-in lane for live OpenTimestamps
 anchoring. It is selected with `ci_opt_in and requires_opentimestamps`. The lane
-checks that `ots stamp` creates a non-fixture `.ots` proof.
+checks that `ots stamp` creates a non-fixture `.ots` proof and that the
+configured verification command can verify the proof against the stamped
+manifest.
 
 ```bash
 make ci-opt-in-opentimestamps

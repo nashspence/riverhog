@@ -131,6 +131,9 @@ Definitions:
 - `glacier` — direct collection archive state and object metadata
 - `archive_manifest` — manifest object path, manifest SHA-256, OTS proof object
   path, and OTS proof state for the collection archive package
+- OTS proof state records proof object presence and integrity. Restore/recovery
+  verification separately validates the `.ots` proof against the exact
+  collection manifest with the configured OpenTimestamps verification command.
 - `disc_coverage` — physical media coverage state and verified physical bytes
 - `protection_state` — one of `under_protected`, `cloud_only`,
   `physical_only`, or `fully_protected`

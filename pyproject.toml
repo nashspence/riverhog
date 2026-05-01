@@ -18,6 +18,7 @@ dependencies = [
   "uvicorn>=0.30,<1.0",
   "PyYAML>=6.0,<7.0",
   "boto3>=1.35,<2.0",
+  "opentimestamps-client>=0.7,<1.0",
 ]
 
 
@@ -66,6 +67,7 @@ markers = [
   "requires_optical_disc_drive: requires access to an optical disc drive",
   "requires_human_operator: requires an operator to provide or handle physical media",
   "requires_aws_s3: requires live AWS S3 access",
+  "requires_aws_billing: requires live AWS Billing and Cost Explorer access",
   "requires_controlled_glacier_billing: requires fixture-controlled Glacier billing metadata",
   "requires_controlled_glacier_failure: requires fixture-controlled Glacier archive failure",
   "requires_glacier_restore: requires live S3 Glacier restore behavior",

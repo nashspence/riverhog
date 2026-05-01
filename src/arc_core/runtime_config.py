@@ -8,6 +8,7 @@ from datetime import timedelta
 from pathlib import Path
 
 _DURATION_RE = re.compile(r"^(?:(\d+)h)?(?:(\d+)m)?(?:(\d+)s)?$")
+DEV_RECOVERY_PAYLOAD_PASSPHRASE = "archive-stack-dev-recovery-passphrase"
 
 
 def _parse_duration(value: str) -> timedelta:
@@ -142,8 +143,10 @@ class RuntimeConfig:
     glacier_standard_metadata_bytes_per_object: int = 8 * 1024
     glacier_minimum_storage_duration_days: int = 180
     ots_stamp_command: tuple[str, ...] = ("ots",)
+    ots_verify_command: tuple[str, ...] = ("ots",)
     recovery_payload_command: tuple[str, ...] = ("age",)
-    recovery_payload_passphrase: str = "archive-stack-dev-recovery-passphrase"
+    recovery_payload_passphrase: str = DEV_RECOVERY_PAYLOAD_PASSPHRASE
+    recovery_payload_require_explicit_passphrase: bool = False
     recovery_payload_work_factor: int = 18
     recovery_payload_max_work_factor: int = 30
     public_base_url: str | None = None
@@ -336,17 +339,33 @@ def load_runtime_config() -> RuntimeConfig:
         os.getenv("ARC_OTS_STAMP_COMMAND", "ots"),
         name="ARC_OTS_STAMP_COMMAND",
     )
+    ots_verify_command = _parse_command(
+        os.getenv("ARC_OTS_VERIFY_COMMAND", "ots"),
+        name="ARC_OTS_VERIFY_COMMAND",
+    )
     recovery_payload_command = _parse_command(
         os.getenv("ARC_RECOVERY_PAYLOAD_COMMAND", "age"),
         name="ARC_RECOVERY_PAYLOAD_COMMAND",
     )
+    recovery_payload_require_explicit_passphrase = _parse_bool(
+        os.getenv("ARC_RECOVERY_PAYLOAD_REQUIRE_EXPLICIT_PASSPHRASE", "false")
+    )
+    recovery_payload_passphrase_supplied = "ARC_RECOVERY_PAYLOAD_PASSPHRASE" in os.environ
     recovery_payload_passphrase = (
         os.getenv(
             "ARC_RECOVERY_PAYLOAD_PASSPHRASE",
-            "archive-stack-dev-recovery-passphrase",
+            DEV_RECOVERY_PAYLOAD_PASSPHRASE,
         ).strip()
-        or "archive-stack-dev-recovery-passphrase"
+        or DEV_RECOVERY_PAYLOAD_PASSPHRASE
     )
+    if recovery_payload_require_explicit_passphrase and (
+        not recovery_payload_passphrase_supplied
+        or recovery_payload_passphrase == DEV_RECOVERY_PAYLOAD_PASSPHRASE
+    ):
+        raise ValueError(
+            "ARC_RECOVERY_PAYLOAD_REQUIRE_EXPLICIT_PASSPHRASE requires "
+            "ARC_RECOVERY_PAYLOAD_PASSPHRASE to be explicitly set to a non-development secret"
+        )
     recovery_payload_work_factor = _parse_int(
         os.getenv("ARC_RECOVERY_PAYLOAD_WORK_FACTOR", "18"),
         name="ARC_RECOVERY_PAYLOAD_WORK_FACTOR",
@@ -435,8 +454,12 @@ def load_runtime_config() -> RuntimeConfig:
         glacier_standard_metadata_bytes_per_object=glacier_standard_metadata_bytes_per_object,
         glacier_minimum_storage_duration_days=glacier_minimum_storage_duration_days,
         ots_stamp_command=ots_stamp_command,
+        ots_verify_command=ots_verify_command,
         recovery_payload_command=recovery_payload_command,
         recovery_payload_passphrase=recovery_payload_passphrase,
+        recovery_payload_require_explicit_passphrase=(
+            recovery_payload_require_explicit_passphrase
+        ),
         recovery_payload_work_factor=recovery_payload_work_factor,
         recovery_payload_max_work_factor=recovery_payload_max_work_factor,
         public_base_url=public_base_url,

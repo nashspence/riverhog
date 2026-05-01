@@ -5,7 +5,11 @@ from pathlib import Path
 
 import pytest
 
-from arc_core.runtime_config import RuntimeConfig
+from arc_core.runtime_config import (
+    DEV_RECOVERY_PAYLOAD_PASSPHRASE,
+    RuntimeConfig,
+    load_runtime_config,
+)
 
 
 def _base_runtime_config(tmp_path: Path, **overrides: object) -> RuntimeConfig:
@@ -62,3 +66,41 @@ def test_runtime_config_does_not_enforce_recovery_timing_without_webhook_url(
     )
 
     assert config.glacier_recovery_webhook_url is None
+
+
+def test_load_runtime_config_accepts_explicit_test_recovery_passphrase(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setenv("ARC_DB_PATH", str(tmp_path / "state.sqlite3"))
+    monkeypatch.setenv("ARC_RECOVERY_PAYLOAD_REQUIRE_EXPLICIT_PASSPHRASE", "true")
+    monkeypatch.setenv("ARC_RECOVERY_PAYLOAD_PASSPHRASE", "unit-test-secret")
+
+    config = load_runtime_config()
+
+    assert config.recovery_payload_require_explicit_passphrase is True
+    assert config.recovery_payload_passphrase == "unit-test-secret"
+
+
+def test_load_runtime_config_rejects_required_default_recovery_passphrase(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setenv("ARC_DB_PATH", str(tmp_path / "state.sqlite3"))
+    monkeypatch.setenv("ARC_RECOVERY_PAYLOAD_REQUIRE_EXPLICIT_PASSPHRASE", "true")
+    monkeypatch.setenv("ARC_RECOVERY_PAYLOAD_PASSPHRASE", DEV_RECOVERY_PAYLOAD_PASSPHRASE)
+
+    with pytest.raises(ValueError, match="non-development secret"):
+        load_runtime_config()
+
+
+def test_load_runtime_config_rejects_required_missing_recovery_passphrase(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setenv("ARC_DB_PATH", str(tmp_path / "state.sqlite3"))
+    monkeypatch.setenv("ARC_RECOVERY_PAYLOAD_REQUIRE_EXPLICIT_PASSPHRASE", "true")
+    monkeypatch.delenv("ARC_RECOVERY_PAYLOAD_PASSPHRASE", raising=False)
+
+    with pytest.raises(ValueError, match="ARC_RECOVERY_PAYLOAD_PASSPHRASE"):
+        load_runtime_config()
