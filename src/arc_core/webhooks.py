@@ -7,6 +7,8 @@ from typing import Protocol
 
 import httpx
 
+from contracts.operator import copy as operator_copy
+
 
 @dataclass(frozen=True)
 class ReadyImage:
@@ -79,11 +81,12 @@ def build_images_ready_payload(
     *, config: WebhookConfig, batch: ImagesReadyBatch, delivered_at: datetime
 ) -> dict[str, object]:
     is_reminder = batch.initial_sent_at is not None
-    return {
+    reminder_count = batch.reminder_count + (1 if is_reminder else 0)
+    base_payload: dict[str, object] = {
         "event": "images.ready.reminder" if is_reminder else "images.ready",
         "batch_id": batch.batch_id,
         "delivered_at": isoformat_z(delivered_at),
-        "reminder_count": batch.reminder_count + (1 if is_reminder else 0),
+        "reminder_count": reminder_count,
         "reminder_interval_seconds": config.reminder_interval_seconds,
         "images": [
             {
@@ -94,6 +97,18 @@ def build_images_ready_payload(
             }
             for image in batch.images
         ],
+    }
+    notification = operator_copy.push_burn_work_ready(
+        disc_count=len(batch.images),
+        oldest_ready_at=isoformat_z(batch.initial_sent_at),
+    )
+    return {
+        **base_payload,
+        **notification.payload(
+            reminder=is_reminder,
+            reminder_count=reminder_count,
+            delivered_at=isoformat_z(delivered_at),
+        ),
     }
 
 
@@ -107,14 +122,17 @@ def build_recovery_ready_payload(
     reminder_count: int,
     reminder: bool,
 ) -> dict[str, object]:
+    affected = [image["image_id"] for image in images]
+    reminder_count_value = reminder_count + (1 if reminder else 0)
     payload: dict[str, object] = {
         "event": "images.rebuild_ready.reminder" if reminder else "images.rebuild_ready",
         "type": "image_rebuild",
         "session_id": session_id,
         "delivered_at": isoformat_z(delivered_at),
         "restore_expires_at": restore_expires_at,
-        "reminder_count": reminder_count + (1 if reminder else 0),
+        "reminder_count": reminder_count_value,
         "reminder_interval_seconds": config.reminder_interval_seconds,
+        "affected": affected,
         "images": [
             {
                 "image_id": image["image_id"],
@@ -130,7 +148,18 @@ def build_recovery_ready_payload(
     }
     if config.base_url:
         payload["session_url"] = recovery_session_url(config.base_url, session_id)
-    return payload
+    notification = operator_copy.push_recovery_ready(
+        affected=affected,
+        expires_at=restore_expires_at,
+    )
+    return {
+        **payload,
+        **notification.payload(
+            reminder=reminder,
+            reminder_count=reminder_count_value,
+            delivered_at=isoformat_z(delivered_at),
+        ),
+    }
 
 
 def post_webhook(*, config: WebhookConfig, payload: dict[str, object]) -> None:

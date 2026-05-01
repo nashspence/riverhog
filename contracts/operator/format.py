@@ -39,7 +39,7 @@ def bytes_amount(num_bytes: int | None) -> str:
     return f"{value:.2f} {unit}"
 
 
-def money_usd(amount: Decimal | float | int | str | None) -> str:
+def money_usd(amount: object | None) -> str:
     if amount is None:
         return "unknown cost"
 

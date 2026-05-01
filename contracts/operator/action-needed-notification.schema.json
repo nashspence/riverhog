@@ -1,10 +1,10 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://riverhog.local/contracts/operator/action-needed-notification.schema.json",
+  "$id": "https://riverhog.dev/contracts/operator/action-needed-notification.schema.json",
   "title": "Riverhog Action-Needed Notification Payload",
   "type": "object",
   "additionalProperties": true,
-  "required": ["event", "title", "body", "actions"],
+  "required": ["event", "title", "body", "urgency", "actions"],
   "properties": {
     "event": {
       "type": "string",
@@ -36,9 +36,123 @@
     "delivered_at": {
       "type": "string",
       "format": "date-time"
+    },
+    "session_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "session_url": {
+      "type": "string",
+      "minLength": 1
+    },
+    "type": {
+      "type": "string",
+      "minLength": 1
+    },
+    "restore_expires_at": {
+      "type": ["string", "null"]
+    },
+    "affected": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "images": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/image"
+      }
+    },
+    "collection_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "collection_url": {
+      "type": "string",
+      "minLength": 1
+    },
+    "error": {
+      "type": "string",
+      "minLength": 1
+    },
+    "attempts": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "failed_at": {
+      "type": "string",
+      "format": "date-time"
     }
   },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "event": {
+            "enum": ["images.rebuild_ready", "images.rebuild_ready.reminder"]
+          }
+        },
+        "required": ["event"]
+      },
+      "then": {
+        "required": ["type", "session_id", "images", "reminder_count"],
+        "properties": {
+          "type": {
+            "const": "image_rebuild"
+          },
+          "images": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "$ref": "#/$defs/image"
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "event": {
+            "const": "collections.glacier_upload.failed"
+          }
+        },
+        "required": ["event"]
+      },
+      "then": {
+        "required": ["collection_id", "error", "attempts"]
+      }
+    }
+  ],
   "$defs": {
+    "image": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": ["image_id"],
+      "properties": {
+        "image_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "filename": {
+          "type": "string",
+          "minLength": 1
+        },
+        "iso_available": {
+          "type": "boolean"
+        },
+        "download_url": {
+          "type": "string",
+          "minLength": 1
+        },
+        "image_url": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
     "operatorAction": {
       "type": "object",
       "additionalProperties": false,

@@ -30,6 +30,7 @@ from arc_core.webhooks import (
     post_webhook,
     utcnow,
 )
+from contracts.operator import copy as operator_copy
 
 
 class SqlAlchemyGlacierUploadService:
@@ -243,12 +244,22 @@ class SqlAlchemyGlacierUploadService:
                 f"/v1/collection-uploads/{collection_id}"
             ),
         }
+        notification = operator_copy.push_cloud_backup_failed(
+            collection_id=collection_id,
+            attempts=attempt_count,
+        )
         post_webhook(
             config=WebhookConfig(
                 url=self._config.glacier_failure_webhook_url,
                 base_url=self._config.public_base_url or "",
             ),
-            payload=payload,
+            payload={
+                **payload,
+                **notification.payload(
+                    reminder_count=0,
+                    delivered_at=failed_at,
+                ),
+            },
         )
 
 def enqueue_collection_archive_upload(

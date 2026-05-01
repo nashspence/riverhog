@@ -320,9 +320,10 @@ def disc_item_recovery_ready(
         title="Recovery is ready",
         body=(
             f"Recovery {session_id} is ready for {list_sentence(affected)} "
-            f"{deadline(expires_at)}. Finish this before the ready window closes."
+            f"{deadline(expires_at)}. Make the replacement disc before the ready "
+            "window closes."
         ),
-        next_step="Finish the guided recovery.",
+        next_step="Make the replacement disc and finish the guided recovery.",
     )
 
 
@@ -539,7 +540,8 @@ def pins_list_header(*, pin_count: int) -> str:
 def fetch_detail_pending(*, target: str, pending_files: int, partial_files: int) -> str:
     return (
         f"Files need recovery from disc for {truncate(target)}.\n"
-        f"Pending files: {pending_files}. Partly restored files: {partial_files}."
+        f"Pending files: {pending_files}. Partly restored files: {partial_files}.\n"
+        f"Run {command(ARC_DISC)} for the guided disc workflow."
     )
 
 

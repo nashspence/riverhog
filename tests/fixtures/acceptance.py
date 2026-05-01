@@ -4461,15 +4461,10 @@ class AcceptanceSystem:
                     missing_bytes=None,
                 )
             case ("fetch", _fetch_id):
-                stdout = "\n".join(
-                    (
-                        operator_copy.fetch_detail_pending(
-                            target="docs/tax/2022/invoice-123.pdf",
-                            pending_files=1,
-                            partial_files=1,
-                        ),
-                        "Run arc-disc for the guided disc workflow.",
-                    )
+                stdout = operator_copy.fetch_detail_pending(
+                    target="docs/tax/2022/invoice-123.pdf",
+                    pending_files=1,
+                    partial_files=1,
                 )
             case _:
                 return command
@@ -4487,8 +4482,6 @@ class AcceptanceSystem:
             label_location = self.state.operator_label_confirmation_location
         if items:
             stdout = operator_copy.arc_disc_attention(items)
-            if any(item.kind == "recovery_ready" for item in items):
-                stdout = f"{stdout}\nThis recovery will create a replacement disc."
             return _completed_process(["arc-disc"], stdout=stdout)
         if blank_disc_work and label_location is None:
             return _completed_process(
