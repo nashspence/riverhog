@@ -4,7 +4,7 @@ Feature: arc-disc CLI
   Targeted fetch commands remain available for explicit recovery detail flows.
 
   Rule: No-argument physical and recovery backlog
-    @todo @issue_206
+    @contract_gap @issue_208
     Scenario: arc-disc resumes unfinished local disc work before choosing new work
       Given an unlabeled verified disc is waiting for label confirmation
       And ordinary blank-disc work is available
@@ -16,7 +16,7 @@ Feature: arc-disc CLI
       And stdout mentions "storage location"
       And stdout does not mention "candidate"
 
-    @todo @issue_206
+    @contract_gap @issue_208
     Scenario: arc-disc handles ready recovery before ordinary blank-disc work
       Given recovery data is ready for collection "docs"
       And ordinary blank-disc work is available
@@ -28,7 +28,7 @@ Feature: arc-disc CLI
       And stdout mentions "replacement disc"
       And stdout does not mention "image_rebuild"
 
-    @todo @issue_206
+    @contract_gap @issue_208
     Scenario: arc-disc asks for recovery approval before ordinary blank-disc work
       Given recovery for collection "docs" needs approval
       And ordinary blank-disc work is available
@@ -40,7 +40,7 @@ Feature: arc-disc CLI
       And stdout mentions "docs"
       And stdout does not mention "pending_approval"
 
-    @todo @issue_206
+    @contract_gap @issue_208
     Scenario: arc-disc guides hot storage recovery that needs media
       Given pinned files need recovery from disc
       When the operator runs 'arc-disc'
@@ -51,7 +51,7 @@ Feature: arc-disc CLI
       And stdout mentions target "docs/tax/2022/invoice-123.pdf"
       And stdout does not mention "fetch manifest"
 
-    @todo @issue_206
+    @contract_gap @issue_208
     Scenario: arc-disc clears ordinary blank-disc work only after label confirmation
       Given ordinary blank-disc work is available
       And the operator confirms labeled disc at storage location "vault-a/shelf-01"
@@ -63,7 +63,7 @@ Feature: arc-disc CLI
       And stdout mentions "storage location"
       And the collection is fully protected
 
-    @todo @issue_206
+    @contract_gap @issue_208
     Scenario: arc-disc does not count an unlabeled disc as protected
       Given ordinary blank-disc work is available
       When the operator runs 'arc-disc' without label confirmation

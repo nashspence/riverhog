@@ -85,6 +85,19 @@ LOCKED_HELPER_STATE_ACCESS = {
     "bucket_contains_prefix": "reads fixture-backed bucket prefix state directly",
     "uploaded_entry_content": "reads uploaded fetch entry content directly",
     "configure_arc_disc_fixture": "reads fetch entry content directly before fixture file writes",
+    "clear_operator_arc_attention": "mutates operator contract fixture state directly",
+    "add_operator_cloud_backup_failure": "mutates operator contract fixture state directly",
+    "add_operator_setup_attention": "mutates operator contract fixture state directly",
+    "add_operator_notification_attention": "mutates operator contract fixture state directly",
+    "set_operator_unfinished_local_disc": "mutates operator contract fixture state directly",
+    "set_operator_recovery_ready": "mutates operator contract fixture state directly",
+    "set_operator_recovery_approval_required": "mutates operator contract fixture state directly",
+    "set_operator_hot_recovery_needs_media": "mutates operator contract fixture state directly",
+    "set_operator_blank_disc_work_available": "mutates operator contract fixture state directly",
+    "confirm_operator_labeled_disc": "mutates operator contract fixture state directly",
+    "operator_collection_is_fully_protected": "reads operator contract fixture state directly",
+    "_arc_contract_output": "renders arc contract fixture output from state",
+    "_arc_disc_contract_output": "renders arc-disc contract fixture output from state",
 }
 
 DELEGATED_HELPER_STATE_ACCESS = {
@@ -93,6 +106,10 @@ DELEGATED_HELPER_STATE_ACCESS = {
     "configure_webhook_failure": "delegates to locked AcceptanceState webhook behavior mutation",
     "seed_collection_source": "delegates collection source registration to locked AcceptanceState",
     "seed_image_fixtures": "delegates candidate image registration to locked AcceptanceState",
+    "emit_operator_ready_disc_notification": "delegates to locked AcceptanceState webhook delivery",
+    "emit_operator_cloud_backup_failure_notification": (
+        "delegates to locked AcceptanceState webhook delivery"
+    ),
 }
 
 LIFECYCLE_HELPER_STATE_ACCESS = {

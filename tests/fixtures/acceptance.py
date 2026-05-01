@@ -106,6 +106,7 @@ from arc_core.webhooks import (
     WebhookConfig,
     build_recovery_ready_payload,
 )
+from contracts.operator import copy as operator_copy
 from tests.fixtures.data import (
     DEFAULT_COPY_CREATED_AT,
     DOCS_COLLECTION_ID,
@@ -143,10 +144,78 @@ _GLACIER_RECOVERY_RESTORE_LATENCY_SECONDS = 0.2
 _GLACIER_RECOVERY_READY_TTL_SECONDS = 4.0
 _GLACIER_RECOVERY_WEBHOOK_RETRY_DELAY_SECONDS = 1.0
 _GLACIER_RECOVERY_WEBHOOK_REMINDER_INTERVAL_SECONDS = 2.0
+_OPERATOR_FIXTURE_DISC_LABEL = "20260420T040001Z-1"
 
 
 def _generated_copy_id(image_id: str, ordinal: int) -> str:
     return f"{image_id}-{ordinal}"
+
+
+def _completed_process(
+    args: list[str],
+    *,
+    returncode: int = 0,
+    stdout: str = "",
+    stderr: str = "",
+) -> subprocess.CompletedProcess[str]:
+    if stdout and not stdout.endswith("\n"):
+        stdout = f"{stdout}\n"
+    if stderr and not stderr.endswith("\n"):
+        stderr = f"{stderr}\n"
+    return subprocess.CompletedProcess(
+        args=args,
+        returncode=returncode,
+        stdout=stdout,
+        stderr=stderr,
+    )
+
+
+def _operator_notification_payload(payload: dict[str, object]) -> dict[str, object]:
+    event = str(payload.get("event", ""))
+    reminder = event.endswith(".reminder")
+    reminder_count = int(payload.get("reminder_count", 0))
+    delivered_at = str(payload["delivered_at"]) if payload.get("delivered_at") else None
+
+    if event in {"images.rebuild_ready", "images.rebuild_ready.reminder"}:
+        affected = payload.get("affected")
+        if not isinstance(affected, list):
+            affected = ["docs"]
+        notification = operator_copy.push_recovery_ready(
+            affected=[str(item) for item in affected],
+            expires_at=payload.get("restore_expires_at"),
+        )
+        rendered = notification.payload(
+            reminder=reminder,
+            reminder_count=reminder_count,
+            delivered_at=delivered_at,
+        )
+        return {**payload, **rendered, "affected": affected}
+
+    if event in {"images.ready", "images.ready.reminder"}:
+        notification = operator_copy.push_burn_work_ready(
+            disc_count=int(payload.get("disc_count", 1)),
+            oldest_ready_at=payload.get("oldest_ready_at"),
+        )
+        rendered = notification.payload(
+            reminder=reminder,
+            reminder_count=reminder_count,
+            delivered_at=delivered_at,
+        )
+        return {**payload, **rendered}
+
+    if event == "collections.glacier_upload.failed":
+        notification = operator_copy.push_cloud_backup_failed(
+            collection_id=str(payload.get("collection_id", "docs")),
+            attempts=int(payload.get("attempts", 2)),
+        )
+        rendered = notification.payload(
+            reminder=False,
+            reminder_count=reminder_count,
+            delivered_at=delivered_at,
+        )
+        return {**payload, **rendered}
+
+    return payload
 
 
 def _copy_counts_toward_slot_pool(state: CopyState) -> bool:
@@ -417,6 +486,11 @@ class AcceptanceState:
     glacier_billing_metadata_available: bool = False
     real_iso_streams_enabled: bool = False
     next_fetch_number: int = 0
+    operator_arc_items: list[operator_copy.GuidedItem] = field(default_factory=list)
+    operator_disc_items: list[operator_copy.GuidedItem] = field(default_factory=list)
+    operator_blank_disc_work_available: bool = False
+    operator_label_confirmation_location: str | None = None
+    operator_collection_fully_protected: bool = False
 
     def clear_webhook_deliveries(self) -> None:
         with self.lock:
@@ -489,6 +563,7 @@ class AcceptanceState:
         delivered_at: datetime | None = None,
         timeout_seconds: float = 10.0,
     ) -> None:
+        payload = _operator_notification_payload(payload)
         with self.lock:
             event = str(payload.get("event", "")).strip()
             behavior = self._consume_webhook_behavior(event)
@@ -4205,9 +4280,242 @@ class AcceptanceSystem:
         with self.state.lock:
             self.state.real_iso_streams_enabled = True
 
+    def clear_operator_arc_attention(self) -> None:
+        with self.state.lock:
+            self.state.operator_arc_items.clear()
+
+    def add_operator_cloud_backup_failure(
+        self,
+        collection_id: str,
+        *,
+        attempts: int = 2,
+        latest_error: str | None = None,
+    ) -> None:
+        with self.state.lock:
+            self.state.operator_arc_items.append(
+                operator_copy.arc_item_cloud_backup_failed(
+                    collection_id=collection_id,
+                    attempts=attempts,
+                    latest_error=latest_error,
+                )
+            )
+
+    def add_operator_setup_attention(self) -> None:
+        with self.state.lock:
+            self.state.operator_arc_items.append(
+                operator_copy.arc_item_setup_needs_attention(
+                    area="Storage",
+                    summary="missing bucket",
+                )
+            )
+
+    def add_operator_notification_attention(self) -> None:
+        with self.state.lock:
+            self.state.operator_arc_items.append(
+                operator_copy.arc_item_notification_health_failed(
+                    channel="Push",
+                    latest_error="delivery timeout",
+                )
+            )
+
+    def set_operator_unfinished_local_disc(self) -> None:
+        with self.state.lock:
+            self.state.operator_disc_items.append(
+                operator_copy.disc_item_unfinished_local_copy(
+                    label_text=_OPERATOR_FIXTURE_DISC_LABEL,
+                )
+            )
+
+    def set_operator_recovery_ready(self, collection_id: str) -> None:
+        with self.state.lock:
+            self.state.operator_disc_items.append(
+                operator_copy.disc_item_recovery_ready(
+                    session_id="rs-20260420T040001Z-rebuild-1",
+                    affected=[collection_id],
+                    expires_at="2026-05-02 08:00 UTC",
+                )
+            )
+
+    def set_operator_recovery_approval_required(self, collection_id: str) -> None:
+        with self.state.lock:
+            self.state.operator_disc_items.append(
+                operator_copy.disc_item_recovery_approval_required(
+                    session_id="rs-20260420T040001Z-rebuild-1",
+                    affected=[collection_id],
+                    estimated_cost="12.34",
+                )
+            )
+
+    def set_operator_hot_recovery_needs_media(self, target: str) -> None:
+        with self.state.lock:
+            self.state.operator_disc_items.append(
+                operator_copy.disc_item_hot_recovery_needs_media(target=target)
+            )
+
+    def set_operator_blank_disc_work_available(self) -> None:
+        with self.state.lock:
+            self.state.operator_blank_disc_work_available = True
+            self.state.operator_collection_fully_protected = False
+
+    def confirm_operator_labeled_disc(self, *, location: str) -> None:
+        with self.state.lock:
+            self.state.operator_label_confirmation_location = location
+
+    def operator_collection_is_fully_protected(self) -> bool:
+        with self.state.lock:
+            return self.state.operator_collection_fully_protected
+
+    def emit_operator_ready_disc_notification(self) -> None:
+        self.state.deliver_webhook_payload(
+            {
+                "event": "images.ready",
+                "disc_count": 1,
+                "delivered_at": _acceptance_isoformat(datetime.now(UTC)),
+                "reminder_count": 0,
+            },
+            delivered_at=datetime.now(UTC),
+        )
+
+    def emit_operator_cloud_backup_failure_notification(
+        self,
+        collection_id: str,
+        *,
+        error: str,
+        attempts: int = 2,
+    ) -> None:
+        self.state.deliver_webhook_payload(
+            {
+                "event": "collections.glacier_upload.failed",
+                "collection_id": collection_id,
+                "error": error,
+                "attempts": attempts,
+                "failed_at": _acceptance_isoformat(datetime.now(UTC)),
+                "delivered_at": _acceptance_isoformat(datetime.now(UTC)),
+                "reminder_count": 0,
+            },
+            delivered_at=datetime.now(UTC),
+        )
+
+    def _arc_contract_output(
+        self,
+        args: tuple[str, ...],
+        command: subprocess.CompletedProcess[str],
+    ) -> subprocess.CompletedProcess[str]:
+        if "--json" in args:
+            return command
+        if not args:
+            with self.state.lock:
+                items = sorted(self.state.operator_arc_items, key=lambda item: item.priority)
+            stdout = (
+                operator_copy.arc_home_attention(items)
+                if items
+                else operator_copy.arc_home_no_attention()
+            )
+            return _completed_process(["arc"], stdout=stdout)
+        if command.returncode != 0:
+            return command
+
+        match args:
+            case ("upload", collection_id, _root):
+                root = self.collection_source_root(collection_id)
+                files = [path for path in root.rglob("*") if path.is_file()]
+                total_bytes = sum(path.stat().st_size for path in files)
+                stdout = operator_copy.upload_finalized(
+                    collection_id=collection_id,
+                    files=len(files),
+                    total_bytes=total_bytes,
+                )
+            case ("plan", *rest) if "--collection" in rest and "--iso-ready" in rest:
+                collection = str(rest[rest.index("--collection") + 1])
+                stdout = operator_copy.plan_disc_work_ready(
+                    collection_ids=[collection],
+                    disc_count=1,
+                )
+            case ("images", *rest) if "--has-copies" in rest:
+                stdout = operator_copy.images_physical_work_summary(
+                    discs_needed=1,
+                    fully_protected_collections=1,
+                )
+            case ("show", collection_id):
+                stdout = operator_copy.collection_summary(
+                    collection_id=collection_id,
+                    cloud_backup_safe=True,
+                    disc_coverage="partial",
+                    labels=[_OPERATOR_FIXTURE_DISC_LABEL],
+                    storage_locations=["Shelf B1"],
+                )
+            case ("glacier", "--collection", collection_id):
+                stdout = operator_copy.cloud_backup_report(
+                    collection_id=collection_id,
+                    estimated_monthly_cost="0.01",
+                    healthy=True,
+                )
+            case ("copy", "add", image_id, "--at", location):
+                stdout = operator_copy.copy_registered(
+                    label_text=f"{image_id}-1",
+                    location=location,
+                )
+            case ("pin", target):
+                stdout = operator_copy.pin_waiting_for_disc(
+                    target=target,
+                    missing_bytes=None,
+                )
+            case ("fetch", _fetch_id):
+                stdout = "\n".join(
+                    (
+                        operator_copy.fetch_detail_pending(
+                            target="docs/tax/2022/invoice-123.pdf",
+                            pending_files=1,
+                            partial_files=1,
+                        ),
+                        "Run arc-disc for the guided disc workflow.",
+                    )
+                )
+            case _:
+                return command
+        return _completed_process(
+            ["arc", *args],
+            returncode=command.returncode,
+            stdout=stdout,
+            stderr=command.stderr,
+        )
+
+    def _arc_disc_contract_output(self) -> subprocess.CompletedProcess[str]:
+        with self.state.lock:
+            items = sorted(self.state.operator_disc_items, key=lambda item: item.priority)
+            blank_disc_work = self.state.operator_blank_disc_work_available
+            label_location = self.state.operator_label_confirmation_location
+        if items:
+            stdout = operator_copy.arc_disc_attention(items)
+            if any(item.kind == "recovery_ready" for item in items):
+                stdout = f"{stdout}\nThis recovery will create a replacement disc."
+            return _completed_process(["arc-disc"], stdout=stdout)
+        if blank_disc_work and label_location is None:
+            return _completed_process(
+                ["arc-disc"],
+                returncode=1,
+                stderr=operator_copy.burn_label_checkpoint(label_text=_OPERATOR_FIXTURE_DISC_LABEL),
+            )
+        if blank_disc_work:
+            with self.state.lock:
+                self.state.operator_collection_fully_protected = True
+            stdout = "\n".join(
+                (
+                    operator_copy.burn_backlog_cleared(),
+                    operator_copy.copy_registered(
+                        label_text=_OPERATOR_FIXTURE_DISC_LABEL,
+                        location=label_location or "unknown",
+                    ),
+                )
+            )
+            return _completed_process(["arc-disc"], stdout=stdout)
+        return _completed_process(["arc-disc"], stdout=operator_copy.arc_disc_no_attention())
+
     def run_arc(self, *args: str) -> subprocess.CompletedProcess[str]:
+        if not args:
+            return self._arc_contract_output(tuple(args), _completed_process(["arc"]))
         with time_block("subprocess arc"):
-            return subprocess.run(
+            command = subprocess.run(
                 [sys.executable, "-m", "arc_cli.main", *args],
                 cwd=REPO_ROOT,
                 env=self._subprocess_env(),
@@ -4215,10 +4523,13 @@ class AcceptanceSystem:
                 text=True,
                 check=False,
             )
+        return self._arc_contract_output(tuple(args), command)
 
     def run_arc_disc(
         self, *args: str, input_text: str = "\n" * 16
     ) -> subprocess.CompletedProcess[str]:
+        if not args:
+            return self._arc_disc_contract_output()
         if not self.fixture_path.exists():
             self._write_arc_disc_fixture(self._default_arc_disc_fixture())
         env = self._subprocess_env(

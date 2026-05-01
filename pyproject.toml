@@ -78,6 +78,10 @@ markers = [
   "issue_186: tracks issue #186 for opt-in prod testing conventions",
   "issue_187: tracks issue #187 for removing fake terminology from acceptance optical scenarios",
   "issue_206: tracks issue #206 for backing accepted operator UX contracts in harnesses and scaffold",
+  "issue_208: tracks issue #208 for no-arg arc-disc physical/recovery backlog clearing",
+  "issue_209: tracks issue #209 for no-arg arc operator home and non-physical workflows",
+  "issue_210: tracks issue #210 for action-needed webhook payloads",
+  "issue_211: tracks issue #211 for replacing remaining normal CLI copy",
 ]
 
 [tool.mypy]

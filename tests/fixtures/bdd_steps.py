@@ -8,15 +8,18 @@ import re
 import shlex
 from dataclasses import dataclass, field
 from datetime import datetime
+from pathlib import Path
 from typing import Any
 from urllib.parse import parse_qsl, quote, urlsplit
 
 import httpx
+import jsonschema
 import pytest
 from pytest_bdd import given, parsers, then, when
 
 from arc_core.domain.selectors import parse_target
 from arc_core.fs_paths import normalize_collection_id
+from contracts.operator import copy as operator_copy
 from tests.fixtures.acceptance import AcceptanceSystem
 from tests.fixtures.data import (
     DOCS_COLLECTION_ID,
@@ -50,6 +53,8 @@ from tests.fixtures.disc_contracts import (
 
 _CAPTURED_WEBHOOK_TIMEOUT_DELAY_SECONDS = 15.0
 _DEFAULT_OPTICAL_ACCEPTANCE_DEVICE = "/dev/sr0"
+_ROOT = Path(__file__).resolve().parents[2]
+_OPERATOR_DISC_LABEL = "20260420T040001Z-1"
 
 
 @dataclass(slots=True)
@@ -126,6 +131,161 @@ def _require_captured_webhook_attempt(context: AcceptanceScenarioContext) -> dic
     if context.captured_webhook_attempt is None:  # pragma: no cover - defensive guard
         raise AssertionError("no captured webhook attempt has been recorded for this scenario")
     return context.captured_webhook_attempt
+
+
+def _guided_item_text(
+    item: operator_copy.GuidedItem,
+    *,
+    index: int = 1,
+    total: int = 1,
+) -> str:
+    return "\n".join(
+        (
+            operator_copy.guided_item_header(index=index, total=total, item=item),
+            operator_copy.guided_item_body(item=item),
+        )
+    )
+
+
+def _operator_copy_text(name: str) -> str:
+    match name:
+        case "arc_home_no_attention":
+            return operator_copy.arc_home_no_attention()
+        case "arc_item_cloud_backup_failed":
+            return _guided_item_text(
+                operator_copy.arc_item_cloud_backup_failed(
+                    collection_id="docs",
+                    attempts=2,
+                    latest_error=None,
+                )
+            )
+        case "arc_item_setup_needs_attention":
+            return _guided_item_text(
+                operator_copy.arc_item_setup_needs_attention(
+                    area="Storage",
+                    summary="missing bucket",
+                ),
+                index=2,
+                total=2,
+            )
+        case "arc_item_notification_health_failed":
+            return _guided_item_text(
+                operator_copy.arc_item_notification_health_failed(
+                    channel="Push",
+                    latest_error="delivery timeout",
+                ),
+                index=1,
+                total=2,
+            )
+        case "upload_finalized":
+            return operator_copy.upload_finalized(
+                collection_id="photos-2024",
+                files=PHOTOS_2024_FILE_COUNT,
+                total_bytes=PHOTOS_2024_TOTAL_BYTES,
+            )
+        case "plan_disc_work_ready":
+            return operator_copy.plan_disc_work_ready(collection_ids=["docs"], disc_count=1)
+        case "images_physical_work_summary":
+            return operator_copy.images_physical_work_summary(
+                discs_needed=1,
+                fully_protected_collections=1,
+            )
+        case "collection_summary":
+            return operator_copy.collection_summary(
+                collection_id="docs",
+                cloud_backup_safe=True,
+                disc_coverage="partial",
+                labels=[_OPERATOR_DISC_LABEL],
+                storage_locations=["Shelf B1"],
+            )
+        case "cloud_backup_report":
+            return operator_copy.cloud_backup_report(
+                collection_id="docs",
+                estimated_monthly_cost="0.01",
+                healthy=True,
+            )
+        case "copy_registered":
+            return operator_copy.copy_registered(
+                label_text=_OPERATOR_DISC_LABEL,
+                location="Shelf B1",
+            )
+        case "pin_waiting_for_disc":
+            return operator_copy.pin_waiting_for_disc(
+                target="docs/tax/2022/invoice-123.pdf",
+                missing_bytes=None,
+            )
+        case "fetch_detail_pending":
+            return operator_copy.fetch_detail_pending(
+                target="docs/tax/2022/invoice-123.pdf",
+                pending_files=1,
+                partial_files=1,
+            )
+        case "disc_item_unfinished_local_copy":
+            return _guided_item_text(
+                operator_copy.disc_item_unfinished_local_copy(label_text=_OPERATOR_DISC_LABEL)
+            )
+        case "disc_item_recovery_ready":
+            return _guided_item_text(
+                operator_copy.disc_item_recovery_ready(
+                    session_id="rs-20260420T040001Z-rebuild-1",
+                    affected=["docs"],
+                    expires_at="2026-05-02 08:00 UTC",
+                )
+            )
+        case "disc_item_recovery_approval_required":
+            return _guided_item_text(
+                operator_copy.disc_item_recovery_approval_required(
+                    session_id="rs-20260420T040001Z-rebuild-1",
+                    affected=["docs"],
+                    estimated_cost="12.34",
+                )
+            )
+        case "disc_item_hot_recovery_needs_media":
+            return _guided_item_text(
+                operator_copy.disc_item_hot_recovery_needs_media(
+                    target="docs/tax/2022/invoice-123.pdf"
+                )
+            )
+        case "burn_backlog_cleared":
+            return operator_copy.burn_backlog_cleared()
+        case "burn_label_checkpoint":
+            return operator_copy.burn_label_checkpoint(label_text=_OPERATOR_DISC_LABEL)
+    raise AssertionError(f"unsupported operator copy reference: {name}")
+
+
+def _operator_notification(
+    name: str,
+    payload: dict[str, Any],
+) -> operator_copy.ActionNeededNotification:
+    match name:
+        case "push_burn_work_ready":
+            return operator_copy.push_burn_work_ready(
+                disc_count=int(payload.get("disc_count", 1)),
+                oldest_ready_at=payload.get("oldest_ready_at"),
+            )
+        case "push_recovery_ready":
+            affected = payload.get("affected")
+            if not isinstance(affected, list):
+                affected = ["docs"]
+            return operator_copy.push_recovery_ready(
+                affected=[str(item) for item in affected],
+                expires_at=payload.get("restore_expires_at"),
+            )
+        case "push_cloud_backup_failed":
+            return operator_copy.push_cloud_backup_failed(
+                collection_id=str(payload.get("collection_id", "docs")),
+                attempts=int(payload.get("attempts", 2)),
+            )
+    raise AssertionError(f"unsupported operator notification copy reference: {name}")
+
+
+def _captured_webhook_action(payload: dict[str, Any]) -> dict[str, Any]:
+    actions = payload.get("actions")
+    assert isinstance(actions, list), payload
+    assert actions, payload
+    action = actions[0]
+    assert isinstance(action, dict), payload
+    return action
 
 
 def _selected_relpath_for_target(
@@ -395,6 +555,8 @@ def _prepare_arc_expectation(
 ) -> None:
     argv = context.command_argv
     if not argv or argv[0] != "arc":
+        return
+    if len(argv) < 2:
         return
 
     if argv[1] == "pin":
@@ -753,6 +915,167 @@ def given_collection_glacier_archiving_fails(
     error: str,
 ) -> None:
     acceptance_system.fail_collection_glacier_upload(collection_id, error=error)
+
+
+@given("the archive has no non-physical attention items")
+def given_archive_has_no_non_physical_attention_items(
+    acceptance_system: AcceptanceSystem,
+) -> None:
+    acceptance_system.clear_operator_arc_attention()
+
+
+@given(parsers.parse('collection "{collection_id}" has failed cloud backup after retries'))
+def given_collection_has_failed_cloud_backup_after_retries(
+    acceptance_system: AcceptanceSystem,
+    collection_id: str,
+) -> None:
+    _ensure_collection_fixture(acceptance_system, collection_id)
+    acceptance_system.add_operator_cloud_backup_failure(collection_id)
+
+
+@given(
+    parsers.parse(
+        'collection "{collection_id}" has failed cloud backup after retries with error "{error}"'
+    )
+)
+def given_collection_has_failed_cloud_backup_after_retries_with_error(
+    acceptance_system: AcceptanceSystem,
+    collection_id: str,
+    error: str,
+) -> None:
+    _ensure_collection_fixture(acceptance_system, collection_id)
+    acceptance_system.add_operator_cloud_backup_failure(
+        collection_id,
+        latest_error=error,
+    )
+    acceptance_system.emit_operator_cloud_backup_failure_notification(
+        collection_id,
+        error=error,
+    )
+
+
+@given("setup needs attention")
+def given_setup_needs_attention(acceptance_system: AcceptanceSystem) -> None:
+    acceptance_system.add_operator_setup_attention()
+
+
+@given("notification delivery needs attention")
+def given_notification_delivery_needs_attention(acceptance_system: AcceptanceSystem) -> None:
+    acceptance_system.add_operator_notification_attention()
+
+
+@given("an archive with planned disc work")
+def given_archive_with_planned_disc_work(acceptance_system: AcceptanceSystem) -> None:
+    acceptance_system.seed_planner_fixtures()
+    acceptance_system.set_operator_blank_disc_work_available()
+
+
+@given(parsers.parse('a disc copy already exists for collection "{collection_id}"'))
+def given_disc_copy_already_exists_for_collection(
+    acceptance_system: AcceptanceSystem,
+    collection_id: str,
+) -> None:
+    _ensure_collection_fixture(acceptance_system, collection_id)
+    _ensure_candidate_fixture(acceptance_system, IMAGE_ID)
+    acceptance_system.planning.finalize_image(IMAGE_ID)
+    acceptance_system.copies.register("20260420T040001Z", "Shelf B1")
+
+
+@given(parsers.parse('collection "{collection_id}" is safe in cloud backup'))
+def given_collection_is_safe_in_cloud_backup(
+    acceptance_system: AcceptanceSystem,
+    collection_id: str,
+) -> None:
+    _ensure_collection_fixture(acceptance_system, collection_id)
+    acceptance_system.mark_collection_archive_uploaded(collection_id)
+
+
+@given(parsers.parse('collection "{collection_id}" has partial disc coverage'))
+def given_collection_has_partial_disc_coverage(
+    acceptance_system: AcceptanceSystem,
+    collection_id: str,
+) -> None:
+    _ensure_collection_fixture(acceptance_system, collection_id)
+    _ensure_candidate_fixture(acceptance_system, IMAGE_ID)
+    acceptance_system.planning.finalize_image(IMAGE_ID)
+    acceptance_system.copies.register("20260420T040001Z", "Shelf B1")
+
+
+@given(parsers.parse('collection "{collection_id}" has one split file protected by one disc'))
+def given_collection_has_one_split_file_protected_by_one_disc(
+    acceptance_system: AcceptanceSystem,
+    collection_id: str,
+) -> None:
+    assert collection_id == DOCS_COLLECTION_ID
+    acceptance_system.seed_docs_archive_with_split_invoice()
+
+
+@given("an unlabeled verified disc is waiting for label confirmation")
+def given_unlabeled_verified_disc_is_waiting_for_label_confirmation(
+    acceptance_system: AcceptanceSystem,
+) -> None:
+    acceptance_system.set_operator_unfinished_local_disc()
+
+
+@given("ordinary blank-disc work is available")
+def given_ordinary_blank_disc_work_is_available(
+    acceptance_system: AcceptanceSystem,
+) -> None:
+    acceptance_system.seed_planner_fixtures()
+    acceptance_system.set_operator_blank_disc_work_available()
+
+
+@given(parsers.parse('recovery data is ready for collection "{collection_id}"'))
+def given_recovery_data_is_ready_for_collection(
+    acceptance_system: AcceptanceSystem,
+    collection_id: str,
+) -> None:
+    acceptance_system.set_operator_recovery_ready(collection_id)
+
+
+@given(parsers.parse('recovery for collection "{collection_id}" needs approval'))
+def given_recovery_for_collection_needs_approval(
+    acceptance_system: AcceptanceSystem,
+    collection_id: str,
+) -> None:
+    acceptance_system.set_operator_recovery_approval_required(collection_id)
+
+
+@given("pinned files need recovery from disc")
+def given_pinned_files_need_recovery_from_disc(
+    acceptance_system: AcceptanceSystem,
+) -> None:
+    given_pinning_target_requires_fetch(
+        acceptance_system,
+        INVOICE_TARGET,
+        "fx-1",
+    )
+    acceptance_system.set_operator_hot_recovery_needs_media(INVOICE_TARGET)
+
+
+@given(parsers.parse('the operator confirms labeled disc at storage location "{location}"'))
+def given_operator_confirms_labeled_disc_at_storage_location(
+    acceptance_system: AcceptanceSystem,
+    location: str,
+) -> None:
+    acceptance_system.confirm_operator_labeled_disc(location=location)
+
+
+@given("a collection upload finishes successfully")
+def given_collection_upload_finishes_successfully(
+    acceptance_system: AcceptanceSystem,
+) -> None:
+    acceptance_system.seed_photos_hot()
+
+
+@given("disc work finishes successfully")
+def given_disc_work_finishes_successfully() -> None:
+    return None
+
+
+@given("hot storage recovery finishes successfully")
+def given_hot_storage_recovery_finishes_successfully() -> None:
+    return None
 
 
 @given(
@@ -1783,6 +2106,35 @@ def when_operator_runs_command(
         return
 
     raise AssertionError(f"unsupported command: {command}")
+
+
+@when("the operator runs 'arc-disc' without label confirmation")
+def when_operator_runs_arc_disc_without_label_confirmation(
+    acceptance_system: AcceptanceSystem,
+    acceptance_context: AcceptanceScenarioContext,
+) -> None:
+    acceptance_context.command_text = "arc-disc"
+    acceptance_context.command_argv = ["arc-disc"]
+    acceptance_context.stdout_json = None
+    acceptance_context.expected_api_endpoint = None
+    acceptance_context.expected_api_payload = None
+    acceptance_context.command = acceptance_system.run_arc_disc()
+
+
+@when("Riverhog emits an action-needed notification for ready disc work")
+def when_riverhog_emits_action_needed_notification_for_ready_disc_work(
+    acceptance_system: AcceptanceSystem,
+    acceptance_context: AcceptanceScenarioContext,
+) -> None:
+    acceptance_system.emit_operator_ready_disc_notification()
+    acceptance_context.captured_webhook_payload = acceptance_system.wait_for_webhook_event(
+        "images.ready"
+    )
+
+
+@when("Riverhog delivers due action-needed notifications")
+def when_riverhog_delivers_due_action_needed_notifications() -> None:
+    return None
 
 
 @when(parsers.parse('the operator runs arc-disc fetch "{fetch_id}"'))
@@ -3304,6 +3656,75 @@ def then_captured_webhook_payload_field_equals(
     assert str(payload[field]) == value
 
 
+@then(parsers.parse('the captured webhook payload matches "{contract_path}"'))
+def then_captured_webhook_payload_matches_contract(
+    acceptance_context: AcceptanceScenarioContext,
+    contract_path: str,
+) -> None:
+    payload = _require_captured_webhook_payload(acceptance_context)
+    schema_path = _ROOT / contract_path
+    schema = json.loads(schema_path.read_text(encoding="utf-8"))
+    jsonschema.Draft202012Validator(
+        schema,
+        format_checker=jsonschema.FormatChecker(),
+    ).validate(payload)
+
+
+@then(parsers.parse('the captured webhook payload matches operator notification copy "{name}"'))
+def then_captured_webhook_payload_matches_operator_notification_copy(
+    acceptance_context: AcceptanceScenarioContext,
+    name: str,
+) -> None:
+    payload = _require_captured_webhook_payload(acceptance_context)
+    notification = _operator_notification(name, payload)
+    reminder = str(payload.get("event")) == notification.reminder_event
+    expected = notification.payload(
+        reminder=reminder,
+        reminder_count=int(payload["reminder_count"]) if "reminder_count" in payload else None,
+        delivered_at=str(payload["delivered_at"]) if "delivered_at" in payload else None,
+    )
+    for payload_field in ("event", "title", "body", "urgency", "actions"):
+        assert payload.get(payload_field) == expected[payload_field]
+
+
+@then(parsers.parse('the captured webhook payload field "{field}" is present'))
+def then_captured_webhook_payload_field_is_present(
+    acceptance_context: AcceptanceScenarioContext,
+    field: str,
+) -> None:
+    payload = _require_captured_webhook_payload(acceptance_context)
+    assert field in payload
+    assert payload[field] not in {None, ""}
+
+
+@then("the captured webhook payload has exactly one action")
+def then_captured_webhook_payload_has_exactly_one_action(
+    acceptance_context: AcceptanceScenarioContext,
+) -> None:
+    payload = _require_captured_webhook_payload(acceptance_context)
+    actions = payload.get("actions")
+    assert isinstance(actions, list)
+    assert len(actions) == 1
+
+
+@then(parsers.parse('the captured webhook action command equals "{command}"'))
+def then_captured_webhook_action_command_equals(
+    acceptance_context: AcceptanceScenarioContext,
+    command: str,
+) -> None:
+    payload = _require_captured_webhook_payload(acceptance_context)
+    assert _captured_webhook_action(payload).get("command") == command
+
+
+@then(parsers.parse('the captured webhook action argv equals "{command}"'))
+def then_captured_webhook_action_argv_equals(
+    acceptance_context: AcceptanceScenarioContext,
+    command: str,
+) -> None:
+    payload = _require_captured_webhook_payload(acceptance_context)
+    assert _captured_webhook_action(payload).get("argv") == [command]
+
+
 @then(parsers.parse('the captured webhook payload integer field "{field}" equals {value:d}'))
 def then_captured_webhook_payload_integer_field_equals(
     acceptance_context: AcceptanceScenarioContext,
@@ -3404,6 +3825,71 @@ def then_captured_webhook_attempt_integer_field_equals(
 ) -> None:
     attempt = _require_captured_webhook_attempt(acceptance_context)
     assert int(attempt[field]) == value
+
+
+@then("no captured webhook event asks only for labeling")
+def then_no_captured_webhook_event_asks_only_for_labeling(
+    acceptance_system: AcceptanceSystem,
+) -> None:
+    for payload in acceptance_system.list_webhook_deliveries():
+        rendered = "\n".join(
+            str(payload.get(field, ""))
+            for field in ("event", "title", "body")
+        ).casefold()
+        assert "label" not in rendered
+
+
+@then("no captured webhook action command includes a subcommand")
+def then_no_captured_webhook_action_command_includes_subcommand(
+    acceptance_system: AcceptanceSystem,
+) -> None:
+    for payload in acceptance_system.list_webhook_deliveries():
+        actions = payload.get("actions", [])
+        assert isinstance(actions, list)
+        for action in actions:
+            assert isinstance(action, dict)
+            command = str(action.get("command", ""))
+            argv = action.get("argv", [])
+            assert command in {"arc", "arc-disc"}
+            assert isinstance(argv, list)
+            assert argv == [command]
+
+
+@then("no captured webhook event is emitted for routine success")
+def then_no_captured_webhook_event_is_emitted_for_routine_success(
+    acceptance_system: AcceptanceSystem,
+) -> None:
+    assert acceptance_system.list_webhook_deliveries() == []
+
+
+@then("contracts/operator/copy.py defines no labeling notification copy")
+def then_operator_copy_defines_no_labeling_notification_copy() -> None:
+    push_names = [
+        name
+        for name in dir(operator_copy)
+        if name.startswith("push_") and callable(getattr(operator_copy, name))
+    ]
+    assert not [name for name in push_names if "label" in name]
+
+
+@then("contracts/operator/copy.py defines no routine-success notification copy")
+def then_operator_copy_defines_no_routine_success_notification_copy() -> None:
+    push_names = [
+        name
+        for name in dir(operator_copy)
+        if name.startswith("push_") and callable(getattr(operator_copy, name))
+    ]
+    assert not [name for name in push_names if "success" in name or "done" in name]
+
+
+@then("the collection is fully protected")
+def then_the_collection_is_fully_protected(acceptance_system: AcceptanceSystem) -> None:
+    assert acceptance_system.operator_collection_is_fully_protected()
+
+
+@then("the collection is not fully protected")
+def then_the_collection_is_not_fully_protected(acceptance_system: AcceptanceSystem) -> None:
+    assert not acceptance_system.operator_collection_is_fully_protected()
 
 
 @then("the response Glacier totals measured_storage_bytes is greater than 0")
@@ -3910,6 +4396,32 @@ def then_stdout_matches_expected_api_payload(
         actual = _normalized_glacier_payload(actual)
         expected = _normalized_glacier_payload(expected)
     assert actual == expected
+
+
+@then(parsers.parse('stdout matches operator copy "{name}"'))
+def then_stdout_matches_operator_copy(
+    acceptance_context: AcceptanceScenarioContext,
+    name: str,
+) -> None:
+    assert _require_command(acceptance_context).stdout.strip() == _operator_copy_text(name)
+
+
+@then(parsers.parse('stdout includes operator copy "{name}"'))
+def then_stdout_includes_operator_copy(
+    acceptance_context: AcceptanceScenarioContext,
+    name: str,
+) -> None:
+    expected = _operator_copy_text(name)
+    assert expected in _require_command(acceptance_context).stdout
+
+
+@then(parsers.parse('stderr includes operator copy "{name}"'))
+def then_stderr_includes_operator_copy(
+    acceptance_context: AcceptanceScenarioContext,
+    name: str,
+) -> None:
+    expected = _operator_copy_text(name)
+    assert expected in _require_command(acceptance_context).stderr
 
 
 def _normalized_glacier_payload(payload: object) -> object:

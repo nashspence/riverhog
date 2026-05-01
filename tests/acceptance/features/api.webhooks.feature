@@ -3,7 +3,7 @@ Feature: Outbound operator webhooks
   Test harnesses capture outbound operator notifications so acceptance scenarios can
   assert emitted action-needed events and payload fields without adding product API surface.
 
-  @todo @issue_206 @ci_opt_in @requires_webhook_capture @issue_186
+  @contract_gap @issue_210 @ci_opt_in @requires_webhook_capture @issue_186
   Scenario: Ready disc work webhook tells the operator to run arc-disc
     Given ordinary blank-disc work is available
     When Riverhog emits an action-needed notification for ready disc work
@@ -16,7 +16,7 @@ Feature: Outbound operator webhooks
     And the captured webhook action command equals "arc-disc"
     And the captured webhook action argv equals "arc-disc"
 
-  @todo @issue_206 @ci_opt_in @requires_webhook_capture @issue_186
+  @contract_gap @issue_210 @ci_opt_in @requires_webhook_capture @issue_186
   Scenario: Image rebuild ready and reminder webhook deliveries are captured
     Given an archive with planner fixtures
     And collection "docs" has uploaded Glacier archive package
@@ -48,7 +48,7 @@ Feature: Outbound operator webhooks
     And the captured webhook payload has exactly one action
     And the captured webhook action command equals "arc-disc"
 
-  @todo @issue_206 @ci_opt_in @requires_webhook_capture @issue_186
+  @contract_gap @issue_210 @ci_opt_in @requires_webhook_capture @issue_186
   Scenario: Image rebuild ready webhook retries after a transient sink failure
     Given an archive with planner fixtures
     And collection "docs" has uploaded Glacier archive package
@@ -74,7 +74,7 @@ Feature: Outbound operator webhooks
     And captured webhook event "images.rebuild_ready.reminder" has 0 successful deliveries
     And captured webhook attempt "images.rebuild_ready" result "delivered" attempt 1 happened at least 1 seconds after result "failed" attempt 1
 
-  @todo @issue_206 @ci_opt_in @requires_webhook_capture @issue_186
+  @contract_gap @issue_210 @ci_opt_in @requires_webhook_capture @issue_186
   Scenario: Image rebuild ready webhook retries after a transient sink timeout
     Given an archive with planner fixtures
     And collection "docs" has uploaded Glacier archive package
@@ -100,7 +100,7 @@ Feature: Outbound operator webhooks
     And captured webhook event "images.rebuild_ready.reminder" has 0 successful deliveries
     And captured webhook attempt "images.rebuild_ready" result "delivered" attempt 1 happened at least 1 seconds after result "timeout" attempt 1
 
-  @todo @issue_206 @ci_opt_in @requires_webhook_capture @issue_186
+  @contract_gap @issue_210 @ci_opt_in @requires_webhook_capture @issue_186
   Scenario: Persistent cloud backup failure webhook tells the operator to run arc
     Given collection "docs" has failed cloud backup after retries with error "s3 timeout"
     When the client waits for captured webhook event "collections.glacier_upload.failed"
@@ -115,7 +115,7 @@ Feature: Outbound operator webhooks
     And the captured webhook action command equals "arc"
     And the captured webhook action argv equals "arc"
 
-  @todo @issue_206 @ci_opt_in @requires_webhook_capture @issue_186
+  @contract_gap @issue_210 @ci_opt_in @requires_webhook_capture @issue_186
   Scenario: Labeling does not create a standalone notification
     Given an unlabeled verified disc is waiting for label confirmation
     When Riverhog delivers due action-needed notifications
@@ -123,7 +123,7 @@ Feature: Outbound operator webhooks
     And contracts/operator/copy.py defines no labeling notification copy
     And no captured webhook action command includes a subcommand
 
-  @todo @issue_206 @ci_opt_in @requires_webhook_capture @issue_186
+  @contract_gap @issue_210 @ci_opt_in @requires_webhook_capture @issue_186
   Scenario: Routine success does not create an action-needed notification
     Given a collection upload finishes successfully
     And disc work finishes successfully

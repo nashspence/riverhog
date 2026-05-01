@@ -108,7 +108,7 @@ Feature: arc CLI
       And stdout mentions "verified"
 
   Rule: No-argument operator home
-    @todo @issue_206
+    @contract_gap @issue_209
     Scenario: arc opens the operator home when no attention is needed
       Given the archive has no non-physical attention items
       When the operator runs 'arc'
@@ -122,7 +122,7 @@ Feature: arc CLI
       And stdout mentions "release pins"
       And stdout does not mention "Usage:"
 
-    @todo @issue_206
+    @contract_gap @issue_209
     Scenario: arc prioritizes cloud backup failures before at-will workflows
       Given collection "docs" has failed cloud backup after retries
       When the operator runs 'arc'
@@ -134,7 +134,7 @@ Feature: arc CLI
       And stdout does not mention "Glacier"
       And stdout does not mention "archive_manifest"
 
-    @todo @issue_206
+    @contract_gap @issue_209
     Scenario: arc prioritizes setup and notification health before ordinary at-will workflows
       Given setup needs attention
       And notification delivery needs attention
@@ -147,7 +147,7 @@ Feature: arc CLI
       And stdout does not mention "webhook"
 
   Rule: Normal human copy uses operator terms
-    @todo @issue_206
+    @contract_gap @issue_211
     Scenario: arc upload ingests and archives a local collection source
       Given a local collection source "photos-2024" with deterministic fixture contents
       When the operator uploads collection source "photos-2024" with arc
@@ -159,7 +159,7 @@ Feature: arc CLI
       And stdout does not mention "Glacier"
       And collection "photos-2024" has hot_bytes equal to bytes
 
-    @todo @issue_206
+    @contract_gap @issue_211
     Scenario: arc plan describes disc work without candidate terminology
       Given an archive with planned disc work
       When the operator runs 'arc plan --collection docs --iso-ready'
@@ -171,7 +171,7 @@ Feature: arc CLI
       And stdout does not mention "candidate"
       And stdout does not mention "iso_ready"
 
-    @todo @issue_206
+    @contract_gap @issue_211
     Scenario: arc images points physical media work to arc-disc
       Given an archive with planned disc work
       And a disc copy already exists for collection "docs"
@@ -185,7 +185,7 @@ Feature: arc CLI
       And stdout does not mention "waiting_for_future_iso"
       And stdout does not mention "noncompliant_collections"
 
-    @todo @issue_206
+    @contract_gap @issue_211
     Scenario: arc show describes collection safety without storage internals
       Given collection "docs" is safe in cloud backup
       And collection "docs" has partial disc coverage
@@ -200,7 +200,7 @@ Feature: arc CLI
       And stdout does not mention "archive_manifest"
       And stdout does not mention "protection_state"
 
-    @todo @issue_206
+    @contract_gap @issue_211
     Scenario: arc show does not overstate split physical coverage from one disc
       Given collection "docs" has one split file protected by one disc
       When the operator runs 'arc show docs'
@@ -209,7 +209,7 @@ Feature: arc CLI
       And stdout mentions "Disc coverage is partial"
       And stdout does not mention "fully protected"
 
-    @todo @issue_206
+    @contract_gap @issue_211
     Scenario: arc glacier prints cloud backup cost and health
       Given collection "docs" is safe in cloud backup
       When the operator runs 'arc glacier --collection docs'
@@ -221,7 +221,7 @@ Feature: arc CLI
       And stdout does not mention "ots="
       And stdout does not mention "pricing_basis"
 
-    @todo @issue_206 @ci_opt_in @requires_controlled_glacier_billing @issue_186
+    @ci_opt_in @requires_controlled_glacier_billing @issue_186
     Scenario: arc glacier prints resource-level and manifest-aware billing metadata in the spec harness
       Given an archive with split planner fixtures
       And collection "docs" has uploaded Glacier archive package
@@ -230,7 +230,7 @@ Feature: arc CLI
       Then the command exits with code 0
       And stdout exposes Glacier billing resource-level and manifest metadata
 
-    @todo @issue_206
+    @contract_gap @issue_211
     Scenario: arc copy add prints the generated label text and state
       Given candidate "img_2026-04-20_01" is finalized
       When the operator runs 'arc copy add 20260420T040001Z --at "Shelf B1"'
@@ -242,7 +242,7 @@ Feature: arc CLI
       And stdout does not mention "copy slot"
       And stdout does not mention "registered"
 
-    @todo @issue_206
+    @contract_gap @issue_211
     Scenario: arc pin prints fetch guidance when recovery is needed
       Given pinning target "docs/tax/2022/invoice-123.pdf" requires fetch "fx-1"
       When the operator runs 'arc pin "docs/tax/2022/invoice-123.pdf"'
@@ -254,7 +254,7 @@ Feature: arc CLI
       And stdout does not mention "fetch manifest"
       And stdout does not mention "candidate"
 
-    @todo @issue_206
+    @contract_gap @issue_211
     Scenario: arc fetch lists pending and partial files for one pin manifest
       Given fetch "fx-1" exists for target "docs/tax/2022/invoice-123.pdf"
       When the operator runs 'arc fetch "fx-1"'
