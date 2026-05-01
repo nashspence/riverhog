@@ -1,5 +1,8 @@
 from __future__ import annotations
 
+import tempfile
+import uuid
+from collections.abc import Iterable
 from typing import cast
 
 from arc_core.domain.errors import NotFound
@@ -21,6 +24,39 @@ class S3HotStore:
             Key=self._key(collection_id, path),
             Body=content,
         )
+
+    def put_collection_file_stream(
+        self,
+        collection_id: str,
+        path: str,
+        chunks: Iterable[bytes],
+        *,
+        content_length: int,
+    ) -> None:
+        final_key = self._key(collection_id, path)
+        temp_key = f"tmp/collections/{collection_id}/{uuid.uuid4().hex}"
+        with tempfile.TemporaryFile() as body:
+            size = 0
+            for chunk in chunks:
+                size += len(chunk)
+                body.write(chunk)
+            if size != content_length:
+                raise ValueError(f"collection file stream byte count mismatch: {path}")
+            body.seek(0)
+            try:
+                self._client.put_object(
+                    Bucket=self._bucket,
+                    Key=temp_key,
+                    Body=body,
+                    ContentLength=content_length,
+                )
+                self._client.copy_object(
+                    Bucket=self._bucket,
+                    Key=final_key,
+                    CopySource={"Bucket": self._bucket, "Key": temp_key},
+                )
+            finally:
+                self._client.delete_object(Bucket=self._bucket, Key=temp_key)
 
     def get_collection_file(self, collection_id: str, path: str) -> bytes:
         try:

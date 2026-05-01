@@ -266,6 +266,20 @@ def iter_verified_collection_archive_files(
     files: Sequence[CollectionArchiveExpectedFile],
     selected_paths: set[str] | None = None,
 ) -> Iterator[tuple[str, bytes]]:
+    for path, file_chunks, _content_length in iter_verified_collection_archive_file_chunks(
+        chunks,
+        files=files,
+        selected_paths=selected_paths,
+    ):
+        yield path, b"".join(file_chunks)
+
+
+def iter_verified_collection_archive_file_chunks(
+    chunks: Iterable[bytes],
+    *,
+    files: Sequence[CollectionArchiveExpectedFile],
+    selected_paths: set[str] | None = None,
+) -> Iterator[tuple[str, Iterator[bytes], int]]:
     expected = {file.path: file for file in _normalized_expected_files(files)}
     normalized_selected = (
         {normalize_relpath(path) for path in selected_paths}
@@ -291,16 +305,17 @@ def iter_verified_collection_archive_files(
                 raise ValueError(f"collection archive member cannot be read: {path}")
             selected = normalized_selected is None or path in normalized_selected
             if selected:
-                content = handle.read()
-                verify_collection_archive_member(
-                    path=path,
-                    content=content,
-                    expected_sha256=expected_file.sha256,
+                yield (
+                    path,
+                    _verified_collection_archive_member_chunks(
+                        path=path,
+                        chunks=_read_chunks(handle),
+                        expected_bytes=expected_file.bytes,
+                        expected_sha256=expected_file.sha256,
+                    ),
+                    expected_file.bytes,
                 )
-                if len(content) != expected_file.bytes:
-                    raise ValueError(f"collection archive member byte count mismatch: {path}")
                 yielded.add(path)
-                yield path, content
             else:
                 _verify_collection_archive_member_stream(
                     path=path,
@@ -543,6 +558,25 @@ def _verify_collection_archive_member_stream(
     for chunk in chunks:
         digest.update(chunk)
         byte_count += len(chunk)
+    if byte_count != expected_bytes:
+        raise ValueError(f"collection archive member byte count mismatch: {path}")
+    if digest.hexdigest() != expected_sha256:
+        raise ValueError(f"collection archive member sha256 mismatch: {path}")
+
+
+def _verified_collection_archive_member_chunks(
+    *,
+    path: str,
+    chunks: Iterable[bytes],
+    expected_bytes: int,
+    expected_sha256: str,
+) -> Iterator[bytes]:
+    digest = hashlib.sha256()
+    byte_count = 0
+    for chunk in chunks:
+        digest.update(chunk)
+        byte_count += len(chunk)
+        yield chunk
     if byte_count != expected_bytes:
         raise ValueError(f"collection archive member byte count mismatch: {path}")
     if digest.hexdigest() != expected_sha256:

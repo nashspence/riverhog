@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import base64
 import hashlib
-from collections.abc import Iterator
+from collections.abc import Iterable, Iterator
 from pathlib import Path
 
 from arc_core.catalog_models import (
@@ -26,6 +26,18 @@ class _FakeHotStore:
         self._files: dict[tuple[str, str], bytes] = {}
 
     def put_collection_file(self, collection_id: str, path: str, content: bytes) -> None:
+        self._files[(collection_id, path)] = content
+
+    def put_collection_file_stream(
+        self,
+        collection_id: str,
+        path: str,
+        chunks: Iterable[bytes],
+        *,
+        content_length: int,
+    ) -> None:
+        content = b"".join(chunks)
+        assert len(content) == content_length
         self._files[(collection_id, path)] = content
 
     def get_collection_file(self, collection_id: str, path: str) -> bytes:

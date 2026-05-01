@@ -35,7 +35,7 @@ from arc_core.catalog_models import (
 from arc_core.collection_archives import (
     CollectionArchiveExpectedFile,
     iter_collection_archive_files,
-    iter_verified_collection_archive_files,
+    iter_verified_collection_archive_file_chunks,
     verify_collection_archive_files,
     verify_collection_archive_manifest,
     verify_collection_archive_member,
@@ -344,15 +344,25 @@ class SqlAlchemyRecoverySessionService:
             )
             record.archive_verification_state = "completed"
             materialized: list[str] = []
-            for path, content in iter_verified_collection_archive_files(
-                self._archive_store.iter_restored_collection_archive(
-                    collection_id=archive.collection_id,
-                    object_path=archive.archive_object_path,
-                ),
+            archive_chunks = self._archive_store.iter_restored_collection_archive(
+                collection_id=archive.collection_id,
+                object_path=archive.archive_object_path,
+            )
+            for (
+                path,
+                content_chunks,
+                content_length,
+            ) in iter_verified_collection_archive_file_chunks(
+                archive_chunks,
                 files=expected_files,
                 selected_paths=selected_paths,
             ):
-                self._hot_store.put_collection_file(collection.id, path, content)
+                self._hot_store.put_collection_file_stream(
+                    collection.id,
+                    path,
+                    content_chunks,
+                    content_length=content_length,
+                )
                 row = session.get(
                     CollectionFileRecord,
                     {"collection_id": collection.id, "path": path},

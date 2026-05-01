@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import hashlib
 import sys
-from collections.abc import Iterator
+from collections.abc import Iterable, Iterator
 from dataclasses import replace
 from datetime import UTC, datetime, timedelta
 from pathlib import Path
@@ -44,8 +44,27 @@ _RECOVERY_CODEC = FixtureRecoveryPayloadCodec()
 class _FakeHotStore:
     def __init__(self) -> None:
         self.puts: dict[tuple[str, str], bytes] = {}
+        self.byte_put_paths: list[tuple[str, str]] = []
+        self.stream_chunk_lengths: dict[tuple[str, str], list[int]] = {}
 
     def put_collection_file(self, collection_id: str, path: str, content: bytes) -> None:
+        self.byte_put_paths.append((collection_id, path))
+        self.puts[(collection_id, path)] = content
+
+    def put_collection_file_stream(
+        self,
+        collection_id: str,
+        path: str,
+        chunks: Iterable[bytes],
+        *,
+        content_length: int,
+    ) -> None:
+        chunk_list = list(chunks)
+        content = b"".join(chunk_list)
+        assert len(content) == content_length
+        self.stream_chunk_lengths[(collection_id, path)] = [
+            len(chunk) for chunk in chunk_list
+        ]
         self.puts[(collection_id, path)] = content
 
     def get_collection_file(self, collection_id: str, path: str) -> bytes:
@@ -282,6 +301,30 @@ def _seed_collection_archive(sqlite_path: Path, package: CollectionArchivePackag
         )
 
 
+def _seed_collection_files(
+    sqlite_path: Path,
+    *,
+    collection_id: str,
+    files: dict[str, bytes],
+    hot: bool,
+    archived: bool,
+) -> None:
+    session_factory = make_session_factory(str(sqlite_path))
+    with session_scope(session_factory) as session:
+        session.add(CollectionRecord(id=collection_id))
+        for path, content in sorted(files.items()):
+            session.add(
+                CollectionFileRecord(
+                    collection_id=collection_id,
+                    path=path,
+                    bytes=len(content),
+                    sha256=hashlib.sha256(content).hexdigest(),
+                    hot=hot,
+                    archived=archived,
+                )
+            )
+
+
 def _seed_docs_collection_archive(sqlite_path: Path) -> CollectionArchivePackage:
     package = _docs_collection_archive_package()
     _seed_collection_archive(sqlite_path, package)
@@ -489,6 +532,112 @@ def test_collection_restore_materializes_selected_files_to_hot_storage(
         )
         assert row is not None
         assert row.hot is True
+
+
+def test_collection_restore_streams_large_selected_file_to_hot_storage(
+    tmp_path: Path,
+    monkeypatch,
+) -> None:
+    sqlite_path = tmp_path / "state.sqlite3"
+    initialize_db(str(sqlite_path))
+    content = (b"0123456789abcdef" * 70_000) + b"tail"
+    files = {"large.bin": content}
+    _seed_collection_files(
+        sqlite_path,
+        collection_id="docs",
+        files=files,
+        hot=False,
+        archived=True,
+    )
+    package = build_collection_archive_package(
+        collection_id="docs",
+        files=(
+            CollectionArchiveFile(
+                path="large.bin",
+                content=content,
+                sha256=hashlib.sha256(content).hexdigest(),
+            ),
+        ),
+        stamper=_PROOF_STAMPER,
+    )
+    _seed_collection_archive(sqlite_path, package)
+    store = _FakeArchiveStore(collection_packages={"docs": package})
+    hot_store = _FakeHotStore()
+    config = _config(
+        sqlite_path,
+        glacier_recovery_restore_latency=timedelta(seconds=0),
+        glacier_recovery_sweep_interval=timedelta(seconds=0),
+    )
+    recovery_service = SqlAlchemyRecoverySessionService(config, store, hot_store)
+
+    session = recovery_service.create_or_resume_for_collection("docs")
+    monkeypatch.setattr(
+        "arc_core.services.recovery_sessions.utcnow",
+        lambda: datetime(2026, 4, 20, 4, 0, tzinfo=UTC),
+    )
+    recovery_service.approve(session.id)
+    assert recovery_service.process_due_sessions() == 1
+
+    recovery_service.materialize_collection_files(
+        session.id,
+        "docs",
+        paths=["large.bin"],
+    )
+
+    key = ("docs", "large.bin")
+    assert hot_store.byte_put_paths == []
+    assert hot_store.puts[key] == content
+    assert hot_store.stream_chunk_lengths[key]
+    assert max(hot_store.stream_chunk_lengths[key]) < len(content)
+
+
+def test_collection_restore_does_not_materialize_selected_file_with_bad_sha256(
+    tmp_path: Path,
+    monkeypatch,
+) -> None:
+    sqlite_path = tmp_path / "state.sqlite3"
+    image_root = tmp_path / "image-root"
+    initialize_db(str(sqlite_path))
+    write_tree(image_root, IMAGE_ONE_FILES)
+    _seed_finalized_image(sqlite_path, image_root)
+    package = _docs_collection_archive_package()
+    corrupt_archive_bytes = package.archive_bytes.replace(
+        b"invoice 123 contents\n",
+        b"invoice 123 contentx\n",
+        1,
+    )
+    corrupt_package = replace(
+        package,
+        archive_size=len(corrupt_archive_bytes),
+        archive_sha256=hashlib.sha256(corrupt_archive_bytes).hexdigest(),
+        _archive_chunks=lambda: iter((corrupt_archive_bytes,)),
+    )
+    _seed_collection_archive(sqlite_path, corrupt_package)
+    store = _FakeArchiveStore(collection_packages={"docs": corrupt_package})
+    hot_store = _FakeHotStore()
+    config = _config(
+        sqlite_path,
+        glacier_recovery_restore_latency=timedelta(seconds=0),
+        glacier_recovery_sweep_interval=timedelta(seconds=0),
+    )
+    recovery_service = SqlAlchemyRecoverySessionService(config, store, hot_store)
+
+    session = recovery_service.create_or_resume_for_collection("docs")
+    monkeypatch.setattr(
+        "arc_core.services.recovery_sessions.utcnow",
+        lambda: datetime(2026, 4, 20, 4, 0, tzinfo=UTC),
+    )
+    recovery_service.approve(session.id)
+    assert recovery_service.process_due_sessions() == 1
+
+    with pytest.raises(ValueError, match="member sha256 mismatch"):
+        recovery_service.materialize_collection_files(
+            session.id,
+            "docs",
+            paths=["tax/2022/invoice-123.pdf"],
+        )
+
+    assert hot_store.puts == {}
 
 
 def test_collection_restore_rejects_empty_proof_before_completion(

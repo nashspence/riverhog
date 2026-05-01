@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from collections.abc import Iterable
 from pathlib import Path
 
 from arc_core.catalog_models import CollectionFileRecord, CollectionRecord
@@ -10,6 +11,16 @@ from arc_core.sqlite_db import initialize_db, make_session_factory, session_scop
 
 class _FakeHotStore:
     def put_collection_file(self, collection_id: str, path: str, content: bytes) -> None:
+        raise NotImplementedError
+
+    def put_collection_file_stream(
+        self,
+        collection_id: str,
+        path: str,
+        chunks: Iterable[bytes],
+        *,
+        content_length: int,
+    ) -> None:
         raise NotImplementedError
 
     def get_collection_file(self, collection_id: str, path: str) -> bytes:

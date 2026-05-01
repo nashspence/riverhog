@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from collections.abc import Iterable
 from pathlib import Path
 
 from arc_core.catalog_models import (
@@ -29,9 +30,31 @@ _RECOVERY_CODEC = FixtureRecoveryPayloadCodec()
 
 
 class _FakeHotStore:
+    def put_collection_file(self, collection_id: str, path: str, content: bytes) -> None:
+        raise NotImplementedError
+
+    def put_collection_file_stream(
+        self,
+        collection_id: str,
+        path: str,
+        chunks: Iterable[bytes],
+        *,
+        content_length: int,
+    ) -> None:
+        raise NotImplementedError
+
     def get_collection_file(self, collection_id: str, path: str) -> bytes:
         assert collection_id == "docs"
         return DOCS_FILES[path]
+
+    def has_collection_file(self, collection_id: str, path: str) -> bool:
+        raise NotImplementedError
+
+    def delete_collection_file(self, collection_id: str, path: str) -> None:
+        raise NotImplementedError
+
+    def list_collection_files(self, collection_id: str) -> list[tuple[str, int]]:
+        raise NotImplementedError
 
 
 def _config(sqlite_path: Path) -> RuntimeConfig:
