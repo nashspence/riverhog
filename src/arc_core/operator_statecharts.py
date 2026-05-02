@@ -124,6 +124,41 @@ class StatechartCatalog:
         view = state_payload.get("view")
         return str(view) if view else None
 
+    def require_view(self, statechart: str, state: str, view: str) -> None:
+        actual = self.view_for(statechart, state)
+        if actual != view:
+            raise StatechartCatalogError(
+                f"{statechart}.{state} uses view {actual!r}, expected {view!r}"
+            )
+
+    def state_for_guard(self, statechart: str, state: str, guard: str) -> str:
+        state_payload = self.require_state(statechart, state)
+        for transition in _sequence(
+            state_payload.get("transitions", ()),
+            label=f"{statechart}.{state}.transitions",
+        ):
+            transition_payload = _mapping(
+                transition,
+                label=f"{statechart}.{state}.transitions[]",
+            )
+            if transition_payload.get("guard") == guard:
+                return str(transition_payload["target"])
+        raise StatechartCatalogError(f"{statechart}.{state} has no guard {guard!r}")
+
+    def state_for_event(self, statechart: str, state: str, event: str) -> str:
+        state_payload = self.require_state(statechart, state)
+        for transition in _sequence(
+            state_payload.get("transitions", ()),
+            label=f"{statechart}.{state}.transitions",
+        ):
+            transition_payload = _mapping(
+                transition,
+                label=f"{statechart}.{state}.transitions[]",
+            )
+            if transition_payload.get("event") == event:
+                return str(transition_payload["target"])
+        raise StatechartCatalogError(f"{statechart}.{state} has no event {event!r}")
+
     def transition_targets(self, statechart: str, state: str) -> tuple[str, ...]:
         state_payload = self.require_state(statechart, state)
         transitions = state_payload.get("transitions", ())

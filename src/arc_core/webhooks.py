@@ -7,7 +7,10 @@ from typing import Protocol
 
 import httpx
 
+from arc_core.operator_workflows import load_default_operator_workflows
 from contracts.operator import copy as operator_copy
+
+_OPERATOR_WORKFLOWS = load_default_operator_workflows()
 
 
 @dataclass(frozen=True)
@@ -102,6 +105,10 @@ def build_images_ready_payload(
         disc_count=len(batch.images),
         oldest_ready_at=isoformat_z(batch.initial_sent_at),
     )
+    _OPERATOR_WORKFLOWS.require_notification_view(
+        str(base_payload["event"]),
+        "push_burn_work_ready",
+    )
     return {
         **base_payload,
         **notification.payload(
@@ -151,6 +158,10 @@ def build_recovery_ready_payload(
     notification = operator_copy.push_recovery_ready(
         affected=affected,
         expires_at=restore_expires_at,
+    )
+    _OPERATOR_WORKFLOWS.require_notification_view(
+        str(payload["event"]),
+        "push_recovery_ready",
     )
     return {
         **payload,

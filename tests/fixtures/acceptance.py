@@ -103,8 +103,8 @@ from arc_core.iso.streaming import IsoStream, build_iso_cmd_from_root
 from arc_core.operator_statecharts import (
     OperatorDecision,
     OperatorView,
-    load_default_statechart_catalog,
 )
+from arc_core.operator_workflows import load_default_operator_workflows
 from arc_core.planner.manifest import MANIFEST_FILENAME
 from arc_core.runtime_config import load_runtime_config
 from arc_core.webhooks import (
@@ -150,7 +150,7 @@ _GLACIER_RECOVERY_READY_TTL_SECONDS = 4.0
 _GLACIER_RECOVERY_WEBHOOK_RETRY_DELAY_SECONDS = 1.0
 _GLACIER_RECOVERY_WEBHOOK_REMINDER_INTERVAL_SECONDS = 2.0
 _OPERATOR_FIXTURE_DISC_LABEL = "20260420T040001Z-1"
-_OPERATOR_STATECHART_CATALOG = load_default_statechart_catalog(validate_schema=True)
+_OPERATOR_WORKFLOWS = load_default_operator_workflows(validate_schema=True)
 
 
 def _generated_copy_id(image_id: str, ordinal: int) -> str:
@@ -197,7 +197,7 @@ def _operator_completed_process(
 
 
 def _operator_decision(statechart: str, state: str) -> OperatorDecision:
-    return _OPERATOR_STATECHART_CATALOG.decision(statechart, state)
+    return _OPERATOR_WORKFLOWS.decision(statechart, state)
 
 
 def _operator_view(
@@ -206,7 +206,7 @@ def _operator_view(
     *,
     text: str,
 ) -> OperatorView:
-    return _OPERATOR_STATECHART_CATALOG.operator_view(statechart, state, text=text)
+    return _OPERATOR_WORKFLOWS.view(statechart, state, text=text)
 
 
 def _guided_item_text(
@@ -4476,20 +4476,13 @@ class AcceptanceSystem:
             stdout = operator_copy.arc_home_attention(items)
             decisions: list[OperatorDecision] = []
             views: list[OperatorView] = []
-            item_states = {
-                "notification_health_failed": "notification_health_failed",
-                "setup_needs_attention": "setup_needs_attention",
-                "billing_needs_attention": "billing_needs_attention",
-                "cloud_backup_failed": "cloud_backup_failed",
-                "collection_upload_retry": "upload_retry_available",
-            }
             for index, item in enumerate(items, start=1):
-                state = item_states[item.kind]
-                decisions.append(_operator_decision("arc.home", state))
+                decision = _OPERATOR_WORKFLOWS.arc_home_attention_decision(item.kind)
+                decisions.append(decision)
                 views.append(
                     _operator_view(
-                        "arc.home",
-                        state,
+                        decision.statechart,
+                        decision.state,
                         text=_guided_item_text(item, index=index, total=len(items)),
                     )
                 )
@@ -4586,24 +4579,15 @@ class AcceptanceSystem:
             label_location = self.state.operator_label_confirmation_location
         if items:
             stdout = operator_copy.arc_disc_attention(items)
-            item_states = {
-                "unfinished_local_disc": "unfinished_local_disc",
-                "recovery_ready": "recovery_ready",
-                "recovery_approval_required": "recovery_approval_required",
-                "hot_recovery_needs_media": "hot_recovery_needs_media",
-                "replacement_disc_needed": "replacement_disc_needed",
-                "burn_work_ready": "burn_work_ready",
-                "recovery_expired": "recovery_expired",
-            }
             decisions: list[OperatorDecision] = []
             views: list[OperatorView] = []
             for index, item in enumerate(items, start=1):
-                state = item_states[item.kind]
-                decisions.append(_operator_decision("arc_disc.guided", state))
+                decision = _OPERATOR_WORKFLOWS.arc_disc_attention_decision(item.kind)
+                decisions.append(decision)
                 views.append(
                     _operator_view(
-                        "arc_disc.guided",
-                        state,
+                        decision.statechart,
+                        decision.state,
                         text=_guided_item_text(item, index=index, total=len(items)),
                     )
                 )
