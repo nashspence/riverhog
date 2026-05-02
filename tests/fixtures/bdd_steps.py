@@ -15,11 +15,15 @@ from urllib.parse import parse_qsl, quote, urlsplit
 import httpx
 import jsonschema
 import pytest
-import yaml
 from pytest_bdd import given, parsers, then, when
 
 from arc_core.domain.selectors import parse_target
 from arc_core.fs_paths import normalize_collection_id
+from arc_core.operator_statecharts import (
+    OperatorDecision,
+    OperatorView,
+    load_default_statechart_catalog,
+)
 from contracts.operator import copy as operator_copy
 from tests.fixtures.acceptance import AcceptanceSystem
 from tests.fixtures.data import (
@@ -56,7 +60,7 @@ _CAPTURED_WEBHOOK_TIMEOUT_DELAY_SECONDS = 15.0
 _DEFAULT_OPTICAL_ACCEPTANCE_DEVICE = "/dev/sr0"
 _ROOT = Path(__file__).resolve().parents[2]
 _OPERATOR_DISC_LABEL = "20260420T040001Z-1"
-_STATECHARTS_CONTRACT = _ROOT / "contracts" / "operator" / "statecharts.yaml"
+_OPERATOR_STATECHART_CATALOG = load_default_statechart_catalog(validate_schema=True)
 
 
 @dataclass(slots=True)
@@ -70,6 +74,8 @@ class AcceptanceScenarioContext:
     expected_api_endpoint: tuple[str, str] | None = None
     expected_api_payload: Any = None
     accepted_operator_statechart_states: list[tuple[str, str]] = field(default_factory=list)
+    actual_operator_decisions: list[OperatorDecision] = field(default_factory=list)
+    actual_operator_views: list[OperatorView] = field(default_factory=list)
     before_collections: dict[str, dict[str, Any]] = field(default_factory=dict)
     after_collections: dict[str, dict[str, Any]] = field(default_factory=dict)
     tracked_collection_id: str | None = None
@@ -100,15 +106,6 @@ def _require_command(context: AcceptanceScenarioContext) -> Any:
     return context.command
 
 
-def _operator_statecharts() -> dict[str, Any]:
-    contract = yaml.safe_load(_STATECHARTS_CONTRACT.read_text(encoding="utf-8"))
-    assert isinstance(contract, dict)
-    assert contract.get("version") == 1
-    statecharts = contract.get("statecharts")
-    assert isinstance(statecharts, dict)
-    return statecharts
-
-
 @given(
     parsers.parse(
         'statechart "{statechart_name}" state "{state_name}" is the accepted operator contract'
@@ -119,13 +116,7 @@ def given_statechart_state_is_accepted_operator_contract(
     statechart_name: str,
     state_name: str,
 ) -> None:
-    statecharts = _operator_statecharts()
-    assert statechart_name in statecharts
-    statechart = statecharts[statechart_name]
-    assert isinstance(statechart, dict)
-    states = statechart.get("states")
-    assert isinstance(states, dict)
-    assert state_name in states
+    _OPERATOR_STATECHART_CATALOG.require_state(statechart_name, state_name)
     acceptance_context.accepted_operator_statechart_states.append(
         (statechart_name, state_name)
     )
@@ -134,16 +125,11 @@ def given_statechart_state_is_accepted_operator_contract(
 def _accepted_operator_statechart_states(
     context: AcceptanceScenarioContext,
 ) -> list[dict[str, Any]]:
-    statecharts = _operator_statecharts()
     accepted_states: list[dict[str, Any]] = []
     for statechart_name, state_name in context.accepted_operator_statechart_states:
-        statechart = statecharts[statechart_name]
-        assert isinstance(statechart, dict)
-        states = statechart["states"]
-        assert isinstance(states, dict)
-        state = states[state_name]
-        assert isinstance(state, dict)
-        accepted_states.append(state)
+        accepted_states.append(
+            dict(_OPERATOR_STATECHART_CATALOG.require_state(statechart_name, state_name))
+        )
     return accepted_states
 
 
@@ -151,9 +137,11 @@ def _accepted_operator_statechart_views(
     context: AcceptanceScenarioContext,
 ) -> set[str]:
     return {
-        str(state["view"])
-        for state in _accepted_operator_statechart_states(context)
-        if state.get("view")
+        str(view)
+        for statechart_name, state_name in context.accepted_operator_statechart_states
+        if (
+            view := _OPERATOR_STATECHART_CATALOG.view_for(statechart_name, state_name)
+        )
     }
 
 
@@ -166,6 +154,58 @@ def _assert_operator_copy_is_from_accepted_statechart(
         f'operator copy "{name}" is not covered by accepted statechart states '
         f"{context.accepted_operator_statechart_states}; accepted views: "
         f"{sorted(accepted_views)}"
+    )
+
+
+def _command_operator_decisions(
+    context: AcceptanceScenarioContext,
+) -> tuple[OperatorDecision, ...]:
+    command = _require_command(context)
+    return tuple(getattr(command, "operator_decisions", ()))
+
+
+def _command_operator_views(
+    context: AcceptanceScenarioContext,
+) -> tuple[OperatorView, ...]:
+    command = _require_command(context)
+    return tuple(getattr(command, "operator_views", ()))
+
+
+def _actual_operator_decisions(
+    context: AcceptanceScenarioContext,
+) -> set[tuple[str, str]]:
+    decisions = [*_command_operator_decisions(context), *context.actual_operator_decisions]
+    return {(decision.statechart, decision.state) for decision in decisions}
+
+
+def _actual_operator_views(
+    context: AcceptanceScenarioContext,
+) -> tuple[OperatorView, ...]:
+    return (*_command_operator_views(context), *context.actual_operator_views)
+
+
+def _assert_actual_operator_view_matches_copy_ref(
+    context: AcceptanceScenarioContext,
+    name: str,
+    *,
+    text: str,
+) -> None:
+    accepted = set(context.accepted_operator_statechart_states)
+    matches = [
+        view
+        for view in _actual_operator_views(context)
+        if view.copy_ref == name and (view.statechart, view.state) in accepted
+    ]
+    actual_views = [
+        (view.statechart, view.state, view.copy_ref)
+        for view in _actual_operator_views(context)
+    ]
+    assert matches, (
+        f'operator copy "{name}" was not recorded as an actual operator view; '
+        f"actual views: {actual_views}"
+    )
+    assert any(view.text.strip() == text.strip() for view in matches), (
+        f'operator copy "{name}" was recorded, but with different text'
     )
 
 
@@ -349,15 +389,6 @@ def _operator_notification(
                 attempts=int(payload.get("attempts", 2)),
             )
     raise AssertionError(f"unsupported operator notification copy reference: {name}")
-
-
-def _captured_webhook_action(payload: dict[str, Any]) -> dict[str, Any]:
-    actions = payload.get("actions")
-    assert isinstance(actions, list), payload
-    assert actions, payload
-    action = actions[0]
-    assert isinstance(action, dict), payload
-    return action
 
 
 def _selected_relpath_for_target(
@@ -3756,8 +3787,27 @@ def then_captured_webhook_payload_matches_operator_notification_copy(
         reminder_count=int(payload["reminder_count"]) if "reminder_count" in payload else None,
         delivered_at=str(payload["delivered_at"]) if "delivered_at" in payload else None,
     )
-    for payload_field in ("event", "title", "body", "urgency", "actions"):
+    for payload_field in ("event", "title", "body", "urgency"):
         assert payload.get(payload_field) == expected[payload_field]
+    text = "\n".join(
+        (
+            str(expected["title"]),
+            str(expected["body"]),
+        )
+    )
+    for statechart_name, state_name in acceptance_context.accepted_operator_statechart_states:
+        if _OPERATOR_STATECHART_CATALOG.view_for(statechart_name, state_name) != name:
+            continue
+        acceptance_context.actual_operator_decisions.append(
+            _OPERATOR_STATECHART_CATALOG.decision(statechart_name, state_name)
+        )
+        acceptance_context.actual_operator_views.append(
+            _OPERATOR_STATECHART_CATALOG.operator_view(
+                statechart_name,
+                state_name,
+                text=text,
+            )
+        )
 
 
 @then(parsers.parse('the captured webhook payload field "{field}" is present'))
@@ -3768,34 +3818,6 @@ def then_captured_webhook_payload_field_is_present(
     payload = _require_captured_webhook_payload(acceptance_context)
     assert field in payload
     assert payload[field] not in {None, ""}
-
-
-@then("the captured webhook payload has exactly one action")
-def then_captured_webhook_payload_has_exactly_one_action(
-    acceptance_context: AcceptanceScenarioContext,
-) -> None:
-    payload = _require_captured_webhook_payload(acceptance_context)
-    actions = payload.get("actions")
-    assert isinstance(actions, list)
-    assert len(actions) == 1
-
-
-@then(parsers.parse('the captured webhook action command equals "{command}"'))
-def then_captured_webhook_action_command_equals(
-    acceptance_context: AcceptanceScenarioContext,
-    command: str,
-) -> None:
-    payload = _require_captured_webhook_payload(acceptance_context)
-    assert _captured_webhook_action(payload).get("command") == command
-
-
-@then(parsers.parse('the captured webhook action argv equals "{command}"'))
-def then_captured_webhook_action_argv_equals(
-    acceptance_context: AcceptanceScenarioContext,
-    command: str,
-) -> None:
-    payload = _require_captured_webhook_payload(acceptance_context)
-    assert _captured_webhook_action(payload).get("argv") == [command]
 
 
 @then(parsers.parse('the captured webhook payload integer field "{field}" equals {value:d}'))
@@ -3910,22 +3932,6 @@ def then_no_captured_webhook_event_asks_only_for_labeling(
             for field in ("event", "title", "body")
         ).casefold()
         assert "label" not in rendered
-
-
-@then("no captured webhook action command includes a subcommand")
-def then_no_captured_webhook_action_command_includes_subcommand(
-    acceptance_system: AcceptanceSystem,
-) -> None:
-    for payload in acceptance_system.list_webhook_deliveries():
-        actions = payload.get("actions", [])
-        assert isinstance(actions, list)
-        for action in actions:
-            assert isinstance(action, dict)
-            command = str(action.get("command", ""))
-            argv = action.get("argv", [])
-            assert command in {"arc", "arc-disc"}
-            assert isinstance(argv, list)
-            assert argv == [command]
 
 
 @then("no captured webhook event is emitted for routine success")
@@ -4451,6 +4457,19 @@ def then_command_exits_non_zero(acceptance_context: AcceptanceScenarioContext) -
     assert _require_command(acceptance_context).returncode != 0
 
 
+@then("the operator decision matches the accepted state")
+def then_operator_decision_matches_accepted_state(
+    acceptance_context: AcceptanceScenarioContext,
+) -> None:
+    expected = set(acceptance_context.accepted_operator_statechart_states)
+    actual = _actual_operator_decisions(acceptance_context)
+    missing = sorted(expected - actual)
+    assert not missing, (
+        "accepted operator state was not recorded by the command: "
+        f"{missing}; actual decisions: {sorted(actual)}"
+    )
+
+
 @then("stdout is valid JSON")
 def then_stdout_is_valid_json(acceptance_context: AcceptanceScenarioContext) -> None:
     acceptance_context.stdout_json = json.loads(_require_command(acceptance_context).stdout)
@@ -4477,7 +4496,9 @@ def then_stdout_matches_operator_copy(
     name: str,
 ) -> None:
     _assert_operator_copy_is_from_accepted_statechart(acceptance_context, name)
-    assert _require_command(acceptance_context).stdout.strip() == _operator_copy_text(name)
+    expected = _operator_copy_text(name)
+    _assert_actual_operator_view_matches_copy_ref(acceptance_context, name, text=expected)
+    assert _require_command(acceptance_context).stdout.strip() == expected
 
 
 @then(parsers.parse('stdout includes operator copy "{name}"'))
@@ -4487,6 +4508,7 @@ def then_stdout_includes_operator_copy(
 ) -> None:
     _assert_operator_copy_is_from_accepted_statechart(acceptance_context, name)
     expected = _operator_copy_text(name)
+    _assert_actual_operator_view_matches_copy_ref(acceptance_context, name, text=expected)
     assert expected in _require_command(acceptance_context).stdout
 
 
@@ -4497,6 +4519,7 @@ def then_stderr_includes_operator_copy(
 ) -> None:
     _assert_operator_copy_is_from_accepted_statechart(acceptance_context, name)
     expected = _operator_copy_text(name)
+    _assert_actual_operator_view_matches_copy_ref(acceptance_context, name, text=expected)
     assert expected in _require_command(acceptance_context).stderr
 
 

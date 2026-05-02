@@ -469,7 +469,6 @@ statecharts:
         transitions:
           - event: operator_inserts_disc
             target: insert_disc
-        type: choice
       insert_disc:
         view: hot_recovery_insert_disc
         transitions:

@@ -57,9 +57,6 @@
         "event": {
           "$ref": "#/$defs/eventName"
         },
-        "action": {
-          "enum": ["arc", "arc-disc"]
-        },
         "final": {
           "type": "boolean"
         },

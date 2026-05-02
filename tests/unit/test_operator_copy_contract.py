@@ -214,13 +214,6 @@ def _base_payload(*, event: str = "operator.setup_needs_attention") -> dict[str,
         "title": "Setup needs attention",
         "body": "Storage: missing bucket. Run arc.",
         "urgency": "important",
-        "actions": [
-            {
-                "label": "Run arc",
-                "command": "arc",
-                "argv": ["arc"],
-            }
-        ],
     }
 
 
@@ -237,22 +230,16 @@ def test_notification_copy_payloads_match_action_needed_schema() -> None:
         }
         validator.validate(payload)
 
-        action = payload["actions"][0]
-        assert action["label"] == f"Run {action['command']}"
-        assert action["argv"] == [action["command"]]
-        assert "action" not in payload
-
         if notification.reminder_title or notification.reminder_body or notification.reminder_event:
-            validator.validate(
-                {
-                    **metadata,
-                    **notification.payload(
-                        reminder=True,
-                        delivered_at="2026-05-01T09:00:00Z",
-                        reminder_count=1,
-                    ),
-                }
-            )
+            reminder_payload = {
+                **metadata,
+                **notification.payload(
+                    reminder=True,
+                    delivered_at="2026-05-01T09:00:00Z",
+                    reminder_count=1,
+                ),
+            }
+            validator.validate(reminder_payload)
 
 
 def test_notification_schema_uses_public_contract_namespace() -> None:
@@ -280,13 +267,6 @@ def test_recovery_ready_schema_requires_event_metadata() -> None:
         "title": "Recovery is ready",
         "body": "Recovered data for docs is ready before 2026-05-02. Run arc-disc.",
         "urgency": "time-sensitive",
-        "actions": [
-            {
-                "label": "Run arc-disc",
-                "command": "arc-disc",
-                "argv": ["arc-disc"],
-            }
-        ],
     }
 
     errors = list(validator.iter_errors(payload))

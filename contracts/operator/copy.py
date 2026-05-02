@@ -55,36 +55,10 @@ MACHINE_ONLY_TERMS: tuple[str, ...] = (
 
 
 @dataclass(frozen=True, slots=True)
-class OperatorAction:
-    command: OperatorCommand
-    label: str | None = None
-
-    def __post_init__(self) -> None:
-        expected = f"Run {self.command}"
-        if self.label is None:
-            object.__setattr__(self, "label", expected)
-            return
-        if self.label != expected:
-            raise ValueError(f"operator action label must be {expected!r}")
-
-    @property
-    def argv(self) -> tuple[str, ...]:
-        return (self.command,)
-
-    def payload(self) -> dict[str, object]:
-        return {
-            "label": self.label,
-            "command": self.command,
-            "argv": list(self.argv),
-        }
-
-
-@dataclass(frozen=True, slots=True)
 class ActionNeededNotification:
     event: str
     title: str
     body: str
-    action: OperatorAction
     urgency: Urgency = "attention"
     reminder_event: str | None = None
     reminder_title: str | None = None
@@ -103,7 +77,6 @@ class ActionNeededNotification:
             "title": self.reminder_title if reminder and self.reminder_title else self.title,
             "body": self.reminder_body if reminder and self.reminder_body else self.body,
             "urgency": self.urgency,
-            "actions": [self.action.payload()],
         }
         if reminder_count is not None:
             payload["reminder_count"] = reminder_count
@@ -120,18 +93,6 @@ class GuidedItem:
     title: str
     body: str
     next_step: str
-
-    @property
-    def action(self) -> OperatorAction:
-        return OperatorAction(self.command)
-
-
-def _run_arc() -> OperatorAction:
-    return OperatorAction(ARC)
-
-
-def _run_arc_disc() -> OperatorAction:
-    return OperatorAction(ARC_DISC)
 
 
 def _error_detail(latest_error: str | None, *, prefix: str = "Last error") -> str:
@@ -869,7 +830,6 @@ def push_burn_work_ready(
         reminder_event="images.ready.reminder",
         title="Blank discs are needed",
         body=body,
-        action=_run_arc_disc(),
         reminder_title="Disc work is still waiting",
         reminder_body=(
             f"Riverhog still has {count_noun(disc_count, 'disc')} waiting. "
@@ -891,7 +851,6 @@ def push_disc_work_waiting_too_long(
             f"{count_noun(disc_count, 'disc')} have been ready since "
             f"{when(oldest_ready_at)}. Run {command(ARC_DISC)} to write them."
         ),
-        action=_run_arc_disc(),
         urgency="important",
         reminder_title="Disc work is still waiting",
         reminder_body=(
@@ -911,7 +870,6 @@ def push_replacement_disc_needed(*, label_text: str | None = None) -> ActionNeed
             f"Riverhog needs a replacement disc for {subject}. "
             f"Run {command(ARC_DISC)} with a blank disc available."
         ),
-        action=_run_arc_disc(),
         urgency="important",
         reminder_title="Replacement disc still needed",
         reminder_body=(
@@ -935,7 +893,6 @@ def push_recovery_approval_required(
             f"Estimated cost: {money_usd(estimated_cost)}. "
             f"Run {command(ARC_DISC)} to review."
         ),
-        action=_run_arc_disc(),
         urgency="approval",
         reminder_title="Recovery is still waiting for approval",
         reminder_body=(
@@ -959,7 +916,6 @@ def push_recovery_ready(
             f"Recovered data for {list_sentence(affected)} is ready "
             f"{deadline(expires_at)}. Run {command(ARC_DISC)} before the window closes."
         ),
-        action=_run_arc_disc(),
         urgency="time-sensitive",
         reminder_title="Recovery window is still open",
         reminder_body=(
@@ -978,7 +934,6 @@ def push_hot_recovery_needs_media(*, target: str) -> ActionNeededNotification:
             f"{truncate(target, max_chars=80)} is pinned for hot storage, but Riverhog "
             f"needs a disc to restore missing files. Run {command(ARC_DISC)}."
         ),
-        action=_run_arc_disc(),
         reminder_title="Disc still needed",
         reminder_body=(
             "Riverhog still needs a disc to restore "
@@ -1001,7 +956,6 @@ def push_cloud_backup_failed(
             f"{count_noun(attempts, 'try', 'tries')}. "
             f"Run {command(ARC)} to review the next safe step."
         ),
-        action=_run_arc(),
         urgency="important",
         reminder_title="Cloud backup still needs attention",
         reminder_body=(
@@ -1017,7 +971,6 @@ def push_notification_health_failed(*, channel: str) -> ActionNeededNotification
         event="operator.notification_health_failed",
         title="Notifications need attention",
         body=f"{channel} notifications may not be working. Run {command(ARC)}.",
-        action=_run_arc(),
         urgency="important",
         reminder_title="Notifications still need attention",
         reminder_body=f"{channel} notifications still need attention. Run {command(ARC)}.",
@@ -1033,7 +986,6 @@ def push_billing_needs_attention(*, reason: str) -> ActionNeededNotification:
             "Riverhog could not confirm recovery cost information: "
             f"{truncate(reason, max_chars=100)}. Run {command(ARC)}."
         ),
-        action=_run_arc(),
         urgency="important",
         reminder_title="Recovery cost check still needs attention",
         reminder_body=(
@@ -1049,7 +1001,6 @@ def push_setup_needs_attention(*, area: str, summary: str) -> ActionNeededNotifi
         event="operator.setup_needs_attention",
         title="Setup needs attention",
         body=f"{area}: {truncate(summary, max_chars=100)}. Run {command(ARC)}.",
-        action=_run_arc(),
         urgency="important",
         reminder_title="Setup still needs attention",
         reminder_body=f"{area} still needs attention. Run {command(ARC)}.",

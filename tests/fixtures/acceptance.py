@@ -100,6 +100,11 @@ from arc_core.fs_paths import (
     normalize_relpath,
 )
 from arc_core.iso.streaming import IsoStream, build_iso_cmd_from_root
+from arc_core.operator_statecharts import (
+    OperatorDecision,
+    OperatorView,
+    load_default_statechart_catalog,
+)
 from arc_core.planner.manifest import MANIFEST_FILENAME
 from arc_core.runtime_config import load_runtime_config
 from arc_core.webhooks import (
@@ -145,6 +150,7 @@ _GLACIER_RECOVERY_READY_TTL_SECONDS = 4.0
 _GLACIER_RECOVERY_WEBHOOK_RETRY_DELAY_SECONDS = 1.0
 _GLACIER_RECOVERY_WEBHOOK_REMINDER_INTERVAL_SECONDS = 2.0
 _OPERATOR_FIXTURE_DISC_LABEL = "20260420T040001Z-1"
+_OPERATOR_STATECHART_CATALOG = load_default_statechart_catalog(validate_schema=True)
 
 
 def _generated_copy_id(image_id: str, ordinal: int) -> str:
@@ -167,6 +173,53 @@ def _completed_process(
         returncode=returncode,
         stdout=stdout,
         stderr=stderr,
+    )
+
+
+def _operator_completed_process(
+    args: list[str],
+    *,
+    returncode: int = 0,
+    stdout: str = "",
+    stderr: str = "",
+    decisions: Sequence[OperatorDecision] = (),
+    views: Sequence[OperatorView] = (),
+) -> subprocess.CompletedProcess[str]:
+    command = _completed_process(
+        args,
+        returncode=returncode,
+        stdout=stdout,
+        stderr=stderr,
+    )
+    command.operator_decisions = tuple(decisions)
+    command.operator_views = tuple(views)
+    return command
+
+
+def _operator_decision(statechart: str, state: str) -> OperatorDecision:
+    return _OPERATOR_STATECHART_CATALOG.decision(statechart, state)
+
+
+def _operator_view(
+    statechart: str,
+    state: str,
+    *,
+    text: str,
+) -> OperatorView:
+    return _OPERATOR_STATECHART_CATALOG.operator_view(statechart, state, text=text)
+
+
+def _guided_item_text(
+    item: operator_copy.GuidedItem,
+    *,
+    index: int = 1,
+    total: int = 1,
+) -> str:
+    return "\n".join(
+        (
+            operator_copy.guided_item_header(index=index, total=total, item=item),
+            operator_copy.guided_item_body(item=item),
+        )
     )
 
 
@@ -4406,15 +4459,51 @@ class AcceptanceSystem:
         if not args:
             with self.state.lock:
                 items = sorted(self.state.operator_arc_items, key=lambda item: item.priority)
-            stdout = (
-                operator_copy.arc_home_attention(items)
-                if items
-                else operator_copy.arc_home_no_attention()
+            if not items:
+                stdout = operator_copy.arc_home_no_attention()
+                return _operator_completed_process(
+                    ["arc"],
+                    stdout=stdout,
+                    decisions=[_operator_decision("arc.home", "no_attention")],
+                    views=[
+                        _operator_view(
+                            "arc.home",
+                            "no_attention",
+                            text=stdout,
+                        )
+                    ],
+                )
+            stdout = operator_copy.arc_home_attention(items)
+            decisions: list[OperatorDecision] = []
+            views: list[OperatorView] = []
+            item_states = {
+                "notification_health_failed": "notification_health_failed",
+                "setup_needs_attention": "setup_needs_attention",
+                "billing_needs_attention": "billing_needs_attention",
+                "cloud_backup_failed": "cloud_backup_failed",
+                "collection_upload_retry": "upload_retry_available",
+            }
+            for index, item in enumerate(items, start=1):
+                state = item_states[item.kind]
+                decisions.append(_operator_decision("arc.home", state))
+                views.append(
+                    _operator_view(
+                        "arc.home",
+                        state,
+                        text=_guided_item_text(item, index=index, total=len(items)),
+                    )
+                )
+            return _operator_completed_process(
+                ["arc"],
+                stdout=stdout,
+                decisions=decisions,
+                views=views,
             )
-            return _completed_process(["arc"], stdout=stdout)
         if command.returncode != 0:
             return command
 
+        decisions = []
+        views = []
         match args:
             case ("upload", collection_id, _root):
                 root = self.collection_source_root(collection_id)
@@ -4425,16 +4514,22 @@ class AcceptanceSystem:
                     files=len(files),
                     total_bytes=total_bytes,
                 )
+                statechart_state = ("arc.upload", "finalized")
             case ("plan", *rest) if "--collection" in rest and "--iso-ready" in rest:
                 collection = str(rest[rest.index("--collection") + 1])
                 stdout = operator_copy.plan_disc_work_ready(
                     collection_ids=[collection],
                     disc_count=1,
                 )
+                statechart_state = ("arc.collection_status", "plan_disc_work_ready")
             case ("images", *rest) if "--has-copies" in rest:
                 stdout = operator_copy.images_physical_work_summary(
                     discs_needed=1,
                     fully_protected_collections=1,
+                )
+                statechart_state = (
+                    "arc.collection_status",
+                    "images_physical_work_summary",
                 )
             case ("show", collection_id):
                 stdout = operator_copy.collection_summary(
@@ -4444,35 +4539,44 @@ class AcceptanceSystem:
                     labels=[_OPERATOR_FIXTURE_DISC_LABEL],
                     storage_locations=["Shelf B1"],
                 )
+                statechart_state = ("arc.collection_status", "collection_summary")
             case ("glacier", "--collection", collection_id):
                 stdout = operator_copy.cloud_backup_report(
                     collection_id=collection_id,
                     estimated_monthly_cost="0.01",
                     healthy=True,
                 )
+                statechart_state = ("arc.collection_status", "cloud_backup_report")
             case ("copy", "add", image_id, "--at", location):
                 stdout = operator_copy.copy_registered(
                     label_text=f"{image_id}-1",
                     location=location,
                 )
+                statechart_state = ("arc.copy_management", "copy_registered")
             case ("pin", target):
                 stdout = operator_copy.pin_waiting_for_disc(
                     target=target,
                     missing_bytes=None,
                 )
+                statechart_state = ("arc.hot_storage", "pin_waiting_for_disc")
             case ("fetch", _fetch_id):
                 stdout = operator_copy.fetch_detail_pending(
                     target="docs/tax/2022/invoice-123.pdf",
                     pending_files=1,
                     partial_files=1,
                 )
+                statechart_state = ("arc.hot_storage", "fetch_detail_pending")
             case _:
                 return command
-        return _completed_process(
+        decisions.append(_operator_decision(*statechart_state))
+        views.append(_operator_view(*statechart_state, text=stdout))
+        return _operator_completed_process(
             ["arc", *args],
             returncode=command.returncode,
             stdout=stdout,
             stderr=command.stderr,
+            decisions=decisions,
+            views=views,
         )
 
     def _arc_disc_contract_output(self) -> subprocess.CompletedProcess[str]:
@@ -4482,27 +4586,90 @@ class AcceptanceSystem:
             label_location = self.state.operator_label_confirmation_location
         if items:
             stdout = operator_copy.arc_disc_attention(items)
-            return _completed_process(["arc-disc"], stdout=stdout)
+            item_states = {
+                "unfinished_local_disc": "unfinished_local_disc",
+                "recovery_ready": "recovery_ready",
+                "recovery_approval_required": "recovery_approval_required",
+                "hot_recovery_needs_media": "hot_recovery_needs_media",
+                "replacement_disc_needed": "replacement_disc_needed",
+                "burn_work_ready": "burn_work_ready",
+                "recovery_expired": "recovery_expired",
+            }
+            decisions: list[OperatorDecision] = []
+            views: list[OperatorView] = []
+            for index, item in enumerate(items, start=1):
+                state = item_states[item.kind]
+                decisions.append(_operator_decision("arc_disc.guided", state))
+                views.append(
+                    _operator_view(
+                        "arc_disc.guided",
+                        state,
+                        text=_guided_item_text(item, index=index, total=len(items)),
+                    )
+                )
+            return _operator_completed_process(
+                ["arc-disc"],
+                stdout=stdout,
+                decisions=decisions,
+                views=views,
+            )
         if blank_disc_work and label_location is None:
-            return _completed_process(
+            text = operator_copy.burn_label_checkpoint(label_text=_OPERATOR_FIXTURE_DISC_LABEL)
+            return _operator_completed_process(
                 ["arc-disc"],
                 returncode=1,
-                stderr=operator_copy.burn_label_checkpoint(label_text=_OPERATOR_FIXTURE_DISC_LABEL),
+                stderr=text,
+                decisions=[_operator_decision("arc_disc.burn", "label_checkpoint")],
+                views=[
+                    _operator_view(
+                        "arc_disc.burn",
+                        "label_checkpoint",
+                        text=text,
+                    )
+                ],
             )
         if blank_disc_work:
             with self.state.lock:
                 self.state.operator_collection_fully_protected = True
+            registered = operator_copy.copy_registered(
+                label_text=_OPERATOR_FIXTURE_DISC_LABEL,
+                location=label_location or "unknown",
+            )
+            backlog_cleared = operator_copy.burn_backlog_cleared()
             stdout = "\n".join(
                 (
-                    operator_copy.burn_backlog_cleared(),
-                    operator_copy.copy_registered(
-                        label_text=_OPERATOR_FIXTURE_DISC_LABEL,
-                        location=label_location or "unknown",
-                    ),
+                    backlog_cleared,
+                    registered,
                 )
             )
-            return _completed_process(["arc-disc"], stdout=stdout)
-        return _completed_process(["arc-disc"], stdout=operator_copy.arc_disc_no_attention())
+            return _operator_completed_process(
+                ["arc-disc"],
+                stdout=stdout,
+                decisions=[
+                    _operator_decision("arc_disc.guided", "burn_work_ready"),
+                    _operator_decision("arc_disc.burn", "backlog_cleared"),
+                ],
+                views=[
+                    _operator_view(
+                        "arc_disc.burn",
+                        "backlog_cleared",
+                        text=backlog_cleared,
+                    )
+                ],
+            )
+        stdout = operator_copy.arc_disc_no_attention()
+        return _operator_completed_process(
+            ["arc-disc"],
+            stdout=stdout,
+            decisions=[_operator_decision("arc_disc.guided", "no_attention")],
+            views=[
+                _operator_view(
+                    "arc_disc.guided",
+                    "no_attention",
+                    text=stdout,
+                )
+            ],
+        )
 
     def run_arc(self, *args: str) -> subprocess.CompletedProcess[str]:
         if not args:

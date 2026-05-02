@@ -13,9 +13,6 @@ Feature: Outbound operator webhooks
     And the captured webhook payload field "event" equals "images.ready"
     And the captured webhook payload field "title" is present
     And the captured webhook payload field "body" is present
-    And the captured webhook payload has exactly one action
-    And the captured webhook action command equals "arc-disc"
-    And the captured webhook action argv equals "arc-disc"
 
   @contract_gap @issue_210 @ci_opt_in @requires_webhook_capture @issue_186
   Scenario: Image rebuild ready and reminder webhook deliveries are captured
@@ -37,9 +34,6 @@ Feature: Outbound operator webhooks
     And the captured webhook payload integer field "reminder_count" equals 0
     And the captured webhook payload field "title" is present
     And the captured webhook payload field "body" is present
-    And the captured webhook payload has exactly one action
-    And the captured webhook action command equals "arc-disc"
-    And the captured webhook action argv equals "arc-disc"
     When the API process restarts
     And the client waits for captured webhook event "images.rebuild_ready.reminder"
     Then the captured webhook payload matches "contracts/operator/action-needed-notification.schema.json"
@@ -47,8 +41,6 @@ Feature: Outbound operator webhooks
     And the captured webhook payload field "session_id" equals "rs-20260420T040001Z-rebuild-1"
     And the captured webhook payload images contain only "20260420T040001Z"
     And the captured webhook payload integer field "reminder_count" equals 1
-    And the captured webhook payload has exactly one action
-    And the captured webhook action command equals "arc-disc"
 
   @contract_gap @issue_210 @ci_opt_in @requires_webhook_capture @issue_186
   Scenario: Image rebuild ready webhook retries after a transient sink failure
@@ -71,8 +63,6 @@ Feature: Outbound operator webhooks
     And the captured webhook payload field "session_id" equals "rs-20260420T040001Z-rebuild-1"
     And the captured webhook payload images contain only "20260420T040001Z"
     And the captured webhook payload integer field "reminder_count" equals 0
-    And the captured webhook payload has exactly one action
-    And the captured webhook action command equals "arc-disc"
     And captured webhook event "images.rebuild_ready" has 1 successful deliveries
     And captured webhook event "images.rebuild_ready.reminder" has 0 successful deliveries
     And captured webhook attempt "images.rebuild_ready" result "delivered" attempt 1 happened at least 1 seconds after result "failed" attempt 1
@@ -98,8 +88,6 @@ Feature: Outbound operator webhooks
     And the captured webhook payload field "session_id" equals "rs-20260420T040001Z-rebuild-1"
     And the captured webhook payload images contain only "20260420T040001Z"
     And the captured webhook payload integer field "reminder_count" equals 0
-    And the captured webhook payload has exactly one action
-    And the captured webhook action command equals "arc-disc"
     And captured webhook event "images.rebuild_ready" has 1 successful deliveries
     And captured webhook event "images.rebuild_ready.reminder" has 0 successful deliveries
     And captured webhook attempt "images.rebuild_ready" result "delivered" attempt 1 happened at least 1 seconds after result "timeout" attempt 1
@@ -116,9 +104,6 @@ Feature: Outbound operator webhooks
     And the captured webhook payload integer field "attempts" equals 2
     And the captured webhook payload field "title" is present
     And the captured webhook payload field "body" is present
-    And the captured webhook payload has exactly one action
-    And the captured webhook action command equals "arc"
-    And the captured webhook action argv equals "arc"
 
   @contract_gap @issue_210 @ci_opt_in @requires_webhook_capture @issue_186
   Scenario: Labeling does not create a standalone notification
@@ -127,7 +112,6 @@ Feature: Outbound operator webhooks
     When Riverhog delivers due action-needed notifications
     Then no captured webhook event asks only for labeling
     And contracts/operator/copy.py defines no labeling notification copy
-    And no captured webhook action command includes a subcommand
 
   @contract_gap @issue_210 @ci_opt_in @requires_webhook_capture @issue_186
   Scenario: Routine success does not create an action-needed notification

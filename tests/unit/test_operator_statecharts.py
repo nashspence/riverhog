@@ -153,7 +153,6 @@ def test_statechart_contract_has_valid_initials_and_transition_targets() -> None
 
         for state_name, state in states.items():
             assert isinstance(state, dict), f"{name}.{state_name}"
-            assert state.get("action") in (None, "arc", "arc-disc"), f"{name}.{state_name}"
             transitions = state.get("transitions", [])
             assert isinstance(transitions, list), f"{name}.{state_name}"
             for transition in transitions:
@@ -204,7 +203,6 @@ def test_statechart_choice_states_are_routing_states() -> None:
             assert state.get("transitions"), f"{statechart_name}.{state_name}"
             assert state.get("final") is not True, f"{statechart_name}.{state_name}"
             assert "event" not in state, f"{statechart_name}.{state_name}"
-            assert "action" not in state, f"{statechart_name}.{state_name}"
 
 
 def test_statechart_terminal_states_are_marked_final() -> None:
@@ -343,14 +341,13 @@ def test_mermaid_generator_writes_clear_compatible_mmdc_validated_workflows(
         assert not re.search(r"-->\s+[A-Za-z0-9_]+\s*:", rendered)
         assert '"guard ' not in rendered
         assert '"event ' not in rendered
-        assert not re.search(r"^\s+(event|view|action):", rendered, flags=re.MULTILINE)
+        assert not re.search(r"^\s+(event|view):", rendered, flags=re.MULTILINE)
         assert '["<b>' in rendered
         assert "classDef stateNode fill:#f8fafc" in rendered
         assert "classDef eventNode fill:#e0f2fe" in rendered
         assert "classDef guardNode fill:#fef3c7" in rendered
         assert "classDef linkNode fill:#f3e8ff" in rendered
         assert "classDef externalStateNode fill:#faf5ff" in rendered
-        assert "actionNode" not in rendered
         if has_copy_state:
             assert "<br/>" in rendered
 

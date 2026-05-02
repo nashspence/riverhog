@@ -30,9 +30,6 @@ def test_build_images_ready_payload_supports_multiple_images() -> None:
     assert payload["event"] == "images.ready"
     assert payload["title"] == "Blank discs are needed"
     assert payload["urgency"] == "attention"
-    assert payload["actions"] == [
-        {"label": "Run arc-disc", "command": "arc-disc", "argv": ["arc-disc"]}
-    ]
     assert "Run arc-disc" in str(payload["body"])
     assert len(payload["images"]) == 2
     assert payload["images"][0]["download_url"].endswith("/v1/images/20260420T040001Z/iso")
@@ -57,9 +54,6 @@ def test_build_recovery_ready_payload_includes_session_and_image_urls() -> None:
     assert payload["type"] == "image_rebuild"
     assert payload["title"] == "Recovery is ready"
     assert payload["urgency"] == "time-sensitive"
-    assert payload["actions"] == [
-        {"label": "Run arc-disc", "command": "arc-disc", "argv": ["arc-disc"]}
-    ]
     assert payload["session_id"] == "rs-20260420T040001Z-1"
     assert payload["session_url"] == "https://api.test/v1/recovery-sessions/rs-20260420T040001Z-1"
     assert payload["delivered_at"] == "2026-04-20T05:00:00Z"

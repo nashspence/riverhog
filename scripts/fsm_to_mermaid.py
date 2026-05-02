@@ -197,7 +197,6 @@ def _notification_text(notification: operator_copy.ActionNeededNotification) -> 
         (
             notification.title,
             notification.body,
-            notification.action.label or notification.action.command,
         )
     )
 

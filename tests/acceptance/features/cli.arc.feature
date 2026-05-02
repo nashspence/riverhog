@@ -114,6 +114,7 @@ Feature: arc CLI
       And the archive has no non-physical attention items
       When the operator runs 'arc'
       Then the command exits with code 0
+      And the operator decision matches the accepted state
       And stdout matches operator copy "arc_home_no_attention"
       And stdout mentions "No attention needed"
       And stdout mentions "upload a collection"
@@ -129,6 +130,7 @@ Feature: arc CLI
       And collection "docs" has failed cloud backup after retries
       When the operator runs 'arc'
       Then the command exits with code 0
+      And the operator decision matches the accepted state
       And stdout includes operator copy "arc_item_cloud_backup_failed"
       And stdout mentions "Cloud backup needs attention"
       And stdout mentions "docs"
@@ -144,6 +146,7 @@ Feature: arc CLI
       And notification delivery needs attention
       When the operator runs 'arc'
       Then the command exits with code 0
+      And the operator decision matches the accepted state
       And stdout includes operator copy "arc_item_setup_needs_attention"
       And stdout includes operator copy "arc_item_notification_health_failed"
       And stdout mentions "Setup needs attention"
@@ -157,6 +160,7 @@ Feature: arc CLI
       And a local collection source "photos-2024" with deterministic fixture contents
       When the operator uploads collection source "photos-2024" with arc
       Then the command exits with code 0
+      And the operator decision matches the accepted state
       And stdout includes operator copy "upload_finalized"
       And stdout mentions "Collection photos-2024"
       And stdout mentions "Cloud backup is safe"
@@ -170,6 +174,7 @@ Feature: arc CLI
       And an archive with planned disc work
       When the operator runs 'arc plan --collection docs --iso-ready'
       Then the command exits with code 0
+      And the operator decision matches the accepted state
       And stdout includes operator copy "plan_disc_work_ready"
       And stdout mentions "Disc work is ready"
       And stdout mentions "docs"
@@ -184,6 +189,7 @@ Feature: arc CLI
       And a disc copy already exists for collection "docs"
       When the operator runs 'arc images --has-copies'
       Then the command exits with code 0
+      And the operator decision matches the accepted state
       And stdout includes operator copy "images_physical_work_summary"
       And stdout mentions "Disc work needs attention"
       And stdout mentions "Run arc-disc"
@@ -199,6 +205,7 @@ Feature: arc CLI
       And collection "docs" has partial disc coverage
       When the operator runs 'arc show docs'
       Then the command exits with code 0
+      And the operator decision matches the accepted state
       And stdout includes operator copy "collection_summary"
       And stdout mentions "cloud backup is safe"
       And stdout mentions "Disc coverage is partial"
@@ -214,6 +221,7 @@ Feature: arc CLI
       And collection "docs" has one split file protected by one disc
       When the operator runs 'arc show docs'
       Then the command exits with code 0
+      And the operator decision matches the accepted state
       And stdout includes operator copy "collection_summary"
       And stdout mentions "Disc coverage is partial"
       And stdout does not mention "fully protected"
@@ -224,6 +232,7 @@ Feature: arc CLI
       And collection "docs" is safe in cloud backup
       When the operator runs 'arc glacier --collection docs'
       Then the command exits with code 0
+      And the operator decision matches the accepted state
       And stdout includes operator copy "cloud_backup_report"
       And stdout mentions "Cloud backup"
       And stdout mentions "Estimated monthly cost"
@@ -246,6 +255,7 @@ Feature: arc CLI
       And candidate "img_2026-04-20_01" is finalized
       When the operator runs 'arc copy add 20260420T040001Z --at "Shelf B1"'
       Then the command exits with code 0
+      And the operator decision matches the accepted state
       And stdout includes operator copy "copy_registered"
       And stdout mentions "Disc label"
       And stdout mentions "20260420T040001Z-1"
@@ -259,6 +269,7 @@ Feature: arc CLI
       And pinning target "docs/tax/2022/invoice-123.pdf" requires fetch "fx-1"
       When the operator runs 'arc pin "docs/tax/2022/invoice-123.pdf"'
       Then the command exits with code 0
+      And the operator decision matches the accepted state
       And stdout includes operator copy "pin_waiting_for_disc"
       And stdout mentions target "docs/tax/2022/invoice-123.pdf"
       And stdout mentions "Files need recovery from disc"
@@ -272,6 +283,7 @@ Feature: arc CLI
       And fetch "fx-1" exists for target "docs/tax/2022/invoice-123.pdf"
       When the operator runs 'arc fetch "fx-1"'
       Then the command exits with code 0
+      And the operator decision matches the accepted state
       And stdout includes operator copy "fetch_detail_pending"
       And stdout mentions "Files need recovery from disc"
       And stdout mentions "Pending files"
