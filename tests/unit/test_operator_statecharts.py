@@ -9,12 +9,14 @@ from pathlib import Path
 from typing import Any
 
 import yaml
+from jsonschema import Draft202012Validator
 
 from contracts.operator import copy as operator_copy
 
 ROOT = Path(__file__).resolve().parents[2]
 FEATURES_DIR = ROOT / "tests" / "acceptance" / "features"
 STATECHARTS_CONTRACT = ROOT / "contracts" / "operator" / "statecharts.yaml"
+STATECHARTS_SCHEMA = ROOT / "contracts" / "operator" / "statecharts.schema.json"
 MERMAID_GENERATOR = ROOT / "scripts" / "fsm_to_mermaid.py"
 MERMAID_PUPPETEER_CONFIG = ROOT / "scripts" / "mermaid-puppeteer-config.json"
 MERMAID_CLI_PACKAGE = "@mermaid-js/mermaid-cli@8.14.0"
@@ -38,14 +40,20 @@ def _statecharts() -> dict[str, dict[str, Any]]:
     return statecharts
 
 
-def _links() -> list[dict[str, Any]]:
-    links = _contract()["links"]
-    assert isinstance(links, list)
-    return links
+def _schema() -> dict[str, Any]:
+    schema = yaml.safe_load(STATECHARTS_SCHEMA.read_text(encoding="utf-8"))
+    assert isinstance(schema, dict)
+    return schema
 
 
-def _endpoint(link: dict[str, Any], key: str) -> tuple[str, str]:
-    endpoint = link[key]
+def _handoffs() -> list[dict[str, Any]]:
+    handoffs = _contract()["handoffs"]
+    assert isinstance(handoffs, list)
+    return handoffs
+
+
+def _endpoint(handoff: dict[str, Any], key: str) -> tuple[str, str]:
+    endpoint = handoff[key]
     assert isinstance(endpoint, dict)
     return str(endpoint["statechart"]), str(endpoint["state"])
 
@@ -145,38 +153,72 @@ def test_statechart_contract_has_valid_initials_and_transition_targets() -> None
 
         for state_name, state in states.items():
             assert isinstance(state, dict), f"{name}.{state_name}"
-            assert "final" not in state, f"{name}.{state_name}"
-            assert "action" not in state, f"{name}.{state_name}"
+            assert state.get("action") in (None, "arc", "arc-disc"), f"{name}.{state_name}"
             transitions = state.get("transitions", [])
             assert isinstance(transitions, list), f"{name}.{state_name}"
             for transition in transitions:
                 assert isinstance(transition, dict), f"{name}.{state_name}"
-                assert "action" not in transition, f"{name}.{state_name}"
                 assert len({"event", "guard"} & transition.keys()) <= 1
                 assert transition.get("target") in states, f"{name}.{state_name}"
 
 
-def test_statechart_links_resolve_between_contract_states() -> None:
-    statecharts = _statecharts()
-    links = _links()
+def test_statechart_contract_matches_json_schema() -> None:
+    Draft202012Validator.check_schema(_schema())
+    validator = Draft202012Validator(_schema())
+    errors = sorted(validator.iter_errors(_contract()), key=lambda error: error.json_path)
+    assert not errors
 
-    assert links
-    for index, link in enumerate(links):
-        assert set(link) == {"from", "label", "to"}, index
-        assert isinstance(link.get("label"), str), index
-        assert link["label"].strip(), index
+
+def test_statechart_handoffs_resolve_between_contract_states() -> None:
+    statecharts = _statecharts()
+    handoffs = _handoffs()
+
+    assert handoffs
+    for index, handoff in enumerate(handoffs):
+        assert set(handoff) <= {"from", "event", "label", "target"}, index
+        assert {"from", "label", "target"} <= set(handoff), index
+        assert isinstance(handoff.get("label"), str), index
+        assert handoff["label"].strip(), index
         endpoints: dict[str, tuple[str, str]] = {}
-        for key in ("from", "to"):
-            endpoint = link[key]
+        for key in ("from", "target"):
+            endpoint = handoff[key]
             assert isinstance(endpoint, dict), index
             assert set(endpoint) == {"statechart", "state"}, f"{index}.{key}"
-            statechart_name, state_name = _endpoint(link, key)
+            statechart_name, state_name = _endpoint(handoff, key)
             endpoints[key] = (statechart_name, state_name)
             assert statechart_name in statecharts, f"{index}.{key}"
             states = statecharts[statechart_name]["states"]
             assert isinstance(states, dict)
             assert state_name in states, f"{index}.{key}"
-        assert endpoints["from"] != endpoints["to"], index
+        assert endpoints["from"] != endpoints["target"], index
+
+
+def test_statechart_choice_states_are_routing_states() -> None:
+    for statechart_name, statechart in _statecharts().items():
+        states = statechart["states"]
+        assert isinstance(states, dict)
+        for state_name, state in states.items():
+            assert isinstance(state, dict)
+            if state.get("type") != "choice":
+                continue
+            assert state.get("transitions"), f"{statechart_name}.{state_name}"
+            assert state.get("final") is not True, f"{statechart_name}.{state_name}"
+            assert "event" not in state, f"{statechart_name}.{state_name}"
+            assert "action" not in state, f"{statechart_name}.{state_name}"
+
+
+def test_statechart_terminal_states_are_marked_final() -> None:
+    for statechart_name, statechart in _statecharts().items():
+        states = statechart["states"]
+        assert isinstance(states, dict)
+        for state_name, state in states.items():
+            assert isinstance(state, dict)
+            transitions = state.get("transitions", [])
+            assert isinstance(transitions, list), f"{statechart_name}.{state_name}"
+            if transitions:
+                assert state.get("final") is not True, f"{statechart_name}.{state_name}"
+                continue
+            assert state.get("final") is True, f"{statechart_name}.{state_name}"
 
 
 def test_statechart_views_resolve_to_operator_copy_contract() -> None:

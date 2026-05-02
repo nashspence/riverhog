@@ -1,0 +1,139 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://riverhog.dev/contracts/operator/statecharts.schema.json",
+  "title": "Riverhog Operator Statecharts",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["version", "statecharts"],
+  "properties": {
+    "version": {
+      "const": 1
+    },
+    "statecharts": {
+      "type": "object",
+      "minProperties": 1,
+      "additionalProperties": {
+        "$ref": "#/$defs/statechart"
+      }
+    },
+    "handoffs": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/handoff"
+      }
+    }
+  },
+  "$defs": {
+    "statechart": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["initial", "states"],
+      "properties": {
+        "command": {
+          "enum": ["arc", "arc-disc"]
+        },
+        "initial": {
+          "$ref": "#/$defs/name"
+        },
+        "states": {
+          "type": "object",
+          "minProperties": 1,
+          "additionalProperties": {
+            "$ref": "#/$defs/state"
+          }
+        }
+      }
+    },
+    "state": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "type": {
+          "enum": ["choice"]
+        },
+        "view": {
+          "$ref": "#/$defs/name"
+        },
+        "event": {
+          "$ref": "#/$defs/eventName"
+        },
+        "action": {
+          "enum": ["arc", "arc-disc"]
+        },
+        "final": {
+          "type": "boolean"
+        },
+        "transitions": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/transition"
+          }
+        }
+      }
+    },
+    "transition": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["target"],
+      "properties": {
+        "guard": {
+          "$ref": "#/$defs/name"
+        },
+        "event": {
+          "$ref": "#/$defs/eventName"
+        },
+        "target": {
+          "$ref": "#/$defs/name"
+        }
+      }
+    },
+    "handoff": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["from", "target", "label"],
+      "properties": {
+        "from": {
+          "$ref": "#/$defs/stateRef"
+        },
+        "event": {
+          "$ref": "#/$defs/eventName"
+        },
+        "target": {
+          "$ref": "#/$defs/stateRef"
+        },
+        "label": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "stateRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["statechart", "state"],
+      "properties": {
+        "statechart": {
+          "$ref": "#/$defs/statechartName"
+        },
+        "state": {
+          "$ref": "#/$defs/name"
+        }
+      }
+    },
+    "statechartName": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9_]*(\\.[a-z][a-z0-9_]*)*$"
+    },
+    "eventName": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^[a-zA-Z0-9_.:-]+$"
+    },
+    "name": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^[a-zA-Z_][a-zA-Z0-9_]*$"
+    }
+  }
+}

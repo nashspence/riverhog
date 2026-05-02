@@ -38,17 +38,17 @@ def load_contract(
     if contract.get("version") != 1:
         raise StatechartContractError("statechart contract version must be 1")
     statecharts = _mapping(contract.get("statecharts"), label="statecharts")
-    links = contract.get("links", [])
-    if not isinstance(links, Sequence) or isinstance(links, str):
-        raise StatechartContractError("links must be a list")
+    handoffs = contract.get("handoffs", [])
+    if not isinstance(handoffs, Sequence) or isinstance(handoffs, str):
+        raise StatechartContractError("handoffs must be a list")
     return {
         str(name): _mapping(statechart, label=f"statecharts.{name}")
         for name, statechart in statecharts.items()
-    }, [_mapping(link, label="links[]") for link in links]
+    }, [_mapping(handoff, label="handoffs[]") for handoff in handoffs]
 
 
 def load_statecharts(path: Path = DEFAULT_CONTRACT) -> Mapping[str, Mapping[str, Any]]:
-    statecharts, _links = load_contract(path)
+    statecharts, _handoffs = load_contract(path)
     return statecharts
 
 
@@ -131,16 +131,16 @@ def _state_node_line(state_name: str, label: str) -> str:
     return f'    {state_name}["{label}"]:::stateNode'
 
 
-def _link_endpoint(link: Mapping[str, Any], key: str) -> tuple[str, str]:
-    endpoint = _mapping(link.get(key), label=f"links[].{key}")
+def _handoff_endpoint(handoff: Mapping[str, Any], key: str) -> tuple[str, str]:
+    endpoint = _mapping(handoff.get(key), label=f"handoffs[].{key}")
     return str(endpoint.get("statechart", "")), str(endpoint.get("state", ""))
 
 
-def _link_label(link: Mapping[str, Any]) -> str:
-    label = link.get("label")
+def _handoff_label(handoff: Mapping[str, Any]) -> str:
+    label = handoff.get("label")
     if not label:
-        from_statechart, _from_state = _link_endpoint(link, "from")
-        to_statechart, _to_state = _link_endpoint(link, "to")
+        from_statechart, _from_state = _handoff_endpoint(handoff, "from")
+        to_statechart, _to_state = _handoff_endpoint(handoff, "target")
         label = f"{from_statechart} to {to_statechart}"
     return _transition_display_label(str(label))
 
@@ -676,25 +676,25 @@ def _transition_lines_for(
     return lines, transition_nodes
 
 
-def _link_lines_for(
+def _handoff_lines_for(
     *,
     statechart_name: str,
     states: Mapping[str, Any],
     statecharts: Mapping[str, Mapping[str, Any]],
-    links: Sequence[Mapping[str, Any]],
+    handoffs: Sequence[Mapping[str, Any]],
 ) -> list[str]:
     lines: list[str] = []
-    link_nodes: list[tuple[str, str]] = []
+    handoff_nodes: list[tuple[str, str]] = []
     external_nodes: dict[tuple[str, str], str] = {}
 
-    for link in links:
-        from_statechart, from_state = _link_endpoint(link, "from")
+    for handoff in handoffs:
+        from_statechart, from_state = _handoff_endpoint(handoff, "from")
         if from_statechart != statechart_name:
             continue
-        to_statechart, to_state = _link_endpoint(link, "to")
+        to_statechart, to_state = _handoff_endpoint(handoff, "target")
         if from_state not in states:
             raise StatechartContractError(
-                f"link source state does not exist: {from_statechart}.{from_state}"
+                f"handoff source state does not exist: {from_statechart}.{from_state}"
             )
         target_statechart = _mapping(
             statecharts.get(to_statechart),
@@ -706,7 +706,7 @@ def _link_lines_for(
         )
         if to_state not in target_states:
             raise StatechartContractError(
-                f"link target state does not exist: {to_statechart}.{to_state}"
+                f"handoff target state does not exist: {to_statechart}.{to_state}"
             )
 
         link_id = _link_node_id(
@@ -720,11 +720,11 @@ def _link_lines_for(
         )
         lines.append(f"    {from_state} --> {link_id}")
         lines.append(f"    {link_id} --> {external_id}")
-        link_nodes.append((link_id, _link_label(link)))
+        handoff_nodes.append((link_id, _handoff_label(handoff)))
 
-    if link_nodes:
+    if handoff_nodes:
         lines.append("")
-        for link_id, label in link_nodes:
+        for link_id, label in handoff_nodes:
             lines.append(_link_node_line(link_id, label))
         for (to_statechart, to_state), external_id in external_nodes.items():
             lines.append(
@@ -742,7 +742,7 @@ def render_statechart(
     statechart: Mapping[str, Any],
     *,
     statecharts: Mapping[str, Mapping[str, Any]] | None = None,
-    links: Sequence[Mapping[str, Any]] = (),
+    handoffs: Sequence[Mapping[str, Any]] = (),
 ) -> str:
     states = _mapping(statechart.get("states"), label=f"{name}.states")
     initial = str(statechart.get("initial", ""))
@@ -782,15 +782,15 @@ def render_statechart(
         lines.append("")
 
     if statecharts is not None:
-        link_lines = _link_lines_for(
+        handoff_lines = _handoff_lines_for(
             statechart_name=name,
             states=states,
             statecharts=statecharts,
-            links=links,
+            handoffs=handoffs,
         )
-        if link_lines:
+        if handoff_lines:
             lines.append("")
-            lines.extend(link_lines)
+            lines.extend(handoff_lines)
 
     lines.append("")
     lines.extend(_class_def_lines(initial))
@@ -823,7 +823,7 @@ def _write_outputs(
     *,
     out_dir: Path,
     statecharts: Mapping[str, Mapping[str, Any]],
-    links: Sequence[Mapping[str, Any]],
+    handoffs: Sequence[Mapping[str, Any]],
 ) -> list[Path]:
     out_dir.mkdir(parents=True, exist_ok=True)
     paths: list[Path] = []
@@ -834,7 +834,7 @@ def _write_outputs(
                 name,
                 statechart,
                 statecharts=statecharts,
-                links=links,
+                handoffs=handoffs,
             ),
             encoding="utf-8",
         )
@@ -865,14 +865,14 @@ def main(argv: Sequence[str] | None = None) -> int:
     args = parser.parse_args(argv)
 
     try:
-        statecharts, links = load_contract(args.contract)
+        statecharts, handoffs = load_contract(args.contract)
         selected = _selected_statecharts(statecharts, args.statecharts)
         if args.out_dir:
             for path in _write_outputs(
                 selected,
                 out_dir=args.out_dir,
                 statecharts=statecharts,
-                links=links,
+                handoffs=handoffs,
             ):
                 print(path)
             return 0
@@ -881,7 +881,7 @@ def main(argv: Sequence[str] | None = None) -> int:
                 name,
                 statechart,
                 statecharts=statecharts,
-                links=links,
+                handoffs=handoffs,
             ).rstrip()
             for name, statechart in selected
         ]
