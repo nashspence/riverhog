@@ -358,6 +358,12 @@ def _operator_copy_text(name: str) -> str:
                     target="docs/tax/2022/invoice-123.pdf"
                 )
             )
+        case "device_missing":
+            return operator_copy.device_missing()
+        case "device_permission_denied":
+            return operator_copy.device_permission_denied()
+        case "device_lost_during_work":
+            return operator_copy.device_lost_during_work()
         case "burn_backlog_cleared":
             return operator_copy.burn_backlog_cleared()
         case "burn_label_checkpoint":
@@ -1154,6 +1160,39 @@ def given_pinned_files_need_recovery_from_disc(
         "fx-1",
     )
     acceptance_system.set_operator_hot_recovery_needs_media(INVOICE_TARGET)
+
+
+@given("the configured optical device path does not exist")
+def given_configured_optical_device_path_does_not_exist(
+    acceptance_system: AcceptanceSystem,
+) -> None:
+    acceptance_system.set_operator_arc_disc_device_problem(
+        statechart="arc_disc.guided",
+        state="device_missing",
+        copy_ref="device_missing",
+    )
+
+
+@given("the operator cannot read or write the configured optical device")
+def given_operator_cannot_read_or_write_configured_optical_device(
+    acceptance_system: AcceptanceSystem,
+) -> None:
+    acceptance_system.set_operator_arc_disc_device_problem(
+        statechart="arc_disc.guided",
+        state="device_permission_denied",
+        copy_ref="device_permission_denied",
+    )
+
+
+@given("the optical device becomes unavailable while writing media")
+def given_optical_device_becomes_unavailable_while_writing_media(
+    acceptance_system: AcceptanceSystem,
+) -> None:
+    acceptance_system.set_operator_arc_disc_device_problem(
+        statechart="arc_disc.burn",
+        state="device_lost_during_work",
+        copy_ref="device_lost_during_work",
+    )
 
 
 @given(parsers.parse('the operator confirms labeled disc at storage location "{location}"'))
