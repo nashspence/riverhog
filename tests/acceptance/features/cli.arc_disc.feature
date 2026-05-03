@@ -59,7 +59,6 @@ Feature: arc-disc CLI
       And stdout mentions "local configuration"
       And stdout does not mention "httpx"
 
-    @contract_gap @issue_311
     Scenario: arc-disc reports storage-capacity blockage during disc preparation
       Given statechart "arc_disc.burn" state "storage_capacity_blocked" is the accepted operator contract
       And burn preparation needs more local storage than is available
@@ -68,7 +67,6 @@ Feature: arc-disc CLI
       And stderr mentions "Free local storage"
       And stderr does not mention "No space left on device"
 
-    @contract_gap @issue_311
     Scenario: arc-disc reports storage-capacity blockage during recovery materialization
       Given statechart "arc_disc.recovery" state "storage_capacity_blocked" is the accepted operator contract
       And recovery materialization needs more local storage than is available

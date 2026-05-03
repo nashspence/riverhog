@@ -18,6 +18,7 @@ import typer
 from arc_cli.api_preflight import ApiUnreachable, check_api_reachable
 from arc_cli.client import ApiClient
 from arc_cli.output import emit
+from arc_cli.storage_capacity import LocalStorageCapacityBlocked, check_local_storage_capacity
 from arc_core.domain.errors import ArcError, HashMismatch, NotFound
 from contracts.operator import copy as operator_copy
 
@@ -47,6 +48,7 @@ def arc_disc_app(
         if items:
             typer.echo(operator_copy.arc_disc_attention(items))
             return
+        check_local_storage_capacity()
         _check_optical_device_ready(device, statechart="arc_disc.guided")
         completed_copy_ids, recovery_handoffs = _run_burn_backlog(
             device=device,
@@ -59,6 +61,9 @@ def arc_disc_app(
     except ApiUnreachable as exc:
         typer.echo(exc.copy_text)
         raise typer.Exit(code=0) from exc
+    except LocalStorageCapacityBlocked as exc:
+        typer.echo(exc.copy_text, err=True)
+        raise typer.Exit(code=1) from exc
     except ArcDiscOperatorProblem as exc:
         raise typer.Exit(code=1) from exc
     except (ArcError, RuntimeError) as exc:

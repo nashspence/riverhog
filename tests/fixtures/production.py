@@ -9,7 +9,7 @@ import subprocess
 import sys
 import time
 from collections.abc import Iterator, Mapping, Sequence
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from datetime import UTC, datetime, timedelta
 from pathlib import Path
 from typing import cast
@@ -103,6 +103,9 @@ _DEFAULT_EXTERNAL_WEBDAV_BASE_URL = "http://webdav:8080"
 _DEFAULT_EXTERNAL_APP_RESTART_PATH = "/_test/restart"
 _DEFAULT_EXTERNAL_APP_RESET_PATH = "/_test/reset"
 _DEFAULT_ACCEPTANCE_ROOT = ".tmp/acceptance"
+_OPERATOR_STORAGE_AVAILABLE_BYTES = 1_073_741_824
+_OPERATOR_STORAGE_BUDGET_BYTES = 21_474_836_480
+_OPERATOR_STORAGE_REQUIRED_BYTES = 8_589_934_592
 _FORBIDDEN_PROD_ARC_DISC_FACTORY_ENV_VARS = (
     "ARC_DISC_READER_FACTORY",
     "ARC_DISC_ISO_VERIFIER_FACTORY",
@@ -761,6 +764,7 @@ class ProductionSystem:
     operator_recovery_ready: bool = False
     arc_disc_acceptance_device: Path | None = None
     operator_stop_before_label_checkpoint: bool = False
+    local_storage_env: dict[str, str] = field(default_factory=dict)
 
     @classmethod
     def create(cls, workspace: Path) -> ProductionSystem:
@@ -789,6 +793,7 @@ class ProductionSystem:
                 planning=cast(ProductionPlanningClient, None),
                 copies=cast(ProductionCopiesClient, None),
                 arc_disc_acceptance_device=None,
+                local_storage_env={},
             )
             system.collections = ProductionCollectionsClient(system)
             system.fetches = ProductionFetchesClient(system)
@@ -815,6 +820,7 @@ class ProductionSystem:
             self.operator_recovery_ready = False
             self.arc_disc_acceptance_device = None
             self.operator_stop_before_label_checkpoint = False
+            self.local_storage_env.clear()
             self.server.reset()
             self.base_url = self.server.base_url
 
@@ -995,7 +1001,7 @@ class ProductionSystem:
             command = subprocess.run(
                 [sys.executable, "-m", "arc_cli.main", *args],
                 cwd=REPO_ROOT,
-                env=self._subprocess_env(),
+                env=self._subprocess_env(self.local_storage_env),
                 capture_output=True,
                 text=True,
                 check=False,
@@ -1010,6 +1016,7 @@ class ProductionSystem:
                 self._write_arc_disc_fixture(self._default_arc_disc_fixture())
             extra_env = {
                 "ARC_DISC_STAGING_DIR": str(self.workspace / "arc_disc_staging"),
+                **self.local_storage_env,
             }
             if self.arc_disc_acceptance_device is not None:
                 extra_env["ARC_DISC_ACCEPTANCE_DEVICE"] = str(self.arc_disc_acceptance_device)
@@ -1061,6 +1068,14 @@ class ProductionSystem:
 
     def set_operator_local_storage_capacity_summary_available(self) -> None:
         shutil.disk_usage(self.workspace)
+        self.local_storage_env.update(
+            {
+                "ARC_LOCAL_STORAGE_SUMMARY": "1",
+                "ARC_LOCAL_STORAGE_AVAILABLE_BYTES": str(_OPERATOR_STORAGE_AVAILABLE_BYTES),
+                "ARC_LOCAL_STORAGE_BUDGET_BYTES": str(_OPERATOR_STORAGE_BUDGET_BYTES),
+                "ARC_LOCAL_STORAGE_PATH": str(self.workspace),
+            }
+        )
 
     def set_operator_storage_capacity_blocked(self, *, statechart: str, state: str) -> None:
         assert state == "storage_capacity_blocked"
@@ -1069,6 +1084,15 @@ class ProductionSystem:
             "arc_disc.burn",
             "arc_disc.recovery",
         }
+        self.local_storage_env.update(
+            {
+                "ARC_LOCAL_STORAGE_AVAILABLE_BYTES": str(_OPERATOR_STORAGE_AVAILABLE_BYTES),
+                "ARC_LOCAL_STORAGE_BUDGET_BYTES": str(_OPERATOR_STORAGE_BUDGET_BYTES),
+                "ARC_LOCAL_STORAGE_REQUIRED_BYTES": str(_OPERATOR_STORAGE_REQUIRED_BYTES),
+                "ARC_LOCAL_STORAGE_WORKFLOW": "Local work",
+                "ARC_LOCAL_STORAGE_PATH": str(self.workspace),
+            }
+        )
 
     def delete_hot_backing_file(self, target: str) -> None:
         selected = self.state.selected_files(target)
