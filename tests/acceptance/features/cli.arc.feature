@@ -263,7 +263,7 @@ Feature: arc CLI
       And stdout does not mention "copy slot"
       And stdout does not mention "registered"
 
-    @contract_gap @issue_211 @issue_264
+    @contract_gap @issue_211
     Scenario: arc pin prints fetch guidance when recovery is needed
       Given statechart "arc.hot_storage" state "pin_waiting_for_disc" is the accepted operator contract
       And pinning target "docs/tax/2022/invoice-123.pdf" requires fetch "fx-1"
@@ -277,7 +277,7 @@ Feature: arc CLI
       And stdout does not mention "fetch manifest"
       And stdout does not mention "candidate"
 
-    @contract_gap @issue_211 @issue_264
+    @contract_gap @issue_211
     Scenario: arc fetch lists pending and partial files for one pin manifest
       Given statechart "arc.hot_storage" state "fetch_detail_pending" is the accepted operator contract
       And fetch "fx-1" exists for target "docs/tax/2022/invoice-123.pdf"

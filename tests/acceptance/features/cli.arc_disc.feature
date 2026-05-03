@@ -43,7 +43,7 @@ Feature: arc-disc CLI
       And stdout mentions "docs"
       And stdout does not mention "pending_approval"
 
-    @contract_gap @issue_208 @issue_264
+    @contract_gap @issue_208
     Scenario: arc-disc guides disc restore that needs media
       Given statechart "arc_disc.guided" state "hot_recovery_needs_media" is the accepted operator contract
       And pinned files need disc restore
