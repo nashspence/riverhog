@@ -150,6 +150,9 @@ _GLACIER_RECOVERY_READY_TTL_SECONDS = 4.0
 _GLACIER_RECOVERY_WEBHOOK_RETRY_DELAY_SECONDS = 1.0
 _GLACIER_RECOVERY_WEBHOOK_REMINDER_INTERVAL_SECONDS = 2.0
 _OPERATOR_FIXTURE_DISC_LABEL = "20260420T040001Z-1"
+_OPERATOR_STORAGE_AVAILABLE_BYTES = 1_073_741_824
+_OPERATOR_STORAGE_BUDGET_BYTES = 21_474_836_480
+_OPERATOR_STORAGE_REQUIRED_BYTES = 8_589_934_592
 _OPERATOR_WORKFLOWS = load_default_operator_workflows(validate_schema=True)
 _ARC_API_UNREACHABLE_STATECHARTS = {
     "copy": "arc.copy_management",
@@ -604,6 +607,8 @@ class AcceptanceState:
     operator_rebuild_work_remaining_collections: tuple[str, ...] = ()
     operator_expired_recovery_session_id: str | None = None
     operator_expired_recovery_local_artifacts_available: bool | None = None
+    operator_local_storage_capacity_summary_available: bool = False
+    operator_storage_capacity_block: tuple[str, str] | None = None
     operator_blank_disc_work_available: bool = False
     operator_label_confirmation_location: str | None = None
     operator_collection_fully_protected: bool = False
@@ -4413,6 +4418,19 @@ class AcceptanceSystem:
         with self.state.lock:
             self.state.operator_api_unreachable = True
 
+    def set_operator_local_storage_capacity_summary_available(self) -> None:
+        with self.state.lock:
+            self.state.operator_local_storage_capacity_summary_available = True
+
+    def set_operator_storage_capacity_blocked(
+        self,
+        *,
+        statechart: str,
+        state: str,
+    ) -> None:
+        with self.state.lock:
+            self.state.operator_storage_capacity_block = (statechart, state)
+
     def add_operator_cloud_backup_failure(
         self,
         collection_id: str,
@@ -4713,6 +4731,7 @@ class AcceptanceSystem:
             with self.state.lock:
                 items = sorted(self.state.operator_arc_items, key=lambda item: item.priority)
                 api_unreachable = self.state.operator_api_unreachable
+                capacity_summary = self.state.operator_local_storage_capacity_summary_available
             if api_unreachable:
                 stdout = operator_copy.api_unreachable()
                 return _operator_completed_process(
@@ -4729,6 +4748,25 @@ class AcceptanceSystem:
                     ],
                 )
             if not items:
+                if capacity_summary:
+                    stdout = operator_copy.storage_capacity_summary(
+                        available_bytes=_OPERATOR_STORAGE_AVAILABLE_BYTES,
+                        budget_bytes=_OPERATOR_STORAGE_BUDGET_BYTES,
+                    )
+                    return _operator_completed_process(
+                        ["arc"],
+                        stdout=stdout,
+                        decisions=[
+                            _operator_decision("arc.home", "storage_capacity_summary")
+                        ],
+                        views=[
+                            _operator_view(
+                                "arc.home",
+                                "storage_capacity_summary",
+                                text=stdout,
+                            )
+                        ],
+                    )
                 stdout = operator_copy.arc_home_no_attention()
                 return _operator_completed_process(
                     ["arc"],
@@ -4764,6 +4802,22 @@ class AcceptanceSystem:
                 stdout=stdout,
                 decisions=decisions,
                 views=views,
+            )
+        with self.state.lock:
+            storage_block = self.state.operator_storage_capacity_block
+        if storage_block is not None:
+            statechart, state = storage_block
+            stderr = operator_copy.storage_capacity_blocked(
+                workflow="Local work",
+                required_bytes=_OPERATOR_STORAGE_REQUIRED_BYTES,
+                available_bytes=_OPERATOR_STORAGE_AVAILABLE_BYTES,
+            )
+            return _operator_completed_process(
+                ["arc", *args],
+                returncode=1,
+                stderr=stderr,
+                decisions=[_operator_decision(statechart, state)],
+                views=[_operator_view(statechart, state, text=stderr)],
             )
         if command.returncode != 0:
             return command
@@ -4852,6 +4906,7 @@ class AcceptanceSystem:
             label_location = self.state.operator_label_confirmation_location
             api_unreachable = self.state.operator_api_unreachable
             device_problem = self.state.operator_arc_disc_device_problem
+            storage_block = self.state.operator_storage_capacity_block
         if api_unreachable:
             stdout = operator_copy.api_unreachable()
             return _operator_completed_process(
@@ -4884,6 +4939,20 @@ class AcceptanceSystem:
                 stderr=text,
                 decisions=[_operator_decision(statechart, state)],
                 views=[_operator_view(statechart, state, text=text)],
+            )
+        if storage_block is not None:
+            statechart, state = storage_block
+            stderr = operator_copy.storage_capacity_blocked(
+                workflow="Local work",
+                required_bytes=_OPERATOR_STORAGE_REQUIRED_BYTES,
+                available_bytes=_OPERATOR_STORAGE_AVAILABLE_BYTES,
+            )
+            return _operator_completed_process(
+                ["arc-disc"],
+                returncode=1,
+                stderr=stderr,
+                decisions=[_operator_decision(statechart, state)],
+                views=[_operator_view(statechart, state, text=stderr)],
             )
         if blank_disc_work and items:
             items.append(operator_copy.disc_item_burn_work_ready(disc_count=1))

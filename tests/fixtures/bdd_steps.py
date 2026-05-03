@@ -61,6 +61,9 @@ _CAPTURED_WEBHOOK_TIMEOUT_DELAY_SECONDS = 15.0
 _DEFAULT_OPTICAL_ACCEPTANCE_DEVICE = "/dev/sr0"
 _ROOT = Path(__file__).resolve().parents[2]
 _OPERATOR_DISC_LABEL = "20260420T040001Z-1"
+_OPERATOR_STORAGE_AVAILABLE_BYTES = 1_073_741_824
+_OPERATOR_STORAGE_BUDGET_BYTES = 21_474_836_480
+_OPERATOR_STORAGE_REQUIRED_BYTES = 8_589_934_592
 _OPERATOR_STATECHART_CATALOG = load_default_statechart_catalog(validate_schema=True)
 
 
@@ -406,6 +409,17 @@ def _operator_copy_text(name: str) -> str:
             )
         case "arc_home_no_attention":
             return operator_copy.arc_home_no_attention()
+        case "storage_capacity_summary":
+            return operator_copy.storage_capacity_summary(
+                available_bytes=_OPERATOR_STORAGE_AVAILABLE_BYTES,
+                budget_bytes=_OPERATOR_STORAGE_BUDGET_BYTES,
+            )
+        case "storage_capacity_blocked":
+            return operator_copy.storage_capacity_blocked(
+                workflow="Local work",
+                required_bytes=_OPERATOR_STORAGE_REQUIRED_BYTES,
+                available_bytes=_OPERATOR_STORAGE_AVAILABLE_BYTES,
+            )
         case "arc_item_cloud_backup_failed":
             return _guided_item_text(
                 operator_copy.arc_item_cloud_backup_failed(
@@ -1240,6 +1254,44 @@ def given_riverhog_api_is_unreachable(
     acceptance_system: AcceptanceSystem,
 ) -> None:
     acceptance_system.set_operator_api_unreachable()
+
+
+@given("local storage capacity can be measured")
+def given_local_storage_capacity_can_be_measured(
+    acceptance_system: AcceptanceSystem,
+) -> None:
+    acceptance_system.set_operator_local_storage_capacity_summary_available()
+
+
+@given("collection upload staging needs more local storage than is available")
+def given_collection_upload_staging_needs_more_local_storage(
+    acceptance_system: AcceptanceSystem,
+) -> None:
+    acceptance_system.seed_collection_source(PHOTOS_COLLECTION_ID)
+    acceptance_system.set_operator_storage_capacity_blocked(
+        statechart="arc.upload",
+        state="storage_capacity_blocked",
+    )
+
+
+@given("burn preparation needs more local storage than is available")
+def given_burn_preparation_needs_more_local_storage(
+    acceptance_system: AcceptanceSystem,
+) -> None:
+    acceptance_system.set_operator_storage_capacity_blocked(
+        statechart="arc_disc.burn",
+        state="storage_capacity_blocked",
+    )
+
+
+@given("recovery materialization needs more local storage than is available")
+def given_recovery_materialization_needs_more_local_storage(
+    acceptance_system: AcceptanceSystem,
+) -> None:
+    acceptance_system.set_operator_storage_capacity_blocked(
+        statechart="arc_disc.recovery",
+        state="storage_capacity_blocked",
+    )
 
 
 @given(parsers.parse('collection "{collection_id}" has failed cloud backup after retries'))
