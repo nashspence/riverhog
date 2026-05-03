@@ -1808,6 +1808,63 @@ class ProductionSystem:
         staging_path = self.workspace / "arc_disc_staging" / image_id / str(image["filename"])
         return staging_path.is_file()
 
+    def add_operator_setup_attention(self) -> None:
+        return None
+
+    def add_operator_notification_attention(self) -> None:
+        return None
+
+    def set_operator_blank_disc_work_available(self) -> None:
+        return None
+
+    def operator_blank_disc_work_is_available(self) -> bool:
+        response = self.request(
+            "GET",
+            "/v1/plan",
+            params={
+                "iso_ready": True,
+                "page": 1,
+                "per_page": 1,
+                "sort": "fill",
+                "order": "desc",
+            },
+        )
+        assert response.status_code == 200, response.text
+        return int(response.json()["total"]) > 0
+
+    def set_operator_recovery_ready(self, collection_id: str) -> None:
+        assert collection_id == DOCS_COLLECTION_ID
+        image = IMAGE_FIXTURES[0]
+        self.seed_planner_fixtures()
+        self.mark_collection_archive_uploaded(collection_id)
+        self.seed_finalized_image(image.id)
+        self._seed_image_copy(image.volume_id, f"{image.volume_id}-1", "Shelf A1")
+        self._seed_image_copy(image.volume_id, f"{image.volume_id}-2", "Shelf B1")
+        for copy_id, state in (
+            (f"{image.volume_id}-1", "lost"),
+            (f"{image.volume_id}-2", "damaged"),
+        ):
+            response = self.request(
+                "PATCH",
+                f"/v1/images/{image.volume_id}/copies/{copy_id}",
+                json_body={"state": state},
+            )
+            assert response.status_code == 200, response.text
+        self.ensure_image_rebuild_session(
+            session_id=f"rs-{image.volume_id}-rebuild-1",
+            image_id=image.volume_id,
+        )
+
+    def clear_operator_recovery_ready(self) -> None:
+        return None
+
+    def operator_recovery_ready_is_waiting(self) -> bool:
+        response = self.request("GET", "/v1/recovery-sessions/rs-20260420T040001Z-rebuild-1")
+        if response.status_code == 404:
+            return False
+        assert response.status_code == 200, response.text
+        return response.json()["state"] in {"pending_approval", "restore_requested", "ready"}
+
     def pins_list(self) -> list[str]:
         return [item["target"] for item in self.request("GET", "/v1/pins").json()["pins"]]
 
