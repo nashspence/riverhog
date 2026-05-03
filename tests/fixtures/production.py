@@ -877,6 +877,32 @@ class ProductionSystem:
                 check=False,
             )
 
+    def set_operator_arc_disc_device_problem(
+        self,
+        *,
+        statechart: str,
+        state: str,
+        copy_ref: str,
+    ) -> None:
+        assert statechart in {"arc_disc.guided", "arc_disc.burn"}
+        assert copy_ref == state
+        assert state in {
+            "device_missing",
+            "device_permission_denied",
+            "device_lost_during_work",
+        }
+        if state == "device_missing":
+            missing_device = self.workspace / "missing-optical-device"
+            if missing_device.exists():
+                missing_device.unlink()
+            return
+        if state == "device_permission_denied":
+            denied_device = self.workspace / "permission-denied-optical-device"
+            denied_device.write_bytes(b"fixture optical device\n")
+            denied_device.chmod(0)
+            return
+        self.seed_planner_fixtures()
+
     def delete_hot_backing_file(self, target: str) -> None:
         selected = self.state.selected_files(target)
         if len(selected) != 1:
