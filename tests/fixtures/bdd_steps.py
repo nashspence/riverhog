@@ -261,6 +261,8 @@ def _guided_item_text(
 
 def _operator_copy_text(name: str) -> str:
     match name:
+        case "api_unreachable":
+            return operator_copy.api_unreachable()
         case "arc_home_no_attention":
             return operator_copy.arc_home_no_attention()
         case "arc_item_cloud_backup_failed":
@@ -1025,6 +1027,13 @@ def given_archive_has_no_non_physical_attention_items(
     acceptance_system: AcceptanceSystem,
 ) -> None:
     acceptance_system.clear_operator_arc_attention()
+
+
+@given("the Riverhog API is unreachable")
+def given_riverhog_api_is_unreachable(
+    acceptance_system: AcceptanceSystem,
+) -> None:
+    acceptance_system.set_operator_api_unreachable()
 
 
 @given(parsers.parse('collection "{collection_id}" has failed cloud backup after retries'))

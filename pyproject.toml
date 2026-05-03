@@ -83,6 +83,7 @@ markers = [
   "issue_210: tracks issue #210 for action-needed webhook payloads",
   "issue_211: tracks issue #211 for replacing remaining normal CLI copy",
   "issue_307: tracks issue #307 for backing API-unreachable-PM-scenarios",
+  "issue_312: tracks issue #312 for implementing API-unreachable operator states",
 ]
 
 [tool.mypy]
