@@ -129,7 +129,7 @@ Feature: arc CLI
       And stdout mentions "Riverhog service is running"
       And stdout does not mention "httpx"
 
-    @todo @issue_247
+    @todo @issue_308
     Scenario: arc healthy home reports local storage capacity summary
       Given statechart "arc.home" state "storage_capacity_summary" is the accepted operator contract
       And the archive has no non-physical attention items
@@ -139,7 +139,7 @@ Feature: arc CLI
       And stdout mentions "Local storage available"
       And stdout mentions "Riverhog local storage budget"
 
-    @todo @issue_247
+    @todo @issue_308
     Scenario: arc upload reports storage-capacity blockage before low-level filesystem errors
       Given statechart "arc.upload" state "storage_capacity_blocked" is the accepted operator contract
       And collection upload staging needs more local storage than is available

@@ -101,6 +101,7 @@ markers = [
   "issue_313: tracks issue #313 for implementing expired recovery re-approval routing",
   "issue_245: tracks issue #245 for implementing arc-disc burn problem-state handling",
   "issue_306: tracks issue #306 for backing burn-problem-state-PM-scenarios",
+  "issue_308: tracks issue #308 for backing storage-capacity-PM-scenarios",
 ]
 
 [tool.mypy]
