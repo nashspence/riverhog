@@ -4,7 +4,7 @@ Feature: arc-disc CLI
   Targeted fetch commands remain available for explicit recovery detail flows.
 
   Rule: No-argument physical and recovery backlog
-    @todo @issue_248
+    @todo @issue_309
     Scenario: arc-disc reports a missing configured optical device
       Given statechart "arc_disc.guided" state "device_missing" is the accepted operator contract
       And the configured optical device path does not exist
@@ -13,7 +13,7 @@ Feature: arc-disc CLI
       And stderr mentions "Check the device path"
       And stderr does not mention "xorriso"
 
-    @todo @issue_248
+    @todo @issue_309
     Scenario: arc-disc reports optical device permission problems
       Given statechart "arc_disc.guided" state "device_permission_denied" is the accepted operator contract
       And the operator cannot read or write the configured optical device
@@ -22,7 +22,7 @@ Feature: arc-disc CLI
       And stderr mentions "Fix device permissions"
       And stderr does not mention "PermissionError"
 
-    @todo @issue_248
+    @todo @issue_309
     Scenario: arc-disc reports device loss during physical work
       Given statechart "arc_disc.burn" state "device_lost_during_work" is the accepted operator contract
       And the optical device becomes unavailable while writing media
