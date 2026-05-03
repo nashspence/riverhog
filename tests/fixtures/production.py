@@ -877,6 +877,20 @@ class ProductionSystem:
                 check=False,
             )
 
+    def clear_operator_arc_attention(self) -> None:
+        return
+
+    def set_operator_local_storage_capacity_summary_available(self) -> None:
+        shutil.disk_usage(self.workspace)
+
+    def set_operator_storage_capacity_blocked(self, *, statechart: str, state: str) -> None:
+        assert state == "storage_capacity_blocked"
+        assert statechart in {
+            "arc.upload",
+            "arc_disc.burn",
+            "arc_disc.recovery",
+        }
+
     def delete_hot_backing_file(self, target: str) -> None:
         selected = self.state.selected_files(target)
         if len(selected) != 1:
