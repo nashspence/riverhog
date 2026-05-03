@@ -2,7 +2,7 @@
 Feature: arc-disc burn CLI
   The optical CLI clears a burn backlog only after each generated copy id is explicitly confirmed as labeled.
 
-  @todo @issue_227
+  @todo @issue_302
   Scenario: arc-disc burn does not expose a disc label before Label Checkpoint
     Given statechart "arc_disc.burn" state "insert_blank_disc" is the accepted operator contract
     And statechart "arc_disc.burn" state "verifying_prepared_disc" is the accepted operator contract
