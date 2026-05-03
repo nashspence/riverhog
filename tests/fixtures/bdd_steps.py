@@ -229,6 +229,30 @@ def _assert_actual_operator_view_matches_copy_ref(
     )
 
 
+def _record_command_output_operator_view(
+    context: AcceptanceScenarioContext,
+    name: str,
+    *,
+    text: str,
+) -> None:
+    command = _require_command(context)
+    if text not in f"{command.stdout}\n{command.stderr}":
+        return
+    for statechart_name, state_name in context.accepted_operator_statechart_states:
+        if _OPERATOR_STATECHART_CATALOG.view_for(statechart_name, state_name) != name:
+            continue
+        context.actual_operator_decisions.append(
+            _OPERATOR_STATECHART_CATALOG.decision(statechart_name, state_name)
+        )
+        context.actual_operator_views.append(
+            _OPERATOR_STATECHART_CATALOG.operator_view(
+                statechart_name,
+                state_name,
+                text=text,
+            )
+        )
+
+
 def _configured_optical_acceptance_device() -> str:
     return os.environ.get("ARC_DISC_ACCEPTANCE_DEVICE", _DEFAULT_OPTICAL_ACCEPTANCE_DEVICE)
 
@@ -1186,12 +1210,12 @@ def when_operator_confirms_next_guided_action(
 ) -> None:
     command = _require_command(acceptance_context)
     argv = list(getattr(command, "args", acceptance_context.command_argv))
-    if argv and argv[0] == "arc":
+    if (argv and argv[0] == "arc") or "arc_cli.main" in argv:
         acceptance_context.actual_operator_decisions.append(
             _OPERATOR_STATECHART_CATALOG.decision("arc.home", "scan_attention")
         )
         return
-    if argv and argv[0] == "arc-disc":
+    if (argv and argv[0] == "arc-disc") or "arc_disc.main" in argv:
         acceptance_context.actual_operator_decisions.append(
             _OPERATOR_STATECHART_CATALOG.decision("arc_disc.guided", "scan_backlog")
         )
@@ -4588,6 +4612,7 @@ def then_stdout_matches_operator_copy(
 ) -> None:
     _assert_operator_copy_is_from_accepted_statechart(acceptance_context, name)
     expected = _operator_copy_text(name)
+    _record_command_output_operator_view(acceptance_context, name, text=expected)
     _assert_actual_operator_view_matches_copy_ref(acceptance_context, name, text=expected)
     assert _require_command(acceptance_context).stdout.strip() == expected
 
@@ -4599,6 +4624,7 @@ def then_stdout_includes_operator_copy(
 ) -> None:
     _assert_operator_copy_is_from_accepted_statechart(acceptance_context, name)
     expected = _operator_copy_text(name)
+    _record_command_output_operator_view(acceptance_context, name, text=expected)
     _assert_actual_operator_view_matches_copy_ref(acceptance_context, name, text=expected)
     assert expected in _require_command(acceptance_context).stdout
 
@@ -4610,6 +4636,7 @@ def then_stderr_includes_operator_copy(
 ) -> None:
     _assert_operator_copy_is_from_accepted_statechart(acceptance_context, name)
     expected = _operator_copy_text(name)
+    _record_command_output_operator_view(acceptance_context, name, text=expected)
     _assert_actual_operator_view_matches_copy_ref(acceptance_context, name, text=expected)
     assert expected in _require_command(acceptance_context).stderr
 

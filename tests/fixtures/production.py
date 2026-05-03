@@ -33,10 +33,17 @@ from arc_core.catalog_models import (
     FinalizedImageCoveragePartRecord,
     FinalizedImageCoveredPathRecord,
     FinalizedImageRecord,
+    GlacierRecoverySessionRecord,
     ImageCopyRecord,
     PlannedCandidateRecord,
 )
-from arc_core.domain.enums import CopyState, FetchState, ProtectionState, VerificationState
+from arc_core.domain.enums import (
+    CopyState,
+    FetchState,
+    ProtectionState,
+    RecoverySessionState,
+    VerificationState,
+)
 from arc_core.domain.models import CollectionSummary, CopySummary, FetchCopyHint, FetchSummary
 from arc_core.domain.selectors import parse_target
 from arc_core.domain.types import CollectionId, CopyId, FetchId, TargetStr
@@ -723,6 +730,9 @@ class ProductionSystem:
     state: ProductionStateClient
     planning: ProductionPlanningClient
     copies: ProductionCopiesClient
+    operator_setup_attention: bool = False
+    operator_notification_attention: bool = False
+    operator_recovery_ready: bool = False
 
     @classmethod
     def create(cls, workspace: Path) -> ProductionSystem:
@@ -771,6 +781,9 @@ class ProductionSystem:
     def reset(self) -> None:
         with time_block("fixture.acceptance_system.reset"):
             self._clear_fixture_path()
+            self.operator_setup_attention = False
+            self.operator_notification_attention = False
+            self.operator_recovery_ready = False
             self.server.reset()
 
     def request(
@@ -1809,13 +1822,14 @@ class ProductionSystem:
         return staging_path.is_file()
 
     def add_operator_setup_attention(self) -> None:
-        return None
+        self.operator_setup_attention = True
 
     def add_operator_notification_attention(self) -> None:
-        return None
+        self.operator_notification_attention = True
 
     def set_operator_blank_disc_work_available(self) -> None:
-        return None
+        self.seed_photos_hot()
+        self.seed_candidate_for_collection("photos-2024")
 
     def operator_blank_disc_work_is_available(self) -> bool:
         response = self.request(
@@ -1854,9 +1868,29 @@ class ProductionSystem:
             session_id=f"rs-{image.volume_id}-rebuild-1",
             image_id=image.volume_id,
         )
+        with session_scope(make_session_factory(str(self.db_path))) as session:
+            record = session.get(
+                GlacierRecoverySessionRecord,
+                f"rs-{image.volume_id}-rebuild-1",
+            )
+            assert record is not None
+            record.state = RecoverySessionState.READY.value
+            record.approved_at = "2026-05-01T08:00:00Z"
+            record.restore_requested_at = "2026-05-01T08:00:00Z"
+            record.restore_ready_at = "2026-05-01T08:00:00Z"
+            record.restore_expires_at = "2026-05-02 08:00 UTC"
+        self.operator_recovery_ready = True
 
     def clear_operator_recovery_ready(self) -> None:
-        return None
+        self.operator_recovery_ready = False
+        with session_scope(make_session_factory(str(self.db_path))) as session:
+            record = session.get(
+                GlacierRecoverySessionRecord,
+                "rs-20260420T040001Z-rebuild-1",
+            )
+            if record is not None:
+                record.state = RecoverySessionState.COMPLETED.value
+                record.completed_at = "2026-05-01T09:00:00Z"
 
     def operator_recovery_ready_is_waiting(self) -> bool:
         response = self.request("GET", "/v1/recovery-sessions/rs-20260420T040001Z-rebuild-1")
@@ -1958,6 +1992,19 @@ class ProductionSystem:
         env["PYTHONPATH"] = os.pathsep.join(pythonpath_parts)
         env["ARC_BASE_URL"] = self.base_url
         env["ARC_DB_PATH"] = str(self.db_path)
+        if self.operator_setup_attention:
+            env["ARC_OPERATOR_SETUP_NEEDS_ATTENTION"] = "1"
+            env["ARC_OPERATOR_SETUP_AREA"] = "Storage"
+            env["ARC_OPERATOR_SETUP_SUMMARY"] = "missing bucket"
+        if self.operator_notification_attention:
+            env["ARC_OPERATOR_NOTIFICATION_HEALTH_FAILED"] = "1"
+            env["ARC_OPERATOR_NOTIFICATION_CHANNEL"] = "Push"
+            env["ARC_OPERATOR_NOTIFICATION_LATEST_ERROR"] = "delivery timeout"
+        if self.operator_recovery_ready:
+            env["ARC_DISC_OPERATOR_RECOVERY_READY"] = "1"
+            env["ARC_DISC_OPERATOR_RECOVERY_SESSION_ID"] = "rs-20260420T040001Z-rebuild-1"
+            env["ARC_DISC_OPERATOR_RECOVERY_AFFECTED"] = DOCS_COLLECTION_ID
+            env["ARC_DISC_OPERATOR_RECOVERY_EXPIRES_AT"] = "2026-05-02 08:00 UTC"
         if extra:
             env.update(extra)
         _reject_prod_arc_disc_factory_env(env)
