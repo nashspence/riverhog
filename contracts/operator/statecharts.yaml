@@ -8,6 +8,8 @@ statecharts:
         transitions:
           - guard: api_unreachable
             target: api_unreachable
+          - guard: healthy_capacity_summary_available
+            target: storage_capacity_summary
           - guard: non_physical_attention_items
             target: attention_summary
           - target: no_attention
@@ -15,6 +17,11 @@ statecharts:
       api_unreachable:
         view: api_unreachable
         final: true
+      storage_capacity_summary:
+        view: storage_capacity_summary
+        transitions:
+          - event: operator_chooses_at_will_workflow
+            target: at_will_menu
       attention_summary:
         view: arc_home_attention
         transitions:
@@ -94,10 +101,15 @@ statecharts:
           - event: operator.arc_upload.still_running
             status: still_running
         transitions:
+          - guard: local_storage_capacity_blocked
+            target: storage_capacity_blocked
           - guard: upload_canceled
             target: canceled
           - guard: files_uploaded_and_verified
             target: archiving
+      storage_capacity_blocked:
+        view: storage_capacity_blocked
+        final: true
       archiving:
         view: upload_archiving
         status_events:
@@ -170,10 +182,15 @@ statecharts:
       get_starting:
         view: get_starting
         transitions:
+          - guard: local_storage_capacity_blocked
+            target: storage_capacity_blocked
           - guard: file_is_hot
             target: get_written
           - guard: file_not_hot
             target: get_not_hot
+      storage_capacity_blocked:
+        view: storage_capacity_blocked
+        final: true
       get_written:
         view: get_written
         final: true
@@ -440,6 +457,8 @@ statecharts:
             target: device_not_ready
           - guard: device_permission_denied
             target: device_permission_denied
+          - guard: local_storage_capacity_blocked
+            target: storage_capacity_blocked
           - guard: no_disc_work
             target: no_work
           - guard: unlabeled_verified_disc_available
@@ -460,6 +479,9 @@ statecharts:
         final: true
       device_permission_denied:
         view: device_permission_denied
+        final: true
+      storage_capacity_blocked:
+        view: storage_capacity_blocked
         final: true
       no_work:
         view: burn_no_work
@@ -593,6 +615,8 @@ statecharts:
             target: device_not_ready
           - guard: device_permission_denied
             target: device_permission_denied
+          - guard: local_storage_capacity_blocked
+            target: storage_capacity_blocked
           - guard: approval_required
             target: approval_required
           - guard: recovery_requested
@@ -619,6 +643,9 @@ statecharts:
         final: true
       device_permission_denied:
         view: device_permission_denied
+        final: true
+      storage_capacity_blocked:
+        view: storage_capacity_blocked
         final: true
       approval_required:
         view: recovery_approval_required
@@ -726,6 +753,8 @@ statecharts:
           - event: operator.arc_disc_hot_recovery.still_running
             status: still_running
         transitions:
+          - guard: local_storage_capacity_blocked
+            target: storage_capacity_blocked
           - guard: restore_complete
             target: done
           - guard: device_lost_during_work
@@ -751,6 +780,9 @@ statecharts:
         transitions:
           - event: operator_inserts_named_disc
             target: insert_disc
+      storage_capacity_blocked:
+        view: storage_capacity_blocked
+        final: true
       recovery_workflow_needed:
         view: hot_recovery_registered_copies_exhausted
         status_events:
@@ -810,6 +842,8 @@ statecharts:
           - event: operator.arc_disc_fetch.still_running
             status: still_running
         transitions:
+          - guard: local_storage_capacity_blocked
+            target: storage_capacity_blocked
           - guard: server_accepts_recovered_bytes
             target: done
           - guard: device_lost_during_work
@@ -835,6 +869,9 @@ statecharts:
         transitions:
           - event: operator_inserts_named_disc
             target: insert_disc
+      storage_capacity_blocked:
+        view: storage_capacity_blocked
+        final: true
       recovery_workflow_needed:
         view: hot_recovery_registered_copies_exhausted
         status_events:
