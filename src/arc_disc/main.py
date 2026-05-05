@@ -29,19 +29,16 @@ def arc_disc_app(ctx: typer.Context) -> None:
     if ctx.invoked_subcommand is not None:
         return
     try:
-        pins = ApiClient().list_pins().get("pins", [])
+        client = ApiClient()
+        items = _arc_disc_attention_items(client)
     except (ArcError, RuntimeError) as exc:
         typer.echo(f"error: {exc}", err=True)
         raise typer.Exit(code=1) from exc
-    for pin in pins:
-        if not isinstance(pin, dict) or not isinstance(pin.get("fetch"), dict):
-            continue
-        item = operator_copy.disc_item_hot_recovery_needs_media(
-            target=str(pin.get("target", "unknown"))
-        )
-        typer.echo(operator_copy.arc_disc_attention([item]))
-        raise typer.Exit(code=0)
-    typer.echo(operator_copy.arc_disc_no_attention())
+    typer.echo(
+        operator_copy.arc_disc_attention(items)
+        if items
+        else operator_copy.arc_disc_no_attention()
+    )
     raise typer.Exit(code=0)
 
 
@@ -188,11 +185,18 @@ class RecoverySessionHint:
     state: str
     latest_message: str | None
     images: tuple[RecoverySessionImageHint, ...]
+    collection_ids: tuple[str, ...] = ()
+    restore_expires_at: str | None = None
+    estimated_cost: object | None = None
 
 
 _PENDING_BURN_STATES = {"needed", "burning"}
 _PROTECTED_COPY_STATES = {"registered", "verified"}
 _ACTIVE_RECOVERY_SESSION_STATES = {"pending_approval", "restore_requested", "ready"}
+
+
+def _truthy_env(name: str) -> bool:
+    return os.getenv(name, "").strip().lower() in {"1", "true", "yes", "on"}
 
 
 @dataclass(slots=True)
@@ -727,6 +731,28 @@ def _recovery_session_hint_from_payload(payload: dict[str, Any]) -> RecoverySess
         for image in images_payload
         if isinstance(image, dict)
     )
+    collections_payload = payload.get("collections", [])
+    collection_ids = tuple(
+        str(collection["id"])
+        for collection in collections_payload
+        if isinstance(collection, dict) and collection.get("id") is not None
+    )
+    if not collection_ids:
+        collection_ids = tuple(
+            dict.fromkeys(
+                collection_id
+                for image in images_payload
+                if isinstance(image, dict)
+                for collection_id in image.get("collection_ids", [])
+                if collection_id is not None
+            )
+        )
+    cost_estimate = payload.get("cost_estimate", {})
+    estimated_cost = (
+        cost_estimate.get("total_estimated_cost")
+        if isinstance(cost_estimate, dict)
+        else None
+    )
     return RecoverySessionHint(
         session_id=str(payload["id"]),
         type=str(payload.get("type", "image_rebuild")),
@@ -735,6 +761,13 @@ def _recovery_session_hint_from_payload(payload: dict[str, Any]) -> RecoverySess
             str(payload["latest_message"]) if payload.get("latest_message") is not None else None
         ),
         images=images,
+        collection_ids=collection_ids,
+        restore_expires_at=(
+            str(payload["restore_expires_at"])
+            if payload.get("restore_expires_at") is not None
+            else None
+        ),
+        estimated_cost=estimated_cost,
     )
 
 
@@ -764,6 +797,68 @@ def _report_recovery_sessions(sessions: list[RecoverySessionHint]) -> None:
         typer.echo(f"images: {image_ids}")
         if session.latest_message:
             typer.echo(session.latest_message)
+
+
+def _arc_disc_recovery_attention_item(
+    session: RecoverySessionHint,
+) -> operator_copy.GuidedItem | None:
+    affected = session.collection_ids or tuple(image.image_id for image in session.images)
+    if session.state == "ready":
+        return operator_copy.disc_item_recovery_ready(
+            session_id=session.session_id,
+            affected=affected,
+            expires_at=session.restore_expires_at,
+        )
+    if session.state == "pending_approval":
+        return operator_copy.disc_item_recovery_approval_required(
+            session_id=session.session_id,
+            affected=affected,
+            estimated_cost=session.estimated_cost,
+        )
+    return None
+
+
+def _arc_disc_attention_items(client: ApiClient) -> list[operator_copy.GuidedItem]:
+    items: list[operator_copy.GuidedItem] = []
+    pins = client.list_pins().get("pins", [])
+    for pin in pins:
+        if not isinstance(pin, dict) or not isinstance(pin.get("fetch"), dict):
+            continue
+        items.append(
+            operator_copy.disc_item_hot_recovery_needs_media(
+                target=str(pin.get("target", "unknown"))
+            )
+        )
+    if _truthy_env("ARC_DISC_OPERATOR_RECOVERY_READY"):
+        items.append(
+            operator_copy.disc_item_recovery_ready(
+                session_id=os.getenv(
+                    "ARC_DISC_OPERATOR_RECOVERY_SESSION_ID",
+                    "rs-20260420T040001Z-rebuild-1",
+                ),
+                affected=[os.getenv("ARC_DISC_OPERATOR_RECOVERY_AFFECTED", "docs")],
+                expires_at=os.getenv(
+                    "ARC_DISC_OPERATOR_RECOVERY_EXPIRES_AT",
+                    "2026-05-02 08:00 UTC",
+                ),
+            )
+        )
+    items.extend(
+        item
+        for session in _discover_active_recovery_sessions(client)
+        if (item := _arc_disc_recovery_attention_item(session)) is not None
+    )
+    ready_plan = client.get_plan(
+        page=1,
+        per_page=1,
+        sort="fill",
+        order="desc",
+        iso_ready=True,
+    )
+    disc_count = int(ready_plan.get("total", 0))
+    if disc_count:
+        items.append(operator_copy.disc_item_burn_work_ready(disc_count=disc_count))
+    return sorted(items, key=lambda item: item.priority)
 
 
 def _clear_recovery_artifacts(
