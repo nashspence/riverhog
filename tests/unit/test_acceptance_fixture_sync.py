@@ -95,6 +95,9 @@ LOCKED_HELPER_STATE_ACCESS = {
     "set_operator_rebuild_work_remaining": "mutates operator contract fixture state directly",
     "set_operator_hot_recovery_needs_media": "mutates operator contract fixture state directly",
     "set_operator_arc_disc_device_problem": "mutates operator contract fixture state directly",
+    "set_operator_fetch_same_image_copies_exhausted": (
+        "mutates operator contract fixture state directly"
+    ),
     "set_operator_blank_disc_work_available": "mutates operator contract fixture state directly",
     "operator_blank_disc_work_is_available": "reads operator contract fixture state directly",
     "confirm_operator_labeled_disc": "mutates operator contract fixture state directly",

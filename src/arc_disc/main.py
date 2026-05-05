@@ -641,6 +641,62 @@ def _prompt_for_disc(copy: RecoveryCopyHint, *, device: str) -> None:
         raise RuntimeError("stdin closed while waiting for disc insertion") from exc
 
 
+def _image_id_from_copy_id(copy_id: str) -> str:
+    image_id, sep, _ordinal = copy_id.rpartition("-")
+    return image_id if sep else copy_id
+
+
+def _next_same_image_copy(
+    part: RecoveryPartHint,
+    failed_copy: RecoveryCopyHint,
+) -> RecoveryCopyHint | None:
+    failed_image_id = _image_id_from_copy_id(failed_copy.copy_id)
+    for copy in part.copies:
+        if copy.copy_id == failed_copy.copy_id:
+            continue
+        if _image_id_from_copy_id(copy.copy_id) == failed_image_id:
+            return copy
+    return None
+
+
+def _next_same_image_copy_for_entry(entry: RecoveryEntry) -> RecoveryCopyHint | None:
+    for part in entry.parts:
+        if not part.copies:
+            continue
+        next_copy = _next_same_image_copy(part, part.copies[0])
+        if next_copy is not None:
+            return next_copy
+    return None
+
+
+def _report_same_image_retry_or_recovery(
+    entry: RecoveryEntry,
+    *,
+    target: str,
+    failed_copy: RecoveryCopyHint | None = None,
+) -> None:
+    next_copy: RecoveryCopyHint | None = None
+    if failed_copy is not None:
+        for part in entry.parts:
+            if failed_copy in part.copies:
+                next_copy = _next_same_image_copy(part, failed_copy)
+                break
+    else:
+        next_copy = _next_same_image_copy_for_entry(entry)
+
+    if next_copy is not None:
+        typer.echo(
+            operator_copy.hot_recovery_retry_other_disc(
+                target=target,
+                next_disc_label=next_copy.copy_id,
+            ),
+            err=True,
+        )
+        return
+
+    typer.echo(operator_copy.hot_recovery_registered_copies_exhausted(target=target), err=True)
+
+
 def _sha256_file(path: Path) -> str:
     digest = hashlib.sha256()
     with path.open("rb") as handle:
@@ -1491,6 +1547,7 @@ def _upload_entry_from_disc(
     client: ApiClient,
     reader: Any,
     device: str,
+    target: str,
     progress: ProgressReporter,
 ) -> None:
     offset = session.offset
@@ -1509,22 +1566,26 @@ def _upload_entry_from_disc(
             _iter_recovered_chunks(reader, copy, device=device),
             skip_bytes=resume_within_part,
         )
-        for chunk in recovered_chunks:
-            if not chunk:
-                continue
-            upload_result = client.append_upload_chunk(
-                session.upload_url,
-                offset=offset,
-                checksum_algorithm=session.checksum_algorithm,
-                content=chunk,
-            )
-            next_offset = int(upload_result["offset"])
-            uploaded_bytes = next_offset - offset
-            if uploaded_bytes != len(chunk):
-                raise RuntimeError(f"upload offset advanced unexpectedly for {entry.path}")
-            offset = next_offset
-            progress.record_uploaded_bytes(entry, uploaded_bytes)
-            progress.report(entry)
+        try:
+            for chunk in recovered_chunks:
+                if not chunk:
+                    continue
+                upload_result = client.append_upload_chunk(
+                    session.upload_url,
+                    offset=offset,
+                    checksum_algorithm=session.checksum_algorithm,
+                    content=chunk,
+                )
+                next_offset = int(upload_result["offset"])
+                uploaded_bytes = next_offset - offset
+                if uploaded_bytes != len(chunk):
+                    raise RuntimeError(f"upload offset advanced unexpectedly for {entry.path}")
+                offset = next_offset
+                progress.record_uploaded_bytes(entry, uploaded_bytes)
+                progress.report(entry)
+        except RuntimeError:
+            _report_same_image_retry_or_recovery(entry, target=target, failed_copy=copy)
+            raise
 
         part_start = part_end
 
@@ -1547,18 +1608,7 @@ def _reset_byte_complete_uploads(
         client.cancel_fetch_entry_upload(fetch_id, entry.id)
         reset_entries.append(entry)
         typer.echo(
-            (
-                f"reset byte-complete upload for {entry.path}; "
-                "try another registered copy or recovered media"
-            ),
-            err=True,
-        )
-    if reset_entries:
-        typer.echo(
-            (
-                "fetch remains active and incomplete; if every registered copy fails, "
-                "report the damaged copies and use the Glacier recovery session before retrying"
-            ),
+            f"reset byte-complete upload for {entry.path} after recovered bytes were rejected",
             err=True,
         )
     return reset_entries
@@ -1575,6 +1625,7 @@ def fetch_cmd(
     try:
         client = ApiClient()
         manifest = client.get_fetch_manifest(fetch_id)
+        target = str(manifest.get("target", fetch_id))
         reader = build_optical_reader()
         entries = tuple(_entry_from_manifest(entry) for entry in manifest.get("entries", []))
         sessions = {
@@ -1595,6 +1646,7 @@ def fetch_cmd(
                 client=client,
                 reader=reader,
                 device=device,
+                target=target,
                 progress=progress,
             )
 
@@ -1602,6 +1654,8 @@ def fetch_cmd(
             payload = client.complete_fetch(fetch_id)
         except HashMismatch as exc:
             _reset_byte_complete_uploads(client, fetch_id, entries, progress)
+            for entry in entries:
+                _report_same_image_retry_or_recovery(entry, target=target)
             raise RuntimeError(f"final fetch verification failed: {exc}") from exc
     except (ArcError, RuntimeError) as exc:
         typer.echo(f"error: {exc}", err=True)

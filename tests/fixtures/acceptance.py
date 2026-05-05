@@ -546,6 +546,7 @@ class AcceptanceState:
     operator_label_confirmation_location: str | None = None
     operator_collection_fully_protected: bool = False
     operator_arc_disc_device_problem: tuple[str, str, str] | None = None
+    operator_fetch_same_image_copies_exhausted: set[str] = field(default_factory=set)
 
     def clear_webhook_deliveries(self) -> None:
         with self.lock:
@@ -4427,6 +4428,56 @@ class AcceptanceSystem:
         with self.state.lock:
             self.state.operator_arc_disc_device_problem = (statechart, state, copy_ref)
 
+    def set_operator_fetch_same_image_copies_exhausted(self, fetch_id: str) -> None:
+        with self.state.lock:
+            self.state.operator_fetch_same_image_copies_exhausted.add(fetch_id)
+
+    def arc_disc_same_image_retry(
+        self,
+        *,
+        statechart: str,
+        target: str,
+        next_disc_label: str,
+    ) -> subprocess.CompletedProcess[str]:
+        stderr = operator_copy.hot_recovery_retry_other_disc(
+            target=target,
+            next_disc_label=next_disc_label,
+        )
+        return _operator_completed_process(
+            ["arc-disc"],
+            returncode=1,
+            stderr=stderr,
+            decisions=[_operator_decision(statechart, "retry_other_disc")],
+            views=[
+                _operator_view(
+                    statechart,
+                    "retry_other_disc",
+                    text=stderr,
+                )
+            ],
+        )
+
+    def arc_disc_registered_copies_exhausted(
+        self,
+        *,
+        fetch_id: str,
+        target: str,
+    ) -> subprocess.CompletedProcess[str]:
+        stderr = operator_copy.hot_recovery_registered_copies_exhausted(target=target)
+        return _operator_completed_process(
+            ["arc-disc", "fetch", fetch_id],
+            returncode=1,
+            stderr=stderr,
+            decisions=[_operator_decision("arc_disc.fetch", "recovery_workflow_needed")],
+            views=[
+                _operator_view(
+                    "arc_disc.fetch",
+                    "recovery_workflow_needed",
+                    text=stderr,
+                )
+            ],
+        )
+
     def set_operator_blank_disc_work_available(self) -> None:
         with self.state.lock:
             self.state.operator_blank_disc_work_available = True
@@ -4715,6 +4766,13 @@ class AcceptanceSystem:
             ],
         )
 
+    @staticmethod
+    def _arc_disc_contract_result(
+        _args: tuple[str, ...],
+        command: subprocess.CompletedProcess[str],
+    ) -> subprocess.CompletedProcess[str]:
+        return command
+
     def run_arc(self, *args: str) -> subprocess.CompletedProcess[str]:
         if not args:
             return self._arc_contract_output(tuple(args), _completed_process(["arc"]))
@@ -4751,6 +4809,15 @@ class AcceptanceSystem:
                         )
                     ],
                 )
+        if len(args) >= 2 and args[0] == "fetch":
+            fetch_id = args[1]
+            with self.state.lock:
+                exhausted = fetch_id in self.state.operator_fetch_same_image_copies_exhausted
+            if exhausted:
+                return self.arc_disc_registered_copies_exhausted(
+                    fetch_id=fetch_id,
+                    target="docs/tax/2022/invoice-123.pdf",
+                )
         if not args:
             return self._arc_disc_contract_output()
         if not self.fixture_path.exists():
@@ -4766,10 +4833,11 @@ class AcceptanceSystem:
                 ),
                 "ARC_DISC_BURN_PROMPTS_FACTORY": "tests.fixtures.arc_disc_fakes:FixtureBurnPrompts",
                 "ARC_DISC_STAGING_DIR": str(self.workspace / "arc_disc_staging"),
+                "ARC_DISC_EXPECTED_DEVICE": "/dev/sr0",
             }
         )
         with time_block("subprocess arc-disc"):
-            return subprocess.run(
+            command = subprocess.run(
                 [sys.executable, "-m", "arc_disc.main", *args],
                 cwd=REPO_ROOT,
                 env=env,
@@ -4778,6 +4846,7 @@ class AcceptanceSystem:
                 text=True,
                 check=False,
             )
+        return self._arc_disc_contract_result(tuple(args), command)
 
     def delete_hot_backing_file(self, target: str) -> None:
         with self.state.lock:

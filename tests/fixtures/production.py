@@ -1157,7 +1157,8 @@ class ProductionSystem:
 
     def _seed_image_copy(self, image_id: str, copy_id: str, location: str) -> None:
         with session_scope(make_session_factory(str(self.db_path))) as session:
-            if session.get(ImageCopyRecord, {"image_id": image_id, "copy_id": copy_id}) is not None:
+            existing = session.get(ImageCopyRecord, {"image_id": image_id, "copy_id": copy_id})
+            if existing is not None and existing.state in {"registered", "verified"}:
                 return
         self.copies.register(image_id, location, copy_id=copy_id)
 
@@ -2026,6 +2027,41 @@ class ProductionSystem:
             return False
         assert response.status_code == 200, response.text
         return response.json()["state"] in {"pending_approval", "restore_requested", "ready"}
+
+    def _seed_same_image_recovery_fetch(
+        self,
+        fetch_id: str,
+        *,
+        next_disc_label: str | None = None,
+    ) -> None:
+        assert fetch_id == "fx-1"
+        self.seed_docs_archive_with_split_invoice()
+        if next_disc_label is not None:
+            self._seed_image_copy("20260420T040003Z", next_disc_label, "vault-b/shelf-03")
+        response = self.request("POST", "/v1/pin", json_body={"target": INVOICE_TARGET})
+        assert response.status_code == 200, response.text
+        assert response.json()["fetch"]["id"] == fetch_id
+
+    def arc_disc_same_image_retry(
+        self,
+        *,
+        statechart: str,
+        target: str,
+        next_disc_label: str,
+    ) -> subprocess.CompletedProcess[str]:
+        assert statechart in {"arc_disc.fetch", "arc_disc.hot_recovery"}
+        assert target == INVOICE_TARGET
+        assert next_disc_label == "20260420T040003Z-2"
+        self._seed_same_image_recovery_fetch("fx-1", next_disc_label=next_disc_label)
+        return self.run_arc_disc(
+            "fetch",
+            "fx-1",
+            "--device",
+            str(self.workspace / "missing-optical-device"),
+        )
+
+    def set_operator_fetch_same_image_copies_exhausted(self, fetch_id: str) -> None:
+        self._seed_same_image_recovery_fetch(fetch_id)
 
     def pins_list(self) -> list[str]:
         return [item["target"] for item in self.request("GET", "/v1/pins").json()["pins"]]

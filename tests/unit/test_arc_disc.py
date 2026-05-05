@@ -8,6 +8,7 @@ from typer.testing import CliRunner
 
 import arc_disc.main as arc_disc_main
 from arc_core.domain.errors import HashMismatch
+from contracts.operator import copy as operator_copy
 from tests.fixtures.data import fixture_encrypt_bytes
 
 runner = CliRunner()
@@ -294,7 +295,12 @@ def test_arc_disc_fetch_resets_byte_complete_upload_after_final_verification_fai
     assert result.exit_code == 1
     assert cancelled == [("fx-1", "e1")]
     assert "reset byte-complete upload for tax/2022/invoice-123.pdf" in result.stderr
-    assert "try another registered copy or recovered media" in result.stderr
+    assert (
+        operator_copy.hot_recovery_registered_copies_exhausted(
+            target="docs/tax/2022/invoice-123.pdf"
+        )
+        in result.stderr
+    )
     assert "error: final fetch verification failed: sha256 did not match" in result.stderr
 
 
@@ -333,6 +339,12 @@ def test_arc_disc_fetch_reports_clean_error_when_optical_read_fails(monkeypatch)
     assert result.exit_code == 1
     assert (
         "error: fixture optical read failed for disc/000001.bin on /dev/fake-sr0" in result.stderr
+    )
+    assert (
+        operator_copy.hot_recovery_registered_copies_exhausted(
+            target="docs/tax/2022/invoice-123.pdf"
+        )
+        in result.stderr
     )
     assert "Traceback" not in result.stderr
 

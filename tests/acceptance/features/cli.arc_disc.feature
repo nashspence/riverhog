@@ -125,6 +125,34 @@ Feature: arc-disc CLI
       And the collection is not fully protected
 
   Rule: Targeted fetch detail remains available
+  Scenario: arc-disc fetch names the exact same-image disc after rejected bytes
+    Given statechart "arc_disc.fetch" state "retry_other_disc" is the accepted operator contract
+    And fetch "fx-1" needs copy label "20260420T040003Z-1"
+    And same-image copy label "20260420T040003Z-2" remains untried
+    When the server rejects recovered bytes from copy label "20260420T040003Z-1"
+    Then stderr includes operator copy "hot_recovery_retry_other_disc"
+    And stderr mentions "20260420T040003Z-2"
+    And stderr does not mention "try another registered copy or recovered media"
+    And stderr does not mention "20260420T040004Z-1"
+
+  Scenario: arc-disc disc restore names the exact same-image disc after failed media
+    Given statechart "arc_disc.hot_recovery" state "retry_other_disc" is the accepted operator contract
+    And disc restore needs copy label "20260420T040003Z-1"
+    And same-image copy label "20260420T040003Z-2" remains untried
+    When copy label "20260420T040003Z-1" cannot restore the requested files
+    Then stderr includes operator copy "hot_recovery_retry_other_disc"
+    And stderr mentions "20260420T040003Z-2"
+    And stderr does not mention "try another registered disc or recovered media"
+    And stderr does not mention "20260420T040004Z-1"
+
+  Scenario: arc-disc failed media routes to recovery when same-image copies are exhausted
+    Given statechart "arc_disc.fetch" state "recovery_workflow_needed" is the accepted operator contract
+    And all registered same-image disc labels for fetch "fx-1" have failed
+    When the operator runs 'arc-disc fetch "fx-1"'
+    Then stderr includes operator copy "hot_recovery_registered_copies_exhausted"
+    And stderr mentions "recovery workflow"
+    And stderr does not mention "try another registered copy"
+
   @ci_opt_in @requires_optical_disc_drive @requires_human_operator @issue_186 @issue_187
   Scenario: arc-disc fetch completes a recoverable fetch
     Given split archived target "docs/tax/2022/invoice-123.pdf" is pinned with fetch "fx-1"
@@ -180,7 +208,7 @@ Feature: arc-disc CLI
 
   @ci_opt_in @requires_optical_disc_drive @requires_human_operator @issue_186 @issue_187
   Scenario: arc-disc fetch fails if the server rejects incorrect recovered bytes
-    Given split archived target "docs/tax/2022/invoice-123.pdf" is pinned with fetch "fx-1"
+    Given split archived target "docs/tax/2022/invoice-123.pdf" with same-image copy label "20260420T040003Z-2" is pinned with fetch "fx-1"
     And fetch "fx-1" has a stable manifest
     And a configured optical reader can recover every required entry
     And the configured optical reader returns bytes the server rejects for one required entry
@@ -188,8 +216,8 @@ Feature: arc-disc CLI
     Then the command exits non-zero
     And fetch "fx-1" is not "done"
     And stderr mentions "reset byte-complete upload"
-    And stderr mentions "try another registered copy or recovered media"
-    And stderr mentions "fetch remains active and incomplete"
+    And stderr mentions copy id "20260420T040003Z-2"
+    And stderr does not mention "try another registered copy or recovered media"
     When the client gets "/v1/fetches/fx-1/manifest"
     Then the response status is 200
     And fetch manifest entry "e1" upload state is "pending"

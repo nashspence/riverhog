@@ -463,6 +463,15 @@ def _operator_copy_text(name: str) -> str:
             return operator_copy.device_permission_denied()
         case "device_lost_during_work":
             return operator_copy.device_lost_during_work()
+        case "hot_recovery_retry_other_disc":
+            return operator_copy.hot_recovery_retry_other_disc(
+                target="docs/tax/2022/invoice-123.pdf",
+                next_disc_label="20260420T040003Z-2",
+            )
+        case "hot_recovery_registered_copies_exhausted":
+            return operator_copy.hot_recovery_registered_copies_exhausted(
+                target="docs/tax/2022/invoice-123.pdf"
+            )
         case "burn_backlog_cleared":
             return operator_copy.burn_backlog_cleared()
         case "burn_label_checkpoint":
@@ -1355,6 +1364,68 @@ def given_optical_device_becomes_unavailable_while_writing_media(
     )
 
 
+@given(parsers.parse('fetch "{fetch_id}" needs copy label "{copy_label}"'))
+def given_fetch_needs_copy_label(fetch_id: str, copy_label: str) -> None:
+    assert fetch_id == "fx-1"
+    assert copy_label == "20260420T040003Z-1"
+
+
+@given(parsers.parse('disc restore needs copy label "{copy_label}"'))
+def given_disc_restore_needs_copy_label(copy_label: str) -> None:
+    assert copy_label == "20260420T040003Z-1"
+
+
+@given(parsers.parse('same-image copy label "{copy_label}" remains untried'))
+def given_same_image_copy_label_remains_untried(copy_label: str) -> None:
+    assert copy_label == "20260420T040003Z-2"
+
+
+@given(parsers.parse('all registered same-image disc labels for fetch "{fetch_id}" have failed'))
+def given_all_same_image_disc_labels_have_failed(
+    acceptance_system: AcceptanceSystem,
+    fetch_id: str,
+) -> None:
+    acceptance_system.set_operator_fetch_same_image_copies_exhausted(fetch_id)
+
+
+@when(parsers.parse('the server rejects recovered bytes from copy label "{copy_label}"'))
+def when_server_rejects_recovered_bytes_from_copy_label(
+    acceptance_system: AcceptanceSystem,
+    acceptance_context: AcceptanceScenarioContext,
+    copy_label: str,
+) -> None:
+    assert copy_label == "20260420T040003Z-1"
+    acceptance_context.command_text = "arc-disc fetch fx-1"
+    acceptance_context.command_argv = ["arc-disc", "fetch", "fx-1"]
+    acceptance_context.stdout_json = None
+    acceptance_context.expected_api_endpoint = None
+    acceptance_context.expected_api_payload = None
+    acceptance_context.command = acceptance_system.arc_disc_same_image_retry(
+        statechart="arc_disc.fetch",
+        target=INVOICE_TARGET,
+        next_disc_label="20260420T040003Z-2",
+    )
+
+
+@when(parsers.parse('copy label "{copy_label}" cannot restore the requested files'))
+def when_copy_label_cannot_restore_requested_files(
+    acceptance_system: AcceptanceSystem,
+    acceptance_context: AcceptanceScenarioContext,
+    copy_label: str,
+) -> None:
+    assert copy_label == "20260420T040003Z-1"
+    acceptance_context.command_text = "arc-disc restore"
+    acceptance_context.command_argv = ["arc-disc", "restore"]
+    acceptance_context.stdout_json = None
+    acceptance_context.expected_api_endpoint = None
+    acceptance_context.expected_api_payload = None
+    acceptance_context.command = acceptance_system.arc_disc_same_image_retry(
+        statechart="arc_disc.hot_recovery",
+        target=INVOICE_TARGET,
+        next_disc_label="20260420T040003Z-2",
+    )
+
+
 @given(parsers.parse('the operator confirms labeled disc at storage location "{location}"'))
 def given_operator_confirms_labeled_disc_at_storage_location(
     acceptance_system: AcceptanceSystem,
@@ -1475,6 +1546,32 @@ def given_split_archived_target_is_pinned_with_fetch(
     acceptance_system.seed_docs_archive_with_split_invoice()
     resp = acceptance_system.request("POST", "/v1/pin", json_body={"target": target})
     assert resp.status_code == 200, resp.text
+
+
+@given(
+    parsers.parse(
+        'split archived target "{target}" with same-image copy label "{copy_label}" '
+        'is pinned with fetch "{fetch_id}"'
+    )
+)
+def given_split_archived_target_with_same_image_copy_is_pinned(
+    acceptance_system: AcceptanceSystem,
+    target: str,
+    copy_label: str,
+    fetch_id: str,
+) -> None:
+    acceptance_system.seed_docs_archive_with_split_invoice()
+    image_id, sep, _ordinal = copy_label.rpartition("-")
+    assert sep, f"copy label must include an ordinal suffix: {copy_label}"
+    resp = acceptance_system.request(
+        "POST",
+        f"/v1/images/{image_id}/copies",
+        json_body={"copy_id": copy_label, "location": "Shelf D1"},
+    )
+    assert resp.status_code == 200, resp.text
+    resp = acceptance_system.request("POST", "/v1/pin", json_body={"target": target})
+    assert resp.status_code == 200, resp.text
+    assert resp.json()["fetch"]["id"] == fetch_id
 
 
 @given(parsers.parse('fetch "{fetch_id}" already exists for target "{target}"'))
@@ -4720,9 +4817,11 @@ def then_stderr_includes_operator_copy(
 ) -> None:
     _assert_operator_copy_is_from_accepted_statechart(acceptance_context, name)
     expected = _operator_copy_text(name)
+    assert expected in _require_command(acceptance_context).stderr, _require_command(
+        acceptance_context
+    ).stderr
     _record_command_output_operator_view(acceptance_context, name, text=expected)
     _assert_actual_operator_view_matches_copy_ref(acceptance_context, name, text=expected)
-    assert expected in _require_command(acceptance_context).stderr
 
 
 def _normalized_glacier_payload(payload: object) -> object:
