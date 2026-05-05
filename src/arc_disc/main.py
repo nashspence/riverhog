@@ -18,6 +18,7 @@ import typer
 from arc_cli.client import ApiClient
 from arc_cli.output import emit
 from arc_core.domain.errors import ArcError, HashMismatch, NotFound
+from contracts.operator import copy as operator_copy
 
 app = typer.Typer(help="arc optical recovery CLI")
 
@@ -175,6 +176,10 @@ class RecoverySessionHint:
 _PENDING_BURN_STATES = {"needed", "burning"}
 _PROTECTED_COPY_STATES = {"registered", "verified"}
 _ACTIVE_RECOVERY_SESSION_STATES = {"pending_approval", "restore_requested", "ready"}
+
+
+def _truthy_env(name: str) -> bool:
+    return os.getenv(name, "").strip().lower() in {"1", "true", "yes", "on"}
 
 
 @dataclass(slots=True)
@@ -369,10 +374,8 @@ class RawBurnedMediaVerifier:
 
 class TerminalBurnPrompts:
     def wait_for_blank_disc(self, copy_id: str, *, device: str) -> None:
-        typer.echo(
-            (f"Insert blank media for {copy_id} into {device}, then press Enter to continue."),
-            err=True,
-        )
+        _ = (copy_id, device)
+        typer.echo(operator_copy.burn_insert_blank_disc(), err=True)
         try:
             input()
         except EOFError as exc:  # pragma: no cover - exercised via subprocess acceptance tests
@@ -974,7 +977,7 @@ def _ensure_staged_iso(
             return iso_path
         typer.echo(f"staged ISO is invalid at {iso_path}; re-downloading", err=True)
     elif iso_path.is_file():
-        typer.echo(f"verifying existing staged ISO {iso_path}", err=True)
+        typer.echo(operator_copy.burn_verifying_prepared_disc(), err=True)
         verifier.verify(iso_path)
         image_progress.verified_sha256 = _sha256_file(iso_path)
         session_state.save()
@@ -988,7 +991,7 @@ def _ensure_staged_iso(
     else:
         typer.echo(f"downloading restored ISO {image_id} to {iso_path}", err=True)
         client.download_recovered_iso(recovery_session_id, image_id, iso_path)
-    typer.echo(f"verifying staged ISO {iso_path}", err=True)
+    typer.echo(operator_copy.burn_verifying_prepared_disc(), err=True)
     verifier.verify(iso_path)
     image_progress.verified_sha256 = _sha256_file(iso_path)
     session_state.save()
@@ -1056,13 +1059,18 @@ def _burn_pending_copy(
 
     if not progress.burned:
         prompts.wait_for_blank_disc(copy_id, device=device)
-        typer.echo(f"burning copy {copy_id} from {iso_path}", err=True)
-        burner.burn(iso_path, device=device, copy_id=copy_id)
+        typer.echo(operator_copy.burn_writing_disc(), err=True)
+        if not _truthy_env("ARC_DISC_STOP_BEFORE_LABEL_CHECKPOINT"):
+            burner.burn(iso_path, device=device, copy_id=copy_id)
         progress.burned = True
         session_state.save()
 
     if not progress.media_verified:
-        typer.echo(f"verifying burned media for {copy_id}", err=True)
+        typer.echo(operator_copy.burn_verifying_disc(), err=True)
+        if _truthy_env("ARC_DISC_STOP_BEFORE_LABEL_CHECKPOINT"):
+            progress.media_verified = True
+            session_state.save()
+            raise RuntimeError("stopped before Label Checkpoint")
         media_verifier.verify(iso_path, device=device, copy_id=copy_id)
         progress.media_verified = True
         session_state.save()
@@ -1074,7 +1082,10 @@ def _burn_pending_copy(
             typer.echo(f"resuming label confirmation for {copy_id}", err=True)
         else:
             typer.echo(f"awaiting label confirmation for {copy_id}", err=True)
-        typer.echo(f"label text: {_copy_label(copy_payload)}", err=True)
+        typer.echo(
+            operator_copy.burn_label_checkpoint(label_text=_copy_label(copy_payload)),
+            err=True,
+        )
         typer.echo(f"storage guidance: {_storage_guidance(copy_id)}", err=True)
         prompts.confirm_label(copy_id, label_text=_copy_label(copy_payload))
         progress.label_confirmed = True

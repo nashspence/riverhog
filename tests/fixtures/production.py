@@ -724,6 +724,7 @@ class ProductionSystem:
     state: ProductionStateClient
     planning: ProductionPlanningClient
     copies: ProductionCopiesClient
+    operator_stop_before_label_checkpoint: bool = False
 
     @classmethod
     def create(cls, workspace: Path) -> ProductionSystem:
@@ -772,6 +773,7 @@ class ProductionSystem:
     def reset(self) -> None:
         with time_block("fixture.acceptance_system.reset"):
             self._clear_fixture_path()
+            self.operator_stop_before_label_checkpoint = False
             self.server.reset()
 
     def request(
@@ -1830,17 +1832,22 @@ class ProductionSystem:
         return response.json()["protection_state"] == "full"
 
     def arc_disc_burn_before_label_checkpoint(self) -> subprocess.CompletedProcess[str]:
-        return self.run_arc_disc(
-            "burn",
-            "--device",
-            str(self.workspace / "missing-optical-device"),
-        )
+        self.operator_stop_before_label_checkpoint = True
+        try:
+            return self.run_arc_disc(
+                "burn",
+                "--device",
+                str(self.workspace / "missing-optical-device"),
+            )
+        finally:
+            self.operator_stop_before_label_checkpoint = False
 
     def arc_disc_burn_label_checkpoint(self) -> subprocess.CompletedProcess[str]:
         return self.run_arc_disc(
             "burn",
             "--device",
             str(self.workspace / "missing-optical-device"),
+            input_text="y\n\n",
         )
 
     def pins_list(self) -> list[str]:
@@ -1936,6 +1943,8 @@ class ProductionSystem:
         env["PYTHONPATH"] = os.pathsep.join(pythonpath_parts)
         env["ARC_BASE_URL"] = self.base_url
         env["ARC_DB_PATH"] = str(self.db_path)
+        if self.operator_stop_before_label_checkpoint:
+            env["ARC_DISC_STOP_BEFORE_LABEL_CHECKPOINT"] = "1"
         if extra:
             env.update(extra)
         _reject_prod_arc_disc_factory_env(env)

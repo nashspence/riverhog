@@ -8,6 +8,7 @@ from typer.testing import CliRunner
 
 import arc_disc.main as arc_disc_main
 from arc_core.domain.errors import HashMismatch
+from contracts.operator import copy as operator_copy
 from tests.fixtures.data import fixture_encrypt_bytes
 
 runner = CliRunner()
@@ -1704,7 +1705,7 @@ def test_arc_disc_burn_resumes_from_media_verification_when_unfinished_disc_is_a
     )
 
     assert second.exit_code == 0
-    assert "verifying burned media for 20260420T040001Z-1" in second.stderr
+    assert operator_copy.burn_verifying_disc() in second.stderr
     assert "burning copy 20260420T040001Z-1" not in second.stderr
     assert burner.calls == [copy_one, copy_two]
     assert media_verifier.calls == [copy_one, copy_one, copy_two]
