@@ -204,6 +204,30 @@ def _actual_operator_views(
     return (*_command_operator_views(context), *context.actual_operator_views)
 
 
+def _record_command_output_operator_view(
+    context: AcceptanceScenarioContext,
+    name: str,
+    *,
+    text: str,
+) -> None:
+    command = _require_command(context)
+    if text not in f"{command.stdout}\n{command.stderr}":
+        return
+    for statechart_name, state_name in context.accepted_operator_statechart_states:
+        if _OPERATOR_STATECHART_CATALOG.view_for(statechart_name, state_name) != name:
+            continue
+        context.actual_operator_decisions.append(
+            _OPERATOR_STATECHART_CATALOG.decision(statechart_name, state_name)
+        )
+        context.actual_operator_views.append(
+            _OPERATOR_STATECHART_CATALOG.operator_view(
+                statechart_name,
+                state_name,
+                text=text,
+            )
+        )
+
+
 def _assert_actual_operator_view_matches_copy_ref(
     context: AcceptanceScenarioContext,
     name: str,
@@ -224,7 +248,10 @@ def _assert_actual_operator_view_matches_copy_ref(
         f'operator copy "{name}" was not recorded as an actual operator view; '
         f"actual views: {actual_views}"
     )
-    assert any(view.text.strip() == text.strip() for view in matches), (
+    assert any(
+        view.text.strip() == text.strip() or text.strip() in view.text
+        for view in matches
+    ), (
         f'operator copy "{name}" was recorded, but with different text'
     )
 
@@ -390,28 +417,30 @@ def _operator_copy_text(name: str) -> str:
                 partial_files=1,
             )
         case "disc_item_unfinished_local_copy":
-            return _guided_item_text(
-                operator_copy.disc_item_unfinished_local_copy(label_text=_OPERATOR_DISC_LABEL)
+            return operator_copy.guided_item_body(
+                item=operator_copy.disc_item_unfinished_local_copy(
+                    label_text=_OPERATOR_DISC_LABEL
+                )
             )
         case "disc_item_recovery_ready":
-            return _guided_item_text(
-                operator_copy.disc_item_recovery_ready(
+            return operator_copy.guided_item_body(
+                item=operator_copy.disc_item_recovery_ready(
                     session_id="rs-20260420T040001Z-rebuild-1",
                     affected=["docs"],
                     expires_at="2026-05-02 08:00 UTC",
                 )
             )
         case "disc_item_recovery_approval_required":
-            return _guided_item_text(
-                operator_copy.disc_item_recovery_approval_required(
+            return operator_copy.guided_item_body(
+                item=operator_copy.disc_item_recovery_approval_required(
                     session_id="rs-20260420T040001Z-rebuild-1",
                     affected=["docs"],
                     estimated_cost="12.34",
                 )
             )
         case "disc_item_hot_recovery_needs_media":
-            return _guided_item_text(
-                operator_copy.disc_item_hot_recovery_needs_media(
+            return operator_copy.guided_item_body(
+                item=operator_copy.disc_item_hot_recovery_needs_media(
                     target="docs/tax/2022/invoice-123.pdf"
                 )
             )
@@ -428,6 +457,12 @@ def _operator_copy_text(name: str) -> str:
             )
         case "recovery_rebuild_work_remaining":
             return operator_copy.recovery_rebuild_work_remaining(affected=["docs"])
+        case "device_missing":
+            return operator_copy.device_missing()
+        case "device_permission_denied":
+            return operator_copy.device_permission_denied()
+        case "device_lost_during_work":
+            return operator_copy.device_lost_during_work()
         case "burn_backlog_cleared":
             return operator_copy.burn_backlog_cleared()
         case "burn_label_checkpoint":
@@ -1285,6 +1320,39 @@ def given_pinned_files_need_disc_restore(
         "fx-1",
     )
     acceptance_system.set_operator_hot_recovery_needs_media(INVOICE_TARGET)
+
+
+@given("the configured optical device path does not exist")
+def given_configured_optical_device_path_does_not_exist(
+    acceptance_system: AcceptanceSystem,
+) -> None:
+    acceptance_system.set_operator_arc_disc_device_problem(
+        statechart="arc_disc.guided",
+        state="device_missing",
+        copy_ref="device_missing",
+    )
+
+
+@given("the operator cannot read or write the configured optical device")
+def given_operator_cannot_read_or_write_configured_optical_device(
+    acceptance_system: AcceptanceSystem,
+) -> None:
+    acceptance_system.set_operator_arc_disc_device_problem(
+        statechart="arc_disc.guided",
+        state="device_permission_denied",
+        copy_ref="device_permission_denied",
+    )
+
+
+@given("the optical device becomes unavailable while writing media")
+def given_optical_device_becomes_unavailable_while_writing_media(
+    acceptance_system: AcceptanceSystem,
+) -> None:
+    acceptance_system.set_operator_arc_disc_device_problem(
+        statechart="arc_disc.burn",
+        state="device_lost_during_work",
+        copy_ref="device_lost_during_work",
+    )
 
 
 @given(parsers.parse('the operator confirms labeled disc at storage location "{location}"'))

@@ -4,6 +4,30 @@ Feature: arc-disc CLI
   Targeted fetch commands remain available for explicit recovery detail flows.
 
   Rule: No-argument physical and recovery backlog
+    Scenario: arc-disc reports a missing configured optical device
+      Given statechart "arc_disc.guided" state "device_missing" is the accepted operator contract
+      And the configured optical device path does not exist
+      When the operator runs 'arc-disc'
+      Then stderr includes operator copy "device_missing"
+      And stderr mentions "Check the device path"
+      And stderr does not mention "xorriso"
+
+    Scenario: arc-disc reports optical device permission problems
+      Given statechart "arc_disc.guided" state "device_permission_denied" is the accepted operator contract
+      And the operator cannot read or write the configured optical device
+      When the operator runs 'arc-disc'
+      Then stderr includes operator copy "device_permission_denied"
+      And stderr mentions "Fix device permissions"
+      And stderr does not mention "PermissionError"
+
+    Scenario: arc-disc reports device loss during physical work
+      Given statechart "arc_disc.burn" state "device_lost_during_work" is the accepted operator contract
+      And the optical device becomes unavailable while writing media
+      When the operator runs 'arc-disc'
+      Then stderr includes operator copy "device_lost_during_work"
+      And stderr mentions "last safe checkpoint"
+      And stderr does not mention "Input/output error"
+
     Scenario: arc-disc no-arg attention summary continues inside the guided flow
       Given statechart "arc_disc.guided" state "attention_summary" is the accepted operator contract
       And recovery data is ready for collection "docs"
@@ -38,7 +62,7 @@ Feature: arc-disc CLI
       And stdout mentions "storage location"
       And stdout does not mention "candidate"
 
-    @contract_gap @issue_208
+    @issue_208
     Scenario: arc-disc handles ready recovery before ordinary blank-disc work
       Given statechart "arc_disc.guided" state "recovery_ready" is the accepted operator contract
       And recovery data is ready for collection "docs"

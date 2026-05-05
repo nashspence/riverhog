@@ -87,6 +87,8 @@ markers = [
   "issue_315: tracks issue #315 for implementing guided in-flow continuation",
   "issue_304: tracks issue #304 for backing recovery-rebuild-work-remaining-PM-scenario",
   "issue_314: tracks issue #314 for implementing recovery rebuild-work-remaining copy",
+  "issue_309: tracks issue #309 for backing device-availability-PM-scenarios",
+  "issue_310: tracks issue #310 for implementing arc-disc device availability states",
 ]
 
 [tool.mypy]
