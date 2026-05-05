@@ -85,6 +85,8 @@ markers = [
   "issue_264: tracks issue #264 for applying operator-facing recovery terminology",
   "issue_303: tracks issue #303 for backing guided-in-flow-PM-scenarios",
   "issue_315: tracks issue #315 for implementing guided in-flow continuation",
+  "issue_304: tracks issue #304 for backing recovery-rebuild-work-remaining-PM-scenario",
+  "issue_314: tracks issue #314 for implementing recovery rebuild-work-remaining copy",
 ]
 
 [tool.mypy]

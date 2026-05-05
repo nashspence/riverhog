@@ -1929,7 +1929,7 @@ class ProductionSystem:
         assert response.status_code == 200, response.text
         return int(response.json()["total"]) > 0
 
-    def set_operator_recovery_ready(self, collection_id: str) -> None:
+    def set_operator_rebuild_work_remaining(self, collection_id: str) -> None:
         assert collection_id == DOCS_COLLECTION_ID
         image = IMAGE_FIXTURES[0]
         self.seed_planner_fixtures()
@@ -1951,6 +1951,10 @@ class ProductionSystem:
             session_id=f"rs-{image.volume_id}-rebuild-1",
             image_id=image.volume_id,
         )
+
+    def set_operator_recovery_ready(self, collection_id: str) -> None:
+        self.set_operator_rebuild_work_remaining(collection_id)
+        image = IMAGE_FIXTURES[0]
         with session_scope(make_session_factory(str(self.db_path))) as session:
             record = session.get(
                 GlacierRecoverySessionRecord,

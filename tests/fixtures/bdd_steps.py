@@ -426,6 +426,8 @@ def _operator_copy_text(name: str) -> str:
                     operator_copy.disc_item_burn_work_ready(disc_count=1),
                 ]
             )
+        case "recovery_rebuild_work_remaining":
+            return operator_copy.recovery_rebuild_work_remaining(affected=["docs"])
         case "burn_backlog_cleared":
             return operator_copy.burn_backlog_cleared()
         case "burn_label_checkpoint":
@@ -1259,7 +1261,21 @@ def given_recovery_for_collection_needs_approval(
     acceptance_system.set_operator_recovery_approval_required(collection_id)
 
 
+@given("ordinary burn backlog is clear")
+def given_ordinary_burn_backlog_is_clear() -> None:
+    return None
+
+
+@given(parsers.parse('replacement-disc recovery work remains for collection "{collection_id}"'))
+def given_replacement_disc_recovery_work_remains(
+    acceptance_system: AcceptanceSystem,
+    collection_id: str,
+) -> None:
+    acceptance_system.set_operator_rebuild_work_remaining(collection_id)
+
+
 @given("pinned files need disc restore")
+@given("pinned files need recovery from disc")
 def given_pinned_files_need_disc_restore(
     acceptance_system: AcceptanceSystem,
 ) -> None:
