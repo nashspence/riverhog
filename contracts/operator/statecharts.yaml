@@ -488,8 +488,10 @@ statecharts:
             target: waiting
           - guard: recovered_data_ready
             target: ready
-          - guard: ready_window_expired
-            target: expired
+          - guard: expired_local_artifacts_available
+            target: expired_local_resume
+          - guard: expired_restore_must_be_requested_again
+            target: expired_needs_reapproval
           - guard: image_rebuild_work_remaining
             target: rebuild_work_remaining
         type: choice
@@ -517,21 +519,30 @@ statecharts:
         transitions:
           - guard: recovered_data_ready
             target: ready
-          - guard: ready_window_expired
-            target: expired
+          - guard: expired_restore_must_be_requested_again
+            target: expired_needs_reapproval
       ready:
         view: recovery_ready
         transitions:
           - event: operator_makes_replacement_disc
             target: completed
-          - guard: ready_window_expired
-            target: expired
+          - guard: expired_local_artifacts_available
+            target: expired_local_resume
+          - guard: expired_restore_must_be_requested_again
+            target: expired_needs_reapproval
       completed:
         view: recovery_completed
         final: true
-      expired:
-        view: recovery_expired
-        final: true
+      expired_local_resume:
+        view: recovery_expired_local_resume
+        transitions:
+          - event: operator_resumes_from_local_artifacts
+            target: ready
+      expired_needs_reapproval:
+        view: recovery_expired_needs_reapproval
+        transitions:
+          - event: operator_reviews_reapproval
+            target: approval_required
       rebuild_work_remaining:
         view: recovery_rebuild_work_remaining
         final: true
@@ -923,8 +934,8 @@ handoffs:
       state: scan_backlog
   - from:
       statechart: arc_disc.recovery
-      state: expired
-    label: operator checks remaining recovery work
+      state: expired_local_resume
+    label: operator resumes local recovery artifacts
     target:
       statechart: arc_disc.guided
       state: scan_backlog

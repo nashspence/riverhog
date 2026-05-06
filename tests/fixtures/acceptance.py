@@ -542,6 +542,8 @@ class AcceptanceState:
     operator_arc_items: list[operator_copy.GuidedItem] = field(default_factory=list)
     operator_disc_items: list[operator_copy.GuidedItem] = field(default_factory=list)
     operator_rebuild_work_remaining_collections: tuple[str, ...] = ()
+    operator_expired_recovery_session_id: str | None = None
+    operator_expired_recovery_local_artifacts_available: bool | None = None
     operator_blank_disc_work_available: bool = False
     operator_label_confirmation_location: str | None = None
     operator_collection_fully_protected: bool = False
@@ -4412,6 +4414,31 @@ class AcceptanceSystem:
         with self.state.lock:
             self.state.operator_rebuild_work_remaining_collections = (collection_id,)
 
+    def set_operator_expired_recovery_session(self, session_id: str) -> None:
+        image = IMAGE_FIXTURES[0]
+        assert session_id == f"rs-{image.volume_id}-rebuild-1"
+        self.seed_planner_fixtures()
+        self.seed_finalized_image(image.id, force_ready=True)
+        self.mark_collection_archive_uploaded(DOCS_COLLECTION_ID)
+        self.ensure_image_rebuild_session(session_id=session_id, image_id=image.volume_id)
+        with self.state.lock:
+            self.state.operator_expired_recovery_session_id = session_id
+            record = self.state.recovery_sessions_by_id[session_id]
+            record.state = RecoverySessionState.EXPIRED
+            record.approved_at = "2026-04-20T05:00:00Z"
+            record.restore_requested_at = "2026-04-20T05:00:00Z"
+            record.restore_ready_at = "2026-04-20T06:00:00Z"
+            record.restore_next_poll_at = None
+            record.restore_expires_at = "2000-01-01T00:00:00Z"
+            record.latest_message = (
+                "Restored ISO data expired and cleanup was recorded; re-initiate "
+                "recovery to request a new restore."
+            )
+
+    def set_operator_expired_recovery_local_artifacts(self, *, available: bool) -> None:
+        with self.state.lock:
+            self.state.operator_expired_recovery_local_artifacts_available = available
+
     def set_operator_hot_recovery_needs_media(self, target: str) -> None:
         with self.state.lock:
             self.state.operator_disc_items.append(
@@ -4849,6 +4876,51 @@ class AcceptanceSystem:
                         _operator_view(
                             "arc_disc.recovery",
                             "rebuild_work_remaining",
+                            text=stdout,
+                        )
+                    ],
+                )
+        if len(args) >= 2 and args[0] == "recover":
+            session_id = args[1]
+            with self.state.lock:
+                expired_session_id = self.state.operator_expired_recovery_session_id
+                local_artifacts_available = (
+                    self.state.operator_expired_recovery_local_artifacts_available
+                )
+            if expired_session_id == session_id and local_artifacts_available is not None:
+                if local_artifacts_available:
+                    stdout = operator_copy.recovery_expired_local_resume(
+                        session_id=session_id
+                    )
+                    state = "expired_local_resume"
+                else:
+                    with self.state.lock:
+                        record = self.state.recovery_sessions_by_id.get(session_id)
+                        if record is not None:
+                            record.state = RecoverySessionState.PENDING_APPROVAL
+                            record.approved_at = None
+                            record.restore_requested_at = None
+                            record.restore_ready_at = None
+                            record.restore_next_poll_at = None
+                            record.restore_expires_at = None
+                            record.latest_message = (
+                                "Approve the estimated restore cost before Riverhog "
+                                "requests archive restore."
+                            )
+                    stdout = operator_copy.recovery_expired_needs_reapproval(
+                        session_id=session_id,
+                        affected=["docs"],
+                        estimated_cost="12.34",
+                    )
+                    state = "expired_needs_reapproval"
+                return _operator_completed_process(
+                    ["arc-disc", *args],
+                    stdout=stdout,
+                    decisions=[_operator_decision("arc_disc.recovery", state)],
+                    views=[
+                        _operator_view(
+                            "arc_disc.recovery",
+                            state,
                             text=stdout,
                         )
                     ],

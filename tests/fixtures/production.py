@@ -1996,6 +1996,39 @@ class ProductionSystem:
             image_id=image.volume_id,
         )
 
+    def set_operator_expired_recovery_session(self, session_id: str) -> None:
+        image = IMAGE_FIXTURES[0]
+        assert session_id == f"rs-{image.volume_id}-rebuild-1"
+        self.set_operator_rebuild_work_remaining(DOCS_COLLECTION_ID)
+        with session_scope(make_session_factory(str(self.db_path))) as session:
+            record = session.get(GlacierRecoverySessionRecord, session_id)
+            assert record is not None, f"recovery session not found: {session_id}"
+            record.state = RecoverySessionState.EXPIRED.value
+            record.approved_at = "2026-04-20T05:00:00Z"
+            record.restore_requested_at = "2026-04-20T05:00:00Z"
+            record.restore_ready_at = "2026-04-20T06:00:00Z"
+            record.restore_next_poll_at = None
+            record.restore_expires_at = "2000-01-01T00:00:00Z"
+            record.latest_message = (
+                "Restored ISO data expired and cleanup was recorded; re-initiate "
+                "recovery to request a new restore."
+            )
+            estimate = json.loads(record.estimate_json)
+            estimate["total_estimated_cost_usd"] = 12.34
+            record.estimate_json = json.dumps(estimate)
+
+    def set_operator_expired_recovery_local_artifacts(self, *, available: bool) -> None:
+        image = IMAGE_FIXTURES[0]
+        staging_path = self.workspace / "arc_disc_staging" / image.volume_id / image.filename
+        if available:
+            staging_path.parent.mkdir(parents=True, exist_ok=True)
+            response = self.request("GET", f"/v1/images/{image.volume_id}/iso")
+            assert response.status_code == 200, response.text
+            staging_path.write_bytes(response.content)
+            return
+        if staging_path.parent.exists():
+            shutil.rmtree(staging_path.parent)
+
     def set_operator_recovery_ready(self, collection_id: str) -> None:
         self.set_operator_rebuild_work_remaining(collection_id)
         image = IMAGE_FIXTURES[0]

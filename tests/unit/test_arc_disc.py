@@ -1128,6 +1128,97 @@ def test_arc_disc_recover_can_finish_expired_session_from_local_staging(
     assert not (tmp_path / "burn-session.json").exists()
 
 
+def test_arc_disc_recover_requests_reapproval_for_expired_session_without_local_staging(
+    monkeypatch,
+    tmp_path: Path,
+) -> None:
+    image_id = "20260420T040001Z"
+
+    class FakeClient:
+        def __init__(self) -> None:
+            self.reapproval_requests: list[str] = []
+            self.copy_states = {
+                f"{image_id}-1": {"id": f"{image_id}-1", "state": "lost"},
+                f"{image_id}-2": {"id": f"{image_id}-2", "state": "damaged"},
+                f"{image_id}-3": {"id": f"{image_id}-3", "state": "needed"},
+            }
+
+        def list_images(self, *, page: int, per_page: int, sort: str, order: str):
+            return {"page": 1, "pages": 0, "images": []}
+
+        def get_recovery_session(self, session_id: str) -> dict[str, object]:
+            assert session_id == "rs-20260420T040001Z-1"
+            return {
+                "id": session_id,
+                "type": "image_rebuild",
+                "state": "expired",
+                "latest_message": (
+                    "Restored ISO data expired and was cleaned up; re-initiate recovery to "
+                    "request a new restore."
+                ),
+                "images": [
+                    {
+                        "id": image_id,
+                        "filename": f"{image_id}.iso",
+                        "collection_ids": ["docs"],
+                    }
+                ],
+                "collections": [{"id": "docs"}],
+                "cost_estimate": {"total_estimated_cost_usd": 12.34},
+            }
+
+        def list_copies(self, image_id_arg: str) -> dict[str, object]:
+            assert image_id_arg == image_id
+            return {"copies": list(self.copy_states.values())}
+
+        def create_recovery_session_for_image(self, image_id_arg: str) -> dict[str, object]:
+            assert image_id_arg == image_id
+            self.reapproval_requests.append(image_id_arg)
+            return {
+                "id": "rs-20260420T040001Z-1",
+                "type": "image_rebuild",
+                "state": "pending_approval",
+                "latest_message": (
+                    "Approve the estimated restore cost before Riverhog requests archive "
+                    "restore."
+                ),
+                "images": [
+                    {
+                        "id": image_id,
+                        "filename": f"{image_id}.iso",
+                        "collection_ids": ["docs"],
+                    }
+                ],
+                "collections": [{"id": "docs"}],
+                "cost_estimate": {"total_estimated_cost_usd": 12.34},
+            }
+
+    client = FakeClient()
+    monkeypatch.setattr(arc_disc_main, "ApiClient", lambda: client)
+    monkeypatch.setattr(arc_disc_main, "build_iso_verifier", lambda: object())
+    monkeypatch.setattr(arc_disc_main, "build_disc_burner", lambda: object())
+    monkeypatch.setattr(arc_disc_main, "build_burned_media_verifier", lambda: object())
+    monkeypatch.setattr(arc_disc_main, "build_burn_prompts", lambda: object())
+
+    result = runner.invoke(
+        arc_disc_main.app,
+        [
+            "recover",
+            "rs-20260420T040001Z-1",
+            "--device",
+            "/dev/fake-sr0",
+            "--staging-dir",
+            str(tmp_path),
+        ],
+    )
+
+    assert result.exit_code == 0
+    assert "Approve again" in result.stdout
+    assert "Estimated cost" in result.stdout
+    assert "rebuild session rs-20260420T040001Z-1 is pending_approval" in result.stdout
+    assert client.reapproval_requests == [image_id]
+
+
 def test_arc_disc_recover_stages_all_pending_session_images_before_first_burn(
     monkeypatch,
     tmp_path: Path,

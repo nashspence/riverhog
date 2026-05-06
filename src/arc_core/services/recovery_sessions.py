@@ -178,6 +178,14 @@ class SqlAlchemyRecoverySessionService:
                     "image still has protected copies and does not require "
                     f"archive recovery: {image_id}"
                 )
+            latest = _latest_session_for_image(session, image_id)
+            if latest is not None and latest.state == RecoverySessionState.EXPIRED.value:
+                _reset_recovery_session_for_reapproval(
+                    session,
+                    record=latest,
+                    config=self._config,
+                )
+                return _session_summary(session, latest, config=self._config)
             reusable = _reusable_pending_approval_session(session)
             if reusable is not None:
                 attached = _attach_image_to_session(
@@ -803,6 +811,34 @@ def _attach_image_to_session(
     session.flush()
     _refresh_recovery_session_metadata(session, record=record, config=config)
     return record
+
+
+def _reset_recovery_session_for_reapproval(
+    session: Session,
+    *,
+    record: GlacierRecoverySessionRecord,
+    config: RuntimeConfig,
+) -> None:
+    if (record.type or "image_rebuild") == "image_rebuild":
+        _sync_session_collections_for_images(session, record)
+        session.flush()
+    _refresh_recovery_session_metadata(session, record=record, config=config)
+    record.state = RecoverySessionState.PENDING_APPROVAL.value
+    record.approved_at = None
+    record.restore_requested_at = None
+    record.restore_ready_at = None
+    record.restore_next_poll_at = None
+    record.restore_expires_at = None
+    record.completed_at = None
+    record.latest_message = (
+        "Approve the estimated restore cost before Riverhog requests archive restore."
+    )
+    record.reminder_count = 0
+    record.next_reminder_at = None
+    record.last_notified_at = None
+    record.archive_verification_state = "pending"
+    record.extraction_state = "pending"
+    record.materialization_state = "pending"
 
 
 def _require_image(session: Session, image_id: str) -> FinalizedImageRecord:

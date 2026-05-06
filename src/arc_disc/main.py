@@ -214,6 +214,7 @@ class RecoverySessionHint:
     images: tuple[RecoverySessionImageHint, ...]
     collection_ids: tuple[str, ...] = ()
     restore_expires_at: str | None = None
+    affected: tuple[str, ...] = ()
     estimated_cost: object | None = None
 
 
@@ -896,12 +897,6 @@ def _recovery_session_hint_from_payload(payload: dict[str, Any]) -> RecoverySess
                 if collection_id is not None
             )
         )
-    cost_estimate = payload.get("cost_estimate", {})
-    estimated_cost = (
-        cost_estimate.get("total_estimated_cost")
-        if isinstance(cost_estimate, dict)
-        else None
-    )
     return RecoverySessionHint(
         session_id=str(payload["id"]),
         type=str(payload.get("type", "image_rebuild")),
@@ -916,8 +911,34 @@ def _recovery_session_hint_from_payload(payload: dict[str, Any]) -> RecoverySess
             if payload.get("restore_expires_at") is not None
             else None
         ),
-        estimated_cost=estimated_cost,
+        affected=_recovery_session_affected(payload),
+        estimated_cost=_recovery_session_estimated_cost(payload),
     )
+
+
+def _recovery_session_affected(payload: dict[str, Any]) -> tuple[str, ...]:
+    affected: set[str] = set()
+    collections = payload.get("collections", [])
+    if isinstance(collections, list):
+        for collection in collections:
+            if isinstance(collection, dict) and collection.get("id") is not None:
+                affected.add(str(collection["id"]))
+    images = payload.get("images", [])
+    if isinstance(images, list):
+        for image in images:
+            if not isinstance(image, dict):
+                continue
+            collection_ids = image.get("collection_ids", [])
+            if isinstance(collection_ids, list):
+                affected.update(str(collection_id) for collection_id in collection_ids)
+    return tuple(sorted(affected))
+
+
+def _recovery_session_estimated_cost(payload: dict[str, Any]) -> object | None:
+    cost_estimate = payload.get("cost_estimate")
+    if not isinstance(cost_estimate, dict):
+        return None
+    return cost_estimate.get("total_estimated_cost_usd")
 
 
 def _discover_active_recovery_sessions(client: ApiClient) -> list[RecoverySessionHint]:
@@ -1079,6 +1100,17 @@ def _can_resume_expired_recovery_session(
     return True
 
 
+def _request_expired_recovery_reapproval(
+    recovery_session: RecoverySessionHint,
+    *,
+    client: ApiClient,
+) -> RecoverySessionHint:
+    if recovery_session.type != "image_rebuild" or not recovery_session.images:
+        return recovery_session
+    payload = client.create_recovery_session_for_image(recovery_session.images[0].image_id)
+    return _recovery_session_hint_from_payload(payload)
+
+
 def _recover_session_image(
     image: RecoverySessionImageHint,
     *,
@@ -1166,10 +1198,22 @@ def _process_recovery_session(
             client=client,
             staging_dir=staging_dir,
         ):
-            raise RuntimeError(
-                recovery_session.latest_message
-                or f"recovery session expired and must be re-initiated: {session_id}"
+            typer.echo(
+                operator_copy.recovery_expired_needs_reapproval(
+                    session_id=session_id,
+                    affected=recovery_session.affected or ("affected data",),
+                    estimated_cost=recovery_session.estimated_cost,
+                )
             )
+            recovery_session = _request_expired_recovery_reapproval(
+                recovery_session,
+                client=client,
+            )
+            return (
+                recovery_session,
+                [],
+            )
+        typer.echo(operator_copy.recovery_expired_local_resume(session_id=session_id))
         typer.echo(
             "restore window expired remotely; resuming from local staged ISO artifacts",
             err=True,
@@ -1754,6 +1798,16 @@ def recover_cmd(
             else "recovery session"
         )
         typer.echo(f"{label} {session_id} is restore_requested")
+        if recovery_session.latest_message:
+            typer.echo(recovery_session.latest_message)
+        return
+    if recovery_session.state == "pending_approval":
+        label = (
+            "rebuild session"
+            if recovery_session.type == "image_rebuild"
+            else "recovery session"
+        )
+        typer.echo(f"{label} {session_id} is pending_approval")
         if recovery_session.latest_message:
             typer.echo(recovery_session.latest_message)
         return

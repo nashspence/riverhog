@@ -428,6 +428,72 @@ def test_recovery_session_processes_ready_and_expired_states(
     assert completed.state == RecoverySessionState.COMPLETED
 
 
+def test_expired_image_recovery_reuses_same_session_for_reapproval(
+    tmp_path: Path,
+    monkeypatch,
+) -> None:
+    sqlite_path = tmp_path / "state.sqlite3"
+    image_root = tmp_path / "image-root"
+    initialize_db(str(sqlite_path))
+    write_tree(image_root, IMAGE_ONE_FILES)
+    _seed_finalized_image(sqlite_path, image_root)
+    package = _seed_docs_collection_archive(sqlite_path)
+
+    config = _config(
+        sqlite_path,
+        glacier_recovery_restore_latency=timedelta(seconds=10),
+        glacier_recovery_ready_ttl=timedelta(seconds=5),
+    )
+    copy_service = SqlAlchemyCopyService(config, _FakeHotStore())
+    store = _FakeArchiveStore(collection_packages={"docs": package})
+    recovery_service = SqlAlchemyRecoverySessionService(config, store)
+
+    copy_service.register("20260420T040001Z", "Shelf A1", copy_id="20260420T040001Z-1")
+    copy_service.register("20260420T040001Z", "Shelf B1", copy_id="20260420T040001Z-2")
+    copy_service.update("20260420T040001Z", "20260420T040001Z-1", state="lost")
+    copy_service.update("20260420T040001Z", "20260420T040001Z-2", state="damaged")
+
+    start = datetime(2026, 4, 20, 4, 0, tzinfo=UTC)
+    monkeypatch.setattr("arc_core.services.recovery_sessions.utcnow", lambda: start)
+    approved = recovery_service.approve("rs-20260420T040001Z-rebuild-1")
+    assert approved.state == RecoverySessionState.RESTORE_REQUESTED
+
+    monkeypatch.setattr(
+        "arc_core.services.recovery_sessions.utcnow",
+        lambda: start + timedelta(seconds=11),
+    )
+    assert recovery_service.process_due_sessions() == 1
+    ready = recovery_service.get("rs-20260420T040001Z-rebuild-1")
+    assert ready.state == RecoverySessionState.READY
+
+    monkeypatch.setattr(
+        "arc_core.services.recovery_sessions.utcnow",
+        lambda: start + timedelta(seconds=17),
+    )
+    assert recovery_service.process_due_sessions() == 1
+    expired = recovery_service.get("rs-20260420T040001Z-rebuild-1")
+    assert expired.state == RecoverySessionState.EXPIRED
+
+    reapproval = recovery_service.create_or_resume_for_image("20260420T040001Z")
+
+    assert reapproval.id == "rs-20260420T040001Z-rebuild-1"
+    assert reapproval.state == RecoverySessionState.PENDING_APPROVAL
+    assert reapproval.approved_at is None
+    assert reapproval.restore_requested_at is None
+    assert reapproval.restore_ready_at is None
+    assert reapproval.restore_expires_at is None
+    assert reapproval.latest_message == (
+        "Approve the estimated restore cost before Riverhog requests archive restore."
+    )
+    assert reapproval.progress.archive_verification == "pending"
+    assert reapproval.progress.extraction == "pending"
+    assert reapproval.progress.materialization == "pending"
+    assert [str(image.id) for image in reapproval.images] == ["20260420T040001Z"]
+    assert [str(collection.id) for collection in reapproval.collections] == ["docs"]
+    assert reapproval.images[0].rebuild_state == "pending"
+    assert len(store.restore_requests) == 1
+
+
 def test_collection_restore_requests_and_verifies_manifest_and_proof(
     tmp_path: Path,
     monkeypatch,

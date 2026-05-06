@@ -83,6 +83,7 @@ markers = [
   "issue_210: tracks issue #210 for action-needed webhook payloads",
   "issue_211: tracks issue #211 for replacing remaining normal CLI copy",
   "issue_264: tracks issue #264 for applying operator-facing recovery terminology",
+  "issue_277: tracks issue #277 for expired recovery re-approval coverage",
   "issue_274: tracks issue #274 for implementing burn label checkpoint behavior",
   "issue_303: tracks issue #303 for backing guided-in-flow-PM-scenarios",
   "issue_315: tracks issue #315 for implementing guided in-flow continuation",
@@ -94,6 +95,8 @@ markers = [
   "issue_302: tracks issue #302 for backing label-checkpoint-PM-scenario",
   "issue_316: tracks issue #316 for implementing burn label checkpoint behavior",
   "issue_317: tracks issue #317 for implementing next-disc label retry routing",
+  "issue_305: tracks issue #305 for backing expired-recovery-reapproval-PM-scenarios",
+  "issue_313: tracks issue #313 for implementing expired recovery re-approval routing",
 ]
 
 [tool.mypy]

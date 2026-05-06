@@ -11,6 +11,31 @@ Feature: arc-disc recover CLI
     And stdout does not mention "Cleanup Handoff"
     And stdout does not mention "safe recovery handoff"
 
+  Scenario: expired recovery with local artifacts resumes without another approval
+    Given statechart "arc_disc.recovery" state "expired_local_resume" is the accepted operator contract
+    And recovery session "rs-20260420T040001Z-rebuild-1" has expired
+    And local staged recovery artifacts are available
+    When the operator runs arc-disc recover "rs-20260420T040001Z-rebuild-1"
+    Then stdout includes operator copy "recovery_expired_local_resume"
+    And stdout mentions "local staged recovery files"
+    And stdout does not mention "Approve again"
+
+  @issue_277
+  Scenario: expired recovery without local artifacts returns to approval
+    Given statechart "arc_disc.recovery" state "expired_needs_reapproval" is the accepted operator contract
+    And recovery session "rs-20260420T040001Z-rebuild-1" has expired
+    And local staged recovery artifacts are absent
+    When the operator runs arc-disc recover "rs-20260420T040001Z-rebuild-1"
+    Then stdout includes operator copy "recovery_expired_needs_reapproval"
+    And stdout mentions "Approve again"
+    And stdout mentions "Estimated cost"
+    And stdout does not mention "Run arc-disc to review the next safe recovery step"
+    And the client gets "/v1/recovery-sessions/rs-20260420T040001Z-rebuild-1"
+    And the response recovery session state is "pending_approval"
+    And the response recovery session images contain only "20260420T040001Z"
+    And the response recovery session collections include "docs"
+    And the response recovery session image "20260420T040001Z" rebuild_state is "pending"
+
   Scenario: arc-disc recover lists one multi-image pending rebuild session
     Given an archive with planned images
     And an archive with split planned images

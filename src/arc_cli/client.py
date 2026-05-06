@@ -191,6 +191,12 @@ class ApiClient:
             f"/v1/images/{quote(image_id, safe='/')}/rebuild-session",
         )
 
+    def create_recovery_session_for_image(self, image_id: str) -> dict[str, Any]:
+        return self._json(
+            "POST",
+            f"/v1/images/{quote(image_id, safe='/')}/rebuild-session",
+        )
+
     def get_recovery_session(self, session_id: str) -> dict[str, Any]:
         return self._json("GET", f"/v1/recovery-sessions/{quote(session_id, safe='/')}")
 
