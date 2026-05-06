@@ -146,6 +146,15 @@ Feature: arc CLI
       And stderr mentions "raise the configured budget"
       And stderr does not mention "No space left on device"
 
+    @contract_gap @issue_289
+    Scenario: arc get reports storage-capacity blockage before low-level filesystem errors
+      Given statechart "arc.hot_storage" state "storage_capacity_blocked" is the accepted operator contract
+      And hot storage retrieval needs more local storage than is available
+      When the operator runs 'arc get "docs/tax/2022/invoice-123.pdf"'
+      Then stderr includes operator copy "storage_capacity_blocked"
+      And stderr mentions "raise the configured budget"
+      And stderr does not mention "No space left on device"
+
     @contract_gap @issue_209
     Scenario: arc opens the operator home when no attention is needed
       Given statechart "arc.home" state "no_attention" is the accepted operator contract

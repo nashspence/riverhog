@@ -85,6 +85,7 @@ markers = [
   "issue_223: tracks issue #223 for long-running operator status notifications",
   "issue_264: tracks issue #264 for applying operator-facing recovery terminology",
   "issue_277: tracks issue #277 for expired recovery re-approval coverage",
+  "issue_289: tracks issue #289 for operator storage-capacity problem states",
   "issue_274: tracks issue #274 for implementing burn label checkpoint behavior",
   "issue_288: tracks issue #288 for Riverhog API-unreachable operator states",
   "issue_303: tracks issue #303 for backing guided-in-flow-PM-scenarios",

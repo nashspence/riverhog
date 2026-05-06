@@ -177,6 +177,10 @@ _ARC_DISC_API_UNREACHABLE_STATECHARTS = {
     "recover": "arc_disc.recovery",
     "restore": "arc_disc.hot_recovery",
 }
+_ARC_DISC_STORAGE_CAPACITY_STATECHARTS = {
+    "fetch": "arc_disc.fetch",
+    "restore": "arc_disc.hot_recovery",
+}
 
 
 def _generated_copy_id(image_id: str, ordinal: int) -> str:
@@ -5088,12 +5092,38 @@ class AcceptanceSystem:
         if args:
             with self.state.lock:
                 api_unreachable = self.state.operator_api_unreachable
+                storage_block = self.state.operator_storage_capacity_block
             statechart = _ARC_DISC_API_UNREACHABLE_STATECHARTS.get(args[0])
             if api_unreachable and statechart is not None:
                 return _api_unreachable_operator_process(
                     "arc-disc",
                     tuple(args),
                     statechart=statechart,
+                )
+            storage_statechart = _ARC_DISC_STORAGE_CAPACITY_STATECHARTS.get(args[0])
+            if (
+                storage_statechart is not None
+                and storage_block == (storage_statechart, "storage_capacity_blocked")
+            ):
+                stderr = operator_copy.storage_capacity_blocked(
+                    workflow="Local work",
+                    required_bytes=_OPERATOR_STORAGE_REQUIRED_BYTES,
+                    available_bytes=_OPERATOR_STORAGE_BLOCKED_AVAILABLE_BYTES,
+                )
+                return _operator_completed_process(
+                    ["arc-disc", *args],
+                    returncode=1,
+                    stderr=stderr,
+                    decisions=[
+                        _operator_decision(storage_statechart, "storage_capacity_blocked")
+                    ],
+                    views=[
+                        _operator_view(
+                            storage_statechart,
+                            "storage_capacity_blocked",
+                            text=stderr,
+                        )
+                    ],
                 )
         if args == ("recover",):
             with self.state.lock:

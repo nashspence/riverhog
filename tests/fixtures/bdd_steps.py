@@ -1034,6 +1034,9 @@ def _prepare_arc_expectation(
     if argv[1] == "fetch":
         return
 
+    if argv[1] == "get":
+        return
+
     if argv[1] == "upload":
         return
 
@@ -1278,6 +1281,17 @@ def given_collection_upload_staging_needs_more_local_storage(
     )
 
 
+@given("hot storage retrieval needs more local storage than is available")
+def given_hot_storage_retrieval_needs_more_local_storage(
+    acceptance_system: AcceptanceSystem,
+) -> None:
+    acceptance_system.seed_docs_hot()
+    acceptance_system.set_operator_storage_capacity_blocked(
+        statechart="arc.hot_storage",
+        state="storage_capacity_blocked",
+    )
+
+
 @given("burn preparation needs more local storage than is available")
 def given_burn_preparation_needs_more_local_storage(
     acceptance_system: AcceptanceSystem,
@@ -1296,6 +1310,32 @@ def given_recovery_materialization_needs_more_local_storage(
     acceptance_system.set_operator_recovery_ready(DOCS_COLLECTION_ID)
     acceptance_system.set_operator_storage_capacity_blocked(
         statechart="arc_disc.recovery",
+        state="storage_capacity_blocked",
+    )
+
+
+@given("fetch recovery needs more local storage than is available")
+def given_fetch_recovery_needs_more_local_storage(
+    acceptance_system: AcceptanceSystem,
+) -> None:
+    given_split_archived_target_is_pinned_with_fetch(
+        acceptance_system,
+        INVOICE_TARGET,
+        "fx-1",
+    )
+    acceptance_system.set_operator_storage_capacity_blocked(
+        statechart="arc_disc.fetch",
+        state="storage_capacity_blocked",
+    )
+
+
+@given("disc restore needs more local storage than is available")
+def given_disc_restore_needs_more_local_storage(
+    acceptance_system: AcceptanceSystem,
+) -> None:
+    given_pinned_files_need_disc_restore(acceptance_system)
+    acceptance_system.set_operator_storage_capacity_blocked(
+        statechart="arc_disc.hot_recovery",
         state="storage_capacity_blocked",
     )
 

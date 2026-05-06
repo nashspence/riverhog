@@ -1081,8 +1081,11 @@ class ProductionSystem:
     def set_operator_storage_capacity_blocked(self, *, statechart: str, state: str) -> None:
         assert state == "storage_capacity_blocked"
         assert statechart in {
+            "arc.hot_storage",
             "arc.upload",
             "arc_disc.burn",
+            "arc_disc.fetch",
+            "arc_disc.hot_recovery",
             "arc_disc.recovery",
         }
         self.local_storage_env.update(

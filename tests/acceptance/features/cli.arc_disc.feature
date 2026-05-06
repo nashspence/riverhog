@@ -75,6 +75,24 @@ Feature: arc-disc CLI
       And stderr mentions "choose a different staging location"
       And stderr does not mention "No space left on device"
 
+    @contract_gap @issue_289
+    Scenario: arc-disc fetch reports storage-capacity blockage while restoring pinned files
+      Given statechart "arc_disc.fetch" state "storage_capacity_blocked" is the accepted operator contract
+      And fetch recovery needs more local storage than is available
+      When the operator runs arc-disc fetch "fx-1"
+      Then stderr includes operator copy "storage_capacity_blocked"
+      And stderr mentions "choose a different staging location"
+      And stderr does not mention "No space left on device"
+
+    @contract_gap @issue_289
+    Scenario: arc-disc restore reports storage-capacity blockage while restoring pinned files
+      Given statechart "arc_disc.hot_recovery" state "storage_capacity_blocked" is the accepted operator contract
+      And disc restore needs more local storage than is available
+      When the operator runs 'arc-disc restore'
+      Then stderr includes operator copy "storage_capacity_blocked"
+      And stderr mentions "choose a different staging location"
+      And stderr does not mention "No space left on device"
+
     @contract_gap @issue_208
     Scenario: arc-disc resumes unfinished local disc work before choosing new work
       Given statechart "arc_disc.guided" state "unfinished_local_disc" is the accepted operator contract
