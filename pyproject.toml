@@ -83,6 +83,7 @@ markers = [
   "issue_210: tracks issue #210 for action-needed webhook payloads",
   "issue_211: tracks issue #211 for replacing remaining normal CLI copy",
   "issue_223: tracks issue #223 for long-running operator status notifications",
+  "issue_236: tracks issue #236 for backing maintenance check outcome PM scenarios",
   "issue_264: tracks issue #264 for applying operator-facing recovery terminology",
   "issue_277: tracks issue #277 for expired recovery re-approval coverage",
   "issue_274: tracks issue #274 for implementing burn label checkpoint behavior",

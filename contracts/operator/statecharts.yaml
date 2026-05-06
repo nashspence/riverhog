@@ -313,33 +313,58 @@ statecharts:
           - guard: api_unreachable
             target: api_unreachable
           - event: check_setup
-            target: doctor
+            target: setup_check
           - event: check_recovery_costs
-            target: billing_unavailable
+            target: recovery_costs_check
           - event: check_notifications
-            target: notification_health_failed
+            target: notification_delivery_check
+          - event: send_notification_test
+            target: notification_delivery_test_opt_in_required
         type: choice
       api_unreachable:
         view: api_unreachable
         final: true
-      doctor:
+      setup_check:
         transitions:
           - guard: setup_is_healthy
-            target: doctor_ok
+            target: setup_healthy
           - guard: setup_needs_attention
-            target: doctor_needs_attention
+            target: setup_needs_attention
         type: choice
-      doctor_ok:
-        view: doctor_ok
+      setup_healthy:
+        view: setup_check_healthy
         final: true
-      doctor_needs_attention:
-        view: doctor_needs_attention
+      setup_needs_attention:
+        view: setup_check_needs_attention
         final: true
-      billing_unavailable:
-        view: billing_unavailable
+      recovery_costs_check:
+        transitions:
+          - guard: recovery_costs_available
+            target: recovery_costs_healthy
+          - guard: recovery_costs_need_attention
+            target: recovery_costs_need_attention
+        type: choice
+      recovery_costs_healthy:
+        view: recovery_costs_healthy
         final: true
-      notification_health_failed:
-        view: notification_health_failed
+      recovery_costs_need_attention:
+        view: recovery_costs_need_attention
+        final: true
+      notification_delivery_check:
+        transitions:
+          - guard: notification_delivery_healthy
+            target: notification_delivery_healthy
+          - guard: notification_delivery_needs_attention
+            target: notification_delivery_needs_attention
+        type: choice
+      notification_delivery_healthy:
+        view: notification_delivery_healthy
+        final: true
+      notification_delivery_needs_attention:
+        view: notification_delivery_needs_attention
+        final: true
+      notification_delivery_test_opt_in_required:
+        view: notification_delivery_test_opt_in_required
         final: true
   arc_disc.guided:
     command: arc-disc
@@ -977,7 +1002,7 @@ handoffs:
   - from:
       statechart: arc.home
       state: billing_needs_attention
-    label: operator reviews recovery costs
+    label: operator reviews recovery cost information
     target:
       statechart: arc.maintenance
       state: choose_check

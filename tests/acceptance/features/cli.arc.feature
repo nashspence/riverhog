@@ -221,6 +221,83 @@ Feature: arc CLI
       And the operator decision matches the accepted state
       And stdout does not mention "httpx"
 
+  Rule: Operator maintenance checks
+    @todo @issue_236
+    Scenario: arc maintenance shows healthy setup status
+      Given statechart "arc.maintenance" state "setup_healthy" is the accepted operator contract
+      And the archive setup is healthy
+      When the operator runs 'arc maintenance setup'
+      Then the command exits with code 0
+      And the operator decision matches the accepted state
+      And stdout includes operator copy "setup_check_healthy"
+      And stdout mentions "Setup check passed"
+      And stdout does not mention "doctor"
+
+    @todo @issue_236
+    Scenario: arc maintenance explains setup work that needs attention
+      Given statechart "arc.maintenance" state "setup_needs_attention" is the accepted operator contract
+      And setup needs attention
+      When the operator runs 'arc maintenance setup'
+      Then the command exits with code 0
+      And the operator decision matches the accepted state
+      And stdout includes operator copy "setup_check_needs_attention"
+      And stdout mentions "Setup needs attention"
+      And stdout does not mention "doctor"
+
+    @todo @issue_236
+    Scenario: arc maintenance shows healthy recovery cost information
+      Given statechart "arc.maintenance" state "recovery_costs_healthy" is the accepted operator contract
+      And recovery cost information is available
+      When the operator runs 'arc maintenance recovery-costs'
+      Then the command exits with code 0
+      And the operator decision matches the accepted state
+      And stdout includes operator copy "recovery_costs_healthy"
+      And stdout mentions "Recovery cost information is available"
+      And stdout does not mention "billing"
+
+    @todo @issue_236
+    Scenario: arc maintenance explains recovery cost information that needs attention
+      Given statechart "arc.maintenance" state "recovery_costs_need_attention" is the accepted operator contract
+      And recovery cost information needs attention
+      When the operator runs 'arc maintenance recovery-costs'
+      Then the command exits with code 0
+      And the operator decision matches the accepted state
+      And stdout includes operator copy "recovery_costs_need_attention"
+      And stdout mentions "Recovery cost information needs attention"
+      And stdout does not mention "billing"
+
+    @todo @issue_236
+    Scenario: arc maintenance shows healthy notification delivery
+      Given statechart "arc.maintenance" state "notification_delivery_healthy" is the accepted operator contract
+      And notification delivery is healthy
+      When the operator runs 'arc maintenance notifications'
+      Then the command exits with code 0
+      And the operator decision matches the accepted state
+      And stdout includes operator copy "notification_delivery_healthy"
+      And stdout mentions "notification delivery is working"
+      And stdout does not mention "webhook"
+
+    @todo @issue_236
+    Scenario: arc maintenance explains notification delivery that needs attention
+      Given statechart "arc.maintenance" state "notification_delivery_needs_attention" is the accepted operator contract
+      And notification delivery needs attention
+      When the operator runs 'arc maintenance notifications'
+      Then the command exits with code 0
+      And the operator decision matches the accepted state
+      And stdout includes operator copy "notification_delivery_needs_attention"
+      And stdout mentions "notification delivery needs attention"
+      And stdout does not mention "webhook"
+
+    @todo @issue_236
+    Scenario: arc maintenance keeps live notification delivery tests opt-in
+      Given statechart "arc.maintenance" state "notification_delivery_test_opt_in_required" is the accepted operator contract
+      And notification delivery testing is not opted in
+      When the operator runs 'arc maintenance notifications --send-test'
+      Then the command exits with code 0
+      And the operator decision matches the accepted state
+      And stdout includes operator copy "notification_delivery_test_opt_in_required"
+      And stdout mentions "controlled harness"
+
   Rule: Normal human copy uses operator terms
     @contract_gap @issue_211
     Scenario: arc upload ingests and archives a local collection source

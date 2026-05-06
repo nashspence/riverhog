@@ -148,6 +148,25 @@ def _feature_copy_text(name: str) -> str:
                 index=1,
                 total=2,
             )
+        case "setup_check_healthy":
+            return operator_copy.setup_check_healthy()
+        case "setup_check_needs_attention":
+            return operator_copy.setup_check_needs_attention(["Storage bucket missing"])
+        case "recovery_costs_healthy":
+            return operator_copy.recovery_costs_healthy()
+        case "recovery_costs_need_attention":
+            return operator_copy.recovery_costs_need_attention(
+                reason="pricing unavailable"
+            )
+        case "notification_delivery_healthy":
+            return operator_copy.notification_delivery_healthy(channel="Push")
+        case "notification_delivery_needs_attention":
+            return operator_copy.notification_delivery_needs_attention(
+                channel="Push",
+                latest_error="delivery timeout",
+            )
+        case "notification_delivery_test_opt_in_required":
+            return operator_copy.notification_delivery_test_opt_in_required()
         case "upload_finalized":
             return operator_copy.upload_finalized(
                 collection_id="photos-2024",

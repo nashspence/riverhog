@@ -893,31 +893,54 @@ def hot_recovery_done(*, target: str) -> str:
     return f"{truncate(target)} is back in hot storage."
 
 
-# setup / doctor / billing / notification health
+# setup / recovery cost / notification delivery maintenance
 
 
-def doctor_ok() -> str:
-    return "Riverhog setup looks healthy. No setup action is needed now."
+def setup_check_healthy() -> str:
+    return "Setup check passed. No setup action is needed now."
 
 
-def doctor_needs_attention(items: Sequence[str]) -> str:
+def setup_check_needs_attention(items: Sequence[str]) -> str:
     rendered = "\n".join(f"- {item}" for item in items)
-    return f"Riverhog setup needs attention:\n{rendered}"
+    return f"Setup needs attention:\n{rendered}"
 
 
-def billing_unavailable(*, reason: str | None = None) -> str:
+def recovery_costs_healthy() -> str:
+    return (
+        "Recovery cost information is available. "
+        "Review it before approving recovery work."
+    )
+
+
+def recovery_costs_need_attention(*, reason: str | None = None) -> str:
     detail = f" Reason: {truncate(reason, max_chars=120)}." if reason else ""
     return (
-        f"Recovery cost estimates are not available right now.{detail}\n"
+        f"Recovery cost information needs attention.{detail}\n"
         "Fix this before approving recovery work."
     )
 
 
-def notification_health_failed(*, channel: str, latest_error: str | None = None) -> str:
+def notification_delivery_healthy(*, channel: str) -> str:
     return (
-        f"{channel} notifications may not be working."
+        f"{channel} notification delivery is working. "
+        "No notification action is needed now."
+    )
+
+
+def notification_delivery_needs_attention(
+    *, channel: str, latest_error: str | None = None
+) -> str:
+    return (
+        f"{channel} notification delivery needs attention."
         f"{_error_detail(latest_error)}\n"
         "Fix this so Riverhog can tell you when recovery or disc work needs attention."
+    )
+
+
+def notification_delivery_test_opt_in_required() -> str:
+    return (
+        "Notification delivery tests send a real operator notification.\n"
+        "Use a controlled harness or explicit opt-in before sending one."
     )
 
 

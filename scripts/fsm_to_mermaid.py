@@ -390,17 +390,25 @@ def render_operator_copy(reference: str) -> str:
             return operator_copy.copy_marked_lost(label_text="20260420T040001Z-1")
         case "copy_marked_damaged":
             return operator_copy.copy_marked_damaged(label_text="20260420T040001Z-1")
-        case "doctor_ok":
-            return operator_copy.doctor_ok()
-        case "doctor_needs_attention":
-            return operator_copy.doctor_needs_attention(["Storage bucket missing"])
-        case "billing_unavailable":
-            return operator_copy.billing_unavailable(reason="pricing unavailable")
-        case "notification_health_failed":
-            return operator_copy.notification_health_failed(
+        case "setup_check_healthy":
+            return operator_copy.setup_check_healthy()
+        case "setup_check_needs_attention":
+            return operator_copy.setup_check_needs_attention(["Storage bucket missing"])
+        case "recovery_costs_healthy":
+            return operator_copy.recovery_costs_healthy()
+        case "recovery_costs_need_attention":
+            return operator_copy.recovery_costs_need_attention(
+                reason="pricing unavailable"
+            )
+        case "notification_delivery_healthy":
+            return operator_copy.notification_delivery_healthy(channel="Push")
+        case "notification_delivery_needs_attention":
+            return operator_copy.notification_delivery_needs_attention(
                 channel="Push",
                 latest_error="delivery timeout",
             )
+        case "notification_delivery_test_opt_in_required":
+            return operator_copy.notification_delivery_test_opt_in_required()
         case "arc_disc_no_attention":
             return operator_copy.arc_disc_no_attention()
         case "device_missing":
