@@ -268,6 +268,21 @@ def _operator_notification_payload(payload: dict[str, object]) -> dict[str, obje
         )
         return {**payload, **rendered}
 
+    if event == "operator.recovery_approval_required":
+        affected = payload.get("affected")
+        if not isinstance(affected, list):
+            affected = ["docs"]
+        notification = operator_copy.push_recovery_approval_required(
+            affected=[str(item) for item in affected],
+            estimated_cost=payload.get("estimated_cost", "12.34"),
+        )
+        rendered = notification.payload(
+            reminder=reminder,
+            reminder_count=reminder_count,
+            delivered_at=delivered_at,
+        )
+        return {**payload, **rendered, "affected": affected}
+
     return payload
 
 
@@ -4279,6 +4294,13 @@ class AcceptanceSystem:
             time.sleep(0.05)
         raise AssertionError(
             f"timed out waiting for captured webhook attempt {event} {result} #{attempt}"
+        )
+
+    def deliver_operator_webhook_payload(self, payload: dict[str, object]) -> None:
+        self.state.deliver_webhook_payload(
+            payload,
+            delivered_at=datetime.now(UTC),
+            timeout_seconds=self.state.webhook_config().timeout_seconds,
         )
 
     def fail_collection_glacier_upload(self, collection_id: str, *, error: str) -> None:

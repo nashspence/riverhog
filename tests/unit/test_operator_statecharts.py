@@ -17,6 +17,7 @@ ROOT = Path(__file__).resolve().parents[2]
 FEATURES_DIR = ROOT / "tests" / "acceptance" / "features"
 STATECHARTS_CONTRACT = ROOT / "contracts" / "operator" / "statecharts.yaml"
 STATECHARTS_SCHEMA = ROOT / "contracts" / "operator" / "statecharts.schema.json"
+STATUS_NOTIFICATION_SCHEMA = ROOT / "contracts" / "operator" / "status-notification.schema.json"
 MERMAID_GENERATOR = ROOT / "scripts" / "fsm_to_mermaid.py"
 MERMAID_PUPPETEER_CONFIG = ROOT / "scripts" / "mermaid-puppeteer-config.json"
 MERMAID_CLI_PACKAGE = "@mermaid-js/mermaid-cli@8.14.0"
@@ -42,6 +43,12 @@ def _statecharts() -> dict[str, dict[str, Any]]:
 
 def _schema() -> dict[str, Any]:
     schema = yaml.safe_load(STATECHARTS_SCHEMA.read_text(encoding="utf-8"))
+    assert isinstance(schema, dict)
+    return schema
+
+
+def _status_notification_schema() -> dict[str, Any]:
+    schema = yaml.safe_load(STATUS_NOTIFICATION_SCHEMA.read_text(encoding="utf-8"))
     assert isinstance(schema, dict)
     return schema
 
@@ -166,6 +173,24 @@ def test_statechart_contract_matches_json_schema() -> None:
     validator = Draft202012Validator(_schema())
     errors = sorted(validator.iter_errors(_contract()), key=lambda error: error.json_path)
     assert not errors
+
+
+def test_status_notification_schema_is_valid() -> None:
+    Draft202012Validator.check_schema(_status_notification_schema())
+
+
+def test_statechart_status_events_cover_status_notification_lifecycle() -> None:
+    statuses: set[str] = set()
+    for statechart in _statecharts().values():
+        states = statechart["states"]
+        assert isinstance(states, dict)
+        for state in states.values():
+            assert isinstance(state, dict)
+            for event in state.get("status_events", []):
+                assert isinstance(event, dict)
+                statuses.add(str(event["status"]))
+
+    assert statuses == {"started", "still_running", "blocked", "completed", "failed"}
 
 
 def test_statechart_handoffs_resolve_between_contract_states() -> None:

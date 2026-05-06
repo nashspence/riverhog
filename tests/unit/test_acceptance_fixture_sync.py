@@ -124,6 +124,9 @@ DELEGATED_HELPER_STATE_ACCESS = {
     "emit_operator_cloud_backup_failure_notification": (
         "delegates to locked AcceptanceState webhook delivery"
     ),
+    "deliver_operator_webhook_payload": (
+        "delegates to locked AcceptanceState webhook delivery"
+    ),
 }
 
 LIFECYCLE_HELPER_STATE_ACCESS = {

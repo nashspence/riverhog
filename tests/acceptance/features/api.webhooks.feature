@@ -105,6 +105,42 @@ Feature: Outbound operator webhooks
     And the captured webhook payload field "title" is present
     And the captured webhook payload field "body" is present
 
+  @issue_223 @ci_opt_in @requires_webhook_capture
+  Scenario: Upload status notifications report started and still-running lifecycle
+    Given statechart "arc.upload" state "started" is the accepted operator contract
+    And statechart "arc.upload" state "progress" is the accepted operator contract
+    And collection upload "photos-2024" is a long-running operator interaction
+    When Riverhog emits status notifications for upload "photos-2024"
+    Then the captured status payload matches "contracts/operator/status-notification.schema.json"
+    And the captured status payload field "kind" equals "status"
+    And the captured status payload field "operation_id" is stable for the upload
+    And the captured status payload sequence includes status "started" from "arc.upload" state "started"
+    And the captured status payload sequence includes status "still_running" from "arc.upload" state "progress"
+    And no captured status payload is treated as an action-needed notification
+
+  @issue_223 @ci_opt_in @requires_webhook_capture
+  Scenario: Blocked status notifications preserve action-needed semantics
+    Given statechart "arc_disc.recovery" state "approval_required" is the accepted operator contract
+    And statechart "operator.notifications" state "recovery_approval_required" is the accepted operator contract
+    And recovery session "rs-20260420T040001Z-rebuild-1" is waiting for operator approval
+    When Riverhog emits due operator notifications
+    Then the captured status payload matches "contracts/operator/status-notification.schema.json"
+    And the captured status payload field "status" equals "blocked"
+    And the captured status payload field "action_needed_event" equals "operator.recovery_approval_required"
+    And the captured webhook payload matches "contracts/operator/action-needed-notification.schema.json"
+    And the captured webhook payload matches operator notification copy "push_recovery_approval_required"
+
+  @issue_223 @ci_opt_in @requires_webhook_capture
+  Scenario: Terminal status notifications report completion and failure without routine action-needed events
+    Given statechart "arc_disc.burn" state "registered" is the accepted operator contract
+    And statechart "arc.upload" state "cloud_backup_failed" is the accepted operator contract
+    When Riverhog emits terminal status notifications for long-running operator work
+    Then the captured status payload matches "contracts/operator/status-notification.schema.json"
+    And the captured status payload sequence includes status "completed" from "arc_disc.burn" state "registered"
+    And the captured status payload sequence includes status "failed" from "arc.upload" state "cloud_backup_failed"
+    And completed status notifications do not emit routine-success action-needed notifications
+    And failed status notifications include the related action-needed event when operator action is available
+
   @contract_gap @issue_210 @ci_opt_in @requires_webhook_capture @issue_186
   Scenario: Labeling does not create a standalone notification
     Given statechart "operator.notifications" state "no_labeling_notification" is the accepted operator contract

@@ -7,7 +7,7 @@ import os
 import re
 import shlex
 from dataclasses import dataclass, field
-from datetime import datetime
+from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 from urllib.parse import parse_qsl, quote, urlsplit
@@ -24,6 +24,7 @@ from arc_core.operator_statecharts import (
     OperatorView,
     load_default_statechart_catalog,
 )
+from arc_core.webhooks import build_status_notification_payload
 from contracts.operator import copy as operator_copy
 from tests.fixtures.acceptance import AcceptanceSystem
 from tests.fixtures.data import (
@@ -87,6 +88,8 @@ class AcceptanceScenarioContext:
     read_only_browsing_paths: set[str] = field(default_factory=set)
     captured_webhook_payload: dict[str, Any] | None = None
     captured_webhook_attempt: dict[str, Any] | None = None
+    captured_status_payload: dict[str, Any] | None = None
+    captured_status_payloads: list[dict[str, Any]] = field(default_factory=list)
 
 
 @pytest.fixture
@@ -316,6 +319,60 @@ def _require_captured_webhook_attempt(context: AcceptanceScenarioContext) -> dic
     return context.captured_webhook_attempt
 
 
+def _require_captured_status_payload(context: AcceptanceScenarioContext) -> dict[str, Any]:
+    if context.captured_status_payload is None:  # pragma: no cover - defensive guard
+        raise AssertionError("no captured status payload has been recorded for this scenario")
+    return context.captured_status_payload
+
+
+def _require_captured_status_payloads(
+    context: AcceptanceScenarioContext,
+) -> list[dict[str, Any]]:
+    if not context.captured_status_payloads:  # pragma: no cover - defensive guard
+        raise AssertionError("no captured status payload sequence has been recorded")
+    return context.captured_status_payloads
+
+
+def _status_event_payload(
+    statechart: str,
+    state: str,
+    *,
+    operation_id: str,
+    workflow: str,
+    blocked_reason: str | None = None,
+    error: str | None = None,
+    progress: dict[str, object] | None = None,
+) -> dict[str, object]:
+    return build_status_notification_payload(
+        statechart=statechart,
+        state=state,
+        operation_id=operation_id,
+        workflow=workflow,
+        occurred_at=datetime(2026, 4, 20, 4, 0, 1, tzinfo=UTC),
+        blocked_reason=blocked_reason,
+        error=error,
+        progress=progress,
+    )
+
+
+def _record_new_status_payloads(
+    acceptance_system: AcceptanceSystem,
+    acceptance_context: AcceptanceScenarioContext,
+    *,
+    before_count: int,
+) -> None:
+    new_deliveries = acceptance_system.list_webhook_deliveries()[before_count:]
+    payloads = [
+        dict(payload)
+        for payload in new_deliveries
+        if isinstance(payload, dict) and payload.get("kind") == "status"
+    ]
+    if not payloads:
+        raise AssertionError("no status payload was captured")
+    acceptance_context.captured_status_payloads = payloads
+    acceptance_context.captured_status_payload = payloads[0]
+
+
 def _guided_item_text(
     item: operator_copy.GuidedItem,
     *,
@@ -525,6 +582,14 @@ def _operator_notification(
             return operator_copy.push_cloud_backup_failed(
                 collection_id=str(payload.get("collection_id", "docs")),
                 attempts=int(payload.get("attempts", 2)),
+            )
+        case "push_recovery_approval_required":
+            affected = payload.get("affected")
+            if not isinstance(affected, list):
+                affected = ["docs"]
+            return operator_copy.push_recovery_approval_required(
+                affected=[str(item) for item in affected],
+                estimated_cost=payload.get("estimated_cost", "12.34"),
             )
     raise AssertionError(f"unsupported operator notification copy reference: {name}")
 
@@ -2508,6 +2573,30 @@ def when_the_client_waits_for_recovery_session_state(
     _set_response(acceptance_context, response)
 
 
+@given(
+    parsers.parse(
+        'collection upload "{collection_id}" is a long-running operator interaction'
+    )
+)
+def given_collection_upload_is_long_running_operator_interaction(
+    acceptance_context: AcceptanceScenarioContext,
+    collection_id: str,
+) -> None:
+    acceptance_context.tracked_collection_id = normalize_collection_id(collection_id)
+
+
+@given(
+    parsers.parse(
+        'recovery session "{session_id}" is waiting for operator approval'
+    )
+)
+def given_recovery_session_is_waiting_for_operator_approval(
+    acceptance_context: AcceptanceScenarioContext,
+    session_id: str,
+) -> None:
+    acceptance_context.last_fetch_id = session_id
+
+
 @given(parsers.parse('the client waits for captured webhook event "{event}"'))
 @when(parsers.parse('the client waits for captured webhook event "{event}"'))
 @then(parsers.parse('the client waits for captured webhook event "{event}"'))
@@ -2651,9 +2740,121 @@ def when_riverhog_emits_action_needed_notification_for_ready_disc_work(
     )
 
 
+@when(parsers.parse('Riverhog emits status notifications for upload "{collection_id}"'))
+def when_riverhog_emits_status_notifications_for_upload(
+    acceptance_system: AcceptanceSystem,
+    acceptance_context: AcceptanceScenarioContext,
+    collection_id: str,
+) -> None:
+    normalized_collection_id = normalize_collection_id(collection_id)
+    operation_id = f"upload:{normalized_collection_id}"
+    before_count = len(acceptance_system.list_webhook_deliveries())
+    acceptance_system.deliver_operator_webhook_payload(
+        _status_event_payload(
+            "arc.upload",
+            "started",
+            operation_id=operation_id,
+            workflow="collection upload",
+        )
+    )
+    acceptance_system.deliver_operator_webhook_payload(
+        _status_event_payload(
+            "arc.upload",
+            "progress",
+            operation_id=operation_id,
+            workflow="collection upload",
+            progress={
+                "current": PHOTOS_2024_FILE_COUNT,
+                "total": PHOTOS_2024_FILE_COUNT,
+                "unit": "files",
+                "summary": f"{PHOTOS_2024_FILE_COUNT} files accepted",
+            },
+        )
+    )
+    _record_new_status_payloads(
+        acceptance_system,
+        acceptance_context,
+        before_count=before_count,
+    )
+
+
 @when("Riverhog delivers due action-needed notifications")
-def when_riverhog_delivers_due_action_needed_notifications() -> None:
-    return None
+@when("Riverhog emits due operator notifications")
+def when_riverhog_delivers_due_action_needed_notifications(
+    acceptance_system: AcceptanceSystem,
+    acceptance_context: AcceptanceScenarioContext,
+) -> None:
+    if (
+        "arc_disc.recovery",
+        "approval_required",
+    ) not in acceptance_context.accepted_operator_statechart_states:
+        return
+    session_id = acceptance_context.last_fetch_id or "rs-20260420T040001Z-rebuild-1"
+    before_count = len(acceptance_system.list_webhook_deliveries())
+    acceptance_system.deliver_operator_webhook_payload(
+        _status_event_payload(
+            "arc_disc.recovery",
+            "approval_required",
+            operation_id=f"recovery:{session_id}",
+            workflow="disc recovery",
+            blocked_reason="operator approval required",
+        )
+    )
+    acceptance_system.deliver_operator_webhook_payload(
+        {
+            "event": "operator.recovery_approval_required",
+            "session_id": session_id,
+            "type": "image_rebuild",
+            "affected": ["docs"],
+            "estimated_cost": "12.34",
+            "delivered_at": "2026-04-20T04:00:01Z",
+            "reminder_count": 0,
+        }
+    )
+    new_deliveries = acceptance_system.list_webhook_deliveries()[before_count:]
+    _record_new_status_payloads(
+        acceptance_system,
+        acceptance_context,
+        before_count=before_count,
+    )
+    action_payloads = [
+        dict(payload)
+        for payload in new_deliveries
+        if isinstance(payload, dict) and payload.get("kind") != "status"
+    ]
+    if not action_payloads:
+        raise AssertionError("no action-needed payload was captured")
+    acceptance_context.captured_webhook_payload = action_payloads[0]
+
+
+@when("Riverhog emits terminal status notifications for long-running operator work")
+def when_riverhog_emits_terminal_status_notifications(
+    acceptance_system: AcceptanceSystem,
+    acceptance_context: AcceptanceScenarioContext,
+) -> None:
+    before_count = len(acceptance_system.list_webhook_deliveries())
+    acceptance_system.deliver_operator_webhook_payload(
+        _status_event_payload(
+            "arc_disc.burn",
+            "registered",
+            operation_id="burn:20260420T040001Z-1",
+            workflow="disc burn",
+        )
+    )
+    acceptance_system.deliver_operator_webhook_payload(
+        _status_event_payload(
+            "arc.upload",
+            "cloud_backup_failed",
+            operation_id="upload:photos-2024",
+            workflow="collection upload",
+            error="cloud backup failed after retries",
+        )
+    )
+    _record_new_status_payloads(
+        acceptance_system,
+        acceptance_context,
+        before_count=before_count,
+    )
 
 
 @when(parsers.parse('the operator runs arc-disc fetch "{fetch_id}"'))
@@ -4189,6 +4390,21 @@ def then_captured_webhook_payload_matches_contract(
     ).validate(payload)
 
 
+@then(parsers.parse('the captured status payload matches "{contract_path}"'))
+def then_captured_status_payload_matches_contract(
+    acceptance_context: AcceptanceScenarioContext,
+    contract_path: str,
+) -> None:
+    schema_path = _ROOT / contract_path
+    schema = json.loads(schema_path.read_text(encoding="utf-8"))
+    validator = jsonschema.Draft202012Validator(
+        schema,
+        format_checker=jsonschema.FormatChecker(),
+    )
+    for payload in _require_captured_status_payloads(acceptance_context):
+        validator.validate(payload)
+
+
 @then(parsers.parse('the captured webhook payload matches operator notification copy "{name}"'))
 def then_captured_webhook_payload_matches_operator_notification_copy(
     acceptance_context: AcceptanceScenarioContext,
@@ -4224,6 +4440,98 @@ def then_captured_webhook_payload_matches_operator_notification_copy(
                 text=text,
             )
         )
+
+
+@then(parsers.parse('the captured status payload field "{field}" equals "{value}"'))
+def then_captured_status_payload_field_equals(
+    acceptance_context: AcceptanceScenarioContext,
+    field: str,
+    value: str,
+) -> None:
+    payloads = _require_captured_status_payloads(acceptance_context)
+    assert all(str(payload[field]) == value for payload in payloads)
+
+
+@then('the captured status payload field "operation_id" is stable for the upload')
+def then_captured_status_payload_operation_id_is_stable_for_upload(
+    acceptance_context: AcceptanceScenarioContext,
+) -> None:
+    payloads = _require_captured_status_payloads(acceptance_context)
+    operation_ids = {str(payload["operation_id"]) for payload in payloads}
+    assert len(operation_ids) == 1
+    expected_collection_id = acceptance_context.tracked_collection_id or "photos-2024"
+    assert operation_ids == {f"upload:{expected_collection_id}"}
+
+
+@then(
+    parsers.parse(
+        'the captured status payload sequence includes status "{status}" '
+        'from "{statechart}" state "{state}"'
+    )
+)
+def then_captured_status_payload_sequence_includes_status(
+    acceptance_context: AcceptanceScenarioContext,
+    status: str,
+    statechart: str,
+    state: str,
+) -> None:
+    payloads = _require_captured_status_payloads(acceptance_context)
+    assert any(
+        str(payload.get("status")) == status
+        and str(payload.get("statechart")) == statechart
+        and str(payload.get("state")) == state
+        for payload in payloads
+    ), payloads
+
+
+@then("no captured status payload is treated as an action-needed notification")
+def then_no_captured_status_payload_is_treated_as_action_needed(
+    acceptance_context: AcceptanceScenarioContext,
+) -> None:
+    payloads = _require_captured_status_payloads(acceptance_context)
+    action_schema_path = _ROOT / "contracts/operator/action-needed-notification.schema.json"
+    action_schema = json.loads(action_schema_path.read_text(encoding="utf-8"))
+    validator = jsonschema.Draft202012Validator(
+        action_schema,
+        format_checker=jsonschema.FormatChecker(),
+    )
+    for payload in payloads:
+        assert payload.get("kind") == "status"
+        assert not validator.is_valid(payload)
+
+
+@then("completed status notifications do not emit routine-success action-needed notifications")
+def then_completed_status_notifications_do_not_emit_routine_success_action_needed(
+    acceptance_system: AcceptanceSystem,
+    acceptance_context: AcceptanceScenarioContext,
+) -> None:
+    completed_events = {
+        str(payload["event"])
+        for payload in _require_captured_status_payloads(acceptance_context)
+        if payload.get("status") == "completed"
+    }
+    action_events = {
+        str(payload.get("event"))
+        for payload in acceptance_system.list_webhook_deliveries()
+        if payload.get("kind") != "status"
+    }
+    assert completed_events.isdisjoint(action_events)
+
+
+@then(
+    "failed status notifications include the related action-needed event "
+    "when operator action is available"
+)
+def then_failed_status_notifications_include_related_action_needed_event(
+    acceptance_context: AcceptanceScenarioContext,
+) -> None:
+    failed_payloads = [
+        payload
+        for payload in _require_captured_status_payloads(acceptance_context)
+        if payload.get("status") == "failed"
+    ]
+    assert failed_payloads
+    assert all(payload.get("action_needed_event") for payload in failed_payloads)
 
 
 @then(parsers.parse('the captured webhook payload field "{field}" is present'))

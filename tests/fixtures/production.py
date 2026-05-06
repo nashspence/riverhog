@@ -61,6 +61,7 @@ from arc_core.stores.s3_support import (
     create_glacier_s3_client,
     create_s3_client,
 )
+from arc_core.webhooks import WebhookConfig, post_webhook
 from contracts.operator import copy as operator_copy
 from tests.fixtures.acceptance import REPO_ROOT, SRC_ROOT
 from tests.fixtures.crypto import FixtureRecoveryPayloadCodec
@@ -1566,6 +1567,15 @@ class ProductionSystem:
             time.sleep(0.05)
         raise AssertionError(
             f"timed out waiting for captured webhook attempt {event} {result} #{attempt}"
+        )
+
+    def deliver_operator_webhook_payload(self, payload: dict[str, object]) -> None:
+        post_webhook(
+            config=WebhookConfig(
+                url=f"{self.base_url.rstrip('/')}/_test/webhooks",
+                base_url=self.base_url,
+            ),
+            payload=payload,
         )
 
     def seed_nested_photos_hot(self) -> None:

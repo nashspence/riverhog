@@ -1,6 +1,10 @@
 from __future__ import annotations
 
+import json
 from datetime import UTC, datetime
+from pathlib import Path
+
+import jsonschema
 
 from arc_core.webhooks import (
     ImagesReadyBatch,
@@ -8,7 +12,10 @@ from arc_core.webhooks import (
     WebhookConfig,
     build_images_ready_payload,
     build_recovery_ready_payload,
+    build_status_notification_payload,
 )
+
+ROOT = Path(__file__).resolve().parents[2]
 
 
 def test_build_images_ready_payload_supports_multiple_images() -> None:
@@ -69,3 +76,67 @@ def test_build_recovery_ready_payload_includes_session_and_image_urls() -> None:
         }
     ]
     assert "Run arc-disc" in str(payload["body"])
+
+
+def test_build_status_notification_payload_uses_statechart_status_event() -> None:
+    payload = build_status_notification_payload(
+        statechart="arc.upload",
+        state="progress",
+        operation_id="upload:photos-2024",
+        workflow="collection upload",
+        occurred_at=datetime(2026, 4, 20, 4, 0, 1, tzinfo=UTC),
+        progress={
+            "current": 3,
+            "total": 3,
+            "unit": "files",
+            "summary": "3 files accepted",
+        },
+    )
+
+    assert payload["kind"] == "status"
+    assert payload["event"] == "operator.arc_upload.still_running"
+    assert payload["status"] == "still_running"
+    assert payload["operation_id"] == "upload:photos-2024"
+    assert payload["statechart"] == "arc.upload"
+    assert payload["state"] == "progress"
+    assert payload["command"] == "arc"
+    assert payload["urgency"] == "info"
+    assert payload["occurred_at"] == "2026-04-20T04:00:01Z"
+
+
+def test_build_status_notification_payload_preserves_action_needed_reference() -> None:
+    payload = build_status_notification_payload(
+        statechart="arc_disc.recovery",
+        state="approval_required",
+        operation_id="recovery:rs-20260420T040001Z-rebuild-1",
+        workflow="disc recovery",
+        occurred_at=datetime(2026, 4, 20, 4, 0, 1, tzinfo=UTC),
+        blocked_reason="operator approval required",
+    )
+
+    assert payload["event"] == "operator.arc_disc_recovery.blocked"
+    assert payload["status"] == "blocked"
+    assert payload["urgency"] == "attention"
+    assert payload["blocked_reason"] == "operator approval required"
+    assert payload["action_needed_event"] == "operator.recovery_approval_required"
+
+
+def test_build_status_notification_payload_matches_schema() -> None:
+    schema = json.loads(
+        (ROOT / "contracts/operator/status-notification.schema.json").read_text(
+            encoding="utf-8"
+        )
+    )
+    payload = build_status_notification_payload(
+        statechart="arc.upload",
+        state="cloud_backup_failed",
+        operation_id="upload:photos-2024",
+        workflow="collection upload",
+        occurred_at=datetime(2026, 4, 20, 4, 0, 1, tzinfo=UTC),
+        error="cloud backup failed after retries",
+    )
+
+    jsonschema.Draft202012Validator(
+        schema,
+        format_checker=jsonschema.FormatChecker(),
+    ).validate(payload)

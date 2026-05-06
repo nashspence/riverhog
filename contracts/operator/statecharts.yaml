@@ -72,11 +72,17 @@ statecharts:
             target: started
       started:
         view: upload_started
+        status_events:
+          - event: operator.arc_upload.started
+            status: started
         transitions:
           - event: upload_begins
             target: progress
       progress:
         view: upload_progress
+        status_events:
+          - event: operator.arc_upload.still_running
+            status: still_running
         transitions:
           - guard: upload_canceled
             target: canceled
@@ -84,6 +90,9 @@ statecharts:
             target: archiving
       archiving:
         view: upload_archiving
+        status_events:
+          - event: operator.arc_upload.still_running
+            status: still_running
         transitions:
           - guard: cloud_backup_verified
             target: finalized
@@ -91,9 +100,16 @@ statecharts:
             target: cloud_backup_failed
       finalized:
         view: upload_finalized
+        status_events:
+          - event: operator.arc_upload.completed
+            status: completed
         final: true
       cloud_backup_failed:
         view: upload_failed_cloud_backup
+        status_events:
+          - event: operator.arc_upload.failed
+            status: failed
+            action_needed_event: collections.glacier_upload.failed
         final: true
       canceled:
         view: upload_canceled
@@ -427,6 +443,9 @@ statecharts:
             target: insert_blank_disc
       verifying_prepared_disc:
         view: burn_verifying_prepared_disc
+        status_events:
+          - event: operator.arc_disc_burn.started
+            status: started
         transitions:
           - guard: prepared_disc_valid
             target: writing_disc
@@ -434,11 +453,17 @@ statecharts:
             target: prepared_content_failed
       prepared_content_failed:
         view: burn_prepared_content_failed
+        status_events:
+          - event: operator.arc_disc_burn.failed
+            status: failed
         transitions:
           - event: operator_retries_after_restaging
             target: verifying_prepared_disc
       writing_disc:
         view: burn_writing_disc
+        status_events:
+          - event: operator.arc_disc_burn.still_running
+            status: still_running
         transitions:
           - guard: write_complete
             target: verifying_disc
@@ -448,14 +473,23 @@ statecharts:
             target: device_lost_during_work
       write_failed:
         view: burn_write_failed
+        status_events:
+          - event: operator.arc_disc_burn.failed
+            status: failed
         transitions:
           - event: operator_replaces_media
             target: insert_blank_disc
       device_lost_during_work:
         view: device_lost_during_work
+        status_events:
+          - event: operator.arc_disc_burn.failed
+            status: failed
         final: true
       verifying_disc:
         view: burn_verifying_disc
+        status_events:
+          - event: operator.arc_disc_burn.still_running
+            status: still_running
         transitions:
           - guard: disc_verified
             target: label_checkpoint
@@ -463,11 +497,17 @@ statecharts:
             target: burned_media_verification_failed
       burned_media_verification_failed:
         view: burn_burned_media_verification_failed
+        status_events:
+          - event: operator.arc_disc_burn.failed
+            status: failed
         transitions:
           - event: operator_replaces_media
             target: insert_blank_disc
       label_checkpoint:
         view: burn_label_checkpoint
+        status_events:
+          - event: operator.arc_disc_burn.blocked
+            status: blocked
         transitions:
           - event: operator_confirms_label
             target: location_prompt
@@ -478,6 +518,9 @@ statecharts:
             target: registered
       registered:
         view: burn_registered
+        status_events:
+          - event: operator.arc_disc_burn.completed
+            status: completed
         transitions:
           - guard: backlog_empty
             target: backlog_cleared
@@ -534,16 +577,26 @@ statecharts:
         final: true
       approval_required:
         view: recovery_approval_required
+        status_events:
+          - event: operator.arc_disc_recovery.blocked
+            status: blocked
+            action_needed_event: operator.recovery_approval_required
         transitions:
           - event: operator_approves_recovery
             target: requested
       requested:
         view: recovery_requested
+        status_events:
+          - event: operator.arc_disc_recovery.started
+            status: started
         transitions:
           - guard: request_accepted
             target: waiting
       waiting:
         view: recovery_waiting
+        status_events:
+          - event: operator.arc_disc_recovery.still_running
+            status: still_running
         transitions:
           - guard: recovered_data_ready
             target: ready
@@ -551,6 +604,10 @@ statecharts:
             target: expired_needs_reapproval
       ready:
         view: recovery_ready
+        status_events:
+          - event: operator.arc_disc_recovery.blocked
+            status: blocked
+            action_needed_event: images.rebuild_ready
         transitions:
           - event: operator_makes_replacement_disc
             target: completed
@@ -560,6 +617,9 @@ statecharts:
             target: expired_needs_reapproval
       completed:
         view: recovery_completed
+        status_events:
+          - event: operator.arc_disc_recovery.completed
+            status: completed
         final: true
       expired_local_resume:
         view: recovery_expired_local_resume
@@ -568,6 +628,10 @@ statecharts:
             target: ready
       expired_needs_reapproval:
         view: recovery_expired_needs_reapproval
+        status_events:
+          - event: operator.arc_disc_recovery.blocked
+            status: blocked
+            action_needed_event: operator.recovery_approval_required
         transitions:
           - event: operator_reviews_reapproval
             target: approval_required
@@ -599,11 +663,18 @@ statecharts:
         final: true
       insert_disc:
         view: hot_recovery_insert_disc
+        status_events:
+          - event: operator.arc_disc_hot_recovery.blocked
+            status: blocked
+            action_needed_event: operator.hot_recovery_needs_media
         transitions:
           - event: disc_accepted
             target: progress
       progress:
         view: hot_recovery_progress
+        status_events:
+          - event: operator.arc_disc_hot_recovery.still_running
+            status: still_running
         transitions:
           - guard: restore_complete
             target: done
@@ -617,17 +688,31 @@ statecharts:
             target: recovery_workflow_needed
       device_lost_during_work:
         view: device_lost_during_work
+        status_events:
+          - event: operator.arc_disc_hot_recovery.failed
+            status: failed
         final: true
       retry_other_disc:
         view: hot_recovery_retry_other_disc
+        status_events:
+          - event: operator.arc_disc_hot_recovery.blocked
+            status: blocked
+            action_needed_event: operator.hot_recovery_needs_media
         transitions:
           - event: operator_inserts_named_disc
             target: insert_disc
       recovery_workflow_needed:
         view: hot_recovery_registered_copies_exhausted
+        status_events:
+          - event: operator.arc_disc_hot_recovery.blocked
+            status: blocked
+            action_needed_event: images.rebuild_ready
         final: true
       done:
         view: hot_recovery_done
+        status_events:
+          - event: operator.arc_disc_hot_recovery.completed
+            status: completed
         final: true
   arc_disc.fetch:
     command: arc-disc
@@ -657,11 +742,18 @@ statecharts:
         final: true
       insert_disc:
         view: hot_recovery_insert_disc
+        status_events:
+          - event: operator.arc_disc_fetch.blocked
+            status: blocked
+            action_needed_event: operator.hot_recovery_needs_media
         transitions:
           - event: disc_accepted
             target: progress
       progress:
         view: hot_recovery_progress
+        status_events:
+          - event: operator.arc_disc_fetch.still_running
+            status: still_running
         transitions:
           - guard: server_accepts_recovered_bytes
             target: done
@@ -675,17 +767,31 @@ statecharts:
             target: recovery_workflow_needed
       device_lost_during_work:
         view: device_lost_during_work
+        status_events:
+          - event: operator.arc_disc_fetch.failed
+            status: failed
         final: true
       retry_other_disc:
         view: hot_recovery_retry_other_disc
+        status_events:
+          - event: operator.arc_disc_fetch.blocked
+            status: blocked
+            action_needed_event: operator.hot_recovery_needs_media
         transitions:
           - event: operator_inserts_named_disc
             target: insert_disc
       recovery_workflow_needed:
         view: hot_recovery_registered_copies_exhausted
+        status_events:
+          - event: operator.arc_disc_fetch.blocked
+            status: blocked
+            action_needed_event: images.rebuild_ready
         final: true
       done:
         view: hot_recovery_done
+        status_events:
+          - event: operator.arc_disc_fetch.completed
+            status: completed
         final: true
   operator.notifications:
     initial: classify_event

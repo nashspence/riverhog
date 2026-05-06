@@ -1,12 +1,14 @@
 from __future__ import annotations
 
 import asyncio
+from collections.abc import Mapping
 from dataclasses import dataclass
 from datetime import UTC, datetime, timedelta
-from typing import Protocol
+from typing import Any, Protocol, cast
 
 import httpx
 
+from arc_core.operator_statecharts import StatechartCatalogError
 from arc_core.operator_workflows import load_default_operator_workflows
 from contracts.operator import copy as operator_copy
 
@@ -70,6 +72,72 @@ def image_iso_download_url(base_url: str, image_id: str) -> str:
 
 def image_summary_url(base_url: str, image_id: str) -> str:
     return f"{base_url.rstrip('/')}{image_summary_path(image_id)}"
+
+
+def build_status_notification_payload(
+    *,
+    statechart: str,
+    state: str,
+    operation_id: str,
+    workflow: str,
+    occurred_at: datetime,
+    blocked_reason: str | None = None,
+    error: str | None = None,
+    progress: Mapping[str, object] | None = None,
+) -> dict[str, object]:
+    state_payload = _OPERATOR_WORKFLOWS.catalog.require_state(statechart, state)
+    status_event = _status_event_for_state(statechart, state, state_payload)
+    status = str(status_event["status"])
+    statechart_payload = _OPERATOR_WORKFLOWS.catalog.require_statechart(statechart)
+    payload: dict[str, object] = {
+        "kind": "status",
+        "event": str(status_event["event"]),
+        "status": status,
+        "workflow": workflow,
+        "operation_id": operation_id,
+        "statechart": statechart,
+        "state": state,
+        "command": str(statechart_payload.get("command")),
+        "title": f"{workflow} {status.replace('_', ' ')}",
+        "body": f"{workflow} is {status.replace('_', ' ')}.",
+        "urgency": _status_urgency(status),
+        "occurred_at": isoformat_z(occurred_at),
+    }
+    if progress is not None:
+        payload["progress"] = dict(progress)
+    if status == "blocked":
+        payload["blocked_reason"] = blocked_reason or "operator action is required"
+    if status == "failed":
+        payload["error"] = error or "operator work failed"
+    if action_needed_event := status_event.get("action_needed_event"):
+        payload["action_needed_event"] = str(action_needed_event)
+    return payload
+
+
+def emit_status_notification(
+    *,
+    config: WebhookConfig,
+    statechart: str,
+    state: str,
+    operation_id: str,
+    workflow: str,
+    occurred_at: datetime | None = None,
+    blocked_reason: str | None = None,
+    error: str | None = None,
+    progress: Mapping[str, object] | None = None,
+) -> dict[str, object]:
+    payload = build_status_notification_payload(
+        statechart=statechart,
+        state=state,
+        operation_id=operation_id,
+        workflow=workflow,
+        occurred_at=occurred_at or utcnow(),
+        blocked_reason=blocked_reason,
+        error=error,
+        progress=progress,
+    )
+    post_webhook(config=config, payload=payload)
+    return payload
 
 
 def recovery_session_path(session_id: str) -> str:
@@ -177,6 +245,28 @@ def post_webhook(*, config: WebhookConfig, payload: dict[str, object]) -> None:
     with httpx.Client(timeout=config.timeout_seconds) as client:
         response = client.post(config.url, json=payload)
         response.raise_for_status()
+
+
+def _status_event_for_state(
+    statechart: str,
+    state: str,
+    state_payload: Mapping[str, Any],
+) -> Mapping[str, Any]:
+    status_events = state_payload.get("status_events")
+    if not isinstance(status_events, list) or not status_events:
+        raise StatechartCatalogError(f"{statechart}.{state} defines no status_events")
+    status_event = status_events[0]
+    if not isinstance(status_event, Mapping):
+        raise StatechartCatalogError(f"{statechart}.{state} status_events[0] is not an object")
+    return cast(Mapping[str, Any], status_event)
+
+
+def _status_urgency(status: str) -> str:
+    if status == "blocked":
+        return "attention"
+    if status == "failed":
+        return "important"
+    return "info"
 
 
 class ImagesReadyReminderService:

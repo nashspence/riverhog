@@ -1,0 +1,137 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://riverhog.dev/contracts/operator/status-notification.schema.json",
+  "title": "Riverhog Status Notification Payload",
+  "type": "object",
+  "additionalProperties": true,
+  "required": [
+    "kind",
+    "event",
+    "status",
+    "workflow",
+    "operation_id",
+    "statechart",
+    "state",
+    "title",
+    "body",
+    "urgency",
+    "occurred_at"
+  ],
+  "properties": {
+    "kind": {
+      "const": "status"
+    },
+    "event": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^[a-zA-Z0-9_.:-]+$"
+    },
+    "status": {
+      "enum": ["started", "still_running", "blocked", "completed", "failed"]
+    },
+    "workflow": {
+      "type": "string",
+      "minLength": 1
+    },
+    "operation_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "statechart": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^[a-z][a-z0-9_]*(\\.[a-z][a-z0-9_]*)*$"
+    },
+    "state": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^[a-zA-Z_][a-zA-Z0-9_]*$"
+    },
+    "command": {
+      "enum": ["arc", "arc-disc"]
+    },
+    "title": {
+      "type": "string",
+      "minLength": 1
+    },
+    "body": {
+      "type": "string",
+      "minLength": 1
+    },
+    "urgency": {
+      "enum": ["info", "attention", "important"]
+    },
+    "occurred_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "progress": {
+      "$ref": "#/$defs/progress"
+    },
+    "blocked_reason": {
+      "type": "string",
+      "minLength": 1
+    },
+    "error": {
+      "type": "string",
+      "minLength": 1
+    },
+    "action_needed_event": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^[a-zA-Z0-9_.:-]+$"
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "status": {
+            "const": "blocked"
+          }
+        },
+        "required": ["status"]
+      },
+      "then": {
+        "required": ["blocked_reason"]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "status": {
+            "const": "failed"
+          }
+        },
+        "required": ["status"]
+      },
+      "then": {
+        "required": ["error"]
+      }
+    }
+  ],
+  "$defs": {
+    "progress": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "current": {
+          "type": "number",
+          "minimum": 0
+        },
+        "total": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "unit": {
+          "type": "string",
+          "minLength": 1
+        },
+        "summary": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    }
+  }
+}

@@ -8,6 +8,8 @@ The notification payload keeps machine-readable event fields for integrations, b
 
 Riverhog does not emit routine-success notifications or standalone labeling notifications.
 
+Status notifications are separate from action-needed notifications and do not change the one-action action-needed payload contract.
+
 ## Reason
 
 Notifications should tell the operator which guided flow can make progress, while integrations still need durable event identity and metadata.
