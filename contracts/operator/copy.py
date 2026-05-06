@@ -689,6 +689,20 @@ def burn_verifying_prepared_disc() -> str:
     return "Checking prepared contents before writing the inserted disc."
 
 
+def burn_inserted_media_rejected() -> str:
+    return (
+        "The inserted disc is not blank, writable, and compatible for this burn. "
+        "Remove it and insert a blank writable disc before trying again."
+    )
+
+
+def burn_prepared_content_failed() -> str:
+    return (
+        "Riverhog could not verify the prepared disc contents before writing. "
+        "Re-stage the prepared image before trying this disc work again."
+    )
+
+
 def burn_writing_disc(*, device: str | None = None) -> str:
     text = "Writing the inserted disc. Keep the disc available."
     if device:
@@ -696,10 +710,24 @@ def burn_writing_disc(*, device: str | None = None) -> str:
     return text
 
 
+def burn_write_failed() -> str:
+    return (
+        "The disc write failed before Riverhog could verify the media. "
+        "Do not label or store this disc; insert a new blank disc and retry."
+    )
+
+
 def burn_verifying_disc() -> str:
     return (
         "Verifying the burned disc. Riverhog will not count it until verification "
         "passes and you confirm the label."
+    )
+
+
+def burn_burned_media_verification_failed() -> str:
+    return (
+        "The burned disc did not match the prepared image. Do not label or store "
+        "this disc; insert a new blank disc and retry."
     )
 
 

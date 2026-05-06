@@ -54,6 +54,8 @@ def arc_disc_app(
     except OpticalDeviceProblem as exc:
         typer.echo(exc.copy_text, err=True)
         raise typer.Exit(code=1) from exc
+    except ArcDiscOperatorProblem as exc:
+        raise typer.Exit(code=1) from exc
     except (ArcError, RuntimeError) as exc:
         typer.echo(f"error: {exc}", err=True)
         raise typer.Exit(code=1) from exc
@@ -277,8 +279,6 @@ def _looks_like_device_loss(exc: RuntimeError) -> bool:
         return False
     if message.startswith("xorriso is required") or message.startswith("staged iso is missing"):
         return False
-    if message.startswith("burning ") and " failed:" in message:
-        return True
     return any(
         fragment in message
         for fragment in (
@@ -286,8 +286,9 @@ def _looks_like_device_loss(exc: RuntimeError) -> bool:
             "no such device",
             "dev=",
             "device became unavailable",
+            "not mmc",
         )
-    ) or bool(message)
+    )
 
 
 @dataclass(slots=True)
@@ -427,22 +428,87 @@ class XorrisoIsoVerifier:
         )
 
 
+class InsertedMediaRejected(RuntimeError):
+    """Raised by burn boundaries when inserted media cannot be used for writing."""
+
+
+def _looks_like_inserted_media_rejected(exc: RuntimeError) -> bool:
+    message = str(exc).lower()
+    return any(
+        fragment in message
+        for fragment in (
+            "media is not blank",
+            "medium is not blank",
+            "disc is not blank",
+            "media is not writable",
+            "medium is not writable",
+            "media is not writeable",
+            "medium is not writeable",
+            "not a writable",
+            "not a writeable",
+            "not a blank",
+            "not blank",
+        )
+    )
+
+
 class XorrisoDiscBurner:
     def burn(self, iso_path: Path, *, device: str, copy_id: str) -> None:
         if not iso_path.is_file():
             raise RuntimeError(f"staged ISO is missing for {copy_id}: {iso_path}")
+        if Path(device).is_dir():
+            raise InsertedMediaRejected(
+                f"inserted media is not blank, writable, or compatible for {copy_id}: {device}"
+            )
         xorriso = _require_tool("xorriso")
-        _run_checked(
-            [
-                xorriso,
-                "-as",
-                "cdrecord",
-                "-v",
-                f"dev={device}",
-                str(iso_path),
-            ],
-            action=f"burning {copy_id} to {device}",
-        )
+        try:
+            _run_checked(
+                [
+                    xorriso,
+                    "-as",
+                    "cdrecord",
+                    "-v",
+                    f"dev={device}",
+                    str(iso_path),
+                ],
+                action=f"burning {copy_id} to {device}",
+            )
+        except RuntimeError as exc:
+            if _looks_like_inserted_media_rejected(exc):
+                raise InsertedMediaRejected(str(exc)) from exc
+            raise
+
+
+class ArcDiscOperatorProblem(Exception):
+    def __init__(self, state: str) -> None:
+        super().__init__(state)
+        self.state = state
+
+
+def _burn_problem_text(state: str) -> str:
+    match state:
+        case "inserted_media_rejected":
+            return operator_copy.burn_inserted_media_rejected()
+        case "write_failed":
+            return operator_copy.burn_write_failed()
+        case "burned_media_verification_failed":
+            return operator_copy.burn_burned_media_verification_failed()
+        case _:
+            raise RuntimeError(f"unsupported burn problem state: {state}")
+
+
+def _raise_burn_problem(state: str, *, cause: RuntimeError | None = None) -> None:
+    typer.echo(_burn_problem_text(state), err=True)
+    if cause is not None:
+        typer.echo(f"error: {cause}", err=True)
+        raise ArcDiscOperatorProblem(state) from cause
+    raise ArcDiscOperatorProblem(state)
+
+
+def _burn_failure_state(exc: RuntimeError) -> str:
+    if isinstance(exc, InsertedMediaRejected):
+        return "inserted_media_rejected"
+    return "write_failed"
 
 
 class RawBurnedMediaVerifier:
@@ -1354,7 +1420,7 @@ def _burn_pending_copy(
     copy_id = str(copy_payload["id"])
     progress = session_state.copy_progress(image_id, copy_id)
 
-    if progress.burned and not progress.label_confirmed:
+    if progress.burned and progress.media_verified and not progress.label_confirmed:
         typer.echo(
             f"checking whether the unlabeled disc for {copy_id} is still available",
             err=True,
@@ -1386,9 +1452,18 @@ def _burn_pending_copy(
         except OSError as exc:
             raise _device_lost_during_work() from exc
         except RuntimeError as exc:
-            if not _looks_like_device_loss(exc):
-                raise
-            raise _device_lost_during_work() from exc
+            burn_failure_state = _burn_failure_state(exc)
+            if burn_failure_state == "inserted_media_rejected":
+                try:
+                    _raise_burn_problem(burn_failure_state, cause=exc)
+                except ArcDiscOperatorProblem as problem:
+                    raise problem from exc
+            if _looks_like_device_loss(exc):
+                raise _device_lost_during_work() from exc
+            try:
+                _raise_burn_problem(burn_failure_state, cause=exc)
+            except ArcDiscOperatorProblem as problem:
+                raise problem from exc
         progress.burned = True
         session_state.save()
 
@@ -1399,9 +1474,12 @@ def _burn_pending_copy(
         except OSError as exc:
             raise _device_lost_during_work() from exc
         except RuntimeError as exc:
-            if not _looks_like_device_loss(exc):
-                raise
-            raise _device_lost_during_work() from exc
+            if _looks_like_device_loss(exc):
+                raise _device_lost_during_work() from exc
+            try:
+                _raise_burn_problem("burned_media_verification_failed", cause=exc)
+            except ArcDiscOperatorProblem as problem:
+                raise problem from exc
         progress.media_verified = True
         session_state.save()
         if _truthy_env("ARC_DISC_STOP_BEFORE_LABEL_CHECKPOINT"):
@@ -1730,6 +1808,8 @@ def burn_cmd(
     except OpticalDeviceProblem as exc:
         typer.echo(exc.copy_text, err=True)
         raise typer.Exit(code=1) from exc
+    except ArcDiscOperatorProblem as exc:
+        raise typer.Exit(code=1) from exc
     except (ArcError, RuntimeError) as exc:
         typer.echo(f"error: {exc}", err=True)
         raise typer.Exit(code=1) from exc
@@ -1787,6 +1867,8 @@ def recover_cmd(
             prompts=prompts,
             device=device,
         )
+    except ArcDiscOperatorProblem as exc:
+        raise typer.Exit(code=1) from exc
     except (ArcError, RuntimeError) as exc:
         typer.echo(f"error: {exc}", err=True)
         raise typer.Exit(code=1) from exc

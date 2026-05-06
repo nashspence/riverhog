@@ -490,6 +490,12 @@ def _operator_copy_text(name: str) -> str:
                 affected=["docs"],
                 estimated_cost="12.34",
             )
+        case "burn_inserted_media_rejected":
+            return operator_copy.burn_inserted_media_rejected()
+        case "burn_write_failed":
+            return operator_copy.burn_write_failed()
+        case "burn_burned_media_verification_failed":
+            return operator_copy.burn_burned_media_verification_failed()
         case "burn_backlog_cleared":
             return operator_copy.burn_backlog_cleared()
         case "burn_label_checkpoint":
@@ -1767,6 +1773,54 @@ def when_operator_reaches_label_checkpoint(
     acceptance_context.expected_api_endpoint = None
     acceptance_context.expected_api_payload = None
     acceptance_context.command = acceptance_system.arc_disc_burn_label_checkpoint()
+
+
+@when("the operator inserts media that is not blank, writable, or compatible")
+def when_operator_inserts_invalid_media(
+    acceptance_system: AcceptanceSystem,
+    acceptance_context: AcceptanceScenarioContext,
+) -> None:
+    acceptance_context.command_text = "arc-disc burn"
+    acceptance_context.command_argv = ["arc-disc", "burn"]
+    acceptance_context.stdout_json = None
+    acceptance_context.expected_api_endpoint = None
+    acceptance_context.expected_api_payload = None
+    acceptance_context.command = acceptance_system.arc_disc_burn_problem(
+        state="inserted_media_rejected",
+        copy_ref="burn_inserted_media_rejected",
+    )
+
+
+@when("disc writing fails after work begins")
+def when_disc_writing_fails_after_work_begins(
+    acceptance_system: AcceptanceSystem,
+    acceptance_context: AcceptanceScenarioContext,
+) -> None:
+    acceptance_context.command_text = "arc-disc burn"
+    acceptance_context.command_argv = ["arc-disc", "burn"]
+    acceptance_context.stdout_json = None
+    acceptance_context.expected_api_endpoint = None
+    acceptance_context.expected_api_payload = None
+    acceptance_context.command = acceptance_system.arc_disc_burn_problem(
+        state="write_failed",
+        copy_ref="burn_write_failed",
+    )
+
+
+@when("burned-media verification fails after writing")
+def when_burned_media_verification_fails_after_writing(
+    acceptance_system: AcceptanceSystem,
+    acceptance_context: AcceptanceScenarioContext,
+) -> None:
+    acceptance_context.command_text = "arc-disc burn"
+    acceptance_context.command_argv = ["arc-disc", "burn"]
+    acceptance_context.stdout_json = None
+    acceptance_context.expected_api_endpoint = None
+    acceptance_context.expected_api_payload = None
+    acceptance_context.command = acceptance_system.arc_disc_burn_problem(
+        state="burned_media_verification_failed",
+        copy_ref="burn_burned_media_verification_failed",
+    )
 
 
 @given(parsers.parse('the burn fixture fails while burning copy id "{copy_id}"'))
@@ -4334,7 +4388,8 @@ def then_the_collection_is_not_fully_protected(acceptance_system: AcceptanceSyst
 
 
 @then("no label is recorded for the inserted disc")
-def then_no_label_is_recorded_for_inserted_disc(
+@then("no label is recorded for the failed disc")
+def then_no_label_is_recorded_for_problem_disc(
     acceptance_system: AcceptanceSystem,
 ) -> None:
     assert not acceptance_system.operator_disc_label_is_recorded()

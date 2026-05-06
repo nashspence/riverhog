@@ -1000,15 +1000,7 @@ class ProductionSystem:
             denied_device.chmod(0)
             self.arc_disc_acceptance_device = denied_device
             return
-        lost_device = self.workspace / "lost-during-work-optical-device"
-        if lost_device.exists():
-            if lost_device.is_dir():
-                shutil.rmtree(lost_device)
-            else:
-                lost_device.unlink()
-        lost_device.mkdir()
-        lost_device.chmod(0o700)
-        self.arc_disc_acceptance_device = lost_device
+        self.arc_disc_acceptance_device = Path("/dev/full")
         self.seed_planner_fixtures()
 
     def delete_hot_backing_file(self, target: str) -> None:
@@ -1935,6 +1927,102 @@ class ProductionSystem:
         burn["verify_fail_copy_ids"] = []
         burn["blank_media_blocked_copy_ids"] = []
         self._write_arc_disc_fixture(payload)
+
+    @staticmethod
+    def _burn_problem_copy_text(*, state: str, copy_ref: str) -> str:
+        expected_ref_by_state = {
+            "inserted_media_rejected": "burn_inserted_media_rejected",
+            "write_failed": "burn_write_failed",
+            "burned_media_verification_failed": "burn_burned_media_verification_failed",
+        }
+        if expected_ref_by_state.get(state) != copy_ref:
+            raise AssertionError(f"unsupported burn problem state/copy: {state} {copy_ref}")
+        match copy_ref:
+            case "burn_inserted_media_rejected":
+                return operator_copy.burn_inserted_media_rejected()
+            case "burn_write_failed":
+                return operator_copy.burn_write_failed()
+            case "burn_burned_media_verification_failed":
+                return operator_copy.burn_burned_media_verification_failed()
+            case _:
+                raise AssertionError(f"unsupported burn problem copy: {copy_ref}")
+
+    def _first_pending_burn_copy(self) -> tuple[str, str]:
+        image_id = IMAGE_FIXTURES[0].volume_id
+        pending_states = {CopyState.NEEDED, CopyState.BURNING}
+        for copy in self.copies.list_for_image(image_id):
+            if copy.state in pending_states:
+                return image_id, str(copy.id)
+        raise AssertionError(f"no pending burn copy exists for {image_id}")
+
+    def _mark_first_copy_burned_but_unverified(self) -> None:
+        image_id, copy_id = self._first_pending_burn_copy()
+        state_path = self.workspace / "arc_disc_staging" / "burn-session.json"
+        state_path.parent.mkdir(parents=True, exist_ok=True)
+        state_path.write_text(
+            json.dumps(
+                {
+                    "images": {
+                        image_id: {
+                            "verified_sha256": None,
+                            "copies": {
+                                copy_id: {
+                                    "burned": True,
+                                    "media_verified": False,
+                                    "label_confirmed": False,
+                                    "location": None,
+                                }
+                            },
+                        }
+                    }
+                },
+                indent=2,
+                sort_keys=True,
+            ),
+            encoding="utf-8",
+        )
+
+    def _burn_problem_device(self, state: str) -> str:
+        if state == "inserted_media_rejected":
+            invalid_media = self.workspace / "inserted-media-not-blank"
+            invalid_media.mkdir(exist_ok=True)
+            return str(invalid_media)
+        if state == "write_failed":
+            return "/dev/fake-sr0"
+        if state == "burned_media_verification_failed":
+            self.planning.finalize_image(IMAGE_FIXTURES[0].id)
+            self._mark_first_copy_burned_but_unverified()
+            mismatched_media = self.workspace / "mismatched-burned-media.img"
+            mismatched_media.write_bytes(b"not the staged ISO\n")
+            return str(mismatched_media)
+        raise AssertionError(f"unsupported burn problem state: {state}")
+
+    @staticmethod
+    def _attach_burn_problem_evidence(
+        command: subprocess.CompletedProcess[str],
+        *,
+        state: str,
+        copy_ref: str,
+        text: str,
+    ) -> subprocess.CompletedProcess[str]:
+        command.operator_decisions = (OperatorDecision("arc_disc.burn", state),)
+        command.operator_views = (OperatorView("arc_disc.burn", state, copy_ref, text),)
+        return command
+
+    def arc_disc_burn_problem(
+        self,
+        *,
+        state: str,
+        copy_ref: str,
+    ) -> subprocess.CompletedProcess[str]:
+        text = self._burn_problem_copy_text(state=state, copy_ref=copy_ref)
+        command = self.run_arc_disc("burn", "--device", self._burn_problem_device(state))
+        return self._attach_burn_problem_evidence(
+            command,
+            state=state,
+            copy_ref=copy_ref,
+            text=text,
+        )
 
     def corrupt_arc_disc_staged_iso(self, image_id: str) -> None:
         image = self.request("GET", f"/v1/images/{image_id}").json()

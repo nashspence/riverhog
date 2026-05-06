@@ -164,6 +164,45 @@ def test_xorriso_disc_burner_invokes_xorriso_cdrecord(
     ]
 
 
+def test_xorriso_disc_burner_reports_inserted_media_rejection(
+    monkeypatch,
+    tmp_path: Path,
+) -> None:
+    iso_path = tmp_path / "image.iso"
+    iso_path.write_bytes(b"iso-bytes")
+
+    def fake_run(command, *, capture_output, text, check):
+        return arc_disc_main.subprocess.CompletedProcess(
+            command,
+            1,
+            "",
+            "xorriso : FAILURE : Media is not blank",
+        )
+
+    monkeypatch.setattr(arc_disc_main.shutil, "which", lambda name: f"/usr/bin/{name}")
+    monkeypatch.setattr(arc_disc_main.subprocess, "run", fake_run)
+
+    with pytest.raises(arc_disc_main.InsertedMediaRejected, match="Media is not blank"):
+        arc_disc_main.XorrisoDiscBurner().burn(
+            iso_path,
+            device="/dev/fake-sr0",
+            copy_id="20260420T040001Z-1",
+        )
+
+
+def test_burn_failure_state_uses_burner_media_rejection_boundary() -> None:
+    assert (
+        arc_disc_main._burn_failure_state(
+            arc_disc_main.InsertedMediaRejected("fixture media is not blank")
+        )
+        == "inserted_media_rejected"
+    )
+    assert (
+        arc_disc_main._burn_failure_state(RuntimeError("fixture media is not blank"))
+        == "write_failed"
+    )
+
+
 def test_raw_burned_media_verifier_compares_the_iso_prefix(tmp_path: Path) -> None:
     iso_path = tmp_path / "image.iso"
     device_path = tmp_path / "sr0"

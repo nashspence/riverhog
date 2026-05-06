@@ -97,6 +97,8 @@ markers = [
   "issue_317: tracks issue #317 for implementing next-disc label retry routing",
   "issue_305: tracks issue #305 for backing expired-recovery-reapproval-PM-scenarios",
   "issue_313: tracks issue #313 for implementing expired recovery re-approval routing",
+  "issue_245: tracks issue #245 for implementing arc-disc burn problem-state handling",
+  "issue_306: tracks issue #306 for backing burn-problem-state-PM-scenarios",
 ]
 
 [tool.mypy]

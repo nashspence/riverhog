@@ -4541,6 +4541,7 @@ class AcceptanceSystem:
             ("verifying_disc", operator_copy.burn_verifying_disc()),
         ]
         stderr = "\n".join(text for _state, text in states_and_text)
+
         return _operator_completed_process(
             ["arc-disc", "burn"],
             returncode=1,
@@ -4565,6 +4566,35 @@ class AcceptanceSystem:
                 _operator_view(
                     "arc_disc.burn",
                     "label_checkpoint",
+                    text=stderr,
+                )
+            ],
+        )
+
+    def arc_disc_burn_problem(
+        self,
+        *,
+        state: str,
+        copy_ref: str,
+    ) -> subprocess.CompletedProcess[str]:
+        match copy_ref:
+            case "burn_inserted_media_rejected":
+                stderr = operator_copy.burn_inserted_media_rejected()
+            case "burn_write_failed":
+                stderr = operator_copy.burn_write_failed()
+            case "burn_burned_media_verification_failed":
+                stderr = operator_copy.burn_burned_media_verification_failed()
+            case _:
+                raise AssertionError(f"unsupported burn problem copy: {copy_ref}")
+        return _operator_completed_process(
+            ["arc-disc", "burn"],
+            returncode=1,
+            stderr=stderr,
+            decisions=[_operator_decision("arc_disc.burn", state)],
+            views=[
+                _operator_view(
+                    "arc_disc.burn",
+                    state,
                     text=stderr,
                 )
             ],

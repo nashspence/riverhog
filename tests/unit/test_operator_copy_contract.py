@@ -240,6 +240,14 @@ def _feature_copy_text(name: str) -> str:
             return operator_copy.burn_writing_disc(device="/dev/sr0")
         case "burn_verifying_disc":
             return operator_copy.burn_verifying_disc()
+        case "burn_inserted_media_rejected":
+            return operator_copy.burn_inserted_media_rejected()
+        case "burn_prepared_content_failed":
+            return operator_copy.burn_prepared_content_failed()
+        case "burn_write_failed":
+            return operator_copy.burn_write_failed()
+        case "burn_burned_media_verification_failed":
+            return operator_copy.burn_burned_media_verification_failed()
         case "burn_backlog_cleared":
             return operator_copy.burn_backlog_cleared()
         case "burn_label_checkpoint":
