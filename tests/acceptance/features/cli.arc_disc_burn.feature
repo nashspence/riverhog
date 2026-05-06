@@ -2,6 +2,25 @@
 Feature: arc-disc burn CLI
   The optical CLI clears a burn backlog only after each generated copy id is explicitly confirmed as labeled.
 
+  @ci_opt_in @requires_optical_disc_drive @requires_human_operator @issue_186 @issue_187 @issue_274
+  Scenario: arc-disc burn does not expose a disc label before Label Checkpoint
+    Given statechart "arc_disc.burn" state "insert_blank_disc" is the accepted operator contract
+    And statechart "arc_disc.burn" state "verifying_prepared_disc" is the accepted operator contract
+    And statechart "arc_disc.burn" state "writing_disc" is the accepted operator contract
+    And statechart "arc_disc.burn" state "verifying_disc" is the accepted operator contract
+    And statechart "arc_disc.burn" state "label_checkpoint" is the accepted operator contract
+    And ordinary blank-disc work is available
+    When the operator inserts blank media but stops before Label Checkpoint
+    Then stderr includes operator copy "burn_insert_blank_disc"
+    And stderr includes operator copy "burn_verifying_prepared_disc"
+    And stderr includes operator copy "burn_writing_disc"
+    And stderr mentions "Verifying the burned disc"
+    And stderr does not mention "20260420T040001Z-1"
+    And no label is recorded for the inserted disc
+    When the operator reaches Label Checkpoint
+    Then stderr includes operator copy "burn_label_checkpoint"
+    And stderr mentions "20260420T040001Z-1"
+
   @ci_opt_in @requires_optical_disc_drive @requires_human_operator @issue_186 @issue_187
   Scenario: arc-disc burn finalizes one ready image and clears its two-copy backlog
     Given an archive with planned images
@@ -70,7 +89,8 @@ Feature: arc-disc burn CLI
     And burned-media verification fails for copy id "20260420T040001Z-1"
     When the operator runs arc-disc burn
     Then the command exits non-zero
-    And stderr mentions "verifying burned media for 20260420T040001Z-1"
+    And stderr mentions "Verifying the burned disc"
+    And stderr mentions copy id "20260420T040001Z-1"
     And image "20260420T040001Z" has physical_copies_registered 0
     When unlabeled copy id "20260420T040001Z-1" is still available
     And the optical burn boundary is healthy again
@@ -92,7 +112,8 @@ Feature: arc-disc burn CLI
     And the operator confirms labeled copy id "20260420T040001Z-2" at location "vault-b/shelf-01"
     And the operator runs arc-disc burn
     Then the command exits with code 0
-    And stderr mentions "burning copy 20260420T040001Z-1"
+    And stderr mentions "unlabeled disc for 20260420T040001Z-1 is unavailable; restarting burn"
+    And stderr mentions "Writing the inserted disc"
     And image "20260420T040001Z" has physical_copies_registered 2
 
   @ci_opt_in @requires_optical_disc_drive @requires_human_operator @issue_186 @issue_187

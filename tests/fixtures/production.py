@@ -737,6 +737,7 @@ class ProductionSystem:
     operator_notification_attention: bool = False
     operator_recovery_ready: bool = False
     arc_disc_acceptance_device: Path | None = None
+    operator_stop_before_label_checkpoint: bool = False
 
     @classmethod
     def create(cls, workspace: Path) -> ProductionSystem:
@@ -790,6 +791,7 @@ class ProductionSystem:
             self.operator_notification_attention = False
             self.operator_recovery_ready = False
             self.arc_disc_acceptance_device = None
+            self.operator_stop_before_label_checkpoint = False
             self.server.reset()
 
     def request(
@@ -1953,7 +1955,7 @@ class ProductionSystem:
         self.operator_notification_attention = True
 
     def set_operator_blank_disc_work_available(self) -> None:
-        self.seed_photos_hot()
+        self.seed_planner_fixtures()
         self.seed_candidate_for_collection("photos-2024")
 
     def operator_blank_disc_work_is_available(self) -> bool:
@@ -2063,6 +2065,36 @@ class ProductionSystem:
     def set_operator_fetch_same_image_copies_exhausted(self, fetch_id: str) -> None:
         self._seed_same_image_recovery_fetch(fetch_id)
 
+    def operator_disc_label_is_recorded(self) -> bool:
+        response = self.request("GET", f"/v1/images/{IMAGE_FIXTURES[0].volume_id}/copies")
+        if response.status_code == 404:
+            return False
+        assert response.status_code == 200, response.text
+        return any(
+            copy.get("state") in {"registered", "verified"}
+            for copy in response.json().get("copies", [])
+        )
+
+    def operator_collection_is_fully_protected(self) -> bool:
+        response = self.request("GET", f"/v1/collections/{DOCS_COLLECTION_ID}")
+        if response.status_code == 404:
+            return False
+        assert response.status_code == 200, response.text
+        return response.json()["protection_state"] == "full"
+
+    def arc_disc_burn_before_label_checkpoint(self) -> subprocess.CompletedProcess[str]:
+        self.operator_stop_before_label_checkpoint = True
+        try:
+            return self.run_arc_disc("burn")
+        finally:
+            self.operator_stop_before_label_checkpoint = False
+
+    def arc_disc_burn_label_checkpoint(self) -> subprocess.CompletedProcess[str]:
+        return self.run_arc_disc(
+            "burn",
+            input_text="y\nlabeled\nvault-a/shelf-01\n\nlabeled\nvault-b/shelf-01\n",
+        )
+
     def pins_list(self) -> list[str]:
         return [item["target"] for item in self.request("GET", "/v1/pins").json()["pins"]]
 
@@ -2169,6 +2201,8 @@ class ProductionSystem:
             env["ARC_DISC_OPERATOR_RECOVERY_SESSION_ID"] = "rs-20260420T040001Z-rebuild-1"
             env["ARC_DISC_OPERATOR_RECOVERY_AFFECTED"] = DOCS_COLLECTION_ID
             env["ARC_DISC_OPERATOR_RECOVERY_EXPIRES_AT"] = "2026-05-02 08:00 UTC"
+        if self.operator_stop_before_label_checkpoint:
+            env["ARC_DISC_STOP_BEFORE_LABEL_CHECKPOINT"] = "1"
         if extra:
             env.update(extra)
         _reject_prod_arc_disc_factory_env(env)

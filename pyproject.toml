@@ -83,6 +83,7 @@ markers = [
   "issue_210: tracks issue #210 for action-needed webhook payloads",
   "issue_211: tracks issue #211 for replacing remaining normal CLI copy",
   "issue_264: tracks issue #264 for applying operator-facing recovery terminology",
+  "issue_274: tracks issue #274 for implementing burn label checkpoint behavior",
   "issue_303: tracks issue #303 for backing guided-in-flow-PM-scenarios",
   "issue_315: tracks issue #315 for implementing guided in-flow continuation",
   "issue_304: tracks issue #304 for backing recovery-rebuild-work-remaining-PM-scenario",
@@ -90,6 +91,8 @@ markers = [
   "issue_309: tracks issue #309 for backing device-availability-PM-scenarios",
   "issue_310: tracks issue #310 for implementing arc-disc device availability states",
   "issue_301: tracks issue #301 for backing next-disc-label-PM-scenarios",
+  "issue_302: tracks issue #302 for backing label-checkpoint-PM-scenario",
+  "issue_316: tracks issue #316 for implementing burn label checkpoint behavior",
   "issue_317: tracks issue #317 for implementing next-disc label retry routing",
 ]
 

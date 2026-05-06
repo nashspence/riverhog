@@ -63,7 +63,8 @@ Feature: arc-disc recover CLI
     And the operator runs arc-disc recover "rs-20260420T040001Z-rebuild-1"
     Then the command exits with code 0
     And stdout mentions "rebuild session rs-20260420T040001Z-rebuild-1 completed"
-    And stderr mentions "verifying burned media for 20260420T040001Z-3"
+    And stderr mentions "Verifying the burned disc"
+    And stderr mentions copy id "20260420T040001Z-3"
     And stderr does not mention "burning copy 20260420T040001Z-3"
     And the client gets "/v1/recovery-sessions/rs-20260420T040001Z-rebuild-1"
     And the response status is 200

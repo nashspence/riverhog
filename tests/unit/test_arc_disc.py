@@ -1,6 +1,8 @@
 from __future__ import annotations
 
 import hashlib
+import io
+from contextlib import redirect_stderr
 from pathlib import Path
 
 import pytest
@@ -60,6 +62,19 @@ def test_default_arc_disc_io_builders_use_real_backends(monkeypatch) -> None:
         arc_disc_main.build_burned_media_verifier(),
         arc_disc_main.RawBurnedMediaVerifier,
     )
+
+
+def test_terminal_burn_prompt_names_configured_device(monkeypatch) -> None:
+    monkeypatch.setattr("builtins.input", lambda: "")
+    stderr = io.StringIO()
+
+    with redirect_stderr(stderr):
+        arc_disc_main.TerminalBurnPrompts().wait_for_blank_disc(
+            "20260420T040001Z-1",
+            device="/dev/fake-sr0",
+        )
+
+    assert operator_copy.burn_insert_blank_disc(device="/dev/fake-sr0") in stderr.getvalue()
 
 
 def test_xorriso_optical_reader_reads_from_mounted_media(tmp_path: Path) -> None:
@@ -1445,9 +1460,13 @@ def test_arc_disc_burn_waits_for_label_confirmation_before_registration_and_resu
             self.calls.append(copy_id)
 
     class FakeMediaVerifier:
+        def __init__(self) -> None:
+            self.calls: list[str] = []
+
         def verify(self, iso_path: Path, *, device: str, copy_id: str) -> None:
             assert device == "/dev/fake-sr0"
             assert iso_path.read_bytes() == b"fixture-iso\n"
+            self.calls.append(copy_id)
 
     class FakePrompts:
         def __init__(self) -> None:
@@ -1474,13 +1493,15 @@ def test_arc_disc_burn_waits_for_label_confirmation_before_registration_and_resu
 
     client = FakeClient()
     burner = FakeBurner()
+    media_verifier = FakeMediaVerifier()
     prompts = FakePrompts()
 
     monkeypatch.setattr(arc_disc_main, "ApiClient", lambda: client)
     monkeypatch.setattr(arc_disc_main, "build_iso_verifier", lambda: FakeIsoVerifier())
     monkeypatch.setattr(arc_disc_main, "build_disc_burner", lambda: burner)
-    monkeypatch.setattr(arc_disc_main, "build_burned_media_verifier", lambda: FakeMediaVerifier())
+    monkeypatch.setattr(arc_disc_main, "build_burned_media_verifier", lambda: media_verifier)
     monkeypatch.setattr(arc_disc_main, "build_burn_prompts", lambda: prompts)
+    monkeypatch.setenv("ARC_DISC_STOP_BEFORE_LABEL_CHECKPOINT", "1")
 
     first = runner.invoke(
         arc_disc_main.app,
@@ -1488,11 +1509,14 @@ def test_arc_disc_burn_waits_for_label_confirmation_before_registration_and_resu
     )
 
     assert first.exit_code == 1
-    assert f"error: label confirmation required for {copy_one}" in first.stderr
+    assert "error: stopped before Label Checkpoint" in first.stderr
+    assert operator_copy.burn_writing_disc(device="/dev/fake-sr0") in first.stderr
     assert client.register_calls == []
     assert burner.calls == [copy_one]
+    assert media_verifier.calls == [copy_one]
     assert client.copy_states[copy_one]["state"] == "needed"
 
+    monkeypatch.delenv("ARC_DISC_STOP_BEFORE_LABEL_CHECKPOINT")
     prompts.confirmed.update({copy_one, copy_two})
     prompts.available.update({copy_one, copy_two})
     second = runner.invoke(
@@ -1716,7 +1740,7 @@ def test_arc_disc_burn_resumes_from_media_verification_when_unfinished_disc_is_a
     )
 
     assert second.exit_code == 0
-    assert "verifying burned media for 20260420T040001Z-1" in second.stderr
+    assert operator_copy.burn_verifying_disc() in second.stderr
     assert "burning copy 20260420T040001Z-1" not in second.stderr
     assert burner.calls == [copy_one, copy_two]
     assert media_verifier.calls == [copy_one, copy_one, copy_two]

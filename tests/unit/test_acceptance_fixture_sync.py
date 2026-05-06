@@ -104,6 +104,7 @@ LOCKED_HELPER_STATE_ACCESS = {
     "clear_operator_recovery_ready": "mutates operator contract fixture state directly",
     "operator_recovery_ready_is_waiting": "reads operator contract fixture state directly",
     "operator_collection_is_fully_protected": "reads operator contract fixture state directly",
+    "operator_disc_label_is_recorded": "reads operator contract fixture state directly",
     "run_arc_disc": "renders and annotates arc-disc operator fixture output from state",
     "_arc_contract_output": "renders arc contract fixture output from state",
     "_arc_disc_contract_output": "renders arc-disc contract fixture output from state",
