@@ -404,7 +404,7 @@ def glacier_cmd(
 @app.command("maintenance")
 def maintenance_cmd() -> None:
     _ = client()
-    typer.echo(operator_copy.doctor_ok())
+    typer.echo(operator_copy.setup_check_healthy())
 
 
 @iso_app.command("get")
