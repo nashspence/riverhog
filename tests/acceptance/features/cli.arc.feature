@@ -119,6 +119,16 @@ Feature: arc CLI
       When the operator confirms the next guided action
       Then statechart "arc.home" state "scan_attention" is the accepted operator contract
 
+    Scenario: arc reports API unreachability as accepted operator copy
+      Given statechart "arc.home" state "api_unreachable" is the accepted operator contract
+      And the Riverhog API is unreachable
+      When the operator runs 'arc'
+      Then stdout includes operator copy "api_unreachable"
+      And the operator decision matches the accepted state
+      And stdout mentions "Riverhog cannot reach the API"
+      And stdout mentions "Riverhog service is running"
+      And stdout does not mention "httpx"
+
     @contract_gap @issue_209
     Scenario: arc opens the operator home when no attention is needed
       Given statechart "arc.home" state "no_attention" is the accepted operator contract
@@ -163,6 +173,53 @@ Feature: arc CLI
       And stdout mentions "Setup needs attention"
       And stdout mentions "Notifications need attention"
       And stdout does not mention "webhook"
+
+  Rule: API unreachability preflight
+    @issue_288
+    Scenario: arc upload reports API unreachability as accepted operator copy
+      Given statechart "arc.upload" state "api_unreachable" is the accepted operator contract
+      And a local collection source "photos-2024" with deterministic fixture contents
+      And the Riverhog API is unreachable
+      When the operator uploads collection source "photos-2024" with arc
+      Then stdout includes operator copy "api_unreachable"
+      And the operator decision matches the accepted state
+      And stdout does not mention "httpx"
+
+    @issue_288
+    Scenario: arc hot storage reports API unreachability as accepted operator copy
+      Given statechart "arc.hot_storage" state "api_unreachable" is the accepted operator contract
+      And the Riverhog API is unreachable
+      When the operator runs 'arc pin "docs/tax/2022/invoice-123.pdf"'
+      Then stdout includes operator copy "api_unreachable"
+      And the operator decision matches the accepted state
+      And stdout does not mention "httpx"
+
+    @issue_288
+    Scenario: arc collection status reports API unreachability as accepted operator copy
+      Given statechart "arc.collection_status" state "api_unreachable" is the accepted operator contract
+      And the Riverhog API is unreachable
+      When the operator runs 'arc show docs'
+      Then stdout includes operator copy "api_unreachable"
+      And the operator decision matches the accepted state
+      And stdout does not mention "httpx"
+
+    @issue_288
+    Scenario: arc copy management reports API unreachability as accepted operator copy
+      Given statechart "arc.copy_management" state "api_unreachable" is the accepted operator contract
+      And the Riverhog API is unreachable
+      When the operator runs 'arc copy list 20260420T040001Z'
+      Then stdout includes operator copy "api_unreachable"
+      And the operator decision matches the accepted state
+      And stdout does not mention "httpx"
+
+    @issue_288
+    Scenario: arc maintenance reports API unreachability as accepted operator copy
+      Given statechart "arc.maintenance" state "api_unreachable" is the accepted operator contract
+      And the Riverhog API is unreachable
+      When the operator runs 'arc maintenance'
+      Then stdout includes operator copy "api_unreachable"
+      And the operator decision matches the accepted state
+      And stdout does not mention "httpx"
 
   Rule: Normal human copy uses operator terms
     @contract_gap @issue_211

@@ -49,6 +49,16 @@ Feature: arc-disc CLI
       When the recovery item is no longer waiting
       Then the guided flow chooses ordinary blank-disc work without another command
 
+    Scenario: arc-disc reports API unreachability as accepted operator copy
+      Given statechart "arc_disc.guided" state "api_unreachable" is the accepted operator contract
+      And the Riverhog API is unreachable
+      When the operator runs 'arc-disc'
+      Then stdout includes operator copy "api_unreachable"
+      And the operator decision matches the accepted state
+      And stdout mentions "Riverhog cannot reach the API"
+      And stdout mentions "local configuration"
+      And stdout does not mention "httpx"
+
     @contract_gap @issue_208
     Scenario: arc-disc resumes unfinished local disc work before choosing new work
       Given statechart "arc_disc.guided" state "unfinished_local_disc" is the accepted operator contract
@@ -152,6 +162,43 @@ Feature: arc-disc CLI
     Then stderr includes operator copy "hot_recovery_registered_copies_exhausted"
     And stderr mentions "recovery workflow"
     And stderr does not mention "try another registered copy"
+
+  Rule: API unreachability preflight
+    @issue_288
+    Scenario: arc-disc burn reports API unreachability as accepted operator copy
+      Given statechart "arc_disc.burn" state "api_unreachable" is the accepted operator contract
+      And the Riverhog API is unreachable
+      When the operator runs arc-disc burn
+      Then stdout includes operator copy "api_unreachable"
+      And the operator decision matches the accepted state
+      And stdout does not mention "httpx"
+
+    @issue_288
+    Scenario: arc-disc recover reports API unreachability as accepted operator copy
+      Given statechart "arc_disc.recovery" state "api_unreachable" is the accepted operator contract
+      And the Riverhog API is unreachable
+      When the operator runs arc-disc recover "rs-20260420T040001Z-rebuild-1"
+      Then stdout includes operator copy "api_unreachable"
+      And the operator decision matches the accepted state
+      And stdout does not mention "httpx"
+
+    @issue_288
+    Scenario: arc-disc fetch reports API unreachability as accepted operator copy
+      Given statechart "arc_disc.fetch" state "api_unreachable" is the accepted operator contract
+      And the Riverhog API is unreachable
+      When the operator runs arc-disc fetch "fx-1"
+      Then stdout includes operator copy "api_unreachable"
+      And the operator decision matches the accepted state
+      And stdout does not mention "httpx"
+
+    @issue_288
+    Scenario: arc-disc restore reports API unreachability as accepted operator copy
+      Given statechart "arc_disc.hot_recovery" state "api_unreachable" is the accepted operator contract
+      And the Riverhog API is unreachable
+      When the operator runs 'arc-disc restore'
+      Then stdout includes operator copy "api_unreachable"
+      And the operator decision matches the accepted state
+      And stdout does not mention "httpx"
 
   @ci_opt_in @requires_optical_disc_drive @requires_human_operator @issue_186 @issue_187
   Scenario: arc-disc fetch completes a recoverable fetch

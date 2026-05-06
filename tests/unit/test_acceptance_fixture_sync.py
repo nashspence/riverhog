@@ -99,6 +99,7 @@ LOCKED_HELPER_STATE_ACCESS = {
     ),
     "set_operator_hot_recovery_needs_media": "mutates operator contract fixture state directly",
     "set_operator_arc_disc_device_problem": "mutates operator contract fixture state directly",
+    "set_operator_api_unreachable": "mutates operator contract fixture state directly",
     "set_operator_fetch_same_image_copies_exhausted": (
         "mutates operator contract fixture state directly"
     ),
@@ -109,6 +110,7 @@ LOCKED_HELPER_STATE_ACCESS = {
     "operator_recovery_ready_is_waiting": "reads operator contract fixture state directly",
     "operator_collection_is_fully_protected": "reads operator contract fixture state directly",
     "operator_disc_label_is_recorded": "reads operator contract fixture state directly",
+    "run_arc": "renders and annotates arc operator fixture output from state",
     "run_arc_disc": "renders and annotates arc-disc operator fixture output from state",
     "_arc_contract_output": "renders arc contract fixture output from state",
     "_arc_disc_contract_output": "renders arc-disc contract fixture output from state",

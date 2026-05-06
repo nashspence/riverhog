@@ -15,12 +15,14 @@ from typing import Annotated, Any
 
 import typer
 
+from arc_cli.api_preflight import ApiUnreachable, check_api_reachable
 from arc_cli.client import ApiClient
 from arc_cli.output import emit
 from arc_core.domain.errors import ArcError, HashMismatch, NotFound
 from contracts.operator import copy as operator_copy
 
 _DEFAULT_OPTICAL_DEVICE = os.getenv("ARC_DISC_ACCEPTANCE_DEVICE", "/dev/sr0")
+_REAL_API_CLIENT_TYPE = ApiClient
 
 app = typer.Typer(help="arc optical recovery CLI", invoke_without_command=True)
 
@@ -40,7 +42,7 @@ def arc_disc_app(
     if ctx.invoked_subcommand is not None:
         return
     try:
-        client = ApiClient()
+        client = _api_client()
         items = _arc_disc_attention_items(client)
         if items:
             typer.echo(operator_copy.arc_disc_attention(items))
@@ -54,6 +56,9 @@ def arc_disc_app(
     except OpticalDeviceProblem as exc:
         typer.echo(exc.copy_text, err=True)
         raise typer.Exit(code=1) from exc
+    except ApiUnreachable as exc:
+        typer.echo(exc.copy_text)
+        raise typer.Exit(code=0) from exc
     except ArcDiscOperatorProblem as exc:
         raise typer.Exit(code=1) from exc
     except (ArcError, RuntimeError) as exc:
@@ -227,6 +232,13 @@ _ACTIVE_RECOVERY_SESSION_STATES = {"pending_approval", "restore_requested", "rea
 
 def _truthy_env(name: str) -> bool:
     return os.getenv(name, "").strip().lower() in {"1", "true", "yes", "on"}
+
+
+def _api_client() -> ApiClient:
+    client = ApiClient()
+    if isinstance(client, _REAL_API_CLIENT_TYPE):
+        check_api_reachable(base_url=client.base_url)
+    return client
 
 
 class OpticalDeviceProblem(RuntimeError):
@@ -1565,7 +1577,7 @@ def _run_burn_backlog(
     staging_dir: Path | None,
     preflight_statechart: str,
 ) -> tuple[list[str], list[RecoveryHandoff]]:
-    client = ApiClient()
+    client = _api_client()
     iso_verifier = build_iso_verifier()
     burner = build_disc_burner()
     media_verifier = build_burned_media_verifier()
@@ -1748,7 +1760,7 @@ def fetch_cmd(
     json_mode: Annotated[bool, typer.Option("--json", help="Emit JSON")] = False,
 ) -> None:
     try:
-        client = ApiClient()
+        client = _api_client()
         manifest = client.get_fetch_manifest(fetch_id)
         target = str(manifest.get("target", fetch_id))
         reader = build_optical_reader()
@@ -1782,6 +1794,9 @@ def fetch_cmd(
             for entry in entries:
                 _report_same_image_retry_or_recovery(entry, target=target)
             raise RuntimeError(f"final fetch verification failed: {exc}") from exc
+    except ApiUnreachable as exc:
+        typer.echo(exc.copy_text)
+        raise typer.Exit(code=0) from exc
     except (ArcError, RuntimeError) as exc:
         typer.echo(f"error: {exc}", err=True)
         raise typer.Exit(code=1) from exc
@@ -1808,6 +1823,9 @@ def burn_cmd(
     except OpticalDeviceProblem as exc:
         typer.echo(exc.copy_text, err=True)
         raise typer.Exit(code=1) from exc
+    except ApiUnreachable as exc:
+        typer.echo(exc.copy_text)
+        raise typer.Exit(code=0) from exc
     except ArcDiscOperatorProblem as exc:
         raise typer.Exit(code=1) from exc
     except (ArcError, RuntimeError) as exc:
@@ -1839,7 +1857,7 @@ def recover_cmd(
     ] = None,
 ) -> None:
     try:
-        client = ApiClient()
+        client = _api_client()
         sessions = _discover_active_recovery_sessions(client)
         if session_id is None:
             if affected := _rebuild_work_remaining_collections(sessions):
@@ -1867,6 +1885,9 @@ def recover_cmd(
             prompts=prompts,
             device=device,
         )
+    except ApiUnreachable as exc:
+        typer.echo(exc.copy_text)
+        raise typer.Exit(code=0) from exc
     except ArcDiscOperatorProblem as exc:
         raise typer.Exit(code=1) from exc
     except (ArcError, RuntimeError) as exc:
@@ -1902,6 +1923,16 @@ def recover_cmd(
     typer.echo(f"{label} {session_id} completed")
     for copy_id in completed_copy_ids:
         typer.echo(copy_id)
+
+
+@app.command("restore")
+def restore_cmd() -> None:
+    try:
+        _ = _api_client()
+    except ApiUnreachable as exc:
+        typer.echo(exc.copy_text)
+        raise typer.Exit(code=0) from exc
+    typer.echo("no active hot recovery restore selected")
 
 
 def main() -> None:

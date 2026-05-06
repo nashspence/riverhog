@@ -4,10 +4,11 @@ import hashlib
 import os
 import time
 from pathlib import Path
-from typing import Annotated, TypedDict
+from typing import Annotated, NoReturn, TypedDict
 
 import typer
 
+from arc_cli.api_preflight import ApiUnreachable, check_api_reachable
 from arc_cli.client import ApiClient
 from arc_cli.output import (
     emit,
@@ -26,7 +27,7 @@ from arc_cli.output import (
 from arc_core.domain.errors import NotFound
 from contracts.operator import copy as operator_copy
 
-app = typer.Typer(help="arc archival control CLI")
+app = typer.Typer(help="arc archival control CLI", invoke_without_command=True)
 iso_app = typer.Typer(help="ISO operations")
 copy_app = typer.Typer(help="copy registration")
 app.add_typer(iso_app, name="iso")
@@ -44,7 +45,16 @@ class CollectionManifestEntry(TypedDict):
     sha256: str
 
 
+def _exit_api_unreachable(exc: ApiUnreachable) -> NoReturn:
+    typer.echo(exc.copy_text)
+    raise typer.Exit(code=0) from exc
+
+
 def client() -> ApiClient:
+    try:
+        check_api_reachable()
+    except ApiUnreachable as exc:
+        _exit_api_unreachable(exc)
     return ApiClient()
 
 
@@ -75,6 +85,10 @@ def _arc_home_items() -> list[operator_copy.GuidedItem]:
 def arc_app(ctx: typer.Context) -> None:
     if ctx.invoked_subcommand is not None:
         return
+    try:
+        check_api_reachable()
+    except ApiUnreachable as exc:
+        _exit_api_unreachable(exc)
     items = _arc_home_items()
     typer.echo(
         operator_copy.arc_home_attention(items)
@@ -385,6 +399,12 @@ def glacier_cmd(
 ) -> None:
     payload = client().get_glacier_report(collection=collection)
     emit(payload if json_mode else format_glacier_report(payload), json_mode=json_mode)
+
+
+@app.command("maintenance")
+def maintenance_cmd() -> None:
+    _ = client()
+    typer.echo(operator_copy.doctor_ok())
 
 
 @iso_app.command("get")

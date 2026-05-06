@@ -110,6 +110,28 @@ _FORBIDDEN_PROD_ARC_DISC_FACTORY_ENV_VARS = (
     "ARC_DISC_BURNED_MEDIA_VERIFIER_FACTORY",
     "ARC_DISC_BURN_PROMPTS_FACTORY",
 )
+_ARC_API_UNREACHABLE_STATECHARTS = {
+    "copy": "arc.copy_management",
+    "fetch": "arc.hot_storage",
+    "find": "arc.hot_storage",
+    "get": "arc.hot_storage",
+    "glacier": "arc.collection_status",
+    "images": "arc.collection_status",
+    "maintenance": "arc.maintenance",
+    "pin": "arc.hot_storage",
+    "pins": "arc.hot_storage",
+    "plan": "arc.collection_status",
+    "release": "arc.hot_storage",
+    "show": "arc.collection_status",
+    "status": "arc.collection_status",
+    "upload": "arc.upload",
+}
+_ARC_DISC_API_UNREACHABLE_STATECHARTS = {
+    "burn": "arc_disc.burn",
+    "fetch": "arc_disc.fetch",
+    "recover": "arc_disc.recovery",
+    "restore": "arc_disc.hot_recovery",
+}
 
 
 def _command_recovery_payload(content: bytes) -> bytes:
@@ -794,6 +816,7 @@ class ProductionSystem:
             self.arc_disc_acceptance_device = None
             self.operator_stop_before_label_checkpoint = False
             self.server.reset()
+            self.base_url = self.server.base_url
 
     def request(
         self,
@@ -895,6 +918,16 @@ class ProductionSystem:
         args: tuple[str, ...],
         command: subprocess.CompletedProcess[str],
     ) -> subprocess.CompletedProcess[str]:
+        statechart = "arc.home" if not args else _ARC_API_UNREACHABLE_STATECHARTS.get(args[0])
+        api_unreachable_copy = operator_copy.api_unreachable()
+        if statechart is not None and api_unreachable_copy in command.stdout:
+            return self._attach_operator_evidence(
+                command,
+                statechart=statechart,
+                state="api_unreachable",
+                copy_ref="api_unreachable",
+                text=api_unreachable_copy,
+            )
         if command.returncode != 0:
             return command
         match args:
@@ -929,7 +962,23 @@ class ProductionSystem:
         args: tuple[str, ...],
         command: subprocess.CompletedProcess[str],
     ) -> subprocess.CompletedProcess[str]:
-        if args or command.returncode != 0 or INVOICE_TARGET not in self.pins_list():
+        api_unreachable_copy = operator_copy.api_unreachable()
+        statechart = (
+            "arc_disc.guided"
+            if not args
+            else _ARC_DISC_API_UNREACHABLE_STATECHARTS.get(args[0])
+        )
+        if statechart is not None and api_unreachable_copy in command.stdout:
+            return self._attach_operator_evidence(
+                command,
+                statechart=statechart,
+                state="api_unreachable",
+                copy_ref="api_unreachable",
+                text=api_unreachable_copy,
+            )
+        if args or command.returncode != 0:
+            return command
+        if INVOICE_TARGET not in self.pins_list():
             return command
         return self._attach_operator_evidence(
             command,
@@ -1003,6 +1052,9 @@ class ProductionSystem:
             return
         self.arc_disc_acceptance_device = Path("/dev/full")
         self.seed_planner_fixtures()
+
+    def set_operator_api_unreachable(self) -> None:
+        self.base_url = "http://127.0.0.1:9"
 
     def delete_hot_backing_file(self, target: str) -> None:
         selected = self.state.selected_files(target)

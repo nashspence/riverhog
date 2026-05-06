@@ -389,6 +389,8 @@ def _guided_item_text(
 
 def _operator_copy_text(name: str) -> str:
     match name:
+        case "api_unreachable":
+            return operator_copy.api_unreachable()
         case "arc_home_attention":
             return operator_copy.arc_home_attention(
                 [
@@ -1020,6 +1022,9 @@ def _prepare_arc_expectation(
     if argv[1] == "upload":
         return
 
+    if argv[1] == "maintenance":
+        return
+
     if argv[1] == "show" and "--files" in argv:
         collection_id = argv[2]
         context.expected_api_endpoint = ("GET", f"/v1/collection-files/{collection_id}")
@@ -1228,6 +1233,13 @@ def given_archive_has_no_non_physical_attention_items(
     acceptance_system: AcceptanceSystem,
 ) -> None:
     acceptance_system.clear_operator_arc_attention()
+
+
+@given("the Riverhog API is unreachable")
+def given_riverhog_api_is_unreachable(
+    acceptance_system: AcceptanceSystem,
+) -> None:
+    acceptance_system.set_operator_api_unreachable()
 
 
 @given(parsers.parse('collection "{collection_id}" has failed cloud backup after retries'))
@@ -2706,6 +2718,8 @@ def when_operator_runs_command(
 
     if argv[0] == "arc":
         acceptance_context.command = acceptance_system.run_arc(*argv[1:])
+        if operator_copy.api_unreachable() in acceptance_context.command.stdout:
+            return
         _prepare_arc_expectation(acceptance_system, acceptance_context)
         return
 

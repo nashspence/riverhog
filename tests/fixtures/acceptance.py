@@ -151,6 +151,28 @@ _GLACIER_RECOVERY_WEBHOOK_RETRY_DELAY_SECONDS = 1.0
 _GLACIER_RECOVERY_WEBHOOK_REMINDER_INTERVAL_SECONDS = 2.0
 _OPERATOR_FIXTURE_DISC_LABEL = "20260420T040001Z-1"
 _OPERATOR_WORKFLOWS = load_default_operator_workflows(validate_schema=True)
+_ARC_API_UNREACHABLE_STATECHARTS = {
+    "copy": "arc.copy_management",
+    "fetch": "arc.hot_storage",
+    "find": "arc.hot_storage",
+    "get": "arc.hot_storage",
+    "glacier": "arc.collection_status",
+    "images": "arc.collection_status",
+    "maintenance": "arc.maintenance",
+    "pin": "arc.hot_storage",
+    "pins": "arc.hot_storage",
+    "plan": "arc.collection_status",
+    "release": "arc.hot_storage",
+    "show": "arc.collection_status",
+    "status": "arc.collection_status",
+    "upload": "arc.upload",
+}
+_ARC_DISC_API_UNREACHABLE_STATECHARTS = {
+    "burn": "arc_disc.burn",
+    "fetch": "arc_disc.fetch",
+    "recover": "arc_disc.recovery",
+    "restore": "arc_disc.hot_recovery",
+}
 
 
 def _generated_copy_id(image_id: str, ordinal: int) -> str:
@@ -207,6 +229,28 @@ def _operator_view(
     text: str,
 ) -> OperatorView:
     return _OPERATOR_WORKFLOWS.view(statechart, state, text=text)
+
+
+def _api_unreachable_operator_process(
+    command: str,
+    args: tuple[str, ...],
+    *,
+    statechart: str,
+) -> subprocess.CompletedProcess[str]:
+    stdout = operator_copy.api_unreachable()
+    return _operator_completed_process(
+        [command, *args],
+        returncode=1,
+        stdout=stdout,
+        decisions=[_operator_decision(statechart, "api_unreachable")],
+        views=[
+            _operator_view(
+                statechart,
+                "api_unreachable",
+                text=stdout,
+            )
+        ],
+    )
 
 
 def _guided_item_text(
@@ -556,6 +600,7 @@ class AcceptanceState:
     next_fetch_number: int = 0
     operator_arc_items: list[operator_copy.GuidedItem] = field(default_factory=list)
     operator_disc_items: list[operator_copy.GuidedItem] = field(default_factory=list)
+    operator_api_unreachable: bool = False
     operator_rebuild_work_remaining_collections: tuple[str, ...] = ()
     operator_expired_recovery_session_id: str | None = None
     operator_expired_recovery_local_artifacts_available: bool | None = None
@@ -4364,6 +4409,10 @@ class AcceptanceSystem:
         with self.state.lock:
             self.state.operator_arc_items.clear()
 
+    def set_operator_api_unreachable(self) -> None:
+        with self.state.lock:
+            self.state.operator_api_unreachable = True
+
     def add_operator_cloud_backup_failure(
         self,
         collection_id: str,
@@ -4663,6 +4712,22 @@ class AcceptanceSystem:
         if not args:
             with self.state.lock:
                 items = sorted(self.state.operator_arc_items, key=lambda item: item.priority)
+                api_unreachable = self.state.operator_api_unreachable
+            if api_unreachable:
+                stdout = operator_copy.api_unreachable()
+                return _operator_completed_process(
+                    ["arc"],
+                    returncode=1,
+                    stdout=stdout,
+                    decisions=[_operator_decision("arc.home", "api_unreachable")],
+                    views=[
+                        _operator_view(
+                            "arc.home",
+                            "api_unreachable",
+                            text=stdout,
+                        )
+                    ],
+                )
             if not items:
                 stdout = operator_copy.arc_home_no_attention()
                 return _operator_completed_process(
@@ -4785,7 +4850,23 @@ class AcceptanceSystem:
             items = [*self.state.operator_disc_items]
             blank_disc_work = self.state.operator_blank_disc_work_available
             label_location = self.state.operator_label_confirmation_location
+            api_unreachable = self.state.operator_api_unreachable
             device_problem = self.state.operator_arc_disc_device_problem
+        if api_unreachable:
+            stdout = operator_copy.api_unreachable()
+            return _operator_completed_process(
+                ["arc-disc"],
+                returncode=1,
+                stdout=stdout,
+                decisions=[_operator_decision("arc_disc.guided", "api_unreachable")],
+                views=[
+                    _operator_view(
+                        "arc_disc.guided",
+                        "api_unreachable",
+                        text=stdout,
+                    )
+                ],
+            )
         if device_problem is not None:
             statechart, state, copy_ref = device_problem
             match copy_ref:
@@ -4899,6 +4980,15 @@ class AcceptanceSystem:
     def run_arc(self, *args: str) -> subprocess.CompletedProcess[str]:
         if not args:
             return self._arc_contract_output(tuple(args), _completed_process(["arc"]))
+        with self.state.lock:
+            api_unreachable = self.state.operator_api_unreachable
+        statechart = _ARC_API_UNREACHABLE_STATECHARTS.get(args[0])
+        if api_unreachable and statechart is not None:
+            return _api_unreachable_operator_process(
+                "arc",
+                tuple(args),
+                statechart=statechart,
+            )
         with time_block("subprocess arc"):
             command = subprocess.run(
                 [sys.executable, "-m", "arc_cli.main", *args],
@@ -4913,6 +5003,16 @@ class AcceptanceSystem:
     def run_arc_disc(
         self, *args: str, input_text: str = "\n" * 16
     ) -> subprocess.CompletedProcess[str]:
+        if args:
+            with self.state.lock:
+                api_unreachable = self.state.operator_api_unreachable
+            statechart = _ARC_DISC_API_UNREACHABLE_STATECHARTS.get(args[0])
+            if api_unreachable and statechart is not None:
+                return _api_unreachable_operator_process(
+                    "arc-disc",
+                    tuple(args),
+                    statechart=statechart,
+                )
         if args == ("recover",):
             with self.state.lock:
                 affected = self.state.operator_rebuild_work_remaining_collections
