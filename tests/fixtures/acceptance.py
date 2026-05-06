@@ -152,7 +152,8 @@ _GLACIER_RECOVERY_WEBHOOK_REMINDER_INTERVAL_SECONDS = 2.0
 _OPERATOR_FIXTURE_DISC_LABEL = "20260420T040001Z-1"
 _OPERATOR_STORAGE_AVAILABLE_BYTES = 1_073_741_824
 _OPERATOR_STORAGE_BUDGET_BYTES = 21_474_836_480
-_OPERATOR_STORAGE_REQUIRED_BYTES = 8_589_934_592
+_OPERATOR_STORAGE_REQUIRED_BYTES = 8_200
+_OPERATOR_STORAGE_BLOCKED_AVAILABLE_BYTES = _OPERATOR_STORAGE_REQUIRED_BYTES - 1
 _OPERATOR_WORKFLOWS = load_default_operator_workflows(validate_schema=True)
 _ARC_API_UNREACHABLE_STATECHARTS = {
     "copy": "arc.copy_management",
@@ -4474,10 +4475,22 @@ class AcceptanceSystem:
             )
 
     def set_operator_recovery_ready(self, collection_id: str) -> None:
+        image = IMAGE_FIXTURES[0]
+        session_id = f"rs-{image.volume_id}-rebuild-1"
+        self.seed_planner_fixtures()
+        self.seed_finalized_image(image.id, force_ready=True)
+        self.mark_collection_archive_uploaded(collection_id)
+        self.ensure_image_rebuild_session(session_id=session_id, image_id=image.volume_id)
         with self.state.lock:
+            record = self.state.recovery_sessions_by_id[session_id]
+            record.state = RecoverySessionState.READY
+            record.approved_at = "2026-05-01T08:00:00Z"
+            record.restore_requested_at = "2026-05-01T08:00:00Z"
+            record.restore_ready_at = "2026-05-01T08:00:00Z"
+            record.restore_expires_at = "2026-05-02 08:00 UTC"
             self.state.operator_disc_items.append(
                 operator_copy.disc_item_recovery_ready(
-                    session_id="rs-20260420T040001Z-rebuild-1",
+                    session_id=session_id,
                     affected=[collection_id],
                     expires_at="2026-05-02 08:00 UTC",
                 )
@@ -4810,7 +4823,7 @@ class AcceptanceSystem:
             stderr = operator_copy.storage_capacity_blocked(
                 workflow="Local work",
                 required_bytes=_OPERATOR_STORAGE_REQUIRED_BYTES,
-                available_bytes=_OPERATOR_STORAGE_AVAILABLE_BYTES,
+                available_bytes=_OPERATOR_STORAGE_BLOCKED_AVAILABLE_BYTES,
             )
             return _operator_completed_process(
                 ["arc", *args],
@@ -4945,7 +4958,7 @@ class AcceptanceSystem:
             stderr = operator_copy.storage_capacity_blocked(
                 workflow="Local work",
                 required_bytes=_OPERATOR_STORAGE_REQUIRED_BYTES,
-                available_bytes=_OPERATOR_STORAGE_AVAILABLE_BYTES,
+                available_bytes=_OPERATOR_STORAGE_BLOCKED_AVAILABLE_BYTES,
             )
             return _operator_completed_process(
                 ["arc-disc"],
@@ -5159,20 +5172,31 @@ class AcceptanceSystem:
             return self._arc_disc_contract_output()
         if not self.fixture_path.exists():
             self._write_arc_disc_fixture(self._default_arc_disc_fixture())
-        env = self._subprocess_env(
-            {
-                "ARC_DISC_FIXTURE_PATH": str(self.fixture_path),
-                "ARC_DISC_READER_FACTORY": "tests.fixtures.arc_disc_fakes:FixtureOpticalReader",
-                "ARC_DISC_ISO_VERIFIER_FACTORY": "tests.fixtures.arc_disc_fakes:FixtureIsoVerifier",
-                "ARC_DISC_BURNER_FACTORY": "tests.fixtures.arc_disc_fakes:FixtureDiscBurner",
-                "ARC_DISC_BURNED_MEDIA_VERIFIER_FACTORY": (
-                    "tests.fixtures.arc_disc_fakes:FixtureBurnedMediaVerifier"
-                ),
-                "ARC_DISC_BURN_PROMPTS_FACTORY": "tests.fixtures.arc_disc_fakes:FixtureBurnPrompts",
-                "ARC_DISC_STAGING_DIR": str(self.workspace / "arc_disc_staging"),
-                "ARC_DISC_EXPECTED_DEVICE": "/dev/sr0",
-            }
-        )
+        extra_env = {
+            "ARC_DISC_FIXTURE_PATH": str(self.fixture_path),
+            "ARC_DISC_READER_FACTORY": "tests.fixtures.arc_disc_fakes:FixtureOpticalReader",
+            "ARC_DISC_ISO_VERIFIER_FACTORY": "tests.fixtures.arc_disc_fakes:FixtureIsoVerifier",
+            "ARC_DISC_BURNER_FACTORY": "tests.fixtures.arc_disc_fakes:FixtureDiscBurner",
+            "ARC_DISC_BURNED_MEDIA_VERIFIER_FACTORY": (
+                "tests.fixtures.arc_disc_fakes:FixtureBurnedMediaVerifier"
+            ),
+            "ARC_DISC_BURN_PROMPTS_FACTORY": "tests.fixtures.arc_disc_fakes:FixtureBurnPrompts",
+            "ARC_DISC_STAGING_DIR": str(self.workspace / "arc_disc_staging"),
+            "ARC_DISC_EXPECTED_DEVICE": "/dev/sr0",
+        }
+        with self.state.lock:
+            storage_block = self.state.operator_storage_capacity_block
+        if storage_block is not None:
+            extra_env.update(
+                {
+                    "ARC_LOCAL_STORAGE_AVAILABLE_BYTES": str(
+                        _OPERATOR_STORAGE_BLOCKED_AVAILABLE_BYTES
+                    ),
+                    "ARC_LOCAL_STORAGE_BUDGET_BYTES": str(_OPERATOR_STORAGE_BUDGET_BYTES),
+                    "ARC_LOCAL_STORAGE_PATH": str(self.workspace),
+                }
+            )
+        env = self._subprocess_env(extra_env)
         with time_block("subprocess arc-disc"):
             command = subprocess.run(
                 [sys.executable, "-m", "arc_disc.main", *args],

@@ -70,7 +70,7 @@ Feature: arc-disc CLI
     Scenario: arc-disc reports storage-capacity blockage during recovery materialization
       Given statechart "arc_disc.recovery" state "storage_capacity_blocked" is the accepted operator contract
       And recovery materialization needs more local storage than is available
-      When the operator runs 'arc-disc'
+      When the operator runs arc-disc recover "rs-20260420T040001Z-rebuild-1"
       Then stderr includes operator copy "storage_capacity_blocked"
       And stderr mentions "choose a different staging location"
       And stderr does not mention "No space left on device"

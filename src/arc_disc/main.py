@@ -44,11 +44,11 @@ def arc_disc_app(
         return
     try:
         client = _api_client()
+        _check_arc_disc_required_capacity(client)
         items = _arc_disc_attention_items(client)
         if items:
             typer.echo(operator_copy.arc_disc_attention(items))
             return
-        check_local_storage_capacity()
         _check_optical_device_ready(device, statechart="arc_disc.guided")
         completed_copy_ids, recovery_handoffs = _run_burn_backlog(
             device=device,
@@ -199,6 +199,7 @@ class BurnBacklogItem:
     image_id: str | None
     candidate_id: str | None
     filename: str
+    bytes: int
     fill: float
 
 
@@ -214,6 +215,7 @@ class RecoveryHandoff:
 class RecoverySessionImageHint:
     image_id: str
     filename: str
+    bytes: int = 0
     collection_ids: tuple[str, ...] = ()
 
 
@@ -888,6 +890,7 @@ def _discover_burn_backlog(client: ApiClient) -> list[BurnBacklogItem]:
                     image_id=None,
                     candidate_id=str(candidate["candidate_id"]),
                     filename=f"{candidate['candidate_id']}.iso",
+                    bytes=int(candidate.get("bytes", 0)),
                     fill=float(candidate.get("fill", 0)),
                 )
             )
@@ -901,6 +904,7 @@ def _discover_burn_backlog(client: ApiClient) -> list[BurnBacklogItem]:
                 image_id=image_id,
                 candidate_id=None,
                 filename=str(image["filename"]),
+                bytes=int(image.get("bytes", 0)),
                 fill=float(image.get("fill", 0)),
             )
         )
@@ -955,6 +959,7 @@ def _recovery_session_hint_from_payload(payload: dict[str, Any]) -> RecoverySess
         RecoverySessionImageHint(
             image_id=str(image["id"]),
             filename=str(image["filename"]),
+            bytes=int(image.get("bytes", 0)),
             collection_ids=tuple(
                 str(collection_id)
                 for collection_id in image.get("collection_ids", [])
@@ -1035,8 +1040,89 @@ def _discover_active_recovery_sessions(client: ApiClient) -> list[RecoverySessio
         hint = _recovery_session_hint_from_payload(payload)
         if hint.state not in _ACTIVE_RECOVERY_SESSION_STATES:
             continue
+        image_bytes = int(image.get("bytes", 0))
+        if image_bytes > 0:
+            hint = RecoverySessionHint(
+                session_id=hint.session_id,
+                type=hint.type,
+                state=hint.state,
+                latest_message=hint.latest_message,
+                images=tuple(
+                    RecoverySessionImageHint(
+                        image_id=current.image_id,
+                        filename=current.filename,
+                        bytes=(
+                            image_bytes
+                            if current.image_id == image_id and current.bytes <= 0
+                            else current.bytes
+                        ),
+                        collection_ids=current.collection_ids,
+                    )
+                    for current in hint.images
+                ),
+                collection_ids=hint.collection_ids,
+                restore_expires_at=hint.restore_expires_at,
+                affected=hint.affected,
+                estimated_cost=hint.estimated_cost,
+            )
         sessions_by_id.setdefault(hint.session_id, hint)
     return sorted(sessions_by_id.values(), key=lambda current: current.session_id)
+
+
+def _image_bytes_lookup(client: ApiClient, image_ids: set[str]) -> dict[str, int]:
+    remaining = set(image_ids)
+    found: dict[str, int] = {}
+    for payload in _iter_paged_payloads(
+        lambda page: client.list_images(page=page, per_page=100, sort="finalized_at", order="desc")
+    ):
+        for image in payload.get("images", []):
+            if not isinstance(image, dict):
+                continue
+            image_id = str(image.get("id"))
+            if image_id not in remaining:
+                continue
+            found[image_id] = int(image.get("bytes", 0))
+            remaining.remove(image_id)
+        if not remaining:
+            break
+    return found
+
+
+def _recovery_session_required_bytes(
+    recovery_session: RecoverySessionHint,
+    *,
+    client: ApiClient,
+) -> int | None:
+    missing_image_ids = {
+        image.image_id for image in recovery_session.images if image.bytes <= 0
+    }
+    image_bytes = _image_bytes_lookup(client, missing_image_ids) if missing_image_ids else {}
+    required = sum(
+        image.bytes if image.bytes > 0 else image_bytes.get(image.image_id, 0)
+        for image in recovery_session.images
+    )
+    return required if required > 0 else None
+
+
+def _burn_backlog_required_bytes(backlog: list[BurnBacklogItem]) -> int | None:
+    if not backlog:
+        return None
+    required = max(item.bytes for item in backlog)
+    return required if required > 0 else None
+
+
+def _check_arc_disc_required_capacity(client: ApiClient) -> None:
+    check_local_storage_capacity(
+        required_bytes=_burn_backlog_required_bytes(_discover_burn_backlog(client)),
+    )
+    recovery_required = sum(
+        image.bytes
+        for session in _discover_active_recovery_sessions(client)
+        for image in session.images
+    )
+    check_local_storage_capacity(
+        required_bytes=recovery_required if recovery_required > 0 else None,
+    )
 
 
 def _report_recovery_sessions(sessions: list[RecoverySessionHint]) -> None:
@@ -1595,6 +1681,7 @@ def _run_burn_backlog(
         backlog = _discover_burn_backlog(client)
         if not backlog:
             break
+        check_local_storage_capacity(required_bytes=_burn_backlog_required_bytes(backlog))
         _check_optical_device_ready(device, statechart=preflight_statechart)
         completed_copy_ids.extend(
             _process_burn_backlog_item(
@@ -1831,6 +1918,9 @@ def burn_cmd(
     except ApiUnreachable as exc:
         typer.echo(exc.copy_text)
         raise typer.Exit(code=0) from exc
+    except LocalStorageCapacityBlocked as exc:
+        typer.echo(exc.copy_text, err=True)
+        raise typer.Exit(code=1) from exc
     except ArcDiscOperatorProblem as exc:
         raise typer.Exit(code=1) from exc
     except (ArcError, RuntimeError) as exc:
@@ -1873,6 +1963,12 @@ def recover_cmd(
 
         payload = client.get_recovery_session(session_id)
         recovery_session = _recovery_session_hint_from_payload(payload)
+        check_local_storage_capacity(
+            required_bytes=_recovery_session_required_bytes(
+                recovery_session,
+                client=client,
+            ),
+        )
         iso_verifier = build_iso_verifier()
         burner = build_disc_burner()
         media_verifier = build_burned_media_verifier()
@@ -1893,6 +1989,9 @@ def recover_cmd(
     except ApiUnreachable as exc:
         typer.echo(exc.copy_text)
         raise typer.Exit(code=0) from exc
+    except LocalStorageCapacityBlocked as exc:
+        typer.echo(exc.copy_text, err=True)
+        raise typer.Exit(code=1) from exc
     except ArcDiscOperatorProblem as exc:
         raise typer.Exit(code=1) from exc
     except (ArcError, RuntimeError) as exc:

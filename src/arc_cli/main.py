@@ -126,6 +126,13 @@ def _local_collection_manifest(root: Path) -> list[CollectionManifestEntry]:
     return files
 
 
+def _local_collection_required_bytes(root: Path) -> int:
+    files = [path for path in root.rglob("*") if path.is_file()]
+    if not files:
+        raise typer.BadParameter("collection source must contain at least one file")
+    return sum(path.stat().st_size for path in files)
+
+
 def _finalized_collection_upload_payload(
     collection_id: str,
     manifest: list[CollectionManifestEntry],
@@ -170,7 +177,9 @@ def upload_cmd(
     if not resolved_root.is_dir():
         raise typer.BadParameter("collection source must be a directory")
     try:
-        check_local_storage_capacity()
+        check_local_storage_capacity(
+            required_bytes=_local_collection_required_bytes(resolved_root),
+        )
     except LocalStorageCapacityBlocked as exc:
         typer.echo(exc.copy_text, err=True)
         raise typer.Exit(code=1) from exc

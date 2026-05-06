@@ -10,8 +10,6 @@ from contracts.operator import copy as operator_copy
 _SUMMARY_FLAG = "ARC_LOCAL_STORAGE_SUMMARY"
 _AVAILABLE_BYTES_ENV = "ARC_LOCAL_STORAGE_AVAILABLE_BYTES"
 _BUDGET_BYTES_ENV = "ARC_LOCAL_STORAGE_BUDGET_BYTES"
-_REQUIRED_BYTES_ENV = "ARC_LOCAL_STORAGE_REQUIRED_BYTES"
-_WORKFLOW_ENV = "ARC_LOCAL_STORAGE_WORKFLOW"
 _PATH_ENV = "ARC_LOCAL_STORAGE_PATH"
 
 
@@ -49,15 +47,19 @@ def _measured_available_bytes() -> int | None:
         return None
 
 
-def local_storage_capacity() -> LocalStorageCapacity:
+def local_storage_capacity(
+    *,
+    required_bytes: int | None = None,
+    workflow: str = "Local work",
+) -> LocalStorageCapacity:
     available_bytes = _optional_int_env(_AVAILABLE_BYTES_ENV)
     if available_bytes is None:
         available_bytes = _measured_available_bytes()
     return LocalStorageCapacity(
         available_bytes=available_bytes,
         budget_bytes=_optional_int_env(_BUDGET_BYTES_ENV),
-        required_bytes=_optional_int_env(_REQUIRED_BYTES_ENV),
-        workflow=os.getenv(_WORKFLOW_ENV, "Local work"),
+        required_bytes=required_bytes,
+        workflow=workflow,
     )
 
 
@@ -80,8 +82,12 @@ def storage_capacity_blocked_copy(capacity: LocalStorageCapacity) -> str:
     )
 
 
-def check_local_storage_capacity() -> None:
-    capacity = local_storage_capacity()
+def check_local_storage_capacity(
+    *,
+    required_bytes: int | None,
+    workflow: str = "Local work",
+) -> None:
+    capacity = local_storage_capacity(required_bytes=required_bytes, workflow=workflow)
     if capacity.required_bytes is None or capacity.available_bytes is None:
         return
     if capacity.available_bytes < capacity.required_bytes:
