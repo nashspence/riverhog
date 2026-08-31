@@ -1,6 +1,6 @@
-FROM jdxcode/mise:2026.7.13@sha256:7fe9145156e33f95f7712632dbadb418592ed0f60fb46e5bcc8c113d372ad8a3 AS mise
+FROM jdxcode/mise:2026.8.15@sha256:0f78b61792734627f3188613063c233bd04390723dc41a4cfa0f35dcce162cf9 AS mise
 
-FROM python:3.12-slim@sha256:090ba77e2958f6af52a5341f788b50b032dd4ca28377d2893dcf1ecbdfdfe203 AS locked-tools
+FROM python:3.12-slim@sha256:09f7da3bc104798d0afb40bc08d23ab2da20a76130cec1f2ef170848f5d85217 AS locked-tools
 
 COPY --from=mise /usr/local/bin/mise /usr/local/bin/mise
 WORKDIR /workspace
@@ -21,7 +21,7 @@ RUN mise trust mise.toml \
     && test "$(/opt/riverhog-tools/bin/uv --version)" = "$(mise exec uv -- uv --version)"
 
 
-FROM python:3.12-slim@sha256:090ba77e2958f6af52a5341f788b50b032dd4ca28377d2893dcf1ecbdfdfe203
+FROM python:3.12-slim@sha256:09f7da3bc104798d0afb40bc08d23ab2da20a76130cec1f2ef170848f5d85217
 
 ARG SOURCE_DATE_EPOCH=0
 ENV DEBIAN_FRONTEND=noninteractive \
