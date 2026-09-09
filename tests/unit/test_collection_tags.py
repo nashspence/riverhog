@@ -59,6 +59,7 @@ from riverhog_core.services.collection_tags import (
 from riverhog_core.services.mutable_document_reclamation import (
     process_due_mutable_document_reclamations,
 )
+from riverhog_core.stores.storage_adapter_archive_store import StorageAdapterArchiveStore
 from riverhog_protocol import (
     COLLECTION_TAG_HEAD_RELATIVE_PATH,
     COLLECTION_TAG_UTF8_BYTES_MAX,
@@ -74,6 +75,7 @@ from riverhog_protocol import (
     encode_collection_tag_node,
 )
 from riverhog_protocol.errors import NotFound, PreconditionFailed, ServiceUnavailable
+from riverhog_storage_adapter_protocol import DeleteObjectRequest
 from sqlalchemy import exists, select
 from time_formats import utc_timestamp_now
 
@@ -83,6 +85,7 @@ from tests.unit.archive_object_fixtures import (
     seed_archive_copy,
 )
 from tests.unit.db_helpers import sqlite_url
+from tests.unit.test_storage_adapter_archive_store import _VersionedMemoryAdapter
 
 
 def _principal(*tags: str) -> ApplicationPrincipal:
@@ -102,6 +105,7 @@ def _service(
     *,
     archive_store: MemoryArchiveStore | None = None,
     database_url: str | None = None,
+    archive_storage_prefix: str = "archives/archive/opaque-docs",
 ) -> tuple[SqlAlchemyCollectionTagService, object, MemoryArchiveStore]:
     config, archive = seed_archive_copy(
         path,
@@ -114,6 +118,9 @@ def _service(
     with session_scope(factory) as session:
         collection = session.get(CollectionRecord, archive.collection_id)
         assert collection is not None and collection.archive_root_sha256 is not None
+        copy = session.get(CollectionArchiveCopyRecord, (archive.collection_id, "archive"))
+        assert copy is not None
+        copy.archive_storage_prefix = archive_storage_prefix
         tag_set, _created = build_collection_tag_set(session, ("source:camera",))
         head = CollectionTagHeadDocument.seal(
             archive_root_sha256=collection.archive_root_sha256,
@@ -165,7 +172,7 @@ def _service(
         publication.published_head_identity = head.head_identity
     receipt = store.publish_collection_tag_head(
         collection_id=archive.collection_id,
-        archive_storage_prefix="archives/archive/opaque-docs",
+        archive_storage_prefix=archive_storage_prefix,
         document=head.to_json_bytes(),
         passphrase_id="riverhog-dev-key-v1",
     )
@@ -200,6 +207,19 @@ class _EncryptedMemoryTagNodes:
         raise AssertionError((digest, encoded))
 
 
+class _EncryptedAdapterTagNodes:
+    def __init__(self, adapter: _VersionedMemoryAdapter, prefix: str) -> None:
+        self.adapter = adapter
+        self.prefix = prefix
+
+    def get(self, digest: str) -> bytes:
+        path = f"{self.prefix}/{collection_tag_node_path(digest)}"
+        return decrypt_age_scrypt(self.adapter.objects[path].content, DEV_ARCHIVE_PASSPHRASE)
+
+    def put(self, digest: str, encoded: bytes) -> None:
+        raise AssertionError((digest, encoded))
+
+
 def _recover_stored_tags(
     store: MemoryArchiveStore,
     *,
@@ -213,6 +233,24 @@ def _recover_stored_tags(
     )
     tags = CollectionTagSet(
         _EncryptedMemoryTagNodes(store, prefix),
+        CollectionTagSetRoot.seal(head.root_sha256),
+    )
+    return head, set(tags.iter_tags())
+
+
+def _recover_adapter_tags(
+    adapter: _VersionedMemoryAdapter,
+    *,
+    prefix: str = "archives/archive/opaque-docs",
+) -> tuple[CollectionTagHeadDocument, set[str]]:
+    head = CollectionTagHeadDocument.from_json_bytes(
+        decrypt_age_scrypt(
+            adapter.objects[f"{prefix}/{COLLECTION_TAG_HEAD_RELATIVE_PATH}"].content,
+            DEV_ARCHIVE_PASSPHRASE,
+        )
+    )
+    tags = CollectionTagSet(
+        _EncryptedAdapterTagNodes(adapter, prefix),
         CollectionTagSetRoot.seal(head.root_sha256),
     )
     return head, set(tags.iter_tags())
@@ -1724,6 +1762,225 @@ class _AmbiguousTagDeleteStore(MemoryArchiveStore):
         if self.fail_delete_once:
             self.fail_delete_once = False
             raise RuntimeError("ambiguous provider response")
+
+
+class _InterruptedExactTagNodeDeleteAdapter(_VersionedMemoryAdapter):
+    def __init__(self) -> None:
+        super().__init__()
+        self.fail_exact_path: str | None = None
+        self.interrupted_revision: str | None = None
+
+    def delete_object(self, request: DeleteObjectRequest) -> None:
+        path = request.object.object_path
+        if request.mode == "current":
+            self.deleted.append(request)
+            current = self.objects.get(path)
+            if current is None:
+                return
+            expected = request.expected_current_stored_sha256
+            if expected is not None:
+                assert hashlib.sha256(current.content).hexdigest() == expected
+            self.revisions[(path, current.revision)] = current
+            del self.objects[path]
+            return
+        if path == self.fail_exact_path:
+            assert request.mode == "exact_revision"
+            assert request.object.revision is not None
+            self.deleted.append(request)
+            self.interrupted_revision = request.object.revision
+            self.fail_exact_path = None
+            raise RuntimeError("exact provider revision cleanup was interrupted")
+        super().delete_object(request)
+
+
+def _expire_prior_tag_authorities(
+    factory: object,
+    *,
+    database_url: str,
+    current_revision: int,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    with session_scope(factory) as session:  # type: ignore[arg-type]
+        for event in session.scalars(select(CatalogEventRecord)):
+            event.committed_at = "2026-01-01T00:00:00.000000Z"
+    monkeypatch.setattr(
+        "riverhog_core.services.catalog_sync.utc_now",
+        lambda: datetime(2026, 9, 8, tzinfo=UTC),
+    )
+    catalog = SqlAlchemyCatalogSyncService(
+        RuntimeConfig(
+            database_url=database_url,
+            catalog_sync_history_retention=timedelta(days=1),
+            catalog_sync_bootstrap_lifetime=timedelta(hours=1),
+            catalog_sync_cursor_lifetime=timedelta(hours=1),
+            browse_token_lifetime=timedelta(hours=1),
+        ),
+        session_factory=factory,  # type: ignore[arg-type]
+    )
+    catalog.reap_expired_history(limit=64)
+    monkeypatch.setattr(
+        "riverhog_core.services.catalog_sync.utc_now",
+        lambda: datetime(2026, 9, 8, 1, 0, 1, tzinfo=UTC),
+    )
+    for _ in range(64):
+        catalog.reap_expired_history(limit=1)
+        with session_scope(factory) as session:  # type: ignore[arg-type]
+            revisions = list(
+                session.scalars(
+                    select(CollectionTagRevisionRecord.revision).order_by(
+                        CollectionTagRevisionRecord.revision
+                    )
+                )
+            )
+        if revisions == [current_revision]:
+            return
+    raise AssertionError("retired tag authorities did not expire")
+
+
+def _assert_unrelated_head_advance_preserves_interrupted_tag_gc(
+    *,
+    path: Path | None,
+    monkeypatch: pytest.MonkeyPatch,
+    database_url: str | None = None,
+) -> None:
+    adapter = _InterruptedExactTagNodeDeleteAdapter()
+    archive = StorageAdapterArchiveStore(
+        RuntimeConfig(),
+        name="archive",
+        adapter=adapter,
+    )
+    service, factory, _unused = _service(
+        path,
+        archive_store=archive,  # type: ignore[arg-type]
+        database_url=database_url,
+        archive_storage_prefix="archives/opaque-docs",
+    )
+    config_url = database_url if database_url is not None else sqlite_url(path)
+    principal = _principal("source:camera", "workflow:archive", "where:unrelated")
+    with session_scope(factory) as session:  # type: ignore[arg-type]
+        collection = session.get(CollectionRecord, 1)
+        assert collection is not None
+        initial_identity = collection.tag_set_identity
+    added = service.add(
+        1,
+        tag="workflow:archive",
+        operation_id="head-advance-add",
+        expected_revision=1,
+        expected_tag_set_identity=initial_identity,
+        principal=principal,
+    )
+    service.remove(
+        1,
+        tag="workflow:archive",
+        operation_id="head-advance-remove",
+        expected_revision=2,
+        expected_tag_set_identity=str(added["tag_set_identity"]),
+        principal=principal,
+    )
+    with session_scope(factory) as session:  # type: ignore[arg-type]
+        mutation = session.get(CollectionTagMutationRecord, (1, "head-advance-add"))
+        assert mutation is not None and mutation.result_root_sha256 is not None
+        reclaimed_digest = mutation.result_root_sha256
+    _expire_prior_tag_authorities(
+        factory,
+        database_url=config_url,
+        current_revision=3,
+        monkeypatch=monkeypatch,
+    )
+
+    node_path = f"archives/opaque-docs/{collection_tag_node_path(reclaimed_digest)}"
+    assert node_path in adapter.objects
+    old_revision = adapter.objects[node_path].revision
+    adapter.fail_exact_path = node_path
+    for _ in range(128):
+        assert service.process_due(limit=1) in {0, 1}
+        with session_scope(factory) as session:  # type: ignore[arg-type]
+            gc = session.get(CollectionTagNodeGcRecord, (1, "archive", reclaimed_digest))
+            if gc is not None and gc.state == "retry_wait":
+                gc.next_attempt_at = "9999-12-31T23:59:59.999999Z"
+                obligation_head_identity = gc.expected_head_identity
+                break
+    else:  # pragma: no cover - the fixed-depth tag closure is much smaller
+        raise AssertionError("target tag-node cleanup was not interrupted")
+    assert adapter.interrupted_revision == old_revision
+    assert node_path not in adapter.objects
+    assert (node_path, old_revision) in adapter.revisions
+
+    unrelated = service.add(
+        1,
+        tag="where:unrelated",
+        operation_id="head-advance-unrelated-add",
+        expected_revision=3,
+        expected_tag_set_identity=initial_identity,
+        principal=principal,
+    )
+    with session_scope(factory) as session:  # type: ignore[arg-type]
+        publication = session.get(CollectionTagPublicationRecord, (1, "archive"))
+        gc = session.get(CollectionTagNodeGcRecord, (1, "archive", reclaimed_digest))
+        receipt = session.get(CollectionTagPublishedNodeRecord, (1, "archive", reclaimed_digest))
+        assert publication is not None and publication.published_revision == 4
+        assert publication.published_head_identity != obligation_head_identity
+        assert gc is not None and receipt is not None
+        gc.next_attempt_at = utc_timestamp_now()
+
+    restarted = SqlAlchemyCollectionTagService(
+        RuntimeConfig(database_url=config_url),
+        ArchiveStoreRegistry(
+            {"archive": archive_store_binding(archive)}  # type: ignore[arg-type]
+        ),
+        session_factory=make_session_factory(config_url),
+    )
+    assert restarted.process_due(limit=1) == 1
+    with session_scope(factory) as session:  # type: ignore[arg-type]
+        assert session.get(CollectionTagNodeGcRecord, (1, "archive", reclaimed_digest)) is None
+        assert (
+            session.get(CollectionTagPublishedNodeRecord, (1, "archive", reclaimed_digest)) is None
+        )
+    assert (node_path, old_revision) not in adapter.revisions
+
+    reverted = restarted.remove(
+        1,
+        tag="where:unrelated",
+        operation_id="head-advance-unrelated-remove",
+        expected_revision=4,
+        expected_tag_set_identity=str(unrelated["tag_set_identity"]),
+        principal=principal,
+    )
+    readded = restarted.add(
+        1,
+        tag="workflow:archive",
+        operation_id="head-advance-reuse",
+        expected_revision=5,
+        expected_tag_set_identity=str(reverted["tag_set_identity"]),
+        principal=principal,
+    )
+    with session_scope(factory) as session:  # type: ignore[arg-type]
+        mutation = session.get(CollectionTagMutationRecord, (1, "head-advance-reuse"))
+        frontier = session.get(
+            CollectionTagPublicationFrontierRecord,
+            (1, "archive", str(readded["head_identity"]), reclaimed_digest),
+        )
+        assert mutation is not None and mutation.result_root_sha256 == reclaimed_digest
+        assert frontier is not None and frontier.published and frontier.expanded
+    assert node_path in adapter.objects
+    assert adapter.objects[node_path].revision != old_revision
+    assert (node_path, old_revision) not in adapter.revisions
+    recovered_head, recovered_tags = _recover_adapter_tags(
+        adapter,
+        prefix="archives/opaque-docs",
+    )
+    assert recovered_head.revision == 6
+    assert recovered_tags == {"source:camera", "workflow:archive"}
+
+
+def test_unrelated_head_advance_preserves_interrupted_tag_gc_until_reuse_is_safe(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    _assert_unrelated_head_advance_preserves_interrupted_tag_gc(
+        path=tmp_path / "head-advance.sqlite3",
+        monkeypatch=monkeypatch,
+    )
 
 
 class _PersistentTagDeleteFailureStore(MemoryArchiveStore):

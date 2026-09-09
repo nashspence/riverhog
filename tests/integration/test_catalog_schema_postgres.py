@@ -85,6 +85,7 @@ from tests.unit.test_collection_descriptions import (
 from tests.unit.test_collection_tags import (
     _AmbiguousTagDeleteStore,
     _assert_delayed_old_tag_gc_result_cannot_change_successor,
+    _assert_unrelated_head_advance_preserves_interrupted_tag_gc,
 )
 from tests.unit.test_collection_tags import _principal as tag_principal
 from tests.unit.test_collection_tags import _service as tag_service
@@ -839,6 +840,17 @@ def test_postgres_delayed_failure_from_old_tag_gc_cannot_reschedule_successor(
         path=None,
         database_url=isolated_database_url,
         fail_old_result=True,
+    )
+
+
+def test_postgres_unrelated_head_advance_preserves_interrupted_tag_gc_until_reuse_is_safe(
+    isolated_database_url: str,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    _assert_unrelated_head_advance_preserves_interrupted_tag_gc(
+        path=None,
+        database_url=isolated_database_url,
+        monkeypatch=monkeypatch,
     )
 
 

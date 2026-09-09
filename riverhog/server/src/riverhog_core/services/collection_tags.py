@@ -695,7 +695,6 @@ class SqlAlchemyCollectionTagService:
             )
             if (
                 publication is None
-                or publication.published_head_identity != gc.expected_head_identity
                 or published is None
                 or published.object_path != gc.object_path
                 or published.provider_revision != gc.provider_revision
