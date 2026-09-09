@@ -137,6 +137,10 @@ WITNESSES = (
             "test_postgres_delayed_success_from_old_tag_gc_cannot_consume_successor",
             "tests/integration/test_catalog_schema_postgres.py::"
             "test_postgres_delayed_failure_from_old_tag_gc_cannot_reschedule_successor",
+            "tests/unit/test_collection_tags.py::"
+            "test_unrelated_head_advance_preserves_interrupted_tag_gc_until_reuse_is_safe",
+            "tests/integration/test_catalog_schema_postgres.py::"
+            "test_postgres_unrelated_head_advance_preserves_interrupted_tag_gc_until_reuse_is_safe",
             "tests/integration/test_catalog_schema_postgres.py::"
             "test_postgres_superseded_document_cleanup_workers_claim_distinct_receipts",
         ),
