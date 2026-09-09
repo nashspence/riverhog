@@ -82,7 +82,10 @@ from tests.unit.test_collection_descriptions import (
 from tests.unit.test_collection_descriptions import (
     _seed as description_seed,
 )
-from tests.unit.test_collection_tags import _AmbiguousTagDeleteStore
+from tests.unit.test_collection_tags import (
+    _AmbiguousTagDeleteStore,
+    _assert_delayed_old_tag_gc_result_cannot_change_successor,
+)
 from tests.unit.test_collection_tags import _principal as tag_principal
 from tests.unit.test_collection_tags import _service as tag_service
 from tests.unit.test_retrieval_service import _seed_collection
@@ -817,6 +820,26 @@ def test_postgres_reused_tag_node_gc_and_publication_workers_converge(
     with session_scope(factory) as session:
         assert session.get(CollectionTagNodeGcRecord, (1, "archive", digest)) is None
         assert session.query(CollectionMutableDocumentPublicationAttemptRecord).count() == 0
+
+
+def test_postgres_delayed_success_from_old_tag_gc_cannot_consume_successor(
+    isolated_database_url: str,
+) -> None:
+    _assert_delayed_old_tag_gc_result_cannot_change_successor(
+        path=None,
+        database_url=isolated_database_url,
+        fail_old_result=False,
+    )
+
+
+def test_postgres_delayed_failure_from_old_tag_gc_cannot_reschedule_successor(
+    isolated_database_url: str,
+) -> None:
+    _assert_delayed_old_tag_gc_result_cannot_change_successor(
+        path=None,
+        database_url=isolated_database_url,
+        fail_old_result=True,
+    )
 
 
 def test_postgres_archive_sequence_state_round_trips_full_v1_domain(

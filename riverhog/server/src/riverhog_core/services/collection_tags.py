@@ -5,7 +5,7 @@ from __future__ import annotations
 from collections.abc import Iterable
 from dataclasses import dataclass
 from datetime import timedelta
-from typing import Any
+from typing import Any, cast
 
 from riverhog_protocol import (
     COLLECTION_TAG_PAGE_UTF8_BYTES_MAX,
@@ -22,7 +22,8 @@ from riverhog_protocol import (
 )
 from riverhog_protocol.errors import Conflict, NotFound, PreconditionFailed, ServiceUnavailable
 from riverhog_protocol.paths import text_search_key
-from sqlalchemy import exists, func, select
+from sqlalchemy import delete, exists, func, select, update
+from sqlalchemy.engine import CursorResult
 from sqlalchemy.orm import Session, aliased
 from sqlalchemy.sql.selectable import Select
 from time_formats import format_utc_timestamp, utc_now, utc_timestamp_now
@@ -684,28 +685,35 @@ class SqlAlchemyCollectionTagService:
             if copy is None or copy.archive_storage_prefix is None:
                 session.delete(gc)
                 return True
+            publication = session.get(
+                CollectionTagPublicationRecord,
+                (gc.collection_id, gc.store),
+            )
+            published = session.get(
+                CollectionTagPublishedNodeRecord,
+                (gc.collection_id, gc.store, gc.node_digest),
+            )
+            if (
+                publication is None
+                or publication.published_head_identity != gc.expected_head_identity
+                or published is None
+                or published.object_path != gc.object_path
+                or published.provider_revision != gc.provider_revision
+            ):
+                session.delete(gc)
+                if publication is not None and publication.state != "published":
+                    publication.next_attempt_at = now
+                return True
             gc.state = "deleting"
             collection_id = gc.collection_id
             store_name = gc.store
             digest = gc.node_digest
+            expected_head_identity = gc.expected_head_identity
             prefix = copy.archive_storage_prefix
+            object_path = gc.object_path
             provider_revision = gc.provider_revision
-            expected_stored_sha256 = session.scalar(
-                select(CollectionTagPublishedNodeRecord.stored_sha256).where(
-                    CollectionTagPublishedNodeRecord.collection_id == gc.collection_id,
-                    CollectionTagPublishedNodeRecord.store == gc.store,
-                    CollectionTagPublishedNodeRecord.node_digest == gc.node_digest,
-                )
-            )
-            if expected_stored_sha256 is None:
-                session.delete(gc)
-                publication = session.get(
-                    CollectionTagPublicationRecord,
-                    (gc.collection_id, gc.store),
-                )
-                if publication is not None and publication.state != "published":
-                    publication.next_attempt_at = now
-                return True
+            stored_bytes = published.stored_bytes
+            expected_stored_sha256 = published.stored_sha256
         try:
             self._archive_stores.require(store_name).store.delete_collection_tag_node(
                 collection_id=collection_id,
@@ -716,14 +724,31 @@ class SqlAlchemyCollectionTagService:
             )
         except Exception as exc:
             with session_scope(self._session_factory) as session:
-                current = session.get(
-                    CollectionTagNodeGcRecord, (collection_id, store_name, digest)
+                retry_at = format_utc_timestamp(utc_now() + timedelta(seconds=2))
+                updated = cast(
+                    CursorResult[Any],
+                    session.execute(
+                        update(CollectionTagNodeGcRecord)
+                        .where(
+                            CollectionTagNodeGcRecord.collection_id == collection_id,
+                            CollectionTagNodeGcRecord.store == store_name,
+                            CollectionTagNodeGcRecord.node_digest == digest,
+                            CollectionTagNodeGcRecord.expected_head_identity
+                            == expected_head_identity,
+                            CollectionTagNodeGcRecord.object_path == object_path,
+                            CollectionTagNodeGcRecord.provider_revision.is_not_distinct_from(
+                                provider_revision
+                            ),
+                        )
+                        .values(
+                            state="retry_wait",
+                            next_attempt_at=retry_at,
+                            failure=f"{type(exc).__name__}: {exc}"[:1000],
+                        )
+                        .execution_options(synchronize_session=False)
+                    ),
                 )
-                if current is not None:
-                    current.state = "retry_wait"
-                    retry_at = format_utc_timestamp(utc_now() + timedelta(seconds=2))
-                    current.next_attempt_at = retry_at
-                    current.failure = f"{type(exc).__name__}: {exc}"[:1000]
+                if updated.rowcount:
                     publication = session.get(
                         CollectionTagPublicationRecord,
                         (collection_id, store_name),
@@ -732,14 +757,55 @@ class SqlAlchemyCollectionTagService:
                         publication.next_attempt_at = retry_at
             return True
         with session_scope(self._session_factory) as session:
-            current = session.get(CollectionTagNodeGcRecord, (collection_id, store_name, digest))
-            if current is not None:
-                published = session.get(
-                    CollectionTagPublishedNodeRecord, (collection_id, store_name, digest)
-                )
-                if published is not None:
-                    session.delete(published)
-                session.delete(current)
+            removed_receipt = cast(
+                CursorResult[Any],
+                session.execute(
+                    delete(CollectionTagPublishedNodeRecord)
+                    .where(
+                        CollectionTagPublishedNodeRecord.collection_id == collection_id,
+                        CollectionTagPublishedNodeRecord.store == store_name,
+                        CollectionTagPublishedNodeRecord.node_digest == digest,
+                        CollectionTagPublishedNodeRecord.object_path == object_path,
+                        CollectionTagPublishedNodeRecord.provider_revision.is_not_distinct_from(
+                            provider_revision
+                        ),
+                        CollectionTagPublishedNodeRecord.stored_bytes == stored_bytes,
+                        CollectionTagPublishedNodeRecord.stored_sha256 == expected_stored_sha256,
+                        exists(
+                            select(1).where(
+                                CollectionTagNodeGcRecord.collection_id == collection_id,
+                                CollectionTagNodeGcRecord.store == store_name,
+                                CollectionTagNodeGcRecord.node_digest == digest,
+                                CollectionTagNodeGcRecord.expected_head_identity
+                                == expected_head_identity,
+                                CollectionTagNodeGcRecord.object_path == object_path,
+                                CollectionTagNodeGcRecord.provider_revision.is_not_distinct_from(
+                                    provider_revision
+                                ),
+                            )
+                        ),
+                    )
+                    .execution_options(synchronize_session=False)
+                ),
+            )
+            removed_obligation = cast(
+                CursorResult[Any],
+                session.execute(
+                    delete(CollectionTagNodeGcRecord)
+                    .where(
+                        CollectionTagNodeGcRecord.collection_id == collection_id,
+                        CollectionTagNodeGcRecord.store == store_name,
+                        CollectionTagNodeGcRecord.node_digest == digest,
+                        CollectionTagNodeGcRecord.expected_head_identity == expected_head_identity,
+                        CollectionTagNodeGcRecord.object_path == object_path,
+                        CollectionTagNodeGcRecord.provider_revision.is_not_distinct_from(
+                            provider_revision
+                        ),
+                    )
+                    .execution_options(synchronize_session=False)
+                ),
+            )
+            if removed_receipt.rowcount or removed_obligation.rowcount:
                 publication = session.get(
                     CollectionTagPublicationRecord,
                     (collection_id, store_name),

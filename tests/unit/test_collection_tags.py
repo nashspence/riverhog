@@ -1395,6 +1395,227 @@ class _DelayedTagDeleteStore(MemoryArchiveStore):
         )
 
 
+class _TagDeleteCompletionRaceStore(MemoryArchiveStore):
+    def __init__(self) -> None:
+        super().__init__()
+        self.delay_after_effect_digest: str | None = None
+        self.delay_before_effect_digest: str | None = None
+        self.fail_delayed_result = False
+        self.old_effect_applied = threading.Event()
+        self.release_old_result = threading.Event()
+        self.successor_effect_started = threading.Event()
+        self.release_successor_effect = threading.Event()
+        self._delay_lock = threading.Lock()
+
+    def delete_collection_tag_node(
+        self,
+        *,
+        collection_id: int,
+        archive_storage_prefix: str,
+        digest: str,
+        expected_current_stored_sha256: str,
+        provider_revision: str | None,
+    ) -> None:
+        with self._delay_lock:
+            delay_after = self.delay_after_effect_digest == digest
+            delay_before = self.delay_before_effect_digest == digest
+            if delay_after:
+                self.delay_after_effect_digest = None
+            if delay_before:
+                self.delay_before_effect_digest = None
+        if delay_before:
+            self.successor_effect_started.set()
+            assert self.release_successor_effect.wait(timeout=10)
+        super().delete_collection_tag_node(
+            collection_id=collection_id,
+            archive_storage_prefix=archive_storage_prefix,
+            digest=digest,
+            expected_current_stored_sha256=expected_current_stored_sha256,
+            provider_revision=provider_revision,
+        )
+        if delay_after:
+            self.old_effect_applied.set()
+            assert self.release_old_result.wait(timeout=10)
+            if self.fail_delayed_result:
+                raise RuntimeError("delayed provider completion failed")
+
+
+def _advance_until_tag_delete_pauses(
+    service: SqlAlchemyCollectionTagService,
+    paused: threading.Event,
+) -> int:
+    for _ in range(256):
+        progressed = service.process_due(limit=1)
+        if paused.is_set():
+            return progressed
+        if progressed == 0:
+            break
+    raise AssertionError("expected tag-node reclamation did not reach the provider")
+
+
+def _remove_retired_tag_publication_frontiers(factory: object) -> None:
+    with session_scope(factory) as session:  # type: ignore[arg-type]
+        publication = session.get(CollectionTagPublicationRecord, (1, "archive"))
+        assert publication is not None and publication.published_head_identity is not None
+        session.query(CollectionTagPublicationFrontierRecord).filter(
+            CollectionTagPublicationFrontierRecord.collection_id == 1,
+            CollectionTagPublicationFrontierRecord.store == "archive",
+            CollectionTagPublicationFrontierRecord.head_identity
+            != publication.published_head_identity,
+        ).delete(synchronize_session=False)
+
+
+def _assert_delayed_old_tag_gc_result_cannot_change_successor(
+    *,
+    path: Path | None,
+    database_url: str | None = None,
+    fail_old_result: bool,
+) -> None:
+    store = _TagDeleteCompletionRaceStore()
+    service, factory, _stored = _service(
+        path,
+        archive_store=store,
+        database_url=database_url,
+    )
+    principal = _principal("source:camera", "workflow:archive")
+    with session_scope(factory) as session:  # type: ignore[arg-type]
+        collection = session.get(CollectionRecord, 1)
+        assert collection is not None
+        initial_identity = collection.tag_set_identity
+    added = service.add(
+        1,
+        tag="workflow:archive",
+        operation_id="generation-fence-add",
+        expected_revision=1,
+        expected_tag_set_identity=initial_identity,
+        principal=principal,
+    )
+    with session_scope(factory) as session:  # type: ignore[arg-type]
+        mutation = session.get(CollectionTagMutationRecord, (1, "generation-fence-add"))
+        assert mutation is not None and mutation.result_root_sha256 is not None
+        digest = mutation.result_root_sha256
+    service.remove(
+        1,
+        tag="workflow:archive",
+        operation_id="generation-fence-remove",
+        expected_revision=2,
+        expected_tag_set_identity=str(added["tag_set_identity"]),
+        principal=principal,
+    )
+    for _ in range(256):
+        if service.process_due(limit=1) == 0:
+            break
+    _remove_retired_tag_publication_frontiers(factory)
+
+    store.delay_after_effect_digest = digest
+    store.fail_delayed_result = fail_old_result
+    config_url = database_url if database_url is not None else sqlite_url(path)
+    restarted = SqlAlchemyCollectionTagService(
+        RuntimeConfig(database_url=config_url),
+        ArchiveStoreRegistry({"archive": archive_store_binding(store)}),
+        session_factory=factory,  # type: ignore[arg-type]
+    )
+    with ThreadPoolExecutor(max_workers=2) as executor:
+        old_result = executor.submit(
+            _advance_until_tag_delete_pauses,
+            service,
+            store.old_effect_applied,
+        )
+        successor_result = None
+        try:
+            assert store.old_effect_applied.wait(timeout=10)
+            with session_scope(factory) as session:  # type: ignore[arg-type]
+                old_gc = session.get(CollectionTagNodeGcRecord, (1, "archive", digest))
+                assert old_gc is not None and old_gc.state == "deleting"
+                old_generation_identity = old_gc.expected_head_identity
+
+            assert restarted.requeue_interrupted_for_startup(limit=1) == 1
+            assert restarted.process_due(limit=1) == 1
+            with session_scope(factory) as session:  # type: ignore[arg-type]
+                assert session.get(CollectionTagNodeGcRecord, (1, "archive", digest)) is None
+                assert session.get(CollectionTagPublishedNodeRecord, (1, "archive", digest)) is None
+
+            readded = restarted.add(
+                1,
+                tag="workflow:archive",
+                operation_id="generation-fence-readd",
+                expected_revision=3,
+                expected_tag_set_identity=initial_identity,
+                principal=principal,
+            )
+            restarted.remove(
+                1,
+                tag="workflow:archive",
+                operation_id="generation-fence-reremove",
+                expected_revision=4,
+                expected_tag_set_identity=str(readded["tag_set_identity"]),
+                principal=principal,
+            )
+            _remove_retired_tag_publication_frontiers(factory)
+
+            store.delay_before_effect_digest = digest
+            successor_result = executor.submit(
+                _advance_until_tag_delete_pauses,
+                restarted,
+                store.successor_effect_started,
+            )
+            assert store.successor_effect_started.wait(timeout=10)
+            with session_scope(factory) as session:  # type: ignore[arg-type]
+                successor_gc = session.get(CollectionTagNodeGcRecord, (1, "archive", digest))
+                published = session.get(
+                    CollectionTagPublishedNodeRecord,
+                    (1, "archive", digest),
+                )
+                assert successor_gc is not None and successor_gc.state == "deleting"
+                assert successor_gc.expected_head_identity != old_generation_identity
+                assert successor_gc.failure is None
+                assert published is not None
+                successor_identity = successor_gc.expected_head_identity
+                successor_receipt = (
+                    published.object_path,
+                    published.provider_revision,
+                    published.stored_bytes,
+                    published.stored_sha256,
+                )
+                assert successor_receipt == (
+                    successor_gc.object_path,
+                    successor_gc.provider_revision,
+                    published.stored_bytes,
+                    published.stored_sha256,
+                )
+
+            store.release_old_result.set()
+            assert old_result.result(timeout=10) == 1
+            with session_scope(factory) as session:  # type: ignore[arg-type]
+                successor_gc = session.get(CollectionTagNodeGcRecord, (1, "archive", digest))
+                published = session.get(
+                    CollectionTagPublishedNodeRecord,
+                    (1, "archive", digest),
+                )
+                assert successor_gc is not None
+                assert successor_gc.expected_head_identity == successor_identity
+                assert successor_gc.state == "deleting"
+                assert successor_gc.failure is None
+                assert published is not None
+                assert (
+                    published.object_path,
+                    published.provider_revision,
+                    published.stored_bytes,
+                    published.stored_sha256,
+                ) == successor_receipt
+
+            store.release_successor_effect.set()
+            assert successor_result.result(timeout=10) == 1
+        finally:
+            store.release_old_result.set()
+            store.release_successor_effect.set()
+
+    with session_scope(factory) as session:  # type: ignore[arg-type]
+        assert session.get(CollectionTagNodeGcRecord, (1, "archive", digest)) is None
+        assert session.get(CollectionTagPublishedNodeRecord, (1, "archive", digest)) is None
+    assert f"archives/archive/opaque-docs/{collection_tag_node_path(digest)}" not in store.objects
+
+
 def test_delayed_gc_cannot_delete_a_node_republished_by_a_newer_authority(
     tmp_path: Path,
 ) -> None:
@@ -1461,6 +1682,24 @@ def test_delayed_gc_cannot_delete_a_node_republished_by_a_newer_authority(
     head, tags = _recover_stored_tags(store)
     assert head.revision == 4
     assert tags == {"source:camera", "workflow:archive"}
+
+
+def test_delayed_success_from_old_tag_gc_cannot_consume_successor(
+    tmp_path: Path,
+) -> None:
+    _assert_delayed_old_tag_gc_result_cannot_change_successor(
+        path=tmp_path / "delayed-success.sqlite3",
+        fail_old_result=False,
+    )
+
+
+def test_delayed_failure_from_old_tag_gc_cannot_reschedule_successor(
+    tmp_path: Path,
+) -> None:
+    _assert_delayed_old_tag_gc_result_cannot_change_successor(
+        path=tmp_path / "delayed-failure.sqlite3",
+        fail_old_result=True,
+    )
 
 
 class _AmbiguousTagDeleteStore(MemoryArchiveStore):

@@ -105,6 +105,7 @@ WITNESSES = (
         scopes=(
             "collection-description-publication",
             "collection-tag-publication",
+            "collection-tag-node-reclamation",
             "mutable-document-reclamation",
         ),
         invariant=(
@@ -128,6 +129,14 @@ WITNESSES = (
             "test_superseded_tag_heads_retain_exact_cleanup_custody",
             "tests/unit/test_collection_tags.py::"
             "test_tag_node_gc_resumes_idempotently_after_an_ambiguous_delete",
+            "tests/unit/test_collection_tags.py::"
+            "test_delayed_success_from_old_tag_gc_cannot_consume_successor",
+            "tests/unit/test_collection_tags.py::"
+            "test_delayed_failure_from_old_tag_gc_cannot_reschedule_successor",
+            "tests/integration/test_catalog_schema_postgres.py::"
+            "test_postgres_delayed_success_from_old_tag_gc_cannot_consume_successor",
+            "tests/integration/test_catalog_schema_postgres.py::"
+            "test_postgres_delayed_failure_from_old_tag_gc_cannot_reschedule_successor",
             "tests/integration/test_catalog_schema_postgres.py::"
             "test_postgres_superseded_document_cleanup_workers_claim_distinct_receipts",
         ),
