@@ -1921,7 +1921,41 @@ def _assert_unrelated_head_advance_preserves_interrupted_tag_gc(
         assert publication is not None and publication.published_revision == 4
         assert publication.published_head_identity != obligation_head_identity
         assert gc is not None and receipt is not None
+
+    reverted = service.remove(
+        1,
+        tag="where:unrelated",
+        operation_id="head-advance-unrelated-remove",
+        expected_revision=4,
+        expected_tag_set_identity=str(unrelated["tag_set_identity"]),
+        principal=principal,
+    )
+    with pytest.raises(ServiceUnavailable, match="waiting for node cleanup"):
+        service.add(
+            1,
+            tag="workflow:archive",
+            operation_id="head-advance-reuse",
+            expected_revision=5,
+            expected_tag_set_identity=str(reverted["tag_set_identity"]),
+            principal=principal,
+        )
+    with session_scope(factory) as session:  # type: ignore[arg-type]
+        mutation = session.get(CollectionTagMutationRecord, (1, "head-advance-reuse"))
+        publication = session.get(CollectionTagPublicationRecord, (1, "archive"))
+        gc = session.get(CollectionTagNodeGcRecord, (1, "archive", reclaimed_digest))
+        receipt = session.get(CollectionTagPublishedNodeRecord, (1, "archive", reclaimed_digest))
+        assert mutation is not None and mutation.result_root_sha256 == reclaimed_digest
+        assert publication is not None and publication.published_revision == 5
+        frontier = session.get(
+            CollectionTagPublicationFrontierRecord,
+            (1, "archive", publication.desired_head_identity, reclaimed_digest),
+        )
+        assert frontier is not None and frontier.expanded and not frontier.published
+        assert gc is not None and receipt is not None
         gc.next_attempt_at = utc_timestamp_now()
+        publication.next_attempt_at = utc_timestamp_now()
+    assert node_path not in adapter.objects
+    assert (node_path, old_revision) in adapter.revisions
 
     restarted = SqlAlchemyCollectionTagService(
         RuntimeConfig(database_url=config_url),
@@ -1930,23 +1964,22 @@ def _assert_unrelated_head_advance_preserves_interrupted_tag_gc(
         ),
         session_factory=make_session_factory(config_url),
     )
-    assert restarted.process_due(limit=1) == 1
-    with session_scope(factory) as session:  # type: ignore[arg-type]
-        assert session.get(CollectionTagNodeGcRecord, (1, "archive", reclaimed_digest)) is None
-        assert (
-            session.get(CollectionTagPublishedNodeRecord, (1, "archive", reclaimed_digest)) is None
-        )
-    assert (node_path, old_revision) not in adapter.revisions
+    for _ in range(128):
+        progressed = restarted.process_due(limit=1)
+        with session_scope(factory) as session:  # type: ignore[arg-type]
+            publication = session.get(CollectionTagPublicationRecord, (1, "archive"))
+            settled = (
+                publication is not None
+                and publication.state == "published"
+                and publication.published_revision == 6
+            )
+        if settled:
+            break
+        assert progressed == 1
+    else:  # pragma: no cover - the fixed-depth tag closure is much smaller
+        raise AssertionError("reused tag authority did not converge")
 
-    reverted = restarted.remove(
-        1,
-        tag="where:unrelated",
-        operation_id="head-advance-unrelated-remove",
-        expected_revision=4,
-        expected_tag_set_identity=str(unrelated["tag_set_identity"]),
-        principal=principal,
-    )
-    readded = restarted.add(
+    replay = restarted.add(
         1,
         tag="workflow:archive",
         operation_id="head-advance-reuse",
@@ -1954,14 +1987,16 @@ def _assert_unrelated_head_advance_preserves_interrupted_tag_gc(
         expected_tag_set_identity=str(reverted["tag_set_identity"]),
         principal=principal,
     )
+    assert replay["revision"] == 6
     with session_scope(factory) as session:  # type: ignore[arg-type]
         mutation = session.get(CollectionTagMutationRecord, (1, "head-advance-reuse"))
         frontier = session.get(
             CollectionTagPublicationFrontierRecord,
-            (1, "archive", str(readded["head_identity"]), reclaimed_digest),
+            (1, "archive", str(replay["head_identity"]), reclaimed_digest),
         )
         assert mutation is not None and mutation.result_root_sha256 == reclaimed_digest
         assert frontier is not None and frontier.published and frontier.expanded
+        assert session.get(CollectionTagNodeGcRecord, (1, "archive", reclaimed_digest)) is None
     assert node_path in adapter.objects
     assert adapter.objects[node_path].revision != old_revision
     assert (node_path, old_revision) not in adapter.revisions
