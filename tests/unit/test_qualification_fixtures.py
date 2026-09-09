@@ -21,6 +21,7 @@ QUALIFICATION_INPUTS = {
     REPO_ROOT / "qualification/fixtures/stove0/admissions.json",
     REPO_ROOT / "qualification/contracts/riverhog-v1.json",
     REPO_ROOT / "qualification/contracts/riverhog-v1-trace.json",
+    REPO_ROOT / "qualification/policies/implementation-witnesses.json",
     REPO_ROOT / "qualification/provider/config.toml",
 }
 
@@ -114,3 +115,15 @@ def test_every_checked_qualification_input_runs_through_its_real_consumer(
     assert (REPO_ROOT / "qualification/contracts/riverhog-v1-trace.json").read_text(
         encoding="utf-8"
     ) == contract_module._render_trace(projection)
+
+    policy_script = REPO_ROOT / "scripts/implementation_policy.py"
+    policy_spec = importlib.util.spec_from_file_location(
+        "qualification_implementation_policy", policy_script
+    )
+    assert policy_spec is not None and policy_spec.loader is not None
+    policy_module = importlib.util.module_from_spec(policy_spec)
+    sys.modules[policy_spec.name] = policy_module
+    policy_spec.loader.exec_module(policy_module)
+    assert (REPO_ROOT / "qualification/policies/implementation-witnesses.json").read_text(
+        encoding="utf-8"
+    ) == policy_module._render()

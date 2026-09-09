@@ -362,15 +362,15 @@ def test_trace_index_covers_every_extent_and_only_current_source_paths() -> None
     assert trace["contract_projection_sha256"] == hashlib.sha256(ARTIFACT.read_bytes()).hexdigest()
     assert {link["id"] for link in links} == {decision["id"] for decision in decisions}
     assert len(links) == len(decisions)
-    witnesses = {item["id"]: item for item in trace["behavioral_witnesses"]}
+    witnesses = {item["id"]: item for item in trace["segmented_extent_witnesses"]}
     segmented = [
         decision for decision in decisions if decision["policy"] == "segmented_no_total_max"
     ]
-    linked_segmented = [link for link in links if "behavioral_witnesses" in link]
+    linked_segmented = [link for link in links if "segmented_extent_witnesses" in link]
     assert {link["id"] for link in linked_segmented} == {decision["id"] for decision in segmented}
-    assert all(link["behavioral_witnesses"] for link in linked_segmented)
+    assert all(link["segmented_extent_witnesses"] for link in linked_segmented)
     assert {
-        witness_id for link in linked_segmented for witness_id in link["behavioral_witnesses"]
+        witness_id for link in linked_segmented for witness_id in link["segmented_extent_witnesses"]
     } == set(witnesses)
     for witness in witnesses.values():
         assert set(witness["claims"]) == {

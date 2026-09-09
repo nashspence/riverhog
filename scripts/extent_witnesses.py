@@ -19,7 +19,7 @@ REQUIRED_CLAIMS = frozenset(
 
 
 @dataclass(frozen=True, slots=True)
-class BehavioralWitness:
+class SegmentedExtentWitness:
     """One reviewed group of executable proofs for an owned progression rule."""
 
     id: str
@@ -31,7 +31,7 @@ class BehavioralWitness:
 
 
 WITNESSES = (
-    BehavioralWitness(
+    SegmentedExtentWitness(
         id="riverhog-upload-work-progression/v1",
         owner="riverhog",
         reasons=("bounded-actionable-work-acquisition",),
@@ -45,7 +45,7 @@ WITNESSES = (
         ),
         gates=("make unit", "make compose-smoke"),
     ),
-    BehavioralWitness(
+    SegmentedExtentWitness(
         id="riverhog-archive-volume-part-progression/v1",
         owner=(
             "https://nashspence.github.io/riverhog/v1/schemas/"
@@ -62,7 +62,7 @@ WITNESSES = (
         ),
         gates=("make unit", "make compose-smoke", "make provider-qualification"),
     ),
-    BehavioralWitness(
+    SegmentedExtentWitness(
         id="riverhog-work-authority-append/v1",
         owner="riverhog",
         reasons=("bounded-authority-append",),
@@ -74,7 +74,7 @@ WITNESSES = (
         ),
         gates=("make unit", "make postgres-concurrency", "make compose-smoke"),
     ),
-    BehavioralWitness(
+    SegmentedExtentWitness(
         id="riverhog-work-disposition-append/v1",
         owner="riverhog",
         reasons=("bounded-disposition-append",),
@@ -86,7 +86,7 @@ WITNESSES = (
         ),
         gates=("make unit", "make postgres-concurrency", "make compose-smoke"),
     ),
-    BehavioralWitness(
+    SegmentedExtentWitness(
         id="riverhog-provenance-volume-progression/v1",
         owner=(
             "https://nashspence.github.io/riverhog/v1/schemas/"
@@ -103,7 +103,7 @@ WITNESSES = (
         ),
         gates=("make unit", "make compose-smoke", "make provider-qualification"),
     ),
-    BehavioralWitness(
+    SegmentedExtentWitness(
         id="riverhog-raw-digest-progression/v1",
         owner="riverhog",
         reasons=("bounded-raw-digest-append",),
@@ -115,7 +115,7 @@ WITNESSES = (
         ),
         gates=("make unit", "make compose-smoke", "make provider-qualification"),
     ),
-    BehavioralWitness(
+    SegmentedExtentWitness(
         id="riverhog-retrieval-work-progression/v1",
         owner="riverhog",
         reasons=("bounded-retrieval-work-request",),
@@ -127,7 +127,7 @@ WITNESSES = (
         ),
         gates=("make unit", "make postgres-concurrency", "make compose-smoke"),
     ),
-    BehavioralWitness(
+    SegmentedExtentWitness(
         id="riverhog-read-collection-progression/v1",
         owner="riverhog",
         reasons=("bounded-route-page", "bounded-route-progression"),
@@ -141,7 +141,7 @@ WITNESSES = (
         ),
         gates=("make unit", "make postgres-concurrency", "make database-qualification"),
     ),
-    BehavioralWitness(
+    SegmentedExtentWitness(
         id="stove0-read-collection-progression/v1",
         owner="stove0",
         reasons=("bounded-route-page", "bounded-route-progression"),
@@ -155,7 +155,7 @@ WITNESSES = (
         ),
         gates=("make unit", "make database-qualification", "make compose-smoke"),
     ),
-    BehavioralWitness(
+    SegmentedExtentWitness(
         id="riverhog-upload-registration-progression/v1",
         owner="riverhog",
         reasons=("bounded-upload-registration",),
@@ -167,7 +167,7 @@ WITNESSES = (
         ),
         gates=("make unit", "make postgres-concurrency", "make compose-smoke"),
     ),
-    BehavioralWitness(
+    SegmentedExtentWitness(
         id="riverhog-upload-tag-staging-progression/v1",
         owner="riverhog",
         reasons=("bounded-upload-staging-step; collection-tag-set-is-unbounded",),
@@ -191,7 +191,7 @@ WITNESSES = (
         ),
         gates=("make unit", "make compose-smoke", "make provider-qualification"),
     ),
-    BehavioralWitness(
+    SegmentedExtentWitness(
         id="riverhog-upload-unit-source-progression/v1",
         owner="riverhog",
         reasons=("bounded-upload-unit-source-map",),
@@ -234,18 +234,20 @@ def bind_segmented_decisions(
 
     identities = [witness.id for witness in WITNESSES]
     if len(identities) != len(set(identities)):
-        raise ExtentWitnessError("behavioral witness identities are not unique")
+        raise ExtentWitnessError("segmented extent witness identities are not unique")
     for witness in WITNESSES:
         if set(witness.claims) != REQUIRED_CLAIMS:
-            raise ExtentWitnessError(f"behavioral witness has incomplete claims: {witness.id}")
+            raise ExtentWitnessError(
+                f"segmented extent witness has incomplete claims: {witness.id}"
+            )
         if not witness.test_node_ids or not witness.gates:
-            raise ExtentWitnessError(f"behavioral witness is not executable: {witness.id}")
+            raise ExtentWitnessError(f"segmented extent witness is not executable: {witness.id}")
         missing = [
             node_id for node_id in witness.test_node_ids if not _test_symbol_exists(root, node_id)
         ]
         if missing:
             raise ExtentWitnessError(
-                f"behavioral witness has stale test nodes: {witness.id}: {missing}"
+                f"segmented extent witness has stale test nodes: {witness.id}: {missing}"
             )
 
     used: set[str] = set()
@@ -262,19 +264,21 @@ def bind_segmented_decisions(
         ]
         if not matched:
             raise ExtentWitnessError(
-                "segmented extent has no executable behavioral witness: "
+                "segmented extent has no executable extent witness: "
                 f"{decision.get('id')} ({owner}; {reason})"
             )
         used.update(matched)
         links.append(
             {
                 "id": decision["id"],
-                "behavioral_witnesses": matched,
+                "segmented_extent_witnesses": matched,
             }
         )
     unused = sorted(set(identities) - used)
     if unused:
-        raise ExtentWitnessError(f"behavioral witnesses have no segmented owner: {unused}")
+        raise ExtentWitnessError(
+            f"segmented extent witnesses have no contract decision owner: {unused}"
+        )
     records: list[dict[str, object]] = [
         {
             "id": witness.id,
@@ -291,7 +295,7 @@ def bind_segmented_decisions(
 
 
 __all__ = [
-    "BehavioralWitness",
+    "SegmentedExtentWitness",
     "ExtentWitnessError",
     "REQUIRED_CLAIMS",
     "WITNESSES",
