@@ -31,7 +31,7 @@ target "image-common" {
 target "riverhog" {
   inherits   = ["image-common"]
   context    = "."
-  dockerfile = "riverhog/server/Dockerfile"
+  dockerfile = "riverhog/Dockerfile"
   tags       = ["riverhog-app:dev"]
   args       = { SOURCE_REVISION = "unknown" }
 }

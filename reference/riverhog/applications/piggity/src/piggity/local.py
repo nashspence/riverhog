@@ -12,7 +12,6 @@ from typing import Annotated, Any, cast
 
 import typer
 from http_api_contracts import BrowseTokenCodec, BrowseTokenError
-from riverhog_cli_support.output import emit, format_list_ids
 from riverhog_client.catalog_sync import CatalogReplica
 from riverhog_client.client import ApiClient, RestorePolicy
 from riverhog_client.downloads import (
@@ -29,6 +28,7 @@ from riverhog_provenance import list_provenance_observers, resolve_provenance_ob
 from state_schema import StateSchemaError
 from time_formats import parse_utc_timestamp
 
+from piggity.cli_support import emit, format_list_ids
 from piggity.local_state import state_schema as local_state_schema
 from piggity.output import format_local_collection, format_local_collections
 

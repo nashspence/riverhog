@@ -25,7 +25,6 @@ dependencies = [
   "rich>=15.0,<16.0",
   "riverhog-client>=0.1,<0.2",
   "riverhog-application-access>=0.1,<0.2",
-  "riverhog-cli-support>=0.1,<0.2",
   "riverhog-protocol>=0.1,<0.2",
   "riverhog-provenance>=0.1,<0.2",
   "state-schema>=0.1,<0.2",
@@ -41,7 +40,6 @@ piggity = "piggity.main:main"
 http-api-contracts = { workspace = true }
 riverhog-client = { workspace = true }
 riverhog-application-access = { workspace = true }
-riverhog-cli-support = { workspace = true }
 riverhog-protocol = { workspace = true }
 riverhog-provenance = { workspace = true }
 state-schema = { workspace = true }

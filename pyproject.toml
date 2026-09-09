@@ -26,7 +26,7 @@ members = [
   "reference/stove0/targets/*/target",
   "reference/stove0/targets/*/review-sampler",
   "reference/stove0/packages/*",
-  "riverhog/*",
+  "riverhog",
 ]
 
 [tool.uv.sources]

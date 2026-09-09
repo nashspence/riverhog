@@ -23,8 +23,8 @@ COPY --from=locked-tools /opt/riverhog-tools/bin/uv /usr/local/bin/uv
 WORKDIR /workspace
 
 COPY pyproject.toml uv.lock ./
-COPY riverhog/server/pyproject.toml riverhog/server/pyproject.toml
-COPY riverhog/server/src riverhog/server/src
+COPY riverhog/pyproject.toml riverhog/pyproject.toml
+COPY riverhog/src riverhog/src
 COPY packages/riverhog-application-access packages/riverhog-application-access
 COPY packages/http-api-contracts packages/http-api-contracts
 COPY packages/lifecycle-events packages/lifecycle-events

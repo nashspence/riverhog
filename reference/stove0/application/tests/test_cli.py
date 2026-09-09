@@ -59,7 +59,7 @@ class FakeClient:
                 "artifacts": [
                     {
                         "id": "source",
-                        "role": "munchy.source/v1",
+                        "role": "fixture.source/v1",
                         "path": "source.bin",
                         "bytes": 1,
                     }

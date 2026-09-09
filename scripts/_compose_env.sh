@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-COMPOSE_FILE="${ROOT_DIR}/riverhog/server/compose.yaml"
+COMPOSE_FILE="${ROOT_DIR}/riverhog/compose.yaml"
 LOCAL_ENV_FILE="${ROOT_DIR}/.env.compose"
 APP_IMAGE_NAME="riverhog-app:dev"
 TEST_IMAGE_NAME="riverhog-test:dev"

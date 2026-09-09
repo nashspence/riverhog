@@ -3,9 +3,9 @@ from __future__ import annotations
 import json
 
 import piggity.main
+from piggity.cli_support import emit
 from piggity.main import app
 from pytest import CaptureFixture
-from riverhog_cli_support.output import emit
 from typer.testing import CliRunner
 
 

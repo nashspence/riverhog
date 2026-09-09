@@ -22,7 +22,6 @@ dependencies = [
   "config-validation>=0.1,<0.2",
   "gogurt-core>=0.1,<0.2",
   "gogurt-listener-runtime>=0.1,<0.2",
-  "riverhog-cli-support>=0.1,<0.2",
   "typer>=0.12,<1.0",
 ]
 
@@ -33,7 +32,6 @@ gogurt = "gogurt.cli:main"
 config-validation = { workspace = true }
 gogurt-core = { workspace = true }
 gogurt-listener-runtime = { workspace = true }
-riverhog-cli-support = { workspace = true }
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/gogurt"]

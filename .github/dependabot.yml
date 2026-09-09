@@ -55,7 +55,7 @@ updates:
       - /reference/stove0/targets/review/materialize-target
       - /reference/stove0/targets/review/rclone-effect-target
       - /reference/riverhog/ingress/ftp
-      - /riverhog/server
+      - /riverhog
       - /reference/riverhog/storage/aws
       - /reference/riverhog/storage/backblaze
       - /reference/riverhog/storage/filesystem

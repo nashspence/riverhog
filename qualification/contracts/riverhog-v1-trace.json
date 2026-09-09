@@ -1,6 +1,6 @@
 {
-  "contract_canonical_sha256": "924827dd96528c461efe730b238d190d516193515eff9b08eb33019eca8e6655",
-  "contract_projection_sha256": "55328507b108c315a29931e116c9a948c0fe6bf2d54152ce2546367bddf3e70c",
+  "contract_canonical_sha256": "4c30083502f124065a0add13aecb0e3088a5d37539dcc15919b8f988ff9017fa",
+  "contract_projection_sha256": "0b432dfae4cc995075334baa6bd1bf9df38552cdc7f844583760d030dced8c2a",
   "contract_schema": "riverhog-contract-freeze/v1",
   "coverage": {
     "extent_decisions": 1939,
@@ -10264,7 +10264,7 @@
           "path": "/health/live",
           "source": {
             "module": "riverhog_api.app",
-            "path": "riverhog/server/src/riverhog_api/app.py",
+            "path": "riverhog/src/riverhog_api/app.py",
             "symbol": "create_app.<locals>.health_live"
           }
         },
@@ -10276,7 +10276,7 @@
           "path": "/health/ready",
           "source": {
             "module": "riverhog_api.app",
-            "path": "riverhog/server/src/riverhog_api/app.py",
+            "path": "riverhog/src/riverhog_api/app.py",
             "symbol": "create_app.<locals>.health_ready"
           }
         },
@@ -10288,7 +10288,7 @@
           "path": "/v1/app-key-access",
           "source": {
             "module": "riverhog_api.routers.apps",
-            "path": "riverhog/server/src/riverhog_api/routers/apps.py",
+            "path": "riverhog/src/riverhog_api/routers/apps.py",
             "symbol": "list_app_key_access"
           }
         },
@@ -10300,7 +10300,7 @@
           "path": "/v1/apps",
           "source": {
             "module": "riverhog_api.routers.apps",
-            "path": "riverhog/server/src/riverhog_api/routers/apps.py",
+            "path": "riverhog/src/riverhog_api/routers/apps.py",
             "symbol": "list_apps"
           }
         },
@@ -10312,7 +10312,7 @@
           "path": "/v1/apps/{app}/keys",
           "source": {
             "module": "riverhog_api.routers.apps",
-            "path": "riverhog/server/src/riverhog_api/routers/apps.py",
+            "path": "riverhog/src/riverhog_api/routers/apps.py",
             "symbol": "create_app_key"
           }
         },
@@ -10324,7 +10324,7 @@
           "path": "/v1/apps/{app}/keys",
           "source": {
             "module": "riverhog_api.routers.apps",
-            "path": "riverhog/server/src/riverhog_api/routers/apps.py",
+            "path": "riverhog/src/riverhog_api/routers/apps.py",
             "symbol": "list_app_keys"
           }
         },
@@ -10336,7 +10336,7 @@
           "path": "/v1/apps/{app}/keys/{key_id}/access",
           "source": {
             "module": "riverhog_api.routers.apps",
-            "path": "riverhog/server/src/riverhog_api/routers/apps.py",
+            "path": "riverhog/src/riverhog_api/routers/apps.py",
             "symbol": "add_app_key_access"
           }
         },
@@ -10348,7 +10348,7 @@
           "path": "/v1/apps/{app}/keys/{key_id}/access",
           "source": {
             "module": "riverhog_api.routers.apps",
-            "path": "riverhog/server/src/riverhog_api/routers/apps.py",
+            "path": "riverhog/src/riverhog_api/routers/apps.py",
             "symbol": "remove_app_key_access"
           }
         },
@@ -10360,7 +10360,7 @@
           "path": "/v1/apps/{app}/keys/{key_id}/access",
           "source": {
             "module": "riverhog_api.routers.apps",
-            "path": "riverhog/server/src/riverhog_api/routers/apps.py",
+            "path": "riverhog/src/riverhog_api/routers/apps.py",
             "symbol": "replace_app_key_access"
           }
         },
@@ -10372,7 +10372,7 @@
           "path": "/v1/apps/{app}/keys/{key_id}/download-quota",
           "source": {
             "module": "riverhog_api.routers.quotas",
-            "path": "riverhog/server/src/riverhog_api/routers/quotas.py",
+            "path": "riverhog/src/riverhog_api/routers/quotas.py",
             "symbol": "set_app_key_download_quota"
           }
         },
@@ -10384,7 +10384,7 @@
           "path": "/v1/apps/{app}/keys/{key_id}/revoke",
           "source": {
             "module": "riverhog_api.routers.apps",
-            "path": "riverhog/server/src/riverhog_api/routers/apps.py",
+            "path": "riverhog/src/riverhog_api/routers/apps.py",
             "symbol": "revoke_app_key"
           }
         },
@@ -10396,7 +10396,7 @@
           "path": "/v1/apps/{app}/keys/{key_id}/rotate",
           "source": {
             "module": "riverhog_api.routers.apps",
-            "path": "riverhog/server/src/riverhog_api/routers/apps.py",
+            "path": "riverhog/src/riverhog_api/routers/apps.py",
             "symbol": "rotate_app_key"
           }
         },
@@ -10408,7 +10408,7 @@
           "path": "/v1/archive/copies",
           "source": {
             "module": "riverhog_api.routers.archive",
-            "path": "riverhog/server/src/riverhog_api/routers/archive.py",
+            "path": "riverhog/src/riverhog_api/routers/archive.py",
             "symbol": "create_or_resume_archive_copy"
           }
         },
@@ -10420,7 +10420,7 @@
           "path": "/v1/archive/copies",
           "source": {
             "module": "riverhog_api.routers.archive",
-            "path": "riverhog/server/src/riverhog_api/routers/archive.py",
+            "path": "riverhog/src/riverhog_api/routers/archive.py",
             "symbol": "list_archive_copy_jobs"
           }
         },
@@ -10432,7 +10432,7 @@
           "path": "/v1/archive/copies/retire",
           "source": {
             "module": "riverhog_api.routers.archive",
-            "path": "riverhog/server/src/riverhog_api/routers/archive.py",
+            "path": "riverhog/src/riverhog_api/routers/archive.py",
             "symbol": "retire_archive_copy"
           }
         },
@@ -10444,7 +10444,7 @@
           "path": "/v1/archive/copies/retirement-plan",
           "source": {
             "module": "riverhog_api.routers.archive",
-            "path": "riverhog/server/src/riverhog_api/routers/archive.py",
+            "path": "riverhog/src/riverhog_api/routers/archive.py",
             "symbol": "plan_archive_copy_retirement"
           }
         },
@@ -10456,7 +10456,7 @@
           "path": "/v1/archive/copies/{collection_id}/{destination_store}",
           "source": {
             "module": "riverhog_api.routers.archive",
-            "path": "riverhog/server/src/riverhog_api/routers/archive.py",
+            "path": "riverhog/src/riverhog_api/routers/archive.py",
             "symbol": "cancel_archive_copy_job"
           }
         },
@@ -10468,7 +10468,7 @@
           "path": "/v1/archive/copies/{collection_id}/{destination_store}",
           "source": {
             "module": "riverhog_api.routers.archive",
-            "path": "riverhog/server/src/riverhog_api/routers/archive.py",
+            "path": "riverhog/src/riverhog_api/routers/archive.py",
             "symbol": "get_archive_copy_job"
           }
         },
@@ -10480,7 +10480,7 @@
           "path": "/v1/archive/stores",
           "source": {
             "module": "riverhog_api.routers.archive",
-            "path": "riverhog/server/src/riverhog_api/routers/archive.py",
+            "path": "riverhog/src/riverhog_api/routers/archive.py",
             "symbol": "list_archive_stores"
           }
         },
@@ -10492,7 +10492,7 @@
           "path": "/v1/archive/stores/{store}",
           "source": {
             "module": "riverhog_api.routers.archive",
-            "path": "riverhog/server/src/riverhog_api/routers/archive.py",
+            "path": "riverhog/src/riverhog_api/routers/archive.py",
             "symbol": "get_archive_store"
           }
         },
@@ -10504,7 +10504,7 @@
           "path": "/v1/catalog-sync/changes",
           "source": {
             "module": "riverhog_api.routers.catalog_sync",
-            "path": "riverhog/server/src/riverhog_api/routers/catalog_sync.py",
+            "path": "riverhog/src/riverhog_api/routers/catalog_sync.py",
             "symbol": "list_catalog_sync_changes"
           }
         },
@@ -10516,7 +10516,7 @@
           "path": "/v1/catalog-sync/checkpoint",
           "source": {
             "module": "riverhog_api.routers.catalog_sync",
-            "path": "riverhog/server/src/riverhog_api/routers/catalog_sync.py",
+            "path": "riverhog/src/riverhog_api/routers/catalog_sync.py",
             "symbol": "create_catalog_sync_checkpoint"
           }
         },
@@ -10528,7 +10528,7 @@
           "path": "/v1/catalog-sync/collections",
           "source": {
             "module": "riverhog_api.routers.catalog_sync",
-            "path": "riverhog/server/src/riverhog_api/routers/catalog_sync.py",
+            "path": "riverhog/src/riverhog_api/routers/catalog_sync.py",
             "symbol": "list_catalog_sync_collections"
           }
         },
@@ -10540,7 +10540,7 @@
           "path": "/v1/catalog/collections/{collection_id}/inventory",
           "source": {
             "module": "riverhog_api.routers.portable_collections",
-            "path": "riverhog/server/src/riverhog_api/routers/portable_collections.py",
+            "path": "riverhog/src/riverhog_api/routers/portable_collections.py",
             "symbol": "get_portable_collection_inventory"
           }
         },
@@ -10552,7 +10552,7 @@
           "path": "/v1/collection-processing-claims",
           "source": {
             "module": "riverhog_api.routers.workflows",
-            "path": "riverhog/server/src/riverhog_api/routers/workflows.py",
+            "path": "riverhog/src/riverhog_api/routers/workflows.py",
             "symbol": "create_or_resume_processing_claim"
           }
         },
@@ -10564,7 +10564,7 @@
           "path": "/v1/collection-processing-claims",
           "source": {
             "module": "riverhog_api.routers.workflows",
-            "path": "riverhog/server/src/riverhog_api/routers/workflows.py",
+            "path": "riverhog/src/riverhog_api/routers/workflows.py",
             "symbol": "list_processing_claims"
           }
         },
@@ -10576,7 +10576,7 @@
           "path": "/v1/collection-processing-claims/{claim_id}",
           "source": {
             "module": "riverhog_api.routers.workflows",
-            "path": "riverhog/server/src/riverhog_api/routers/workflows.py",
+            "path": "riverhog/src/riverhog_api/routers/workflows.py",
             "symbol": "get_processing_claim"
           }
         },
@@ -10588,7 +10588,7 @@
           "path": "/v1/collection-processing-claims/{claim_id}/abandon",
           "source": {
             "module": "riverhog_api.routers.workflows",
-            "path": "riverhog/server/src/riverhog_api/routers/workflows.py",
+            "path": "riverhog/src/riverhog_api/routers/workflows.py",
             "symbol": "abandon_processing_claim"
           }
         },
@@ -10600,7 +10600,7 @@
           "path": "/v1/collection-processing-claims/{claim_id}/capabilities",
           "source": {
             "module": "riverhog_api.routers.workflows",
-            "path": "riverhog/server/src/riverhog_api/routers/workflows.py",
+            "path": "riverhog/src/riverhog_api/routers/workflows.py",
             "symbol": "create_transform_capability"
           }
         },
@@ -10612,7 +10612,7 @@
           "path": "/v1/collection-processing-claims/{claim_id}/capabilities/{capability_id}/artifacts",
           "source": {
             "module": "riverhog_api.routers.workflows",
-            "path": "riverhog/server/src/riverhog_api/routers/workflows.py",
+            "path": "riverhog/src/riverhog_api/routers/workflows.py",
             "symbol": "append_transform_capability_artifacts"
           }
         },
@@ -10624,7 +10624,7 @@
           "path": "/v1/collection-processing-claims/{claim_id}/capabilities/{capability_id}/artifacts/seal",
           "source": {
             "module": "riverhog_api.routers.workflows",
-            "path": "riverhog/server/src/riverhog_api/routers/workflows.py",
+            "path": "riverhog/src/riverhog_api/routers/workflows.py",
             "symbol": "seal_transform_capability_artifacts"
           }
         },
@@ -10636,7 +10636,7 @@
           "path": "/v1/collection-processing-claims/{claim_id}/derivation",
           "source": {
             "module": "riverhog_api.routers.workflows",
-            "path": "riverhog/server/src/riverhog_api/routers/workflows.py",
+            "path": "riverhog/src/riverhog_api/routers/workflows.py",
             "symbol": "get_processing_claim_dispositions"
           }
         },
@@ -10648,7 +10648,7 @@
           "path": "/v1/collection-processing-claims/{claim_id}/derivation/dispositions",
           "source": {
             "module": "riverhog_api.routers.workflows",
-            "path": "riverhog/server/src/riverhog_api/routers/workflows.py",
+            "path": "riverhog/src/riverhog_api/routers/workflows.py",
             "symbol": "list_processing_claim_dispositions"
           }
         },
@@ -10660,7 +10660,7 @@
           "path": "/v1/collection-processing-claims/{claim_id}/derivation/dispositions",
           "source": {
             "module": "riverhog_api.routers.workflows",
-            "path": "riverhog/server/src/riverhog_api/routers/workflows.py",
+            "path": "riverhog/src/riverhog_api/routers/workflows.py",
             "symbol": "record_processing_claim_dispositions"
           }
         },
@@ -10672,7 +10672,7 @@
           "path": "/v1/collection-processing-claims/{claim_id}/derivation/output-edges",
           "source": {
             "module": "riverhog_api.routers.workflows",
-            "path": "riverhog/server/src/riverhog_api/routers/workflows.py",
+            "path": "riverhog/src/riverhog_api/routers/workflows.py",
             "symbol": "list_processing_claim_disposition_outputs"
           }
         },
@@ -10684,7 +10684,7 @@
           "path": "/v1/collection-processing-claims/{claim_id}/derivation/output-edges",
           "source": {
             "module": "riverhog_api.routers.workflows",
-            "path": "riverhog/server/src/riverhog_api/routers/workflows.py",
+            "path": "riverhog/src/riverhog_api/routers/workflows.py",
             "symbol": "record_processing_claim_disposition_outputs"
           }
         },
@@ -10696,7 +10696,7 @@
           "path": "/v1/collection-processing-claims/{claim_id}/derivation/seal",
           "source": {
             "module": "riverhog_api.routers.workflows",
-            "path": "riverhog/server/src/riverhog_api/routers/workflows.py",
+            "path": "riverhog/src/riverhog_api/routers/workflows.py",
             "symbol": "seal_processing_claim_dispositions"
           }
         },
@@ -10708,7 +10708,7 @@
           "path": "/v1/collection-processing-claims/{claim_id}/inputs",
           "source": {
             "module": "riverhog_api.routers.workflows",
-            "path": "riverhog/server/src/riverhog_api/routers/workflows.py",
+            "path": "riverhog/src/riverhog_api/routers/workflows.py",
             "symbol": "append_processing_claim_inputs"
           }
         },
@@ -10720,7 +10720,7 @@
           "path": "/v1/collection-processing-claims/{claim_id}/inputs",
           "source": {
             "module": "riverhog_api.routers.workflows",
-            "path": "riverhog/server/src/riverhog_api/routers/workflows.py",
+            "path": "riverhog/src/riverhog_api/routers/workflows.py",
             "symbol": "list_processing_claim_inputs"
           }
         },
@@ -10732,7 +10732,7 @@
           "path": "/v1/collection-processing-claims/{claim_id}/inputs/seal",
           "source": {
             "module": "riverhog_api.routers.workflows",
-            "path": "riverhog/server/src/riverhog_api/routers/workflows.py",
+            "path": "riverhog/src/riverhog_api/routers/workflows.py",
             "symbol": "seal_processing_claim_inputs"
           }
         },
@@ -10744,7 +10744,7 @@
           "path": "/v1/collection-processing-claims/{claim_id}/outcomes",
           "source": {
             "module": "riverhog_api.routers.workflows",
-            "path": "riverhog/server/src/riverhog_api/routers/workflows.py",
+            "path": "riverhog/src/riverhog_api/routers/workflows.py",
             "symbol": "list_processing_claim_outcomes"
           }
         },
@@ -10756,7 +10756,7 @@
           "path": "/v1/collection-processing-claims/{claim_id}/outcomes/settle",
           "source": {
             "module": "riverhog_api.routers.workflows",
-            "path": "riverhog/server/src/riverhog_api/routers/workflows.py",
+            "path": "riverhog/src/riverhog_api/routers/workflows.py",
             "symbol": "settle_processing_claim_outcomes"
           }
         },
@@ -10768,7 +10768,7 @@
           "path": "/v1/collection-processing-claims/{claim_id}/plan",
           "source": {
             "module": "riverhog_api.routers.workflows",
-            "path": "riverhog/server/src/riverhog_api/routers/workflows.py",
+            "path": "riverhog/src/riverhog_api/routers/workflows.py",
             "symbol": "seal_processing_claim_plan"
           }
         },
@@ -10780,7 +10780,7 @@
           "path": "/v1/collection-processing-claims/{claim_id}/plan/artifacts",
           "source": {
             "module": "riverhog_api.routers.workflows",
-            "path": "riverhog/server/src/riverhog_api/routers/workflows.py",
+            "path": "riverhog/src/riverhog_api/routers/workflows.py",
             "symbol": "append_processing_claim_artifacts"
           }
         },
@@ -10792,7 +10792,7 @@
           "path": "/v1/collection-processing-claims/{claim_id}/plan/artifacts",
           "source": {
             "module": "riverhog_api.routers.workflows",
-            "path": "riverhog/server/src/riverhog_api/routers/workflows.py",
+            "path": "riverhog/src/riverhog_api/routers/workflows.py",
             "symbol": "list_processing_claim_artifacts"
           }
         },
@@ -10804,7 +10804,7 @@
           "path": "/v1/collection-processing-claims/{claim_id}/plan/artifacts/seal",
           "source": {
             "module": "riverhog_api.routers.workflows",
-            "path": "riverhog/server/src/riverhog_api/routers/workflows.py",
+            "path": "riverhog/src/riverhog_api/routers/workflows.py",
             "symbol": "seal_processing_claim_artifacts"
           }
         },
@@ -10816,7 +10816,7 @@
           "path": "/v1/collection-processing-claims/{claim_id}/release",
           "source": {
             "module": "riverhog_api.routers.workflows",
-            "path": "riverhog/server/src/riverhog_api/routers/workflows.py",
+            "path": "riverhog/src/riverhog_api/routers/workflows.py",
             "symbol": "release_processing_claim"
           }
         },
@@ -10828,7 +10828,7 @@
           "path": "/v1/collection-processing-claims/{claim_id}/renew",
           "source": {
             "module": "riverhog_api.routers.workflows",
-            "path": "riverhog/server/src/riverhog_api/routers/workflows.py",
+            "path": "riverhog/src/riverhog_api/routers/workflows.py",
             "symbol": "renew_processing_claim"
           }
         },
@@ -10840,7 +10840,7 @@
           "path": "/v1/collection-processing-claims/{claim_id}/restart",
           "source": {
             "module": "riverhog_api.routers.workflows",
-            "path": "riverhog/server/src/riverhog_api/routers/workflows.py",
+            "path": "riverhog/src/riverhog_api/routers/workflows.py",
             "symbol": "restart_processing_claim"
           }
         },
@@ -10852,7 +10852,7 @@
           "path": "/v1/collection-processing-claims/{claim_id}/retirement",
           "source": {
             "module": "riverhog_api.routers.workflows",
-            "path": "riverhog/server/src/riverhog_api/routers/workflows.py",
+            "path": "riverhog/src/riverhog_api/routers/workflows.py",
             "symbol": "begin_processing_claim_retirement"
           }
         },
@@ -10864,7 +10864,7 @@
           "path": "/v1/collection-processing-claims/{claim_id}/settle",
           "source": {
             "module": "riverhog_api.routers.workflows",
-            "path": "riverhog/server/src/riverhog_api/routers/workflows.py",
+            "path": "riverhog/src/riverhog_api/routers/workflows.py",
             "symbol": "settle_processing_claim"
           }
         },
@@ -10876,7 +10876,7 @@
           "path": "/v1/collection-upload-sessions",
           "source": {
             "module": "riverhog_api.routers.collections",
-            "path": "riverhog/server/src/riverhog_api/routers/collections.py",
+            "path": "riverhog/src/riverhog_api/routers/collections.py",
             "symbol": "create_or_resume_collection_upload_session"
           }
         },
@@ -10888,7 +10888,7 @@
           "path": "/v1/collection-upload-sessions",
           "source": {
             "module": "riverhog_api.routers.collections",
-            "path": "riverhog/server/src/riverhog_api/routers/collections.py",
+            "path": "riverhog/src/riverhog_api/routers/collections.py",
             "symbol": "list_collection_upload_sessions"
           }
         },
@@ -10900,7 +10900,7 @@
           "path": "/v1/collection-upload-sessions/{collection_id}",
           "source": {
             "module": "riverhog_api.routers.collections",
-            "path": "riverhog/server/src/riverhog_api/routers/collections.py",
+            "path": "riverhog/src/riverhog_api/routers/collections.py",
             "symbol": "get_collection_upload_session"
           }
         },
@@ -10912,7 +10912,7 @@
           "path": "/v1/collection-upload-sessions/{collection_id}/cancel",
           "source": {
             "module": "riverhog_api.routers.collections",
-            "path": "riverhog/server/src/riverhog_api/routers/collections.py",
+            "path": "riverhog/src/riverhog_api/routers/collections.py",
             "symbol": "cancel_collection_upload_session"
           }
         },
@@ -10924,7 +10924,7 @@
           "path": "/v1/collection-upload-sessions/{collection_id}/complete",
           "source": {
             "module": "riverhog_api.routers.collections",
-            "path": "riverhog/server/src/riverhog_api/routers/collections.py",
+            "path": "riverhog/src/riverhog_api/routers/collections.py",
             "symbol": "complete_collection_upload_session"
           }
         },
@@ -10936,7 +10936,7 @@
           "path": "/v1/collection-upload-sessions/{collection_id}/discard",
           "source": {
             "module": "riverhog_api.routers.collections",
-            "path": "riverhog/server/src/riverhog_api/routers/collections.py",
+            "path": "riverhog/src/riverhog_api/routers/collections.py",
             "symbol": "discard_collection_upload"
           }
         },
@@ -10948,7 +10948,7 @@
           "path": "/v1/collection-upload-sessions/{collection_id}/discard-plan",
           "source": {
             "module": "riverhog_api.routers.collections",
-            "path": "riverhog/server/src/riverhog_api/routers/collections.py",
+            "path": "riverhog/src/riverhog_api/routers/collections.py",
             "symbol": "plan_collection_upload_discard"
           }
         },
@@ -10960,7 +10960,7 @@
           "path": "/v1/collection-upload-sessions/{collection_id}/files",
           "source": {
             "module": "riverhog_api.routers.collections",
-            "path": "riverhog/server/src/riverhog_api/routers/collections.py",
+            "path": "riverhog/src/riverhog_api/routers/collections.py",
             "symbol": "list_collection_upload_session_files"
           }
         },
@@ -10972,7 +10972,7 @@
           "path": "/v1/collection-upload-sessions/{collection_id}/files",
           "source": {
             "module": "riverhog_api.routers.collections",
-            "path": "riverhog/server/src/riverhog_api/routers/collections.py",
+            "path": "riverhog/src/riverhog_api/routers/collections.py",
             "symbol": "register_collection_upload_session_files"
           }
         },
@@ -10984,7 +10984,7 @@
           "path": "/v1/collection-upload-sessions/{collection_id}/heartbeat",
           "source": {
             "module": "riverhog_api.routers.collections",
-            "path": "riverhog/server/src/riverhog_api/routers/collections.py",
+            "path": "riverhog/src/riverhog_api/routers/collections.py",
             "symbol": "heartbeat_collection_upload_session"
           }
         },
@@ -10996,7 +10996,7 @@
           "path": "/v1/collection-upload-sessions/{collection_id}/provenance/journals/{journal_id}",
           "source": {
             "module": "riverhog_api.routers.collections",
-            "path": "riverhog/server/src/riverhog_api/routers/collections.py",
+            "path": "riverhog/src/riverhog_api/routers/collections.py",
             "symbol": "append_collection_upload_session_provenance_journal"
           }
         },
@@ -11008,7 +11008,7 @@
           "path": "/v1/collection-upload-sessions/{collection_id}/provenance/journals/{journal_id}",
           "source": {
             "module": "riverhog_api.routers.collections",
-            "path": "riverhog/server/src/riverhog_api/routers/collections.py",
+            "path": "riverhog/src/riverhog_api/routers/collections.py",
             "symbol": "create_collection_upload_session_provenance_journal"
           }
         },
@@ -11020,7 +11020,7 @@
           "path": "/v1/collection-upload-sessions/{collection_id}/provenance/journals/{journal_id}",
           "source": {
             "module": "riverhog_api.routers.collections",
-            "path": "riverhog/server/src/riverhog_api/routers/collections.py",
+            "path": "riverhog/src/riverhog_api/routers/collections.py",
             "symbol": "get_collection_upload_session_provenance_journal"
           }
         },
@@ -11032,7 +11032,7 @@
           "path": "/v1/collection-upload-sessions/{collection_id}/provenance/journals/{journal_id}/seal",
           "source": {
             "module": "riverhog_api.routers.collections",
-            "path": "riverhog/server/src/riverhog_api/routers/collections.py",
+            "path": "riverhog/src/riverhog_api/routers/collections.py",
             "symbol": "seal_collection_upload_session_provenance_journal"
           }
         },
@@ -11044,7 +11044,7 @@
           "path": "/v1/collection-upload-sessions/{collection_id}/raw-part-digests",
           "source": {
             "module": "riverhog_api.routers.collections",
-            "path": "riverhog/server/src/riverhog_api/routers/collections.py",
+            "path": "riverhog/src/riverhog_api/routers/collections.py",
             "symbol": "register_collection_upload_session_raw_part_digests"
           }
         },
@@ -11056,7 +11056,7 @@
           "path": "/v1/collection-upload-sessions/{collection_id}/tags",
           "source": {
             "module": "riverhog_api.routers.collections",
-            "path": "riverhog/server/src/riverhog_api/routers/collections.py",
+            "path": "riverhog/src/riverhog_api/routers/collections.py",
             "symbol": "add_collection_upload_session_tags"
           }
         },
@@ -11068,7 +11068,7 @@
           "path": "/v1/collection-upload-sessions/{collection_id}/volumes/{volume_id}/units/{unit}",
           "source": {
             "module": "riverhog_api.routers.collections",
-            "path": "riverhog/server/src/riverhog_api/routers/collections.py",
+            "path": "riverhog/src/riverhog_api/routers/collections.py",
             "symbol": "get_collection_upload_session_unit"
           }
         },
@@ -11080,7 +11080,7 @@
           "path": "/v1/collection-upload-sessions/{collection_id}/volumes/{volume_id}/units/{unit}",
           "source": {
             "module": "riverhog_api.routers.collections",
-            "path": "riverhog/server/src/riverhog_api/routers/collections.py",
+            "path": "riverhog/src/riverhog_api/routers/collections.py",
             "symbol": "put_collection_upload_session_unit"
           }
         },
@@ -11092,7 +11092,7 @@
           "path": "/v1/collection-upload-sessions/{collection_id}/work",
           "source": {
             "module": "riverhog_api.routers.collections",
-            "path": "riverhog/server/src/riverhog_api/routers/collections.py",
+            "path": "riverhog/src/riverhog_api/routers/collections.py",
             "symbol": "acquire_collection_upload_session_work"
           }
         },
@@ -11104,7 +11104,7 @@
           "path": "/v1/collections",
           "source": {
             "module": "riverhog_api.routers.collections",
-            "path": "riverhog/server/src/riverhog_api/routers/collections.py",
+            "path": "riverhog/src/riverhog_api/routers/collections.py",
             "symbol": "list_collections"
           }
         },
@@ -11116,7 +11116,7 @@
           "path": "/v1/collections/{collection_id}",
           "source": {
             "module": "riverhog_api.routers.collections",
-            "path": "riverhog/server/src/riverhog_api/routers/collections.py",
+            "path": "riverhog/src/riverhog_api/routers/collections.py",
             "symbol": "get_collection"
           }
         },
@@ -11128,7 +11128,7 @@
           "path": "/v1/collections/{collection_id}/archive-copies",
           "source": {
             "module": "riverhog_api.routers.collections",
-            "path": "riverhog/server/src/riverhog_api/routers/collections.py",
+            "path": "riverhog/src/riverhog_api/routers/collections.py",
             "symbol": "list_collection_archive_copies"
           }
         },
@@ -11140,7 +11140,7 @@
           "path": "/v1/collections/{collection_id}/delete",
           "source": {
             "module": "riverhog_api.routers.collections",
-            "path": "riverhog/server/src/riverhog_api/routers/collections.py",
+            "path": "riverhog/src/riverhog_api/routers/collections.py",
             "symbol": "delete_collection"
           }
         },
@@ -11152,7 +11152,7 @@
           "path": "/v1/collections/{collection_id}/deletion-plan",
           "source": {
             "module": "riverhog_api.routers.collections",
-            "path": "riverhog/server/src/riverhog_api/routers/collections.py",
+            "path": "riverhog/src/riverhog_api/routers/collections.py",
             "symbol": "plan_collection_deletion"
           }
         },
@@ -11164,7 +11164,7 @@
           "path": "/v1/collections/{collection_id}/derivation",
           "source": {
             "module": "riverhog_api.routers.workflows",
-            "path": "riverhog/server/src/riverhog_api/routers/workflows.py",
+            "path": "riverhog/src/riverhog_api/routers/workflows.py",
             "symbol": "get_collection_derivation"
           }
         },
@@ -11176,7 +11176,7 @@
           "path": "/v1/collections/{collection_id}/description",
           "source": {
             "module": "riverhog_api.routers.collections",
-            "path": "riverhog/server/src/riverhog_api/routers/collections.py",
+            "path": "riverhog/src/riverhog_api/routers/collections.py",
             "symbol": "replace_collection_description"
           }
         },
@@ -11188,7 +11188,7 @@
           "path": "/v1/collections/{collection_id}/provenance/files",
           "source": {
             "module": "riverhog_api.routers.provenance",
-            "path": "riverhog/server/src/riverhog_api/routers/provenance.py",
+            "path": "riverhog/src/riverhog_api/routers/provenance.py",
             "symbol": "list_collection_provenance"
           }
         },
@@ -11200,7 +11200,7 @@
           "path": "/v1/collections/{collection_id}/provenance/files/{path:path}",
           "source": {
             "module": "riverhog_api.routers.provenance",
-            "path": "riverhog/server/src/riverhog_api/routers/provenance.py",
+            "path": "riverhog/src/riverhog_api/routers/provenance.py",
             "symbol": "get_collection_file_provenance"
           }
         },
@@ -11212,7 +11212,7 @@
           "path": "/v1/collections/{collection_id}/provenance/journals/{journal_id}",
           "source": {
             "module": "riverhog_api.routers.provenance",
-            "path": "riverhog/server/src/riverhog_api/routers/provenance.py",
+            "path": "riverhog/src/riverhog_api/routers/provenance.py",
             "symbol": "stream_collection_provenance_journal"
           }
         },
@@ -11224,7 +11224,7 @@
           "path": "/v1/collections/{collection_id}/provenance/journals/{journal_id}",
           "source": {
             "module": "riverhog_api.routers.provenance",
-            "path": "riverhog/server/src/riverhog_api/routers/provenance.py",
+            "path": "riverhog/src/riverhog_api/routers/provenance.py",
             "symbol": "stream_collection_provenance_journal"
           }
         },
@@ -11236,7 +11236,7 @@
           "path": "/v1/collections/{collection_id}/provenance/journals/{journal_id}/agents",
           "source": {
             "module": "riverhog_api.routers.provenance",
-            "path": "riverhog/server/src/riverhog_api/routers/provenance.py",
+            "path": "riverhog/src/riverhog_api/routers/provenance.py",
             "symbol": "list_collection_provenance_journal_agents"
           }
         },
@@ -11248,7 +11248,7 @@
           "path": "/v1/collections/{collection_id}/provenance/trace/{path:path}",
           "source": {
             "module": "riverhog_api.routers.provenance",
-            "path": "riverhog/server/src/riverhog_api/routers/provenance.py",
+            "path": "riverhog/src/riverhog_api/routers/provenance.py",
             "symbol": "trace_collection_file_provenance"
           }
         },
@@ -11260,7 +11260,7 @@
           "path": "/v1/collections/{collection_id}/provenance/verification",
           "source": {
             "module": "riverhog_api.routers.provenance",
-            "path": "riverhog/server/src/riverhog_api/routers/provenance.py",
+            "path": "riverhog/src/riverhog_api/routers/provenance.py",
             "symbol": "cancel_collection_provenance_verification"
           }
         },
@@ -11272,7 +11272,7 @@
           "path": "/v1/collections/{collection_id}/provenance/verification",
           "source": {
             "module": "riverhog_api.routers.provenance",
-            "path": "riverhog/server/src/riverhog_api/routers/provenance.py",
+            "path": "riverhog/src/riverhog_api/routers/provenance.py",
             "symbol": "get_collection_provenance_verification"
           }
         },
@@ -11284,7 +11284,7 @@
           "path": "/v1/collections/{collection_id}/provenance/verification",
           "source": {
             "module": "riverhog_api.routers.provenance",
-            "path": "riverhog/server/src/riverhog_api/routers/provenance.py",
+            "path": "riverhog/src/riverhog_api/routers/provenance.py",
             "symbol": "request_collection_provenance_verification"
           }
         },
@@ -11296,7 +11296,7 @@
           "path": "/v1/collections/{collection_id}/tags",
           "source": {
             "module": "riverhog_api.routers.tags",
-            "path": "riverhog/server/src/riverhog_api/routers/tags.py",
+            "path": "riverhog/src/riverhog_api/routers/tags.py",
             "symbol": "list_collection_tags"
           }
         },
@@ -11308,7 +11308,7 @@
           "path": "/v1/collections/{collection_id}/tags:add",
           "source": {
             "module": "riverhog_api.routers.tags",
-            "path": "riverhog/server/src/riverhog_api/routers/tags.py",
+            "path": "riverhog/src/riverhog_api/routers/tags.py",
             "symbol": "add_collection_tag"
           }
         },
@@ -11320,7 +11320,7 @@
           "path": "/v1/collections/{collection_id}/tags:contains",
           "source": {
             "module": "riverhog_api.routers.tags",
-            "path": "riverhog/server/src/riverhog_api/routers/tags.py",
+            "path": "riverhog/src/riverhog_api/routers/tags.py",
             "symbol": "collection_contains_tag"
           }
         },
@@ -11332,7 +11332,7 @@
           "path": "/v1/collections/{collection_id}/tags:remove",
           "source": {
             "module": "riverhog_api.routers.tags",
-            "path": "riverhog/server/src/riverhog_api/routers/tags.py",
+            "path": "riverhog/src/riverhog_api/routers/tags.py",
             "symbol": "remove_collection_tag"
           }
         },
@@ -11344,7 +11344,7 @@
           "path": "/v1/download-quota",
           "source": {
             "module": "riverhog_api.routers.quotas",
-            "path": "riverhog/server/src/riverhog_api/routers/quotas.py",
+            "path": "riverhog/src/riverhog_api/routers/quotas.py",
             "symbol": "get_download_quota"
           }
         },
@@ -11356,7 +11356,7 @@
           "path": "/v1/download-quotas",
           "source": {
             "module": "riverhog_api.routers.quotas",
-            "path": "riverhog/server/src/riverhog_api/routers/quotas.py",
+            "path": "riverhog/src/riverhog_api/routers/quotas.py",
             "symbol": "list_download_quotas"
           }
         },
@@ -11368,7 +11368,7 @@
           "path": "/v1/events",
           "source": {
             "module": "riverhog_api.routers.events",
-            "path": "riverhog/server/src/riverhog_api/routers/events.py",
+            "path": "riverhog/src/riverhog_api/routers/events.py",
             "symbol": "list_lifecycle_events"
           }
         },
@@ -11380,7 +11380,7 @@
           "path": "/v1/retrieval-cache",
           "source": {
             "module": "riverhog_api.routers.retrieval",
-            "path": "riverhog/server/src/riverhog_api/routers/retrieval.py",
+            "path": "riverhog/src/riverhog_api/routers/retrieval.py",
             "symbol": "retrieval_cache_status"
           }
         },
@@ -11392,7 +11392,7 @@
           "path": "/v1/retrieval-cache/objects",
           "source": {
             "module": "riverhog_api.routers.retrieval",
-            "path": "riverhog/server/src/riverhog_api/routers/retrieval.py",
+            "path": "riverhog/src/riverhog_api/routers/retrieval.py",
             "symbol": "list_retrieval_cache_objects"
           }
         },
@@ -11404,7 +11404,7 @@
           "path": "/v1/retrieval-cache/objects/{collection_id}/{source_store}/{object_id}",
           "source": {
             "module": "riverhog_api.routers.retrieval",
-            "path": "riverhog/server/src/riverhog_api/routers/retrieval.py",
+            "path": "riverhog/src/riverhog_api/routers/retrieval.py",
             "symbol": "get_retrieval_cache_object"
           }
         },
@@ -11416,7 +11416,7 @@
           "path": "/v1/retrieval-jobs",
           "source": {
             "module": "riverhog_api.routers.retrieval",
-            "path": "riverhog/server/src/riverhog_api/routers/retrieval.py",
+            "path": "riverhog/src/riverhog_api/routers/retrieval.py",
             "symbol": "create_retrieval_job"
           }
         },
@@ -11428,7 +11428,7 @@
           "path": "/v1/retrieval-jobs/{job_id}",
           "source": {
             "module": "riverhog_api.routers.retrieval",
-            "path": "riverhog/server/src/riverhog_api/routers/retrieval.py",
+            "path": "riverhog/src/riverhog_api/routers/retrieval.py",
             "symbol": "cancel_retrieval_job"
           }
         },
@@ -11440,7 +11440,7 @@
           "path": "/v1/retrieval-jobs/{job_id}",
           "source": {
             "module": "riverhog_api.routers.retrieval",
-            "path": "riverhog/server/src/riverhog_api/routers/retrieval.py",
+            "path": "riverhog/src/riverhog_api/routers/retrieval.py",
             "symbol": "get_retrieval_job"
           }
         },
@@ -11452,7 +11452,7 @@
           "path": "/v1/retrieval-jobs/{job_id}/ack",
           "source": {
             "module": "riverhog_api.routers.retrieval",
-            "path": "riverhog/server/src/riverhog_api/routers/retrieval.py",
+            "path": "riverhog/src/riverhog_api/routers/retrieval.py",
             "symbol": "acknowledge_retrieval_job"
           }
         },
@@ -11464,7 +11464,7 @@
           "path": "/v1/retrieval-jobs/{job_id}/content",
           "source": {
             "module": "riverhog_api.routers.retrieval",
-            "path": "riverhog/server/src/riverhog_api/routers/retrieval.py",
+            "path": "riverhog/src/riverhog_api/routers/retrieval.py",
             "symbol": "download_retrieval_file"
           }
         },
@@ -11476,7 +11476,7 @@
           "path": "/v1/retrieval-jobs/{job_id}/content",
           "source": {
             "module": "riverhog_api.routers.retrieval",
-            "path": "riverhog/server/src/riverhog_api/routers/retrieval.py",
+            "path": "riverhog/src/riverhog_api/routers/retrieval.py",
             "symbol": "download_retrieval_file"
           }
         },
@@ -11488,7 +11488,7 @@
           "path": "/v1/retrieval-jobs/{job_id}/renew",
           "source": {
             "module": "riverhog_api.routers.retrieval",
-            "path": "riverhog/server/src/riverhog_api/routers/retrieval.py",
+            "path": "riverhog/src/riverhog_api/routers/retrieval.py",
             "symbol": "renew_retrieval_job"
           }
         },
@@ -11500,7 +11500,7 @@
           "path": "/v1/retrieval-plans",
           "source": {
             "module": "riverhog_api.routers.retrieval",
-            "path": "riverhog/server/src/riverhog_api/routers/retrieval.py",
+            "path": "riverhog/src/riverhog_api/routers/retrieval.py",
             "symbol": "plan_retrieval"
           }
         },
@@ -11512,7 +11512,7 @@
           "path": "/v1/retrieval-plans/{plan_id}",
           "source": {
             "module": "riverhog_api.routers.retrieval",
-            "path": "riverhog/server/src/riverhog_api/routers/retrieval.py",
+            "path": "riverhog/src/riverhog_api/routers/retrieval.py",
             "symbol": "get_retrieval_plan"
           }
         },
@@ -11524,7 +11524,7 @@
           "path": "/v1/retrieval-plans/{plan_id}/advance",
           "source": {
             "module": "riverhog_api.routers.retrieval",
-            "path": "riverhog/server/src/riverhog_api/routers/retrieval.py",
+            "path": "riverhog/src/riverhog_api/routers/retrieval.py",
             "symbol": "advance_retrieval_plan"
           }
         },
@@ -11536,7 +11536,7 @@
           "path": "/v1/retrieval-plans/{plan_id}/files",
           "source": {
             "module": "riverhog_api.routers.retrieval",
-            "path": "riverhog/server/src/riverhog_api/routers/retrieval.py",
+            "path": "riverhog/src/riverhog_api/routers/retrieval.py",
             "symbol": "list_retrieval_plan_files"
           }
         },
@@ -11548,7 +11548,7 @@
           "path": "/v1/search",
           "source": {
             "module": "riverhog_api.routers.search",
-            "path": "riverhog/server/src/riverhog_api/routers/search.py",
+            "path": "riverhog/src/riverhog_api/routers/search.py",
             "symbol": "search"
           }
         },
@@ -11560,7 +11560,7 @@
           "path": "/v1/tags",
           "source": {
             "module": "riverhog_api.routers.tags",
-            "path": "riverhog/server/src/riverhog_api/routers/tags.py",
+            "path": "riverhog/src/riverhog_api/routers/tags.py",
             "symbol": "list_tags"
           }
         }
@@ -12230,7 +12230,7 @@
         {
           "consumer": "riverhog-server",
           "expression": "_env_int(values, 'RIVERHOG_AGE_SESSION_CACHE_ENTRIES', DEFAULT_AGE_SESSION_CACHE_ENTRIES)",
-          "path": "riverhog/server/src/riverhog_core/throughput.py"
+          "path": "riverhog/src/riverhog_core/throughput.py"
         }
       ],
       "id": "configuration-environment:RIVERHOG_AGE_SESSION_CACHE_ENTRIES"
@@ -12240,7 +12240,7 @@
         {
           "consumer": "riverhog-server",
           "expression": "_env_int(values, 'RIVERHOG_AGE_SESSION_DERIVATION_CONCURRENCY', DEFAULT_AGE_DERIVATION_CONCURRENCY)",
-          "path": "riverhog/server/src/riverhog_core/throughput.py"
+          "path": "riverhog/src/riverhog_core/throughput.py"
         }
       ],
       "id": "configuration-environment:RIVERHOG_AGE_SESSION_DERIVATION_CONCURRENCY"
@@ -12270,7 +12270,7 @@
         {
           "consumer": "riverhog-server",
           "expression": "os.getenv('RIVERHOG_ARCHIVE_ACTIVE_PASSPHRASE_ID', '')",
-          "path": "riverhog/server/src/riverhog_core/runtime_config.py"
+          "path": "riverhog/src/riverhog_core/runtime_config.py"
         }
       ],
       "id": "configuration-environment:RIVERHOG_ARCHIVE_ACTIVE_PASSPHRASE_ID"
@@ -12280,7 +12280,7 @@
         {
           "consumer": "riverhog-server",
           "expression": "_env_bytes(values, 'RIVERHOG_ARCHIVE_PART_PLAINTEXT_BYTES', DEFAULT_PART_PLAINTEXT_BYTES)",
-          "path": "riverhog/server/src/riverhog_core/collection_plan.py"
+          "path": "riverhog/src/riverhog_core/collection_plan.py"
         }
       ],
       "id": "configuration-environment:RIVERHOG_ARCHIVE_PART_PLAINTEXT_BYTES"
@@ -12290,7 +12290,7 @@
         {
           "consumer": "riverhog-server",
           "expression": "os.getenv('RIVERHOG_ARCHIVE_PASSPHRASES_JSON', '')",
-          "path": "riverhog/server/src/riverhog_core/runtime_config.py"
+          "path": "riverhog/src/riverhog_core/runtime_config.py"
         }
       ],
       "id": "configuration-environment:RIVERHOG_ARCHIVE_PASSPHRASES_JSON"
@@ -12300,7 +12300,7 @@
         {
           "consumer": "riverhog-server",
           "expression": "_env_int(values, 'RIVERHOG_ARCHIVE_PREPARE_CONCURRENCY', DEFAULT_UPLOAD_PREPARE_CONCURRENCY)",
-          "path": "riverhog/server/src/riverhog_core/throughput.py"
+          "path": "riverhog/src/riverhog_core/throughput.py"
         }
       ],
       "id": "configuration-environment:RIVERHOG_ARCHIVE_PREPARE_CONCURRENCY"
@@ -12310,7 +12310,7 @@
         {
           "consumer": "riverhog-server",
           "expression": "values.get('RIVERHOG_ARCHIVE_READ_ORDER', ','.join(names))",
-          "path": "riverhog/server/src/riverhog_core/runtime_config.py"
+          "path": "riverhog/src/riverhog_core/runtime_config.py"
         }
       ],
       "id": "configuration-environment:RIVERHOG_ARCHIVE_READ_ORDER"
@@ -12320,7 +12320,7 @@
         {
           "consumer": "riverhog-server",
           "expression": "os.getenv('RIVERHOG_ARCHIVE_REQUIRE_EXPLICIT_PASSPHRASES', 'false')",
-          "path": "riverhog/server/src/riverhog_core/runtime_config.py"
+          "path": "riverhog/src/riverhog_core/runtime_config.py"
         }
       ],
       "id": "configuration-environment:RIVERHOG_ARCHIVE_REQUIRE_EXPLICIT_PASSPHRASES"
@@ -12330,12 +12330,12 @@
         {
           "consumer": "riverhog-server",
           "expression": "_parse_int(os.getenv('RIVERHOG_ARCHIVE_SCRYPT_WORK_FACTOR', str(DEFAULT_ARCHIVE_SCRYPT_WORK_FACTOR)), name='RIVERHOG_ARCHIVE_SCRYPT_WORK_FACTOR', minimum=1)",
-          "path": "riverhog/server/src/riverhog_core/runtime_config.py"
+          "path": "riverhog/src/riverhog_core/runtime_config.py"
         },
         {
           "consumer": "riverhog-server",
           "expression": "os.getenv('RIVERHOG_ARCHIVE_SCRYPT_WORK_FACTOR', str(DEFAULT_ARCHIVE_SCRYPT_WORK_FACTOR))",
-          "path": "riverhog/server/src/riverhog_core/runtime_config.py"
+          "path": "riverhog/src/riverhog_core/runtime_config.py"
         }
       ],
       "id": "configuration-environment:RIVERHOG_ARCHIVE_SCRYPT_WORK_FACTOR"
@@ -12345,7 +12345,7 @@
         {
           "consumer": "riverhog-server",
           "expression": "values.get('RIVERHOG_ARCHIVE_STORES', 'archive')",
-          "path": "riverhog/server/src/riverhog_core/runtime_config.py"
+          "path": "riverhog/src/riverhog_core/runtime_config.py"
         }
       ],
       "id": "configuration-environment:RIVERHOG_ARCHIVE_STORES"
@@ -12355,7 +12355,7 @@
         {
           "consumer": "riverhog-server",
           "expression": "_env_int(values, 'RIVERHOG_ARCHIVE_UPLOAD_REQUEST_CONCURRENCY', DEFAULT_UPLOAD_REQUEST_CONCURRENCY)",
-          "path": "riverhog/server/src/riverhog_core/throughput.py"
+          "path": "riverhog/src/riverhog_core/throughput.py"
         }
       ],
       "id": "configuration-environment:RIVERHOG_ARCHIVE_UPLOAD_REQUEST_CONCURRENCY"
@@ -12365,7 +12365,7 @@
         {
           "consumer": "riverhog-server",
           "expression": "os.getenv('RIVERHOG_ARCHIVE_UPLOAD_SWEEP_INTERVAL', '30s')",
-          "path": "riverhog/server/src/riverhog_core/runtime_config.py"
+          "path": "riverhog/src/riverhog_core/runtime_config.py"
         }
       ],
       "id": "configuration-environment:RIVERHOG_ARCHIVE_UPLOAD_SWEEP_INTERVAL"
@@ -12375,7 +12375,7 @@
         {
           "consumer": "riverhog-server",
           "expression": "_env_int(values, 'RIVERHOG_ARCHIVE_WRITE_CONCURRENCY', DEFAULT_WRITE_CONCURRENCY)",
-          "path": "riverhog/server/src/riverhog_core/throughput.py"
+          "path": "riverhog/src/riverhog_core/throughput.py"
         }
       ],
       "id": "configuration-environment:RIVERHOG_ARCHIVE_WRITE_CONCURRENCY"
@@ -12385,7 +12385,7 @@
         {
           "consumer": "riverhog-server",
           "expression": "values.get('RIVERHOG_ARCHIVE_WRITE_STORE', names[0])",
-          "path": "riverhog/server/src/riverhog_core/runtime_config.py"
+          "path": "riverhog/src/riverhog_core/runtime_config.py"
         }
       ],
       "id": "configuration-environment:RIVERHOG_ARCHIVE_WRITE_STORE"
@@ -12420,7 +12420,7 @@
         {
           "consumer": "riverhog-server",
           "expression": "os.getenv(BOOTSTRAP_TOKEN_ENV, '')",
-          "path": "riverhog/server/src/riverhog_api/auth.py"
+          "path": "riverhog/src/riverhog_api/auth.py"
         }
       ],
       "id": "configuration-environment:RIVERHOG_BOOTSTRAP_TOKEN"
@@ -12430,7 +12430,7 @@
         {
           "consumer": "riverhog-server",
           "expression": "os.getenv('RIVERHOG_BROWSE_REQUIRE_EXPLICIT_SIGNING_KEY', 'false')",
-          "path": "riverhog/server/src/riverhog_core/runtime_config.py"
+          "path": "riverhog/src/riverhog_core/runtime_config.py"
         }
       ],
       "id": "configuration-environment:RIVERHOG_BROWSE_REQUIRE_EXPLICIT_SIGNING_KEY"
@@ -12440,7 +12440,7 @@
         {
           "consumer": "riverhog-server",
           "expression": "os.getenv('RIVERHOG_BROWSE_TOKEN_LIFETIME', '24h')",
-          "path": "riverhog/server/src/riverhog_core/runtime_config.py"
+          "path": "riverhog/src/riverhog_core/runtime_config.py"
         }
       ],
       "id": "configuration-environment:RIVERHOG_BROWSE_TOKEN_LIFETIME"
@@ -12450,7 +12450,7 @@
         {
           "consumer": "riverhog-server",
           "expression": "os.getenv('RIVERHOG_BROWSE_TOKEN_SIGNING_KEY', DEFAULT_BROWSE_TOKEN_SIGNING_KEY)",
-          "path": "riverhog/server/src/riverhog_core/runtime_config.py"
+          "path": "riverhog/src/riverhog_core/runtime_config.py"
         }
       ],
       "id": "configuration-environment:RIVERHOG_BROWSE_TOKEN_SIGNING_KEY"
@@ -12460,7 +12460,7 @@
         {
           "consumer": "riverhog-server",
           "expression": "os.getenv('RIVERHOG_CATALOG_SYNC_BOOTSTRAP_LIFETIME', '7d')",
-          "path": "riverhog/server/src/riverhog_core/runtime_config.py"
+          "path": "riverhog/src/riverhog_core/runtime_config.py"
         }
       ],
       "id": "configuration-environment:RIVERHOG_CATALOG_SYNC_BOOTSTRAP_LIFETIME"
@@ -12470,7 +12470,7 @@
         {
           "consumer": "riverhog-server",
           "expression": "os.getenv('RIVERHOG_CATALOG_SYNC_CURSOR_LIFETIME', '24h')",
-          "path": "riverhog/server/src/riverhog_core/runtime_config.py"
+          "path": "riverhog/src/riverhog_core/runtime_config.py"
         }
       ],
       "id": "configuration-environment:RIVERHOG_CATALOG_SYNC_CURSOR_LIFETIME"
@@ -12480,12 +12480,12 @@
         {
           "consumer": "riverhog-server",
           "expression": "_parse_int(os.getenv('RIVERHOG_CATALOG_SYNC_HISTORY_REAP_BATCH_SIZE', '100'), name='RIVERHOG_CATALOG_SYNC_HISTORY_REAP_BATCH_SIZE', minimum=1)",
-          "path": "riverhog/server/src/riverhog_core/runtime_config.py"
+          "path": "riverhog/src/riverhog_core/runtime_config.py"
         },
         {
           "consumer": "riverhog-server",
           "expression": "os.getenv('RIVERHOG_CATALOG_SYNC_HISTORY_REAP_BATCH_SIZE', '100')",
-          "path": "riverhog/server/src/riverhog_core/runtime_config.py"
+          "path": "riverhog/src/riverhog_core/runtime_config.py"
         }
       ],
       "id": "configuration-environment:RIVERHOG_CATALOG_SYNC_HISTORY_REAP_BATCH_SIZE"
@@ -12495,7 +12495,7 @@
         {
           "consumer": "riverhog-server",
           "expression": "os.getenv('RIVERHOG_CATALOG_SYNC_HISTORY_RETENTION', '30d')",
-          "path": "riverhog/server/src/riverhog_core/runtime_config.py"
+          "path": "riverhog/src/riverhog_core/runtime_config.py"
         }
       ],
       "id": "configuration-environment:RIVERHOG_CATALOG_SYNC_HISTORY_RETENTION"
@@ -12505,12 +12505,12 @@
         {
           "consumer": "riverhog-server",
           "expression": "_parse_int(os.getenv('RIVERHOG_CATALOG_SYNC_PAGE_SIZE_MAX', str(CATALOG_SYNC_PAGE_SIZE_MAX)), name='RIVERHOG_CATALOG_SYNC_PAGE_SIZE_MAX', minimum=1)",
-          "path": "riverhog/server/src/riverhog_core/runtime_config.py"
+          "path": "riverhog/src/riverhog_core/runtime_config.py"
         },
         {
           "consumer": "riverhog-server",
           "expression": "os.getenv('RIVERHOG_CATALOG_SYNC_PAGE_SIZE_MAX', str(CATALOG_SYNC_PAGE_SIZE_MAX))",
-          "path": "riverhog/server/src/riverhog_core/runtime_config.py"
+          "path": "riverhog/src/riverhog_core/runtime_config.py"
         }
       ],
       "id": "configuration-environment:RIVERHOG_CATALOG_SYNC_PAGE_SIZE_MAX"
@@ -12520,7 +12520,7 @@
         {
           "consumer": "riverhog-server",
           "expression": "os.getenv('RIVERHOG_COLLECTION_UPLOAD_CUSTODY_LEASE', '1h')",
-          "path": "riverhog/server/src/riverhog_core/runtime_config.py"
+          "path": "riverhog/src/riverhog_core/runtime_config.py"
         }
       ],
       "id": "configuration-environment:RIVERHOG_COLLECTION_UPLOAD_CUSTODY_LEASE"
@@ -12530,7 +12530,7 @@
         {
           "consumer": "riverhog-server",
           "expression": "os.getenv('RIVERHOG_DATABASE_URL', '')",
-          "path": "riverhog/server/src/riverhog_core/runtime_config.py"
+          "path": "riverhog/src/riverhog_core/runtime_config.py"
         }
       ],
       "id": "configuration-environment:RIVERHOG_DATABASE_URL"
@@ -12570,12 +12570,12 @@
         {
           "consumer": "riverhog-server",
           "expression": "_parse_int(os.getenv('RIVERHOG_EVENT_CONTEXT_REAP_BATCH_SIZE', '100'), name='RIVERHOG_EVENT_CONTEXT_REAP_BATCH_SIZE', minimum=1)",
-          "path": "riverhog/server/src/riverhog_core/runtime_config.py"
+          "path": "riverhog/src/riverhog_core/runtime_config.py"
         },
         {
           "consumer": "riverhog-server",
           "expression": "os.getenv('RIVERHOG_EVENT_CONTEXT_REAP_BATCH_SIZE', '100')",
-          "path": "riverhog/server/src/riverhog_core/runtime_config.py"
+          "path": "riverhog/src/riverhog_core/runtime_config.py"
         }
       ],
       "id": "configuration-environment:RIVERHOG_EVENT_CONTEXT_REAP_BATCH_SIZE"
@@ -12585,7 +12585,7 @@
         {
           "consumer": "riverhog-server",
           "expression": "os.getenv('RIVERHOG_EVENT_CONTEXT_RETENTION', '30d')",
-          "path": "riverhog/server/src/riverhog_core/runtime_config.py"
+          "path": "riverhog/src/riverhog_core/runtime_config.py"
         }
       ],
       "id": "configuration-environment:RIVERHOG_EVENT_CONTEXT_RETENTION"
@@ -12595,7 +12595,7 @@
         {
           "consumer": "riverhog-server",
           "expression": "os.getenv('RIVERHOG_EVENT_SOURCE', 'urn:riverhog')",
-          "path": "riverhog/server/src/riverhog_core/runtime_config.py"
+          "path": "riverhog/src/riverhog_core/runtime_config.py"
         }
       ],
       "id": "configuration-environment:RIVERHOG_EVENT_SOURCE"
@@ -12700,7 +12700,7 @@
         {
           "consumer": "riverhog-server",
           "expression": "_env_bytes(values, 'RIVERHOG_INGRESS_MAX_INFLIGHT_BYTES', DEFAULT_UPLOAD_MAX_INFLIGHT_BYTES)",
-          "path": "riverhog/server/src/riverhog_core/throughput.py"
+          "path": "riverhog/src/riverhog_core/throughput.py"
         }
       ],
       "id": "configuration-environment:RIVERHOG_INGRESS_MAX_INFLIGHT_BYTES"
@@ -12710,7 +12710,7 @@
         {
           "consumer": "riverhog-server",
           "expression": "_env_bytes(values, 'RIVERHOG_INGRESS_SOURCE_READ_CHUNK_BYTES', DEFAULT_SOURCE_READ_CHUNK_BYTES)",
-          "path": "riverhog/server/src/riverhog_core/throughput.py"
+          "path": "riverhog/src/riverhog_core/throughput.py"
         }
       ],
       "id": "configuration-environment:RIVERHOG_INGRESS_SOURCE_READ_CHUNK_BYTES"
@@ -12720,7 +12720,7 @@
         {
           "consumer": "riverhog-server",
           "expression": "os.getenv('RIVERHOG_LOG_LEVEL', DEFAULT_LOG_LEVEL)",
-          "path": "riverhog/server/src/riverhog_core/runtime_config.py"
+          "path": "riverhog/src/riverhog_core/runtime_config.py"
         }
       ],
       "id": "configuration-environment:RIVERHOG_LOG_LEVEL"
@@ -12730,7 +12730,7 @@
         {
           "consumer": "riverhog-server",
           "expression": "_env_int(values, 'RIVERHOG_PACK_FILES', ARCHIVE_PACK_FILES_MAX)",
-          "path": "riverhog/server/src/riverhog_core/collection_plan.py"
+          "path": "riverhog/src/riverhog_core/collection_plan.py"
         }
       ],
       "id": "configuration-environment:RIVERHOG_PACK_FILES"
@@ -12740,7 +12740,7 @@
         {
           "consumer": "riverhog-server",
           "expression": "_env_bytes(values, 'RIVERHOG_PACK_MEMBER_BYTES', DEFAULT_PACK_MEMBER_BYTES)",
-          "path": "riverhog/server/src/riverhog_core/collection_plan.py"
+          "path": "riverhog/src/riverhog_core/collection_plan.py"
         }
       ],
       "id": "configuration-environment:RIVERHOG_PACK_MEMBER_BYTES"
@@ -12750,7 +12750,7 @@
         {
           "consumer": "riverhog-server",
           "expression": "_env_bytes(values, 'RIVERHOG_PACK_SOURCE_BYTES', DEFAULT_PACK_SOURCE_BYTES)",
-          "path": "riverhog/server/src/riverhog_core/collection_plan.py"
+          "path": "riverhog/src/riverhog_core/collection_plan.py"
         }
       ],
       "id": "configuration-environment:RIVERHOG_PACK_SOURCE_BYTES"
@@ -12770,7 +12770,7 @@
         {
           "consumer": "riverhog-server",
           "expression": "os.getenv('RIVERHOG_PUBLIC_BASE_URL', '')",
-          "path": "riverhog/server/src/riverhog_core/runtime_config.py"
+          "path": "riverhog/src/riverhog_core/runtime_config.py"
         }
       ],
       "id": "configuration-environment:RIVERHOG_PUBLIC_BASE_URL"
@@ -12780,7 +12780,7 @@
         {
           "consumer": "riverhog-server",
           "expression": "_env_bytes(values, 'RIVERHOG_RAW_VOLUME_PLAINTEXT_BYTES', DEFAULT_RAW_VOLUME_PLAINTEXT_BYTES)",
-          "path": "riverhog/server/src/riverhog_core/collection_plan.py"
+          "path": "riverhog/src/riverhog_core/collection_plan.py"
         }
       ],
       "id": "configuration-environment:RIVERHOG_RAW_VOLUME_PLAINTEXT_BYTES"
@@ -12790,7 +12790,7 @@
         {
           "consumer": "riverhog-server",
           "expression": "os.getenv('RIVERHOG_RETRIEVAL_CACHE_NEW_ARCHIVE_ENABLED', 'true')",
-          "path": "riverhog/server/src/riverhog_core/runtime_config.py"
+          "path": "riverhog/src/riverhog_core/runtime_config.py"
         }
       ],
       "id": "configuration-environment:RIVERHOG_RETRIEVAL_CACHE_NEW_ARCHIVE_ENABLED"
@@ -12800,7 +12800,7 @@
         {
           "consumer": "riverhog-server",
           "expression": "os.getenv('RIVERHOG_RETRIEVAL_CACHE_NEW_ARCHIVE_LEASE', '72h')",
-          "path": "riverhog/server/src/riverhog_core/runtime_config.py"
+          "path": "riverhog/src/riverhog_core/runtime_config.py"
         }
       ],
       "id": "configuration-environment:RIVERHOG_RETRIEVAL_CACHE_NEW_ARCHIVE_LEASE"
@@ -12810,7 +12810,7 @@
         {
           "consumer": "riverhog-server",
           "expression": "values.get('RIVERHOG_RETRIEVAL_CACHE_STORES', '')",
-          "path": "riverhog/server/src/riverhog_core/runtime_config.py"
+          "path": "riverhog/src/riverhog_core/runtime_config.py"
         }
       ],
       "id": "configuration-environment:RIVERHOG_RETRIEVAL_CACHE_STORES"
@@ -12820,7 +12820,7 @@
         {
           "consumer": "riverhog-server",
           "expression": "os.getenv('RIVERHOG_RETRIEVAL_CACHE_SWEEP_INTERVAL', '5m')",
-          "path": "riverhog/server/src/riverhog_core/runtime_config.py"
+          "path": "riverhog/src/riverhog_core/runtime_config.py"
         }
       ],
       "id": "configuration-environment:RIVERHOG_RETRIEVAL_CACHE_SWEEP_INTERVAL"
@@ -12830,12 +12830,12 @@
         {
           "consumer": "riverhog-server",
           "expression": "_parse_bytes(os.getenv('RIVERHOG_RETRIEVAL_CACHE_WRITE_SEGMENT_BYTES', '64MiB'), name='RIVERHOG_RETRIEVAL_CACHE_WRITE_SEGMENT_BYTES', minimum=1)",
-          "path": "riverhog/server/src/riverhog_core/runtime_config.py"
+          "path": "riverhog/src/riverhog_core/runtime_config.py"
         },
         {
           "consumer": "riverhog-server",
           "expression": "os.getenv('RIVERHOG_RETRIEVAL_CACHE_WRITE_SEGMENT_BYTES', '64MiB')",
-          "path": "riverhog/server/src/riverhog_core/runtime_config.py"
+          "path": "riverhog/src/riverhog_core/runtime_config.py"
         }
       ],
       "id": "configuration-environment:RIVERHOG_RETRIEVAL_CACHE_WRITE_SEGMENT_BYTES"
@@ -12845,7 +12845,7 @@
         {
           "consumer": "riverhog-server",
           "expression": "os.getenv('RIVERHOG_RETRIEVAL_DEFAULT_LEASE', '24h')",
-          "path": "riverhog/server/src/riverhog_core/runtime_config.py"
+          "path": "riverhog/src/riverhog_core/runtime_config.py"
         }
       ],
       "id": "configuration-environment:RIVERHOG_RETRIEVAL_DEFAULT_LEASE"
@@ -12855,7 +12855,7 @@
         {
           "consumer": "riverhog-server",
           "expression": "os.getenv('RIVERHOG_RETRIEVAL_ESTIMATED_LATENCY', '48h')",
-          "path": "riverhog/server/src/riverhog_core/runtime_config.py"
+          "path": "riverhog/src/riverhog_core/runtime_config.py"
         }
       ],
       "id": "configuration-environment:RIVERHOG_RETRIEVAL_ESTIMATED_LATENCY"
@@ -12865,7 +12865,7 @@
         {
           "consumer": "riverhog-server",
           "expression": "_env_bytes(values, 'RIVERHOG_RETRIEVAL_MAX_INFLIGHT_BYTES', DEFAULT_RETRIEVAL_MAX_INFLIGHT_BYTES)",
-          "path": "riverhog/server/src/riverhog_core/throughput.py"
+          "path": "riverhog/src/riverhog_core/throughput.py"
         }
       ],
       "id": "configuration-environment:RIVERHOG_RETRIEVAL_MAX_INFLIGHT_BYTES"
@@ -12875,7 +12875,7 @@
         {
           "consumer": "riverhog-server",
           "expression": "os.getenv('RIVERHOG_RETRIEVAL_MAX_LEASE', '7d')",
-          "path": "riverhog/server/src/riverhog_core/runtime_config.py"
+          "path": "riverhog/src/riverhog_core/runtime_config.py"
         }
       ],
       "id": "configuration-environment:RIVERHOG_RETRIEVAL_MAX_LEASE"
@@ -12885,7 +12885,7 @@
         {
           "consumer": "riverhog-server",
           "expression": "_scoped_env_bytes(values, 'RIVERHOG_RETRIEVAL_MAX_RANGE_BYTES', DEFAULT_MAX_RANGE_REQUEST_BYTES, store_name=store_name)",
-          "path": "riverhog/server/src/riverhog_core/pack_retrieval.py"
+          "path": "riverhog/src/riverhog_core/pack_retrieval.py"
         }
       ],
       "id": "configuration-environment:RIVERHOG_RETRIEVAL_MAX_RANGE_BYTES"
@@ -12895,7 +12895,7 @@
         {
           "consumer": "riverhog-server",
           "expression": "os.getenv('RIVERHOG_RETRIEVAL_PENDING_TIMEOUT', '72h')",
-          "path": "riverhog/server/src/riverhog_core/runtime_config.py"
+          "path": "riverhog/src/riverhog_core/runtime_config.py"
         }
       ],
       "id": "configuration-environment:RIVERHOG_RETRIEVAL_PENDING_TIMEOUT"
@@ -12905,7 +12905,7 @@
         {
           "consumer": "riverhog-server",
           "expression": "_scoped_env_value(values, 'RIVERHOG_RETRIEVAL_RANGE_BILLING_MODE', BILLING_MODE_RETURNED_BYTES, store_name=store_name)",
-          "path": "riverhog/server/src/riverhog_core/pack_retrieval.py"
+          "path": "riverhog/src/riverhog_core/pack_retrieval.py"
         }
       ],
       "id": "configuration-environment:RIVERHOG_RETRIEVAL_RANGE_BILLING_MODE"
@@ -12915,7 +12915,7 @@
         {
           "consumer": "riverhog-server",
           "expression": "_scoped_env_bytes(values, 'RIVERHOG_RETRIEVAL_RANGE_MERGE_GAP_BYTES', 0, store_name=store_name)",
-          "path": "riverhog/server/src/riverhog_core/pack_retrieval.py"
+          "path": "riverhog/src/riverhog_core/pack_retrieval.py"
         }
       ],
       "id": "configuration-environment:RIVERHOG_RETRIEVAL_RANGE_MERGE_GAP_BYTES"
@@ -12925,7 +12925,7 @@
         {
           "consumer": "riverhog-server",
           "expression": "_env_bytes(values, 'RIVERHOG_RETRIEVAL_READ_CHUNK_BYTES', DEFAULT_RETRIEVAL_READ_CHUNK_BYTES)",
-          "path": "riverhog/server/src/riverhog_core/throughput.py"
+          "path": "riverhog/src/riverhog_core/throughput.py"
         }
       ],
       "id": "configuration-environment:RIVERHOG_RETRIEVAL_READ_CHUNK_BYTES"
@@ -12935,7 +12935,7 @@
         {
           "consumer": "riverhog-server",
           "expression": "_env_int(values, 'RIVERHOG_RETRIEVAL_REQUEST_CONCURRENCY', DEFAULT_RETRIEVAL_REQUEST_CONCURRENCY)",
-          "path": "riverhog/server/src/riverhog_core/throughput.py"
+          "path": "riverhog/src/riverhog_core/throughput.py"
         }
       ],
       "id": "configuration-environment:RIVERHOG_RETRIEVAL_REQUEST_CONCURRENCY"
@@ -12945,7 +12945,7 @@
         {
           "consumer": "riverhog-server",
           "expression": "os.getenv('RIVERHOG_RETRIEVAL_RESTORE_POLL_INTERVAL', '5m')",
-          "path": "riverhog/server/src/riverhog_core/runtime_config.py"
+          "path": "riverhog/src/riverhog_core/runtime_config.py"
         }
       ],
       "id": "configuration-environment:RIVERHOG_RETRIEVAL_RESTORE_POLL_INTERVAL"

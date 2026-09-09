@@ -12,14 +12,6 @@
       {
         "console_scripts": {},
         "dependencies": [],
-        "distribution": "file-download",
-        "optional_dependencies": {},
-        "path": "packages/file-download",
-        "role": "internal_build_unit"
-      },
-      {
-        "console_scripts": {},
-        "dependencies": [],
         "distribution": "http-api-contracts",
         "optional_dependencies": {},
         "path": "packages/http-api-contracts",
@@ -64,17 +56,6 @@
       {
         "console_scripts": {},
         "dependencies": [
-          "http-api-contracts"
-        ],
-        "distribution": "riverhog-cli-support",
-        "optional_dependencies": {},
-        "path": "packages/riverhog-cli-support",
-        "role": "internal_build_unit"
-      },
-      {
-        "console_scripts": {},
-        "dependencies": [
-          "file-download",
           "http-api-contracts",
           "riverhog-application-access",
           "riverhog-protocol",
@@ -174,8 +155,7 @@
         "dependencies": [
           "config-validation",
           "gogurt-core",
-          "gogurt-listener-runtime",
-          "riverhog-cli-support"
+          "gogurt-listener-runtime"
         ],
         "distribution": "gogurt",
         "optional_dependencies": {},
@@ -297,7 +277,6 @@
         "dependencies": [
           "http-api-contracts",
           "riverhog-application-access",
-          "riverhog-cli-support",
           "riverhog-client",
           "riverhog-protocol",
           "riverhog-provenance",
@@ -905,7 +884,7 @@
         ],
         "distribution": "riverhog-server",
         "optional_dependencies": {},
-        "path": "riverhog/server",
+        "path": "riverhog",
         "role": "deployed_implementation"
       }
     ],

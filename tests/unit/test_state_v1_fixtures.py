@@ -19,7 +19,7 @@ REPO_ROOT = Path(__file__).resolve().parents[2]
 FIXTURES = REPO_ROOT / "tests/fixtures/state/v1_0001"
 
 MIGRATION_BASELINES = {
-    "riverhog/server/src/riverhog_core/state_migrations/versions/v1_0001.py": (
+    "riverhog/src/riverhog_core/state_migrations/versions/v1_0001.py": (
         "alembic",
         "riverhog_core.state_migrations.v1_ddl",
     ),

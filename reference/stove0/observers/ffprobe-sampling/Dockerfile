@@ -23,7 +23,6 @@ WORKDIR /workspace
 COPY pyproject.toml uv.lock ./
 COPY reference/stove0/observers/ffprobe-sampling reference/stove0/observers/ffprobe-sampling
 COPY packages/riverhog-application-access packages/riverhog-application-access
-COPY packages/file-download packages/file-download
 COPY packages/http-api-contracts packages/http-api-contracts
 COPY packages/lifecycle-events packages/lifecycle-events
 COPY packages/riverhog-client packages/riverhog-client

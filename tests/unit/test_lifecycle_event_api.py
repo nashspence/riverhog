@@ -57,7 +57,7 @@ def _finalized_event_data(collection_id: int, owner: str) -> dict[str, object]:
 
 
 def test_every_emitted_riverhog_event_type_has_one_public_contract() -> None:
-    root = Path(__file__).parents[2] / "riverhog/server/src/riverhog_core"
+    root = Path(__file__).parents[2] / "riverhog/src/riverhog_core"
     emitted: set[str] = set()
     for path in root.rglob("*.py"):
         tree = ast.parse(path.read_text(encoding="utf-8"))

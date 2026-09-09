@@ -24,7 +24,6 @@ COPY pyproject.toml uv.lock ./
 COPY reference/stove0/application/server reference/stove0/application/server
 COPY packages/riverhog-application-access packages/riverhog-application-access
 COPY packages/config-validation packages/config-validation
-COPY packages/file-download packages/file-download
 COPY packages/http-api-contracts packages/http-api-contracts
 COPY packages/lifecycle-events packages/lifecycle-events
 COPY packages/riverhog-client packages/riverhog-client

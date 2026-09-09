@@ -49,7 +49,7 @@ Workspace checks enforce ownership boundaries.
 
 ## Repository map
 
-- [`riverhog/server`](../riverhog/server/): archive service.
+- [`riverhog`](../riverhog/): archive service.
 - [`reference/gogurt`](../reference/gogurt/): Gogurt reference application and components.
 - [`reference/riverhog`](../reference/riverhog/): Riverhog reference applications and components,
   including the permissively licensed independent recovery tool.

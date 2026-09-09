@@ -11,7 +11,7 @@ STOVE0_CORE = REPO_ROOT / "reference" / "stove0" / "application" / "server" / "s
 STOVE0_SERVER = REPO_ROOT / "reference" / "stove0" / "application" / "server" / "src"
 PROTOCOL_ROOT = REPO_ROOT / "reference" / "stove0" / "packages" / "protocol" / "src"
 RIVERHOG_RUNTIME_ROOTS = (
-    REPO_ROOT / "riverhog" / "server" / "src",
+    REPO_ROOT / "riverhog" / "src",
     REPO_ROOT / "packages" / "riverhog-protocol" / "src",
 )
 OBSERVER_PROTOCOL_ROOT = (

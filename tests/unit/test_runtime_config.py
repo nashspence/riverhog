@@ -19,7 +19,7 @@ from riverhog_core.throughput import ArchiveThroughputTuning
 
 from tests.unit.db_helpers import sqlite_url
 
-_SERVER_SOURCE = Path(__file__).parents[2] / "riverhog" / "server" / "src"
+_SERVER_SOURCE = Path(__file__).parents[2] / "riverhog" / "src"
 
 
 def _config(tmp_path: Path, **overrides: object) -> RuntimeConfig:
