@@ -28,10 +28,11 @@ Contracts define packages; architecture records ownership.
   independently selected extension capability. Both are nonnormative, family-owned, and enter
   Riverhog only through public contracts.
 - **Public contracts.** Published HTTP and CloudEvents contracts define integration. Shared models
-  own identities; HTTP/OpenAPI owns CRUD and official client JSON. The generated freeze inventories
-  external extents.
-- **Riverhog platform.** Server owns sealed membership, canonical content identity, archive
-  construction, copies, retrieval, and verified delivery; clients own materializations.
+  own identities; HTTP/OpenAPI owns CRUD and maintained-client JSON. The generated freeze
+  inventories external extents.
+- **Riverhog platform.** Server owns archives, transfer, retrieval, and
+  delivery. Generic client owns transport, production, sync, and capability-scoped processing;
+  applications own interfaces and materializations.
 - **Ingress adapters.** Ingress adapters are content-opaque, bounded-custody Riverhog clients; they
   relinquish bytes only after finalization.
 - **Storage adapters.** Storage adapters translate opaque-object capabilities into
@@ -49,7 +50,6 @@ Workspace checks enforce ownership boundaries.
 ## Repository map
 
 - [`riverhog/server`](../riverhog/server/): archive service.
-- [`riverhog/client`](../riverhog/client/): client.
 - [`reference/gogurt`](../reference/gogurt/): Gogurt reference application and components.
 - [`reference/riverhog`](../reference/riverhog/): Riverhog reference applications and components,
   including the permissively licensed independent recovery tool.

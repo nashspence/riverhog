@@ -1272,7 +1272,7 @@ def test_official_upload_client_writes_directly_and_resumes_after_interruption(
         ) -> CollectionUploadUnitWorkDocument:
             return self.acquire_collection_upload_session_work(_collection_id).work[0].unit
 
-    monkeypatch.setattr(module.shutil, "which", lambda _name: "/usr/bin/riverhog")
+    monkeypatch.setattr(module.shutil, "which", lambda _name: "/usr/bin/piggity")
     monkeypatch.setattr(module.subprocess, "Popen", popen)
     monkeypatch.setattr(module.time, "sleep", lambda _seconds: None)
 
@@ -1580,7 +1580,7 @@ def test_qualification_api_rotates_one_durable_job_owner(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     module = load_script()
-    from riverhog_api_client import client as client_module
+    from riverhog_client import client as client_module
 
     calls: list[tuple[object, ...]] = []
 

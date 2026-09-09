@@ -18,7 +18,7 @@ dependencies = [
   "fastapi>=0.111,<1.0",
   "http-api-contracts>=0.1,<0.2",
   "pydantic>=2.7,<3.0",
-  "riverhog-api-client>=0.1,<0.2",
+  "riverhog-client>=0.1,<0.2",
   "riverhog-protocol>=0.1,<0.2",
   "stove0-media-archive-target-contracts>=0.1,<0.2",
   "stove0-media-archive-target-support>=0.1,<0.2",
@@ -32,7 +32,7 @@ stove0-nvenc-av1-opus-target = "stove0_nvenc_av1_opus_target.app:target_main"
 
 [tool.uv.sources]
 http-api-contracts = { workspace = true }
-riverhog-api-client = { workspace = true }
+riverhog-client = { workspace = true }
 riverhog-protocol = { workspace = true }
 stove0-media-archive-target-contracts = { workspace = true }
 stove0-media-archive-target-support = { workspace = true }

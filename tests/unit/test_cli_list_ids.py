@@ -3,8 +3,8 @@ from __future__ import annotations
 import json
 from typing import Any
 
-import riverhog_cli.main
-from riverhog_cli.main import app
+import piggity.main
+from piggity.main import app
 from typer.testing import CliRunner
 
 runner = CliRunner()
@@ -24,7 +24,7 @@ def test_collection_list_ids_emits_one_pipeable_bounded_page(monkeypatch) -> Non
                 "next_page_token": "later-page",
             }
 
-    monkeypatch.setattr(riverhog_cli.main, "client", FakeClient)
+    monkeypatch.setattr(piggity.main, "client", FakeClient)
 
     result = runner.invoke(
         app,
@@ -66,7 +66,7 @@ def test_collection_upload_list_ids_forwards_bounded_page_and_filters(monkeypatc
                 "next_page_token": None,
             }
 
-    monkeypatch.setattr(riverhog_cli.main, "client", FakeClient)
+    monkeypatch.setattr(piggity.main, "client", FakeClient)
 
     result = runner.invoke(
         app,
@@ -107,7 +107,7 @@ def test_find_selectors_emits_pipeable_file_identities_from_one_page(monkeypatch
                 "next_page_token": None,
             }
 
-    monkeypatch.setattr(riverhog_cli.main, "client", FakeClient)
+    monkeypatch.setattr(piggity.main, "client", FakeClient)
 
     result = runner.invoke(app, ["find", "-q", "invoice", "--selectors"])
 
@@ -130,10 +130,10 @@ def test_riverhog_closes_its_shared_api_client(monkeypatch) -> None:
         def close(self) -> None:
             closed.append(True)
 
-    monkeypatch.setattr(riverhog_cli.main, "_API_CLIENT", FakeClient())
+    monkeypatch.setattr(piggity.main, "_API_CLIENT", FakeClient())
 
     result = runner.invoke(app, ["collection", "list"])
 
     assert result.exit_code == 0
     assert closed == [True]
-    assert riverhog_cli.main._API_CLIENT is None
+    assert piggity.main._API_CLIENT is None

@@ -7,9 +7,9 @@ from pathlib import Path
 
 import httpx
 import pytest
-from riverhog_api_client import put_collection_upload_unit
-from riverhog_cli import main as riverhog_main
-from riverhog_cli.upload_progress import CollectionUploadProgressState, format_upload_progress_line
+from piggity import main as riverhog_main
+from piggity.upload_progress import CollectionUploadProgressState, format_upload_progress_line
+from riverhog_client import put_collection_upload_unit
 from riverhog_protocol import (
     CollectionUploadUnitAssignmentDocument,
     CollectionUploadUnitWorkDocument,
@@ -31,9 +31,9 @@ REGISTRATION_CONSTRAINTS = {
 def test_upload_runtime_settings_have_explicit_parsers(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    monkeypatch.setenv("RIVERHOG_UPLOAD_FILE_LOG_BYTES", "0")
-    monkeypatch.setenv("RIVERHOG_UPLOAD_FINALIZE_POLL_SECONDS", "0.25")
-    monkeypatch.setenv("RIVERHOG_UPLOAD_FINALIZE_TIMEOUT_SECONDS", "12.5")
+    monkeypatch.setenv("PIGGITY_UPLOAD_FILE_LOG_BYTES", "0")
+    monkeypatch.setenv("PIGGITY_UPLOAD_FINALIZE_POLL_SECONDS", "0.25")
+    monkeypatch.setenv("PIGGITY_UPLOAD_FINALIZE_TIMEOUT_SECONDS", "12.5")
 
     assert riverhog_main._upload_file_log_bytes() == 0
     assert riverhog_main._upload_finalize_poll_seconds() == 0.25
@@ -404,7 +404,7 @@ def test_direct_collection_upload_registers_plans_and_finalizes(
                 "registration_constraints": None,
             }
 
-    monkeypatch.setenv("RIVERHOG_CLI_PLAIN", "1")
+    monkeypatch.setenv("PIGGITY_PLAIN", "1")
     payload = riverhog_main._upload_collection_via_session(
         Api(),  # type: ignore[arg-type]
         "test-upload",
@@ -471,7 +471,7 @@ def test_finalization_watch_returns_verified_custody(
         {"collection_id": COLLECTION_ID, "state": "finalized"},
     ]
     sleeps: list[float] = []
-    monkeypatch.setenv("RIVERHOG_UPLOAD_FINALIZE_POLL_SECONDS", "0.01")
+    monkeypatch.setenv("PIGGITY_UPLOAD_FINALIZE_POLL_SECONDS", "0.01")
     monkeypatch.setattr(riverhog_main.time, "sleep", sleeps.append)
 
     class Api:

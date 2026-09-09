@@ -64,8 +64,8 @@ def test_target_contract_models_are_importable_without_runtime_support() -> None
 
     forbidden = {
         "httpx",
-        "riverhog_api_client",
-        "riverhog_transform_sdk",
+        "riverhog_client",
+        "riverhog_client.transform",
         "stove0_target_support",
     }
     code = (

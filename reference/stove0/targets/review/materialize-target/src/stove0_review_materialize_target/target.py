@@ -5,7 +5,7 @@ from __future__ import annotations
 from pathlib import Path
 
 from pydantic import JsonValue
-from riverhog_transform_sdk import TransformWorkspace
+from riverhog_client.transform import TransformWorkspace
 from stove0_review_target_contracts import REVIEW_MATERIALIZE_OPERATION
 from stove0_review_target_support import (
     ReviewTargetServiceBase,

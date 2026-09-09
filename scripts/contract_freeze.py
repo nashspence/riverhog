@@ -27,8 +27,8 @@ import release as release_contract
 from gogurt.cli import app as gogurt_app
 from gogurt_core import GOGURT_ROUTES_SCHEMA
 from mango_fish.relay import MangoFishConfig
+from piggity.main import app as piggity_app
 from pydantic import BaseModel
-from riverhog_cli.main import app as riverhog_app
 from riverhog_core.runtime_config import (
     ARCHIVE_STORE_ENVIRONMENT_SETTINGS,
     ARCHIVE_STORE_ENVIRONMENT_TEMPLATE,
@@ -52,7 +52,7 @@ SCHEMA = "riverhog-contract-freeze/v1"
 TRACE_SCHEMA = "riverhog-contract-trace/v1"
 ENVIRONMENT_NAME = re.compile(r"^[A-Z][A-Z0-9_]+$")
 CONFIGURATION_ENVIRONMENT_NAME = re.compile(
-    r"^(?:GOGURT|MANGO|RIVERHOG|STOVE0|VCRUNCH)_[A-Z0-9_]+$"
+    r"^(?:GOGURT|MANGO|PIGGITY|RIVERHOG|STOVE0|VCRUNCH)_[A-Z0-9_]+$"
 )
 PROCESS_SCHEMA_BUNDLES: dict[str, Callable[[], dict[str, Any]]] = {
     "riverhog-storage-adapter": storage_adapter_schema_bundle,
@@ -176,30 +176,33 @@ def _python_surfaces(
         if project.role != "reusable_library":
             continue
         pyproject = ROOT / project.path / "pyproject.toml"
-        package = release_contract._public_python_package(pyproject)
-        module = importlib.import_module(package)
-        exports = getattr(module, "__all__", None)
-        if (
-            not isinstance(exports, list)
-            or not exports
-            or any(
-                not isinstance(name, str) or not name or name.startswith("_") for name in exports
+        for package in release_contract._public_python_modules(pyproject):
+            module = importlib.import_module(package)
+            exports = getattr(module, "__all__", None)
+            if (
+                not isinstance(exports, list)
+                or not exports
+                or any(
+                    not isinstance(name, str) or not name or name.startswith("_")
+                    for name in exports
+                )
+                or len(exports) != len(set(exports))
+            ):
+                raise ContractFreezeError(f"invalid public __all__ for {project.name}:{package}")
+            missing = sorted(name for name in exports if not hasattr(module, name))
+            if missing:
+                raise ContractFreezeError(
+                    f"missing public exports for {project.name}:{package}: {missing}"
+                )
+            result.append(
+                {
+                    "distribution": project.name,
+                    "module": package,
+                    "exports": {
+                        name: _python_export(getattr(module, name)) for name in sorted(exports)
+                    },
+                }
             )
-            or len(exports) != len(set(exports))
-        ):
-            raise ContractFreezeError(f"invalid public __all__ for {project.name}")
-        missing = sorted(name for name in exports if not hasattr(module, name))
-        if missing:
-            raise ContractFreezeError(f"missing public exports for {project.name}: {missing}")
-        result.append(
-            {
-                "distribution": project.name,
-                "module": package,
-                "exports": {
-                    name: _python_export(getattr(module, name)) for name in sorted(exports)
-                },
-            }
-        )
     return result
 
 
@@ -471,7 +474,7 @@ def _argparse_command(parser: argparse.ArgumentParser) -> dict[str, object]:
 def _cli_surfaces() -> dict[str, object]:
     return {
         "gogurt": _click_command(get_command(gogurt_app)),
-        "riverhog": _click_command(get_command(riverhog_app)),
+        "piggity": _click_command(get_command(piggity_app)),
         "riverhog-ftp-adapter": _argparse_command(ftp_adapter_parser()),
         "riverhog-recover": _argparse_command(recovery_parser()),
         "stove0": _click_command(get_command(stove0_app)),
@@ -710,7 +713,7 @@ def _protocol_trace() -> list[dict[str, object]]:
 def _cli_trace() -> list[dict[str, object]]:
     modules = {
         "gogurt": "gogurt.cli",
-        "riverhog": "riverhog_cli.main",
+        "piggity": "piggity.main",
         "riverhog-ftp-adapter": "riverhog_ftp_adapter.app",
         "riverhog-recover": "riverhog_recover.cli",
         "stove0": "stove0_cli.main",
@@ -727,9 +730,14 @@ def _cli_trace() -> list[dict[str, object]]:
 def _python_trace(projection: Mapping[str, object]) -> list[dict[str, object]]:
     external = cast(Mapping[str, object], projection["external_contract"])
     surfaces = cast(list[dict[str, object]], external["python"])
+    counts = Counter(str(surface["distribution"]) for surface in surfaces)
     return [
         {
-            "id": f"python:{surface['distribution']}",
+            "id": (
+                f"python:{surface['distribution']}:{surface['module']}"
+                if counts[str(surface["distribution"])] > 1
+                else f"python:{surface['distribution']}"
+            ),
             "source": _source_ref(importlib.import_module(str(surface["module"]))),
         }
         for surface in surfaces

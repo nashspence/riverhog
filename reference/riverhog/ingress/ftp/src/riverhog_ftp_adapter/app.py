@@ -27,7 +27,7 @@ from http_api_contracts import (
     error_code_for_status,
     error_payload,
 )
-from riverhog_api_client import ApiClient
+from riverhog_client import ApiClient
 from riverhog_ftp_adapter_api_client import RiverhogFtpAdapterClient
 from riverhog_provenance import resolve_provenance_observer
 from starlette.exceptions import HTTPException as StarletteHTTPException

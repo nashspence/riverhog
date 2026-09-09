@@ -104,6 +104,17 @@ def _import_roots(path: Path) -> set[str]:
     return roots
 
 
+def _import_modules(path: Path) -> set[str]:
+    modules: set[str] = set()
+    tree = ast.parse(path.read_text(encoding="utf-8"), filename=str(path))
+    for node in ast.walk(tree):
+        if isinstance(node, ast.Import):
+            modules.update(alias.name for alias in node.names)
+        elif isinstance(node, ast.ImportFrom) and node.module:
+            modules.add(node.module)
+    return modules
+
+
 def _identifiers(path: Path) -> set[str]:
     tree = ast.parse(path.read_text(encoding="utf-8"), filename=str(path))
     return {
@@ -254,8 +265,13 @@ def test_stove0_core_does_not_define_a_second_observer_acceptance_domain() -> No
 
 def test_stove0_server_consumes_component_boundaries_only_as_protocols_and_callers() -> None:
     imports = {root for path in STOVE0_SERVER.rglob("*.py") for root in _import_roots(path)}
+    modules = {module for path in STOVE0_SERVER.rglob("*.py") for module in _import_modules(path)}
+    assert not {
+        module
+        for module in modules
+        if module == "riverhog_client.transform" or module.startswith("riverhog_client.transform.")
+    }
     assert not imports & {
-        "riverhog_transform_sdk",
         "stove0_media_archive_target_contracts",
         "stove0_media_archive_target_support",
         "stove0_media_metadata_observer_contracts",
@@ -283,8 +299,18 @@ def test_caller_packages_do_not_pull_in_author_or_implementation_dependencies() 
         for path in caller.rglob("*.py")
         for root in _import_roots(path)
     }
+    modules = {
+        module
+        for caller in CALLER_ROOTS
+        for path in caller.rglob("*.py")
+        for module in _import_modules(path)
+    }
+    assert not {
+        module
+        for module in modules
+        if module == "riverhog_client.transform" or module.startswith("riverhog_client.transform.")
+    }
     assert not imports & {
-        "riverhog_transform_sdk",
         "stove0_core",
         "stove0_media_archive_target_contracts",
         "stove0_media_archive_target_support",

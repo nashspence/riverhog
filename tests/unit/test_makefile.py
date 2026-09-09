@@ -552,8 +552,8 @@ def test_mypy_target_covers_source_and_service_apps(tmp_path: Path) -> None:
     ):
         assert source in uv_log_lines[0]
     assert (
-        "riverhog/client/src reference/riverhog/ingress/ftp/src reference/riverhog/recovery/src"
-        in uv_log_lines[0]
+        "reference/riverhog/applications/piggity/src "
+        "reference/riverhog/ingress/ftp/src reference/riverhog/recovery/src" in uv_log_lines[0]
     )
     assert "scripts/operation_qualification.py" in uv_log_lines[0]
     assert "scripts/provider_qualification.py" in uv_log_lines[0]
@@ -739,7 +739,7 @@ def test_compose_smoke_starts_and_cleans_a_fresh_stack(tmp_path: Path) -> None:
     assert docker_log.count(" restart api") == 3
     assert "RIVERHOG_SMOKE_ADMISSION_OUTPUT=ftp" in docker_log
     assert "RIVERHOG_SMOKE_CLIENT_RECEIPT_OUTPUT=1" in docker_log
-    assert "collection upload start /official-client-input" in docker_log
+    assert "collection upload start /reference-client-input" in docker_log
     assert "--tag stove0/conformance" in docker_log
     assert "RIVERHOG_SMOKE_ADMISSION_OUTPUT=client" in docker_log
     assert "EXPECTED_WORK_ID=" in docker_log

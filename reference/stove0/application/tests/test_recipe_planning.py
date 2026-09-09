@@ -4,7 +4,7 @@ from pathlib import Path
 from typing import cast
 
 import pytest
-from riverhog_api_client import ApiClient
+from riverhog_client import ApiClient
 from riverhog_protocol import (
     ImmutableFileIdentityDocument,
     PortableCollectionHeader,

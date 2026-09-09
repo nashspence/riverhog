@@ -69,8 +69,8 @@ def test_observer_contract_models_are_importable_without_runtime_support() -> No
 
     forbidden = {
         "httpx",
-        "riverhog_api_client",
-        "riverhog_transform_sdk",
+        "riverhog_client",
+        "riverhog_client.transform",
         "stove0_core",
         "stove0_observer_support",
     }

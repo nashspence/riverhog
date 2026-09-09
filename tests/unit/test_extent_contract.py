@@ -131,7 +131,7 @@ def test_operation_parameter_extents_are_covered_from_the_openapi_authority() ->
         "contract_max",
         1024 * 1024,
     )
-    cli_page_size = decisions["cli:riverhog:riverhog:collection:list:parameter:page_size:value"]
+    cli_page_size = decisions["cli:piggity:piggity:collection:list:parameter:page_size:value"]
     assert (cli_page_size["policy"], cli_page_size["maximum"]) == (
         page_size["policy"],
         page_size["maximum"],

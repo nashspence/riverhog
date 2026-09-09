@@ -5,7 +5,7 @@ import threading
 from collections.abc import Callable
 from pathlib import Path
 
-from riverhog_api_client.downloads import RetrievalDownload, download_retrieval_files
+from riverhog_client.downloads import RetrievalDownload, download_retrieval_files
 
 
 class DownloadApi:

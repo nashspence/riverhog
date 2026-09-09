@@ -497,7 +497,7 @@ def _run_client_operation(
     cwd: Path,
     environment: dict[str, str],
 ) -> str:
-    if root == "riverhog-client":
+    if root == "piggity":
         environment["RIVERHOG_BASE_URL"] = base_url
         command = [str(executable), "event", "list", "--json"]
     elif root == "stove0-client":
@@ -1888,7 +1888,7 @@ def _qualify_component(
         raise QualificationError(f"{root} --version differs from the installed release")
     _run([str(primary), "--help"], cwd=scratch, env=environment, capture=True)
 
-    if root in {"riverhog-client", "stove0-client"}:
+    if root in {"piggity", "stove0-client"}:
         operation = _run_client_operation(
             root,
             primary,

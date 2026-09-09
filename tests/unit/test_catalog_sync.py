@@ -10,8 +10,8 @@ import pytest
 import riverhog_core.services.catalog_sync as catalog_sync_service
 from pydantic import ValidationError
 from riverhog_api.app import create_app
-from riverhog_api_client import CatalogReplica
 from riverhog_application_access import ALL_RESOURCES, CATALOG_READ, ApplicationAccess
+from riverhog_client import CatalogReplica
 from riverhog_core.app_permissions import ApplicationPrincipal
 from riverhog_core.catalog_db import initialize_db, make_session_factory, session_scope
 from riverhog_core.catalog_events import (

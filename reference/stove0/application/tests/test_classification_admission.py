@@ -4,7 +4,7 @@ from types import SimpleNamespace
 from typing import Any, cast
 
 import pytest
-from riverhog_api_client import ApiClient
+from riverhog_client import ApiClient
 from riverhog_protocol import (
     CatalogSyncChangePage,
     CatalogSyncCheckpoint,

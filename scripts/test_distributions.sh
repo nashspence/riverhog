@@ -101,33 +101,27 @@ smoke_workspace_distribution() {
   )
 }
 
-client_wheel="$(single_wheel 'riverhog_client-*.whl')"
 recovery_wheel="$(single_wheel 'riverhog_recover-*.whl')"
 server_wheel="$(single_wheel 'riverhog_server-*.whl')"
 
-run_uv venv --python 3.12 "${SCRATCH}/client"
-mapfile -t client_wheels < <(
-  workspace_wheel_closure "${client_wheel}"
-)
-run_uv pip install \
-  --strict \
-  --python "${SCRATCH}/client/bin/python" \
-  --find-links "${DIST_DIR}" \
-  "${client_wheels[@]}"
-(
-  cd "${SCRATCH}"
-  env -u PYTHONPATH "${SCRATCH}/client/bin/riverhog" --help >/dev/null
-  client_version="$(env -u PYTHONPATH "${SCRATCH}/client/bin/riverhog" --version)"
-  installed_version="$(
-    "${SCRATCH}/client/bin/python" -I -c \
-      'import importlib.metadata as m; print(m.version("riverhog-client"))'
-  )"
-  [[ "${client_version}" == "${installed_version}" ]]
-  "${SCRATCH}/client/bin/python" -I -c \
-    'import importlib.metadata as m; import riverhog_cli.main; import riverhog_cli_support.output; m.version("riverhog-cli-support")'
-  "${SCRATCH}/client/bin/python" -I -c \
-    'import importlib.metadata as m; names = {d.metadata["Name"].lower() for d in m.distributions()}; native = {"riverhog-provenance-linux-observer", "riverhog-provenance-macos-observer", "riverhog-provenance-windows-observer"}; contracts = {"riverhog-provenance-linux-contracts", "riverhog-provenance-macos-contracts", "riverhog-provenance-windows-contracts"}; assert names.isdisjoint(native | contracts); assert "riverhog-provenance-contracts" in names'
-)
+smoke_workspace_distribution \
+  riverhog-client \
+  'riverhog_client-*.whl' \
+  'import importlib.metadata as m, sys; import riverhog_client; assert not any(name.startswith("riverhog_client.transform") for name in sys.modules); import riverhog_client.transform; assert m.version("riverhog-client")'
+env -u PYTHONPATH "${SCRATCH}/riverhog-client/bin/python" -I \
+  "${ROOT_DIR}/tests/fixtures/external_riverhog_client_application.py"
+
+smoke_workspace_distribution \
+  piggity \
+  'piggity-*.whl' \
+  'import importlib.metadata as m; import piggity.main; import riverhog_cli_support.output; names = {d.metadata["Name"].lower() for d in m.distributions()}; native = {"riverhog-provenance-linux-observer", "riverhog-provenance-macos-observer", "riverhog-provenance-windows-observer"}; contracts = {"riverhog-provenance-linux-contracts", "riverhog-provenance-macos-contracts", "riverhog-provenance-windows-contracts"}; assert names.isdisjoint(native | contracts); assert "riverhog-provenance-contracts" in names; assert m.version("piggity")' \
+  piggity
+piggity_version="$(env -u PYTHONPATH "${SCRATCH}/piggity/bin/piggity" --version)"
+installed_piggity_version="$(
+  "${SCRATCH}/piggity/bin/python" -I -c \
+    'import importlib.metadata as m; print(m.version("piggity"))'
+)"
+[[ "${piggity_version}" == "${installed_piggity_version}" ]]
 
 linux_observer_wheel="$(single_wheel 'riverhog_provenance_linux_observer-*.whl')"
 mapfile -t linux_observer_wheels < <(
@@ -135,11 +129,11 @@ mapfile -t linux_observer_wheels < <(
 )
 run_uv pip install \
   --strict \
-  --python "${SCRATCH}/client/bin/python" \
+  --python "${SCRATCH}/piggity/bin/python" \
   --find-links "${DIST_DIR}" \
   "${linux_observer_wheels[@]}"
-"${SCRATCH}/client/bin/riverhog" local provenance-observer show riverhog-linux --json \
-  | "${SCRATCH}/client/bin/python" -I -c \
+"${SCRATCH}/piggity/bin/piggity" local provenance-observer show riverhog-linux --json \
+  | "${SCRATCH}/piggity/bin/python" -I -c \
     'import json, sys; value = json.load(sys.stdin); assert value["observer_id"] == "riverhog-provenance-linux-observer/v1"; assert value["contract_id"] == "riverhog-provenance-linux-observation/v1"; assert len(value["contract_sha256"]) == 64'
 
 run_uv venv --python 3.12 "${SCRATCH}/recovery"

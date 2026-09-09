@@ -8,7 +8,7 @@ import pytest
 from fastapi.testclient import TestClient
 from riverhog_api.app import create_app
 from riverhog_api.deps import ServiceContainer
-from riverhog_api_client.client import ApiClient
+from riverhog_client.client import ApiClient
 from riverhog_core.archive_store_registry import ArchiveStoreRegistry
 from riverhog_core.catalog_db import initialize_db, make_session_factory, session_scope
 from riverhog_core.catalog_models import CollectionUploadRecord

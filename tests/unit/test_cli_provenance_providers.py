@@ -3,7 +3,7 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-from riverhog_cli.main import app
+from piggity.main import app
 from typer.testing import CliRunner
 
 RUNNER = CliRunner()
@@ -90,7 +90,7 @@ def test_upload_provider_environment_selection_is_connected(
     root = tmp_path / "collection"
     root.mkdir()
     (root / "payload.bin").write_bytes(b"payload")
-    monkeypatch.setenv("RIVERHOG_PROVENANCE_OBSERVER", "riverhog-linux")
+    monkeypatch.setenv("PIGGITY_PROVENANCE_OBSERVER", "riverhog-linux")
 
     result = RUNNER.invoke(
         app,

@@ -15,7 +15,7 @@ REPO = Path(__file__).resolve().parents[2]
 
 IMPLEMENTATION_OWNERS = {
     "riverhog-server": (REPO / "riverhog/server/src", {"riverhog_api", "riverhog_core"}),
-    "riverhog-client": (REPO / "riverhog/client/src", {"riverhog_cli"}),
+    "piggity": (REPO / "reference/riverhog/applications/piggity/src", {"piggity"}),
     "riverhog-recover": (REPO / "reference/riverhog/recovery/src", {"riverhog_recover"}),
     "riverhog-ftp-adapter": (REPO / "reference/riverhog/ingress/ftp/src", {"riverhog_ftp_adapter"}),
     "riverhog-storage-adapter-aws": (
@@ -141,7 +141,7 @@ CORE_ROOTS = {
 }
 RIVERHOG_COLLECTION_WORKFLOW_SURFACE = (
     REPO / "packages/riverhog-protocol/src/riverhog_protocol/collection_workflows.py",
-    REPO / "packages/riverhog-api-client/src/riverhog_api_client/workflows.py",
+    REPO / "packages/riverhog-client/src/riverhog_client/workflows.py",
     REPO / "riverhog/server/src/riverhog_api/routers/workflows.py",
     REPO / "riverhog/server/src/riverhog_api/schemas/workflows.py",
     REPO / "riverhog/server/src/riverhog_core/catalog_workflow_models.py",
@@ -373,7 +373,7 @@ def test_riverhog_collection_workflows_use_application_agnostic_outcomes() -> No
 def test_riverhog_production_surfaces_are_stove0_agnostic() -> None:
     roots = (
         REPO / "riverhog/server/src",
-        REPO / "riverhog/client/src",
+        REPO / "reference/riverhog/applications/piggity/src",
         REPO / "reference/riverhog/recovery/src",
         REPO / "reference/riverhog/ingress/ftp/src",
     )
@@ -457,7 +457,11 @@ def test_portable_products_do_not_select_provider_implementations() -> None:
         }
     )
     assert all("sys.platform" not in path.read_text(encoding="utf-8") for path in gogurt_sources)
-    client = tomllib.loads((REPO / "riverhog/client/pyproject.toml").read_text(encoding="utf-8"))
+    client = tomllib.loads(
+        (REPO / "reference/riverhog/applications/piggity/pyproject.toml").read_text(
+            encoding="utf-8"
+        )
+    )
     client_dependencies = declared_project_dependencies(client)
     assert client_dependencies.isdisjoint(
         {
@@ -828,9 +832,8 @@ def test_images_copy_only_their_owned_implementation_project() -> None:
 def test_stove0_server_has_only_protocol_and_caller_side_extension_dependencies() -> None:
     _projects, graph = workspace_project_graph()
     closure = dependency_closure("stove0-server", graph)
-    assert {"stove0-observer-client", "stove0-target-client"} <= closure
+    assert {"riverhog-client", "stove0-observer-client", "stove0-target-client"} <= closure
     assert not closure & {
-        "riverhog-transform-sdk",
         "stove0-media-archive-target-contracts",
         "stove0-media-archive-target-support",
         "stove0-media-metadata-observer-contracts",
@@ -841,6 +844,18 @@ def test_stove0_server_has_only_protocol_and_caller_side_extension_dependencies(
         "stove0-review-sampler-support",
         "stove0-target-support",
     }
+
+
+def test_stove0_control_plane_does_not_import_riverhog_transform_runtime() -> None:
+    server = REPO / "reference/stove0/application/server/src"
+    imported = {
+        module
+        for path in server.rglob("*.py")
+        for module in imported_modules(path)
+        if module == "riverhog_client.transform" or module.startswith("riverhog_client.transform.")
+    }
+
+    assert not imported
 
 
 def test_maintained_observer_distributions_do_not_pull_target_authority() -> None:

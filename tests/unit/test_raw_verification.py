@@ -152,7 +152,7 @@ def test_raw_volume_set_digest_changes_with_immutable_object_identity() -> None:
 
 
 def test_part_manifest_verification_avoids_remote_read_after_write() -> None:
-    from riverhog_api_client.source_hashing import hash_raw_source_chunks
+    from riverhog_client.source_hashing import hash_raw_source_chunks
 
     whole = b"abcdefghij"
     file = ArchiveFile(

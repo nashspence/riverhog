@@ -10,7 +10,6 @@ ENTRYPOINTS = {REPO / "README.md", REPO / "AGENTS.md"}
 DURABLE_CONTEXT = {REPO / "docs/architecture.md"}
 REPOSITORY_MAP_TARGETS = {
     REPO / "riverhog/server",
-    REPO / "riverhog/client",
     REPO / "reference/gogurt",
     REPO / "reference/riverhog",
     REPO / "reference/stove0",

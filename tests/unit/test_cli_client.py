@@ -6,7 +6,7 @@ from typing import Any
 
 import httpx
 import pytest
-from riverhog_api_client.client import ApiClient
+from riverhog_client.client import ApiClient
 from riverhog_protocol import (
     CollectionUploadArtifactCustodyReceiptDocument,
     CollectionUploadCustodyObjectDocument,

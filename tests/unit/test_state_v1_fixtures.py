@@ -10,7 +10,7 @@ from pathlib import Path
 from gogurt_listener_runtime import ListenerStore
 from mango_fish.relay import CursorState
 from mango_fish.schema import state_schema as mango_fish_state_schema
-from riverhog_cli.local_state import state_schema as local_state_schema
+from piggity.local_state import state_schema as local_state_schema
 from riverhog_core.state_migrations.v1_ddl import POSTGRESQL_DDL
 from riverhog_provenance import load_or_create_installation_id
 from stove0_core.state_migrations.v1_ddl import POSTGRESQL_DDL as STOVE0_POSTGRESQL_DDL
@@ -27,9 +27,9 @@ MIGRATION_BASELINES = {
         "alembic",
         "stove0_core.state_migrations.v1_ddl",
     ),
-    "riverhog/client/src/riverhog_cli/state_migrations/versions/v1_0001.py": (
+    "reference/riverhog/applications/piggity/src/piggity/state_migrations/versions/v1_0001.py": (
         "alembic",
-        "riverhog_cli.state_migrations.v1_ddl",
+        "piggity.state_migrations.v1_ddl",
     ),
     (
         "reference/riverhog/applications/mango-fish/src/mango_fish/state_migrations/"
@@ -53,11 +53,11 @@ def _connect(database: Path) -> sqlite3.Connection:
     return connection
 
 
-def test_riverhog_local_current_v1_fixture_restarts_with_selection_and_retrieval_state(
+def test_piggity_current_v1_fixture_restarts_with_selection_and_retrieval_state(
     tmp_path: Path,
 ) -> None:
-    database = tmp_path / "riverhog-local.sqlite3"
-    _restore_sqlite(FIXTURES / "riverhog-local.sqlite.sql", database)
+    database = tmp_path / "piggity.sqlite3"
+    _restore_sqlite(FIXTURES / "piggity.sqlite.sql", database)
 
     status = local_state_schema(database).upgrade()
     with closing(_connect(database)) as connection:

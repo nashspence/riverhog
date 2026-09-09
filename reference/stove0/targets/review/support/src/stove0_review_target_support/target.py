@@ -12,9 +12,9 @@ from pathlib import Path, PurePosixPath
 
 from jsonschema import Draft202012Validator
 from pydantic import JsonValue
-from riverhog_api_client import ProducerFile
+from riverhog_client import ProducerFile
+from riverhog_client.transform import TransformWorkspace
 from riverhog_protocol import canonical_json_bytes, canonical_json_sha256
-from riverhog_transform_sdk import TransformWorkspace
 from stove0_protocol import JsonSchemaDocument
 from stove0_review_sampler_client import ReviewSamplerClient
 from stove0_review_sampler_protocol import (

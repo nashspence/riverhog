@@ -8,7 +8,7 @@ from typing import cast
 
 import pytest
 from riverhog_age import CHUNK_SIZE
-from riverhog_api_client.source_hashing import hash_raw_source_chunks
+from riverhog_client.source_hashing import hash_raw_source_chunks
 from riverhog_core.app_permissions import (
     CATALOG_READ,
     RETRIEVAL_MANAGE,

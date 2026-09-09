@@ -2,8 +2,8 @@ from __future__ import annotations
 
 import json
 
-import riverhog_cli.main
-from riverhog_cli.main import app
+import piggity.main
+from piggity.main import app
 from typer.testing import CliRunner
 
 runner = CliRunner()
@@ -33,7 +33,7 @@ def test_archive_copy_selects_destination_and_optional_source(monkeypatch) -> No
                 "failure": None,
             }
 
-    monkeypatch.setattr(riverhog_cli.main, "client", FakeClient)
+    monkeypatch.setattr(piggity.main, "client", FakeClient)
 
     result = runner.invoke(
         app,
@@ -102,7 +102,7 @@ def test_archive_copy_list_and_show_share_server_job_models(monkeypatch) -> None
             calls.append("show")
             return job
 
-    monkeypatch.setattr(riverhog_cli.main, "client", FakeClient)
+    monkeypatch.setattr(piggity.main, "client", FakeClient)
 
     human_list = runner.invoke(app, ["archive", "copy", "list"])
     listed = runner.invoke(app, ["archive", "copy", "list", "--json"])
@@ -162,8 +162,8 @@ def test_archive_copy_list_selectors_cancel_and_watch_are_actionable(monkeypatch
             calls.append(("watch", collection_id, destination_store))
             return job(next(states))
 
-    monkeypatch.setattr(riverhog_cli.main, "client", FakeClient)
-    monkeypatch.setattr(riverhog_cli.main.time, "sleep", lambda _seconds: None)
+    monkeypatch.setattr(piggity.main, "client", FakeClient)
+    monkeypatch.setattr(piggity.main.time, "sleep", lambda _seconds: None)
 
     listed = runner.invoke(
         app,

@@ -44,7 +44,7 @@ MYPY_SOURCES = \
 	packages/riverhog-age/src \
 	packages/riverhog-archive-contracts/src \
 	reference/riverhog/ingress/ftp-api-client/src \
-	packages/riverhog-api-client/src \
+	packages/riverhog-client/src \
 	packages/riverhog-cli-support/src \
 	packages/riverhog-protocol/src \
 	packages/riverhog-provenance-contracts/src \
@@ -54,7 +54,6 @@ MYPY_SOURCES = \
 	reference/riverhog/provenance/observers/macos/src \
 	reference/riverhog/provenance/contracts/windows/src \
 	reference/riverhog/provenance/observers/windows/src \
-	packages/riverhog-transform-sdk/src \
 	packages/riverhog-storage-adapter-asgi-support/src \
 	packages/riverhog-storage-adapter-protocol/src \
 	reference/riverhog/storage/s3-support/src \
@@ -81,7 +80,7 @@ MYPY_SOURCES = \
 	packages/riverhog-provenance/src \
 	packages/state-schema/src \
 	packages/time-formats/src \
-	riverhog/client/src \
+	reference/riverhog/applications/piggity/src \
 	reference/riverhog/ingress/ftp/src \
 	reference/riverhog/recovery/src \
 	riverhog/server/src \

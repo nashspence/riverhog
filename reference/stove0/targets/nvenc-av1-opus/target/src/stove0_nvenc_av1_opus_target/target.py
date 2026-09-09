@@ -9,7 +9,7 @@ import threading
 from collections.abc import Sequence
 from pathlib import Path, PurePosixPath
 
-from riverhog_api_client import ProducerFile
+from riverhog_client import ProducerFile
 from riverhog_protocol import canonical_json_sha256
 from stove0_media_archive_target_contracts import (
     AV1_OPUS_ARCHIVE_OPERATION,

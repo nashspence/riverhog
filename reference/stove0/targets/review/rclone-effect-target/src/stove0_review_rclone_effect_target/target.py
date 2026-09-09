@@ -8,8 +8,8 @@ from dataclasses import dataclass
 from pathlib import Path
 
 from pydantic import JsonValue
+from riverhog_client.transform import TransformWorkspace
 from riverhog_protocol import canonical_json_bytes
-from riverhog_transform_sdk import TransformWorkspace
 from stove0_review_target_contracts import REVIEW_RCLONE_DELIVER_OPERATION
 from stove0_review_target_support import (
     ReviewTargetServiceBase,

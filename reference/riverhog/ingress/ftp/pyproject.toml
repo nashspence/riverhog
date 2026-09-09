@@ -22,7 +22,7 @@ dependencies = [
   "fastapi>=0.111,<1.0",
   "http-api-contracts>=0.1,<0.2",
   "pydantic>=2.7,<3.0",
-  "riverhog-api-client>=0.1,<0.2",
+  "riverhog-client>=0.1,<0.2",
   "riverhog-ftp-adapter-api-client>=0.1,<0.2",
   "riverhog-protocol>=0.1,<0.2",
   "riverhog-provenance>=0.1,<0.2",
@@ -36,7 +36,7 @@ riverhog-ftp-adapter = "riverhog_ftp_adapter.app:main"
 [tool.uv.sources]
 http-api-contracts = { workspace = true }
 riverhog-ftp-adapter-api-client = { workspace = true }
-riverhog-api-client = { workspace = true }
+riverhog-client = { workspace = true }
 riverhog-protocol = { workspace = true }
 riverhog-provenance = { workspace = true }
 

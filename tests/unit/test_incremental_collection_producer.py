@@ -6,7 +6,7 @@ from dataclasses import replace
 from pathlib import Path
 
 import pytest
-from riverhog_api_client import (
+from riverhog_client import (
     IncrementalCollectionProducer,
     ProducerArtifactIdentity,
     ProducerFile,

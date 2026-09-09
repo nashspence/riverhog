@@ -80,7 +80,7 @@ provider_qualification_runtime = "provider-qualification"
 components = "A supported deployment runs components from one coordinated product version."
 http_api = "Published v1 HTTP and CloudEvents contracts remain backward compatible throughout v1."
 cli = "Command names, options, exit status, and structured output remain backward compatible throughout v1; prose output is for people."
-python_api = "Reusable-library top-level exports and public signatures remain backward compatible throughout v1; implementation submodules and other component roles are not Python API promises."
+python_api = "Reusable-library declared public-module exports and public signatures remain backward compatible throughout v1; undeclared implementation submodules and other component roles are not Python API promises."
 archive = "A valid v1 archive remains independently recoverable throughout the supported v1 lifetime. Pack construction, ingress checkpointing, and resumable-write strategies are not archive-format compatibility promises."
 recovery = "Every later v1 recovery release reads every valid earlier v1 archive and provenance set."
 configuration = "Accepted v1 configuration remains valid throughout v1 unless an unsafe value must be rejected."
@@ -96,11 +96,11 @@ head = "v1_0001"
 fixtures = ["tests/fixtures/state/v1_0001/riverhog.postgresql.sql"]
 
 [[state.owners]]
-id = "riverhog-local"
-distribution = "riverhog-client"
+id = "piggity-local"
+distribution = "piggity"
 format = "state-schema/sqlite"
 head = "v1_0001"
-fixtures = ["tests/fixtures/state/v1_0001/riverhog-local.sqlite.sql"]
+fixtures = ["tests/fixtures/state/v1_0001/piggity.sqlite.sql"]
 
 [[state.owners]]
 id = "mango-fish-cursor"
@@ -181,7 +181,7 @@ lock_format = "pylock.toml"
 managed_python = true
 wheel_only = true
 simple_index_path = "artifacts/v{version}/simple/"
-roots = ["gogurt", "riverhog-client", "riverhog-recover", "stove0-client"]
+roots = ["gogurt", "piggity", "riverhog-recover", "stove0-client"]
 
 [installation.listener]
 root = "gogurt"
@@ -216,15 +216,14 @@ compromise = "Stop publication, disclose and revoke affected evidence, and issue
 github_oidc = "Published GitHub artifacts also receive workflow identity attestations; they complement rather than replace the maintainer signature."
 
 [python]
-end_user_artifact = [
-  "riverhog/client",
-]
+end_user_artifact = []
 deployed_implementation = [
   "riverhog/server",
 ]
 reference_application = [
   "reference/gogurt/application",
   "reference/riverhog/applications/mango-fish",
+  "reference/riverhog/applications/piggity",
   "reference/riverhog/recovery",
   "reference/stove0/application/client",
   "reference/stove0/application/server",
@@ -276,14 +275,13 @@ reusable_library = [
   "packages/lifecycle-events",
   "packages/riverhog-age",
   "packages/riverhog-archive-contracts",
-  "packages/riverhog-api-client",
+  "packages/riverhog-client",
   "packages/riverhog-protocol",
   "packages/riverhog-provenance",
   "packages/riverhog-provenance-contracts",
   "packages/riverhog-storage-adapter-asgi-support",
   "packages/riverhog-storage-adapter-protocol",
   "packages/riverhog-storage-adapter-support",
-  "packages/riverhog-transform-sdk",
   "reference/stove0/packages/observer-protocol",
   "reference/stove0/packages/observer-support",
   "reference/stove0/packages/observer-client",
