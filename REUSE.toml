@@ -8,7 +8,7 @@ SPDX-License-Identifier = "Apache-2.0"
 
 [[annotations]]
 path = [
-  "riverhog/server/**",
+  "riverhog/**",
   "reference/riverhog/storage/aws/**",
   "reference/riverhog/storage/backblaze/**",
   "reference/riverhog/storage/filesystem/**",
@@ -25,7 +25,7 @@ SPDX-License-Identifier = "CAL-1.0"
 
 [[annotations]]
 path = [
-  "riverhog/server/openapi/**",
+  "riverhog/openapi/**",
 ]
 precedence = "override"
 SPDX-FileCopyrightText = "2026 Nash Spence"

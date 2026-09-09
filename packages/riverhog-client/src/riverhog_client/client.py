@@ -11,7 +11,6 @@ from typing import Annotated, Any, Literal, Self, cast
 from urllib.parse import quote
 
 import httpx
-from file_download import verified_download
 from http_api_contracts import (
     CanonicalVisibleText,
     closed_literal_values,
@@ -98,6 +97,7 @@ from riverhog_protocol.paths import (
 )
 from riverhog_provenance_contracts import ProvenanceJournalId
 
+from riverhog_client._file_download import verified_download
 from riverhog_client.workflows import CollectionWorkflowMethods
 
 _HTTP_TIMEOUT_SECONDS = 300.0

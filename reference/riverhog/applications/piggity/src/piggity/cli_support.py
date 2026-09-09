@@ -1,4 +1,4 @@
-"""Shared structured CLI output helpers for Riverhog-family applications."""
+"""Structured output helpers owned by the Piggity reference application."""
 
 from __future__ import annotations
 

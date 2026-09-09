@@ -95,7 +95,7 @@ def test_repo_owns_toolchain_python_lock_and_runtime_exports() -> None:
         "reference/stove0/targets/*/target",
         "reference/stove0/targets/*/review-sampler",
         "reference/stove0/packages/*",
-        "riverhog/*",
+        "riverhog",
     ]
     assert (REPO_ROOT / "mise.lock").is_file()
     assert (REPO_ROOT / "uv.lock").is_file()

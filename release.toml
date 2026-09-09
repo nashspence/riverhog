@@ -218,7 +218,7 @@ github_oidc = "Published GitHub artifacts also receive workflow identity attesta
 [python]
 end_user_artifact = []
 deployed_implementation = [
-  "riverhog/server",
+  "riverhog",
 ]
 reference_application = [
   "reference/gogurt/application",
@@ -295,8 +295,6 @@ reusable_library = [
 ]
 internal_build_unit = [
   "packages/config-validation",
-  "packages/file-download",
-  "packages/riverhog-cli-support",
   "packages/state-schema",
   "packages/time-formats",
 ]

@@ -32,7 +32,6 @@ COPY pyproject.toml uv.lock ./
 COPY reference/stove0/targets/review/rclone-effect-target reference/stove0/targets/review/rclone-effect-target
 COPY reference/stove0/targets/review/support reference/stove0/targets/review/support
 COPY packages/riverhog-application-access packages/riverhog-application-access
-COPY packages/file-download packages/file-download
 COPY packages/http-api-contracts packages/http-api-contracts
 COPY packages/lifecycle-events packages/lifecycle-events
 COPY packages/riverhog-client packages/riverhog-client

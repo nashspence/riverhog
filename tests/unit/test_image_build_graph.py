@@ -37,13 +37,13 @@ NON_ROOT_RUNTIME_IMAGES = set(MISE_CONTAINER_TOOLS) - {"test"}
 
 IMAGE_CONTRACTS = {
     "riverhog": {
-        "dockerfile": "riverhog/server/Dockerfile",
+        "dockerfile": "riverhog/Dockerfile",
         "tag": "riverhog-app:dev",
         "title": "Riverhog",
         "license": "CAL-1.0",
         "compose": (
-            ("riverhog/server/compose.yaml", "state"),
-            ("riverhog/server/compose.yaml", "app"),
+            ("riverhog/compose.yaml", "state"),
+            ("riverhog/compose.yaml", "app"),
         ),
     },
     "riverhog-ftp-adapter": {
@@ -72,7 +72,7 @@ IMAGE_CONTRACTS = {
         "tag": "riverhog-storage-adapter-filesystem:dev",
         "title": "Riverhog filesystem storage adapter",
         "license": "CAL-1.0",
-        "compose": (("riverhog/server/compose.yaml", "filesystem-cache-adapter"),),
+        "compose": (("riverhog/compose.yaml", "filesystem-cache-adapter"),),
     },
     "stove0": {
         "dockerfile": "reference/stove0/application/server/Dockerfile",
@@ -147,7 +147,7 @@ IMAGE_CONTRACTS = {
         "tag": "riverhog-test:dev",
         "title": "Riverhog Test Suite",
         "license": "CAL-1.0 AND Apache-2.0",
-        "compose": (("riverhog/server/compose.yaml", "test"),),
+        "compose": (("riverhog/compose.yaml", "test"),),
     },
 }
 
@@ -392,9 +392,7 @@ def test_production_images_use_the_common_unprivileged_runtime_identity() -> Non
     riverhog = (REPO_ROOT / IMAGE_CONTRACTS["riverhog"]["dockerfile"]).read_text(encoding="utf-8")
     assert "HOME=/tmp" in riverhog
 
-    compose = yaml.safe_load(
-        (REPO_ROOT / "riverhog/server/compose.yaml").read_text(encoding="utf-8")
-    )
+    compose = yaml.safe_load((REPO_ROOT / "riverhog/compose.yaml").read_text(encoding="utf-8"))
     for service_name in ("state", "app"):
         service = compose["services"][service_name]
         assert service["read_only"] is True

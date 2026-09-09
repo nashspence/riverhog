@@ -5,7 +5,7 @@ Riverhog uses a component-based licensing boundary.
 The following implementations are licensed under the Cryptographic Autonomy
 License 1.0 (`CAL-1.0`):
 
-- `riverhog/server/**`
+- `riverhog/**`
 - `reference/stove0/application/server/**`
 - `reference/riverhog/storage/aws/**`
 - `reference/riverhog/storage/backblaze/**`

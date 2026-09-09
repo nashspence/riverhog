@@ -9,7 +9,7 @@ REPO = Path(__file__).resolve().parents[2]
 ENTRYPOINTS = {REPO / "README.md", REPO / "AGENTS.md"}
 DURABLE_CONTEXT = {REPO / "docs/architecture.md"}
 REPOSITORY_MAP_TARGETS = {
-    REPO / "riverhog/server",
+    REPO / "riverhog",
     REPO / "reference/gogurt",
     REPO / "reference/riverhog",
     REPO / "reference/stove0",

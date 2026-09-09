@@ -9,7 +9,7 @@ from tests.workspace import workspace_pyprojects
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 SERVER_PROJECTS = {
-    Path("riverhog/server/pyproject.toml"),
+    Path("riverhog/pyproject.toml"),
     Path("reference/riverhog/storage/aws/pyproject.toml"),
     Path("reference/riverhog/storage/backblaze/pyproject.toml"),
     Path("reference/riverhog/storage/filesystem/pyproject.toml"),
@@ -37,7 +37,7 @@ def test_reuse_policy_assigns_an_apache_default_and_narrow_server_overrides() ->
         "SPDX-License-Identifier": "Apache-2.0",
     }
     assert annotations[1]["path"] == [
-        "riverhog/server/**",
+        "riverhog/**",
         "reference/riverhog/storage/aws/**",
         "reference/riverhog/storage/backblaze/**",
         "reference/riverhog/storage/filesystem/**",
@@ -50,7 +50,7 @@ def test_reuse_policy_assigns_an_apache_default_and_narrow_server_overrides() ->
     ]
     assert annotations[1]["SPDX-License-Identifier"] == "CAL-1.0"
     assert annotations[2]["path"] == [
-        "riverhog/server/openapi/**",
+        "riverhog/openapi/**",
     ]
     assert annotations[2]["SPDX-License-Identifier"] == "Apache-2.0"
     assert len(annotations) == 3
@@ -110,7 +110,7 @@ def test_recovery_tool_is_independent_and_advertised() -> None:
 
 def test_published_images_carry_source_and_license_identity() -> None:
     images = {
-        "riverhog/server/Dockerfile": "CAL-1.0",
+        "riverhog/Dockerfile": "CAL-1.0",
         "reference/riverhog/ingress/ftp/Dockerfile": "Apache-2.0",
         "reference/riverhog/storage/aws/Dockerfile": "CAL-1.0",
         "reference/riverhog/storage/backblaze/Dockerfile": "CAL-1.0",

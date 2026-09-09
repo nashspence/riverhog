@@ -114,7 +114,7 @@ env -u PYTHONPATH "${SCRATCH}/riverhog-client/bin/python" -I \
 smoke_workspace_distribution \
   piggity \
   'piggity-*.whl' \
-  'import importlib.metadata as m; import piggity.main; import riverhog_cli_support.output; names = {d.metadata["Name"].lower() for d in m.distributions()}; native = {"riverhog-provenance-linux-observer", "riverhog-provenance-macos-observer", "riverhog-provenance-windows-observer"}; contracts = {"riverhog-provenance-linux-contracts", "riverhog-provenance-macos-contracts", "riverhog-provenance-windows-contracts"}; assert names.isdisjoint(native | contracts); assert "riverhog-provenance-contracts" in names; assert m.version("piggity")' \
+  'import importlib.metadata as m; import piggity.main; import piggity.cli_support; names = {d.metadata["Name"].lower() for d in m.distributions()}; native = {"riverhog-provenance-linux-observer", "riverhog-provenance-macos-observer", "riverhog-provenance-windows-observer"}; contracts = {"riverhog-provenance-linux-contracts", "riverhog-provenance-macos-contracts", "riverhog-provenance-windows-contracts"}; assert names.isdisjoint(native | contracts); assert "riverhog-provenance-contracts" in names; assert m.version("piggity")' \
   piggity
 piggity_version="$(env -u PYTHONPATH "${SCRATCH}/piggity/bin/piggity" --version)"
 installed_piggity_version="$(

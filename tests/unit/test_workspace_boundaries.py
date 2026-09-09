@@ -14,7 +14,7 @@ from tests.workspace import workspace_pyprojects
 REPO = Path(__file__).resolve().parents[2]
 
 IMPLEMENTATION_OWNERS = {
-    "riverhog-server": (REPO / "riverhog/server/src", {"riverhog_api", "riverhog_core"}),
+    "riverhog-server": (REPO / "riverhog/src", {"riverhog_api", "riverhog_core"}),
     "piggity": (REPO / "reference/riverhog/applications/piggity/src", {"piggity"}),
     "riverhog-recover": (REPO / "reference/riverhog/recovery/src", {"riverhog_recover"}),
     "riverhog-ftp-adapter": (REPO / "reference/riverhog/ingress/ftp/src", {"riverhog_ftp_adapter"}),
@@ -136,16 +136,16 @@ ALL_IMPLEMENTATION_MODULES = set().union(
     )
 )
 CORE_ROOTS = {
-    "riverhog_core": REPO / "riverhog/server/src/riverhog_core",
+    "riverhog_core": REPO / "riverhog/src/riverhog_core",
     "stove0_core": REPO / "reference/stove0/application/server/src/stove0_core",
 }
 RIVERHOG_COLLECTION_WORKFLOW_SURFACE = (
     REPO / "packages/riverhog-protocol/src/riverhog_protocol/collection_workflows.py",
     REPO / "packages/riverhog-client/src/riverhog_client/workflows.py",
-    REPO / "riverhog/server/src/riverhog_api/routers/workflows.py",
-    REPO / "riverhog/server/src/riverhog_api/schemas/workflows.py",
-    REPO / "riverhog/server/src/riverhog_core/catalog_workflow_models.py",
-    REPO / "riverhog/server/src/riverhog_core/services/collection_workflows.py",
+    REPO / "riverhog/src/riverhog_api/routers/workflows.py",
+    REPO / "riverhog/src/riverhog_api/schemas/workflows.py",
+    REPO / "riverhog/src/riverhog_core/catalog_workflow_models.py",
+    REPO / "riverhog/src/riverhog_core/services/collection_workflows.py",
 )
 EXTERNAL_DISTRIBUTION_MODULES = {
     "alembic": {"alembic"},
@@ -372,7 +372,7 @@ def test_riverhog_collection_workflows_use_application_agnostic_outcomes() -> No
 
 def test_riverhog_production_surfaces_are_stove0_agnostic() -> None:
     roots = (
-        REPO / "riverhog/server/src",
+        REPO / "riverhog/src",
         REPO / "reference/riverhog/applications/piggity/src",
         REPO / "reference/riverhog/recovery/src",
         REPO / "reference/riverhog/ingress/ftp/src",
@@ -733,7 +733,7 @@ def test_core_domain_and_ports_are_dependency_roots() -> None:
 
 def test_images_copy_only_their_owned_implementation_project() -> None:
     dockerfiles = {
-        REPO / "riverhog/server/Dockerfile": "riverhog/server",
+        REPO / "riverhog/Dockerfile": "riverhog",
         REPO / "reference/riverhog/ingress/ftp/Dockerfile": (
             "reference/riverhog/ingress/ftp",
             "reference/riverhog/ingress/ftp-api-client",
@@ -957,7 +957,7 @@ def test_compose_timezone_defaults_are_configurable_utc() -> None:
 
 def test_images_copy_their_complete_internal_dependency_closure() -> None:
     images = {
-        REPO / "riverhog/server/Dockerfile": "riverhog-server",
+        REPO / "riverhog/Dockerfile": "riverhog-server",
         REPO / "reference/riverhog/ingress/ftp/Dockerfile": (
             "riverhog-ftp-adapter",
             "riverhog-provenance-linux-observer",

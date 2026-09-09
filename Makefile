@@ -38,14 +38,12 @@ MYPY_SOURCES = \
 	reference/stove0/application/server/src \
 	packages/riverhog-application-access/src \
 	packages/config-validation/src \
-	packages/file-download/src \
 	packages/http-api-contracts/src \
 	packages/lifecycle-events/src \
 	packages/riverhog-age/src \
 	packages/riverhog-archive-contracts/src \
 	reference/riverhog/ingress/ftp-api-client/src \
 	packages/riverhog-client/src \
-	packages/riverhog-cli-support/src \
 	packages/riverhog-protocol/src \
 	packages/riverhog-provenance-contracts/src \
 	reference/riverhog/provenance/contracts/linux/src \
@@ -83,7 +81,7 @@ MYPY_SOURCES = \
 	reference/riverhog/applications/piggity/src \
 	reference/riverhog/ingress/ftp/src \
 	reference/riverhog/recovery/src \
-	riverhog/server/src \
+	riverhog/src \
 	reference/riverhog/storage/aws/src \
 	reference/riverhog/storage/backblaze/src \
 	reference/riverhog/storage/filesystem/src \

@@ -10,7 +10,6 @@ resolution-markers = [
 [manifest]
 members = [
     "config-validation",
-    "file-download",
     "gogurt",
     "gogurt-core",
     "gogurt-linux-listener-host",
@@ -28,7 +27,6 @@ members = [
     "riverhog-age",
     "riverhog-application-access",
     "riverhog-archive-contracts",
-    "riverhog-cli-support",
     "riverhog-client",
     "riverhog-ftp-adapter",
     "riverhog-ftp-adapter-api-client",
@@ -499,11 +497,6 @@ wheels = [
 ]
 
 [[package]]
-name = "file-download"
-version = "0.1.0"
-source = { editable = "packages/file-download" }
-
-[[package]]
 name = "gogurt"
 version = "0.1.0"
 source = { editable = "reference/gogurt/application" }
@@ -511,7 +504,6 @@ dependencies = [
     { name = "config-validation" },
     { name = "gogurt-core" },
     { name = "gogurt-listener-runtime" },
-    { name = "riverhog-cli-support" },
     { name = "typer" },
 ]
 
@@ -520,7 +512,6 @@ requires-dist = [
     { name = "config-validation", editable = "packages/config-validation" },
     { name = "gogurt-core", editable = "reference/gogurt/packages/core" },
     { name = "gogurt-listener-runtime", editable = "reference/gogurt/packages/listener-runtime" },
-    { name = "riverhog-cli-support", editable = "packages/riverhog-cli-support" },
     { name = "typer", specifier = ">=0.12,<1.0" },
 ]
 
@@ -1226,7 +1217,6 @@ dependencies = [
     { name = "httpx" },
     { name = "rich" },
     { name = "riverhog-application-access" },
-    { name = "riverhog-cli-support" },
     { name = "riverhog-client" },
     { name = "riverhog-protocol" },
     { name = "riverhog-provenance" },
@@ -1243,7 +1233,6 @@ requires-dist = [
     { name = "httpx", specifier = ">=0.27,<1.0" },
     { name = "rich", specifier = ">=15.0,<16.0" },
     { name = "riverhog-application-access", editable = "packages/riverhog-application-access" },
-    { name = "riverhog-cli-support", editable = "packages/riverhog-cli-support" },
     { name = "riverhog-client", editable = "packages/riverhog-client" },
     { name = "riverhog-protocol", editable = "packages/riverhog-protocol" },
     { name = "riverhog-provenance", editable = "packages/riverhog-provenance" },
@@ -1626,22 +1615,10 @@ version = "0.1.0"
 source = { editable = "packages/riverhog-archive-contracts" }
 
 [[package]]
-name = "riverhog-cli-support"
-version = "0.1.0"
-source = { editable = "packages/riverhog-cli-support" }
-dependencies = [
-    { name = "http-api-contracts" },
-]
-
-[package.metadata]
-requires-dist = [{ name = "http-api-contracts", editable = "packages/http-api-contracts" }]
-
-[[package]]
 name = "riverhog-client"
 version = "0.1.0"
 source = { editable = "packages/riverhog-client" }
 dependencies = [
-    { name = "file-download" },
     { name = "http-api-contracts" },
     { name = "httpx", extra = ["http2"] },
     { name = "pydantic" },
@@ -1652,7 +1629,6 @@ dependencies = [
 
 [package.metadata]
 requires-dist = [
-    { name = "file-download", editable = "packages/file-download" },
     { name = "http-api-contracts", editable = "packages/http-api-contracts" },
     { name = "httpx", extras = ["http2"], specifier = ">=0.27,<1.0" },
     { name = "pydantic", specifier = ">=2.7,<3.0" },
@@ -1858,7 +1834,7 @@ requires-dist = [
 [[package]]
 name = "riverhog-server"
 version = "0.1.0"
-source = { editable = "riverhog/server" }
+source = { editable = "riverhog" }
 dependencies = [
     { name = "alembic" },
     { name = "fastapi" },

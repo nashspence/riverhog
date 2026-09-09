@@ -7,8 +7,7 @@ from collections.abc import Callable
 from dataclasses import dataclass
 from typing import Any, Literal
 
-from riverhog_cli_support.output import plain_output_requested
-
+from piggity.cli_support import plain_output_requested
 from piggity.output import ATTENTION_STYLE, ENTITY_ID_STYLE, FIELD_STYLE
 
 RichBarColumn: Any

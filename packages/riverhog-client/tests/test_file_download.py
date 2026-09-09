@@ -4,7 +4,7 @@ import hashlib
 from pathlib import Path
 
 import pytest
-from file_download import (
+from riverhog_client._file_download import (
     DownloadDestinationExists,
     DownloadIntegrityError,
     FileDownloadError,

@@ -24,7 +24,6 @@ COPY pyproject.toml uv.lock ./
 COPY reference/riverhog/ingress/ftp reference/riverhog/ingress/ftp
 COPY reference/riverhog/ingress/ftp-api-client reference/riverhog/ingress/ftp-api-client
 COPY packages/riverhog-application-access packages/riverhog-application-access
-COPY packages/file-download packages/file-download
 COPY packages/http-api-contracts packages/http-api-contracts
 COPY packages/lifecycle-events packages/lifecycle-events
 COPY packages/riverhog-client packages/riverhog-client

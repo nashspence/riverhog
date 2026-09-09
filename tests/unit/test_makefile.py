@@ -16,7 +16,7 @@ from yaml.nodes import MappingNode, Node, SequenceNode
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 MAKEFILE = REPO_ROOT / "Makefile"
-COMPOSE_FILE = REPO_ROOT / "riverhog/server/compose.yaml"
+COMPOSE_FILE = REPO_ROOT / "riverhog/compose.yaml"
 SBOM_GENERATOR = (
     "docker.io/docker/buildkit-syft-scanner:stable-1@"
     "sha256:79e7b013cbec16bbb436f312819a49a4a57752b2270c1a9332ae1a10fcc82a68"
@@ -178,8 +178,8 @@ def test_compose_has_unique_keys_and_runtime_owned_environment() -> None:
     runtime_source = "\n".join(
         path.read_text(encoding="utf-8")
         for package in (
-            REPO_ROOT / "riverhog/server/src/riverhog_core",
-            REPO_ROOT / "riverhog/server/src/riverhog_api",
+            REPO_ROOT / "riverhog/src/riverhog_core",
+            REPO_ROOT / "riverhog/src/riverhog_api",
         )
         for path in package.rglob("*.py")
     )
@@ -223,8 +223,8 @@ def test_compose_services_publish_every_static_runtime_setting() -> None:
     runtime_trees = (
         ast.parse(path.read_text(encoding="utf-8"))
         for package in (
-            REPO_ROOT / "riverhog/server/src/riverhog_core",
-            REPO_ROOT / "riverhog/server/src/riverhog_api",
+            REPO_ROOT / "riverhog/src/riverhog_core",
+            REPO_ROOT / "riverhog/src/riverhog_api",
         )
         for path in package.rglob("*.py")
     )
@@ -366,7 +366,7 @@ def test_compose_services_publish_the_archive_runtime_configuration() -> None:
         assert required <= set(compose["services"][service]["environment"])
         assert compose["services"][service]["env_file"] == [
             {
-                "path": "${RIVERHOG_COMPOSE_ENV_FILE:-../../.env.compose}",
+                "path": "${RIVERHOG_COMPOSE_ENV_FILE:-../.env.compose}",
                 "required": False,
             }
         ]
@@ -375,7 +375,7 @@ def test_compose_services_publish_the_archive_runtime_configuration() -> None:
             "type": "bind",
             "source": (
                 "${RIVERHOG_STORAGE_ADAPTER_TOKEN_HOST_PATH:-"
-                "../../tests/harness/garage-storage-adapter.token}"
+                "../tests/harness/garage-storage-adapter.token}"
             ),
             "target": "/run/secrets/riverhog-storage-adapter.token",
             "read_only": True,
@@ -797,7 +797,7 @@ def test_postgres_concurrency_target_uses_disposable_postgres(tmp_path: Path) ->
 
 
 def test_dockerfiles_keep_dependency_layers_independent_of_docs_and_tests() -> None:
-    app_dockerfile = (REPO_ROOT / "riverhog/server/Dockerfile").read_text()
+    app_dockerfile = (REPO_ROOT / "riverhog/Dockerfile").read_text()
     test_dockerfile = (REPO_ROOT / "tests" / "Dockerfile").read_text()
     dockerignore = (REPO_ROOT / ".dockerignore").read_text().splitlines()
 
@@ -808,11 +808,11 @@ def test_dockerfiles_keep_dependency_layers_independent_of_docs_and_tests() -> N
     assert "pip install" not in app_dockerfile
     assert "pip install" not in test_dockerfile
     assert app_dockerfile.index("COPY pyproject.toml uv.lock ./") < app_dockerfile.index(
-        "COPY riverhog/server/src riverhog/server/src"
+        "COPY riverhog/src riverhog/src"
     )
-    assert app_dockerfile.index(
-        "COPY riverhog/server/src riverhog/server/src"
-    ) < app_dockerfile.index("uv sync --frozen --package riverhog-server --no-dev --no-editable")
+    assert app_dockerfile.index("COPY riverhog/src riverhog/src") < app_dockerfile.index(
+        "uv sync --frozen --package riverhog-server --no-dev --no-editable"
+    )
     assert test_dockerfile.index("COPY pyproject.toml uv.lock ./") < test_dockerfile.index(
         "COPY reference reference"
     )
@@ -876,7 +876,7 @@ def test_repo_wide_lint_targets_cover_source_and_service_apps() -> None:
     assert "python -m ruff format $(FILES)" in makefile
     assert "python -m ruff format --check $(FILES)" in makefile
     assert "MYPY_SOURCES" in makefile
-    assert "riverhog/server/src" in makefile
+    assert "riverhog/src" in makefile
     assert "strict = true" in pyproject
 
 
@@ -902,7 +902,7 @@ def test_format_check_and_compile_are_non_mutating_repository_targets(tmp_path: 
 
 def test_deployed_application_dockerfiles_use_locked_workspace_dependencies() -> None:
     service_dockerfiles = [
-        REPO_ROOT / "riverhog/server/Dockerfile",
+        REPO_ROOT / "riverhog/Dockerfile",
         REPO_ROOT / "reference/riverhog/ingress/ftp/Dockerfile",
         REPO_ROOT / "reference/stove0/application/server/Dockerfile",
         REPO_ROOT / "reference/stove0/observers/exiftool/Dockerfile",
@@ -965,7 +965,7 @@ def test_opus_target_is_a_slim_non_cuda_image() -> None:
 
 def test_workspace_lock_and_app_manifests_own_runtime_dependencies() -> None:
     lock = (REPO_ROOT / "uv.lock").read_text()
-    riverhog = (REPO_ROOT / "riverhog/server/pyproject.toml").read_text()
+    riverhog = (REPO_ROOT / "riverhog/pyproject.toml").read_text()
     root = (REPO_ROOT / "pyproject.toml").read_text()
 
     for package in ("boto3", "fastapi", "psycopg", "sqlalchemy", "uvicorn"):

@@ -34,7 +34,6 @@ from gogurt_listener_runtime.listener import (
     uninstall_listener,
 )
 from gogurt_listener_runtime.platform import ListenerPlatformError
-from riverhog_cli_support.output import json_text
 
 from gogurt.providers import (
     ResolvedListenerHostProvider,
@@ -44,6 +43,11 @@ from gogurt.providers import (
     resolve_listener_host_provider,
     resolve_mounted_volume_provider,
 )
+
+
+def _json_text(payload: object) -> str:
+    return json.dumps(payload, sort_keys=True, separators=(",", ":"))
+
 
 app = typer.Typer(help="Portable mounted-volume marker actions.")
 listener_app = typer.Typer(help="Install and manage the per-user Gogurt listener.")
@@ -101,7 +105,7 @@ def _root(
 
 def emit(payload: object, *, json_mode: bool) -> None:
     if json_mode:
-        typer.echo(json_text(payload))
+        typer.echo(_json_text(payload))
         return
     typer.echo(str(payload))
 
@@ -743,7 +747,7 @@ def _emit_cli_error(exc: BaseException, *, json_mode: bool) -> None:
             if isinstance(exc, (ListenerError, ListenerPlatformError))
             else "config_error"
         )
-        typer.echo(json_text({"error": {"code": code, "message": message}}))
+        typer.echo(_json_text({"error": {"code": code, "message": message}}))
         return
     typer.echo(f"gogurt: {message}", err=True)
 

@@ -69,7 +69,7 @@ def test_provider_vocabulary_is_isolated_from_generic_adapter_and_core_sources()
         REPO / "packages/riverhog-storage-adapter-protocol/src",
         REPO / "packages/riverhog-storage-adapter-support/src",
         REPO / "packages/riverhog-storage-adapter-asgi-support/src",
-        REPO / "riverhog/server/src/riverhog_core",
+        REPO / "riverhog/src/riverhog_core",
     )
     checked = [
         path

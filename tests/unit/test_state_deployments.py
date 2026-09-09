@@ -12,7 +12,7 @@ REPO_ROOT = Path(__file__).resolve().parents[2]
     ("compose_path", "upgrade_service", "runtime_service", "command"),
     (
         (
-            "riverhog/server/compose.yaml",
+            "riverhog/compose.yaml",
             "state",
             "app",
             ["state", "upgrade"],
