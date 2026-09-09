@@ -9,7 +9,7 @@ from typing import Any, cast, get_type_hints
 import pytest
 from fastapi.routing import APIRoute
 from fastapi.testclient import TestClient
-from riverhog_api_client import ApiClient
+from riverhog_client import ApiClient
 from riverhog_protocol import CatalogSyncDescriptor
 from riverhog_protocol.collection_workflows import ArtifactDispositionSetIdentity
 from sqlalchemy import create_engine

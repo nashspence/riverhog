@@ -5,8 +5,8 @@ import json
 from pathlib import Path
 from typing import Any
 
-import riverhog_cli.main
-from riverhog_cli.main import app
+import piggity.main
+from piggity.main import app
 from typer.testing import CliRunner
 
 RUNNER = CliRunner()
@@ -88,7 +88,7 @@ def test_provenance_list_show_trace_export_and_verify_share_one_cli_surface(
                 },
             }
 
-    monkeypatch.setattr(riverhog_cli.main, "client", FakeClient)
+    monkeypatch.setattr(piggity.main, "client", FakeClient)
     output = tmp_path / "movie.json-seq"
     json_output = tmp_path / "movie-json.json-seq"
 
@@ -209,7 +209,7 @@ def test_provenance_list_selectors_match_other_file_list_commands(monkeypatch) -
                 "next_page_token": None,
             }
 
-    monkeypatch.setattr(riverhog_cli.main, "client", FakeClient)
+    monkeypatch.setattr(piggity.main, "client", FakeClient)
 
     result = RUNNER.invoke(
         app,

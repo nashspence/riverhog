@@ -9,7 +9,7 @@ from collections.abc import Sequence
 from datetime import timedelta
 from typing import Any, Literal, cast
 
-from riverhog_api_client import ApiClient
+from riverhog_client import ApiClient
 from riverhog_protocol import (
     CATALOG_SYNC_PAGE_SIZE_MAX,
     CatalogSyncChangePage,

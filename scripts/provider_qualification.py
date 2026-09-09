@@ -2566,7 +2566,7 @@ def _qualification_api(
     allow_insecure_http: bool,
     qualification_key_id: str | None,
 ) -> Iterator[tuple[Any, str, str]]:
-    from riverhog_api_client.client import ApiClient
+    from riverhog_client.client import ApiClient
 
     bootstrap = ApiClient(
         base_url=base_url,
@@ -2629,7 +2629,7 @@ def _upload_collection_with_observation(
     token: str,
     allow_insecure_http: bool,
 ) -> tuple[int, tuple[str, ...]]:
-    executable = shutil.which("riverhog")
+    executable = shutil.which("piggity")
     if executable is None:
         raise QualificationError("the official riverhog CLI is unavailable")
     environment = os.environ.copy()
@@ -2638,7 +2638,7 @@ def _upload_collection_with_observation(
             "RIVERHOG_BASE_URL": base_url,
             "RIVERHOG_TOKEN": token,
             "RIVERHOG_ALLOW_INSECURE_HTTP": "true" if allow_insecure_http else "false",
-            "RIVERHOG_CLI_PLAIN": "1",
+            "PIGGITY_PLAIN": "1",
         }
     )
     command = [

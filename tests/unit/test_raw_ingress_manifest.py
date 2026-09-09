@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import hashlib
 
-from riverhog_api_client.source_hashing import hash_raw_source_chunks
+from riverhog_client.source_hashing import hash_raw_source_chunks
 from riverhog_protocol.raw_ingress import (
     RawSourceDigestSummary,
     ordered_raw_part_commitment,

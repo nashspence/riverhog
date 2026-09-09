@@ -197,9 +197,10 @@ def test_installation_artifacts_are_derived_and_mutually_consistent(
         }
 
         client_closure = {
-            item["name"] for item in components["riverhog-client"]["first_party_closure"][platform]
+            item["name"] for item in components["piggity"]["first_party_closure"][platform]
         }
         assert {
+            "piggity",
             "riverhog-client",
             "riverhog-provenance",
             "riverhog-provenance-contracts",

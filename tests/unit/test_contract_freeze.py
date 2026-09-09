@@ -42,7 +42,7 @@ def test_checked_contract_freeze_matches_every_executable_authority() -> None:
         "runtime_images",
     }
     components = boundaries["components"]
-    assert len(components) == 74
+    assert len(components) == 73
     roles = {component["distribution"]: component["role"] for component in components}
     extension_points = boundaries["entry_point_extensions"]
     assert {point["group"] for point in extension_points} == {
@@ -88,12 +88,12 @@ def test_checked_contract_freeze_matches_every_executable_authority() -> None:
     }
     assert set(external["cli"]) == {
         "gogurt",
-        "riverhog",
+        "piggity",
         "riverhog-ftp-adapter",
         "riverhog-recover",
         "stove0",
     }
-    assert set(external["cli"]["riverhog"]["commands"]) == {
+    assert set(external["cli"]["piggity"]["commands"]) == {
         "app",
         "archive",
         "catalog-sync",
@@ -104,7 +104,7 @@ def test_checked_contract_freeze_matches_every_executable_authority() -> None:
         "retrieval",
         "tag",
     }
-    assert "list" in external["cli"]["riverhog"]["commands"]["collection"]["commands"]
+    assert "list" in external["cli"]["piggity"]["commands"]["collection"]["commands"]
     assert set(external["http_openapi"]) == {
         "riverhog",
         "riverhog-ftp-adapter",
@@ -117,6 +117,12 @@ def test_checked_contract_freeze_matches_every_executable_authority() -> None:
         for operation in external["operations"]
     )
     assert len(external["python"]) == 25
+    riverhog_client_modules = {
+        surface["module"]
+        for surface in external["python"]
+        if surface["distribution"] == "riverhog-client"
+    }
+    assert riverhog_client_modules == {"riverhog_client", "riverhog_client.transform"}
     assert len(external["durable_state"]["owners"]) == 8
     extents = external["extents"]
     assert extents["schema"] == "riverhog-extent-contract/v1"

@@ -4,7 +4,7 @@ import threading
 from collections.abc import Callable
 from dataclasses import dataclass
 
-from riverhog_api_client.uploads import upload_collection_units
+from riverhog_client.uploads import upload_collection_units
 from riverhog_protocol import (
     CollectionUploadUnitAssignmentDocument,
     CollectionUploadUnitWorkDocument,

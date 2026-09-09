@@ -411,7 +411,7 @@ test -n "${input_receipt_json}"
 input_collection_id="$(printf '%s' "${input_receipt_json}" | jq -r '.collection_id')"
 
 classification_code="import os
-from riverhog_api_client import ApiClient
+from riverhog_client import ApiClient
 with ApiClient() as client:
     collection_id = int(os.environ['INPUT_COLLECTION_ID'])
     collection = client.get_collection(collection_id)
@@ -580,7 +580,7 @@ stove0_compose exec -T \
   api python -c "${invoke_code}"
 
 cache_code="import os
-from riverhog_api_client import ApiClient
+from riverhog_client import ApiClient
 def collect(method, key, **kwargs):
     page_token = None
     rows = []
@@ -603,7 +603,7 @@ compose run --rm "${COMPOSE_RUN_TTY_ARGS[@]}" "${client_environment[@]}" \
   --env "INPUT_COLLECTION_ID=${input_collection_id}" \
   --entrypoint python test -c "${cache_code}"
 
-client_input_root="${smoke_root}/official-client-input"
+client_input_root="${smoke_root}/reference-client-input"
 install -d -m 0700 "${client_input_root}"
 python3 -c "import sys, wave
 with wave.open(sys.argv[1], 'wb') as audio:
@@ -611,20 +611,20 @@ with wave.open(sys.argv[1], 'wb') as audio:
     audio.setsampwidth(2)
     audio.setframerate(8000)
     audio.writeframes(b'\\x00\\x00' * 400)" \
-  "${client_input_root}/official-client.wav"
+  "${client_input_root}/reference-client.wav"
 client_receipt_json="$(
   compose run --rm "${COMPOSE_RUN_TTY_ARGS[@]}" "${client_environment[@]}" \
     --env RIVERHOG_SMOKE_CLIENT_RECEIPT_OUTPUT=1 \
-    --volume "${client_input_root}:/official-client-input:ro" \
-    --entrypoint riverhog test collection upload start /official-client-input \
-    --description 'Classified official-client compose qualification' \
+    --volume "${client_input_root}:/reference-client-input:ro" \
+    --entrypoint piggity test collection upload start /reference-client-input \
+    --description 'Classified reference-client compose qualification' \
     --tag stove0/conformance \
     --omit-provenance 'compose qualification fixture' --json
 )"
 client_collection_id="$(printf '%s' "${client_receipt_json}" | jq -r '.collection_id')"
 compose run --rm "${COMPOSE_RUN_TTY_ARGS[@]}" "${client_environment[@]}" \
   --env "INPUT_COLLECTION_ID=${client_collection_id}" \
-  --env "EXPECTED_DESCRIPTION=Classified official-client compose qualification" \
+  --env "EXPECTED_DESCRIPTION=Classified reference-client compose qualification" \
   --entrypoint python test -c "${classification_code}"
 client_work_id="$(stove0_compose exec -T \
   --env RIVERHOG_SMOKE_ADMISSION_OUTPUT=client \
@@ -639,12 +639,12 @@ truncate -s 2MiB "${overflow_root}/larger-than-local-budget.bin"
 overflow_result="$(
   compose run --rm "${COMPOSE_RUN_TTY_ARGS[@]}" "${client_environment[@]}" \
     --volume "${overflow_root}:/overflow:ro" \
-    --entrypoint riverhog test collection upload start /overflow \
+    --entrypoint piggity test collection upload start /overflow \
     --omit-provenance 'compose qualification fixture' --json
 )"
 overflow_collection_id="$(printf '%s' "${overflow_result}" | jq -r '.collection_id')"
 overflow_cache_code="import os, time
-from riverhog_api_client import ApiClient
+from riverhog_client import ApiClient
 def collect(method, key, **kwargs):
     page_token = None
     rows = []
@@ -769,7 +769,7 @@ output_collection_id="$(stove0_compose exec -T \
 test -n "${output_collection_id}"
 
 lineage_code="import json, os
-from riverhog_api_client import ApiClient
+from riverhog_client import ApiClient
 def collect(method, key, **kwargs):
     page_token = None
     rows = []

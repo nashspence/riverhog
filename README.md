@@ -5,8 +5,8 @@ accepts logical collections without staging plaintext on its host, constructs ca
 archive layouts, encrypts them, records collection identity and placement in PostgreSQL, and
 coordinates verified archive transfer and retrieval through published storage-adapter
 capabilities. Its archives remain independently recoverable with standard tools. This
-repository centers the Riverhog server and official `riverhog` client; nonnormative reference
-applications and components integrate through public contracts.
+repository centers the Riverhog server and generic `riverhog-client` library; nonnormative
+reference applications and components integrate through public contracts.
 
 ## Contributions
 

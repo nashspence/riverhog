@@ -22,7 +22,7 @@ import httpx
 import uvicorn
 from http_api_contracts import BrowseTokenCodec
 from riverhog_api.app import create_app
-from riverhog_api_client import ApiClient
+from riverhog_client import ApiClient
 from riverhog_core.app_permissions import (
     ALL_RESOURCES,
     CATALOG_READ,

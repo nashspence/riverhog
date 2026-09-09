@@ -19,7 +19,13 @@ from http_api_contracts import (
 from jsonschema import Draft202012Validator
 from jsonschema.exceptions import ValidationError as JsonSchemaValidationError
 from pydantic import ValidationError
-from riverhog_api_client import ProducerArtifactCustody, ProducerArtifactIdentity, ProducerFile
+from riverhog_client import ProducerArtifactCustody, ProducerArtifactIdentity, ProducerFile
+from riverhog_client.transform import (
+    ClaimedCollectionRuntime,
+    ClaimedCollectionRuntimeRegistry,
+    CollectionTransformRuntime,
+    DerivedCollectionReceipt,
+)
 from riverhog_protocol import (
     CollectionUploadArtifactCustodyReceiptDocument,
     CollectionUploadCustodyObjectDocument,
@@ -33,12 +39,6 @@ from riverhog_protocol.collection_workflows import (
 )
 from riverhog_protocol.collection_workflows import (
     canonical_json_sha256 as riverhog_canonical_json_sha256,
-)
-from riverhog_transform_sdk import (
-    ClaimedCollectionRuntime,
-    ClaimedCollectionRuntimeRegistry,
-    CollectionTransformRuntime,
-    DerivedCollectionReceipt,
 )
 from stove0_protocol import (
     ArtifactSelection,

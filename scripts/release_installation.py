@@ -32,7 +32,7 @@ from packaging.utils import InvalidWheelFilename, parse_wheel_filename
 INSTALLATION_SCHEMA = "riverhog-installation/v1"
 INSTALLATION_ROOTS = (
     "gogurt",
-    "riverhog-client",
+    "piggity",
     "riverhog-recover",
     "stove0-client",
 )

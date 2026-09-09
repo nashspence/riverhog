@@ -49,11 +49,11 @@ def _copy_release_contract(module: ModuleType, destination: Path) -> None:
     release = tomllib.loads((REPO_ROOT / "release.toml").read_text(encoding="utf-8"))
     for relative in release["python"]["reusable_library"]:
         pyproject = REPO_ROOT / relative / "pyproject.toml"
-        package = module._public_python_package(pyproject)
-        source = pyproject.parent / "src" / package / "__init__.py"
-        target = destination / source.relative_to(REPO_ROOT)
-        target.parent.mkdir(parents=True, exist_ok=True)
-        shutil.copy2(source, target)
+        for package in module._public_python_modules(pyproject):
+            source = pyproject.parent / "src" / Path(*package.split(".")) / "__init__.py"
+            target = destination / source.relative_to(REPO_ROOT)
+            target.parent.mkdir(parents=True, exist_ok=True)
+            shutil.copy2(source, target)
     for image in module.RUNTIME_IMAGE_TARGETS:
         source = module._bake_dockerfile(REPO_ROOT, image)
         relative = source.relative_to(REPO_ROOT)
@@ -73,14 +73,13 @@ def test_release_contract_classifies_every_coordinated_distribution() -> None:
 
     projects = module.validate_release_contract(REPO_ROOT)
 
-    assert len(projects) == 74
+    assert len(projects) == 73
     assert {project.version for project in projects} == {"0.1.0"}
     assert Counter(project.role for project in projects) == {
-        "end_user_artifact": 1,
         "deployed_implementation": 1,
-        "reference_application": 5,
+        "reference_application": 6,
         "reference_component": 37,
-        "reusable_library": 25,
+        "reusable_library": 24,
         "internal_build_unit": 5,
     }
     assert {project.name for project in projects} >= {
@@ -90,6 +89,7 @@ def test_release_contract_classifies_every_coordinated_distribution() -> None:
         "riverhog-ftp-adapter-api-client",
         "riverhog-recover",
         "riverhog-server",
+        "piggity",
         "riverhog-storage-adapter-aws",
         "riverhog-storage-adapter-backblaze",
         "riverhog-storage-adapter-filesystem",
@@ -133,18 +133,21 @@ def test_release_contract_classifies_every_coordinated_distribution() -> None:
     assert {project.name for project in projects if project.role == "reference_application"} == {
         "gogurt",
         "mango-fish",
+        "piggity",
         "riverhog-recover",
         "stove0-client",
         "stove0-server",
     }
     release = tomllib.loads((REPO_ROOT / "release.toml").read_text(encoding="utf-8"))
-    assert release["compatibility"]["python_api"].startswith("Reusable-library top-level exports")
+    assert release["compatibility"]["python_api"].startswith(
+        "Reusable-library declared public-module exports"
+    )
     assert {owner["id"] for owner in release["state"]["owners"]} == {
         "gogurt-listener",
         "mango-fish-cursor",
         "riverhog-catalog",
         "riverhog-ftp-custody",
-        "riverhog-local",
+        "piggity-local",
         "riverhog-provenance-installation",
         "stove0-control",
         "stove0-target-jobs",
@@ -186,13 +189,15 @@ def test_release_contract_classifies_every_coordinated_distribution() -> None:
     assert qualification["storage_reference"] == module.STORAGE_REFERENCE_QUALIFICATION
 
 
-def test_reusable_library_requires_an_explicit_top_level_api(tmp_path: Path) -> None:
+def test_reusable_library_requires_explicit_exports_for_every_public_module(
+    tmp_path: Path,
+) -> None:
     module = load_script()
     _copy_release_contract(module, tmp_path)
     public_root = tmp_path / "reference/gogurt/packages/core/src/gogurt_core/__init__.py"
     public_root.write_text('"""No declared public surface."""\n', encoding="utf-8")
 
-    with pytest.raises(module.ReleaseError, match="explicit top-level __all__"):
+    with pytest.raises(module.ReleaseError, match="explicit public __all__"):
         module.validate_release_contract(tmp_path)
 
 
@@ -241,7 +246,7 @@ def test_release_contract_rejects_optional_reference_dependency_from_product(
 ) -> None:
     module = load_script()
     _copy_release_contract(module, tmp_path)
-    pyproject = tmp_path / "riverhog/client/pyproject.toml"
+    pyproject = tmp_path / "riverhog/server/pyproject.toml"
     pyproject.write_text(
         pyproject.read_text(encoding="utf-8")
         + "\n[project.optional-dependencies]\n"
@@ -454,7 +459,7 @@ def test_release_plan_is_exact_sha_bound_and_excludes_the_test_image() -> None:
     assert plan["tag"] == "v1.0.0"
     assert len(plan["source_sha"]) == 40
     assert all(character in "0123456789abcdef" for character in plan["source_sha"])
-    assert len(plan["python"]) == 74
+    assert len(plan["python"]) == 73
     assert all(len(project["artifacts"]) == 2 for project in plan["python"])
     assert {image["target"] for image in plan["images"]} == set(module.RUNTIME_IMAGE_TARGETS)
     assert plan["reference_policy"] == module.REFERENCE_POLICY
@@ -500,7 +505,7 @@ def test_release_plan_is_exact_sha_bound_and_excludes_the_test_image() -> None:
             "manifest": "install-manifest.json",
             "locks": [
                 "pylock.gogurt.toml",
-                "pylock.riverhog-client.toml",
+                "pylock.piggity.toml",
                 "pylock.riverhog-recover.toml",
                 "pylock.stove0-client.toml",
             ],

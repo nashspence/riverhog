@@ -11,7 +11,7 @@ from typing import Any
 
 import pytest
 import riverhog_ftp_adapter.landing as landing
-from riverhog_api_client.producer import ProducedCollection
+from riverhog_client.producer import ProducedCollection
 from riverhog_ftp_adapter.config import FtpAdapterConfig, SourceConfig
 from riverhog_ftp_adapter.landing import FtpAdapter
 

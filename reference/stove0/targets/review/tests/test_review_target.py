@@ -8,8 +8,8 @@ from typing import cast
 
 import pytest
 from fastapi.testclient import TestClient
+from riverhog_client.transform import TransformWorkspace
 from riverhog_protocol import canonical_json_sha256
-from riverhog_transform_sdk import TransformWorkspace
 from stove0_protocol import (
     ArtifactSelection,
     ArtifactSubject,

@@ -3,10 +3,10 @@ from __future__ import annotations
 import json
 from typing import Any
 
+import piggity.main
 import pytest
-import riverhog_cli.main
 import typer
-from riverhog_cli.main import app
+from piggity.main import app
 from typer.testing import CliRunner
 
 runner = CliRunner()
@@ -30,7 +30,7 @@ def test_app_list_matches_pipeable_list_conventions(monkeypatch) -> None:
                 "next_page_token": None,
             }
 
-    monkeypatch.setattr(riverhog_cli.main, "client", FakeClient)
+    monkeypatch.setattr(piggity.main, "client", FakeClient)
 
     result = runner.invoke(
         app,
@@ -73,7 +73,7 @@ def test_app_key_create_emits_machine_readable_one_time_token(monkeypatch) -> No
                 "token": "rh_app_secret",
             }
 
-    monkeypatch.setattr(riverhog_cli.main, "client", FakeClient)
+    monkeypatch.setattr(piggity.main, "client", FakeClient)
 
     result = runner.invoke(
         app,
@@ -125,7 +125,7 @@ def test_app_key_list_never_requires_or_formats_plaintext(monkeypatch) -> None:
                 "next_page_token": None,
             }
 
-    monkeypatch.setattr(riverhog_cli.main, "client", FakeClient)
+    monkeypatch.setattr(piggity.main, "client", FakeClient)
 
     result = runner.invoke(
         app,
@@ -218,7 +218,7 @@ def test_access_and_quota_lists_match_pipeable_conventions(monkeypatch) -> None:
             )
             return {"app": app_name, "key_id": key_id, "access": []}
 
-    monkeypatch.setattr(riverhog_cli.main, "client", FakeClient)
+    monkeypatch.setattr(piggity.main, "client", FakeClient)
 
     access = runner.invoke(
         app,
@@ -375,7 +375,7 @@ def test_access_and_quota_lists_match_pipeable_conventions(monkeypatch) -> None:
 
 def test_quota_ids_require_an_application_for_actionable_identity() -> None:
     with pytest.raises(typer.BadParameter, match="--ids requires --app"):
-        riverhog_cli.main.app_key_quota_list_cmd(ids=True)
+        piggity.main.app_key_quota_list_cmd(ids=True)
 
 
 def test_quota_assignment_accepts_human_binary_sizes_and_explicit_unlimited(monkeypatch) -> None:
@@ -402,7 +402,7 @@ def test_quota_assignment_accepts_human_binary_sizes_and_explicit_unlimited(monk
                 "resets_at": "2026-09-01T00:00:00Z",
             }
 
-    monkeypatch.setattr(riverhog_cli.main, "client", FakeClient)
+    monkeypatch.setattr(piggity.main, "client", FakeClient)
 
     finite = runner.invoke(
         app,
@@ -473,7 +473,7 @@ def test_app_key_policy_mutations_have_human_json_parity(monkeypatch) -> None:
         def get_download_quota(self) -> dict[str, object]:
             return dict(quota)
 
-    monkeypatch.setattr(riverhog_cli.main, "client", FakeClient)
+    monkeypatch.setattr(piggity.main, "client", FakeClient)
 
     cases = (
         (

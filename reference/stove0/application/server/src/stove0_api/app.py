@@ -32,7 +32,7 @@ from http_api_contracts import (
 )
 from http_api_contracts.browse import BrowseTokenCodec, BrowseTokenError
 from pydantic import ValidationError
-from riverhog_api_client import ApiClient
+from riverhog_client import ApiClient
 from sqlalchemy import text
 from starlette.exceptions import HTTPException as StarletteHTTPException
 from state_schema import StateSchemaError

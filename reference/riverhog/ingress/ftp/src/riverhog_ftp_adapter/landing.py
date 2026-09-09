@@ -13,8 +13,8 @@ from collections.abc import Iterator, Mapping, Sequence
 from pathlib import Path
 from typing import Any
 
-from riverhog_api_client import ApiClient
-from riverhog_api_client.producer import CollectionProducer, ProducedCollection, ProducerFile
+from riverhog_client import ApiClient
+from riverhog_client.producer import CollectionProducer, ProducedCollection, ProducerFile
 from riverhog_provenance import (
     FileProvenanceBinding,
     FileStateObserverFactory,

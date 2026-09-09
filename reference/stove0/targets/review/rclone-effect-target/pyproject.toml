@@ -18,7 +18,7 @@ dependencies = [
   "fastapi>=0.111,<1.0",
   "pydantic>=2.7,<3.0",
   "riverhog-protocol>=0.1,<0.2",
-  "riverhog-transform-sdk>=0.1,<0.2",
+  "riverhog-client>=0.1,<0.2",
   "stove0-review-target-contracts>=0.1,<0.2",
   "stove0-review-target-support>=0.1,<0.2",
   "stove0-target-support>=0.1,<0.2",
@@ -30,7 +30,7 @@ stove0-review-rclone-effect-target = "stove0_review_rclone_effect_target.app:mai
 
 [tool.uv.sources]
 riverhog-protocol = { workspace = true }
-riverhog-transform-sdk = { workspace = true }
+riverhog-client = { workspace = true }
 stove0-review-target-contracts = { workspace = true }
 stove0-review-target-support = { workspace = true }
 stove0-target-support = { workspace = true }

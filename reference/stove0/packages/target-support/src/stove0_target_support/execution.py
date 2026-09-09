@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import threading
 
-from riverhog_transform_sdk import ClaimedCollectionRuntimeRegistry
+from riverhog_client.transform import ClaimedCollectionRuntimeRegistry
 from stove0_target_protocol import TargetJobRequest, TargetJobStatus
 
 
@@ -12,7 +12,7 @@ class TargetExecutionSession:
     """Bind refreshable runtime authority and finalized success to one attempt.
 
     The session is target-process operational state. It retains no request or
-    bearer token itself; capability material remains in the SDK's in-memory
+    bearer token itself; capability material remains in the client runtime's in-memory
     registry, while only a fully validated successful status may be retained as
     the publication witness for the duration of the attempt.
     """

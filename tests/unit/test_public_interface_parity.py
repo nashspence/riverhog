@@ -6,8 +6,8 @@ from pathlib import Path
 from typing import Any
 
 import pytest
-import riverhog_api_client
-import riverhog_api_client.client as riverhog_client_module
+import riverhog_client
+import riverhog_client.client as riverhog_client_module
 import riverhog_core.services.app_keys as app_key_service_module
 import riverhog_core.services.archive_copies as archive_copy_service_module
 import riverhog_core.services.archive_stores as archive_store_service_module
@@ -33,11 +33,19 @@ from http_api_contracts import (
 from http_api_contracts import (
     HealthResponse as CanonicalHealthResponse,
 )
+from piggity import main as piggity
+from piggity import upload_progress as riverhog_upload_progress
 from pydantic import TypeAdapter, ValidationError
 from riverhog_api.app import create_app as create_riverhog_app
 from riverhog_api.browse import canonical_selectors
 from riverhog_api.error_contracts import RIVERHOG_OPERATION_ERROR_CODES
-from riverhog_api_client import (
+from riverhog_application_access import (
+    ApplicationPermission as CanonicalApplicationPermission,
+)
+from riverhog_application_access import (
+    ApplicationResource as CanonicalApplicationResource,
+)
+from riverhog_client import (
     ApplicationPermission,
     ApplicationResource,
     configured_download_concurrency,
@@ -46,17 +54,9 @@ from riverhog_api_client import (
     configured_upload_window,
     upload_collection_units,
 )
-from riverhog_api_client import producer as riverhog_producer
-from riverhog_api_client import workflows as riverhog_workflow_client_module
-from riverhog_api_client.client import ApiClient
-from riverhog_application_access import (
-    ApplicationPermission as CanonicalApplicationPermission,
-)
-from riverhog_application_access import (
-    ApplicationResource as CanonicalApplicationResource,
-)
-from riverhog_cli import main as riverhog_cli
-from riverhog_cli import upload_progress as riverhog_upload_progress
+from riverhog_client import producer as riverhog_producer
+from riverhog_client import workflows as riverhog_workflow_client_module
+from riverhog_client.client import ApiClient
 from riverhog_core.services.archive_copy_states import ARCHIVE_COPY_STATES
 from riverhog_ftp_adapter_api_client import (
     HealthResponse as FtpAdapterHealthResponse,
@@ -201,7 +201,7 @@ def test_riverhog_client_exports_the_complete_public_error_hierarchy() -> None:
         "RiverhogError",
         "ServiceUnavailable",
         "Unauthorized",
-    } <= set(riverhog_api_client.__all__)
+    } <= set(riverhog_client.__all__)
 
 
 def public_operations(app: FastAPI) -> list[tuple[str, str]]:
@@ -1248,13 +1248,13 @@ def test_official_clients_accept_a_scoped_remote_cleartext_opt_in(
 
 
 def test_official_direct_ingress_callers_share_the_upload_runner() -> None:
-    assert riverhog_cli.upload_collection_units is upload_collection_units
+    assert piggity.upload_collection_units is upload_collection_units
     assert riverhog_producer.upload_collection_units is upload_collection_units
 
 
 @pytest.mark.parametrize(
     ("setting", "rich_enabled"),
-    (("RIVERHOG_CLI_PLAIN", riverhog_upload_progress._rich_progress_available),),
+    (("PIGGITY_PLAIN", riverhog_upload_progress._rich_progress_available),),
 )
 def test_rich_clients_share_plain_output_selection(
     monkeypatch: pytest.MonkeyPatch,

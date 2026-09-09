@@ -370,22 +370,43 @@ def _public_python_package(pyproject: Path) -> str:
     return packages[0].removeprefix("src/")
 
 
-def _validate_public_python_package(pyproject: Path) -> None:
+def _public_python_modules(pyproject: Path) -> tuple[str, ...]:
+    config = tomllib.loads(pyproject.read_text(encoding="utf-8"))
     package = _public_python_package(pyproject)
-    root = pyproject.parent / "src" / package / "__init__.py"
-    if not root.is_file():
-        raise ReleaseError(f"reusable library lacks a top-level import surface: {package}")
-    tree = ast.parse(root.read_text(encoding="utf-8"), filename=str(root))
-    if not any(
-        isinstance(node, (ast.Assign, ast.AnnAssign))
-        and (
-            any(isinstance(target, ast.Name) and target.id == "__all__" for target in node.targets)
-            if isinstance(node, ast.Assign)
-            else isinstance(node.target, ast.Name) and node.target.id == "__all__"
-        )
-        for node in tree.body
+    configured = config.get("tool", {}).get("riverhog", {}).get("public-api", {}).get("modules")
+    if configured is None:
+        return (package,)
+    if (
+        not isinstance(configured, list)
+        or not configured
+        or any(not isinstance(module, str) or not module for module in configured)
+        or len(configured) != len(set(configured))
+        or configured[0] != package
+        or any(module != package and not module.startswith(f"{package}.") for module in configured)
     ):
-        raise ReleaseError(f"reusable library lacks an explicit top-level __all__: {package}")
+        raise ReleaseError(f"invalid public Python module inventory: {pyproject}")
+    return tuple(configured)
+
+
+def _validate_public_python_package(pyproject: Path) -> None:
+    for module in _public_python_modules(pyproject):
+        root = pyproject.parent / "src" / Path(*module.split(".")) / "__init__.py"
+        if not root.is_file():
+            raise ReleaseError(f"reusable library lacks a public import surface: {module}")
+        tree = ast.parse(root.read_text(encoding="utf-8"), filename=str(root))
+        if not any(
+            isinstance(node, (ast.Assign, ast.AnnAssign))
+            and (
+                any(
+                    isinstance(target, ast.Name) and target.id == "__all__"
+                    for target in node.targets
+                )
+                if isinstance(node, ast.Assign)
+                else isinstance(node.target, ast.Name) and node.target.id == "__all__"
+            )
+            for node in tree.body
+        ):
+            raise ReleaseError(f"reusable library lacks an explicit public __all__: {module}")
 
 
 def _bake_targets(root: Path) -> set[str]:

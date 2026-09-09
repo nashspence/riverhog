@@ -35,10 +35,9 @@ COPY packages/riverhog-application-access packages/riverhog-application-access
 COPY packages/file-download packages/file-download
 COPY packages/http-api-contracts packages/http-api-contracts
 COPY packages/lifecycle-events packages/lifecycle-events
-COPY packages/riverhog-api-client packages/riverhog-api-client
+COPY packages/riverhog-client packages/riverhog-client
 COPY packages/riverhog-protocol packages/riverhog-protocol
 COPY packages/riverhog-provenance-contracts packages/riverhog-provenance-contracts
-COPY packages/riverhog-transform-sdk packages/riverhog-transform-sdk
 COPY reference/stove0/packages/protocol reference/stove0/packages/protocol
 COPY reference/stove0/targets/review/contracts reference/stove0/targets/review/contracts
 COPY reference/stove0/targets/review/sampler/client reference/stove0/targets/review/sampler/client

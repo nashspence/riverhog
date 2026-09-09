@@ -7,8 +7,8 @@ from contextlib import contextmanager
 from pathlib import Path
 from typing import Any, Literal, Protocol, Self, cast
 
-from riverhog_api_client import ApiClient
-from riverhog_transform_sdk import (
+from riverhog_client import ApiClient
+from riverhog_client.transform import (
     CapabilityApiClient,
     ClaimedArtifact,
     ClaimedCollectionReader,

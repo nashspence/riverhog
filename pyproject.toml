@@ -53,7 +53,7 @@ riverhog-storage-adapter-asgi-support = { workspace = true }
 riverhog-storage-adapter-protocol = { workspace = true }
 riverhog-storage-adapter-s3-support = { workspace = true }
 riverhog-storage-adapter-support = { workspace = true }
-riverhog-transform-sdk = { workspace = true }
+riverhog-client = { workspace = true }
 stove0-api-client = { workspace = true }
 stove0-media-archive-target-contracts = { workspace = true }
 stove0-media-archive-target-support = { workspace = true }

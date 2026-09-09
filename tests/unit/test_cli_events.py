@@ -2,8 +2,8 @@ from __future__ import annotations
 
 import json
 
-import riverhog_cli.main
-from riverhog_cli.main import app
+import piggity.main
+from piggity.main import app
 from riverhog_protocol.lifecycle_events import RiverhogEventPage
 from typer.testing import CliRunner
 
@@ -40,7 +40,7 @@ def test_riverhog_event_list_has_human_and_json_output(monkeypatch) -> None:  # 
             assert limit == 6
             return RiverhogEventPage.model_validate(expected)
 
-    monkeypatch.setattr(riverhog_cli.main, "client", lambda: FakeClient())
+    monkeypatch.setattr(piggity.main, "client", lambda: FakeClient())
     runner = CliRunner()
     args = ["event", "list", "--after", "4", "--limit", "6"]
 

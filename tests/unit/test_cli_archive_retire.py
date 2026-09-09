@@ -2,8 +2,8 @@ from __future__ import annotations
 
 import json
 
-import riverhog_cli.main
-from riverhog_cli.main import app
+import piggity.main
+from piggity.main import app
 from typer.testing import CliRunner
 
 runner = CliRunner()
@@ -47,7 +47,7 @@ def test_archive_retire_plan_emits_data_loss_warning_and_challenge(monkeypatch) 
             assert (collection_id, store) == (_COLLECTION_ID, "b2")
             return _plan()
 
-    monkeypatch.setattr(riverhog_cli.main, "client", FakeClient)
+    monkeypatch.setattr(piggity.main, "client", FakeClient)
 
     result = runner.invoke(
         app,
@@ -85,7 +85,7 @@ def test_archive_retire_interactive_requires_exact_collection_and_store(monkeypa
                 "verified_store": "deep",
             }
 
-    monkeypatch.setattr(riverhog_cli.main, "client", FakeClient)
+    monkeypatch.setattr(piggity.main, "client", FakeClient)
 
     result = runner.invoke(
         app,
@@ -118,7 +118,7 @@ def test_archive_retire_noninteractive_uses_prior_challenge(monkeypatch) -> None
                 "verified_store": "deep",
             }
 
-    monkeypatch.setattr(riverhog_cli.main, "client", FakeClient)
+    monkeypatch.setattr(piggity.main, "client", FakeClient)
 
     result = runner.invoke(
         app,

@@ -160,7 +160,7 @@ WITNESSES = (
         owner="riverhog",
         reasons=("bounded-upload-registration",),
         test_node_ids=(
-            "packages/riverhog-transform-sdk/tests/test_collection_transform_sdk.py::"
+            "packages/riverhog-client/tests/test_transform.py::"
             "test_producer_streams_bounded_batches_without_limiting_collection_size",
             "tests/integration/test_collection_upload_custody_concurrency.py::"
             "test_distinct_concurrent_registrations_preserve_both_members",

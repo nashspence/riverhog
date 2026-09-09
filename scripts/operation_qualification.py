@@ -23,10 +23,10 @@ from typing import Any, TypeGuard, cast, get_origin, get_type_hints
 
 from fastapi import FastAPI
 from fastapi.routing import APIRoute
+from piggity import main as piggity
 from pydantic import BaseModel, TypeAdapter
 from riverhog_api.app import create_app as create_riverhog_app
-from riverhog_api_client.client import ApiClient
-from riverhog_cli import main as riverhog_cli
+from riverhog_client.client import ApiClient
 from riverhog_ftp_adapter.app import FtpAdapterComposition
 from riverhog_ftp_adapter.app import build_parser as build_adapter_parser
 from riverhog_ftp_adapter.app import create_app as create_adapter_app
@@ -319,7 +319,7 @@ def application_surfaces() -> tuple[ApplicationSurface, ...]:
             "riverhog",
             create_riverhog_app(),
             (ApiClient,),
-            tuple(_typer_commands(riverhog_cli.app)),
+            tuple(_typer_commands(piggity.app)),
         ),
         ApplicationSurface(
             "stove0",
@@ -340,6 +340,7 @@ def _project_callable(value: object) -> TypeGuard[Callable[..., object]]:
     module = str(getattr(value, "__module__", ""))
     return inspect.isfunction(value) and module.startswith(
         (
+            "piggity",
             "riverhog_",
             "stove0_",
         )
@@ -811,7 +812,7 @@ def _contract_freeze_identity(path: Path = CONTRACT_FREEZE) -> dict[str, object]
 
 def _cold_cli_timings(*, trials: int = 3) -> dict[str, object]:
     entrypoints = {
-        "riverhog": "from riverhog_cli.main import main; raise SystemExit(main())",
+        "riverhog": "from piggity.main import main; raise SystemExit(main())",
         "stove0": "from stove0_cli.main import main; main()",
         "riverhog-ftp-adapter": (
             "from riverhog_ftp_adapter.app import main; raise SystemExit(main())"

@@ -10,7 +10,7 @@ from pathlib import PurePosixPath
 from typing import cast
 
 from pydantic import JsonValue
-from riverhog_api_client import ApiClient
+from riverhog_client import ApiClient
 from riverhog_protocol.collection_workflows import canonical_json_sha256
 from stove0_observer_protocol import (
     ObservationEvidence,

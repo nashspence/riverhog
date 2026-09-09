@@ -2,8 +2,8 @@ from __future__ import annotations
 
 import json
 
-import riverhog_cli.main
-from riverhog_cli.main import app
+import piggity.main
+from piggity.main import app
 from typer.testing import CliRunner
 
 runner = CliRunner()
@@ -35,7 +35,7 @@ def test_collection_delete_dry_run_emits_warning_and_challenge(monkeypatch) -> N
             assert collection_id == COLLECTION_ID
             return _plan()
 
-    monkeypatch.setattr(riverhog_cli.main, "client", FakeClient)
+    monkeypatch.setattr(piggity.main, "client", FakeClient)
 
     result = runner.invoke(app, ["collection", "delete", str(COLLECTION_ID), "--dry-run"])
 
@@ -63,7 +63,7 @@ def test_collection_delete_interactive_requires_exact_id_after_warning(monkeypat
                 "remote_storage_bytes": 28,
             }
 
-    monkeypatch.setattr(riverhog_cli.main, "client", FakeClient)
+    monkeypatch.setattr(piggity.main, "client", FakeClient)
 
     result = runner.invoke(
         app,
@@ -87,7 +87,7 @@ def test_collection_delete_interactive_mismatch_stops_before_execution(monkeypat
         def delete_collection(self, collection_id: int, *, challenge: str) -> dict[str, object]:
             raise AssertionError((collection_id, challenge))
 
-    monkeypatch.setattr(riverhog_cli.main, "client", FakeClient)
+    monkeypatch.setattr(piggity.main, "client", FakeClient)
 
     result = runner.invoke(app, ["collection", "delete", str(COLLECTION_ID)], input="2\n")
 
@@ -112,7 +112,7 @@ def test_collection_delete_noninteractive_uses_prior_challenge(monkeypatch) -> N
                 "remote_storage_bytes": 28,
             }
 
-    monkeypatch.setattr(riverhog_cli.main, "client", FakeClient)
+    monkeypatch.setattr(piggity.main, "client", FakeClient)
 
     result = runner.invoke(
         app,
