@@ -11685,7 +11685,7 @@
         {
           "distribution": "riverhog-server",
           "fixture_sha256s": [
-            "1f4c3cc6143a75a38a084b723bfe96ebb0bba70e5939ad309aa669cdf80ab191"
+            "b51eb71e32f6e45d5c31c5dae9df420b1afbf1f7b1a615c85f6c5d7f81adedd2"
           ],
           "format": "state-schema/postgresql",
           "head": "v1_0001",
@@ -102274,6 +102274,10 @@
           "CATALOG_SYNC_PAGE_SIZE_MAX": {
             "kind": "constant",
             "value": 100
+          },
+          "COLLECTION_DESCRIPTION_DOCUMENT_BYTES_MAX": {
+            "kind": "constant",
+            "value": 65807
           },
           "COLLECTION_DESCRIPTION_DOCUMENT_FORMAT": {
             "kind": "constant",

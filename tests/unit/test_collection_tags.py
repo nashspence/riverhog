@@ -218,6 +218,208 @@ def _recover_stored_tags(
     return head, set(tags.iter_tags())
 
 
+class _CountingTagStore(MemoryArchiveStore):
+    def __init__(self) -> None:
+        super().__init__()
+        self.published_nodes: list[str] = []
+        self.deleted_nodes: list[str] = []
+
+    def publish_collection_tag_node(
+        self,
+        *,
+        collection_id: int,
+        archive_storage_prefix: str,
+        digest: str,
+        encoded: bytes,
+        passphrase_id: str,
+    ) -> CollectionTagObjectReceipt:
+        self.published_nodes.append(digest)
+        return super().publish_collection_tag_node(
+            collection_id=collection_id,
+            archive_storage_prefix=archive_storage_prefix,
+            digest=digest,
+            encoded=encoded,
+            passphrase_id=passphrase_id,
+        )
+
+    def delete_collection_tag_node(
+        self,
+        *,
+        collection_id: int,
+        archive_storage_prefix: str,
+        digest: str,
+        expected_current_stored_sha256: str,
+        provider_revision: str | None,
+    ) -> None:
+        self.deleted_nodes.append(digest)
+        super().delete_collection_tag_node(
+            collection_id=collection_id,
+            archive_storage_prefix=archive_storage_prefix,
+            digest=digest,
+            expected_current_stored_sha256=expected_current_stored_sha256,
+            provider_revision=provider_revision,
+        )
+
+
+def test_tag_edit_inherits_complete_published_subtrees_without_rewalking_them(
+    tmp_path: Path,
+) -> None:
+    store = _CountingTagStore()
+    service, factory, _stored = _service(
+        tmp_path / "catalog.sqlite3",
+        archive_store=store,
+    )
+    principal = _principal("source:camera", "workflow:first", "workflow:second")
+    with session_scope(factory) as session:  # type: ignore[arg-type]
+        collection = session.get(CollectionRecord, 1)
+        assert collection is not None
+        revision = collection.tag_revision
+        identity = collection.tag_set_identity
+    first = service.add(
+        1,
+        tag="workflow:first",
+        operation_id="closure-first",
+        expected_revision=revision,
+        expected_tag_set_identity=identity,
+        principal=principal,
+    )
+    with session_scope(factory) as session:  # type: ignore[arg-type]
+        inherited_node_count = session.query(CollectionTagPublishedNodeRecord).count()
+    before = len(store.published_nodes)
+
+    service.add(
+        1,
+        tag="workflow:second",
+        operation_id="closure-second",
+        expected_revision=int(first["revision"]),
+        expected_tag_set_identity=str(first["tag_set_identity"]),
+        principal=principal,
+    )
+
+    newly_published = len(store.published_nodes) - before
+    assert inherited_node_count > newly_published > 0
+    head, tags = _recover_stored_tags(store)
+    assert head.revision == 3
+    assert tags == {"source:camera", "workflow:first", "workflow:second"}
+
+
+def test_tag_provider_gc_removes_obsolete_parent_before_its_children(tmp_path: Path) -> None:
+    store = _CountingTagStore()
+    service, factory, _stored = _service(
+        tmp_path / "catalog.sqlite3",
+        archive_store=store,
+    )
+    principal = _principal("source:camera", "workflow:archive")
+    with session_scope(factory) as session:  # type: ignore[arg-type]
+        collection = session.get(CollectionRecord, 1)
+        assert collection is not None
+        initial_identity = collection.tag_set_identity
+    added = service.add(
+        1,
+        tag="workflow:archive",
+        operation_id="gc-parent-add",
+        expected_revision=1,
+        expected_tag_set_identity=initial_identity,
+        principal=principal,
+    )
+    with session_scope(factory) as session:  # type: ignore[arg-type]
+        mutation = session.get(CollectionTagMutationRecord, (1, "gc-parent-add"))
+        assert mutation is not None and mutation.result_root_sha256 is not None
+        obsolete_parent = mutation.result_root_sha256
+        child_digests = set(
+            session.scalars(
+                select(CollectionTagNodeEdgeRecord.child_digest).where(
+                    CollectionTagNodeEdgeRecord.parent_digest == obsolete_parent
+                )
+            )
+        )
+        assert child_digests
+    service.remove(
+        1,
+        tag="workflow:archive",
+        operation_id="gc-parent-remove",
+        expected_revision=2,
+        expected_tag_set_identity=str(added["tag_set_identity"]),
+        principal=principal,
+    )
+    with session_scope(factory) as session:  # type: ignore[arg-type]
+        publication = session.get(CollectionTagPublicationRecord, (1, "archive"))
+        assert publication is not None and publication.published_head_identity is not None
+        session.query(CollectionTagPublicationFrontierRecord).filter(
+            CollectionTagPublicationFrontierRecord.collection_id == 1,
+            CollectionTagPublicationFrontierRecord.store == "archive",
+            CollectionTagPublicationFrontierRecord.head_identity
+            != publication.published_head_identity,
+        ).delete(synchronize_session=False)
+
+    for _ in range(16):
+        assert service.process_due(limit=1) in {0, 1}
+        if store.deleted_nodes:
+            break
+    else:  # pragma: no cover - only two superseded tag heads precede node GC
+        raise AssertionError("obsolete tag parent was not reclaimed")
+    assert store.deleted_nodes == [obsolete_parent]
+    with session_scope(factory) as session:  # type: ignore[arg-type]
+        assert all(
+            session.get(CollectionTagPublishedNodeRecord, (1, "archive", digest)) is not None
+            for digest in child_digests
+        )
+
+
+def test_tag_publication_budget_defers_but_does_not_limit_logical_mutation(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    path = tmp_path / "catalog.sqlite3"
+    service, factory, store = _service(path)
+    principal = _principal("source:camera", "workflow:archive")
+    with session_scope(factory) as session:  # type: ignore[arg-type]
+        collection = session.get(CollectionRecord, 1)
+        assert collection is not None
+        initial_identity = collection.tag_set_identity
+    monkeypatch.setattr(
+        "riverhog_core.services.collection_tags._SYNCHRONOUS_PUBLICATION_STEP_BUDGET",
+        1,
+    )
+
+    with pytest.raises(ServiceUnavailable, match="continues asynchronously"):
+        service.add(
+            1,
+            tag="workflow:archive",
+            operation_id="deferred-publication",
+            expected_revision=1,
+            expected_tag_set_identity=initial_identity,
+            principal=principal,
+        )
+
+    restarted = SqlAlchemyCollectionTagService(
+        RuntimeConfig(database_url=sqlite_url(path)),
+        ArchiveStoreRegistry({"archive": archive_store_binding(store)}),
+        session_factory=make_session_factory(sqlite_url(path)),
+    )
+    for _ in range(128):
+        progressed = restarted.process_due(limit=1)
+        with session_scope(factory) as session:  # type: ignore[arg-type]
+            mutation = session.get(CollectionTagMutationRecord, (1, "deferred-publication"))
+            if mutation is not None and mutation.state == "succeeded":
+                break
+        assert progressed == 1
+    else:  # pragma: no cover - one compressed path is much smaller
+        raise AssertionError("deferred tag publication did not converge")
+
+    replay = restarted.add(
+        1,
+        tag="workflow:archive",
+        operation_id="deferred-publication",
+        expected_revision=1,
+        expected_tag_set_identity=initial_identity,
+        principal=principal,
+    )
+    assert replay["revision"] == 2
+    _head, tags = _recover_stored_tags(store)
+    assert tags == {"source:camera", "workflow:archive"}
+
+
 def test_tag_mutation_is_exact_replayable_and_aba_safe(tmp_path: Path) -> None:
     service, factory, _store = _service(tmp_path / "catalog.sqlite3")
     principal = _principal("source:camera", "workflow:archive")

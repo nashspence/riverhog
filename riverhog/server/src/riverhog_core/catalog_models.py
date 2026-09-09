@@ -4,6 +4,7 @@ import builtins
 import secrets
 
 from riverhog_protocol import (
+    COLLECTION_DESCRIPTION_DOCUMENT_BYTES_MAX,
     COLLECTION_DESCRIPTION_UTF8_BYTES_MAX,
     COLLECTION_TAG_NODE_BYTES_MAX,
     COLLECTION_TAG_UTF8_BYTES_MAX,
@@ -40,7 +41,7 @@ from riverhog_core.catalog_types import (
 COLLECTION_ID_TYPE = BigInteger().with_variant(Integer, "sqlite")
 _ARCHIVE_SEQUENCE_ZERO = "0" * 64
 _AUTHORITY_ORDINAL_ZERO = "0" * 64
-_MUTABLE_DOCUMENT_PUBLICATION_BYTES_MAX = COLLECTION_DESCRIPTION_UTF8_BYTES_MAX + 1024
+_MUTABLE_DOCUMENT_PUBLICATION_BYTES_MAX = COLLECTION_DESCRIPTION_DOCUMENT_BYTES_MAX
 
 
 def _fixed_lowercase_integer_check(column: str, width: int) -> str:

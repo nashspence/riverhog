@@ -60,7 +60,11 @@ from riverhog_core.services.collection_descriptions import (
 from riverhog_core.services.collection_tags import SqlAlchemyCollectionTagService
 from riverhog_core.services.collection_uploads import SqlAlchemyCollectionUploadService
 from riverhog_core.services.retrieval import SqlAlchemyRetrievalService
-from riverhog_protocol import collection_description_identity
+from riverhog_protocol import (
+    COLLECTION_DESCRIPTION_UTF8_BYTES_MAX,
+    MAX_COLLECTION_DESCRIPTION_REVISION,
+    collection_description_identity,
+)
 from riverhog_protocol.errors import ServiceUnavailable
 from sqlalchemy import inspect, select, text
 from sqlalchemy.engine import make_url
@@ -72,6 +76,7 @@ from tests.unit.archive_object_fixtures import (
 )
 from tests.unit.test_collection_descriptions import PRINCIPAL as description_principal
 from tests.unit.test_collection_descriptions import (
+    DelayedDescriptionStore,
     VersionedDescriptionStore,
 )
 from tests.unit.test_collection_descriptions import (
@@ -486,6 +491,140 @@ def test_postgres_superseded_document_cleanup_workers_claim_distinct_receipts(
     assert not store.retained_revisions
 
 
+def test_postgres_primary_description_claim_excludes_replica_worker(
+    isolated_database_url: str,
+) -> None:
+    config, factory, _initial, _registry = description_seed(
+        None,
+        database_url=isolated_database_url,
+    )
+    store = DelayedDescriptionStore()
+    stores = ArchiveStoreRegistry({"archive": archive_store_binding(store)})
+    service = SqlAlchemyCollectionDescriptionService(config, stores, session_factory=factory)
+    initial_identity = collection_description_identity(
+        archive_root_sha256="5" * 64,
+        revision=0,
+        description=None,
+    )
+    store.delay_next_description = True
+
+    with ThreadPoolExecutor(max_workers=1) as executor:
+        primary = executor.submit(
+            service.replace,
+            1,
+            description="PostgreSQL primary owner",
+            expected_identity=initial_identity,
+            principal=description_principal,
+        )
+        assert store.started.wait(timeout=10)
+        competing = SqlAlchemyCollectionDescriptionService(
+            config,
+            stores,
+            session_factory=make_session_factory(isolated_database_url),
+        )
+        assert competing.process_due(limit=1) == 0
+        assert len(store.description_documents) == 1
+        store.resume.set()
+        assert primary.result(timeout=10)["description"] == "PostgreSQL primary owner"
+
+    with session_scope(factory) as session:
+        assert session.query(CollectionMutableDocumentPublicationAttemptRecord).count() == 0
+
+
+def test_postgres_replica_description_claim_excludes_primary_writer(
+    isolated_database_url: str,
+) -> None:
+    config, factory, _initial, _registry = description_seed(
+        None,
+        database_url=isolated_database_url,
+    )
+    store = DelayedDescriptionStore()
+    stores = ArchiveStoreRegistry({"archive": archive_store_binding(store)})
+    service = SqlAlchemyCollectionDescriptionService(config, stores, session_factory=factory)
+    initial_identity = collection_description_identity(
+        archive_root_sha256="5" * 64,
+        revision=0,
+        description=None,
+    )
+    current = service.replace(
+        1,
+        description="Current",
+        expected_identity=initial_identity,
+        principal=description_principal,
+    )
+    with session_scope(factory) as session:
+        publication = session.get(CollectionDescriptionPublicationRecord, (1, "archive"))
+        assert publication is not None
+        publication.state = "pending"
+        publication.next_attempt_at = "2026-09-07T00:00:00.000000Z"
+
+    store.delay_next_description = True
+    with ThreadPoolExecutor(max_workers=1) as executor:
+        replica = executor.submit(service.process_due, limit=1)
+        assert store.started.wait(timeout=10)
+        with pytest.raises(ServiceUnavailable, match="no retained archive copy"):
+            service.replace(
+                1,
+                description="Next",
+                expected_identity=str(current["description_identity"]),
+                principal=description_principal,
+            )
+        assert len(store.description_documents) == 2
+        with session_scope(factory) as session:
+            collection = session.get(CollectionRecord, 1)
+            attempt = session.get(
+                CollectionMutableDocumentPublicationAttemptRecord,
+                (1, "archive", "description"),
+            )
+            assert collection is not None and collection.pending_description_revision == 2
+            assert attempt is not None and attempt.document_revision == 1
+            collection.description_next_attempt_at = "2026-09-07T00:00:00.000000Z"
+        store.resume.set()
+        assert replica.result(timeout=10) == 1
+
+    assert service.process_due(limit=1) == 1
+    with session_scope(factory) as session:
+        collection = session.get(CollectionRecord, 1)
+        assert collection is not None
+        assert collection.description == "Next"
+        assert collection.description_revision == 2
+        assert session.query(CollectionMutableDocumentPublicationAttemptRecord).count() == 0
+
+
+def test_postgres_description_attempt_accepts_maximum_canonical_document(
+    isolated_database_url: str,
+) -> None:
+    config, factory, store, registry = description_seed(
+        None,
+        database_url=isolated_database_url,
+    )
+    with session_scope(factory) as session:
+        collection = session.get(CollectionRecord, 1)
+        publication = session.get(CollectionDescriptionPublicationRecord, (1, "archive"))
+        assert collection is not None and publication is not None
+        collection.description_revision = MAX_COLLECTION_DESCRIPTION_REVISION - 1
+        collection.description_identity = collection_description_identity(
+            archive_root_sha256="5" * 64,
+            revision=MAX_COLLECTION_DESCRIPTION_REVISION - 1,
+            description=None,
+        )
+        expected_identity = collection.description_identity
+    service = SqlAlchemyCollectionDescriptionService(
+        config,
+        registry,
+        session_factory=factory,
+    )
+    result = service.replace(
+        1,
+        description='"' * COLLECTION_DESCRIPTION_UTF8_BYTES_MAX,
+        expected_identity=expected_identity,
+        principal=description_principal,
+    )
+
+    assert result["description_revision"] == MAX_COLLECTION_DESCRIPTION_REVISION
+    assert store.objects
+
+
 def test_postgres_mutable_replica_attempt_serializes_reconciliation_before_newer_desired(
     isolated_database_url: str,
 ) -> None:
@@ -608,6 +747,10 @@ def test_postgres_reused_tag_node_gc_and_publication_workers_converge(
         expected_tag_set_identity=initial_identity,
         principal=principal,
     )
+    with session_scope(factory) as session:
+        added_mutation = session.get(CollectionTagMutationRecord, (1, "postgres-gc-add"))
+        assert added_mutation is not None and added_mutation.result_root_sha256 is not None
+        obsolete_parent = added_mutation.result_root_sha256
     service.remove(
         1,
         tag="workflow:archive",
@@ -634,6 +777,7 @@ def test_postgres_reused_tag_node_gc_and_publication_workers_converge(
                 break
     else:  # pragma: no cover - fixed-depth tag closure is much smaller
         raise AssertionError("tag-node reclamation did not reach its ambiguous result")
+    assert digest == obsolete_parent
 
     with pytest.raises(ServiceUnavailable):
         service.add(

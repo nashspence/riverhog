@@ -5,7 +5,9 @@ import json
 import pytest
 from pydantic import TypeAdapter, ValidationError
 from riverhog_protocol import (
+    COLLECTION_DESCRIPTION_DOCUMENT_BYTES_MAX,
     COLLECTION_DESCRIPTION_UTF8_BYTES_MAX,
+    MAX_COLLECTION_DESCRIPTION_REVISION,
     CollectionDescription,
     CollectionDescriptionDocument,
     collection_description_identity,
@@ -35,6 +37,20 @@ def test_description_document_is_canonical_revision_sensitive_and_round_trips() 
         sort_keys=True,
         separators=(",", ":"),
     ).encode("utf-8")
+
+
+@pytest.mark.parametrize("character", ('"', "\\", "\t", "\n"))
+def test_description_document_bound_covers_worst_case_json_escaping(character: str) -> None:
+    description = character * COLLECTION_DESCRIPTION_UTF8_BYTES_MAX
+    if character in {"\t", "\n"}:
+        description = '"' + description[1:]
+    document = CollectionDescriptionDocument.seal(
+        archive_root_sha256=ROOT,
+        revision=MAX_COLLECTION_DESCRIPTION_REVISION,
+        description=description,
+    )
+
+    assert len(document.to_json_bytes()) == COLLECTION_DESCRIPTION_DOCUMENT_BYTES_MAX
 
 
 def test_description_identity_binds_root_revision_and_nullable_value() -> None:

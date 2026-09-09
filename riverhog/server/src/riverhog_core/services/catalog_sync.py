@@ -54,6 +54,7 @@ from riverhog_core.catalog_models import (
     CollectionTagNodeRecord,
     CollectionTagPublicationFrontierRecord,
     CollectionTagPublicationRecord,
+    CollectionTagPublishedNodeRecord,
     CollectionTagRecord,
     CollectionTagRevisionRecord,
     CollectionTagVisibilityRecord,
@@ -871,6 +872,11 @@ def _reap_unreferenced_tag_history_rows(
             ),
             ~exists(
                 select(1).where(
+                    CollectionTagPublishedNodeRecord.node_digest == CollectionTagNodeRecord.digest
+                )
+            ),
+            ~exists(
+                select(1).where(
                     CollectionTagNodeEdgeRecord.child_digest == CollectionTagNodeRecord.digest
                 )
             ),
@@ -919,6 +925,7 @@ def _tag_node_has_live_owner(session: Session, digest: str) -> bool:
         CollectionUploadTagPublicationFrontierRecord.node_digest,
         CollectionUploadTagNodeReferenceRecord.node_digest,
         CollectionTagMutationNodeReferenceRecord.node_digest,
+        CollectionTagPublishedNodeRecord.node_digest,
     )
     if any(session.scalar(select(exists().where(column == digest))) is True for column in columns):
         return True

@@ -23,7 +23,7 @@ from riverhog_protocol import (
 from riverhog_protocol.errors import Conflict, NotFound, PreconditionFailed, ServiceUnavailable
 from riverhog_protocol.paths import text_search_key
 from sqlalchemy import exists, func, select
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, aliased
 from sqlalchemy.sql.selectable import Select
 from time_formats import format_utc_timestamp, utc_now, utc_timestamp_now
 
@@ -77,6 +77,8 @@ from riverhog_core.services.mutable_document_reclamation import (
 )
 
 type _TagNodeGcKey = tuple[int, str, str]
+
+_SYNCHRONOUS_PUBLICATION_STEP_BUDGET = 128
 
 
 @dataclass(frozen=True)
@@ -426,7 +428,7 @@ class SqlAlchemyCollectionTagService:
             return _mutation_payload(completed)
 
     def _finish_mutation(self, collection_id: int, operation_id: str) -> None:
-        for _ in range(128):
+        for _ in range(_SYNCHRONOUS_PUBLICATION_STEP_BUDGET):
             with session_scope(self._session_factory) as session:
                 mutation = session.get(CollectionTagMutationRecord, (collection_id, operation_id))
                 if mutation is None or mutation.state == "succeeded":
@@ -448,7 +450,9 @@ class SqlAlchemyCollectionTagService:
                 raise ServiceUnavailable("collection tag publication is waiting for node cleanup")
             if not result.progressed:
                 return
-        raise RuntimeError("collection tag mutation exceeded fixed-depth path work")
+        raise ServiceUnavailable(
+            "collection tag publication continues asynchronously after its synchronous budget"
+        )
 
     def requeue_interrupted_for_startup(self, *, limit: int = 100) -> int:
         now = utc_timestamp_now()
@@ -520,7 +524,7 @@ class SqlAlchemyCollectionTagService:
                     None if publication is None else (publication.collection_id, publication.store)
                 )
             if key is None:
-                if self._process_reachability_step() or self._process_gc_step():
+                if self._process_gc_step():
                     processed += 1
                     continue
                 reclaimed = process_due_mutable_document_reclamations(
@@ -549,7 +553,7 @@ class SqlAlchemyCollectionTagService:
                 if result.blocked_gc is not None and self._process_gc_step(key=result.blocked_gc):
                     processed += 1
                     continue
-                if self._process_reachability_step() or self._process_gc_step():
+                if self._process_gc_step():
                     processed += 1
                     continue
                 reclaimed = process_due_mutable_document_reclamations(
@@ -563,60 +567,6 @@ class SqlAlchemyCollectionTagService:
                     continue
                 break
         return processed
-
-    def _process_reachability_step(self) -> bool:
-        """Expand one published-head node so later reclamation remains bounded and exact."""
-
-        with session_scope(self._session_factory) as session:
-            frontier = session.scalar(
-                select(CollectionTagPublicationFrontierRecord)
-                .join(
-                    CollectionTagPublicationRecord,
-                    (
-                        CollectionTagPublicationRecord.collection_id
-                        == CollectionTagPublicationFrontierRecord.collection_id
-                    )
-                    & (
-                        CollectionTagPublicationRecord.store
-                        == CollectionTagPublicationFrontierRecord.store
-                    ),
-                )
-                .where(
-                    CollectionTagPublicationRecord.state == "published",
-                    CollectionTagPublicationRecord.desired_head_identity
-                    == CollectionTagPublicationRecord.published_head_identity,
-                    CollectionTagPublicationFrontierRecord.head_identity
-                    == CollectionTagPublicationRecord.published_head_identity,
-                    CollectionTagPublicationFrontierRecord.published.is_(True),
-                    CollectionTagPublicationFrontierRecord.expanded.is_(False),
-                )
-                .order_by(
-                    CollectionTagPublicationFrontierRecord.collection_id,
-                    CollectionTagPublicationFrontierRecord.store,
-                    CollectionTagPublicationFrontierRecord.node_digest,
-                )
-                .limit(1)
-                .with_for_update(skip_locked=True)
-            )
-            if frontier is None:
-                return False
-            publication = session.get(
-                CollectionTagPublicationRecord,
-                (frontier.collection_id, frontier.store),
-            )
-            node = session.get(CollectionTagNodeRecord, frontier.node_digest)
-            if publication is None or publication.published_head_identity is None or node is None:
-                raise RuntimeError("published collection tag reachability state is unavailable")
-            for child in decode_collection_tag_node(node.encoded).children:
-                _add_frontier_node(
-                    session,
-                    publication=publication,
-                    head_identity=publication.published_head_identity,
-                    digest=child.digest,
-                    expanded=False,
-                )
-            frontier.expanded = True
-            return True
 
     def _process_gc_step(self, *, key: _TagNodeGcKey | None = None) -> bool:
         with session_scope(self._session_factory) as session:
@@ -644,6 +594,7 @@ class SqlAlchemyCollectionTagService:
             if gc is None:
                 if key is not None:
                     return False
+                published_parent = aliased(CollectionTagPublishedNodeRecord)
                 published = session.scalar(
                     select(CollectionTagPublishedNodeRecord)
                     .join(
@@ -681,6 +632,22 @@ class SqlAlchemyCollectionTagService:
                                 == CollectionTagPublishedNodeRecord.store,
                                 CollectionTagPublicationFrontierRecord.node_digest
                                 == CollectionTagPublishedNodeRecord.node_digest,
+                            )
+                        ),
+                        ~exists(
+                            select(1)
+                            .select_from(CollectionTagNodeEdgeRecord)
+                            .join(
+                                published_parent,
+                                published_parent.node_digest
+                                == CollectionTagNodeEdgeRecord.parent_digest,
+                            )
+                            .where(
+                                CollectionTagNodeEdgeRecord.child_digest
+                                == CollectionTagPublishedNodeRecord.node_digest,
+                                published_parent.collection_id
+                                == CollectionTagPublishedNodeRecord.collection_id,
+                                published_parent.store == CollectionTagPublishedNodeRecord.store,
                             )
                         ),
                     )
@@ -732,6 +699,12 @@ class SqlAlchemyCollectionTagService:
             )
             if expected_stored_sha256 is None:
                 session.delete(gc)
+                publication = session.get(
+                    CollectionTagPublicationRecord,
+                    (gc.collection_id, gc.store),
+                )
+                if publication is not None and publication.state != "published":
+                    publication.next_attempt_at = now
                 return True
         try:
             self._archive_stores.require(store_name).store.delete_collection_tag_node(
@@ -767,6 +740,12 @@ class SqlAlchemyCollectionTagService:
                 if published is not None:
                     session.delete(published)
                 session.delete(current)
+                publication = session.get(
+                    CollectionTagPublicationRecord,
+                    (collection_id, store_name),
+                )
+                if publication is not None and publication.state != "published":
+                    publication.next_attempt_at = utc_timestamp_now()
         return True
 
     def _process_publication_step(
@@ -834,6 +813,56 @@ class SqlAlchemyCollectionTagService:
                     CollectionTagPublicationFrontierRecord.head_identity
                     == retained_document.head_identity,
                     CollectionTagPublicationFrontierRecord.published.is_(False),
+                    CollectionTagPublicationFrontierRecord.expanded.is_(False),
+                )
+                .order_by(CollectionTagPublicationFrontierRecord.node_digest)
+                .limit(1)
+                .with_for_update(skip_locked=True)
+            )
+            if frontier is not None:
+                node = session.get(CollectionTagNodeRecord, frontier.node_digest)
+                if node is None:
+                    raise RuntimeError("collection tag publication node is unavailable")
+                for child in decode_collection_tag_node(node.encoded).children:
+                    _add_frontier_node(
+                        session,
+                        publication=publication,
+                        head_identity=retained_document.head_identity,
+                        digest=child.digest,
+                        expanded=False,
+                    )
+                frontier.expanded = True
+                publication.state = "pending"
+                publication.next_attempt_at = utc_timestamp_now()
+                publication.failure = None
+                return _PublicationStepResult(progressed=True)
+
+            child_frontier = aliased(CollectionTagPublicationFrontierRecord)
+            frontier = session.scalar(
+                select(CollectionTagPublicationFrontierRecord)
+                .where(
+                    CollectionTagPublicationFrontierRecord.collection_id == collection_id,
+                    CollectionTagPublicationFrontierRecord.store == store_name,
+                    CollectionTagPublicationFrontierRecord.head_identity
+                    == retained_document.head_identity,
+                    CollectionTagPublicationFrontierRecord.published.is_(False),
+                    CollectionTagPublicationFrontierRecord.expanded.is_(True),
+                    ~exists(
+                        select(1)
+                        .select_from(CollectionTagNodeEdgeRecord)
+                        .join(
+                            child_frontier,
+                            (child_frontier.node_digest == CollectionTagNodeEdgeRecord.child_digest)
+                            & (child_frontier.collection_id == collection_id)
+                            & (child_frontier.store == store_name)
+                            & (child_frontier.head_identity == retained_document.head_identity),
+                        )
+                        .where(
+                            CollectionTagNodeEdgeRecord.parent_digest
+                            == CollectionTagPublicationFrontierRecord.node_digest,
+                            child_frontier.published.is_(False),
+                        )
+                    ),
                 )
                 .order_by(CollectionTagPublicationFrontierRecord.node_digest)
                 .limit(1)
@@ -865,6 +894,20 @@ class SqlAlchemyCollectionTagService:
                 digest = frontier.node_digest
                 encoded = node.encoded
                 decoded = decode_collection_tag_node(encoded)
+                for child in decoded.children:
+                    child_state = session.get(
+                        CollectionTagPublicationFrontierRecord,
+                        (
+                            collection_id,
+                            store_name,
+                            retained_document.head_identity,
+                            child.digest,
+                        ),
+                    )
+                    if child_state is None or not child_state.published:
+                        raise RuntimeError(
+                            "collection tag node became publishable before its children"
+                        )
                 publication.state = "publishing_nodes"
             else:
                 digest = None
@@ -920,16 +963,6 @@ class SqlAlchemyCollectionTagService:
                         published_at=receipt.published_at,
                     )
                 )
-                if not frontier.expanded:
-                    for child in decoded.children:
-                        _add_frontier_node(
-                            session,
-                            publication=publication,
-                            head_identity=retained_document.head_identity,
-                            digest=child.digest,
-                            expanded=False,
-                        )
-                frontier.expanded = True
                 frontier.published = True
                 publication.state = "pending"
                 publication.next_attempt_at = utc_timestamp_now()
@@ -1396,14 +1429,15 @@ def _add_frontier_node(
             CollectionTagNodeGcRecord,
             (publication.collection_id, publication.store, digest),
         )
+        inherited = already is not None and gc is None
         session.add(
             CollectionTagPublicationFrontierRecord(
                 collection_id=publication.collection_id,
                 store=publication.store,
                 head_identity=head_identity,
                 node_digest=digest,
-                expanded=expanded,
-                published=already is not None and gc is None,
+                expanded=True if inherited else expanded,
+                published=inherited,
             )
         )
 
