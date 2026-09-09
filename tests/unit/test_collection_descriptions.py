@@ -46,6 +46,7 @@ from riverhog_core.services.collection_descriptions import (
 from riverhog_core.services.collections import SqlAlchemyCollectionService
 from riverhog_core.services.search import SqlAlchemySearchService
 from riverhog_protocol import (
+    COLLECTION_DESCRIPTION_DOCUMENT_BYTES_MAX,
     COLLECTION_DESCRIPTION_RELATIVE_PATH,
     COLLECTION_DESCRIPTION_UTF8_BYTES_MAX,
     CatalogSyncUpsert,
@@ -104,6 +105,7 @@ class DelayedDescriptionStore(MemoryArchiveStore):
         self.delay_next_description = False
         self.started = threading.Event()
         self.resume = threading.Event()
+        self.description_documents: list[bytes] = []
 
     def publish_collection_description(
         self,
@@ -114,6 +116,7 @@ class DelayedDescriptionStore(MemoryArchiveStore):
         passphrase_id: str,
         expected_current_stored_sha256: str | None = None,
     ) -> CollectionDescriptionReceipt:
+        self.description_documents.append(document)
         if self.delay_next_description:
             self.delay_next_description = False
             self.started.set()
@@ -669,6 +672,158 @@ def test_description_projection_waits_for_durable_publication_and_restarts(
         assert collection.description_revision == 1
         assert collection.description_mutation_state == "idle"
         assert len(list(session.scalars(select(CatalogEventRecord)))) == 2
+
+
+def test_primary_description_claim_excludes_replica_worker_for_the_same_destination(
+    tmp_path: Path,
+) -> None:
+    path = tmp_path / "catalog.sqlite3"
+    config, factory, _initial, _registry = _seed(path)
+    store = DelayedDescriptionStore()
+    registry = ArchiveStoreRegistry({"archive": archive_store_binding(store)})
+    service = SqlAlchemyCollectionDescriptionService(
+        config,
+        registry,
+        session_factory=factory,
+    )
+    initial_identity = collection_description_identity(
+        archive_root_sha256="5" * 64,
+        revision=0,
+        description=None,
+    )
+    store.delay_next_description = True
+
+    with ThreadPoolExecutor(max_workers=1) as executor:
+        primary = executor.submit(
+            service.replace,
+            1,
+            description="One destination owner",
+            expected_identity=initial_identity,
+            principal=PRINCIPAL,
+        )
+        assert store.started.wait(timeout=10)
+        competing = SqlAlchemyCollectionDescriptionService(
+            config,
+            registry,
+            session_factory=make_session_factory(config.database_url),
+        )
+        assert competing.process_due(limit=1) == 0
+        with session_scope(factory) as session:  # type: ignore[arg-type]
+            attempt = session.get(
+                CollectionMutableDocumentPublicationAttemptRecord,
+                (1, "archive", "description"),
+            )
+            publication = session.get(CollectionDescriptionPublicationRecord, (1, "archive"))
+            assert attempt is not None
+            assert publication is not None and publication.state == "publishing"
+        assert len(store.description_documents) == 1
+        store.resume.set()
+        result = primary.result(timeout=10)
+
+    assert result["description"] == "One destination owner"
+    assert len(store.description_documents) == 1
+
+
+def test_replica_description_claim_excludes_primary_writer_for_the_same_destination(
+    tmp_path: Path,
+) -> None:
+    path = tmp_path / "catalog.sqlite3"
+    config, factory, _initial, _registry = _seed(path)
+    store = DelayedDescriptionStore()
+    registry = ArchiveStoreRegistry({"archive": archive_store_binding(store)})
+    service = SqlAlchemyCollectionDescriptionService(
+        config,
+        registry,
+        session_factory=factory,
+    )
+    initial_identity = collection_description_identity(
+        archive_root_sha256="5" * 64,
+        revision=0,
+        description=None,
+    )
+    current = service.replace(
+        1,
+        description="Current",
+        expected_identity=initial_identity,
+        principal=PRINCIPAL,
+    )
+    with session_scope(factory) as session:  # type: ignore[arg-type]
+        publication = session.get(CollectionDescriptionPublicationRecord, (1, "archive"))
+        assert publication is not None
+        publication.state = "pending"
+        publication.next_attempt_at = NOW
+
+    store.delay_next_description = True
+    with ThreadPoolExecutor(max_workers=1) as executor:
+        replica = executor.submit(service.process_due, limit=1)
+        assert store.started.wait(timeout=10)
+        with pytest.raises(ServiceUnavailable, match="no retained archive copy"):
+            service.replace(
+                1,
+                description="Next",
+                expected_identity=str(current["description_identity"]),
+                principal=PRINCIPAL,
+            )
+        assert len(store.description_documents) == 2
+        with session_scope(factory) as session:  # type: ignore[arg-type]
+            attempt = session.get(
+                CollectionMutableDocumentPublicationAttemptRecord,
+                (1, "archive", "description"),
+            )
+            collection = session.get(CollectionRecord, 1)
+            assert attempt is not None and attempt.document_revision == 1
+            assert collection is not None
+            assert collection.pending_description_revision == 2
+            collection.description_next_attempt_at = NOW
+        store.resume.set()
+        assert replica.result(timeout=10) == 1
+
+    assert service.process_due(limit=1) == 1
+    assert len(store.description_documents) == 3
+    with session_scope(factory) as session:  # type: ignore[arg-type]
+        collection = session.get(CollectionRecord, 1)
+        assert collection is not None
+        assert collection.description == "Next"
+        assert collection.description_revision == 2
+        assert session.query(CollectionMutableDocumentPublicationAttemptRecord).count() == 0
+
+
+def test_maximum_description_document_is_retained_before_provider_io(tmp_path: Path) -> None:
+    config, factory, _initial, _registry = _seed(tmp_path / "catalog.sqlite3")
+    store = DelayedDescriptionStore()
+    service = SqlAlchemyCollectionDescriptionService(
+        config,
+        ArchiveStoreRegistry({"archive": archive_store_binding(store)}),
+        session_factory=factory,
+    )
+    initial_identity = collection_description_identity(
+        archive_root_sha256="5" * 64,
+        revision=0,
+        description=None,
+    )
+    description = '"' * COLLECTION_DESCRIPTION_UTF8_BYTES_MAX
+    store.delay_next_description = True
+
+    with ThreadPoolExecutor(max_workers=1) as executor:
+        pending = executor.submit(
+            service.replace,
+            1,
+            description=description,
+            expected_identity=initial_identity,
+            principal=PRINCIPAL,
+        )
+        assert store.started.wait(timeout=10)
+        with session_scope(factory) as session:  # type: ignore[arg-type]
+            attempt = session.get(
+                CollectionMutableDocumentPublicationAttemptRecord,
+                (1, "archive", "description"),
+            )
+            assert attempt is not None
+            assert len(attempt.document_bytes) <= COLLECTION_DESCRIPTION_DOCUMENT_BYTES_MAX
+            retained = CollectionDescriptionDocument.from_json_bytes(attempt.document_bytes)
+            assert retained.description == description
+        store.resume.set()
+        assert pending.result(timeout=10)["description"] == description
 
 
 def test_delayed_primary_description_writer_cannot_overwrite_newer_authority(

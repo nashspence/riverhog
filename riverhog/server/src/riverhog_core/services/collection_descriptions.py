@@ -14,7 +14,7 @@ from riverhog_protocol import (
 )
 from riverhog_protocol.errors import Conflict, NotFound, PreconditionFailed, ServiceUnavailable
 from riverhog_protocol.paths import text_search_key
-from sqlalchemy import select
+from sqlalchemy import exists, select
 from sqlalchemy.orm import Session
 from time_formats import format_utc_timestamp, utc_now, utc_timestamp_now
 
@@ -37,7 +37,6 @@ from riverhog_core.catalog_models import (
     CollectionRecord,
 )
 from riverhog_core.collection_access import require_collection_access
-from riverhog_core.ports.archive_store import CollectionDescriptionReceipt
 from riverhog_core.runtime_config import RuntimeConfig
 from riverhog_core.services.archive_records import archive_copy_is_complete
 from riverhog_core.services.collections import _normalize_collection_id_or_raise
@@ -49,7 +48,6 @@ from riverhog_core.services.mutable_document_publication import (
 from riverhog_core.services.mutable_document_reclamation import (
     process_due_mutable_document_reclamations,
     requeue_interrupted_mutable_document_reclamations,
-    retain_superseded_mutable_document,
 )
 
 _LOG = logging.getLogger(__name__)
@@ -168,10 +166,35 @@ class SqlAlchemyCollectionDescriptionService:
             changed += len(collections)
             remaining = limit - changed
             if remaining:
+                primary_attempt = exists(
+                    select(1)
+                    .select_from(CollectionMutableDocumentPublicationAttemptRecord)
+                    .join(
+                        CollectionRecord,
+                        CollectionRecord.id
+                        == CollectionMutableDocumentPublicationAttemptRecord.collection_id,
+                    )
+                    .where(
+                        CollectionMutableDocumentPublicationAttemptRecord.collection_id
+                        == CollectionDescriptionPublicationRecord.collection_id,
+                        CollectionMutableDocumentPublicationAttemptRecord.store
+                        == CollectionDescriptionPublicationRecord.store,
+                        CollectionMutableDocumentPublicationAttemptRecord.document_kind
+                        == "description",
+                        CollectionRecord.description_mutation_state != "idle",
+                        CollectionRecord.pending_description_revision
+                        == CollectionMutableDocumentPublicationAttemptRecord.document_revision,
+                        CollectionRecord.pending_description_identity
+                        == CollectionMutableDocumentPublicationAttemptRecord.document_identity,
+                    )
+                )
                 publications = list(
                     session.scalars(
                         select(CollectionDescriptionPublicationRecord)
-                        .where(CollectionDescriptionPublicationRecord.state == "publishing")
+                        .where(
+                            CollectionDescriptionPublicationRecord.state == "publishing",
+                            ~primary_attempt,
+                        )
                         .order_by(
                             CollectionDescriptionPublicationRecord.collection_id,
                             CollectionDescriptionPublicationRecord.store,
@@ -270,35 +293,49 @@ class SqlAlchemyCollectionDescriptionService:
                 or collection.pending_description_identity is None
             ):
                 raise RuntimeError("pending collection description authority is incomplete")
-            candidate = _publication_candidate(session, collection_id)
-            if candidate is None:
-                raise ServiceUnavailable("no retained archive copy can accept the description")
-            store, prefix = candidate
-            publication = session.get(
-                CollectionDescriptionPublicationRecord,
-                (collection_id, store),
-            )
-            expected_current_stored_sha256 = (
-                None if publication is None else publication.stored_sha256
-            )
             revision = collection.pending_description_revision
             identity = collection.pending_description_identity
             description = collection.pending_description
-            passphrase_id = collection.passphrase_id
             document = CollectionDescriptionDocument(
                 archive_root_sha256=collection.archive_root_sha256,
                 revision=revision,
                 description=description,
                 description_identity=identity,
             ).to_json_bytes()
+            claimed = _claim_mutation_destination(
+                session,
+                collection=collection,
+                document=document,
+            )
+            if claimed is None:
+                raise ServiceUnavailable("no retained archive copy can accept the description")
+            publication, attempt = claimed
+            retained_document = validate_mutable_document_publication_attempt(attempt)
+            if not isinstance(retained_document, CollectionDescriptionDocument):
+                raise RuntimeError("description publication attempt has another document kind")
+            if (
+                retained_document.revision != revision
+                or retained_document.description_identity != identity
+            ):
+                raise RuntimeError("primary description publication attempt differs")
+            publication.state = "publishing"
+            publication.attempt_count += 1
+            publication.next_attempt_at = utc_timestamp_now()
+            publication.last_attempt_at = utc_timestamp_now()
             collection.description_mutation_state = "publishing"
             collection.description_attempt_count += 1
             collection.description_last_attempt_at = utc_timestamp_now()
+            store = attempt.store
+            prefix = attempt.archive_storage_prefix
+            encoded = attempt.document_bytes
+            passphrase_id = attempt.passphrase_id
+            expected_current_stored_sha256 = attempt.prior_stored_sha256
+            attempt_identity = attempt.attempt_identity
 
         receipt = self._archive_stores.require(store).store.publish_collection_description(
             collection_id=collection_id,
             archive_storage_prefix=prefix,
-            document=document,
+            document=encoded,
             passphrase_id=passphrase_id,
             expected_current_stored_sha256=expected_current_stored_sha256,
         )
@@ -311,16 +348,63 @@ class SqlAlchemyCollectionDescriptionService:
             )
             if collection is None:
                 return
+            accepted_publication = session.scalar(
+                select(CollectionDescriptionPublicationRecord)
+                .where(
+                    CollectionDescriptionPublicationRecord.collection_id == collection_id,
+                    CollectionDescriptionPublicationRecord.store == store,
+                )
+                .with_for_update()
+            )
+            accepted_attempt = session.scalar(
+                select(CollectionMutableDocumentPublicationAttemptRecord)
+                .where(
+                    CollectionMutableDocumentPublicationAttemptRecord.collection_id
+                    == collection_id,
+                    CollectionMutableDocumentPublicationAttemptRecord.store == store,
+                    CollectionMutableDocumentPublicationAttemptRecord.document_kind
+                    == "description",
+                )
+                .with_for_update()
+            )
+            if (
+                accepted_publication is None
+                or accepted_attempt is None
+                or accepted_attempt.attempt_identity != attempt_identity
+            ):
+                return
             if (
                 collection.description_mutation_state != "publishing"
                 or collection.pending_description_revision != revision
                 or collection.pending_description_identity != identity
             ):
                 raise Conflict("collection description replacement changed during publication")
-            collection.description = description
-            collection.description_search = text_search_key(description or "")
-            collection.description_revision = revision
-            collection.description_identity = identity
+            if (
+                accepted_publication.object_path != accepted_attempt.prior_object_path
+                or accepted_publication.provider_revision
+                != accepted_attempt.prior_provider_revision
+                or accepted_publication.stored_bytes != accepted_attempt.prior_stored_bytes
+                or accepted_publication.stored_sha256 != accepted_attempt.prior_stored_sha256
+            ):
+                raise Conflict("description publication receipt changed during its attempt")
+            retained_document = validate_mutable_document_publication_attempt(accepted_attempt)
+            if not isinstance(retained_document, CollectionDescriptionDocument):
+                raise RuntimeError("description publication attempt has another document kind")
+            if (
+                retained_document.revision != revision
+                or retained_document.description_identity != identity
+                or retained_document.description != description
+            ):
+                raise Conflict("primary description publication attempt changed")
+            retain_attempt_superseded_document(
+                session,
+                attempt=accepted_attempt,
+                replacement=receipt,
+            )
+            collection.description = retained_document.description
+            collection.description_search = text_search_key(retained_document.description or "")
+            collection.description_revision = retained_document.revision
+            collection.description_identity = retained_document.description_identity
             collection.description_mutation_state = "idle"
             collection.pending_description = None
             collection.pending_description_revision = None
@@ -329,12 +413,21 @@ class SqlAlchemyCollectionDescriptionService:
             collection.description_next_attempt_at = None
             collection.description_last_attempt_at = None
             collection.description_failure = None
-            _record_published_copy(
-                session,
-                collection=collection,
-                store=store,
-                receipt=receipt,
-            )
+            accepted_publication.desired_revision = retained_document.revision
+            accepted_publication.desired_identity = retained_document.description_identity
+            accepted_publication.published_revision = retained_document.revision
+            accepted_publication.published_identity = retained_document.description_identity
+            accepted_publication.state = "published"
+            accepted_publication.attempt_count = 0
+            accepted_publication.next_attempt_at = None
+            accepted_publication.last_attempt_at = None
+            accepted_publication.failure = None
+            accepted_publication.object_path = receipt.object_path
+            accepted_publication.provider_revision = receipt.revision
+            accepted_publication.stored_bytes = receipt.stored_bytes
+            accepted_publication.stored_sha256 = receipt.stored_sha256
+            accepted_publication.published_at = receipt.published_at
+            session.delete(accepted_attempt)
             for copy in _retained_copies(session, collection_id):
                 if copy.store != store:
                     _schedule_copy(session, collection=collection, copy=copy, now=now)
@@ -641,20 +734,118 @@ def description_publication_state(
     return "current" if current == len(copies) else "reconciling"
 
 
-def _publication_candidate(session: Session, collection_id: int) -> tuple[str, str] | None:
-    for copy in _retained_copies(session, collection_id):
+def _claim_mutation_destination(
+    session: Session,
+    *,
+    collection: CollectionRecord,
+    document: bytes,
+) -> (
+    tuple[
+        CollectionDescriptionPublicationRecord,
+        CollectionMutableDocumentPublicationAttemptRecord,
+    ]
+    | None
+):
+    """Acquire one destination attempt before a primary description provider effect."""
+
+    revision = collection.pending_description_revision
+    identity = collection.pending_description_identity
+    if revision is None or identity is None:
+        raise RuntimeError("pending collection description authority is incomplete")
+    existing = session.scalar(
+        select(CollectionMutableDocumentPublicationAttemptRecord)
+        .where(
+            CollectionMutableDocumentPublicationAttemptRecord.collection_id == collection.id,
+            CollectionMutableDocumentPublicationAttemptRecord.document_kind == "description",
+            CollectionMutableDocumentPublicationAttemptRecord.document_revision == revision,
+            CollectionMutableDocumentPublicationAttemptRecord.document_identity == identity,
+        )
+        .order_by(CollectionMutableDocumentPublicationAttemptRecord.store)
+        .limit(1)
+    )
+    if existing is not None:
+        attempt = session.scalar(
+            select(CollectionMutableDocumentPublicationAttemptRecord)
+            .where(
+                CollectionMutableDocumentPublicationAttemptRecord.collection_id == collection.id,
+                CollectionMutableDocumentPublicationAttemptRecord.store == existing.store,
+                CollectionMutableDocumentPublicationAttemptRecord.document_kind == "description",
+                CollectionMutableDocumentPublicationAttemptRecord.attempt_identity
+                == existing.attempt_identity,
+            )
+            .with_for_update(skip_locked=True)
+        )
+        publication = session.scalar(
+            select(CollectionDescriptionPublicationRecord)
+            .where(
+                CollectionDescriptionPublicationRecord.collection_id == collection.id,
+                CollectionDescriptionPublicationRecord.store == existing.store,
+            )
+            .with_for_update(skip_locked=True)
+        )
+        copy = session.get(CollectionArchiveCopyRecord, (collection.id, existing.store))
+        if attempt is None or publication is None:
+            raise ServiceUnavailable("collection description destination is already active")
+        if (
+            copy is None
+            or copy.archive_storage_prefix != attempt.archive_storage_prefix
+            or not archive_copy_is_complete(copy)
+            or session.get(ArchiveCopyRetirementRecord, (collection.id, existing.store)) is not None
+        ):
+            raise Conflict("collection description destination archive copy is unavailable")
+        return publication, attempt
+
+    now = utc_timestamp_now()
+    for copy in _retained_copies(session, collection.id):
         publication = session.get(
             CollectionDescriptionPublicationRecord,
-            (collection_id, copy.store),
+            (collection.id, copy.store),
         )
-        attempt = session.get(
-            CollectionMutableDocumentPublicationAttemptRecord,
-            (collection_id, copy.store, "description"),
-        )
-        if publication is None or (publication.state != "publishing" and attempt is None):
-            if copy.archive_storage_prefix is None:  # pragma: no cover - completeness owns this
+        if publication is not None:
+            publication = session.scalar(
+                select(CollectionDescriptionPublicationRecord)
+                .where(
+                    CollectionDescriptionPublicationRecord.collection_id == collection.id,
+                    CollectionDescriptionPublicationRecord.store == copy.store,
+                )
+                .with_for_update(skip_locked=True)
+            )
+            if publication is None:
                 continue
-            return copy.store, copy.archive_storage_prefix
+        else:
+            publication = ensure_description_publication_for_copy(
+                session,
+                collection=collection,
+                copy=copy,
+                now=now,
+            )
+            session.flush()
+        if publication.state == "publishing":
+            continue
+        if (
+            session.get(
+                CollectionMutableDocumentPublicationAttemptRecord,
+                (collection.id, copy.store, "description"),
+            )
+            is not None
+        ):
+            continue
+        if copy.archive_storage_prefix is None:  # pragma: no cover - completeness owns this
+            continue
+        attempt = create_mutable_document_publication_attempt(
+            session,
+            collection_id=collection.id,
+            store=copy.store,
+            document_kind="description",
+            document=document,
+            archive_storage_prefix=copy.archive_storage_prefix,
+            passphrase_id=collection.passphrase_id,
+            prior_object_path=publication.object_path,
+            prior_provider_revision=publication.provider_revision,
+            prior_stored_bytes=publication.stored_bytes,
+            prior_stored_sha256=publication.stored_sha256,
+        )
+        return publication, attempt
     return None
 
 
@@ -690,71 +881,6 @@ def _schedule_copy(
         copy=copy,
         now=now,
     )
-
-
-def _record_published_copy(
-    session: Session,
-    *,
-    collection: CollectionRecord,
-    store: str,
-    receipt: CollectionDescriptionReceipt,
-) -> None:
-    if (
-        session.get(
-            CollectionMutableDocumentPublicationAttemptRecord,
-            (collection.id, store, "description"),
-        )
-        is not None
-    ):
-        raise RuntimeError("description destination has an unresolved publication attempt")
-    publication = session.get(
-        CollectionDescriptionPublicationRecord,
-        (collection.id, store),
-    )
-    values = {
-        "object_path": receipt.object_path,
-        "provider_revision": receipt.revision,
-        "stored_bytes": receipt.stored_bytes,
-        "stored_sha256": receipt.stored_sha256,
-        "published_at": receipt.published_at,
-    }
-    if publication is None:
-        publication = CollectionDescriptionPublicationRecord(
-            collection_id=collection.id,
-            store=store,
-            desired_revision=collection.description_revision,
-            desired_identity=collection.description_identity,
-            published_revision=collection.description_revision,
-            published_identity=collection.description_identity,
-            state="published",
-            attempt_count=0,
-            next_attempt_at=None,
-            **values,
-        )
-        session.add(publication)
-        return
-    retain_superseded_mutable_document(
-        session,
-        collection_id=collection.id,
-        store=store,
-        document_kind="description",
-        object_path=publication.object_path,
-        provider_revision=publication.provider_revision,
-        stored_bytes=publication.stored_bytes,
-        stored_sha256=publication.stored_sha256,
-        replacement=receipt,
-    )
-    publication.desired_revision = collection.description_revision
-    publication.desired_identity = collection.description_identity
-    publication.published_revision = collection.description_revision
-    publication.published_identity = collection.description_identity
-    publication.state = "published"
-    publication.attempt_count = 0
-    publication.next_attempt_at = None
-    publication.last_attempt_at = None
-    publication.failure = None
-    for key, value in values.items():
-        setattr(publication, key, value)
 
 
 def _description_payload(session: Session, collection: CollectionRecord) -> dict[str, object]:

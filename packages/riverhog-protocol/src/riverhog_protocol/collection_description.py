@@ -24,6 +24,30 @@ COLLECTION_DESCRIPTION_UTF8_BYTES_MAX = 32 * 1024
 # A JSON integer which every maintained client runtime can represent exactly. The bound is
 # representational rather than a product policy limiting collection size or membership.
 MAX_COLLECTION_DESCRIPTION_REVISION = 9_007_199_254_740_991
+
+
+def _maximum_document_bytes() -> int:
+    """Return the exact maximum canonical document size over the accepted domain."""
+
+    fixed = json.dumps(
+        {
+            "archive_root_sha256": "0" * 64,
+            "description": "",
+            "description_identity": "0" * 64,
+            "format": COLLECTION_DESCRIPTION_DOCUMENT_FORMAT,
+            "revision": MAX_COLLECTION_DESCRIPTION_REVISION,
+        },
+        ensure_ascii=False,
+        sort_keys=True,
+        separators=(",", ":"),
+    ).encode("utf-8")
+    # Each accepted UTF-8 byte contributes at most two canonical JSON bytes: the
+    # one-byte quote, reverse solidus, tab, or line-feed cases require escaping;
+    # every accepted multibyte Unicode scalar is emitted without ASCII escaping.
+    return len(fixed) + 2 * COLLECTION_DESCRIPTION_UTF8_BYTES_MAX
+
+
+COLLECTION_DESCRIPTION_DOCUMENT_BYTES_MAX = _maximum_document_bytes()
 _DESCRIPTION_IDENTITY_DOMAIN = b"riverhog-collection-description-state/v1\x00"
 _SHA256_PATTERN = r"^[0-9a-f]{64}$"
 _UNICODE_WHITESPACE = frozenset(
@@ -194,6 +218,7 @@ class CollectionDescriptionDocument(BaseModel):
 
 
 __all__ = [
+    "COLLECTION_DESCRIPTION_DOCUMENT_BYTES_MAX",
     "COLLECTION_DESCRIPTION_DOCUMENT_FORMAT",
     "COLLECTION_DESCRIPTION_RELATIVE_PATH",
     "COLLECTION_DESCRIPTION_UTF8_BYTES_MAX",
