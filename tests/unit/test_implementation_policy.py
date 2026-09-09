@@ -38,7 +38,7 @@ def test_checked_implementation_policy_is_scoped_and_executable() -> None:
             "operational_policy": 1,
         },
         "policies": 5,
-        "test_links": 27,
+        "test_links": 31,
     }
     policies = projection["policies"]
     assert {policy["id"] for policy in policies} == {
