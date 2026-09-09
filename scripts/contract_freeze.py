@@ -786,13 +786,13 @@ def trace_projection(projection: Mapping[str, object]) -> dict[str, object]:
     source_kinds = dict(
         sorted(Counter(identity.split(":", 1)[0] for identity in source_ids).items())
     )
-    behavioral_witnesses, segmented_links = extent_witnesses.bind_segmented_decisions(
+    segmented_extent_witnesses, segmented_links = extent_witnesses.bind_segmented_decisions(
         ROOT,
         decisions,
     )
     segmented_by_id = {str(link["id"]): link for link in segmented_links}
-    segmented_witness_link_count = sum(
-        len(cast(list[str], link["behavioral_witnesses"])) for link in segmented_links
+    segmented_extent_witness_link_count = sum(
+        len(cast(list[str], link["segmented_extent_witnesses"])) for link in segmented_links
     )
     return {
         "schema": TRACE_SCHEMA,
@@ -800,7 +800,7 @@ def trace_projection(projection: Mapping[str, object]) -> dict[str, object]:
         "contract_canonical_sha256": hashlib.sha256(semantic_payload).hexdigest(),
         "contract_projection_sha256": hashlib.sha256(rendered_payload).hexdigest(),
         "sources": sources,
-        "behavioral_witnesses": behavioral_witnesses,
+        "segmented_extent_witnesses": segmented_extent_witnesses,
         "extent_sources": [
             {
                 "id": decision["id"],
@@ -808,8 +808,8 @@ def trace_projection(projection: Mapping[str, object]) -> dict[str, object]:
                 "source_pointer": decision["source_pointer"],
                 **(
                     {
-                        "behavioral_witnesses": segmented_by_id[str(decision["id"])][
-                            "behavioral_witnesses"
+                        "segmented_extent_witnesses": segmented_by_id[str(decision["id"])][
+                            "segmented_extent_witnesses"
                         ]
                     }
                     if str(decision["id"]) in segmented_by_id
@@ -824,8 +824,8 @@ def trace_projection(projection: Mapping[str, object]) -> dict[str, object]:
             "extent_decisions": len(decisions),
             "extent_source_links": len(decisions),
             "segmented_decisions": len(segmented_links),
-            "segmented_behavioral_witness_links": segmented_witness_link_count,
-            "behavioral_witnesses": len(behavioral_witnesses),
+            "segmented_extent_witness_links": segmented_extent_witness_link_count,
+            "segmented_extent_witnesses": len(segmented_extent_witnesses),
         },
     }
 

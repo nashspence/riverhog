@@ -1,0 +1,129 @@
+{
+  "authority": "nonnormative-implementation-correctness",
+  "coverage": {
+    "classifications": {
+      "external_contract": 1,
+      "internal_correctness": 3,
+      "operational_policy": 1
+    },
+    "policies": 5,
+    "test_links": 27
+  },
+  "policies": [
+    {
+      "applies_when": "An external state-changing effect and its database acceptance cannot be committed atomically.",
+      "classification": "internal_correctness",
+      "gates": [
+        "make unit",
+        "make postgres-concurrency",
+        "make compose-smoke"
+      ],
+      "id": "exact-external-effect-authority/v1",
+      "invariant": "Seal immutable intent and atomically acquire the exact destination attempt, ownership, and effect precondition before provider I/O; retries reconcile that attempt and conflicting intent cannot reuse it.",
+      "scopes": [
+        "collection-description-publication",
+        "collection-tag-head-publication"
+      ],
+      "test_node_ids": [
+        "tests/unit/test_collection_descriptions.py::test_primary_description_claim_excludes_replica_worker_for_the_same_destination",
+        "tests/unit/test_collection_descriptions.py::test_replica_description_claim_excludes_primary_writer_for_the_same_destination",
+        "tests/unit/test_collection_tags.py::test_delayed_old_head_writer_cannot_overwrite_newer_acknowledged_authority",
+        "tests/integration/test_catalog_schema_postgres.py::test_postgres_primary_description_claim_excludes_replica_worker",
+        "tests/integration/test_catalog_schema_postgres.py::test_postgres_mutable_replica_attempt_serializes_reconciliation_before_newer_desired"
+      ]
+    },
+    {
+      "applies_when": "A published authority references independently reclaimable immutable dependencies.",
+      "classification": "internal_correctness",
+      "gates": [
+        "make unit",
+        "make postgres-concurrency",
+        "make compose-smoke",
+        "make provider-qualification"
+      ],
+      "id": "structured-authority-dependency-liveness/v1",
+      "invariant": "Accept a structured published authority only while its required dependency closure is durably and continuously protected; establish successor ownership before prior protection is released. Content equality alone does not establish stored liveness.",
+      "scopes": [
+        "collection-tag-authority"
+      ],
+      "test_node_ids": [
+        "tests/unit/test_collection_tags.py::test_tag_edit_inherits_complete_published_subtrees_without_rewalking_them",
+        "tests/unit/test_collection_tags.py::test_pending_mutation_reuses_a_retiring_root_without_a_retention_gap",
+        "tests/unit/test_collection_tags.py::test_delayed_gc_cannot_delete_a_node_republished_by_a_newer_authority",
+        "tests/unit/test_collection_tags.py::test_provider_nodes_for_retained_exact_revisions_remain_recoverable",
+        "tests/integration/test_catalog_schema_postgres.py::test_postgres_reused_tag_node_gc_and_publication_workers_converge"
+      ]
+    },
+    {
+      "applies_when": "An accepted or superseded external result has provider state Riverhog may later need to reconcile or reclaim.",
+      "classification": "internal_correctness",
+      "gates": [
+        "make unit",
+        "make postgres-concurrency",
+        "make compose-smoke",
+        "make provider-qualification"
+      ],
+      "id": "external-result-acceptance-and-cleanup-custody/v1",
+      "invariant": "Report completion only after transactional acceptance of the exact external result, and retain its exact cleanup custody across ambiguity, replacement, retirement, and restart until reclamation is reconciled. Once destructive work claims an exact stored revision, reuse establishes a separately receipted protected state.",
+      "scopes": [
+        "collection-description-publication",
+        "collection-tag-publication",
+        "mutable-document-reclamation"
+      ],
+      "test_node_ids": [
+        "tests/unit/test_collection_descriptions.py::test_description_projection_waits_for_durable_publication_and_restarts",
+        "tests/unit/test_collection_descriptions.py::test_description_replacement_reconciles_receipts_after_an_ambiguous_response",
+        "tests/unit/test_collection_descriptions.py::test_superseded_document_cleanup_receipt_survives_collection_retirement",
+        "tests/unit/test_collection_tags.py::test_superseded_tag_heads_retain_exact_cleanup_custody",
+        "tests/unit/test_collection_tags.py::test_tag_node_gc_resumes_idempotently_after_an_ambiguous_delete",
+        "tests/integration/test_catalog_schema_postgres.py::test_postgres_superseded_document_cleanup_workers_claim_distinct_receipts"
+      ]
+    },
+    {
+      "applies_when": "A public read contract issues an exact authority with a declared retained lifetime.",
+      "classification": "external_contract",
+      "gates": [
+        "make unit",
+        "make database-qualification"
+      ],
+      "id": "exact-read-authority-lifetime/v1",
+      "invariant": "Keep an exact read authority available under its declared retention rules or return its explicit expiry/reset result, while every access still enforces current authorization and reclaimed history cannot become silent omission.",
+      "scopes": [
+        "catalog-sync-authority",
+        "collection-tag-revision"
+      ],
+      "test_node_ids": [
+        "tests/unit/test_catalog_sync.py::test_catalog_sync_cursor_fails_closed_for_authority_changes",
+        "tests/unit/test_catalog_sync.py::test_catalog_sync_cursor_expiry_is_explicit",
+        "tests/unit/test_catalog_sync.py::test_catalog_sync_history_reaping_has_an_explicit_gap_error",
+        "tests/unit/test_runtime_config.py::test_catalog_sync_cursor_lifetimes_fit_the_retained_history",
+        "tests/unit/test_collection_tags.py::test_exact_tag_revisions_expire_with_the_catalog_history_that_names_them"
+      ]
+    },
+    {
+      "applies_when": "A maintained operation may require segmented work, an external effect, retry backoff, or scheduling alongside independent obligations.",
+      "classification": "operational_policy",
+      "gates": [
+        "make unit",
+        "make postgres-concurrency",
+        "make database-qualification",
+        "make compose-smoke"
+      ],
+      "id": "bounded-obligation-progression/v1",
+      "invariant": "Admit only values representable throughout their mandatory path; advance obligations that may exceed one bounded step or cross an external effect through durable restartable continuation, count attempted work separately from semantic completion, and do not starve unrelated runnable work.",
+      "scopes": [
+        "mutable-collection-publication",
+        "mutable-document-reclamation"
+      ],
+      "test_node_ids": [
+        "tests/unit/test_collection_descriptions.py::test_maximum_description_document_is_retained_before_provider_io",
+        "tests/unit/test_collection_tags.py::test_tag_publication_budget_defers_but_does_not_limit_logical_mutation",
+        "tests/unit/test_collection_tags.py::test_persistent_tag_gc_failure_is_bounded_and_does_not_starve_other_publication",
+        "tests/unit/test_collection_tags.py::test_tag_node_reclamation_counts_every_edge_and_node_row_at_work_one",
+        "tests/integration/test_catalog_schema_postgres.py::test_postgres_description_attempt_accepts_maximum_canonical_document",
+        "tests/integration/test_catalog_schema_postgres.py::test_postgres_tag_history_cleanup_serializes_its_row_work_budget"
+      ]
+    }
+  ],
+  "schema": "riverhog-implementation-policy-witnesses/v1"
+}

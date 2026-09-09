@@ -88,6 +88,7 @@ MYPY_SOURCES = \
 	reference/riverhog/storage/aws/src \
 	reference/riverhog/storage/backblaze/src \
 	reference/riverhog/storage/filesystem/src \
+	scripts/implementation_policy.py \
 	scripts/operation_qualification.py \
 	scripts/contract_freeze.py \
 	scripts/provider_qualification.py \
@@ -99,7 +100,7 @@ MYPY_SOURCES = \
 	utilities/mango-fish/src
 args ?=
 
-.PHONY: help license ruff ruff-fix format format-check fix mypy lint compile unit spec dependency-readiness operation-qualification database-qualification contract-freeze contract-freeze-update provider-qualification installation-qualification release-check release-plan release-dry-run release-governance-check release-evidence release-verify c2sp-vectors postgres-concurrency compose-smoke stove0-scale-qualification mango-fish-smoke transfer-profile stop-spec dist dist-smoke build build-riverhog build-riverhog-ftp-adapter build-riverhog-storage-adapter-aws build-riverhog-storage-adapter-backblaze build-riverhog-storage-adapter-filesystem build-stove0 build-stove0-exiftool-observer build-stove0-ffprobe-sampling-observer build-stove0-nvenc-av1-opus-target build-stove0-opus-target build-stove0-review-materialize-target build-stove0-review-rclone-effect-target build-mango-fish build-test bootstrap-garage down test
+.PHONY: help license ruff ruff-fix format format-check fix mypy lint compile unit spec dependency-readiness operation-qualification database-qualification contract-freeze contract-freeze-update implementation-policy implementation-policy-update provider-qualification installation-qualification release-check release-plan release-dry-run release-governance-check release-evidence release-verify c2sp-vectors postgres-concurrency compose-smoke stove0-scale-qualification mango-fish-smoke transfer-profile stop-spec dist dist-smoke build build-riverhog build-riverhog-ftp-adapter build-riverhog-storage-adapter-aws build-riverhog-storage-adapter-backblaze build-riverhog-storage-adapter-filesystem build-stove0 build-stove0-exiftool-observer build-stove0-ffprobe-sampling-observer build-stove0-nvenc-av1-opus-target build-stove0-opus-target build-stove0-review-materialize-target build-stove0-review-rclone-effect-target build-mango-fish build-test bootstrap-garage down test
 
 define UV_CMD
 	@if ! command -v "$(MISE_BIN)" >/dev/null 2>&1; then \
@@ -140,6 +141,8 @@ help:
 		'  make database-qualification Record exact-SHA database scale evidence.' \
 		'  make contract-freeze   Verify the checked-in v1 boundary and external contract.' \
 		'  make contract-freeze-update Regenerate that contract for semantic review.' \
+		'  make implementation-policy Verify nonnormative implementation-policy proof.' \
+		'  make implementation-policy-update Regenerate that separate proof inventory.' \
 		'  make provider-qualification Run the operator/provider qualification command.' \
 		'  make installation-qualification Stage and qualify independent uv-tool installs.' \
 		'  make release-check     Validate the coordinated release-unit contract.' \
@@ -241,6 +244,12 @@ contract-freeze:
 
 contract-freeze-update:
 	$(call UV_CMD,python scripts/contract_freeze.py update)
+
+implementation-policy:
+	$(call UV_CMD,python scripts/implementation_policy.py check)
+
+implementation-policy-update:
+	$(call UV_CMD,python scripts/implementation_policy.py update)
 
 provider-qualification:
 	$(call UV_CMD,python scripts/provider_qualification.py $(args))

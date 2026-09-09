@@ -127,6 +127,16 @@ def test_checked_contract_freeze_matches_every_executable_authority() -> None:
     assert extents["coverage"]["undecided"] == 0
     trace = json.loads(TRACE_ARTIFACT.read_text(encoding="utf-8"))
     assert trace["schema"] == "riverhog-contract-trace/v1"
+    assert set(trace) == {
+        "contract_canonical_sha256",
+        "contract_projection_sha256",
+        "contract_schema",
+        "coverage",
+        "extent_sources",
+        "schema",
+        "segmented_extent_witnesses",
+        "sources",
+    }
     assert trace["coverage"]["source_authorities"] == len(trace["sources"])
     assert trace["coverage"]["source_kinds"] == {
         "cli": 5,
@@ -146,8 +156,10 @@ def test_checked_contract_freeze_matches_every_executable_authority() -> None:
         if decision["policy"] == "segmented_no_total_max"
     ]
     assert trace["coverage"]["segmented_decisions"] == len(segmented)
-    assert trace["coverage"]["segmented_behavioral_witness_links"] >= len(segmented)
-    assert trace["coverage"]["behavioral_witnesses"] == len(trace["behavioral_witnesses"])
+    assert trace["coverage"]["segmented_extent_witness_links"] >= len(segmented)
+    assert trace["coverage"]["segmented_extent_witnesses"] == len(
+        trace["segmented_extent_witnesses"]
+    )
 
 
 def test_extent_semantic_diff_is_grouped_by_owning_boundary() -> None:
