@@ -18,7 +18,7 @@ REPO_ROOT = Path(__file__).resolve().parents[2]
             ["state", "upgrade"],
         ),
         (
-            "companions/stove0/compose.yaml",
+            "reference/stove0/application/compose.yaml",
             "state",
             "api",
             ["stove0-server", "state", "upgrade"],

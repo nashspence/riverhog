@@ -86,7 +86,9 @@ def test_installation_artifacts_are_derived_and_mutually_consistent(
         "python": "3.12.3",
         "python_provider": "uv-managed-cpython",
     }
-    assert [item["root"] for item in manifest["components"]] == list(installation.END_USER_ROOTS)
+    assert [item["root"] for item in manifest["components"]] == list(
+        installation.INSTALLATION_ROOTS
+    )
     assert {item["kind"] for item in records} == {
         "install-index",
         "install-lock",

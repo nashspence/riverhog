@@ -2,43 +2,6 @@
   "boundaries": {
     "components": [
       {
-        "console_scripts": {
-          "stove0": "stove0_cli.main:main"
-        },
-        "dependencies": [
-          "stove0-api-client",
-          "stove0-protocol",
-          "stove0-recipe-config"
-        ],
-        "distribution": "stove0-client",
-        "optional_dependencies": {},
-        "path": "companions/stove0/client",
-        "role": "end_user_artifact"
-      },
-      {
-        "console_scripts": {
-          "stove0-server": "stove0_api.app:main"
-        },
-        "dependencies": [
-          "http-api-contracts",
-          "riverhog-api-client",
-          "riverhog-protocol",
-          "state-schema",
-          "stove0-observer-client",
-          "stove0-observer-protocol",
-          "stove0-operator-contracts",
-          "stove0-protocol",
-          "stove0-recipe-config",
-          "stove0-target-client",
-          "stove0-target-protocol",
-          "time-formats"
-        ],
-        "distribution": "stove0-server",
-        "optional_dependencies": {},
-        "path": "companions/stove0/server",
-        "role": "deployed_implementation"
-      },
-      {
         "console_scripts": {},
         "dependencies": [],
         "distribution": "config-validation",
@@ -53,27 +16,6 @@
         "optional_dependencies": {},
         "path": "packages/file-download",
         "role": "internal_build_unit"
-      },
-      {
-        "console_scripts": {},
-        "dependencies": [
-          "config-validation"
-        ],
-        "distribution": "gogurt-core",
-        "optional_dependencies": {},
-        "path": "packages/gogurt-core",
-        "role": "reusable_library"
-      },
-      {
-        "console_scripts": {},
-        "dependencies": [
-          "config-validation",
-          "gogurt-core"
-        ],
-        "distribution": "gogurt-listener-runtime",
-        "optional_dependencies": {},
-        "path": "packages/gogurt-listener-runtime",
-        "role": "reusable_library"
       },
       {
         "console_scripts": {},
@@ -230,141 +172,26 @@
       },
       {
         "console_scripts": {},
-        "dependencies": [
-          "http-api-contracts",
-          "stove0-operator-contracts",
-          "stove0-protocol"
-        ],
-        "distribution": "stove0-api-client",
-        "optional_dependencies": {},
-        "path": "packages/stove0-api-client",
-        "role": "reusable_library"
-      },
-      {
-        "console_scripts": {},
-        "dependencies": [
-          "http-api-contracts",
-          "stove0-observer-protocol"
-        ],
-        "distribution": "stove0-observer-client",
-        "optional_dependencies": {},
-        "path": "packages/stove0-observer-client",
-        "role": "reusable_library"
-      },
-      {
-        "console_scripts": {},
-        "dependencies": [
-          "http-api-contracts",
-          "stove0-protocol"
-        ],
-        "distribution": "stove0-observer-protocol",
-        "optional_dependencies": {},
-        "path": "packages/stove0-observer-protocol",
-        "role": "reusable_library"
-      },
-      {
-        "console_scripts": {
-          "stove0-observer-conformance": "stove0_observer_support.conformance:main",
-          "stove0-observer-schemas": "stove0_observer_support.schemas:main"
-        },
-        "dependencies": [
-          "http-api-contracts",
-          "riverhog-api-client",
-          "riverhog-transform-sdk",
-          "stove0-observer-client",
-          "stove0-observer-protocol"
-        ],
-        "distribution": "stove0-observer-support",
-        "optional_dependencies": {},
-        "path": "packages/stove0-observer-support",
-        "role": "reusable_library"
-      },
-      {
-        "console_scripts": {},
-        "dependencies": [
-          "http-api-contracts",
-          "lifecycle-events",
-          "riverhog-protocol",
-          "stove0-observer-protocol",
-          "stove0-protocol",
-          "stove0-recipe-config",
-          "stove0-target-protocol"
-        ],
-        "distribution": "stove0-operator-contracts",
-        "optional_dependencies": {},
-        "path": "packages/stove0-operator-contracts",
-        "role": "reusable_library"
-      },
-      {
-        "console_scripts": {},
-        "dependencies": [
-          "riverhog-protocol"
-        ],
-        "distribution": "stove0-protocol",
-        "optional_dependencies": {},
-        "path": "packages/stove0-protocol",
-        "role": "reusable_library"
-      },
-      {
-        "console_scripts": {},
-        "dependencies": [
-          "config-validation",
-          "stove0-protocol",
-          "stove0-target-protocol"
-        ],
-        "distribution": "stove0-recipe-config",
-        "optional_dependencies": {},
-        "path": "packages/stove0-recipe-config",
-        "role": "reusable_library"
-      },
-      {
-        "console_scripts": {},
-        "dependencies": [
-          "http-api-contracts",
-          "stove0-target-protocol"
-        ],
-        "distribution": "stove0-target-client",
-        "optional_dependencies": {},
-        "path": "packages/stove0-target-client",
-        "role": "reusable_library"
-      },
-      {
-        "console_scripts": {},
-        "dependencies": [
-          "http-api-contracts",
-          "riverhog-protocol",
-          "stove0-protocol"
-        ],
-        "distribution": "stove0-target-protocol",
-        "optional_dependencies": {},
-        "path": "packages/stove0-target-protocol",
-        "role": "reusable_library"
-      },
-      {
-        "console_scripts": {
-          "stove0-target-conformance": "stove0_target_support.conformance:main",
-          "stove0-target-schemas": "stove0_target_support.schemas:main"
-        },
-        "dependencies": [
-          "http-api-contracts",
-          "riverhog-api-client",
-          "riverhog-protocol",
-          "riverhog-transform-sdk",
-          "stove0-target-client",
-          "stove0-target-protocol"
-        ],
-        "distribution": "stove0-target-support",
-        "optional_dependencies": {},
-        "path": "packages/stove0-target-support",
-        "role": "reusable_library"
-      },
-      {
-        "console_scripts": {},
         "dependencies": [],
         "distribution": "time-formats",
         "optional_dependencies": {},
         "path": "packages/time-formats",
         "role": "internal_build_unit"
+      },
+      {
+        "console_scripts": {
+          "gogurt": "gogurt.cli:main"
+        },
+        "dependencies": [
+          "config-validation",
+          "gogurt-core",
+          "gogurt-listener-runtime",
+          "riverhog-cli-support"
+        ],
+        "distribution": "gogurt",
+        "optional_dependencies": {},
+        "path": "reference/gogurt/application",
+        "role": "reference_application"
       },
       {
         "console_scripts": {},
@@ -439,6 +266,40 @@
         "optional_dependencies": {},
         "path": "reference/gogurt/mounted-volume/windows",
         "role": "reference_component"
+      },
+      {
+        "console_scripts": {},
+        "dependencies": [
+          "config-validation"
+        ],
+        "distribution": "gogurt-core",
+        "optional_dependencies": {},
+        "path": "reference/gogurt/packages/core",
+        "role": "reusable_library"
+      },
+      {
+        "console_scripts": {},
+        "dependencies": [
+          "config-validation",
+          "gogurt-core"
+        ],
+        "distribution": "gogurt-listener-runtime",
+        "optional_dependencies": {},
+        "path": "reference/gogurt/packages/listener-runtime",
+        "role": "reusable_library"
+      },
+      {
+        "console_scripts": {
+          "mango-fish": "mango_fish.cli:main"
+        },
+        "dependencies": [
+          "lifecycle-events",
+          "state-schema"
+        ],
+        "distribution": "mango-fish",
+        "optional_dependencies": {},
+        "path": "reference/riverhog/applications/mango-fish",
+        "role": "reference_application"
       },
       {
         "console_scripts": {
@@ -531,6 +392,20 @@
       },
       {
         "console_scripts": {
+          "riverhog-recover": "riverhog_recover.cli:main"
+        },
+        "dependencies": [
+          "riverhog-archive-contracts",
+          "riverhog-protocol",
+          "riverhog-provenance"
+        ],
+        "distribution": "riverhog-recover",
+        "optional_dependencies": {},
+        "path": "reference/riverhog/recovery",
+        "role": "reference_application"
+      },
+      {
+        "console_scripts": {
           "riverhog-storage-adapter-aws": "riverhog_storage_adapter_aws.app:main"
         },
         "dependencies": [
@@ -583,6 +458,43 @@
         "role": "reference_component"
       },
       {
+        "console_scripts": {
+          "stove0": "stove0_cli.main:main"
+        },
+        "dependencies": [
+          "stove0-api-client",
+          "stove0-protocol",
+          "stove0-recipe-config"
+        ],
+        "distribution": "stove0-client",
+        "optional_dependencies": {},
+        "path": "reference/stove0/application/client",
+        "role": "reference_application"
+      },
+      {
+        "console_scripts": {
+          "stove0-server": "stove0_api.app:main"
+        },
+        "dependencies": [
+          "http-api-contracts",
+          "riverhog-api-client",
+          "riverhog-protocol",
+          "state-schema",
+          "stove0-observer-client",
+          "stove0-observer-protocol",
+          "stove0-operator-contracts",
+          "stove0-protocol",
+          "stove0-recipe-config",
+          "stove0-target-client",
+          "stove0-target-protocol",
+          "time-formats"
+        ],
+        "distribution": "stove0-server",
+        "optional_dependencies": {},
+        "path": "reference/stove0/application/server",
+        "role": "reference_application"
+      },
+      {
         "console_scripts": {},
         "dependencies": [
           "stove0-observer-protocol"
@@ -631,6 +543,136 @@
         "optional_dependencies": {},
         "path": "reference/stove0/observers/ffprobe-sampling",
         "role": "reference_component"
+      },
+      {
+        "console_scripts": {},
+        "dependencies": [
+          "http-api-contracts",
+          "stove0-operator-contracts",
+          "stove0-protocol"
+        ],
+        "distribution": "stove0-api-client",
+        "optional_dependencies": {},
+        "path": "reference/stove0/packages/api-client",
+        "role": "reusable_library"
+      },
+      {
+        "console_scripts": {},
+        "dependencies": [
+          "http-api-contracts",
+          "stove0-observer-protocol"
+        ],
+        "distribution": "stove0-observer-client",
+        "optional_dependencies": {},
+        "path": "reference/stove0/packages/observer-client",
+        "role": "reusable_library"
+      },
+      {
+        "console_scripts": {},
+        "dependencies": [
+          "http-api-contracts",
+          "stove0-protocol"
+        ],
+        "distribution": "stove0-observer-protocol",
+        "optional_dependencies": {},
+        "path": "reference/stove0/packages/observer-protocol",
+        "role": "reusable_library"
+      },
+      {
+        "console_scripts": {
+          "stove0-observer-conformance": "stove0_observer_support.conformance:main",
+          "stove0-observer-schemas": "stove0_observer_support.schemas:main"
+        },
+        "dependencies": [
+          "http-api-contracts",
+          "riverhog-api-client",
+          "riverhog-transform-sdk",
+          "stove0-observer-client",
+          "stove0-observer-protocol"
+        ],
+        "distribution": "stove0-observer-support",
+        "optional_dependencies": {},
+        "path": "reference/stove0/packages/observer-support",
+        "role": "reusable_library"
+      },
+      {
+        "console_scripts": {},
+        "dependencies": [
+          "http-api-contracts",
+          "lifecycle-events",
+          "riverhog-protocol",
+          "stove0-observer-protocol",
+          "stove0-protocol",
+          "stove0-recipe-config",
+          "stove0-target-protocol"
+        ],
+        "distribution": "stove0-operator-contracts",
+        "optional_dependencies": {},
+        "path": "reference/stove0/packages/operator-contracts",
+        "role": "reusable_library"
+      },
+      {
+        "console_scripts": {},
+        "dependencies": [
+          "riverhog-protocol"
+        ],
+        "distribution": "stove0-protocol",
+        "optional_dependencies": {},
+        "path": "reference/stove0/packages/protocol",
+        "role": "reusable_library"
+      },
+      {
+        "console_scripts": {},
+        "dependencies": [
+          "config-validation",
+          "stove0-protocol",
+          "stove0-target-protocol"
+        ],
+        "distribution": "stove0-recipe-config",
+        "optional_dependencies": {},
+        "path": "reference/stove0/packages/recipe-config",
+        "role": "reusable_library"
+      },
+      {
+        "console_scripts": {},
+        "dependencies": [
+          "http-api-contracts",
+          "stove0-target-protocol"
+        ],
+        "distribution": "stove0-target-client",
+        "optional_dependencies": {},
+        "path": "reference/stove0/packages/target-client",
+        "role": "reusable_library"
+      },
+      {
+        "console_scripts": {},
+        "dependencies": [
+          "http-api-contracts",
+          "riverhog-protocol",
+          "stove0-protocol"
+        ],
+        "distribution": "stove0-target-protocol",
+        "optional_dependencies": {},
+        "path": "reference/stove0/packages/target-protocol",
+        "role": "reusable_library"
+      },
+      {
+        "console_scripts": {
+          "stove0-target-conformance": "stove0_target_support.conformance:main",
+          "stove0-target-schemas": "stove0_target_support.schemas:main"
+        },
+        "dependencies": [
+          "http-api-contracts",
+          "riverhog-api-client",
+          "riverhog-protocol",
+          "riverhog-transform-sdk",
+          "stove0-target-client",
+          "stove0-target-protocol"
+        ],
+        "distribution": "stove0-target-support",
+        "optional_dependencies": {},
+        "path": "reference/stove0/packages/target-support",
+        "role": "reusable_library"
       },
       {
         "console_scripts": {},
@@ -859,20 +901,6 @@
       },
       {
         "console_scripts": {
-          "riverhog-recover": "riverhog_recover.cli:main"
-        },
-        "dependencies": [
-          "riverhog-archive-contracts",
-          "riverhog-protocol",
-          "riverhog-provenance"
-        ],
-        "distribution": "riverhog-recover",
-        "optional_dependencies": {},
-        "path": "riverhog/recovery",
-        "role": "end_user_artifact"
-      },
-      {
-        "console_scripts": {
           "riverhog-api": "riverhog_api.app:main"
         },
         "dependencies": [
@@ -893,34 +921,6 @@
         "optional_dependencies": {},
         "path": "riverhog/server",
         "role": "deployed_implementation"
-      },
-      {
-        "console_scripts": {
-          "gogurt": "gogurt.cli:main"
-        },
-        "dependencies": [
-          "config-validation",
-          "gogurt-core",
-          "gogurt-listener-runtime",
-          "riverhog-cli-support"
-        ],
-        "distribution": "gogurt",
-        "optional_dependencies": {},
-        "path": "utilities/gogurt",
-        "role": "end_user_artifact"
-      },
-      {
-        "console_scripts": {
-          "mango-fish": "mango_fish.cli:main"
-        },
-        "dependencies": [
-          "lifecycle-events",
-          "state-schema"
-        ],
-        "distribution": "mango-fish",
-        "optional_dependencies": {},
-        "path": "utilities/mango-fish",
-        "role": "deployed_implementation"
       }
     ],
     "entry_point_extensions": [
@@ -928,7 +928,7 @@
         "group": "gogurt.listener-host-providers",
         "owner": "gogurt-listener-runtime",
         "owner_constant": "GOGURT_LISTENER_HOST_PROVIDER_ENTRY_POINT_GROUP",
-        "owner_path": "packages/gogurt-listener-runtime",
+        "owner_path": "reference/gogurt/packages/listener-runtime",
         "providers": [
           {
             "distribution": "gogurt-linux-listener-host",
@@ -951,7 +951,7 @@
         "group": "gogurt.mounted-volume-providers",
         "owner": "gogurt-core",
         "owner_constant": "GOGURT_MOUNTED_VOLUME_PROVIDER_ENTRY_POINT_GROUP",
-        "owner_path": "packages/gogurt-core",
+        "owner_path": "reference/gogurt/packages/core",
         "providers": [
           {
             "distribution": "gogurt-linux-mounted-volume",
@@ -1020,7 +1020,7 @@
         "group": "stove0.observer-semantic-validators",
         "owner": "stove0-observer-client",
         "owner_constant": "SEMANTIC_VALIDATOR_ENTRY_POINT_GROUP",
-        "owner_path": "packages/stove0-observer-client",
+        "owner_path": "reference/stove0/packages/observer-client",
         "providers": [
           {
             "distribution": "stove0-media-metadata-observer-contracts",
@@ -1167,12 +1167,12 @@
       ],
       "runtime": {
         "mango-fish": {
-          "description": "Riverhog CloudEvents utility.",
+          "description": "Optional nonnormative CloudEvents reference application for Riverhog.",
           "distributions": [
             "mango-fish"
           ],
           "repository": "ghcr.io/nashspence/riverhog-mango-fish",
-          "role": "product"
+          "role": "reference"
         },
         "riverhog": {
           "description": "Riverhog archive service.",
@@ -1216,12 +1216,12 @@
           "role": "reference"
         },
         "stove0": {
-          "description": "Stove0 transformation companion.",
+          "description": "Optional nonnormative transformation reference application for Riverhog.",
           "distributions": [
             "stove0-server"
           ],
           "repository": "ghcr.io/nashspence/riverhog-stove0",
-          "role": "product"
+          "role": "reference"
         },
         "stove0-exiftool-observer": {
           "description": "Optional nonnormative ExifTool observer reference for Stove0.",
@@ -99147,656 +99147,6 @@
     },
     "python": [
       {
-        "distribution": "gogurt-core",
-        "exports": {
-          "DEFAULT_GOGURT_CONFIG_FILENAME": {
-            "kind": "constant",
-            "value": "gogurt-routes.yaml"
-          },
-          "GOGURT_EMOJI": {
-            "kind": "constant",
-            "value": "\ud83d\udef9"
-          },
-          "GOGURT_MOUNTED_VOLUME_PROVIDER_BINDING_FORMAT": {
-            "kind": "constant",
-            "value": "gogurt-mounted-volume-provider-binding/v1"
-          },
-          "GOGURT_MOUNTED_VOLUME_PROVIDER_ENTRY_POINT_GROUP": {
-            "kind": "constant",
-            "value": "gogurt.mounted-volume-providers"
-          },
-          "GOGURT_PROVIDER_REFERENCE_FORMAT": {
-            "kind": "constant",
-            "value": "gogurt-provider-reference/v1"
-          },
-          "GOGURT_ROUTES_SCHEMA": {
-            "kind": "constant",
-            "value": {
-              "$schema": "https://json-schema.org/draft/2020-12/schema",
-              "additionalProperties": false,
-              "properties": {
-                "kind": {
-                  "const": "gogurt.routes",
-                  "type": "string"
-                },
-                "routes": {
-                  "additionalProperties": {
-                    "additionalProperties": false,
-                    "properties": {
-                      "command": {
-                        "items": {
-                          "minLength": 1,
-                          "type": "string"
-                        },
-                        "minItems": 1,
-                        "type": "array"
-                      },
-                      "enabled": {
-                        "type": "boolean"
-                      }
-                    },
-                    "required": [
-                      "command"
-                    ],
-                    "type": "object"
-                  },
-                  "propertyNames": {
-                    "pattern": "^[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?$"
-                  },
-                  "type": "object"
-                },
-                "schema_version": {
-                  "const": 1,
-                  "type": "integer"
-                }
-              },
-              "required": [
-                "schema_version",
-                "kind",
-                "routes"
-              ],
-              "type": "object"
-            }
-          },
-          "GOGURT_ROUTE_MARKER_FORMAT": {
-            "kind": "constant",
-            "value": "gogurt-route-marker/v1"
-          },
-          "GOGURT_ROUTE_PATTERN": {
-            "kind": "constant",
-            "value": "^[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?$"
-          },
-          "GogurtAction": {
-            "fields": [
-              {
-                "default": "required",
-                "name": "route",
-                "type": "'str'"
-              },
-              {
-                "default": "required",
-                "name": "command",
-                "type": "'tuple[str, ...]'"
-              }
-            ],
-            "kind": "class",
-            "signature": "(route: 'str', command: 'tuple[str, ...]') -> None"
-          },
-          "GogurtProviderKind": {
-            "kind": "type-alias",
-            "value": "typing.Literal['mounted-volume', 'listener-host']"
-          },
-          "GogurtProviderReference": {
-            "fields": [
-              {
-                "default": "required",
-                "name": "kind",
-                "type": "'GogurtProviderKind'"
-              },
-              {
-                "default": "required",
-                "name": "name",
-                "type": "'str'"
-              },
-              {
-                "default": "required",
-                "name": "provider_id",
-                "type": "'str'"
-              },
-              {
-                "default": "'gogurt-provider-reference/v1'",
-                "name": "format",
-                "type": "'str'"
-              }
-            ],
-            "kind": "class",
-            "members": {
-              "as_dict": {
-                "kind": "method",
-                "signature": "(self) -> 'dict[str, str]'"
-              },
-              "from_mapping": {
-                "kind": "classmethod",
-                "signature": "(cls, value: 'object') -> 'GogurtProviderReference'"
-              }
-            },
-            "signature": "(kind: 'GogurtProviderKind', name: 'str', provider_id: 'str', format: 'str' = 'gogurt-provider-reference/v1') -> None"
-          },
-          "GogurtRouteMarker": {
-            "fields": [
-              {
-                "default": "required",
-                "name": "route",
-                "type": "'str'"
-              },
-              {
-                "default": "'gogurt-route-marker/v1'",
-                "name": "format",
-                "type": "'str'"
-              }
-            ],
-            "kind": "class",
-            "members": {
-              "as_dict": {
-                "kind": "method",
-                "signature": "(self) -> 'dict[str, str]'"
-              },
-              "from_mapping": {
-                "kind": "classmethod",
-                "signature": "(cls, value: 'object') -> 'GogurtRouteMarker'"
-              }
-            },
-            "signature": "(route: 'str', format: 'str' = 'gogurt-route-marker/v1') -> None"
-          },
-          "MAX_GOGURT_INTERVAL_SECONDS": {
-            "kind": "constant",
-            "value": 3600.0
-          },
-          "MAX_GOGURT_MARKER_IDENTITY_CHARS": {
-            "kind": "constant",
-            "value": 1024
-          },
-          "MIN_GOGURT_INTERVAL_SECONDS": {
-            "kind": "constant",
-            "value": 0.1
-          },
-          "MountDiscovery": {
-            "kind": "type-alias",
-            "value": "collections.abc.Callable[[], collections.abc.Sequence[pathlib.Path]]"
-          },
-          "MountedMarkerObservation": {
-            "fields": [
-              {
-                "default": "required",
-                "name": "marker",
-                "type": "'GogurtRouteMarker'"
-              },
-              {
-                "default": "required",
-                "name": "identity",
-                "type": "'str'"
-              }
-            ],
-            "kind": "class",
-            "signature": "(marker: 'GogurtRouteMarker', identity: 'str') -> None"
-          },
-          "MountedVolumeAccess": {
-            "kind": "class",
-            "members": {
-              "discover": {
-                "kind": "method",
-                "signature": "(self) -> 'Sequence[Path]'"
-              },
-              "observe_marker": {
-                "kind": "method",
-                "signature": "(self, mount_point: 'Path') -> 'MountedMarkerObservation | None'"
-              },
-              "publish_marker": {
-                "kind": "method",
-                "signature": "(self, mount_point: 'Path', marker: 'GogurtRouteMarker', *, expected: 'MountedMarkerObservation | None') -> 'MountedMarkerObservation'"
-              }
-            },
-            "signature": "(*args, **kwargs)"
-          },
-          "MountedVolumeProvider": {
-            "kind": "class",
-            "members": {
-              "reference": {
-                "kind": "property",
-                "signature": "(self) -> 'GogurtProviderReference'"
-              }
-            },
-            "signature": "(*args, **kwargs)"
-          },
-          "MountedVolumeProviderBinding": {
-            "fields": [
-              {
-                "default": "required",
-                "name": "provider_id",
-                "type": "'str'"
-              },
-              {
-                "default": "required",
-                "name": "access",
-                "type": "'MountedVolumeAccess'"
-              },
-              {
-                "default": "'gogurt-mounted-volume-provider-binding/v1'",
-                "name": "format",
-                "type": "'str'"
-              }
-            ],
-            "kind": "class",
-            "signature": "(provider_id: 'str', access: 'MountedVolumeAccess', format: 'str' = 'gogurt-mounted-volume-provider-binding/v1') -> None"
-          },
-          "PathInput": {
-            "kind": "object",
-            "type": "types.UnionType"
-          },
-          "default_gogurt_config_file": {
-            "kind": "function",
-            "signature": "(config_dir: 'PathInput', *, filename: 'str' = 'gogurt-routes.yaml') -> 'Path'"
-          },
-          "execute_gogurt_action": {
-            "kind": "function",
-            "signature": "(plan: 'Mapping[str, object]', *, provider: 'MountedVolumeProvider', capture_output: 'bool' = False) -> 'subprocess.CompletedProcess[str]'"
-          },
-          "iter_new_mounts": {
-            "kind": "function",
-            "signature": "(*, discover: 'Callable[[], Sequence[Path]]', interval_seconds: 'float' = 2.0, include_existing: 'bool' = False, sleep: 'Callable[[float], None]' = <built-in function sleep>) -> 'Iterator[Path]'"
-          },
-          "load_gogurt_actions": {
-            "kind": "function",
-            "signature": "(config_file: 'PathInput') -> 'list[GogurtAction]'"
-          },
-          "plan_gogurt_action": {
-            "kind": "function",
-            "signature": "(config_file: 'PathInput', mount_point: 'PathInput', *, provider: 'MountedVolumeProvider', actions_dir: 'PathInput | None' = None) -> 'dict[str, object]'"
-          },
-          "plan_gogurt_marker": {
-            "kind": "function",
-            "signature": "(config_file: 'PathInput', route_name: 'str', mount_point: 'PathInput', *, provider: 'MountedVolumeProvider', force: 'bool' = False) -> 'dict[str, object]'"
-          },
-          "revalidate_gogurt_action": {
-            "kind": "function",
-            "signature": "(plan: 'Mapping[str, object]', *, provider: 'MountedVolumeProvider') -> 'list[str]'"
-          },
-          "route_for_gogurt_marker": {
-            "kind": "function",
-            "signature": "(config_file: 'PathInput', route_name: 'str') -> 'str'"
-          },
-          "validate_gogurt_action_executables": {
-            "kind": "function",
-            "signature": "(config_file: 'PathInput', *, actions_dir: 'PathInput | None' = None) -> 'list[GogurtAction]'"
-          },
-          "validate_gogurt_interval": {
-            "kind": "function",
-            "signature": "(value: 'object') -> 'float'"
-          },
-          "write_gogurt_marker": {
-            "kind": "function",
-            "signature": "(config_file: 'PathInput', route_name: 'str', mount_point: 'PathInput', *, provider: 'MountedVolumeProvider', force: 'bool' = False) -> 'MountedMarkerObservation'"
-          }
-        },
-        "module": "gogurt_core"
-      },
-      {
-        "distribution": "gogurt-listener-runtime",
-        "exports": {
-          "GOGURT_LISTENER_HOST_PROVIDER_BINDING_FORMAT": {
-            "kind": "constant",
-            "value": "gogurt-listener-host-provider-binding/v1"
-          },
-          "GOGURT_LISTENER_HOST_PROVIDER_ENTRY_POINT_GROUP": {
-            "kind": "constant",
-            "value": "gogurt.listener-host-providers"
-          },
-          "LISTENER_CONFIG_SCHEMA": {
-            "kind": "constant",
-            "value": "gogurt-listener-config/v1"
-          },
-          "LISTENER_HEARTBEAT_SCHEMA": {
-            "kind": "constant",
-            "value": "gogurt-listener-heartbeat/v1"
-          },
-          "LISTENER_OPERATIONS": {
-            "kind": "constant",
-            "value": [
-              "install",
-              "status",
-              "start",
-              "stop",
-              "restart",
-              "uninstall"
-            ]
-          },
-          "LISTENER_STATE_SCHEMA": {
-            "kind": "constant",
-            "value": 1
-          },
-          "LISTENER_STATUS_SCHEMA": {
-            "kind": "constant",
-            "value": "gogurt-listener-status/v1"
-          },
-          "ListenerAdapter": {
-            "kind": "class",
-            "members": {
-              "process_is_running": {
-                "kind": "method",
-                "signature": "(self, pid: 'int') -> 'bool'"
-              },
-              "register": {
-                "kind": "method",
-                "signature": "(self, paths: 'ListenerRuntimePaths', command: 'Sequence[str]') -> 'None'"
-              },
-              "start": {
-                "kind": "method",
-                "signature": "(self, paths: 'ListenerRuntimePaths') -> 'None'"
-              },
-              "status": {
-                "kind": "method",
-                "signature": "(self, paths: 'ListenerRuntimePaths') -> 'NativeListenerStatus'"
-              },
-              "stop": {
-                "kind": "method",
-                "signature": "(self, paths: 'ListenerRuntimePaths') -> 'None'"
-              },
-              "unregister": {
-                "kind": "method",
-                "signature": "(self, paths: 'ListenerRuntimePaths') -> 'None'"
-              }
-            },
-            "signature": "(*args, **kwargs)"
-          },
-          "ListenerConfig": {
-            "fields": [
-              {
-                "default": "required",
-                "name": "executable",
-                "type": "'Path'"
-              },
-              {
-                "default": "required",
-                "name": "routes_file",
-                "type": "'Path'"
-              },
-              {
-                "default": "required",
-                "name": "actions_dir",
-                "type": "'Path | None'"
-              },
-              {
-                "default": "required",
-                "name": "interval_seconds",
-                "type": "'float'"
-              },
-              {
-                "default": "required",
-                "name": "state_dir",
-                "type": "'Path'"
-              },
-              {
-                "default": "required",
-                "name": "mounted_volume_provider",
-                "type": "'GogurtProviderReference'"
-              },
-              {
-                "default": "required",
-                "name": "listener_host_provider",
-                "type": "'GogurtProviderReference'"
-              },
-              {
-                "default": "True",
-                "name": "autorun",
-                "type": "'bool'"
-              }
-            ],
-            "kind": "class",
-            "members": {
-              "content": {
-                "kind": "method",
-                "signature": "(self) -> 'bytes'"
-              },
-              "payload": {
-                "kind": "method",
-                "signature": "(self) -> 'dict[str, object]'"
-              },
-              "read": {
-                "kind": "classmethod",
-                "signature": "(cls, path: 'Path') -> 'ListenerConfig'"
-              },
-              "write": {
-                "kind": "method",
-                "signature": "(self, path: 'Path') -> 'None'"
-              }
-            },
-            "signature": "(executable: 'Path', routes_file: 'Path', actions_dir: 'Path | None', interval_seconds: 'float', state_dir: 'Path', mounted_volume_provider: 'GogurtProviderReference', listener_host_provider: 'GogurtProviderReference', autorun: 'bool' = True) -> None"
-          },
-          "ListenerError": {
-            "kind": "class",
-            "signature": "unavailable"
-          },
-          "ListenerHostProviderBinding": {
-            "fields": [
-              {
-                "default": "required",
-                "name": "provider_id",
-                "type": "'str'"
-              },
-              {
-                "default": "required",
-                "name": "paths",
-                "type": "'Callable[[], ListenerRuntimePaths]'"
-              },
-              {
-                "default": "required",
-                "name": "adapter",
-                "type": "'Callable[[], ListenerAdapter]'"
-              },
-              {
-                "default": "required",
-                "name": "executable",
-                "type": "'Callable[[str | None], Path]'"
-              },
-              {
-                "default": "'gogurt-listener-host-provider-binding/v1'",
-                "name": "format",
-                "type": "'str'"
-              }
-            ],
-            "kind": "class",
-            "signature": "(provider_id: 'str', paths: 'Callable[[], ListenerRuntimePaths]', adapter: 'Callable[[], ListenerAdapter]', executable: 'Callable[[str | None], Path]', format: 'str' = 'gogurt-listener-host-provider-binding/v1') -> None"
-          },
-          "ListenerLock": {
-            "kind": "class",
-            "signature": "(path: 'Path') -> 'None'"
-          },
-          "ListenerPlatformError": {
-            "kind": "class",
-            "signature": "unavailable"
-          },
-          "ListenerRuntime": {
-            "kind": "class",
-            "members": {
-              "request_stop": {
-                "kind": "method",
-                "signature": "(self) -> 'None'"
-              },
-              "run": {
-                "kind": "method",
-                "signature": "(self) -> 'None'"
-              },
-              "run_once": {
-                "kind": "method",
-                "signature": "(self) -> 'None'"
-              }
-            },
-            "signature": "(config: 'ListenerConfig', paths: 'ListenerRuntimePaths', *, mounted_volume_provider: 'MountedVolumeProvider', product_version: 'str', clock: 'Callable[[], float]' = <built-in function time>, sleep: 'Callable[[float], None]' = <built-in function sleep>, logger: 'logging.Logger | None' = None) -> 'None'"
-          },
-          "ListenerRuntimePaths": {
-            "fields": [
-              {
-                "default": "required",
-                "name": "state_dir",
-                "type": "'Path'"
-              },
-              {
-                "default": "required",
-                "name": "config_file",
-                "type": "'Path'"
-              },
-              {
-                "default": "required",
-                "name": "database_file",
-                "type": "'Path'"
-              },
-              {
-                "default": "required",
-                "name": "heartbeat_file",
-                "type": "'Path'"
-              },
-              {
-                "default": "required",
-                "name": "lock_file",
-                "type": "'Path'"
-              },
-              {
-                "default": "required",
-                "name": "log_file",
-                "type": "'Path'"
-              },
-              {
-                "default": "required",
-                "name": "stop_file",
-                "type": "'Path'"
-              }
-            ],
-            "kind": "class",
-            "signature": "(state_dir: 'Path', config_file: 'Path', database_file: 'Path', heartbeat_file: 'Path', lock_file: 'Path', log_file: 'Path', stop_file: 'Path') -> None"
-          },
-          "ListenerStore": {
-            "kind": "class",
-            "members": {
-              "create": {
-                "kind": "method",
-                "signature": "(self) -> 'None'"
-              },
-              "finish_dispatch": {
-                "kind": "method",
-                "signature": "(self, dispatch_id: 'str', *, return_code: 'int | None', error: 'str | None', uncertain: 'bool' = False, now: 'float') -> 'str'"
-              },
-              "mark_running_uncertain": {
-                "kind": "method",
-                "signature": "(self, dispatch_id: 'str', *, error: 'str', now: 'float') -> 'None'"
-              },
-              "observe": {
-                "kind": "method",
-                "signature": "(self, mount_points: 'Sequence[Path]', planner: 'Callable[[Path], Mapping[str, object]]', *, now: 'float') -> 'list[str]'"
-              },
-              "runnable": {
-                "kind": "method",
-                "signature": "(self, *, now: 'float', limit: 'int') -> 'list[str]'"
-              },
-              "start_dispatch": {
-                "kind": "method",
-                "signature": "(self, dispatch_id: 'str', *, now: 'float') -> 'dict[str, object] | None'"
-              },
-              "summary": {
-                "kind": "method",
-                "signature": "(self, *, timeout_seconds: 'float' = 30) -> 'dict[str, object]'"
-              }
-            },
-            "signature": "(path: 'Path') -> 'None'"
-          },
-          "NativeListenerStatus": {
-            "fields": [
-              {
-                "default": "required",
-                "name": "installed",
-                "type": "'bool'"
-              },
-              {
-                "default": "required",
-                "name": "enabled",
-                "type": "'bool'"
-              },
-              {
-                "default": "required",
-                "name": "running",
-                "type": "'bool'"
-              }
-            ],
-            "kind": "class",
-            "signature": "(installed: 'bool', enabled: 'bool', running: 'bool') -> None"
-          },
-          "PRIVATE_DIRECTORY_MODE": {
-            "kind": "constant",
-            "value": 448
-          },
-          "PRIVATE_FILE_MODE": {
-            "kind": "constant",
-            "value": 384
-          },
-          "atomic_write": {
-            "kind": "function",
-            "signature": "(destination: 'Path', content: 'bytes', *, mode: 'int') -> 'None'"
-          },
-          "ensure_private_directory": {
-            "kind": "function",
-            "signature": "(path: 'Path') -> 'None'"
-          },
-          "ensure_private_file": {
-            "kind": "function",
-            "signature": "(path: 'Path') -> 'None'"
-          },
-          "ensure_private_files": {
-            "kind": "function",
-            "signature": "(paths: 'Iterable[Path]') -> 'None'"
-          },
-          "install_listener": {
-            "kind": "function",
-            "signature": "(routes_file: 'Path', *, actions_dir: 'Path | None', interval_seconds: 'float' = 2.0, executable: 'Path', paths: 'ListenerRuntimePaths', adapter: 'ListenerAdapter', product_version: 'str', mounted_volume_provider: 'GogurtProviderReference', listener_host_provider: 'GogurtProviderReference', wait_for_health: 'bool' = True) -> 'dict[str, object]'"
-          },
-          "listener_status": {
-            "kind": "function",
-            "signature": "(*, paths: 'ListenerRuntimePaths', adapter: 'ListenerAdapter', product_version: 'str', now: 'float | None' = None) -> 'dict[str, object]'"
-          },
-          "open_private_text_append": {
-            "kind": "function",
-            "signature": "(path: 'Path', *, encoding: 'str', errors: 'str | None') -> 'TextIO'"
-          },
-          "promote_staged": {
-            "kind": "function",
-            "signature": "(temporary: 'Path', destination: 'Path', *, mode: 'int') -> 'None'"
-          },
-          "restart_listener": {
-            "kind": "function",
-            "signature": "(*, paths: 'ListenerRuntimePaths', adapter: 'ListenerAdapter', product_version: 'str') -> 'dict[str, object]'"
-          },
-          "run_listener": {
-            "kind": "function",
-            "signature": "(config_file: 'Path', *, mounted_volume_provider: 'MountedVolumeProvider', product_version: 'str') -> 'None'"
-          },
-          "stage_bytes": {
-            "kind": "function",
-            "signature": "(destination: 'Path', content: 'bytes', *, mode: 'int') -> 'Path'"
-          },
-          "start_listener": {
-            "kind": "function",
-            "signature": "(*, paths: 'ListenerRuntimePaths', adapter: 'ListenerAdapter', product_version: 'str') -> 'dict[str, object]'"
-          },
-          "stop_listener": {
-            "kind": "function",
-            "signature": "(*, paths: 'ListenerRuntimePaths', adapter: 'ListenerAdapter', product_version: 'str') -> 'dict[str, object]'"
-          },
-          "uninstall_listener": {
-            "kind": "function",
-            "signature": "(*, paths: 'ListenerRuntimePaths', adapter: 'ListenerAdapter', product_version: 'str') -> 'dict[str, object]'"
-          }
-        },
-        "module": "gogurt_listener_runtime"
-      },
-      {
         "distribution": "http-api-contracts",
         "exports": {
           "BrowsePageToken": {
@@ -106231,6 +105581,656 @@
         "module": "riverhog_transform_sdk"
       },
       {
+        "distribution": "gogurt-core",
+        "exports": {
+          "DEFAULT_GOGURT_CONFIG_FILENAME": {
+            "kind": "constant",
+            "value": "gogurt-routes.yaml"
+          },
+          "GOGURT_EMOJI": {
+            "kind": "constant",
+            "value": "\ud83d\udef9"
+          },
+          "GOGURT_MOUNTED_VOLUME_PROVIDER_BINDING_FORMAT": {
+            "kind": "constant",
+            "value": "gogurt-mounted-volume-provider-binding/v1"
+          },
+          "GOGURT_MOUNTED_VOLUME_PROVIDER_ENTRY_POINT_GROUP": {
+            "kind": "constant",
+            "value": "gogurt.mounted-volume-providers"
+          },
+          "GOGURT_PROVIDER_REFERENCE_FORMAT": {
+            "kind": "constant",
+            "value": "gogurt-provider-reference/v1"
+          },
+          "GOGURT_ROUTES_SCHEMA": {
+            "kind": "constant",
+            "value": {
+              "$schema": "https://json-schema.org/draft/2020-12/schema",
+              "additionalProperties": false,
+              "properties": {
+                "kind": {
+                  "const": "gogurt.routes",
+                  "type": "string"
+                },
+                "routes": {
+                  "additionalProperties": {
+                    "additionalProperties": false,
+                    "properties": {
+                      "command": {
+                        "items": {
+                          "minLength": 1,
+                          "type": "string"
+                        },
+                        "minItems": 1,
+                        "type": "array"
+                      },
+                      "enabled": {
+                        "type": "boolean"
+                      }
+                    },
+                    "required": [
+                      "command"
+                    ],
+                    "type": "object"
+                  },
+                  "propertyNames": {
+                    "pattern": "^[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?$"
+                  },
+                  "type": "object"
+                },
+                "schema_version": {
+                  "const": 1,
+                  "type": "integer"
+                }
+              },
+              "required": [
+                "schema_version",
+                "kind",
+                "routes"
+              ],
+              "type": "object"
+            }
+          },
+          "GOGURT_ROUTE_MARKER_FORMAT": {
+            "kind": "constant",
+            "value": "gogurt-route-marker/v1"
+          },
+          "GOGURT_ROUTE_PATTERN": {
+            "kind": "constant",
+            "value": "^[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?$"
+          },
+          "GogurtAction": {
+            "fields": [
+              {
+                "default": "required",
+                "name": "route",
+                "type": "'str'"
+              },
+              {
+                "default": "required",
+                "name": "command",
+                "type": "'tuple[str, ...]'"
+              }
+            ],
+            "kind": "class",
+            "signature": "(route: 'str', command: 'tuple[str, ...]') -> None"
+          },
+          "GogurtProviderKind": {
+            "kind": "type-alias",
+            "value": "typing.Literal['mounted-volume', 'listener-host']"
+          },
+          "GogurtProviderReference": {
+            "fields": [
+              {
+                "default": "required",
+                "name": "kind",
+                "type": "'GogurtProviderKind'"
+              },
+              {
+                "default": "required",
+                "name": "name",
+                "type": "'str'"
+              },
+              {
+                "default": "required",
+                "name": "provider_id",
+                "type": "'str'"
+              },
+              {
+                "default": "'gogurt-provider-reference/v1'",
+                "name": "format",
+                "type": "'str'"
+              }
+            ],
+            "kind": "class",
+            "members": {
+              "as_dict": {
+                "kind": "method",
+                "signature": "(self) -> 'dict[str, str]'"
+              },
+              "from_mapping": {
+                "kind": "classmethod",
+                "signature": "(cls, value: 'object') -> 'GogurtProviderReference'"
+              }
+            },
+            "signature": "(kind: 'GogurtProviderKind', name: 'str', provider_id: 'str', format: 'str' = 'gogurt-provider-reference/v1') -> None"
+          },
+          "GogurtRouteMarker": {
+            "fields": [
+              {
+                "default": "required",
+                "name": "route",
+                "type": "'str'"
+              },
+              {
+                "default": "'gogurt-route-marker/v1'",
+                "name": "format",
+                "type": "'str'"
+              }
+            ],
+            "kind": "class",
+            "members": {
+              "as_dict": {
+                "kind": "method",
+                "signature": "(self) -> 'dict[str, str]'"
+              },
+              "from_mapping": {
+                "kind": "classmethod",
+                "signature": "(cls, value: 'object') -> 'GogurtRouteMarker'"
+              }
+            },
+            "signature": "(route: 'str', format: 'str' = 'gogurt-route-marker/v1') -> None"
+          },
+          "MAX_GOGURT_INTERVAL_SECONDS": {
+            "kind": "constant",
+            "value": 3600.0
+          },
+          "MAX_GOGURT_MARKER_IDENTITY_CHARS": {
+            "kind": "constant",
+            "value": 1024
+          },
+          "MIN_GOGURT_INTERVAL_SECONDS": {
+            "kind": "constant",
+            "value": 0.1
+          },
+          "MountDiscovery": {
+            "kind": "type-alias",
+            "value": "collections.abc.Callable[[], collections.abc.Sequence[pathlib.Path]]"
+          },
+          "MountedMarkerObservation": {
+            "fields": [
+              {
+                "default": "required",
+                "name": "marker",
+                "type": "'GogurtRouteMarker'"
+              },
+              {
+                "default": "required",
+                "name": "identity",
+                "type": "'str'"
+              }
+            ],
+            "kind": "class",
+            "signature": "(marker: 'GogurtRouteMarker', identity: 'str') -> None"
+          },
+          "MountedVolumeAccess": {
+            "kind": "class",
+            "members": {
+              "discover": {
+                "kind": "method",
+                "signature": "(self) -> 'Sequence[Path]'"
+              },
+              "observe_marker": {
+                "kind": "method",
+                "signature": "(self, mount_point: 'Path') -> 'MountedMarkerObservation | None'"
+              },
+              "publish_marker": {
+                "kind": "method",
+                "signature": "(self, mount_point: 'Path', marker: 'GogurtRouteMarker', *, expected: 'MountedMarkerObservation | None') -> 'MountedMarkerObservation'"
+              }
+            },
+            "signature": "(*args, **kwargs)"
+          },
+          "MountedVolumeProvider": {
+            "kind": "class",
+            "members": {
+              "reference": {
+                "kind": "property",
+                "signature": "(self) -> 'GogurtProviderReference'"
+              }
+            },
+            "signature": "(*args, **kwargs)"
+          },
+          "MountedVolumeProviderBinding": {
+            "fields": [
+              {
+                "default": "required",
+                "name": "provider_id",
+                "type": "'str'"
+              },
+              {
+                "default": "required",
+                "name": "access",
+                "type": "'MountedVolumeAccess'"
+              },
+              {
+                "default": "'gogurt-mounted-volume-provider-binding/v1'",
+                "name": "format",
+                "type": "'str'"
+              }
+            ],
+            "kind": "class",
+            "signature": "(provider_id: 'str', access: 'MountedVolumeAccess', format: 'str' = 'gogurt-mounted-volume-provider-binding/v1') -> None"
+          },
+          "PathInput": {
+            "kind": "object",
+            "type": "types.UnionType"
+          },
+          "default_gogurt_config_file": {
+            "kind": "function",
+            "signature": "(config_dir: 'PathInput', *, filename: 'str' = 'gogurt-routes.yaml') -> 'Path'"
+          },
+          "execute_gogurt_action": {
+            "kind": "function",
+            "signature": "(plan: 'Mapping[str, object]', *, provider: 'MountedVolumeProvider', capture_output: 'bool' = False) -> 'subprocess.CompletedProcess[str]'"
+          },
+          "iter_new_mounts": {
+            "kind": "function",
+            "signature": "(*, discover: 'Callable[[], Sequence[Path]]', interval_seconds: 'float' = 2.0, include_existing: 'bool' = False, sleep: 'Callable[[float], None]' = <built-in function sleep>) -> 'Iterator[Path]'"
+          },
+          "load_gogurt_actions": {
+            "kind": "function",
+            "signature": "(config_file: 'PathInput') -> 'list[GogurtAction]'"
+          },
+          "plan_gogurt_action": {
+            "kind": "function",
+            "signature": "(config_file: 'PathInput', mount_point: 'PathInput', *, provider: 'MountedVolumeProvider', actions_dir: 'PathInput | None' = None) -> 'dict[str, object]'"
+          },
+          "plan_gogurt_marker": {
+            "kind": "function",
+            "signature": "(config_file: 'PathInput', route_name: 'str', mount_point: 'PathInput', *, provider: 'MountedVolumeProvider', force: 'bool' = False) -> 'dict[str, object]'"
+          },
+          "revalidate_gogurt_action": {
+            "kind": "function",
+            "signature": "(plan: 'Mapping[str, object]', *, provider: 'MountedVolumeProvider') -> 'list[str]'"
+          },
+          "route_for_gogurt_marker": {
+            "kind": "function",
+            "signature": "(config_file: 'PathInput', route_name: 'str') -> 'str'"
+          },
+          "validate_gogurt_action_executables": {
+            "kind": "function",
+            "signature": "(config_file: 'PathInput', *, actions_dir: 'PathInput | None' = None) -> 'list[GogurtAction]'"
+          },
+          "validate_gogurt_interval": {
+            "kind": "function",
+            "signature": "(value: 'object') -> 'float'"
+          },
+          "write_gogurt_marker": {
+            "kind": "function",
+            "signature": "(config_file: 'PathInput', route_name: 'str', mount_point: 'PathInput', *, provider: 'MountedVolumeProvider', force: 'bool' = False) -> 'MountedMarkerObservation'"
+          }
+        },
+        "module": "gogurt_core"
+      },
+      {
+        "distribution": "gogurt-listener-runtime",
+        "exports": {
+          "GOGURT_LISTENER_HOST_PROVIDER_BINDING_FORMAT": {
+            "kind": "constant",
+            "value": "gogurt-listener-host-provider-binding/v1"
+          },
+          "GOGURT_LISTENER_HOST_PROVIDER_ENTRY_POINT_GROUP": {
+            "kind": "constant",
+            "value": "gogurt.listener-host-providers"
+          },
+          "LISTENER_CONFIG_SCHEMA": {
+            "kind": "constant",
+            "value": "gogurt-listener-config/v1"
+          },
+          "LISTENER_HEARTBEAT_SCHEMA": {
+            "kind": "constant",
+            "value": "gogurt-listener-heartbeat/v1"
+          },
+          "LISTENER_OPERATIONS": {
+            "kind": "constant",
+            "value": [
+              "install",
+              "status",
+              "start",
+              "stop",
+              "restart",
+              "uninstall"
+            ]
+          },
+          "LISTENER_STATE_SCHEMA": {
+            "kind": "constant",
+            "value": 1
+          },
+          "LISTENER_STATUS_SCHEMA": {
+            "kind": "constant",
+            "value": "gogurt-listener-status/v1"
+          },
+          "ListenerAdapter": {
+            "kind": "class",
+            "members": {
+              "process_is_running": {
+                "kind": "method",
+                "signature": "(self, pid: 'int') -> 'bool'"
+              },
+              "register": {
+                "kind": "method",
+                "signature": "(self, paths: 'ListenerRuntimePaths', command: 'Sequence[str]') -> 'None'"
+              },
+              "start": {
+                "kind": "method",
+                "signature": "(self, paths: 'ListenerRuntimePaths') -> 'None'"
+              },
+              "status": {
+                "kind": "method",
+                "signature": "(self, paths: 'ListenerRuntimePaths') -> 'NativeListenerStatus'"
+              },
+              "stop": {
+                "kind": "method",
+                "signature": "(self, paths: 'ListenerRuntimePaths') -> 'None'"
+              },
+              "unregister": {
+                "kind": "method",
+                "signature": "(self, paths: 'ListenerRuntimePaths') -> 'None'"
+              }
+            },
+            "signature": "(*args, **kwargs)"
+          },
+          "ListenerConfig": {
+            "fields": [
+              {
+                "default": "required",
+                "name": "executable",
+                "type": "'Path'"
+              },
+              {
+                "default": "required",
+                "name": "routes_file",
+                "type": "'Path'"
+              },
+              {
+                "default": "required",
+                "name": "actions_dir",
+                "type": "'Path | None'"
+              },
+              {
+                "default": "required",
+                "name": "interval_seconds",
+                "type": "'float'"
+              },
+              {
+                "default": "required",
+                "name": "state_dir",
+                "type": "'Path'"
+              },
+              {
+                "default": "required",
+                "name": "mounted_volume_provider",
+                "type": "'GogurtProviderReference'"
+              },
+              {
+                "default": "required",
+                "name": "listener_host_provider",
+                "type": "'GogurtProviderReference'"
+              },
+              {
+                "default": "True",
+                "name": "autorun",
+                "type": "'bool'"
+              }
+            ],
+            "kind": "class",
+            "members": {
+              "content": {
+                "kind": "method",
+                "signature": "(self) -> 'bytes'"
+              },
+              "payload": {
+                "kind": "method",
+                "signature": "(self) -> 'dict[str, object]'"
+              },
+              "read": {
+                "kind": "classmethod",
+                "signature": "(cls, path: 'Path') -> 'ListenerConfig'"
+              },
+              "write": {
+                "kind": "method",
+                "signature": "(self, path: 'Path') -> 'None'"
+              }
+            },
+            "signature": "(executable: 'Path', routes_file: 'Path', actions_dir: 'Path | None', interval_seconds: 'float', state_dir: 'Path', mounted_volume_provider: 'GogurtProviderReference', listener_host_provider: 'GogurtProviderReference', autorun: 'bool' = True) -> None"
+          },
+          "ListenerError": {
+            "kind": "class",
+            "signature": "unavailable"
+          },
+          "ListenerHostProviderBinding": {
+            "fields": [
+              {
+                "default": "required",
+                "name": "provider_id",
+                "type": "'str'"
+              },
+              {
+                "default": "required",
+                "name": "paths",
+                "type": "'Callable[[], ListenerRuntimePaths]'"
+              },
+              {
+                "default": "required",
+                "name": "adapter",
+                "type": "'Callable[[], ListenerAdapter]'"
+              },
+              {
+                "default": "required",
+                "name": "executable",
+                "type": "'Callable[[str | None], Path]'"
+              },
+              {
+                "default": "'gogurt-listener-host-provider-binding/v1'",
+                "name": "format",
+                "type": "'str'"
+              }
+            ],
+            "kind": "class",
+            "signature": "(provider_id: 'str', paths: 'Callable[[], ListenerRuntimePaths]', adapter: 'Callable[[], ListenerAdapter]', executable: 'Callable[[str | None], Path]', format: 'str' = 'gogurt-listener-host-provider-binding/v1') -> None"
+          },
+          "ListenerLock": {
+            "kind": "class",
+            "signature": "(path: 'Path') -> 'None'"
+          },
+          "ListenerPlatformError": {
+            "kind": "class",
+            "signature": "unavailable"
+          },
+          "ListenerRuntime": {
+            "kind": "class",
+            "members": {
+              "request_stop": {
+                "kind": "method",
+                "signature": "(self) -> 'None'"
+              },
+              "run": {
+                "kind": "method",
+                "signature": "(self) -> 'None'"
+              },
+              "run_once": {
+                "kind": "method",
+                "signature": "(self) -> 'None'"
+              }
+            },
+            "signature": "(config: 'ListenerConfig', paths: 'ListenerRuntimePaths', *, mounted_volume_provider: 'MountedVolumeProvider', product_version: 'str', clock: 'Callable[[], float]' = <built-in function time>, sleep: 'Callable[[float], None]' = <built-in function sleep>, logger: 'logging.Logger | None' = None) -> 'None'"
+          },
+          "ListenerRuntimePaths": {
+            "fields": [
+              {
+                "default": "required",
+                "name": "state_dir",
+                "type": "'Path'"
+              },
+              {
+                "default": "required",
+                "name": "config_file",
+                "type": "'Path'"
+              },
+              {
+                "default": "required",
+                "name": "database_file",
+                "type": "'Path'"
+              },
+              {
+                "default": "required",
+                "name": "heartbeat_file",
+                "type": "'Path'"
+              },
+              {
+                "default": "required",
+                "name": "lock_file",
+                "type": "'Path'"
+              },
+              {
+                "default": "required",
+                "name": "log_file",
+                "type": "'Path'"
+              },
+              {
+                "default": "required",
+                "name": "stop_file",
+                "type": "'Path'"
+              }
+            ],
+            "kind": "class",
+            "signature": "(state_dir: 'Path', config_file: 'Path', database_file: 'Path', heartbeat_file: 'Path', lock_file: 'Path', log_file: 'Path', stop_file: 'Path') -> None"
+          },
+          "ListenerStore": {
+            "kind": "class",
+            "members": {
+              "create": {
+                "kind": "method",
+                "signature": "(self) -> 'None'"
+              },
+              "finish_dispatch": {
+                "kind": "method",
+                "signature": "(self, dispatch_id: 'str', *, return_code: 'int | None', error: 'str | None', uncertain: 'bool' = False, now: 'float') -> 'str'"
+              },
+              "mark_running_uncertain": {
+                "kind": "method",
+                "signature": "(self, dispatch_id: 'str', *, error: 'str', now: 'float') -> 'None'"
+              },
+              "observe": {
+                "kind": "method",
+                "signature": "(self, mount_points: 'Sequence[Path]', planner: 'Callable[[Path], Mapping[str, object]]', *, now: 'float') -> 'list[str]'"
+              },
+              "runnable": {
+                "kind": "method",
+                "signature": "(self, *, now: 'float', limit: 'int') -> 'list[str]'"
+              },
+              "start_dispatch": {
+                "kind": "method",
+                "signature": "(self, dispatch_id: 'str', *, now: 'float') -> 'dict[str, object] | None'"
+              },
+              "summary": {
+                "kind": "method",
+                "signature": "(self, *, timeout_seconds: 'float' = 30) -> 'dict[str, object]'"
+              }
+            },
+            "signature": "(path: 'Path') -> 'None'"
+          },
+          "NativeListenerStatus": {
+            "fields": [
+              {
+                "default": "required",
+                "name": "installed",
+                "type": "'bool'"
+              },
+              {
+                "default": "required",
+                "name": "enabled",
+                "type": "'bool'"
+              },
+              {
+                "default": "required",
+                "name": "running",
+                "type": "'bool'"
+              }
+            ],
+            "kind": "class",
+            "signature": "(installed: 'bool', enabled: 'bool', running: 'bool') -> None"
+          },
+          "PRIVATE_DIRECTORY_MODE": {
+            "kind": "constant",
+            "value": 448
+          },
+          "PRIVATE_FILE_MODE": {
+            "kind": "constant",
+            "value": 384
+          },
+          "atomic_write": {
+            "kind": "function",
+            "signature": "(destination: 'Path', content: 'bytes', *, mode: 'int') -> 'None'"
+          },
+          "ensure_private_directory": {
+            "kind": "function",
+            "signature": "(path: 'Path') -> 'None'"
+          },
+          "ensure_private_file": {
+            "kind": "function",
+            "signature": "(path: 'Path') -> 'None'"
+          },
+          "ensure_private_files": {
+            "kind": "function",
+            "signature": "(paths: 'Iterable[Path]') -> 'None'"
+          },
+          "install_listener": {
+            "kind": "function",
+            "signature": "(routes_file: 'Path', *, actions_dir: 'Path | None', interval_seconds: 'float' = 2.0, executable: 'Path', paths: 'ListenerRuntimePaths', adapter: 'ListenerAdapter', product_version: 'str', mounted_volume_provider: 'GogurtProviderReference', listener_host_provider: 'GogurtProviderReference', wait_for_health: 'bool' = True) -> 'dict[str, object]'"
+          },
+          "listener_status": {
+            "kind": "function",
+            "signature": "(*, paths: 'ListenerRuntimePaths', adapter: 'ListenerAdapter', product_version: 'str', now: 'float | None' = None) -> 'dict[str, object]'"
+          },
+          "open_private_text_append": {
+            "kind": "function",
+            "signature": "(path: 'Path', *, encoding: 'str', errors: 'str | None') -> 'TextIO'"
+          },
+          "promote_staged": {
+            "kind": "function",
+            "signature": "(temporary: 'Path', destination: 'Path', *, mode: 'int') -> 'None'"
+          },
+          "restart_listener": {
+            "kind": "function",
+            "signature": "(*, paths: 'ListenerRuntimePaths', adapter: 'ListenerAdapter', product_version: 'str') -> 'dict[str, object]'"
+          },
+          "run_listener": {
+            "kind": "function",
+            "signature": "(config_file: 'Path', *, mounted_volume_provider: 'MountedVolumeProvider', product_version: 'str') -> 'None'"
+          },
+          "stage_bytes": {
+            "kind": "function",
+            "signature": "(destination: 'Path', content: 'bytes', *, mode: 'int') -> 'Path'"
+          },
+          "start_listener": {
+            "kind": "function",
+            "signature": "(*, paths: 'ListenerRuntimePaths', adapter: 'ListenerAdapter', product_version: 'str') -> 'dict[str, object]'"
+          },
+          "stop_listener": {
+            "kind": "function",
+            "signature": "(*, paths: 'ListenerRuntimePaths', adapter: 'ListenerAdapter', product_version: 'str') -> 'dict[str, object]'"
+          },
+          "uninstall_listener": {
+            "kind": "function",
+            "signature": "(*, paths: 'ListenerRuntimePaths', adapter: 'ListenerAdapter', product_version: 'str') -> 'dict[str, object]'"
+          }
+        },
+        "module": "gogurt_listener_runtime"
+      },
+      {
         "distribution": "stove0-api-client",
         "exports": {
           "HealthResponse": {
@@ -109933,6 +109933,12 @@
         "lock_format": "pylock.toml",
         "managed_python": true,
         "method": "uv-tool",
+        "roots": [
+          "gogurt",
+          "riverhog-client",
+          "riverhog-recover",
+          "stove0-client"
+        ],
         "simple_index_path": "artifacts/v{version}/simple/",
         "wheel_only": true
       },

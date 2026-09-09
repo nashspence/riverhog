@@ -3,10 +3,10 @@ SHELL := bash
 
 MISE_BIN ?= mise
 FILES ?= .
-TESTS ?= companions packages reference riverhog tests/unit utilities
+TESTS ?= packages reference riverhog tests/unit
 SPEC_TESTS ?= tests/harness/test_spec_harness.py
 POSTGRES_TESTS ?= tests/integration/test_catalog_schema_postgres.py tests/integration/test_collection_deletion_concurrency.py tests/integration/test_collection_upload_custody_concurrency.py tests/integration/test_download_allowance_concurrency.py tests/integration/test_lifecycle_event_concurrency.py tests/integration/test_public_selector_plans_postgres.py tests/integration/test_retrieval_cache_admission_concurrency.py tests/integration/test_stove0_postgres_concurrency.py
-PYTHON_PATHS ?= companions packages reference riverhog scripts tests utilities
+PYTHON_PATHS ?= packages reference riverhog scripts tests
 RELEASE_VERSION ?= 1.0.0
 RELEASE_OUTPUT ?=
 RELEASE_SUMMARY ?=
@@ -16,9 +16,9 @@ UV_RUN = "$(MISE_BIN)" x -- uv run --locked --all-packages --group dev
 BAKE_FILE = docker-bake.hcl
 MYPY_FLAGS = --show-error-codes --hide-error-context --no-error-summary --no-color-output
 MYPY_SOURCES = \
-	companions/stove0/client/src \
-	packages/gogurt-core/src \
-	packages/gogurt-listener-runtime/src \
+	reference/stove0/application/client/src \
+	reference/gogurt/packages/core/src \
+	reference/gogurt/packages/listener-runtime/src \
 	reference/gogurt/mounted-volume/path-support/src \
 	reference/gogurt/listener-host/linux/src \
 	reference/gogurt/listener-host/macos/src \
@@ -35,7 +35,7 @@ MYPY_SOURCES = \
 	reference/stove0/targets/review/materialize-target/src \
 	reference/stove0/targets/review/rclone-effect-target/src \
 	reference/stove0/targets/review/support/src \
-	companions/stove0/server/src \
+	reference/stove0/application/server/src \
 	packages/riverhog-application-access/src \
 	packages/config-validation/src \
 	packages/file-download/src \
@@ -59,31 +59,31 @@ MYPY_SOURCES = \
 	packages/riverhog-storage-adapter-protocol/src \
 	reference/riverhog/storage/s3-support/src \
 	packages/riverhog-storage-adapter-support/src \
-	packages/stove0-api-client/src \
-	packages/stove0-observer-client/src \
-	packages/stove0-observer-protocol/src \
-	packages/stove0-observer-support/src \
-	packages/stove0-operator-contracts/src \
+	reference/stove0/packages/api-client/src \
+	reference/stove0/packages/observer-client/src \
+	reference/stove0/packages/observer-protocol/src \
+	reference/stove0/packages/observer-support/src \
+	reference/stove0/packages/operator-contracts/src \
 	reference/stove0/targets/media-archive/contracts/src \
 	reference/stove0/targets/media-archive/support/src \
 	reference/stove0/observers/contracts/media-metadata/src \
 	reference/stove0/observers/contracts/media-sampling/src \
-	packages/stove0-protocol/src \
-	packages/stove0-recipe-config/src \
+	reference/stove0/packages/protocol/src \
+	reference/stove0/packages/recipe-config/src \
 	reference/stove0/targets/review/planning/src \
 	reference/stove0/targets/review/contracts/src \
 	reference/stove0/targets/review/sampler/client/src \
 	reference/stove0/targets/review/sampler/protocol/src \
 	reference/stove0/targets/review/sampler/support/src \
-	packages/stove0-target-client/src \
-	packages/stove0-target-protocol/src \
-	packages/stove0-target-support/src \
+	reference/stove0/packages/target-client/src \
+	reference/stove0/packages/target-protocol/src \
+	reference/stove0/packages/target-support/src \
 	packages/riverhog-provenance/src \
 	packages/state-schema/src \
 	packages/time-formats/src \
 	riverhog/client/src \
 	reference/riverhog/ingress/ftp/src \
-	riverhog/recovery/src \
+	reference/riverhog/recovery/src \
 	riverhog/server/src \
 	reference/riverhog/storage/aws/src \
 	reference/riverhog/storage/backblaze/src \
@@ -96,8 +96,8 @@ MYPY_SOURCES = \
 	scripts/release_installation.py \
 	scripts/test_mango_fish_image.py \
 	scripts/qualify_installation.py \
-	utilities/gogurt/src \
-	utilities/mango-fish/src
+	reference/gogurt/application/src \
+	reference/riverhog/applications/mango-fish/src
 args ?=
 
 .PHONY: help license ruff ruff-fix format format-check fix mypy lint compile unit spec dependency-readiness operation-qualification database-qualification contract-freeze contract-freeze-update implementation-policy implementation-policy-update provider-qualification installation-qualification release-check release-plan release-dry-run release-governance-check release-evidence release-verify c2sp-vectors postgres-concurrency compose-smoke stove0-scale-qualification mango-fish-smoke transfer-profile stop-spec dist dist-smoke build build-riverhog build-riverhog-ftp-adapter build-riverhog-storage-adapter-aws build-riverhog-storage-adapter-backblaze build-riverhog-storage-adapter-filesystem build-stove0 build-stove0-exiftool-observer build-stove0-ffprobe-sampling-observer build-stove0-nvenc-av1-opus-target build-stove0-opus-target build-stove0-review-materialize-target build-stove0-review-rclone-effect-target build-mango-fish build-test bootstrap-garage down test

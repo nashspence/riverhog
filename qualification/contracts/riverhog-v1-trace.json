@@ -1,6 +1,6 @@
 {
-  "contract_canonical_sha256": "75d835614a532ca859dbaa2df48782a3065821be18e662f8831a98be8cede771",
-  "contract_projection_sha256": "1f6479f30dbb9e047322c65da5d5af88af5416133872b8ca097126ea2c130f34",
+  "contract_canonical_sha256": "fdf6062ed285c409df87af6e9612dfa3ee29c5cd654d322e0b658e917eab6eb4",
+  "contract_projection_sha256": "5f8abb300bcd17d6bc87762754213d39bb7a7bc7f778afe08b0204a9558f05d8",
   "contract_schema": "riverhog-contract-freeze/v1",
   "coverage": {
     "extent_decisions": 1939,
@@ -10022,7 +10022,7 @@
         "bounded-authority-append"
       ],
       "test_node_ids": [
-        "companions/stove0/tests/test_riverhog_adapter.py::test_post_root_settlement_restarts_from_bounded_portable_inventory_progress",
+        "reference/stove0/application/tests/test_riverhog_adapter.py::test_post_root_settlement_restarts_from_bounded_portable_inventory_progress",
         "tests/integration/test_collection_deletion_concurrency.py::test_postgres_exact_output_intent_creation_resumes_one_upload"
       ]
     },
@@ -10045,7 +10045,7 @@
         "bounded-disposition-append"
       ],
       "test_node_ids": [
-        "companions/stove0/tests/test_riverhog_adapter.py::test_post_root_settlement_restarts_from_bounded_portable_inventory_progress",
+        "reference/stove0/application/tests/test_riverhog_adapter.py::test_post_root_settlement_restarts_from_bounded_portable_inventory_progress",
         "tests/integration/test_collection_deletion_concurrency.py::test_postgres_concurrent_first_disposition_and_output_create_one_set"
       ]
     },
@@ -10165,8 +10165,8 @@
       ],
       "test_node_ids": [
         "tests/unit/test_public_interface_parity.py::test_public_read_collection_selectors_are_bounded_and_frozen",
-        "companions/stove0/tests/test_cli.py::test_stove0_bounded_pages_keep_rich_and_json_cli_parity",
-        "companions/stove0/tests/test_work_state.py::test_sql_operational_retention_scans_bounded_pages_without_parsing_all_work"
+        "reference/stove0/application/tests/test_cli.py::test_stove0_bounded_pages_keep_rich_and_json_cli_parity",
+        "reference/stove0/application/tests/test_work_state.py::test_sql_operational_retention_scans_bounded_pages_without_parsing_all_work"
       ]
     },
     {
@@ -11582,7 +11582,7 @@
           "path": "/health/live",
           "source": {
             "module": "stove0_api.app",
-            "path": "companions/stove0/server/src/stove0_api/app.py",
+            "path": "reference/stove0/application/server/src/stove0_api/app.py",
             "symbol": "create_app.<locals>.health_live"
           }
         },
@@ -11594,7 +11594,7 @@
           "path": "/health/ready",
           "source": {
             "module": "stove0_api.app",
-            "path": "companions/stove0/server/src/stove0_api/app.py",
+            "path": "reference/stove0/application/server/src/stove0_api/app.py",
             "symbol": "create_app.<locals>.health_ready"
           }
         },
@@ -11606,7 +11606,7 @@
           "path": "/v1/admin/scheduler",
           "source": {
             "module": "stove0_api.app",
-            "path": "companions/stove0/server/src/stove0_api/app.py",
+            "path": "reference/stove0/application/server/src/stove0_api/app.py",
             "symbol": "create_app.<locals>.scheduler_status"
           }
         },
@@ -11618,7 +11618,7 @@
           "path": "/v1/admin/scheduler/run",
           "source": {
             "module": "stove0_api.app",
-            "path": "companions/stove0/server/src/stove0_api/app.py",
+            "path": "reference/stove0/application/server/src/stove0_api/app.py",
             "symbol": "create_app.<locals>.run_scheduler_once"
           }
         },
@@ -11630,7 +11630,7 @@
           "path": "/v1/admission-policies",
           "source": {
             "module": "stove0_api.app",
-            "path": "companions/stove0/server/src/stove0_api/app.py",
+            "path": "reference/stove0/application/server/src/stove0_api/app.py",
             "symbol": "create_app.<locals>.list_admission_policies"
           }
         },
@@ -11642,7 +11642,7 @@
           "path": "/v1/admission-policies/{policy_id}:backfill",
           "source": {
             "module": "stove0_api.app",
-            "path": "companions/stove0/server/src/stove0_api/app.py",
+            "path": "reference/stove0/application/server/src/stove0_api/app.py",
             "symbol": "create_app.<locals>.backfill_admission_policy"
           }
         },
@@ -11654,7 +11654,7 @@
           "path": "/v1/admission-policies/{policy_id}:rebaseline",
           "source": {
             "module": "stove0_api.app",
-            "path": "companions/stove0/server/src/stove0_api/app.py",
+            "path": "reference/stove0/application/server/src/stove0_api/app.py",
             "symbol": "create_app.<locals>.rebaseline_admission_policy"
           }
         },
@@ -11666,7 +11666,7 @@
           "path": "/v1/admissions",
           "source": {
             "module": "stove0_api.app",
-            "path": "companions/stove0/server/src/stove0_api/app.py",
+            "path": "reference/stove0/application/server/src/stove0_api/app.py",
             "symbol": "create_app.<locals>.list_admissions"
           }
         },
@@ -11678,7 +11678,7 @@
           "path": "/v1/admissions/{admission_id}",
           "source": {
             "module": "stove0_api.app",
-            "path": "companions/stove0/server/src/stove0_api/app.py",
+            "path": "reference/stove0/application/server/src/stove0_api/app.py",
             "symbol": "create_app.<locals>.get_admission"
           }
         },
@@ -11690,7 +11690,7 @@
           "path": "/v1/artifact-selections/{selection_sha256}",
           "source": {
             "module": "stove0_api.app",
-            "path": "companions/stove0/server/src/stove0_api/app.py",
+            "path": "reference/stove0/application/server/src/stove0_api/app.py",
             "symbol": "create_app.<locals>.get_artifact_selection"
           }
         },
@@ -11702,7 +11702,7 @@
           "path": "/v1/evaluations",
           "source": {
             "module": "stove0_api.app",
-            "path": "companions/stove0/server/src/stove0_api/app.py",
+            "path": "reference/stove0/application/server/src/stove0_api/app.py",
             "symbol": "create_app.<locals>.create_evaluation"
           }
         },
@@ -11714,7 +11714,7 @@
           "path": "/v1/evaluations",
           "source": {
             "module": "stove0_api.app",
-            "path": "companions/stove0/server/src/stove0_api/app.py",
+            "path": "reference/stove0/application/server/src/stove0_api/app.py",
             "symbol": "create_app.<locals>.list_evaluations"
           }
         },
@@ -11726,7 +11726,7 @@
           "path": "/v1/evaluations/{evaluation_id}",
           "source": {
             "module": "stove0_api.app",
-            "path": "companions/stove0/server/src/stove0_api/app.py",
+            "path": "reference/stove0/application/server/src/stove0_api/app.py",
             "symbol": "create_app.<locals>.get_evaluation"
           }
         },
@@ -11738,7 +11738,7 @@
           "path": "/v1/evaluations/{evaluation_id}/cancel",
           "source": {
             "module": "stove0_api.app",
-            "path": "companions/stove0/server/src/stove0_api/app.py",
+            "path": "reference/stove0/application/server/src/stove0_api/app.py",
             "symbol": "create_app.<locals>.cancel_evaluation"
           }
         },
@@ -11750,7 +11750,7 @@
           "path": "/v1/evaluations/{evaluation_id}/step",
           "source": {
             "module": "stove0_api.app",
-            "path": "companions/stove0/server/src/stove0_api/app.py",
+            "path": "reference/stove0/application/server/src/stove0_api/app.py",
             "symbol": "create_app.<locals>.step_evaluation"
           }
         },
@@ -11762,7 +11762,7 @@
           "path": "/v1/evaluations/{evaluation_id}/variants/{variant_id}/retry",
           "source": {
             "module": "stove0_api.app",
-            "path": "companions/stove0/server/src/stove0_api/app.py",
+            "path": "reference/stove0/application/server/src/stove0_api/app.py",
             "symbol": "create_app.<locals>.retry_evaluation_variant"
           }
         },
@@ -11774,7 +11774,7 @@
           "path": "/v1/evaluations/{evaluation_id}/variants/{variant_id}/review",
           "source": {
             "module": "stove0_api.app",
-            "path": "companions/stove0/server/src/stove0_api/app.py",
+            "path": "reference/stove0/application/server/src/stove0_api/app.py",
             "symbol": "create_app.<locals>.review_evaluation_variant"
           }
         },
@@ -11786,7 +11786,7 @@
           "path": "/v1/events",
           "source": {
             "module": "stove0_api.app",
-            "path": "companions/stove0/server/src/stove0_api/app.py",
+            "path": "reference/stove0/application/server/src/stove0_api/app.py",
             "symbol": "create_app.<locals>.list_events"
           }
         },
@@ -11798,7 +11798,7 @@
           "path": "/v1/recipes",
           "source": {
             "module": "stove0_api.app",
-            "path": "companions/stove0/server/src/stove0_api/app.py",
+            "path": "reference/stove0/application/server/src/stove0_api/app.py",
             "symbol": "create_app.<locals>.list_recipes"
           }
         },
@@ -11810,7 +11810,7 @@
           "path": "/v1/recipes/{recipe_id:path}",
           "source": {
             "module": "stove0_api.app",
-            "path": "companions/stove0/server/src/stove0_api/app.py",
+            "path": "reference/stove0/application/server/src/stove0_api/app.py",
             "symbol": "create_app.<locals>.get_recipe"
           }
         },
@@ -11822,7 +11822,7 @@
           "path": "/v1/target-executions/{job_id}/dispositions/{input_id}",
           "source": {
             "module": "stove0_api.app",
-            "path": "companions/stove0/server/src/stove0_api/app.py",
+            "path": "reference/stove0/application/server/src/stove0_api/app.py",
             "symbol": "create_app.<locals>.declare_target_execution_disposition"
           }
         },
@@ -11834,7 +11834,7 @@
           "path": "/v1/target-executions/{job_id}/inputs",
           "source": {
             "module": "stove0_api.app",
-            "path": "companions/stove0/server/src/stove0_api/app.py",
+            "path": "reference/stove0/application/server/src/stove0_api/app.py",
             "symbol": "create_app.<locals>.get_target_execution_inputs"
           }
         },
@@ -11846,7 +11846,7 @@
           "path": "/v1/target-executions/{job_id}/outputs/{artifact_id}",
           "source": {
             "module": "stove0_api.app",
-            "path": "companions/stove0/server/src/stove0_api/app.py",
+            "path": "reference/stove0/application/server/src/stove0_api/app.py",
             "symbol": "create_app.<locals>.declare_target_execution_output"
           }
         },
@@ -11858,7 +11858,7 @@
           "path": "/v1/target-executions/{job_id}/production/seal",
           "source": {
             "module": "stove0_api.app",
-            "path": "companions/stove0/server/src/stove0_api/app.py",
+            "path": "reference/stove0/application/server/src/stove0_api/app.py",
             "symbol": "create_app.<locals>.seal_target_execution_production"
           }
         },
@@ -11870,7 +11870,7 @@
           "path": "/v1/target-executions/{job_id}/source-edges/{output_id}/{input_id}",
           "source": {
             "module": "stove0_api.app",
-            "path": "companions/stove0/server/src/stove0_api/app.py",
+            "path": "reference/stove0/application/server/src/stove0_api/app.py",
             "symbol": "create_app.<locals>.declare_target_execution_source_edge"
           }
         },
@@ -11882,7 +11882,7 @@
           "path": "/v1/work",
           "source": {
             "module": "stove0_api.app",
-            "path": "companions/stove0/server/src/stove0_api/app.py",
+            "path": "reference/stove0/application/server/src/stove0_api/app.py",
             "symbol": "create_app.<locals>.create_work"
           }
         },
@@ -11894,7 +11894,7 @@
           "path": "/v1/work",
           "source": {
             "module": "stove0_api.app",
-            "path": "companions/stove0/server/src/stove0_api/app.py",
+            "path": "reference/stove0/application/server/src/stove0_api/app.py",
             "symbol": "create_app.<locals>.list_work"
           }
         },
@@ -11906,7 +11906,7 @@
           "path": "/v1/work/{work_id}",
           "source": {
             "module": "stove0_api.app",
-            "path": "companions/stove0/server/src/stove0_api/app.py",
+            "path": "reference/stove0/application/server/src/stove0_api/app.py",
             "symbol": "create_app.<locals>.get_work"
           }
         },
@@ -11918,7 +11918,7 @@
           "path": "/v1/work/{work_id}/cancel",
           "source": {
             "module": "stove0_api.app",
-            "path": "companions/stove0/server/src/stove0_api/app.py",
+            "path": "reference/stove0/application/server/src/stove0_api/app.py",
             "symbol": "create_app.<locals>.cancel_work"
           }
         },
@@ -11930,7 +11930,7 @@
           "path": "/v1/work/{work_id}/coordination",
           "source": {
             "module": "stove0_api.app",
-            "path": "companions/stove0/server/src/stove0_api/app.py",
+            "path": "reference/stove0/application/server/src/stove0_api/app.py",
             "symbol": "create_app.<locals>.inspect_work_coordination"
           }
         },
@@ -11942,7 +11942,7 @@
           "path": "/v1/work/{work_id}/retry",
           "source": {
             "module": "stove0_api.app",
-            "path": "companions/stove0/server/src/stove0_api/app.py",
+            "path": "reference/stove0/application/server/src/stove0_api/app.py",
             "symbol": "create_app.<locals>.retry_work"
           }
         },
@@ -11954,7 +11954,7 @@
           "path": "/v1/work/{work_id}/step",
           "source": {
             "module": "stove0_api.app",
-            "path": "companions/stove0/server/src/stove0_api/app.py",
+            "path": "reference/stove0/application/server/src/stove0_api/app.py",
             "symbol": "create_app.<locals>.step_work"
           }
         },
@@ -11966,7 +11966,7 @@
           "path": "/v1/workflow-previews",
           "source": {
             "module": "stove0_api.app",
-            "path": "companions/stove0/server/src/stove0_api/app.py",
+            "path": "reference/stove0/application/server/src/stove0_api/app.py",
             "symbol": "create_app.<locals>.preview_workflow"
           }
         }
@@ -12051,7 +12051,7 @@
       "id": "cli:gogurt",
       "source": {
         "module": "gogurt.cli",
-        "path": "utilities/gogurt/src/gogurt/cli.py",
+        "path": "reference/gogurt/application/src/gogurt/cli.py",
         "symbol": "<module>"
       }
     },
@@ -12075,7 +12075,7 @@
       "id": "cli:riverhog-recover",
       "source": {
         "module": "riverhog_recover.cli",
-        "path": "riverhog/recovery/src/riverhog_recover/cli.py",
+        "path": "reference/riverhog/recovery/src/riverhog_recover/cli.py",
         "symbol": "<module>"
       }
     },
@@ -12083,7 +12083,7 @@
       "id": "cli:stove0",
       "source": {
         "module": "stove0_cli.main",
-        "path": "companions/stove0/client/src/stove0_cli/main.py",
+        "path": "reference/stove0/application/client/src/stove0_cli/main.py",
         "symbol": "<module>"
       }
     },
@@ -12091,7 +12091,7 @@
       "id": "configuration:gogurt-routes",
       "source": {
         "module": "gogurt_core",
-        "path": "packages/gogurt-core/src/gogurt_core/__init__.py",
+        "path": "reference/gogurt/packages/core/src/gogurt_core/__init__.py",
         "symbol": "<module>"
       }
     },
@@ -12099,7 +12099,7 @@
       "id": "configuration:mango-fish",
       "source": {
         "module": "mango_fish.relay",
-        "path": "utilities/mango-fish/src/mango_fish/relay.py",
+        "path": "reference/riverhog/applications/mango-fish/src/mango_fish/relay.py",
         "symbol": "MangoFishConfig"
       }
     },
@@ -12115,7 +12115,7 @@
       "id": "configuration:stove0-recipes",
       "source": {
         "module": "stove0_recipe_config.models",
-        "path": "packages/stove0-recipe-config/src/stove0_recipe_config/models.py",
+        "path": "reference/stove0/packages/recipe-config/src/stove0_recipe_config/models.py",
         "symbol": "RecipeCatalog"
       }
     },
@@ -12140,7 +12140,7 @@
         {
           "consumer": "gogurt",
           "expression": "typer.Option('--listener-host-provider', envvar='GOGURT_LISTENER_HOST_PROVIDER', help='Exact installed listener-host provider name.')",
-          "path": "utilities/gogurt/src/gogurt/cli.py"
+          "path": "reference/gogurt/application/src/gogurt/cli.py"
         }
       ],
       "id": "configuration-environment:GOGURT_LISTENER_HOST_PROVIDER"
@@ -12150,7 +12150,7 @@
         {
           "consumer": "gogurt",
           "expression": "typer.Option('--mounted-volume-provider', envvar='GOGURT_MOUNTED_VOLUME_PROVIDER', help='Exact installed mounted-volume provider name.')",
-          "path": "utilities/gogurt/src/gogurt/cli.py"
+          "path": "reference/gogurt/application/src/gogurt/cli.py"
         }
       ],
       "id": "configuration-environment:GOGURT_MOUNTED_VOLUME_PROVIDER"
@@ -12190,7 +12190,7 @@
         {
           "consumer": "stove0-server",
           "expression": "_boolean(values, 'RIVERHOG_ALLOW_INSECURE_HTTP', False)",
-          "path": "companions/stove0/server/src/stove0_core/runtime_config.py"
+          "path": "reference/stove0/application/server/src/stove0_core/runtime_config.py"
         }
       ],
       "id": "configuration-environment:RIVERHOG_ALLOW_INSECURE_HTTP"
@@ -12340,7 +12340,7 @@
         {
           "consumer": "stove0-server",
           "expression": "_required(values, 'RIVERHOG_BASE_URL')",
-          "path": "companions/stove0/server/src/stove0_core/runtime_config.py"
+          "path": "reference/stove0/application/server/src/stove0_core/runtime_config.py"
         }
       ],
       "id": "configuration-environment:RIVERHOG_BASE_URL"
@@ -12930,7 +12930,7 @@
         {
           "consumer": "stove0-server",
           "expression": "_secret(values, 'RIVERHOG_TOKEN', required=True)",
-          "path": "companions/stove0/server/src/stove0_core/runtime_config.py"
+          "path": "reference/stove0/application/server/src/stove0_core/runtime_config.py"
         }
       ],
       "id": "configuration-environment:RIVERHOG_TOKEN"
@@ -13000,7 +13000,7 @@
         {
           "consumer": "stove0-server",
           "expression": "values.get('STOVE0_ADMISSIONS_PATH', '')",
-          "path": "companions/stove0/server/src/stove0_core/runtime_config.py"
+          "path": "reference/stove0/application/server/src/stove0_core/runtime_config.py"
         }
       ],
       "id": "configuration-environment:STOVE0_ADMISSIONS_PATH"
@@ -13010,7 +13010,7 @@
         {
           "consumer": "stove0-api-client",
           "expression": "_boolean_env('STOVE0_ALLOW_INSECURE_HTTP', False)",
-          "path": "packages/stove0-api-client/src/stove0_api_client/client.py"
+          "path": "reference/stove0/packages/api-client/src/stove0_api_client/client.py"
         }
       ],
       "id": "configuration-environment:STOVE0_ALLOW_INSECURE_HTTP"
@@ -13020,12 +13020,12 @@
         {
           "consumer": "stove0-server",
           "expression": "_secret(values, 'STOVE0_API_TOKEN', required=False)",
-          "path": "companions/stove0/server/src/stove0_core/runtime_config.py"
+          "path": "reference/stove0/application/server/src/stove0_core/runtime_config.py"
         },
         {
           "consumer": "stove0-server",
           "expression": "_secret(values, 'STOVE0_API_TOKEN', required=True)",
-          "path": "companions/stove0/server/src/stove0_core/runtime_config.py"
+          "path": "reference/stove0/application/server/src/stove0_core/runtime_config.py"
         }
       ],
       "id": "configuration-environment:STOVE0_API_TOKEN"
@@ -13035,12 +13035,12 @@
         {
           "consumer": "stove0-api-client",
           "expression": "os.getenv('STOVE0_BASE_URL')",
-          "path": "packages/stove0-api-client/src/stove0_api_client/client.py"
+          "path": "reference/stove0/packages/api-client/src/stove0_api_client/client.py"
         },
         {
           "consumer": "stove0-api-client",
           "expression": "safe_http_base_url(base_url or os.getenv('STOVE0_BASE_URL') or 'http://127.0.0.1:8080', setting='STOVE0_BASE_URL', allow_insecure_http=allow)",
-          "path": "packages/stove0-api-client/src/stove0_api_client/client.py"
+          "path": "reference/stove0/packages/api-client/src/stove0_api_client/client.py"
         }
       ],
       "id": "configuration-environment:STOVE0_BASE_URL"
@@ -13050,7 +13050,7 @@
         {
           "consumer": "stove0-server",
           "expression": "_integer(values, 'STOVE0_BROWSE_TOKEN_LIFETIME_SECONDS', 24 * 60 * 60, minimum=1)",
-          "path": "companions/stove0/server/src/stove0_core/runtime_config.py"
+          "path": "reference/stove0/application/server/src/stove0_core/runtime_config.py"
         }
       ],
       "id": "configuration-environment:STOVE0_BROWSE_TOKEN_LIFETIME_SECONDS"
@@ -13060,7 +13060,7 @@
         {
           "consumer": "stove0-server",
           "expression": "_secret(values, 'STOVE0_BROWSE_TOKEN_SIGNING_KEY', required=require_api_token)",
-          "path": "companions/stove0/server/src/stove0_core/runtime_config.py"
+          "path": "reference/stove0/application/server/src/stove0_core/runtime_config.py"
         }
       ],
       "id": "configuration-environment:STOVE0_BROWSE_TOKEN_SIGNING_KEY"
@@ -13070,7 +13070,7 @@
         {
           "consumer": "stove0-server",
           "expression": "_integer(values, 'STOVE0_CAPABILITY_TTL_SECONDS', 900, minimum=30)",
-          "path": "companions/stove0/server/src/stove0_core/runtime_config.py"
+          "path": "reference/stove0/application/server/src/stove0_core/runtime_config.py"
         }
       ],
       "id": "configuration-environment:STOVE0_CAPABILITY_TTL_SECONDS"
@@ -13080,7 +13080,7 @@
         {
           "consumer": "stove0-server",
           "expression": "_integer(values, 'STOVE0_CLAIM_LEASE_SECONDS', 1800, minimum=30)",
-          "path": "companions/stove0/server/src/stove0_core/runtime_config.py"
+          "path": "reference/stove0/application/server/src/stove0_core/runtime_config.py"
         }
       ],
       "id": "configuration-environment:STOVE0_CLAIM_LEASE_SECONDS"
@@ -13090,7 +13090,7 @@
         {
           "consumer": "stove0-server",
           "expression": "_secret(values, 'STOVE0_DATABASE_URL', required=True)",
-          "path": "companions/stove0/server/src/stove0_core/runtime_config.py"
+          "path": "reference/stove0/application/server/src/stove0_core/runtime_config.py"
         }
       ],
       "id": "configuration-environment:STOVE0_DATABASE_URL"
@@ -13295,7 +13295,7 @@
         {
           "consumer": "stove0-api-client",
           "expression": "_boolean_env('STOVE0_HTTP2', True)",
-          "path": "packages/stove0-api-client/src/stove0_api_client/client.py"
+          "path": "reference/stove0/packages/api-client/src/stove0_api_client/client.py"
         }
       ],
       "id": "configuration-environment:STOVE0_HTTP2"
@@ -13305,7 +13305,7 @@
         {
           "consumer": "stove0-api-client",
           "expression": "_positive_float_env('STOVE0_HTTP_TIMEOUT_SECONDS', 300.0)",
-          "path": "packages/stove0-api-client/src/stove0_api_client/client.py"
+          "path": "reference/stove0/packages/api-client/src/stove0_api_client/client.py"
         }
       ],
       "id": "configuration-environment:STOVE0_HTTP_TIMEOUT_SECONDS"
@@ -13325,7 +13325,7 @@
         {
           "consumer": "stove0-server",
           "expression": "_registrations(values, 'STOVE0_OBSERVERS_JSON', semantic_validators=True)",
-          "path": "companions/stove0/server/src/stove0_core/runtime_config.py"
+          "path": "reference/stove0/application/server/src/stove0_core/runtime_config.py"
         }
       ],
       "id": "configuration-environment:STOVE0_OBSERVERS_JSON"
@@ -13335,7 +13335,7 @@
         {
           "consumer": "stove0-server",
           "expression": "_integer(values, 'STOVE0_OPERATIONAL_STATE_RETENTION_SECONDS', DEFAULT_OPERATIONAL_STATE_RETENTION_SECONDS, minimum=1)",
-          "path": "companions/stove0/server/src/stove0_core/runtime_config.py"
+          "path": "reference/stove0/application/server/src/stove0_core/runtime_config.py"
         }
       ],
       "id": "configuration-environment:STOVE0_OPERATIONAL_STATE_RETENTION_SECONDS"
@@ -13345,7 +13345,7 @@
         {
           "consumer": "stove0-server",
           "expression": "_required(values, 'STOVE0_RECIPES_PATH')",
-          "path": "companions/stove0/server/src/stove0_core/runtime_config.py"
+          "path": "reference/stove0/application/server/src/stove0_core/runtime_config.py"
         }
       ],
       "id": "configuration-environment:STOVE0_RECIPES_PATH"
@@ -13355,7 +13355,7 @@
         {
           "consumer": "stove0-server",
           "expression": "_number(values, 'STOVE0_SCHEDULER_INTERVAL_SECONDS', 5.0, minimum=0.1)",
-          "path": "companions/stove0/server/src/stove0_core/runtime_config.py"
+          "path": "reference/stove0/application/server/src/stove0_core/runtime_config.py"
         }
       ],
       "id": "configuration-environment:STOVE0_SCHEDULER_INTERVAL_SECONDS"
@@ -13365,7 +13365,7 @@
         {
           "consumer": "stove0-server",
           "expression": "_registrations(values, 'STOVE0_TARGETS_JSON')",
-          "path": "companions/stove0/server/src/stove0_core/runtime_config.py"
+          "path": "reference/stove0/application/server/src/stove0_core/runtime_config.py"
         }
       ],
       "id": "configuration-environment:STOVE0_TARGETS_JSON"
@@ -13375,7 +13375,7 @@
         {
           "consumer": "stove0-server",
           "expression": "_integer(values, 'STOVE0_TARGET_AUTHORITY_BATCH_SIZE', 100, minimum=1, maximum=128)",
-          "path": "companions/stove0/server/src/stove0_core/runtime_config.py"
+          "path": "reference/stove0/application/server/src/stove0_core/runtime_config.py"
         }
       ],
       "id": "configuration-environment:STOVE0_TARGET_AUTHORITY_BATCH_SIZE"
@@ -13385,7 +13385,7 @@
         {
           "consumer": "stove0-server",
           "expression": "_boolean(values, 'STOVE0_TARGET_CALLBACK_ALLOW_INSECURE_HTTP', False)",
-          "path": "companions/stove0/server/src/stove0_core/runtime_config.py"
+          "path": "reference/stove0/application/server/src/stove0_core/runtime_config.py"
         }
       ],
       "id": "configuration-environment:STOVE0_TARGET_CALLBACK_ALLOW_INSECURE_HTTP"
@@ -13395,7 +13395,7 @@
         {
           "consumer": "stove0-server",
           "expression": "values.get('STOVE0_TARGET_CALLBACK_BASE_URL', '')",
-          "path": "companions/stove0/server/src/stove0_core/runtime_config.py"
+          "path": "reference/stove0/application/server/src/stove0_core/runtime_config.py"
         }
       ],
       "id": "configuration-environment:STOVE0_TARGET_CALLBACK_BASE_URL"
@@ -13405,7 +13405,7 @@
         {
           "consumer": "stove0-server",
           "expression": "_secret(values, 'STOVE0_TARGET_CALLBACK_SIGNING_KEY', required=bool(targets))",
-          "path": "companions/stove0/server/src/stove0_core/runtime_config.py"
+          "path": "reference/stove0/application/server/src/stove0_core/runtime_config.py"
         }
       ],
       "id": "configuration-environment:STOVE0_TARGET_CALLBACK_SIGNING_KEY"
@@ -13415,7 +13415,7 @@
         {
           "consumer": "stove0-target-support",
           "expression": "values.get(TARGET_TERMINAL_STATE_RETENTION_ENV, str(DEFAULT_TERMINAL_STATE_RETENTION_SECONDS))",
-          "path": "packages/stove0-target-support/src/stove0_target_support/configuration.py"
+          "path": "reference/stove0/packages/target-support/src/stove0_target_support/configuration.py"
         }
       ],
       "id": "configuration-environment:STOVE0_TARGET_TERMINAL_STATE_RETENTION_SECONDS"
@@ -13425,7 +13425,7 @@
         {
           "consumer": "stove0-api-client",
           "expression": "os.getenv('STOVE0_TOKEN')",
-          "path": "packages/stove0-api-client/src/stove0_api_client/client.py"
+          "path": "reference/stove0/packages/api-client/src/stove0_api_client/client.py"
         }
       ],
       "id": "configuration-environment:STOVE0_TOKEN"
@@ -13435,7 +13435,7 @@
         {
           "consumer": "stove0-server",
           "expression": "values.get('STOVE0_WORKSPACE_ASSURANCE', 'encrypted')",
-          "path": "companions/stove0/server/src/stove0_core/runtime_config.py"
+          "path": "reference/stove0/application/server/src/stove0_core/runtime_config.py"
         }
       ],
       "id": "configuration-environment:STOVE0_WORKSPACE_ASSURANCE"
@@ -13638,7 +13638,7 @@
       "id": "protocol:generated:stove0-observer",
       "source": {
         "module": "stove0_observer_support.schemas",
-        "path": "packages/stove0-observer-support/src/stove0_observer_support/schemas.py",
+        "path": "reference/stove0/packages/observer-support/src/stove0_observer_support/schemas.py",
         "symbol": "observer_schema_bundle"
       }
     },
@@ -13654,24 +13654,8 @@
       "id": "protocol:generated:stove0-target",
       "source": {
         "module": "stove0_target_support.schemas",
-        "path": "packages/stove0-target-support/src/stove0_target_support/schemas.py",
+        "path": "reference/stove0/packages/target-support/src/stove0_target_support/schemas.py",
         "symbol": "target_schema_bundle"
-      }
-    },
-    {
-      "id": "python:gogurt-core",
-      "source": {
-        "module": "gogurt_core",
-        "path": "packages/gogurt-core/src/gogurt_core/__init__.py",
-        "symbol": "<module>"
-      }
-    },
-    {
-      "id": "python:gogurt-listener-runtime",
-      "source": {
-        "module": "gogurt_listener_runtime",
-        "path": "packages/gogurt-listener-runtime/src/gogurt_listener_runtime/__init__.py",
-        "symbol": "<module>"
       }
     },
     {
@@ -13779,10 +13763,26 @@
       }
     },
     {
+      "id": "python:gogurt-core",
+      "source": {
+        "module": "gogurt_core",
+        "path": "reference/gogurt/packages/core/src/gogurt_core/__init__.py",
+        "symbol": "<module>"
+      }
+    },
+    {
+      "id": "python:gogurt-listener-runtime",
+      "source": {
+        "module": "gogurt_listener_runtime",
+        "path": "reference/gogurt/packages/listener-runtime/src/gogurt_listener_runtime/__init__.py",
+        "symbol": "<module>"
+      }
+    },
+    {
       "id": "python:stove0-api-client",
       "source": {
         "module": "stove0_api_client",
-        "path": "packages/stove0-api-client/src/stove0_api_client/__init__.py",
+        "path": "reference/stove0/packages/api-client/src/stove0_api_client/__init__.py",
         "symbol": "<module>"
       }
     },
@@ -13790,7 +13790,7 @@
       "id": "python:stove0-observer-client",
       "source": {
         "module": "stove0_observer_client",
-        "path": "packages/stove0-observer-client/src/stove0_observer_client/__init__.py",
+        "path": "reference/stove0/packages/observer-client/src/stove0_observer_client/__init__.py",
         "symbol": "<module>"
       }
     },
@@ -13798,7 +13798,7 @@
       "id": "python:stove0-observer-protocol",
       "source": {
         "module": "stove0_observer_protocol",
-        "path": "packages/stove0-observer-protocol/src/stove0_observer_protocol/__init__.py",
+        "path": "reference/stove0/packages/observer-protocol/src/stove0_observer_protocol/__init__.py",
         "symbol": "<module>"
       }
     },
@@ -13806,7 +13806,7 @@
       "id": "python:stove0-observer-support",
       "source": {
         "module": "stove0_observer_support",
-        "path": "packages/stove0-observer-support/src/stove0_observer_support/__init__.py",
+        "path": "reference/stove0/packages/observer-support/src/stove0_observer_support/__init__.py",
         "symbol": "<module>"
       }
     },
@@ -13814,7 +13814,7 @@
       "id": "python:stove0-operator-contracts",
       "source": {
         "module": "stove0_operator_contracts",
-        "path": "packages/stove0-operator-contracts/src/stove0_operator_contracts/__init__.py",
+        "path": "reference/stove0/packages/operator-contracts/src/stove0_operator_contracts/__init__.py",
         "symbol": "<module>"
       }
     },
@@ -13822,7 +13822,7 @@
       "id": "python:stove0-protocol",
       "source": {
         "module": "stove0_protocol",
-        "path": "packages/stove0-protocol/src/stove0_protocol/__init__.py",
+        "path": "reference/stove0/packages/protocol/src/stove0_protocol/__init__.py",
         "symbol": "<module>"
       }
     },
@@ -13830,7 +13830,7 @@
       "id": "python:stove0-recipe-config",
       "source": {
         "module": "stove0_recipe_config",
-        "path": "packages/stove0-recipe-config/src/stove0_recipe_config/__init__.py",
+        "path": "reference/stove0/packages/recipe-config/src/stove0_recipe_config/__init__.py",
         "symbol": "<module>"
       }
     },
@@ -13838,7 +13838,7 @@
       "id": "python:stove0-target-client",
       "source": {
         "module": "stove0_target_client",
-        "path": "packages/stove0-target-client/src/stove0_target_client/__init__.py",
+        "path": "reference/stove0/packages/target-client/src/stove0_target_client/__init__.py",
         "symbol": "<module>"
       }
     },
@@ -13846,7 +13846,7 @@
       "id": "python:stove0-target-protocol",
       "source": {
         "module": "stove0_target_protocol",
-        "path": "packages/stove0-target-protocol/src/stove0_target_protocol/__init__.py",
+        "path": "reference/stove0/packages/target-protocol/src/stove0_target_protocol/__init__.py",
         "symbol": "<module>"
       }
     },
@@ -13854,7 +13854,7 @@
       "id": "python:stove0-target-support",
       "source": {
         "module": "stove0_target_support",
-        "path": "packages/stove0-target-support/src/stove0_target_support/__init__.py",
+        "path": "reference/stove0/packages/target-support/src/stove0_target_support/__init__.py",
         "symbol": "<module>"
       }
     },

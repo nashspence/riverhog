@@ -7,9 +7,18 @@ from pathlib import Path
 
 import pytest
 
+from scripts.release_installation import INSTALLATION_ROOTS
+
 REPO_ROOT = Path(__file__).resolve().parents[2]
 RELEASE = tomllib.loads((REPO_ROOT / "release.toml").read_text(encoding="utf-8"))
-END_USER_PROJECTS = tuple(RELEASE["python"]["end_user_artifact"])
+CLASSIFIED_PROJECTS = {
+    tomllib.loads((REPO_ROOT / path / "pyproject.toml").read_text(encoding="utf-8"))["project"][
+        "name"
+    ]: path
+    for paths in RELEASE["python"].values()
+    for path in paths
+}
+END_USER_PROJECTS = tuple(CLASSIFIED_PROJECTS[name] for name in INSTALLATION_ROOTS)
 
 
 def _entrypoints() -> tuple[str, ...]:

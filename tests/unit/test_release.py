@@ -76,8 +76,9 @@ def test_release_contract_classifies_every_coordinated_distribution() -> None:
     assert len(projects) == 74
     assert {project.version for project in projects} == {"0.1.0"}
     assert Counter(project.role for project in projects) == {
-        "end_user_artifact": 4,
-        "deployed_implementation": 3,
+        "end_user_artifact": 1,
+        "deployed_implementation": 1,
+        "reference_application": 5,
         "reference_component": 37,
         "reusable_library": 25,
         "internal_build_unit": 5,
@@ -129,6 +130,13 @@ def test_release_contract_classifies_every_coordinated_distribution() -> None:
         "stove0-target-client",
         "stove0-target-support",
     }
+    assert {project.name for project in projects if project.role == "reference_application"} == {
+        "gogurt",
+        "mango-fish",
+        "riverhog-recover",
+        "stove0-client",
+        "stove0-server",
+    }
     release = tomllib.loads((REPO_ROOT / "release.toml").read_text(encoding="utf-8"))
     assert release["compatibility"]["python_api"].startswith("Reusable-library top-level exports")
     assert {owner["id"] for owner in release["state"]["owners"]} == {
@@ -168,8 +176,9 @@ def test_release_contract_classifies_every_coordinated_distribution() -> None:
         "runtime_images": ["linux/amd64"],
     }
     assert all(
-        project.path.startswith("reference/") == (project.role == "reference_component")
+        project.role in {"reference_application", "reference_component", "reusable_library"}
         for project in projects
+        if project.path.startswith("reference/")
     )
     qualification = tomllib.loads((REPO_ROOT / "release.toml").read_text(encoding="utf-8"))[
         "qualification"
@@ -180,7 +189,7 @@ def test_release_contract_classifies_every_coordinated_distribution() -> None:
 def test_reusable_library_requires_an_explicit_top_level_api(tmp_path: Path) -> None:
     module = load_script()
     _copy_release_contract(module, tmp_path)
-    public_root = tmp_path / "packages/gogurt-core/src/gogurt_core/__init__.py"
+    public_root = tmp_path / "reference/gogurt/packages/core/src/gogurt_core/__init__.py"
     public_root.write_text('"""No declared public surface."""\n', encoding="utf-8")
 
     with pytest.raises(module.ReleaseError, match="explicit top-level __all__"):
@@ -196,34 +205,35 @@ def test_release_role_dependency_direction_is_exact() -> None:
         projects,
     )
     roles = {project.name: project.role for project in projects}
-    reference = {name for name, role in roles.items() if role == "reference_component"}
-    product = {
+    paths = {project.name: project.path for project in projects}
+    references = {name for name, path in paths.items() if path.startswith("reference/")}
+    components = {name for name, role in roles.items() if role == "reference_component"}
+    implementations = {
         name
         for name, role in roles.items()
-        if role in {"end_user_artifact", "deployed_implementation"}
+        if role in {"end_user_artifact", "deployed_implementation", "reference_application"}
     }
 
     assert all(
-        not (artifact_dependencies[name] & reference)
+        not (artifact_dependencies[name] & components)
         for name, role in roles.items()
-        if role
-        in {
-            "end_user_artifact",
-            "deployed_implementation",
-            "reusable_library",
-            "internal_build_unit",
-        }
+        if role != "reference_component"
     )
     assert all(
-        not (artifact_dependencies[name] & product)
+        not (artifact_dependencies[name] & references)
+        for name, path in paths.items()
+        if not path.startswith("reference/")
+    )
+    assert all(
+        not (artifact_dependencies[name] & implementations)
         for name, role in roles.items()
-        if role == "reference_component"
+        if role in {"reference_application", "reference_component"}
     )
     architecture = " ".join(
         (REPO_ROOT / "docs/architecture.md").read_text(encoding="utf-8").split()
     )
-    assert "Non-reference release units do not depend on references" in architecture
-    assert "reference images, qualification, and tests compose them explicitly" in architecture
+    assert "Both are nonnormative, family-owned" in architecture
+    assert "enter Riverhog only through public contracts" in architecture
 
 
 def test_release_contract_rejects_optional_reference_dependency_from_product(
@@ -231,7 +241,7 @@ def test_release_contract_rejects_optional_reference_dependency_from_product(
 ) -> None:
     module = load_script()
     _copy_release_contract(module, tmp_path)
-    pyproject = tmp_path / "riverhog/recovery/pyproject.toml"
+    pyproject = tmp_path / "riverhog/client/pyproject.toml"
     pyproject.write_text(
         pyproject.read_text(encoding="utf-8")
         + "\n[project.optional-dependencies]\n"
@@ -239,7 +249,9 @@ def test_release_contract_rejects_optional_reference_dependency_from_product(
         encoding="utf-8",
     )
 
-    with pytest.raises(module.ReleaseError, match="depends on independently selected"):
+    with pytest.raises(
+        module.ReleaseError, match="product-owned release unit depends on references"
+    ):
         module.validate_release_contract(tmp_path)
 
 
@@ -258,7 +270,7 @@ def test_release_contract_rejects_product_dependency_from_reference(
         encoding="utf-8",
     )
 
-    with pytest.raises(module.ReleaseError, match="depends on product release units"):
+    with pytest.raises(module.ReleaseError, match="depends on implementation release units"):
         module.validate_release_contract(tmp_path)
 
 
@@ -447,6 +459,9 @@ def test_release_plan_is_exact_sha_bound_and_excludes_the_test_image() -> None:
     assert {image["target"] for image in plan["images"]} == set(module.RUNTIME_IMAGE_TARGETS)
     assert plan["reference_policy"] == module.REFERENCE_POLICY
     assert {image["role"] for image in plan["images"]} == {"product", "reference"}
+    assert {image["target"] for image in plan["images"] if image["role"] == "product"} == {
+        "riverhog"
+    }
     assert all(image["description"] for image in plan["images"])
     assert next(image for image in plan["images"] if image["target"] == "stove0")[
         "distributions"

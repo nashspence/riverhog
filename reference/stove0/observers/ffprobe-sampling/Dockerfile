@@ -30,10 +30,10 @@ COPY packages/riverhog-api-client packages/riverhog-api-client
 COPY packages/riverhog-protocol packages/riverhog-protocol
 COPY packages/riverhog-provenance-contracts packages/riverhog-provenance-contracts
 COPY packages/riverhog-transform-sdk packages/riverhog-transform-sdk
-COPY packages/stove0-observer-client packages/stove0-observer-client
-COPY packages/stove0-observer-protocol packages/stove0-observer-protocol
-COPY packages/stove0-observer-support packages/stove0-observer-support
-COPY packages/stove0-protocol packages/stove0-protocol
+COPY reference/stove0/packages/observer-client reference/stove0/packages/observer-client
+COPY reference/stove0/packages/observer-protocol reference/stove0/packages/observer-protocol
+COPY reference/stove0/packages/observer-support reference/stove0/packages/observer-support
+COPY reference/stove0/packages/protocol reference/stove0/packages/protocol
 COPY reference/stove0/observers/contracts/media-sampling reference/stove0/observers/contracts/media-sampling
 COPY packages/time-formats packages/time-formats
 RUN uv sync --frozen --package stove0-ffprobe-sampling-observer --no-dev --no-editable

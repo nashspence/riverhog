@@ -83,6 +83,7 @@ STORAGE_REFERENCE_QUALIFICATION = {
 RELEASE_ROLES = (
     "end_user_artifact",
     "deployed_implementation",
+    "reference_application",
     "reference_component",
     "reusable_library",
     "internal_build_unit",
@@ -96,6 +97,20 @@ PROJECT_README = {
 REFERENCE_PROJECT_README = {
     "text": (
         "Optional nonnormative Riverhog v1 reference component. "
+        "See the project URL for documentation and releases."
+    ),
+    "content-type": "text/markdown",
+}
+REFERENCE_APPLICATION_README = {
+    "text": (
+        "Optional nonnormative Riverhog v1 reference application. "
+        "See the project URL for documentation and releases."
+    ),
+    "content-type": "text/markdown",
+}
+REFERENCE_APPLICATION_LIBRARY_README = {
+    "text": (
+        "Public contract or support for a nonnormative Riverhog v1 reference application. "
         "See the project URL for documentation and releases."
     ),
     "content-type": "text/markdown",
@@ -143,14 +158,14 @@ RUNTIME_IMAGE_TARGETS = {
         "repository": "ghcr.io/nashspence/riverhog-storage-adapter-filesystem",
     },
     "mango-fish": {
-        "role": "product",
-        "description": "Riverhog CloudEvents utility.",
+        "role": "reference",
+        "description": "Optional nonnormative CloudEvents reference application for Riverhog.",
         "distributions": ["mango-fish"],
         "repository": "ghcr.io/nashspence/riverhog-mango-fish",
     },
     "stove0": {
-        "role": "product",
-        "description": "Stove0 transformation companion.",
+        "role": "reference",
+        "description": "Optional nonnormative transformation reference application for Riverhog.",
         "distributions": ["stove0-server"],
         "repository": "ghcr.io/nashspence/riverhog-stove0",
     },
@@ -595,11 +610,14 @@ def validate_release_contract(root: Path, *, expected_version: str | None = None
         _version(version)
         if expected_version is not None and version != expected_version:
             raise ReleaseError(f"{name} is {version}, expected {expected_version}")
-        expected_readme = (
-            REFERENCE_PROJECT_README
-            if classified[relative] == "reference_component"
-            else PROJECT_README
-        )
+        if classified[relative] == "reference_component":
+            expected_readme = REFERENCE_PROJECT_README
+        elif classified[relative] == "reference_application":
+            expected_readme = REFERENCE_APPLICATION_README
+        elif relative.startswith(("reference/gogurt/packages/", "reference/stove0/packages/")):
+            expected_readme = REFERENCE_APPLICATION_LIBRARY_README
+        else:
+            expected_readme = PROJECT_README
         if metadata.get("readme") != expected_readme:
             raise ReleaseError(f"{name} does not carry the common package README")
         if metadata.get("authors") != PROJECT_PEOPLE:
@@ -624,11 +642,18 @@ def validate_release_contract(root: Path, *, expected_version: str | None = None
 
     for project in projects:
         is_reference_path = project.path.startswith("reference/")
-        if is_reference_path != (project.role == "reference_component"):
+        is_reference_role = project.role in {"reference_application", "reference_component"}
+        is_reference_application_library = (
+            project.role == "reusable_library"
+            and project.path.startswith(
+                ("reference/gogurt/packages/", "reference/stove0/packages/")
+            )
+        )
+        if is_reference_path != (is_reference_role or is_reference_application_library):
             raise ReleaseError(
                 f"{project.name} path and release role disagree about reference ownership"
             )
-        if is_reference_path and not all(
+        if is_reference_role and not all(
             word in project.description.casefold()
             for word in ("optional", "nonnormative", "reference")
         ):
@@ -706,42 +731,51 @@ def validate_release_contract(root: Path, *, expected_version: str | None = None
         projects,
     )
     reference_names = {
+        project.name for project in projects if project.path.startswith("reference/")
+    }
+    reference_component_names = {
         project.name for project in projects if project.role == "reference_component"
     }
-    product_names = {
+    implementation_names = {
         project.name
         for project in projects
-        if project.role in {"end_user_artifact", "deployed_implementation"}
-    }
-    reference_forbidden_roles = {
-        "end_user_artifact",
-        "deployed_implementation",
-        "reusable_library",
-        "internal_build_unit",
+        if project.role in {"end_user_artifact", "deployed_implementation", "reference_application"}
     }
     for project in projects:
-        if project.role not in reference_forbidden_roles:
+        if project.path.startswith("reference/"):
             continue
         references = sorted(artifact_dependencies[project.name] & reference_names)
+        if references:
+            raise ReleaseError(
+                f"{project.name} product-owned release unit depends on references: {references}"
+            )
+    for project in projects:
+        if project.role == "reference_component":
+            continue
+        references = sorted(artifact_dependencies[project.name] & reference_component_names)
         if references:
             raise ReleaseError(
                 f"{project.name} depends on independently selected reference components: "
                 f"{references}"
             )
     for project in projects:
-        if project.role != "reference_component":
+        if project.role not in {"reference_application", "reference_component"}:
             continue
-        products = sorted(artifact_dependencies[project.name] & product_names)
-        if products:
+        implementations = sorted(artifact_dependencies[project.name] & implementation_names)
+        if implementations:
             raise ReleaseError(
-                f"{project.name} reference component depends on product release units: {products}"
+                f"{project.name} reference release unit depends on implementation release units: "
+                f"{implementations}"
             )
     for target, value in runtime_images.items():
         configured_roots = [
             _normalize_name(str(distribution)) for distribution in value["distributions"]
         ]
         if value["role"] == "reference":
-            if any(roles_by_name[root] != "reference_component" for root in configured_roots):
+            if any(
+                roles_by_name[root] not in {"reference_application", "reference_component"}
+                for root in configured_roots
+            ):
                 raise ReleaseError(f"reference image contains a non-reference root: {target}")
         elif value["role"] == "product":
             if roles_by_name[configured_roots[0]] != "deployed_implementation":
@@ -750,7 +784,7 @@ def validate_release_contract(root: Path, *, expected_version: str | None = None
                 *(_dependency_closure(internal_dependencies, root) for root in configured_roots)
             )
             reference_dependencies = sorted(
-                name for name in product_closure if roles_by_name[name] == "reference_component"
+                name for name in product_closure if name in reference_names
             )
             if reference_dependencies:
                 raise ReleaseError(
@@ -1009,7 +1043,7 @@ def build_release_plan(root: Path, version: str, *, allow_dirty: bool = False) -
         "contract": config["artifacts"]["contract"],
         "installation": {
             "manifest": "install-manifest.json",
-            "locks": [f"pylock.{name}.toml" for name in installation.END_USER_ROOTS],
+            "locks": [f"pylock.{name}.toml" for name in installation.INSTALLATION_ROOTS],
             "index_snapshot": f"riverhog-python-index-v{version}.tar.gz",
             "gogurt_listener_reference": f"gogurt-listener-v{version}.md",
         },

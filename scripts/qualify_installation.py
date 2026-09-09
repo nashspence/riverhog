@@ -1656,7 +1656,7 @@ def _run_recovery(
     scratch: Path,
     environment: dict[str, str],
 ) -> str:
-    fixture_path = source_root / "riverhog/recovery/tests/test_recovery.py"
+    fixture_path = source_root / "reference/riverhog/recovery/tests/test_recovery.py"
     spec = importlib.util.spec_from_file_location(
         "_riverhog_recovery_qualification_fixture",
         fixture_path,

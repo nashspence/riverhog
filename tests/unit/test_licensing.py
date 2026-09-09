@@ -13,7 +13,7 @@ SERVER_PROJECTS = {
     Path("reference/riverhog/storage/aws/pyproject.toml"),
     Path("reference/riverhog/storage/backblaze/pyproject.toml"),
     Path("reference/riverhog/storage/filesystem/pyproject.toml"),
-    Path("companions/stove0/server/pyproject.toml"),
+    Path("reference/stove0/application/server/pyproject.toml"),
     Path("reference/stove0/observers/ffprobe-sampling/pyproject.toml"),
     Path("reference/stove0/observers/exiftool/pyproject.toml"),
     Path("reference/stove0/targets/nvenc-av1-opus/review-sampler/pyproject.toml"),
@@ -41,7 +41,7 @@ def test_reuse_policy_assigns_an_apache_default_and_narrow_server_overrides() ->
         "reference/riverhog/storage/aws/**",
         "reference/riverhog/storage/backblaze/**",
         "reference/riverhog/storage/filesystem/**",
-        "companions/stove0/server/**",
+        "reference/stove0/application/server/**",
         "reference/stove0/observers/exiftool/**",
         "reference/stove0/observers/ffprobe-sampling/**",
         "reference/stove0/targets/nvenc-av1-opus/**",
@@ -85,7 +85,7 @@ def test_every_workspace_distribution_uses_the_canonical_build_system() -> None:
 
 def test_recovery_tool_is_independent_and_advertised() -> None:
     config = tomllib.loads(
-        (REPO_ROOT / "riverhog/recovery/pyproject.toml").read_text(encoding="utf-8")
+        (REPO_ROOT / "reference/riverhog/recovery/pyproject.toml").read_text(encoding="utf-8")
     )
     architecture = " ".join(
         (REPO_ROOT / "docs/architecture.md").read_text(encoding="utf-8").split()
@@ -114,14 +114,14 @@ def test_published_images_carry_source_and_license_identity() -> None:
         "reference/riverhog/ingress/ftp/Dockerfile": "Apache-2.0",
         "reference/riverhog/storage/aws/Dockerfile": "CAL-1.0",
         "reference/riverhog/storage/backblaze/Dockerfile": "CAL-1.0",
-        "companions/stove0/server/Dockerfile": "CAL-1.0",
+        "reference/stove0/application/server/Dockerfile": "CAL-1.0",
         "reference/stove0/observers/ffprobe-sampling/Dockerfile": "CAL-1.0",
         "reference/stove0/observers/exiftool/Dockerfile": "CAL-1.0",
         "reference/stove0/targets/nvenc-av1-opus/Dockerfile": "CAL-1.0",
         "reference/stove0/targets/opus/Dockerfile": "CAL-1.0",
         "reference/stove0/targets/review/materialize-target/Dockerfile": "CAL-1.0",
         "reference/stove0/targets/review/rclone-effect-target/Dockerfile": "CAL-1.0",
-        "utilities/mango-fish/Dockerfile": "Apache-2.0",
+        "reference/riverhog/applications/mango-fish/Dockerfile": "Apache-2.0",
     }
     for relative, expected_license in images.items():
         dockerfile = (REPO_ROOT / relative).read_text(encoding="utf-8")

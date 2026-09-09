@@ -101,7 +101,7 @@ jobs:
           mise x python uv age -- uv run --locked --all-packages --group dev
           python -m pytest -q
           packages/riverhog-provenance/tests/test_platform_live.py
-          utilities/gogurt/tests
+          reference/gogurt/application/tests
           tests/platform/test_end_user_artifacts.py
       - name: Qualify independent staged uv-tool installs
         run: >-

@@ -23,10 +23,10 @@ Contracts define packages; architecture records ownership.
 
 ## Boundary model
 
-- **Implementation ownership.** Products own implementations. Packages contain product contracts or
-  implementation-neutral tooling; reference contracts and support stay with their family.
-  Non-reference release units do not depend on references; reference images, qualification, and
-  tests compose them explicitly.
+- **Implementation ownership.** Riverhog owns product implementations and generic contracts.
+  Reference applications own their workflows and public interfaces; reference components own one
+  independently selected extension capability. Both are nonnormative, family-owned, and enter
+  Riverhog only through public contracts.
 - **Public contracts.** Published HTTP and CloudEvents contracts define integration. Shared models
   own identities; HTTP/OpenAPI owns CRUD and official client JSON. The generated freeze inventories
   external extents.
@@ -36,8 +36,8 @@ Contracts define packages; architecture records ownership.
   relinquish bytes only after finalization.
 - **Storage adapters.** Storage adapters translate opaque-object capabilities into
   provider mechanisms. Provider policy and mechanisms remain outside Riverhog.
-- **Companions.** Companions use Riverhog capabilities and own workflow state. Stove0 is one; its
-  core does not interpret content.
+- **Reference applications.** Reference applications use Riverhog capabilities and own their state;
+  their contracts are authoritative for the application, not for Riverhog.
 - **Extensions.** Observers report immutable-artifact facts; targets perform declared operations.
   Each selected distribution owns one capability; shared-dependency image bundles preserve separate
   identities and selection. Names identify families; only exact digest-bound contracts or selected
@@ -50,10 +50,8 @@ Workspace checks enforce ownership boundaries.
 
 - [`riverhog/server`](../riverhog/server/): archive service.
 - [`riverhog/client`](../riverhog/client/): client.
-- [`riverhog/recovery`](../riverhog/recovery/): permissively licensed independent recovery tool.
-- [`reference/gogurt`](../reference/gogurt/): Gogurt references.
-- [`reference/riverhog`](../reference/riverhog/): Riverhog references.
-- [`companions`](../companions/): independent Riverhog applications.
-- [`reference/stove0`](../reference/stove0/): Stove0 references.
-- [`utilities`](../utilities/): operator and event utilities.
-- [`packages`](../packages/): product-owned contracts and implementation-neutral support.
+- [`reference/gogurt`](../reference/gogurt/): Gogurt reference application and components.
+- [`reference/riverhog`](../reference/riverhog/): Riverhog reference applications and components,
+  including the permissively licensed independent recovery tool.
+- [`reference/stove0`](../reference/stove0/): Stove0 reference application and components.
+- [`packages`](../packages/): product-owned contracts and support.

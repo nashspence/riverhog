@@ -11,12 +11,9 @@ DURABLE_CONTEXT = {REPO / "docs/architecture.md"}
 REPOSITORY_MAP_TARGETS = {
     REPO / "riverhog/server",
     REPO / "riverhog/client",
-    REPO / "riverhog/recovery",
-    REPO / "companions",
     REPO / "reference/gogurt",
     REPO / "reference/riverhog",
     REPO / "reference/stove0",
-    REPO / "utilities",
     REPO / "packages",
 }
 MARKDOWN_LINK_RE = re.compile(r"\[[^\]]+\]\(([^)]+)\)")
@@ -36,7 +33,7 @@ ARCHITECTURE_CATEGORIES = {
         "Riverhog platform",
         "Ingress adapters",
         "Storage adapters",
-        "Companions",
+        "Reference applications",
         "Extensions",
         "Transfer path",
     ],

@@ -1,7 +1,7 @@
 """Canonical contracts for collection producers and collection transforms.
 
 The contracts in this module are deliberately transport-neutral. Riverhog owns
-collection custody and immutable identities; adapters and companions exchange
+collection custody and immutable identities; adapters and reference applications exchange
 only these sealed JSON documents and opaque capabilities.
 """
 

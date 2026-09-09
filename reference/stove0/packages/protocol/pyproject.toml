@@ -1,0 +1,33 @@
+[build-system]
+requires = ["hatchling>=1.31.0"]
+build-backend = "hatchling.build"
+
+[project]
+name = "stove0-protocol"
+version = "0.1.0"
+description = "Canonical content-opaque collection orchestration contracts for stove0."
+requires-python = ">=3.12"
+license = "Apache-2.0"
+license-files = ["LICENSE"]
+readme = { text = "Public contract or support for a nonnormative Riverhog v1 reference application. See the project URL for documentation and releases.", content-type = "text/markdown" }
+authors = [{ name = "Nash Spence" }]
+maintainers = [{ name = "Nash Spence" }]
+classifiers = [
+  "Programming Language :: Python :: 3 :: Only",
+  "Programming Language :: Python :: 3.12",
+  "Typing :: Typed",
+]
+urls = { Documentation = "https://nashspence.github.io/riverhog/v1/", Issues = "https://github.com/nashspence/riverhog/issues", Repository = "https://github.com/nashspence/riverhog" }
+dependencies = [
+  "jsonschema>=4.25,<5.0",
+  "pydantic>=2.7,<3.0",
+  "referencing>=0.37,<0.38",
+  "rfc8785>=0.1.4,<0.2",
+  "riverhog-protocol>=0.1,<0.2",
+]
+
+[tool.uv.sources]
+riverhog-protocol = { workspace = true }
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/stove0_protocol"]

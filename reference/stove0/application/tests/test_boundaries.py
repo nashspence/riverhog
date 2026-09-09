@@ -1,0 +1,360 @@
+from __future__ import annotations
+
+import ast
+import json
+from pathlib import Path
+
+from stove0_core import WorkRecord
+
+REPO_ROOT = Path(__file__).parents[4]
+STOVE0_CORE = REPO_ROOT / "reference" / "stove0" / "application" / "server" / "src" / "stove0_core"
+STOVE0_SERVER = REPO_ROOT / "reference" / "stove0" / "application" / "server" / "src"
+PROTOCOL_ROOT = REPO_ROOT / "reference" / "stove0" / "packages" / "protocol" / "src"
+RIVERHOG_RUNTIME_ROOTS = (
+    REPO_ROOT / "riverhog" / "server" / "src",
+    REPO_ROOT / "packages" / "riverhog-protocol" / "src",
+)
+OBSERVER_PROTOCOL_ROOT = (
+    REPO_ROOT / "reference" / "stove0" / "packages" / "observer-protocol" / "src"
+)
+OBSERVER_ROOT = REPO_ROOT / "reference" / "stove0" / "packages" / "observer-support" / "src"
+TARGET_PROTOCOL_ROOT = REPO_ROOT / "reference" / "stove0" / "packages" / "target-protocol" / "src"
+TARGET_ROOT = REPO_ROOT / "reference" / "stove0" / "packages" / "target-support" / "src"
+MEDIA_METADATA_OBSERVER_CONTRACT_ROOT = (
+    REPO_ROOT / "reference" / "stove0" / "observers" / "contracts" / "media-metadata" / "src"
+)
+MEDIA_SAMPLING_OBSERVER_CONTRACT_ROOT = (
+    REPO_ROOT / "reference" / "stove0" / "observers" / "contracts" / "media-sampling" / "src"
+)
+MEDIA_ARCHIVE_TARGET_CONTRACT_ROOT = (
+    REPO_ROOT / "reference" / "stove0" / "targets" / "media-archive" / "contracts" / "src"
+)
+MEDIA_ARCHIVE_TARGET_SUPPORT_ROOT = (
+    REPO_ROOT / "reference" / "stove0" / "targets" / "media-archive" / "support" / "src"
+)
+REVIEW_TARGET_CONTRACT_ROOT = (
+    REPO_ROOT / "reference" / "stove0" / "targets" / "review" / "contracts" / "src"
+)
+REVIEW_PLANNING_ROOT = (
+    REPO_ROOT / "reference" / "stove0" / "targets" / "review" / "planning" / "src"
+)
+CALLER_ROOTS = (
+    REPO_ROOT / "reference" / "stove0" / "packages" / "observer-client" / "src",
+    REPO_ROOT / "reference" / "stove0" / "packages" / "target-client" / "src",
+    REPO_ROOT / "reference" / "stove0" / "targets" / "review" / "sampler" / "client" / "src",
+)
+IMPLEMENTATION_ROOT = REPO_ROOT / "reference" / "stove0"
+MAINTAINED_TARGETS = (
+    IMPLEMENTATION_ROOT
+    / "targets"
+    / "opus"
+    / "target"
+    / "src"
+    / "stove0_opus_target"
+    / "target.py",
+    IMPLEMENTATION_ROOT
+    / "targets"
+    / "nvenc-av1-opus"
+    / "target"
+    / "src"
+    / "stove0_nvenc_av1_opus_target"
+    / "target.py",
+    IMPLEMENTATION_ROOT
+    / "targets"
+    / "review"
+    / "materialize-target"
+    / "src"
+    / "stove0_review_materialize_target"
+    / "target.py",
+)
+EXTENSION_ROOTS = (
+    OBSERVER_PROTOCOL_ROOT,
+    OBSERVER_ROOT,
+    TARGET_PROTOCOL_ROOT,
+    TARGET_ROOT,
+    MEDIA_METADATA_OBSERVER_CONTRACT_ROOT,
+    MEDIA_SAMPLING_OBSERVER_CONTRACT_ROOT,
+    MEDIA_ARCHIVE_TARGET_CONTRACT_ROOT,
+    MEDIA_ARCHIVE_TARGET_SUPPORT_ROOT,
+    REVIEW_TARGET_CONTRACT_ROOT,
+    REVIEW_PLANNING_ROOT,
+)
+FORBIDDEN_CORE_IMPORTS = {
+    "PIL",
+    "av",
+    "cv2",
+    "exiftool",
+    "ffmpeg",
+    "magic",
+    "mimetypes",
+    "mutagen",
+    "numpy",
+    "subprocess",
+}
+
+
+def _import_roots(path: Path) -> set[str]:
+    roots: set[str] = set()
+    tree = ast.parse(path.read_text(encoding="utf-8"), filename=str(path))
+    for node in ast.walk(tree):
+        if isinstance(node, ast.Import):
+            roots.update(alias.name.split(".", 1)[0] for alias in node.names)
+        elif isinstance(node, ast.ImportFrom) and node.module:
+            roots.add(node.module.split(".", 1)[0])
+    return roots
+
+
+def _identifiers(path: Path) -> set[str]:
+    tree = ast.parse(path.read_text(encoding="utf-8"), filename=str(path))
+    return {
+        node.id if isinstance(node, ast.Name) else node.attr
+        for node in ast.walk(tree)
+        if isinstance(node, (ast.Name, ast.Attribute))
+    }
+
+
+def test_stove0_core_has_no_content_parser_probe_or_tool_dependency() -> None:
+    imports = {root for path in STOVE0_CORE.rglob("*.py") for root in _import_roots(path)}
+    assert not (imports & FORBIDDEN_CORE_IMPORTS)
+
+
+def test_external_extension_surfaces_do_not_import_product_or_server_internals() -> None:
+    forbidden = {
+        "riverhog_api",
+        "riverhog_core",
+        "stove0_core",
+    }
+    offenders = [
+        path
+        for root in EXTENSION_ROOTS
+        for path in root.rglob("*.py")
+        if _import_roots(path) & forbidden
+    ]
+    assert offenders == []
+
+
+def test_extension_surfaces_do_not_depend_on_each_other() -> None:
+    assert not {
+        path
+        for path in (*OBSERVER_PROTOCOL_ROOT.rglob("*.py"), *OBSERVER_ROOT.rglob("*.py"))
+        if _import_roots(path) & {"stove0_target_protocol", "stove0_target_support"}
+    }
+    assert not {
+        path
+        for path in (*TARGET_PROTOCOL_ROOT.rglob("*.py"), *TARGET_ROOT.rglob("*.py"))
+        if _import_roots(path) & {"stove0_observer_protocol", "stove0_observer_support"}
+    }
+
+
+def test_observer_owned_semantics_do_not_depend_on_target_authority() -> None:
+    forbidden = {
+        "stove0_media_archive_target_contracts",
+        "stove0_media_archive_target_support",
+        "stove0_review_planning",
+        "stove0_review_target_contracts",
+        "stove0_target_protocol",
+        "stove0_target_support",
+    }
+    for root in (
+        MEDIA_METADATA_OBSERVER_CONTRACT_ROOT,
+        MEDIA_SAMPLING_OBSERVER_CONTRACT_ROOT,
+    ):
+        imports = {item for path in root.rglob("*.py") for item in _import_roots(path)}
+        assert "stove0_observer_protocol" in imports
+        assert not imports & forbidden
+
+
+def test_target_owned_semantics_do_not_depend_on_observer_runtime() -> None:
+    media_imports = {
+        item
+        for path in MEDIA_ARCHIVE_TARGET_CONTRACT_ROOT.rglob("*.py")
+        for item in _import_roots(path)
+    }
+    review_imports = {
+        item for path in REVIEW_TARGET_CONTRACT_ROOT.rglob("*.py") for item in _import_roots(path)
+    }
+    assert "stove0_target_protocol" in media_imports
+    assert "stove0_media_metadata_observer_contracts" not in media_imports
+    assert "stove0_target_protocol" in review_imports
+    assert "stove0_media_sampling_observer_contracts" not in review_imports
+    for imports in (media_imports, review_imports):
+        assert "stove0_observer_support" not in imports
+        assert "stove0_target_support" not in imports
+
+
+def test_only_explicit_support_bridges_join_observer_and_target_semantics() -> None:
+    media_imports = {
+        item
+        for path in MEDIA_ARCHIVE_TARGET_SUPPORT_ROOT.rglob("*.py")
+        for item in _import_roots(path)
+    }
+    review_imports = {
+        item for path in REVIEW_PLANNING_ROOT.rglob("*.py") for item in _import_roots(path)
+    }
+    assert {
+        "stove0_media_archive_target_contracts",
+        "stove0_media_metadata_observer_contracts",
+    } <= media_imports
+    assert {
+        "stove0_media_sampling_observer_contracts",
+        "stove0_review_target_contracts",
+    } <= review_imports
+    for imports in (media_imports, review_imports):
+        assert "stove0_core" not in imports
+        assert "stove0_observer_support" not in imports
+        assert "stove0_target_support" not in imports
+
+
+def test_protocol_package_is_independent_of_implementations_and_stove0_core() -> None:
+    forbidden = {
+        "stove0_core",
+        "stove0_observer_support",
+        "stove0_target_support",
+        "stove0_media_archive_target_contracts",
+        "stove0_media_archive_target_support",
+        "stove0_media_metadata_observer_contracts",
+        "stove0_media_sampling_observer_contracts",
+        "stove0_observer_protocol",
+        "stove0_review_planning",
+        "stove0_review_target_contracts",
+        "stove0_target_protocol",
+    }
+    imports = {root for path in PROTOCOL_ROOT.rglob("*.py") for root in _import_roots(path)}
+    assert not (imports & forbidden)
+
+
+def test_riverhog_runtime_remains_stove0_and_coordination_ontology_agnostic() -> None:
+    sources = [path for root in RIVERHOG_RUNTIME_ROOTS for path in root.rglob("*.py")]
+    imports = {root for path in sources for root in _import_roots(path)}
+    assert "stove0_protocol" not in imports
+    assert not {
+        path for path in sources if {"BranchSetPlan", "CoordinationSettlement"} & _identifiers(path)
+    }
+
+
+def test_durable_stove0_work_schema_contains_no_bearer_material() -> None:
+    schema = json.dumps(WorkRecord.model_json_schema(), sort_keys=True)
+    assert "capability_token" not in schema
+    assert "riverhog_base_url" not in schema
+
+
+def test_stove0_core_does_not_import_maintained_review_semantics() -> None:
+    imports = {root for path in STOVE0_CORE.rglob("*.py") for root in _import_roots(path)}
+    assert "stove0_review_planning" not in imports
+    assert "stove0_review_target_contracts" not in imports
+
+
+def test_stove0_core_does_not_define_a_second_observer_acceptance_domain() -> None:
+    assert not {
+        path
+        for path in STOVE0_CORE.rglob("*.py")
+        if "accept_observation_result" in _identifiers(path)
+    }
+
+
+def test_stove0_server_consumes_component_boundaries_only_as_protocols_and_callers() -> None:
+    imports = {root for path in STOVE0_SERVER.rglob("*.py") for root in _import_roots(path)}
+    assert not imports & {
+        "riverhog_transform_sdk",
+        "stove0_media_archive_target_contracts",
+        "stove0_media_archive_target_support",
+        "stove0_media_metadata_observer_contracts",
+        "stove0_media_sampling_observer_contracts",
+        "stove0_observer_support",
+        "stove0_review_planning",
+        "stove0_review_target_contracts",
+        "stove0_review_sampler_support",
+        "stove0_target_support",
+        "stove0_ffprobe_sampling_observer",
+        "stove0_nvenc_av1_opus_review_sampler",
+        "stove0_nvenc_av1_opus_target",
+        "stove0_opus_review_sampler",
+        "stove0_opus_target",
+        "stove0_review_materialize_target",
+        "stove0_review_rclone_effect_target",
+        "stove0_review_target_support",
+    }
+
+
+def test_caller_packages_do_not_pull_in_author_or_implementation_dependencies() -> None:
+    imports = {
+        root
+        for caller in CALLER_ROOTS
+        for path in caller.rglob("*.py")
+        for root in _import_roots(path)
+    }
+    assert not imports & {
+        "riverhog_transform_sdk",
+        "stove0_core",
+        "stove0_media_archive_target_contracts",
+        "stove0_media_archive_target_support",
+        "stove0_media_metadata_observer_contracts",
+        "stove0_media_sampling_observer_contracts",
+        "stove0_observer_support",
+        "stove0_review_planning",
+        "stove0_review_target_contracts",
+        "stove0_review_sampler_support",
+        "stove0_target_support",
+    }
+
+
+def test_maintained_reference_components_do_not_import_product_internals() -> None:
+    imports = {
+        imported
+        for component_kind in ("observers", "targets")
+        for path in (IMPLEMENTATION_ROOT / component_kind).rglob("*.py")
+        for imported in _import_roots(path)
+    }
+    assert not imports & {"riverhog_api", "riverhog_core", "stove0_api", "stove0_core"}
+
+
+def test_maintained_targets_seal_callback_authority_through_shared_runtime() -> None:
+    for path in MAINTAINED_TARGETS:
+        tree = ast.parse(path.read_text(encoding="utf-8"), filename=str(path))
+        calls = [
+            node
+            for node in ast.walk(tree)
+            if isinstance(node, ast.Call)
+            and isinstance(node.func, ast.Attribute)
+            and node.func.attr in {"publish_success", "finish_success"}
+        ]
+        assert len(calls) == 1, path
+        keyword_names = {item.arg for item in calls[0].keywords}
+        assert {"execution_sha256", "operation"} <= keyword_names, path
+        assert "stove0_target_support" in _import_roots(path)
+
+    direct_targets = MAINTAINED_TARGETS[:2]
+    assert all(
+        any(
+            isinstance(node, ast.Call)
+            and isinstance(node.func, ast.Attribute)
+            and node.func.attr == "declare_disposition"
+            for node in ast.walk(ast.parse(path.read_text(encoding="utf-8")))
+        )
+        for path in direct_targets
+    )
+    review_support = (
+        IMPLEMENTATION_ROOT
+        / "targets"
+        / "review"
+        / "support"
+        / "src"
+        / "stove0_review_target_support"
+        / "target.py"
+    )
+    assert any(
+        isinstance(node, ast.Call)
+        and isinstance(node.func, ast.Attribute)
+        and node.func.attr == "declare_disposition"
+        for node in ast.walk(ast.parse(review_support.read_text(encoding="utf-8")))
+    )
+
+
+def test_review_planning_bridge_is_not_a_stove0_product_plugin() -> None:
+    forbidden = {
+        "stove0_core",
+        "riverhog_api",
+        "riverhog_core",
+    }
+    imports = {root for path in REVIEW_PLANNING_ROOT.rglob("*.py") for root in _import_roots(path)}
+    assert not (imports & forbidden)

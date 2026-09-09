@@ -391,24 +391,23 @@ def test_compose_services_publish_the_archive_runtime_configuration() -> None:
         ("ruff", (), "python -m ruff check ."),
         (
             "ruff-fix",
-            ("FILES=companions/stove0/server",),
-            "python -m ruff check --fix companions/stove0/server",
+            ("FILES=reference/stove0/application/server",),
+            "python -m ruff check --fix reference/stove0/application/server",
         ),
         (
             "format",
-            ("FILES=companions/stove0/server",),
-            "python -m ruff format companions/stove0/server",
+            ("FILES=reference/stove0/application/server",),
+            "python -m ruff format reference/stove0/application/server",
         ),
         (
             "unit",
             ("args=-k entrypoint",),
-            "python -m pytest -q companions packages reference riverhog tests/unit utilities "
-            "-k entrypoint",
+            "python -m pytest -q packages reference riverhog tests/unit -k entrypoint",
         ),
         (
             "unit",
-            ("TESTS=companions/stove0/tests/test_stove0_api_parity.py",),
-            "python -m pytest -q companions/stove0/tests/test_stove0_api_parity.py",
+            ("TESTS=reference/stove0/application/tests/test_stove0_api_parity.py",),
+            "python -m pytest -q reference/stove0/application/tests/test_stove0_api_parity.py",
         ),
         (
             "spec",
@@ -494,15 +493,15 @@ def test_fix_runs_ruff_fix_then_format(tmp_path: Path) -> None:
     completed, docker_log_path, uv_log_path = _run_make(
         tmp_path,
         "fix",
-        "FILES=companions/stove0/server",
+        "FILES=reference/stove0/application/server",
     )
 
     assert completed.returncode == 0, completed.stderr
     assert _read_log_lines(docker_log_path) == []
     uv_log_lines = _read_log_lines(uv_log_path)
     assert len(uv_log_lines) == 2
-    assert "python -m ruff check --fix companions/stove0/server" in uv_log_lines[0]
-    assert "python -m ruff format companions/stove0/server" in uv_log_lines[1]
+    assert "python -m ruff check --fix reference/stove0/application/server" in uv_log_lines[0]
+    assert "python -m ruff format reference/stove0/application/server" in uv_log_lines[1]
 
 
 def test_local_targets_fail_clearly_when_mise_is_missing(tmp_path: Path) -> None:
@@ -527,7 +526,7 @@ def test_mypy_target_covers_source_and_service_apps(tmp_path: Path) -> None:
     assert _read_log_lines(docker_log_path) == []
     uv_log_lines = _read_log_lines(uv_log_path)
     assert len(uv_log_lines) == 1
-    assert "python -m mypy companions/stove0/client/src" in uv_log_lines[0]
+    assert "python -m mypy reference/stove0/application/client/src" in uv_log_lines[0]
     for source in (
         "reference/stove0/observers/exiftool/src",
         "reference/stove0/observers/ffprobe-sampling/src",
@@ -538,27 +537,30 @@ def test_mypy_target_covers_source_and_service_apps(tmp_path: Path) -> None:
         "reference/stove0/targets/review/materialize-target/src",
         "reference/stove0/targets/review/rclone-effect-target/src",
         "reference/stove0/targets/review/support/src",
-        "companions/stove0/server/src",
+        "reference/stove0/application/server/src",
         "reference/stove0/targets/media-archive/contracts/src",
         "reference/stove0/targets/media-archive/support/src",
         "reference/stove0/observers/contracts/media-metadata/src",
         "reference/stove0/observers/contracts/media-sampling/src",
-        "packages/stove0-observer-client/src",
+        "reference/stove0/packages/observer-client/src",
         "reference/stove0/targets/review/planning/src",
         "reference/stove0/targets/review/sampler/protocol/src",
         "reference/stove0/targets/review/sampler/support/src",
         "reference/stove0/targets/review/sampler/client/src",
         "reference/stove0/targets/review/contracts/src",
-        "packages/stove0-target-client/src",
+        "reference/stove0/packages/target-client/src",
     ):
         assert source in uv_log_lines[0]
     assert (
-        "riverhog/client/src reference/riverhog/ingress/ftp/src riverhog/recovery/src"
+        "riverhog/client/src reference/riverhog/ingress/ftp/src reference/riverhog/recovery/src"
         in uv_log_lines[0]
     )
     assert "scripts/operation_qualification.py" in uv_log_lines[0]
     assert "scripts/provider_qualification.py" in uv_log_lines[0]
-    assert "utilities/gogurt/src utilities/mango-fish/src" in uv_log_lines[0]
+    assert (
+        "reference/gogurt/application/src reference/riverhog/applications/mango-fish/src"
+        in uv_log_lines[0]
+    )
     assert "--no-error-summary --no-color-output --strict" in uv_log_lines[0]
 
 
@@ -588,7 +590,7 @@ def test_lint_runs_license_format_ruff_and_mypy(tmp_path: Path) -> None:
     assert "python -m reuse lint" in uv_log_lines[0]
     assert "python -m ruff format --check ." in uv_log_lines[1]
     assert "python -m ruff check ." in uv_log_lines[2]
-    assert "python -m mypy companions/stove0/client/src" in uv_log_lines[3]
+    assert "python -m mypy reference/stove0/application/client/src" in uv_log_lines[3]
 
 
 def test_build_targets_use_the_canonical_bake_graph(tmp_path: Path) -> None:
@@ -812,7 +814,7 @@ def test_dockerfiles_keep_dependency_layers_independent_of_docs_and_tests() -> N
         "COPY riverhog/server/src riverhog/server/src"
     ) < app_dockerfile.index("uv sync --frozen --package riverhog-server --no-dev --no-editable")
     assert test_dockerfile.index("COPY pyproject.toml uv.lock ./") < test_dockerfile.index(
-        "COPY companions companions"
+        "COPY reference reference"
     )
     assert "uv sync --frozen --all-packages --group dev --no-editable" in test_dockerfile
     assert '"$(mise which uv)" /opt/riverhog-tools/bin/uv' in test_dockerfile
@@ -821,11 +823,9 @@ def test_dockerfiles_keep_dependency_layers_independent_of_docs_and_tests() -> N
     assert test_dockerfile.index("COPY pyproject.toml uv.lock ./") < test_dockerfile.index(
         "COPY tests tests"
     )
-    assert "COPY companions companions" in test_dockerfile
     assert "COPY reference reference" in test_dockerfile
     assert "COPY packages packages" in test_dockerfile
     assert "COPY riverhog riverhog" in test_dockerfile
-    assert "COPY utilities utilities" in test_dockerfile
     assert "COPY tests tests" in test_dockerfile
     assert "/docs/" in dockerignore
 
@@ -833,10 +833,8 @@ def test_dockerfiles_keep_dependency_layers_independent_of_docs_and_tests() -> N
 def test_dockerfile_copy_sources_are_git_owned() -> None:
     dockerfiles = [
         REPO_ROOT / "tests" / "Dockerfile",
-        *sorted((REPO_ROOT / "companions").rglob("Dockerfile")),
         *sorted((REPO_ROOT / "reference").rglob("Dockerfile")),
         *sorted((REPO_ROOT / "riverhog").rglob("Dockerfile")),
-        *sorted((REPO_ROOT / "utilities").rglob("Dockerfile")),
     ]
 
     for dockerfile in dockerfiles:
@@ -859,12 +857,14 @@ def test_dockerfile_copy_sources_are_git_owned() -> None:
 
 
 def test_workspace_unit_lane_owns_application_unit_tests() -> None:
-    assert (REPO_ROOT / "companions/stove0/tests/test_stove0_api_parity.py").is_file()
+    assert (REPO_ROOT / "reference/stove0/application/tests/test_stove0_api_parity.py").is_file()
     assert (
         REPO_ROOT / "reference/riverhog/ingress/ftp/tests/test_ftp_adapter_api_parity.py"
     ).is_file()
-    assert (REPO_ROOT / "utilities/mango-fish/tests/test_mango_fish.py").is_file()
-    assert (REPO_ROOT / "utilities/gogurt/tests/test_gogurt.py").is_file()
+    assert (
+        REPO_ROOT / "reference/riverhog/applications/mango-fish/tests/test_mango_fish.py"
+    ).is_file()
+    assert (REPO_ROOT / "reference/gogurt/application/tests/test_gogurt.py").is_file()
 
 
 def test_repo_wide_lint_targets_cover_source_and_service_apps() -> None:
@@ -896,7 +896,7 @@ def test_format_check_and_compile_are_non_mutating_repository_targets(tmp_path: 
     assert _read_log_lines(docker_log_path) == []
     assert _read_log_lines(uv_log_path) == [
         "|x -- uv run --locked --all-packages --group dev "
-        "python -m compileall -q companions packages reference riverhog scripts tests utilities"
+        "python -m compileall -q packages reference riverhog scripts tests"
     ]
 
 
@@ -904,14 +904,14 @@ def test_deployed_application_dockerfiles_use_locked_workspace_dependencies() ->
     service_dockerfiles = [
         REPO_ROOT / "riverhog/server/Dockerfile",
         REPO_ROOT / "reference/riverhog/ingress/ftp/Dockerfile",
-        REPO_ROOT / "companions/stove0/server/Dockerfile",
+        REPO_ROOT / "reference/stove0/application/server/Dockerfile",
         REPO_ROOT / "reference/stove0/observers/exiftool/Dockerfile",
         REPO_ROOT / "reference/stove0/observers/ffprobe-sampling/Dockerfile",
         REPO_ROOT / "reference/stove0/targets/nvenc-av1-opus/Dockerfile",
         REPO_ROOT / "reference/stove0/targets/opus/Dockerfile",
         REPO_ROOT / "reference/stove0/targets/review/materialize-target/Dockerfile",
         REPO_ROOT / "reference/stove0/targets/review/rclone-effect-target/Dockerfile",
-        REPO_ROOT / "utilities/mango-fish/Dockerfile",
+        REPO_ROOT / "reference/riverhog/applications/mango-fish/Dockerfile",
     ]
 
     for path in service_dockerfiles:
@@ -986,11 +986,8 @@ def test_test_aggregate_runs_lint_then_unit(tmp_path: Path) -> None:
     assert "python -m reuse lint" in uv_log_lines[0]
     assert "python -m ruff format --check ." in uv_log_lines[1]
     assert "python -m ruff check ." in uv_log_lines[2]
-    assert "python -m mypy companions/stove0/client/src" in uv_log_lines[3]
-    assert (
-        "python -m pytest -q companions packages reference riverhog tests/unit utilities"
-        in uv_log_lines[4]
-    )
+    assert "python -m mypy reference/stove0/application/client/src" in uv_log_lines[3]
+    assert "python -m pytest -q packages reference riverhog tests/unit" in uv_log_lines[4]
 
 
 def test_down_target_uses_compose_down_with_volumes(tmp_path: Path) -> None:

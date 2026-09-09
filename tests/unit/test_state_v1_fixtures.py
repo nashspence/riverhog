@@ -23,7 +23,7 @@ MIGRATION_BASELINES = {
         "alembic",
         "riverhog_core.state_migrations.v1_ddl",
     ),
-    "companions/stove0/server/src/stove0_core/state_migrations/versions/v1_0001.py": (
+    "reference/stove0/application/server/src/stove0_core/state_migrations/versions/v1_0001.py": (
         "alembic",
         "stove0_core.state_migrations.v1_ddl",
     ),
@@ -31,7 +31,10 @@ MIGRATION_BASELINES = {
         "alembic",
         "riverhog_cli.state_migrations.v1_ddl",
     ),
-    "utilities/mango-fish/src/mango_fish/state_migrations/versions/v1_0001.py": (
+    (
+        "reference/riverhog/applications/mango-fish/src/mango_fish/state_migrations/"
+        "versions/v1_0001.py"
+    ): (
         "alembic",
         "mango_fish.state_migrations.v1_ddl",
     ),
