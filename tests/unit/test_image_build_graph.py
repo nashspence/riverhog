@@ -75,16 +75,16 @@ IMAGE_CONTRACTS = {
         "compose": (("riverhog/server/compose.yaml", "filesystem-cache-adapter"),),
     },
     "stove0": {
-        "dockerfile": "companions/stove0/server/Dockerfile",
+        "dockerfile": "reference/stove0/application/server/Dockerfile",
         "tag": "stove0:dev",
         "compose_target": "reference-composition",
         "title": "stove0",
         "license": "CAL-1.0",
         "compose": (
-            ("companions/stove0/compose.yaml", "state"),
-            ("companions/stove0/compose.yaml", "api"),
-            ("companions/stove0/compose.yaml", "controller"),
-            ("companions/stove0/compose.yaml", "worker"),
+            ("reference/stove0/application/compose.yaml", "state"),
+            ("reference/stove0/application/compose.yaml", "api"),
+            ("reference/stove0/application/compose.yaml", "controller"),
+            ("reference/stove0/application/compose.yaml", "worker"),
         ),
     },
     "stove0-exiftool-observer": {
@@ -92,14 +92,14 @@ IMAGE_CONTRACTS = {
         "tag": "stove0-exiftool-observer:dev",
         "title": "stove0 ExifTool observer",
         "license": "CAL-1.0",
-        "compose": (("companions/stove0/compose.yaml", "exiftool-observer"),),
+        "compose": (("reference/stove0/application/compose.yaml", "exiftool-observer"),),
     },
     "stove0-ffprobe-sampling-observer": {
         "dockerfile": "reference/stove0/observers/ffprobe-sampling/Dockerfile",
         "tag": "stove0-ffprobe-sampling-observer:dev",
         "title": "stove0 FFprobe sampling observer",
         "license": "CAL-1.0",
-        "compose": (("companions/stove0/compose.yaml", "ffprobe-sampling-observer"),),
+        "compose": (("reference/stove0/application/compose.yaml", "ffprobe-sampling-observer"),),
     },
     "stove0-nvenc-av1-opus-target": {
         "dockerfile": "reference/stove0/targets/nvenc-av1-opus/Dockerfile",
@@ -107,8 +107,8 @@ IMAGE_CONTRACTS = {
         "title": "stove0 NVENC AV1 + Opus target",
         "license": "CAL-1.0",
         "compose": (
-            ("companions/stove0/compose.yaml", "nvenc-av1-opus-target"),
-            ("companions/stove0/compose.yaml", "nvenc-av1-opus-review-sampler"),
+            ("reference/stove0/application/compose.yaml", "nvenc-av1-opus-target"),
+            ("reference/stove0/application/compose.yaml", "nvenc-av1-opus-review-sampler"),
         ),
     },
     "stove0-opus-target": {
@@ -117,8 +117,8 @@ IMAGE_CONTRACTS = {
         "title": "stove0 Opus target",
         "license": "CAL-1.0",
         "compose": (
-            ("companions/stove0/compose.yaml", "opus-target"),
-            ("companions/stove0/compose.yaml", "opus-review-sampler"),
+            ("reference/stove0/application/compose.yaml", "opus-target"),
+            ("reference/stove0/application/compose.yaml", "opus-review-sampler"),
         ),
     },
     "stove0-review-materialize-target": {
@@ -126,17 +126,17 @@ IMAGE_CONTRACTS = {
         "tag": "stove0-review-materialize-target:dev",
         "title": "stove0 review materialize target",
         "license": "CAL-1.0",
-        "compose": (("companions/stove0/compose.yaml", "review-materialize-target"),),
+        "compose": (("reference/stove0/application/compose.yaml", "review-materialize-target"),),
     },
     "stove0-review-rclone-effect-target": {
         "dockerfile": "reference/stove0/targets/review/rclone-effect-target/Dockerfile",
         "tag": "stove0-review-rclone-effect-target:dev",
         "title": "stove0 rclone review-effect target",
         "license": "CAL-1.0",
-        "compose": (("companions/stove0/compose.yaml", "review-rclone-effect-target"),),
+        "compose": (("reference/stove0/application/compose.yaml", "review-rclone-effect-target"),),
     },
     "mango-fish": {
-        "dockerfile": "utilities/mango-fish/Dockerfile",
+        "dockerfile": "reference/riverhog/applications/mango-fish/Dockerfile",
         "tag": "mango-fish:dev",
         "title": "Mango Fish",
         "license": "Apache-2.0",
@@ -455,9 +455,10 @@ def test_stove0_reference_validators_are_compose_composition_only() -> None:
         "FROM build AS reference-composition-build", 1
     )
     composition_build, runtime_stages = composition_and_runtime.split("FROM python:3.12-slim@", 1)
-    composition_runtime, product_runtime = runtime_stages.split("FROM runtime-base AS runtime", 1)
+    composition_runtime, generic_runtime = runtime_stages.split("FROM runtime-base AS runtime", 1)
 
-    assert "reference/" not in generic_build
+    assert "reference/stove0/observers/" not in generic_build
+    assert "reference/stove0/targets/" not in generic_build
     assert "--package stove0-server --no-dev --no-editable" in generic_build
     assert "stove0-media-metadata-observer-contracts" not in generic_build
     assert "stove0-media-sampling-observer-contracts" not in generic_build
@@ -479,9 +480,9 @@ def test_stove0_reference_validators_are_compose_composition_only() -> None:
     )
     assert 'io.github.nashspence.riverhog.release-role="product"' not in composition_runtime
     assert "COPY --from=reference-composition-build /opt/venv /opt/venv" in (composition_runtime)
-    assert 'io.github.nashspence.riverhog.release-role="product"' in product_runtime
-    assert "COPY --from=build /opt/venv /opt/venv" in product_runtime
-    assert "reference-composition-build" not in product_runtime
+    assert 'io.github.nashspence.riverhog.release-role="reference"' in generic_runtime
+    assert "COPY --from=build /opt/venv /opt/venv" in generic_runtime
+    assert "reference-composition-build" not in generic_runtime
 
 
 def test_github_image_matrix_uses_bounded_per_image_bake_caches() -> None:

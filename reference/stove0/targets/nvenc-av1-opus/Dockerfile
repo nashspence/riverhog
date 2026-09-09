@@ -109,15 +109,15 @@ COPY packages/riverhog-transform-sdk packages/riverhog-transform-sdk
 COPY reference/stove0/targets/media-archive/contracts reference/stove0/targets/media-archive/contracts
 COPY reference/stove0/targets/media-archive/support reference/stove0/targets/media-archive/support
 COPY reference/stove0/observers/contracts/media-metadata reference/stove0/observers/contracts/media-metadata
-COPY packages/stove0-observer-protocol packages/stove0-observer-protocol
-COPY packages/stove0-protocol packages/stove0-protocol
+COPY reference/stove0/packages/observer-protocol reference/stove0/packages/observer-protocol
+COPY reference/stove0/packages/protocol reference/stove0/packages/protocol
 COPY reference/stove0/targets/review/contracts reference/stove0/targets/review/contracts
 COPY reference/stove0/targets/review/sampler/client reference/stove0/targets/review/sampler/client
 COPY reference/stove0/targets/review/sampler/protocol reference/stove0/targets/review/sampler/protocol
 COPY reference/stove0/targets/review/sampler/support reference/stove0/targets/review/sampler/support
-COPY packages/stove0-target-client packages/stove0-target-client
-COPY packages/stove0-target-protocol packages/stove0-target-protocol
-COPY packages/stove0-target-support packages/stove0-target-support
+COPY reference/stove0/packages/target-client reference/stove0/packages/target-client
+COPY reference/stove0/packages/target-protocol reference/stove0/packages/target-protocol
+COPY reference/stove0/packages/target-support reference/stove0/packages/target-support
 COPY packages/time-formats packages/time-formats
 RUN uv sync --frozen --package stove0-nvenc-av1-opus-target --package stove0-nvenc-av1-opus-review-sampler --no-dev --no-editable
 

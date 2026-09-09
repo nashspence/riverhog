@@ -978,7 +978,7 @@ def test_non_cli_python_interfaces_do_not_reintroduce_an_all_selector() -> None:
     roots = (
         REPO_ROOT / "packages",
         REPO_ROOT / "riverhog" / "server",
-        REPO_ROOT / "companions" / "stove0" / "server",
+        REPO_ROOT / "reference" / "stove0" / "application" / "server",
     )
     offenders: list[str] = []
     for root in roots:

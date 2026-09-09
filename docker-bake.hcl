@@ -71,7 +71,7 @@ target "riverhog-storage-adapter-filesystem" {
 target "stove0" {
   inherits   = ["image-common"]
   context    = "."
-  dockerfile = "companions/stove0/server/Dockerfile"
+  dockerfile = "reference/stove0/application/server/Dockerfile"
   tags       = ["stove0:dev"]
   args       = { SOURCE_REVISION = "unknown" }
 }
@@ -127,7 +127,7 @@ target "stove0-review-rclone-effect-target" {
 target "mango-fish" {
   inherits   = ["image-common"]
   context    = "."
-  dockerfile = "utilities/mango-fish/Dockerfile"
+  dockerfile = "reference/riverhog/applications/mango-fish/Dockerfile"
   tags       = ["mango-fish:dev"]
   args       = { SOURCE_REVISION = "unknown" }
 }

@@ -2,13 +2,14 @@
 
 Riverhog uses a component-based licensing boundary.
 
-The following server implementations are licensed under the Cryptographic Autonomy
+The following implementations are licensed under the Cryptographic Autonomy
 License 1.0 (`CAL-1.0`):
 
 - `riverhog/server/**`
-- `companions/stove0/server/**`
+- `reference/stove0/application/server/**`
 - `reference/riverhog/storage/aws/**`
 - `reference/riverhog/storage/backblaze/**`
+- `reference/riverhog/storage/filesystem/**`
 - `reference/stove0/observers/exiftool/**`
 - `reference/stove0/observers/ffprobe-sampling/**`
 - `reference/stove0/targets/nvenc-av1-opus/**`
@@ -22,7 +23,7 @@ observer/target implementations remain CAL-licensed. No Riverhog file carries CA
 Combined Work Exception unless it is explicitly identified there in the future.
 
 All other first-party repository content is licensed under Apache License 2.0
-(`Apache-2.0`) by default. This includes clients, reusable packages, utilities,
+(`Apache-2.0`) by default. This includes clients, reusable packages, reference applications,
 documentation, scripts, tests, archive-format and protocol specifications, API clients,
 SDKs, interoperability examples, and independent recovery tooling.
 

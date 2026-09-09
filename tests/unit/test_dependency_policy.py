@@ -69,15 +69,19 @@ def test_repo_owns_toolchain_python_lock_and_runtime_exports() -> None:
     assert mise["settings"]["lockfile"] is True
     assert "dev" in pyproject["dependency-groups"]
     assert pyproject["tool"]["uv"]["workspace"]["members"] == [
-        "companions/*/client",
-        "companions/*/server",
         "packages/*",
+        "reference/gogurt/application",
         "reference/gogurt/listener-host/*",
         "reference/gogurt/mounted-volume/*",
+        "reference/gogurt/packages/*",
+        "reference/riverhog/applications/*",
         "reference/riverhog/ingress/*",
         "reference/riverhog/provenance/contracts/*",
         "reference/riverhog/provenance/observers/*",
+        "reference/riverhog/recovery",
         "reference/riverhog/storage/*",
+        "reference/stove0/application/client",
+        "reference/stove0/application/server",
         "reference/stove0/observers/exiftool",
         "reference/stove0/observers/ffprobe-sampling",
         "reference/stove0/observers/contracts/*",
@@ -90,8 +94,8 @@ def test_repo_owns_toolchain_python_lock_and_runtime_exports() -> None:
         "reference/stove0/targets/review/sampler/*",
         "reference/stove0/targets/*/target",
         "reference/stove0/targets/*/review-sampler",
+        "reference/stove0/packages/*",
         "riverhog/*",
-        "utilities/*",
     ]
     assert (REPO_ROOT / "mise.lock").is_file()
     assert (REPO_ROOT / "uv.lock").is_file()

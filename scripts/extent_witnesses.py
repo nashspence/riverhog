@@ -67,7 +67,7 @@ WITNESSES = (
         owner="riverhog",
         reasons=("bounded-authority-append",),
         test_node_ids=(
-            "companions/stove0/tests/test_riverhog_adapter.py::"
+            "reference/stove0/application/tests/test_riverhog_adapter.py::"
             "test_post_root_settlement_restarts_from_bounded_portable_inventory_progress",
             "tests/integration/test_collection_deletion_concurrency.py::"
             "test_postgres_exact_output_intent_creation_resumes_one_upload",
@@ -79,7 +79,7 @@ WITNESSES = (
         owner="riverhog",
         reasons=("bounded-disposition-append",),
         test_node_ids=(
-            "companions/stove0/tests/test_riverhog_adapter.py::"
+            "reference/stove0/application/tests/test_riverhog_adapter.py::"
             "test_post_root_settlement_restarts_from_bounded_portable_inventory_progress",
             "tests/integration/test_collection_deletion_concurrency.py::"
             "test_postgres_concurrent_first_disposition_and_output_create_one_set",
@@ -148,9 +148,9 @@ WITNESSES = (
         test_node_ids=(
             "tests/unit/test_public_interface_parity.py::"
             "test_public_read_collection_selectors_are_bounded_and_frozen",
-            "companions/stove0/tests/test_cli.py::"
+            "reference/stove0/application/tests/test_cli.py::"
             "test_stove0_bounded_pages_keep_rich_and_json_cli_parity",
-            "companions/stove0/tests/test_work_state.py::"
+            "reference/stove0/application/tests/test_work_state.py::"
             "test_sql_operational_retention_scans_bounded_pages_without_parsing_all_work",
         ),
         gates=("make unit", "make database-qualification", "make compose-smoke"),

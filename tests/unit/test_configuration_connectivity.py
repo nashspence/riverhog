@@ -14,14 +14,12 @@ from riverhog_ftp_adapter.config import FtpAdapterConfig, SourceConfig
 from stove0_core import EndpointRegistration, Stove0RuntimeConfig
 
 REPO_ROOT = Path(__file__).parents[2]
-STOVE0_SOURCE = REPO_ROOT / "companions" / "stove0" / "server" / "src"
+STOVE0_SOURCE = REPO_ROOT / "reference" / "stove0" / "application" / "server" / "src"
 ADAPTER_SOURCE = REPO_ROOT / "reference" / "riverhog" / "ingress" / "ftp" / "src"
 PRODUCTION_ROOTS = (
     REPO_ROOT / "packages",
     REPO_ROOT / "riverhog",
-    REPO_ROOT / "companions",
     REPO_ROOT / "reference",
-    REPO_ROOT / "utilities",
     REPO_ROOT / "scripts",
 )
 _SETTING_NAME = re.compile(r"^(?:RIVERHOG|STOVE0|GOGURT|MANGO|VCRUNCH)_[A-Z0-9_]+$")

@@ -222,7 +222,7 @@ def test_ci_uses_thin_repository_and_image_build_adapters() -> None:
         "mise x python uv age -- uv run --locked --all-packages --group dev "
         "python -m pytest -q "
         "packages/riverhog-provenance/tests/test_platform_live.py "
-        "utilities/gogurt/tests "
+        "reference/gogurt/application/tests "
         "tests/platform/test_end_user_artifacts.py",
         "mise x python uv age -- uv run --locked --all-packages --group dev "
         "python scripts/qualify_installation.py --version 1.0.0 --listener-lifecycle "

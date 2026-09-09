@@ -41,7 +41,7 @@ if (( smoke_download_quota_bytes < 16777216 )); then
 fi
 stove0_project="${COMPOSE_PROJECT_NAME}-stove0"
 adapter_project="${COMPOSE_PROJECT_NAME}-ftp-adapter"
-stove0_compose_file="${ROOT_DIR}/companions/stove0/compose.yaml"
+stove0_compose_file="${ROOT_DIR}/reference/stove0/application/compose.yaml"
 adapter_compose_file="${ROOT_DIR}/reference/riverhog/ingress/ftp/compose.yaml"
 export STOVE0_RECIPES_HOST_PATH="${ROOT_DIR}/qualification/fixtures/stove0/recipes.yaml"
 export STOVE0_ADMISSIONS_HOST_PATH="${ROOT_DIR}/qualification/fixtures/stove0/admissions.json"
@@ -135,9 +135,9 @@ compose run --rm "${COMPOSE_RUN_TTY_ARGS[@]}" \
   tests/unit/test_collection_tags.py::test_committed_tag_head_reconciles_after_its_response_is_lost \
   tests/unit/test_collection_tags.py::test_delayed_old_head_writer_cannot_overwrite_newer_acknowledged_authority \
   tests/unit/test_collection_tags.py::test_delayed_gc_cannot_delete_a_node_republished_by_a_newer_authority \
-  companions/stove0/tests/test_classification_admission.py::test_stale_upsert_cannot_resurrect_a_deleted_catalog_revision \
-  companions/stove0/tests/test_classification_admission.py::test_equal_catalog_revision_with_different_authority_fails_closed \
-  companions/stove0/tests/test_classification_admission.py::test_failed_lowest_candidate_is_delayed_and_does_not_starve_the_next
+  reference/stove0/application/tests/test_classification_admission.py::test_stale_upsert_cannot_resurrect_a_deleted_catalog_revision \
+  reference/stove0/application/tests/test_classification_admission.py::test_equal_catalog_revision_with_different_authority_fails_closed \
+  reference/stove0/application/tests/test_classification_admission.py::test_failed_lowest_candidate_is_delayed_and_does_not_starve_the_next
 ensure_compose_image app
 compose up --detach --wait app
 compose exec -T app sh -c \

@@ -16,7 +16,7 @@ REPO = Path(__file__).resolve().parents[2]
 IMPLEMENTATION_OWNERS = {
     "riverhog-server": (REPO / "riverhog/server/src", {"riverhog_api", "riverhog_core"}),
     "riverhog-client": (REPO / "riverhog/client/src", {"riverhog_cli"}),
-    "riverhog-recover": (REPO / "riverhog/recovery/src", {"riverhog_recover"}),
+    "riverhog-recover": (REPO / "reference/riverhog/recovery/src", {"riverhog_recover"}),
     "riverhog-ftp-adapter": (REPO / "reference/riverhog/ingress/ftp/src", {"riverhog_ftp_adapter"}),
     "riverhog-storage-adapter-aws": (
         REPO / "reference/riverhog/storage/aws/src",
@@ -43,10 +43,10 @@ IMPLEMENTATION_OWNERS = {
         {"riverhog_provenance_windows_observer"},
     ),
     "stove0-server": (
-        REPO / "companions/stove0/server/src",
+        REPO / "reference/stove0/application/server/src",
         {"stove0_api", "stove0_core"},
     ),
-    "stove0-client": (REPO / "companions/stove0/client/src", {"stove0_cli"}),
+    "stove0-client": (REPO / "reference/stove0/application/client/src", {"stove0_cli"}),
     "stove0-exiftool-observer": (
         REPO / "reference/stove0/observers/exiftool/src",
         {"stove0_exiftool_observer"},
@@ -95,8 +95,8 @@ IMPLEMENTATION_OWNERS = {
         REPO / "reference/stove0/targets/review/sampler/support/src",
         {"stove0_review_sampler_support"},
     ),
-    "mango-fish": (REPO / "utilities/mango-fish/src", {"mango_fish"}),
-    "gogurt": (REPO / "utilities/gogurt/src", {"gogurt"}),
+    "mango-fish": (REPO / "reference/riverhog/applications/mango-fish/src", {"mango_fish"}),
+    "gogurt": (REPO / "reference/gogurt/application/src", {"gogurt"}),
     "gogurt-linux-listener-host": (
         REPO / "reference/gogurt/listener-host/linux/src",
         {"gogurt_linux_listener_host"},
@@ -137,7 +137,7 @@ ALL_IMPLEMENTATION_MODULES = set().union(
 )
 CORE_ROOTS = {
     "riverhog_core": REPO / "riverhog/server/src/riverhog_core",
-    "stove0_core": REPO / "companions/stove0/server/src/stove0_core",
+    "stove0_core": REPO / "reference/stove0/application/server/src/stove0_core",
 }
 RIVERHOG_COLLECTION_WORKFLOW_SURFACE = (
     REPO / "packages/riverhog-protocol/src/riverhog_protocol/collection_workflows.py",
@@ -313,9 +313,17 @@ def test_implementation_projects_do_not_cross_owner_boundaries() -> None:
 
 
 def test_every_implementation_project_and_module_has_exactly_one_owner() -> None:
+    release = tomllib.loads((REPO / "release.toml").read_text(encoding="utf-8"))
+    roles = {path: role for role, paths in release["python"].items() for path in paths}
     projects: dict[str, Path] = {}
     for pyproject in workspace_pyprojects(REPO):
-        if pyproject.relative_to(REPO).parts[0] == "packages":
+        relative = pyproject.parent.relative_to(REPO).as_posix()
+        if roles[relative] not in {
+            "end_user_artifact",
+            "deployed_implementation",
+            "reference_application",
+            "reference_component",
+        }:
             continue
         config = tomllib.loads(pyproject.read_text(encoding="utf-8"))
         project = config["project"]
@@ -366,7 +374,7 @@ def test_riverhog_production_surfaces_are_stove0_agnostic() -> None:
     roots = (
         REPO / "riverhog/server/src",
         REPO / "riverhog/client/src",
-        REPO / "riverhog/recovery/src",
+        REPO / "reference/riverhog/recovery/src",
         REPO / "reference/riverhog/ingress/ftp/src",
     )
     paths = [path for root in roots for path in root.rglob("*.py")]
@@ -421,7 +429,9 @@ def test_projects_declare_their_exact_direct_runtime_dependencies() -> None:
 
 
 def test_portable_products_do_not_select_provider_implementations() -> None:
-    gogurt = tomllib.loads((REPO / "utilities/gogurt/pyproject.toml").read_text(encoding="utf-8"))
+    gogurt = tomllib.loads(
+        (REPO / "reference/gogurt/application/pyproject.toml").read_text(encoding="utf-8")
+    )
     assert declared_project_dependencies(gogurt).isdisjoint(
         {
             "gogurt-linux-listener-host",
@@ -433,7 +443,7 @@ def test_portable_products_do_not_select_provider_implementations() -> None:
             "gogurt-windows-mounted-volume",
         }
     )
-    gogurt_sources = tuple((REPO / "utilities/gogurt/src").rglob("*.py"))
+    gogurt_sources = tuple((REPO / "reference/gogurt/application/src").rglob("*.py"))
     gogurt_imports = set().union(*(imported_roots(path) for path in gogurt_sources))
     assert gogurt_imports.isdisjoint(
         {
@@ -465,7 +475,10 @@ def test_portable_core_listener_runtime_and_platform_dependency_direction_is_exa
         for capability in ("listener_host", "mounted_volume")
     }
     gogurt_core_imports = set().union(
-        *(imported_roots(path) for path in (REPO / "packages/gogurt-core/src").rglob("*.py"))
+        *(
+            imported_roots(path)
+            for path in (REPO / "reference/gogurt/packages/core/src").rglob("*.py")
+        )
     )
     assert gogurt_core_imports.isdisjoint(
         gogurt_native_roots | {"gogurt_listener_runtime", "gogurt_path_volume_support"}
@@ -482,7 +495,9 @@ def test_portable_core_listener_runtime_and_platform_dependency_direction_is_exa
     }
 
     listener_runtime_config = tomllib.loads(
-        (REPO / "packages/gogurt-listener-runtime/pyproject.toml").read_text(encoding="utf-8")
+        (REPO / "reference/gogurt/packages/listener-runtime/pyproject.toml").read_text(
+            encoding="utf-8"
+        )
     )
     assert declared_project_dependencies(listener_runtime_config) == {
         "config-validation",
@@ -491,7 +506,7 @@ def test_portable_core_listener_runtime_and_platform_dependency_direction_is_exa
     listener_runtime_imports = set().union(
         *(
             imported_roots(path)
-            for path in (REPO / "packages/gogurt-listener-runtime/src").rglob("*.py")
+            for path in (REPO / "reference/gogurt/packages/listener-runtime/src").rglob("*.py")
         )
     )
     assert "gogurt_core" in listener_runtime_imports
@@ -500,11 +515,11 @@ def test_portable_core_listener_runtime_and_platform_dependency_direction_is_exa
     )
 
     generic_marker_sources = (
-        REPO / "packages/gogurt-core/src/gogurt_core/mounts.py",
-        REPO / "packages/gogurt-core/src/gogurt_core/core.py",
-        REPO / "packages/gogurt-listener-runtime/src/gogurt_listener_runtime/listener.py",
-        REPO / "utilities/gogurt/src/gogurt/cli.py",
-        REPO / "utilities/gogurt/src/gogurt/providers.py",
+        REPO / "reference/gogurt/packages/core/src/gogurt_core/mounts.py",
+        REPO / "reference/gogurt/packages/core/src/gogurt_core/core.py",
+        REPO / "reference/gogurt/packages/listener-runtime/src/gogurt_listener_runtime/listener.py",
+        REPO / "reference/gogurt/application/src/gogurt/cli.py",
+        REPO / "reference/gogurt/application/src/gogurt/providers.py",
     )
     for source in generic_marker_sources:
         text = source.read_text(encoding="utf-8")
@@ -662,11 +677,16 @@ def test_reference_paths_follow_the_closed_nonnormative_release_policy() -> None
     classified = {path: role for role, paths in release["python"].items() for path in paths}
     for pyproject in (REPO / "reference").rglob("pyproject.toml"):
         relative = pyproject.parent.relative_to(REPO).as_posix()
-        assert classified[relative] == "reference_component"
-        description = tomllib.loads(pyproject.read_text(encoding="utf-8"))["project"][
-            "description"
-        ].casefold()
-        assert all(word in description for word in ("optional", "nonnormative", "reference"))
+        role = classified[relative]
+        assert role in {"reference_application", "reference_component", "reusable_library"}
+        project = tomllib.loads(pyproject.read_text(encoding="utf-8"))["project"]
+        if role in {"reference_application", "reference_component"}:
+            description = project["description"].casefold()
+            assert all(word in description for word in ("optional", "nonnormative", "reference"))
+        else:
+            assert project["readme"]["text"].startswith(
+                "Public contract or support for a nonnormative Riverhog v1 reference application."
+            )
 
 
 def test_shared_packages_are_product_owned_or_implementation_neutral() -> None:
@@ -677,10 +697,7 @@ def test_shared_packages_are_product_owned_or_implementation_neutral() -> None:
         assert classified[relative] in {"reusable_library", "internal_build_unit"}
 
     architecture = " ".join((REPO / "docs/architecture.md").read_text(encoding="utf-8").split())
-    assert (
-        "Packages contain product contracts or implementation-neutral tooling; reference contracts "
-        "and support stay with their family." in architecture
-    )
+    assert "Riverhog owns product implementations and generic contracts." in architecture
 
 
 def test_core_dependency_graphs_are_acyclic() -> None:
@@ -727,7 +744,8 @@ def test_images_copy_only_their_owned_implementation_project() -> None:
             "reference/riverhog/storage/backblaze",
             "reference/riverhog/storage/s3-support",
         ),
-        REPO / "companions/stove0/server/Dockerfile": "companions/stove0/server",
+        REPO
+        / "reference/stove0/application/server/Dockerfile": "reference/stove0/application/server",
         REPO / "reference/stove0/observers/exiftool/Dockerfile": (
             "reference/stove0/observers/exiftool",
             "reference/stove0/observers/contracts/media-metadata",
@@ -773,19 +791,31 @@ def test_images_copy_only_their_owned_implementation_project() -> None:
             "reference/stove0/targets/review/sampler/protocol",
             "reference/stove0/targets/review/support",
         ),
-        REPO / "utilities/mango-fish/Dockerfile": "utilities/mango-fish",
+        REPO / "reference/riverhog/applications/mango-fish/Dockerfile": (
+            "reference/riverhog/applications/mango-fish"
+        ),
     }
-    implementation_prefix = re.compile(r"^(?:companions|reference|riverhog|utilities)/")
+    release = tomllib.loads((REPO / "release.toml").read_text(encoding="utf-8"))
+    implementation_roots = {
+        path
+        for role in (
+            "end_user_artifact",
+            "deployed_implementation",
+            "reference_application",
+            "reference_component",
+        )
+        for path in release["python"][role]
+    }
     for dockerfile, expected in dockerfiles.items():
         dockerfile_text = dockerfile.read_text()
-        if dockerfile == REPO / "companions/stove0/server/Dockerfile":
+        if dockerfile == REPO / "reference/stove0/application/server/Dockerfile":
             dockerfile_text = dockerfile_text.split("FROM build AS reference-composition-build", 1)[
                 0
             ]
         copied = {
             source
             for source in re.findall(r"^COPY ([^\s]+)", dockerfile_text, re.MULTILINE)
-            if implementation_prefix.match(source)
+            if any(source == root or source.startswith(f"{root}/") for root in implementation_roots)
         }
         assert copied
         allowed = (expected,) if isinstance(expected, str) else expected
@@ -924,7 +954,7 @@ def test_images_copy_their_complete_internal_dependency_closure() -> None:
         REPO / "reference/riverhog/storage/filesystem/Dockerfile": (
             "riverhog-storage-adapter-filesystem"
         ),
-        REPO / "companions/stove0/server/Dockerfile": "stove0-server",
+        REPO / "reference/stove0/application/server/Dockerfile": "stove0-server",
         REPO / "reference/stove0/observers/exiftool/Dockerfile": ("stove0-exiftool-observer"),
         REPO / "reference/stove0/observers/ffprobe-sampling/Dockerfile": (
             "stove0-ffprobe-sampling-observer"
@@ -943,7 +973,7 @@ def test_images_copy_their_complete_internal_dependency_closure() -> None:
         REPO / "reference/stove0/targets/review/rclone-effect-target/Dockerfile": (
             "stove0-review-rclone-effect-target"
         ),
-        REPO / "utilities/mango-fish/Dockerfile": "mango-fish",
+        REPO / "reference/riverhog/applications/mango-fish/Dockerfile": "mango-fish",
     }
     projects, graph = workspace_project_graph()
 

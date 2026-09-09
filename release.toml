@@ -181,6 +181,7 @@ lock_format = "pylock.toml"
 managed_python = true
 wheel_only = true
 simple_index_path = "artifacts/v{version}/simple/"
+roots = ["gogurt", "riverhog-client", "riverhog-recover", "stove0-client"]
 
 [installation.listener]
 root = "gogurt"
@@ -216,15 +217,17 @@ github_oidc = "Published GitHub artifacts also receive workflow identity attesta
 
 [python]
 end_user_artifact = [
-  "companions/stove0/client",
   "riverhog/client",
-  "riverhog/recovery",
-  "utilities/gogurt",
 ]
 deployed_implementation = [
-  "companions/stove0/server",
   "riverhog/server",
-  "utilities/mango-fish",
+]
+reference_application = [
+  "reference/gogurt/application",
+  "reference/riverhog/applications/mango-fish",
+  "reference/riverhog/recovery",
+  "reference/stove0/application/client",
+  "reference/stove0/application/server",
 ]
 reference_component = [
   "reference/gogurt/listener-host/linux",
@@ -266,8 +269,8 @@ reference_component = [
   "reference/stove0/targets/review/support",
 ]
 reusable_library = [
-  "packages/gogurt-core",
-  "packages/gogurt-listener-runtime",
+  "reference/gogurt/packages/core",
+  "reference/gogurt/packages/listener-runtime",
   "packages/riverhog-application-access",
   "packages/http-api-contracts",
   "packages/lifecycle-events",
@@ -281,16 +284,16 @@ reusable_library = [
   "packages/riverhog-storage-adapter-protocol",
   "packages/riverhog-storage-adapter-support",
   "packages/riverhog-transform-sdk",
-  "packages/stove0-observer-protocol",
-  "packages/stove0-observer-support",
-  "packages/stove0-observer-client",
-  "packages/stove0-api-client",
-  "packages/stove0-operator-contracts",
-  "packages/stove0-protocol",
-  "packages/stove0-recipe-config",
-  "packages/stove0-target-client",
-  "packages/stove0-target-protocol",
-  "packages/stove0-target-support",
+  "reference/stove0/packages/observer-protocol",
+  "reference/stove0/packages/observer-support",
+  "reference/stove0/packages/observer-client",
+  "reference/stove0/packages/api-client",
+  "reference/stove0/packages/operator-contracts",
+  "reference/stove0/packages/protocol",
+  "reference/stove0/packages/recipe-config",
+  "reference/stove0/packages/target-client",
+  "reference/stove0/packages/target-protocol",
+  "reference/stove0/packages/target-support",
 ]
 internal_build_unit = [
   "packages/config-validation",
@@ -310,12 +313,12 @@ platforms = ["linux/amd64"]
 
 [images.runtime]
 riverhog = { role = "product", description = "Riverhog archive service.", distributions = ["riverhog-server"], repository = "ghcr.io/nashspence/riverhog" }
-mango-fish = { role = "product", description = "Riverhog CloudEvents utility.", distributions = ["mango-fish"], repository = "ghcr.io/nashspence/riverhog-mango-fish" }
+mango-fish = { role = "reference", description = "Optional nonnormative CloudEvents reference application for Riverhog.", distributions = ["mango-fish"], repository = "ghcr.io/nashspence/riverhog-mango-fish" }
 riverhog-ftp-adapter = { role = "reference", description = "Optional nonnormative Riverhog FTP ingress reference.", distributions = ["riverhog-ftp-adapter", "riverhog-provenance-linux-observer"], repository = "ghcr.io/nashspence/riverhog-ftp-adapter" }
 riverhog-storage-adapter-aws = { role = "reference", description = "Optional nonnormative AWS storage reference for Riverhog.", distributions = ["riverhog-storage-adapter-aws"], repository = "ghcr.io/nashspence/riverhog-storage-adapter-aws" }
 riverhog-storage-adapter-backblaze = { role = "reference", description = "Optional nonnormative Backblaze B2 storage reference for Riverhog.", distributions = ["riverhog-storage-adapter-backblaze"], repository = "ghcr.io/nashspence/riverhog-storage-adapter-backblaze" }
 riverhog-storage-adapter-filesystem = { role = "reference", description = "Optional nonnormative Linux filesystem storage reference for Riverhog.", distributions = ["riverhog-storage-adapter-filesystem"], repository = "ghcr.io/nashspence/riverhog-storage-adapter-filesystem" }
-stove0 = { role = "product", description = "Stove0 transformation companion.", distributions = ["stove0-server"], repository = "ghcr.io/nashspence/riverhog-stove0" }
+stove0 = { role = "reference", description = "Optional nonnormative transformation reference application for Riverhog.", distributions = ["stove0-server"], repository = "ghcr.io/nashspence/riverhog-stove0" }
 stove0-exiftool-observer = { role = "reference", description = "Optional nonnormative ExifTool observer reference for Stove0.", distributions = ["stove0-exiftool-observer"], repository = "ghcr.io/nashspence/riverhog-stove0-exiftool-observer" }
 stove0-ffprobe-sampling-observer = { role = "reference", description = "Optional nonnormative FFprobe sampling-observer reference for Stove0.", distributions = ["stove0-ffprobe-sampling-observer"], repository = "ghcr.io/nashspence/riverhog-stove0-ffprobe-sampling-observer" }
 stove0-nvenc-av1-opus-target = { role = "reference", description = "Optional nonnormative NVENC AV1 and Opus target reference for Stove0.", distributions = ["stove0-nvenc-av1-opus-target", "stove0-nvenc-av1-opus-review-sampler"], repository = "ghcr.io/nashspence/riverhog-stove0-nvenc-av1-opus-target" }

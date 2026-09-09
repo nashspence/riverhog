@@ -30,7 +30,7 @@ from packaging.tags import Tag, compatible_tags, cpython_tags, mac_platforms
 from packaging.utils import InvalidWheelFilename, parse_wheel_filename
 
 INSTALLATION_SCHEMA = "riverhog-installation/v1"
-END_USER_ROOTS = (
+INSTALLATION_ROOTS = (
     "gogurt",
     "riverhog-client",
     "riverhog-recover",
@@ -43,6 +43,7 @@ INSTALLATION_POLICY = {
     "managed_python": True,
     "wheel_only": True,
     "simple_index_path": "artifacts/v{version}/simple/",
+    "roots": list(INSTALLATION_ROOTS),
     "listener": {
         "root": "gogurt",
         "scope": "current-user",
@@ -164,12 +165,15 @@ def qualified_tool_versions(root: Path) -> dict[str, str]:
 
 
 def installation_roots(projects: Sequence[ProjectLike]) -> list[ProjectLike]:
-    roots = sorted(
-        (project for project in projects if project.role == "end_user_artifact"),
-        key=lambda project: project.name,
-    )
-    if tuple(project.name for project in roots) != END_USER_ROOTS:
-        raise InstallationError("end-user release roots differ from the v1 installation contract")
+    projects_by_name = {project.name: project for project in projects}
+    try:
+        roots = [projects_by_name[name] for name in INSTALLATION_ROOTS]
+    except KeyError as exc:
+        raise InstallationError(
+            "an installation root is absent from the release inventory"
+        ) from exc
+    if any(project.role not in {"end_user_artifact", "reference_application"} for project in roots):
+        raise InstallationError("installation roots must be products or reference applications")
     return roots
 
 
@@ -1142,7 +1146,7 @@ def verify_installation_artifacts(output: Path, manifest: dict[str, Any]) -> Non
     components = manifest.get("components")
     if not isinstance(components, list):
         raise InstallationError("install manifest components are not a list")
-    if tuple(item.get("root") for item in components) != END_USER_ROOTS:
+    if tuple(item.get("root") for item in components) != INSTALLATION_ROOTS:
         raise InstallationError("install manifest roots differ from v1")
     wheel_names = set(manifest.get("wheels", {}))
     if wheel_names != set(manifest["index"]["first_party_projects"]):

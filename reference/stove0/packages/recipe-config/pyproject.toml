@@ -1,0 +1,34 @@
+[build-system]
+requires = ["hatchling>=1.31.0"]
+build-backend = "hatchling.build"
+
+[project]
+name = "stove0-recipe-config"
+version = "0.1.0"
+description = "Portable deployment-owned Stove0 recipe catalog contracts and validation."
+requires-python = ">=3.12"
+license = "Apache-2.0"
+license-files = ["LICENSE"]
+readme = { text = "Public contract or support for a nonnormative Riverhog v1 reference application. See the project URL for documentation and releases.", content-type = "text/markdown" }
+authors = [{ name = "Nash Spence" }]
+maintainers = [{ name = "Nash Spence" }]
+classifiers = [
+  "Programming Language :: Python :: 3 :: Only",
+  "Programming Language :: Python :: 3.12",
+  "Typing :: Typed",
+]
+urls = { Documentation = "https://nashspence.github.io/riverhog/v1/", Issues = "https://github.com/nashspence/riverhog/issues", Repository = "https://github.com/nashspence/riverhog" }
+dependencies = [
+  "config-validation>=0.1,<0.2",
+  "pydantic>=2.7,<3.0",
+  "stove0-protocol>=0.1,<0.2",
+  "stove0-target-protocol>=0.1,<0.2",
+]
+
+[tool.uv.sources]
+config-validation = { workspace = true }
+stove0-protocol = { workspace = true }
+stove0-target-protocol = { workspace = true }
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/stove0_recipe_config"]
