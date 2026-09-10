@@ -50,13 +50,16 @@ def _expected_checks(descriptor: AdapterDescriptor) -> tuple[str, ...]:
     if descriptor.maximum_segment_count is None or descriptor.maximum_segment_count >= 2:
         checks.append("sparse-write-reconciliation")
     checks.append("write-begin-recovery")
+    checks.append("write-segment-idempotent-authority")
     if descriptor.maximum_segment_count is None or descriptor.maximum_segment_count >= 2:
         checks.append("write-traversal-invalidation")
     checks.extend(
         (
             "write-continuation-replay",
             "write-reconciliation",
+            "write-active-completion-authority",
             "write-completion-recovery",
+            "write-completed-object-authority",
             "write-stream",
             "read-preparation",
             "write-abort",
@@ -246,6 +249,20 @@ def run_storage_adapter_conformance(
         first_listing = continuation_client.list_segments(
             WriteSegmentListRequest(session=persisted_session)
         )
+        replayed_first_segment = continuation_client.write_segment(
+            session=persisted_session,
+            number=1,
+            stored_bytes=len(segment_contents[0]),
+            content=segment_contents[0],
+        )
+        if replayed_first_segment != first_segment:
+            raise AssertionError("identical segment replay changed its receipt")
+        replayed_first_listing = continuation_client.list_segments(
+            WriteSegmentListRequest(session=persisted_session)
+        )
+        if replayed_first_listing != first_listing:
+            raise AssertionError("identical segment replay changed accepted write authority")
+        checks.append("write-segment-idempotent-authority")
         written_segments = (
             first_segment,
             *(
@@ -293,10 +310,35 @@ def run_storage_adapter_conformance(
             required_identity_assertions=write_request.required_identity_assertions,
             expected_placement=write_request.placement,
         )
+        altered_authority = listed_segment_page.completion.model_copy(
+            update={"authority_token": "conformance-altered-authority"}
+        )
+        if altered_authority == listed_segment_page.completion:
+            altered_authority = listed_segment_page.completion.model_copy(
+                update={"authority_token": "conformance-other-authority"}
+            )
+        altered_completion_request = completion_request.model_copy(
+            update={"completion": altered_authority}
+        )
+        try:
+            continuation_client.complete_write(altered_completion_request)
+        except StorageAdapterProtocolError as completion_exc:
+            if completion_exc.code != "identity_conflict":
+                raise AssertionError(
+                    "active write rejected an altered authority with the wrong error code"
+                ) from completion_exc
+        else:
+            raise AssertionError("active write accepted an altered completion authority")
+        checks.append("write-active-completion-authority")
         completed = continuation_client.complete_write(completion_request)
         recovered_completion = continuation_client.complete_write(completion_request)
         if recovered_completion != completed:
             raise AssertionError("lost completion response did not reconcile exactly")
+        recovered_with_obsolete_transport = continuation_client.complete_write(
+            altered_completion_request
+        )
+        if recovered_with_obsolete_transport != completed:
+            raise AssertionError("completed-object identity did not supersede transport authority")
         headed_completion = continuation_client.find_completed_write(
             CompletedWriteLookupRequest(
                 object_path=write_path,
@@ -309,6 +351,7 @@ def run_storage_adapter_conformance(
         if headed_completion != completed:
             raise AssertionError("completed write lookup differs from its receipt")
         checks.append("write-completion-recovery")
+        checks.append("write-completed-object-authority")
 
         write_content = b"".join(segment_contents)
         stored_write = b"".join(

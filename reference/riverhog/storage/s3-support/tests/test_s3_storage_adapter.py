@@ -427,8 +427,22 @@ def test_resumable_write_reconciles_segments_and_lost_completion() -> None:
         stored_bytes=len(first_content),
         content=first_content,
     )
+    first_page = adapter.list_segments(WriteSegmentListRequest(session=session))
     persisted_session = WriteSession.model_validate_json(session.model_dump_json())
     restarted_adapter = S3StorageAdapter(client, _config())
+    assert (
+        restarted_adapter.write_segment(
+            session=persisted_session,
+            number=1,
+            stored_bytes=len(first_content),
+            content=first_content,
+        )
+        == first_segment
+    )
+    assert (
+        restarted_adapter.list_segments(WriteSegmentListRequest(session=persisted_session))
+        == first_page
+    )
     segments = (
         first_segment,
         restarted_adapter.write_segment(
@@ -441,6 +455,7 @@ def test_resumable_write_reconciles_segments_and_lost_completion() -> None:
     segment_page = restarted_adapter.list_segments(
         WriteSegmentListRequest(session=persisted_session)
     )
+    assert segment_page.traversal_token != first_page.traversal_token
     assert segment_page.segments == segments
     assert segment_page.completion is not None
     completion = WriteCompleteRequest(
@@ -451,11 +466,22 @@ def test_resumable_write_reconciles_segments_and_lost_completion() -> None:
         required_identity_assertions=create.required_identity_assertions,
         expected_placement=create.placement,
     )
+    altered_completion = completion.model_copy(
+        update={
+            "completion": completion.completion.model_copy(
+                update={"authority_token": "altered-active-write-authority"}
+            )
+        }
+    )
+    with pytest.raises(StorageAdapterRejection) as altered:
+        restarted_adapter.complete_write(altered_completion)
+    assert altered.value.code == "identity_conflict"
 
     first = restarted_adapter.complete_write(completion)
     recovered = restarted_adapter.complete_write(completion)
 
     assert recovered == first
+    assert restarted_adapter.complete_write(altered_completion) == first
     assert not hasattr(first, "stored_sha256")
     assert (
         restarted_adapter.find_completed_write(

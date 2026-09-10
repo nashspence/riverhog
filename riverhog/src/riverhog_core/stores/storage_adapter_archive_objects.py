@@ -275,7 +275,7 @@ def _adapter_completion(
     return AdapterWriteCompletionAuthority(
         segment_count=completion.segment_count,
         stored_bytes=completion.stored_bytes,
-        sequence_sha256=completion.sequence_sha256,
+        authority_token=completion.authority_token,
     )
 
 
@@ -285,7 +285,7 @@ def _write_completion(
     return WriteCompletionAuthority(
         segment_count=completion.segment_count,
         stored_bytes=completion.stored_bytes,
-        sequence_sha256=completion.sequence_sha256,
+        authority_token=completion.authority_token,
     )
 
 

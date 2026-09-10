@@ -32,7 +32,7 @@ class WriteSegmentReceipt:
 class WriteCompletionAuthority:
     segment_count: int
     stored_bytes: int
-    sequence_sha256: str
+    authority_token: str
 
 
 @dataclass(frozen=True, slots=True)

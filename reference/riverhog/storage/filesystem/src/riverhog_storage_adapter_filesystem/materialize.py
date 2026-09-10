@@ -874,7 +874,7 @@ def _stream_segment_ledger(
         or expected_offset != record.stored_bytes
         or completion.segment_count != record.segment_count
         or completion.stored_bytes != record.stored_bytes
-        or completion.sequence_sha256 != record.segment_sequence_sha256
+        or completion.authority_token != record.segment_sequence_sha256
     ):
         raise MaterializationError("filesystem object segment authority differs from its ledger")
 

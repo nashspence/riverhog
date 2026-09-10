@@ -96,12 +96,6 @@ from riverhog_provenance import (
     validate_journal,
 )
 from riverhog_storage_adapter_protocol import ObjectPlacement
-from riverhog_storage_adapter_protocol import (
-    WriteSegmentReceipt as AdapterWriteSegmentReceipt,
-)
-from riverhog_storage_adapter_protocol import (
-    write_completion_authority as adapter_write_completion_authority,
-)
 from sqlalchemy.orm import Session
 
 from tests.provenance_observer import native_provenance_observer
@@ -111,19 +105,10 @@ from tests.unit.db_helpers import sqlite_url
 def _completion_authority(
     receipts: tuple[WriteSegmentReceipt, ...],
 ) -> WriteCompletionAuthority:
-    authority = adapter_write_completion_authority(
-        AdapterWriteSegmentReceipt(
-            number=receipt.number,
-            segment_token=receipt.segment_token,
-            stored_bytes=receipt.bytes,
-            stored_sha256=receipt.sha256,
-        )
-        for receipt in receipts
-    )
     return WriteCompletionAuthority(
-        segment_count=authority.segment_count,
-        stored_bytes=authority.stored_bytes,
-        sequence_sha256=authority.sequence_sha256,
+        segment_count=len(receipts),
+        stored_bytes=sum(receipt.bytes for receipt in receipts),
+        authority_token=hashlib.sha256(repr(receipts).encode("utf-8")).hexdigest(),
     )
 
 

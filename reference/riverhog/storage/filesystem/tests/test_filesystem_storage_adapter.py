@@ -512,6 +512,7 @@ def test_segment_replay_and_completion_replay_are_exact(tmp_path: Path) -> None:
             stored_bytes=len(content),
             content=content,
         )
+        original_authority = _segment_page(adapter, session)
         assert (
             adapter.write_segment(
                 session=session,
@@ -521,6 +522,7 @@ def test_segment_replay_and_completion_replay_are_exact(tmp_path: Path) -> None:
             )
             == segment
         )
+        assert _segment_page(adapter, session) == original_authority
         with pytest.raises(StorageAdapterRejection) as rejected:
             adapter.write_segment(
                 session=session,
@@ -538,8 +540,19 @@ def test_segment_replay_and_completion_replay_are_exact(tmp_path: Path) -> None:
             required_identity_assertions=request.required_identity_assertions,
             expected_placement=request.placement,
         )
+        altered_completion = completion.model_copy(
+            update={
+                "completion": completion.completion.model_copy(
+                    update={"authority_token": "altered-active-write-authority"}
+                )
+            }
+        )
+        with pytest.raises(StorageAdapterRejection) as altered:
+            adapter.complete_write(altered_completion)
+        assert altered.value.code == "identity_conflict"
         receipt = adapter.complete_write(completion)
         assert adapter.complete_write(completion) == receipt
+        assert adapter.complete_write(altered_completion) == receipt
 
 
 def test_completion_does_not_reread_the_completed_payload(

@@ -34,12 +34,12 @@ from riverhog_storage_adapter_protocol import (
     SmallObjectWriteRequest,
     StorageAdapterRejection,
     WriteCompleteRequest,
+    WriteCompletionAuthority,
     WriteSegmentListRequest,
     WriteSegmentPage,
     WriteSegmentReceipt,
     WriteSession,
     WriteStartRequest,
-    write_completion_authority,
 )
 from time_formats import format_utc_timestamp, utc_now
 
@@ -52,6 +52,7 @@ _STORED_SHA256_METADATA = f"{ADAPTER_PRIVATE_ASSERTION_PREFIX}stored-sha256"
 _PLACEMENT_METADATA = f"{ADAPTER_PRIVATE_ASSERTION_PREFIX}placement"
 _RESERVED_METADATA = frozenset({_STORED_SHA256_METADATA, _PLACEMENT_METADATA})
 _TRAVERSAL_DOMAIN = b"riverhog-s3-write-segment-traversal/v1\x00"
+_COMPLETION_DOMAIN = b"riverhog-storage-write-segment-sequence/v1\x00"
 
 
 def _segment_traversal_token(segments: tuple[WriteSegmentReceipt, ...]) -> str:
@@ -67,6 +68,31 @@ def _segment_traversal_token(segments: tuple[WriteSegmentReceipt, ...]) -> str:
         digest.update(len(encoded).to_bytes(8, "big"))
         digest.update(encoded)
     return digest.hexdigest()
+
+
+def _write_completion_authority(
+    segments: tuple[WriteSegmentReceipt, ...],
+) -> WriteCompletionAuthority:
+    digest = hashlib.sha256(_COMPLETION_DOMAIN)
+    stored_bytes = 0
+    for expected_number, segment in enumerate(segments, start=1):
+        if segment.number != expected_number:
+            raise ValueError("S3 write segments must be contiguous and ordered from one")
+        encoded = json.dumps(
+            segment.model_dump(mode="json", exclude_none=True),
+            allow_nan=False,
+            ensure_ascii=False,
+            separators=(",", ":"),
+            sort_keys=True,
+        ).encode("utf-8")
+        digest.update(len(encoded).to_bytes(8, "big"))
+        digest.update(encoded)
+        stored_bytes += segment.stored_bytes
+    return WriteCompletionAuthority(
+        segment_count=len(segments),
+        stored_bytes=stored_bytes,
+        authority_token=digest.hexdigest(),
+    )
 
 
 def _segments_can_complete(
@@ -270,7 +296,7 @@ class S3StorageAdapter:
             expected_bytes=request.session.expected_bytes,
             minimum_nonfinal_bytes=_MINIMUM_NONFINAL_PART_BYTES,
         ):
-            completion = write_completion_authority(parts)
+            completion = _write_completion_authority(parts)
         return WriteSegmentPage(
             session=request.session,
             traversal_token=traversal_token,
@@ -322,7 +348,7 @@ class S3StorageAdapter:
         if recovered is not None:
             return recovered
         parts = self._listed_segments(request.session)
-        if write_completion_authority(parts) != request.completion:
+        if _write_completion_authority(parts) != request.completion:
             raise StorageAdapterRejection(
                 "identity_conflict",
                 "S3 write completion authority differs from accepted segments",

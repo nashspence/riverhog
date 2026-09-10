@@ -18,30 +18,15 @@ from riverhog_core.ports.retrieval_cache import RetrievalCacheAdmission, Retriev
 from riverhog_core.stores.mirrored_archive_resumable_object_store import (
     MirroredArchiveResumableObjectStore,
 )
-from riverhog_storage_adapter_protocol import (
-    WriteSegmentReceipt as AdapterWriteSegmentReceipt,
-)
-from riverhog_storage_adapter_protocol import (
-    write_completion_authority,
-)
 
 NOW = "2026-08-13T00:00:00Z"
 
 
 def _authority(segments: tuple[WriteSegmentReceipt, ...]) -> WriteCompletionAuthority:
-    result = write_completion_authority(
-        AdapterWriteSegmentReceipt(
-            number=item.number,
-            segment_token=item.segment_token,
-            stored_bytes=item.bytes,
-            stored_sha256=item.sha256,
-        )
-        for item in segments
-    )
     return WriteCompletionAuthority(
-        result.segment_count,
-        result.stored_bytes,
-        result.sequence_sha256,
+        len(segments),
+        sum(item.bytes for item in segments),
+        hashlib.sha256(repr(segments).encode("utf-8")).hexdigest(),
     )
 
 

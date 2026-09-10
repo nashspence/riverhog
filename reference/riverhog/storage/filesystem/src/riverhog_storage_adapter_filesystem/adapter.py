@@ -282,7 +282,7 @@ class _SegmentAuthority:
         return WriteCompletionAuthority(
             segment_count=self.segment_count,
             stored_bytes=self.stored_bytes,
-            sequence_sha256=digest.hexdigest(),
+            authority_token=digest.hexdigest(),
         )
 
 
@@ -710,7 +710,7 @@ class FilesystemStorageAdapter:
                 placement=state.placement,
                 completed_at=completed_at,
                 segment_count=completion.segment_count,
-                segment_sequence_sha256=completion.sequence_sha256,
+                segment_sequence_sha256=completion.authority_token,
             )
             self._install_write_as_revision(object_key, write_dir, record)
             return self._completed_receipt(record)

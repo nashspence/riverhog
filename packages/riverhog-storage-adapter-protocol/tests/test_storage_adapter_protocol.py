@@ -8,6 +8,7 @@ from types import SimpleNamespace
 from typing import cast
 
 import pytest
+import riverhog_storage_adapter_protocol as protocol_package
 from pydantic import ValidationError
 from riverhog_storage_adapter_protocol import (
     ADAPTER_PRIVATE_ASSERTION_PREFIX,
@@ -31,6 +32,7 @@ from riverhog_storage_adapter_protocol import (
     StorageAdapterPort,
     ValidatedStorageAdapterPort,
     WriteCompleteRequest,
+    WriteCompletionAuthority,
     WriteSegmentListRequest,
     WriteSegmentPage,
     WriteSegmentReceipt,
@@ -45,8 +47,17 @@ from riverhog_storage_adapter_protocol import (
     validate_write_completion_request,
     validate_write_segment_page_response,
     validate_write_session_response,
-    write_completion_authority,
 )
+
+
+def _completion_authority(
+    segments: tuple[WriteSegmentReceipt, ...],
+) -> WriteCompletionAuthority:
+    return WriteCompletionAuthority(
+        segment_count=len(segments),
+        stored_bytes=sum(segment.stored_bytes for segment in segments),
+        authority_token=f"fixture-terminal-{len(segments)}",
+    )
 
 
 def test_protocol_matches_the_existing_capability_port_inventory() -> None:
@@ -221,7 +232,7 @@ def test_validated_port_rejects_direct_response_and_stream_drift() -> None:
         )
 
 
-def test_write_completion_commits_optional_digests_and_repeated_provider_tokens() -> None:
+def test_write_completion_treats_adapter_authority_as_bounded_and_opaque() -> None:
     session = WriteSession(
         object_path="archives/id/volumes/pack.tar.age",
         write_token="opaque",
@@ -242,7 +253,7 @@ def test_write_completion_commits_optional_digests_and_repeated_provider_tokens(
     )
     request = WriteCompleteRequest(
         session=session,
-        completion=write_completion_authority(segments),
+        completion=_completion_authority(segments),
         expected_bytes=12,
         expected_content_type="application/vnd.riverhog.pack+age",
         required_identity_assertions={"Riverhog-Format": "riverhog-pack-volume/v1"},
@@ -254,7 +265,19 @@ def test_write_completion_commits_optional_digests_and_repeated_provider_tokens(
     assert segments[0].stored_sha256 is None
     assert request.completion.segment_count == 2
     assert request.completion.stored_bytes == 12
+    assert request.completion.authority_token == "fixture-terminal-2"
     assert "stored_sha256" not in WriteCompleteRequest.model_fields
+    assert not hasattr(protocol_package, "write_completion_authority")
+    description = WriteCompletionAuthority.model_json_schema()["properties"]["authority_token"][
+        "description"
+    ]
+    assert "grants no authority" in description
+    with pytest.raises(ValidationError, match="at most 4000 characters"):
+        WriteCompletionAuthority(
+            segment_count=2,
+            stored_bytes=12,
+            authority_token="a" * 4001,
+        )
 
 
 def test_completed_write_attestation_binds_exact_identity_and_placement() -> None:
@@ -283,7 +306,7 @@ def test_completed_write_attestation_binds_exact_identity_and_placement() -> Non
             write_token="opaque-write",
             expected_bytes=12,
         ),
-        completion=write_completion_authority(
+        completion=_completion_authority(
             (WriteSegmentReceipt(number=1, segment_token="opaque-part", stored_bytes=12),)
         ),
         expected_bytes=12,
@@ -404,7 +427,7 @@ def test_write_completion_binds_the_immutable_session_length() -> None:
     with pytest.raises(ValidationError, match="differs from its session"):
         WriteCompleteRequest(
             session=session,
-            completion=write_completion_authority(
+            completion=_completion_authority(
                 (WriteSegmentReceipt(number=1, segment_token="part", stored_bytes=1),)
             ),
             expected_bytes=1,
@@ -568,7 +591,7 @@ def test_response_validators_bind_exact_requests_and_closed_readiness_states() -
         session=session,
         traversal_token="view-one",
         segments=(receipt,),
-        completion=write_completion_authority((receipt,)),
+        completion=_completion_authority((receipt,)),
     )
     validate_write_segment_page_response(list_request, segment_page, descriptor)
 
@@ -634,7 +657,7 @@ def test_listed_write_segments_allow_sparse_restart_state_but_completion_does_no
     with pytest.raises(ValidationError, match="requires at least one segment"):
         WriteCompleteRequest(
             session=session,
-            completion=write_completion_authority(()),
+            completion=_completion_authority(()),
             expected_bytes=1,
             expected_content_type="application/octet-stream",
             required_identity_assertions={"identity": "exact"},
@@ -689,7 +712,7 @@ def test_segment_constraints_are_shared_by_listing_and_completion() -> None:
 
     completion = WriteCompleteRequest(
         session=session,
-        completion=write_completion_authority(
+        completion=_completion_authority(
             (WriteSegmentReceipt(number=1, segment_token="one", stored_bytes=5),)
         ),
         expected_bytes=5,
