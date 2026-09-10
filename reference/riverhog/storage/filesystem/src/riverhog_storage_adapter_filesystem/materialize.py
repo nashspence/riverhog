@@ -34,6 +34,7 @@ from riverhog_storage_adapter_filesystem.adapter import _PartRecord
 
 _STATE_SCHEMA = "riverhog-filesystem-materialization-state/v1"
 _COMMITMENT_DOMAIN = b"riverhog-filesystem-materialization-source/v1\0"
+_OPERATION_COMMITMENT_DOMAIN = b"riverhog-filesystem-materialization-operation/v1\0"
 _HEX = frozenset("0123456789abcdef")
 _COPY_CHUNK_BYTES = 8 * 1024 * 1024
 _PRIVATE_DIRECTORY_MODE = 0o700
@@ -43,6 +44,7 @@ _CLEANUP_BATCH_ROWS = 512
 _OBJECT_SCHEMA = "riverhog-filesystem-object/v1"
 _BOOTSTRAP_SCHEMA = "riverhog-filesystem-materialization-bootstrap/v1"
 _COMPLETION_SCHEMA = "riverhog-filesystem-materialization-completion/v1"
+_IDENTITY_RECORD_BYTES_MAX = 8192
 
 
 class MaterializationError(RuntimeError):
@@ -78,17 +80,6 @@ class MaterializationSelection:
             self.all_objects
             or object_path in self.paths
             or any(object_path.startswith(prefix) for prefix in self.prefixes)
-        )
-
-    def canonical_json(self) -> str:
-        return json.dumps(
-            {
-                "all_objects": self.all_objects,
-                "paths": list(self.paths),
-                "prefixes": list(self.prefixes),
-            },
-            separators=(",", ":"),
-            sort_keys=True,
         )
 
 
@@ -266,13 +257,19 @@ def _operation_binding(
     *, source: Path, destination: Path, selection: MaterializationSelection
 ) -> dict[str, str]:
     root = source.stat(follow_symlinks=False)
-    return {
-        "source": str(source),
-        "source_device": str(root.st_dev),
-        "source_inode": str(root.st_ino),
-        "destination": str(destination),
-        "selection": selection.canonical_json(),
-    }
+    digest = hashlib.sha256()
+    digest.update(_OPERATION_COMMITMENT_DOMAIN)
+    for label, value in (
+        (b"source", str(source).encode("utf-8")),
+        (b"source-device", str(root.st_dev).encode("ascii")),
+        (b"source-inode", str(root.st_ino).encode("ascii")),
+        (b"destination", str(destination).encode("utf-8")),
+    ):
+        _commit_field(digest, label)
+        _commit_field(digest, value)
+    _commit_selection(digest, selection)
+    _commit_field(digest, b"operation-terminal")
+    return {"operation_sha256": digest.hexdigest()}
 
 
 def _prepare_checkpoint(
@@ -375,7 +372,7 @@ def _read_completion_record(
         return None
     _require_regular_file(path, "materialization completion receipt")
     try:
-        raw = json.loads(_read_text(path, maximum_bytes=8192))
+        raw = json.loads(_read_text(path, maximum_bytes=_IDENTITY_RECORD_BYTES_MAX))
     except json.JSONDecodeError as exc:
         raise MaterializationError("materialization completion receipt is invalid") from exc
     expected_binding = _operation_binding(
@@ -444,7 +441,7 @@ def _retire_checkpoint(checkpoint: Path) -> None:
 def _require_exact_json(path: Path, expected: dict[str, object], label: str) -> None:
     _require_regular_file(path, label)
     try:
-        observed = json.loads(_read_text(path, maximum_bytes=8192))
+        observed = json.loads(_read_text(path, maximum_bytes=_IDENTITY_RECORD_BYTES_MAX))
     except json.JSONDecodeError as exc:
         raise MaterializationError(f"{label} is invalid") from exc
     if observed != expected:
@@ -459,6 +456,8 @@ def _write_json_exclusive(path: Path, payload: dict[str, object]) -> None:
         separators=(",", ":"),
         sort_keys=True,
     ).encode("utf-8")
+    if len(encoded) > _IDENTITY_RECORD_BYTES_MAX:
+        raise MaterializationError("filesystem adapter identity field exceeds its contract")
     temporary = path.parent / f".{path.name}.{uuid.uuid4().hex}.partial"
     fd = os.open(
         temporary,
@@ -686,8 +685,7 @@ def _scan_projection(
 
     digest = hashlib.sha256()
     digest.update(_COMMITMENT_DOMAIN)
-    selection_bytes = selection.canonical_json().encode("utf-8")
-    _commit_field(digest, selection_bytes)
+    _commit_selection(digest, selection)
     objects = 0
     stored_bytes = 0
     cursor = state.execute(
@@ -909,6 +907,19 @@ def _commit_field(digest: Any, value: bytes) -> None:
     digest.update(value)
 
 
+def _commit_selection(digest: Any, selection: MaterializationSelection) -> None:
+    _commit_field(digest, b"selection")
+    _commit_field(digest, b"all" if selection.all_objects else b"selected")
+    for path in selection.paths:
+        _commit_field(digest, b"path")
+        _commit_field(digest, path.encode("utf-8"))
+    _commit_field(digest, b"paths-terminal")
+    for prefix in selection.prefixes:
+        _commit_field(digest, b"prefix")
+        _commit_field(digest, prefix.encode("utf-8"))
+    _commit_field(digest, b"prefixes-terminal")
+
+
 def _bind_projection(
     state: sqlite3.Connection,
     *,
@@ -918,14 +929,9 @@ def _bind_projection(
     destination: Path,
     allow_existing_destination: bool = False,
 ) -> None:
-    root = source.stat(follow_symlinks=False)
     expected = {
         "schema": _STATE_SCHEMA,
-        "source": str(source),
-        "source_device": str(root.st_dev),
-        "source_inode": str(root.st_ino),
-        "destination": str(destination),
-        "selection": selection.canonical_json(),
+        **_operation_binding(source=source, destination=destination, selection=selection),
         "source_projection_sha256": projection.sha256,
     }
     persisted = dict(state.execute("SELECT key, value FROM authority").fetchall())

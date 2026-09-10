@@ -4,9 +4,10 @@ from __future__ import annotations
 
 import sqlite3
 import tempfile
-from collections.abc import Iterable, Iterator
+from collections.abc import Callable, Iterable, Iterator, Mapping, Sequence
 from pathlib import Path
 from types import TracebackType
+from typing import Any
 
 from riverhog_protocol import (
     COLLECTION_TAG_REQUEST_MEMBERS_MAX,
@@ -17,6 +18,7 @@ from riverhog_protocol import (
     collection_tag_node_digest,
     validate_collection_tag,
 )
+from riverhog_protocol.paths import validate_collection_id
 
 
 class _SqliteTagNodeStore:
@@ -131,4 +133,28 @@ def prepare_initial_collection_tags(tags: Iterable[str]) -> PreparedInitialColle
     return PreparedInitialCollectionTags(tags)
 
 
-__all__ = ["PreparedInitialCollectionTags", "prepare_initial_collection_tags"]
+def create_or_resume_with_initial_collection_tags(
+    tags: Iterable[str],
+    *,
+    create_or_resume: Callable[[Sequence[CollectionTag], str], Mapping[str, Any]],
+    add_tags: Callable[[int, Sequence[CollectionTag]], object],
+) -> dict[str, Any]:
+    """Reconcile complete tag intent and stage bounded batches only while open."""
+
+    with prepare_initial_collection_tags(tags) as prepared:
+        batches = prepared.iter_batches()
+        first_batch = next(batches, ())
+        session = dict(create_or_resume(first_batch, prepared.tag_set_identity))
+        if str(session.get("state") or "") != "open":
+            return session
+        collection_id = validate_collection_id(session.get("collection_id"))
+        for batch in batches:
+            add_tags(collection_id, batch)
+        return session
+
+
+__all__ = [
+    "PreparedInitialCollectionTags",
+    "create_or_resume_with_initial_collection_tags",
+    "prepare_initial_collection_tags",
+]

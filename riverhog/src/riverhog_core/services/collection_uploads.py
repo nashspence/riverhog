@@ -184,6 +184,7 @@ from riverhog_core.collection_access import (
     permission_resources,
     require_collection_access,
     require_collection_create_access,
+    tag_hashes,
 )
 from riverhog_core.collection_creation_identity import (
     CollectionUploadCreationIdentityDocument,
@@ -500,11 +501,7 @@ class SqlAlchemyCollectionUploadService:
             if upload is not None:
                 if upload.initiated_by_app != principal.app:
                     raise NotFound(f"collection upload not found: {normalized}")
-                require_collection_create_access(
-                    principal,
-                    COLLECTIONS_CREATE,
-                    tags=_upload_tag_values(session, normalized),
-                )
+                _require_upload_create_access(session, normalized, principal)
                 return
             collection = session.get(CollectionRecord, normalized)
             if collection is None or collection.created_by_app != principal.app:
@@ -529,11 +526,11 @@ class SqlAlchemyCollectionUploadService:
             )
             if upload is None or upload.initiated_by_app != principal.app:
                 raise NotFound(f"collection upload not found: {normalized}")
-            existing_tags = _upload_tag_values(session, normalized)
-            require_collection_create_access(
+            existing_tag_count = _require_upload_create_access(
+                session,
+                normalized,
                 principal,
-                COLLECTIONS_CREATE,
-                tags=(*existing_tags, *canonical),
+                additional_tags=canonical,
             )
             if upload.state != "open":
                 raise Conflict(f"collection upload session is not open: {normalized}")
@@ -571,7 +568,7 @@ class SqlAlchemyCollectionUploadService:
             return {
                 "collection_id": normalized,
                 "added": added,
-                "tag_count": len(existing_tags) + added,
+                "tag_count": existing_tag_count + added,
             }
 
     def require_read_access(self, collection_id: int, principal: ApplicationPrincipal) -> None:
@@ -582,11 +579,7 @@ class SqlAlchemyCollectionUploadService:
             upload = session.get(CollectionUploadRecord, normalized)
             if upload is not None:
                 if upload.initiated_by_app == principal.app:
-                    require_collection_create_access(
-                        principal,
-                        COLLECTIONS_CREATE,
-                        tags=_upload_tag_values(session, normalized),
-                    )
+                    _require_upload_create_access(session, normalized, principal)
                     return
                 if _upload_visible_to_deleter(session, upload, principal):
                     return
@@ -4123,16 +4116,6 @@ def _require_tag_assignment_access(principal: ApplicationPrincipal, tags: Sequen
             raise NotFound("collection tag assignment is not available")
 
 
-def _upload_tag_values(session: Session, collection_id: int) -> tuple[str, ...]:
-    return tuple(
-        session.scalars(
-            select(CollectionUploadTagRecord.tag)
-            .where(CollectionUploadTagRecord.collection_id == collection_id)
-            .order_by(CollectionUploadTagRecord.tag)
-        )
-    )
-
-
 def _upload_tag_count(session: Session, collection_id: int) -> int:
     return int(
         session.scalar(
@@ -4142,6 +4125,39 @@ def _upload_tag_count(session: Session, collection_id: int) -> int:
         )
         or 0
     )
+
+
+def _require_upload_create_access(
+    session: Session,
+    collection_id: int,
+    principal: ApplicationPrincipal,
+    *,
+    additional_tags: Sequence[CollectionTag] = (),
+) -> int:
+    """Authorize one staged tag set without materializing all members at once."""
+
+    existing_count = _upload_tag_count(session, collection_id)
+    resources = permission_resources(principal, COLLECTIONS_CREATE)
+    if ALL_RESOURCES in resources:
+        return existing_count
+    allowed_tag_hashes = tag_hashes(resources)
+    additional_hashes = tuple(collection_tag_sha256(tag) for tag in additional_tags)
+    if (
+        (existing_count == 0 and not additional_hashes)
+        or not allowed_tag_hashes
+        or any(digest not in allowed_tag_hashes for digest in additional_hashes)
+    ):
+        raise NotFound("collection creation is not available")
+    staged_hashes = session.scalars(
+        select(CollectionUploadTagRecord.tag_sha256)
+        .where(CollectionUploadTagRecord.collection_id == collection_id)
+        .order_by(CollectionUploadTagRecord.tag_sha256)
+        .execution_options(yield_per=COLLECTION_TAG_REQUEST_MEMBERS_MAX)
+    )
+    for digest in staged_hashes:
+        if digest not in allowed_tag_hashes:
+            raise NotFound("collection creation is not available")
+    return existing_count
 
 
 def _collection_upload_creation_identity(
