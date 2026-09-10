@@ -173,6 +173,56 @@ smoke_workspace_distribution \
   'import importlib.metadata as m; import riverhog_ftp_adapter.app; m.version("riverhog-ftp-adapter")' \
   riverhog-ftp-adapter
 smoke_workspace_distribution \
+  riverhog-storage-adapter-filesystem \
+  'riverhog_storage_adapter_filesystem-*.whl' \
+  'import importlib.metadata as m; import riverhog_storage_adapter_filesystem.materialize; m.version("riverhog-storage-adapter-filesystem")' \
+  riverhog-storage-adapter-filesystem-materialize
+
+# Produce the source with the full development tree, then prove that the built
+# adapter-owned exporter and independent recovery application need neither the
+# Riverhog server nor its database at recovery time.
+proof_root="${SCRATCH}/filesystem-recovery-proof"
+proof_path="$(dirname "$("${MISE_BIN}" which age)"):${PATH}"
+PATH="${proof_path}" "${MISE_BIN}" x -- uv run --locked --all-packages --group dev \
+  python -I "${ROOT_DIR}/tests/harness/filesystem_recovery_materialization.py" \
+  prepare "${proof_root}"
+filesystem_materializer="${SCRATCH}/riverhog-storage-adapter-filesystem/bin/riverhog-storage-adapter-filesystem-materialize"
+recovery_command="${SCRATCH}/recovery/bin/riverhog-recover"
+"${SCRATCH}/riverhog-storage-adapter-filesystem/bin/python" -I -c \
+  'import importlib.util; assert importlib.util.find_spec("riverhog_core") is None; assert importlib.util.find_spec("sqlalchemy") is None'
+"${SCRATCH}/recovery/bin/python" -I -c \
+  'import importlib.util; assert importlib.util.find_spec("riverhog_core") is None; assert importlib.util.find_spec("sqlalchemy") is None'
+"${filesystem_materializer}" \
+  "${proof_root}/adapter-root" "${proof_root}/full" \
+  --prefix archives/recovery-proof/
+PATH="${proof_path}" "${recovery_command}" \
+  "${proof_root}/full/archives/recovery-proof" "${proof_root}/recovered" \
+  --passphrases-file "${proof_root}/passphrases.json"
+"${filesystem_materializer}" \
+  "${proof_root}/adapter-root" "${proof_root}/description" \
+  --path archives/recovery-proof/recovery.json \
+  --path archives/recovery-proof/manifest.json.age \
+  --path archives/recovery-proof/description.json.age
+PATH="${proof_path}" "${recovery_command}" \
+  "${proof_root}/description/archives/recovery-proof" \
+  --passphrases-file "${proof_root}/passphrases.json" \
+  --description-only >"${proof_root}/description.json"
+"${filesystem_materializer}" \
+  "${proof_root}/adapter-root" "${proof_root}/tags" \
+  --path archives/recovery-proof/recovery.json \
+  --path archives/recovery-proof/manifest.json.age \
+  --path archives/recovery-proof/tags/head.json.age \
+  --prefix archives/recovery-proof/tags/nodes/
+PATH="${proof_path}" "${recovery_command}" \
+  "${proof_root}/tags/archives/recovery-proof" \
+  --passphrases-file "${proof_root}/passphrases.json" \
+  --tags-only >"${proof_root}/tags.json-seq"
+for proof in full description tags; do
+  "${MISE_BIN}" x -- uv run --locked --all-packages --group dev \
+    python -I "${ROOT_DIR}/tests/harness/filesystem_recovery_materialization.py" \
+    "verify-${proof}" "${proof_root}"
+done
+smoke_workspace_distribution \
   stove0-client \
   'stove0_client-*.whl' \
   'import importlib.metadata as m; import stove0_cli.main; m.version("stove0-client")' \

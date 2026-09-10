@@ -23,6 +23,7 @@ dependencies = [
 
 [project.scripts]
 riverhog-storage-adapter-filesystem = "riverhog_storage_adapter_filesystem.app:main"
+riverhog-storage-adapter-filesystem-materialize = "riverhog_storage_adapter_filesystem.materialize_cli:main"
 
 [tool.uv.sources]
 riverhog-storage-adapter-asgi-support = { workspace = true }

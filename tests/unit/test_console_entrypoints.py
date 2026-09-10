@@ -18,6 +18,7 @@ CONSOLE_DISTRIBUTIONS = {
     "riverhog-api": "riverhog-server",
     "riverhog-recover": "riverhog-recover",
     "riverhog-ftp-adapter": "riverhog-ftp-adapter",
+    "riverhog-storage-adapter-filesystem-materialize": ("riverhog-storage-adapter-filesystem"),
     "stove0": "stove0-client",
     "stove0-server": "stove0-server",
     "stove0-exiftool-observer": "stove0-exiftool-observer",

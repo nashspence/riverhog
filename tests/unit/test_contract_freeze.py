@@ -91,6 +91,7 @@ def test_checked_contract_freeze_matches_every_executable_authority() -> None:
         "piggity",
         "riverhog-ftp-adapter",
         "riverhog-recover",
+        "riverhog-storage-adapter-filesystem-materialize",
         "stove0",
     }
     assert set(external["cli"]["piggity"]["commands"]) == {
@@ -145,7 +146,7 @@ def test_checked_contract_freeze_matches_every_executable_authority() -> None:
     }
     assert trace["coverage"]["source_authorities"] == len(trace["sources"])
     assert trace["coverage"]["source_kinds"] == {
-        "cli": 5,
+        "cli": 6,
         "configuration": 6,
         "configuration-environment": 121,
         "openapi": 3,

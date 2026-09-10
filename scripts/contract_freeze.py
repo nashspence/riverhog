@@ -36,6 +36,9 @@ from riverhog_core.runtime_config import (
 from riverhog_ftp_adapter.app import build_parser as ftp_adapter_parser
 from riverhog_ftp_adapter.config import FtpAdapterConfig
 from riverhog_recover.cli import _parser as recovery_parser
+from riverhog_storage_adapter_filesystem.materialize_cli import (
+    build_parser as filesystem_materialize_parser,
+)
 from riverhog_storage_adapter_support import storage_adapter_schema_bundle
 from stove0_cli.main import app as stove0_app
 from stove0_observer_support import observer_schema_bundle
@@ -477,6 +480,9 @@ def _cli_surfaces() -> dict[str, object]:
         "piggity": _click_command(get_command(piggity_app)),
         "riverhog-ftp-adapter": _argparse_command(ftp_adapter_parser()),
         "riverhog-recover": _argparse_command(recovery_parser()),
+        "riverhog-storage-adapter-filesystem-materialize": _argparse_command(
+            filesystem_materialize_parser()
+        ),
         "stove0": _click_command(get_command(stove0_app)),
     }
 
@@ -716,6 +722,9 @@ def _cli_trace() -> list[dict[str, object]]:
         "piggity": "piggity.main",
         "riverhog-ftp-adapter": "riverhog_ftp_adapter.app",
         "riverhog-recover": "riverhog_recover.cli",
+        "riverhog-storage-adapter-filesystem-materialize": (
+            "riverhog_storage_adapter_filesystem.materialize_cli"
+        ),
         "stove0": "stove0_cli.main",
     }
     return [
