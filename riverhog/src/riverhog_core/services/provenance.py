@@ -7,7 +7,6 @@ from typing import Any, cast
 
 from http_api_contracts import BrowseScalar, closed_literal_values
 from riverhog_protocol import (
-    DERIVATION_EVIDENCE_PATH,
     ProvenanceSort,
     ProvenanceStatus,
     SortOrder,
@@ -39,7 +38,7 @@ from riverhog_provenance.journal import (
     resolve_incremental_journal_current_state,
     validate_incremental_journal_entry,
 )
-from sqlalchemy import and_, asc, case, delete, desc, func, or_, select, tuple_, update
+from sqlalchemy import and_, asc, delete, desc, func, select, tuple_, update
 from sqlalchemy.orm import Session
 from state_schema import read_snapshot
 from time_formats import utc_timestamp_now
@@ -783,11 +782,6 @@ def _verification_binding_rows(
     after_path: str | None,
     limit: int,
 ) -> list[tuple[CollectionFileRecord, CollectionFileProvenanceRecord]]:
-    terminal_rank = case(
-        (CollectionFileRecord.path == DERIVATION_EVIDENCE_PATH, 2),
-        (CollectionFileRecord.path.startswith("riverhog/"), 1),
-        else_=0,
-    )
     statement = (
         select(CollectionFileRecord, CollectionFileProvenanceRecord)
         .join(
@@ -796,21 +790,12 @@ def _verification_binding_rows(
             & (CollectionFileProvenanceRecord.path == CollectionFileRecord.path),
         )
         .where(CollectionFileRecord.collection_id == collection_id)
-        .order_by(terminal_rank, CollectionFileRecord.path_sort_key)
+        .order_by(CollectionFileRecord.path_sort_key)
         .limit(limit)
     )
     if after_path is not None:
-        after_rank = (
-            2 if after_path == DERIVATION_EVIDENCE_PATH else int(after_path.startswith("riverhog/"))
-        )
         statement = statement.where(
-            or_(
-                terminal_rank > after_rank,
-                and_(
-                    terminal_rank == after_rank,
-                    CollectionFileRecord.path_sort_key > relpath_sort_key(after_path),
-                ),
-            )
+            CollectionFileRecord.path_sort_key > relpath_sort_key(after_path)
         )
     return list(session.execute(statement).tuples())
 

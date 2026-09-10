@@ -11,6 +11,7 @@ from piggity import main as riverhog_main
 from piggity.upload_progress import CollectionUploadProgressState, format_upload_progress_line
 from riverhog_client import put_collection_upload_unit
 from riverhog_protocol import (
+    COLLECTION_TAG_REQUEST_MEMBERS_MAX,
     CollectionUploadUnitAssignmentDocument,
     CollectionUploadUnitWorkDocument,
     CollectionUploadWorkBatchDocument,
@@ -267,6 +268,8 @@ def test_direct_collection_upload_registers_plans_and_finalizes(
     registered: list[dict[str, object]] = []
     uploaded = bytearray()
     committed = False
+    requested_tags = [f"qualification/{index:04d}" for index in range(300)]
+    tag_batches: list[tuple[str, ...]] = []
 
     class Api:
         base_url = "https://riverhog.test"
@@ -281,11 +284,21 @@ def test_direct_collection_upload_registers_plans_and_finalizes(
         ) -> dict[str, object]:
             assert idempotency_key == "test-upload"
             assert _kwargs["description"] == "Morning footage"
+            assert _kwargs["tags"] == tuple(requested_tags[:COLLECTION_TAG_REQUEST_MEMBERS_MAX])
             return {
                 "collection_id": COLLECTION_ID,
                 "state": "open",
                 "registration_constraints": REGISTRATION_CONSTRAINTS,
             }
+
+        def add_collection_upload_session_tags(
+            self,
+            collection_id: int,
+            tags: tuple[str, ...],
+        ) -> dict[str, object]:
+            assert collection_id == COLLECTION_ID
+            tag_batches.append(tags)
+            return {"collection_id": collection_id, "added": len(tags)}
 
         def register_collection_upload_session_files(
             self,
@@ -411,6 +424,7 @@ def test_direct_collection_upload_registers_plans_and_finalizes(
         root,
         ingest_source=str(root),
         description="Morning footage",
+        tags=requested_tags,
         file_concurrency=1,
         json_mode=True,
         provenance_observer_factory=native_provenance_observer,
@@ -420,6 +434,14 @@ def test_direct_collection_upload_registers_plans_and_finalizes(
     assert sorted(str(item["path"]) for item in registered) == ["a.txt", "b.txt"]
     assert all(item["provenance"]["status"] == "captured" for item in registered)  # type: ignore[index]
     assert bytes(uploaded) == b"alphabravo"
+    assert tag_batches == [
+        tuple(
+            requested_tags[
+                COLLECTION_TAG_REQUEST_MEMBERS_MAX : 2 * COLLECTION_TAG_REQUEST_MEMBERS_MAX
+            ]
+        ),
+        tuple(requested_tags[2 * COLLECTION_TAG_REQUEST_MEMBERS_MAX :]),
+    ]
 
 
 def test_upload_retry_returns_an_already_finalized_collection(

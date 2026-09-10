@@ -37,6 +37,7 @@ required_checks = [
   "make compile",
   "make compose-smoke",
   "make dist-smoke",
+  "make filesystem-recovery-qualification",
   "make implementation-policy",
   "make lint",
   "make postgres-concurrency",

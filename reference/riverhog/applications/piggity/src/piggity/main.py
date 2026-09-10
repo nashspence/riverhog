@@ -27,6 +27,7 @@ from riverhog_client.uploads import (
     configured_upload_window,
     upload_collection_units,
 )
+from riverhog_protocol import COLLECTION_TAG_REQUEST_MEMBERS_MAX
 from riverhog_protocol.collection_description import validate_collection_description
 from riverhog_protocol.collection_upload_transport import (
     CollectionUploadRegistrationConstraintsDocument,
@@ -1042,18 +1043,33 @@ def _create_or_resume_collection_upload_session(
     provenance_mode: ProvenanceMode,
     provenance_omission_reason: str | None,
 ) -> dict[str, Any]:
-    return _retry_transient_upload_operation(
+    requested_tags = tuple(tags or ())
+    session = _retry_transient_upload_operation(
         "Upload session open/resume",
         lambda: api.create_or_resume_collection_upload_session(
             idempotency_key,
             ingest_source=ingest_source,
             description=description,
-            tags=tags or (),
+            tags=requested_tags[:COLLECTION_TAG_REQUEST_MEMBERS_MAX],
             archive_store=archive_store,
             provenance_mode=provenance_mode,
             provenance_omission_reason=provenance_omission_reason,
         ),
     )
+    if session.get("state") == "finalized":
+        return session
+    collection_id = cast(int, session["collection_id"])
+    for offset in range(
+        COLLECTION_TAG_REQUEST_MEMBERS_MAX,
+        len(requested_tags),
+        COLLECTION_TAG_REQUEST_MEMBERS_MAX,
+    ):
+        batch = requested_tags[offset : offset + COLLECTION_TAG_REQUEST_MEMBERS_MAX]
+        _retry_transient_upload_operation(
+            f"Upload session add {len(batch)} tag(s)",
+            partial(api.add_collection_upload_session_tags, collection_id, batch),
+        )
+    return session
 
 
 def _register_collection_upload_session_files(

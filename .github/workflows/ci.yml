@@ -40,6 +40,8 @@ jobs:
             docker: true
           - target: compose-smoke
             docker: true
+          - target: filesystem-recovery-qualification
+            docker: true
           - target: dist-smoke
     steps:
       - name: Check out repository

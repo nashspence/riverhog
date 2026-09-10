@@ -2417,6 +2417,9 @@ class CollectionUploadRecord(Base):
     archive_tree_next_file_order: Mapped[int] = mapped_column(
         BigInteger, default=0, server_default=text("0")
     )
+    archive_tree_after_path_sort_key: Mapped[bytes | None] = mapped_column(
+        LargeBinary, nullable=True
+    )
     archive_tree_hash_state: Mapped[str | None] = mapped_column(Text, nullable=True)
     archive_tree_sha256: Mapped[str | None] = mapped_column(String(64), nullable=True)
     archive_volume_next_sequence: Mapped[int] = mapped_column(
@@ -2439,6 +2442,9 @@ class CollectionUploadRecord(Base):
     )
     provenance_archive_next_file_order: Mapped[int] = mapped_column(
         BigInteger, default=0, server_default=text("0")
+    )
+    provenance_archive_after_path_sort_key: Mapped[bytes | None] = mapped_column(
+        LargeBinary, nullable=True
     )
     provenance_archive_last_journal_id: Mapped[str | None] = mapped_column(String, nullable=True)
     provenance_archive_current_journal_id: Mapped[str | None] = mapped_column(String, nullable=True)

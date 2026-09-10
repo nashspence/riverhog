@@ -155,11 +155,13 @@ def test_ci_uses_thin_repository_and_image_build_adapters() -> None:
         "c2sp-vectors",
         "postgres-concurrency",
         "compose-smoke",
+        "filesystem-recovery-qualification",
         "dist-smoke",
     ]
     assert [entry["target"] for entry in matrix if entry.get("docker") == "true"] == [
         "postgres-concurrency",
         "compose-smoke",
+        "filesystem-recovery-qualification",
     ]
 
     steps = job["steps"]
