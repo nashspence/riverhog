@@ -97,7 +97,7 @@ MYPY_SOURCES = \
 	reference/riverhog/applications/mango-fish/src
 args ?=
 
-.PHONY: help license ruff ruff-fix format format-check fix mypy lint compile unit spec dependency-readiness operation-qualification database-qualification contract-freeze contract-freeze-update implementation-policy implementation-policy-update provider-qualification installation-qualification release-check release-plan release-dry-run release-governance-check release-evidence release-verify c2sp-vectors postgres-concurrency compose-smoke stove0-scale-qualification mango-fish-smoke transfer-profile stop-spec dist dist-smoke build build-riverhog build-riverhog-ftp-adapter build-riverhog-storage-adapter-aws build-riverhog-storage-adapter-backblaze build-riverhog-storage-adapter-filesystem build-stove0 build-stove0-exiftool-observer build-stove0-ffprobe-sampling-observer build-stove0-nvenc-av1-opus-target build-stove0-opus-target build-stove0-review-materialize-target build-stove0-review-rclone-effect-target build-mango-fish build-test bootstrap-garage down test
+.PHONY: help license ruff ruff-fix format format-check fix mypy lint compile unit spec dependency-readiness operation-qualification database-qualification contract-freeze contract-freeze-update implementation-policy implementation-policy-update provider-qualification installation-qualification release-check release-plan release-dry-run release-governance-check release-evidence release-verify c2sp-vectors postgres-concurrency compose-smoke filesystem-recovery-qualification stove0-scale-qualification mango-fish-smoke transfer-profile stop-spec dist dist-smoke build build-riverhog build-riverhog-ftp-adapter build-riverhog-storage-adapter-aws build-riverhog-storage-adapter-backblaze build-riverhog-storage-adapter-filesystem build-stove0 build-stove0-exiftool-observer build-stove0-ffprobe-sampling-observer build-stove0-nvenc-av1-opus-target build-stove0-opus-target build-stove0-review-materialize-target build-stove0-review-rclone-effect-target build-mango-fish build-test bootstrap-garage down test
 
 define UV_CMD
 	@if ! command -v "$(MISE_BIN)" >/dev/null 2>&1; then \
@@ -151,6 +151,7 @@ help:
 		'  make c2sp-vectors      Download and run the pinned C2SP age conformance corpus.' \
 		'  make postgres-concurrency Run database concurrency tests against disposable Postgres.' \
 		'  make compose-smoke     Verify disposable adapter, Riverhog, cache, and stove0 lifecycle.' \
+		'  make filesystem-recovery-qualification Prove built-service recovery from filesystem storage.' \
 		'  make stove0-scale-qualification Run the final-image lifecycle with a 128-file workload.' \
 		'  make mango-fish-smoke  Exercise the already-built final Mango Fish image.' \
 		'  make transfer-profile  Profile a supported transfer command with secret-free JSON.' \
@@ -288,6 +289,9 @@ postgres-concurrency:
 
 compose-smoke:
 	@./scripts/test_compose_smoke.sh
+
+filesystem-recovery-qualification:
+	@./scripts/test_filesystem_recovery_qualification.sh
 
 stove0-scale-qualification:
 	@STOVE0_SMOKE_FILE_COUNT="$${STOVE0_SCALE_FILES:-128}" \

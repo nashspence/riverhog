@@ -11721,7 +11721,7 @@
         {
           "distribution": "riverhog-server",
           "fixture_sha256s": [
-            "b51eb71e32f6e45d5c31c5dae9df420b1afbf1f7b1a615c85f6c5d7f81adedd2"
+            "89bfa5eeaf969a6d5f369d39b65ae46c74cb7aa0bec3ea7185d294c84a6927ae"
           ],
           "format": "state-schema/postgresql",
           "head": "v1_0001",
@@ -79844,7 +79844,9 @@
       {
         "application": "riverhog",
         "classification": "client-only-primitive",
-        "cli_commands": [],
+        "cli_commands": [
+          "collection upload start"
+        ],
         "client": "ApiClient",
         "method": "POST",
         "operation_id": "add_collection_upload_session_tags",

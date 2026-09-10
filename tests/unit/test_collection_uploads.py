@@ -34,6 +34,7 @@ from riverhog_core.catalog_models import (
     CollectionTagNodeRecord,
     CollectionUploadProvenanceJournalChunkRecord,
     CollectionUploadProvenanceJournalRecord,
+    CollectionUploadProvenanceValidationFactRecord,
     CollectionUploadRecord,
     CollectionUploadTagNodeReferenceRecord,
     RetrievalCacheLeaseRecord,
@@ -49,7 +50,10 @@ from riverhog_core.incremental_plan import (
 from riverhog_core.ports.retrieval_cache import RetrievalCacheAdmission
 from riverhog_core.runtime_config import RuntimeConfig
 from riverhog_core.services.catalog_sync import SqlAlchemyCatalogSyncService
-from riverhog_core.services.collection_uploads import SqlAlchemyCollectionUploadService
+from riverhog_core.services.collection_uploads import (
+    SqlAlchemyCollectionUploadService,
+    _entity_validation_fact_key,
+)
 from riverhog_core.services.lifecycle_events import SqlAlchemyLifecycleEventService
 from riverhog_core.services.provenance import SqlAlchemyProvenanceService
 from riverhog_core.throughput import ArchiveThroughputTuning, log_transfer_timing
@@ -109,6 +113,15 @@ _OTHER_DELETER = ApplicationPrincipal(
     key_id="key-other",
     access=frozenset({ApplicationAccess(COLLECTIONS_DELETE, "collection:999")}),
 )
+
+
+def test_provenance_entity_validation_fact_keys_are_database_safe_and_unambiguous() -> None:
+    first = _entity_validation_fact_key("agents", "urn:uuid:first")
+    second = _entity_validation_fact_key("agent", "surn:uuid:first")
+
+    assert len(first) == 64
+    assert set(first) <= set("0123456789abcdef")
+    assert first != second
 
 
 class _UnusedRangeStore:
@@ -737,6 +750,18 @@ def test_captured_and_omitted_file_provenance_is_one_immutable_mixed_archive(
     assert staged["accepted_bytes"] == len(journal)
     assert staged["sha256"] == summary.journal_sha256
     assert staged["current_state_id"] == summary.current_state_id
+    with session_scope(make_session_factory(config.database_url)) as session:
+        entity_keys = tuple(
+            session.scalars(
+                select(CollectionUploadProvenanceValidationFactRecord.fact_key).where(
+                    CollectionUploadProvenanceValidationFactRecord.collection_id == collection_id,
+                    CollectionUploadProvenanceValidationFactRecord.journal_id == summary.journal_id,
+                    CollectionUploadProvenanceValidationFactRecord.kind == "entity",
+                )
+            )
+        )
+        assert entity_keys
+        assert all(len(key) == 64 and set(key) <= set("0123456789abcdef") for key in entity_keys)
     service.register_files(
         collection_id,
         tuple(
@@ -756,7 +781,7 @@ def test_captured_and_omitted_file_provenance_is_one_immutable_mixed_archive(
                     ),
                 },
             }
-            for binding in bindings
+            for binding in reversed(bindings)
         ),
     )
     closing = service.complete(collection_id)
@@ -894,7 +919,7 @@ def test_captured_and_omitted_file_provenance_is_one_immutable_mixed_archive(
                 else {"omission_reason": binding.omission_reason}
             ),
         }
-        for binding in bindings
+        for binding in sorted(bindings, key=lambda current: current.path.encode("utf-8"))
     ]
     assert bytes(recovered_journal) == journal
 
@@ -1552,8 +1577,8 @@ def test_server_owned_membership_is_independent_of_registration_order(
         "z/last.txt": b"last\n",
     }
 
-    def publish(order: tuple[str, ...], key: str) -> dict[str, object]:
-        service, _config = _service(tmp_path / key)
+    def publish(order: tuple[str, ...], key: str) -> tuple[dict[str, object], str]:
+        service, config = _service(tmp_path / key)
         opened = service.create_or_resume(
             idempotency_key=key,
             ingest_source="fixture",
@@ -1592,10 +1617,23 @@ def test_server_owned_membership_is_independent_of_registration_order(
                     plan_sha256=str(volume["plan_sha256"]),
                     content=payload,
                 )
-        return _process_until(service, collection_id)
+        tree_sha256: str | None = None
+        for _ in range(256):
+            result = service.get(collection_id)
+            if result["state"] == "finalized":
+                break
+            assert service.process_due_finalizations() == 1
+            with session_scope(make_session_factory(config.database_url)) as session:
+                upload = session.get(CollectionUploadRecord, collection_id)
+                if upload is not None and upload.archive_tree_sha256 is not None:
+                    tree_sha256 = upload.archive_tree_sha256
+        else:
+            raise AssertionError("bounded finalization did not terminate")
+        assert tree_sha256 is not None
+        return result, tree_sha256
 
-    forward = publish(tuple(contents), "server-membership-forward")
-    shuffled = publish(tuple(reversed(contents)), "server-membership-shuffled")
+    forward, forward_tree = publish(tuple(contents), "server-membership-forward")
+    shuffled, shuffled_tree = publish(tuple(reversed(contents)), "server-membership-shuffled")
     expected = collection_content_identity(
         (
             (path, len(content), hashlib.sha256(content).hexdigest())
@@ -1604,6 +1642,10 @@ def test_server_owned_membership_is_independent_of_registration_order(
     )
 
     assert forward["content_identity"] == shuffled["content_identity"] == expected
+    tree = hashlib.sha256()
+    for path, content in sorted(contents.items()):
+        tree.update(f"{path}\t{len(content)}\t{hashlib.sha256(content).hexdigest()}\n".encode())
+    assert forward_tree == shuffled_tree == tree.hexdigest()
 
 
 def test_completion_requires_volume_plans_to_match_registered_file_identities(

@@ -2968,18 +2968,22 @@ class SqlAlchemyCollectionUploadService:
 
             if upload.provenance_archive_next_file_order < upload.file_count:
                 first_file_order = int(upload.provenance_archive_next_file_order)
+                statement = select(CollectionUploadFileRecord).where(
+                    CollectionUploadFileRecord.collection_id == collection_id
+                )
+                if upload.provenance_archive_after_path_sort_key is not None:
+                    statement = statement.where(
+                        CollectionUploadFileRecord.path_sort_key
+                        > upload.provenance_archive_after_path_sort_key
+                    )
                 rows = list(
                     session.scalars(
-                        select(CollectionUploadFileRecord)
-                        .where(
-                            CollectionUploadFileRecord.collection_id == collection_id,
-                            CollectionUploadFileRecord.file_order >= first_file_order,
+                        statement.order_by(CollectionUploadFileRecord.path_sort_key).limit(
+                            PROVENANCE_BINDING_SEGMENT_FILES_MAX
                         )
-                        .order_by(CollectionUploadFileRecord.file_order)
-                        .limit(PROVENANCE_BINDING_SEGMENT_FILES_MAX)
                     )
                 )
-                if not rows or rows[0].file_order != first_file_order:
+                if not rows:
                     raise RuntimeError("provenance binding publication is not contiguous")
                 binding_rows: list[Mapping[str, object]] = [
                     _provenance_binding_row(row) for row in rows
@@ -2998,6 +3002,7 @@ class SqlAlchemyCollectionUploadService:
                     file_count=len(rows),
                 )
                 next_file_order = first_file_order + len(rows)
+                next_path_sort_key = rows[-1].path_sort_key
                 journal_id = None
                 next_journal_offset = 0
             else:
@@ -3024,6 +3029,7 @@ class SqlAlchemyCollectionUploadService:
                     document = None
                     payload = b""
                     next_file_order = int(upload.provenance_archive_next_file_order)
+                    next_path_sort_key = None
                     journal_id = None
                     next_journal_offset = 0
                 else:
@@ -3048,6 +3054,7 @@ class SqlAlchemyCollectionUploadService:
                         journal_offset=offset,
                     )
                     next_file_order = int(upload.provenance_archive_next_file_order)
+                    next_path_sort_key = None
                     journal_id = journal.journal_id
                     next_journal_offset = offset + len(payload)
             if upload.provenance_archive_next_file_order < upload.file_count:
@@ -3142,6 +3149,8 @@ class SqlAlchemyCollectionUploadService:
             upload.provenance_archive_next_sequence = sequence + 1
             upload.provenance_archive_hash_state = digest.export_state()
             upload.provenance_archive_next_file_order = next_file_order
+            if next_path_sort_key is not None:
+                upload.provenance_archive_after_path_sort_key = next_path_sort_key
             if journal_id is not None:
                 if upload.provenance_archive_current_journal_id not in {None, journal_id}:
                     raise RuntimeError("provenance journal publication changed identity")
@@ -3170,16 +3179,19 @@ class SqlAlchemyCollectionUploadService:
                 if upload.archive_tree_hash_state is not None
                 else CheckpointSHA256()
             )
+            statement = select(CollectionUploadFileRecord).where(
+                CollectionUploadFileRecord.collection_id == collection_id
+            )
+            if upload.archive_tree_after_path_sort_key is not None:
+                statement = statement.where(
+                    CollectionUploadFileRecord.path_sort_key
+                    > upload.archive_tree_after_path_sort_key
+                )
             rows = list(
                 session.scalars(
-                    select(CollectionUploadFileRecord)
-                    .where(
-                        CollectionUploadFileRecord.collection_id == collection_id,
-                        CollectionUploadFileRecord.file_order
-                        >= upload.archive_tree_next_file_order,
+                    statement.order_by(CollectionUploadFileRecord.path_sort_key).limit(
+                        _FINALIZATION_FILE_BATCH
                     )
-                    .order_by(CollectionUploadFileRecord.file_order)
-                    .limit(_FINALIZATION_FILE_BATCH)
                 )
             )
             if not rows:
@@ -3190,11 +3202,10 @@ class SqlAlchemyCollectionUploadService:
                 return True
             expected = upload.archive_tree_next_file_order
             for row in rows:
-                if row.file_order != expected:
-                    raise RuntimeError("archive tree file order is not contiguous")
                 digest.update(f"{row.path}\t{row.bytes}\t{row.sha256}\n".encode())
                 expected += 1
             upload.archive_tree_next_file_order = expected
+            upload.archive_tree_after_path_sort_key = rows[-1].path_sort_key
             if expected == upload.file_count:
                 upload.archive_tree_sha256 = digest.hexdigest()
                 upload.archive_tree_hash_state = None
@@ -5698,7 +5709,7 @@ def _validate_next_upload_journal_entry(
             session,
             record,
             kind="entity",
-            key=f"{entity_type}\x00{entity_id}",
+            key=_entity_validation_fact_key(entity_type, entity_id),
             value={
                 "entity_type": entity_type,
                 "entity_id": entity_id,
@@ -5784,6 +5795,15 @@ def _validate_next_upload_journal_entry(
     record.validation_byte_offset += len(encoded)
     if record.validation_byte_offset == record.bytes and record.state == "validating":
         _seal_validated_upload_journal(session, record)
+
+
+def _entity_validation_fact_key(entity_type: str, entity_id: str) -> str:
+    identity = json.dumps(
+        [entity_type, entity_id],
+        ensure_ascii=False,
+        separators=(",", ":"),
+    ).encode()
+    return hashlib.sha256(b"riverhog-provenance-validation-entity/v1\x00" + identity).hexdigest()
 
 
 def _next_upload_journal_entry_bytes(
@@ -5890,13 +5910,11 @@ def _seal_validated_upload_journal(
     binding_value = json.loads(binding.value_json)
     state_ref = binding_value.get("state") if isinstance(binding_value, dict) else None
     state_id = state_ref.get("id") if isinstance(state_ref, dict) else None
-    state = (
-        session.get(
-            CollectionUploadProvenanceValidationFactRecord,
-            (record.collection_id, record.journal_id, "state", state_id),
-        )
-        if isinstance(state_id, str)
-        else None
+    if not isinstance(state_id, str):
+        raise ProvenanceValidationError("current primary payload state is not asserted")
+    state = session.get(
+        CollectionUploadProvenanceValidationFactRecord,
+        (record.collection_id, record.journal_id, "state", state_id),
     )
     if state is None:
         raise ProvenanceValidationError("current primary payload state is not asserted")
@@ -5906,7 +5924,7 @@ def _seal_validated_upload_journal(
             record.collection_id,
             record.journal_id,
             "entity",
-            f"states\x00{state_id}",
+            _entity_validation_fact_key("states", state_id),
         ),
     )
     state_entity_value = json.loads(state_entity.value_json) if state_entity is not None else None
