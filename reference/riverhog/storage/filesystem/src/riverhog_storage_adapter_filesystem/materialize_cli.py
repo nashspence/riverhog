@@ -86,7 +86,8 @@ def main(argv: Sequence[str] | None = None) -> int:
             f"Materialized {summary.selected_objects} objects "
             f"({summary.selected_bytes} bytes) to {summary.destination}; "
             f"copied={summary.copied_bytes} destination-verified="
-            f"{summary.destination_verified_bytes} source-metadata="
+            f"{summary.destination_verified_bytes} staging-verified="
+            f"{summary.staging_verified_bytes} source-metadata="
             f"{summary.source_metadata_bytes}",
             flush=True,
         )
