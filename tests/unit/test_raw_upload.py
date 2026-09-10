@@ -10,6 +10,9 @@ from riverhog_core.domain.archive import RawVolumePlan
 from riverhog_core.ports.archive_objects import (
     CompletedObjectReceipt,
     ResumableWriteConstraints,
+    WriteCompletionAuthority,
+    WriteSegmentCursor,
+    WriteSegmentPage,
     WriteSegmentReceipt,
     WriteSession,
 )
@@ -19,8 +22,31 @@ from riverhog_core.raw_upload import (
     merge_raw_upload_checkpoints,
 )
 from riverhog_core.raw_volume import raw_age_aligned_unit_plans
+from riverhog_storage_adapter_protocol import (
+    WriteSegmentReceipt as AdapterWriteSegmentReceipt,
+)
+from riverhog_storage_adapter_protocol import (
+    write_completion_authority,
+)
 
 ARCHIVE_UNIT_BYTES = 5 * 1024 * 1024
+
+
+def _authority(segments: tuple[WriteSegmentReceipt, ...]) -> WriteCompletionAuthority:
+    result = write_completion_authority(
+        AdapterWriteSegmentReceipt(
+            number=item.number,
+            segment_token=item.segment_token,
+            stored_bytes=item.bytes,
+            stored_sha256=item.sha256,
+        )
+        for item in segments
+    )
+    return WriteCompletionAuthority(
+        result.segment_count,
+        result.stored_bytes,
+        result.sequence_sha256,
+    )
 
 
 class MemoryRawCheckpointStore:
@@ -94,18 +120,32 @@ class MemoryResumableStore:
         row.segment_tokens[number] = segment_token
         return WriteSegmentReceipt(number, segment_token, len(content))
 
-    def list_segments(self, *, session: WriteSession) -> tuple[WriteSegmentReceipt, ...]:
+    def list_segments(
+        self,
+        *,
+        session: WriteSession,
+        cursor: WriteSegmentCursor,
+    ) -> WriteSegmentPage:
         row = self.uploads[session.write_token]
-        return tuple(
+        segments = tuple(
             WriteSegmentReceipt(number, row.segment_tokens[number], len(row.parts[number]))
             for number in sorted(row.parts)
+        )
+        token = hashlib.sha256(repr(segments).encode()).hexdigest()
+        assert cursor.traversal_token in {None, token}
+        page = tuple(item for item in segments if item.number > cursor.after_number)[:128]
+        has_more = bool(page) and page[-1].number < segments[-1].number
+        return WriteSegmentPage(
+            segments=page,
+            next_cursor=(WriteSegmentCursor(page[-1].number, token) if has_more else None),
+            completion=None if has_more else _authority(segments),
         )
 
     def complete_write(
         self,
         *,
         session: WriteSession,
-        segments: tuple[WriteSegmentReceipt, ...],
+        completion: WriteCompletionAuthority,
         expected_bytes: int,
         expected_content_type: str,
         expected_metadata: dict[str, str],
@@ -113,6 +153,11 @@ class MemoryResumableStore:
         row = self.uploads[session.write_token]
         assert row.content_type == expected_content_type
         assert all(row.metadata.get(key) == value for key, value in expected_metadata.items())
+        segments = tuple(
+            WriteSegmentReceipt(number, row.segment_tokens[number], len(row.parts[number]))
+            for number in sorted(row.parts)
+        )
+        assert completion == _authority(segments)
         content = b"".join(row.parts[current.number] for current in segments)
         assert len(content) == expected_bytes
         receipt = CompletedObjectReceipt(
@@ -224,8 +269,7 @@ def test_raw_upload_resumes_on_server_defined_age_part_boundaries() -> None:
         second.plaintext_len,
     ]
     assert sum(part.plaintext_bytes for part in receipt.parts) == len(content)
-    assert resumed.write_segments
-    assert all(current.sha256 is not None for current in resumed.write_segments)
+    assert "write_segments" not in resumed.to_json()
 
 
 def test_raw_upload_revalidates_the_registered_part_identity() -> None:

@@ -31,8 +31,9 @@ from riverhog_storage_adapter_protocol import (
     StorageAdapterPort,
     ValidatedStorageAdapterPort,
     WriteCompleteRequest,
+    WriteSegmentListRequest,
+    WriteSegmentPage,
     WriteSegmentReceipt,
-    WriteSegmentSet,
     WriteSession,
     WriteStartRequest,
     normalize_object_path,
@@ -42,8 +43,9 @@ from riverhog_storage_adapter_protocol import (
     validate_read_status_response,
     validate_small_object_response,
     validate_write_completion_request,
-    validate_write_segment_set_response,
+    validate_write_segment_page_response,
     validate_write_session_response,
+    write_completion_authority,
 )
 
 
@@ -219,27 +221,28 @@ def test_validated_port_rejects_direct_response_and_stream_drift() -> None:
         )
 
 
-def test_write_completion_preserves_optional_digests_and_repeated_provider_tokens() -> None:
+def test_write_completion_commits_optional_digests_and_repeated_provider_tokens() -> None:
     session = WriteSession(
         object_path="archives/id/volumes/pack.tar.age",
         write_token="opaque",
         expected_bytes=12,
     )
+    segments = (
+        WriteSegmentReceipt(
+            number=1,
+            segment_token="provider-part-1",
+            stored_bytes=5,
+        ),
+        WriteSegmentReceipt(
+            number=2,
+            segment_token="provider-part-1",
+            stored_bytes=7,
+            stored_sha256="a" * 64,
+        ),
+    )
     request = WriteCompleteRequest(
         session=session,
-        segments=(
-            WriteSegmentReceipt(
-                number=1,
-                segment_token="provider-part-1",
-                stored_bytes=5,
-            ),
-            WriteSegmentReceipt(
-                number=2,
-                segment_token="provider-part-1",
-                stored_bytes=7,
-                stored_sha256="a" * 64,
-            ),
-        ),
+        completion=write_completion_authority(segments),
         expected_bytes=12,
         expected_content_type="application/vnd.riverhog.pack+age",
         required_identity_assertions={"Riverhog-Format": "riverhog-pack-volume/v1"},
@@ -247,8 +250,10 @@ def test_write_completion_preserves_optional_digests_and_repeated_provider_token
     )
 
     assert request.required_identity_assertions == {"riverhog-format": "riverhog-pack-volume/v1"}
-    assert request.segments[0].segment_token == request.segments[1].segment_token
-    assert request.segments[0].stored_sha256 is None
+    assert segments[0].segment_token == segments[1].segment_token
+    assert segments[0].stored_sha256 is None
+    assert request.completion.segment_count == 2
+    assert request.completion.stored_bytes == 12
     assert "stored_sha256" not in WriteCompleteRequest.model_fields
 
 
@@ -278,7 +283,9 @@ def test_completed_write_attestation_binds_exact_identity_and_placement() -> Non
             write_token="opaque-write",
             expected_bytes=12,
         ),
-        segments=(WriteSegmentReceipt(number=1, segment_token="opaque-part", stored_bytes=12),),
+        completion=write_completion_authority(
+            (WriteSegmentReceipt(number=1, segment_token="opaque-part", stored_bytes=12),)
+        ),
         expected_bytes=12,
         expected_content_type=request.expected_content_type,
         required_identity_assertions=request.required_identity_assertions,
@@ -397,7 +404,9 @@ def test_write_completion_binds_the_immutable_session_length() -> None:
     with pytest.raises(ValidationError, match="differs from its session"):
         WriteCompleteRequest(
             session=session,
-            segments=(WriteSegmentReceipt(number=1, segment_token="part", stored_bytes=1),),
+            completion=write_completion_authority(
+                (WriteSegmentReceipt(number=1, segment_token="part", stored_bytes=1),)
+            ),
             expected_bytes=1,
             expected_content_type="application/octet-stream",
             required_identity_assertions={"identity": "exact"},
@@ -553,15 +562,23 @@ def test_response_validators_bind_exact_requests_and_closed_readiness_states() -
         expected_bytes=1,
     )
     validate_write_session_response(start, session)
-    segment_set = WriteSegmentSet(
+    list_request = WriteSegmentListRequest(session=session)
+    receipt = WriteSegmentReceipt(number=1, segment_token="one", stored_bytes=1)
+    segment_page = WriteSegmentPage(
         session=session,
-        segments=(WriteSegmentReceipt(number=1, segment_token="one", stored_bytes=1),),
+        traversal_token="view-one",
+        segments=(receipt,),
+        completion=write_completion_authority((receipt,)),
     )
-    validate_write_segment_set_response(session, segment_set, descriptor)
+    validate_write_segment_page_response(list_request, segment_page, descriptor)
 
     other_session = session.model_copy(update={"write_token": "other"})
-    with pytest.raises(ValueError, match="segment set"):
-        validate_write_segment_set_response(other_session, segment_set, descriptor)
+    with pytest.raises(ValueError, match="segment page"):
+        validate_write_segment_page_response(
+            WriteSegmentListRequest(session=other_session),
+            segment_page,
+            descriptor,
+        )
 
     head_request = ObjectHeadRequest(
         object=ObjectLocator(object_path=start.object_path, revision="revision-1"),
@@ -599,7 +616,12 @@ def test_listed_write_segments_allow_sparse_restart_state_but_completion_does_no
         expected_bytes=1,
     )
     second = WriteSegmentReceipt(number=2, segment_token="two", stored_bytes=1)
-    listed = WriteSegmentSet(session=session, segments=(second,))
+    list_request = WriteSegmentListRequest(session=session)
+    listed = WriteSegmentPage(
+        session=session,
+        traversal_token="sparse-view",
+        segments=(second,),
+    )
     descriptor = AdapterDescriptor(
         implementation_id="fixture.storage/v1",
         implementation_version="1.0.0",
@@ -608,28 +630,30 @@ def test_listed_write_segments_allow_sparse_restart_state_but_completion_does_no
         maximum_segment_count=2,
     )
 
-    validate_write_segment_set_response(session, listed, descriptor)
-    with pytest.raises(ValidationError, match="contiguous"):
+    validate_write_segment_page_response(list_request, listed, descriptor)
+    with pytest.raises(ValidationError, match="requires at least one segment"):
         WriteCompleteRequest(
             session=session,
-            segments=listed.segments,
+            completion=write_completion_authority(()),
             expected_bytes=1,
             expected_content_type="application/octet-stream",
             required_identity_assertions={"identity": "exact"},
             expected_placement="archive",
         )
     with pytest.raises(ValueError, match="count limit"):
-        validate_write_segment_set_response(
-            session,
-            WriteSegmentSet(
+        validate_write_segment_page_response(
+            list_request,
+            WriteSegmentPage(
                 session=session,
+                traversal_token="invalid-view",
                 segments=(WriteSegmentReceipt(number=3, segment_token="three", stored_bytes=1),),
             ),
             descriptor,
         )
     with pytest.raises(ValidationError, match="unique and strictly ordered"):
-        WriteSegmentSet(
+        WriteSegmentPage(
             session=session,
+            traversal_token="invalid-view",
             segments=(
                 WriteSegmentReceipt(number=2, segment_token="two", stored_bytes=1),
                 WriteSegmentReceipt(number=1, segment_token="one", stored_bytes=1),
@@ -653,25 +677,31 @@ def test_segment_constraints_are_shared_by_listing_and_completion() -> None:
     )
     oversized = WriteSegmentReceipt(number=1, segment_token="one", stored_bytes=9)
     with pytest.raises(ValueError, match="byte limit"):
-        validate_write_segment_set_response(
-            session,
-            WriteSegmentSet(session=session, segments=(oversized,)),
+        validate_write_segment_page_response(
+            WriteSegmentListRequest(session=session),
+            WriteSegmentPage(
+                session=session,
+                traversal_token="oversized-view",
+                segments=(oversized,),
+            ),
             descriptor,
         )
 
     completion = WriteCompleteRequest(
         session=session,
-        segments=(
-            WriteSegmentReceipt(number=1, segment_token="one", stored_bytes=4),
-            WriteSegmentReceipt(number=2, segment_token="two", stored_bytes=1),
+        completion=write_completion_authority(
+            (WriteSegmentReceipt(number=1, segment_token="one", stored_bytes=5),)
         ),
         expected_bytes=5,
         expected_content_type="application/octet-stream",
         required_identity_assertions={},
         expected_placement="archive",
     )
-    with pytest.raises(ValueError, match="undersized non-final"):
-        validate_write_completion_request(completion, descriptor)
+    too_many = completion.model_copy(
+        update={"completion": completion.completion.model_copy(update={"segment_count": 3})}
+    )
+    with pytest.raises(ValueError, match="count limit"):
+        validate_write_completion_request(too_many, descriptor)
 
 
 def test_small_write_and_head_success_bind_exact_storage_predicates() -> None:

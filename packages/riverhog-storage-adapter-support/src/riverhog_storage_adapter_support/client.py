@@ -30,9 +30,10 @@ from riverhog_storage_adapter_protocol import (
     StorageAdapterErrorCode,
     StorageAdapterRejection,
     WriteCompleteRequest,
+    WriteSegmentListRequest,
+    WriteSegmentPage,
     WriteSegmentReceipt,
     WriteSegmentRequest,
-    WriteSegmentSet,
     WriteSession,
     WriteStartRequest,
     validate_completed_write_response,
@@ -41,9 +42,9 @@ from riverhog_storage_adapter_protocol import (
     validate_read_status_response,
     validate_small_object_response,
     validate_write_completion_request,
+    validate_write_segment_page_response,
     validate_write_segment_request,
     validate_write_segment_response,
-    validate_write_segment_set_response,
     validate_write_session_response,
     validate_write_start_request,
 )
@@ -172,11 +173,11 @@ class StorageAdapterClient:
         self._validate(validate_write_segment_response, request, response)
         return response
 
-    def list_segments(self, session: WriteSession) -> WriteSegmentSet:
-        response = self._model("POST", "/v1/writes/segments", WriteSegmentSet, session)
+    def list_segments(self, request: WriteSegmentListRequest) -> WriteSegmentPage:
+        response = self._model("POST", "/v1/writes/segments", WriteSegmentPage, request)
         self._validate(
-            validate_write_segment_set_response,
-            session,
+            validate_write_segment_page_response,
+            request,
             response,
             self.descriptor(),
         )

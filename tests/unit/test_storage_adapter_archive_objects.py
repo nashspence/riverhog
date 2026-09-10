@@ -3,7 +3,12 @@ from __future__ import annotations
 import hashlib
 
 import pytest
-from riverhog_core.ports.archive_objects import ArchiveObjectIdentityConflict
+from riverhog_core.ports.archive_objects import (
+    ArchiveObjectIdentityConflict,
+)
+from riverhog_core.ports.archive_objects import (
+    WriteSegmentCursor as CoreWriteSegmentCursor,
+)
 from riverhog_core.stores.storage_adapter_archive_objects import (
     StorageAdapterArchiveObjectRangeStore,
     StorageAdapterArchiveResumableObjectStore,
@@ -21,10 +26,12 @@ from riverhog_storage_adapter_protocol import (
     SmallObjectWriteRequest,
     StorageAdapterRejection,
     WriteCompleteRequest,
+    WriteSegmentListRequest,
+    WriteSegmentPage,
     WriteSegmentReceipt,
-    WriteSegmentSet,
     WriteSession,
     WriteStartRequest,
+    write_completion_authority,
 )
 
 
@@ -75,20 +82,30 @@ class _Adapter:
             stored_sha256=hashlib.sha256(content).hexdigest(),
         )
 
-    def list_segments(self, session: WriteSession) -> WriteSegmentSet:
+    def list_segments(self, request: WriteSegmentListRequest) -> WriteSegmentPage:
         assert self.upload is not None
-        assert session == self.upload
-        return WriteSegmentSet(
-            session=session,
-            segments=tuple(
-                WriteSegmentReceipt(
-                    number=number,
-                    segment_token=f"part-{number}",
-                    stored_bytes=len(content),
-                    stored_sha256=hashlib.sha256(content).hexdigest(),
-                )
-                for number, content in sorted(self.parts.items())
-            ),
+        assert request.session == self.upload
+        segments = tuple(
+            WriteSegmentReceipt(
+                number=number,
+                segment_token=f"part-{number}",
+                stored_bytes=len(content),
+                stored_sha256=hashlib.sha256(content).hexdigest(),
+            )
+            for number, content in sorted(self.parts.items())
+        )
+        token = hashlib.sha256(repr(segments).encode()).hexdigest()
+        assert request.traversal_token in {None, token}
+        page = tuple(item for item in segments if item.number > request.after_number)[
+            : request.maximum_items
+        ]
+        has_more = bool(page) and page[-1].number < segments[-1].number
+        return WriteSegmentPage(
+            session=request.session,
+            traversal_token=token,
+            segments=page,
+            next_after_number=page[-1].number if has_more else None,
+            completion=None if has_more else write_completion_authority(segments),
         )
 
     def complete_write(
@@ -175,16 +192,18 @@ def test_existing_object_ports_preserve_adapter_receipts_and_generic_placement()
         store.write_segment(session=session, number=1, content=b"first"),
         store.write_segment(session=session, number=2, content=b"second"),
     )
+    page = store.list_segments(session=session, cursor=CoreWriteSegmentCursor())
+    assert page.completion is not None
     completed = store.complete_write(
         session=session,
-        segments=segments,
+        completion=page.completion,
         expected_bytes=11,
         expected_content_type="application/octet-stream",
         expected_metadata={"riverhog-format": "volume/v1"},
     )
 
     assert adapter.created is not None and adapter.created.placement == "archive"
-    assert store.list_segments(session=session) == segments
+    assert page.segments == segments
     assert completed.revision == "version-volume"
     assert completed.entity_token == "entity-volume"
     assert (
@@ -268,10 +287,13 @@ def test_completed_receipts_must_attest_the_exact_requested_storage_predicates()
         metadata={"riverhog-format": "volume/v1"},
     )
     segment = store.write_segment(session=session, number=1, content=b"firstsecond")
+    page = store.list_segments(session=session, cursor=CoreWriteSegmentCursor())
+    assert page.segments == (segment,)
+    assert page.completion is not None
     with pytest.raises(ValueError, match="placement"):
         store.complete_write(
             session=session,
-            segments=(segment,),
+            completion=page.completion,
             expected_bytes=11,
             expected_content_type="application/octet-stream",
             expected_metadata={"riverhog-format": "volume/v1"},

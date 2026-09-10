@@ -29,7 +29,8 @@ from riverhog_core.pack_volume import iter_render_pack_upload_unit_payload
 from riverhog_core.ports.archive_objects import (
     ArchiveResumableObjectStore,
     CompletedObjectReceipt,
-    WriteSegmentReceipt,
+    WriteCompletionAuthority,
+    WriteSegmentCursor,
     WriteSession,
 )
 from riverhog_core.ports.archive_upload_checkpoints import PackUploadCheckpointStore
@@ -56,7 +57,7 @@ from riverhog_core.throughput import (
     TransferTiming,
     WeightedByteSemaphore,
 )
-from riverhog_core.write_segments import WriteSegmentPlan, plan_write_segments
+from riverhog_core.write_segments import WriteSegmentPlan, iter_write_segments
 
 PACK_UPLOAD_CHECKPOINT_SCHEMA = "pack-upload-checkpoint/v1"
 PACK_VOLUME_CONTENT_TYPE = "application/vnd.riverhog.pack+age"
@@ -85,12 +86,10 @@ class PackUploadCheckpoint:
     age_state_json: str
     next_unit: int
     archive_parts: tuple[StoredArchivePart, ...]
-    write_segments: tuple[WriteSegmentReceipt, ...]
     completed: CompletedPackObject | None = None
 
     def to_json(self) -> str:
         ordered_parts = tuple(sorted(self.archive_parts, key=lambda current: current.number))
-        ordered_segments = tuple(sorted(self.write_segments, key=lambda current: current.number))
         payload: dict[str, object] = {
             "schema": PACK_UPLOAD_CHECKPOINT_SCHEMA,
             "collection_id": self.collection_id,
@@ -103,7 +102,6 @@ class PackUploadCheckpoint:
             "age_state": json.loads(self.age_state_json),
             "next_unit": self.next_unit,
             "archive_parts": [_archive_part_payload(current) for current in ordered_parts],
-            "write_segments": [_write_segment_payload(current) for current in ordered_segments],
             "completed": (
                 {
                     "revision": self.completed.revision,
@@ -140,24 +138,17 @@ class PackUploadCheckpoint:
             "age_state",
             "next_unit",
             "archive_parts",
-            "write_segments",
             "completed",
         }
         if set(payload) != expected_fields:
             raise ValueError("pack upload checkpoint fields are invalid")
         age_state = payload.get("age_state")
         raw_parts = payload.get("archive_parts")
-        raw_segments = payload.get("write_segments")
-        if (
-            not isinstance(age_state, dict)
-            or not isinstance(raw_parts, list)
-            or not isinstance(raw_segments, list)
-        ):
+        if not isinstance(age_state, dict) or not isinstance(raw_parts, list):
             raise ValueError("pack upload checkpoint structure is invalid")
         age_state_json = canonical_json_bytes(age_state).decode("utf-8")
         age_upload_state = UploadState.from_json_bytes(age_state_json)
         parts = _parts_from_payload(raw_parts)
-        segments = _segments_from_payload(raw_segments)
         next_unit = _canonical_nonnegative_int(payload.get("next_unit"), label="next unit")
         if next_unit != _first_missing_unit(parts):
             raise ValueError("pack upload checkpoint next unit does not match its parts")
@@ -169,8 +160,6 @@ class PackUploadCheckpoint:
             _require_complete_plaintext_coverage(parts, plaintext_bytes=plaintext_bytes)
             if completed.bytes != sum(current.stored_bytes for current in parts):
                 raise ValueError("completed pack upload checkpoint stored byte count mismatch")
-            if completed.bytes != sum(current.bytes for current in segments):
-                raise ValueError("completed pack write-segment byte count mismatch")
         if age_upload_state.plaintext_size != plaintext_bytes:
             raise ValueError("pack upload age state plaintext size mismatch")
         volume_id = str(payload.get("volume_id", ""))
@@ -193,7 +182,6 @@ class PackUploadCheckpoint:
             age_state_json=age_state_json,
             next_unit=next_unit,
             archive_parts=parts,
-            write_segments=segments,
             completed=completed,
         )
 
@@ -201,7 +189,6 @@ class PackUploadCheckpoint:
 @dataclass(frozen=True, slots=True)
 class _UploadedPackPart:
     receipt: StoredArchivePart
-    write_segments: tuple[WriteSegmentReceipt, ...]
     queue_wait_seconds: float
     source_seconds: float
     crypto_seconds: float
@@ -322,7 +309,6 @@ class PackVolumeUploader:
                 )
                 if completed is not None:
                     return self._mark_completed(checkpoint, completed)
-                self._reconcile_recorded_parts(checkpoint)
             return checkpoint
 
         with self._derivation_gate.reserve() as derivation_wait_seconds:
@@ -373,7 +359,6 @@ class PackVolumeUploader:
             age_state_json=age_state_json,
             next_unit=0,
             archive_parts=(),
-            write_segments=(),
         )
         checkpoint_started = time.perf_counter()
         checkpoint = self._save(checkpoint)
@@ -442,7 +427,6 @@ class PackVolumeUploader:
         checkpoint, checkpoint_seconds = self._record_part(
             checkpoint,
             uploaded.receipt,
-            uploaded.write_segments,
         )
         self._observe(uploaded, checkpoint_seconds=checkpoint_seconds)
         if len(checkpoint.archive_parts) == len(plan.units):
@@ -539,7 +523,6 @@ class PackVolumeUploader:
                 self._byte_budget.release(working_bytes)
                 byte_reserved = False
                 raise
-        segment_receipts: list[WriteSegmentReceipt] = []
         request_wait_seconds = 0.0
         remote_seconds = 0.0
         try:
@@ -573,19 +556,12 @@ class PackVolumeUploader:
                     raise RuntimeError(
                         "resumable store returned an inconsistent write-segment receipt"
                     )
-                segment_receipts.append(
-                    replace(
-                        remote_segment,
-                        sha256=hashlib.sha256(content).hexdigest(),
-                    )
-                )
         finally:
             if byte_reserved:
                 self._byte_budget.release(working_bytes)
         queue_wait_seconds = prepare_wait_seconds + byte_wait_seconds + request_wait_seconds
         return _UploadedPackPart(
             receipt=_stored_archive_part(unit, prepared),
-            write_segments=tuple(segment_receipts),
             queue_wait_seconds=queue_wait_seconds,
             source_seconds=prepared.source_seconds,
             crypto_seconds=prepared.crypto_seconds,
@@ -597,7 +573,6 @@ class PackVolumeUploader:
         self,
         checkpoint: PackUploadCheckpoint,
         part: StoredArchivePart,
-        write_segments: tuple[WriteSegmentReceipt, ...],
     ) -> tuple[PackUploadCheckpoint, float]:
         existing = _part_by_number(checkpoint.archive_parts, part.number)
         if existing is not None and existing != part:
@@ -617,7 +592,6 @@ class PackVolumeUploader:
             age_state_json=checkpoint.age_state_json,
             next_unit=_first_missing_unit(ordered),
             archive_parts=ordered,
-            write_segments=_merge_write_segments(checkpoint.write_segments, write_segments),
             completed=checkpoint.completed,
         )
         started = time.perf_counter()
@@ -641,9 +615,10 @@ class PackVolumeUploader:
             checkpoint.write_token,
             _stored_bytes_for_state(checkpoint.age_state_json),
         )
+        completion = self._completion_authority(plan=plan, checkpoint=checkpoint)
         completed = self._object_store.complete_write(
             session=session,
-            segments=tuple(sorted(checkpoint.write_segments, key=lambda current: current.number)),
+            completion=completion,
             expected_bytes=sum(current.stored_bytes for current in parts),
             expected_content_type=PACK_VOLUME_CONTENT_TYPE,
             expected_metadata=_object_metadata(plan, checkpoint.age_state_json),
@@ -670,9 +645,6 @@ class PackVolumeUploader:
             next_unit=checkpoint.next_unit,
             archive_parts=tuple(
                 sorted(checkpoint.archive_parts, key=lambda current: current.number)
-            ),
-            write_segments=tuple(
-                sorted(checkpoint.write_segments, key=lambda current: current.number)
             ),
             completed=CompletedPackObject(
                 revision=completed.revision,
@@ -713,48 +685,53 @@ class PackVolumeUploader:
                 or part.plaintext_bytes != unit.plaintext_bytes
             ):
                 raise ValueError("pack upload checkpoint parts do not match the plan")
-        expected_segments = tuple(
-            current
-            for current in self._write_segment_plans(
-                plan,
-                session=self._session_cache.get(checkpoint.age_state_json),
-            )
-            if current.archive_part_number in {part.number for part in checkpoint.archive_parts}
-        )
-        if tuple((current.number, current.bytes) for current in checkpoint.write_segments) != tuple(
-            (current.number, current.stored_bytes) for current in expected_segments
-        ):
-            raise ValueError("pack upload checkpoint write segments do not match its archive parts")
         if checkpoint.next_unit != _first_missing_unit(checkpoint.archive_parts):
             raise ValueError("pack upload checkpoint next unit is invalid")
         if checkpoint.completed is not None and len(checkpoint.archive_parts) != len(plan.units):
             raise ValueError("completed pack upload checkpoint has pending units")
 
-    def _reconcile_recorded_parts(self, checkpoint: PackUploadCheckpoint) -> None:
-        remote = {
-            current.number: current
-            for current in self._object_store.list_segments(
+    def _completion_authority(
+        self,
+        *,
+        plan: PackVolumePlan,
+        checkpoint: PackUploadCheckpoint,
+    ) -> WriteCompletionAuthority:
+        expected = iter(
+            self._write_segment_plans(
+                plan,
+                session=self._session_cache.get(checkpoint.age_state_json),
+            )
+        )
+        cursor = WriteSegmentCursor()
+        while True:
+            page = self._object_store.list_segments(
                 session=WriteSession(
                     checkpoint.object_path,
                     checkpoint.write_token,
                     _stored_bytes_for_state(checkpoint.age_state_json),
-                )
+                ),
+                cursor=cursor,
             )
-        }
-        for current in checkpoint.write_segments:
-            found = remote.get(current.number)
-            if found is None or (
-                found.segment_token != current.segment_token or found.bytes != current.bytes
-            ):
-                raise RuntimeError("resumable store no longer contains a recorded write segment")
+            for receipt in page.segments:
+                expected_segment = next(expected, None)
+                if expected_segment is None or (
+                    receipt.number != expected_segment.number
+                    or receipt.bytes != expected_segment.stored_bytes
+                ):
+                    raise RuntimeError("pack write reconciliation differs from its plan")
+            if page.next_cursor is None:
+                if next(expected, None) is not None or page.completion is None:
+                    raise RuntimeError("pack write reconciliation is incomplete")
+                return page.completion
+            cursor = page.next_cursor
 
     def _write_segment_plans(
         self,
         plan: PackVolumePlan,
         *,
         session: ResumableAgeScryptSession,
-    ) -> tuple[WriteSegmentPlan, ...]:
-        archive_part_bytes = tuple(
+    ) -> Iterable[WriteSegmentPlan]:
+        archive_part_bytes = (
             _age_part_plan(
                 session=session,
                 total_plaintext_bytes=plan.plaintext_bytes,
@@ -762,7 +739,7 @@ class PackVolumeUploader:
             ).ciphertext_len
             for unit in plan.units
         )
-        return plan_write_segments(
+        return iter_write_segments(
             archive_part_bytes,
             self._object_store.write_constraints(),
         )
@@ -823,7 +800,6 @@ def merge_pack_upload_checkpoints(
             raise RuntimeError("pack upload checkpoint contains conflicting part receipts")
         parts[part.number] = part
     ordered = tuple(sorted(parts.values(), key=lambda part: part.number))
-    segments = _merge_write_segments(current.write_segments, candidate.write_segments)
     completed = current.completed or candidate.completed
     if current.completed is not None and candidate.completed is not None:
         if current.completed != candidate.completed:
@@ -832,7 +808,6 @@ def merge_pack_upload_checkpoints(
         current,
         next_unit=_first_missing_unit(ordered),
         archive_parts=ordered,
-        write_segments=segments,
         completed=completed,
     )
     if completed is not None:
@@ -981,52 +956,6 @@ def _archive_part_payload(current: StoredArchivePart) -> dict[str, object]:
         "stored_bytes": current.stored_bytes,
         "stored_sha256": current.stored_sha256,
     }
-
-
-def _segments_from_payload(raw_segments: list[object]) -> tuple[WriteSegmentReceipt, ...]:
-    segments: list[WriteSegmentReceipt] = []
-    for raw in raw_segments:
-        if not isinstance(raw, dict):
-            raise ValueError("pack upload checkpoint write segment must be a mapping")
-        segment = WriteSegmentReceipt(
-            number=_canonical_positive_int(raw.get("number"), label="segment number"),
-            segment_token=str(raw.get("segment_token", "")),
-            bytes=_canonical_positive_int(raw.get("stored_bytes"), label="segment bytes"),
-            sha256=(
-                _required_sha256(raw.get("stored_sha256"), label="segment")
-                if raw.get("stored_sha256") is not None
-                else None
-            ),
-        )
-        if not segment.segment_token:
-            raise ValueError("pack upload checkpoint write-segment token is invalid")
-        segments.append(segment)
-    ordered = tuple(sorted(segments, key=lambda current: current.number))
-    if len({current.number for current in ordered}) != len(ordered):
-        raise ValueError("pack upload checkpoint write segment numbers are duplicated")
-    return ordered
-
-
-def _write_segment_payload(current: WriteSegmentReceipt) -> dict[str, object]:
-    return {
-        "number": current.number,
-        "segment_token": current.segment_token,
-        "stored_bytes": current.bytes,
-        "stored_sha256": current.sha256,
-    }
-
-
-def _merge_write_segments(
-    current: tuple[WriteSegmentReceipt, ...],
-    candidate: tuple[WriteSegmentReceipt, ...],
-) -> tuple[WriteSegmentReceipt, ...]:
-    merged = {segment.number: segment for segment in current}
-    for segment in candidate:
-        existing = merged.get(segment.number)
-        if existing is not None and existing != segment:
-            raise RuntimeError("pack upload checkpoint contains conflicting write segments")
-        merged[segment.number] = segment
-    return tuple(sorted(merged.values(), key=lambda segment: segment.number))
 
 
 def _completed_from_payload(value: object) -> CompletedPackObject | None:

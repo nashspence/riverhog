@@ -19,6 +19,9 @@ from riverhog_storage_adapter_protocol import (
     SmallObjectWriteRequest,
     StorageAdapterRejection,
     WriteCompleteRequest,
+    WriteCompletionAuthority,
+    WriteSegmentListRequest,
+    WriteSession,
     WriteStartRequest,
 )
 
@@ -48,6 +51,31 @@ def _start(path: str, size: int):
         required_identity_assertions={"riverhog-object": path},
         placement="immediate",
     )
+
+
+def _segment_page(adapter: FilesystemStorageAdapter, session):  # type: ignore[no-untyped-def]
+    return adapter.list_segments(WriteSegmentListRequest(session=session))
+
+
+def _completion_authority(
+    adapter: FilesystemStorageAdapter,
+    session: WriteSession,
+) -> WriteCompletionAuthority:
+    after_number = 0
+    traversal_token = None
+    while True:
+        page = adapter.list_segments(
+            WriteSegmentListRequest(
+                session=session,
+                after_number=after_number,
+                traversal_token=traversal_token,
+            )
+        )
+        traversal_token = page.traversal_token
+        if page.next_after_number is None:
+            assert page.completion is not None
+            return page.completion
+        after_number = page.next_after_number
 
 
 def test_descriptor_is_immediate_and_fixed_slot(tmp_path: Path) -> None:
@@ -81,8 +109,8 @@ def test_resumable_write_survives_restart_and_supports_exact_reads(tmp_path: Pat
     try:
         resumed = adapter.begin_write(request)
         assert resumed == session
-        assert adapter.list_segments(resumed).segments == (first,)
-        second = adapter.write_segment(
+        assert _segment_page(adapter, resumed).segments == (first,)
+        adapter.write_segment(
             session=resumed,
             number=2,
             stored_bytes=len(payload) - SEGMENT_BYTES,
@@ -91,7 +119,7 @@ def test_resumable_write_survives_restart_and_supports_exact_reads(tmp_path: Pat
         receipt = adapter.complete_write(
             WriteCompleteRequest(
                 session=resumed,
-                segments=(first, second),
+                completion=_completion_authority(adapter, resumed),
                 expected_bytes=len(payload),
                 expected_content_type=request.content_type,
                 required_identity_assertions=request.required_identity_assertions,
@@ -145,6 +173,55 @@ def test_resumable_write_survives_restart_and_supports_exact_reads(tmp_path: Pat
         adapter.close()
 
 
+def test_segment_traversal_is_bounded_exact_and_restartable(tmp_path: Path) -> None:
+    segment_count = 129
+    expected_bytes = (segment_count - 1) * SEGMENT_BYTES + 1
+    request = _start("bounded-traversal", expected_bytes)
+    root = tmp_path / "store"
+    with _adapter(root) as adapter:
+        session = adapter.begin_write(request)
+        for number in range(1, segment_count + 1):
+            stored_bytes = 1 if number == segment_count else SEGMENT_BYTES
+            adapter.write_segment(
+                session=session,
+                number=number,
+                stored_bytes=stored_bytes,
+                content=bytes((number % 251,)) * stored_bytes,
+            )
+
+    with _adapter(root) as adapter:
+        resumed = adapter.begin_write(request)
+        first = adapter.list_segments(WriteSegmentListRequest(session=resumed))
+        assert len(first.segments) == 128
+        assert first.next_after_number == 128
+        assert first.completion is None
+
+        final = adapter.list_segments(
+            WriteSegmentListRequest(
+                session=resumed,
+                after_number=first.next_after_number,
+                traversal_token=first.traversal_token,
+            )
+        )
+        assert tuple(item.number for item in final.segments) == (129,)
+        assert final.next_after_number is None
+        assert final.completion is not None
+        assert final.completion.segment_count == segment_count
+        assert final.completion.stored_bytes == expected_bytes
+
+        completed = adapter.complete_write(
+            WriteCompleteRequest(
+                session=resumed,
+                completion=final.completion,
+                expected_bytes=expected_bytes,
+                expected_content_type=request.content_type,
+                required_identity_assertions=request.required_identity_assertions,
+                expected_placement=request.placement,
+            )
+        )
+        assert completed.stored_bytes == expected_bytes
+
+
 def test_exact_admission_is_removed_by_abort(tmp_path: Path) -> None:
     root = tmp_path / "store"
     with _adapter(root) as adapter:
@@ -180,14 +257,14 @@ def test_failed_segment_is_not_catalogued_and_can_be_retried(tmp_path: Path) -> 
                 content=payload[:-1],
             )
         assert rejected.value.code == "integrity_failure"
-        assert adapter.list_segments(session).segments == ()
+        assert _segment_page(adapter, session).segments == ()
         accepted = adapter.write_segment(
             session=session,
             number=1,
             stored_bytes=SEGMENT_BYTES,
             content=payload,
         )
-        assert adapter.list_segments(session).segments == (accepted,)
+        assert _segment_page(adapter, session).segments == (accepted,)
 
 
 def test_small_object_create_replace_revision_and_delete(tmp_path: Path) -> None:
@@ -406,7 +483,7 @@ def test_one_process_owns_a_root(tmp_path: Path) -> None:
 
 def test_sparse_segment_number_is_reconciled_and_abort_releases_blocks(tmp_path: Path) -> None:
     root = tmp_path / "store"
-    request = _start("sparse", SEGMENT_BYTES)
+    request = _start("sparse", 2 * SEGMENT_BYTES)
     adapter = _adapter(root)
     session = adapter.begin_write(request)
     sparse = adapter.write_segment(
@@ -419,7 +496,7 @@ def test_sparse_segment_number_is_reconciled_and_abort_releases_blocks(tmp_path:
 
     with _adapter(root) as resumed:
         assert resumed.begin_write(request) == session
-        assert resumed.list_segments(session).segments == (sparse,)
+        assert _segment_page(resumed, session).segments == (sparse,)
         resumed.abort_write(session)
         resumed.begin_write(_start("replacement", SEGMENT_BYTES))
 
@@ -455,7 +532,7 @@ def test_segment_replay_and_completion_replay_are_exact(tmp_path: Path) -> None:
 
         completion = WriteCompleteRequest(
             session=session,
-            segments=(segment,),
+            completion=_completion_authority(adapter, session),
             expected_bytes=len(content),
             expected_content_type=request.content_type,
             required_identity_assertions=request.required_identity_assertions,
@@ -475,7 +552,7 @@ def test_completion_does_not_reread_the_completed_payload(
     request = _start("no-completion-reread", len(content))
     with _adapter(tmp_path / "store") as adapter:
         session = adapter.begin_write(request)
-        segment = adapter.write_segment(
+        adapter.write_segment(
             session=session,
             number=1,
             stored_bytes=len(content),
@@ -490,7 +567,7 @@ def test_completion_does_not_reread_the_completed_payload(
         receipt = adapter.complete_write(
             WriteCompleteRequest(
                 session=session,
-                segments=(segment,),
+                completion=_completion_authority(adapter, session),
                 expected_bytes=len(content),
                 expected_content_type=request.content_type,
                 required_identity_assertions=request.required_identity_assertions,
@@ -591,13 +668,13 @@ def test_out_of_order_segments_complete_in_logical_number_order(tmp_path: Path) 
     request = _start("out-of-order", len(first_content) + len(final_content))
     with _adapter(tmp_path / "store") as adapter:
         session = adapter.begin_write(request)
-        second = adapter.write_segment(
+        adapter.write_segment(
             session=session,
             number=2,
             stored_bytes=len(final_content),
             content=final_content,
         )
-        first = adapter.write_segment(
+        adapter.write_segment(
             session=session,
             number=1,
             stored_bytes=len(first_content),
@@ -606,7 +683,7 @@ def test_out_of_order_segments_complete_in_logical_number_order(tmp_path: Path) 
         receipt = adapter.complete_write(
             WriteCompleteRequest(
                 session=session,
-                segments=(first, second),
+                completion=_completion_authority(adapter, session),
                 expected_bytes=request.expected_bytes,
                 expected_content_type=request.content_type,
                 required_identity_assertions=request.required_identity_assertions,
@@ -744,7 +821,7 @@ def test_stale_completion_does_not_abort_a_newer_active_session(tmp_path: Path) 
     first_request = _start("same-object", len(payload))
     with _adapter(tmp_path / "store") as adapter:
         first_session = adapter.begin_write(first_request)
-        first_segment = adapter.write_segment(
+        adapter.write_segment(
             session=first_session,
             number=1,
             stored_bytes=len(payload),
@@ -752,7 +829,7 @@ def test_stale_completion_does_not_abort_a_newer_active_session(tmp_path: Path) 
         )
         first_completion = WriteCompleteRequest(
             session=first_session,
-            segments=(first_segment,),
+            completion=_completion_authority(adapter, first_session),
             expected_bytes=len(payload),
             expected_content_type=first_request.content_type,
             required_identity_assertions=first_request.required_identity_assertions,
@@ -765,7 +842,7 @@ def test_stale_completion_does_not_abort_a_newer_active_session(tmp_path: Path) 
         )
         second_session = adapter.begin_write(second_request)
         assert adapter.complete_write(first_completion) == first_receipt
-        assert adapter.list_segments(second_session).segments == ()
+        assert _segment_page(adapter, second_session).segments == ()
 
 
 def test_restart_finalizes_revision_installed_before_current_pointer(tmp_path: Path) -> None:
@@ -775,7 +852,7 @@ def test_restart_finalizes_revision_installed_before_current_pointer(tmp_path: P
 
     adapter = _adapter(root)
     session = adapter.begin_write(request)
-    segment = adapter.write_segment(
+    adapter.write_segment(
         session=session,
         number=1,
         stored_bytes=len(payload),
@@ -783,7 +860,7 @@ def test_restart_finalizes_revision_installed_before_current_pointer(tmp_path: P
     )
     completion = WriteCompleteRequest(
         session=session,
-        segments=(segment,),
+        completion=_completion_authority(adapter, session),
         expected_bytes=len(payload),
         expected_content_type=request.content_type,
         required_identity_assertions=request.required_identity_assertions,
@@ -826,4 +903,4 @@ def test_restart_finalizes_revision_installed_before_current_pointer(tmp_path: P
         ) as stream:
             assert b"".join(stream.content) == payload
         with pytest.raises(StorageAdapterRejection, match="write session"):
-            recovered.list_segments(session)
+            recovered.list_segments(WriteSegmentListRequest(session=session))

@@ -20,8 +20,10 @@ from riverhog_storage_adapter_protocol import (
     ObjectReadStream,
     SmallObjectWriteRequest,
     WriteCompleteRequest,
-    WriteSegmentSet,
+    WriteSegmentListRequest,
+    WriteSegmentPage,
     WriteStartRequest,
+    write_completion_authority,
 )
 from riverhog_storage_adapter_protocol import (
     CompletedObjectReceipt as AdapterCompletedObjectReceipt,
@@ -99,27 +101,47 @@ class _Adapter:
 
     def list_segments(
         self,
-        session: AdapterWriteSession,
-    ) -> WriteSegmentSet:
-        assert session.write_token == "write-1"
-        return WriteSegmentSet(
-            session=session,
-            segments=tuple(
-                AdapterWriteSegmentReceipt(
-                    number=number,
-                    segment_token=f"segment-{number}",
-                    stored_bytes=len(content),
-                    stored_sha256=hashlib.sha256(content).hexdigest(),
-                )
-                for number, content in sorted(self._segments.items())
-            ),
+        request: WriteSegmentListRequest,
+    ) -> WriteSegmentPage:
+        assert request.session.write_token == "write-1"
+        segments = tuple(
+            AdapterWriteSegmentReceipt(
+                number=number,
+                segment_token=f"segment-{number}",
+                stored_bytes=len(content),
+                stored_sha256=hashlib.sha256(content).hexdigest(),
+            )
+            for number, content in sorted(self._segments.items())
+        )
+        token = hashlib.sha256(repr(segments).encode()).hexdigest()
+        assert request.traversal_token in {None, token}
+        page = tuple(item for item in segments if item.number > request.after_number)[
+            : request.maximum_items
+        ]
+        has_more = bool(page) and page[-1].number < segments[-1].number
+        return WriteSegmentPage(
+            session=request.session,
+            traversal_token=token,
+            segments=page,
+            next_after_number=page[-1].number if has_more else None,
+            completion=None if has_more else write_completion_authority(segments),
         )
 
     def complete_write(
         self,
         request: WriteCompleteRequest,
     ) -> AdapterCompletedObjectReceipt:
-        content = b"".join(self._segments[current.number] for current in request.segments)
+        segments = tuple(
+            AdapterWriteSegmentReceipt(
+                number=number,
+                segment_token=f"segment-{number}",
+                stored_bytes=len(content),
+                stored_sha256=hashlib.sha256(content).hexdigest(),
+            )
+            for number, content in sorted(self._segments.items())
+        )
+        assert write_completion_authority(segments) == request.completion
+        content = b"".join(self._segments[current.number] for current in segments)
         assert len(content) == request.expected_bytes
         self.objects[request.session.object_path] = content
         self.revisions[request.session.object_path] = "version-1"

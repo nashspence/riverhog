@@ -34,8 +34,9 @@ from riverhog_storage_adapter_protocol import (
     SmallObjectWriteRequest,
     StorageAdapterRejection,
     WriteCompleteRequest,
+    WriteSegmentListRequest,
+    WriteSegmentPage,
     WriteSegmentReceipt,
-    WriteSegmentSet,
     WriteSession,
     WriteStartRequest,
 )
@@ -173,8 +174,8 @@ class _MemoryAdapter:
     ) -> WriteSegmentReceipt:
         raise NotImplementedError(upload, number, content)
 
-    def list_segments(self, upload: WriteSession) -> WriteSegmentSet:
-        raise NotImplementedError(upload)
+    def list_segments(self, request: WriteSegmentListRequest) -> WriteSegmentPage:
+        raise NotImplementedError(request)
 
     def complete_write(
         self,

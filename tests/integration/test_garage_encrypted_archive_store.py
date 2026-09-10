@@ -15,7 +15,7 @@ from riverhog_core.archive_formats import (
 from riverhog_core.catalog_db import initialize_db, make_session_factory
 from riverhog_core.ports.archive_objects import (
     ArchiveResumableObjectStore,
-    WriteSegmentReceipt,
+    WriteSegmentCursor,
     WriteSession,
 )
 from riverhog_core.ports.archive_store import ArchiveObjectIdentity
@@ -123,9 +123,12 @@ def test_canonical_archive_capabilities_against_garage_adapter(tmp_path: Path) -
         )
         active_writes.append((resumable, session))
         segment = resumable.write_segment(session=session, number=1, content=ciphertext)
+        segment_page = resumable.list_segments(session=session, cursor=WriteSegmentCursor())
+        assert segment_page.segments == (segment,)
+        assert segment_page.completion is not None
         completed = resumable.complete_write(
             session=session,
-            segments=(segment,),
+            completion=segment_page.completion,
             expected_bytes=len(ciphertext),
             expected_content_type="application/vnd.riverhog.raw-volume+age",
             expected_metadata=metadata,
@@ -154,16 +157,15 @@ def test_canonical_archive_capabilities_against_garage_adapter(tmp_path: Path) -
             number=1,
             content=ciphertext,
         )
+        mirrored_page = mirrored.list_segments(
+            session=mirrored_session,
+            cursor=WriteSegmentCursor(),
+        )
+        assert mirrored_page.segments[0].number == mirrored_segment.number
+        assert mirrored_page.completion is not None
         mirrored_completed = mirrored.complete_write(
             session=mirrored_session,
-            segments=(
-                WriteSegmentReceipt(
-                    number=mirrored_segment.number,
-                    segment_token=mirrored_segment.segment_token,
-                    bytes=mirrored_segment.bytes,
-                    sha256=stored_sha256,
-                ),
-            ),
+            completion=mirrored_page.completion,
             expected_bytes=len(ciphertext),
             expected_content_type="application/vnd.riverhog.raw-volume+age",
             expected_metadata=metadata,

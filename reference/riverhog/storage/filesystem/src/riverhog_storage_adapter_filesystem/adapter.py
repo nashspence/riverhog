@@ -15,6 +15,7 @@ import hashlib
 import json
 import os
 import shutil
+import sqlite3
 import stat
 import threading
 import uuid
@@ -45,8 +46,10 @@ from riverhog_storage_adapter_protocol import (
     SmallObjectWriteRequest,
     StorageAdapterRejection,
     WriteCompleteRequest,
+    WriteCompletionAuthority,
+    WriteSegmentListRequest,
+    WriteSegmentPage,
     WriteSegmentReceipt,
-    WriteSegmentSet,
     WriteSession,
     WriteStartRequest,
 )
@@ -54,6 +57,7 @@ from time_formats import format_utc_timestamp, utc_now
 
 _WRITE_SCHEMA = "riverhog-filesystem-write/v1"
 _OBJECT_SCHEMA = "riverhog-filesystem-object/v1"
+_SEGMENT_DATABASE = "segments.sqlite3"
 _DEFAULT_SEGMENT_BYTES = 64 * 1024 * 1024
 _DEFAULT_READ_CHUNK_BYTES = 8 * 1024 * 1024
 _DEFAULT_MINIMUM_FREE_BYTES = 256 * 1024 * 1024
@@ -61,6 +65,8 @@ _GATE_SHARDS = 1024
 _INTERNAL_MODE = 0o700
 _FILE_MODE = 0o600
 _CAPACITY_ERRORS = frozenset({errno.ENOSPC, errno.EDQUOT, errno.EFBIG})
+_SEGMENT_ENTRY_DOMAIN = b"riverhog-filesystem-segment-entry/v1\0"
+_SEGMENT_SEQUENCE_DOMAIN = b"riverhog-filesystem-segment-sequence/v1\0"
 _UNSUPPORTED_ALLOCATION_ERRORS = frozenset(
     {
         errno.EINVAL,
@@ -223,6 +229,63 @@ class _SegmentRecord:
         )
 
 
+@dataclass(slots=True)
+class _SegmentAuthority:
+    segment_count: int = 0
+    stored_bytes: int = 0
+    combined_entry_sha256: int = 0
+
+    @classmethod
+    def from_state(
+        cls,
+        *,
+        segment_count: object,
+        stored_bytes: object,
+        combined_entry_sha256: object,
+    ) -> Self:
+        combined = str(combined_entry_sha256)
+        if len(combined) != 64 or not _is_sha256(combined):
+            raise RuntimeError("filesystem segment authority accumulator is invalid")
+        return cls(
+            segment_count=_canonical_decimal(segment_count, "filesystem segment count"),
+            stored_bytes=_canonical_decimal(stored_bytes, "filesystem accepted bytes"),
+            combined_entry_sha256=int(combined, 16),
+        )
+
+    def add(self, receipt: WriteSegmentReceipt) -> None:
+        encoded = json.dumps(
+            receipt.model_dump(mode="json", exclude_none=True),
+            allow_nan=False,
+            ensure_ascii=False,
+            separators=(",", ":"),
+            sort_keys=True,
+        ).encode("utf-8")
+        entry = hashlib.sha256(
+            _SEGMENT_ENTRY_DOMAIN + len(encoded).to_bytes(8, "big") + encoded
+        ).digest()
+        self.combined_entry_sha256 ^= int.from_bytes(entry, "big")
+        self.segment_count += 1
+        self.stored_bytes += receipt.stored_bytes
+
+    def state(self) -> str:
+        return f"{self.combined_entry_sha256:064x}"
+
+    def completion(self) -> WriteCompletionAuthority:
+        count = str(self.segment_count).encode("ascii")
+        stored_bytes = str(self.stored_bytes).encode("ascii")
+        digest = hashlib.sha256(_SEGMENT_SEQUENCE_DOMAIN)
+        digest.update(len(count).to_bytes(8, "big"))
+        digest.update(count)
+        digest.update(len(stored_bytes).to_bytes(8, "big"))
+        digest.update(stored_bytes)
+        digest.update(self.combined_entry_sha256.to_bytes(32, "big"))
+        return WriteCompletionAuthority(
+            segment_count=self.segment_count,
+            stored_bytes=self.stored_bytes,
+            sequence_sha256=digest.hexdigest(),
+        )
+
+
 @dataclass(frozen=True, slots=True)
 class _WriteState:
     token: str
@@ -232,7 +295,6 @@ class _WriteState:
     required_identity_assertions: dict[str, str]
     placement: ObjectPlacement
     created_at: str
-    segments: dict[int, _SegmentRecord]
 
     @classmethod
     def from_json(cls, raw: dict[str, Any]) -> Self:
@@ -245,7 +307,6 @@ class _WriteState:
             "required_identity_assertions",
             "placement",
             "created_at",
-            "segments",
         }
         if set(raw) != expected or raw.get("schema") != _WRITE_SCHEMA:
             raise RuntimeError("filesystem write state has an invalid shape")
@@ -254,7 +315,6 @@ class _WriteState:
         content_type = raw["content_type"]
         assertions = raw["required_identity_assertions"]
         placement = raw["placement"]
-        raw_segments = raw["segments"]
         if not isinstance(token, str) or not token:
             raise RuntimeError("filesystem write token is invalid")
         if not isinstance(object_path, str) or not object_path:
@@ -265,23 +325,7 @@ class _WriteState:
             raise RuntimeError("filesystem write assertions are invalid")
         if placement not in {"archive", "immediate"}:
             raise RuntimeError("filesystem write placement is invalid")
-        if not isinstance(raw_segments, list):
-            raise RuntimeError("filesystem write segment state is invalid")
         expected_bytes = _required_int(raw, "expected_bytes", minimum=1)
-        parsed = tuple(
-            _SegmentRecord.from_json(_required_dict(item, "filesystem write segment"))
-            for item in raw_segments
-        )
-        numbers = tuple(item.number for item in parsed)
-        if numbers != tuple(sorted(set(numbers))):
-            raise RuntimeError("filesystem write segment state is not canonical")
-        _validate_extents(
-            ((item.offset, item.stored_bytes) for item in parsed),
-            maximum=expected_bytes,
-            label="filesystem write segment",
-        )
-        if sum(item.stored_bytes for item in parsed) > expected_bytes:
-            raise RuntimeError("filesystem write segments exceed the admitted bytes")
         return cls(
             token=token,
             object_path=object_path,
@@ -290,7 +334,6 @@ class _WriteState:
             required_identity_assertions=dict(sorted(cast(dict[str, str], assertions).items())),
             placement=cast(ObjectPlacement, placement),
             created_at=_required_string(raw, "created_at"),
-            segments={item.number: item for item in parsed},
         )
 
     def as_json(self) -> dict[str, Any]:
@@ -303,7 +346,6 @@ class _WriteState:
             "required_identity_assertions": self.required_identity_assertions,
             "placement": self.placement,
             "created_at": self.created_at,
-            "segments": [self.segments[number].as_json() for number in sorted(self.segments)],
         }
 
     def session(self) -> WriteSession:
@@ -322,20 +364,6 @@ class _WriteState:
             and self.placement == request.placement
         )
 
-    def with_segment(self, segment: _SegmentRecord) -> _WriteState:
-        segments = dict(self.segments)
-        segments[segment.number] = segment
-        return _WriteState(
-            token=self.token,
-            object_path=self.object_path,
-            expected_bytes=self.expected_bytes,
-            content_type=self.content_type,
-            required_identity_assertions=self.required_identity_assertions,
-            placement=self.placement,
-            created_at=self.created_at,
-            segments=segments,
-        )
-
 
 @dataclass(frozen=True, slots=True)
 class _ObjectRecord:
@@ -348,7 +376,8 @@ class _ObjectRecord:
     required_identity_assertions: dict[str, str]
     placement: ObjectPlacement
     completed_at: str
-    parts: tuple[_PartRecord, ...]
+    segment_count: int
+    segment_sequence_sha256: str | None
 
     @classmethod
     def from_json(cls, raw: dict[str, Any]) -> Self:
@@ -363,33 +392,27 @@ class _ObjectRecord:
             "required_identity_assertions",
             "placement",
             "completed_at",
-            "parts",
+            "segment_count",
+            "segment_sequence_sha256",
         }
         if set(raw) != expected or raw.get("schema") != _OBJECT_SCHEMA:
             raise RuntimeError("filesystem object metadata has an invalid shape")
         assertions = raw["required_identity_assertions"]
-        raw_parts = raw["parts"]
         placement = raw["placement"]
         if not _is_string_mapping(assertions):
             raise RuntimeError("filesystem object assertions are invalid")
-        if not isinstance(raw_parts, list):
-            raise RuntimeError("filesystem object parts are invalid")
         if placement not in {"archive", "immediate"}:
             raise RuntimeError("filesystem object placement is invalid")
-        parts = tuple(
-            _PartRecord.from_json(_required_dict(item, "filesystem object part"))
-            for item in raw_parts
-        )
-        if tuple(part.number for part in parts) != tuple(range(1, len(parts) + 1)):
-            raise RuntimeError("filesystem object parts are not contiguous")
         stored_bytes = _required_int(raw, "stored_bytes", minimum=0)
-        if sum(part.stored_bytes for part in parts) != stored_bytes:
-            raise RuntimeError("filesystem object parts differ from its byte count")
-        _validate_extents(
-            ((part.offset, part.stored_bytes) for part in parts),
-            maximum=stored_bytes,
-            label="filesystem object part",
-        )
+        segment_count = _required_int(raw, "segment_count", minimum=0)
+        segment_sequence_sha256 = raw["segment_sequence_sha256"]
+        if segment_count == 0:
+            if segment_sequence_sha256 is not None:
+                raise RuntimeError("small filesystem object has segment authority")
+        elif not isinstance(segment_sequence_sha256, str) or not _is_sha256(
+            segment_sequence_sha256
+        ):
+            raise RuntimeError("filesystem object segment authority is invalid")
         return cls(
             object_path=_required_string(raw, "object_path"),
             revision=_required_string(raw, "revision"),
@@ -400,7 +423,8 @@ class _ObjectRecord:
             required_identity_assertions=dict(sorted(cast(dict[str, str], assertions).items())),
             placement=cast(ObjectPlacement, placement),
             completed_at=_required_string(raw, "completed_at"),
-            parts=parts,
+            segment_count=segment_count,
+            segment_sequence_sha256=cast(str | None, segment_sequence_sha256),
         )
 
     def as_json(self) -> dict[str, Any]:
@@ -415,7 +439,8 @@ class _ObjectRecord:
             "required_identity_assertions": self.required_identity_assertions,
             "placement": self.placement,
             "completed_at": self.completed_at,
-            "parts": [part.as_json() for part in self.parts],
+            "segment_count": self.segment_count,
+            "segment_sequence_sha256": self.segment_sequence_sha256,
         }
 
 
@@ -519,8 +544,8 @@ class FilesystemStorageAdapter:
                     required_identity_assertions=dict(request.required_identity_assertions),
                     placement=request.placement,
                     created_at=format_utc_timestamp(utc_now()),
-                    segments={},
                 )
+                self._initialize_segment_database(write_dir / _SEGMENT_DATABASE)
                 self._write_json_atomic(state_path, state.as_json())
                 self._fsync_dir(write_dir)
             except BaseException:
@@ -553,7 +578,8 @@ class FilesystemStorageAdapter:
                     "invalid_request",
                     "write segment size is outside the filesystem adapter limit",
                 )
-            existing = state.segments.get(number)
+            segment_database = write_dir / _SEGMENT_DATABASE
+            existing = self._load_segment(segment_database, number)
             payload_path = write_dir / "payload.data"
             if existing is not None:
                 if existing.stored_bytes != stored_bytes:
@@ -564,18 +590,16 @@ class FilesystemStorageAdapter:
                 self._verify_replayed_segment(payload_path, existing, content)
                 return existing.receipt()
 
-            accepted_bytes = sum(item.stored_bytes for item in state.segments.values())
-            if accepted_bytes + stored_bytes > state.expected_bytes:
+            offset = (number - 1) * self._config.segment_bytes
+            expected_segment_bytes = min(
+                self._config.segment_bytes,
+                max(0, state.expected_bytes - offset),
+            )
+            if expected_segment_bytes < 1 or stored_bytes != expected_segment_bytes:
                 raise StorageAdapterRejection(
                     "invalid_request",
-                    "accepted filesystem segments would exceed the admitted object bytes",
+                    "filesystem segment does not match its admitted logical extent",
                 )
-            offset = max(
-                (item.offset + item.stored_bytes for item in state.segments.values()),
-                default=0,
-            )
-            if offset + stored_bytes > state.expected_bytes:
-                raise RuntimeError("filesystem write extent accounting is inconsistent")
             digest = self._write_payload_range(
                 payload_path,
                 offset=offset,
@@ -589,24 +613,43 @@ class FilesystemStorageAdapter:
                 stored_bytes=stored_bytes,
                 stored_sha256=digest,
             )
-            try:
-                self._write_json_atomic(state_path, state.with_segment(segment).as_json())
-            except OSError as exc:
-                self._raise_post_admission_io(exc)
+            self._insert_segment(segment_database, segment)
             return segment.receipt()
 
-    def list_segments(self, session: WriteSession) -> WriteSegmentSet:
+    def list_segments(self, request: WriteSegmentListRequest) -> WriteSegmentPage:
         self._require_open()
+        session = request.session
         object_key = self._object_key(session.object_path)
         with self._gate(object_key).write():
             write_dir = self._write_dir_by_key(object_key)
             state = self._require_write_state(write_dir / "state.json", session)
             self._verify_active_payload(write_dir, state)
-            return WriteSegmentSet(
+            database = write_dir / _SEGMENT_DATABASE
+            traversal_token = self._segment_traversal_token(database)
+            if request.traversal_token is not None and request.traversal_token != traversal_token:
+                raise StorageAdapterRejection(
+                    "traversal_invalidated",
+                    "accepted filesystem write segments changed during traversal",
+                )
+            segments = self._segment_page(
+                database,
+                after_number=request.after_number,
+                maximum_items=request.maximum_items,
+            )
+            has_more = len(segments) > request.maximum_items
+            page = segments[: request.maximum_items]
+            completion = None
+            if not has_more:
+                completion = self._available_completion(
+                    database,
+                    expected_bytes=state.expected_bytes,
+                )
+            return WriteSegmentPage(
                 session=session,
-                segments=tuple(
-                    state.segments[number].receipt() for number in sorted(state.segments)
-                ),
+                traversal_token=traversal_token,
+                segments=page,
+                next_after_number=page[-1].number if has_more else None,
+                completion=completion,
             )
 
     def complete_write(self, request: WriteCompleteRequest) -> CompletedObjectReceipt:
@@ -646,15 +689,15 @@ class FilesystemStorageAdapter:
                     "identity_conflict",
                     "write completion differs from the admitted filesystem session",
                 )
-            expected_receipts = tuple(
-                state.segments[number].receipt() for number in sorted(state.segments)
+            completion = self._available_completion(
+                write_dir / _SEGMENT_DATABASE,
+                expected_bytes=state.expected_bytes,
             )
-            if request.segments != expected_receipts:
+            if completion is None or request.completion != completion:
                 raise StorageAdapterRejection(
                     "identity_conflict",
-                    "write completion segment receipts differ from persisted state",
+                    "write completion authority differs from persisted state",
                 )
-            self._validate_complete_segments(state)
             completed_at = format_utc_timestamp(utc_now())
             record = _ObjectRecord(
                 object_path=state.object_path,
@@ -666,7 +709,8 @@ class FilesystemStorageAdapter:
                 required_identity_assertions=state.required_identity_assertions,
                 placement=state.placement,
                 completed_at=completed_at,
-                parts=tuple(state.segments[number].part() for number in sorted(state.segments)),
+                segment_count=completion.segment_count,
+                segment_sequence_sha256=completion.sequence_sha256,
             )
             self._install_write_as_revision(object_key, write_dir, record)
             return self._completed_receipt(record)
@@ -774,14 +818,8 @@ class FilesystemStorageAdapter:
                     required_identity_assertions=dict(request.required_identity_assertions),
                     placement=request.placement,
                     completed_at=format_utc_timestamp(utc_now()),
-                    parts=(
-                        _PartRecord(
-                            number=1,
-                            offset=0,
-                            stored_bytes=request.stored_bytes,
-                            stored_sha256=digest,
-                        ),
-                    ),
+                    segment_count=0,
+                    segment_sequence_sha256=None,
                 )
                 self._install_staged_revision(object_key, staging_path, record)
                 return self._immutable_receipt(record)
@@ -856,37 +894,26 @@ class FilesystemStorageAdapter:
 
         def content() -> Iterator[bytes]:
             remaining = read_bytes
-            logical_skip = offset
+            absolute = offset
             fd = os.open(
                 revision_dir / "payload.data",
                 os.O_RDONLY | os.O_CLOEXEC | os.O_NOFOLLOW,
             )
             try:
-                for part in record.parts:
-                    if remaining == 0:
-                        break
-                    if logical_skip >= part.stored_bytes:
-                        logical_skip -= part.stored_bytes
-                        continue
-                    part_cursor = logical_skip
-                    take = min(remaining, part.stored_bytes - part_cursor)
-                    absolute = part.offset + part_cursor
-                    while take:
-                        chunk = os.pread(
-                            fd,
-                            min(take, self._config.read_chunk_bytes),
-                            absolute,
+                while remaining:
+                    chunk = os.pread(
+                        fd,
+                        min(remaining, self._config.read_chunk_bytes),
+                        absolute,
+                    )
+                    if not chunk:
+                        raise StorageAdapterRejection(
+                            "integrity_failure",
+                            "filesystem object ended before its metadata",
                         )
-                        if not chunk:
-                            raise StorageAdapterRejection(
-                                "integrity_failure",
-                                "filesystem object ended before its metadata",
-                            )
-                        absolute += len(chunk)
-                        take -= len(chunk)
-                        remaining -= len(chunk)
-                        yield chunk
-                    logical_skip = 0
+                    absolute += len(chunk)
+                    remaining -= len(chunk)
+                    yield chunk
                 if remaining:
                     raise StorageAdapterRejection(
                         "integrity_failure",
@@ -1045,6 +1072,13 @@ class FilesystemStorageAdapter:
                     raise RuntimeError(
                         "filesystem installed revision differs from its active write"
                     )
+                if not os.path.samefile(
+                    write_dir / _SEGMENT_DATABASE,
+                    self._revision_dir(write_dir.name, state.token) / _SEGMENT_DATABASE,
+                ):
+                    raise RuntimeError(
+                        "filesystem installed segment ledger differs from its active write"
+                    )
                 object_dir = self._object_dir_by_key(write_dir.name)
                 self._write_text_atomic(object_dir / "current", state.token)
                 self._remove_write_dir(write_dir.name)
@@ -1201,6 +1235,186 @@ class FilesystemStorageAdapter:
             raise RuntimeError("filesystem write payload is missing") from exc
         if not stat.S_ISREG(details.st_mode) or details.st_size != state.expected_bytes:
             raise RuntimeError("filesystem write payload differs from its admitted size")
+        self._segment_authority(write_dir / _SEGMENT_DATABASE)
+
+    @staticmethod
+    def _open_segment_database(path: Path) -> sqlite3.Connection:
+        try:
+            details = path.stat(follow_symlinks=False)
+        except FileNotFoundError as exc:
+            raise RuntimeError("filesystem write segment ledger is missing") from exc
+        if not stat.S_ISREG(details.st_mode):
+            raise RuntimeError("filesystem write segment ledger is not a regular file")
+        database = sqlite3.connect(path)
+        database.execute("PRAGMA foreign_keys = ON")
+        return database
+
+    @staticmethod
+    def _initialize_segment_database(path: Path) -> None:
+        database = sqlite3.connect(path)
+        try:
+            database.executescript(
+                """
+                PRAGMA journal_mode = DELETE;
+                PRAGMA synchronous = FULL;
+                CREATE TABLE authority (
+                    singleton INTEGER PRIMARY KEY CHECK (singleton = 1),
+                    traversal_token TEXT NOT NULL,
+                    segment_count TEXT NOT NULL,
+                    stored_bytes TEXT NOT NULL,
+                    combined_entry_sha256 TEXT NOT NULL
+                );
+                CREATE TABLE segment (
+                    number TEXT PRIMARY KEY,
+                    offset TEXT NOT NULL,
+                    segment_token TEXT NOT NULL,
+                    stored_bytes TEXT NOT NULL,
+                    stored_sha256 TEXT NOT NULL
+                );
+                """
+            )
+            database.execute(
+                "INSERT INTO authority VALUES (1, ?, '0', '0', ?)",
+                (uuid.uuid4().hex, "0" * 64),
+            )
+            database.commit()
+        finally:
+            database.close()
+        os.chmod(path, _FILE_MODE)
+
+    @staticmethod
+    def _segment_from_row(row: tuple[object, ...]) -> _SegmentRecord:
+        number, offset, token, stored_bytes, stored_sha256 = row
+        raw = {
+            "number": _canonical_decimal(number, "filesystem segment number"),
+            "offset": _canonical_decimal(offset, "filesystem segment offset"),
+            "segment_token": token,
+            "stored_bytes": _canonical_decimal(stored_bytes, "filesystem segment stored bytes"),
+            "stored_sha256": stored_sha256,
+        }
+        return _SegmentRecord.from_json(raw)
+
+    def _load_segment(self, path: Path, number: int) -> _SegmentRecord | None:
+        database = self._open_segment_database(path)
+        try:
+            row = database.execute(
+                "SELECT number, offset, segment_token, stored_bytes, stored_sha256 "
+                "FROM segment WHERE number = ?",
+                (str(number),),
+            ).fetchone()
+            return None if row is None else self._segment_from_row(row)
+        finally:
+            database.close()
+
+    def _insert_segment(self, path: Path, segment: _SegmentRecord) -> None:
+        database = self._open_segment_database(path)
+        try:
+            database.execute("BEGIN IMMEDIATE")
+            authority = database.execute(
+                "SELECT segment_count, stored_bytes, combined_entry_sha256 "
+                "FROM authority WHERE singleton = 1"
+            ).fetchone()
+            if authority is None:
+                raise RuntimeError("filesystem segment ledger authority is missing")
+            accumulated = _SegmentAuthority.from_state(
+                segment_count=authority[0],
+                stored_bytes=authority[1],
+                combined_entry_sha256=authority[2],
+            )
+            database.execute(
+                "INSERT INTO segment(number, offset, segment_token, stored_bytes, "
+                "stored_sha256) VALUES (?, ?, ?, ?, ?)",
+                (
+                    str(segment.number),
+                    str(segment.offset),
+                    segment.segment_token,
+                    str(segment.stored_bytes),
+                    segment.stored_sha256,
+                ),
+            )
+            accumulated.add(segment.receipt())
+            database.execute(
+                "UPDATE authority SET traversal_token = ?, segment_count = ?, "
+                "stored_bytes = ?, combined_entry_sha256 = ? WHERE singleton = 1",
+                (
+                    uuid.uuid4().hex,
+                    str(accumulated.segment_count),
+                    str(accumulated.stored_bytes),
+                    accumulated.state(),
+                ),
+            )
+            database.commit()
+        except sqlite3.Error as exc:
+            database.rollback()
+            raise RuntimeError("filesystem segment ledger update failed") from exc
+        finally:
+            database.close()
+
+    def _segment_traversal_token(self, path: Path) -> str:
+        database = self._open_segment_database(path)
+        try:
+            row = database.execute(
+                "SELECT traversal_token FROM authority WHERE singleton = 1"
+            ).fetchone()
+            if row is None or not isinstance(row[0], str) or not row[0]:
+                raise RuntimeError("filesystem segment traversal authority is invalid")
+            return row[0]
+        finally:
+            database.close()
+
+    def _segment_page(
+        self,
+        path: Path,
+        *,
+        after_number: int,
+        maximum_items: int,
+    ) -> tuple[WriteSegmentReceipt, ...]:
+        after = str(after_number)
+        database = self._open_segment_database(path)
+        try:
+            rows = database.execute(
+                "SELECT number, offset, segment_token, stored_bytes, stored_sha256 "
+                "FROM segment WHERE length(number) > ? OR "
+                "(length(number) = ? AND number > ?) "
+                "ORDER BY length(number), number LIMIT ?",
+                (len(after), len(after), after, maximum_items + 1),
+            ).fetchall()
+            return tuple(self._segment_from_row(row).receipt() for row in rows)
+        finally:
+            database.close()
+
+    def _available_completion(
+        self,
+        path: Path,
+        *,
+        expected_bytes: int,
+    ) -> WriteCompletionAuthority | None:
+        accumulated = self._segment_authority(path)
+        if accumulated.stored_bytes != expected_bytes:
+            return None
+        expected_count = (expected_bytes + self._config.segment_bytes - 1) // (
+            self._config.segment_bytes
+        )
+        if accumulated.segment_count != expected_count:
+            return None
+        return accumulated.completion()
+
+    def _segment_authority(self, path: Path) -> _SegmentAuthority:
+        database = self._open_segment_database(path)
+        try:
+            row = database.execute(
+                "SELECT segment_count, stored_bytes, combined_entry_sha256 "
+                "FROM authority WHERE singleton = 1"
+            ).fetchone()
+        finally:
+            database.close()
+        if row is None:
+            raise RuntimeError("filesystem segment ledger authority is missing")
+        return _SegmentAuthority.from_state(
+            segment_count=row[0],
+            stored_bytes=row[1],
+            combined_entry_sha256=row[2],
+        )
 
     def _verify_replayed_segment(
         self,
@@ -1238,24 +1452,6 @@ class FilesystemStorageAdapter:
         finally:
             os.close(fd)
 
-    def _validate_complete_segments(self, state: _WriteState) -> None:
-        segments = [state.segments[number] for number in sorted(state.segments)]
-        if [segment.number for segment in segments] != list(range(1, len(segments) + 1)):
-            raise StorageAdapterRejection(
-                "invalid_request",
-                "filesystem write segments are not contiguous",
-            )
-        if sum(segment.stored_bytes for segment in segments) != state.expected_bytes:
-            raise StorageAdapterRejection(
-                "invalid_request",
-                "filesystem write segments do not fill the admitted object bytes",
-            )
-        if any(segment.stored_bytes < self._config.segment_bytes for segment in segments[:-1]):
-            raise StorageAdapterRejection(
-                "invalid_request",
-                "filesystem completion contains an undersized non-final segment",
-            )
-
     def _install_write_as_revision(
         self,
         object_key: str,
@@ -1266,12 +1462,15 @@ class FilesystemStorageAdapter:
         revisions_dir = object_dir / "revisions"
         revision_dir = self._revision_dir(object_key, record.revision)
         source = write_dir / "payload.data"
+        segment_source = write_dir / _SEGMENT_DATABASE
         if revision_dir.exists():
             persisted = self._load_object(record.object_path, revision=record.revision)
             if persisted != record:
                 raise RuntimeError("filesystem revision conflicts with its write session")
             if not os.path.samefile(source, revision_dir / "payload.data"):
                 raise RuntimeError("filesystem revision payload conflicts with its write session")
+            if not os.path.samefile(segment_source, revision_dir / _SEGMENT_DATABASE):
+                raise RuntimeError("filesystem revision segment ledger conflicts with its write")
         else:
             temporary = revisions_dir / f".{record.revision}.{uuid.uuid4().hex}.tmp"
             temporary.mkdir(mode=_INTERNAL_MODE)
@@ -1279,6 +1478,12 @@ class FilesystemStorageAdapter:
                 destination = temporary / "payload.data"
                 os.link(source, destination, follow_symlinks=False)
                 os.chmod(destination, _FILE_MODE)
+                os.link(
+                    segment_source,
+                    temporary / _SEGMENT_DATABASE,
+                    follow_symlinks=False,
+                )
+                os.chmod(temporary / _SEGMENT_DATABASE, _FILE_MODE)
                 self._write_json_atomic(temporary / "metadata.json", record.as_json())
                 self._fsync_dir(temporary)
                 os.rename(temporary, revision_dir)
@@ -1382,6 +1587,25 @@ class FilesystemStorageAdapter:
             raise StorageAdapterRejection(
                 "integrity_failure",
                 "filesystem object payload differs from its metadata",
+            )
+        segment_database = revision_dir / _SEGMENT_DATABASE
+        if record.segment_count:
+            try:
+                ledger_details = segment_database.stat(follow_symlinks=False)
+            except FileNotFoundError as exc:
+                raise StorageAdapterRejection(
+                    "integrity_failure",
+                    "filesystem object segment ledger is missing",
+                ) from exc
+            if not stat.S_ISREG(ledger_details.st_mode):
+                raise StorageAdapterRejection(
+                    "integrity_failure",
+                    "filesystem object segment ledger is invalid",
+                )
+        elif segment_database.exists() or segment_database.is_symlink():
+            raise StorageAdapterRejection(
+                "integrity_failure",
+                "small filesystem object unexpectedly contains a segment ledger",
             )
 
     @staticmethod
@@ -1663,6 +1887,16 @@ def _required_int(raw: dict[str, Any], key: str, *, minimum: int) -> int:
     if isinstance(value, bool) or not isinstance(value, int) or value < minimum:
         raise RuntimeError(f"filesystem metadata field {key} is invalid")
     return value
+
+
+def _canonical_decimal(value: object, label: str) -> int:
+    try:
+        parsed = int(str(value))
+    except (TypeError, ValueError) as exc:
+        raise RuntimeError(f"{label} is invalid") from exc
+    if parsed < 0 or str(parsed) != str(value):
+        raise RuntimeError(f"{label} is not a canonical nonnegative integer")
+    return parsed
 
 
 def _required_string(raw: dict[str, Any], key: str) -> str:

@@ -30,6 +30,8 @@ _SEMANTIC_ID_PATTERN = r"^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$"
 _METADATA_KEY_PATTERN = re.compile(r"^[a-z0-9](?:[a-z0-9._-]{0,126}[a-z0-9])?$")
 _MAX_IDENTITY_ASSERTIONS_ITEMS = 64
 _MAX_IDENTITY_ASSERTIONS_BYTES = 16 * 1024
+MAX_WRITE_SEGMENT_PAGE_ITEMS = 128
+_WRITE_SEGMENT_SEQUENCE_DOMAIN = b"riverhog-storage-write-segment-sequence/v1\x00"
 
 Sha256 = Annotated[str, StringConstraints(pattern=_SHA256_PATTERN)]
 SemanticId = Annotated[str, StringConstraints(pattern=_SEMANTIC_ID_PATTERN)]
@@ -44,6 +46,7 @@ StorageAdapterErrorCode = Literal[
     "request_too_large",
     "insufficient_storage",
     "identity_conflict",
+    "traversal_invalidated",
     "invalid_path",
     "invalid_range",
     "read_not_ready",
@@ -223,12 +226,41 @@ def _listed_segments(
     return value
 
 
-def _completion_segments(
-    value: tuple[WriteSegmentReceipt, ...],
-) -> tuple[WriteSegmentReceipt, ...]:
-    if [segment.number for segment in value] != list(range(1, len(value) + 1)):
-        raise ValueError("write segments must be contiguous and ordered from one")
-    return value
+class WriteCompletionAuthority(StorageAdapterModel):
+    """Exact adapter-write segment sequence selected for publication."""
+
+    segment_count: int = Field(ge=0)
+    stored_bytes: int = Field(ge=0)
+    sequence_sha256: Sha256
+
+
+def write_completion_authority(
+    segments: Iterable[WriteSegmentReceipt],
+) -> WriteCompletionAuthority:
+    """Commit one canonical, contiguous sequence without retaining it in memory."""
+
+    digest = sha256(_WRITE_SEGMENT_SEQUENCE_DOMAIN)
+    segment_count = 0
+    stored_bytes = 0
+    for expected_number, segment in enumerate(segments, start=1):
+        if segment.number != expected_number:
+            raise ValueError("write segments must be contiguous and ordered from one")
+        encoded = json.dumps(
+            segment.model_dump(mode="json", exclude_none=True),
+            allow_nan=False,
+            ensure_ascii=False,
+            separators=(",", ":"),
+            sort_keys=True,
+        ).encode("utf-8")
+        digest.update(len(encoded).to_bytes(8, "big"))
+        digest.update(encoded)
+        segment_count += 1
+        stored_bytes += segment.stored_bytes
+    return WriteCompletionAuthority(
+        segment_count=segment_count,
+        stored_bytes=stored_bytes,
+        sequence_sha256=digest.hexdigest(),
+    )
 
 
 def _canonical_utc_timestamp(value: str) -> str:
@@ -241,9 +273,46 @@ def _canonical_utc_timestamp(value: str) -> str:
     return value
 
 
-class WriteSegmentSet(StorageAdapterModel):
+class WriteSegmentListRequest(StorageAdapterModel):
+    """Request one bounded page from an exact accepted-segment view."""
+
     session: WriteSession
-    segments: tuple[WriteSegmentReceipt, ...] = ()
+    after_number: int = Field(
+        default=0,
+        ge=0,
+        json_schema_extra={
+            "x-riverhog-extent": {
+                "policy": "segmented_no_total_max",
+                "reason": "write-segment-history-bounded-traversal",
+            }
+        },
+    )
+    traversal_token: str | None = Field(default=None, min_length=1, max_length=4000)
+    maximum_items: int = Field(
+        default=MAX_WRITE_SEGMENT_PAGE_ITEMS,
+        ge=1,
+        le=MAX_WRITE_SEGMENT_PAGE_ITEMS,
+    )
+
+
+class WriteSegmentPage(StorageAdapterModel):
+    """One bounded page under an adapter-owned immutable traversal view."""
+
+    session: WriteSession
+    traversal_token: str = Field(min_length=1, max_length=4000)
+    segments: tuple[WriteSegmentReceipt, ...] = Field(
+        default=(),
+        max_length=MAX_WRITE_SEGMENT_PAGE_ITEMS,
+        json_schema_extra={
+            "x-riverhog-extent": {
+                "policy": "segmented_no_total_max",
+                "reason": "bounded-storage-write-segment-page",
+                "progression": "exact-adapter-write-traversal",
+            }
+        },
+    )
+    next_after_number: int | None = Field(default=None, ge=1)
+    completion: WriteCompletionAuthority | None = None
 
     @field_validator("segments")
     @classmethod
@@ -252,6 +321,16 @@ class WriteSegmentSet(StorageAdapterModel):
         value: tuple[WriteSegmentReceipt, ...],
     ) -> tuple[WriteSegmentReceipt, ...]:
         return _listed_segments(value)
+
+    @model_validator(mode="after")
+    def validate_terminal(self) -> Self:
+        if self.next_after_number is not None and self.completion is not None:
+            raise ValueError("nonterminal write segment pages cannot carry completion authority")
+        if self.next_after_number is not None and (
+            not self.segments or self.next_after_number != self.segments[-1].number
+        ):
+            raise ValueError("write segment page continuation must name its last segment")
+        return self
 
 
 class WriteSegmentRequest(StorageAdapterModel):
@@ -262,19 +341,11 @@ class WriteSegmentRequest(StorageAdapterModel):
 
 class WriteCompleteRequest(StorageAdapterModel):
     session: WriteSession
-    segments: tuple[WriteSegmentReceipt, ...] = Field(min_length=1)
+    completion: WriteCompletionAuthority
     expected_bytes: int = Field(ge=1)
     expected_content_type: str = Field(min_length=1, max_length=255)
     required_identity_assertions: RequiredIdentityAssertions
     expected_placement: ObjectPlacement
-
-    @field_validator("segments")
-    @classmethod
-    def canonical_segments(
-        cls,
-        value: tuple[WriteSegmentReceipt, ...],
-    ) -> tuple[WriteSegmentReceipt, ...]:
-        return _completion_segments(value)
 
     @field_validator("required_identity_assertions")
     @classmethod
@@ -285,8 +356,10 @@ class WriteCompleteRequest(StorageAdapterModel):
     def validate_bytes(self) -> Self:
         if self.expected_bytes != self.session.expected_bytes:
             raise ValueError("write completion byte count differs from its session")
-        if sum(segment.stored_bytes for segment in self.segments) != self.expected_bytes:
-            raise ValueError("write byte count does not equal its segments")
+        if self.completion.segment_count < 1:
+            raise ValueError("write completion requires at least one segment")
+        if self.completion.stored_bytes != self.expected_bytes:
+            raise ValueError("write byte count does not equal its completion authority")
         return self
 
 
@@ -643,15 +716,15 @@ def _validate_segment_receipts(
         descriptor.maximum_segment_count is not None
         and len(segments) > descriptor.maximum_segment_count
     ):
-        raise ValueError("write segment set exceeds the adapter's advertised count limit")
+        raise ValueError("write segment page exceeds the adapter's advertised count limit")
     if descriptor.maximum_segment_count is not None and any(
         segment.number > descriptor.maximum_segment_count for segment in segments
     ):
-        raise ValueError("write segment set exceeds the adapter's advertised count limit")
+        raise ValueError("write segment page exceeds the adapter's advertised count limit")
     if descriptor.maximum_segment_bytes is not None and any(
         segment.stored_bytes > descriptor.maximum_segment_bytes for segment in segments
     ):
-        raise ValueError("write segment set exceeds the adapter's advertised byte limit")
+        raise ValueError("write segment page exceeds the adapter's advertised byte limit")
     if completion and any(
         segment.stored_bytes < descriptor.minimum_nonfinal_segment_bytes
         for segment in segments[:-1]
@@ -663,16 +736,26 @@ def validate_write_completion_request(
     request: WriteCompleteRequest,
     descriptor: AdapterDescriptor,
 ) -> None:
-    _validate_segment_receipts(request.segments, descriptor, completion=True)
+    if (
+        descriptor.maximum_segment_count is not None
+        and request.completion.segment_count > descriptor.maximum_segment_count
+    ):
+        raise ValueError("write completion exceeds the adapter's advertised count limit")
 
 
-def validate_write_segment_set_response(
-    request: WriteSession,
-    response: WriteSegmentSet,
+def validate_write_segment_page_response(
+    request: WriteSegmentListRequest,
+    response: WriteSegmentPage,
     descriptor: AdapterDescriptor,
 ) -> None:
-    if response.session != request:
-        raise ValueError("adapter segment set differs from its write session")
+    if response.session != request.session:
+        raise ValueError("adapter segment page differs from its write session")
+    if request.traversal_token is not None and response.traversal_token != request.traversal_token:
+        raise ValueError("adapter segment traversal identity changed")
+    if len(response.segments) > request.maximum_items:
+        raise ValueError("adapter segment page exceeds the requested item count")
+    if any(segment.number <= request.after_number for segment in response.segments):
+        raise ValueError("adapter segment page did not advance past its cursor")
     _validate_segment_receipts(response.segments, descriptor, completion=False)
 
 
@@ -771,7 +854,7 @@ class StorageAdapterPort(Protocol):
         content: BinaryContent,
     ) -> WriteSegmentReceipt: ...
 
-    def list_segments(self, session: WriteSession) -> WriteSegmentSet: ...
+    def list_segments(self, request: WriteSegmentListRequest) -> WriteSegmentPage: ...
 
     def complete_write(
         self,
@@ -912,13 +995,13 @@ class ValidatedStorageAdapterPort:
             raise ValueError("adapter segment digest differs from the supplied content")
         return response
 
-    def list_segments(self, session: WriteSession) -> WriteSegmentSet:
+    def list_segments(self, request: WriteSegmentListRequest) -> WriteSegmentPage:
         response = _response(
-            self._adapter.list_segments(session),
-            WriteSegmentSet,
-            "write segment set",
+            self._adapter.list_segments(request),
+            WriteSegmentPage,
+            "write segment page",
         )
-        validate_write_segment_set_response(session, response, self.descriptor())
+        validate_write_segment_page_response(request, response, self.descriptor())
         return response
 
     def complete_write(self, request: WriteCompleteRequest) -> CompletedObjectReceipt:
@@ -1046,6 +1129,7 @@ def validated_storage_adapter(adapter: StorageAdapterPort) -> ValidatedStorageAd
 
 __all__ = [
     "ADAPTER_PRIVATE_ASSERTION_PREFIX",
+    "MAX_WRITE_SEGMENT_PAGE_ITEMS",
     "STORAGE_ADAPTER_PROTOCOL",
     "AdapterDescriptor",
     "BinaryContent",
@@ -1055,10 +1139,12 @@ __all__ = [
     "ImmutableObjectReceipt",
     "MaintenanceResult",
     "WriteCompleteRequest",
+    "WriteCompletionAuthority",
     "WriteStartRequest",
     "CompletedWriteLookupRequest",
     "WriteSegmentReceipt",
-    "WriteSegmentSet",
+    "WriteSegmentListRequest",
+    "WriteSegmentPage",
     "WriteSegmentRequest",
     "WriteSession",
     "ObjectLocator",
@@ -1094,9 +1180,10 @@ __all__ = [
     "validate_small_object_response",
     "validate_write_segment_response",
     "validate_write_segment_request",
-    "validate_write_segment_set_response",
+    "validate_write_segment_page_response",
     "validate_write_completion_request",
     "validate_write_start_request",
     "validate_write_session_response",
     "validated_storage_adapter",
+    "write_completion_authority",
 ]

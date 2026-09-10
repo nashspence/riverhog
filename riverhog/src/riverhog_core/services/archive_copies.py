@@ -45,6 +45,8 @@ from riverhog_core.pack_upload import PACK_VOLUME_CONTENT_TYPE
 from riverhog_core.ports.archive_objects import (
     ArchiveResumableObjectStore,
     ImmutableArchiveObjectStore,
+    WriteCompletionAuthority,
+    WriteSegmentCursor,
     WriteSegmentReceipt,
     WriteSession,
 )
@@ -79,7 +81,7 @@ from riverhog_core.throughput import (
     TransferTiming,
     log_transfer_timing,
 )
-from riverhog_core.write_segments import WriteSegmentPlan, plan_write_segments
+from riverhog_core.write_segments import WriteSegmentPlan, iter_write_segments
 
 _LOG = logging.getLogger(__name__)
 _SORT_FIELDS = closed_literal_values(ArchiveCopySort)
@@ -901,17 +903,15 @@ class SqlAlchemyArchiveCopyService:
                 checkpoint.write_token = write_session.write_token
                 checkpoint.object_path = destination_path
 
-        segment_plans = plan_write_segments(
-            tuple(_part_int(current, "stored_bytes") for current in part_rows),
-            destination_object_store.write_constraints(),
+        constraints = destination_object_store.write_constraints()
+        total_segments = sum(
+            1
+            for _ in iter_write_segments(
+                (_part_int(current, "stored_bytes") for current in part_rows),
+                constraints,
+            )
         )
-        remote_segments = {
-            current.number: current
-            for current in destination_object_store.list_segments(session=write_session)
-        }
-        if set(remote_segments) - {current.number for current in segment_plans}:
-            raise Conflict("archive copy resumable write has unexpected segments")
-        committed = self._copy_volume_parts(
+        self._copy_volume_parts(
             collection_id=collection_id,
             destination_store_name=destination_store_name,
             source_store=source_store,
@@ -920,12 +920,22 @@ class SqlAlchemyArchiveCopyService:
             identity=identity,
             write_session=write_session,
             part_rows=part_rows,
-            segment_plans=segment_plans,
-            remote_segments=remote_segments,
+            segment_plans=iter_write_segments(
+                (_part_int(current, "stored_bytes") for current in part_rows),
+                constraints,
+            ),
+            total_segments=total_segments,
         )
         completed = destination_object_store.complete_write(
             session=write_session,
-            segments=committed,
+            completion=self._copy_completion_authority(
+                destination_object_store,
+                session=write_session,
+                expected=iter_write_segments(
+                    (_part_int(current, "stored_bytes") for current in part_rows),
+                    constraints,
+                ),
+            ),
             expected_bytes=source.stored_bytes,
             expected_content_type=content_type,
             expected_metadata=metadata,
@@ -974,11 +984,11 @@ class SqlAlchemyArchiveCopyService:
         identity: ArchiveObjectIdentity,
         write_session: WriteSession,
         part_rows: Sequence[dict[str, object]],
-        segment_plans: Sequence[WriteSegmentPlan],
-        remote_segments: Mapping[int, WriteSegmentReceipt],
-    ) -> tuple[WriteSegmentReceipt, ...]:
-        worker_count = min(self._throughput.write_concurrency, len(segment_plans))
-        window = min(len(segment_plans), worker_count * 2)
+        segment_plans: Iterable[WriteSegmentPlan],
+        total_segments: int,
+    ) -> None:
+        worker_count = self._throughput.write_concurrency
+        window = worker_count * 2
         source_chunks = iter(
             source_store.iter_stored_archive_object(
                 collection_id=collection_id,
@@ -987,23 +997,28 @@ class SqlAlchemyArchiveCopyService:
         )
         source_buffer = bytearray()
         pending: dict[Future[_CopiedPart], WriteSegmentPlan] = {}
-        committed: dict[int, WriteSegmentReceipt] = {}
+        uploaded_segments = 0
+        uploaded_bytes = 0
         exhausted = False
         retrieval_wait_seconds = 0.0
         retrieval_wait_recorded = False
 
-        plans_by_part: dict[int, list[WriteSegmentPlan]] = {}
-        for plan in segment_plans:
-            plans_by_part.setdefault(plan.archive_part_number, []).append(plan)
+        plan_iterator = iter(segment_plans)
+        next_plan = next(plan_iterator, None)
 
         def segment_inputs() -> Iterator[
             tuple[WriteSegmentPlan, bytes, float, float, float, _ArchivePartReservation]
         ]:
-            nonlocal retrieval_wait_recorded
+            nonlocal next_plan, retrieval_wait_recorded
             for row in part_rows:
                 archive_part_number = _part_int(row, "number")
                 archive_part_bytes = _part_int(row, "stored_bytes")
-                plans = tuple(plans_by_part.get(archive_part_number, ()))
+                plans: list[WriteSegmentPlan] = []
+                while (
+                    next_plan is not None and next_plan.archive_part_number == archive_part_number
+                ):
+                    plans.append(next_plan)
+                    next_plan = next(plan_iterator, None)
                 if not plans:
                     raise Conflict("archive part has no destination write segments")
                 byte_wait_seconds = self._resources.upload_bytes.acquire(archive_part_bytes)
@@ -1064,6 +1079,8 @@ class SqlAlchemyArchiveCopyService:
                     reservation.release(len(plans) - transferred)
             if source_buffer or any(bytes(chunk) for chunk in source_chunks):
                 raise Conflict("source archive volume has bytes beyond its part receipts")
+            if next_plan is not None:
+                raise Conflict("destination write segments exceed the archive parts")
 
         inputs = iter(segment_inputs())
 
@@ -1074,18 +1091,15 @@ class SqlAlchemyArchiveCopyService:
             source_seconds: float,
             integrity_seconds: float,
         ) -> _CopiedPart:
-            receipt = remote_segments.get(plan.number)
-            remote_seconds = 0.0
-            if receipt is None:
-                with self._resources.upload_requests.reserve() as request_wait_seconds:
-                    queue_wait_seconds += request_wait_seconds
-                    remote_started = time.perf_counter()
-                    receipt = destination_object_store.write_segment(
-                        session=write_session,
-                        number=plan.number,
-                        content=content,
-                    )
-                    remote_seconds = time.perf_counter() - remote_started
+            with self._resources.upload_requests.reserve() as request_wait_seconds:
+                queue_wait_seconds += request_wait_seconds
+                remote_started = time.perf_counter()
+                receipt = destination_object_store.write_segment(
+                    session=write_session,
+                    number=plan.number,
+                    content=content,
+                )
+                remote_seconds = time.perf_counter() - remote_started
             if receipt.bytes != len(content):
                 raise Conflict("archive copy write-segment byte count changed")
             receipt = replace(receipt, sha256=hashlib.sha256(content).hexdigest())
@@ -1159,17 +1173,19 @@ class SqlAlchemyArchiveCopyService:
                         done, _ = wait(tuple(pending), return_when=FIRST_COMPLETED)
                         completed_parts: list[_CopiedPart] = []
                         for future in done:
-                            plan = pending.pop(future)
+                            pending.pop(future)
                             result = future.result()
-                            committed[plan.number] = result.receipt
+                            uploaded_segments += 1
+                            uploaded_bytes += result.receipt.bytes
                             completed_parts.append(result)
                         checkpoint_started = time.perf_counter()
-                        self._record_copy_segments(
+                        self._record_copy_progress(
                             collection_id=collection_id,
                             destination_store=destination_store_name,
                             object_id=source.object_id,
-                            segments=tuple(committed[number] for number in sorted(committed)),
-                            total_segments=len(segment_plans),
+                            uploaded_bytes=uploaded_bytes,
+                            uploaded_segments=uploaded_segments,
+                            total_segments=total_segments,
                         )
                         checkpoint_seconds = time.perf_counter() - checkpoint_started
                         checkpoint_share = checkpoint_seconds / len(completed_parts)
@@ -1188,9 +1204,35 @@ class SqlAlchemyArchiveCopyService:
                     for future in pending:
                         future.cancel()
                     raise
-        if set(committed) != {current.number for current in segment_plans}:
+        if uploaded_segments != total_segments or uploaded_bytes != source.stored_bytes:
             raise Conflict("archive copy write-segment receipts do not cover the volume")
-        return tuple(committed[number] for number in sorted(committed))
+
+    @staticmethod
+    def _copy_completion_authority(
+        store: ArchiveResumableObjectStore,
+        *,
+        session: WriteSession,
+        expected: Iterable[WriteSegmentPlan],
+    ) -> WriteCompletionAuthority:
+        expected_iterator = iter(expected)
+        cursor = WriteSegmentCursor()
+        completion: WriteCompletionAuthority | None = None
+        while True:
+            page = store.list_segments(session=session, cursor=cursor)
+            for receipt in page.segments:
+                plan = next(expected_iterator, None)
+                if plan is None or (receipt.number, receipt.bytes) != (
+                    plan.number,
+                    plan.stored_bytes,
+                ):
+                    raise Conflict("archive copy write segments do not match the byte plan")
+            if page.next_cursor is None:
+                completion = page.completion
+                break
+            cursor = page.next_cursor
+        if next(expected_iterator, None) is not None or completion is None:
+            raise Conflict("archive copy write segments are incomplete")
+        return completion
 
     def _copy_small_immutable_object(
         self,
@@ -1277,13 +1319,14 @@ class SqlAlchemyArchiveCopyService:
             receipt.completed_at,
         )
 
-    def _record_copy_segments(
+    def _record_copy_progress(
         self,
         *,
         collection_id: int,
         destination_store: str,
         object_id: str,
-        segments: Sequence[WriteSegmentReceipt],
+        uploaded_bytes: int,
+        uploaded_segments: int,
         total_segments: int,
     ) -> None:
         with session_scope(self._session_factory) as session:
@@ -1293,20 +1336,8 @@ class SqlAlchemyArchiveCopyService:
             )
             if record is None:
                 raise Conflict("archive copy upload checkpoint disappeared")
-            record.write_segments_json = json.dumps(
-                [
-                    {
-                        "number": current.number,
-                        "segment_token": current.segment_token,
-                        "bytes": current.bytes,
-                    }
-                    for current in segments
-                ],
-                sort_keys=True,
-                separators=(",", ":"),
-            )
-            record.uploaded_bytes = sum(current.bytes for current in segments)
-            record.uploaded_segments = len(segments)
+            record.uploaded_bytes = uploaded_bytes
+            record.uploaded_segments = uploaded_segments
             record.total_segments = total_segments
 
     def _require_copy_active(self, collection_id: int, destination_store: str) -> None:

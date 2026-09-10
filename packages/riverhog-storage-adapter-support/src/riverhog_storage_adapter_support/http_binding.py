@@ -36,9 +36,10 @@ from riverhog_storage_adapter_protocol import (
     StorageAdapterPort,
     StorageAdapterRejection,
     WriteCompleteRequest,
+    WriteSegmentListRequest,
+    WriteSegmentPage,
     WriteSegmentReceipt,
     WriteSegmentRequest,
-    WriteSegmentSet,
     WriteSession,
     WriteStartRequest,
     validate_completed_write_response,
@@ -47,9 +48,9 @@ from riverhog_storage_adapter_protocol import (
     validate_read_status_response,
     validate_small_object_response,
     validate_write_completion_request,
+    validate_write_segment_page_response,
     validate_write_segment_request,
     validate_write_segment_response,
-    validate_write_segment_set_response,
     validate_write_session_response,
     validated_storage_adapter,
 )
@@ -145,14 +146,14 @@ class StorageAdapterHttpBinding:
                 validate_write_session_response(start_request, session)
                 return _model_response(session)
             if normalized_method == "POST" and path == "/v1/writes/segments":
-                session = self._parse(body, WriteSession)
-                segment_set = self.adapter.list_segments(session)
-                validate_write_segment_set_response(
-                    session,
-                    segment_set,
+                list_request = self._parse(body, WriteSegmentListRequest)
+                segment_page = self.adapter.list_segments(list_request)
+                validate_write_segment_page_response(
+                    list_request,
+                    segment_page,
                     self.adapter.descriptor(),
                 )
-                return _model_response(segment_set)
+                return _model_response(segment_page)
             if normalized_method == "POST" and path == "/v1/writes/complete":
                 complete_request = self._parse(body, WriteCompleteRequest)
                 self._validate_constraints(
@@ -390,6 +391,7 @@ _ERROR_STATUS: dict[StorageAdapterErrorCode, int] = {
     "request_too_large": 413,
     "insufficient_storage": 507,
     "identity_conflict": 409,
+    "traversal_invalidated": 409,
     "invalid_path": 400,
     "invalid_range": 416,
     "read_not_ready": 409,
@@ -444,10 +446,15 @@ STORAGE_ADAPTER_HTTP_OPERATIONS = (
     _storage_operation(
         "POST",
         "/v1/writes/segments",
-        WriteSession,
-        WriteSegmentSet,
+        WriteSegmentListRequest,
+        WriteSegmentPage,
         "json",
-        errors=_adapter_errors("request_too_large", "invalid_path", "not_found"),
+        errors=_adapter_errors(
+            "request_too_large",
+            "invalid_path",
+            "not_found",
+            "traversal_invalidated",
+        ),
     ),
     _storage_operation(
         "POST",

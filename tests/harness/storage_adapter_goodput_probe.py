@@ -15,6 +15,7 @@ from riverhog_storage_adapter_protocol import (
     ObjectLocator,
     ObjectReadRequest,
     WriteCompleteRequest,
+    WriteSegmentListRequest,
     WriteStartRequest,
     validate_completed_write_response,
 )
@@ -75,26 +76,43 @@ def run(
         upload_started = time.perf_counter()
         session = client.begin_write(request)
         admitted = time.perf_counter()
-        receipts = []
         offset = 0
         number = 1
         while offset < payload_bytes:
             current_bytes = min(segment_bytes, payload_bytes - offset)
             value = number % 251
-            receipts.append(
-                client.write_segment(
-                    session=session,
-                    number=number,
-                    stored_bytes=current_bytes,
-                    content=_chunks(current_bytes, value=value),
-                )
+            client.write_segment(
+                session=session,
+                number=number,
+                stored_bytes=current_bytes,
+                content=_chunks(current_bytes, value=value),
             )
             offset += current_bytes
             number += 1
         written = time.perf_counter()
+        after_number = 0
+        traversal_token: str | None = None
+        accepted_segments = 0
+        completion_authority = None
+        while True:
+            page = client.list_segments(
+                WriteSegmentListRequest(
+                    session=session,
+                    after_number=after_number,
+                    traversal_token=traversal_token,
+                )
+            )
+            accepted_segments += len(page.segments)
+            if page.next_after_number is None:
+                completion_authority = page.completion
+                break
+            after_number = page.next_after_number
+            traversal_token = page.traversal_token
+        if completion_authority is None or accepted_segments != number - 1:
+            raise RuntimeError("storage-adapter goodput traversal is incomplete")
         completion = WriteCompleteRequest(
             session=session,
-            segments=tuple(receipts),
+            completion=completion_authority,
             expected_bytes=payload_bytes,
             expected_content_type=request.content_type,
             required_identity_assertions=request.required_identity_assertions,

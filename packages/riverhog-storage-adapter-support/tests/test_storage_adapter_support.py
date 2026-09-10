@@ -31,11 +31,13 @@ from riverhog_storage_adapter_protocol import (
     SmallObjectWriteRequest,
     StorageAdapterRejection,
     WriteCompleteRequest,
+    WriteSegmentListRequest,
+    WriteSegmentPage,
     WriteSegmentReceipt,
     WriteSegmentRequest,
-    WriteSegmentSet,
     WriteSession,
     WriteStartRequest,
+    write_completion_authority,
 )
 from riverhog_storage_adapter_support import (
     FRAMED_BODY_FORMAT,
@@ -115,17 +117,39 @@ class MemoryAdapter:
             stored_bytes=len(content),
         )
 
-    def list_segments(self, session: WriteSession) -> WriteSegmentSet:
-        return WriteSegmentSet(
-            session=session,
-            segments=tuple(
-                WriteSegmentReceipt(
-                    number=number,
-                    segment_token=f"part-{number}",
-                    stored_bytes=len(content),
-                )
-                for (write_token, number), content in sorted(self.segments.items())
-                if write_token == session.write_token
+    def list_segments(self, request: WriteSegmentListRequest) -> WriteSegmentPage:
+        all_segments = tuple(
+            WriteSegmentReceipt(
+                number=number,
+                segment_token=f"part-{number}",
+                stored_bytes=len(content),
+            )
+            for (write_token, number), content in sorted(self.segments.items())
+            if write_token == request.session.write_token
+        )
+        traversal_token = hashlib.sha256(
+            b"".join(
+                f"{item.number}:{item.segment_token}:{item.stored_bytes}\n".encode()
+                for item in all_segments
+            )
+        ).hexdigest()
+        if request.traversal_token is not None and request.traversal_token != traversal_token:
+            raise StorageAdapterRejection("traversal_invalidated", "segment view changed")
+        remaining = tuple(item for item in all_segments if item.number > request.after_number)
+        page = remaining[: request.maximum_items]
+        has_more = len(remaining) > len(page)
+        return WriteSegmentPage(
+            session=request.session,
+            traversal_token=traversal_token,
+            segments=page,
+            next_after_number=page[-1].number if has_more else None,
+            completion=(
+                None
+                if has_more
+                or tuple(item.number for item in all_segments)
+                != tuple(range(1, len(all_segments) + 1))
+                or sum(item.stored_bytes for item in all_segments) != request.session.expected_bytes
+                else write_completion_authority(all_segments)
             ),
         )
 
@@ -134,8 +158,18 @@ class MemoryAdapter:
         request: WriteCompleteRequest,
     ) -> CompletedObjectReceipt:
         created = self.created[request.session.write_token]
+        accepted = tuple(
+            WriteSegmentReceipt(
+                number=number,
+                segment_token=f"part-{number}",
+                stored_bytes=len(content),
+            )
+            for (write_token, number), content in sorted(self.segments.items())
+            if write_token == request.session.write_token
+        )
+        assert write_completion_authority(accepted) == request.completion
         content = b"".join(
-            self.segments[(request.session.write_token, part.number)] for part in request.segments
+            self.segments[(request.session.write_token, part.number)] for part in accepted
         )
         self.objects[request.session.object_path] = (
             content,
@@ -345,11 +379,13 @@ def test_client_preserves_write_segment_receipts_and_declares_body_lengths() -> 
         first = client.write_segment(session=created, number=1, stored_bytes=5, content=b"first")
         second = client.write_segment(session=created, number=2, stored_bytes=6, content=b"second")
 
-        assert client.list_segments(created).segments == (first, second)
+        segment_page = client.list_segments(WriteSegmentListRequest(session=created))
+        assert segment_page.segments == (first, second)
+        assert segment_page.completion is not None
         completed = client.complete_write(
             WriteCompleteRequest(
                 session=created,
-                segments=(first, second),
+                completion=segment_page.completion,
                 expected_bytes=11,
                 expected_content_type="application/octet-stream",
                 required_identity_assertions={"riverhog-format": "riverhog-pack-volume/v1"},
@@ -383,6 +419,64 @@ def test_client_preserves_write_segment_receipts_and_declares_body_lengths() -> 
             for request in segment_requests
         )
     finally:
+        client.close()
+        http.close()
+
+
+def test_http_write_traversal_crosses_pages_and_process_restart() -> None:
+    state = MemoryAdapterState()
+    client, http = _client(MemoryAdapter(state))
+    continuation_client, continuation_http = _client(MemoryAdapter(state))
+    try:
+        segment_count = 129
+        session = client.begin_write(
+            WriteStartRequest(
+                object_path="archives/id/volumes/many-segments.age",
+                expected_bytes=segment_count,
+                content_type="application/octet-stream",
+                required_identity_assertions={"riverhog-format": "many-segments/v1"},
+                placement="archive",
+            )
+        )
+        for number in range(1, segment_count + 1):
+            client.write_segment(
+                session=session,
+                number=number,
+                stored_bytes=1,
+                content=bytes((number % 251,)),
+            )
+
+        resumed = WriteSession.model_validate_json(session.model_dump_json())
+        first = continuation_client.list_segments(WriteSegmentListRequest(session=resumed))
+        assert len(first.segments) == 128
+        assert first.next_after_number == 128
+        assert first.completion is None
+
+        final = continuation_client.list_segments(
+            WriteSegmentListRequest(
+                session=resumed,
+                after_number=first.next_after_number,
+                traversal_token=first.traversal_token,
+            )
+        )
+        assert tuple(segment.number for segment in final.segments) == (129,)
+        assert final.next_after_number is None
+        assert final.completion is not None
+        assert final.completion.segment_count == segment_count
+        completed = continuation_client.complete_write(
+            WriteCompleteRequest(
+                session=resumed,
+                completion=final.completion,
+                expected_bytes=segment_count,
+                expected_content_type="application/octet-stream",
+                required_identity_assertions={"riverhog-format": "many-segments/v1"},
+                expected_placement="archive",
+            )
+        )
+        assert completed.stored_bytes == segment_count
+    finally:
+        continuation_client.close()
+        continuation_http.close()
         client.close()
         http.close()
 
@@ -747,10 +841,10 @@ def test_schema_and_support_source_remain_provider_and_state_neutral() -> None:
     assert [(item["method"], item["path"]) for item in operations] == [
         (operation.method, operation.path) for operation in STORAGE_ADAPTER_HTTP_OPERATIONS
     ]
-    segment_set = next(item for item in operations if item["path"] == "/v1/writes/segments")
-    assert segment_set["response"] == {
+    segment_page = next(item for item in operations if item["path"] == "/v1/writes/segments")
+    assert segment_page["response"] == {
         "kind": "json",
-        "schema": "WriteSegmentSet",
+        "schema": "WriteSegmentPage",
         "statuses": [200],
         "headers": [],
     }
@@ -764,7 +858,7 @@ def test_schema_and_support_source_remain_provider_and_state_neutral() -> None:
         "Content-Range",
     ]
     assert all(header["schema"] == {"type": "string"} for header in read["response"]["headers"])
-    assert "WriteSegmentSet" in document["schemas"]
+    assert "WriteSegmentPage" in document["schemas"]
 
     source = Path(__file__).resolve().parents[1] / "src/riverhog_storage_adapter_support"
     imported: set[str] = set()
@@ -848,6 +942,7 @@ def test_consumer_runnable_conformance_uses_only_the_public_http_contract() -> N
             "identity-conflict",
             "sparse-write-reconciliation",
             "write-begin-recovery",
+            "write-traversal-invalidation",
             "write-continuation-replay",
             "write-reconciliation",
             "write-completion-recovery",

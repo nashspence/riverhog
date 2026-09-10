@@ -23,6 +23,7 @@ from riverhog_storage_adapter_protocol import (
     ReadPreparationRequest,
     SmallObjectWriteRequest,
     WriteCompleteRequest,
+    WriteSegmentListRequest,
     WriteSession,
     WriteStartRequest,
     normalize_object_path,
@@ -48,9 +49,11 @@ def _expected_checks(descriptor: AdapterDescriptor) -> tuple[str, ...]:
     ]
     if descriptor.maximum_segment_count is None or descriptor.maximum_segment_count >= 2:
         checks.append("sparse-write-reconciliation")
+    checks.append("write-begin-recovery")
+    if descriptor.maximum_segment_count is None or descriptor.maximum_segment_count >= 2:
+        checks.append("write-traversal-invalidation")
     checks.extend(
         (
-            "write-begin-recovery",
             "write-continuation-replay",
             "write-reconciliation",
             "write-completion-recovery",
@@ -181,7 +184,7 @@ def run_storage_adapter_conformance(
         if descriptor.maximum_segment_count is None or descriptor.maximum_segment_count >= 2:
             sparse_request = WriteStartRequest(
                 object_path=sparse_write_path,
-                expected_bytes=descriptor.minimum_nonfinal_segment_bytes,
+                expected_bytes=descriptor.minimum_nonfinal_segment_bytes * 2,
                 content_type="application/octet-stream",
                 required_identity_assertions={"riverhog-conformance": "sparse-resumable-write/v1"},
                 placement="immediate",
@@ -197,7 +200,9 @@ def run_storage_adapter_conformance(
                 stored_bytes=len(sparse_content),
                 content=sparse_content,
             )
-            sparse_listing = continuation_client.list_segments(persisted_sparse_session)
+            sparse_listing = continuation_client.list_segments(
+                WriteSegmentListRequest(session=persisted_sparse_session)
+            )
             if sparse_listing.segments != (second_segment,):
                 raise AssertionError("sparse write listing differs after continuation restart")
             continuation_client.abort_write(persisted_sparse_session)
@@ -238,6 +243,9 @@ def run_storage_adapter_conformance(
         persisted_session = WriteSession.model_validate_json(session.model_dump_json())
         if continuation_client.descriptor() != descriptor:
             raise AssertionError("continuation client names a different adapter contract")
+        first_listing = continuation_client.list_segments(
+            WriteSegmentListRequest(session=persisted_session)
+        )
         written_segments = (
             first_segment,
             *(
@@ -250,16 +258,36 @@ def run_storage_adapter_conformance(
                 for index, content in enumerate(segment_contents[1:], start=2)
             ),
         )
-        listed_segment_set = continuation_client.list_segments(persisted_session)
-        if listed_segment_set.segments != written_segments:
+        if segment_count == 2:
+            try:
+                continuation_client.list_segments(
+                    WriteSegmentListRequest(
+                        session=persisted_session,
+                        traversal_token=first_listing.traversal_token,
+                    )
+                )
+            except StorageAdapterProtocolError as traversal_exc:
+                if traversal_exc.code != "traversal_invalidated":
+                    raise AssertionError(
+                        "changed traversal returned the wrong error code"
+                    ) from traversal_exc
+            else:
+                raise AssertionError("changed accepted segments did not invalidate traversal")
+            checks.append("write-traversal-invalidation")
+        listed_segment_page = continuation_client.list_segments(
+            WriteSegmentListRequest(session=persisted_session)
+        )
+        if listed_segment_page.segments != written_segments:
             raise AssertionError("write listing differs from written segment receipts")
+        if listed_segment_page.completion is None:
+            raise AssertionError("complete segment sequence has no completion authority")
         checks.append("write-continuation-replay")
         checks.append("write-reconciliation")
 
         total_bytes = sum(len(content) for content in segment_contents)
         completion_request = WriteCompleteRequest(
             session=session,
-            segments=listed_segment_set.segments,
+            completion=listed_segment_page.completion,
             expected_bytes=total_bytes,
             expected_content_type=write_request.content_type,
             required_identity_assertions=write_request.required_identity_assertions,

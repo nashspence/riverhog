@@ -25,6 +25,9 @@ from riverhog_storage_adapter_filesystem.materialize_cli import main
 from riverhog_storage_adapter_protocol import (
     SmallObjectWriteRequest,
     WriteCompleteRequest,
+    WriteCompletionAuthority,
+    WriteSegmentListRequest,
+    WriteSession,
     WriteStartRequest,
 )
 
@@ -55,6 +58,27 @@ def _put(adapter: FilesystemStorageAdapter, path: str, payload: bytes) -> None:
     )
 
 
+def _completion_authority(
+    adapter: FilesystemStorageAdapter,
+    session: WriteSession,
+) -> WriteCompletionAuthority:
+    after_number = 0
+    traversal_token = None
+    while True:
+        page = adapter.list_segments(
+            WriteSegmentListRequest(
+                session=session,
+                after_number=after_number,
+                traversal_token=traversal_token,
+            )
+        )
+        traversal_token = page.traversal_token
+        if page.next_after_number is None:
+            assert page.completion is not None
+            return page.completion
+        after_number = page.next_after_number
+
+
 def _put_segmented(
     adapter: FilesystemStorageAdapter,
     path: str,
@@ -69,19 +93,17 @@ def _put_segmented(
         placement="archive",
     )
     session = adapter.begin_write(request)
-    receipts = tuple(
+    for number, segment in enumerate(segments, start=1):
         adapter.write_segment(
             session=session,
             number=number,
             stored_bytes=len(segment),
             content=segment,
         )
-        for number, segment in enumerate(segments, start=1)
-    )
     adapter.complete_write(
         WriteCompleteRequest(
             session=session,
-            segments=receipts,
+            completion=_completion_authority(adapter, session),
             expected_bytes=len(payload),
             expected_content_type=request.content_type,
             required_identity_assertions=request.required_identity_assertions,

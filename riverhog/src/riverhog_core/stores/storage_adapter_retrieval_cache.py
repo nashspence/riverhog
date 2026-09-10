@@ -17,8 +17,12 @@ from riverhog_storage_adapter_protocol import (
     StorageAdapterPort,
     StorageAdapterRejection,
     WriteCompleteRequest,
+    WriteSegmentListRequest,
     WriteStartRequest,
     validated_storage_adapter,
+)
+from riverhog_storage_adapter_protocol import (
+    WriteCompletionAuthority as AdapterWriteCompletionAuthority,
 )
 from riverhog_storage_adapter_protocol import (
     WriteSegmentReceipt as AdapterWriteSegmentReceipt,
@@ -31,6 +35,9 @@ from riverhog_core.ports.archive_objects import (
     ArchiveResumableObjectStore,
     CompletedObjectReceipt,
     ResumableWriteConstraints,
+    WriteCompletionAuthority,
+    WriteSegmentCursor,
+    WriteSegmentPage,
     WriteSegmentReceipt,
     WriteSession,
 )
@@ -151,9 +158,7 @@ class StorageAdapterRetrievalCache:
             raise ValueError("retrieval cache content length must be positive")
         started = time.perf_counter()
         digest = hashlib.sha256()
-        existing = self._adapter.list_segments(_adapter_session(session)).segments
         (
-            segments,
             written,
             queue_wait_seconds,
             source_seconds,
@@ -163,15 +168,15 @@ class StorageAdapterRetrievalCache:
             session=_adapter_session(session),
             content=content,
             digest=digest,
-            existing=existing,
         )
         if written != session.expected_bytes:
             raise ValueError("retrieval cache stream length changed")
         remote_started = time.perf_counter()
+        completion = _adapter_completion(self._adapter, _adapter_session(session))
         completed = self._adapter.complete_write(
             WriteCompleteRequest(
                 session=_adapter_session(session),
-                segments=segments,
+                completion=completion,
                 expected_bytes=session.expected_bytes,
                 expected_content_type="application/octet-stream",
                 required_identity_assertions=_cache_identity(
@@ -262,9 +267,7 @@ class StorageAdapterRetrievalCache:
         session: AdapterWriteSession,
         content: Iterable[bytes],
         digest: Any,
-        existing: tuple[AdapterWriteSegmentReceipt, ...],
     ) -> tuple[
-        tuple[AdapterWriteSegmentReceipt, ...],
         int,
         float,
         float,
@@ -273,14 +276,12 @@ class StorageAdapterRetrievalCache:
     ]:
         worker_count = self._throughput.write_concurrency
         window = worker_count * 2
-        existing_by_number = {current.number: current for current in existing}
         chunks = iter(content)
         buffer = bytearray()
         source_done = False
         written = 0
         next_segment_number = 1
         pending: dict[Future[tuple[AdapterWriteSegmentReceipt, float, float]], int] = {}
-        completed: dict[int, AdapterWriteSegmentReceipt] = {}
         queue_wait_seconds = 0.0
         source_seconds = 0.0
         integrity_seconds = 0.0
@@ -333,17 +334,6 @@ class StorageAdapterRetrievalCache:
                             raise ValueError("retrieval cache object exceeds adapter segment count")
                         current_number = next_segment_number
                         next_segment_number += 1
-                        prior = existing_by_number.get(current_number)
-                        if prior is not None:
-                            if prior.stored_bytes != len(body) or (
-                                prior.stored_sha256 is not None
-                                and prior.stored_sha256 != hashlib.sha256(body).hexdigest()
-                            ):
-                                raise RuntimeError(
-                                    "retrieval cache resumed segment differs from its source"
-                                )
-                            completed[current_number] = prior
-                            continue
                         reserved = len(body)
                         queue_wait_seconds += self._resources.upload_bytes.acquire(reserved)
                         try:
@@ -373,15 +363,13 @@ class StorageAdapterRetrievalCache:
                     for future in done:
                         segment_number = pending.pop(future)
                         receipt, write_wait, write_seconds = future.result()
-                        completed[segment_number] = receipt
+                        if receipt.number != segment_number:
+                            raise RuntimeError("retrieval cache segment receipt number changed")
                         queue_wait_seconds += write_wait
                         remote_seconds += write_seconds
                     fill()
 
-        if set(existing_by_number) - set(completed):
-            raise RuntimeError("retrieval cache write contains unexpected resumed segments")
         return (
-            tuple(completed[number] for number in sorted(completed)),
             written,
             queue_wait_seconds,
             source_seconds,
@@ -461,18 +449,43 @@ class _StorageAdapterRetrievalCacheResumableObjectStore:
             )
         )
 
-    def list_segments(self, *, session: WriteSession) -> tuple[WriteSegmentReceipt, ...]:
+    def list_segments(
+        self,
+        *,
+        session: WriteSession,
+        cursor: WriteSegmentCursor,
+    ) -> WriteSegmentPage:
         self._require_session(session)
-        return tuple(
-            _write_segment(current)
-            for current in self._adapter.list_segments(_adapter_session(session)).segments
+        page = self._adapter.list_segments(
+            WriteSegmentListRequest(
+                session=_adapter_session(session),
+                after_number=cursor.after_number,
+                traversal_token=cursor.traversal_token,
+            )
+        )
+        return WriteSegmentPage(
+            segments=tuple(_write_segment(current) for current in page.segments),
+            next_cursor=(
+                WriteSegmentCursor(page.next_after_number, page.traversal_token)
+                if page.next_after_number is not None
+                else None
+            ),
+            completion=(
+                WriteCompletionAuthority(
+                    page.completion.segment_count,
+                    page.completion.stored_bytes,
+                    page.completion.sequence_sha256,
+                )
+                if page.completion is not None
+                else None
+            ),
         )
 
     def complete_write(
         self,
         *,
         session: WriteSession,
-        segments: tuple[WriteSegmentReceipt, ...],
+        completion: WriteCompletionAuthority,
         expected_bytes: int,
         expected_content_type: str,
         expected_metadata: dict[str, str],
@@ -484,7 +497,7 @@ class _StorageAdapterRetrievalCacheResumableObjectStore:
         receipt = self._adapter.complete_write(
             WriteCompleteRequest(
                 session=_adapter_session(session),
-                segments=tuple(_adapter_segment(current) for current in segments),
+                completion=_adapter_completion_authority(completion),
                 expected_bytes=expected_bytes,
                 expected_content_type="application/octet-stream",
                 required_identity_assertions=self._metadata,
@@ -558,12 +571,31 @@ def _write_session(session: AdapterWriteSession) -> WriteSession:
     return WriteSession(session.object_path, session.write_token, session.expected_bytes)
 
 
-def _adapter_segment(segment: WriteSegmentReceipt) -> AdapterWriteSegmentReceipt:
-    return AdapterWriteSegmentReceipt(
-        number=segment.number,
-        segment_token=segment.segment_token,
-        stored_bytes=segment.bytes,
-        stored_sha256=segment.sha256,
+def _adapter_completion(
+    adapter: StorageAdapterPort,
+    session: AdapterWriteSession,
+) -> AdapterWriteCompletionAuthority:
+    request = WriteSegmentListRequest(session=session)
+    while True:
+        page = adapter.list_segments(request)
+        if page.next_after_number is None:
+            if page.completion is None:
+                raise RuntimeError("storage adapter write is not complete")
+            return page.completion
+        request = WriteSegmentListRequest(
+            session=session,
+            after_number=page.next_after_number,
+            traversal_token=page.traversal_token,
+        )
+
+
+def _adapter_completion_authority(
+    completion: WriteCompletionAuthority,
+) -> AdapterWriteCompletionAuthority:
+    return AdapterWriteCompletionAuthority(
+        segment_count=completion.segment_count,
+        stored_bytes=completion.stored_bytes,
+        sequence_sha256=completion.sequence_sha256,
     )
 
 
