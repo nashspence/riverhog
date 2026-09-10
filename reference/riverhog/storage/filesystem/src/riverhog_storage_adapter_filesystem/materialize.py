@@ -21,11 +21,16 @@ from collections.abc import Iterator
 from contextlib import contextmanager
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, cast
+from typing import Any
 
-from riverhog_storage_adapter_protocol import DeletePrefixRequest, ObjectLocator
+import ijson  # type: ignore[import-untyped]
+from riverhog_storage_adapter_protocol import (
+    DeletePrefixRequest,
+    ObjectLocator,
+    ObjectMetadataReceipt,
+)
 
-from riverhog_storage_adapter_filesystem.adapter import _ObjectRecord
+from riverhog_storage_adapter_filesystem.adapter import _PartRecord
 
 _STATE_SCHEMA = "riverhog-filesystem-materialization-state/v1"
 _COMMITMENT_DOMAIN = b"riverhog-filesystem-materialization-source/v1\0"
@@ -33,6 +38,9 @@ _HEX = frozenset("0123456789abcdef")
 _COPY_CHUNK_BYTES = 8 * 1024 * 1024
 _PRIVATE_DIRECTORY_MODE = 0o700
 _PRIVATE_FILE_MODE = 0o600
+_PROJECTION_BATCH_ROWS = 128
+_CLEANUP_BATCH_ROWS = 512
+_OBJECT_SCHEMA = "riverhog-filesystem-object/v1"
 
 
 class MaterializationError(RuntimeError):
@@ -92,6 +100,7 @@ class MaterializationSummary:
     source_metadata_bytes: int
     destination_verified_objects: int
     destination_verified_bytes: int
+    staging_verified_bytes: int
     copied_objects: int
     copied_bytes: int
 
@@ -104,6 +113,7 @@ class MaterializationSummary:
             "source_metadata_bytes": self.source_metadata_bytes,
             "destination_verified_objects": self.destination_verified_objects,
             "destination_verified_bytes": self.destination_verified_bytes,
+            "staging_verified_bytes": self.staging_verified_bytes,
             "copied_objects": self.copied_objects,
             "copied_bytes": self.copied_bytes,
         }
@@ -111,10 +121,19 @@ class MaterializationSummary:
 
 @dataclass(frozen=True, slots=True)
 class _Projection:
+    generation: str
     sha256: str
     objects: int
     bytes: int
     metadata_bytes: int
+
+
+@dataclass(frozen=True, slots=True)
+class _ProjectedObject:
+    object_path: str
+    revision: str
+    stored_bytes: int
+    stored_sha256: str | None
 
 
 def materialize_committed_objects(
@@ -140,22 +159,27 @@ def materialize_committed_objects(
     if checkpoint == source or checkpoint.is_relative_to(source):
         raise MaterializationError("materialization checkpoint must be outside the adapter root")
 
-    new_checkpoint = not checkpoint.exists()
-    if new_checkpoint:
-        if destination.exists() or destination.is_symlink():
-            raise MaterializationError(
-                "destination already exists without a resumable materialization checkpoint"
-            )
-        checkpoint.mkdir(mode=_PRIVATE_DIRECTORY_MODE)
-    _require_directory(checkpoint, "materialization checkpoint")
-    os.chmod(checkpoint, _PRIVATE_DIRECTORY_MODE)
-
     completed = False
     database = checkpoint / "state.sqlite3"
-    if not new_checkpoint:
-        _require_regular_file(database, "materialization checkpoint database")
     try:
         with _source_lock(source):
+            new_checkpoint = not checkpoint.exists()
+            if new_checkpoint:
+                if destination.exists() or destination.is_symlink():
+                    raise MaterializationError(
+                        "destination already exists without a resumable materialization checkpoint"
+                    )
+                checkpoint.mkdir(mode=_PRIVATE_DIRECTORY_MODE)
+                _fsync_directory(checkpoint.parent)
+            _require_directory(checkpoint, "materialization checkpoint")
+            os.chmod(checkpoint, _PRIVATE_DIRECTORY_MODE)
+            staging = checkpoint / "staging"
+            if not staging.exists():
+                staging.mkdir(mode=_PRIVATE_DIRECTORY_MODE)
+                _fsync_directory(checkpoint)
+            _require_directory(staging, "materialization staging")
+            if not new_checkpoint:
+                _require_regular_file(database, "materialization checkpoint database")
             state = sqlite3.connect(database)
             try:
                 _initialize_state(state)
@@ -171,6 +195,8 @@ def materialize_committed_objects(
                     projection=projection,
                     destination=destination,
                 )
+                _cleanup_inactive_generations(state)
+                _verify_staging_namespace(state, staging)
                 destination.mkdir(mode=_PRIVATE_DIRECTORY_MODE, exist_ok=True)
                 _require_directory(destination, "materialization destination")
                 verified_objects, verified_bytes = _verify_published_progress(
@@ -180,14 +206,17 @@ def materialize_committed_objects(
                 (
                     late_verified_objects,
                     late_verified_bytes,
+                    staging_verified_bytes,
                     copied_objects,
                     copied_bytes,
                 ) = _copy_remaining(
                     state,
                     source=source,
                     destination=destination,
+                    staging=staging,
                     interrupt_after_objects=_interrupt_after_objects,
                 )
+                _verify_staging_namespace(state, staging)
                 _verify_destination_namespace(state, destination)
                 _fsync_directory(destination)
                 completed = True
@@ -198,6 +227,7 @@ def materialize_committed_objects(
                     source_metadata_bytes=projection.metadata_bytes,
                     destination_verified_objects=(verified_objects + late_verified_objects),
                     destination_verified_bytes=verified_bytes + late_verified_bytes,
+                    staging_verified_bytes=staging_verified_bytes,
                     copied_objects=copied_objects,
                     copied_bytes=copied_bytes,
                 )
@@ -269,12 +299,32 @@ def _initialize_state(state: sqlite3.Connection) -> None:
             key TEXT PRIMARY KEY,
             value TEXT NOT NULL
         );
+        CREATE TABLE IF NOT EXISTS projection_generation (
+            generation TEXT PRIMARY KEY,
+            status TEXT NOT NULL,
+            source_projection_sha256 TEXT,
+            object_count INTEGER,
+            stored_bytes INTEGER,
+            metadata_bytes INTEGER
+        );
         CREATE TABLE IF NOT EXISTS projection (
-            object_key TEXT PRIMARY KEY,
-            object_path TEXT NOT NULL UNIQUE,
-            metadata_json TEXT NOT NULL,
+            generation TEXT NOT NULL,
+            object_key TEXT NOT NULL,
+            object_path TEXT NOT NULL,
+            header_json TEXT NOT NULL,
             metadata_bytes INTEGER NOT NULL,
-            stored_bytes INTEGER NOT NULL
+            stored_bytes INTEGER NOT NULL,
+            PRIMARY KEY (generation, object_key),
+            UNIQUE (generation, object_path)
+        );
+        CREATE TABLE IF NOT EXISTS projection_part (
+            generation TEXT NOT NULL,
+            object_key TEXT NOT NULL,
+            number INTEGER NOT NULL,
+            offset INTEGER NOT NULL,
+            stored_bytes INTEGER NOT NULL,
+            stored_sha256 TEXT NOT NULL,
+            PRIMARY KEY (generation, object_key, number)
         );
         """
     )
@@ -287,10 +337,17 @@ def _scan_projection(
     source: Path,
     selection: MaterializationSelection,
 ) -> _Projection:
-    state.execute("DELETE FROM projection")
+    _cleanup_inactive_generations(state)
+    generation = uuid.uuid4().hex
+    state.execute(
+        "INSERT INTO projection_generation(generation, status) VALUES (?, 'building')",
+        (generation,),
+    )
+    state.commit()
     source_metadata_bytes = 0
     matched_paths: set[str] = set()
     matched_prefixes: set[str] = set()
+    inserted_since_commit = 0
     for object_key, object_dir in _iter_object_directories(source / "objects"):
         path_file = object_dir / "path"
         _require_regular_file(path_file, "filesystem object identity")
@@ -330,39 +387,54 @@ def _scan_projection(
         _require_directory(revision_dir, "filesystem current revision")
         metadata_path = revision_dir / "metadata.json"
         _require_regular_file(metadata_path, "filesystem object metadata")
-        metadata_bytes = metadata_path.read_bytes()
-        source_metadata_bytes += len(metadata_bytes)
-        try:
-            raw = json.loads(metadata_bytes)
-        except (UnicodeError, json.JSONDecodeError) as exc:
-            raise MaterializationError("filesystem object metadata is unreadable") from exc
-        if not isinstance(raw, dict):
-            raise MaterializationError("filesystem object metadata root is invalid")
-        try:
-            record = _ObjectRecord.from_json(cast(dict[str, Any], raw))
-        except RuntimeError as exc:
-            raise MaterializationError(str(exc)) from exc
+        metadata_size = metadata_path.stat(follow_symlinks=False).st_size
+        source_metadata_bytes += metadata_size
+
+        def accept_part(part: _PartRecord, object_key: str = object_key) -> None:
+            nonlocal inserted_since_commit
+            state.execute(
+                "INSERT INTO projection_part(generation, object_key, number, offset, "
+                "stored_bytes, stored_sha256) VALUES (?, ?, ?, ?, ?, ?)",
+                (
+                    generation,
+                    object_key,
+                    part.number,
+                    part.offset,
+                    part.stored_bytes,
+                    part.stored_sha256,
+                ),
+            )
+            inserted_since_commit += 1
+            if inserted_since_commit >= _PROJECTION_BATCH_ROWS:
+                state.commit()
+                inserted_since_commit = 0
+
+        record, header_json = _stream_object_metadata(metadata_path, accept_part=accept_part)
         if record.object_path != object_path or record.revision != revision:
             raise MaterializationError("filesystem object metadata differs from its current path")
         payload = revision_dir / "payload.data"
         _require_regular_file(payload, "filesystem object payload")
         if payload.stat(follow_symlinks=False).st_size != record.stored_bytes:
             raise MaterializationError("filesystem object payload differs from its metadata")
-        canonical = json.dumps(
-            record.as_json(),
-            allow_nan=False,
-            ensure_ascii=False,
-            separators=(",", ":"),
-            sort_keys=True,
-        )
         try:
             state.execute(
-                "INSERT INTO projection(object_key, object_path, metadata_json, "
-                "metadata_bytes, stored_bytes) VALUES (?, ?, ?, ?, ?)",
-                (object_key, object_path, canonical, len(metadata_bytes), record.stored_bytes),
+                "INSERT INTO projection(generation, object_key, object_path, header_json, "
+                "metadata_bytes, stored_bytes) VALUES (?, ?, ?, ?, ?, ?)",
+                (
+                    generation,
+                    object_key,
+                    object_path,
+                    header_json,
+                    metadata_size,
+                    record.stored_bytes,
+                ),
             )
         except sqlite3.IntegrityError as exc:
             raise MaterializationError("filesystem current projection is ambiguous") from exc
+        inserted_since_commit += 1
+        if inserted_since_commit >= _PROJECTION_BATCH_ROWS:
+            state.commit()
+            inserted_since_commit = 0
     missing_paths = sorted(set(selection.paths) - matched_paths)
     missing_prefixes = sorted(set(selection.prefixes) - matched_prefixes)
     if missing_paths or missing_prefixes:
@@ -379,30 +451,216 @@ def _scan_projection(
     objects = 0
     stored_bytes = 0
     cursor = state.execute(
-        "SELECT object_key, object_path, metadata_json, metadata_bytes, stored_bytes "
-        "FROM projection ORDER BY object_key"
+        "SELECT object_key, object_path, header_json, metadata_bytes, stored_bytes "
+        "FROM projection WHERE generation = ? ORDER BY object_key",
+        (generation,),
     )
     while row := cursor.fetchone():
-        entry = json.dumps(
+        _commit_field(digest, b"object")
+        _commit_field(digest, str(row[0]).encode("ascii"))
+        _commit_field(digest, str(row[1]).encode("utf-8"))
+        _commit_field(digest, str(row[2]).encode("utf-8"))
+        part_cursor = state.execute(
+            "SELECT number, offset, stored_bytes, stored_sha256 FROM projection_part "
+            "WHERE generation = ? AND object_key = ? ORDER BY number",
+            (generation, str(row[0])),
+        )
+        while part_row := part_cursor.fetchone():
+            _commit_field(digest, b"part")
+            _commit_field(digest, str(int(part_row[0])).encode("ascii"))
+            _commit_field(digest, str(int(part_row[1])).encode("ascii"))
+            _commit_field(digest, str(int(part_row[2])).encode("ascii"))
+            _commit_field(digest, str(part_row[3]).encode("ascii"))
+        _commit_field(digest, b"object-terminal")
+        objects += 1
+        stored_bytes += int(row[4])
+    _commit_field(digest, b"terminal")
+    commitment = digest.hexdigest()
+    state.execute(
+        "UPDATE projection_generation SET status = 'complete', "
+        "source_projection_sha256 = ?, object_count = ?, stored_bytes = ?, "
+        "metadata_bytes = ? WHERE generation = ? AND status = 'building'",
+        (commitment, objects, stored_bytes, source_metadata_bytes, generation),
+    )
+    state.commit()
+    return _Projection(
+        generation=generation,
+        sha256=commitment,
+        objects=objects,
+        bytes=stored_bytes,
+        metadata_bytes=source_metadata_bytes,
+    )
+
+
+def _cleanup_inactive_generations(state: sqlite3.Connection) -> None:
+    active_row = state.execute(
+        "SELECT value FROM authority WHERE key = 'active_generation'"
+    ).fetchone()
+    active = str(active_row[0]) if active_row is not None else None
+    while True:
+        rows = state.execute(
+            "SELECT rowid FROM projection_part WHERE generation != ? LIMIT ?",
+            (active or "", _CLEANUP_BATCH_ROWS),
+        ).fetchall()
+        if not rows:
+            break
+        state.executemany("DELETE FROM projection_part WHERE rowid = ?", rows)
+        state.commit()
+    while True:
+        rows = state.execute(
+            "SELECT rowid FROM projection WHERE generation != ? LIMIT ?",
+            (active or "", _CLEANUP_BATCH_ROWS),
+        ).fetchall()
+        if not rows:
+            break
+        state.executemany("DELETE FROM projection WHERE rowid = ?", rows)
+        state.commit()
+    state.execute("DELETE FROM projection_generation WHERE generation != ?", (active or "",))
+    state.commit()
+
+
+def _stream_object_metadata(
+    path: Path,
+    *,
+    accept_part: Any,
+) -> tuple[_ProjectedObject, str]:
+    expected = {
+        "schema",
+        "object_path",
+        "revision",
+        "entity_token",
+        "stored_bytes",
+        "stored_sha256",
+        "content_type",
+        "required_identity_assertions",
+        "placement",
+        "completed_at",
+        "parts",
+    }
+    scalars: dict[str, object] = {}
+    assertions: dict[str, str] = {}
+    top_keys: set[str] = set()
+    assertion_key: str | None = None
+    part: dict[str, object] | None = None
+    part_key: str | None = None
+    next_part = 1
+    next_offset = 0
+    part_bytes = 0
+    try:
+        with path.open("rb") as stream:
+            for prefix, event, value in ijson.parse(stream):
+                if prefix == "" and event == "map_key":
+                    if value in top_keys:
+                        raise MaterializationError(
+                            "filesystem object metadata contains a duplicate field"
+                        )
+                    top_keys.add(str(value))
+                    continue
+                if prefix in expected - {"required_identity_assertions", "parts"} and event in {
+                    "string",
+                    "number",
+                    "null",
+                }:
+                    if prefix in scalars:
+                        raise MaterializationError(
+                            "filesystem object metadata contains a duplicate value"
+                        )
+                    scalars[prefix] = value
+                    continue
+                if prefix == "required_identity_assertions" and event == "map_key":
+                    assertion_key = str(value)
+                    if assertion_key in assertions:
+                        raise MaterializationError(
+                            "filesystem object assertions contain a duplicate field"
+                        )
+                    continue
+                if prefix.startswith("required_identity_assertions.") and event == "string":
+                    if assertion_key is None:
+                        raise MaterializationError("filesystem object assertions are invalid")
+                    assertions[assertion_key] = str(value)
+                    assertion_key = None
+                    continue
+                if prefix == "parts.item" and event == "start_map":
+                    if part is not None:
+                        raise MaterializationError("filesystem object parts are invalid")
+                    part = {}
+                    continue
+                if prefix == "parts.item" and event == "map_key":
+                    if part is None or str(value) in part:
+                        raise MaterializationError("filesystem object part is invalid")
+                    part_key = str(value)
+                    continue
+                if prefix.startswith("parts.item.") and event in {"string", "number", "null"}:
+                    if part is None or part_key is None:
+                        raise MaterializationError("filesystem object part is invalid")
+                    part[part_key] = value
+                    part_key = None
+                    continue
+                if prefix == "parts.item" and event == "end_map":
+                    if part is None:
+                        raise MaterializationError("filesystem object part is invalid")
+                    try:
+                        parsed_part = _PartRecord.from_json(part)
+                    except RuntimeError as exc:
+                        raise MaterializationError(str(exc)) from exc
+                    if parsed_part.number != next_part or parsed_part.offset != next_offset:
+                        raise MaterializationError("filesystem object parts are not contiguous")
+                    accept_part(parsed_part)
+                    next_part += 1
+                    next_offset += parsed_part.stored_bytes
+                    part_bytes += parsed_part.stored_bytes
+                    part = None
+                    part_key = None
+    except (ijson.JSONError, UnicodeError) as exc:
+        raise MaterializationError("filesystem object metadata is unreadable") from exc
+    if top_keys != expected or part is not None or assertion_key is not None or next_part == 1:
+        raise MaterializationError("filesystem object metadata has an invalid shape")
+    if scalars.get("schema") != _OBJECT_SCHEMA:
+        raise MaterializationError("filesystem object metadata has an invalid shape")
+    try:
+        receipt = ObjectMetadataReceipt.model_validate(
             {
-                "metadata": json.loads(str(row[2])),
-                "object_key": str(row[0]),
-                "object_path": str(row[1]),
-            },
+                "object_path": scalars["object_path"],
+                "revision": scalars["revision"],
+                "entity_token": scalars["entity_token"],
+                "stored_bytes": scalars["stored_bytes"],
+                "stored_sha256": scalars["stored_sha256"],
+                "content_type": scalars["content_type"],
+                "observed_identity_assertions": assertions,
+                "verified_placement": scalars["placement"],
+                "completed_at": scalars["completed_at"],
+            }
+        )
+    except (KeyError, ValueError) as exc:
+        raise MaterializationError("filesystem object metadata is invalid") from exc
+    if part_bytes != receipt.stored_bytes:
+        raise MaterializationError("filesystem object parts differ from its byte count")
+    header = {
+        "completed_at": receipt.completed_at,
+        "content_type": receipt.content_type,
+        "entity_token": receipt.entity_token,
+        "object_path": receipt.object_path,
+        "placement": receipt.verified_placement,
+        "required_identity_assertions": receipt.observed_identity_assertions,
+        "revision": receipt.revision,
+        "schema": _OBJECT_SCHEMA,
+        "stored_bytes": receipt.stored_bytes,
+        "stored_sha256": receipt.stored_sha256,
+    }
+    return (
+        _ProjectedObject(
+            object_path=receipt.object_path,
+            revision=receipt.revision or "",
+            stored_bytes=receipt.stored_bytes,
+            stored_sha256=receipt.stored_sha256,
+        ),
+        json.dumps(
+            header,
             allow_nan=False,
             ensure_ascii=False,
             separators=(",", ":"),
             sort_keys=True,
-        ).encode("utf-8")
-        _commit_field(digest, entry)
-        objects += 1
-        stored_bytes += int(row[4])
-    _commit_field(digest, b"terminal")
-    return _Projection(
-        sha256=digest.hexdigest(),
-        objects=objects,
-        bytes=stored_bytes,
-        metadata_bytes=source_metadata_bytes,
+        ),
     )
 
 
@@ -435,7 +693,11 @@ def _bind_projection(
             raise MaterializationError("materialization checkpoint has no trustworthy authority")
         state.executemany(
             "INSERT INTO authority(key, value) VALUES (?, ?)",
-            [*expected.items(), ("last_object_key", "")],
+            [
+                *expected.items(),
+                ("active_generation", projection.generation),
+                ("last_object_key", ""),
+            ],
         )
         state.commit()
         return
@@ -446,6 +708,11 @@ def _bind_projection(
             )
     if "last_object_key" not in persisted:
         raise MaterializationError("materialization checkpoint is incomplete")
+    state.execute(
+        "UPDATE authority SET value = ? WHERE key = 'active_generation'",
+        (projection.generation,),
+    )
+    state.commit()
 
 
 def _verify_published_progress(
@@ -462,15 +729,18 @@ def _verify_published_progress(
     found = False
     objects = 0
     total = 0
+    generation = _active_generation(state)
     cursor = state.execute(
-        "SELECT object_key, object_path, metadata_json FROM projection "
-        "WHERE object_key <= ? ORDER BY object_key",
-        (last_key,),
+        "SELECT object_key, object_path, header_json FROM projection "
+        "WHERE generation = ? AND object_key <= ? ORDER BY object_key",
+        (generation, last_key),
     )
     while current := cursor.fetchone():
         found = found or str(current[0]) == last_key
         record = _record(str(current[2]))
-        _verify_destination_object(destination, str(current[1]), record)
+        _verify_destination_object(
+            state, generation, str(current[0]), destination, str(current[1]), record
+        )
         objects += 1
         total += record.stored_bytes
     if not found:
@@ -483,18 +753,21 @@ def _copy_remaining(
     *,
     source: Path,
     destination: Path,
+    staging: Path,
     interrupt_after_objects: int | None,
-) -> tuple[int, int, int, int]:
+) -> tuple[int, int, int, int, int]:
     last_row = state.execute("SELECT value FROM authority WHERE key = 'last_object_key'").fetchone()
     last_key = str(last_row[0]) if last_row is not None else ""
     verified_objects = 0
     verified_bytes = 0
     copied_objects = 0
     copied_bytes = 0
+    staging_verified_bytes = 0
+    generation = _active_generation(state)
     cursor = state.execute(
-        "SELECT object_key, object_path, metadata_json FROM projection "
-        "WHERE object_key > ? ORDER BY object_key",
-        (last_key,),
+        "SELECT object_key, object_path, header_json FROM projection "
+        "WHERE generation = ? AND object_key > ? ORDER BY object_key",
+        (generation, last_key),
     )
     while row := cursor.fetchone():
         object_key = str(row[0])
@@ -502,13 +775,24 @@ def _copy_remaining(
         record = _record(str(row[2]))
         target = _destination_path(destination, object_path, create=True)
         if target.exists() or target.is_symlink():
-            _verify_destination_object(destination, object_path, record)
+            _verify_destination_object(
+                state, generation, object_key, destination, object_path, record
+            )
             verified_objects += 1
             verified_bytes += record.stored_bytes
         else:
-            _copy_object(source, object_key, record, target)
+            verified_staging, copied = _copy_object(
+                state,
+                generation,
+                source,
+                object_key,
+                record,
+                staging / f"{object_key}.partial",
+                target,
+            )
             copied_objects += 1
-            copied_bytes += record.stored_bytes
+            staging_verified_bytes += verified_staging
+            copied_bytes += copied
         state.execute(
             "UPDATE authority SET value = ? WHERE key = 'last_object_key'",
             (object_key,),
@@ -517,10 +801,24 @@ def _copy_remaining(
         completed_objects = verified_objects + copied_objects
         if interrupt_after_objects is not None and completed_objects >= interrupt_after_objects:
             raise MaterializationInterrupted("test-controlled materialization interruption")
-    return verified_objects, verified_bytes, copied_objects, copied_bytes
+    return (
+        verified_objects,
+        verified_bytes,
+        staging_verified_bytes,
+        copied_objects,
+        copied_bytes,
+    )
 
 
-def _copy_object(source: Path, object_key: str, record: _ObjectRecord, target: Path) -> None:
+def _copy_object(
+    state: sqlite3.Connection,
+    generation: str,
+    source: Path,
+    object_key: str,
+    record: _ProjectedObject,
+    staged: Path,
+    target: Path,
+) -> tuple[int, int]:
     source_path = (
         source
         / "objects"
@@ -532,36 +830,60 @@ def _copy_object(source: Path, object_key: str, record: _ObjectRecord, target: P
         / "payload.data"
     )
     _require_regular_file(source_path, "filesystem object payload")
-    temporary = target.parent / f".{target.name}.{uuid.uuid4().hex}.tmp"
     source_fd = os.open(source_path, os.O_RDONLY | os.O_CLOEXEC | os.O_NOFOLLOW)
-    target_fd = os.open(
-        temporary,
-        os.O_WRONLY | os.O_CREAT | os.O_EXCL | os.O_CLOEXEC | os.O_NOFOLLOW,
-        _PRIVATE_FILE_MODE,
-    )
+    if staged.exists() or staged.is_symlink():
+        _require_regular_file(staged, "materialization staged object")
+        staged_bytes = staged.stat(follow_symlinks=False).st_size
+        if staged_bytes > record.stored_bytes:
+            os.close(source_fd)
+            raise MaterializationError("materialization staged object exceeds its identity")
+        target_fd = os.open(staged, os.O_RDWR | os.O_CLOEXEC | os.O_NOFOLLOW)
+    else:
+        staged_bytes = 0
+        target_fd = os.open(
+            staged,
+            os.O_RDWR | os.O_CREAT | os.O_EXCL | os.O_CLOEXEC | os.O_NOFOLLOW,
+            _PRIVATE_FILE_MODE,
+        )
+        _fsync_directory(staged.parent)
     try:
-        observed = _copy_and_verify_parts(source_fd, target_fd, record)
+        observed = _copy_and_verify_parts(
+            state,
+            generation,
+            object_key,
+            source_fd,
+            target_fd,
+            staged_bytes=staged_bytes,
+            record=record,
+        )
         if observed != record.stored_bytes:
             raise MaterializationError("filesystem object copy differs from its byte count")
         os.fsync(target_fd)
     except BaseException:
         os.close(target_fd)
         os.close(source_fd)
-        temporary.unlink(missing_ok=True)
         raise
     os.close(target_fd)
     os.close(source_fd)
-    try:
-        os.replace(temporary, target)
-        _fsync_directory(target.parent)
-    finally:
-        temporary.unlink(missing_ok=True)
+    os.replace(staged, target)
+    _fsync_directory(target.parent)
+    _fsync_directory(staged.parent)
+    return staged_bytes, record.stored_bytes - staged_bytes
 
 
-def _copy_and_verify_parts(source_fd: int, target_fd: int, record: _ObjectRecord) -> int:
+def _copy_and_verify_parts(
+    state: sqlite3.Connection,
+    generation: str,
+    object_key: str,
+    source_fd: int,
+    target_fd: int,
+    *,
+    staged_bytes: int,
+    record: _ProjectedObject,
+) -> int:
     whole = hashlib.sha256()
     written = 0
-    for part in record.parts:
+    for part in _iter_parts(state, generation, object_key):
         part_digest = hashlib.sha256()
         remaining = part.stored_bytes
         source_offset = part.offset
@@ -569,7 +891,19 @@ def _copy_and_verify_parts(source_fd: int, target_fd: int, record: _ObjectRecord
             chunk = os.pread(source_fd, min(remaining, _COPY_CHUNK_BYTES), source_offset)
             if not chunk:
                 raise MaterializationError("filesystem object ended before its metadata")
-            _write_all(target_fd, chunk)
+            if source_offset < staged_bytes:
+                compare_bytes = min(len(chunk), staged_bytes - source_offset)
+                staged_chunk = os.pread(target_fd, compare_bytes, source_offset)
+                if staged_chunk != chunk[:compare_bytes]:
+                    raise MaterializationError(
+                        "materialization staged object conflicts with selected source identity"
+                    )
+                if compare_bytes < len(chunk):
+                    os.lseek(target_fd, source_offset + compare_bytes, os.SEEK_SET)
+                    _write_all(target_fd, chunk[compare_bytes:])
+            else:
+                os.lseek(target_fd, source_offset, os.SEEK_SET)
+                _write_all(target_fd, chunk)
             part_digest.update(chunk)
             whole.update(chunk)
             remaining -= len(chunk)
@@ -583,9 +917,12 @@ def _copy_and_verify_parts(source_fd: int, target_fd: int, record: _ObjectRecord
 
 
 def _verify_destination_object(
+    state: sqlite3.Connection,
+    generation: str,
+    object_key: str,
     destination: Path,
     object_path: str,
-    record: _ObjectRecord,
+    record: _ProjectedObject,
 ) -> None:
     target = _destination_path(destination, object_path, create=False)
     _require_regular_file(target, "materialized object")
@@ -596,7 +933,7 @@ def _verify_destination_object(
     try:
         whole = hashlib.sha256()
         offset = 0
-        for part in record.parts:
+        for part in _iter_parts(state, generation, object_key):
             part_digest = hashlib.sha256()
             remaining = part.stored_bytes
             while remaining:
@@ -637,33 +974,58 @@ def _destination_path(root: Path, object_path: str, *, create: bool) -> Path:
 
 
 def _verify_destination_namespace(state: sqlite3.Connection, destination: Path) -> None:
-    pending = [destination]
-    while pending:
-        current = pending.pop()
-        with os.scandir(current) as entries:
-            for entry in entries:
-                path = Path(entry.path)
-                if entry.is_symlink():
-                    raise MaterializationError(
-                        "materialization destination contains a symbolic link"
-                    )
-                if entry.is_dir(follow_symlinks=False):
-                    pending.append(path)
-                    continue
-                if not entry.is_file(follow_symlinks=False):
-                    raise MaterializationError(
-                        "materialization destination contains a special file"
-                    )
-                logical = path.relative_to(destination).as_posix()
-                if (
-                    state.execute(
-                        "SELECT 1 FROM projection WHERE object_path = ?", (logical,)
-                    ).fetchone()
-                    is None
-                ):
-                    raise MaterializationError(
-                        "materialization destination contains an unselected object"
-                    )
+    generation = _active_generation(state)
+    stack: list[Any] = [os.scandir(destination)]
+    try:
+        while stack:
+            try:
+                entry = next(stack[-1])
+            except StopIteration:
+                stack.pop().close()
+                continue
+            path = Path(entry.path)
+            if entry.is_symlink():
+                raise MaterializationError("materialization destination contains a symbolic link")
+            if entry.is_dir(follow_symlinks=False):
+                stack.append(os.scandir(path))
+                continue
+            if not entry.is_file(follow_symlinks=False):
+                raise MaterializationError("materialization destination contains a special file")
+            logical = path.relative_to(destination).as_posix()
+            if (
+                state.execute(
+                    "SELECT 1 FROM projection WHERE generation = ? AND object_path = ?",
+                    (generation, logical),
+                ).fetchone()
+                is None
+            ):
+                raise MaterializationError(
+                    "materialization destination contains an unselected object"
+                )
+    finally:
+        for iterator in stack:
+            iterator.close()
+
+
+def _verify_staging_namespace(state: sqlite3.Connection, staging: Path) -> None:
+    generation = _active_generation(state)
+    with os.scandir(staging) as entries:
+        for entry in entries:
+            if entry.is_symlink() or not entry.is_file(follow_symlinks=False):
+                raise MaterializationError("materialization staging contains an unknown entry")
+            if not entry.name.endswith(".partial"):
+                raise MaterializationError("materialization staging contains an unknown entry")
+            object_key = entry.name.removesuffix(".partial")
+            if not _is_hex(object_key, 64):
+                raise MaterializationError("materialization staging contains an unknown entry")
+            if (
+                state.execute(
+                    "SELECT 1 FROM projection WHERE generation = ? AND object_key = ?",
+                    (generation, object_key),
+                ).fetchone()
+                is None
+            ):
+                raise MaterializationError("materialization staging contains an unowned object")
 
 
 def _iter_object_directories(objects: Path) -> Iterator[tuple[str, Path]]:
@@ -696,14 +1058,85 @@ def _is_hex(value: str, length: int) -> bool:
     return len(value) == length and all(character in _HEX for character in value)
 
 
-def _record(payload: str) -> _ObjectRecord:
+def _record(payload: str) -> _ProjectedObject:
     raw = json.loads(payload)
-    if not isinstance(raw, dict):
+    expected = {
+        "completed_at",
+        "content_type",
+        "entity_token",
+        "object_path",
+        "placement",
+        "required_identity_assertions",
+        "revision",
+        "schema",
+        "stored_bytes",
+        "stored_sha256",
+    }
+    if not isinstance(raw, dict) or set(raw) != expected or raw.get("schema") != _OBJECT_SCHEMA:
         raise MaterializationError("checkpoint object metadata is invalid")
     try:
-        return _ObjectRecord.from_json(cast(dict[str, Any], raw))
-    except RuntimeError as exc:
-        raise MaterializationError(str(exc)) from exc
+        receipt = ObjectMetadataReceipt(
+            object_path=raw["object_path"],
+            revision=raw["revision"],
+            entity_token=raw["entity_token"],
+            stored_bytes=raw["stored_bytes"],
+            stored_sha256=raw["stored_sha256"],
+            content_type=raw["content_type"],
+            observed_identity_assertions=raw["required_identity_assertions"],
+            verified_placement=raw["placement"],
+            completed_at=raw["completed_at"],
+        )
+    except ValueError as exc:
+        raise MaterializationError("checkpoint object metadata is invalid") from exc
+    return _ProjectedObject(
+        object_path=receipt.object_path,
+        revision=receipt.revision or "",
+        stored_bytes=receipt.stored_bytes,
+        stored_sha256=receipt.stored_sha256,
+    )
+
+
+def _active_generation(state: sqlite3.Connection) -> str:
+    row = state.execute("SELECT value FROM authority WHERE key = 'active_generation'").fetchone()
+    if row is None:
+        raise MaterializationError("materialization checkpoint has no active projection")
+    generation = str(row[0])
+    status = state.execute(
+        "SELECT status FROM projection_generation WHERE generation = ?", (generation,)
+    ).fetchone()
+    if status is None or str(status[0]) != "complete":
+        raise MaterializationError("materialization checkpoint projection is incomplete")
+    return generation
+
+
+def _iter_parts(
+    state: sqlite3.Connection,
+    generation: str,
+    object_key: str,
+) -> Iterator[_PartRecord]:
+    expected_number = 1
+    expected_offset = 0
+    cursor = state.execute(
+        "SELECT number, offset, stored_bytes, stored_sha256 FROM projection_part "
+        "WHERE generation = ? AND object_key = ? ORDER BY number",
+        (generation, object_key),
+    )
+    while row := cursor.fetchone():
+        raw = {
+            "number": int(row[0]),
+            "offset": int(row[1]),
+            "stored_bytes": int(row[2]),
+            "stored_sha256": str(row[3]),
+        }
+        try:
+            part = _PartRecord.from_json(raw)
+        except RuntimeError as exc:
+            raise MaterializationError("checkpoint object part is invalid") from exc
+        if part.number != expected_number or part.offset != expected_offset:
+            raise MaterializationError("checkpoint object parts are not contiguous")
+        yield part
+        expected_number += 1
+        expected_offset += part.stored_bytes
 
 
 def _read_text(path: Path, *, maximum_bytes: int) -> str:

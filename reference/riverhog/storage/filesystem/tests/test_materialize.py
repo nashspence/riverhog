@@ -2,6 +2,11 @@ from __future__ import annotations
 
 import hashlib
 import json
+import os
+import signal
+import subprocess
+import sys
+import time
 from pathlib import Path
 
 import pytest
@@ -126,6 +131,95 @@ def test_active_adapter_must_be_quiesced(tmp_path: Path) -> None:
                 destination=tmp_path / "export",
                 selection=MaterializationSelection(all_objects=True),
             )
+        assert not (tmp_path / ".export.riverhog-materialization").exists()
+
+
+def test_sigkill_during_copy_resumes_exact_checkpoint_owned_staging(tmp_path: Path) -> None:
+    root = tmp_path / "store"
+    payload = b"bounded-recovery-copy" * (64 * 1024)
+    with _adapter(root) as adapter:
+        _put(adapter, "archives/one/large.age", payload)
+    output = tmp_path / "export"
+    marker = tmp_path / "copy-started"
+    worker = """
+import sys
+import time
+from pathlib import Path
+import riverhog_storage_adapter_filesystem.materialize as module
+
+source, destination, marker = map(Path, sys.argv[1:])
+original = module._write_all
+module._COPY_CHUNK_BYTES = 4096
+def write_then_wait(fd, payload):
+    original(fd, payload)
+    marker.write_text("ready", encoding="utf-8")
+    time.sleep(60)
+module._write_all = write_then_wait
+module.materialize_committed_objects(
+    source=source,
+    destination=destination,
+    selection=module.MaterializationSelection(all_objects=True),
+)
+"""
+    process = subprocess.Popen([sys.executable, "-c", worker, str(root), str(output), str(marker)])
+    deadline = time.monotonic() + 10
+    while not marker.exists() and process.poll() is None and time.monotonic() < deadline:
+        time.sleep(0.01)
+    assert marker.exists(), process.poll()
+    os.kill(process.pid, signal.SIGKILL)
+    assert process.wait(timeout=10) == -signal.SIGKILL
+
+    checkpoint = tmp_path / ".export.riverhog-materialization"
+    staged = tuple((checkpoint / "staging").iterdir())
+    assert len(staged) == 1
+    staged_bytes = staged[0].stat().st_size
+    assert 0 < staged_bytes < len(payload)
+    assert not tuple(output.rglob("*.tmp"))
+
+    summary = materialize_committed_objects(
+        source=root,
+        destination=output,
+        selection=MaterializationSelection(all_objects=True),
+    )
+
+    assert (output / "archives/one/large.age").read_bytes() == payload
+    assert summary.staging_verified_bytes == staged_bytes
+    assert summary.copied_bytes == len(payload) - staged_bytes
+    assert not checkpoint.exists()
+
+
+def test_corrupt_checkpoint_owned_staging_fails_closed(
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path: Path,
+) -> None:
+    root = tmp_path / "store"
+    payload = b"source-payload" * 4096
+    with _adapter(root) as adapter:
+        _put(adapter, "archives/one/object.age", payload)
+    original_write = materialize_module._write_all
+
+    def interrupt_after_write(fd: int, content: bytes) -> None:
+        original_write(fd, content[:4096])
+        raise MaterializationInterrupted("copy interrupted")
+
+    monkeypatch.setattr(materialize_module, "_write_all", interrupt_after_write)
+    output = tmp_path / "export"
+    with pytest.raises(MaterializationInterrupted, match="copy interrupted"):
+        materialize_committed_objects(
+            source=root,
+            destination=output,
+            selection=MaterializationSelection(all_objects=True),
+        )
+    monkeypatch.setattr(materialize_module, "_write_all", original_write)
+    staged = next((tmp_path / ".export.riverhog-materialization/staging").iterdir())
+    staged.write_bytes(b"wrong")
+
+    with pytest.raises(MaterializationError, match="staged object conflicts"):
+        materialize_committed_objects(
+            source=root,
+            destination=output,
+            selection=MaterializationSelection(all_objects=True),
+        )
 
 
 def test_every_explicit_selector_must_match_current_committed_state(tmp_path: Path) -> None:
@@ -173,7 +267,7 @@ def test_restart_revalidates_projection_and_exact_published_payload(tmp_path: Pa
     unpublished_metadata = _metadata_for(root, unpublished_path)
     original_unpublished_metadata = unpublished_metadata.read_bytes()
     value = json.loads(original_unpublished_metadata)
-    value["completed_at"] = "2026-09-10T01:02:03Z"
+    value["completed_at"] = "2026-09-10T01:02:03.000000Z"
     unpublished_metadata.write_text(json.dumps(value), encoding="utf-8")
     with pytest.raises(MaterializationError, match="projection changed"):
         materialize_committed_objects(
@@ -186,7 +280,7 @@ def test_restart_revalidates_projection_and_exact_published_payload(tmp_path: Pa
     published_metadata = _metadata_for(root, published_path)
     original_published_metadata = published_metadata.read_bytes()
     value = json.loads(original_published_metadata)
-    value["completed_at"] = "2026-09-10T01:02:03Z"
+    value["completed_at"] = "2026-09-10T01:02:03.000000Z"
     published_metadata.write_text(json.dumps(value), encoding="utf-8")
     with pytest.raises(MaterializationError, match="projection changed"):
         materialize_committed_objects(
@@ -274,6 +368,57 @@ def test_materializes_current_revision_across_segments_and_copy_chunks(
 
     assert (output / path).read_bytes() == current
     assert (output / segmented_path).read_bytes() == current
+
+
+def test_projection_streams_many_segments_without_reading_metadata_whole(
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path: Path,
+) -> None:
+    root = tmp_path / "store"
+    path = "archives/one/many-segments.age"
+    segments = tuple(bytes([number % 251]) * (64 * 1024) for number in range(140))
+    with _adapter(root) as adapter:
+        _put_segmented(adapter, path, segments)
+    original_read_bytes = Path.read_bytes
+
+    def reject_metadata_read_bytes(candidate: Path) -> bytes:
+        if candidate.name == "metadata.json":
+            raise AssertionError("recovery loaded complete object metadata")
+        return original_read_bytes(candidate)
+
+    monkeypatch.setattr(Path, "read_bytes", reject_metadata_read_bytes)
+    monkeypatch.setattr(materialize_module, "_PROJECTION_BATCH_ROWS", 7)
+    output = tmp_path / "export"
+    summary = materialize_committed_objects(
+        source=root,
+        destination=output,
+        selection=MaterializationSelection(all_objects=True),
+    )
+
+    assert original_read_bytes(output / path) == b"".join(segments)
+    assert summary.selected_objects == 1
+
+
+def test_projection_and_destination_walk_scale_across_many_siblings(
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path: Path,
+) -> None:
+    root = tmp_path / "store"
+    paths = tuple(f"archives/sibling-{number:03d}/object" for number in range(140))
+    with _adapter(root) as adapter:
+        for path in paths:
+            _put(adapter, path, path.encode())
+    monkeypatch.setattr(materialize_module, "_PROJECTION_BATCH_ROWS", 7)
+
+    output = tmp_path / "export"
+    summary = materialize_committed_objects(
+        source=root,
+        destination=output,
+        selection=MaterializationSelection(all_objects=True),
+    )
+
+    assert summary.selected_objects == len(paths)
+    assert all((output / path).read_bytes() == path.encode() for path in paths)
 
 
 def test_corrupt_current_metadata_fails_closed(tmp_path: Path) -> None:

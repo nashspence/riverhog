@@ -155,6 +155,7 @@ EXTERNAL_DISTRIBUTION_MODULES = {
     "cryptography": {"cryptography"},
     "fastapi": {"fastapi"},
     "httpx": {"httpx"},
+    "ijson": {"ijson"},
     "jsonschema": {"jsonschema"},
     "psycopg": set(),
     "pydantic": {"pydantic"},
