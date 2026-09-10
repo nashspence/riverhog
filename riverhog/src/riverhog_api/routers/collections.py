@@ -256,6 +256,7 @@ def create_or_resume_collection_upload_session(
         ingest_source=request.ingest_source,
         description=request.description,
         tags=request.tags,
+        initial_tag_set_identity=request.initial_tag_set_identity,
         archive_store=request.archive_store,
         initiator=principal,
         event_context=request.event_context,

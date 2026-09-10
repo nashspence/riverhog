@@ -259,6 +259,22 @@ def test_bundled_garage_is_development_only_and_not_an_application_dependency() 
     assert "export COMPOSE_PROFILES=development" in smoke
 
 
+def test_filesystem_recovery_qualification_owns_run_local_images() -> None:
+    qualification = (REPO_ROOT / "scripts" / "test_filesystem_recovery_qualification.sh").read_text(
+        encoding="utf-8"
+    )
+
+    assert (
+        'client_image="riverhog-filesystem-recovery-client:'
+        '${SOURCE_REVISION}-${COMPOSE_PROJECT_NAME}"'
+    ) in qualification
+    assert (
+        'recovery_image="riverhog-filesystem-recovery-tool:'
+        '${SOURCE_REVISION}-${COMPOSE_PROJECT_NAME}"'
+    ) in qualification
+    assert 'chmod 0644 "${proof_root}/oracle/alpha.txt"' in qualification
+
+
 def test_compose_host_interpolation_is_complete_without_an_env_file() -> None:
     expressions = re.findall(
         r"(?<!\$)\$\{([^}]+)\}",

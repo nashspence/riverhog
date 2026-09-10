@@ -2371,6 +2371,7 @@ class CollectionUploadRecord(Base):
     )
     idempotency_key: Mapped[str] = mapped_column(String)
     creation_identity_sha256: Mapped[str] = mapped_column(String(64), nullable=False)
+    initial_tag_set_identity: Mapped[str] = mapped_column(String(64), nullable=False)
     archive_generation: Mapped[str] = mapped_column(
         String(64), nullable=False, default=lambda: secrets.token_hex(32)
     )
@@ -2629,6 +2630,10 @@ class CollectionUploadRecord(Base):
         CheckConstraint(
             _fixed_lowercase_integer_check("tag_staging_set_identity", 64),
             name="ck_collection_uploads_tag_staging_identity",
+        ),
+        CheckConstraint(
+            _fixed_lowercase_integer_check("initial_tag_set_identity", 64),
+            name="ck_collection_uploads_initial_tag_set_identity",
         ),
         CheckConstraint("archive_attempt_count >= 0", name="ck_collection_uploads_attempt_count"),
         {"sqlite_autoincrement": True},

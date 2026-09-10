@@ -26,6 +26,7 @@ from riverhog_protocol import (
     CollectionDescriptionDocument,
     CollectionTag,
     CollectionTagHeadDocument,
+    CollectionTagSet,
     CollectionTagSetRoot,
     CollectionUploadArtifactCustodyReceiptDocument,
     CollectionUploadCustodyMode,
@@ -38,6 +39,7 @@ from riverhog_protocol import (
     CollectionUploadRegistrationConstraintsDocument,
     CollectionUploadSort,
     CollectionUploadState,
+    MemoryCollectionTagNodeStore,
     OmittedFileProvenanceBinding,
     PortableCollectionFile,
     PortableCollectionHeader,
@@ -334,6 +336,7 @@ class SqlAlchemyCollectionUploadService:
         ingest_source: str | None,
         description: CollectionDescription | None = None,
         tags: Sequence[CollectionTag] = (),
+        initial_tag_set_identity: str | None = None,
         archive_store: str | None,
         initiator: ApplicationPrincipal,
         event_context: Mapping[str, object] | None,
@@ -348,6 +351,13 @@ class SqlAlchemyCollectionUploadService:
         except ValueError as exc:
             raise BadRequest(str(exc)) from exc
         canonical_tags = _canonical_tag_batch(tags, allow_empty=True)
+        if initial_tag_set_identity is None:
+            initial_set = CollectionTagSet(MemoryCollectionTagNodeStore())
+            for tag in canonical_tags:
+                initial_set = initial_set.insert(tag)
+            initial_tag_set_identity = initial_set.identity
+        if _SHA256_RE.fullmatch(initial_tag_set_identity) is None:
+            raise BadRequest("initial collection tag-set identity is invalid")
         require_collection_create_access(initiator, COLLECTIONS_CREATE, tags=canonical_tags)
         _require_tag_assignment_access(initiator, canonical_tags)
         context_json = event_context_json(event_context)
@@ -359,7 +369,7 @@ class SqlAlchemyCollectionUploadService:
         creation_identity = _collection_upload_creation_identity(
             ingest_source=ingest_source,
             description=description,
-            tags=canonical_tags,
+            initial_tag_set_identity=initial_tag_set_identity,
             archive_store=store_name,
             event_context_json=context_json,
             provenance_mode=normalized_provenance_mode,
@@ -427,6 +437,7 @@ class SqlAlchemyCollectionUploadService:
             upload = CollectionUploadRecord(
                 idempotency_key=key,
                 creation_identity_sha256=creation_identity.creation_identity_sha256,
+                initial_tag_set_identity=initial_tag_set_identity,
                 archive_generation=secrets.token_hex(32),
                 ingest_source=ingest_source,
                 description=description,
@@ -1041,6 +1052,8 @@ class SqlAlchemyCollectionUploadService:
                 raise Conflict(f"collection upload session is {upload.state}: {normalized_id}")
             checkpoint = _planner_checkpoint(upload)
             if upload.state == "open":
+                if upload.tag_staging_set_identity != upload.initial_tag_set_identity:
+                    raise Conflict("initial collection tags are incomplete")
                 _seal_open_collection_upload(
                     session,
                     upload,
@@ -4135,7 +4148,7 @@ def _collection_upload_creation_identity(
     *,
     ingest_source: str | None,
     description: CollectionDescription | None,
-    tags: Sequence[CollectionTag],
+    initial_tag_set_identity: str,
     archive_store: str,
     event_context_json: str | None,
     provenance_mode: Literal["captured", "omitted"],
@@ -4149,7 +4162,7 @@ def _collection_upload_creation_identity(
         CollectionUploadCreationIdentityPayload(
             ingest_source=ingest_source,
             description=description,
-            initial_tags=list(tags),
+            initial_tag_set_identity=initial_tag_set_identity,
             archive_store=archive_store,
             event_context=event_context,
             provenance_mode=provenance_mode,

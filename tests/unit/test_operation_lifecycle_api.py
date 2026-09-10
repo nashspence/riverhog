@@ -9,6 +9,7 @@ from fastapi.testclient import TestClient
 from riverhog_api.app import create_app
 from riverhog_api.deps import ServiceContainer
 from riverhog_client.client import ApiClient
+from riverhog_client.initial_tags import prepare_initial_collection_tags
 from riverhog_core.archive_store_registry import ArchiveStoreRegistry
 from riverhog_core.catalog_db import initialize_db, make_session_factory, session_scope
 from riverhog_core.catalog_models import CollectionUploadRecord
@@ -65,6 +66,11 @@ from tests.operation_observer import OperationObserver, TimeoutNeutralTestClient
 from tests.provenance_observer import native_provenance_observer
 from tests.unit.archive_object_fixtures import MemoryArchiveStore, archive_store_binding
 from tests.unit.db_helpers import sqlite_url
+
+
+def _tag_set_identity(*tags: str) -> str:
+    with prepare_initial_collection_tags(tags) as prepared:
+        return prepared.tag_set_identity
 
 
 def _container(tmp_path: Path) -> ServiceContainer:
@@ -336,6 +342,7 @@ def test_riverhog_official_client_positive_disposable_lifecycle(
         ingest_source="disposable-test",
         description="Qualification source collection",
         tags=["docs"],
+        initial_tag_set_identity=_tag_set_identity("docs", "qualified"),
         archive_store="primary",
     )
     assert opened["resumed"] is False
@@ -466,6 +473,16 @@ def test_riverhog_official_client_positive_disposable_lifecycle(
         expected_tag_set_identity=str(tag_authority["tag_set_identity"]),
     )
     assert removed["changed"] is True
+    replayed_after_tag_edit = operator.create_or_resume_collection_upload_session(
+        "qualification-upload",
+        ingest_source="disposable-test",
+        description="Qualification source collection",
+        tags=["docs"],
+        initial_tag_set_identity=_tag_set_identity("docs", "qualified"),
+        archive_store="primary",
+    )
+    assert replayed_after_tag_edit["state"] == "finalized"
+    assert int(replayed_after_tag_edit["collection_id"]) == collection_id
     restored = operator.add_collection_tag(
         collection_id,
         tag="docs",
@@ -605,6 +622,7 @@ def test_riverhog_official_client_positive_disposable_lifecycle(
 
     canceled_upload = operator.create_or_resume_collection_upload_session(
         "qualification-canceled-upload",
+        initial_tag_set_identity=_tag_set_identity(),
         provenance_mode="omitted",
         provenance_omission_reason="qualification cancellation",
     )
@@ -615,6 +633,7 @@ def test_riverhog_official_client_positive_disposable_lifecycle(
 
     orphaned_upload = operator.create_or_resume_collection_upload_session(
         "qualification-orphaned-upload",
+        initial_tag_set_identity=_tag_set_identity(),
         provenance_mode="omitted",
         provenance_omission_reason="qualification orphan discard",
         custody_mode="custody-transfer",
@@ -964,6 +983,7 @@ def test_riverhog_official_client_positive_disposable_lifecycle(
     with pytest.raises(Forbidden):
         target.create_or_resume_collection_upload_session(
             hashlib.sha256(b"unauthorized-output").hexdigest(),
+            initial_tag_set_identity=_tag_set_identity(),
             ingest_source=f"transform:{execution_id}",
             provenance_mode="omitted",
             provenance_omission_reason="qualification transform evidence",
@@ -971,6 +991,7 @@ def test_riverhog_official_client_positive_disposable_lifecycle(
     with pytest.raises(Forbidden):
         target.create_or_resume_collection_upload_session(
             execution_id,
+            initial_tag_set_identity=_tag_set_identity(),
             ingest_source="transform:another-execution",
             provenance_mode="omitted",
             provenance_omission_reason="qualification transform evidence",
@@ -978,6 +999,7 @@ def test_riverhog_official_client_positive_disposable_lifecycle(
     with pytest.raises(Forbidden):
         target.create_or_resume_collection_upload_session(
             execution_id,
+            initial_tag_set_identity=_tag_set_identity(),
             ingest_source=f"transform:{execution_id}",
             archive_store="primary",
             provenance_mode="omitted",
@@ -985,12 +1007,14 @@ def test_riverhog_official_client_positive_disposable_lifecycle(
         )
     target_session = target.create_or_resume_collection_upload_session(
         execution_id,
+        initial_tag_set_identity=_tag_set_identity(),
         ingest_source=f"transform:{execution_id}",
         provenance_mode="captured",
     )
     output_collection_id = int(target_session["collection_id"])
     replayed_target_session = target.create_or_resume_collection_upload_session(
         execution_id,
+        initial_tag_set_identity=_tag_set_identity(),
         ingest_source=f"transform:{execution_id}",
         provenance_mode="captured",
     )
@@ -1050,6 +1074,7 @@ def test_riverhog_official_client_positive_disposable_lifecycle(
     assert target.get_collection_upload_session(output_collection_id)["state"] == "finalized"
     replayed_output = target.create_or_resume_collection_upload_session(
         execution_id,
+        initial_tag_set_identity=_tag_set_identity(),
         ingest_source=f"transform:{execution_id}",
         provenance_mode="captured",
     )

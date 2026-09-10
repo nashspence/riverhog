@@ -27,6 +27,7 @@ from tests.unit.db_helpers import sqlite_url
 def test_upload_creation_identity_binds_every_create_or_resume_input() -> None:
     base = CollectionUploadCreationIdentityPayload(
         ingest_source="transform:fixture",
+        initial_tag_set_identity="a" * 64,
         archive_store="archive",
         event_context={"source": "fixture"},
         provenance_mode="omitted",
@@ -36,6 +37,7 @@ def test_upload_creation_identity_binds_every_create_or_resume_input() -> None:
     sealed = CollectionUploadCreationIdentityDocument.seal(base)
     alternatives = (
         base.model_copy(update={"ingest_source": "transform:other"}),
+        base.model_copy(update={"initial_tag_set_identity": "b" * 64}),
         base.model_copy(update={"archive_store": "secondary"}),
         base.model_copy(update={"event_context": {"source": "other"}}),
         base.model_copy(
@@ -247,6 +249,7 @@ def test_initialize_db_creates_current_catalog(tmp_path: Path) -> None:
         column["name"]: column for column in inspector.get_columns("collection_uploads")
     }
     assert upload_columns["creation_identity_sha256"]["nullable"] is False
+    assert upload_columns["initial_tag_set_identity"]["nullable"] is False
     for name in (
         "state",
         "opened_at",

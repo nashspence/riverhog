@@ -16,7 +16,6 @@ from pathlib import Path
 from typing import Any, BinaryIO, Literal, cast
 
 from riverhog_protocol import (
-    COLLECTION_TAG_REQUEST_MEMBERS_MAX,
     CollectionDescription,
     CollectionTag,
 )
@@ -39,6 +38,7 @@ from riverhog_protocol.paths import CollectionId, normalize_relpath, validate_co
 from riverhog_protocol.storage_names import ArchiveStoreName
 
 from riverhog_client.client import ApiClient
+from riverhog_client.initial_tags import prepare_initial_collection_tags
 from riverhog_client.source_hashing import RawSourceHash, hash_raw_source_chunks
 from riverhog_client.uploads import (
     configured_upload_concurrency,
@@ -346,18 +346,26 @@ class IncrementalCollectionProducer:
         self._heartbeat_thread: threading.Thread | None = None
         self._finalized: ProducedCollection | None = None
         self.constraints: CollectionUploadRegistrationConstraintsDocument | None
-        requested_tags = tuple(tags)
-        session = api.create_or_resume_collection_upload_session(
-            idempotency_key or evidence.sha256,
-            ingest_source=ingest_source,
-            description=description,
-            tags=requested_tags[:COLLECTION_TAG_REQUEST_MEMBERS_MAX],
-            archive_store=archive_store,
-            event_context=event_context,
-            provenance_mode=provenance_mode,
-            provenance_omission_reason=(reason if provenance_mode == "omitted" else None),
-            custody_mode="custody-transfer",
-        )
+        with prepare_initial_collection_tags(tags) as prepared_tags:
+            batches = prepared_tags.iter_batches()
+            first_batch = next(batches, ())
+            session = api.create_or_resume_collection_upload_session(
+                idempotency_key or evidence.sha256,
+                ingest_source=ingest_source,
+                description=description,
+                tags=first_batch,
+                initial_tag_set_identity=prepared_tags.tag_set_identity,
+                archive_store=archive_store,
+                event_context=event_context,
+                provenance_mode=provenance_mode,
+                provenance_omission_reason=(reason if provenance_mode == "omitted" else None),
+                custody_mode="custody-transfer",
+            )
+            if str(session.get("state") or "") == "open":
+                for batch in batches:
+                    api.add_collection_upload_session_tags(
+                        validate_collection_id(session.get("collection_id")), batch
+                    )
         self._heartbeat_interval_seconds = _custody_heartbeat_interval(session)
         self.resumed = bool(session.get("resumed"))
         self.collection_id = validate_collection_id(session.get("collection_id"))
@@ -366,15 +374,6 @@ class IncrementalCollectionProducer:
             self._closed = True
             self.constraints = None
             return
-        for offset in range(
-            COLLECTION_TAG_REQUEST_MEMBERS_MAX,
-            len(requested_tags),
-            COLLECTION_TAG_REQUEST_MEMBERS_MAX,
-        ):
-            api.add_collection_upload_session_tags(
-                self.collection_id,
-                requested_tags[offset : offset + COLLECTION_TAG_REQUEST_MEMBERS_MAX],
-            )
         constraints = session.get("registration_constraints")
         if not isinstance(constraints, Mapping):
             raise RuntimeError("Riverhog upload session did not return registration constraints")

@@ -41,6 +41,8 @@ _PRIVATE_FILE_MODE = 0o600
 _PROJECTION_BATCH_ROWS = 128
 _CLEANUP_BATCH_ROWS = 512
 _OBJECT_SCHEMA = "riverhog-filesystem-object/v1"
+_BOOTSTRAP_SCHEMA = "riverhog-filesystem-materialization-bootstrap/v1"
+_COMPLETION_SCHEMA = "riverhog-filesystem-materialization-completion/v1"
 
 
 class MaterializationError(RuntimeError):
@@ -148,7 +150,8 @@ def materialize_committed_objects(
     Every invocation reopens the source under its exclusive instance lock and
     recomputes the selected metadata commitment before it trusts prior progress.
     Payload already published at the destination is independently revalidated.
-    The private checkpoint is removed only after the exact projection completes.
+    A bounded private completion receipt makes a lost success response
+    replayable. Working state is removed only after that receipt is durable.
     """
 
     source = _canonical_source(source)
@@ -156,21 +159,30 @@ def materialize_committed_objects(
     if destination == source or destination.is_relative_to(source):
         raise MaterializationError("destination must be outside the adapter root")
     checkpoint = destination.parent / f".{destination.name}.riverhog-materialization"
+    initializing = destination.parent / f".{destination.name}.riverhog-materialization-init"
+    bootstrap = destination.parent / f".{destination.name}.riverhog-materialization-bootstrap.json"
+    completion = destination.parent / f".{destination.name}.riverhog-materialization-complete.json"
     if checkpoint == source or checkpoint.is_relative_to(source):
         raise MaterializationError("materialization checkpoint must be outside the adapter root")
 
-    completed = False
     database = checkpoint / "state.sqlite3"
     try:
         with _source_lock(source):
-            new_checkpoint = not checkpoint.exists()
-            if new_checkpoint:
-                if destination.exists() or destination.is_symlink():
-                    raise MaterializationError(
-                        "destination already exists without a resumable materialization checkpoint"
-                    )
-                checkpoint.mkdir(mode=_PRIVATE_DIRECTORY_MODE)
-                _fsync_directory(checkpoint.parent)
+            completion_record = _read_completion_record(
+                completion,
+                source=source,
+                destination=destination,
+                selection=selection,
+            )
+            new_checkpoint = _prepare_checkpoint(
+                checkpoint=checkpoint,
+                initializing=initializing,
+                bootstrap=bootstrap,
+                source=source,
+                destination=destination,
+                selection=selection,
+                destination_may_exist=completion_record is not None,
+            )
             _require_directory(checkpoint, "materialization checkpoint")
             os.chmod(checkpoint, _PRIVATE_DIRECTORY_MODE)
             staging = checkpoint / "staging"
@@ -188,12 +200,15 @@ def materialize_committed_objects(
                     source=source,
                     selection=selection,
                 )
+                if completion_record is not None:
+                    _validate_completed_projection(completion_record, projection)
                 _bind_projection(
                     state,
                     source=source,
                     selection=selection,
                     projection=projection,
                     destination=destination,
+                    allow_existing_destination=completion_record is not None,
                 )
                 _cleanup_inactive_generations(state)
                 _verify_staging_namespace(state, staging)
@@ -219,8 +234,7 @@ def materialize_committed_objects(
                 _verify_staging_namespace(state, staging)
                 _verify_destination_namespace(state, destination)
                 _fsync_directory(destination)
-                completed = True
-                return MaterializationSummary(
+                summary = MaterializationSummary(
                     destination=destination,
                     selected_objects=projection.objects,
                     selected_bytes=projection.bytes,
@@ -231,16 +245,242 @@ def materialize_committed_objects(
                     copied_objects=copied_objects,
                     copied_bytes=copied_bytes,
                 )
+                _write_completion_record(
+                    completion,
+                    source=source,
+                    destination=destination,
+                    selection=selection,
+                    projection=projection,
+                )
             finally:
                 state.close()
+            _retire_checkpoint(checkpoint)
+            return summary
     except MaterializationError:
         raise
     except (OSError, sqlite3.Error, UnicodeError, ValueError, json.JSONDecodeError) as exc:
         raise MaterializationError(str(exc)) from exc
+
+
+def _operation_binding(
+    *, source: Path, destination: Path, selection: MaterializationSelection
+) -> dict[str, str]:
+    root = source.stat(follow_symlinks=False)
+    return {
+        "source": str(source),
+        "source_device": str(root.st_dev),
+        "source_inode": str(root.st_ino),
+        "destination": str(destination),
+        "selection": selection.canonical_json(),
+    }
+
+
+def _prepare_checkpoint(
+    *,
+    checkpoint: Path,
+    initializing: Path,
+    bootstrap: Path,
+    source: Path,
+    destination: Path,
+    selection: MaterializationSelection,
+    destination_may_exist: bool,
+) -> bool:
+    """Publish a complete working checkpoint or resume an exact one."""
+
+    expected: dict[str, object] = {
+        "schema": _BOOTSTRAP_SCHEMA,
+        **_operation_binding(source=source, destination=destination, selection=selection),
+    }
+    if destination_may_exist:
+        if bootstrap.exists() or bootstrap.is_symlink():
+            _require_exact_json(bootstrap, expected, "materialization bootstrap")
+        for path, label in (
+            (checkpoint, "materialization checkpoint"),
+            (initializing, "materialization initializing checkpoint"),
+        ):
+            if path.exists() or path.is_symlink():
+                _require_directory(path, label)
+                shutil.rmtree(path)
+                _fsync_directory(path.parent)
+        if bootstrap.exists():
+            bootstrap.unlink()
+            _fsync_directory(bootstrap.parent)
+    if checkpoint.exists() or checkpoint.is_symlink():
+        _require_directory(checkpoint, "materialization checkpoint")
+        if bootstrap.exists() or bootstrap.is_symlink():
+            _require_exact_json(bootstrap, expected, "materialization bootstrap")
+            bootstrap.unlink()
+            _fsync_directory(bootstrap.parent)
+        if initializing.exists() or initializing.is_symlink():
+            raise MaterializationError("materialization bootstrap state is ambiguous")
+        return False
+    if destination.exists() or destination.is_symlink():
+        if not destination_may_exist:
+            raise MaterializationError(
+                "destination already exists without a completed materialization receipt"
+            )
+        _require_directory(destination, "materialization destination")
+    if bootstrap.exists() or bootstrap.is_symlink():
+        _require_exact_json(bootstrap, expected, "materialization bootstrap")
+        if initializing.exists() or initializing.is_symlink():
+            _require_directory(initializing, "materialization initializing checkpoint")
+            shutil.rmtree(initializing)
+            _fsync_directory(initializing.parent)
+    else:
+        if initializing.exists() or initializing.is_symlink():
+            raise MaterializationError("unowned materialization bootstrap state exists")
+        _write_json_exclusive(bootstrap, expected)
+    initializing.mkdir(mode=_PRIVATE_DIRECTORY_MODE)
+    staging = initializing / "staging"
+    staging.mkdir(mode=_PRIVATE_DIRECTORY_MODE)
+    database = initializing / "state.sqlite3"
+    state = sqlite3.connect(database)
+    try:
+        _initialize_state(state)
     finally:
-        if completed:
-            shutil.rmtree(checkpoint)
-            _fsync_directory(checkpoint.parent)
+        state.close()
+    _fsync_directory(initializing)
+    os.replace(initializing, checkpoint)
+    _fsync_directory(checkpoint.parent)
+    bootstrap.unlink()
+    _fsync_directory(bootstrap.parent)
+    return True
+
+
+def _completion_payload(
+    *,
+    source: Path,
+    destination: Path,
+    selection: MaterializationSelection,
+    projection: _Projection,
+) -> dict[str, object]:
+    return {
+        "format": _COMPLETION_SCHEMA,
+        **_operation_binding(source=source, destination=destination, selection=selection),
+        "source_projection_sha256": projection.sha256,
+        "selected_objects": projection.objects,
+        "selected_bytes": projection.bytes,
+        "source_metadata_bytes": projection.metadata_bytes,
+    }
+
+
+def _read_completion_record(
+    path: Path,
+    *,
+    source: Path,
+    destination: Path,
+    selection: MaterializationSelection,
+) -> dict[str, object] | None:
+    if not path.exists() and not path.is_symlink():
+        return None
+    _require_regular_file(path, "materialization completion receipt")
+    try:
+        raw = json.loads(_read_text(path, maximum_bytes=8192))
+    except json.JSONDecodeError as exc:
+        raise MaterializationError("materialization completion receipt is invalid") from exc
+    expected_binding = _operation_binding(
+        source=source, destination=destination, selection=selection
+    )
+    expected_keys = {
+        "format",
+        *expected_binding,
+        "source_projection_sha256",
+        "selected_objects",
+        "selected_bytes",
+        "source_metadata_bytes",
+    }
+    if (
+        not isinstance(raw, dict)
+        or set(raw) != expected_keys
+        or raw.get("format") != _COMPLETION_SCHEMA
+        or any(raw.get(key) != value for key, value in expected_binding.items())
+        or not isinstance(raw.get("source_projection_sha256"), str)
+        or not _is_hex(str(raw["source_projection_sha256"]), 64)
+        or any(
+            type(raw.get(key)) is not int or int(raw[key]) < 0
+            for key in ("selected_objects", "selected_bytes", "source_metadata_bytes")
+        )
+    ):
+        raise MaterializationError("materialization completion receipt conflicts with invocation")
+    return raw
+
+
+def _validate_completed_projection(record: dict[str, object], projection: _Projection) -> None:
+    expected = {
+        "source_projection_sha256": projection.sha256,
+        "selected_objects": projection.objects,
+        "selected_bytes": projection.bytes,
+        "source_metadata_bytes": projection.metadata_bytes,
+    }
+    if any(record.get(key) != value for key, value in expected.items()):
+        raise MaterializationError("selected source projection changed after materialization")
+
+
+def _write_completion_record(
+    path: Path,
+    *,
+    source: Path,
+    destination: Path,
+    selection: MaterializationSelection,
+    projection: _Projection,
+) -> None:
+    payload = _completion_payload(
+        source=source,
+        destination=destination,
+        selection=selection,
+        projection=projection,
+    )
+    if path.exists() or path.is_symlink():
+        _require_exact_json(path, payload, "materialization completion receipt")
+        return
+    _write_json_exclusive(path, payload)
+
+
+def _retire_checkpoint(checkpoint: Path) -> None:
+    shutil.rmtree(checkpoint)
+    _fsync_directory(checkpoint.parent)
+
+
+def _require_exact_json(path: Path, expected: dict[str, object], label: str) -> None:
+    _require_regular_file(path, label)
+    try:
+        observed = json.loads(_read_text(path, maximum_bytes=8192))
+    except json.JSONDecodeError as exc:
+        raise MaterializationError(f"{label} is invalid") from exc
+    if observed != expected:
+        raise MaterializationError(f"{label} conflicts with invocation")
+
+
+def _write_json_exclusive(path: Path, payload: dict[str, object]) -> None:
+    encoded = json.dumps(
+        payload,
+        allow_nan=False,
+        ensure_ascii=False,
+        separators=(",", ":"),
+        sort_keys=True,
+    ).encode("utf-8")
+    temporary = path.parent / f".{path.name}.{uuid.uuid4().hex}.partial"
+    fd = os.open(
+        temporary,
+        os.O_WRONLY | os.O_CREAT | os.O_EXCL | os.O_CLOEXEC | os.O_NOFOLLOW,
+        _PRIVATE_FILE_MODE,
+    )
+    try:
+        offset = 0
+        while offset < len(encoded):
+            written = os.write(fd, encoded[offset:])
+            if written <= 0:
+                raise OSError("materialization metadata write made no progress")
+            offset += written
+        os.fsync(fd)
+    finally:
+        os.close(fd)
+    try:
+        os.link(temporary, path, follow_symlinks=False)
+        _fsync_directory(path.parent)
+    finally:
+        temporary.unlink(missing_ok=True)
+        _fsync_directory(path.parent)
 
 
 def _canonical_source(path: Path) -> Path:
@@ -676,6 +916,7 @@ def _bind_projection(
     selection: MaterializationSelection,
     projection: _Projection,
     destination: Path,
+    allow_existing_destination: bool = False,
 ) -> None:
     root = source.stat(follow_symlinks=False)
     expected = {
@@ -689,7 +930,7 @@ def _bind_projection(
     }
     persisted = dict(state.execute("SELECT key, value FROM authority").fetchall())
     if not persisted:
-        if destination.exists():
+        if destination.exists() and not allow_existing_destination:
             raise MaterializationError("materialization checkpoint has no trustworthy authority")
         state.executemany(
             "INSERT INTO authority(key, value) VALUES (?, ?)",

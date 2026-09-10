@@ -11721,7 +11721,7 @@
         {
           "distribution": "riverhog-server",
           "fixture_sha256s": [
-            "89bfa5eeaf969a6d5f369d39b65ae46c74cb7aa0bec3ea7185d294c84a6927ae"
+            "eb4087f428bbcaf51d562bba6efe445bde153778596385fdeaf30605e6281dd5"
           ],
           "format": "state-schema/postgresql",
           "head": "v1_0001",
@@ -11799,8 +11799,8 @@
     },
     "extents": {
       "coverage": {
-        "classified": 1942,
-        "discovered": 1942,
+        "classified": 1943,
+        "discovered": 1943,
         "duplicate": 0,
         "missing": 0,
         "owners": {
@@ -11837,7 +11837,7 @@
           "https://nashspence.github.io/riverhog/v1/schemas/riverhog-recovery-descriptor-v1.schema.json": 2,
           "mango-fish": 2,
           "piggity": 311,
-          "riverhog": 492,
+          "riverhog": 493,
           "riverhog-client": 7,
           "riverhog-ftp-adapter": 25,
           "riverhog-ftp-adapter-api-client": 1,
@@ -11859,7 +11859,7 @@
         "policies": {
           "contract_max": 427,
           "extension_owned": 55,
-          "fixed": 899,
+          "fixed": 900,
           "operational_policy": 482,
           "segmented_no_total_max": 79
         },
@@ -23152,6 +23152,21 @@
           "reason": "schema-maximum",
           "rule": "schema-bound/v1",
           "source_pointer": "/external_contract/http_openapi/riverhog/components/schemas/CreateOrResumeCollectionUploadSessionRequest/properties/idempotency_key",
+          "unit": "characters"
+        },
+        {
+          "dimension": "length",
+          "id": "http:riverhog:components:/schemas/CreateOrResumeCollectionUploadSessionRequest/properties/initial_tag_set_identity:length",
+          "maximum": 64,
+          "minimum": 64,
+          "owner": "riverhog",
+          "policy": "fixed",
+          "reason": "fixed-public-representation",
+          "rule": "schema-bound/v1",
+          "source_constraint": {
+            "pattern": "^[0-9a-f]{64}$"
+          },
+          "source_pointer": "/external_contract/http_openapi/riverhog/components/schemas/CreateOrResumeCollectionUploadSessionRequest/properties/initial_tag_set_identity",
           "unit": "characters"
         },
         {
@@ -40080,7 +40095,7 @@
         }
       },
       "schema": "riverhog-extent-contract/v1",
-      "sha256": "117d612824c0f22514de3c272954d6f12b2f9002fab912809c1fe35535f47079"
+      "sha256": "ca6cb0801dcd773855cf2090457b5db63978afcf043384364e3b074004988028"
     },
     "http_openapi": {
       "riverhog": {
@@ -48147,6 +48162,11 @@
                   ],
                   "title": "Ingest Source"
                 },
+                "initial_tag_set_identity": {
+                  "pattern": "^[0-9a-f]{64}$",
+                  "title": "Initial Tag Set Identity",
+                  "type": "string"
+                },
                 "provenance_mode": {
                   "default": "captured",
                   "enum": [
@@ -48184,7 +48204,8 @@
                 }
               },
               "required": [
-                "idempotency_key"
+                "idempotency_key",
+                "initial_tag_set_identity"
               ],
               "title": "CreateOrResumeCollectionUploadSessionRequest",
               "type": "object"
@@ -100971,7 +100992,7 @@
               },
               "create_or_resume_collection_upload_session": {
                 "kind": "method",
-                "signature": "(self, idempotency_key: 'CollectionUploadIdempotencyKey', *, ingest_source: 'str | None' = None, description: 'CollectionDescription | None' = None, tags: 'Sequence[CollectionTag]' = (), archive_store: 'ArchiveStoreName | None' = None, event_context: 'Mapping[str, Any] | None' = None, provenance_mode: 'ProvenanceMode' = 'captured', provenance_omission_reason: 'str | None' = None, custody_mode: 'CollectionUploadCustodyMode' = 'producer-retained') -> 'dict[str, Any]'"
+                "signature": "(self, idempotency_key: 'CollectionUploadIdempotencyKey', *, ingest_source: 'str | None' = None, description: 'CollectionDescription | None' = None, tags: 'Sequence[CollectionTag]' = (), initial_tag_set_identity: 'str', archive_store: 'ArchiveStoreName | None' = None, event_context: 'Mapping[str, Any] | None' = None, provenance_mode: 'ProvenanceMode' = 'captured', provenance_omission_reason: 'str | None' = None, custody_mode: 'CollectionUploadCustodyMode' = 'producer-retained') -> 'dict[str, Any]'"
               },
               "create_retrieval_job": {
                 "kind": "method",

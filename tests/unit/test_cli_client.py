@@ -7,6 +7,7 @@ from typing import Any
 import httpx
 import pytest
 from riverhog_client.client import ApiClient
+from riverhog_client.initial_tags import prepare_initial_collection_tags
 from riverhog_protocol import (
     CollectionUploadArtifactCustodyReceiptDocument,
     CollectionUploadCustodyObjectDocument,
@@ -24,6 +25,11 @@ UPLOAD_REGISTRATION_CONSTRAINTS = {
     "pack_member_bytes": 1024,
     "raw_part_plaintext_bytes": 65536,
 }
+
+
+def _tag_set_identity(*tags: str) -> str:
+    with prepare_initial_collection_tags(tags) as prepared:
+        return prepared.tag_set_identity
 
 
 class RecordingClient(ApiClient):
@@ -212,6 +218,7 @@ def test_collection_upload_custody_transfer_and_operator_controls_use_exact_rout
 
     client.create_or_resume_collection_upload_session(
         "execution-1",
+        initial_tag_set_identity=_tag_set_identity(),
         provenance_mode="omitted",
         provenance_omission_reason="fixture",
         custody_mode="custody-transfer",
@@ -227,6 +234,7 @@ def test_collection_upload_custody_transfer_and_operator_controls_use_exact_rout
             {
                 "json": {
                     "idempotency_key": "execution-1",
+                    "initial_tag_set_identity": _tag_set_identity(),
                     "provenance_mode": "omitted",
                     "custody_mode": "custody-transfer",
                     "provenance_omission_reason": "fixture",
@@ -251,6 +259,7 @@ def test_collection_upload_selects_archive_store_without_materialization_policy(
 
     client.create_or_resume_collection_upload_session(
         "upload-one",
+        initial_tag_set_identity=_tag_set_identity(),
         archive_store="b2",
         provenance_mode="omitted",
         provenance_omission_reason="fixture source has no provenance",
@@ -274,6 +283,7 @@ def test_collection_upload_selects_archive_store_without_materialization_policy(
 
     assert client.calls[0][2]["json"] == {
         "idempotency_key": "upload-one",
+        "initial_tag_set_identity": _tag_set_identity(),
         "archive_store": "b2",
         "provenance_mode": "omitted",
         "provenance_omission_reason": "fixture source has no provenance",
@@ -300,6 +310,7 @@ def test_client_carries_description_on_create_and_conditional_replacement() -> N
 
     client.create_or_resume_collection_upload_session(
         "upload-description",
+        initial_tag_set_identity=_tag_set_identity(),
         description="Reference footage — morning",
     )
     client.replace_collection_description(
@@ -315,6 +326,7 @@ def test_client_carries_description_on_create_and_conditional_replacement() -> N
             {
                 "json": {
                     "idempotency_key": "upload-description",
+                    "initial_tag_set_identity": _tag_set_identity(),
                     "provenance_mode": "captured",
                     "description": "Reference footage — morning",
                 }
@@ -379,12 +391,15 @@ def test_client_rejects_invalid_upload_provenance_before_transport() -> None:
     with pytest.raises(BadRequest, match="provenance_mode"):
         client.create_or_resume_collection_upload_session(
             "upload-one",
+            initial_tag_set_identity=_tag_set_identity(),
             provenance_mode="captured",
             provenance_omission_reason="not omitted",
         )
 
     with pytest.raises(BadRequest):
-        client.create_or_resume_collection_upload_session(" padded ")
+        client.create_or_resume_collection_upload_session(
+            " padded ", initial_tag_set_identity=_tag_set_identity()
+        )
     with pytest.raises(BadRequest):
         client.register_collection_upload_session_files(
             1,
@@ -404,11 +419,13 @@ def test_client_rejects_invalid_upload_provenance_before_transport() -> None:
     with pytest.raises(BadRequest, match="provenance_mode"):
         client.create_or_resume_collection_upload_session(
             "upload-one",
+            initial_tag_set_identity=_tag_set_identity(),
             provenance_mode="omitted",
         )
     with pytest.raises(BadRequest, match="provenance_mode"):
         client.create_or_resume_collection_upload_session(
             "upload-one",
+            initial_tag_set_identity=_tag_set_identity(),
             provenance_mode="obsolete",  # type: ignore[arg-type]
         )
 

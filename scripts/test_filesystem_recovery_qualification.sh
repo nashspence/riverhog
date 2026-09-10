@@ -19,8 +19,8 @@ export RIVERHOG_RETRIEVAL_CACHE_NEW_ARCHIVE_ENABLED=false
 
 proof_root="$(mktemp -d "${TMPDIR:-/tmp}/riverhog-filesystem-recovery.XXXXXX")"
 volume_name="${COMPOSE_PROJECT_NAME}_filesystem-cache-data"
-client_image="riverhog-filesystem-recovery-client:${SOURCE_REVISION}"
-recovery_image="riverhog-filesystem-recovery-tool:${SOURCE_REVISION}"
+client_image="riverhog-filesystem-recovery-client:${SOURCE_REVISION}-${COMPOSE_PROJECT_NAME}"
+recovery_image="riverhog-filesystem-recovery-tool:${SOURCE_REVISION}-${COMPOSE_PROJECT_NAME}"
 filesystem_image="riverhog-storage-adapter-filesystem:dev"
 network_name="${COMPOSE_PROJECT_NAME}_default"
 receipt=""
@@ -71,6 +71,8 @@ install -d -m 0755 "${proof_root}/oracle"
 printf '%s\n' 'small packed member alpha' >"${proof_root}/oracle/alpha.txt"
 printf '%s\n' 'small packed member beta' >"${proof_root}/oracle/beta.txt"
 dd if=/dev/zero of="${proof_root}/oracle/direct.bin" bs=1M count=17 status=none
+chmod 0644 "${proof_root}/oracle/alpha.txt" "${proof_root}/oracle/beta.txt" \
+  "${proof_root}/oracle/direct.bin"
 printf '%s' '{"filesystem-proof":"filesystem-recovery-qualification-passphrase"}' \
   >"${proof_root}/passphrases.json"
 chmod 0600 "${proof_root}/passphrases.json"
@@ -127,7 +129,11 @@ with FilesystemStorageAdapter(FilesystemStorageAdapterConfig(root=Path("/var/lib
     adapter.begin_write(WriteStartRequest(object_path="archives/incomplete/payload.age", expected_bytes=65536, content_type="application/octet-stream", required_identity_assertions={"qualification":"incomplete"}, placement="archive"))'
 
 chmod 0777 "${proof_root}"
-install -d -m 0777 "${proof_root}/recovery-output"
+install -d -m 0777 \
+  "${proof_root}/recovery-output" \
+  "${proof_root}/materializer-full" \
+  "${proof_root}/materializer-description" \
+  "${proof_root}/materializer-tags"
 docker run --rm \
   --network none \
   --volume "${proof_root}:/proof" \
@@ -138,12 +144,14 @@ docker run --rm \
   --network none \
   --user 65532:65532 \
   --volume "${volume_name}:/source:ro" \
-  --volume "${proof_root}:/proof" \
-  --entrypoint riverhog-storage-adapter-filesystem-materialize \
-  "${filesystem_image}" /source /proof/full --all --json >"${proof_root}/materialize-full.json"
+  --volume "${proof_root}/materializer-full:/work" \
+  --entrypoint /bin/sh \
+  "${filesystem_image}" -ceu \
+  'test ! -e /oracle; test ! -e /prior-full; test ! -e /passphrases.json; exec riverhog-storage-adapter-filesystem-materialize "$@"' \
+  sh /source /work/tree --all --json >"${proof_root}/materialize-full.json"
 archive_relative="$(docker run --rm \
   --network none \
-  --volume "${proof_root}/full:/materialized:ro" \
+  --volume "${proof_root}/materializer-full/tree:/materialized:ro" \
   --entrypoint python \
   "${recovery_image}" -c \
   'from pathlib import Path
@@ -151,13 +159,13 @@ items=list(Path("/materialized").glob("archives/*/recovery.json"))
 assert len(items) == 1, items
 print(items[0].parent.relative_to("/materialized").as_posix())')"
 test -n "${archive_relative}"
-test ! -e "${proof_root}/full/archives/incomplete"
+test ! -e "${proof_root}/materializer-full/tree/archives/incomplete"
 
 docker run --rm \
   --network none \
   --read-only \
   --tmpfs /tmp:rw,noexec,nosuid,nodev,mode=700,uid=65532,gid=65532 \
-  --volume "${proof_root}/full:/materialized:ro" \
+  --volume "${proof_root}/materializer-full/tree:/materialized:ro" \
   --volume "${proof_root}/recovery-output:/output-parent" \
   --volume "${proof_root}/passphrases.json:/passphrases.json:ro" \
   "${recovery_image}" "/materialized/${archive_relative}" /output-parent/recovered \
@@ -186,13 +194,15 @@ for path in "${description_paths[@]}"; do
   description_args+=(--path "${path}")
 done
 docker run --rm --network none --user 65532:65532 \
-  --volume "${volume_name}:/source:ro" --volume "${proof_root}:/proof" \
-  --entrypoint riverhog-storage-adapter-filesystem-materialize "${filesystem_image}" \
-  /source /proof/description "${description_args[@]}"
+  --volume "${volume_name}:/source:ro" \
+  --volume "${proof_root}/materializer-description:/work" \
+  --entrypoint /bin/sh "${filesystem_image}" -ceu \
+  'test ! -e /oracle; test ! -e /prior-full; test ! -e /passphrases.json; exec riverhog-storage-adapter-filesystem-materialize "$@"' \
+  sh /source /work/tree "${description_args[@]}"
 description="$({
   docker run --rm --network none --read-only \
     --tmpfs /tmp:rw,noexec,nosuid,nodev,mode=700,uid=65532,gid=65532 \
-    --volume "${proof_root}/description:/materialized:ro" \
+    --volume "${proof_root}/materializer-description/tree:/materialized:ro" \
     --volume "${proof_root}/passphrases.json:/passphrases.json:ro" \
     "${recovery_image}" "/materialized/${archive_relative}" \
     --passphrases-file /passphrases.json --description-only
@@ -203,14 +213,16 @@ tag_paths=("${archive_relative}/recovery.json" "${archive_relative}/manifest.jso
 tag_prefix="${archive_relative}/tags/nodes/"
 "${instrument[@]}" "${tag_paths[@]}" --prefix "${tag_prefix}"
 docker run --rm --network none --user 65532:65532 \
-  --volume "${volume_name}:/source:ro" --volume "${proof_root}:/proof" \
-  --entrypoint riverhog-storage-adapter-filesystem-materialize "${filesystem_image}" \
-  /source /proof/tags \
+  --volume "${volume_name}:/source:ro" \
+  --volume "${proof_root}/materializer-tags:/work" \
+  --entrypoint /bin/sh "${filesystem_image}" -ceu \
+  'test ! -e /oracle; test ! -e /prior-full; test ! -e /passphrases.json; exec riverhog-storage-adapter-filesystem-materialize "$@"' \
+  sh /source /work/tree \
   --path "${tag_paths[0]}" --path "${tag_paths[1]}" --path "${tag_paths[2]}" \
   --prefix "${tag_prefix}"
 docker run --rm --network none --read-only \
   --tmpfs /tmp:rw,noexec,nosuid,nodev,mode=700,uid=65532,gid=65532 \
-  --volume "${proof_root}/tags:/materialized:ro" \
+  --volume "${proof_root}/materializer-tags/tree:/materialized:ro" \
   --volume "${proof_root}/passphrases.json:/passphrases.json:ro" \
   "${recovery_image}" "/materialized/${archive_relative}" \
   --passphrases-file /passphrases.json --tags-only >"${proof_root}/tags.json-seq"
@@ -222,7 +234,7 @@ for directory in invalid-corrupt invalid-missing invalid-authority invalid-outpu
 done
 docker run --rm --network none --volume "${proof_root}:/proof" \
   alpine:3.22@sha256:14358309a308569c32bdc37e2e0e9694be33a9d99e68afb0f5ff33cc1f695dce \
-  sh -ceu 'cp -a /proof/full/. /proof/invalid-corrupt/; cp -a /proof/full/. /proof/invalid-missing/; cp -a /proof/full/. /proof/invalid-authority/'
+  sh -ceu 'cp -a /proof/materializer-full/tree/. /proof/invalid-corrupt/; cp -a /proof/materializer-full/tree/. /proof/invalid-missing/; cp -a /proof/materializer-full/tree/. /proof/invalid-authority/'
 docker run --rm --network none --volume "${proof_root}/invalid-corrupt:/tree" \
   --entrypoint python "${recovery_image}" -c \
   'from pathlib import Path

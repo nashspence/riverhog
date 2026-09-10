@@ -11,6 +11,7 @@ from riverhog_client import (
     ProducerArtifactIdentity,
     ProducerFile,
 )
+from riverhog_client.initial_tags import prepare_initial_collection_tags
 from riverhog_core.app_permissions import (
     ALL_RESOURCES,
     COLLECTIONS_CREATE,
@@ -44,6 +45,7 @@ class _CustodyApi:
         self.heartbeats = 0
         self.session_calls = 0
         self.initial_tags: tuple[str, ...] = ()
+        self.initial_tag_set_identity = ""
         self.tag_batches: list[tuple[str, ...]] = []
 
     def spawn(self) -> _CustodyApi:
@@ -59,6 +61,7 @@ class _CustodyApi:
     ) -> dict[str, object]:
         assert kwargs["custody_mode"] == "custody-transfer"
         self.initial_tags = tuple(str(tag) for tag in kwargs.get("tags", ()))
+        self.initial_tag_set_identity = str(kwargs["initial_tag_set_identity"])
         self.session_calls += 1
         return {
             "collection_id": 42,
@@ -191,11 +194,30 @@ def test_incremental_producer_stages_unbounded_logical_tags_in_bounded_requests(
     producer.stop()
 
     assert api.initial_tags == tags[:COLLECTION_TAG_REQUEST_MEMBERS_MAX]
+    with prepare_initial_collection_tags(tags) as prepared:
+        assert api.initial_tag_set_identity == prepared.tag_set_identity
     assert api.tag_batches == [
         tags[COLLECTION_TAG_REQUEST_MEMBERS_MAX : 2 * COLLECTION_TAG_REQUEST_MEMBERS_MAX],
         tags[2 * COLLECTION_TAG_REQUEST_MEMBERS_MAX :],
     ]
     assert all(len(batch) <= COLLECTION_TAG_REQUEST_MEMBERS_MAX for batch in api.tag_batches)
+
+
+def test_incremental_producer_rejects_late_invalid_tags_before_remote_mutation() -> None:
+    api = _CustodyApi()
+    tags = [*(f"classification/{index:04d}" for index in range(150)), " invalid"]
+
+    with pytest.raises(ValueError):
+        IncrementalCollectionProducer(
+            api,  # type: ignore[arg-type]
+            producer_app="fixture-target",
+            adapter_id="fixture-target/v1",
+            adapter_version="1.0.0",
+            ingest_source="transform:fixture",
+            source_event_id="fixture-execution",
+            tags=tags,
+        )
+    assert api.session_calls == 0
 
 
 def test_incremental_producer_resumes_without_rereading_custodied_local_bytes(
@@ -344,6 +366,8 @@ class _ServiceApi:
         return self.service.create_or_resume(
             idempotency_key=idempotency_key,
             ingest_source=str(kwargs["ingest_source"]),
+            tags=tuple(str(tag) for tag in kwargs.get("tags", ())),
+            initial_tag_set_identity=str(kwargs["initial_tag_set_identity"]),
             archive_store=None,
             initiator=self.principal,
             event_context=None,

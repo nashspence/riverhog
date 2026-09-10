@@ -10,6 +10,7 @@ import pytest
 from piggity import main as riverhog_main
 from piggity.upload_progress import CollectionUploadProgressState, format_upload_progress_line
 from riverhog_client import put_collection_upload_unit
+from riverhog_client.initial_tags import prepare_initial_collection_tags
 from riverhog_protocol import (
     COLLECTION_TAG_REQUEST_MEMBERS_MAX,
     CollectionUploadUnitAssignmentDocument,
@@ -285,6 +286,8 @@ def test_direct_collection_upload_registers_plans_and_finalizes(
             assert idempotency_key == "test-upload"
             assert _kwargs["description"] == "Morning footage"
             assert _kwargs["tags"] == tuple(requested_tags[:COLLECTION_TAG_REQUEST_MEMBERS_MAX])
+            with prepare_initial_collection_tags(requested_tags) as prepared:
+                assert _kwargs["initial_tag_set_identity"] == prepared.tag_set_identity
             return {
                 "collection_id": COLLECTION_ID,
                 "state": "open",
