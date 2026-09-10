@@ -1581,10 +1581,9 @@ class ArchiveCopyObjectUploadRecord(Base):
     sha256: Mapped[str | None] = mapped_column(String(64), nullable=True)
     write_token: Mapped[str | None] = mapped_column(String, nullable=True)
     expected_stored_bytes: Mapped[int | None] = mapped_column(BigInteger, nullable=True)
-    write_segments_json: Mapped[str | None] = mapped_column(String, nullable=True)
     uploaded_bytes: Mapped[int] = mapped_column(BigInteger, default=0)
-    uploaded_segments: Mapped[int] = mapped_column(Integer, default=0)
-    total_segments: Mapped[int] = mapped_column(Integer, default=0)
+    uploaded_segments: Mapped[int] = mapped_column(BigInteger, default=0)
+    total_segments: Mapped[int] = mapped_column(BigInteger, default=0)
 
     __table_args__ = (
         ForeignKeyConstraint(

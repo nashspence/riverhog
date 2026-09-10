@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import hashlib
+import json
 from collections.abc import Iterator
 from dataclasses import dataclass
 from datetime import datetime
@@ -33,10 +34,12 @@ from riverhog_storage_adapter_protocol import (
     SmallObjectWriteRequest,
     StorageAdapterRejection,
     WriteCompleteRequest,
+    WriteSegmentListRequest,
+    WriteSegmentPage,
     WriteSegmentReceipt,
-    WriteSegmentSet,
     WriteSession,
     WriteStartRequest,
+    write_completion_authority,
 )
 from time_formats import format_utc_timestamp, utc_now
 
@@ -48,6 +51,36 @@ _DEFAULT_WRITE_CHUNK_BYTES = 1024 * 1024
 _STORED_SHA256_METADATA = f"{ADAPTER_PRIVATE_ASSERTION_PREFIX}stored-sha256"
 _PLACEMENT_METADATA = f"{ADAPTER_PRIVATE_ASSERTION_PREFIX}placement"
 _RESERVED_METADATA = frozenset({_STORED_SHA256_METADATA, _PLACEMENT_METADATA})
+_TRAVERSAL_DOMAIN = b"riverhog-s3-write-segment-traversal/v1\x00"
+
+
+def _segment_traversal_token(segments: tuple[WriteSegmentReceipt, ...]) -> str:
+    digest = hashlib.sha256(_TRAVERSAL_DOMAIN)
+    for segment in segments:
+        encoded = json.dumps(
+            segment.model_dump(mode="json", exclude_none=True),
+            allow_nan=False,
+            ensure_ascii=False,
+            separators=(",", ":"),
+            sort_keys=True,
+        ).encode("utf-8")
+        digest.update(len(encoded).to_bytes(8, "big"))
+        digest.update(encoded)
+    return digest.hexdigest()
+
+
+def _segments_can_complete(
+    segments: tuple[WriteSegmentReceipt, ...],
+    *,
+    expected_bytes: int,
+    minimum_nonfinal_bytes: int,
+) -> bool:
+    return (
+        bool(segments)
+        and tuple(item.number for item in segments) == tuple(range(1, len(segments) + 1))
+        and sum(item.stored_bytes for item in segments) == expected_bytes
+        and all(item.stored_bytes >= minimum_nonfinal_bytes for item in segments[:-1])
+    )
 
 
 @dataclass(frozen=True, slots=True)
@@ -220,7 +253,33 @@ class S3StorageAdapter:
             stored_bytes=stored_bytes,
         )
 
-    def list_segments(self, session: WriteSession) -> WriteSegmentSet:
+    def list_segments(self, request: WriteSegmentListRequest) -> WriteSegmentPage:
+        parts = self._listed_segments(request.session)
+        traversal_token = _segment_traversal_token(parts)
+        if request.traversal_token is not None and request.traversal_token != traversal_token:
+            raise StorageAdapterRejection(
+                "traversal_invalidated",
+                "accepted S3 write segments changed during traversal",
+            )
+        remaining = tuple(part for part in parts if part.number > request.after_number)
+        page = remaining[: request.maximum_items]
+        has_more = len(remaining) > len(page)
+        completion = None
+        if not has_more and _segments_can_complete(
+            parts,
+            expected_bytes=request.session.expected_bytes,
+            minimum_nonfinal_bytes=_MINIMUM_NONFINAL_PART_BYTES,
+        ):
+            completion = write_completion_authority(parts)
+        return WriteSegmentPage(
+            session=request.session,
+            traversal_token=traversal_token,
+            segments=page,
+            next_after_number=page[-1].number if has_more else None,
+            completion=completion,
+        )
+
+    def _listed_segments(self, session: WriteSession) -> tuple[WriteSegmentReceipt, ...]:
         request: dict[str, Any] = {
             "Bucket": self._config.bucket,
             "Key": self._key(session.object_path),
@@ -246,20 +305,36 @@ class S3StorageAdapter:
                 raise RuntimeError("S3 multipart listing omitted its next marker")
             request["PartNumberMarker"] = int(str(marker))
         parts.sort(key=lambda current: current.number)
-        return WriteSegmentSet(session=session, segments=tuple(parts))
+        return tuple(parts)
 
     def complete_write(
         self,
         request: WriteCompleteRequest,
     ) -> CompletedObjectReceipt:
-        if len(request.segments) > _MAXIMUM_PART_COUNT or any(
-            part.stored_bytes > _MAXIMUM_PART_BYTES for part in request.segments
+        lookup = CompletedWriteLookupRequest(
+            object_path=request.session.object_path,
+            expected_bytes=request.expected_bytes,
+            expected_content_type=request.expected_content_type,
+            required_identity_assertions=request.required_identity_assertions,
+            expected_placement=request.expected_placement,
+        )
+        recovered = self.find_completed_write(lookup)
+        if recovered is not None:
+            return recovered
+        parts = self._listed_segments(request.session)
+        if write_completion_authority(parts) != request.completion:
+            raise StorageAdapterRejection(
+                "identity_conflict",
+                "S3 write completion authority differs from accepted segments",
+            )
+        if len(parts) > _MAXIMUM_PART_COUNT or any(
+            part.stored_bytes > _MAXIMUM_PART_BYTES for part in parts
         ):
             raise StorageAdapterRejection(
                 "invalid_request",
                 "multipart completion exceeds the S3 adapter limits",
             )
-        if any(part.stored_bytes < _MINIMUM_NONFINAL_PART_BYTES for part in request.segments[:-1]):
+        if any(part.stored_bytes < _MINIMUM_NONFINAL_PART_BYTES for part in parts[:-1]):
             raise StorageAdapterRejection(
                 "invalid_request",
                 "multipart completion contains an undersized non-final part",
@@ -269,10 +344,7 @@ class S3StorageAdapter:
             "Key": self._key(request.session.object_path),
             "UploadId": request.session.write_token,
             "MultipartUpload": {
-                "Parts": [
-                    {"PartNumber": part.number, "ETag": part.segment_token}
-                    for part in request.segments
-                ]
+                "Parts": [{"PartNumber": part.number, "ETag": part.segment_token} for part in parts]
             },
             "IfNoneMatch": "*",
         }
@@ -290,15 +362,7 @@ class S3StorageAdapter:
                 "PreconditionFailed",
             }:
                 raise
-            recovered = self.find_completed_write(
-                CompletedWriteLookupRequest(
-                    object_path=request.session.object_path,
-                    expected_bytes=request.expected_bytes,
-                    expected_content_type=request.expected_content_type,
-                    required_identity_assertions=request.required_identity_assertions,
-                    expected_placement=request.expected_placement,
-                )
-            )
+            recovered = self.find_completed_write(lookup)
             if recovered is None:
                 raise RuntimeError(
                     "conditional multipart completion failed without a completed object"

@@ -129,7 +129,6 @@ def test_initialize_db_creates_current_catalog(tmp_path: Path) -> None:
         "sha256",
         "write_token",
         "expected_stored_bytes",
-        "write_segments_json",
         "uploaded_bytes",
         "uploaded_segments",
         "total_segments",

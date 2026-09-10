@@ -52,6 +52,9 @@ from riverhog_core.ports.archive_objects import (
     CompletedObjectReceipt,
     ImmutableObjectReceipt,
     ResumableWriteConstraints,
+    WriteCompletionAuthority,
+    WriteSegmentCursor,
+    WriteSegmentPage,
     WriteSegmentReceipt,
     WriteSession,
 )
@@ -93,10 +96,36 @@ from riverhog_provenance import (
     validate_journal,
 )
 from riverhog_storage_adapter_protocol import ObjectPlacement
+from riverhog_storage_adapter_protocol import (
+    WriteSegmentReceipt as AdapterWriteSegmentReceipt,
+)
+from riverhog_storage_adapter_protocol import (
+    write_completion_authority as adapter_write_completion_authority,
+)
 from sqlalchemy.orm import Session
 
 from tests.provenance_observer import native_provenance_observer
 from tests.unit.db_helpers import sqlite_url
+
+
+def _completion_authority(
+    receipts: tuple[WriteSegmentReceipt, ...],
+) -> WriteCompletionAuthority:
+    authority = adapter_write_completion_authority(
+        AdapterWriteSegmentReceipt(
+            number=receipt.number,
+            segment_token=receipt.segment_token,
+            stored_bytes=receipt.bytes,
+            stored_sha256=receipt.sha256,
+        )
+        for receipt in receipts
+    )
+    return WriteCompletionAuthority(
+        segment_count=authority.segment_count,
+        stored_bytes=authority.stored_bytes,
+        sequence_sha256=authority.sequence_sha256,
+    )
+
 
 COLLECTION_ID = 1
 UPLOADED_AT = "2026-07-15T00:00:00.000000Z"
@@ -953,9 +982,14 @@ class MemoryArchiveStore:
             sha256=hashlib.sha256(content).hexdigest(),
         )
 
-    def list_segments(self, *, session: WriteSession) -> tuple[WriteSegmentReceipt, ...]:
+    def list_segments(
+        self,
+        *,
+        session: WriteSession,
+        cursor: WriteSegmentCursor,
+    ) -> WriteSegmentPage:
         _path, _content_type, _metadata, segments = self._writes[session.write_token]
-        return tuple(
+        receipts = tuple(
             WriteSegmentReceipt(
                 number=number,
                 segment_token=hashlib.sha256(content).hexdigest(),
@@ -964,12 +998,26 @@ class MemoryArchiveStore:
             )
             for number, content in sorted(segments.items())
         )
+        traversal_token = hashlib.sha256(repr(receipts).encode()).hexdigest()
+        if cursor.traversal_token not in {None, traversal_token}:
+            raise RuntimeError("write-segment traversal invalidated")
+        page_segments = tuple(
+            receipt for receipt in receipts if receipt.number > cursor.after_number
+        )[:128]
+        has_more = bool(page_segments) and page_segments[-1].number < receipts[-1].number
+        return WriteSegmentPage(
+            segments=page_segments,
+            next_cursor=(
+                WriteSegmentCursor(page_segments[-1].number, traversal_token) if has_more else None
+            ),
+            completion=(None if has_more else _completion_authority(receipts)),
+        )
 
     def complete_write(
         self,
         *,
         session: WriteSession,
-        segments: tuple[WriteSegmentReceipt, ...],
+        completion: WriteCompletionAuthority,
         expected_bytes: int,
         expected_content_type: str,
         expected_metadata: dict[str, str],
@@ -979,7 +1027,17 @@ class MemoryArchiveStore:
         )
         assert content_type == expected_content_type
         assert metadata == expected_metadata
-        content = b"".join(written_segments[current.number] for current in segments)
+        receipts = tuple(
+            WriteSegmentReceipt(
+                number=number,
+                segment_token=hashlib.sha256(content).hexdigest(),
+                bytes=len(content),
+                sha256=hashlib.sha256(content).hexdigest(),
+            )
+            for number, content in sorted(written_segments.items())
+        )
+        assert _completion_authority(receipts) == completion
+        content = b"".join(written_segments[current.number] for current in receipts)
         assert len(content) == expected_bytes
         self.objects[object_path] = content
         self.object_content_types[object_path] = content_type

@@ -12,8 +12,12 @@ from riverhog_storage_adapter_protocol import (
     StorageAdapterPort,
     StorageAdapterRejection,
     WriteCompleteRequest,
+    WriteSegmentListRequest,
     WriteStartRequest,
     validated_storage_adapter,
+)
+from riverhog_storage_adapter_protocol import (
+    WriteCompletionAuthority as AdapterWriteCompletionAuthority,
 )
 from riverhog_storage_adapter_protocol import (
     WriteSegmentReceipt as AdapterWriteSegmentReceipt,
@@ -27,6 +31,9 @@ from riverhog_core.ports.archive_objects import (
     CompletedObjectReceipt,
     ImmutableObjectReceipt,
     ResumableWriteConstraints,
+    WriteCompletionAuthority,
+    WriteSegmentCursor,
+    WriteSegmentPage,
     WriteSegmentReceipt,
     WriteSession,
 )
@@ -86,24 +93,46 @@ class StorageAdapterArchiveResumableObjectStore:
         )
         return _write_segment(receipt)
 
-    def list_segments(self, *, session: WriteSession) -> tuple[WriteSegmentReceipt, ...]:
-        return tuple(
-            _write_segment(current)
-            for current in self._adapter.list_segments(_adapter_session(session)).segments
+    def list_segments(
+        self,
+        *,
+        session: WriteSession,
+        cursor: WriteSegmentCursor,
+    ) -> WriteSegmentPage:
+        page = self._adapter.list_segments(
+            WriteSegmentListRequest(
+                session=_adapter_session(session),
+                after_number=cursor.after_number,
+                traversal_token=cursor.traversal_token,
+            )
+        )
+        return WriteSegmentPage(
+            segments=tuple(_write_segment(current) for current in page.segments),
+            next_cursor=(
+                WriteSegmentCursor(
+                    after_number=page.next_after_number,
+                    traversal_token=page.traversal_token,
+                )
+                if page.next_after_number is not None
+                else None
+            ),
+            completion=(
+                _write_completion(page.completion) if page.completion is not None else None
+            ),
         )
 
     def complete_write(
         self,
         *,
         session: WriteSession,
-        segments: tuple[WriteSegmentReceipt, ...],
+        completion: WriteCompletionAuthority,
         expected_bytes: int,
         expected_content_type: str,
         expected_metadata: dict[str, str],
     ) -> CompletedObjectReceipt:
         request = WriteCompleteRequest(
             session=_adapter_session(session),
-            segments=tuple(_adapter_segment(current) for current in segments),
+            completion=_adapter_completion(completion),
             expected_bytes=expected_bytes,
             expected_content_type=expected_content_type,
             required_identity_assertions=expected_metadata,
@@ -240,12 +269,23 @@ def _write_session(session: AdapterWriteSession) -> WriteSession:
     )
 
 
-def _adapter_segment(segment: WriteSegmentReceipt) -> AdapterWriteSegmentReceipt:
-    return AdapterWriteSegmentReceipt(
-        number=segment.number,
-        segment_token=segment.segment_token,
-        stored_bytes=segment.bytes,
-        stored_sha256=segment.sha256,
+def _adapter_completion(
+    completion: WriteCompletionAuthority,
+) -> AdapterWriteCompletionAuthority:
+    return AdapterWriteCompletionAuthority(
+        segment_count=completion.segment_count,
+        stored_bytes=completion.stored_bytes,
+        sequence_sha256=completion.sequence_sha256,
+    )
+
+
+def _write_completion(
+    completion: AdapterWriteCompletionAuthority,
+) -> WriteCompletionAuthority:
+    return WriteCompletionAuthority(
+        segment_count=completion.segment_count,
+        stored_bytes=completion.stored_bytes,
+        sequence_sha256=completion.sequence_sha256,
     )
 
 

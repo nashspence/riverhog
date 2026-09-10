@@ -29,6 +29,26 @@ class WriteSegmentReceipt:
 
 
 @dataclass(frozen=True, slots=True)
+class WriteCompletionAuthority:
+    segment_count: int
+    stored_bytes: int
+    sequence_sha256: str
+
+
+@dataclass(frozen=True, slots=True)
+class WriteSegmentCursor:
+    after_number: int = 0
+    traversal_token: str | None = None
+
+
+@dataclass(frozen=True, slots=True)
+class WriteSegmentPage:
+    segments: tuple[WriteSegmentReceipt, ...]
+    next_cursor: WriteSegmentCursor | None
+    completion: WriteCompletionAuthority | None
+
+
+@dataclass(frozen=True, slots=True)
 class WriteSession:
     object_path: str
     write_token: str
@@ -65,13 +85,18 @@ class ArchiveResumableObjectStore(Protocol):
         content: bytes,
     ) -> WriteSegmentReceipt: ...
 
-    def list_segments(self, *, session: WriteSession) -> tuple[WriteSegmentReceipt, ...]: ...
+    def list_segments(
+        self,
+        *,
+        session: WriteSession,
+        cursor: WriteSegmentCursor,
+    ) -> WriteSegmentPage: ...
 
     def complete_write(
         self,
         *,
         session: WriteSession,
-        segments: tuple[WriteSegmentReceipt, ...],
+        completion: WriteCompletionAuthority,
         expected_bytes: int,
         expected_content_type: str,
         expected_metadata: dict[str, str],

@@ -17,6 +17,7 @@ from riverhog_storage_adapter_protocol import (
     ObjectLocator,
     ObjectReadRequest,
     WriteCompleteRequest,
+    WriteSegmentListRequest,
     WriteSegmentReceipt,
     WriteSession,
     WriteStartRequest,
@@ -135,7 +136,8 @@ def resume(path: Path) -> dict[str, object]:
             raise RuntimeError("restarted storage adapter descriptor changed")
         if client.begin_write(request) != session:
             raise RuntimeError("restarted storage adapter changed the write session")
-        if client.list_segments(session).segments != (first_segment,):
+        first_page = client.list_segments(WriteSegmentListRequest(session=session))
+        if first_page.segments != (first_segment,):
             raise RuntimeError("restarted storage adapter lost its committed segment")
         second_segment = client.write_segment(
             session=session,
@@ -143,10 +145,14 @@ def resume(path: Path) -> dict[str, object]:
             stored_bytes=len(_SECOND_SEGMENT),
             content=_SECOND_SEGMENT,
         )
-        segments = (first_segment, second_segment)
+        completed_page = client.list_segments(WriteSegmentListRequest(session=session))
+        if completed_page.segments != (first_segment, second_segment):
+            raise RuntimeError("restarted storage adapter segment traversal changed")
+        if completed_page.completion is None:
+            raise RuntimeError("restarted storage adapter did not expose completion authority")
         completion = WriteCompleteRequest(
             session=session,
-            segments=segments,
+            completion=completed_page.completion,
             expected_bytes=first_segment_bytes + len(_SECOND_SEGMENT),
             expected_content_type=request.content_type,
             required_identity_assertions=request.required_identity_assertions,

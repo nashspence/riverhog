@@ -23,14 +23,17 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
-import ijson  # type: ignore[import-untyped]
 from riverhog_storage_adapter_protocol import (
     DeletePrefixRequest,
     ObjectLocator,
-    ObjectMetadataReceipt,
+    WriteSegmentReceipt,
 )
 
-from riverhog_storage_adapter_filesystem.adapter import _PartRecord
+from riverhog_storage_adapter_filesystem.adapter import (
+    _ObjectRecord,
+    _PartRecord,
+    _SegmentAuthority,
+)
 
 _STATE_SCHEMA = "riverhog-filesystem-materialization-state/v1"
 _COMMITMENT_DOMAIN = b"riverhog-filesystem-materialization-source/v1\0"
@@ -41,10 +44,9 @@ _PRIVATE_DIRECTORY_MODE = 0o700
 _PRIVATE_FILE_MODE = 0o600
 _PROJECTION_BATCH_ROWS = 128
 _CLEANUP_BATCH_ROWS = 512
-_OBJECT_SCHEMA = "riverhog-filesystem-object/v1"
 _BOOTSTRAP_SCHEMA = "riverhog-filesystem-materialization-bootstrap/v1"
 _COMPLETION_SCHEMA = "riverhog-filesystem-materialization-completion/v1"
-_IDENTITY_RECORD_BYTES_MAX = 8192
+_IDENTITY_RECORD_BYTES_MAX = 64 * 1024
 
 
 class MaterializationError(RuntimeError):
@@ -648,9 +650,32 @@ def _scan_projection(
                 state.commit()
                 inserted_since_commit = 0
 
-        record, header_json = _stream_object_metadata(metadata_path, accept_part=accept_part)
+        record, header_json = _read_object_metadata(metadata_path)
         if record.object_path != object_path or record.revision != revision:
             raise MaterializationError("filesystem object metadata differs from its current path")
+        segment_ledger = revision_dir / "segments.sqlite3"
+        if record.segment_count:
+            _stream_segment_ledger(
+                segment_ledger,
+                record=record,
+                accept_part=accept_part,
+            )
+            source_metadata_bytes += segment_ledger.stat(follow_symlinks=False).st_size
+        else:
+            if segment_ledger.exists() or segment_ledger.is_symlink():
+                raise MaterializationError(
+                    "small filesystem object unexpectedly contains a segment ledger"
+                )
+            if record.stored_sha256 is None:
+                raise MaterializationError("small filesystem object is missing its digest")
+            accept_part(
+                _PartRecord(
+                    number=1,
+                    offset=0,
+                    stored_bytes=record.stored_bytes,
+                    stored_sha256=record.stored_sha256,
+                )
+            )
         payload = revision_dir / "payload.data"
         _require_regular_file(payload, "filesystem object payload")
         if payload.stat(follow_symlinks=False).st_size != record.stored_bytes:
@@ -757,149 +782,101 @@ def _cleanup_inactive_generations(state: sqlite3.Connection) -> None:
     state.commit()
 
 
-def _stream_object_metadata(
-    path: Path,
-    *,
-    accept_part: Any,
-) -> tuple[_ProjectedObject, str]:
-    expected = {
-        "schema",
-        "object_path",
-        "revision",
-        "entity_token",
-        "stored_bytes",
-        "stored_sha256",
-        "content_type",
-        "required_identity_assertions",
-        "placement",
-        "completed_at",
-        "parts",
-    }
-    scalars: dict[str, object] = {}
-    assertions: dict[str, str] = {}
-    top_keys: set[str] = set()
-    assertion_key: str | None = None
-    part: dict[str, object] | None = None
-    part_key: str | None = None
-    next_part = 1
-    next_offset = 0
-    part_bytes = 0
+def _read_object_metadata(path: Path) -> tuple[_ObjectRecord, str]:
     try:
-        with path.open("rb") as stream:
-            for prefix, event, value in ijson.parse(stream):
-                if prefix == "" and event == "map_key":
-                    if value in top_keys:
-                        raise MaterializationError(
-                            "filesystem object metadata contains a duplicate field"
-                        )
-                    top_keys.add(str(value))
-                    continue
-                if prefix in expected - {"required_identity_assertions", "parts"} and event in {
-                    "string",
-                    "number",
-                    "null",
-                }:
-                    if prefix in scalars:
-                        raise MaterializationError(
-                            "filesystem object metadata contains a duplicate value"
-                        )
-                    scalars[prefix] = value
-                    continue
-                if prefix == "required_identity_assertions" and event == "map_key":
-                    assertion_key = str(value)
-                    if assertion_key in assertions:
-                        raise MaterializationError(
-                            "filesystem object assertions contain a duplicate field"
-                        )
-                    continue
-                if prefix.startswith("required_identity_assertions.") and event == "string":
-                    if assertion_key is None:
-                        raise MaterializationError("filesystem object assertions are invalid")
-                    assertions[assertion_key] = str(value)
-                    assertion_key = None
-                    continue
-                if prefix == "parts.item" and event == "start_map":
-                    if part is not None:
-                        raise MaterializationError("filesystem object parts are invalid")
-                    part = {}
-                    continue
-                if prefix == "parts.item" and event == "map_key":
-                    if part is None or str(value) in part:
-                        raise MaterializationError("filesystem object part is invalid")
-                    part_key = str(value)
-                    continue
-                if prefix.startswith("parts.item.") and event in {"string", "number", "null"}:
-                    if part is None or part_key is None:
-                        raise MaterializationError("filesystem object part is invalid")
-                    part[part_key] = value
-                    part_key = None
-                    continue
-                if prefix == "parts.item" and event == "end_map":
-                    if part is None:
-                        raise MaterializationError("filesystem object part is invalid")
-                    try:
-                        parsed_part = _PartRecord.from_json(part)
-                    except RuntimeError as exc:
-                        raise MaterializationError(str(exc)) from exc
-                    if parsed_part.number != next_part or parsed_part.offset != next_offset:
-                        raise MaterializationError("filesystem object parts are not contiguous")
-                    accept_part(parsed_part)
-                    next_part += 1
-                    next_offset += parsed_part.stored_bytes
-                    part_bytes += parsed_part.stored_bytes
-                    part = None
-                    part_key = None
-    except (ijson.JSONError, UnicodeError) as exc:
-        raise MaterializationError("filesystem object metadata is unreadable") from exc
-    if top_keys != expected or part is not None or assertion_key is not None or next_part == 1:
-        raise MaterializationError("filesystem object metadata has an invalid shape")
-    if scalars.get("schema") != _OBJECT_SCHEMA:
-        raise MaterializationError("filesystem object metadata has an invalid shape")
-    try:
-        receipt = ObjectMetadataReceipt.model_validate(
-            {
-                "object_path": scalars["object_path"],
-                "revision": scalars["revision"],
-                "entity_token": scalars["entity_token"],
-                "stored_bytes": scalars["stored_bytes"],
-                "stored_sha256": scalars["stored_sha256"],
-                "content_type": scalars["content_type"],
-                "observed_identity_assertions": assertions,
-                "verified_placement": scalars["placement"],
-                "completed_at": scalars["completed_at"],
-            }
-        )
-    except (KeyError, ValueError) as exc:
-        raise MaterializationError("filesystem object metadata is invalid") from exc
-    if part_bytes != receipt.stored_bytes:
-        raise MaterializationError("filesystem object parts differ from its byte count")
-    header = {
-        "completed_at": receipt.completed_at,
-        "content_type": receipt.content_type,
-        "entity_token": receipt.entity_token,
-        "object_path": receipt.object_path,
-        "placement": receipt.verified_placement,
-        "required_identity_assertions": receipt.observed_identity_assertions,
-        "revision": receipt.revision,
-        "schema": _OBJECT_SCHEMA,
-        "stored_bytes": receipt.stored_bytes,
-        "stored_sha256": receipt.stored_sha256,
-    }
+        raw = json.loads(_read_text(path, maximum_bytes=_IDENTITY_RECORD_BYTES_MAX))
+        if not isinstance(raw, dict):
+            raise MaterializationError("filesystem object metadata root is invalid")
+        record = _ObjectRecord.from_json(raw)
+    except (json.JSONDecodeError, RuntimeError, UnicodeError) as exc:
+        raise MaterializationError("filesystem object metadata has an invalid shape") from exc
     return (
-        _ProjectedObject(
-            object_path=receipt.object_path,
-            revision=receipt.revision or "",
-            stored_bytes=receipt.stored_bytes,
-            stored_sha256=receipt.stored_sha256,
-        ),
+        record,
         json.dumps(
-            header,
+            record.as_json(),
             allow_nan=False,
             ensure_ascii=False,
             separators=(",", ":"),
             sort_keys=True,
         ),
     )
+
+
+def _stream_segment_ledger(
+    path: Path,
+    *,
+    record: _ObjectRecord,
+    accept_part: Any,
+) -> None:
+    _require_regular_file(path, "filesystem object segment ledger")
+    database = sqlite3.connect(f"file:{path}?mode=ro&immutable=1", uri=True)
+    expected_number = 1
+    expected_offset = 0
+    observed = _SegmentAuthority()
+
+    def verify_receipts() -> None:
+        nonlocal expected_number, expected_offset
+        cursor = database.execute(
+            "SELECT number, offset, segment_token, stored_bytes, stored_sha256 "
+            "FROM segment ORDER BY length(number), number"
+        )
+        while rows := cursor.fetchmany(_PROJECTION_BATCH_ROWS):
+            for row in rows:
+                try:
+                    number = _canonical_decimal(row[0], "segment number")
+                    offset = _canonical_decimal(row[1], "segment offset")
+                    stored_bytes = _canonical_decimal(row[3], "segment stored bytes")
+                    receipt = WriteSegmentReceipt(
+                        number=number,
+                        segment_token=str(row[2]),
+                        stored_bytes=stored_bytes,
+                        stored_sha256=str(row[4]),
+                    )
+                except ValueError as exc:
+                    raise MaterializationError("filesystem segment ledger is invalid") from exc
+                if number != expected_number or offset != expected_offset:
+                    raise MaterializationError("filesystem object segments are not contiguous")
+                accept_part(
+                    _PartRecord(
+                        number=number,
+                        offset=offset,
+                        stored_bytes=stored_bytes,
+                        stored_sha256=receipt.stored_sha256,
+                    )
+                )
+                expected_number += 1
+                expected_offset += stored_bytes
+                observed.add(receipt)
+
+    try:
+        verify_receipts()
+        authority = database.execute(
+            "SELECT segment_count, stored_bytes, combined_entry_sha256 "
+            "FROM authority WHERE singleton = 1"
+        ).fetchone()
+    except sqlite3.Error as exc:
+        raise MaterializationError("filesystem segment ledger is unreadable") from exc
+    finally:
+        database.close()
+    if authority is None:
+        raise MaterializationError("filesystem segment ledger authority is missing")
+    try:
+        persisted = _SegmentAuthority.from_state(
+            segment_count=authority[0],
+            stored_bytes=authority[1],
+            combined_entry_sha256=authority[2],
+        )
+    except RuntimeError as exc:
+        raise MaterializationError("filesystem segment ledger authority is invalid") from exc
+    completion = observed.completion()
+    if (
+        observed != persisted
+        or expected_offset != record.stored_bytes
+        or completion.segment_count != record.segment_count
+        or completion.stored_bytes != record.stored_bytes
+        or completion.sequence_sha256 != record.segment_sequence_sha256
+    ):
+        raise MaterializationError("filesystem object segment authority differs from its ledger")
 
 
 def _commit_field(digest: Any, value: bytes) -> None:
@@ -1307,39 +1284,17 @@ def _is_hex(value: str, length: int) -> bool:
 
 def _record(payload: str) -> _ProjectedObject:
     raw = json.loads(payload)
-    expected = {
-        "completed_at",
-        "content_type",
-        "entity_token",
-        "object_path",
-        "placement",
-        "required_identity_assertions",
-        "revision",
-        "schema",
-        "stored_bytes",
-        "stored_sha256",
-    }
-    if not isinstance(raw, dict) or set(raw) != expected or raw.get("schema") != _OBJECT_SCHEMA:
+    if not isinstance(raw, dict):
         raise MaterializationError("checkpoint object metadata is invalid")
     try:
-        receipt = ObjectMetadataReceipt(
-            object_path=raw["object_path"],
-            revision=raw["revision"],
-            entity_token=raw["entity_token"],
-            stored_bytes=raw["stored_bytes"],
-            stored_sha256=raw["stored_sha256"],
-            content_type=raw["content_type"],
-            observed_identity_assertions=raw["required_identity_assertions"],
-            verified_placement=raw["placement"],
-            completed_at=raw["completed_at"],
-        )
-    except ValueError as exc:
+        record = _ObjectRecord.from_json(raw)
+    except RuntimeError as exc:
         raise MaterializationError("checkpoint object metadata is invalid") from exc
     return _ProjectedObject(
-        object_path=receipt.object_path,
-        revision=receipt.revision or "",
-        stored_bytes=receipt.stored_bytes,
-        stored_sha256=receipt.stored_sha256,
+        object_path=record.object_path,
+        revision=record.revision,
+        stored_bytes=record.stored_bytes,
+        stored_sha256=record.stored_sha256,
     )
 
 
@@ -1391,6 +1346,16 @@ def _read_text(path: Path, *, maximum_bytes: int) -> str:
     if details.st_size > maximum_bytes:
         raise MaterializationError("filesystem adapter identity field exceeds its contract")
     return path.read_text(encoding="utf-8")
+
+
+def _canonical_decimal(value: object, label: str) -> int:
+    try:
+        parsed = int(str(value))
+    except (TypeError, ValueError) as exc:
+        raise MaterializationError(f"filesystem {label} is invalid") from exc
+    if parsed < 0 or str(parsed) != str(value):
+        raise MaterializationError(f"filesystem {label} is not canonical")
+    return parsed
 
 
 def _require_directory(path: Path, label: str) -> None:

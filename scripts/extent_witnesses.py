@@ -63,6 +63,23 @@ WITNESSES = (
         gates=("make unit", "make compose-smoke", "make provider-qualification"),
     ),
     SegmentedExtentWitness(
+        id="riverhog-storage-write-segment-progression/v1",
+        owner="riverhog-storage-adapter-protocol",
+        reasons=("bounded-storage-write-segment-page",),
+        test_node_ids=(
+            "packages/riverhog-storage-adapter-support/tests/"
+            "test_storage_adapter_support.py::"
+            "test_http_write_traversal_crosses_pages_and_process_restart",
+            "reference/riverhog/storage/filesystem/tests/"
+            "test_filesystem_storage_adapter.py::"
+            "test_segment_traversal_is_bounded_exact_and_restartable",
+            "reference/riverhog/storage/s3-support/tests/"
+            "test_s3_storage_adapter.py::"
+            "test_resumable_write_reconciles_segments_and_lost_completion",
+        ),
+        gates=("make unit", "make compose-smoke", "make provider-qualification"),
+    ),
+    SegmentedExtentWitness(
         id="riverhog-work-authority-append/v1",
         owner="riverhog",
         reasons=("bounded-authority-append",),

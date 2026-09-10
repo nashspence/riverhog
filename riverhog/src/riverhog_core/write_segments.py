@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from collections.abc import Sequence
+from collections.abc import Generator, Iterable, Iterator, Sequence
 from dataclasses import dataclass
 
 from riverhog_core.ports.archive_objects import ResumableWriteConstraints
@@ -33,33 +33,82 @@ def plan_write_segments(
     if minimum < 1 or (maximum is not None and maximum < minimum):
         raise ValueError("adapter write constraints are invalid")
 
-    plans: list[WriteSegmentPlan] = []
-    for archive_index, total in enumerate(archive_part_bytes, start=1):
-        object_final = archive_index == len(archive_part_bytes)
-        sizes = _segment_sizes(
-            total,
+    return tuple(iter_write_segments(archive_part_bytes, constraints))
+
+
+def iter_write_segments(
+    archive_part_bytes: Iterable[int],
+    constraints: ResumableWriteConstraints,
+) -> Iterator[WriteSegmentPlan]:
+    """Yield the adapter mapping without retaining the object's segment history."""
+
+    minimum = constraints.minimum_nonfinal_segment_bytes
+    maximum = constraints.maximum_segment_bytes
+    if minimum < 1 or (maximum is not None and maximum < minimum):
+        raise ValueError("adapter write constraints are invalid")
+
+    parts = iter(archive_part_bytes)
+    try:
+        current = next(parts)
+    except StopIteration as exc:
+        raise ValueError("archive parts must contain positive byte counts") from exc
+    archive_index = 1
+    segment_number = 0
+    for following in parts:
+        if current < 1:
+            raise ValueError("archive parts must contain positive byte counts")
+        segment_number = yield from _iter_archive_part_segments(
+            current,
+            archive_part_number=archive_index,
+            segment_number=segment_number,
             minimum=minimum,
             maximum=maximum,
-            object_final=object_final,
+            object_final=False,
+            maximum_segment_count=constraints.maximum_segment_count,
         )
-        offset = 0
-        for size in sizes:
-            plans.append(
-                WriteSegmentPlan(
-                    number=len(plans) + 1,
-                    archive_part_number=archive_index,
-                    archive_part_offset=offset,
-                    stored_bytes=size,
-                )
-            )
-            offset += size
+        archive_index += 1
+        current = following
+    if current < 1:
+        raise ValueError("archive parts must contain positive byte counts")
+    yield from _iter_archive_part_segments(
+        current,
+        archive_part_number=archive_index,
+        segment_number=segment_number,
+        minimum=minimum,
+        maximum=maximum,
+        object_final=True,
+        maximum_segment_count=constraints.maximum_segment_count,
+    )
 
-    if (
-        constraints.maximum_segment_count is not None
-        and len(plans) > constraints.maximum_segment_count
+
+def _iter_archive_part_segments(
+    total: int,
+    *,
+    archive_part_number: int,
+    segment_number: int,
+    minimum: int,
+    maximum: int | None,
+    object_final: bool,
+    maximum_segment_count: int | None,
+) -> Generator[WriteSegmentPlan, None, int]:
+    offset = 0
+    for size in _segment_sizes(
+        total,
+        minimum=minimum,
+        maximum=maximum,
+        object_final=object_final,
     ):
-        raise ValueError("authoritative object exceeds the adapter write-segment count")
-    return tuple(plans)
+        segment_number += 1
+        if maximum_segment_count is not None and segment_number > maximum_segment_count:
+            raise ValueError("authoritative object exceeds the adapter write-segment count")
+        yield WriteSegmentPlan(
+            number=segment_number,
+            archive_part_number=archive_part_number,
+            archive_part_offset=offset,
+            stored_bytes=size,
+        )
+        offset += size
+    return segment_number
 
 
 def _segment_sizes(
@@ -68,28 +117,29 @@ def _segment_sizes(
     minimum: int,
     maximum: int | None,
     object_final: bool,
-) -> tuple[int, ...]:
+) -> Iterator[int]:
     if maximum is None or total <= maximum:
         if not object_final and total < minimum:
             raise ValueError(
                 "authoritative object cannot satisfy adapter write-segment constraints"
             )
-        return (total,)
+        yield total
+        return
 
     count = (total + maximum - 1) // maximum
     final_minimum = 1 if object_final else minimum
     required = (count - 1) * minimum + final_minimum
     if total < required:
         raise ValueError("authoritative object cannot satisfy adapter write-segment constraints")
-    sizes = [minimum] * (count - 1) + [final_minimum]
     remaining = total - required
-    for index, size in enumerate(sizes):
+    for index in range(count):
+        size = final_minimum if index == count - 1 else minimum
         accepted = min(maximum - size, remaining)
-        sizes[index] += accepted
+        size += accepted
         remaining -= accepted
+        yield size
     if remaining:
         raise ValueError("authoritative object cannot satisfy adapter write-segment constraints")
-    return tuple(sizes)
 
 
-__all__ = ["WriteSegmentPlan", "plan_write_segments"]
+__all__ = ["WriteSegmentPlan", "iter_write_segments", "plan_write_segments"]

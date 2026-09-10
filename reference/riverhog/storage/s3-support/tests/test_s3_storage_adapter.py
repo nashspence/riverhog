@@ -23,6 +23,7 @@ from riverhog_storage_adapter_protocol import (
     SmallObjectWriteRequest,
     StorageAdapterRejection,
     WriteCompleteRequest,
+    WriteSegmentListRequest,
     WriteSession,
     WriteStartRequest,
 )
@@ -437,10 +438,14 @@ def test_resumable_write_reconciles_segments_and_lost_completion() -> None:
             content=b"second",
         ),
     )
-    assert restarted_adapter.list_segments(persisted_session).segments == segments
+    segment_page = restarted_adapter.list_segments(
+        WriteSegmentListRequest(session=persisted_session)
+    )
+    assert segment_page.segments == segments
+    assert segment_page.completion is not None
     completion = WriteCompleteRequest(
         session=persisted_session,
-        segments=segments,
+        completion=segment_page.completion,
         expected_bytes=len(first_content) + 6,
         expected_content_type=create.content_type,
         required_identity_assertions=create.required_identity_assertions,
@@ -506,7 +511,9 @@ def test_resumable_write_lists_sparse_provider_state_after_restart() -> None:
         content=content,
     )
 
-    assert restarted_adapter.list_segments(persisted_session).segments == (second,)
+    assert restarted_adapter.list_segments(
+        WriteSegmentListRequest(session=persisted_session)
+    ).segments == (second,)
 
 
 def test_identity_assertions_are_inert_while_placement_remains_explicit() -> None:

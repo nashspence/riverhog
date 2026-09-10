@@ -11721,7 +11721,7 @@
         {
           "distribution": "riverhog-server",
           "fixture_sha256s": [
-            "eb4087f428bbcaf51d562bba6efe445bde153778596385fdeaf30605e6281dd5"
+            "8b337f69f6bdc2665afd1b24a645301878925997d1a4416b607c82204d68bc96"
           ],
           "format": "state-schema/postgresql",
           "head": "v1_0001",
@@ -11799,8 +11799,8 @@
     },
     "extents": {
       "coverage": {
-        "classified": 1943,
-        "discovered": 1943,
+        "classified": 1946,
+        "discovered": 1946,
         "duplicate": 0,
         "missing": 0,
         "owners": {
@@ -11844,7 +11844,7 @@
           "riverhog-recover": 3,
           "riverhog-server": 34,
           "riverhog-storage-adapter-filesystem-materialize": 3,
-          "riverhog-storage-adapter-protocol": 63,
+          "riverhog-storage-adapter-protocol": 66,
           "stove0": 413,
           "stove0-api-client": 1,
           "stove0-observer-protocol": 76,
@@ -11857,11 +11857,11 @@
           "stove0-target-support": 1
         },
         "policies": {
-          "contract_max": 427,
+          "contract_max": 430,
           "extension_owned": 55,
-          "fixed": 900,
-          "operational_policy": 482,
-          "segmented_no_total_max": 79
+          "fixed": 901,
+          "operational_policy": 480,
+          "segmented_no_total_max": 80
         },
         "stale": 0,
         "undecided": 0
@@ -32930,20 +32930,55 @@
           "unit": "entries"
         },
         {
-          "capacity_authority": {
-            "declared_maximum": null,
-            "hidden_maximum": "forbidden",
-            "owner": "riverhog-storage-adapter-protocol"
-          },
-          "dimension": "cardinality",
-          "id": "protocol:generated:riverhog-storage-adapter:/schemas/WriteCompleteRequest/properties/segments:cardinality",
-          "maximum": null,
+          "dimension": "value",
+          "id": "protocol:generated:riverhog-storage-adapter:/schemas/WriteSegmentListRequest/properties/maximum_items:value",
+          "maximum": 128,
+          "minimum": 1,
           "owner": "riverhog-storage-adapter-protocol",
-          "policy": "operational_policy",
-          "reason": "no-declared-semantic-maximum",
-          "rule": "no-semantic-maximum/v1",
-          "source_pointer": "/external_contract/protocol_schemas/generated:riverhog-storage-adapter/schemas/WriteCompleteRequest/properties/segments",
+          "policy": "contract_max",
+          "reason": "schema-maximum",
+          "rule": "schema-bound/v1",
+          "source_pointer": "/external_contract/protocol_schemas/generated:riverhog-storage-adapter/schemas/WriteSegmentListRequest/properties/maximum_items",
+          "unit": "schema-value"
+        },
+        {
+          "dimension": "length",
+          "id": "protocol:generated:riverhog-storage-adapter:/schemas/WriteSegmentListRequest/properties/traversal_token/anyOf/0:length",
+          "maximum": 4000,
+          "minimum": 1,
+          "owner": "riverhog-storage-adapter-protocol",
+          "policy": "contract_max",
+          "reason": "schema-maximum",
+          "rule": "schema-bound/v1",
+          "source_pointer": "/external_contract/protocol_schemas/generated:riverhog-storage-adapter/schemas/WriteSegmentListRequest/properties/traversal_token/anyOf/0",
+          "unit": "characters"
+        },
+        {
+          "dimension": "cardinality",
+          "id": "protocol:generated:riverhog-storage-adapter:/schemas/WriteSegmentPage/properties/segments:cardinality",
+          "maximum": 128,
+          "minimum": null,
+          "owner": "riverhog-storage-adapter-protocol",
+          "policy": "segmented_no_total_max",
+          "progression": {
+            "progression": "exact-adapter-write-traversal"
+          },
+          "reason": "bounded-storage-write-segment-page",
+          "rule": "bounded-segment/v1",
+          "source_pointer": "/external_contract/protocol_schemas/generated:riverhog-storage-adapter/schemas/WriteSegmentPage/properties/segments",
           "unit": "items"
+        },
+        {
+          "dimension": "length",
+          "id": "protocol:generated:riverhog-storage-adapter:/schemas/WriteSegmentPage/properties/traversal_token:length",
+          "maximum": 4000,
+          "minimum": 1,
+          "owner": "riverhog-storage-adapter-protocol",
+          "policy": "contract_max",
+          "reason": "schema-maximum",
+          "rule": "schema-bound/v1",
+          "source_pointer": "/external_contract/protocol_schemas/generated:riverhog-storage-adapter/schemas/WriteSegmentPage/properties/traversal_token",
+          "unit": "characters"
         },
         {
           "dimension": "length",
@@ -32971,22 +33006,6 @@
           },
           "source_pointer": "/external_contract/protocol_schemas/generated:riverhog-storage-adapter/schemas/WriteSegmentReceipt/properties/stored_sha256/anyOf/0",
           "unit": "characters"
-        },
-        {
-          "capacity_authority": {
-            "declared_maximum": null,
-            "hidden_maximum": "forbidden",
-            "owner": "riverhog-storage-adapter-protocol"
-          },
-          "dimension": "cardinality",
-          "id": "protocol:generated:riverhog-storage-adapter:/schemas/WriteSegmentSet/properties/segments:cardinality",
-          "maximum": null,
-          "owner": "riverhog-storage-adapter-protocol",
-          "policy": "operational_policy",
-          "reason": "no-declared-semantic-maximum",
-          "rule": "no-semantic-maximum/v1",
-          "source_pointer": "/external_contract/protocol_schemas/generated:riverhog-storage-adapter/schemas/WriteSegmentSet/properties/segments",
-          "unit": "items"
         },
         {
           "dimension": "length",
@@ -33135,6 +33154,21 @@
         },
         {
           "dimension": "length",
+          "id": "protocol:generated:riverhog-storage-adapter:definition:WriteCompletionAuthority:/properties/sequence_sha256:length",
+          "maximum": 64,
+          "minimum": 64,
+          "owner": "riverhog-storage-adapter-protocol",
+          "policy": "fixed",
+          "reason": "fixed-public-representation",
+          "rule": "schema-bound/v1",
+          "source_constraint": {
+            "pattern": "^[0-9a-f]{64}$"
+          },
+          "source_pointer": "/external_contract/protocol_schemas/generated:riverhog-storage-adapter/schemas/WriteCompleteRequest/$defs/WriteCompletionAuthority/properties/sequence_sha256",
+          "unit": "characters"
+        },
+        {
+          "dimension": "length",
           "id": "protocol:generated:riverhog-storage-adapter:definition:WriteSegmentReceipt:/properties/segment_token:length",
           "maximum": 4000,
           "minimum": 1,
@@ -33142,7 +33176,7 @@
           "policy": "contract_max",
           "reason": "schema-maximum",
           "rule": "schema-bound/v1",
-          "source_pointer": "/external_contract/protocol_schemas/generated:riverhog-storage-adapter/schemas/WriteCompleteRequest/$defs/WriteSegmentReceipt/properties/segment_token",
+          "source_pointer": "/external_contract/protocol_schemas/generated:riverhog-storage-adapter/schemas/WriteSegmentPage/$defs/WriteSegmentReceipt/properties/segment_token",
           "unit": "characters"
         },
         {
@@ -33157,7 +33191,7 @@
           "source_constraint": {
             "pattern": "^[0-9a-f]{64}$"
           },
-          "source_pointer": "/external_contract/protocol_schemas/generated:riverhog-storage-adapter/schemas/WriteCompleteRequest/$defs/WriteSegmentReceipt/properties/stored_sha256/anyOf/0",
+          "source_pointer": "/external_contract/protocol_schemas/generated:riverhog-storage-adapter/schemas/WriteSegmentPage/$defs/WriteSegmentReceipt/properties/stored_sha256/anyOf/0",
           "unit": "characters"
         },
         {
@@ -40095,7 +40129,7 @@
         }
       },
       "schema": "riverhog-extent-contract/v1",
-      "sha256": "ca6cb0801dcd773855cf2090457b5db63978afcf043384364e3b074004988028"
+      "sha256": "b34596d3e9f2505d82878601f1f213d9adae7e0288b14328f3d58140b0e01d0a"
     },
     "http_openapi": {
       "riverhog": {
@@ -81119,7 +81153,7 @@
           "semantic_acceptance": "semantic_acceptance",
           "structural_models": "schemas"
         },
-        "bundle_sha256": "74ec369887452c4403f66d6ecd85efdc9c10f32df7e56110e76545fa19a65394",
+        "bundle_sha256": "ed1dae122819e272b1cabd8462c741b7bfa960c5d8b42c9841eb67b5a858f58b",
         "compatibility": {
           "provider_ontology": "private",
           "unknown_fields": "reject"
@@ -81293,6 +81327,10 @@
                 {
                   "code": "not_found",
                   "status": 404
+                },
+                {
+                  "code": "traversal_invalidated",
+                  "status": 409
                 }
               ],
               "method": "POST",
@@ -81300,12 +81338,12 @@
               "path_parameters": [],
               "request": {
                 "kind": "json",
-                "schema": "WriteSession"
+                "schema": "WriteSegmentListRequest"
               },
               "response": {
                 "headers": [],
                 "kind": "json",
-                "schema": "WriteSegmentSet",
+                "schema": "WriteSegmentPage",
                 "statuses": [
                   200
                 ]
@@ -83060,6 +83098,7 @@
                       "request_too_large",
                       "insufficient_storage",
                       "identity_conflict",
+                      "traversal_invalidated",
                       "invalid_path",
                       "invalid_range",
                       "read_not_ready",
@@ -83100,6 +83139,227 @@
           },
           "WriteCompleteRequest": {
             "$defs": {
+              "WriteCompletionAuthority": {
+                "additionalProperties": false,
+                "description": "Exact adapter-write segment sequence selected for publication.",
+                "properties": {
+                  "segment_count": {
+                    "minimum": 0,
+                    "title": "Segment Count",
+                    "type": "integer"
+                  },
+                  "sequence_sha256": {
+                    "pattern": "^[0-9a-f]{64}$",
+                    "title": "Sequence Sha256",
+                    "type": "string"
+                  },
+                  "stored_bytes": {
+                    "minimum": 0,
+                    "title": "Stored Bytes",
+                    "type": "integer"
+                  }
+                },
+                "required": [
+                  "segment_count",
+                  "stored_bytes",
+                  "sequence_sha256"
+                ],
+                "title": "WriteCompletionAuthority",
+                "type": "object"
+              },
+              "WriteSession": {
+                "additionalProperties": false,
+                "properties": {
+                  "expected_bytes": {
+                    "description": "Exact immutable-object byte length admitted by this write session. The value remains fixed until the write becomes terminal.",
+                    "minimum": 1,
+                    "title": "Expected Bytes",
+                    "type": "integer"
+                  },
+                  "object_path": {
+                    "maxLength": 4096,
+                    "minLength": 1,
+                    "title": "Object Path",
+                    "type": "string"
+                  },
+                  "write_token": {
+                    "description": "Opaque adapter-owned persistable continuation handle. For the same configured adapter it remains replayable across client, transport, Riverhog, and adapter process restarts until completion, explicit abort, or caller-authorized incomplete-write reclamation makes the write terminal.",
+                    "maxLength": 4000,
+                    "minLength": 1,
+                    "title": "Write Token",
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "object_path",
+                  "expected_bytes",
+                  "write_token"
+                ],
+                "title": "WriteSession",
+                "type": "object"
+              }
+            },
+            "additionalProperties": false,
+            "properties": {
+              "completion": {
+                "$ref": "#/$defs/WriteCompletionAuthority"
+              },
+              "expected_bytes": {
+                "minimum": 1,
+                "title": "Expected Bytes",
+                "type": "integer"
+              },
+              "expected_content_type": {
+                "maxLength": 255,
+                "minLength": 1,
+                "title": "Expected Content Type",
+                "type": "string"
+              },
+              "expected_placement": {
+                "enum": [
+                  "archive",
+                  "immediate"
+                ],
+                "title": "Expected Placement",
+                "type": "string"
+              },
+              "required_identity_assertions": {
+                "additionalProperties": {
+                  "type": "string"
+                },
+                "description": "Inert caller-owned facts used only to identify and reconcile an exact stored object. Adapters canonicalize, persist, return, and compare these assertions; they must not interpret them as routing, retrieval, retention, credentials, placement, or provider-control instructions. Adapters may retain additional adapter-private assertions.",
+                "maxProperties": 64,
+                "title": "Required Identity Assertions",
+                "type": "object",
+                "x-riverhog-encoded-bytes-max": 16384,
+                "x-riverhog-extent": {
+                  "policy": "contract_max",
+                  "reason": "bounded-object-identity-assertion-envelope"
+                }
+              },
+              "session": {
+                "$ref": "#/$defs/WriteSession"
+              }
+            },
+            "required": [
+              "session",
+              "completion",
+              "expected_bytes",
+              "expected_content_type",
+              "required_identity_assertions",
+              "expected_placement"
+            ],
+            "title": "WriteCompleteRequest",
+            "type": "object"
+          },
+          "WriteSegmentListRequest": {
+            "$defs": {
+              "WriteSession": {
+                "additionalProperties": false,
+                "properties": {
+                  "expected_bytes": {
+                    "description": "Exact immutable-object byte length admitted by this write session. The value remains fixed until the write becomes terminal.",
+                    "minimum": 1,
+                    "title": "Expected Bytes",
+                    "type": "integer"
+                  },
+                  "object_path": {
+                    "maxLength": 4096,
+                    "minLength": 1,
+                    "title": "Object Path",
+                    "type": "string"
+                  },
+                  "write_token": {
+                    "description": "Opaque adapter-owned persistable continuation handle. For the same configured adapter it remains replayable across client, transport, Riverhog, and adapter process restarts until completion, explicit abort, or caller-authorized incomplete-write reclamation makes the write terminal.",
+                    "maxLength": 4000,
+                    "minLength": 1,
+                    "title": "Write Token",
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "object_path",
+                  "expected_bytes",
+                  "write_token"
+                ],
+                "title": "WriteSession",
+                "type": "object"
+              }
+            },
+            "additionalProperties": false,
+            "description": "Request one bounded page from an exact accepted-segment view.",
+            "properties": {
+              "after_number": {
+                "default": 0,
+                "minimum": 0,
+                "title": "After Number",
+                "type": "integer",
+                "x-riverhog-extent": {
+                  "policy": "segmented_no_total_max",
+                  "reason": "write-segment-history-bounded-traversal"
+                }
+              },
+              "maximum_items": {
+                "default": 128,
+                "maximum": 128,
+                "minimum": 1,
+                "title": "Maximum Items",
+                "type": "integer"
+              },
+              "session": {
+                "$ref": "#/$defs/WriteSession"
+              },
+              "traversal_token": {
+                "anyOf": [
+                  {
+                    "maxLength": 4000,
+                    "minLength": 1,
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Traversal Token"
+              }
+            },
+            "required": [
+              "session"
+            ],
+            "title": "WriteSegmentListRequest",
+            "type": "object"
+          },
+          "WriteSegmentPage": {
+            "$defs": {
+              "WriteCompletionAuthority": {
+                "additionalProperties": false,
+                "description": "Exact adapter-write segment sequence selected for publication.",
+                "properties": {
+                  "segment_count": {
+                    "minimum": 0,
+                    "title": "Segment Count",
+                    "type": "integer"
+                  },
+                  "sequence_sha256": {
+                    "pattern": "^[0-9a-f]{64}$",
+                    "title": "Sequence Sha256",
+                    "type": "string"
+                  },
+                  "stored_bytes": {
+                    "minimum": 0,
+                    "title": "Stored Bytes",
+                    "type": "integer"
+                  }
+                },
+                "required": [
+                  "segment_count",
+                  "stored_bytes",
+                  "sequence_sha256"
+                ],
+                "title": "WriteCompletionAuthority",
+                "type": "object"
+              },
               "WriteSegmentReceipt": {
                 "additionalProperties": false,
                 "properties": {
@@ -83174,61 +83434,61 @@
               }
             },
             "additionalProperties": false,
+            "description": "One bounded page under an adapter-owned immutable traversal view.",
             "properties": {
-              "expected_bytes": {
-                "minimum": 1,
-                "title": "Expected Bytes",
-                "type": "integer"
-              },
-              "expected_content_type": {
-                "maxLength": 255,
-                "minLength": 1,
-                "title": "Expected Content Type",
-                "type": "string"
-              },
-              "expected_placement": {
-                "enum": [
-                  "archive",
-                  "immediate"
+              "completion": {
+                "anyOf": [
+                  {
+                    "$ref": "#/$defs/WriteCompletionAuthority"
+                  },
+                  {
+                    "type": "null"
+                  }
                 ],
-                "title": "Expected Placement",
-                "type": "string"
+                "default": null
               },
-              "required_identity_assertions": {
-                "additionalProperties": {
-                  "type": "string"
-                },
-                "description": "Inert caller-owned facts used only to identify and reconcile an exact stored object. Adapters canonicalize, persist, return, and compare these assertions; they must not interpret them as routing, retrieval, retention, credentials, placement, or provider-control instructions. Adapters may retain additional adapter-private assertions.",
-                "maxProperties": 64,
-                "title": "Required Identity Assertions",
-                "type": "object",
-                "x-riverhog-encoded-bytes-max": 16384,
-                "x-riverhog-extent": {
-                  "policy": "contract_max",
-                  "reason": "bounded-object-identity-assertion-envelope"
-                }
+              "next_after_number": {
+                "anyOf": [
+                  {
+                    "minimum": 1,
+                    "type": "integer"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Next After Number"
               },
               "segments": {
+                "default": [],
                 "items": {
                   "$ref": "#/$defs/WriteSegmentReceipt"
                 },
-                "minItems": 1,
+                "maxItems": 128,
                 "title": "Segments",
-                "type": "array"
+                "type": "array",
+                "x-riverhog-extent": {
+                  "policy": "segmented_no_total_max",
+                  "progression": "exact-adapter-write-traversal",
+                  "reason": "bounded-storage-write-segment-page"
+                }
               },
               "session": {
                 "$ref": "#/$defs/WriteSession"
+              },
+              "traversal_token": {
+                "maxLength": 4000,
+                "minLength": 1,
+                "title": "Traversal Token",
+                "type": "string"
               }
             },
             "required": [
               "session",
-              "segments",
-              "expected_bytes",
-              "expected_content_type",
-              "required_identity_assertions",
-              "expected_placement"
+              "traversal_token"
             ],
-            "title": "WriteCompleteRequest",
+            "title": "WriteSegmentPage",
             "type": "object"
           },
           "WriteSegmentReceipt": {
@@ -83328,101 +83588,6 @@
               "stored_bytes"
             ],
             "title": "WriteSegmentRequest",
-            "type": "object"
-          },
-          "WriteSegmentSet": {
-            "$defs": {
-              "WriteSegmentReceipt": {
-                "additionalProperties": false,
-                "properties": {
-                  "number": {
-                    "minimum": 1,
-                    "title": "Number",
-                    "type": "integer"
-                  },
-                  "segment_token": {
-                    "maxLength": 4000,
-                    "minLength": 1,
-                    "title": "Segment Token",
-                    "type": "string"
-                  },
-                  "stored_bytes": {
-                    "minimum": 1,
-                    "title": "Stored Bytes",
-                    "type": "integer"
-                  },
-                  "stored_sha256": {
-                    "anyOf": [
-                      {
-                        "pattern": "^[0-9a-f]{64}$",
-                        "type": "string"
-                      },
-                      {
-                        "type": "null"
-                      }
-                    ],
-                    "default": null,
-                    "title": "Stored Sha256"
-                  }
-                },
-                "required": [
-                  "number",
-                  "segment_token",
-                  "stored_bytes"
-                ],
-                "title": "WriteSegmentReceipt",
-                "type": "object"
-              },
-              "WriteSession": {
-                "additionalProperties": false,
-                "properties": {
-                  "expected_bytes": {
-                    "description": "Exact immutable-object byte length admitted by this write session. The value remains fixed until the write becomes terminal.",
-                    "minimum": 1,
-                    "title": "Expected Bytes",
-                    "type": "integer"
-                  },
-                  "object_path": {
-                    "maxLength": 4096,
-                    "minLength": 1,
-                    "title": "Object Path",
-                    "type": "string"
-                  },
-                  "write_token": {
-                    "description": "Opaque adapter-owned persistable continuation handle. For the same configured adapter it remains replayable across client, transport, Riverhog, and adapter process restarts until completion, explicit abort, or caller-authorized incomplete-write reclamation makes the write terminal.",
-                    "maxLength": 4000,
-                    "minLength": 1,
-                    "title": "Write Token",
-                    "type": "string"
-                  }
-                },
-                "required": [
-                  "object_path",
-                  "expected_bytes",
-                  "write_token"
-                ],
-                "title": "WriteSession",
-                "type": "object"
-              }
-            },
-            "additionalProperties": false,
-            "properties": {
-              "segments": {
-                "default": [],
-                "items": {
-                  "$ref": "#/$defs/WriteSegmentReceipt"
-                },
-                "title": "Segments",
-                "type": "array"
-              },
-              "session": {
-                "$ref": "#/$defs/WriteSession"
-              }
-            },
-            "required": [
-              "session"
-            ],
-            "title": "WriteSegmentSet",
             "type": "object"
           },
           "WriteSession": {
@@ -105034,6 +105199,10 @@
             "schema_sha256": "4246d342ca4bea1f0e76e6b31ee8d998513e8d604a1b2ef888c96c7a0776196d",
             "signature": "(*, object_path: Annotated[str, MinLen(min_length=1), MaxLen(max_length=4096)], revision: Annotated[str | None, MinLen(min_length=1), MaxLen(max_length=2000)] = None, entity_token: Annotated[str | None, MinLen(min_length=1), MaxLen(max_length=4000)] = None, stored_bytes: Annotated[int, Ge(ge=0)], stored_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)], verified_content_type: Annotated[str, MinLen(min_length=1), MaxLen(max_length=255)], verified_identity_assertions: Annotated[dict[str, str], MaxLen(max_length=64)], verified_placement: Literal['archive', 'immediate'], completed_at: Annotated[str, MinLen(min_length=1), MaxLen(max_length=100)]) -> None"
           },
+          "MAX_WRITE_SEGMENT_PAGE_ITEMS": {
+            "kind": "constant",
+            "value": 128
+          },
           "MaintenanceResult": {
             "kind": "class",
             "schema_sha256": "1b8ad376bb41a2eb81c64450d4ccb99a09150f8f1c72f6203ecdad2b933a565c",
@@ -105204,13 +105373,13 @@
           },
           "StorageAdapterError": {
             "kind": "class",
-            "schema_sha256": "40cd573753d7065b03910677c666186c9e3b55aa46c899c3b8f4dcaa6d140245",
+            "schema_sha256": "19b906afcdf8d94d77f5aef65b4facf0cb084d382ef94d440ae8a5cd58e7aa7f",
             "signature": "(*, error: riverhog_storage_adapter_protocol.protocol.StorageAdapterErrorBody) -> None"
           },
           "StorageAdapterErrorBody": {
             "kind": "class",
-            "schema_sha256": "97f66be2bca75b83f1f69639a51602fb4af8932ed3f5b2045b8f77fcf129b35a",
-            "signature": "(*, code: Literal['unauthorized', 'invalid_request', 'not_found', 'method_not_allowed', 'length_required', 'request_too_large', 'insufficient_storage', 'identity_conflict', 'invalid_path', 'invalid_range', 'read_not_ready', 'read_expired', 'integrity_failure', 'provider_unavailable', 'internal_failure'], message: Annotated[str, MinLen(min_length=1), MaxLen(max_length=2000)]) -> None"
+            "schema_sha256": "9c6d2bb482f12292a4cb9eca4a79d1e6c953362f34ba69a7f5009bf0d394616d",
+            "signature": "(*, code: Literal['unauthorized', 'invalid_request', 'not_found', 'method_not_allowed', 'length_required', 'request_too_large', 'insufficient_storage', 'identity_conflict', 'traversal_invalidated', 'invalid_path', 'invalid_range', 'read_not_ready', 'read_expired', 'integrity_failure', 'provider_unavailable', 'internal_failure'], message: Annotated[str, MinLen(min_length=1), MaxLen(max_length=2000)]) -> None"
           },
           "StorageAdapterErrorCode": {
             "kind": "object",
@@ -105262,7 +105431,7 @@
               },
               "list_segments": {
                 "kind": "method",
-                "signature": "(self, session: 'WriteSession') -> 'WriteSegmentSet'"
+                "signature": "(self, request: 'WriteSegmentListRequest') -> 'WriteSegmentPage'"
               },
               "prepare_read": {
                 "kind": "method",
@@ -105332,7 +105501,7 @@
               },
               "list_segments": {
                 "kind": "method",
-                "signature": "(self, session: 'WriteSession') -> 'WriteSegmentSet'"
+                "signature": "(self, request: 'WriteSegmentListRequest') -> 'WriteSegmentPage'"
               },
               "prepare_read": {
                 "kind": "method",
@@ -105364,17 +105533,38 @@
                 "kind": "classmethod",
                 "signature": "(cls, value: 'dict[str, str]') -> 'dict[str, str]'"
               },
-              "canonical_segments": {
-                "kind": "classmethod",
-                "signature": "(cls, value: 'tuple[WriteSegmentReceipt, ...]') -> 'tuple[WriteSegmentReceipt, ...]'"
-              },
               "validate_bytes": {
                 "kind": "method",
                 "signature": "(self) -> 'Self'"
               }
             },
-            "schema_sha256": "0d6859f5420862b18ef413d6df607139d39894ee00cc2c93d0e2802658e1a775",
-            "signature": "(*, session: riverhog_storage_adapter_protocol.protocol.WriteSession, segments: Annotated[tuple[riverhog_storage_adapter_protocol.protocol.WriteSegmentReceipt, ...], MinLen(min_length=1)], expected_bytes: Annotated[int, Ge(ge=1)], expected_content_type: Annotated[str, MinLen(min_length=1), MaxLen(max_length=255)], required_identity_assertions: Annotated[dict[str, str], MaxLen(max_length=64)], expected_placement: Literal['archive', 'immediate']) -> None"
+            "schema_sha256": "a2e718cd5afebe46b3026a7675c8b0550167e5214ba8b5037e86d52f8f5e0113",
+            "signature": "(*, session: riverhog_storage_adapter_protocol.protocol.WriteSession, completion: riverhog_storage_adapter_protocol.protocol.WriteCompletionAuthority, expected_bytes: Annotated[int, Ge(ge=1)], expected_content_type: Annotated[str, MinLen(min_length=1), MaxLen(max_length=255)], required_identity_assertions: Annotated[dict[str, str], MaxLen(max_length=64)], expected_placement: Literal['archive', 'immediate']) -> None"
+          },
+          "WriteCompletionAuthority": {
+            "kind": "class",
+            "schema_sha256": "69cc9307d44911887be98009dec314a4a5cbddb26fafdd84dfc23404b2755167",
+            "signature": "(*, segment_count: Annotated[int, Ge(ge=0)], stored_bytes: Annotated[int, Ge(ge=0)], sequence_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)]) -> None"
+          },
+          "WriteSegmentListRequest": {
+            "kind": "class",
+            "schema_sha256": "c655ec3f5640ade7ac2d3b60a3b9bb3de1ecaf39de3d4bcd731afb029a65684f",
+            "signature": "(*, session: riverhog_storage_adapter_protocol.protocol.WriteSession, after_number: Annotated[int, Ge(ge=0)] = 0, traversal_token: Annotated[str | None, MinLen(min_length=1), MaxLen(max_length=4000)] = None, maximum_items: Annotated[int, Ge(ge=1), Le(le=128)] = 128) -> None"
+          },
+          "WriteSegmentPage": {
+            "kind": "class",
+            "members": {
+              "canonical_segments": {
+                "kind": "classmethod",
+                "signature": "(cls, value: 'tuple[WriteSegmentReceipt, ...]') -> 'tuple[WriteSegmentReceipt, ...]'"
+              },
+              "validate_terminal": {
+                "kind": "method",
+                "signature": "(self) -> 'Self'"
+              }
+            },
+            "schema_sha256": "4e76e714253dfc42e1d79196e82a8dbd548e09cd3673a417d0c20d2e4556f78a",
+            "signature": "(*, session: riverhog_storage_adapter_protocol.protocol.WriteSession, traversal_token: Annotated[str, MinLen(min_length=1), MaxLen(max_length=4000)], segments: Annotated[tuple[riverhog_storage_adapter_protocol.protocol.WriteSegmentReceipt, ...], MaxLen(max_length=128)] = (), next_after_number: Annotated[int | None, Ge(ge=1)] = None, completion: riverhog_storage_adapter_protocol.protocol.WriteCompletionAuthority | None = None) -> None"
           },
           "WriteSegmentReceipt": {
             "kind": "class",
@@ -105385,17 +105575,6 @@
             "kind": "class",
             "schema_sha256": "e51e90e06c0f6a6ca83920b56cbb0696ced3950650ea8d743c33191cb2cf7d31",
             "signature": "(*, session: riverhog_storage_adapter_protocol.protocol.WriteSession, number: Annotated[int, Ge(ge=1)], stored_bytes: Annotated[int, Ge(ge=1)]) -> None"
-          },
-          "WriteSegmentSet": {
-            "kind": "class",
-            "members": {
-              "canonical_segments": {
-                "kind": "classmethod",
-                "signature": "(cls, value: 'tuple[WriteSegmentReceipt, ...]') -> 'tuple[WriteSegmentReceipt, ...]'"
-              }
-            },
-            "schema_sha256": "efefe4e7d1b517363a9ba0b71edf24998be480383f3c983a5391753ce555a688",
-            "signature": "(*, session: riverhog_storage_adapter_protocol.protocol.WriteSession, segments: tuple[riverhog_storage_adapter_protocol.protocol.WriteSegmentReceipt, ...] = ()) -> None"
           },
           "WriteSession": {
             "kind": "class",
@@ -105451,6 +105630,10 @@
             "kind": "function",
             "signature": "(request: 'WriteCompleteRequest', descriptor: 'AdapterDescriptor') -> 'None'"
           },
+          "validate_write_segment_page_response": {
+            "kind": "function",
+            "signature": "(request: 'WriteSegmentListRequest', response: 'WriteSegmentPage', descriptor: 'AdapterDescriptor') -> 'None'"
+          },
           "validate_write_segment_request": {
             "kind": "function",
             "signature": "(request: 'WriteSegmentRequest', descriptor: 'AdapterDescriptor') -> 'None'"
@@ -105458,10 +105641,6 @@
           "validate_write_segment_response": {
             "kind": "function",
             "signature": "(request: 'WriteSegmentRequest', response: 'WriteSegmentReceipt') -> 'None'"
-          },
-          "validate_write_segment_set_response": {
-            "kind": "function",
-            "signature": "(request: 'WriteSession', response: 'WriteSegmentSet', descriptor: 'AdapterDescriptor') -> 'None'"
           },
           "validate_write_session_response": {
             "kind": "function",
@@ -105474,6 +105653,10 @@
           "validated_storage_adapter": {
             "kind": "function",
             "signature": "(adapter: 'StorageAdapterPort') -> 'ValidatedStorageAdapterPort'"
+          },
+          "write_completion_authority": {
+            "kind": "function",
+            "signature": "(segments: 'Iterable[WriteSegmentReceipt]') -> 'WriteCompletionAuthority'"
           }
         },
         "module": "riverhog_storage_adapter_protocol"
@@ -105579,7 +105762,7 @@
               },
               "list_segments": {
                 "kind": "method",
-                "signature": "(self, session: 'WriteSession') -> 'WriteSegmentSet'"
+                "signature": "(self, request: 'WriteSegmentListRequest') -> 'WriteSegmentPage'"
               },
               "prepare_read": {
                 "kind": "method",

@@ -8,6 +8,9 @@ import pytest
 from riverhog_core.ports.archive_objects import (
     CompletedObjectReceipt,
     ResumableWriteConstraints,
+    WriteCompletionAuthority,
+    WriteSegmentCursor,
+    WriteSegmentPage,
     WriteSegmentReceipt,
     WriteSession,
 )
@@ -15,8 +18,31 @@ from riverhog_core.ports.retrieval_cache import RetrievalCacheAdmission, Retriev
 from riverhog_core.stores.mirrored_archive_resumable_object_store import (
     MirroredArchiveResumableObjectStore,
 )
+from riverhog_storage_adapter_protocol import (
+    WriteSegmentReceipt as AdapterWriteSegmentReceipt,
+)
+from riverhog_storage_adapter_protocol import (
+    write_completion_authority,
+)
 
 NOW = "2026-08-13T00:00:00Z"
+
+
+def _authority(segments: tuple[WriteSegmentReceipt, ...]) -> WriteCompletionAuthority:
+    result = write_completion_authority(
+        AdapterWriteSegmentReceipt(
+            number=item.number,
+            segment_token=item.segment_token,
+            stored_bytes=item.bytes,
+            stored_sha256=item.sha256,
+        )
+        for item in segments
+    )
+    return WriteCompletionAuthority(
+        result.segment_count,
+        result.stored_bytes,
+        result.sequence_sha256,
+    )
 
 
 @dataclass
@@ -61,19 +87,28 @@ class _ResumableStore:
             hashlib.sha256(content).hexdigest(),
         )
 
-    def list_segments(self, *, session):  # type: ignore[no-untyped-def]
+    def list_segments(self, *, session, cursor):  # type: ignore[no-untyped-def]
         assert session.write_token == self.write_token
         assert self.completed is None, "completed writes must reconcile without multipart state"
-        return tuple(
+        segments = tuple(
             WriteSegmentReceipt(number, f"{self.name}-{number}", len(content))
             for number, content in sorted(self.segments.items())
+        )
+        token = hashlib.sha256(repr(segments).encode()).hexdigest()
+        assert cursor.traversal_token in {None, token}
+        page = tuple(item for item in segments if item.number > cursor.after_number)[:128]
+        has_more = bool(page) and page[-1].number < segments[-1].number
+        return WriteSegmentPage(
+            segments=page,
+            next_cursor=(WriteSegmentCursor(page[-1].number, token) if has_more else None),
+            completion=None if has_more else _authority(segments),
         )
 
     def complete_write(
         self,
         *,
         session,
-        segments,
+        completion,
         expected_bytes,
         expected_content_type,
         expected_metadata,
@@ -85,6 +120,11 @@ class _ResumableStore:
         if self.fail_completion_once:
             self.fail_completion_once = False
             raise RuntimeError(f"{self.name} completion interrupted")
+        segments = tuple(
+            WriteSegmentReceipt(number, f"{self.name}-{number}", len(content))
+            for number, content in sorted(self.segments.items())
+        )
+        assert completion == _authority(segments)
         self.completed = b"".join(self.segments[current.number] for current in segments)
         assert len(self.completed) == expected_bytes
         self.events.append(f"{self.name}:complete")
@@ -234,9 +274,13 @@ def test_encrypted_segments_complete_in_cache_before_archive_authority() -> None
         metadata={"riverhog-format": "riverhog-pack-volume/v1"},
     )
     receipt = mirror.write_segment(session=session, number=1, content=b"encrypted")
+    page = mirror.list_segments(session=session, cursor=WriteSegmentCursor())
+    assert page.segments[0].number == receipt.number
+    assert page.segments[0].bytes == receipt.bytes
+    assert page.completion is not None
     completed = mirror.complete_write(
         session=session,
-        segments=(receipt,),
+        completion=page.completion,
         expected_bytes=9,
         expected_content_type="application/vnd.riverhog.pack+age",
         expected_metadata={"riverhog-format": "riverhog-pack-volume/v1"},
@@ -278,10 +322,12 @@ def test_cache_segment_failure_never_blocks_archive_completion() -> None:
         metadata={"riverhog-format": "riverhog-pack-volume/v1"},
     )
 
-    receipt = mirror.write_segment(session=session, number=1, content=b"encrypted")
+    mirror.write_segment(session=session, number=1, content=b"encrypted")
+    page = mirror.list_segments(session=session, cursor=WriteSegmentCursor())
+    assert page.completion is not None
     completed = mirror.complete_write(
         session=session,
-        segments=(receipt,),
+        completion=page.completion,
         expected_bytes=9,
         expected_content_type="application/vnd.riverhog.pack+age",
         expected_metadata={"riverhog-format": "riverhog-pack-volume/v1"},
@@ -303,12 +349,14 @@ def test_completion_resumes_after_cache_sealed_before_archive() -> None:
         content_type="application/vnd.riverhog.raw-segment+age",
         metadata={"riverhog-format": "riverhog-raw-volume/v1"},
     )
-    receipt = mirror.write_segment(session=session, number=1, content=b"ciphertext")
+    mirror.write_segment(session=session, number=1, content=b"ciphertext")
+    page = mirror.list_segments(session=session, cursor=WriteSegmentCursor())
+    assert page.completion is not None
 
     with pytest.raises(RuntimeError, match="archive completion interrupted"):
         mirror.complete_write(
             session=session,
-            segments=(receipt,),
+            completion=page.completion,
             expected_bytes=10,
             expected_content_type="application/vnd.riverhog.raw-segment+age",
             expected_metadata={"riverhog-format": "riverhog-raw-volume/v1"},
@@ -316,7 +364,7 @@ def test_completion_resumes_after_cache_sealed_before_archive() -> None:
 
     completed = mirror.complete_write(
         session=session,
-        segments=(receipt,),
+        completion=page.completion,
         expected_bytes=10,
         expected_content_type="application/vnd.riverhog.raw-segment+age",
         expected_metadata={"riverhog-format": "riverhog-raw-volume/v1"},

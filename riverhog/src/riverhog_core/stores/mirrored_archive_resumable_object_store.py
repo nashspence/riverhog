@@ -10,6 +10,9 @@ from riverhog_core.ports.archive_objects import (
     ArchiveResumableObjectStore,
     CompletedObjectReceipt,
     ResumableWriteConstraints,
+    WriteCompletionAuthority,
+    WriteSegmentCursor,
+    WriteSegmentPage,
     WriteSegmentReceipt,
     WriteSession,
 )
@@ -151,42 +154,20 @@ class MirroredArchiveResumableObjectStore:
             raise RuntimeError("archive and retrieval cache segment receipts disagree")
         return archive_receipt
 
-    def list_segments(self, *, session: WriteSession) -> tuple[WriteSegmentReceipt, ...]:
+    def list_segments(
+        self,
+        *,
+        session: WriteSession,
+        cursor: WriteSegmentCursor,
+    ) -> WriteSegmentPage:
         archive_session, admission, _content_type, _metadata = _decode_write_token(session)
-        archive_segments = self._archive.list_segments(session=archive_session)
-        cache_session = _cache_session(admission)
-        if (
-            admission is None
-            or cache_session is None
-            or not self._cache.is_current(admission=admission)
-        ):
-            return archive_segments
-        try:
-            cache_segments = {
-                current.number: current
-                for current in self._cache.resumable_object_store(
-                    admission=admission
-                ).list_segments(session=cache_session)
-            }
-        except Exception:
-            _LOG.warning(
-                "optional retrieval-cache reconciliation failed; archive transfer continues",
-                exc_info=True,
-            )
-            self._release_optional_cache()
-            return archive_segments
-        return tuple(
-            current
-            for current in archive_segments
-            if (mirrored := cache_segments.get(current.number)) is not None
-            and mirrored.bytes == current.bytes
-        )
+        return self._archive.list_segments(session=archive_session, cursor=cursor)
 
     def complete_write(
         self,
         *,
         session: WriteSession,
-        segments: tuple[WriteSegmentReceipt, ...],
+        completion: WriteCompletionAuthority,
         expected_bytes: int,
         expected_content_type: str,
         expected_metadata: dict[str, str],
@@ -213,11 +194,17 @@ class MirroredArchiveResumableObjectStore:
                     expected_metadata={},
                 )
                 if cache_completed is None:
-                    cache_segments = cache_objects.list_segments(session=cache_session)
-                    _require_matching_segments(segments, cache_segments)
+                    cache_authority = _completion_authority(cache_objects, cache_session)
+                    if (
+                        cache_authority.segment_count != completion.segment_count
+                        or cache_authority.stored_bytes != completion.stored_bytes
+                    ):
+                        raise RuntimeError(
+                            "retrieval cache write segments do not match the archive write"
+                        )
                     cache_completed = cache_objects.complete_write(
                         session=cache_session,
-                        segments=cache_segments,
+                        completion=cache_authority,
                         expected_bytes=expected_bytes,
                         expected_content_type="application/octet-stream",
                         expected_metadata={},
@@ -239,7 +226,7 @@ class MirroredArchiveResumableObjectStore:
                 self._release_optional_cache()
         archive_completed = self._archive.complete_write(
             session=archive_session,
-            segments=segments,
+            completion=completion,
             expected_bytes=expected_bytes,
             expected_content_type=expected_content_type,
             expected_metadata=expected_metadata,
@@ -463,14 +450,18 @@ def _cache_session(admission: RetrievalCacheAdmission | None) -> WriteSession | 
     )
 
 
-def _require_matching_segments(
-    archive: tuple[WriteSegmentReceipt, ...],
-    cache: tuple[WriteSegmentReceipt, ...],
-) -> None:
-    archive_shape = tuple((current.number, current.bytes) for current in archive)
-    cache_shape = tuple((current.number, current.bytes) for current in cache)
-    if archive_shape != cache_shape:
-        raise RuntimeError("retrieval cache write segments do not match the archive write")
+def _completion_authority(
+    store: ArchiveResumableObjectStore,
+    session: WriteSession,
+) -> WriteCompletionAuthority:
+    cursor = WriteSegmentCursor()
+    while True:
+        page = store.list_segments(session=session, cursor=cursor)
+        if page.next_cursor is None:
+            if page.completion is None:
+                raise RuntimeError("retrieval cache write is not complete")
+            return page.completion
+        cursor = page.next_cursor
 
 
 __all__ = ["MirroredArchiveResumableObjectStore"]

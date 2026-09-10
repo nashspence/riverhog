@@ -1,13 +1,13 @@
 {
-  "contract_canonical_sha256": "51b40928e6d10a21463447ba65a2336746cfc4bdaa646d065a3a90016d16885e",
-  "contract_projection_sha256": "ad0b9bacc07b24aee5fc74f9f992931134801f855ccdb586909198ba8f4a3899",
+  "contract_canonical_sha256": "18185621df93b5f585aa492c57cc0a52a005c66c976db8009623ed6edd320e4a",
+  "contract_projection_sha256": "da130b823c3a56b6491b081b0346f3aedddd11e106b9e485146303b77555adbc",
   "contract_schema": "riverhog-contract-freeze/v1",
   "coverage": {
-    "extent_decisions": 1943,
-    "extent_source_links": 1943,
-    "segmented_decisions": 79,
-    "segmented_extent_witness_links": 79,
-    "segmented_extent_witnesses": 12,
+    "extent_decisions": 1946,
+    "extent_source_links": 1946,
+    "segmented_decisions": 80,
+    "segmented_extent_witness_links": 80,
+    "segmented_extent_witnesses": 13,
     "source_authorities": 205,
     "source_kinds": {
       "cli": 6,
@@ -7480,9 +7480,27 @@
       "source_pointer": "/external_contract/protocol_schemas/generated:riverhog-storage-adapter/schemas/WriteCompleteRequest/properties/required_identity_assertions"
     },
     {
-      "id": "protocol:generated:riverhog-storage-adapter:/schemas/WriteCompleteRequest/properties/segments:cardinality",
+      "id": "protocol:generated:riverhog-storage-adapter:/schemas/WriteSegmentListRequest/properties/maximum_items:value",
       "owner": "riverhog-storage-adapter-protocol",
-      "source_pointer": "/external_contract/protocol_schemas/generated:riverhog-storage-adapter/schemas/WriteCompleteRequest/properties/segments"
+      "source_pointer": "/external_contract/protocol_schemas/generated:riverhog-storage-adapter/schemas/WriteSegmentListRequest/properties/maximum_items"
+    },
+    {
+      "id": "protocol:generated:riverhog-storage-adapter:/schemas/WriteSegmentListRequest/properties/traversal_token/anyOf/0:length",
+      "owner": "riverhog-storage-adapter-protocol",
+      "source_pointer": "/external_contract/protocol_schemas/generated:riverhog-storage-adapter/schemas/WriteSegmentListRequest/properties/traversal_token/anyOf/0"
+    },
+    {
+      "id": "protocol:generated:riverhog-storage-adapter:/schemas/WriteSegmentPage/properties/segments:cardinality",
+      "owner": "riverhog-storage-adapter-protocol",
+      "segmented_extent_witnesses": [
+        "riverhog-storage-write-segment-progression/v1"
+      ],
+      "source_pointer": "/external_contract/protocol_schemas/generated:riverhog-storage-adapter/schemas/WriteSegmentPage/properties/segments"
+    },
+    {
+      "id": "protocol:generated:riverhog-storage-adapter:/schemas/WriteSegmentPage/properties/traversal_token:length",
+      "owner": "riverhog-storage-adapter-protocol",
+      "source_pointer": "/external_contract/protocol_schemas/generated:riverhog-storage-adapter/schemas/WriteSegmentPage/properties/traversal_token"
     },
     {
       "id": "protocol:generated:riverhog-storage-adapter:/schemas/WriteSegmentReceipt/properties/segment_token:length",
@@ -7493,11 +7511,6 @@
       "id": "protocol:generated:riverhog-storage-adapter:/schemas/WriteSegmentReceipt/properties/stored_sha256/anyOf/0:length",
       "owner": "riverhog-storage-adapter-protocol",
       "source_pointer": "/external_contract/protocol_schemas/generated:riverhog-storage-adapter/schemas/WriteSegmentReceipt/properties/stored_sha256/anyOf/0"
-    },
-    {
-      "id": "protocol:generated:riverhog-storage-adapter:/schemas/WriteSegmentSet/properties/segments:cardinality",
-      "owner": "riverhog-storage-adapter-protocol",
-      "source_pointer": "/external_contract/protocol_schemas/generated:riverhog-storage-adapter/schemas/WriteSegmentSet/properties/segments"
     },
     {
       "id": "protocol:generated:riverhog-storage-adapter:/schemas/WriteSession/properties/object_path:length",
@@ -7560,14 +7573,19 @@
       "source_pointer": "/external_contract/protocol_schemas/generated:riverhog-storage-adapter/schemas/StorageAdapterError/$defs/StorageAdapterErrorBody/properties/message"
     },
     {
+      "id": "protocol:generated:riverhog-storage-adapter:definition:WriteCompletionAuthority:/properties/sequence_sha256:length",
+      "owner": "riverhog-storage-adapter-protocol",
+      "source_pointer": "/external_contract/protocol_schemas/generated:riverhog-storage-adapter/schemas/WriteCompleteRequest/$defs/WriteCompletionAuthority/properties/sequence_sha256"
+    },
+    {
       "id": "protocol:generated:riverhog-storage-adapter:definition:WriteSegmentReceipt:/properties/segment_token:length",
       "owner": "riverhog-storage-adapter-protocol",
-      "source_pointer": "/external_contract/protocol_schemas/generated:riverhog-storage-adapter/schemas/WriteCompleteRequest/$defs/WriteSegmentReceipt/properties/segment_token"
+      "source_pointer": "/external_contract/protocol_schemas/generated:riverhog-storage-adapter/schemas/WriteSegmentPage/$defs/WriteSegmentReceipt/properties/segment_token"
     },
     {
       "id": "protocol:generated:riverhog-storage-adapter:definition:WriteSegmentReceipt:/properties/stored_sha256/anyOf/0:length",
       "owner": "riverhog-storage-adapter-protocol",
-      "source_pointer": "/external_contract/protocol_schemas/generated:riverhog-storage-adapter/schemas/WriteCompleteRequest/$defs/WriteSegmentReceipt/properties/stored_sha256/anyOf/0"
+      "source_pointer": "/external_contract/protocol_schemas/generated:riverhog-storage-adapter/schemas/WriteSegmentPage/$defs/WriteSegmentReceipt/properties/stored_sha256/anyOf/0"
     },
     {
       "id": "protocol:generated:riverhog-storage-adapter:definition:WriteSession:/properties/object_path:length",
@@ -10021,6 +10039,30 @@
         "tests/unit/test_incremental_plan.py::test_artifact_at_a_time_construction_seals_the_exact_one_shot_v1_plans",
         "tests/unit/test_pack_upload.py::test_checkpoint_resumes_across_riverhog_and_adapter_restart",
         "tests/unit/test_raw_upload.py::test_raw_upload_resumes_on_server_defined_age_part_boundaries"
+      ]
+    },
+    {
+      "claims": [
+        "bounded_step",
+        "forward_progress",
+        "multiple_segments",
+        "no_silent_truncation",
+        "restart"
+      ],
+      "gates": [
+        "make unit",
+        "make compose-smoke",
+        "make provider-qualification"
+      ],
+      "id": "riverhog-storage-write-segment-progression/v1",
+      "owner": "riverhog-storage-adapter-protocol",
+      "reasons": [
+        "bounded-storage-write-segment-page"
+      ],
+      "test_node_ids": [
+        "packages/riverhog-storage-adapter-support/tests/test_storage_adapter_support.py::test_http_write_traversal_crosses_pages_and_process_restart",
+        "reference/riverhog/storage/filesystem/tests/test_filesystem_storage_adapter.py::test_segment_traversal_is_bounded_exact_and_restartable",
+        "reference/riverhog/storage/s3-support/tests/test_s3_storage_adapter.py::test_resumable_write_reconciles_segments_and_lost_completion"
       ]
     },
     {
@@ -13890,7 +13932,7 @@
       "fixtures": [
         {
           "path": "tests/fixtures/state/v1_0001/riverhog.postgresql.sql",
-          "sha256": "eb4087f428bbcaf51d562bba6efe445bde153778596385fdeaf30605e6281dd5"
+          "sha256": "8b337f69f6bdc2665afd1b24a645301878925997d1a4416b607c82204d68bc96"
         }
       ],
       "id": "state:riverhog-catalog"
