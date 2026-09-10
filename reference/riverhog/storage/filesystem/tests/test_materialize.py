@@ -211,6 +211,84 @@ def test_sigkill_during_checkpoint_bootstrap_restarts_exactly(tmp_path: Path) ->
     assert (output / "archives/one/recovery.json").read_bytes() == b"descriptor"
 
 
+def _large_exact_selection(
+    adapter: FilesystemStorageAdapter,
+    *,
+    count: int = 256,
+) -> MaterializationSelection:
+    paths = tuple(f"archives/archive-{number:04d}/recovery.json" for number in range(count))
+    for path in paths:
+        _put(adapter, path, path.encode("utf-8"))
+    assert len(json.dumps({"paths": paths}, separators=(",", ":"))) > 8192
+    return MaterializationSelection(paths=paths)
+
+
+def test_large_exact_selection_restarts_after_interrupted_bootstrap(
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path: Path,
+) -> None:
+    root = tmp_path / "store"
+    with _adapter(root) as adapter:
+        selection = _large_exact_selection(adapter)
+    output = tmp_path / "export"
+    original_initialize = materialize_module._initialize_state
+
+    def interrupt_bootstrap(_state: object) -> None:
+        raise MaterializationInterrupted("simulated interrupted bootstrap")
+
+    monkeypatch.setattr(materialize_module, "_initialize_state", interrupt_bootstrap)
+    with pytest.raises(MaterializationInterrupted, match="interrupted bootstrap"):
+        materialize_committed_objects(
+            source=root,
+            destination=output,
+            selection=selection,
+        )
+    bootstrap = tmp_path / ".export.riverhog-materialization-bootstrap.json"
+    assert bootstrap.stat().st_size < 8192
+
+    monkeypatch.setattr(materialize_module, "_initialize_state", original_initialize)
+    summary = materialize_committed_objects(
+        source=root,
+        destination=output,
+        selection=selection,
+    )
+
+    assert summary.selected_objects == len(selection.paths)
+    assert all((output / path).is_file() for path in selection.paths)
+
+
+def test_large_exact_selection_completion_receipt_replays_lost_success(
+    tmp_path: Path,
+) -> None:
+    root = tmp_path / "store"
+    with _adapter(root) as adapter:
+        selection = _large_exact_selection(adapter)
+    output = tmp_path / "export"
+
+    first = materialize_committed_objects(
+        source=root,
+        destination=output,
+        selection=selection,
+    )
+    completion = tmp_path / ".export.riverhog-materialization-complete.json"
+    assert completion.stat().st_size < 8192
+    replayed = materialize_committed_objects(
+        source=root,
+        destination=output,
+        selection=selection,
+    )
+
+    assert first.copied_objects == len(selection.paths)
+    assert replayed.copied_objects == 0
+    assert replayed.destination_verified_objects == len(selection.paths)
+    with pytest.raises(MaterializationError, match="completion receipt conflicts"):
+        materialize_committed_objects(
+            source=root,
+            destination=output,
+            selection=MaterializationSelection(paths=selection.paths[:-1]),
+        )
+
+
 @pytest.mark.parametrize("after_cleanup", [False, True])
 def test_sigkill_after_durable_completion_replays_success(
     tmp_path: Path, after_cleanup: bool

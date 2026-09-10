@@ -20,7 +20,7 @@ import httpx
 import typer
 from riverhog_application_access import ApplicationPermission
 from riverhog_client.client import ApiClient, ProvenanceMode
-from riverhog_client.initial_tags import prepare_initial_collection_tags
+from riverhog_client.initial_tags import create_or_resume_with_initial_collection_tags
 from riverhog_client.producer import COLLECTION_UPLOAD_REGISTRATION_BATCH_FILES
 from riverhog_client.source_hashing import RawSourceHash, hash_raw_source_chunks
 from riverhog_client.uploads import (
@@ -1043,31 +1043,26 @@ def _create_or_resume_collection_upload_session(
     provenance_mode: ProvenanceMode,
     provenance_omission_reason: str | None,
 ) -> dict[str, Any]:
-    with prepare_initial_collection_tags(tags or ()) as prepared_tags:
-        batches = prepared_tags.iter_batches()
-        first_batch = next(batches, ())
-        session = _retry_transient_upload_operation(
+    return create_or_resume_with_initial_collection_tags(
+        tags or (),
+        create_or_resume=lambda first_batch, identity: _retry_transient_upload_operation(
             "Upload session open/resume",
             lambda: api.create_or_resume_collection_upload_session(
                 idempotency_key,
                 ingest_source=ingest_source,
                 description=description,
                 tags=first_batch,
-                initial_tag_set_identity=prepared_tags.tag_set_identity,
+                initial_tag_set_identity=identity,
                 archive_store=archive_store,
                 provenance_mode=provenance_mode,
                 provenance_omission_reason=provenance_omission_reason,
             ),
-        )
-        if session.get("state") == "finalized":
-            return session
-        collection_id = cast(int, session["collection_id"])
-        for batch in batches:
-            _retry_transient_upload_operation(
-                f"Upload session add {len(batch)} tag(s)",
-                partial(api.add_collection_upload_session_tags, collection_id, batch),
-            )
-        return session
+        ),
+        add_tags=lambda collection_id, batch: _retry_transient_upload_operation(
+            f"Upload session add {len(batch)} tag(s)",
+            partial(api.add_collection_upload_session_tags, collection_id, batch),
+        ),
+    )
 
 
 def _register_collection_upload_session_files(

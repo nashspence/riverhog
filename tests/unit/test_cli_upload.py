@@ -447,6 +447,47 @@ def test_direct_collection_upload_registers_plans_and_finalizes(
     ]
 
 
+@pytest.mark.parametrize(
+    "state",
+    ["closing", "uploading", "finalizing"],
+)
+def test_piggity_upload_continuation_does_not_replay_tags_after_discovery(
+    state: str,
+) -> None:
+    requested_tags = [f"qualification/{index:04d}" for index in range(300)]
+    tag_calls: list[tuple[int, tuple[str, ...]]] = []
+
+    class Api:
+        def create_or_resume_collection_upload_session(
+            self,
+            _idempotency_key: str,
+            **_kwargs: object,
+        ) -> dict[str, object]:
+            with prepare_initial_collection_tags(requested_tags) as prepared:
+                assert _kwargs["initial_tag_set_identity"] == prepared.tag_set_identity
+            return {"collection_id": COLLECTION_ID, "state": state}
+
+        def add_collection_upload_session_tags(
+            self,
+            collection_id: int,
+            tags: tuple[str, ...],
+        ) -> dict[str, object]:
+            tag_calls.append((collection_id, tags))
+            return {"collection_id": collection_id, "added": len(tags)}
+
+    result = riverhog_main._create_or_resume_collection_upload_session(
+        Api(),  # type: ignore[arg-type]
+        "closing-retry",
+        ingest_source="fixture",
+        tags=requested_tags,
+        provenance_mode="omitted",
+        provenance_omission_reason="fixture",
+    )
+
+    assert result["state"] == state
+    assert tag_calls == []
+
+
 def test_upload_retry_returns_an_already_finalized_collection(
     monkeypatch: pytest.MonkeyPatch,
     tmp_path: Path,

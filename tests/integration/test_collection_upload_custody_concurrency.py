@@ -11,6 +11,8 @@ from typing import Any
 from uuid import uuid4
 
 import pytest
+from piggity.main import _create_or_resume_collection_upload_session
+from riverhog_client.initial_tags import prepare_initial_collection_tags
 from riverhog_core.app_permissions import (
     ALL_RESOURCES,
     COLLECTION_TAGS_MANAGE,
@@ -41,9 +43,12 @@ from riverhog_core.services import collection_uploads as collection_uploads_modu
 from riverhog_core.services.catalog_sync import _reap_unreferenced_tag_history
 from riverhog_core.services.collection_tags import build_collection_tag_set
 from riverhog_core.services.collection_uploads import SqlAlchemyCollectionUploadService
-from riverhog_protocol import CollectionUploadProvenanceJournalCreateDocument
+from riverhog_protocol import (
+    COLLECTION_TAG_REQUEST_MEMBERS_MAX,
+    CollectionUploadProvenanceJournalCreateDocument,
+)
 from riverhog_protocol.errors import Conflict, ServiceUnavailable
-from sqlalchemy import func, select, text
+from sqlalchemy import event, func, select, text
 from sqlalchemy.engine import make_url
 
 from tests.unit.archive_object_fixtures import MemoryArchiveStore, archive_store_binding
@@ -136,6 +141,148 @@ def _create(service: SqlAlchemyCollectionUploadService) -> int:
         custody_mode="custody-transfer",
     )
     return int(payload["collection_id"])
+
+
+def _initial_tag_identity(tags: tuple[str, ...]) -> str:
+    with prepare_initial_collection_tags(tags) as prepared:
+        return prepared.tag_set_identity
+
+
+def test_postgres_upload_tag_authorization_never_returns_the_accumulated_set(
+    database_url: str,
+) -> None:
+    service, _other = _services(database_url)
+    tags = tuple(f"scope/tag-{index:04d}" for index in range(301))
+    principal = ApplicationPrincipal(
+        app="bounded-tag-uploader",
+        key_id="bounded-tag-key",
+        access=frozenset(
+            {
+                ApplicationAccess(COLLECTION_TAGS_MANAGE, ALL_RESOURCES),
+                *(ApplicationAccess(COLLECTIONS_CREATE, tag_resource(tag)) for tag in tags),
+            }
+        ),
+    )
+    opened = service.create_or_resume(
+        idempotency_key="bounded-tag-authorization",
+        ingest_source="fixture",
+        tags=tags[:100],
+        initial_tag_set_identity=_initial_tag_identity(tags),
+        archive_store=None,
+        initiator=principal,
+        event_context=None,
+        provenance_mode="omitted",
+        provenance_omission_reason="fixture",
+    )
+    collection_id = int(opened["collection_id"])
+    service.add_tags(collection_id, tags[100:200], principal=principal)
+    service.add_tags(collection_id, tags[200:300], principal=principal)
+
+    statements: list[str] = []
+    staged_hash_fetch_sizes: list[int | None] = []
+    engine = service._session_factory.kw["bind"]
+
+    def record_statement(
+        _connection: object,
+        _cursor: object,
+        statement: str,
+        _parameters: object,
+        context: Any,
+        _executemany: bool,
+    ) -> None:
+        normalized = " ".join(statement.casefold().split())
+        statements.append(normalized)
+        if "select collection_upload_tags.tag_sha256 " in normalized and "count(" not in normalized:
+            staged_hash_fetch_sizes.append(context.execution_options.get("yield_per"))
+
+    event.listen(engine, "before_cursor_execute", record_statement)
+    try:
+        result = service.add_tags(collection_id, tags[300:], principal=principal)
+        service.require_access(collection_id, principal)
+        service.require_read_access(collection_id, principal)
+    finally:
+        event.remove(engine, "before_cursor_execute", record_statement)
+
+    assert result["tag_count"] == len(tags)
+    assert any("count(collection_upload_tags.tag_sha256)" in item for item in statements)
+    assert staged_hash_fetch_sizes
+    assert set(staged_hash_fetch_sizes) == {COLLECTION_TAG_REQUEST_MEMBERS_MAX}
+    assert not any(
+        "select collection_upload_tags.tag " in item and "from collection_upload_tags" in item
+        for item in statements
+    )
+
+
+def test_piggity_reconciles_real_closed_discovery_without_replaying_tags(
+    database_url: str,
+) -> None:
+    service, _other = _services(database_url)
+    tags = [f"camera/retry-{index:04d}" for index in range(205)]
+    principal = ApplicationPrincipal(
+        app="piggity-retry",
+        key_id="piggity-retry-key",
+        access=frozenset(
+            {
+                ApplicationAccess(COLLECTIONS_CREATE, ALL_RESOURCES),
+                ApplicationAccess(COLLECTION_TAGS_MANAGE, ALL_RESOURCES),
+            }
+        ),
+    )
+    tag_calls = 0
+
+    class Api:
+        def create_or_resume_collection_upload_session(
+            self,
+            idempotency_key: str,
+            **kwargs: object,
+        ) -> dict[str, object]:
+            return service.create_or_resume(
+                idempotency_key=idempotency_key,
+                ingest_source=str(kwargs.get("ingest_source") or "fixture"),
+                tags=tuple(kwargs.get("tags") or ()),
+                initial_tag_set_identity=str(kwargs["initial_tag_set_identity"]),
+                archive_store=None,
+                initiator=principal,
+                event_context=None,
+                provenance_mode="omitted",
+                provenance_omission_reason="fixture",
+            )
+
+        def add_collection_upload_session_tags(
+            self,
+            collection_id: int,
+            batch: tuple[str, ...],
+        ) -> dict[str, object]:
+            nonlocal tag_calls
+            tag_calls += 1
+            return service.add_tags(collection_id, batch, principal=principal)
+
+    api = Api()
+    opened = _create_or_resume_collection_upload_session(
+        api,  # type: ignore[arg-type]
+        "piggity-closing-retry",
+        ingest_source="fixture",
+        tags=tags,
+        provenance_mode="omitted",
+        provenance_omission_reason="fixture",
+    )
+    collection_id = int(opened["collection_id"])
+    service.register_files(collection_id, (_FILE,))
+    closed = service.complete(collection_id)
+    assert closed["state"] in {"closing", "uploading", "finalizing"}
+    staged_calls = tag_calls
+
+    resumed = _create_or_resume_collection_upload_session(
+        api,  # type: ignore[arg-type]
+        "piggity-closing-retry",
+        ingest_source="fixture",
+        tags=tags,
+        provenance_mode="omitted",
+        provenance_omission_reason="fixture",
+    )
+
+    assert resumed["state"] == closed["state"]
+    assert tag_calls == staged_calls
 
 
 def test_postgres_upload_protects_a_reused_tag_root_before_its_first_commit(

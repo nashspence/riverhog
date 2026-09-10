@@ -38,7 +38,7 @@ from riverhog_protocol.paths import CollectionId, normalize_relpath, validate_co
 from riverhog_protocol.storage_names import ArchiveStoreName
 
 from riverhog_client.client import ApiClient
-from riverhog_client.initial_tags import prepare_initial_collection_tags
+from riverhog_client.initial_tags import create_or_resume_with_initial_collection_tags
 from riverhog_client.source_hashing import RawSourceHash, hash_raw_source_chunks
 from riverhog_client.uploads import (
     configured_upload_concurrency,
@@ -346,26 +346,26 @@ class IncrementalCollectionProducer:
         self._heartbeat_thread: threading.Thread | None = None
         self._finalized: ProducedCollection | None = None
         self.constraints: CollectionUploadRegistrationConstraintsDocument | None
-        with prepare_initial_collection_tags(tags) as prepared_tags:
-            batches = prepared_tags.iter_batches()
-            first_batch = next(batches, ())
-            session = api.create_or_resume_collection_upload_session(
-                idempotency_key or evidence.sha256,
-                ingest_source=ingest_source,
-                description=description,
-                tags=first_batch,
-                initial_tag_set_identity=prepared_tags.tag_set_identity,
-                archive_store=archive_store,
-                event_context=event_context,
-                provenance_mode=provenance_mode,
-                provenance_omission_reason=(reason if provenance_mode == "omitted" else None),
-                custody_mode="custody-transfer",
-            )
-            if str(session.get("state") or "") == "open":
-                for batch in batches:
-                    api.add_collection_upload_session_tags(
-                        validate_collection_id(session.get("collection_id")), batch
-                    )
+        session = create_or_resume_with_initial_collection_tags(
+            tags,
+            create_or_resume=lambda first_batch, identity: (
+                api.create_or_resume_collection_upload_session(
+                    idempotency_key or evidence.sha256,
+                    ingest_source=ingest_source,
+                    description=description,
+                    tags=first_batch,
+                    initial_tag_set_identity=identity,
+                    archive_store=archive_store,
+                    event_context=event_context,
+                    provenance_mode=provenance_mode,
+                    provenance_omission_reason=(reason if provenance_mode == "omitted" else None),
+                    custody_mode="custody-transfer",
+                )
+            ),
+            add_tags=lambda collection_id, batch: api.add_collection_upload_session_tags(
+                collection_id, batch
+            ),
+        )
         self._heartbeat_interval_seconds = _custody_heartbeat_interval(session)
         self.resumed = bool(session.get("resumed"))
         self.collection_id = validate_collection_id(session.get("collection_id"))
