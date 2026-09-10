@@ -31,7 +31,7 @@ _METADATA_KEY_PATTERN = re.compile(r"^[a-z0-9](?:[a-z0-9._-]{0,126}[a-z0-9])?$")
 _MAX_IDENTITY_ASSERTIONS_ITEMS = 64
 _MAX_IDENTITY_ASSERTIONS_BYTES = 16 * 1024
 MAX_WRITE_SEGMENT_PAGE_ITEMS = 128
-_WRITE_SEGMENT_SEQUENCE_DOMAIN = b"riverhog-storage-write-segment-sequence/v1\x00"
+_MAX_WRITE_COMPLETION_AUTHORITY_TOKEN_LENGTH = 4000
 
 Sha256 = Annotated[str, StringConstraints(pattern=_SHA256_PATTERN)]
 SemanticId = Annotated[str, StringConstraints(pattern=_SEMANTIC_ID_PATTERN)]
@@ -227,39 +227,23 @@ def _listed_segments(
 
 
 class WriteCompletionAuthority(StorageAdapterModel):
-    """Exact adapter-write segment sequence selected for publication."""
+    """Adapter-issued terminal authority for one exact active-write state.
+
+    Consumers echo the opaque token unchanged. It is neither a credential nor a
+    bearer capability; completion remains independently authorized. Once an exact
+    immutable object is published, its completed-object identity supersedes this
+    transport authority for terminal reconciliation.
+    """
 
     segment_count: int = Field(ge=0)
     stored_bytes: int = Field(ge=0)
-    sequence_sha256: Sha256
-
-
-def write_completion_authority(
-    segments: Iterable[WriteSegmentReceipt],
-) -> WriteCompletionAuthority:
-    """Commit one canonical, contiguous sequence without retaining it in memory."""
-
-    digest = sha256(_WRITE_SEGMENT_SEQUENCE_DOMAIN)
-    segment_count = 0
-    stored_bytes = 0
-    for expected_number, segment in enumerate(segments, start=1):
-        if segment.number != expected_number:
-            raise ValueError("write segments must be contiguous and ordered from one")
-        encoded = json.dumps(
-            segment.model_dump(mode="json", exclude_none=True),
-            allow_nan=False,
-            ensure_ascii=False,
-            separators=(",", ":"),
-            sort_keys=True,
-        ).encode("utf-8")
-        digest.update(len(encoded).to_bytes(8, "big"))
-        digest.update(encoded)
-        segment_count += 1
-        stored_bytes += segment.stored_bytes
-    return WriteCompletionAuthority(
-        segment_count=segment_count,
-        stored_bytes=stored_bytes,
-        sequence_sha256=digest.hexdigest(),
+    authority_token: str = Field(
+        min_length=1,
+        max_length=_MAX_WRITE_COMPLETION_AUTHORITY_TOKEN_LENGTH,
+        description=(
+            "Bounded opaque adapter-issued authority for the exact accepted state of an "
+            "active write. The token grants no authority and must be echoed unchanged."
+        ),
     )
 
 
@@ -1185,5 +1169,4 @@ __all__ = [
     "validate_write_start_request",
     "validate_write_session_response",
     "validated_storage_adapter",
-    "write_completion_authority",
 ]

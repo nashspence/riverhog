@@ -22,30 +22,15 @@ from riverhog_core.raw_upload import (
     merge_raw_upload_checkpoints,
 )
 from riverhog_core.raw_volume import raw_age_aligned_unit_plans
-from riverhog_storage_adapter_protocol import (
-    WriteSegmentReceipt as AdapterWriteSegmentReceipt,
-)
-from riverhog_storage_adapter_protocol import (
-    write_completion_authority,
-)
 
 ARCHIVE_UNIT_BYTES = 5 * 1024 * 1024
 
 
 def _authority(segments: tuple[WriteSegmentReceipt, ...]) -> WriteCompletionAuthority:
-    result = write_completion_authority(
-        AdapterWriteSegmentReceipt(
-            number=item.number,
-            segment_token=item.segment_token,
-            stored_bytes=item.bytes,
-            stored_sha256=item.sha256,
-        )
-        for item in segments
-    )
     return WriteCompletionAuthority(
-        result.segment_count,
-        result.stored_bytes,
-        result.sequence_sha256,
+        len(segments),
+        sum(item.bytes for item in segments),
+        hashlib.sha256(repr(segments).encode("utf-8")).hexdigest(),
     )
 
 

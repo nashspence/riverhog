@@ -26,13 +26,23 @@ from riverhog_storage_adapter_protocol import (
     SmallObjectWriteRequest,
     StorageAdapterRejection,
     WriteCompleteRequest,
+    WriteCompletionAuthority,
     WriteSegmentListRequest,
     WriteSegmentPage,
     WriteSegmentReceipt,
     WriteSession,
     WriteStartRequest,
-    write_completion_authority,
 )
+
+
+def _completion_authority(
+    segments: tuple[WriteSegmentReceipt, ...],
+) -> WriteCompletionAuthority:
+    return WriteCompletionAuthority(
+        segment_count=len(segments),
+        stored_bytes=sum(segment.stored_bytes for segment in segments),
+        authority_token=hashlib.sha256(repr(segments).encode("utf-8")).hexdigest(),
+    )
 
 
 class _Adapter:
@@ -105,7 +115,7 @@ class _Adapter:
             traversal_token=token,
             segments=page,
             next_after_number=page[-1].number if has_more else None,
-            completion=None if has_more else write_completion_authority(segments),
+            completion=None if has_more else _completion_authority(segments),
         )
 
     def complete_write(

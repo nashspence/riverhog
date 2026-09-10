@@ -474,7 +474,7 @@ class _StorageAdapterRetrievalCacheResumableObjectStore:
                 WriteCompletionAuthority(
                     page.completion.segment_count,
                     page.completion.stored_bytes,
-                    page.completion.sequence_sha256,
+                    page.completion.authority_token,
                 )
                 if page.completion is not None
                 else None
@@ -595,7 +595,7 @@ def _adapter_completion_authority(
     return AdapterWriteCompletionAuthority(
         segment_count=completion.segment_count,
         stored_bytes=completion.stored_bytes,
-        sequence_sha256=completion.sequence_sha256,
+        authority_token=completion.authority_token,
     )
 
 

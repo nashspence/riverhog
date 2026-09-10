@@ -31,13 +31,13 @@ from riverhog_storage_adapter_protocol import (
     SmallObjectWriteRequest,
     StorageAdapterRejection,
     WriteCompleteRequest,
+    WriteCompletionAuthority,
     WriteSegmentListRequest,
     WriteSegmentPage,
     WriteSegmentReceipt,
     WriteSegmentRequest,
     WriteSession,
     WriteStartRequest,
-    write_completion_authority,
 )
 from riverhog_storage_adapter_support import (
     FRAMED_BODY_FORMAT,
@@ -52,6 +52,17 @@ from riverhog_storage_adapter_support import (
     run_storage_adapter_conformance,
     storage_adapter_schema_bundle,
 )
+
+
+def _completion_authority(
+    segments: tuple[WriteSegmentReceipt, ...],
+) -> WriteCompletionAuthority:
+    encoded = repr(segments).encode("utf-8")
+    return WriteCompletionAuthority(
+        segment_count=len(segments),
+        stored_bytes=sum(segment.stored_bytes for segment in segments),
+        authority_token=hashlib.sha256(encoded).hexdigest(),
+    )
 
 
 @dataclass
@@ -149,7 +160,7 @@ class MemoryAdapter:
                 or tuple(item.number for item in all_segments)
                 != tuple(range(1, len(all_segments) + 1))
                 or sum(item.stored_bytes for item in all_segments) != request.session.expected_bytes
-                else write_completion_authority(all_segments)
+                else _completion_authority(all_segments)
             ),
         )
 
@@ -157,6 +168,17 @@ class MemoryAdapter:
         self,
         request: WriteCompleteRequest,
     ) -> CompletedObjectReceipt:
+        completed = self.find_completed_write(
+            CompletedWriteLookupRequest(
+                object_path=request.session.object_path,
+                expected_bytes=request.expected_bytes,
+                expected_content_type=request.expected_content_type,
+                required_identity_assertions=request.required_identity_assertions,
+                expected_placement=request.expected_placement,
+            )
+        )
+        if completed is not None:
+            return completed
         created = self.created[request.session.write_token]
         accepted = tuple(
             WriteSegmentReceipt(
@@ -167,7 +189,11 @@ class MemoryAdapter:
             for (write_token, number), content in sorted(self.segments.items())
             if write_token == request.session.write_token
         )
-        assert write_completion_authority(accepted) == request.completion
+        if _completion_authority(accepted) != request.completion:
+            raise StorageAdapterRejection(
+                "identity_conflict",
+                "completion authority differs from accepted fixture segments",
+            )
         content = b"".join(
             self.segments[(request.session.write_token, part.number)] for part in accepted
         )
@@ -942,10 +968,13 @@ def test_consumer_runnable_conformance_uses_only_the_public_http_contract() -> N
             "identity-conflict",
             "sparse-write-reconciliation",
             "write-begin-recovery",
+            "write-segment-idempotent-authority",
             "write-traversal-invalidation",
             "write-continuation-replay",
             "write-reconciliation",
+            "write-active-completion-authority",
             "write-completion-recovery",
+            "write-completed-object-authority",
             "write-stream",
             "read-preparation",
             "write-abort",

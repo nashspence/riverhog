@@ -11857,9 +11857,9 @@
           "stove0-target-support": 1
         },
         "policies": {
-          "contract_max": 430,
+          "contract_max": 431,
           "extension_owned": 55,
-          "fixed": 901,
+          "fixed": 900,
           "operational_policy": 480,
           "segmented_no_total_max": 80
         },
@@ -33154,17 +33154,14 @@
         },
         {
           "dimension": "length",
-          "id": "protocol:generated:riverhog-storage-adapter:definition:WriteCompletionAuthority:/properties/sequence_sha256:length",
-          "maximum": 64,
-          "minimum": 64,
+          "id": "protocol:generated:riverhog-storage-adapter:definition:WriteCompletionAuthority:/properties/authority_token:length",
+          "maximum": 4000,
+          "minimum": 1,
           "owner": "riverhog-storage-adapter-protocol",
-          "policy": "fixed",
-          "reason": "fixed-public-representation",
+          "policy": "contract_max",
+          "reason": "schema-maximum",
           "rule": "schema-bound/v1",
-          "source_constraint": {
-            "pattern": "^[0-9a-f]{64}$"
-          },
-          "source_pointer": "/external_contract/protocol_schemas/generated:riverhog-storage-adapter/schemas/WriteCompleteRequest/$defs/WriteCompletionAuthority/properties/sequence_sha256",
+          "source_pointer": "/external_contract/protocol_schemas/generated:riverhog-storage-adapter/schemas/WriteCompleteRequest/$defs/WriteCompletionAuthority/properties/authority_token",
           "unit": "characters"
         },
         {
@@ -40129,7 +40126,7 @@
         }
       },
       "schema": "riverhog-extent-contract/v1",
-      "sha256": "b34596d3e9f2505d82878601f1f213d9adae7e0288b14328f3d58140b0e01d0a"
+      "sha256": "fa7b3a799198214f71ed88d5d1aa3deef152be111562d077e23f4edd604a381b"
     },
     "http_openapi": {
       "riverhog": {
@@ -81153,7 +81150,7 @@
           "semantic_acceptance": "semantic_acceptance",
           "structural_models": "schemas"
         },
-        "bundle_sha256": "ed1dae122819e272b1cabd8462c741b7bfa960c5d8b42c9841eb67b5a858f58b",
+        "bundle_sha256": "ed6a7530471c36528ec0c944a389ae5b9f06bb3f643b45ff61c0f8bd47cc4ec6",
         "compatibility": {
           "provider_ontology": "private",
           "unknown_fields": "reject"
@@ -83141,17 +83138,19 @@
             "$defs": {
               "WriteCompletionAuthority": {
                 "additionalProperties": false,
-                "description": "Exact adapter-write segment sequence selected for publication.",
+                "description": "Adapter-issued terminal authority for one exact active-write state.\n\nConsumers echo the opaque token unchanged. It is neither a credential nor a\nbearer capability; completion remains independently authorized. Once an exact\nimmutable object is published, its completed-object identity supersedes this\ntransport authority for terminal reconciliation.",
                 "properties": {
+                  "authority_token": {
+                    "description": "Bounded opaque adapter-issued authority for the exact accepted state of an active write. The token grants no authority and must be echoed unchanged.",
+                    "maxLength": 4000,
+                    "minLength": 1,
+                    "title": "Authority Token",
+                    "type": "string"
+                  },
                   "segment_count": {
                     "minimum": 0,
                     "title": "Segment Count",
                     "type": "integer"
-                  },
-                  "sequence_sha256": {
-                    "pattern": "^[0-9a-f]{64}$",
-                    "title": "Sequence Sha256",
-                    "type": "string"
                   },
                   "stored_bytes": {
                     "minimum": 0,
@@ -83162,7 +83161,7 @@
                 "required": [
                   "segment_count",
                   "stored_bytes",
-                  "sequence_sha256"
+                  "authority_token"
                 ],
                 "title": "WriteCompletionAuthority",
                 "type": "object"
@@ -83334,17 +83333,19 @@
             "$defs": {
               "WriteCompletionAuthority": {
                 "additionalProperties": false,
-                "description": "Exact adapter-write segment sequence selected for publication.",
+                "description": "Adapter-issued terminal authority for one exact active-write state.\n\nConsumers echo the opaque token unchanged. It is neither a credential nor a\nbearer capability; completion remains independently authorized. Once an exact\nimmutable object is published, its completed-object identity supersedes this\ntransport authority for terminal reconciliation.",
                 "properties": {
+                  "authority_token": {
+                    "description": "Bounded opaque adapter-issued authority for the exact accepted state of an active write. The token grants no authority and must be echoed unchanged.",
+                    "maxLength": 4000,
+                    "minLength": 1,
+                    "title": "Authority Token",
+                    "type": "string"
+                  },
                   "segment_count": {
                     "minimum": 0,
                     "title": "Segment Count",
                     "type": "integer"
-                  },
-                  "sequence_sha256": {
-                    "pattern": "^[0-9a-f]{64}$",
-                    "title": "Sequence Sha256",
-                    "type": "string"
                   },
                   "stored_bytes": {
                     "minimum": 0,
@@ -83355,7 +83356,7 @@
                 "required": [
                   "segment_count",
                   "stored_bytes",
-                  "sequence_sha256"
+                  "authority_token"
                 ],
                 "title": "WriteCompletionAuthority",
                 "type": "object"
@@ -105538,13 +105539,13 @@
                 "signature": "(self) -> 'Self'"
               }
             },
-            "schema_sha256": "a2e718cd5afebe46b3026a7675c8b0550167e5214ba8b5037e86d52f8f5e0113",
+            "schema_sha256": "3b6857dbea430d76de035e4b9a4d2e0306c6b78a8f4fd827d729da581b4e9f10",
             "signature": "(*, session: riverhog_storage_adapter_protocol.protocol.WriteSession, completion: riverhog_storage_adapter_protocol.protocol.WriteCompletionAuthority, expected_bytes: Annotated[int, Ge(ge=1)], expected_content_type: Annotated[str, MinLen(min_length=1), MaxLen(max_length=255)], required_identity_assertions: Annotated[dict[str, str], MaxLen(max_length=64)], expected_placement: Literal['archive', 'immediate']) -> None"
           },
           "WriteCompletionAuthority": {
             "kind": "class",
-            "schema_sha256": "69cc9307d44911887be98009dec314a4a5cbddb26fafdd84dfc23404b2755167",
-            "signature": "(*, segment_count: Annotated[int, Ge(ge=0)], stored_bytes: Annotated[int, Ge(ge=0)], sequence_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)]) -> None"
+            "schema_sha256": "c522a1b0d2d807b0740cab37856acf28b1c1eea4fa6a576110441995d96589d7",
+            "signature": "(*, segment_count: Annotated[int, Ge(ge=0)], stored_bytes: Annotated[int, Ge(ge=0)], authority_token: Annotated[str, MinLen(min_length=1), MaxLen(max_length=4000)]) -> None"
           },
           "WriteSegmentListRequest": {
             "kind": "class",
@@ -105563,7 +105564,7 @@
                 "signature": "(self) -> 'Self'"
               }
             },
-            "schema_sha256": "4e76e714253dfc42e1d79196e82a8dbd548e09cd3673a417d0c20d2e4556f78a",
+            "schema_sha256": "d1d971aecf4fda3444d770576aa32bb6527302511e9401a9b027918ec8ae3b38",
             "signature": "(*, session: riverhog_storage_adapter_protocol.protocol.WriteSession, traversal_token: Annotated[str, MinLen(min_length=1), MaxLen(max_length=4000)], segments: Annotated[tuple[riverhog_storage_adapter_protocol.protocol.WriteSegmentReceipt, ...], MaxLen(max_length=128)] = (), next_after_number: Annotated[int | None, Ge(ge=1)] = None, completion: riverhog_storage_adapter_protocol.protocol.WriteCompletionAuthority | None = None) -> None"
           },
           "WriteSegmentReceipt": {
@@ -105653,10 +105654,6 @@
           "validated_storage_adapter": {
             "kind": "function",
             "signature": "(adapter: 'StorageAdapterPort') -> 'ValidatedStorageAdapterPort'"
-          },
-          "write_completion_authority": {
-            "kind": "function",
-            "signature": "(segments: 'Iterable[WriteSegmentReceipt]') -> 'WriteCompletionAuthority'"
           }
         },
         "module": "riverhog_storage_adapter_protocol"

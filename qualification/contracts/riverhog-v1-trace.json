@@ -1,6 +1,6 @@
 {
-  "contract_canonical_sha256": "18185621df93b5f585aa492c57cc0a52a005c66c976db8009623ed6edd320e4a",
-  "contract_projection_sha256": "da130b823c3a56b6491b081b0346f3aedddd11e106b9e485146303b77555adbc",
+  "contract_canonical_sha256": "0a6dd20babe74f68af5903c2742b5f6970272f58d17b54405349c83f8eac8f49",
+  "contract_projection_sha256": "0bf135b7ef55c55f58e435c9fcccda8b807262c66512e4c925485db5fa9615f2",
   "contract_schema": "riverhog-contract-freeze/v1",
   "coverage": {
     "extent_decisions": 1946,
@@ -7573,9 +7573,9 @@
       "source_pointer": "/external_contract/protocol_schemas/generated:riverhog-storage-adapter/schemas/StorageAdapterError/$defs/StorageAdapterErrorBody/properties/message"
     },
     {
-      "id": "protocol:generated:riverhog-storage-adapter:definition:WriteCompletionAuthority:/properties/sequence_sha256:length",
+      "id": "protocol:generated:riverhog-storage-adapter:definition:WriteCompletionAuthority:/properties/authority_token:length",
       "owner": "riverhog-storage-adapter-protocol",
-      "source_pointer": "/external_contract/protocol_schemas/generated:riverhog-storage-adapter/schemas/WriteCompleteRequest/$defs/WriteCompletionAuthority/properties/sequence_sha256"
+      "source_pointer": "/external_contract/protocol_schemas/generated:riverhog-storage-adapter/schemas/WriteCompleteRequest/$defs/WriteCompletionAuthority/properties/authority_token"
     },
     {
       "id": "protocol:generated:riverhog-storage-adapter:definition:WriteSegmentReceipt:/properties/segment_token:length",

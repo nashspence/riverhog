@@ -58,7 +58,6 @@ from riverhog_storage_adapter_protocol.protocol import (
     validate_write_session_response,
     validate_write_start_request,
     validated_storage_adapter,
-    write_completion_authority,
 )
 
 __all__ = [
@@ -119,5 +118,4 @@ __all__ = [
     "validate_write_start_request",
     "validate_write_session_response",
     "validated_storage_adapter",
-    "write_completion_authority",
 ]
