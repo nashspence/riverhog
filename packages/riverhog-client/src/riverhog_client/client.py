@@ -1058,6 +1058,7 @@ class ApiClient(CollectionWorkflowMethods, _HttpApiClient):
         ingest_source: str | None = None,
         description: CollectionDescription | None = None,
         tags: Sequence[CollectionTag] = (),
+        initial_tag_set_identity: str,
         archive_store: ArchiveStoreName | None = None,
         event_context: Mapping[str, Any] | None = None,
         provenance_mode: ProvenanceMode = "captured",
@@ -1070,6 +1071,9 @@ class ApiClient(CollectionWorkflowMethods, _HttpApiClient):
         )
         payload: dict[str, Any] = {
             "idempotency_key": _validated_collection_upload_idempotency_key(idempotency_key),
+            "initial_tag_set_identity": _sha256_identity(
+                initial_tag_set_identity, "initial collection tag-set identity"
+            ),
             "provenance_mode": provenance_mode,
         }
         normalized_custody_mode = _one_of(

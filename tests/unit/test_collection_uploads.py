@@ -61,8 +61,10 @@ from riverhog_protocol import (
     COLLECTION_DESCRIPTION_RELATIVE_PATH,
     COLLECTION_UPLOAD_PROVENANCE_APPEND_BYTES_MAX,
     CollectionDescriptionDocument,
+    CollectionTagSet,
     CollectionUploadProvenanceJournalCreateDocument,
     CollectionUploadRawDigestBatchDocument,
+    MemoryCollectionTagNodeStore,
 )
 from riverhog_protocol.errors import Conflict, NotFound
 from riverhog_protocol.manifest import collection_content_identity
@@ -113,6 +115,13 @@ _OTHER_DELETER = ApplicationPrincipal(
     key_id="key-other",
     access=frozenset({ApplicationAccess(COLLECTIONS_DELETE, "collection:999")}),
 )
+
+
+def _tag_set_identity(*tags: str) -> str:
+    tag_set = CollectionTagSet(MemoryCollectionTagNodeStore())
+    for tag in tags:
+        tag_set = tag_set.insert(tag)
+    return tag_set.identity
 
 
 def test_provenance_entity_validation_fact_keys_are_database_safe_and_unambiguous() -> None:
@@ -267,6 +276,29 @@ def test_open_upload_retains_tag_nodes_until_publication_can_finish(tmp_path: Pa
     assert sync.reap_expired_history(limit=10_000) == 0
     with session_scope(factory) as session:
         assert list(session.scalars(select(CollectionTagNodeRecord.digest))) == []
+
+
+def test_upload_cannot_close_until_complete_initial_tag_intent_is_staged(tmp_path: Path) -> None:
+    service, _config = _service(tmp_path)
+    tags = tuple(f"classification/{index:04d}" for index in range(101))
+    opened = service.create_or_resume(
+        idempotency_key="complete-initial-tag-intent",
+        ingest_source="fixture",
+        tags=tags[:100],
+        initial_tag_set_identity=_tag_set_identity(*tags),
+        archive_store=None,
+        initiator=_TAGGED_CREATOR,
+        event_context=None,
+        provenance_mode="omitted",
+        provenance_omission_reason="fixture has no source provenance",
+    )
+    collection_id = int(opened["collection_id"])
+
+    with pytest.raises(Conflict, match="initial collection tags are incomplete"):
+        service.complete(collection_id)
+    service.add_tags(collection_id, tags[100:], principal=_TAGGED_CREATOR)
+    with pytest.raises(Conflict, match="has no registered files"):
+        service.complete(collection_id)
 
 
 def _process_until(

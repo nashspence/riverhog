@@ -372,6 +372,7 @@ class CreateOrResumeCollectionUploadSessionRequest(RiverhogModel):
             }
         },
     )
+    initial_tag_set_identity: str = Field(pattern=r"^[0-9a-f]{64}$")
     archive_store: ArchiveStoreName | None = None
     event_context: EventContext | None = None
     provenance_mode: Literal["captured", "omitted"] = "captured"

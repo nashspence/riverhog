@@ -134,6 +134,141 @@ def test_active_adapter_must_be_quiesced(tmp_path: Path) -> None:
         assert not (tmp_path / ".export.riverhog-materialization").exists()
 
 
+def _kill_materializer_at_hook(
+    *,
+    source: Path,
+    destination: Path,
+    marker: Path,
+    hook: str,
+    after_hook: bool = False,
+) -> None:
+    worker = """
+import sys
+import time
+from pathlib import Path
+import riverhog_storage_adapter_filesystem.materialize as module
+
+source, destination, marker = map(Path, sys.argv[1:4])
+hook = sys.argv[4]
+after_hook = sys.argv[5] == "true"
+original = getattr(module, hook)
+def wait_at_hook(*args, **kwargs):
+    if after_hook:
+        result = original(*args, **kwargs)
+    marker.write_text("ready", encoding="utf-8")
+    time.sleep(60)
+    if not after_hook:
+        return original(*args, **kwargs)
+    return result
+setattr(module, hook, wait_at_hook)
+module.materialize_committed_objects(
+    source=source,
+    destination=destination,
+    selection=module.MaterializationSelection(all_objects=True),
+)
+"""
+    process = subprocess.Popen(
+        [
+            sys.executable,
+            "-c",
+            worker,
+            str(source),
+            str(destination),
+            str(marker),
+            hook,
+            str(after_hook).lower(),
+        ]
+    )
+    deadline = time.monotonic() + 10
+    while not marker.exists() and process.poll() is None and time.monotonic() < deadline:
+        time.sleep(0.01)
+    assert marker.exists(), process.poll()
+    os.kill(process.pid, signal.SIGKILL)
+    assert process.wait(timeout=10) == -signal.SIGKILL
+
+
+def test_sigkill_during_checkpoint_bootstrap_restarts_exactly(tmp_path: Path) -> None:
+    root = tmp_path / "store"
+    with _adapter(root) as adapter:
+        _put(adapter, "archives/one/recovery.json", b"descriptor")
+    output = tmp_path / "export"
+
+    _kill_materializer_at_hook(
+        source=root,
+        destination=output,
+        marker=tmp_path / "bootstrap-started",
+        hook="_initialize_state",
+    )
+
+    assert (tmp_path / ".export.riverhog-materialization-bootstrap.json").is_file()
+    assert (tmp_path / ".export.riverhog-materialization-init").is_dir()
+    summary = materialize_committed_objects(
+        source=root,
+        destination=output,
+        selection=MaterializationSelection(all_objects=True),
+    )
+    assert summary.copied_objects == 1
+    assert (output / "archives/one/recovery.json").read_bytes() == b"descriptor"
+
+
+@pytest.mark.parametrize("after_cleanup", [False, True])
+def test_sigkill_after_durable_completion_replays_success(
+    tmp_path: Path, after_cleanup: bool
+) -> None:
+    root = tmp_path / "store"
+    with _adapter(root) as adapter:
+        _put(adapter, "archives/one/recovery.json", b"descriptor")
+    output = tmp_path / "export"
+
+    _kill_materializer_at_hook(
+        source=root,
+        destination=output,
+        marker=tmp_path / "completion-written",
+        hook="_retire_checkpoint",
+        after_hook=after_cleanup,
+    )
+
+    assert (tmp_path / ".export.riverhog-materialization-complete.json").is_file()
+    if not after_cleanup:
+        (tmp_path / ".export.riverhog-materialization/state.sqlite3").unlink()
+    summary = materialize_committed_objects(
+        source=root,
+        destination=output,
+        selection=MaterializationSelection(all_objects=True),
+    )
+    assert summary.copied_objects == 0
+    assert summary.destination_verified_objects == 1
+    assert (output / "archives/one/recovery.json").read_bytes() == b"descriptor"
+
+
+def test_completed_materialization_rejects_changed_source_projection(tmp_path: Path) -> None:
+    root = tmp_path / "store"
+    with _adapter(root) as adapter:
+        _put(adapter, "archives/one/recovery.json", b"descriptor")
+    output = tmp_path / "export"
+    selection = MaterializationSelection(all_objects=True)
+    materialize_committed_objects(source=root, destination=output, selection=selection)
+    with _adapter(root) as adapter:
+        _put(adapter, "archives/two/recovery.json", b"new")
+
+    with pytest.raises(MaterializationError, match="changed after materialization"):
+        materialize_committed_objects(source=root, destination=output, selection=selection)
+
+
+def test_unowned_partial_bootstrap_is_never_adopted(tmp_path: Path) -> None:
+    root = tmp_path / "store"
+    with _adapter(root) as adapter:
+        _put(adapter, "archives/one/recovery.json", b"descriptor")
+    (tmp_path / ".export.riverhog-materialization-init").mkdir()
+
+    with pytest.raises(MaterializationError, match="unowned materialization bootstrap"):
+        materialize_committed_objects(
+            source=root,
+            destination=tmp_path / "export",
+            selection=MaterializationSelection(all_objects=True),
+        )
+
+
 def test_sigkill_during_copy_resumes_exact_checkpoint_owned_staging(tmp_path: Path) -> None:
     root = tmp_path / "store"
     payload = b"bounded-recovery-copy" * (64 * 1024)

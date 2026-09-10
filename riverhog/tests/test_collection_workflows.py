@@ -721,6 +721,9 @@ def test_expired_execution_upload_remains_a_deletion_blocker(
                 collection_id=3,
                 idempotency_key=EXECUTION_ID,
                 creation_identity_sha256="a" * 64,
+                initial_tag_set_identity=(
+                    "d99a47346b904680a2b3182b3950c159b297a427edfd0c8a23124b7bfb296ed9"
+                ),
                 ingest_source=f"transform:{EXECUTION_ID}",
                 encryption_format="age-v1-scrypt",
                 passphrase_id="fixture-archive-key-v1",
