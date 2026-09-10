@@ -1,16 +1,16 @@
 {
-  "contract_canonical_sha256": "4c30083502f124065a0add13aecb0e3088a5d37539dcc15919b8f988ff9017fa",
-  "contract_projection_sha256": "0b432dfae4cc995075334baa6bd1bf9df38552cdc7f844583760d030dced8c2a",
+  "contract_canonical_sha256": "bce51ceb1c8acf90821649d452ff7f758dec55ca744371865da7116e7295f2bd",
+  "contract_projection_sha256": "1ba2c13b317c8a23b46afbfc2372efdd536debb6383c9627ea77191d5d4afbd8",
   "contract_schema": "riverhog-contract-freeze/v1",
   "coverage": {
-    "extent_decisions": 1939,
-    "extent_source_links": 1939,
+    "extent_decisions": 1942,
+    "extent_source_links": 1942,
     "segmented_decisions": 79,
     "segmented_extent_witness_links": 79,
     "segmented_extent_witnesses": 12,
-    "source_authorities": 204,
+    "source_authorities": 205,
     "source_kinds": {
-      "cli": 5,
+      "cli": 6,
       "configuration": 6,
       "configuration-environment": 121,
       "openapi": 3,
@@ -1865,6 +1865,21 @@
       "id": "cli:riverhog-recover:riverhog-recover:parameter:4:values-per-occurrence",
       "owner": "riverhog-recover",
       "source_pointer": "/external_contract/cli/riverhog-recover/parameters/4"
+    },
+    {
+      "id": "cli:riverhog-storage-adapter-filesystem-materialize:riverhog-storage-adapter-filesystem-materialize:parameter:0:values-per-occurrence",
+      "owner": "riverhog-storage-adapter-filesystem-materialize",
+      "source_pointer": "/external_contract/cli/riverhog-storage-adapter-filesystem-materialize/parameters/0"
+    },
+    {
+      "id": "cli:riverhog-storage-adapter-filesystem-materialize:riverhog-storage-adapter-filesystem-materialize:parameter:5:values-per-occurrence",
+      "owner": "riverhog-storage-adapter-filesystem-materialize",
+      "source_pointer": "/external_contract/cli/riverhog-storage-adapter-filesystem-materialize/parameters/5"
+    },
+    {
+      "id": "cli:riverhog-storage-adapter-filesystem-materialize:riverhog-storage-adapter-filesystem-materialize:parameter:6:values-per-occurrence",
+      "owner": "riverhog-storage-adapter-filesystem-materialize",
+      "source_pointer": "/external_contract/cli/riverhog-storage-adapter-filesystem-materialize/parameters/6"
     },
     {
       "id": "cli:stove0:stove0:admission:list:parameter:order:values-per-occurrence",
@@ -12076,6 +12091,14 @@
       "source": {
         "module": "riverhog_recover.cli",
         "path": "reference/riverhog/recovery/src/riverhog_recover/cli.py",
+        "symbol": "<module>"
+      }
+    },
+    {
+      "id": "cli:riverhog-storage-adapter-filesystem-materialize",
+      "source": {
+        "module": "riverhog_storage_adapter_filesystem.materialize_cli",
+        "path": "reference/riverhog/storage/filesystem/src/riverhog_storage_adapter_filesystem/materialize_cli.py",
         "symbol": "<module>"
       }
     },

@@ -5,8 +5,8 @@ Contracts define packages; architecture records ownership.
 ## Authority model
 
 - **Archive authority.** Archive stores own encrypted bytes. Only sealed objects and published
-  immutable roots are archive authority; retrieval caches are rebuildable. Retirement and deletion
-  mutate archives; archives remain recoverable with standard tools without Riverhog's database.
+  immutable roots are archive authority; caches rebuild. Retirement/deletion mutate archives; archives remain
+  recoverable with standard tools without Riverhog's service or database.
 - **Trust boundary.** Riverhog's host is the plaintext/encryption boundary. Ingress encrypts there
   before writing immutable final-object units to the selected archive store; ingress is not a
   storage tier.
@@ -35,8 +35,8 @@ Contracts define packages; architecture records ownership.
   applications own interfaces and materializations.
 - **Ingress adapters.** Ingress adapters are content-opaque, bounded-custody Riverhog clients; they
   relinquish bytes only after finalization.
-- **Storage adapters.** Storage adapters translate opaque-object capabilities into
-  provider mechanisms. Provider policy and mechanisms remain outside Riverhog.
+- **Storage adapters.** Storage adapters translate opaque objects into provider mechanisms and
+  materialize canonical logical trees; provider policy remains external.
 - **Reference applications.** Reference applications use Riverhog capabilities and own their state;
   their contracts are authoritative for the application, not for Riverhog.
 - **Extensions.** Observers report immutable-artifact facts; targets perform declared operations.

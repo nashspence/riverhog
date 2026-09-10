@@ -27,7 +27,9 @@ def _parser() -> argparse.ArgumentParser:
         action="version",
         version=importlib.metadata.version("riverhog-recover"),
     )
-    parser.add_argument("archive", type=Path, help="downloaded opaque archive directory")
+    parser.add_argument(
+        "archive", type=Path, help="materialized canonical logical archive directory"
+    )
     parser.add_argument("output", type=Path, nargs="?", help="new directory for recovered files")
     metadata = parser.add_mutually_exclusive_group()
     metadata.add_argument(

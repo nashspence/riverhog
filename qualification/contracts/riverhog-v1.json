@@ -421,7 +421,8 @@
       },
       {
         "console_scripts": {
-          "riverhog-storage-adapter-filesystem": "riverhog_storage_adapter_filesystem.app:main"
+          "riverhog-storage-adapter-filesystem": "riverhog_storage_adapter_filesystem.app:main",
+          "riverhog-storage-adapter-filesystem-materialize": "riverhog_storage_adapter_filesystem.materialize_cli:main"
         },
         "dependencies": [
           "riverhog-storage-adapter-asgi-support",
@@ -8169,6 +8170,76 @@
           }
         ]
       },
+      "riverhog-storage-adapter-filesystem-materialize": {
+        "name": "riverhog-storage-adapter-filesystem-materialize",
+        "parameters": [
+          {
+            "dest": "version",
+            "kind": "_VersionAction",
+            "nargs": 0,
+            "options": [
+              "--version"
+            ],
+            "required": false
+          },
+          {
+            "dest": "source",
+            "kind": "_StoreAction",
+            "nargs": null,
+            "options": [],
+            "required": true,
+            "type": "Path"
+          },
+          {
+            "dest": "destination",
+            "kind": "_StoreAction",
+            "nargs": null,
+            "options": [],
+            "required": true,
+            "type": "Path"
+          },
+          {
+            "default": [],
+            "dest": "path",
+            "kind": "_AppendAction",
+            "nargs": null,
+            "options": [
+              "--path"
+            ],
+            "required": false
+          },
+          {
+            "default": [],
+            "dest": "prefix",
+            "kind": "_AppendAction",
+            "nargs": null,
+            "options": [
+              "--prefix"
+            ],
+            "required": false
+          },
+          {
+            "default": false,
+            "dest": "all_objects",
+            "kind": "_StoreTrueAction",
+            "nargs": 0,
+            "options": [
+              "--all"
+            ],
+            "required": false
+          },
+          {
+            "default": false,
+            "dest": "json",
+            "kind": "_StoreTrueAction",
+            "nargs": 0,
+            "options": [
+              "--json"
+            ],
+            "required": false
+          }
+        ]
+      },
       "stove0": {
         "commands": {
           "admission": {
@@ -11728,8 +11799,8 @@
     },
     "extents": {
       "coverage": {
-        "classified": 1939,
-        "discovered": 1939,
+        "classified": 1942,
+        "discovered": 1942,
         "duplicate": 0,
         "missing": 0,
         "owners": {
@@ -11772,6 +11843,7 @@
           "riverhog-ftp-adapter-api-client": 1,
           "riverhog-recover": 3,
           "riverhog-server": 34,
+          "riverhog-storage-adapter-filesystem-materialize": 3,
           "riverhog-storage-adapter-protocol": 63,
           "stove0": 413,
           "stove0-api-client": 1,
@@ -11787,7 +11859,7 @@
         "policies": {
           "contract_max": 427,
           "extension_owned": 55,
-          "fixed": 896,
+          "fixed": 899,
           "operational_policy": 482,
           "segmented_no_total_max": 79
         },
@@ -17332,6 +17404,51 @@
             "field": "nargs"
           },
           "source_pointer": "/external_contract/cli/riverhog-recover/parameters/4",
+          "unit": "values-per-occurrence"
+        },
+        {
+          "dimension": "cardinality",
+          "id": "cli:riverhog-storage-adapter-filesystem-materialize:riverhog-storage-adapter-filesystem-materialize:parameter:0:values-per-occurrence",
+          "maximum": 0,
+          "minimum": 0,
+          "owner": "riverhog-storage-adapter-filesystem-materialize",
+          "policy": "fixed",
+          "reason": "fixed-command-argument-arity",
+          "rule": "schema-bound/v1",
+          "source_constraint": {
+            "field": "nargs"
+          },
+          "source_pointer": "/external_contract/cli/riverhog-storage-adapter-filesystem-materialize/parameters/0",
+          "unit": "values-per-occurrence"
+        },
+        {
+          "dimension": "cardinality",
+          "id": "cli:riverhog-storage-adapter-filesystem-materialize:riverhog-storage-adapter-filesystem-materialize:parameter:5:values-per-occurrence",
+          "maximum": 0,
+          "minimum": 0,
+          "owner": "riverhog-storage-adapter-filesystem-materialize",
+          "policy": "fixed",
+          "reason": "fixed-command-argument-arity",
+          "rule": "schema-bound/v1",
+          "source_constraint": {
+            "field": "nargs"
+          },
+          "source_pointer": "/external_contract/cli/riverhog-storage-adapter-filesystem-materialize/parameters/5",
+          "unit": "values-per-occurrence"
+        },
+        {
+          "dimension": "cardinality",
+          "id": "cli:riverhog-storage-adapter-filesystem-materialize:riverhog-storage-adapter-filesystem-materialize:parameter:6:values-per-occurrence",
+          "maximum": 0,
+          "minimum": 0,
+          "owner": "riverhog-storage-adapter-filesystem-materialize",
+          "policy": "fixed",
+          "reason": "fixed-command-argument-arity",
+          "rule": "schema-bound/v1",
+          "source_constraint": {
+            "field": "nargs"
+          },
+          "source_pointer": "/external_contract/cli/riverhog-storage-adapter-filesystem-materialize/parameters/6",
           "unit": "values-per-occurrence"
         },
         {
@@ -39963,7 +40080,7 @@
         }
       },
       "schema": "riverhog-extent-contract/v1",
-      "sha256": "7cee2212188ca2255cd3aac239978db13afa8bb160acf8087db84e9a201f2db1"
+      "sha256": "117d612824c0f22514de3c272954d6f12b2f9002fab912809c1fe35535f47079"
     },
     "http_openapi": {
       "riverhog": {

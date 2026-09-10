@@ -4,7 +4,8 @@ Riverhog is a self-hosted archive construction, catalog, transfer, and retrieval
 accepts logical collections without staging plaintext on its host, constructs canonical
 archive layouts, encrypts them, records collection identity and placement in PostgreSQL, and
 coordinates verified archive transfer and retrieval through published storage-adapter
-capabilities. Its archives remain independently recoverable with standard tools. This
+capabilities. Its archives remain independently recoverable with standard tools, without its
+service or database. This
 repository centers the Riverhog server and generic `riverhog-client` library; nonnormative
 reference applications and components integrate through public contracts.
 
