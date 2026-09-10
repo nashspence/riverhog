@@ -49,6 +49,7 @@ from riverhog_protocol import (
     ProvenanceSort,
     RetrievalCacheSort,
     SearchSort,
+    collection_tag_set_identity,
 )
 from sqlalchemy import text
 from sqlalchemy.engine import Engine, make_url
@@ -70,6 +71,7 @@ from scripts.operation_qualification import (
 pytestmark = pytest.mark.integration
 _ROWS = 16384
 _NOW = "2026-08-28T00:00:00.000000Z"
+_EMPTY_TAG_SET_IDENTITY = collection_tag_set_identity(None)
 _READER = ApplicationPrincipal(
     app="qualification",
     key_id=None,
@@ -367,7 +369,7 @@ def _seed_selector_relations(engine: Engine, *, rows: int) -> None:
             f"""
             INSERT INTO collection_uploads (
                 collection_id, idempotency_key, creation_identity_sha256,
-                archive_generation,
+                initial_tag_set_identity, archive_generation,
                 ingest_source, provenance_mode, provenance_omission_reason,
                 provenance_identity, encryption_format, passphrase_id,
                 initiated_by_app, initiated_by_key_id, event_context_json,
@@ -379,7 +381,8 @@ def _seed_selector_relations(engine: Engine, *, rows: int) -> None:
                 file_count, file_bytes, custodied_file_count, custodied_file_bytes,
                 search_text
             )
-            SELECT {rows} + g, 'upload-' || g, {sha}, {sha},
+            SELECT {rows} + g, 'upload-' || g, {sha},
+                   '{_EMPTY_TAG_SET_IDENTITY}', {sha},
                    'source-' || lpad(g::text, 6, '0'), 'omitted',
                    'qualification fixture', NULL, 'age-v1-scrypt',
                    'qualification-key-v1', 'qualification', NULL, NULL,
