@@ -7,7 +7,7 @@ from riverhog_core.ports.archive_store import (
     ArchiveObjectIdentity,
     CollectionArchiveIdentity,
 )
-from riverhog_core.runtime_config import RuntimeConfig
+from riverhog_core.runtime_config import TEST_ARCHIVE_PASSPHRASE_ID, RuntimeConfig
 from riverhog_core.stores.storage_adapter_archive_store import StorageAdapterArchiveStore
 from riverhog_protocol import (
     COLLECTION_DESCRIPTION_RELATIVE_PATH,
@@ -260,7 +260,7 @@ class _VersionedMemoryAdapter(_MemoryAdapter):
 
 def _store(adapter: _MemoryAdapter) -> StorageAdapterArchiveStore:
     return StorageAdapterArchiveStore(
-        RuntimeConfig(),
+        RuntimeConfig.for_testing(),
         name="primary",
         adapter=adapter,
     )
@@ -389,13 +389,13 @@ def test_collection_description_is_replaced_idempotently_without_readback() -> N
         collection_id=17,
         archive_storage_prefix="archives/opaque",
         document=first.to_json_bytes(),
-        passphrase_id="riverhog-dev-key-v1",
+        passphrase_id=TEST_ARCHIVE_PASSPHRASE_ID,
     )
     repeated = store.publish_collection_description(
         collection_id=17,
         archive_storage_prefix="archives/opaque",
         document=first.to_json_bytes(),
-        passphrase_id="riverhog-dev-key-v1",
+        passphrase_id=TEST_ARCHIVE_PASSPHRASE_ID,
     )
 
     path = f"archives/opaque/{COLLECTION_DESCRIPTION_RELATIVE_PATH}"
@@ -409,7 +409,7 @@ def test_collection_description_is_replaced_idempotently_without_readback() -> N
         "riverhog-description-identity": first.description_identity,
         "riverhog-description-revision": "1",
         "riverhog-encryption": "age-v1-scrypt",
-        "riverhog-passphrase-id": "riverhog-dev-key-v1",
+        "riverhog-passphrase-id": TEST_ARCHIVE_PASSPHRASE_ID,
         "riverhog-plaintext-bytes": str(len(first.to_json_bytes())),
         "riverhog-plaintext-sha256": hashlib.sha256(first.to_json_bytes()).hexdigest(),
     }
@@ -423,7 +423,7 @@ def test_collection_description_is_replaced_idempotently_without_readback() -> N
         collection_id=17,
         archive_storage_prefix="archives/opaque",
         document=cleared.to_json_bytes(),
-        passphrase_id="riverhog-dev-key-v1",
+        passphrase_id=TEST_ARCHIVE_PASSPHRASE_ID,
         expected_current_stored_sha256=receipt.stored_sha256,
     )
     assert adapter.objects[path].identity["riverhog-description-revision"] == "2"
@@ -475,7 +475,7 @@ def test_mutable_document_gc_removes_only_the_exact_superseded_revision() -> Non
         collection_id=17,
         archive_storage_prefix="archives/opaque",
         document=first.to_json_bytes(),
-        passphrase_id="riverhog-dev-key-v1",
+        passphrase_id=TEST_ARCHIVE_PASSPHRASE_ID,
     )
     second = CollectionDescriptionDocument.seal(
         archive_root_sha256="a" * 64,
@@ -486,7 +486,7 @@ def test_mutable_document_gc_removes_only_the_exact_superseded_revision() -> Non
         collection_id=17,
         archive_storage_prefix="archives/opaque",
         document=second.to_json_bytes(),
-        passphrase_id="riverhog-dev-key-v1",
+        passphrase_id=TEST_ARCHIVE_PASSPHRASE_ID,
         expected_current_stored_sha256=first_receipt.stored_sha256,
     )
 

@@ -112,7 +112,7 @@ def test_archive_copy_event_type_binds_its_exact_lifecycle_state(
 
 
 def test_context_expiry_targets_owner_and_subject_in_sql(tmp_path: Path) -> None:
-    config = RuntimeConfig(database_url=sqlite_url(tmp_path / "catalog.sqlite3"))
+    config = RuntimeConfig.for_testing(database_url=sqlite_url(tmp_path / "catalog.sqlite3"))
     initialize_db(config.database_url)
     events = SqlAlchemyLifecycleEventService(config)
     events.emit(
@@ -150,7 +150,7 @@ def test_context_expiry_targets_owner_and_subject_in_sql(tmp_path: Path) -> None
 
 
 def test_event_page_omits_expired_context_without_performing_cleanup(tmp_path: Path) -> None:
-    config = RuntimeConfig(database_url=sqlite_url(tmp_path / "catalog.sqlite3"))
+    config = RuntimeConfig.for_testing(database_url=sqlite_url(tmp_path / "catalog.sqlite3"))
     initialize_db(config.database_url)
     events = SqlAlchemyLifecycleEventService(config)
     events.emit(
@@ -173,7 +173,7 @@ def test_event_page_omits_expired_context_without_performing_cleanup(tmp_path: P
 
 
 def test_expired_context_reclamation_is_bounded_and_restartable(tmp_path: Path) -> None:
-    config = RuntimeConfig(
+    config = RuntimeConfig.for_testing(
         database_url=sqlite_url(tmp_path / "catalog.sqlite3"),
         event_context_reap_batch_size=2,
     )
@@ -217,7 +217,7 @@ def test_expired_context_reclamation_is_bounded_and_restartable(tmp_path: Path) 
 def test_lifecycle_event_api_scopes_normal_readers_to_their_application(
     tmp_path: Path,
 ) -> None:
-    config = RuntimeConfig(database_url=sqlite_url(tmp_path / "catalog.sqlite3"))
+    config = RuntimeConfig.for_testing(database_url=sqlite_url(tmp_path / "catalog.sqlite3"))
     initialize_db(config.database_url)
     app_keys = SqlAlchemyAppKeyService(config)
     events = SqlAlchemyLifecycleEventService(config)

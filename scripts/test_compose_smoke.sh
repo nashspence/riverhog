@@ -8,6 +8,12 @@ configure_compose_tty
 export COMPOSE_PROFILES=development
 export SOURCE_REVISION="${SOURCE_REVISION:-$(git -C "${ROOT_DIR}" rev-parse HEAD)}"
 export RIVERHOG_API_PORT="${RIVERHOG_API_PORT:-0}"
+export RIVERHOG_BOOTSTRAP_TOKEN="${RIVERHOG_BOOTSTRAP_TOKEN:-riverhog-compose-smoke-bootstrap-token}"
+if [[ -z "${RIVERHOG_ARCHIVE_PASSPHRASES_JSON:-}" ]]; then
+  export RIVERHOG_ARCHIVE_PASSPHRASES_JSON='{"compose-smoke-key-v1":"riverhog-compose-smoke-archive-passphrase"}'
+fi
+export RIVERHOG_ARCHIVE_ACTIVE_PASSPHRASE_ID="${RIVERHOG_ARCHIVE_ACTIVE_PASSPHRASE_ID:-compose-smoke-key-v1}"
+export RIVERHOG_BROWSE_TOKEN_SIGNING_KEY="${RIVERHOG_BROWSE_TOKEN_SIGNING_KEY:-riverhog-compose-smoke-browse-token-key-v1}"
 export RIVERHOG_RETRIEVAL_CACHE_STORES="${RIVERHOG_RETRIEVAL_CACHE_STORES:-local,elastic}"
 export RIVERHOG_RETRIEVAL_CACHE_LOCAL_ADAPTER_URL="${RIVERHOG_RETRIEVAL_CACHE_LOCAL_ADAPTER_URL:-http://filesystem-cache-adapter:8080}"
 export RIVERHOG_RETRIEVAL_CACHE_LOCAL_ADAPTER_TOKEN_FILE="${RIVERHOG_RETRIEVAL_CACHE_LOCAL_ADAPTER_TOKEN_FILE:-/run/secrets/riverhog-storage-adapter.token}"
@@ -146,7 +152,7 @@ compose exec -T postgres createdb --username riverhog --owner riverhog stove0
 compose exec -T postgres psql --username riverhog --dbname stove0 \
   --command 'CREATE EXTENSION pg_trgm WITH SCHEMA public;'
 
-bootstrap_token="$(compose_env_value RIVERHOG_BOOTSTRAP_TOKEN riverhog-development-bootstrap-token)"
+bootstrap_token="$(compose_env_value RIVERHOG_BOOTSTRAP_TOKEN riverhog-compose-smoke-bootstrap-token)"
 create_code="import json, os, urllib.request
 health = json.load(urllib.request.urlopen('http://127.0.0.1:8000/health/ready'))
 assert health['status'] == 'ok'
@@ -233,6 +239,9 @@ printf '%s\n' '{' \
   '  "riverhog_base_url": "http://app:8000",' \
   '  "allow_insecure_http": true,' \
   '  "poll_seconds": 0.25,' \
+  '  "pending_claim_capacity": 16,' \
+  '  "claim_attempt_budget": 8,' \
+  '  "discovery_entry_budget": 4096,' \
   '  "sources": [' \
   '    {' \
   '      "id": "ftp-smoke",' \

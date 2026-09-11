@@ -19,13 +19,15 @@ from typing import Annotated, Any, Literal, TypedDict, cast
 import httpx
 import typer
 from riverhog_application_access import ApplicationPermission
-from riverhog_client.client import ApiClient, ProvenanceMode
-from riverhog_client.initial_tags import create_or_resume_with_initial_collection_tags
-from riverhog_client.producer import COLLECTION_UPLOAD_REGISTRATION_BATCH_FILES
-from riverhog_client.source_hashing import RawSourceHash, hash_raw_source_chunks
-from riverhog_client.uploads import (
+from riverhog_client import (
+    COLLECTION_UPLOAD_REGISTRATION_BATCH_FILES,
+    ApiClient,
+    ProvenanceMode,
+    RawSourceHash,
     configured_upload_concurrency,
     configured_upload_window,
+    create_or_resume_with_initial_collection_tags,
+    hash_raw_source_chunks,
     upload_collection_units,
 )
 from riverhog_protocol.collection_description import validate_collection_description

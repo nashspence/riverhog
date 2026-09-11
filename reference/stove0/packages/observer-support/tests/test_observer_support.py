@@ -335,7 +335,9 @@ def test_observation_runtime_exposes_only_exact_requested_artifacts(tmp_path: Pa
         assert [(subject.id, artifact.path) for subject, artifact in resolved] == [
             ("source", "camera/input.mov")
         ]
-        assert runtime.read_bytes(request.subjects[0], maximum_bytes=1024) == api.data
+        for _ in range(64):
+            assert runtime.read_bytes(request.subjects[0], maximum_bytes=1024) == api.data
+            assert not runtime.reader._retrievals
         workspace_root = tmp_path / "workspace"
         workspace_root.mkdir(mode=0o700)
         workspace = runtime.open_workspace(workspace_root)
@@ -343,7 +345,7 @@ def test_observation_runtime_exposes_only_exact_requested_artifacts(tmp_path: Pa
         assert materialized.read_bytes() == api.data
         workspace.release()
 
-    assert api.acknowledged == ["observer-retrieval", "observer-retrieval"]
+    assert api.acknowledged == ["observer-retrieval"] * 65
     assert api.inventory_requests == 0
 
 

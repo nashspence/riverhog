@@ -458,7 +458,7 @@ class _ServiceApi:
 
 def _bounded_service_api(tmp_path: Path) -> tuple[_ServiceApi, MemoryArchiveStore]:
     database_url = sqlite_url(tmp_path / "catalog.sqlite3")
-    config = RuntimeConfig(database_url=database_url, archive_scrypt_work_factor=1)
+    config = RuntimeConfig.for_testing(database_url=database_url, archive_scrypt_work_factor=1)
     initialize_db(database_url)
     store = MemoryArchiveStore()
     binding = replace(archive_store_binding(store), store=store)

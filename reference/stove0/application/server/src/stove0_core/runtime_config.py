@@ -6,7 +6,7 @@ import json
 import math
 import os
 from collections.abc import Mapping
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Literal, cast
 
@@ -24,7 +24,7 @@ def _postgresql_database_url(value: str) -> str:
 @dataclass(frozen=True, slots=True)
 class EndpointRegistration:
     base_url: str
-    token: str | None
+    token: str | None = field(repr=False)
     allow_insecure_http: bool
     semantic_validator_providers: tuple[str, ...] = ()
 
@@ -32,24 +32,24 @@ class EndpointRegistration:
 @dataclass(frozen=True, slots=True)
 class Stove0RuntimeConfig:
     database_url: str
-    api_token: str | None
+    api_token: str | None = field(repr=False)
     riverhog_base_url: str
-    riverhog_token: str
+    riverhog_token: str = field(repr=False)
     riverhog_allow_insecure_http: bool
     recipes_path: Path
     observers: dict[str, EndpointRegistration]
     targets: dict[str, EndpointRegistration]
     target_callback_base_url: str
     target_callback_allow_insecure_http: bool
-    target_callback_signing_key: str
+    target_callback_signing_key: str = field(repr=False)
     target_authority_batch_size: int
     workspace_assurance: Literal["encrypted", "ephemeral"]
     claim_lease_seconds: int
     capability_ttl_seconds: int
     scheduler_interval_seconds: float
     operational_state_retention_seconds: int
+    browse_token_signing_key: str = field(repr=False)
     admissions: AdmissionCatalog = AdmissionCatalog()
-    browse_token_signing_key: str = "stove0-development-browse-token-signing-key-v1"
     browse_token_lifetime_seconds: int = 24 * 60 * 60
 
     @classmethod
@@ -90,7 +90,7 @@ class Stove0RuntimeConfig:
         browse_token_signing_key = _secret(
             values,
             "STOVE0_BROWSE_TOKEN_SIGNING_KEY",
-            required=require_api_token,
+            required=True,
         )
         return cls(
             database_url=database_url,
@@ -128,11 +128,7 @@ class Stove0RuntimeConfig:
                 minimum=1,
                 maximum=128,
             ),
-            browse_token_signing_key=(
-                browse_token_signing_key
-                if browse_token_signing_key is not None
-                else "stove0-unused-browse-token-signing-key-v1"
-            ),
+            browse_token_signing_key=cast(str, browse_token_signing_key),
             browse_token_lifetime_seconds=_integer(
                 values,
                 "STOVE0_BROWSE_TOKEN_LIFETIME_SECONDS",

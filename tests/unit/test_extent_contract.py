@@ -358,6 +358,10 @@ def test_trace_index_covers_every_extent_and_only_current_source_paths() -> None
     links = trace["extent_sources"]
 
     semantic_payload = json.dumps(projection, separators=(",", ":"), sort_keys=True).encode()
+    boundary_payload = json.dumps(
+        projection["boundaries"], separators=(",", ":"), sort_keys=True
+    ).encode()
+    assert trace["boundary_canonical_sha256"] == hashlib.sha256(boundary_payload).hexdigest()
     assert trace["contract_canonical_sha256"] == hashlib.sha256(semantic_payload).hexdigest()
     assert trace["contract_projection_sha256"] == hashlib.sha256(ARTIFACT.read_bytes()).hexdigest()
     assert {link["id"] for link in links} == {decision["id"] for decision in decisions}

@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import os
 from contextlib import ExitStack
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from functools import lru_cache
 from typing import Annotated
 
@@ -97,12 +97,7 @@ class ServiceContainer:
     lifecycle_events: LifecycleEventService
     download_quotas: DownloadAllowance
     session_factory: SessionFactory
-    browse_tokens: BrowseTokenCodec = field(
-        default_factory=lambda: BrowseTokenCodec(
-            "riverhog-development-browse-token-signing-key-v1",
-            lifetime_seconds=24 * 60 * 60,
-        )
-    )
+    browse_tokens: BrowseTokenCodec
     storage_adapter_clients: tuple[StorageAdapterClient, ...] = ()
 
     def close(self) -> None:

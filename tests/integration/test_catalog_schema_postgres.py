@@ -206,7 +206,7 @@ def test_postgres_upload_idempotency_is_independent_per_application(
 
     def create(app: str, key_id: str) -> dict[str, object]:
         service = SqlAlchemyCollectionUploadService(
-            RuntimeConfig(database_url=isolated_database_url),
+            RuntimeConfig.for_testing(database_url=isolated_database_url),
             archive_stores,
         )
         return service.create_or_resume(
@@ -312,7 +312,7 @@ def test_postgres_catalog_revisions_serialize_commit_and_restart(
         ) == [1, 2]
 
     restarted = SqlAlchemyCatalogSyncService(
-        RuntimeConfig(database_url=isolated_database_url),
+        RuntimeConfig.for_testing(database_url=isolated_database_url),
         session_factory=make_session_factory(isolated_database_url),
     )
     reader = ApplicationPrincipal(
@@ -343,7 +343,7 @@ def test_postgres_tag_history_cleanup_serializes_its_row_work_budget(
 
     def reap_one() -> int:
         service = SqlAlchemyCatalogSyncService(
-            RuntimeConfig(
+            RuntimeConfig.for_testing(
                 database_url=isolated_database_url,
                 catalog_sync_history_reap_batch_size=1,
             ),
@@ -801,7 +801,7 @@ def test_postgres_reused_tag_node_gc_and_publication_workers_converge(
 
     def advance() -> int:
         worker = SqlAlchemyCollectionTagService(
-            RuntimeConfig(database_url=isolated_database_url),
+            RuntimeConfig.for_testing(database_url=isolated_database_url),
             ArchiveStoreRegistry({"archive": archive_store_binding(store)}),
             session_factory=make_session_factory(isolated_database_url),
         )
@@ -860,7 +860,7 @@ def test_postgres_archive_sequence_state_round_trips_full_v1_domain(
     initialize_db(isolated_database_url)
     access = frozenset({ApplicationAccess(COLLECTIONS_CREATE, ALL_RESOURCES)})
     service = SqlAlchemyCollectionUploadService(
-        RuntimeConfig(database_url=isolated_database_url),
+        RuntimeConfig.for_testing(database_url=isolated_database_url),
         ArchiveStoreRegistry({"archive": archive_store_binding(MemoryArchiveStore())}),
     )
     created = service.create_or_resume(

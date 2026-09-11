@@ -23,7 +23,7 @@ class _Adapter:
 def test_composition_binds_every_capability_to_each_configured_archive_store(
     monkeypatch,
 ) -> None:  # type: ignore[no-untyped-def]
-    base = RuntimeConfig()
+    base = RuntimeConfig.for_testing()
     primary = base.archive_store("archive")
     secondary = replace(primary, name="secondary", base_url="http://127.0.0.1/secondary")
     config = replace(

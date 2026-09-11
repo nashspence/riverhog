@@ -85,13 +85,13 @@ def test_local_materializer_depends_only_on_client_safe_riverhog_modules() -> No
     }
 
     assert imports == {
-        ("riverhog_client.client", "ApiClient"),
-        ("riverhog_client.client", "RestorePolicy"),
-        ("riverhog_client.catalog_sync", "CatalogReplica"),
-        ("riverhog_client.downloads", "RetrievalDownload"),
-        ("riverhog_client.downloads", "configured_download_concurrency"),
-        ("riverhog_client.downloads", "configured_download_window"),
-        ("riverhog_client.downloads", "download_retrieval_files"),
+        ("riverhog_client", "ApiClient"),
+        ("riverhog_client", "CatalogReplica"),
+        ("riverhog_client", "RestorePolicy"),
+        ("riverhog_client", "RetrievalDownload"),
+        ("riverhog_client", "configured_download_concurrency"),
+        ("riverhog_client", "configured_download_window"),
+        ("riverhog_client", "download_retrieval_files"),
         ("riverhog_protocol", "validate_collection_tag"),
         ("riverhog_protocol.errors", "InvalidState"),
         ("riverhog_protocol.errors", "NotFound"),

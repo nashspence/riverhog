@@ -115,6 +115,9 @@ def test_reference_configuration_is_current_and_secret_injected(
     assert config.host_id == "urn:uuid:00000000-0000-4000-8000-000000000001"
     assert config.riverhog_base_url == "http://app:8000"
     assert config.poll_seconds == 5
+    assert config.pending_claim_capacity == 128
+    assert config.claim_attempt_budget == 8
+    assert config.discovery_entry_budget == 4096
     assert [source.id for source in config.sources] == ["ftp-intake"]
     source = config.source("ftp-intake")
     assert source.ingest_source == "ftp:example-intake"

@@ -51,7 +51,7 @@ BOOTSTRAP = ApplicationPrincipal(
 
 
 def app_keys(tmp_path: Path) -> tuple[SqlAlchemyAppKeyService, RuntimeConfig]:
-    config = RuntimeConfig(database_url=sqlite_url(tmp_path / "catalog.sqlite3"))
+    config = RuntimeConfig.for_testing(database_url=sqlite_url(tmp_path / "catalog.sqlite3"))
     initialize_db(config.database_url)
     return SqlAlchemyAppKeyService(config), config
 

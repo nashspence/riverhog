@@ -22,7 +22,7 @@ from tests.unit.db_helpers import sqlite_url
 
 
 def _config(path: Path) -> RuntimeConfig:
-    config = RuntimeConfig(database_url=sqlite_url(path))
+    config = RuntimeConfig.for_testing(database_url=sqlite_url(path))
     deep = replace(
         config.archive_store("archive"),
         name="deep",

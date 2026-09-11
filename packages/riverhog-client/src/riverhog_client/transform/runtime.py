@@ -64,7 +64,6 @@ class ClaimedCollectionRuntime:
             raise ValueError("claimed collection input retrieval policy is invalid")
         self.input_retrieval_policy = input_retrieval_policy
         self._closed = False
-        self._retrievals: list[ClaimedRetrieval] = []
         self.reader = ClaimedCollectionReader(
             self.api,
             inputs=inputs,
@@ -110,23 +109,15 @@ class ClaimedCollectionRuntime:
     def __exit__(self, _exc_type: object, _exc: object, _tb: object) -> None:
         self.close()
 
-    def close(self, *, raise_errors: bool = True) -> None:
+    def close(self) -> None:
         if self._closed:
             return
+        try:
+            self.reader.close_retrievals()
+        except Exception as exc:
+            raise RuntimeError("failed to cancel active claimed collection retrieval jobs") from exc
         self._closed = True
-        failures: list[Exception] = []
-        for retrieval in self._retrievals:
-            if retrieval.closed:
-                continue
-            try:
-                retrieval.close(success=False)
-            except Exception as exc:
-                failures.append(exc)
         self.api.close()
-        if failures and raise_errors:
-            raise RuntimeError("failed to cancel active claimed collection retrieval jobs") from (
-                failures[0]
-            )
 
     def heartbeat(self) -> None:
         if self._closed:
@@ -149,10 +140,6 @@ class ClaimedCollectionRuntime:
         replacement.upload_timeout_seconds = current.upload_timeout_seconds
         self.api.replace(replacement, owns_client=True)
 
-    def inventory(self) -> tuple[ClaimedArtifact, ...]:
-        self.heartbeat()
-        return self.reader.inventory()
-
     def iter_inventory(self):  # type: ignore[no-untyped-def]
         self.heartbeat()
         return self.reader.iter_inventory()
@@ -164,9 +151,7 @@ class ClaimedCollectionRuntime:
     ) -> ClaimedRetrieval:
         self.heartbeat()
         kwargs.setdefault("restore_policy", self.input_retrieval_policy)
-        retrieval = self.reader.prepare(artifacts, **kwargs)
-        self._retrievals.append(retrieval)
-        return retrieval
+        return self.reader.prepare(artifacts, **kwargs)
 
     def open_workspace(
         self,
@@ -225,7 +210,6 @@ class CollectionTransformRuntime:
         self.input_retrieval_policy = input_retrieval_policy
         self._closed = False
         self._published_receipt: DerivedCollectionReceipt | None = None
-        self._retrievals: list[ClaimedRetrieval] = []
         self._incremental_writer: IncrementalDerivedCollectionWriter | None = None
         self.reader = ClaimedCollectionReader(
             self.api,
@@ -283,27 +267,19 @@ class CollectionTransformRuntime:
         return self
 
     def __exit__(self, _exc_type: object, _exc: object, _tb: object) -> None:
-        # Retrieval cleanup is subordinate once the immutable output collection
-        # has finalized. Before publication, cleanup failures remain actionable.
-        self.close(raise_errors=self._published_receipt is None)
+        self.close()
 
-    def close(self, *, raise_errors: bool = True) -> None:
+    def close(self) -> None:
         if self._closed:
             return
-        self._closed = True
         if self._incremental_writer is not None:
             self._incremental_writer.stop()
-        failures: list[Exception] = []
-        for retrieval in self._retrievals:
-            if retrieval.closed:
-                continue
-            try:
-                retrieval.close(success=False)
-            except Exception as exc:
-                failures.append(exc)
+        try:
+            self.reader.close_retrievals()
+        except Exception as exc:
+            raise RuntimeError("failed to cancel active transform retrieval jobs") from exc
+        self._closed = True
         self.api.close()
-        if failures and raise_errors:
-            raise RuntimeError("failed to cancel active transform retrieval jobs") from failures[0]
 
     def heartbeat(self) -> None:
         if self._closed:
@@ -328,10 +304,6 @@ class CollectionTransformRuntime:
         replacement.upload_timeout_seconds = current.upload_timeout_seconds
         self.api.replace(replacement, owns_client=True)
 
-    def inventory(self) -> tuple[ClaimedArtifact, ...]:
-        self.heartbeat()
-        return self.reader.inventory()
-
     def iter_inventory(self):  # type: ignore[no-untyped-def]
         self.heartbeat()
         return self.reader.iter_inventory()
@@ -343,9 +315,7 @@ class CollectionTransformRuntime:
     ) -> ClaimedRetrieval:
         self.heartbeat()
         kwargs.setdefault("restore_policy", self.input_retrieval_policy)
-        retrieval = self.reader.prepare(artifacts, **kwargs)
-        self._retrievals.append(retrieval)
-        return retrieval
+        return self.reader.prepare(artifacts, **kwargs)
 
     def open_workspace(
         self,

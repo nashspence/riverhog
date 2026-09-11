@@ -33,6 +33,8 @@ from riverhog_client.downloads import (
     configured_download_window,
     download_retrieval_files,
 )
+from riverhog_client.initial_tags import create_or_resume_with_initial_collection_tags
+from riverhog_client.source_hashing import RawSourceHash, hash_raw_source_chunks
 from riverhog_client.uploads import (
     configured_upload_concurrency,
     configured_upload_window,
@@ -74,6 +76,9 @@ __all__ = [
     "configured_upload_window",
     "put_collection_upload_unit",
     "upload_collection_units",
+    "create_or_resume_with_initial_collection_tags",
+    "RawSourceHash",
+    "hash_raw_source_chunks",
 ]
 
 from riverhog_client.producer import (

@@ -74,7 +74,7 @@ def _event_data(collection_id: int) -> dict[str, object]:
 def test_event_reads_and_concurrent_context_reapers_do_only_bounded_work(
     database_url: str,
 ) -> None:
-    config = RuntimeConfig(
+    config = RuntimeConfig.for_testing(
         database_url=database_url,
         event_context_reap_batch_size=5,
     )

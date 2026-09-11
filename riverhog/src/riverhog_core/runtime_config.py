@@ -8,6 +8,7 @@ from dataclasses import dataclass, field, replace
 from datetime import timedelta
 from math import isfinite
 from pathlib import Path
+from typing import Any, Self
 from urllib.parse import urlsplit
 
 from http_api_contracts import safe_http_base_url
@@ -20,15 +21,15 @@ from riverhog_protocol import CATALOG_SYNC_PAGE_SIZE_MAX
 from time_formats import parse_duration
 
 _BYTES_RE = re.compile(r"^(\d+(?:_\d+)*)([kmgt]i?b?|b)?$", re.IGNORECASE)
-DEV_ARCHIVE_PASSPHRASE = "riverhog-dev-archive-passphrase"
-DEV_ARCHIVE_PASSPHRASE_ID = "riverhog-dev-key-v1"
+TEST_ARCHIVE_PASSPHRASE = "riverhog-test-archive-passphrase"
+TEST_ARCHIVE_PASSPHRASE_ID = "riverhog-test-key-v1"
+TEST_BROWSE_TOKEN_SIGNING_KEY = "riverhog-test-browse-token-signing-key-v1"
 DEFAULT_DATABASE_URL = "postgresql+psycopg://riverhog:riverhog@127.0.0.1:5432/riverhog"
 DEFAULT_RETRIEVAL_CACHE_WRITE_SEGMENT_BYTES = 64 * 1024 * 1024
 DEFAULT_STORAGE_ADAPTER_MAX_CONNECTIONS = 32
 DEFAULT_STORAGE_ADAPTER_TIMEOUT_SECONDS = 300.0
 DEFAULT_ARCHIVE_SCRYPT_WORK_FACTOR = 18
 DEFAULT_LOG_LEVEL = "INFO"
-DEFAULT_BROWSE_TOKEN_SIGNING_KEY = "riverhog-development-browse-token-signing-key-v1"
 ARCHIVE_STORE_ENVIRONMENT_TEMPLATE = "RIVERHOG_ARCHIVE_STORE_{store}_{setting}"
 ARCHIVE_STORE_ENVIRONMENT_SETTINGS = (
     "ADAPTER_URL",
@@ -175,11 +176,8 @@ class RuntimeConfig:
     retrieval_max_lease: timedelta = field(default_factory=lambda: timedelta(days=7))
     retrieval_pending_timeout: timedelta = field(default_factory=lambda: timedelta(hours=72))
     retrieval_cache_sweep_interval: timedelta = field(default_factory=lambda: timedelta(minutes=5))
-    archive_passphrases: Mapping[str, str] = field(
-        default_factory=lambda: {DEV_ARCHIVE_PASSPHRASE_ID: DEV_ARCHIVE_PASSPHRASE}
-    )
-    archive_active_passphrase_id: str = DEV_ARCHIVE_PASSPHRASE_ID
-    archive_require_explicit_passphrases: bool = False
+    archive_passphrases: Mapping[str, str] = field(default_factory=dict, repr=False)
+    archive_active_passphrase_id: str = ""
     archive_scrypt_work_factor: int = DEFAULT_ARCHIVE_SCRYPT_WORK_FACTOR
     archive_upload_sweep_interval: timedelta = field(default_factory=lambda: timedelta(seconds=30))
     collection_upload_custody_lease: timedelta = field(default_factory=lambda: timedelta(hours=1))
@@ -189,8 +187,7 @@ class RuntimeConfig:
     event_source: str = "urn:riverhog"
     event_context_retention: timedelta = field(default_factory=lambda: timedelta(days=30))
     event_context_reap_batch_size: int = 100
-    browse_token_signing_key: str = DEFAULT_BROWSE_TOKEN_SIGNING_KEY
-    browse_require_explicit_signing_key: bool = False
+    browse_token_signing_key: str = field(default="", repr=False)
     browse_token_lifetime: timedelta = field(default_factory=lambda: timedelta(hours=24))
     catalog_sync_bootstrap_lifetime: timedelta = field(default_factory=lambda: timedelta(days=7))
     catalog_sync_cursor_lifetime: timedelta = field(default_factory=lambda: timedelta(hours=24))
@@ -198,16 +195,21 @@ class RuntimeConfig:
     catalog_sync_page_size_max: int = CATALOG_SYNC_PAGE_SIZE_MAX
     catalog_sync_history_reap_batch_size: int = 100
 
+    @classmethod
+    def for_testing(cls, **values: Any) -> Self:
+        """Construct an explicitly selected configuration with dummy test secrets."""
+
+        values.setdefault(
+            "archive_passphrases",
+            {TEST_ARCHIVE_PASSPHRASE_ID: TEST_ARCHIVE_PASSPHRASE},
+        )
+        values.setdefault("archive_active_passphrase_id", TEST_ARCHIVE_PASSPHRASE_ID)
+        values.setdefault("browse_token_signing_key", TEST_BROWSE_TOKEN_SIGNING_KEY)
+        return cls(**values)
+
     def __post_init__(self) -> None:
         if len(self.browse_token_signing_key.encode("utf-8")) < 32:
             raise ValueError("RIVERHOG_BROWSE_TOKEN_SIGNING_KEY must contain at least 32 bytes")
-        if (
-            self.browse_require_explicit_signing_key
-            and self.browse_token_signing_key == DEFAULT_BROWSE_TOKEN_SIGNING_KEY
-        ):
-            raise ValueError(
-                "RIVERHOG_BROWSE_REQUIRE_EXPLICIT_SIGNING_KEY rejects the development key"
-            )
         if self.browse_token_lifetime.total_seconds() < 1:
             raise ValueError("RIVERHOG_BROWSE_TOKEN_LIFETIME must be positive")
         if self.catalog_sync_history_retention.total_seconds() <= 0:
@@ -408,13 +410,6 @@ class RuntimeConfig:
             )
         object.__setattr__(self, "archive_passphrases", archive_passphrases)
         object.__setattr__(self, "archive_active_passphrase_id", active_passphrase_id)
-        if self.archive_require_explicit_passphrases and (
-            active_passphrase_id == DEV_ARCHIVE_PASSPHRASE_ID
-            or DEV_ARCHIVE_PASSPHRASE in archive_passphrases.values()
-        ):
-            raise ValueError(
-                "RIVERHOG_ARCHIVE_REQUIRE_EXPLICIT_PASSPHRASES rejects the development key"
-            )
 
     def archive_store(self, name: str) -> StorageAdapterRegistration:
         normalized = _normalize_archive_store_name(name)
@@ -624,11 +619,9 @@ def load_runtime_config() -> RuntimeConfig:
     archive_write_store, archive_read_order, archive_stores = _parse_archive_stores(os.environ)
     retrieval_cache_stores = _parse_retrieval_cache_stores(os.environ)
     public_base_url = os.getenv("RIVERHOG_PUBLIC_BASE_URL", "").strip() or None
-    configured_archive_passphrases = os.getenv("RIVERHOG_ARCHIVE_PASSPHRASES_JSON", "").strip()
-    archive_passphrases_supplied = bool(configured_archive_passphrases)
-    archive_passphrases_raw = configured_archive_passphrases or json.dumps(
-        {DEV_ARCHIVE_PASSPHRASE_ID: DEV_ARCHIVE_PASSPHRASE}
-    )
+    archive_passphrases_raw = os.getenv("RIVERHOG_ARCHIVE_PASSPHRASES_JSON", "").strip()
+    if not archive_passphrases_raw:
+        raise ValueError("RIVERHOG_ARCHIVE_PASSPHRASES_JSON is required")
     try:
         archive_passphrases_value = json.loads(archive_passphrases_raw)
     except json.JSONDecodeError as exc:
@@ -639,12 +632,9 @@ def load_runtime_config() -> RuntimeConfig:
     ):
         raise ValueError("RIVERHOG_ARCHIVE_PASSPHRASES_JSON must be a string-to-string object")
     archive_passphrases = dict(archive_passphrases_value)
-    archive_active_passphrase_id = (
-        os.getenv("RIVERHOG_ARCHIVE_ACTIVE_PASSPHRASE_ID", "").strip() or DEV_ARCHIVE_PASSPHRASE_ID
-    )
-    archive_require_explicit_passphrases = _parse_bool(
-        os.getenv("RIVERHOG_ARCHIVE_REQUIRE_EXPLICIT_PASSPHRASES", "false")
-    )
+    archive_active_passphrase_id = os.getenv("RIVERHOG_ARCHIVE_ACTIVE_PASSPHRASE_ID", "").strip()
+    if not archive_active_passphrase_id:
+        raise ValueError("RIVERHOG_ARCHIVE_ACTIVE_PASSPHRASE_ID is required")
     archive_scrypt_work_factor = _parse_int(
         os.getenv(
             "RIVERHOG_ARCHIVE_SCRYPT_WORK_FACTOR",
@@ -655,11 +645,9 @@ def load_runtime_config() -> RuntimeConfig:
     )
     if archive_scrypt_work_factor > 22:
         raise ValueError("RIVERHOG_ARCHIVE_SCRYPT_WORK_FACTOR must be <= 22")
-    if archive_require_explicit_passphrases and not archive_passphrases_supplied:
-        raise ValueError(
-            "RIVERHOG_ARCHIVE_REQUIRE_EXPLICIT_PASSPHRASES requires "
-            "RIVERHOG_ARCHIVE_PASSPHRASES_JSON"
-        )
+    browse_token_signing_key = os.getenv("RIVERHOG_BROWSE_TOKEN_SIGNING_KEY", "").strip()
+    if not browse_token_signing_key:
+        raise ValueError("RIVERHOG_BROWSE_TOKEN_SIGNING_KEY is required")
     return RuntimeConfig(
         event_source=os.getenv("RIVERHOG_EVENT_SOURCE", "urn:riverhog").strip(),
         event_context_retention=parse_duration(
@@ -670,13 +658,7 @@ def load_runtime_config() -> RuntimeConfig:
             name="RIVERHOG_EVENT_CONTEXT_REAP_BATCH_SIZE",
             minimum=1,
         ),
-        browse_token_signing_key=os.getenv(
-            "RIVERHOG_BROWSE_TOKEN_SIGNING_KEY",
-            DEFAULT_BROWSE_TOKEN_SIGNING_KEY,
-        ).strip(),
-        browse_require_explicit_signing_key=_parse_bool(
-            os.getenv("RIVERHOG_BROWSE_REQUIRE_EXPLICIT_SIGNING_KEY", "false")
-        ),
+        browse_token_signing_key=browse_token_signing_key,
         browse_token_lifetime=parse_duration(os.getenv("RIVERHOG_BROWSE_TOKEN_LIFETIME", "24h")),
         catalog_sync_bootstrap_lifetime=parse_duration(
             os.getenv("RIVERHOG_CATALOG_SYNC_BOOTSTRAP_LIFETIME", "7d")
@@ -722,7 +704,6 @@ def load_runtime_config() -> RuntimeConfig:
         ),
         archive_passphrases=archive_passphrases,
         archive_active_passphrase_id=archive_active_passphrase_id,
-        archive_require_explicit_passphrases=archive_require_explicit_passphrases,
         archive_scrypt_work_factor=archive_scrypt_work_factor,
         archive_upload_sweep_interval=archive_upload_sweep_interval,
         collection_upload_custody_lease=parse_duration(

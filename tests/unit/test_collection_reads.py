@@ -82,7 +82,7 @@ def _seed_collections(database: Path, *, count: int) -> tuple[RuntimeConfig, Eng
                         verified_at=NOW,
                     )
                 )
-    return RuntimeConfig(database_url=database_url), engine
+    return RuntimeConfig.for_testing(database_url=database_url), engine
 
 
 def test_collection_list_query_count_is_independent_of_page_rows(tmp_path: Path) -> None:

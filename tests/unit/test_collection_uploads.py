@@ -450,7 +450,7 @@ def _service_with_archive_objects(
     MemoryImmutableStore,
 ]:
     database_url = sqlite_url(tmp_path / "catalog.sqlite3")
-    config = RuntimeConfig(database_url=database_url, archive_scrypt_work_factor=1)
+    config = RuntimeConfig.for_testing(database_url=database_url, archive_scrypt_work_factor=1)
     initialize_db(database_url)
     archive_store = MemoryArchiveStore()
     resumable = MemoryResumableStore()
@@ -516,7 +516,7 @@ def test_upload_resume_keeps_its_frozen_key_generation_after_rotation(tmp_path: 
 
     def service(active: str) -> SqlAlchemyCollectionUploadService:
         return SqlAlchemyCollectionUploadService(
-            RuntimeConfig(
+            RuntimeConfig.for_testing(
                 database_url=database_url,
                 archive_passphrases=passphrases,
                 archive_active_passphrase_id=active,
@@ -609,11 +609,11 @@ def test_restore_required_ingress_commits_encrypted_cache_with_initial_lease(
     tmp_path: Path,
 ) -> None:
     database_url = sqlite_url(tmp_path / "catalog.sqlite3")
-    baseline = RuntimeConfig(database_url=database_url)
+    baseline = RuntimeConfig.for_testing(database_url=database_url)
     archive = replace(
         baseline.archive_store("archive"),
     )
-    config = RuntimeConfig(
+    config = RuntimeConfig.for_testing(
         database_url=database_url,
         archive_passphrases={"collection-test-key-v1": "test archive secret"},
         archive_active_passphrase_id="collection-test-key-v1",
@@ -697,11 +697,11 @@ def test_restore_required_ingress_uses_archive_only_when_new_archive_cache_is_di
     tmp_path: Path,
 ) -> None:
     database_url = sqlite_url(tmp_path / "catalog.sqlite3")
-    baseline = RuntimeConfig(database_url=database_url)
+    baseline = RuntimeConfig.for_testing(database_url=database_url)
     archive = replace(
         baseline.archive_store("archive"),
     )
-    config = RuntimeConfig(
+    config = RuntimeConfig.for_testing(
         database_url=database_url,
         archive_stores={"archive": archive},
         retrieval_cache_new_archive_enabled=False,

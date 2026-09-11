@@ -551,7 +551,9 @@ PUBLIC_QUERY_SELECTORS = {
         "list_events": {"after", "limit"},
         "list_work": {"order", "page_size", "page_token", "phase", "q", "sort"},
     },
-    "riverhog-ftp-adapter": {},
+    "riverhog-ftp-adapter": {
+        "get_ftp_adapter_status": {"page_size", "page_token"},
+    },
 }
 
 NAMED_ENUM_QUERY_SELECTOR_TYPES = {

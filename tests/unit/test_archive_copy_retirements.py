@@ -15,7 +15,7 @@ from riverhog_core.catalog_models import (
     RetrievalPlanObjectRecord,
     RetrievalPlanRecord,
 )
-from riverhog_core.runtime_config import DEV_ARCHIVE_PASSPHRASE_ID, RuntimeConfig
+from riverhog_core.runtime_config import TEST_ARCHIVE_PASSPHRASE_ID, RuntimeConfig
 from riverhog_core.services.archive_copy_retirements import (
     SqlAlchemyArchiveCopyRetirementService,
 )
@@ -274,7 +274,7 @@ def test_retirement_deletes_description_only_after_another_current_replica_exist
         collection_id=COLLECTION_ID,
         archive_storage_prefix=deep_prefix,
         document=document.to_json_bytes(),
-        passphrase_id=DEV_ARCHIVE_PASSPHRASE_ID,
+        passphrase_id=TEST_ARCHIVE_PASSPHRASE_ID,
     )
     description_path = receipt.object_path
     assert description_path in deep_store.objects

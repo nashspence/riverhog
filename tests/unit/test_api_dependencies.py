@@ -8,7 +8,11 @@ import pytest
 from riverhog_api import deps
 from riverhog_core.catalog_db import initialize_db, make_session_factory, session_scope
 from riverhog_core.catalog_models import CollectionArchiveCopyRecord, CollectionRecord
-from riverhog_core.runtime_config import RuntimeConfig, StorageAdapterRegistration
+from riverhog_core.runtime_config import (
+    TEST_ARCHIVE_PASSPHRASE_ID,
+    RuntimeConfig,
+    StorageAdapterRegistration,
+)
 
 from tests.unit.db_helpers import sqlite_url
 
@@ -23,7 +27,7 @@ def test_default_container_closes_startup_resources_after_missing_required_cache
         token_file=tmp_path / "adapter.token",
         allow_insecure_http=True,
     )
-    config = RuntimeConfig(
+    config = RuntimeConfig.for_testing(
         database_url="sqlite+pysqlite:///:memory:",
         archive_stores={"archive": registration},
     )
@@ -83,7 +87,7 @@ def test_startup_rejects_a_persisted_key_id_without_its_secret(tmp_path: Path) -
 
     with pytest.raises(ValueError, match="removed-archive-key-v1"):
         deps._require_archive_encryption_bindings(
-            RuntimeConfig(database_url=database_url),
+            RuntimeConfig.for_testing(database_url=database_url),
             session_factory=factory,
         )
 
@@ -101,7 +105,7 @@ def test_startup_rejects_an_uploaded_copy_without_recovery_descriptor(tmp_path: 
                 creation_custody_mode="producer-retained",
                 content_identity="a" * 64,
                 encryption_format="age-v1-scrypt",
-                passphrase_id="riverhog-dev-key-v1",
+                passphrase_id=TEST_ARCHIVE_PASSPHRASE_ID,
                 provenance_mode="omitted",
                 provenance_identity=None,
                 inventory_identity="b" * 64,
@@ -122,6 +126,6 @@ def test_startup_rejects_an_uploaded_copy_without_recovery_descriptor(tmp_path: 
 
     with pytest.raises(ValueError, match="no recovery descriptor"):
         deps._require_archive_encryption_bindings(
-            RuntimeConfig(database_url=database_url),
+            RuntimeConfig.for_testing(database_url=database_url),
             session_factory=factory,
         )

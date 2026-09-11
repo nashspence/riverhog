@@ -3,6 +3,9 @@
   "riverhog_base_url": "http://app:8000",
   "allow_insecure_http": true,
   "poll_seconds": 5,
+  "pending_claim_capacity": 128,
+  "claim_attempt_budget": 8,
+  "discovery_entry_budget": 4096,
   "sources": [
     {
       "id": "ftp-intake",

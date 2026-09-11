@@ -34,7 +34,7 @@ def test_bootstrap_and_application_keys_enforce_permissions_immediately(
     monkeypatch,
 ) -> None:
     monkeypatch.setenv("RIVERHOG_BOOTSTRAP_TOKEN", "bootstrap-token")
-    config = RuntimeConfig(database_url=sqlite_url(tmp_path / "catalog.sqlite3"))
+    config = RuntimeConfig.for_testing(database_url=sqlite_url(tmp_path / "catalog.sqlite3"))
     initialize_db(config.database_url)
     with session_scope(make_session_factory(config.database_url)) as session:
         session.add(

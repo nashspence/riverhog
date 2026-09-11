@@ -8,11 +8,12 @@ configure_compose_tty
 export COMPOSE_PROFILES=development
 export SOURCE_REVISION="${SOURCE_REVISION:-$(git -C "${ROOT_DIR}" rev-parse HEAD)}"
 export RIVERHOG_API_PORT=0
+export RIVERHOG_BOOTSTRAP_TOKEN="${RIVERHOG_BOOTSTRAP_TOKEN:-riverhog-filesystem-proof-bootstrap-token}"
 export RIVERHOG_ARCHIVE_STORE_ARCHIVE_ADAPTER_URL=http://filesystem-cache-adapter:8080
 export RIVERHOG_ARCHIVE_STORE_ARCHIVE_ADAPTER_ALLOW_INSECURE_HTTP=true
-export RIVERHOG_ARCHIVE_REQUIRE_EXPLICIT_PASSPHRASES=true
 export RIVERHOG_ARCHIVE_PASSPHRASES_JSON='{"filesystem-proof":"filesystem-recovery-qualification-passphrase"}'
 export RIVERHOG_ARCHIVE_ACTIVE_PASSPHRASE_ID=filesystem-proof
+export RIVERHOG_BROWSE_TOKEN_SIGNING_KEY=filesystem-recovery-qualification-browse-key
 export RIVERHOG_ARCHIVE_SCRYPT_WORK_FACTOR=10
 export RIVERHOG_RETRIEVAL_CACHE_STORES=local
 export RIVERHOG_RETRIEVAL_CACHE_NEW_ARCHIVE_ENABLED=false
@@ -78,7 +79,7 @@ printf '%s' '{"filesystem-proof":"filesystem-recovery-qualification-passphrase"}
 chmod 0600 "${proof_root}/passphrases.json"
 
 compose up --detach --wait filesystem-cache-adapter postgres app
-bootstrap_token="$(compose_env_value RIVERHOG_BOOTSTRAP_TOKEN riverhog-development-bootstrap-token)"
+bootstrap_token="$(compose_env_value RIVERHOG_BOOTSTRAP_TOKEN riverhog-filesystem-proof-bootstrap-token)"
 qualification_key_code="import json, os, urllib.request
 request = urllib.request.Request(
     'http://127.0.0.1:8000/v1/apps/filesystem-recovery-qualification/keys',

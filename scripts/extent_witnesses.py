@@ -173,6 +173,20 @@ WITNESSES = (
         gates=("make unit", "make database-qualification", "make compose-smoke"),
     ),
     SegmentedExtentWitness(
+        id="riverhog-ftp-adapter-status-progression/v1",
+        owner="riverhog-ftp-adapter",
+        reasons=("bounded-route-progression",),
+        test_node_ids=(
+            "reference/riverhog/ingress/ftp/tests/test_ftp_adapter_custody.py::"
+            "test_status_pages_sources_without_claiming_an_exact_backlog_snapshot",
+            "reference/riverhog/ingress/ftp/tests/test_ftp_adapter_custody.py::"
+            "test_large_unavailable_backlog_is_bounded_then_drains_exactly_after_restart",
+            "reference/riverhog/ingress/ftp/tests/test_ftp_adapter_api_parity.py::"
+            "test_management_api_and_client_share_versioned_routes",
+        ),
+        gates=("make unit", "make compose-smoke"),
+    ),
+    SegmentedExtentWitness(
         id="riverhog-upload-registration-progression/v1",
         owner="riverhog",
         reasons=("bounded-upload-registration",),

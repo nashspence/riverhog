@@ -9,7 +9,9 @@ import shutil
 import stat
 import threading
 import time
-from collections.abc import Iterator, Mapping, Sequence
+from bisect import bisect_right
+from collections.abc import Generator, Mapping, Sequence
+from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
@@ -29,6 +31,14 @@ _FLUSH_MARKER = ".riverhog-ftp-flush"
 _MANIFEST = "claim.json"
 _RECEIPT = "receipt.json"
 _RECEIPTS_DIR = "receipts"
+_RECONCILE_CURSOR = "reconcile-cursor.json"
+
+
+@dataclass(frozen=True, slots=True)
+class _Admission:
+    claim_root: Path | None
+    entries_examined: int
+    sweep_complete: bool
 
 
 class FtpAdapterError(RuntimeError):
@@ -77,29 +87,78 @@ class FtpAdapter:
             raise KeyError(", ".join(sorted(unknown)))
         completed = 0
         failed: list[dict[str, str]] = []
+        source_results: list[dict[str, object]] = []
         for source in sources:
             source.root.mkdir(mode=0o700, parents=True, exist_ok=True)
-            for claim_root in self._claim_roots(source):
+            claims = self._claim_roots(source)
+            capacity_available = len(claims) < self.config.pending_claim_capacity
+            retry_budget = self.config.claim_attempt_budget - int(capacity_available)
+            work = self._claim_work(source, claims, limit=retry_budget)
+            source_completed = 0
+            source_failed = 0
+            attempts = 0
+            for claim_root in work:
                 try:
                     self._publish_claim(source, claim_root)
                 except Exception as exc:
                     failed.append(
                         {"source": source.id, "claim": claim_root.name, "error": str(exc)[:1000]}
                     )
+                    source_failed += 1
                 else:
                     completed += 1
-            try:
-                new_claim = self._claim_new_batch(source)
-                if new_claim is not None:
-                    self._publish_claim(source, new_claim)
-                    completed += 1
-            except Exception as exc:
-                failed.append({"source": source.id, "claim": "new", "error": str(exc)[:1000]})
+                    source_completed += 1
+                finally:
+                    attempts += 1
+                    self._save_reconcile_cursor(source, claim_root.name)
+            pending_after_work = len(claims) - source_completed
+            admission = _Admission(None, 0, False)
+            if (
+                attempts < self.config.claim_attempt_budget
+                and pending_after_work < self.config.pending_claim_capacity
+            ):
+                try:
+                    admission = self._claim_new_batch(source)
+                    if admission.claim_root is not None:
+                        attempts += 1
+                        try:
+                            self._publish_claim(source, admission.claim_root)
+                        except Exception as exc:
+                            failed.append(
+                                {
+                                    "source": source.id,
+                                    "claim": admission.claim_root.name,
+                                    "error": str(exc)[:1000],
+                                }
+                            )
+                            source_failed += 1
+                        else:
+                            completed += 1
+                            source_completed += 1
+                        finally:
+                            self._save_reconcile_cursor(source, admission.claim_root.name)
+                except Exception as exc:
+                    failed.append({"source": source.id, "claim": "new", "error": str(exc)[:1000]})
+                    source_failed += 1
+            source_results.append(
+                {
+                    "id": source.id,
+                    "claim_attempts": attempts,
+                    "completed": source_completed,
+                    "failed": source_failed,
+                    "discovery_entries_examined": admission.entries_examined,
+                    "discovery_sweep_complete": admission.sweep_complete,
+                    "admission_deferred": (
+                        pending_after_work >= self.config.pending_claim_capacity
+                    ),
+                }
+            )
         return {
             "format": "riverhog-ftp-adapter-pass/v1",
             "completed": completed,
             "failed": failed,
             "sources": [source.id for source in sources],
+            "source_results": source_results,
         }
 
     def flush(self, source_id: str) -> dict[str, object]:
@@ -110,15 +169,33 @@ class FtpAdapter:
             _write_atomic(marker, b"riverhog-ftp-adapter-flush/v1\n")
             return self._run_once((source_id,))
 
-    def status(self) -> dict[str, object]:
+    def status(
+        self,
+        *,
+        page_size: int = 25,
+        page_token: str | None = None,
+    ) -> dict[str, object]:
+        with self._custody_pass_lock:
+            return self._status(page_size=page_size, page_token=page_token)
+
+    def _status(
+        self,
+        *,
+        page_size: int,
+        page_token: str | None,
+    ) -> dict[str, object]:
+        if page_size < 1 or page_size > 100:
+            raise ValueError("FTP adapter status page_size must be in 1..100")
+        source_ids = [source.id for source in self.config.sources]
+        start = bisect_right(source_ids, page_token) if page_token is not None else 0
+        selected = self.config.sources[start : start + page_size]
         rows: list[dict[str, object]] = []
-        for source in self.config.sources:
+        for source in selected:
             claims = self._claim_roots(source)
             claim_bytes = sum(
-                path.stat().st_size
+                int(str(row["bytes"]))
                 for claim in claims
-                for path in (claim / "payload").rglob("*")
-                if path.is_file()
+                for row in _file_rows(_read_manifest(claim))
             )
             rows.append(
                 {
@@ -130,12 +207,19 @@ class FtpAdapter:
                     "max_files": source.max_files,
                     "max_bytes": source.max_bytes,
                     "provenance": source.provenance,
+                    "pending_claim_capacity": self.config.pending_claim_capacity,
                 }
             )
+        next_page_token = (
+            selected[-1].id if start + len(selected) < len(self.config.sources) else None
+        )
         return {
             "format": "riverhog-ftp-adapter-status/v1",
             "provenance_observer": self.config.provenance_observer,
             "sources": rows,
+            "page_size": page_size,
+            "next_page_token": next_page_token,
+            "snapshot": False,
         }
 
     def accept_completed_file(
@@ -195,6 +279,8 @@ class FtpAdapter:
             return self._publish_claim(source, claim_root)
         if not path.exists():
             raise SourceChanged("completed protocol upload is missing and has no receipt")
+        if len(self._claim_roots(source)) >= self.config.pending_claim_capacity:
+            raise FtpAdapterError("pending claim capacity is exhausted; admission is deferred")
         observed = path.stat(follow_symlinks=False)
         if not stat.S_ISREG(observed.st_mode) or observed.st_size != expected_bytes:
             raise SourceChanged("completed protocol upload differs from its declared size")
@@ -202,31 +288,35 @@ class FtpAdapter:
             raise SourceChanged("completed protocol upload differs from its declared SHA-256")
         if not claim_root.exists():
             claim_root.mkdir(mode=0o700, parents=True)
-            journals = dict(provenance_journals or {})
-            if provenance is None:
-                binding, captured = self._prepared_provenance(source, path, relative_path)
-                journals.update(captured)
-            else:
-                binding = dict(provenance)
-            manifest = {
-                "format": "riverhog-ftp-adapter-claim/v1",
-                "claim_id": identity,
-                "source_event_id": source_event_id,
-                "source": source.id,
-                "files": [
-                    {
-                        "path": relative_path,
-                        "bytes": observed.st_size,
-                        "sha256": expected_sha256,
-                        "device": observed.st_dev,
-                        "inode": observed.st_ino,
-                        "original": str(path.resolve()),
-                        "provenance": binding,
-                    }
-                ],
-                "journals": self._persist_journals(claim_root, journals),
-            }
-            _write_json(claim_root / _MANIFEST, manifest)
+            try:
+                journals = dict(provenance_journals or {})
+                if provenance is None:
+                    binding, captured = self._prepared_provenance(source, path, relative_path)
+                    journals.update(captured)
+                else:
+                    binding = dict(provenance)
+                manifest = {
+                    "format": "riverhog-ftp-adapter-claim/v1",
+                    "claim_id": identity,
+                    "source_event_id": source_event_id,
+                    "source": source.id,
+                    "files": [
+                        {
+                            "path": relative_path,
+                            "bytes": observed.st_size,
+                            "sha256": expected_sha256,
+                            "device": observed.st_dev,
+                            "inode": observed.st_ino,
+                            "original": str(path.resolve()),
+                            "provenance": binding,
+                        }
+                    ],
+                    "journals": self._persist_journals(claim_root, journals),
+                }
+                _write_json(claim_root / _MANIFEST, manifest)
+            except BaseException:
+                shutil.rmtree(claim_root)
+                raise
         self._reconcile_claim(source, claim_root)
         return self._publish_claim(source, claim_root)
 
@@ -237,49 +327,142 @@ class FtpAdapter:
         root = self._claims_root(source)
         if not root.is_dir():
             return []
-        return sorted(
-            path for path in root.iterdir() if path.is_dir() and (path / _MANIFEST).is_file()
+        claims: list[Path] = []
+        with os.scandir(root) as entries:
+            for entry in entries:
+                path = Path(entry.path)
+                if entry.is_dir(follow_symlinks=False) and (path / _MANIFEST).is_file():
+                    claims.append(path)
+                    if len(claims) > self.config.pending_claim_capacity:
+                        raise FtpAdapterError(
+                            "pending claims exceed the configured admission capacity"
+                        )
+        return sorted(claims)
+
+    def _claim_work(
+        self,
+        source: SourceConfig,
+        claims: Sequence[Path],
+        *,
+        limit: int,
+    ) -> tuple[Path, ...]:
+        if not claims or limit < 1:
+            return ()
+        names = [claim.name for claim in claims]
+        after = self._load_reconcile_cursor(source)
+        start = bisect_right(names, after) if after is not None else 0
+        ordered = (*claims[start:], *claims[:start])
+        return tuple(ordered[:limit])
+
+    def _cursor_path(self, source: SourceConfig) -> Path:
+        return source.root / _CONTROL_DIR / _RECONCILE_CURSOR
+
+    def _load_reconcile_cursor(self, source: SourceConfig) -> str | None:
+        path = self._cursor_path(source)
+        if not path.is_file():
+            return None
+        value = json.loads(path.read_text(encoding="utf-8"))
+        if (
+            not isinstance(value, dict)
+            or value.get("format") != "riverhog-ftp-adapter-reconcile-cursor/v1"
+            or value.get("source") != source.id
+            or not isinstance(value.get("after"), str)
+        ):
+            raise FtpAdapterError("invalid FTP adapter reconcile cursor")
+        return str(value["after"])
+
+    def _save_reconcile_cursor(self, source: SourceConfig, claim_id: str) -> None:
+        _write_json(
+            self._cursor_path(source),
+            {
+                "format": "riverhog-ftp-adapter-reconcile-cursor/v1",
+                "source": source.id,
+                "after": claim_id,
+            },
         )
 
-    def _eligible(
+    def _source_entries(
+        self, source: SourceConfig
+    ) -> Generator[tuple[Path, str, os.stat_result | None], None, None]:
+        iterators: list[Any] = [os.scandir(source.root)]
+        try:
+            while iterators:
+                try:
+                    entry = next(iterators[-1])
+                except StopIteration:
+                    iterators.pop().close()
+                    continue
+                path = Path(entry.path)
+                relative = path.relative_to(source.root)
+                if relative.parts and relative.parts[0] == _CONTROL_DIR:
+                    yield path, relative.as_posix(), None
+                    continue
+                try:
+                    is_directory = entry.is_dir(follow_symlinks=False)
+                except FileNotFoundError:
+                    yield path, relative.as_posix(), None
+                    continue
+                if is_directory:
+                    yield path, relative.as_posix(), None
+                    try:
+                        iterators.append(os.scandir(path))
+                    except FileNotFoundError:
+                        pass
+                    continue
+                try:
+                    observed = entry.stat(follow_symlinks=False)
+                except FileNotFoundError:
+                    observed = None
+                yield path, relative.as_posix(), observed
+        finally:
+            for iterator in iterators:
+                iterator.close()
+
+    def _discover_batch(
         self, source: SourceConfig, *, flush: bool
-    ) -> Iterator[tuple[Path, str, os.stat_result]]:
+    ) -> tuple[list[tuple[Path, str, os.stat_result]], int, bool]:
         if source.close_mode == "explicit-flush" and not flush:
-            return
+            return [], 0, True
         cutoff_ns = time.time_ns() - source.stable_seconds * 1_000_000_000
-        for path in source.root.rglob("*"):
-            relative = path.relative_to(source.root)
-            if not relative.parts or relative.parts[0] == _CONTROL_DIR:
-                continue
+        selected: list[tuple[Path, str, os.stat_result]] = []
+        total = 0
+        examined = 0
+        iterator = self._source_entries(source)
+        while examined < self.config.discovery_entry_budget:
+            try:
+                path, relative, observed = next(iterator)
+            except StopIteration:
+                selected.sort(key=lambda row: row[1])
+                return selected, examined, True
+            examined += 1
             if path.name == _FLUSH_MARKER or path.name.endswith(".riverhog-provenance.json-seq"):
                 continue
-            if ".riverhog" in relative.parts:
+            if ".riverhog" in Path(relative).parts:
                 continue
-            try:
-                observed = path.stat(follow_symlinks=False)
-            except FileNotFoundError:
-                continue
-            if not stat.S_ISREG(observed.st_mode):
+            if observed is None or not stat.S_ISREG(observed.st_mode):
                 continue
             if not flush and observed.st_mtime_ns > cutoff_ns:
                 continue
-            yield (path, relative.as_posix(), observed)
+            if selected and (
+                len(selected) >= source.max_files or total + observed.st_size > source.max_bytes
+            ):
+                iterator.close()
+                selected.sort(key=lambda row: row[1])
+                return selected, examined, False
+            selected.append((path, relative, observed))
+            total += observed.st_size
+        iterator.close()
+        selected.sort(key=lambda row: row[1])
+        return selected, examined, False
 
-    def _claim_new_batch(self, source: SourceConfig) -> Path | None:
+    def _claim_new_batch(self, source: SourceConfig) -> _Admission:
         marker = source.root / _FLUSH_MARKER
         flush = marker.is_file()
-        selected: list[tuple[Path, str, os.stat_result]] = []
-        total = 0
-        for row in self._eligible(source, flush=flush):
-            size = row[2].st_size
-            if selected and (len(selected) >= source.max_files or total + size > source.max_bytes):
-                break
-            selected.append(row)
-            total += size
+        selected, examined, sweep_complete = self._discover_batch(source, flush=flush)
         if not selected:
-            if flush:
+            if flush and sweep_complete:
                 marker.unlink(missing_ok=True)
-            return None
+            return _Admission(None, examined, sweep_complete)
         event_id = hashlib.sha256(
             "\n".join(
                 f"{row[1]}\0{row[2].st_size}\0{row[2].st_mtime_ns}" for row in selected
@@ -294,37 +477,45 @@ class FtpAdapter:
         )
         claim_root = self._claims_root(source) / claim_id
         if claim_root.exists():
-            return claim_root
+            if (claim_root / _MANIFEST).is_file():
+                return _Admission(claim_root, examined, sweep_complete)
+            # Finalized claim intent is the manifest. Construction can leave a
+            # pre-manifest directory behind, but no payload move has begun yet.
+            shutil.rmtree(claim_root)
         claim_root.mkdir(mode=0o700, parents=True)
-        files: list[dict[str, object]] = []
-        journals: dict[str, bytes] = {}
-        for original, relative, observed in selected:
-            binding, captured = self._prepared_provenance(source, original, relative)
-            journals.update(_merge_journals(journals, captured))
-            files.append(
-                {
-                    "path": relative,
-                    "bytes": observed.st_size,
-                    "sha256": _sha256_path(original),
-                    "device": observed.st_dev,
-                    "inode": observed.st_ino,
-                    "original": str(original.resolve()),
-                    "provenance": binding,
-                }
-            )
-        manifest = {
-            "format": "riverhog-ftp-adapter-claim/v1",
-            "claim_id": claim_id,
-            "source_event_id": event_id,
-            "source": source.id,
-            "files": files,
-            "journals": self._persist_journals(claim_root, journals),
-        }
-        _write_json(claim_root / _MANIFEST, manifest)
+        try:
+            files: list[dict[str, object]] = []
+            journals: dict[str, bytes] = {}
+            for original, relative, observed in selected:
+                binding, captured = self._prepared_provenance(source, original, relative)
+                journals.update(_merge_journals(journals, captured))
+                files.append(
+                    {
+                        "path": relative,
+                        "bytes": observed.st_size,
+                        "sha256": _sha256_path(original),
+                        "device": observed.st_dev,
+                        "inode": observed.st_ino,
+                        "original": str(original.resolve()),
+                        "provenance": binding,
+                    }
+                )
+            manifest = {
+                "format": "riverhog-ftp-adapter-claim/v1",
+                "claim_id": claim_id,
+                "source_event_id": event_id,
+                "source": source.id,
+                "files": files,
+                "journals": self._persist_journals(claim_root, journals),
+            }
+            _write_json(claim_root / _MANIFEST, manifest)
+        except BaseException:
+            shutil.rmtree(claim_root)
+            raise
         self._reconcile_claim(source, claim_root)
-        if flush:
+        if flush and sweep_complete:
             marker.unlink(missing_ok=True)
-        return claim_root
+        return _Admission(claim_root, examined, sweep_complete)
 
     def _prepared_provenance(
         self,
@@ -449,7 +640,7 @@ class FtpAdapter:
         _write_json(claim_root / _RECEIPT, receipt_payload)
         _write_json(self._receipt_path(source, claim_root.name), receipt_payload)
         shutil.rmtree(claim_root)
-        _prune_empty(source.root)
+        _prune_claim_parents(source.root, manifest)
         return receipt
 
     def _receipt_path(self, source: SourceConfig, claim_id: str) -> Path:
@@ -642,14 +833,14 @@ def _write_atomic(path: Path, content: bytes) -> None:
         os.close(directory)
 
 
-def _prune_empty(root: Path) -> None:
-    for path in sorted(
-        (item for item in root.rglob("*") if item.is_dir()),
-        key=lambda item: len(item.parts),
-        reverse=True,
-    ):
-        if path.name == _CONTROL_DIR or _CONTROL_DIR in path.parts:
-            continue
+def _prune_claim_parents(root: Path, manifest: Mapping[str, object]) -> None:
+    candidates = {
+        parent
+        for row in _file_rows(manifest)
+        for parent in (root / str(row["path"])).parents
+        if parent != root and root in parent.parents
+    }
+    for path in sorted(candidates, key=lambda item: len(item.parts), reverse=True):
         try:
             path.rmdir()
         except OSError:

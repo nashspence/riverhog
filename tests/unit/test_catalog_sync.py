@@ -59,7 +59,7 @@ PRINCIPAL = ApplicationPrincipal(
 
 
 def _service(path: Path) -> tuple[SqlAlchemyCatalogSyncService, object]:
-    config = RuntimeConfig(
+    config = RuntimeConfig.for_testing(
         database_url=sqlite_url(path),
         browse_token_signing_key="catalog-sync-test-key-000000000000",
     )

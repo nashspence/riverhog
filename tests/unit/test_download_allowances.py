@@ -47,7 +47,7 @@ def _config(
     allowance: int | None = 100,
     buffer: int = 10,
 ) -> RuntimeConfig:
-    config = RuntimeConfig(database_url=sqlite_url(path))
+    config = RuntimeConfig.for_testing(database_url=sqlite_url(path))
     store = replace(
         config.archive_store("archive"),
         name="deep",
