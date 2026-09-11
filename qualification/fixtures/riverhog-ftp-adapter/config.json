@@ -6,6 +6,7 @@
   "pending_claim_capacity": 128,
   "claim_attempt_budget": 8,
   "discovery_entry_budget": 4096,
+  "completion_root": "/var/lib/riverhog-ftp-completions",
   "sources": [
     {
       "id": "ftp-intake",
@@ -14,7 +15,6 @@
       "description": "Reference FTP intake",
       "tags": ["source:ftp"],
       "close_mode": "stable",
-      "stable_seconds": 30,
       "max_files": 1000,
       "max_bytes": 107374182400,
       "provenance": "omit",

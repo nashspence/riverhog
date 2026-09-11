@@ -9816,13 +9816,6 @@
                 "title": "Root",
                 "type": "string"
               },
-              "stable_seconds": {
-                "default": 30,
-                "maximum": 604800,
-                "minimum": 1,
-                "title": "Stable Seconds",
-                "type": "integer"
-              },
               "tags": {
                 "default": [],
                 "items": {
@@ -9859,6 +9852,19 @@
             "minimum": 2,
             "title": "Claim Attempt Budget",
             "type": "integer"
+          },
+          "completion_root": {
+            "anyOf": [
+              {
+                "format": "path",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Completion Root"
           },
           "discovery_entry_budget": {
             "default": 4096,
@@ -11826,8 +11832,8 @@
     },
     "extents": {
       "coverage": {
-        "classified": 1949,
-        "discovered": 1949,
+        "classified": 1948,
+        "discovered": 1948,
         "duplicate": 0,
         "missing": 0,
         "owners": {
@@ -11866,7 +11872,7 @@
           "piggity": 311,
           "riverhog": 493,
           "riverhog-client": 7,
-          "riverhog-ftp-adapter": 28,
+          "riverhog-ftp-adapter": 27,
           "riverhog-ftp-adapter-api-client": 1,
           "riverhog-recover": 3,
           "riverhog-server": 34,
@@ -11884,7 +11890,7 @@
           "stove0-target-support": 1
         },
         "policies": {
-          "contract_max": 433,
+          "contract_max": 432,
           "extension_owned": 55,
           "fixed": 900,
           "operational_policy": 480,
@@ -19265,18 +19271,6 @@
           "rule": "schema-bound/v1",
           "source_pointer": "/external_contract/configuration_documents/riverhog-ftp-adapter/$defs/SourceConfig/properties/provenance_omission_reason/anyOf/0",
           "unit": "characters"
-        },
-        {
-          "dimension": "value",
-          "id": "configuration:riverhog-ftp-adapter:/$defs/SourceConfig/properties/stable_seconds:value",
-          "maximum": 604800,
-          "minimum": 1,
-          "owner": "riverhog-ftp-adapter",
-          "policy": "contract_max",
-          "reason": "schema-maximum",
-          "rule": "schema-bound/v1",
-          "source_pointer": "/external_contract/configuration_documents/riverhog-ftp-adapter/$defs/SourceConfig/properties/stable_seconds",
-          "unit": "schema-value"
         },
         {
           "capacity_authority": {
@@ -40195,7 +40189,7 @@
         }
       },
       "schema": "riverhog-extent-contract/v1",
-      "sha256": "1d6739e7093db26fb8200f82ab0ef6eaaee167fbc95be52260cfd89fe104fd00"
+      "sha256": "b99dd09a46395b74d74a61f0614beeb40290806bbb52477efc82e6588f17be43"
     },
     "http_openapi": {
       "riverhog": {

@@ -3,8 +3,10 @@ from __future__ import annotations
 import hashlib
 import json
 import os
+import stat
 import threading
 import time
+import uuid
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 from typing import Any
@@ -33,7 +35,6 @@ def _config(tmp_path: Path) -> FtpAdapterConfig:
                 ingest_source="ftp:camera-a",
                 description="Camera A intake",
                 tags=("source:ftp", "camera:a"),
-                stable_seconds=1,
                 max_files=10,
                 max_bytes=1024 * 1024,
                 provenance="omit",
@@ -96,11 +97,39 @@ class _ControlledProducer:
         )
 
 
-def _stable_file(path: Path, content: bytes) -> None:
+def _append_transfer(
+    source: SourceConfig,
+    path: Path,
+    *,
+    direction: str,
+    byte_count: int,
+    completion_log: Path | None = None,
+) -> None:
+    if completion_log is None:
+        control = source.root / ".riverhog-ftp-adapter"
+        control.mkdir(mode=0o700, parents=True, exist_ok=True)
+        completion_log = control / "completed-transfers.log"
+    if not completion_log.exists():
+        completion_log.write_text(
+            f"riverhog-ftp-completion-log/v1 {uuid.uuid4()}\n",
+            encoding="ascii",
+        )
+    with completion_log.open("ab") as stream:
+        stream.write(
+            f"{time.time_ns()} 1.1 ftp 127.0.0.1 {direction} {byte_count} 1 ".encode("ascii")
+        )
+        stream.write(os.fsencode(path.resolve()))
+        stream.write(b"\n")
+
+
+def _completed_upload(source: SourceConfig, relative: str, content: bytes) -> Path:
+    path = source.root / relative
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_bytes(content)
     old = time.time() - 10
     os.utime(path, (old, old))
+    _append_transfer(source, path, direction="U", byte_count=len(content))
+    return path
 
 
 def test_v1_claim_fixture_retains_payload_and_portable_provenance_identity() -> None:
@@ -122,11 +151,7 @@ def test_landing_adapter_reconciles_lost_response_without_releasing_custody(
 ) -> None:
     config = _config(tmp_path)
     source = config.sources[0]
-    payload = source.root / "camera" / "clip.mp4"
-    payload.parent.mkdir(parents=True)
-    payload.write_bytes(b"immutable camera payload")
-    old = time.time() - 10
-    os.utime(payload, (old, old))
+    payload = _completed_upload(source, "camera/clip.mp4", b"immutable camera payload")
     _Producer.calls = []
     _Producer.fail_once = True
     monkeypatch.setattr("riverhog_ftp_adapter.landing.CollectionProducer", _Producer)
@@ -155,7 +180,7 @@ def test_landing_adapter_reconciles_lost_response_without_releasing_custody(
             "claim_attempts": 1,
             "completed": 1,
             "failed": 0,
-            "discovery_entries_examined": 1,
+            "discovery_entries_examined": 0,
             "discovery_sweep_complete": True,
             "admission_deferred": False,
         }
@@ -188,7 +213,7 @@ def test_large_unavailable_backlog_is_bounded_then_drains_exactly_after_restart(
     )
     expected = {f"camera-{index:02d}.bin" for index in range(12)}
     for name in sorted(expected):
-        _stable_file(source.root / name, name.encode())
+        _completed_upload(source, name, name.encode())
     _ControlledProducer.calls = []
     _ControlledProducer.successes = []
     _ControlledProducer.available = False
@@ -225,6 +250,161 @@ def test_large_unavailable_backlog_is_bounded_then_drains_exactly_after_restart(
     assert adapter.status()["sources"][0]["claims"] == 0  # type: ignore[index]
 
 
+def test_completion_discovery_progresses_beyond_persistent_prefix_across_restart(
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path: Path,
+) -> None:
+    base = _config(tmp_path)
+    source = base.sources[0].model_copy(update={"max_files": 1})
+    config = base.model_copy(
+        update={
+            "sources": (source,),
+            "claim_attempt_budget": 2,
+            "discovery_entry_budget": 2,
+        }
+    )
+    persistent = source.root / "one/two/three/four/five"
+    persistent.mkdir(parents=True)
+    for index in range(5):
+        ignored = source.root / f"ignored-{index}.riverhog-provenance.json-seq"
+        ignored.write_text("persistent", encoding="utf-8")
+        _append_transfer(source, ignored, direction="D", byte_count=10)
+    payload = _completed_upload(source, "one/two/three/four/five/payload.bin", b"payload")
+    _ControlledProducer.calls = []
+    _ControlledProducer.successes = []
+    _ControlledProducer.available = True
+    _ControlledProducer.permanently_failing_paths = set()
+    monkeypatch.setattr(landing, "CollectionProducer", _ControlledProducer)
+
+    passes: list[dict[str, object]] = []
+    for _ in range(4):
+        adapter = FtpAdapter(object(), config)  # type: ignore[arg-type]
+        current = adapter.run_once()
+        passes.append(current)
+        assert current["source_results"][0]["discovery_entries_examined"] <= 2  # type: ignore[index]
+        if not payload.exists():
+            break
+
+    assert not payload.exists()
+    assert _ControlledProducer.successes == ["one/two/three/four/five/payload.bin"]
+    assert sum(int(current["completed"]) for current in passes) == 1
+
+
+def test_external_completion_authority_is_restartable_and_writer_only(
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path: Path,
+) -> None:
+    completion_root = tmp_path / "completion-authority"
+    config = _config(tmp_path).model_copy(update={"completion_root": completion_root})
+    source = config.sources[0]
+    FtpAdapter(object(), config)  # type: ignore[arg-type]
+    log = completion_root / "camera-a.log"
+    assert stat.S_IMODE(log.stat().st_mode) == 0o622
+
+    payload = source.root / "after-restart.bin"
+    payload.write_bytes(b"after")
+    _append_transfer(
+        source,
+        payload,
+        direction="U",
+        byte_count=payload.stat().st_size,
+        completion_log=log,
+    )
+    _Producer.calls = []
+    _Producer.fail_once = False
+    monkeypatch.setattr(landing, "CollectionProducer", _Producer)
+    restarted = FtpAdapter(object(), config)  # type: ignore[arg-type]
+
+    assert restarted.run_once()["completed"] == 1
+    assert not payload.exists()
+    assert log.read_text(encoding="ascii").count("\n") == 2
+
+
+@pytest.mark.parametrize("failure", ["missing", "size-changed"])
+def test_completion_identity_failure_is_visible_and_retryable_without_cursor_loss(
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path: Path,
+    failure: str,
+) -> None:
+    config = _config(tmp_path)
+    source = config.sources[0]
+    payload = _completed_upload(source, "identity.bin", b"exact")
+    if failure == "missing":
+        payload.unlink()
+    else:
+        payload.write_bytes(b"different-size")
+    _Producer.calls = []
+    _Producer.fail_once = False
+    monkeypatch.setattr(landing, "CollectionProducer", _Producer)
+
+    first = FtpAdapter(object(), config)  # type: ignore[arg-type]
+    result = first.run_once()
+
+    assert result["completed"] == 0
+    assert len(result["failed"]) == 1  # type: ignore[arg-type]
+    assert "completed FTP upload" in result["failed"][0]["error"]  # type: ignore[index]
+    assert first.status()["sources"][0]["claims"] == 0  # type: ignore[index]
+
+    payload.write_bytes(b"exact")
+    restarted = FtpAdapter(object(), config)  # type: ignore[arg-type]
+
+    assert restarted.run_once()["completed"] == 1
+    assert not payload.exists()
+
+
+def test_lowered_admission_capacity_preserves_bounded_status_and_claim_drain(
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path: Path,
+) -> None:
+    base = _config(tmp_path)
+    source = base.sources[0].model_copy(update={"max_files": 1})
+    original = base.model_copy(
+        update={
+            "sources": (source,),
+            "pending_claim_capacity": 5,
+            "claim_attempt_budget": 2,
+            "discovery_entry_budget": 2,
+        }
+    )
+    _ControlledProducer.calls = []
+    _ControlledProducer.successes = []
+    _ControlledProducer.available = False
+    _ControlledProducer.permanently_failing_paths = set()
+    monkeypatch.setattr(landing, "CollectionProducer", _ControlledProducer)
+    expected = {f"claimed-{index}.bin" for index in range(5)}
+    for name in sorted(expected):
+        _completed_upload(source, name, name.encode())
+    adapter = FtpAdapter(object(), original)  # type: ignore[arg-type]
+    for _ in range(5):
+        result = adapter.run_once()
+        assert result["source_results"][0]["claim_attempts"] <= 2  # type: ignore[index]
+    assert adapter.status()["sources"][0]["claims"] == 5  # type: ignore[index]
+
+    pending = _completed_upload(source, "new-after-reduction.bin", b"new")
+    lowered = original.model_copy(update={"pending_claim_capacity": 2})
+    adapter = FtpAdapter(object(), lowered)  # type: ignore[arg-type]
+    status = adapter.status()["sources"][0]  # type: ignore[index]
+    assert status["claims"] == 5
+    assert status["pending_claim_capacity"] == 2
+    _ControlledProducer.available = True
+
+    first = adapter.run_once()
+    assert first["source_results"][0]["claim_attempts"] == 2  # type: ignore[index]
+    assert first["source_results"][0]["admission_deferred"] is True  # type: ignore[index]
+    assert pending.exists()
+
+    for _ in range(8):
+        adapter = FtpAdapter(object(), lowered)  # type: ignore[arg-type]
+        result = adapter.run_once()
+        assert result["source_results"][0]["claim_attempts"] <= 2  # type: ignore[index]
+        if adapter.status()["sources"][0]["claims"] == 0:  # type: ignore[index]
+            break
+
+    assert set(_ControlledProducer.successes) == expected | {"new-after-reduction.bin"}
+    assert not pending.exists()
+    assert adapter.status()["sources"][0]["claims"] == 0  # type: ignore[index]
+
+
 def test_persistent_old_failure_does_not_starve_new_input_across_restart(
     monkeypatch: pytest.MonkeyPatch,
     tmp_path: Path,
@@ -244,11 +424,11 @@ def test_persistent_old_failure_does_not_starve_new_input_across_restart(
     _ControlledProducer.available = True
     _ControlledProducer.permanently_failing_paths = {"bad.bin"}
     monkeypatch.setattr(landing, "CollectionProducer", _ControlledProducer)
-    _stable_file(source.root / "bad.bin", b"bad")
+    _completed_upload(source, "bad.bin", b"bad")
 
     first = FtpAdapter(object(), config)  # type: ignore[arg-type]
     assert first.run_once()["failed"]
-    _stable_file(source.root / "good.bin", b"good")
+    _completed_upload(source, "good.bin", b"good")
 
     restarted = FtpAdapter(object(), config)  # type: ignore[arg-type]
     second = restarted.run_once()
@@ -262,7 +442,7 @@ def test_persistent_old_failure_does_not_starve_new_input_across_restart(
     # The durable cursor names the now-completed good claim. A later restart
     # must wrap past that missing entry, retry the old failure, and still admit
     # new input in the same bounded pass.
-    _stable_file(source.root / "later.bin", b"later")
+    _completed_upload(source, "later.bin", b"later")
     restarted = FtpAdapter(object(), config)  # type: ignore[arg-type]
     third = restarted.run_once()
 
@@ -291,12 +471,12 @@ def test_changed_claim_remains_in_custody_for_bounded_reconciliation(
     _ControlledProducer.available = False
     _ControlledProducer.permanently_failing_paths = set()
     monkeypatch.setattr(landing, "CollectionProducer", _ControlledProducer)
-    _stable_file(source.root / "changed.bin", b"original")
+    _completed_upload(source, "changed.bin", b"original")
 
     first = FtpAdapter(object(), config)  # type: ignore[arg-type]
     result = first.run_once()
     assert result["source_results"][0]["claim_attempts"] == 1  # type: ignore[index]
-    claim_root = first._claim_roots(source)[0]
+    claim_root = first._claim_work(source, limit=1)[0].root
     claimed_payload = claim_root / "payload" / "changed.bin"
     claimed_payload.write_bytes(b"tampered")
 
@@ -318,20 +498,25 @@ def test_pre_manifest_construction_orphan_is_rebuilt_after_restart(
     config = _config(tmp_path)
     source = config.sources[0].model_copy(update={"max_files": 1})
     config = config.model_copy(update={"sources": (source,)})
-    payload = source.root / "orphaned.bin"
-    _stable_file(payload, b"orphaned")
+    payload = _completed_upload(source, "orphaned.bin", b"orphaned")
     _Producer.calls = []
     _Producer.fail_once = False
     monkeypatch.setattr(landing, "CollectionProducer", _Producer)
     adapter = FtpAdapter(object(), config)  # type: ignore[arg-type]
-    selected, _, _ = adapter._discover_batch(source, flush=False)
+    discovery = adapter._discover_batch(source, flush=False)
     event_id = hashlib.sha256(
-        "\n".join(f"{row[1]}\0{row[2].st_size}\0{row[2].st_mtime_ns}" for row in selected).encode()
+        "\n".join(
+            f"{row.event_identity}\0{row.relative}\0{row.observed.st_size}"
+            for row in discovery.files
+        ).encode()
     ).hexdigest()
     claim_id = landing._claim_identity(
         source.id,
         event_id,
-        tuple((relative, item.st_size, item.st_dev, item.st_ino) for _, relative, item in selected),
+        tuple(
+            (row.relative, row.observed.st_size, row.observed.st_dev, row.observed.st_ino)
+            for row in discovery.files
+        ),
     )
     orphan = adapter._claims_root(source) / claim_id
     orphan.mkdir(mode=0o700, parents=True)
@@ -372,9 +557,7 @@ def test_explicit_flush_is_the_same_bounded_claim_and_receipt_path(
     base = _config(tmp_path)
     source = base.sources[0].model_copy(update={"close_mode": "explicit-flush"})
     config = base.model_copy(update={"sources": (source,)})
-    payload = source.root / "current.bin"
-    payload.parent.mkdir(parents=True)
-    payload.write_bytes(b"current")
+    _completed_upload(source, "current.bin", b"current")
     _Producer.calls = []
     monkeypatch.setattr("riverhog_ftp_adapter.landing.CollectionProducer", _Producer)
     adapter = FtpAdapter(object(), config)  # type: ignore[arg-type]
@@ -400,9 +583,7 @@ def test_explicit_flush_marker_and_pass_are_one_serialized_operation(
     base = _config(tmp_path)
     source = base.sources[0].model_copy(update={"close_mode": "explicit-flush"})
     config = base.model_copy(update={"sources": (source,)})
-    payload = source.root / "current.bin"
-    payload.parent.mkdir(parents=True)
-    payload.write_bytes(b"current")
+    _completed_upload(source, "current.bin", b"current")
     _Producer.calls = []
     monkeypatch.setattr(landing, "CollectionProducer", _Producer)
     adapter = FtpAdapter(object(), config)  # type: ignore[arg-type]
@@ -463,9 +644,7 @@ def test_captured_provenance_is_identity_checked_and_projected_for_the_producer(
             "sources": (source,),
         }
     )
-    payload = source.root / "captured.bin"
-    payload.parent.mkdir(parents=True)
-    payload.write_bytes(b"captured")
+    _completed_upload(source, "captured.bin", b"captured")
     _Producer.calls = []
     monkeypatch.setattr("riverhog_ftp_adapter.landing.CollectionProducer", _Producer)
 

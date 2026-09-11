@@ -181,6 +181,12 @@ WITNESSES = (
             "test_status_pages_sources_without_claiming_an_exact_backlog_snapshot",
             "reference/riverhog/ingress/ftp/tests/test_ftp_adapter_custody.py::"
             "test_large_unavailable_backlog_is_bounded_then_drains_exactly_after_restart",
+            "reference/riverhog/ingress/ftp/tests/test_ftp_adapter_custody.py::"
+            "test_completion_discovery_progresses_beyond_persistent_prefix_across_restart",
+            "reference/riverhog/ingress/ftp/tests/test_ftp_adapter_custody.py::"
+            "test_external_completion_authority_is_restartable_and_writer_only",
+            "reference/riverhog/ingress/ftp/tests/test_ftp_adapter_custody.py::"
+            "test_lowered_admission_capacity_preserves_bounded_status_and_claim_drain",
             "reference/riverhog/ingress/ftp/tests/test_ftp_adapter_api_parity.py::"
             "test_management_api_and_client_share_versioned_routes",
         ),

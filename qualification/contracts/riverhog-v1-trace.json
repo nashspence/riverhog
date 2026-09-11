@@ -1,11 +1,11 @@
 {
   "boundary_canonical_sha256": "5af7171d406deec927ce70092a60eb033f51c53f2da16b7f1cea794e03e807be",
-  "contract_canonical_sha256": "4c84a9f18dbf084ddf940c3856aa2946a3382390ab33523df2e9510bd730b8ad",
-  "contract_projection_sha256": "d2ef593a1a30e6930ccb9766d703b74d507f2802cc3ac36b6acb2c4b4605c4e5",
+  "contract_canonical_sha256": "d2171b210d6b31fab486076c117a77cd46905b73404d8b2c49a95fb20fbc4816",
+  "contract_projection_sha256": "3069adaae170772f7f5ab45e99ce5d75a68589310a2bad80502142691642caed",
   "contract_schema": "riverhog-contract-freeze/v1",
   "coverage": {
-    "extent_decisions": 1949,
-    "extent_source_links": 1949,
+    "extent_decisions": 1948,
+    "extent_source_links": 1948,
     "segmented_decisions": 81,
     "segmented_extent_witness_links": 81,
     "segmented_extent_witnesses": 14,
@@ -2536,11 +2536,6 @@
       "id": "configuration:riverhog-ftp-adapter:/$defs/SourceConfig/properties/provenance_omission_reason/anyOf/0:length",
       "owner": "riverhog-ftp-adapter",
       "source_pointer": "/external_contract/configuration_documents/riverhog-ftp-adapter/$defs/SourceConfig/properties/provenance_omission_reason/anyOf/0"
-    },
-    {
-      "id": "configuration:riverhog-ftp-adapter:/$defs/SourceConfig/properties/stable_seconds:value",
-      "owner": "riverhog-ftp-adapter",
-      "source_pointer": "/external_contract/configuration_documents/riverhog-ftp-adapter/$defs/SourceConfig/properties/stable_seconds"
     },
     {
       "id": "configuration:riverhog-ftp-adapter:/$defs/SourceConfig/properties/tags:cardinality",
@@ -10270,6 +10265,9 @@
       "test_node_ids": [
         "reference/riverhog/ingress/ftp/tests/test_ftp_adapter_custody.py::test_status_pages_sources_without_claiming_an_exact_backlog_snapshot",
         "reference/riverhog/ingress/ftp/tests/test_ftp_adapter_custody.py::test_large_unavailable_backlog_is_bounded_then_drains_exactly_after_restart",
+        "reference/riverhog/ingress/ftp/tests/test_ftp_adapter_custody.py::test_completion_discovery_progresses_beyond_persistent_prefix_across_restart",
+        "reference/riverhog/ingress/ftp/tests/test_ftp_adapter_custody.py::test_external_completion_authority_is_restartable_and_writer_only",
+        "reference/riverhog/ingress/ftp/tests/test_ftp_adapter_custody.py::test_lowered_admission_capacity_preserves_bounded_status_and_claim_drain",
         "reference/riverhog/ingress/ftp/tests/test_ftp_adapter_api_parity.py::test_management_api_and_client_share_versioned_routes"
       ]
     },

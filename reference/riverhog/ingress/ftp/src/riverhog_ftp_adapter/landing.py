@@ -2,18 +2,21 @@
 
 from __future__ import annotations
 
+import fcntl
 import hashlib
 import json
 import os
 import shutil
+import sqlite3
 import stat
 import threading
-import time
+import uuid
 from bisect import bisect_right
-from collections.abc import Generator, Mapping, Sequence
+from collections.abc import Mapping, Sequence
+from contextlib import closing
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any
+from typing import Any, BinaryIO
 
 from riverhog_client import ApiClient
 from riverhog_client.producer import CollectionProducer, ProducedCollection, ProducerFile
@@ -31,14 +34,41 @@ _FLUSH_MARKER = ".riverhog-ftp-flush"
 _MANIFEST = "claim.json"
 _RECEIPT = "receipt.json"
 _RECEIPTS_DIR = "receipts"
-_RECONCILE_CURSOR = "reconcile-cursor.json"
+_STATE_DB = "state.sqlite3"
+_COMPLETION_LOG = "completed-transfers.log"
+_COMPLETION_LOG_HEADER = "riverhog-ftp-completion-log/v1"
+_MAX_COMPLETION_RECORD_BYTES = 16 * 1024
 
 
 @dataclass(frozen=True, slots=True)
 class _Admission:
     claim_root: Path | None
+    claim_ordinal: int | None
     entries_examined: int
     sweep_complete: bool
+
+
+@dataclass(frozen=True, slots=True)
+class _ClaimWork:
+    ordinal: int
+    root: Path
+
+
+@dataclass(frozen=True, slots=True)
+class _DiscoveredFile:
+    path: Path
+    relative: str
+    observed: os.stat_result
+    event_identity: str
+
+
+@dataclass(frozen=True, slots=True)
+class _DiscoveryBatch:
+    files: tuple[_DiscoveredFile, ...]
+    entries_examined: int
+    sweep_complete: bool
+    generation: str
+    next_offset: int
 
 
 class FtpAdapterError(RuntimeError):
@@ -72,6 +102,91 @@ class FtpAdapter:
         self.config = config
         self._provenance_observer_factory = provenance_observer_factory
         self._custody_pass_lock = threading.Lock()
+        for source in config.sources:
+            self._initialize_source(source)
+
+    def _control_root(self, source: SourceConfig) -> Path:
+        return source.root / _CONTROL_DIR
+
+    def _state_path(self, source: SourceConfig) -> Path:
+        return self._control_root(source) / _STATE_DB
+
+    def _completion_log_path(self, source: SourceConfig) -> Path:
+        if self.config.completion_root is not None:
+            return self.config.completion_root / f"{source.id}.log"
+        return self._control_root(source) / _COMPLETION_LOG
+
+    def _open_state(self, source: SourceConfig) -> sqlite3.Connection:
+        connection = sqlite3.connect(self._state_path(source))
+        connection.execute("PRAGMA foreign_keys = ON")
+        connection.execute("PRAGMA synchronous = FULL")
+        return connection
+
+    def _initialize_source(self, source: SourceConfig) -> None:
+        source.root.mkdir(mode=0o700, parents=True, exist_ok=True)
+        self._control_root(source).mkdir(mode=0o700, parents=True, exist_ok=True)
+        with closing(self._open_state(source)) as connection:
+            version = int(connection.execute("PRAGMA user_version").fetchone()[0])
+            if version not in {0, 1}:
+                raise FtpAdapterError("unsupported FTP adapter operational-state revision")
+            connection.executescript(
+                """
+                CREATE TABLE IF NOT EXISTS claims (
+                    ordinal INTEGER PRIMARY KEY,
+                    claim_id TEXT NOT NULL UNIQUE,
+                    manifest_json TEXT NOT NULL,
+                    claim_bytes INTEGER NOT NULL CHECK (claim_bytes >= 0)
+                );
+                CREATE TABLE IF NOT EXISTS adapter_state (
+                    key TEXT PRIMARY KEY,
+                    value TEXT NOT NULL
+                );
+                PRAGMA user_version = 1;
+                """
+            )
+            claim_count = _state_value(connection, "claim_count")
+            claim_bytes = _state_value(connection, "claim_bytes")
+            if claim_count is None or claim_bytes is None:
+                existing_claims = int(
+                    connection.execute("SELECT COUNT(*) FROM claims").fetchone()[0]
+                )
+                if existing_claims:
+                    raise FtpAdapterError(
+                        "FTP claim accounting is absent for existing operational custody"
+                    )
+                _set_state_value(connection, "claim_count", "0")
+                _set_state_value(connection, "claim_bytes", "0")
+            connection.commit()
+        path = self._completion_log_path(source)
+        if not path.exists():
+            generation = str(uuid.uuid4())
+            _write_atomic(
+                path,
+                f"{_COMPLETION_LOG_HEADER} {generation}\n".encode("ascii"),
+            )
+        if self.config.completion_root is not None:
+            # This writer-only handoff is mounted outside the FTP user's chroot.
+            # Pure-FTPd opens it before authentication, while the adapter owns
+            # its contents and is the only reader.
+            path.chmod(0o622)
+        generation, header_bytes = _read_completion_header(path)
+        with closing(self._open_state(source)) as connection:
+            stored_generation = _state_value(connection, "completion_generation")
+            stored_offset = _state_value(connection, "completion_offset")
+            if stored_generation is None:
+                connection.execute(
+                    "INSERT INTO adapter_state(key, value) VALUES (?, ?)",
+                    ("completion_generation", generation),
+                )
+                connection.execute(
+                    "INSERT INTO adapter_state(key, value) VALUES (?, ?)",
+                    ("completion_offset", str(header_bytes)),
+                )
+                connection.commit()
+            elif stored_generation != generation:
+                raise FtpAdapterError("FTP completion log changed outside adapter custody")
+            elif stored_offset is None or int(stored_offset) < header_bytes:
+                raise FtpAdapterError("FTP completion cursor is invalid")
 
     def run_once(self, source_ids: Sequence[str] | None = None) -> dict[str, object]:
         with self._custody_pass_lock:
@@ -89,20 +204,23 @@ class FtpAdapter:
         failed: list[dict[str, str]] = []
         source_results: list[dict[str, object]] = []
         for source in sources:
-            source.root.mkdir(mode=0o700, parents=True, exist_ok=True)
-            claims = self._claim_roots(source)
-            capacity_available = len(claims) < self.config.pending_claim_capacity
+            claim_count, _claim_bytes = self._claim_summary(source)
+            capacity_available = claim_count < self.config.pending_claim_capacity
             retry_budget = self.config.claim_attempt_budget - int(capacity_available)
-            work = self._claim_work(source, claims, limit=retry_budget)
+            work = self._claim_work(source, limit=retry_budget)
             source_completed = 0
             source_failed = 0
             attempts = 0
-            for claim_root in work:
+            for claim in work:
                 try:
-                    self._publish_claim(source, claim_root)
+                    self._publish_claim(source, claim.root)
                 except Exception as exc:
                     failed.append(
-                        {"source": source.id, "claim": claim_root.name, "error": str(exc)[:1000]}
+                        {
+                            "source": source.id,
+                            "claim": claim.root.name,
+                            "error": str(exc)[:1000],
+                        }
                     )
                     source_failed += 1
                 else:
@@ -110,9 +228,9 @@ class FtpAdapter:
                     source_completed += 1
                 finally:
                     attempts += 1
-                    self._save_reconcile_cursor(source, claim_root.name)
-            pending_after_work = len(claims) - source_completed
-            admission = _Admission(None, 0, False)
+                    self._save_reconcile_cursor(source, claim.ordinal)
+            pending_after_work = claim_count - source_completed
+            admission = _Admission(None, None, 0, False)
             if (
                 attempts < self.config.claim_attempt_budget
                 and pending_after_work < self.config.pending_claim_capacity
@@ -136,7 +254,9 @@ class FtpAdapter:
                             completed += 1
                             source_completed += 1
                         finally:
-                            self._save_reconcile_cursor(source, admission.claim_root.name)
+                            if admission.claim_ordinal is None:
+                                raise FtpAdapterError("new FTP claim has no durable ordinal")
+                            self._save_reconcile_cursor(source, admission.claim_ordinal)
                 except Exception as exc:
                     failed.append({"source": source.id, "claim": "new", "error": str(exc)[:1000]})
                     source_failed += 1
@@ -191,17 +311,12 @@ class FtpAdapter:
         selected = self.config.sources[start : start + page_size]
         rows: list[dict[str, object]] = []
         for source in selected:
-            claims = self._claim_roots(source)
-            claim_bytes = sum(
-                int(str(row["bytes"]))
-                for claim in claims
-                for row in _file_rows(_read_manifest(claim))
-            )
+            claim_count, claim_bytes = self._claim_summary(source)
             rows.append(
                 {
                     "id": source.id,
                     "ingest_source": source.ingest_source,
-                    "claims": len(claims),
+                    "claims": claim_count,
                     "claim_bytes": claim_bytes,
                     "close_mode": source.close_mode,
                     "max_files": source.max_files,
@@ -273,13 +388,16 @@ class FtpAdapter:
         if durable_receipt is not None:
             if claim_root.exists():
                 shutil.rmtree(claim_root)
+            self._forget_claim(source, identity)
             return durable_receipt
-        if claim_root.exists():
+        if self._claim_record(source, identity) is not None:
+            self._materialize_registered_claim(source, identity)
             self._reconcile_claim(source, claim_root)
             return self._publish_claim(source, claim_root)
         if not path.exists():
             raise SourceChanged("completed protocol upload is missing and has no receipt")
-        if len(self._claim_roots(source)) >= self.config.pending_claim_capacity:
+        claim_count, _claim_bytes = self._claim_summary(source)
+        if claim_count >= self.config.pending_claim_capacity:
             raise FtpAdapterError("pending claim capacity is exhausted; admission is deferred")
         observed = path.stat(follow_symlinks=False)
         if not stat.S_ISREG(observed.st_mode) or observed.st_size != expected_bytes:
@@ -314,6 +432,7 @@ class FtpAdapter:
                     "journals": self._persist_journals(claim_root, journals),
                 }
                 _write_json(claim_root / _MANIFEST, manifest)
+                self._register_claim(source, manifest)
             except BaseException:
                 shutil.rmtree(claim_root)
                 raise
@@ -323,162 +442,315 @@ class FtpAdapter:
     def _claims_root(self, source: SourceConfig) -> Path:
         return source.root / _CONTROL_DIR / "claims"
 
-    def _claim_roots(self, source: SourceConfig) -> list[Path]:
-        root = self._claims_root(source)
-        if not root.is_dir():
-            return []
-        claims: list[Path] = []
-        with os.scandir(root) as entries:
-            for entry in entries:
-                path = Path(entry.path)
-                if entry.is_dir(follow_symlinks=False) and (path / _MANIFEST).is_file():
-                    claims.append(path)
-                    if len(claims) > self.config.pending_claim_capacity:
-                        raise FtpAdapterError(
-                            "pending claims exceed the configured admission capacity"
-                        )
-        return sorted(claims)
+    def _claim_summary(self, source: SourceConfig) -> tuple[int, int]:
+        with closing(self._open_state(source)) as connection:
+            claim_count = _state_value(connection, "claim_count")
+            claim_bytes = _state_value(connection, "claim_bytes")
+        if claim_count is None or claim_bytes is None:
+            raise FtpAdapterError("FTP claim accounting is unavailable")
+        return int(claim_count), int(claim_bytes)
 
     def _claim_work(
         self,
         source: SourceConfig,
-        claims: Sequence[Path],
         *,
         limit: int,
-    ) -> tuple[Path, ...]:
-        if not claims or limit < 1:
+    ) -> tuple[_ClaimWork, ...]:
+        if limit < 1:
             return ()
-        names = [claim.name for claim in claims]
-        after = self._load_reconcile_cursor(source)
-        start = bisect_right(names, after) if after is not None else 0
-        ordered = (*claims[start:], *claims[:start])
-        return tuple(ordered[:limit])
-
-    def _cursor_path(self, source: SourceConfig) -> Path:
-        return source.root / _CONTROL_DIR / _RECONCILE_CURSOR
-
-    def _load_reconcile_cursor(self, source: SourceConfig) -> str | None:
-        path = self._cursor_path(source)
-        if not path.is_file():
-            return None
-        value = json.loads(path.read_text(encoding="utf-8"))
-        if (
-            not isinstance(value, dict)
-            or value.get("format") != "riverhog-ftp-adapter-reconcile-cursor/v1"
-            or value.get("source") != source.id
-            or not isinstance(value.get("after"), str)
-        ):
-            raise FtpAdapterError("invalid FTP adapter reconcile cursor")
-        return str(value["after"])
-
-    def _save_reconcile_cursor(self, source: SourceConfig, claim_id: str) -> None:
-        _write_json(
-            self._cursor_path(source),
-            {
-                "format": "riverhog-ftp-adapter-reconcile-cursor/v1",
-                "source": source.id,
-                "after": claim_id,
-            },
+        with closing(self._open_state(source)) as connection:
+            raw_after = _state_value(connection, "reconcile_after")
+            after = int(raw_after) if raw_after is not None else 0
+            rows = connection.execute(
+                "SELECT ordinal, claim_id FROM claims WHERE ordinal > ? ORDER BY ordinal LIMIT ?",
+                (after, limit),
+            ).fetchall()
+            if len(rows) < limit:
+                rows.extend(
+                    connection.execute(
+                        "SELECT ordinal, claim_id FROM claims "
+                        "WHERE ordinal <= ? ORDER BY ordinal LIMIT ?",
+                        (after, limit - len(rows)),
+                    ).fetchall()
+                )
+        return tuple(
+            _ClaimWork(int(ordinal), self._claims_root(source) / str(claim_id))
+            for ordinal, claim_id in rows
         )
 
-    def _source_entries(
-        self, source: SourceConfig
-    ) -> Generator[tuple[Path, str, os.stat_result | None], None, None]:
-        iterators: list[Any] = [os.scandir(source.root)]
-        try:
-            while iterators:
-                try:
-                    entry = next(iterators[-1])
-                except StopIteration:
-                    iterators.pop().close()
-                    continue
-                path = Path(entry.path)
-                relative = path.relative_to(source.root)
-                if relative.parts and relative.parts[0] == _CONTROL_DIR:
-                    yield path, relative.as_posix(), None
-                    continue
-                try:
-                    is_directory = entry.is_dir(follow_symlinks=False)
-                except FileNotFoundError:
-                    yield path, relative.as_posix(), None
-                    continue
-                if is_directory:
-                    yield path, relative.as_posix(), None
-                    try:
-                        iterators.append(os.scandir(path))
-                    except FileNotFoundError:
-                        pass
-                    continue
-                try:
-                    observed = entry.stat(follow_symlinks=False)
-                except FileNotFoundError:
-                    observed = None
-                yield path, relative.as_posix(), observed
-        finally:
-            for iterator in iterators:
-                iterator.close()
+    def _save_reconcile_cursor(self, source: SourceConfig, ordinal: int) -> None:
+        with closing(self._open_state(source)) as connection:
+            _set_state_value(connection, "reconcile_after", str(ordinal))
+            connection.commit()
 
-    def _discover_batch(
-        self, source: SourceConfig, *, flush: bool
-    ) -> tuple[list[tuple[Path, str, os.stat_result]], int, bool]:
+    def _completion_cursor(self, source: SourceConfig) -> tuple[str, int]:
+        with closing(self._open_state(source)) as connection:
+            generation = _state_value(connection, "completion_generation")
+            raw_offset = _state_value(connection, "completion_offset")
+        if generation is None or raw_offset is None:
+            raise FtpAdapterError("FTP completion cursor is unavailable")
+        return generation, int(raw_offset)
+
+    def _save_completion_cursor(
+        self,
+        source: SourceConfig,
+        *,
+        generation: str,
+        offset: int,
+    ) -> None:
+        with closing(self._open_state(source)) as connection:
+            current_generation = _state_value(connection, "completion_generation")
+            current_offset = _state_value(connection, "completion_offset")
+            if current_generation != generation:
+                raise FtpAdapterError("FTP completion authority changed during traversal")
+            if current_offset is None or offset < int(current_offset):
+                raise FtpAdapterError("FTP completion cursor moved backwards")
+            _set_state_value(connection, "completion_offset", str(offset))
+            connection.commit()
+
+    def _claim_record(self, source: SourceConfig, claim_id: str) -> tuple[int, str] | None:
+        with closing(self._open_state(source)) as connection:
+            row = connection.execute(
+                "SELECT ordinal, manifest_json FROM claims WHERE claim_id = ?",
+                (claim_id,),
+            ).fetchone()
+        return None if row is None else (int(row[0]), str(row[1]))
+
+    def _register_claim(
+        self,
+        source: SourceConfig,
+        manifest: Mapping[str, object],
+        *,
+        discovery_generation: str | None = None,
+        discovery_offset: int | None = None,
+    ) -> int:
+        claim_id = str(manifest["claim_id"])
+        encoded = json.dumps(manifest, sort_keys=True, separators=(",", ":"))
+        claim_bytes = sum(int(str(row["bytes"])) for row in _file_rows(manifest))
+        with closing(self._open_state(source)) as connection:
+            existing = connection.execute(
+                "SELECT ordinal, manifest_json FROM claims WHERE claim_id = ?",
+                (claim_id,),
+            ).fetchone()
+            if existing is None:
+                cursor = connection.execute(
+                    "INSERT INTO claims(claim_id, manifest_json, claim_bytes) VALUES (?, ?, ?)",
+                    (claim_id, encoded, claim_bytes),
+                )
+                if cursor.lastrowid is None:
+                    raise FtpAdapterError("FTP claim registration returned no durable ordinal")
+                ordinal = int(cursor.lastrowid)
+                current_count = _state_value(connection, "claim_count")
+                current_bytes = _state_value(connection, "claim_bytes")
+                if current_count is None or current_bytes is None:
+                    raise FtpAdapterError("FTP claim accounting is unavailable")
+                _set_state_value(connection, "claim_count", str(int(current_count) + 1))
+                _set_state_value(
+                    connection,
+                    "claim_bytes",
+                    str(int(current_bytes) + claim_bytes),
+                )
+            else:
+                ordinal = int(existing[0])
+                if str(existing[1]) != encoded:
+                    raise ClaimCollision(f"claim identity collision: {claim_id}")
+            if discovery_generation is not None or discovery_offset is not None:
+                if discovery_generation is None or discovery_offset is None:
+                    raise FtpAdapterError("incomplete FTP completion cursor update")
+                current_generation = _state_value(connection, "completion_generation")
+                if current_generation != discovery_generation:
+                    raise FtpAdapterError("FTP completion authority changed during admission")
+                _set_state_value(connection, "completion_offset", str(discovery_offset))
+            connection.commit()
+        return ordinal
+
+    def _materialize_registered_claim(self, source: SourceConfig, claim_id: str) -> Path:
+        record = self._claim_record(source, claim_id)
+        if record is None:
+            raise FtpAdapterError(f"FTP claim is not registered: {claim_id}")
+        _ordinal, encoded = record
+        claim_root = self._claims_root(source) / claim_id
+        manifest_path = claim_root / _MANIFEST
+        if not manifest_path.is_file():
+            payload = json.loads(encoded)
+            if not isinstance(payload, dict):
+                raise FtpAdapterError("registered FTP claim manifest is invalid")
+            _write_json(manifest_path, payload)
+        return claim_root
+
+    def _forget_claim(self, source: SourceConfig, claim_id: str) -> None:
+        with closing(self._open_state(source)) as connection:
+            row = connection.execute(
+                "SELECT claim_bytes FROM claims WHERE claim_id = ?",
+                (claim_id,),
+            ).fetchone()
+            if row is not None:
+                current_count = _state_value(connection, "claim_count")
+                current_bytes = _state_value(connection, "claim_bytes")
+                if current_count is None or current_bytes is None:
+                    raise FtpAdapterError("FTP claim accounting is unavailable")
+                next_count = int(current_count) - 1
+                next_bytes = int(current_bytes) - int(row[0])
+                if next_count < 0 or next_bytes < 0:
+                    raise FtpAdapterError("FTP claim accounting is inconsistent")
+                connection.execute("DELETE FROM claims WHERE claim_id = ?", (claim_id,))
+                _set_state_value(connection, "claim_count", str(next_count))
+                _set_state_value(connection, "claim_bytes", str(next_bytes))
+            connection.commit()
+
+    def _discover_batch(self, source: SourceConfig, *, flush: bool) -> _DiscoveryBatch:
         if source.close_mode == "explicit-flush" and not flush:
-            return [], 0, True
-        cutoff_ns = time.time_ns() - source.stable_seconds * 1_000_000_000
-        selected: list[tuple[Path, str, os.stat_result]] = []
+            generation, offset = self._completion_cursor(source)
+            return _DiscoveryBatch((), 0, True, generation, offset)
+        generation, offset = self._completion_cursor(source)
+        selected: list[_DiscoveredFile] = []
         total = 0
         examined = 0
-        iterator = self._source_entries(source)
-        while examined < self.config.discovery_entry_budget:
+        next_offset = offset
+        complete = False
+        log_path = self._completion_log_path(source)
+        with log_path.open("rb") as stream:
+            fcntl.lockf(stream.fileno(), fcntl.LOCK_SH)
             try:
-                path, relative, observed = next(iterator)
-            except StopIteration:
-                selected.sort(key=lambda row: row[1])
-                return selected, examined, True
-            examined += 1
-            if path.name == _FLUSH_MARKER or path.name.endswith(".riverhog-provenance.json-seq"):
-                continue
-            if ".riverhog" in Path(relative).parts:
-                continue
-            if observed is None or not stat.S_ISREG(observed.st_mode):
-                continue
-            if not flush and observed.st_mtime_ns > cutoff_ns:
-                continue
-            if selected and (
-                len(selected) >= source.max_files or total + observed.st_size > source.max_bytes
-            ):
-                iterator.close()
-                selected.sort(key=lambda row: row[1])
-                return selected, examined, False
-            selected.append((path, relative, observed))
-            total += observed.st_size
-        iterator.close()
-        selected.sort(key=lambda row: row[1])
-        return selected, examined, False
+                if os.fstat(stream.fileno()).st_size < offset:
+                    raise FtpAdapterError("FTP completion log ended before its durable cursor")
+                stream.seek(offset)
+                while examined < self.config.discovery_entry_budget:
+                    record_start = stream.tell()
+                    raw = stream.readline(_MAX_COMPLETION_RECORD_BYTES + 1)
+                    if not raw:
+                        complete = True
+                        break
+                    if len(raw) > _MAX_COMPLETION_RECORD_BYTES:
+                        raise FtpAdapterError("FTP completion record exceeds its protocol bound")
+                    if not raw.endswith(b"\n"):
+                        break
+                    record_end = stream.tell()
+                    examined += 1
+                    parsed = _parse_completion_record(raw)
+                    if parsed is None:
+                        next_offset = record_end
+                        continue
+                    declared_bytes, path = parsed
+                    try:
+                        relative = path.relative_to(source.root).as_posix()
+                    except ValueError as exc:
+                        raise FtpAdapterError(
+                            "FTP completion record is outside its configured source"
+                        ) from exc
+                    if path.name.endswith(".riverhog-provenance.json-seq"):
+                        next_offset = record_end
+                        continue
+                    if _CONTROL_DIR in Path(relative).parts:
+                        next_offset = record_end
+                        continue
+                    try:
+                        observed = path.stat(follow_symlinks=False)
+                    except FileNotFoundError as exc:
+                        raise SourceChanged(
+                            f"completed FTP upload is missing before custody: {relative}"
+                        ) from exc
+                    if not stat.S_ISREG(observed.st_mode) or observed.st_size != declared_bytes:
+                        raise SourceChanged(
+                            f"completed FTP upload differs from its transfer record: {relative}"
+                        )
+                    if selected and (
+                        len(selected) >= source.max_files
+                        or total + observed.st_size > source.max_bytes
+                    ):
+                        next_offset = record_start
+                        break
+                    event_identity = hashlib.sha256(
+                        b"\0".join(
+                            (
+                                b"riverhog-ftp-completion-record/v1",
+                                generation.encode("ascii"),
+                                str(record_start).encode("ascii"),
+                                raw,
+                            )
+                        )
+                    ).hexdigest()
+                    selected.append(_DiscoveredFile(path, relative, observed, event_identity))
+                    total += observed.st_size
+                    next_offset = record_end
+            finally:
+                fcntl.lockf(stream.fileno(), fcntl.LOCK_UN)
+        selected.sort(key=lambda row: row.relative.encode("utf-8"))
+        return _DiscoveryBatch(
+            tuple(selected),
+            examined,
+            complete,
+            generation,
+            next_offset,
+        )
 
     def _claim_new_batch(self, source: SourceConfig) -> _Admission:
         marker = source.root / _FLUSH_MARKER
         flush = marker.is_file()
-        selected, examined, sweep_complete = self._discover_batch(source, flush=flush)
-        if not selected:
-            if flush and sweep_complete:
+        discovery = self._discover_batch(source, flush=flush)
+        if not discovery.files:
+            self._save_completion_cursor(
+                source,
+                generation=discovery.generation,
+                offset=discovery.next_offset,
+            )
+            if flush and discovery.sweep_complete:
                 marker.unlink(missing_ok=True)
-            return _Admission(None, examined, sweep_complete)
+            return _Admission(
+                None,
+                None,
+                discovery.entries_examined,
+                discovery.sweep_complete,
+            )
         event_id = hashlib.sha256(
             "\n".join(
-                f"{row[1]}\0{row[2].st_size}\0{row[2].st_mtime_ns}" for row in selected
+                f"{row.event_identity}\0{row.relative}\0{row.observed.st_size}"
+                for row in discovery.files
             ).encode()
         ).hexdigest()
         claim_id = _claim_identity(
             source.id,
             event_id,
             tuple(
-                (relative, item.st_size, item.st_dev, item.st_ino) for _, relative, item in selected
+                (
+                    row.relative,
+                    row.observed.st_size,
+                    row.observed.st_dev,
+                    row.observed.st_ino,
+                )
+                for row in discovery.files
             ),
         )
         claim_root = self._claims_root(source) / claim_id
+        registered = self._claim_record(source, claim_id)
+        if registered is not None:
+            self._save_completion_cursor(
+                source,
+                generation=discovery.generation,
+                offset=discovery.next_offset,
+            )
+            self._materialize_registered_claim(source, claim_id)
+            return _Admission(
+                claim_root,
+                registered[0],
+                discovery.entries_examined,
+                discovery.sweep_complete,
+            )
         if claim_root.exists():
             if (claim_root / _MANIFEST).is_file():
-                return _Admission(claim_root, examined, sweep_complete)
+                manifest = _read_manifest(claim_root)
+                ordinal = self._register_claim(
+                    source,
+                    manifest,
+                    discovery_generation=discovery.generation,
+                    discovery_offset=discovery.next_offset,
+                )
+                return _Admission(
+                    claim_root,
+                    ordinal,
+                    discovery.entries_examined,
+                    discovery.sweep_complete,
+                )
             # Finalized claim intent is the manifest. Construction can leave a
             # pre-manifest directory behind, but no payload move has begun yet.
             shutil.rmtree(claim_root)
@@ -486,17 +758,21 @@ class FtpAdapter:
         try:
             files: list[dict[str, object]] = []
             journals: dict[str, bytes] = {}
-            for original, relative, observed in selected:
-                binding, captured = self._prepared_provenance(source, original, relative)
+            for discovered in discovery.files:
+                binding, captured = self._prepared_provenance(
+                    source,
+                    discovered.path,
+                    discovered.relative,
+                )
                 journals.update(_merge_journals(journals, captured))
                 files.append(
                     {
-                        "path": relative,
-                        "bytes": observed.st_size,
-                        "sha256": _sha256_path(original),
-                        "device": observed.st_dev,
-                        "inode": observed.st_ino,
-                        "original": str(original.resolve()),
+                        "path": discovered.relative,
+                        "bytes": discovered.observed.st_size,
+                        "sha256": _sha256_path(discovered.path),
+                        "device": discovered.observed.st_dev,
+                        "inode": discovered.observed.st_ino,
+                        "original": str(discovered.path.resolve()),
                         "provenance": binding,
                     }
                 )
@@ -509,13 +785,24 @@ class FtpAdapter:
                 "journals": self._persist_journals(claim_root, journals),
             }
             _write_json(claim_root / _MANIFEST, manifest)
+            ordinal = self._register_claim(
+                source,
+                manifest,
+                discovery_generation=discovery.generation,
+                discovery_offset=discovery.next_offset,
+            )
         except BaseException:
             shutil.rmtree(claim_root)
             raise
         self._reconcile_claim(source, claim_root)
-        if flush and sweep_complete:
+        if flush and discovery.sweep_complete:
             marker.unlink(missing_ok=True)
-        return _Admission(claim_root, examined, sweep_complete)
+        return _Admission(
+            claim_root,
+            ordinal,
+            discovery.entries_examined,
+            discovery.sweep_complete,
+        )
 
     def _prepared_provenance(
         self,
@@ -591,6 +878,7 @@ class FtpAdapter:
         durable_receipt = self._durable_receipt(source, claim_root.name)
         if durable_receipt is not None:
             shutil.rmtree(claim_root, ignore_errors=True)
+            self._forget_claim(source, claim_root.name)
             return durable_receipt
         manifest = self._reconcile_claim(source, claim_root)
         files = tuple(
@@ -640,6 +928,7 @@ class FtpAdapter:
         _write_json(claim_root / _RECEIPT, receipt_payload)
         _write_json(self._receipt_path(source, claim_root.name), receipt_payload)
         shutil.rmtree(claim_root)
+        self._forget_claim(source, claim_root.name)
         _prune_claim_parents(source.root, manifest)
         return receipt
 
@@ -809,6 +1098,55 @@ def _portable_binding(value: FileProvenanceBinding) -> dict[str, object]:
     else:
         row["omission_reason"] = value.omission_reason
     return row
+
+
+def _state_value(connection: sqlite3.Connection, key: str) -> str | None:
+    row = connection.execute(
+        "SELECT value FROM adapter_state WHERE key = ?",
+        (key,),
+    ).fetchone()
+    return None if row is None else str(row[0])
+
+
+def _set_state_value(connection: sqlite3.Connection, key: str, value: str) -> None:
+    connection.execute(
+        "INSERT INTO adapter_state(key, value) VALUES (?, ?) "
+        "ON CONFLICT(key) DO UPDATE SET value = excluded.value",
+        (key, value),
+    )
+
+
+def _read_completion_header(path: Path) -> tuple[str, int]:
+    with path.open("rb") as stream:
+        return _read_completion_header_stream(stream)
+
+
+def _read_completion_header_stream(stream: BinaryIO) -> tuple[str, int]:
+    stream.seek(0)
+    raw = stream.readline(256)
+    try:
+        prefix, generation = raw.decode("ascii").rstrip("\n").split(" ", 1)
+    except (UnicodeDecodeError, ValueError) as exc:
+        raise FtpAdapterError("FTP completion log header is invalid") from exc
+    if prefix != _COMPLETION_LOG_HEADER or str(uuid.UUID(generation)) != generation:
+        raise FtpAdapterError("FTP completion log authority is invalid")
+    return generation, len(raw)
+
+
+def _parse_completion_record(raw: bytes) -> tuple[int, Path] | None:
+    if raw.startswith(f"{_COMPLETION_LOG_HEADER} ".encode("ascii")):
+        return None
+    fields = raw.rstrip(b"\n").split(b" ", 7)
+    if len(fields) != 8:
+        raise FtpAdapterError("FTP completion record is invalid")
+    if fields[4] == b"D":
+        return None
+    if fields[4] != b"U" or not fields[5].isdigit():
+        raise FtpAdapterError("FTP completion record has invalid transfer semantics")
+    path = Path(os.fsdecode(fields[7]))
+    if not path.is_absolute():
+        raise FtpAdapterError("FTP completion record path is not absolute")
+    return int(fields[5]), path
 
 
 def _write_json(path: Path, payload: Mapping[str, object]) -> None:
