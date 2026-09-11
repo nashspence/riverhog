@@ -10,6 +10,7 @@ from typing import Any
 
 import pytest
 import riverhog_ftp_adapter.landing as landing
+import riverhog_ftp_adapter.listener as ftp_listener
 from riverhog_client.producer import ProducedCollection
 from riverhog_ftp_adapter.completion import (
     CONTROL_DIR,
@@ -129,16 +130,34 @@ def test_success_ack_follows_exact_durable_handoff_and_path_reuse(tmp_path: Path
     assert (root / records[1].custody).read_bytes() == second
 
 
-def test_incomplete_upload_is_not_handed_off_and_resumes_after_restart(tmp_path: Path) -> None:
+def test_incomplete_upload_is_not_handed_off_and_resumes_after_restart(
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path: Path,
+) -> None:
     root = tmp_path / "intake"
     prefix = b"durable prefix-"
     suffix = b"completed after restart"
+    incomplete_received = threading.Event()
+    on_incomplete = ftp_listener._CompletionHandler.on_incomplete_file_received
+
+    def observe_incomplete(handler: Any, file: str) -> None:
+        on_incomplete(handler, file)
+        incomplete_received.set()
+
+    monkeypatch.setattr(
+        ftp_listener._CompletionHandler,
+        "on_incomplete_file_received",
+        observe_incomplete,
+    )
     with _listener(root) as address:
         ftp = _login(address)
         data = ftp.transfercmd("STOR resumed.bin")
         data.sendall(prefix)
         ftp.close()
-        data.close()
+        try:
+            assert incomplete_received.wait(timeout=5)
+        finally:
+            data.close()
 
     partial = root / "resumed.bin"
     assert partial.read_bytes() == prefix
