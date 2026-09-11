@@ -195,6 +195,12 @@ WITNESSES = (
             "test_incomplete_upload_is_not_handed_off_and_resumes_after_restart",
             "reference/riverhog/ingress/ftp/tests/test_ftp_listener.py::"
             "test_success_ack_follows_exact_durable_handoff_and_path_reuse",
+            "reference/riverhog/ingress/ftp/tests/test_ftp_listener.py::"
+            "test_same_path_replay_and_new_event_partition_into_restartable_claims",
+            "reference/riverhog/ingress/ftp/tests/test_ftp_listener.py::"
+            "test_listener_recovers_published_intent_after_exact_adapter_acquisition",
+            "reference/riverhog/ingress/ftp/tests/test_ftp_listener.py::"
+            "test_intent_retirement_and_adapter_acquisition_race_converges_repeatedly",
             "reference/riverhog/ingress/ftp/tests/test_ftp_adapter_custody.py::"
             "test_completed_portable_sidecar_follows_payload_into_claim",
             "reference/riverhog/ingress/ftp/tests/test_ftp_adapter_api_parity.py::"
