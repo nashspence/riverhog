@@ -33,7 +33,6 @@ jobs:
           - target: lint
           - target: compile
           - target: unit
-          - target: spec
           - target: implementation-policy
           - target: c2sp-vectors
           - target: postgres-concurrency

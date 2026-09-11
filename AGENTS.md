@@ -74,7 +74,6 @@ Run focused tests while iterating, then:
 ```bash
 make lint
 make unit
-make spec
 make dist-smoke
 make build
 ```

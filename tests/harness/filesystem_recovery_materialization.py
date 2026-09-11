@@ -4,12 +4,10 @@ from __future__ import annotations
 
 import argparse
 import hashlib
-import importlib
 import json
 import os
 import sys
 from pathlib import Path
-from typing import Any, cast
 
 
 def prepare(workspace: Path) -> None:
@@ -24,10 +22,12 @@ def prepare(workspace: Path) -> None:
 
     repository = Path(__file__).resolve().parents[2]
     sys.path.insert(0, str(repository))
-    recovery_fixture = importlib.import_module("reference.riverhog.recovery.tests.test_recovery")
-    passphrase = cast(str, recovery_fixture.PASSPHRASE)
-    passphrase_id = cast(str, recovery_fixture.PASSPHRASE_ID)
-    write_archive = cast(Any, recovery_fixture._write_archive)
+    from tests.support.qualification.recovery_archive import (
+        PASSPHRASE,
+        PASSPHRASE_ID,
+        write_archive,
+    )
+
     workspace.mkdir(mode=0o700)
     archive = workspace / "logical-archive"
     write_archive(
@@ -82,7 +82,7 @@ def prepare(workspace: Path) -> None:
     adapter.close()
     passphrases = workspace / "passphrases.json"
     passphrases.write_text(
-        json.dumps({passphrase_id: passphrase}),
+        json.dumps({PASSPHRASE_ID: PASSPHRASE}),
         encoding="utf-8",
     )
     os.chmod(passphrases, 0o600)

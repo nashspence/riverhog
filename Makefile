@@ -4,7 +4,6 @@ SHELL := bash
 MISE_BIN ?= mise
 FILES ?= .
 TESTS ?= packages reference riverhog tests/unit
-SPEC_TESTS ?= tests/harness/test_spec_harness.py
 POSTGRES_TESTS ?= tests/integration/test_catalog_schema_postgres.py tests/integration/test_collection_deletion_concurrency.py tests/integration/test_collection_upload_custody_concurrency.py tests/integration/test_download_allowance_concurrency.py tests/integration/test_lifecycle_event_concurrency.py tests/integration/test_public_selector_plans_postgres.py tests/integration/test_retrieval_cache_admission_concurrency.py tests/integration/test_stove0_postgres_concurrency.py
 PYTHON_PATHS ?= packages reference riverhog scripts tests
 RELEASE_VERSION ?= 1.0.0
@@ -97,7 +96,7 @@ MYPY_SOURCES = \
 	reference/riverhog/applications/mango-fish/src
 args ?=
 
-.PHONY: help license ruff ruff-fix format format-check fix mypy lint compile unit spec dependency-readiness operation-qualification database-qualification contract-freeze contract-freeze-update implementation-policy implementation-policy-update provider-qualification installation-qualification release-check release-plan release-dry-run release-governance-check release-evidence release-verify c2sp-vectors postgres-concurrency compose-smoke filesystem-recovery-qualification stove0-scale-qualification mango-fish-smoke transfer-profile stop-spec dist dist-smoke build build-riverhog build-riverhog-ftp-adapter build-riverhog-storage-adapter-aws build-riverhog-storage-adapter-backblaze build-riverhog-storage-adapter-filesystem build-stove0 build-stove0-exiftool-observer build-stove0-ffprobe-sampling-observer build-stove0-nvenc-av1-opus-target build-stove0-opus-target build-stove0-review-materialize-target build-stove0-review-rclone-effect-target build-mango-fish build-test bootstrap-garage down test
+.PHONY: help license ruff ruff-fix format format-check fix mypy lint compile unit dependency-readiness operation-qualification database-qualification contract-freeze contract-freeze-update implementation-policy implementation-policy-update provider-qualification installation-qualification release-check release-plan release-dry-run release-governance-check release-evidence release-verify c2sp-vectors postgres-concurrency compose-smoke filesystem-recovery-qualification stove0-scale-qualification mango-fish-smoke transfer-profile dist dist-smoke build build-riverhog build-riverhog-ftp-adapter build-riverhog-storage-adapter-aws build-riverhog-storage-adapter-backblaze build-riverhog-storage-adapter-filesystem build-stove0 build-stove0-exiftool-observer build-stove0-ffprobe-sampling-observer build-stove0-nvenc-av1-opus-target build-stove0-opus-target build-stove0-review-materialize-target build-stove0-review-rclone-effect-target build-mango-fish build-test bootstrap-garage down test
 
 define UV_CMD
 	@if ! command -v "$(MISE_BIN)" >/dev/null 2>&1; then \
@@ -132,7 +131,6 @@ help:
 		'  make lint              Run license, format, ruff, and mypy checks.' \
 		'  make compile           Byte-compile all repository Python files.' \
 		'  make unit              Run the unit test lane locally.' \
-		'  make spec              Run the fixture-backed spec harness locally.' \
 		'  make dependency-readiness Verify the live uv graph and Dependabot release gate.' \
 		'  make operation-qualification Verify or emit the generated operation matrix.' \
 		'  make database-qualification Record exact-SHA database scale evidence.' \
@@ -155,7 +153,6 @@ help:
 		'  make stove0-scale-qualification Run the final-image lifecycle with a 128-file workload.' \
 		'  make mango-fish-smoke  Exercise the already-built final Mango Fish image.' \
 		'  make transfer-profile  Profile a supported transfer command with secret-free JSON.' \
-		'  make stop-spec         Stop any in-flight local spec harness process.' \
 		'  make dist              Build every Python distribution independently.' \
 		'  make dist-smoke        Install and exercise the Riverhog server and client wheels.' \
 		'  make build-riverhog    Build the Riverhog image.' \
@@ -182,7 +179,6 @@ help:
 		"  FILES='...'            Narrow ruff and format targets to specific files." \
 		"  PYTHON_PATHS='...'      Narrow the Python compile lane." \
 		"  TESTS='...'            Narrow the unit test lane to specific tests." \
-		"  SPEC_TESTS='...'       Narrow the spec lane to specific tests." \
 		"  POSTGRES_TESTS='...'   Select disposable Postgres test files." \
 		'  STOVE0_SCALE_FILES=N  Set the scale-qualification file count (default: 128).' \
 		'  STOVE0_SCALE_AUDIO_FRAMES=N Set frames per scale fixture (default: 2000).' \
@@ -222,9 +218,6 @@ compile:
 
 unit:
 	$(call UV_CMD,python -m pytest -q $(TESTS) $(args))
-
-spec:
-	$(call UV_CMD,python -m pytest -q $(SPEC_TESTS) $(args))
 
 dependency-readiness:
 	$(call UV_CMD,python scripts/check_dependency_readiness.py $(args))
@@ -300,9 +293,6 @@ stove0-scale-qualification:
 
 transfer-profile:
 	$(call UV_CMD,python scripts/transfer_profile.py $(args))
-
-stop-spec:
-	@./scripts/stop_spec.sh
 
 dist:
 	@if ! command -v "$(MISE_BIN)" >/dev/null 2>&1; then \

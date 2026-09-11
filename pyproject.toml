@@ -105,7 +105,7 @@ addopts = "-ra --strict-markers"
 filterwarnings = ["error"]
 testpaths = ["packages", "reference", "riverhog", "tests"]
 markers = [
-  "integration: non-contract regression coverage",
+  "integration: requires explicitly provisioned integration infrastructure",
 ]
 
 [tool.mypy]
