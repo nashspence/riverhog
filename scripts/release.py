@@ -234,6 +234,7 @@ GOVERNANCE_KEYS = {
     "tags",
     "authority",
     "environments",
+    "boundary_freeze",
 }
 GOVERNANCE_SECTION_KEYS = {
     "main": {"delivery", "protection"},
@@ -265,6 +266,7 @@ GOVERNANCE_SECTION_KEYS = {
         "provider_qualification_provisioning",
         "provider_qualification_runtime",
     },
+    "boundary_freeze": {"status", "boundary_canonical_sha256"},
 }
 VERSION_RE = re.compile(r"[0-9]+\.[0-9]+\.[0-9]+")
 PROJECT_VERSION_RE = re.compile(r'(?m)^version = "(?P<version>[^"]+)"$')
@@ -571,6 +573,17 @@ def validate_release_contract(root: Path, *, expected_version: str | None = None
             raise ReleaseError(f"release governance {section} policy must be visible")
     if governance["release"]["required_approvals"] != 0:
         raise ReleaseError("the single-maintainer release rail must not require self-review")
+    boundary_freeze = governance["boundary_freeze"]
+    if boundary_freeze["status"] != "frozen":
+        raise ReleaseError("the v1 authority boundary must be explicitly frozen")
+    if (
+        re.fullmatch(
+            r"[0-9a-f]{64}",
+            str(boundary_freeze["boundary_canonical_sha256"]),
+        )
+        is None
+    ):
+        raise ReleaseError("the v1 authority-boundary freeze must name one SHA-256 identity")
     if governance["tags"]["release_candidate"] != "v{version}-rc.{candidate}":
         raise ReleaseError("release-candidate tags must use v{version}-rc.{candidate}")
     if governance["tags"]["final"] != config["tag_template"]:

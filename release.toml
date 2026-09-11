@@ -76,6 +76,10 @@ pages = "github-pages"
 provider_qualification_provisioning = "provider-qualification-provisioning"
 provider_qualification_runtime = "provider-qualification"
 
+[governance.boundary_freeze]
+status = "frozen"
+boundary_canonical_sha256 = "5af7171d406deec927ce70092a60eb033f51c53f2da16b7f1cea794e03e807be"
+
 [compatibility]
 components = "A supported deployment runs components from one coordinated product version."
 http_api = "Published v1 HTTP and CloudEvents contracts remain backward compatible throughout v1."

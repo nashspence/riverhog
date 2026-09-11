@@ -69,6 +69,26 @@ class ContractFreezeError(RuntimeError):
     """The generated contract projection differs from its authority."""
 
 
+def _boundary_canonical_sha256(boundaries: Mapping[str, object]) -> str:
+    payload = json.dumps(boundaries, separators=(",", ":"), sort_keys=True).encode()
+    return hashlib.sha256(payload).hexdigest()
+
+
+def _require_declared_boundary_freeze(
+    config: Mapping[str, object], boundaries: Mapping[str, object]
+) -> None:
+    governance = cast(Mapping[str, object], config["governance"])
+    freeze = cast(Mapping[str, object], governance["boundary_freeze"])
+    expected = str(freeze["boundary_canonical_sha256"])
+    observed = _boundary_canonical_sha256(boundaries)
+    if observed != expected:
+        raise ContractFreezeError(
+            "the executable v1 authority boundary differs from the maintainer-declared "
+            f"freeze: expected {expected}, observed {observed}; changing the frozen "
+            "boundary requires an explicit maintainer decision and release.toml update"
+        )
+
+
 def _json_value(value: object) -> object | None:
     if value is None or isinstance(value, (bool, int, float, str)):
         return value
@@ -787,7 +807,6 @@ def trace_projection(projection: Mapping[str, object]) -> dict[str, object]:
     extents = cast(Mapping[str, object], external["extents"])
     decisions = cast(list[dict[str, object]], extents["decisions"])
     semantic_payload = json.dumps(projection, separators=(",", ":"), sort_keys=True).encode()
-    boundary_payload = json.dumps(boundaries, separators=(",", ":"), sort_keys=True).encode()
     rendered_payload = (json.dumps(projection, indent=2, sort_keys=True) + "\n").encode()
     sources: list[dict[str, object]] = [
         {"id": "release:release.toml", "source": {"path": "release.toml"}},
@@ -816,7 +835,7 @@ def trace_projection(projection: Mapping[str, object]) -> dict[str, object]:
     return {
         "schema": TRACE_SCHEMA,
         "contract_schema": projection["schema"],
-        "boundary_canonical_sha256": hashlib.sha256(boundary_payload).hexdigest(),
+        "boundary_canonical_sha256": _boundary_canonical_sha256(boundaries),
         "contract_canonical_sha256": hashlib.sha256(semantic_payload).hexdigest(),
         "contract_projection_sha256": hashlib.sha256(rendered_payload).hexdigest(),
         "sources": sources,
@@ -877,16 +896,18 @@ def contract_projection() -> dict[str, object]:
         "durable_state": _state_contract(config),
     }
     external_contract["extents"] = extent_contract.extent_projection(external_contract)
+    boundaries: dict[str, object] = {
+        "reference_policy": config["references"]["policy"],
+        "components": components,
+        "runtime_images": config["images"],
+        "entry_point_extensions": _extension_points(projects),
+        "process_extensions": _process_extensions(projects),
+    }
+    _require_declared_boundary_freeze(config, boundaries)
     return {
         "schema": SCHEMA,
         "series": "v1",
-        "boundaries": {
-            "reference_policy": config["references"]["policy"],
-            "components": components,
-            "runtime_images": config["images"],
-            "entry_point_extensions": _extension_points(projects),
-            "process_extensions": _process_extensions(projects),
-        },
+        "boundaries": boundaries,
         "external_contract": external_contract,
     }
 

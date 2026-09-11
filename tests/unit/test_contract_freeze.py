@@ -4,8 +4,11 @@ import hashlib
 import importlib.util
 import json
 import sys
+import tomllib
 from pathlib import Path
 from types import ModuleType
+
+import pytest
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 SCRIPT = REPO_ROOT / "scripts/contract_freeze.py"
@@ -148,6 +151,11 @@ def test_checked_contract_freeze_matches_every_executable_authority() -> None:
     }
     boundary_payload = json.dumps(boundaries, separators=(",", ":"), sort_keys=True).encode()
     assert trace["boundary_canonical_sha256"] == hashlib.sha256(boundary_payload).hexdigest()
+    release = tomllib.loads((REPO_ROOT / "release.toml").read_text(encoding="utf-8"))
+    assert release["governance"]["boundary_freeze"] == {
+        "status": "frozen",
+        "boundary_canonical_sha256": trace["boundary_canonical_sha256"],
+    }
     assert trace["coverage"]["source_authorities"] == len(trace["sources"])
     assert trace["coverage"]["source_kinds"] == {
         "cli": 6,
@@ -171,6 +179,26 @@ def test_checked_contract_freeze_matches_every_executable_authority() -> None:
     assert trace["coverage"]["segmented_extent_witnesses"] == len(
         trace["segmented_extent_witnesses"]
     )
+
+
+def test_contract_regeneration_cannot_bless_undeclared_boundary_drift(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    module = load_script()
+    component_boundaries = module._component_boundaries
+
+    def changed_component_boundaries(projects: object) -> list[dict[str, object]]:
+        components = component_boundaries(projects)
+        components[0] = {
+            **components[0],
+            "role": f"{components[0]['role']}-changed",
+        }
+        return components
+
+    monkeypatch.setattr(module, "_component_boundaries", changed_component_boundaries)
+
+    with pytest.raises(module.ContractFreezeError, match="maintainer-declared freeze"):
+        module.contract_projection()
 
 
 def test_extent_semantic_diff_is_grouped_by_owning_boundary() -> None:
