@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import hashlib
 import json
-from collections.abc import Iterable, Iterator, Mapping, Sequence
+from collections.abc import Callable, Iterable, Iterator, Mapping, Sequence
 from contextlib import contextmanager
 from pathlib import Path
 from types import SimpleNamespace
@@ -346,6 +346,52 @@ class FailingCleanupApi(RetrievalApi):
         return super().acknowledge_retrieval_job(job_id)
 
 
+class _HeartbeatCanceled(BaseException):
+    pass
+
+
+class PendingPreparationApi(RetrievalApi):
+    def __init__(self, *, poll_failure: bool = False, cancel_failures: int = 2) -> None:
+        super().__init__()
+        self.poll_failure = poll_failure
+        self.cancel_failures = cancel_failures
+        self.created = 0
+        self.cancel_attempts: list[str] = []
+
+    def create_retrieval_job(
+        self,
+        plan_id: str,
+        *,
+        plan_etag: str,
+        **kwargs: Any,
+    ) -> dict[str, Any]:
+        self.created += 1
+        return {
+            "id": f"retrieval-{self.created}",
+            "plan_id": plan_id,
+            "state": "requested" if self.created == 1 else "ready",
+            "plan_etag": plan_etag,
+        }
+
+    def get_retrieval_job(self, job_id: str) -> dict[str, Any]:
+        assert job_id == "retrieval-1"
+        if self.poll_failure:
+            raise ConnectionError("fixture retrieval polling unavailable")
+        return {
+            "id": job_id,
+            "plan_id": "plan-1",
+            "state": "requested",
+            "plan_etag": "9" * 64,
+        }
+
+    def cancel_retrieval_job(self, job_id: str) -> dict[str, Any]:
+        self.cancel_attempts.append(job_id)
+        if self.cancel_failures:
+            self.cancel_failures -= 1
+            raise ConnectionError("fixture retrieval cancellation unavailable")
+        return {"id": job_id, "state": "canceled"}
+
+
 def test_claimed_reader_verifies_roots_filters_control_and_reads_ranges(tmp_path: Path) -> None:
     api = RetrievalApi()
     reader = ClaimedCollectionReader(
@@ -491,6 +537,65 @@ def test_claimed_reader_cleanup_failure_blocks_admission_until_exact_retry_succe
     assert api.created == 2
     assert len(reader._retrievals) == 1
     second.close()
+    assert not reader._retrievals
+
+
+@pytest.mark.parametrize(
+    ("failure_mode", "expected_failure"),
+    [
+        ("timeout", TimeoutError),
+        ("poll", ConnectionError),
+        ("heartbeat", _HeartbeatCanceled),
+    ],
+)
+def test_claimed_reader_owns_pending_job_through_preparation_failure_and_cleanup(
+    failure_mode: str,
+    expected_failure: type[BaseException],
+) -> None:
+    api = PendingPreparationApi(poll_failure=failure_mode == "poll")
+    heartbeat: Callable[[], None] | None = None
+    if failure_mode == "heartbeat":
+
+        def cancel_heartbeat() -> None:
+            raise _HeartbeatCanceled("fixture claim was canceled")
+
+        heartbeat = cancel_heartbeat
+    reader = ClaimedCollectionReader(
+        api,  # type: ignore[arg-type]
+        inputs=_spec().inputs,
+        work_id=WORK_ID,
+        claim_id="claim-1",
+        fence=1,
+        heartbeat=heartbeat,
+    )
+    artifacts = tuple(reader.iter_inventory())
+    timeout_seconds = 0.0 if failure_mode == "timeout" else 10.0
+
+    with pytest.raises(expected_failure):
+        reader.prepare(
+            artifacts,
+            poll_seconds=0.001,
+            timeout_seconds=timeout_seconds,
+        )
+
+    assert api.created == 1
+    assert api.cancel_attempts == ["retrieval-1"]
+    assert set(reader._retrievals) == {"retrieval-1"}
+    pending = reader._retrievals["retrieval-1"]
+    assert pending.cleanup_pending
+    assert not pending.closed
+
+    with pytest.raises(RuntimeError, match="prevents new admission"):
+        reader.prepare(artifacts, poll_seconds=0.001)
+    assert api.created == 1
+    assert api.cancel_attempts == ["retrieval-1", "retrieval-1"]
+
+    ready = reader.prepare(artifacts, poll_seconds=0.001)
+    assert pending.closed
+    assert api.cancel_attempts == ["retrieval-1", "retrieval-1", "retrieval-1"]
+    assert api.created == 2
+    assert set(reader._retrievals) == {"retrieval-2"}
+    ready.close()
     assert not reader._retrievals
 
 

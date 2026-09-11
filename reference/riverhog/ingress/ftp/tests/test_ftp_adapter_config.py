@@ -83,6 +83,24 @@ def test_reference_compose_is_ftp_only_bounded_and_unprivileged() -> None:
     assert "FTP_USER_PASS" not in services["ftp-daemon"]["environment"]
     assert services["ftp-daemon"]["secrets"] == ["ftp_password"]
     assert "/run/secrets/ftp_password" in services["ftp-daemon"]["command"][-1]
+    assert services["ftp-daemon"]["environment"]["RIVERHOG_FTP_ADAPTER_SOURCE_ID"] == (
+        "${RIVERHOG_FTP_ADAPTER_SOURCE_ID:-ftp-intake}"
+    )
+    assert (
+        "-O stats:/var/log/riverhog-ftp-completions/"
+        "$${RIVERHOG_FTP_ADAPTER_SOURCE_ID}.log" in services["ftp-daemon"]["command"][-1]
+    )
+    assert set(compose["volumes"]) == {"ftp-completion-data"}
+    assert any(
+        item["source"] == "ftp-completion-data"
+        and item["target"] == "/var/lib/riverhog-ftp-completions"
+        for item in services["ftp-adapter"]["volumes"]
+    )
+    assert any(
+        item["source"] == "ftp-completion-data"
+        and item["target"] == "/var/log/riverhog-ftp-completions"
+        for item in services["ftp-daemon"]["volumes"]
+    )
     assert compose["networks"]["riverhog-control"] == {
         "external": True,
         "name": "${RIVERHOG_CONTROL_NETWORK:-riverhog_default}",
@@ -97,6 +115,31 @@ def test_reference_compose_is_ftp_only_bounded_and_unprivileged() -> None:
         "?RIVERHOG_FTP_ADAPTER_CONFIG_HOST_PATH is required}"
     )
     assert "archive" not in {key.casefold() for key in compose.get("volumes", {})}
+
+
+def test_external_completion_root_is_absolute(tmp_path: Path) -> None:
+    config = FtpAdapterConfig(
+        host_id="test-host",
+        riverhog_base_url="https://riverhog.invalid",
+        riverhog_token="riverhog-token",
+        api_token="adapter-token",
+        completion_root=tmp_path / "completion-authority",
+        sources=(
+            SourceConfig(
+                id="ftp",
+                root=tmp_path / "ftp",
+                ingest_source="ftp:test",
+                provenance="omit",
+                provenance_omission_reason="Fixture intentionally omits provenance.",
+            ),
+        ),
+    )
+
+    assert config.completion_root == (tmp_path / "completion-authority").resolve()
+    payload = config.model_dump()
+    payload["completion_root"] = "relative"
+    with pytest.raises(ValueError, match="completion root must be absolute"):
+        FtpAdapterConfig.model_validate(payload)
 
 
 def test_reference_configuration_is_current_and_secret_injected(
@@ -124,7 +167,7 @@ def test_reference_configuration_is_current_and_secret_injected(
     assert source.description == "Reference FTP intake"
     assert source.tags == ("source:ftp",)
     assert source.close_mode == "stable"
-    assert source.stable_seconds == 30
+    assert config.completion_root == Path("/var/lib/riverhog-ftp-completions")
     assert source.provenance_omission_reason == (
         "The FTP producer cannot observe the source host filesystem."
     )

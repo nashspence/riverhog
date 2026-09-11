@@ -29,7 +29,6 @@ class SourceConfig(ConfigModel):
     description: CollectionDescription | None = None
     tags: tuple[CollectionTag, ...] = ()
     close_mode: CloseMode = "stable"
-    stable_seconds: int = Field(default=30, ge=1, le=7 * 24 * 60 * 60)
     max_files: int = Field(default=1000, ge=1)
     max_bytes: int = Field(default=100 * 1024**3, ge=1)
     provenance: ProvenanceMode = "capture"
@@ -68,6 +67,17 @@ class FtpAdapterConfig(ConfigModel):
     pending_claim_capacity: int = Field(default=128, ge=1)
     claim_attempt_budget: int = Field(default=8, ge=2)
     discovery_entry_budget: int = Field(default=4096, ge=1)
+    completion_root: Path | None = None
+
+    @field_validator("completion_root")
+    @classmethod
+    def absolute_completion_root(cls, value: Path | None) -> Path | None:
+        if value is None:
+            return None
+        expanded = value.expanduser()
+        if not expanded.is_absolute():
+            raise ValueError("FTP adapter completion root must be absolute")
+        return expanded.resolve()
 
     @field_validator("sources")
     @classmethod

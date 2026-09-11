@@ -16,11 +16,15 @@ services:
       - sh
       - -c
       - >-
-        install -d -o 65532 -g "$${INTAKE_GID}" -m 2770 /intake /intake/ftp
+        install -d -o 65532 -g "$${INTAKE_GID}" -m 2770 /intake /intake/ftp;
+        install -d -o 65532 -g 65532 -m 0733 /completion
     volumes:
       - type: bind
         source: ${RIVERHOG_FTP_ADAPTER_INTAKE_HOST_DIR:-./runtime/intake}
         target: /intake
+      - type: volume
+        source: ftp-completion-data
+        target: /completion
 
   ftp-adapter:
     <<: *ftp-adapter-image
@@ -50,6 +54,9 @@ services:
       - type: bind
         source: ${RIVERHOG_FTP_ADAPTER_INTAKE_HOST_DIR:-./runtime/intake}
         target: /intake
+      - type: volume
+        source: ftp-completion-data
+        target: /var/lib/riverhog-ftp-completions
     tmpfs:
       - /tmp:rw,noexec,nosuid,nodev,mode=700,uid=65532,gid=65532
     networks: ["default", "riverhog-control"]
@@ -81,6 +88,7 @@ services:
       FTP_USER_HOME: /intake/ftp
       FTP_USER_UID: "1000"
       FTP_USER_GID: ${RIVERHOG_FTP_ADAPTER_INTAKE_GID:-65532}
+      RIVERHOG_FTP_ADAPTER_SOURCE_ID: ${RIVERHOG_FTP_ADAPTER_SOURCE_ID:-ftp-intake}
       FTP_PASSIVE_PORTS: ${RIVERHOG_FTP_ADAPTER_PASSIVE_PORT_START:-30000}:${RIVERHOG_FTP_ADAPTER_PASSIVE_PORT_END:-30039}
       PUBLICHOST: ${RIVERHOG_FTP_ADAPTER_PUBLIC_HOST:-127.0.0.1}
     secrets: ["ftp_password"]
@@ -90,7 +98,9 @@ services:
       - >-
         FTP_USER_PASS="$$(cat /run/secrets/ftp_password)";
         export FTP_USER_PASS;
-        exec /run.sh -l puredb:/etc/pure-ftpd/pureftpd.pdb -E -j -R -P "$${PUBLICHOST}"
+        exec /run.sh -l puredb:/etc/pure-ftpd/pureftpd.pdb -E -j -R
+        -O stats:/var/log/riverhog-ftp-completions/$${RIVERHOG_FTP_ADAPTER_SOURCE_ID}.log
+        -P "$${PUBLICHOST}"
     ports:
       - "${RIVERHOG_FTP_ADAPTER_INGRESS_BIND_ADDR:-127.0.0.1}:${RIVERHOG_FTP_ADAPTER_PORT:-21}:21"
       - "${RIVERHOG_FTP_ADAPTER_INGRESS_BIND_ADDR:-127.0.0.1}:${RIVERHOG_FTP_ADAPTER_PASSIVE_PORT_START:-30000}-${RIVERHOG_FTP_ADAPTER_PASSIVE_PORT_END:-30039}:30000-30039"
@@ -98,6 +108,12 @@ services:
       - type: bind
         source: ${RIVERHOG_FTP_ADAPTER_INTAKE_HOST_DIR:-./runtime/intake}
         target: /intake
+      - type: volume
+        source: ftp-completion-data
+        target: /var/log/riverhog-ftp-completions
+
+volumes:
+  ftp-completion-data:
 
 secrets:
   riverhog_token:

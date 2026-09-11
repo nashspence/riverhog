@@ -215,20 +215,6 @@ class ClaimedCollectionReader:
                 }
             },
         )
-        deadline = time.monotonic() + timeout_seconds
-        while str(job.get("state") or "") == "requested":
-            if time.monotonic() >= deadline:
-                _best_effort_cancel(self.api, str(job.get("id") or ""))
-                raise TimeoutError("claimed collection retrieval did not become ready")
-            if self.heartbeat is not None:
-                self.heartbeat()
-            time.sleep(max(0.05, poll_seconds))
-            job = self.api.get_retrieval_job(str(job["id"]))
-        state = str(job.get("state") or "")
-        if state != "ready":
-            failure = str(job.get("failure") or state or "unknown retrieval failure")
-            raise RuntimeError(f"claimed collection retrieval is not ready: {failure}")
-        _verify_job(job, plan_id=str(plan["id"]), plan_etag=plan_etag)
         retrieval = ClaimedRetrieval(
             self.api,
             job=job,
@@ -239,7 +225,42 @@ class ClaimedCollectionReader:
             raise RuntimeError("Riverhog repeated an active retrieval job identity")
         self._retrievals[retrieval.job_id] = retrieval
         retrieval._bind_close_callback(self._release_retrieval)
-        return retrieval
+        try:
+            _verify_job(
+                job,
+                job_id=retrieval.job_id,
+                plan_id=str(plan["id"]),
+                plan_etag=plan_etag,
+            )
+            deadline = time.monotonic() + timeout_seconds
+            while str(retrieval.job.get("state") or "") == "requested":
+                if time.monotonic() >= deadline:
+                    raise TimeoutError("claimed collection retrieval did not become ready")
+                if self.heartbeat is not None:
+                    self.heartbeat()
+                time.sleep(max(0.05, poll_seconds))
+                current = self.api.get_retrieval_job(retrieval.job_id)
+                _verify_job(
+                    current,
+                    job_id=retrieval.job_id,
+                    plan_id=str(plan["id"]),
+                    plan_etag=plan_etag,
+                )
+                retrieval.job = dict(current)
+            state = str(retrieval.job.get("state") or "")
+            if state != "ready":
+                failure = str(retrieval.job.get("failure") or state or "unknown retrieval failure")
+                raise RuntimeError(f"claimed collection retrieval is not ready: {failure}")
+            return retrieval
+        except BaseException as failure:
+            try:
+                retrieval.close(success=False)
+            except BaseException as cleanup_failure:
+                failure.add_note(
+                    "Riverhog retrieval cleanup remains owned after preparation failure: "
+                    f"{type(cleanup_failure).__name__}: {cleanup_failure}"
+                )
+            raise
 
     def close_retrievals(self) -> None:
         """Settle every retrieval still owned by this reader."""
@@ -288,7 +309,7 @@ class ClaimedCollectionReader:
 
 
 class ClaimedRetrieval:
-    """A ready Riverhog retrieval job bound to exact claimed artifact identities."""
+    """An owned retrieval job exposed to callers only after it becomes ready."""
 
     def __init__(
         self,
@@ -410,7 +431,7 @@ class ClaimedRetrieval:
                 if success
                 else self.api.cancel_retrieval_job(self.job_id)
             )
-        except Exception:
+        except BaseException:
             self._cleanup_pending = True
             raise
         expected = "completed" if success else "canceled"
@@ -517,22 +538,16 @@ def _verify_plan_files(
 def _verify_job(
     job: Mapping[str, Any],
     *,
+    job_id: str,
     plan_id: str,
     plan_etag: str,
 ) -> None:
+    if str(job.get("id") or "") != job_id:
+        raise RuntimeError("Riverhog retrieval job changed its identity")
     if str(job.get("plan_id") or "") != plan_id:
         raise RuntimeError("Riverhog retrieval job changed its plan authority")
     if str(job.get("plan_etag") or "") != plan_etag:
         raise RuntimeError("Riverhog retrieval job changed its plan identity")
-
-
-def _best_effort_cancel(api: ClaimedCollectionApi, job_id: str) -> None:
-    if not job_id:
-        return
-    try:
-        api.cancel_retrieval_job(job_id)
-    except Exception:
-        pass
 
 
 def _positive_int(value: object, label: str) -> int:

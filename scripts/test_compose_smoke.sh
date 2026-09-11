@@ -242,13 +242,13 @@ printf '%s\n' '{' \
   '  "pending_claim_capacity": 16,' \
   '  "claim_attempt_budget": 8,' \
   '  "discovery_entry_budget": 4096,' \
+  '  "completion_root": "/var/lib/riverhog-ftp-completions",' \
   '  "sources": [' \
   '    {' \
   '      "id": "ftp-smoke",' \
   '      "root": "/intake/ftp",' \
   '      "ingest_source": "ftp:compose-smoke",' \
   '      "close_mode": "explicit-flush",' \
-  '      "stable_seconds": 1,' \
   "      \"max_files\": ${smoke_claim_file_count}," \
   "      \"max_bytes\": ${smoke_max_bytes}," \
   '      "description": "Classified FTP compose qualification",' \
@@ -295,6 +295,7 @@ export STOVE0_OPUS_REVIEW_SAMPLER_DESCRIPTOR_SHA256="$(printf '5%.0s' {1..64})"
 export RIVERHOG_FTP_ADAPTER_API_PORT=0
 export RIVERHOG_FTP_ADAPTER_PORT=0
 export RIVERHOG_FTP_ADAPTER_PUBLIC_HOST=ftp-daemon
+export RIVERHOG_FTP_ADAPTER_SOURCE_ID=ftp-smoke
 export RIVERHOG_FTP_ADAPTER_SECRET_FILE_GID="$(id -g)"
 export RIVERHOG_FTP_ADAPTER_INTAKE_GID="$(id -g)"
 export RIVERHOG_FTP_ADAPTER_INTAKE_HOST_DIR="${intake_root}"
@@ -389,6 +390,14 @@ while time.monotonic() < deadline:
 else:
     raise RuntimeError('FTP listener did not become ready') from last_error
 assert all(source.read_bytes() == content for source, content in uploads)
+completion_log = Path('/var/lib/riverhog-ftp-completions/ftp-smoke.log')
+deadline = time.monotonic() + 10
+while time.monotonic() < deadline:
+    if completion_log.read_bytes().count(b'\n') >= len(uploads) + 1:
+        break
+    time.sleep(0.1)
+else:
+    raise AssertionError('Pure-FTPd did not durably report every completed upload')
 with RiverhogFtpAdapterClient(
     base_url='http://127.0.0.1:8080',
     token='riverhog-ftp-adapter-compose-smoke-token',
