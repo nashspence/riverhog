@@ -321,10 +321,16 @@ class UploadApi:
 
 class SettlementClient(ApiClient):
     def __init__(self) -> None:
-        self.request: tuple[str, str, object] | None = None
+        self.request: tuple[str, str, str, object] | None = None
 
-    def _claim_response(self, claim_id: str, suffix: str, request: object) -> Any:
-        self.request = (claim_id, suffix, request)
+    def _claim_response(
+        self,
+        operation_id: str,
+        claim_id: str,
+        suffix: str,
+        request: object,
+    ) -> Any:
+        self.request = (operation_id, claim_id, suffix, request)
         return {"state": "settled"}
 
 
@@ -429,7 +435,11 @@ def main() -> None:
         output_collection_id=receipt.collection_id,
         derivation=receipt.derivation.as_dict(),
     ) == {"state": "settled"}
-    assert settlement.request is not None and settlement.request[:2] == (CLAIM_ID, "settle")
+    assert settlement.request is not None and settlement.request[:3] == (
+        "settle_processing_claim",
+        CLAIM_ID,
+        "settle",
+    )
 
 
 if __name__ == "__main__":

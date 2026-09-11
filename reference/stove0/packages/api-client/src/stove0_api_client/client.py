@@ -12,8 +12,13 @@ import httpx
 from http_api_contracts import (
     HealthResponse as HealthResponse,
 )
-from http_api_contracts import closed_literal_values, parse_error_payload, safe_http_base_url
+from http_api_contracts import (
+    closed_literal_values,
+    parse_operation_error_payload,
+    safe_http_base_url,
+)
 from stove0_operator_contracts import (
+    STOVE0_HTTP_ERROR_AUTHORITY,
     AdmissionPage,
     AdmissionPolicyCatalogView,
     AdmissionPolicyStatus,
@@ -124,24 +129,27 @@ class Stove0ApiClient:
             self._client = None
 
     def health_live(self) -> HealthResponse:
-        return HealthResponse.model_validate(self._json("GET", "/health/live", authenticated=False))
+        return HealthResponse.model_validate(
+            self._json("health_live", "GET", "/health/live", authenticated=False)
+        )
 
     def health_ready(self) -> HealthResponse:
         return HealthResponse.model_validate(
-            self._json("GET", "/health/ready", authenticated=False)
+            self._json("health_ready", "GET", "/health/ready", authenticated=False)
         )
 
     def list_events(self, *, after: str | None = None, limit: int = 100) -> Stove0EventPage:
         return Stove0EventPage.model_validate(
-            self._json("GET", "/v1/events", params=_params(after=after, limit=limit))
+            self._json("list_events", "GET", "/v1/events", params=_params(after=after, limit=limit))
         )
 
     def list_recipes(self) -> RecipeCatalogView:
-        return RecipeCatalogView.model_validate(self._json("GET", "/v1/recipes"))
+        return RecipeCatalogView.model_validate(self._json("list_recipes", "GET", "/v1/recipes"))
 
     def get_recipe(self, recipe_id: str, *, revision: int | None = None) -> RecipeView:
         return RecipeView.model_validate(
             self._json(
+                "get_recipe",
                 "GET",
                 f"/v1/recipes/{quote(recipe_id, safe='')}",
                 params=_params(revision=revision),
@@ -150,12 +158,13 @@ class Stove0ApiClient:
 
     def list_admission_policies(self) -> AdmissionPolicyCatalogView:
         return AdmissionPolicyCatalogView.model_validate(
-            self._json("GET", "/v1/admission-policies")
+            self._json("list_admission_policies", "GET", "/v1/admission-policies")
         )
 
     def rebaseline_admission_policy(self, policy_id: str) -> AdmissionPolicyStatus:
         return AdmissionPolicyStatus.model_validate(
             self._json(
+                "rebaseline_admission_policy",
                 "POST",
                 f"/v1/admission-policies/{quote(policy_id, safe='')}:rebaseline",
             )
@@ -164,6 +173,7 @@ class Stove0ApiClient:
     def backfill_admission_policy(self, policy_id: str) -> AdmissionPolicyStatus:
         return AdmissionPolicyStatus.model_validate(
             self._json(
+                "backfill_admission_policy",
                 "POST",
                 f"/v1/admission-policies/{quote(policy_id, safe='')}:backfill",
             )
@@ -182,6 +192,7 @@ class Stove0ApiClient:
     ) -> AdmissionPage:
         return AdmissionPage.model_validate(
             self._json(
+                "list_admissions",
                 "GET",
                 "/v1/admissions",
                 params=_params(
@@ -202,7 +213,7 @@ class Stove0ApiClient:
 
     def get_admission(self, admission_id: str) -> AdmissionView:
         return AdmissionView.model_validate(
-            self._json("GET", f"/v1/admissions/{quote(admission_id, safe='')}")
+            self._json("get_admission", "GET", f"/v1/admissions/{quote(admission_id, safe='')}")
         )
 
     def list_work(
@@ -217,6 +228,7 @@ class Stove0ApiClient:
     ) -> WorkPage:
         return WorkPage.model_validate(
             self._json(
+                "list_work",
                 "GET",
                 "/v1/work",
                 params=_params(
@@ -258,6 +270,7 @@ class Stove0ApiClient:
         )
         return WorkView.model_validate(
             self._json(
+                "create_work",
                 "POST",
                 "/v1/work",
                 json=request.model_dump(mode="json", exclude_none=True),
@@ -265,11 +278,14 @@ class Stove0ApiClient:
         )
 
     def get_work(self, work_id: str) -> WorkView:
-        return WorkView.model_validate(self._json("GET", f"/v1/work/{quote(work_id, safe='')}"))
+        return WorkView.model_validate(
+            self._json("get_work", "GET", f"/v1/work/{quote(work_id, safe='')}")
+        )
 
     def inspect_work_coordination(self, work_id: str) -> BranchSetEvaluation:
         return BranchSetEvaluation.model_validate(
             self._json(
+                "inspect_work_coordination",
                 "GET",
                 f"/v1/work/{quote(work_id, safe='')}/coordination",
             )
@@ -283,6 +299,7 @@ class Stove0ApiClient:
     ) -> ArtifactSelectionPage:
         return ArtifactSelectionPage.model_validate(
             self._json(
+                "get_artifact_selection",
                 "GET",
                 f"/v1/artifact-selections/{quote(selection_sha256, safe='')}",
                 params=_params(continuation=continuation),
@@ -291,17 +308,17 @@ class Stove0ApiClient:
 
     def step_work(self, work_id: str) -> WorkView:
         return WorkView.model_validate(
-            self._json("POST", f"/v1/work/{quote(work_id, safe='')}/step")
+            self._json("step_work", "POST", f"/v1/work/{quote(work_id, safe='')}/step")
         )
 
     def retry_work(self, work_id: str) -> WorkView:
         return WorkView.model_validate(
-            self._json("POST", f"/v1/work/{quote(work_id, safe='')}/retry")
+            self._json("retry_work", "POST", f"/v1/work/{quote(work_id, safe='')}/retry")
         )
 
     def cancel_work(self, work_id: str) -> WorkView:
         return WorkView.model_validate(
-            self._json("POST", f"/v1/work/{quote(work_id, safe='')}/cancel")
+            self._json("cancel_work", "POST", f"/v1/work/{quote(work_id, safe='')}/cancel")
         )
 
     def preview_workflow(
@@ -320,6 +337,7 @@ class Stove0ApiClient:
         )
         return WorkflowPreview.model_validate(
             self._json(
+                "preview_workflow",
                 "POST",
                 "/v1/workflow-previews",
                 json=request.model_dump(mode="json", exclude_none=True),
@@ -338,6 +356,7 @@ class Stove0ApiClient:
     ) -> EvaluationPage:
         return EvaluationPage.model_validate(
             self._json(
+                "list_evaluations",
                 "GET",
                 "/v1/evaluations",
                 params=_params(
@@ -369,6 +388,7 @@ class Stove0ApiClient:
         request = EvaluationDefinition.model_validate(definition)
         return EvaluationView.model_validate(
             self._json(
+                "create_evaluation",
                 "POST",
                 "/v1/evaluations",
                 json=request.model_dump(mode="json", by_alias=True, exclude_none=True),
@@ -377,22 +397,29 @@ class Stove0ApiClient:
 
     def get_evaluation(self, evaluation_id: str) -> EvaluationView:
         return EvaluationView.model_validate(
-            self._json("GET", f"/v1/evaluations/{quote(evaluation_id, safe='')}")
+            self._json("get_evaluation", "GET", f"/v1/evaluations/{quote(evaluation_id, safe='')}")
         )
 
     def step_evaluation(self, evaluation_id: str) -> EvaluationView:
         return EvaluationView.model_validate(
-            self._json("POST", f"/v1/evaluations/{quote(evaluation_id, safe='')}/step")
+            self._json(
+                "step_evaluation", "POST", f"/v1/evaluations/{quote(evaluation_id, safe='')}/step"
+            )
         )
 
     def cancel_evaluation(self, evaluation_id: str) -> EvaluationView:
         return EvaluationView.model_validate(
-            self._json("POST", f"/v1/evaluations/{quote(evaluation_id, safe='')}/cancel")
+            self._json(
+                "cancel_evaluation",
+                "POST",
+                f"/v1/evaluations/{quote(evaluation_id, safe='')}/cancel",
+            )
         )
 
     def retry_evaluation_variant(self, evaluation_id: str, variant_id: str) -> EvaluationView:
         return EvaluationView.model_validate(
             self._json(
+                "retry_evaluation_variant",
                 "POST",
                 f"/v1/evaluations/{quote(evaluation_id, safe='')}/variants/"
                 f"{quote(variant_id, safe='')}/retry",
@@ -410,6 +437,7 @@ class Stove0ApiClient:
         request = EvaluationReviewIn(rating=rating, note=note)
         return EvaluationView.model_validate(
             self._json(
+                "review_evaluation_variant",
                 "PUT",
                 f"/v1/evaluations/{quote(evaluation_id, safe='')}/variants/"
                 f"{quote(variant_id, safe='')}/review",
@@ -418,7 +446,9 @@ class Stove0ApiClient:
         )
 
     def scheduler_status(self) -> SchedulerStatus:
-        return SchedulerStatus.model_validate(self._json("GET", "/v1/admin/scheduler"))
+        return SchedulerStatus.model_validate(
+            self._json("scheduler_status", "GET", "/v1/admin/scheduler")
+        )
 
     def run_scheduler(
         self,
@@ -432,6 +462,7 @@ class Stove0ApiClient:
         )
         return SchedulerRun.model_validate(
             self._json(
+                "run_scheduler",
                 "POST",
                 "/v1/admin/scheduler/run",
                 json=request.model_dump(mode="json"),
@@ -440,6 +471,7 @@ class Stove0ApiClient:
 
     def _json(
         self,
+        operation_id: str,
         method: str,
         path: str,
         *,
@@ -457,26 +489,31 @@ class Stove0ApiClient:
         except httpx.HTTPError as exc:
             raise Stove0ApiError(f"stove0 request failed: {exc}") from exc
         if response.status_code >= 400:
-            self._raise_for_error(response)
+            self._raise_for_error(operation_id, response)
         value = response.json()
         if not isinstance(value, dict):
             raise Stove0ApiError("stove0 returned a non-object JSON response")
         return value
 
     @staticmethod
-    def _raise_for_error(response: httpx.Response) -> None:
+    def _raise_for_error(operation_id: str, response: httpx.Response) -> None:
         try:
             payload = response.json()
         except ValueError:
             payload = None
-        code, message, details = parse_error_payload(
-            payload,
-            fallback_message=(
-                str(payload.get("detail"))
-                if isinstance(payload, dict) and payload.get("detail")
-                else response.text or f"stove0 returned HTTP {response.status_code}"
-            ),
-        )
+        try:
+            code, message, details = parse_operation_error_payload(
+                STOVE0_HTTP_ERROR_AUTHORITY,
+                operation_id,
+                status=response.status_code,
+                payload=payload,
+            )
+        except (TypeError, ValueError) as exc:
+            raise Stove0ApiError(
+                "stove0 returned an undeclared or invalid operation error response",
+                code="invalid_response",
+                observed_status=response.status_code,
+            ) from exc
         raise Stove0ApiError(
             message,
             code=code,

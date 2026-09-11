@@ -14,7 +14,7 @@ import httpx
 from http_api_contracts import (
     CanonicalVisibleText,
     closed_literal_values,
-    parse_error_payload,
+    parse_operation_error_payload,
     parse_quoted_sha256_identity,
     quote_sha256_identity,
     safe_http_base_url,
@@ -36,6 +36,7 @@ from riverhog_application_access import (
 )
 from riverhog_protocol import (
     COLLECTION_TAG_REQUEST_MEMBERS_MAX,
+    RIVERHOG_HTTP_ERROR_AUTHORITY,
     ApplicationAccessSort,
     ApplicationKeySort,
     ApplicationSort,
@@ -522,17 +523,23 @@ class _HttpApiClient:
             )
         return self._download_client
 
-    def _raise_for_error(self, response: httpx.Response) -> None:
+    def _raise_for_error(self, operation_id: str, response: httpx.Response) -> None:
         if response.is_success:
             return
         try:
             data = response.json()
-        except Exception:  # pragma: no cover
-            response.raise_for_status()
-        code, message, details = parse_error_payload(
-            data,
-            fallback_message=response.text or f"HTTP {response.status_code}",
-        )
+            code, message, details = parse_operation_error_payload(
+                RIVERHOG_HTTP_ERROR_AUTHORITY,
+                operation_id,
+                status=response.status_code,
+                payload=data,
+            )
+        except (TypeError, ValueError) as exc:
+            raise RiverhogError(
+                "API returned an undeclared or invalid operation error response",
+                code="invalid_response",
+                observed_status=response.status_code,
+            ) from exc
         error_type = error_type_for_code(code)
         if error_type is None:
             error_type = (
@@ -547,7 +554,13 @@ class _HttpApiClient:
             details=details,
         )
 
-    def _request(self, method: str, path: str, **kwargs: Any) -> httpx.Response:
+    def _request(
+        self,
+        operation_id: str,
+        method: str,
+        path: str,
+        **kwargs: Any,
+    ) -> httpx.Response:
         try:
             response = self._persistent_client().request(method, path, **kwargs)
         except httpx.TransportError:
@@ -555,11 +568,17 @@ class _HttpApiClient:
             raise
         if response.status_code in _TRANSIENT_HTTP_STATUS_CODES:
             self.close()
-        self._raise_for_error(response)
+        self._raise_for_error(operation_id, response)
         return response
 
-    def _json(self, method: str, path: str, **kwargs: Any) -> dict[str, Any]:
-        payload = self._request(method, path, **kwargs).json()
+    def _json(
+        self,
+        operation_id: str,
+        method: str,
+        path: str,
+        **kwargs: Any,
+    ) -> dict[str, Any]:
+        payload = self._request(operation_id, method, path, **kwargs).json()
         if not isinstance(payload, dict):
             raise BadRequest("API returned a non-object JSON payload")
         return payload
@@ -567,6 +586,7 @@ class _HttpApiClient:
     @contextmanager
     def _stream_verified_body(
         self,
+        operation_id: str,
         path: str,
         *,
         media_type: str,
@@ -576,7 +596,7 @@ class _HttpApiClient:
             with client.stream("GET", path, headers={"Accept": media_type}) as response:
                 if not response.is_success:
                     response.read()
-                    self._raise_for_error(response)
+                    self._raise_for_error(operation_id, response)
                 returned_media_type = response.headers.get("Content-Type", "").split(";", 1)[0]
                 if returned_media_type != media_type:
                     raise InvalidState("API returned an invalid binary response media type")
@@ -613,6 +633,7 @@ class _HttpApiClient:
 
     def _download(
         self,
+        operation_id: str,
         path: str,
         output: Path,
         *,
@@ -629,7 +650,7 @@ class _HttpApiClient:
         ) as response:
             if not response.is_success:
                 response.read()
-                self._raise_for_error(response)
+                self._raise_for_error(operation_id, response)
 
             content_length = response.headers.get("Content-Length")
             try:
@@ -703,6 +724,7 @@ class ApiClient(CollectionWorkflowMethods, _HttpApiClient):
         limit: int = 100,
     ) -> RiverhogEventPage:
         payload = self._json(
+            "list_lifecycle_events",
             "GET",
             "/v1/events",
             params={"after": "0" if after is None else after, "limit": limit},
@@ -711,7 +733,7 @@ class ApiClient(CollectionWorkflowMethods, _HttpApiClient):
 
     def create_catalog_sync_checkpoint(self) -> CatalogSyncCheckpoint:
         return CatalogSyncCheckpoint.model_validate(
-            self._json("GET", "/v1/catalog-sync/checkpoint")
+            self._json("create_catalog_sync_checkpoint", "GET", "/v1/catalog-sync/checkpoint")
         )
 
     def list_catalog_sync_collections(
@@ -722,6 +744,7 @@ class ApiClient(CollectionWorkflowMethods, _HttpApiClient):
     ) -> CatalogSyncCollectionPage:
         return CatalogSyncCollectionPage.model_validate(
             self._json(
+                "list_catalog_sync_collections",
                 "GET",
                 "/v1/catalog-sync/collections",
                 params={"cursor": cursor, "limit": limit},
@@ -736,6 +759,7 @@ class ApiClient(CollectionWorkflowMethods, _HttpApiClient):
     ) -> CatalogSyncChangePage:
         return CatalogSyncChangePage.model_validate(
             self._json(
+                "list_catalog_sync_changes",
                 "GET",
                 "/v1/catalog-sync/changes",
                 params={"cursor": cursor, "limit": limit},
@@ -761,6 +785,7 @@ class ApiClient(CollectionWorkflowMethods, _HttpApiClient):
         if cursor is not None:
             params["cursor"] = cursor
         response = self._request(
+            "get_portable_collection_inventory",
             "GET",
             f"/v1/catalog/collections/{str(_collection_id(collection_id))}/inventory",
             params=params,
@@ -793,7 +818,7 @@ class ApiClient(CollectionWorkflowMethods, _HttpApiClient):
         }
         if lease_seconds is not None:
             payload["lease_seconds"] = lease_seconds
-        plan = self._json("POST", "/v1/retrieval-plans", json=payload)
+        plan = self._json("plan_retrieval", "POST", "/v1/retrieval-plans", json=payload)
         while plan["state"] == "planning":
             plan = self.advance_retrieval_plan(str(plan["id"]))
         if plan["state"] != "ready":
@@ -802,10 +827,16 @@ class ApiClient(CollectionWorkflowMethods, _HttpApiClient):
         return plan
 
     def get_retrieval_plan(self, plan_id: str) -> dict[str, Any]:
-        return self._json("GET", f"/v1/retrieval-plans/{quote(plan_id, safe='')}")
+        return self._json(
+            "get_retrieval_plan", "GET", f"/v1/retrieval-plans/{quote(plan_id, safe='')}"
+        )
 
     def advance_retrieval_plan(self, plan_id: str) -> dict[str, Any]:
-        return self._json("POST", f"/v1/retrieval-plans/{quote(plan_id, safe='')}/advance")
+        return self._json(
+            "advance_retrieval_plan",
+            "POST",
+            f"/v1/retrieval-plans/{quote(plan_id, safe='')}/advance",
+        )
 
     def list_retrieval_plan_files(
         self,
@@ -816,6 +847,7 @@ class ApiClient(CollectionWorkflowMethods, _HttpApiClient):
         page_size: int = 100,
     ) -> dict[str, Any]:
         return self._json(
+            "list_retrieval_plan_files",
             "GET",
             f"/v1/retrieval-plans/{quote(plan_id, safe='')}/files",
             params={"start_ordinal": start_ordinal, "page_size": page_size},
@@ -833,6 +865,7 @@ class ApiClient(CollectionWorkflowMethods, _HttpApiClient):
         if event_context is not None:
             payload["event_context"] = dict(event_context)
         return self._json(
+            "create_retrieval_job",
             "POST",
             "/v1/retrieval-jobs",
             json=payload,
@@ -840,23 +873,30 @@ class ApiClient(CollectionWorkflowMethods, _HttpApiClient):
         )
 
     def get_retrieval_job(self, job_id: str) -> dict[str, Any]:
-        return self._json("GET", f"/v1/retrieval-jobs/{quote(job_id, safe='')}")
+        return self._json(
+            "get_retrieval_job", "GET", f"/v1/retrieval-jobs/{quote(job_id, safe='')}"
+        )
 
     def cancel_retrieval_job(self, job_id: str) -> dict[str, Any]:
-        return self._json("DELETE", f"/v1/retrieval-jobs/{quote(job_id, safe='')}")
+        return self._json(
+            "cancel_retrieval_job", "DELETE", f"/v1/retrieval-jobs/{quote(job_id, safe='')}"
+        )
 
     def acknowledge_retrieval_job(self, job_id: str) -> dict[str, Any]:
-        return self._json("POST", f"/v1/retrieval-jobs/{quote(job_id, safe='')}/ack")
+        return self._json(
+            "acknowledge_retrieval_job", "POST", f"/v1/retrieval-jobs/{quote(job_id, safe='')}/ack"
+        )
 
     def renew_retrieval_job(self, job_id: str, *, lease_seconds: int) -> dict[str, Any]:
         return self._json(
+            "renew_retrieval_job",
             "POST",
             f"/v1/retrieval-jobs/{quote(job_id, safe='')}/renew",
             json={"lease_seconds": lease_seconds},
         )
 
     def retrieval_cache_status(self) -> dict[str, Any]:
-        return self._json("GET", "/v1/retrieval-cache")
+        return self._json("retrieval_cache_status", "GET", "/v1/retrieval-cache")
 
     def list_retrieval_cache_objects(
         self,
@@ -909,7 +949,9 @@ class ApiClient(CollectionWorkflowMethods, _HttpApiClient):
             params["expires_before"] = expires_before
         if expires_after:
             params["expires_after"] = expires_after
-        return self._json("GET", "/v1/retrieval-cache/objects", params=params)
+        return self._json(
+            "list_retrieval_cache_objects", "GET", "/v1/retrieval-cache/objects", params=params
+        )
 
     def get_retrieval_cache_object(
         self,
@@ -918,6 +960,7 @@ class ApiClient(CollectionWorkflowMethods, _HttpApiClient):
         object_id: str,
     ) -> dict[str, Any]:
         return self._json(
+            "get_retrieval_cache_object",
             "GET",
             "/v1/retrieval-cache/objects/"
             f"{str(_collection_id(collection_id))}/"
@@ -937,6 +980,7 @@ class ApiClient(CollectionWorkflowMethods, _HttpApiClient):
         progress: DownloadProgress | None = None,
     ) -> int:
         result = self._download(
+            "download_retrieval_file",
             f"/v1/retrieval-jobs/{quote(job_id, safe='')}/content?"
             f"collection_id={str(_collection_id(collection_id))}&"
             f"path={quote(_canonical_relpath(path), safe='')}",
@@ -1000,7 +1044,7 @@ class ApiClient(CollectionWorkflowMethods, _HttpApiClient):
             with client.stream("GET", request_path, params=params, headers=headers) as response:
                 if not response.is_success:
                     response.read()
-                    self._raise_for_error(response)
+                    self._raise_for_error("download_retrieval_file", response)
                 expected_status = 206 if partial else 200
                 if response.status_code != expected_status:
                     raise InvalidState(
@@ -1099,7 +1143,12 @@ class ApiClient(CollectionWorkflowMethods, _HttpApiClient):
             payload["event_context"] = dict(event_context)
         if provenance_omission_reason is not None:
             payload["provenance_omission_reason"] = provenance_omission_reason
-        return self._json("POST", "/v1/collection-upload-sessions", json=payload)
+        return self._json(
+            "create_or_resume_collection_upload_session",
+            "POST",
+            "/v1/collection-upload-sessions",
+            json=payload,
+        )
 
     def add_collection_upload_session_tags(
         self,
@@ -1108,6 +1157,7 @@ class ApiClient(CollectionWorkflowMethods, _HttpApiClient):
     ) -> dict[str, Any]:
         normalized_collection_id = _collection_id(collection_id)
         return self._json(
+            "add_collection_upload_session_tags",
             "POST",
             f"/v1/collection-upload-sessions/{normalized_collection_id}/tags",
             json={"tags": _collection_tags(tags, allow_empty=False)},
@@ -1154,6 +1204,7 @@ class ApiClient(CollectionWorkflowMethods, _HttpApiClient):
         return _validated_collection_upload_file_response(
             normalized_collection_id,
             self._json(
+                "register_collection_upload_session_files",
                 "POST",
                 f"/v1/collection-upload-sessions/{str(normalized_collection_id)}/files",
                 json=batch.model_dump(mode="json"),
@@ -1172,6 +1223,7 @@ class ApiClient(CollectionWorkflowMethods, _HttpApiClient):
         return _validated_collection_upload_file_response(
             normalized_collection_id,
             self._json(
+                "list_collection_upload_session_files",
                 "GET",
                 f"/v1/collection-upload-sessions/{str(normalized_collection_id)}/files",
                 params=_page_params(page_size=page_size, page_token=page_token),
@@ -1192,6 +1244,7 @@ class ApiClient(CollectionWorkflowMethods, _HttpApiClient):
         except ValidationError as exc:
             raise BadRequest(str(exc)) from exc
         payload = self._json(
+            "register_collection_upload_session_raw_part_digests",
             "POST",
             f"/v1/collection-upload-sessions/{str(_collection_id(collection_id))}/raw-part-digests",
             json=document.model_dump(mode="json"),
@@ -1211,6 +1264,7 @@ class ApiClient(CollectionWorkflowMethods, _HttpApiClient):
             raise BadRequest("provenance byte count must be positive")
         return CollectionUploadProvenanceJournalStatusDocument.model_validate(
             self._json(
+                "create_collection_upload_session_provenance_journal",
                 "PUT",
                 f"/v1/collection-upload-sessions/{str(_collection_id(collection_id))}/provenance/journals/"
                 f"{quote(canonical_journal_id, safe='')}",
@@ -1235,6 +1289,7 @@ class ApiClient(CollectionWorkflowMethods, _HttpApiClient):
             raise BadRequest("provenance append is outside its bounded transport contract")
         return CollectionUploadProvenanceJournalStatusDocument.model_validate(
             self._json(
+                "append_collection_upload_session_provenance_journal",
                 "PATCH",
                 f"/v1/collection-upload-sessions/{str(_collection_id(collection_id))}/provenance/journals/"
                 f"{quote(canonical_journal_id, safe='')}",
@@ -1256,6 +1311,7 @@ class ApiClient(CollectionWorkflowMethods, _HttpApiClient):
         canonical_journal_id = _provenance_journal_id(journal_id)
         return CollectionUploadProvenanceJournalStatusDocument.model_validate(
             self._json(
+                "seal_collection_upload_session_provenance_journal",
                 "POST",
                 f"/v1/collection-upload-sessions/{str(_collection_id(collection_id))}/provenance/journals/"
                 f"{quote(canonical_journal_id, safe='')}/seal",
@@ -1270,6 +1326,7 @@ class ApiClient(CollectionWorkflowMethods, _HttpApiClient):
         canonical_journal_id = _provenance_journal_id(journal_id)
         return CollectionUploadProvenanceJournalStatusDocument.model_validate(
             self._json(
+                "get_collection_upload_session_provenance_journal",
                 "GET",
                 f"/v1/collection-upload-sessions/{str(_collection_id(collection_id))}/provenance/journals/"
                 f"{quote(canonical_journal_id, safe='')}",
@@ -1363,19 +1420,26 @@ class ApiClient(CollectionWorkflowMethods, _HttpApiClient):
                 _COLLECTION_UPLOAD_STATES,
                 "collection-upload state",
             )
-        return self._json("GET", "/v1/collection-upload-sessions", params=params)
+        return self._json(
+            "list_collection_upload_sessions",
+            "GET",
+            "/v1/collection-upload-sessions",
+            params=params,
+        )
 
     def complete_collection_upload_session(
         self,
         collection_id: CollectionId,
     ) -> dict[str, Any]:
         return self._json(
+            "complete_collection_upload_session",
             "POST",
             f"/v1/collection-upload-sessions/{str(_collection_id(collection_id))}/complete",
         )
 
     def cancel_collection_upload_session(self, collection_id: CollectionId) -> dict[str, Any]:
         return self._json(
+            "cancel_collection_upload_session",
             "POST",
             f"/v1/collection-upload-sessions/{str(_collection_id(collection_id))}/cancel",
             timeout=_CANCEL_TIMEOUT_SECONDS,
@@ -1383,17 +1447,21 @@ class ApiClient(CollectionWorkflowMethods, _HttpApiClient):
 
     def get_collection_upload_session(self, collection_id: CollectionId) -> dict[str, Any]:
         return self._json(
-            "GET", f"/v1/collection-upload-sessions/{str(_collection_id(collection_id))}"
+            "get_collection_upload_session",
+            "GET",
+            f"/v1/collection-upload-sessions/{str(_collection_id(collection_id))}",
         )
 
     def heartbeat_collection_upload_session(self, collection_id: CollectionId) -> dict[str, Any]:
         return self._json(
+            "heartbeat_collection_upload_session",
             "POST",
             f"/v1/collection-upload-sessions/{str(_collection_id(collection_id))}/heartbeat",
         )
 
     def plan_collection_upload_discard(self, collection_id: CollectionId) -> dict[str, Any]:
         return self._json(
+            "plan_collection_upload_discard",
             "POST",
             f"/v1/collection-upload-sessions/{str(_collection_id(collection_id))}/discard-plan",
         )
@@ -1405,6 +1473,7 @@ class ApiClient(CollectionWorkflowMethods, _HttpApiClient):
         challenge: str,
     ) -> dict[str, Any]:
         return self._json(
+            "discard_collection_upload",
             "POST",
             f"/v1/collection-upload-sessions/{str(_collection_id(collection_id))}/discard",
             json={"challenge": challenge},
@@ -1420,6 +1489,7 @@ class ApiClient(CollectionWorkflowMethods, _HttpApiClient):
         return _response_model(
             CollectionUploadWorkBatchDocument,
             self._json(
+                "acquire_collection_upload_session_work",
                 "GET",
                 f"/v1/collection-upload-sessions/{str(_collection_id(collection_id))}/work",
                 params={"limit": limit},
@@ -1435,6 +1505,7 @@ class ApiClient(CollectionWorkflowMethods, _HttpApiClient):
         return _response_model(
             CollectionUploadUnitWorkDocument,
             self._json(
+                "get_collection_upload_session_unit",
                 "GET",
                 f"/v1/collection-upload-sessions/{str(_collection_id(collection_id))}/volumes/"
                 f"{quote(_collection_upload_volume_id(volume_id), safe='')}/units/"
@@ -1456,6 +1527,7 @@ class ApiClient(CollectionWorkflowMethods, _HttpApiClient):
         return _response_model(
             CollectionUploadUnitWorkDocument,
             self._json(
+                "put_collection_upload_session_unit",
                 "PUT",
                 f"/v1/collection-upload-sessions/{str(_collection_id(collection_id))}/volumes/"
                 f"{quote(normalized_volume_id, safe='')}/units/{str(normalized_unit)}",
@@ -1495,10 +1567,11 @@ class ApiClient(CollectionWorkflowMethods, _HttpApiClient):
             params["q"] = query
         if collection is not None:
             params["collection"] = _collection_id(collection)
-        return self._json("GET", "/v1/search", params=params)
+        return self._json("search", "GET", "/v1/search", params=params)
 
     def get_collection(self, collection_id: CollectionId) -> dict[str, Any]:
         return self._json(
+            "get_collection",
             "GET",
             f"/v1/collections/{str(_collection_id(collection_id))}",
         )
@@ -1517,6 +1590,7 @@ class ApiClient(CollectionWorkflowMethods, _HttpApiClient):
             except ValidationError as exc:
                 raise BadRequest(str(exc)) from exc
         return self._json(
+            "replace_collection_description",
             "PUT",
             f"/v1/collections/{str(_collection_id(collection_id))}/description",
             json={"description": normalized_description},
@@ -1535,6 +1609,7 @@ class ApiClient(CollectionWorkflowMethods, _HttpApiClient):
         page_token: str | None = None,
     ) -> dict[str, Any]:
         return self._json(
+            "list_collection_archive_copies",
             "GET",
             f"/v1/collections/{_collection_id(collection_id)}/archive-copies",
             params=_page_params(page_size=page_size, page_token=page_token),
@@ -1571,6 +1646,7 @@ class ApiClient(CollectionWorkflowMethods, _HttpApiClient):
                 "provenance status",
             )
         return self._json(
+            "list_collection_provenance",
             "GET",
             f"/v1/collections/{_collection_id(collection_id)}/provenance/files",
             params=params,
@@ -1582,6 +1658,7 @@ class ApiClient(CollectionWorkflowMethods, _HttpApiClient):
         path: str,
     ) -> dict[str, Any]:
         return self._json(
+            "get_collection_file_provenance",
             "GET",
             f"/v1/collections/{_collection_id(collection_id)}/provenance/files/"
             f"{quote(_canonical_relpath(path), safe='/')}",
@@ -1596,6 +1673,7 @@ class ApiClient(CollectionWorkflowMethods, _HttpApiClient):
         page_token: str | None = None,
     ) -> dict[str, Any]:
         return self._json(
+            "trace_collection_file_provenance",
             "GET",
             f"/v1/collections/{_collection_id(collection_id)}/provenance/trace/"
             f"{quote(_canonical_relpath(path), safe='/')}",
@@ -1677,7 +1755,7 @@ class ApiClient(CollectionWorkflowMethods, _HttpApiClient):
             with client.stream("GET", path, headers=headers) as response:
                 if not response.is_success:
                     response.read()
-                    self._raise_for_error(response)
+                    self._raise_for_error("stream_collection_provenance_journal", response)
                 expected_status = 206 if partial else 200
                 if response.status_code != expected_status:
                     raise InvalidState(
@@ -1745,6 +1823,7 @@ class ApiClient(CollectionWorkflowMethods, _HttpApiClient):
         except ValidationError as exc:
             raise BadRequest(str(exc)) from exc
         response = self._request(
+            "stream_collection_provenance_journal",
             "HEAD",
             f"/v1/collections/{_collection_id(collection_id)}/provenance/journals/"
             f"{quote(canonical_journal_id, safe='')}",
@@ -1842,6 +1921,7 @@ class ApiClient(CollectionWorkflowMethods, _HttpApiClient):
         except ValidationError as exc:
             raise BadRequest(str(exc)) from exc
         return self._json(
+            "list_collection_provenance_journal_agents",
             "GET",
             f"/v1/collections/{_collection_id(collection_id)}/provenance/journals/"
             f"{quote(canonical_journal_id, safe='')}/agents",
@@ -1852,12 +1932,14 @@ class ApiClient(CollectionWorkflowMethods, _HttpApiClient):
         self, collection_id: CollectionId
     ) -> dict[str, Any]:
         return self._json(
+            "request_collection_provenance_verification",
             "POST",
             f"/v1/collections/{_collection_id(collection_id)}/provenance/verification",
         )
 
     def get_collection_provenance_verification(self, collection_id: CollectionId) -> dict[str, Any]:
         return self._json(
+            "get_collection_provenance_verification",
             "GET",
             f"/v1/collections/{_collection_id(collection_id)}/provenance/verification",
         )
@@ -1866,6 +1948,7 @@ class ApiClient(CollectionWorkflowMethods, _HttpApiClient):
         self, collection_id: CollectionId
     ) -> dict[str, Any]:
         return self._json(
+            "cancel_collection_provenance_verification",
             "DELETE",
             f"/v1/collections/{_collection_id(collection_id)}/provenance/verification",
         )
@@ -1882,6 +1965,7 @@ class ApiClient(CollectionWorkflowMethods, _HttpApiClient):
             else None
         )
         return self._json(
+            "plan_collection_deletion",
             "POST",
             f"/v1/collections/{str(_collection_id(collection_id))}/deletion-plan",
             params=params,
@@ -1901,6 +1985,7 @@ class ApiClient(CollectionWorkflowMethods, _HttpApiClient):
         if event_context is not None:
             payload["event_context"] = dict(event_context)
         return self._json(
+            "delete_collection",
             "POST",
             f"/v1/collections/{str(_collection_id(collection_id))}/delete",
             json=payload,
@@ -1940,7 +2025,7 @@ class ApiClient(CollectionWorkflowMethods, _HttpApiClient):
             params["encryption_format"] = encryption_format
         if passphrase_id:
             params["passphrase_id"] = passphrase_id
-        return self._json("GET", "/v1/collections", params=params)
+        return self._json("list_collections", "GET", "/v1/collections", params=params)
 
     def list_archive_stores(
         self,
@@ -1962,10 +2047,14 @@ class ApiClient(CollectionWorkflowMethods, _HttpApiClient):
         }
         if q is not None:
             params["q"] = q
-        return self._json("GET", "/v1/archive/stores", params=params)
+        return self._json("list_archive_stores", "GET", "/v1/archive/stores", params=params)
 
     def get_archive_store(self, store: ArchiveStoreName) -> dict[str, Any]:
-        return self._json("GET", f"/v1/archive/stores/{quote(_archive_store_name(store), safe='')}")
+        return self._json(
+            "get_archive_store",
+            "GET",
+            f"/v1/archive/stores/{quote(_archive_store_name(store), safe='')}",
+        )
 
     def list_apps(
         self,
@@ -1990,7 +2079,7 @@ class ApiClient(CollectionWorkflowMethods, _HttpApiClient):
             params["q"] = q
         if active is not None:
             params["active"] = str(active).lower()
-        return self._json("GET", "/v1/apps", params=params)
+        return self._json("list_apps", "GET", "/v1/apps", params=params)
 
     def create_app_key(
         self,
@@ -2003,6 +2092,7 @@ class ApiClient(CollectionWorkflowMethods, _HttpApiClient):
         if expires_in_seconds is not None:
             payload["expires_in_seconds"] = expires_in_seconds
         return self._json(
+            "create_app_key",
             "POST",
             f"/v1/apps/{quote(_application_name(app), safe='')}/keys",
             json=payload,
@@ -2033,6 +2123,7 @@ class ApiClient(CollectionWorkflowMethods, _HttpApiClient):
         if active is not None:
             params["active"] = str(active).lower()
         return self._json(
+            "list_app_keys",
             "GET",
             f"/v1/apps/{quote(_application_name(app), safe='')}/keys",
             params=params,
@@ -2040,6 +2131,7 @@ class ApiClient(CollectionWorkflowMethods, _HttpApiClient):
 
     def revoke_app_key(self, app: ApplicationName, key_id: ApplicationKeyId) -> dict[str, Any]:
         return self._json(
+            "revoke_app_key",
             "POST",
             f"/v1/apps/{quote(_application_name(app), safe='')}/keys/"
             f"{quote(_application_key_id(key_id), safe='')}/revoke",
@@ -2047,6 +2139,7 @@ class ApiClient(CollectionWorkflowMethods, _HttpApiClient):
 
     def rotate_app_key(self, app: ApplicationName, key_id: ApplicationKeyId) -> dict[str, Any]:
         return self._json(
+            "rotate_app_key",
             "POST",
             f"/v1/apps/{quote(_application_name(app), safe='')}/keys/"
             f"{quote(_application_key_id(key_id), safe='')}/rotate",
@@ -2087,7 +2180,7 @@ class ApiClient(CollectionWorkflowMethods, _HttpApiClient):
             params["resource"] = _application_resource(resource)
         if active is not None:
             params["active"] = str(active).lower()
-        return self._json("GET", "/v1/app-key-access", params=params)
+        return self._json("list_app_key_access", "GET", "/v1/app-key-access", params=params)
 
     def replace_app_key_access(
         self,
@@ -2097,6 +2190,7 @@ class ApiClient(CollectionWorkflowMethods, _HttpApiClient):
         access: Sequence[Mapping[str, str]],
     ) -> dict[str, Any]:
         return self._json(
+            "replace_app_key_access",
             "PUT",
             f"/v1/apps/{quote(_application_name(app), safe='')}/keys/"
             f"{quote(_application_key_id(key_id), safe='')}/access",
@@ -2112,6 +2206,7 @@ class ApiClient(CollectionWorkflowMethods, _HttpApiClient):
         resource: ApplicationResource,
     ) -> dict[str, Any]:
         return self._json(
+            "add_app_key_access",
             "POST",
             f"/v1/apps/{quote(_application_name(app), safe='')}/keys/"
             f"{quote(_application_key_id(key_id), safe='')}/access",
@@ -2127,6 +2222,7 @@ class ApiClient(CollectionWorkflowMethods, _HttpApiClient):
         resource: ApplicationResource,
     ) -> dict[str, Any]:
         return self._json(
+            "remove_app_key_access",
             "DELETE",
             f"/v1/apps/{quote(_application_name(app), safe='')}/keys/"
             f"{quote(_application_key_id(key_id), safe='')}/access",
@@ -2143,7 +2239,7 @@ class ApiClient(CollectionWorkflowMethods, _HttpApiClient):
         params: dict[str, Any] = _page_params(page_size=page_size, page_token=page_token)
         if q is not None:
             params["q"] = q
-        return self._json("GET", "/v1/tags", params=params)
+        return self._json("list_tags", "GET", "/v1/tags", params=params)
 
     def list_collection_tags(
         self,
@@ -2160,6 +2256,7 @@ class ApiClient(CollectionWorkflowMethods, _HttpApiClient):
             "tag_set_identity": _sha256_identity(tag_set_identity, "tag-set identity"),
         }
         return self._json(
+            "list_collection_tags",
             "GET",
             f"/v1/collections/{_collection_id(collection_id)}/tags",
             params=params,
@@ -2174,6 +2271,7 @@ class ApiClient(CollectionWorkflowMethods, _HttpApiClient):
         tag_set_identity: str,
     ) -> dict[str, Any]:
         return self._json(
+            "collection_contains_tag",
             "GET",
             f"/v1/collections/{_collection_id(collection_id)}/tags:contains",
             params={
@@ -2195,6 +2293,7 @@ class ApiClient(CollectionWorkflowMethods, _HttpApiClient):
         return self._mutate_collection_tag(
             collection_id,
             action="add",
+            http_operation_id="add_collection_tag",
             tag=tag,
             operation_id=operation_id,
             expected_revision=expected_revision,
@@ -2213,6 +2312,7 @@ class ApiClient(CollectionWorkflowMethods, _HttpApiClient):
         return self._mutate_collection_tag(
             collection_id,
             action="remove",
+            http_operation_id="remove_collection_tag",
             tag=tag,
             operation_id=operation_id,
             expected_revision=expected_revision,
@@ -2224,12 +2324,14 @@ class ApiClient(CollectionWorkflowMethods, _HttpApiClient):
         collection_id: CollectionId,
         *,
         action: Literal["add", "remove"],
+        http_operation_id: Literal["add_collection_tag", "remove_collection_tag"],
         tag: CollectionTag,
         operation_id: str,
         expected_revision: int,
         expected_tag_set_identity: str,
     ) -> dict[str, Any]:
         return self._json(
+            http_operation_id,
             "POST",
             f"/v1/collections/{_collection_id(collection_id)}/tags:{action}",
             json={
@@ -2244,7 +2346,7 @@ class ApiClient(CollectionWorkflowMethods, _HttpApiClient):
         )
 
     def get_download_quota(self) -> dict[str, Any]:
-        return self._json("GET", "/v1/download-quota")
+        return self._json("get_download_quota", "GET", "/v1/download-quota")
 
     def set_app_key_download_quota(
         self,
@@ -2265,6 +2367,7 @@ class ApiClient(CollectionWorkflowMethods, _HttpApiClient):
         except ValidationError as exc:
             raise BadRequest("monthly download quota must be non-negative") from exc
         return self._json(
+            "set_app_key_download_quota",
             "PUT",
             f"/v1/apps/{quote(_application_name(app), safe='')}/keys/"
             f"{quote(_application_key_id(key_id), safe='')}/download-quota",
@@ -2297,7 +2400,7 @@ class ApiClient(CollectionWorkflowMethods, _HttpApiClient):
             params["app"] = _application_name(app)
         if active is not None:
             params["active"] = str(active).lower()
-        return self._json("GET", "/v1/download-quotas", params=params)
+        return self._json("list_download_quotas", "GET", "/v1/download-quotas", params=params)
 
     def create_or_resume_archive_copy(
         self,
@@ -2322,7 +2425,9 @@ class ApiClient(CollectionWorkflowMethods, _HttpApiClient):
             payload["source_store"] = stores.source_store
         if event_context is not None:
             payload["event_context"] = dict(event_context)
-        return self._json("POST", "/v1/archive/copies", json=payload)
+        return self._json(
+            "create_or_resume_archive_copy", "POST", "/v1/archive/copies", json=payload
+        )
 
     def list_archive_copy_jobs(
         self,
@@ -2351,7 +2456,7 @@ class ApiClient(CollectionWorkflowMethods, _HttpApiClient):
                 _ARCHIVE_COPY_STATES,
                 "archive-copy state",
             )
-        return self._json("GET", "/v1/archive/copies", params=params)
+        return self._json("list_archive_copy_jobs", "GET", "/v1/archive/copies", params=params)
 
     def get_archive_copy_job(
         self,
@@ -2360,6 +2465,7 @@ class ApiClient(CollectionWorkflowMethods, _HttpApiClient):
         destination_store: ArchiveStoreName,
     ) -> dict[str, Any]:
         return self._json(
+            "get_archive_copy_job",
             "GET",
             f"/v1/archive/copies/{_collection_id(collection_id)}/"
             f"{quote(_archive_store_name(destination_store), safe='')}",
@@ -2372,6 +2478,7 @@ class ApiClient(CollectionWorkflowMethods, _HttpApiClient):
         destination_store: ArchiveStoreName,
     ) -> dict[str, Any]:
         return self._json(
+            "cancel_archive_copy_job",
             "DELETE",
             f"/v1/archive/copies/{_collection_id(collection_id)}/"
             f"{quote(_archive_store_name(destination_store), safe='')}",
@@ -2384,6 +2491,7 @@ class ApiClient(CollectionWorkflowMethods, _HttpApiClient):
         store: ArchiveStoreName,
     ) -> dict[str, Any]:
         return self._json(
+            "plan_archive_copy_retirement",
             "POST",
             "/v1/archive/copies/retirement-plan",
             json={
@@ -2400,6 +2508,7 @@ class ApiClient(CollectionWorkflowMethods, _HttpApiClient):
         challenge: str,
     ) -> dict[str, Any]:
         return self._json(
+            "retire_archive_copy",
             "POST",
             "/v1/archive/copies/retire",
             json={

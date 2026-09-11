@@ -6,6 +6,7 @@ from collections.abc import Collection, Iterable, Iterator, Mapping, Sequence
 from dataclasses import dataclass
 from http import HTTPStatus
 from ipaddress import ip_address
+from types import MappingProxyType
 from typing import Annotated, Any, Literal, get_args
 from urllib.parse import urlsplit
 
@@ -238,6 +239,102 @@ class HttpErrorContract:
             raise ValueError("HTTP error code must be canonical snake case")
         if self.status < 400 or self.status > 599:
             raise ValueError("HTTP error status must be 4xx or 5xx")
+
+
+class HttpOperationErrorAuthority:
+    """Immutable operation-specific error acceptance owned by one protocol."""
+
+    __slots__ = ("_common", "_exact", "_operation")
+
+    def __init__(
+        self,
+        *,
+        common: Collection[HttpErrorContract],
+        operation: Mapping[str, Collection[HttpErrorContract]],
+        exact: Mapping[str, Collection[HttpErrorContract]] | None = None,
+    ) -> None:
+        self._common = _unique_http_errors(common, label="common HTTP errors")
+        normalized: dict[str, tuple[HttpErrorContract, ...]] = {}
+        for operation_id, errors in operation.items():
+            if re.fullmatch(r"[a-z][a-z0-9_]*", operation_id) is None:
+                raise ValueError("HTTP operation ID must be canonical snake case")
+            specific = _unique_http_errors(
+                errors,
+                label=f"HTTP errors for operation {operation_id}",
+            )
+            common_codes = {error.code for error in self._common}
+            if common_codes.intersection(error.code for error in specific):
+                raise ValueError("operation-specific HTTP errors repeat a common code")
+            normalized[operation_id] = specific
+        self._operation = MappingProxyType(normalized)
+        exact_normalized: dict[str, tuple[HttpErrorContract, ...]] = {}
+        for operation_id, errors in (exact or {}).items():
+            if re.fullmatch(r"[a-z][a-z0-9_]*", operation_id) is None:
+                raise ValueError("HTTP operation ID must be canonical snake case")
+            if operation_id in normalized:
+                raise ValueError("HTTP operation cannot extend and replace common errors")
+            exact_normalized[operation_id] = _unique_http_errors(
+                errors,
+                label=f"exact HTTP errors for operation {operation_id}",
+            )
+        self._exact = MappingProxyType(exact_normalized)
+
+    @classmethod
+    def from_codes(
+        cls,
+        *,
+        common: Collection[str],
+        operation: Mapping[str, Collection[str]],
+        exact: Mapping[str, Collection[str]] | None = None,
+    ) -> HttpOperationErrorAuthority:
+        """Build exact code/status pairs from the shared public error vocabulary."""
+
+        return cls(
+            common=tuple(_http_error_for_code(code) for code in common),
+            operation={
+                operation_id: tuple(_http_error_for_code(code) for code in codes)
+                for operation_id, codes in operation.items()
+            },
+            exact={
+                operation_id: tuple(_http_error_for_code(code) for code in codes)
+                for operation_id, codes in (exact or {}).items()
+            },
+        )
+
+    @property
+    def operation_ids(self) -> frozenset[str]:
+        """Return operations whose acceptance extends the common contract."""
+
+        return frozenset((*self._operation, *self._exact))
+
+    def errors_for(self, operation_id: str) -> tuple[HttpErrorContract, ...]:
+        """Return the exact accepted error pairs for one operation identity."""
+
+        exact = self._exact.get(operation_id)
+        if exact is not None:
+            return exact
+        return tuple(
+            sorted((*self._common, *self._operation.get(operation_id, ())), key=_error_key)
+        )
+
+    def accepts(self, operation_id: str, *, status: int, code: str) -> bool:
+        return HttpErrorContract(code=code, status=status) in self.errors_for(operation_id)
+
+
+def _unique_http_errors(
+    errors: Collection[HttpErrorContract],
+    *,
+    label: str,
+) -> tuple[HttpErrorContract, ...]:
+    values = tuple(errors)
+    codes = [error.code for error in values]
+    if len(codes) != len(set(codes)):
+        raise ValueError(f"{label} repeat an error code")
+    return tuple(sorted(values, key=_error_key))
+
+
+def _error_key(error: HttpErrorContract) -> tuple[int, str]:
+    return error.status, error.code
 
 
 @dataclass(frozen=True, slots=True)
@@ -560,6 +657,15 @@ ERROR_STATUS_BY_CODE: dict[str, int] = {
 }
 PUBLIC_ERROR_CODES = frozenset(ERROR_STATUS_BY_CODE)
 
+
+def _http_error_for_code(code: str) -> HttpErrorContract:
+    try:
+        status = ERROR_STATUS_BY_CODE[code]
+    except KeyError as exc:
+        raise ValueError(f"unknown public HTTP error code: {code}") from exc
+    return HttpErrorContract(code=code, status=status)
+
+
 _ERROR_CODE_BY_STATUS: dict[int, str] = {
     400: "bad_request",
     401: "unauthorized",
@@ -651,6 +757,10 @@ def status_for_error_code(code: str, *, fallback: int = 500) -> int:
 _BASE_OPERATION_ERROR_CODES = frozenset(
     {"bad_request", "unauthorized", "forbidden", "internal_error"}
 )
+DEFAULT_HTTP_ERROR_AUTHORITY = HttpOperationErrorAuthority.from_codes(
+    common=_BASE_OPERATION_ERROR_CODES,
+    operation={},
+)
 
 
 def error_payload(
@@ -671,11 +781,11 @@ def error_payload(
 def apply_openapi_error_contract(
     schema: dict[str, Any],
     *,
-    operation_error_codes: Mapping[str, Collection[str]] | None = None,
+    operation_error_authority: HttpOperationErrorAuthority | None = None,
 ) -> dict[str, Any]:
-    """Project exact application-owned error vocabularies into OpenAPI."""
+    """Project one protocol-owned operation-error authority into OpenAPI."""
 
-    declared_by_operation = operation_error_codes or {}
+    authority = operation_error_authority or DEFAULT_HTTP_ERROR_AUTHORITY
     observed_operations: set[str] = set()
     error_schema = ErrorResponse.model_json_schema(ref_template="#/components/schemas/{model}")
     definitions = error_schema.pop("$defs", {})
@@ -690,18 +800,20 @@ def apply_openapi_error_contract(
                 operation, dict
             ):
                 continue
-            if not path.startswith("/v1") and operation.get("x-riverhog-interface") != (
-                "standard-tool/protocol"
+            operation_id = operation.get("operationId")
+            if not isinstance(operation_id, str) or not operation_id:
+                raise ValueError(f"OpenAPI operation {method.upper()} {path} has no operationId")
+            if (
+                not path.startswith("/v1")
+                and operation_id not in authority.operation_ids
+                and operation.get("x-riverhog-interface") != "standard-tool/protocol"
             ):
                 continue
             responses = operation.setdefault("responses", {})
             responses.pop("422", None)
-            operation_id = operation.get("operationId")
-            if not isinstance(operation_id, str) or not operation_id:
-                raise ValueError(f"OpenAPI operation {method.upper()} {path} has no operationId")
             observed_operations.add(operation_id)
-            codes = set(_BASE_OPERATION_ERROR_CODES)
-            codes.update(declared_by_operation.get(operation_id, ()))
+            declared_errors = authority.errors_for(operation_id)
+            codes = {error.code for error in declared_errors}
             for response in responses.values():
                 if not isinstance(response, Mapping):
                     continue
@@ -715,8 +827,8 @@ def apply_openapi_error_contract(
                     + ", ".join(sorted(unknown))
                 )
             by_status: dict[int, list[str]] = {}
-            for code in sorted(codes):
-                by_status.setdefault(ERROR_STATUS_BY_CODE[code], []).append(code)
+            for error in declared_errors:
+                by_status.setdefault(error.status, []).append(error.code)
             existing_error_statuses = [
                 status for status in responses if str(status).isdigit() and int(str(status)) >= 400
             ]
@@ -733,7 +845,7 @@ def apply_openapi_error_contract(
                         }
                     },
                 }
-    unknown_operations = set(declared_by_operation) - observed_operations
+    unknown_operations = authority.operation_ids - observed_operations
     if unknown_operations:
         raise ValueError(
             "error contracts name unknown OpenAPI operations: "
@@ -771,6 +883,21 @@ def parse_declared_error_payload(
     return response.error.code, response.error.message, dict(response.error.details or {})
 
 
+def parse_operation_error_payload(
+    authority: HttpOperationErrorAuthority,
+    operation_id: str,
+    *,
+    status: int,
+    payload: object,
+) -> tuple[str, str, dict[str, Any]]:
+    """Accept one exact protocol-owned operation rejection or fail closed."""
+
+    response = ErrorResponse.model_validate(payload)
+    if not authority.accepts(operation_id, status=status, code=response.error.code):
+        raise ValueError("HTTP peer returned an undeclared operation error code/status pair")
+    return response.error.code, response.error.message, dict(response.error.details or {})
+
+
 __all__ = [
     "MAX_BROWSE_QUERY_CHARACTERS",
     "MAX_BROWSE_TOKEN_BYTES",
@@ -780,6 +907,7 @@ __all__ = [
     "BrowseTokenCodec",
     "BrowseTokenError",
     "CANONICAL_VISIBLE_TEXT_PATTERN",
+    "DEFAULT_HTTP_ERROR_AUTHORITY",
     "ERROR_STATUS_BY_CODE",
     "FRAMED_BODY_DECLARATION_LENGTH_BYTES",
     "FRAMED_BODY_FORMAT",
@@ -796,6 +924,7 @@ __all__ = [
     "HttpErrorContract",
     "HttpBodyKind",
     "HttpOperationContract",
+    "HttpOperationErrorAuthority",
     "HttpPathParameterContract",
     "HttpResponseHeaderContract",
     "OperationInterface",
@@ -815,6 +944,7 @@ __all__ = [
     "iter_json_sequence_records",
     "parse_error_payload",
     "parse_declared_error_payload",
+    "parse_operation_error_payload",
     "parse_quoted_sha256_identity",
     "quote_sha256_identity",
     "safe_http_base_url",
