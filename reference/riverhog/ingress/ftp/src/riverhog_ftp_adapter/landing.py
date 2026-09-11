@@ -32,6 +32,7 @@ from riverhog_ftp_adapter.completion import (
     MAX_COMPLETION_RECORD_BYTES,
     CompletionError,
     CompletionRecord,
+    acquire_handoff,
     completion_log_path,
     initialize_completion_authority,
     parse_completion_record,
@@ -66,6 +67,7 @@ class _DiscoveredFile:
     relative: str
     observed: os.stat_result
     event_identity: str
+    completion_record: CompletionRecord
 
 
 @dataclass(frozen=True, slots=True)
@@ -812,6 +814,7 @@ class FtpAdapter:
             return _DiscoveryBatch((), 0, True, generation, offset)
         generation, offset = self._completion_cursor(source)
         selected: list[_DiscoveredFile] = []
+        selected_paths: set[str] = set()
         total = 0
         examined = 0
         next_offset = offset
@@ -880,6 +883,9 @@ class FtpAdapter:
                     if record.path.endswith(SIDECAR_SUFFIX):
                         next_offset = record_end
                         continue
+                    if record.path in selected_paths:
+                        next_offset = record_start
+                        break
                     if selected and total + record.bytes > source.max_bytes:
                         next_offset = record_start
                         break
@@ -902,8 +908,11 @@ class FtpAdapter:
                         )
                         next_offset = record_end
                         continue
-                    selected.append(_DiscoveredFile(path, record.path, observed, record.event_id))
+                    selected.append(
+                        _DiscoveredFile(path, record.path, observed, record.event_id, record)
+                    )
                     selected_events.add(record.event_id)
+                    selected_paths.add(record.path)
                     total += observed.st_size
                     next_offset = record_end
             finally:
@@ -1006,6 +1015,7 @@ class FtpAdapter:
                         "device": discovered.observed.st_dev,
                         "inode": discovered.observed.st_ino,
                         "original": str(discovered.path.resolve()),
+                        "completion_record": discovered.completion_record.payload(),
                         "provenance": binding,
                     }
                 )
@@ -1083,6 +1093,9 @@ class FtpAdapter:
             original = Path(str(row["original"]))
             destination = payload_root / relative
             destination.parent.mkdir(mode=0o700, parents=True, exist_ok=True)
+            completion_record = _claim_completion_record(source, row)
+            if completion_record is not None:
+                acquire_handoff(source.root, completion_record, claim_root.name)
             original_exists = original.exists()
             destination_exists = destination.exists()
             if original_exists and destination_exists:
@@ -1111,8 +1124,11 @@ class FtpAdapter:
     def _publish_claim(self, source: SourceConfig, claim_root: Path) -> ProducedCollection:
         durable_receipt = self._durable_receipt(source, claim_root.name)
         if durable_receipt is not None:
+            manifest = _read_manifest(claim_root)
             shutil.rmtree(claim_root, ignore_errors=True)
             self._forget_claim(source, claim_root.name)
+            _prune_handoff_parents(source.root, manifest)
+            _prune_claim_parents(source.root, manifest)
             return durable_receipt
         manifest = self._reconcile_claim(source, claim_root)
         files = tuple(
@@ -1278,6 +1294,43 @@ def _read_manifest(claim_root: Path) -> dict[str, object]:
     if not isinstance(payload, dict) or payload.get("format") != "riverhog-ftp-adapter-claim/v1":
         raise FtpAdapterError(f"invalid FTP adapter claim: {claim_root}")
     return payload
+
+
+def _claim_completion_record(
+    source: SourceConfig,
+    row: Mapping[str, object],
+) -> CompletionRecord | None:
+    value = row.get("completion_record")
+    if value is None:
+        return None
+    if not isinstance(value, Mapping):
+        raise FtpAdapterError("FTP claim completion record is invalid")
+    raw = (
+        json.dumps(dict(value), ensure_ascii=False, sort_keys=True, separators=(",", ":")) + "\n"
+    ).encode("utf-8")
+    try:
+        record = parse_completion_record(raw)
+    except CompletionError as exc:
+        raise FtpAdapterError("FTP claim completion record is invalid") from exc
+    expected = (
+        source.id,
+        str(row["path"]),
+        Path(str(row["original"])).resolve(),
+        int(str(row["bytes"])),
+        int(str(row["device"])),
+        int(str(row["inode"])),
+    )
+    actual = (
+        record.source_id,
+        record.path,
+        (source.root / record.custody).resolve(),
+        record.bytes,
+        record.device,
+        record.inode,
+    )
+    if actual != expected:
+        raise FtpAdapterError("FTP claim differs from its exact completion record")
+    return record
 
 
 def _file_rows(manifest: Mapping[str, object]) -> list[dict[str, object]]:

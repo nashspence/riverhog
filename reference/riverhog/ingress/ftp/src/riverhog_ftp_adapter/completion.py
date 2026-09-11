@@ -41,9 +41,12 @@ class CompletionRecord:
     device: int
     inode: int
 
+    def payload(self) -> dict[str, object]:
+        return asdict(self)
+
     def canonical_bytes(self) -> builtins.bytes:
         return (
-            json.dumps(asdict(self), ensure_ascii=False, sort_keys=True, separators=(",", ":"))
+            json.dumps(self.payload(), ensure_ascii=False, sort_keys=True, separators=(",", ":"))
             + "\n"
         ).encode("utf-8")
 
@@ -170,19 +173,46 @@ class CompletionHandoff:
 
     def recover(self) -> None:
         intent_root = self.source_root / CONTROL_DIR / _INTENTS_DIR
+        disappeared_intents: set[str] = set()
         for intent in sorted(intent_root.glob("*.json"), key=lambda item: item.name):
             try:
-                payload = json.loads(intent.read_bytes())
-                if (
-                    not isinstance(payload, dict)
-                    or payload.pop("intent_format", None) != _INTENT_FORMAT
-                ):
-                    raise ValueError
-                record = CompletionRecord(**payload)
-                parse_completion_record(record.canonical_bytes())
+                record = _parse_intent(intent.read_bytes())
+                if record.source_id != self.source_id:
+                    raise CompletionError("FTP completion intent names another source")
+            except FileNotFoundError:
+                # The adapter may atomically acquire an already-published
+                # intent after directory enumeration but before this read.
+                disappeared_intents.add(intent.stem)
+                continue
             except (OSError, ValueError, TypeError, CompletionError) as exc:
                 raise CompletionError(f"invalid FTP completion intent: {intent.name}") from exc
             self._finish_intent(record, intent)
+        acquisition_root = self.source_root / CONTROL_DIR / _HANDOFFS_DIR
+        acquired_events: set[str] = set()
+        for acquisition in sorted(
+            acquisition_root.glob("*/acquired-*.json"),
+            key=lambda item: item.as_posix(),
+        ):
+            try:
+                record = _parse_intent(acquisition.read_bytes())
+                if record.source_id != self.source_id:
+                    raise CompletionError("FTP handoff acquisition names another source")
+                expected_root = (self.source_root / record.custody).parent
+                if acquisition.parent != expected_root:
+                    raise CompletionError("FTP handoff acquisition is not event-bound")
+                if len(_exact_acquisitions(self.source_root, record)) != 1:
+                    raise CompletionError("FTP handoff has multiple outstanding acquisitions")
+                owner_id = acquisition.stem.removeprefix("acquired-")
+                release_handoff_acquisition(self.source_root, record, owner_id)
+                acquired_events.add(record.event_id)
+            except FileNotFoundError:
+                continue
+            except (OSError, ValueError, TypeError, CompletionError) as exc:
+                raise CompletionError(
+                    f"invalid FTP handoff acquisition: {acquisition.name}"
+                ) from exc
+        if not disappeared_intents.issubset(acquired_events):
+            raise CompletionError("FTP completion intent disappeared without exact acquisition")
 
     def _intent_path(self, event_id: str) -> Path:
         return self.source_root / CONTROL_DIR / _INTENTS_DIR / f"{event_id}.json"
@@ -190,6 +220,9 @@ class CompletionHandoff:
     def _finish_intent(self, record: CompletionRecord, intent: Path) -> None:
         source = self.source_root / record.path
         custody = self.source_root / record.custody
+        if not intent.exists():
+            self._require_exact_acquisition(record)
+            return
         source_exists = source.exists()
         custody_exists = custody.exists()
         if source_exists and custody_exists:
@@ -203,16 +236,39 @@ class CompletionHandoff:
                 _fsync_directory(source.parent)
                 _fsync_directory(custody.parent)
         elif not custody_exists:
+            if not intent.exists():
+                self._require_exact_acquisition(record)
+                return
             raise CompletionError("FTP completion intent payload is missing")
-        _require_identity(custody, record)
+        try:
+            _require_identity(custody, record)
+        except FileNotFoundError:
+            if not intent.exists():
+                self._require_exact_acquisition(record)
+                return
+            raise
         custody.chmod(0o400)
         if record.path.endswith(SIDECAR_SUFFIX):
             self._publish_pending_sidecar(record, source, custody)
         else:
             self._adopt_pending_sidecar(record, source, custody)
         self._append_record(record)
-        intent.unlink(missing_ok=True)
+        self._retire_intent(record, intent)
+
+    def _retire_intent(self, record: CompletionRecord, intent: Path) -> None:
+        try:
+            intent.unlink()
+        except FileNotFoundError:
+            self._require_exact_acquisition(record)
         _fsync_directory(intent.parent)
+
+    def _require_exact_acquisition(self, record: CompletionRecord) -> None:
+        acquisitions = _exact_acquisitions(self.source_root, record)
+        if len(acquisitions) != 1:
+            raise CompletionError("FTP completion intent disappeared without exact acquisition")
+        acquisition = acquisitions[0]
+        owner_id = acquisition.stem.removeprefix("acquired-")
+        release_handoff_acquisition(self.source_root, record, owner_id)
 
     def _pending_sidecar_path(self, relative: str) -> Path:
         name = hashlib.sha256(relative.encode("utf-8")).hexdigest() + ".json"
@@ -254,6 +310,8 @@ class CompletionHandoff:
         old_custody = self.source_root / sidecar_record.custody
         visible = canonical_sidecar_path(source)
         destination = canonical_sidecar_path(custody)
+        owner_id = hashlib.sha256(record.event_id.encode("ascii")).hexdigest()
+        acquisition = acquire_handoff(self.source_root, sidecar_record, owner_id)
         if destination.exists():
             _require_identity(destination, sidecar_record)
         else:
@@ -274,6 +332,12 @@ class CompletionHandoff:
                 pass
         pointer.unlink()
         _fsync_directory(pointer.parent)
+        if acquisition is not None:
+            release_handoff_acquisition(
+                self.source_root,
+                sidecar_record,
+                owner_id,
+            )
 
     def _append_record(self, record: CompletionRecord) -> None:
         raw = record.canonical_bytes()
@@ -297,6 +361,17 @@ def _intent_bytes(record: CompletionRecord) -> bytes:
     ).encode("utf-8")
 
 
+def _parse_intent(raw: bytes) -> CompletionRecord:
+    payload = json.loads(raw)
+    if not isinstance(payload, dict) or payload.pop("intent_format", None) != _INTENT_FORMAT:
+        raise ValueError
+    record = CompletionRecord(**payload)
+    parse_completion_record(record.canonical_bytes())
+    if _intent_bytes(record) != raw:
+        raise CompletionError("FTP completion intent is not canonical")
+    return record
+
+
 def _pending_sidecar_bytes(record: CompletionRecord) -> bytes:
     payload = {"pending_format": _PENDING_SIDECAR_FORMAT, **asdict(record)}
     return (
@@ -317,6 +392,79 @@ def _read_pending_sidecar(path: Path) -> CompletionRecord:
     except (OSError, ValueError, TypeError, CompletionError) as exc:
         raise CompletionError("pending provenance sidecar authority is invalid") from exc
     return record
+
+
+def acquire_handoff(
+    source_root: Path,
+    record: CompletionRecord,
+    owner_id: str,
+) -> Path | None:
+    """Atomically transfer an outstanding listener intent to its exact consumer."""
+
+    _validate_owner_id(owner_id)
+    parse_completion_record(record.canonical_bytes())
+    root = source_root.resolve()
+    intent = root / CONTROL_DIR / _INTENTS_DIR / f"{record.event_id}.json"
+    acquisition = (root / record.custody).parent / f"acquired-{owner_id}.json"
+    expected = _intent_bytes(record)
+    if acquisition.exists():
+        if intent.exists():
+            raise CompletionError("FTP handoff has two outstanding owners")
+        if acquisition.read_bytes() != expected:
+            raise CompletionError("FTP handoff acquisition differs from its exact intent")
+        return acquisition
+    try:
+        os.rename(intent, acquisition)
+    except FileNotFoundError as exc:
+        if acquisition.exists():
+            if acquisition.read_bytes() != expected:
+                raise CompletionError(
+                    "FTP handoff acquisition differs from its exact intent"
+                ) from exc
+            return acquisition
+        return None
+    _fsync_directory(intent.parent)
+    _fsync_directory(acquisition.parent)
+    return acquisition
+
+
+def _exact_acquisitions(source_root: Path, record: CompletionRecord) -> list[Path]:
+    event_root = (source_root.resolve() / record.custody).parent
+    expected = _intent_bytes(record)
+    acquisitions: list[Path] = []
+    for acquisition in sorted(event_root.glob("acquired-*.json"), key=lambda item: item.name):
+        _validate_owner_id(acquisition.stem.removeprefix("acquired-"))
+        if acquisition.read_bytes() != expected:
+            raise CompletionError("FTP handoff acquisition differs from its exact intent")
+        acquisitions.append(acquisition)
+    return acquisitions
+
+
+def release_handoff_acquisition(
+    source_root: Path,
+    record: CompletionRecord,
+    owner_id: str,
+) -> None:
+    """Retire exact consumer evidence after its replacement custody is durable."""
+
+    _validate_owner_id(owner_id)
+    event_root = (source_root.resolve() / record.custody).parent
+    if not event_root.exists():
+        return
+    acquisition = event_root / f"acquired-{owner_id}.json"
+    if acquisition.exists() and acquisition.read_bytes() != _intent_bytes(record):
+        raise CompletionError("FTP handoff acquisition differs from its exact intent")
+    acquisition.unlink(missing_ok=True)
+    _fsync_directory(event_root)
+    try:
+        event_root.rmdir()
+    except OSError:
+        pass
+
+
+def _validate_owner_id(value: str) -> None:
+    if len(value) != 64 or any(character not in "0123456789abcdef" for character in value):
+        raise CompletionError("FTP handoff owner identity is invalid")
 
 
 def _relative_source_path(root: Path, path: Path) -> str:
@@ -386,8 +534,10 @@ __all__ = [
     "CompletionHandoff",
     "CompletionRecord",
     "MAX_COMPLETION_RECORD_BYTES",
+    "acquire_handoff",
     "completion_log_path",
     "initialize_completion_authority",
     "parse_completion_record",
     "read_completion_header",
+    "release_handoff_acquisition",
 ]
