@@ -54,6 +54,7 @@ from stove0_observer_protocol.validation import (
     accept_observation_result,
     require_semantic_validators,
     validate_observation_request,
+    validate_observation_result_structure,
 )
 
 OBSERVER_HTTP_OPERATIONS = (
@@ -125,4 +126,5 @@ __all__ = [
     "accept_observation_result",
     "require_semantic_validators",
     "validate_observation_request",
+    "validate_observation_result_structure",
 ]

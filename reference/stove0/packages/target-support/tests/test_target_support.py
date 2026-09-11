@@ -854,10 +854,35 @@ def test_conformance_report_proves_preflight_and_idempotent_submission() -> None
     assert report.operation_evidence[0].semantic_conformance.status == "schema-only"
     assert report.operations[0].semantic_conformance == "schema-only"
     assert report.operation_evidence[0].accepted_job == request.accepted()
+    assert type(report).model_validate_json(report.model_dump_json()) == report
 
     changed = report.model_dump(mode="json")
     changed["operations"][0]["result_kind"] = "external-effect"
     with pytest.raises(ValidationError, match="differs from its contract"):
+        type(report).model_validate(changed)
+
+
+@pytest.mark.parametrize(
+    ("field", "value", "message"),
+    (
+        ("intent", {"suffix": 42}, "intent violates its cited schema"),
+        ("target_options", {"unexpected": True}, "options violates its cited schema"),
+    ),
+)
+def test_target_conformance_result_revalidates_embedded_operation_schemas(
+    field: str,
+    value: dict[str, object],
+    message: str,
+) -> None:
+    operation, target, request = _request()
+    report = conformance_report(
+        FixtureTargetClient(target, request, _success_status(operation, request)),
+        cases=(TargetConformanceCase(operation=operation, job_request=request),),
+    )
+    changed = report.model_dump(mode="json")
+    changed["operation_evidence"][0]["preflight_request"][field] = value
+
+    with pytest.raises(ValidationError, match=message):
         type(report).model_validate(changed)
 
 

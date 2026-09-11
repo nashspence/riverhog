@@ -127,7 +127,7 @@ def accept_observation_result(
 ) -> None:
     """Apply the complete structural and semantic observer-result acceptance domain."""
 
-    support = _validate_observation_result_structure(result, request, descriptor)
+    support = validate_observation_result_structure(result, request, descriptor)
     if result.state != "observed":
         return
     assert result.facts is not None
@@ -147,11 +147,13 @@ def accept_observation_result(
     validator(request, result.facts)
 
 
-def _validate_observation_result_structure(
+def validate_observation_result_structure(
     result: ObservationResult,
     request: ObservationRequest,
     descriptor: ObserverDescriptor,
 ) -> ObserverContractSupport:
+    """Apply the extension-agnostic structural and schema acceptance domain."""
+
     support = validate_observation_request(request, descriptor)
     if result.request_id != request.request_id:
         raise ValueError("observation result does not bind the request")
@@ -184,4 +186,5 @@ __all__ = [
     "accept_observation_result",
     "require_semantic_validators",
     "validate_observation_request",
+    "validate_observation_result_structure",
 ]
