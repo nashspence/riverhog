@@ -393,6 +393,21 @@ def test_riverhog_production_surfaces_are_stove0_agnostic() -> None:
     assert not violations, "\n".join(violations)
 
 
+def test_piggity_consumes_only_the_declared_riverhog_client_root() -> None:
+    source = REPO / "reference/riverhog/applications/piggity/src"
+    imported = {
+        node.module
+        for path in source.rglob("*.py")
+        for node in ast.walk(ast.parse(path.read_text(encoding="utf-8"), filename=str(path)))
+        if isinstance(node, ast.ImportFrom)
+        and node.level == 0
+        and node.module is not None
+        and (node.module == "riverhog_client" or node.module.startswith("riverhog_client."))
+    }
+
+    assert imported == {"riverhog_client"}
+
+
 def test_projects_declare_their_exact_direct_runtime_dependencies() -> None:
     configs: dict[str, tuple[Path, dict[str, object]]] = {}
     distribution_modules: dict[str, set[str]] = dict(EXTERNAL_DISTRIBUTION_MODULES)

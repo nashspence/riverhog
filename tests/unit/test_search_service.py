@@ -86,7 +86,7 @@ def test_search_files_is_paginated_filtered_and_sorted(tmp_path: Path) -> None:
     initialize_db(sqlite_url(path))
     _seed(path)
 
-    service = SqlAlchemySearchService(RuntimeConfig(database_url=sqlite_url(path)))
+    service = SqlAlchemySearchService(RuntimeConfig.for_testing(database_url=sqlite_url(path)))
     first = service.search(
         q="tax",
         collection="1",
@@ -130,7 +130,9 @@ def test_search_files_can_stream_every_database_match(tmp_path: Path) -> None:
     _seed(path)
 
     rows = list(
-        SqlAlchemySearchService(RuntimeConfig(database_url=sqlite_url(path))).iter_files(
+        SqlAlchemySearchService(
+            RuntimeConfig.for_testing(database_url=sqlite_url(path))
+        ).iter_files(
             q="tax",
             sort="path",
             order="asc",
@@ -153,7 +155,9 @@ def test_search_applies_tag_grants_in_the_database(tmp_path: Path) -> None:
         access=frozenset({ApplicationAccess(CATALOG_READ, "tag:other")}),
     )
 
-    payload = SqlAlchemySearchService(RuntimeConfig(database_url=sqlite_url(path))).search(
+    payload = SqlAlchemySearchService(
+        RuntimeConfig.for_testing(database_url=sqlite_url(path))
+    ).search(
         q=None,
         page_size=25,
         position=None,
@@ -176,7 +180,9 @@ def test_search_returns_only_the_exact_artifact_capability_scope(tmp_path: Path)
         artifacts=((1, "tax/receipt.pdf", 21, "c" * 64),),
     )
 
-    payload = SqlAlchemySearchService(RuntimeConfig(database_url=sqlite_url(path))).search(
+    payload = SqlAlchemySearchService(
+        RuntimeConfig.for_testing(database_url=sqlite_url(path))
+    ).search(
         q=None,
         page_size=25,
         position=None,
@@ -220,7 +226,7 @@ def test_search_uses_canonical_utf8_order_and_stable_ascii_case_projection(
             ]
         )
 
-    service = SqlAlchemySearchService(RuntimeConfig(database_url=sqlite_url(path)))
+    service = SqlAlchemySearchService(RuntimeConfig.for_testing(database_url=sqlite_url(path)))
     assert [
         item["path"] for item in service.iter_files(q="unicode", sort="path", order="asc")
     ] == sorted(

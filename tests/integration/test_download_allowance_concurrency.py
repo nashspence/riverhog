@@ -59,7 +59,7 @@ def database_url() -> Iterator[str]:
 
 
 def _config(database_url: str) -> RuntimeConfig:
-    config = RuntimeConfig(database_url=database_url)
+    config = RuntimeConfig.for_testing(database_url=database_url)
     return replace(
         config,
         archive_stores={

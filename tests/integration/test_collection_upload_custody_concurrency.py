@@ -108,7 +108,7 @@ def database_url() -> Iterator[str]:
 def _services(
     database_url: str,
 ) -> tuple[SqlAlchemyCollectionUploadService, SqlAlchemyCollectionUploadService]:
-    base = RuntimeConfig(database_url=database_url, archive_scrypt_work_factor=1)
+    base = RuntimeConfig.for_testing(database_url=database_url, archive_scrypt_work_factor=1)
     archive = replace(base.archive_store("archive"), name="archive")
     config = replace(
         base,

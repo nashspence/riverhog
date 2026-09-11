@@ -316,6 +316,36 @@ class RetrievalApi:
         yield iter((self.data[start:resolved_end],))
 
 
+class FailingCleanupApi(RetrievalApi):
+    def __init__(self, *, failures: int) -> None:
+        super().__init__()
+        self.failures = failures
+        self.created = 0
+        self.acknowledge_attempts: list[str] = []
+
+    def create_retrieval_job(
+        self,
+        plan_id: str,
+        *,
+        plan_etag: str,
+        **kwargs: Any,
+    ) -> dict[str, Any]:
+        self.created += 1
+        return {
+            "id": f"retrieval-{self.created}",
+            "plan_id": plan_id,
+            "state": "ready",
+            "plan_etag": plan_etag,
+        }
+
+    def acknowledge_retrieval_job(self, job_id: str) -> dict[str, Any]:
+        self.acknowledge_attempts.append(job_id)
+        if self.failures:
+            self.failures -= 1
+            raise ConnectionError("fixture acknowledgement unavailable")
+        return super().acknowledge_retrieval_job(job_id)
+
+
 def test_claimed_reader_verifies_roots_filters_control_and_reads_ranges(tmp_path: Path) -> None:
     api = RetrievalApi()
     reader = ClaimedCollectionReader(
@@ -326,7 +356,7 @@ def test_claimed_reader_verifies_roots_filters_control_and_reads_ranges(tmp_path
         fence=1,
     )
 
-    inventory = reader.inventory()
+    inventory = tuple(reader.iter_inventory())
 
     assert [item.path for item in inventory] == ["camera/input.mov"]
     with reader.prepare(inventory, poll_seconds=0.01) as retrieval:
@@ -352,7 +382,153 @@ def test_claimed_reader_fails_closed_when_root_changed() -> None:
     )
 
     with pytest.raises(RuntimeError, match="root changed"):
-        reader.inventory()
+        tuple(reader.iter_inventory())
+
+
+def test_claimed_reader_streams_multiple_inventory_pages_without_eager_surface() -> None:
+    class PagedApi(RetrievalApi):
+        def __init__(self) -> None:
+            super().__init__()
+            self.cursors: list[str | None] = []
+
+        def get_portable_collection_inventory(
+            self, collection_id: int, **kwargs: Any
+        ) -> PortableCollectionInventoryPage:
+            assert collection_id == 1
+            cursor = kwargs["cursor"]
+            self.cursors.append(cursor)
+            path = "a.bin" if cursor is None else "b.bin"
+            content = path.encode()
+            return PortableCollectionInventoryPage.model_validate(
+                {
+                    "authority": {
+                        "header": {
+                            "collection": 1,
+                            "content_identity": "2" * 64,
+                            "encryption_format": "age-v1-scrypt",
+                            "passphrase_id": "fixture-archive-key-v1",
+                            "provenance_mode": "omitted",
+                        },
+                        "inventory_identity": "9" * 64,
+                        "file_count": 2,
+                        "file_bytes": len("a.bin") + len("b.bin"),
+                    },
+                    "files": [
+                        {
+                            "path": path,
+                            "bytes": len(content),
+                            "sha256": hashlib.sha256(content).hexdigest(),
+                        }
+                    ],
+                    "complete": cursor is not None,
+                    "next_cursor": None if cursor is not None else "page-two",
+                }
+            )
+
+    api = PagedApi()
+    reader = ClaimedCollectionReader(
+        api,  # type: ignore[arg-type]
+        inputs=_spec().inputs,
+        work_id=WORK_ID,
+        claim_id="claim-1",
+        fence=1,
+    )
+    iterator = reader.iter_inventory()
+
+    assert next(iterator).path == "a.bin"
+    assert api.cursors == [None]
+    assert next(iterator).path == "b.bin"
+    assert api.cursors == [None, "page-two"]
+    with pytest.raises(StopIteration):
+        next(iterator)
+    assert "inventory" not in ClaimedCollectionReader.__dict__
+
+
+def test_claimed_reader_releases_completed_retrieval_ownership() -> None:
+    api = RetrievalApi()
+    reader = ClaimedCollectionReader(
+        api,  # type: ignore[arg-type]
+        inputs=_spec().inputs,
+        work_id=WORK_ID,
+        claim_id="claim-1",
+        fence=1,
+    )
+    artifacts = tuple(reader.iter_inventory())
+
+    for _ in range(256):
+        retrieval = reader.prepare(artifacts, poll_seconds=0.01)
+        assert len(reader._retrievals) == 1
+        retrieval.close()
+        assert not reader._retrievals
+
+
+def test_claimed_reader_cleanup_failure_blocks_admission_until_exact_retry_succeeds() -> None:
+    api = FailingCleanupApi(failures=2)
+    reader = ClaimedCollectionReader(
+        api,  # type: ignore[arg-type]
+        inputs=_spec().inputs,
+        work_id=WORK_ID,
+        claim_id="claim-1",
+        fence=1,
+    )
+    artifacts = tuple(reader.iter_inventory())
+    first = reader.prepare(artifacts, poll_seconds=0.01)
+
+    with pytest.raises(ConnectionError, match="acknowledgement unavailable"):
+        first.close()
+    assert first.cleanup_pending
+    assert len(reader._retrievals) == 1
+
+    with pytest.raises(RuntimeError, match="prevents new admission"):
+        reader.prepare(artifacts, poll_seconds=0.01)
+    assert api.created == 1
+    assert api.acknowledge_attempts == ["retrieval-1", "retrieval-1"]
+    assert len(reader._retrievals) == 1
+
+    second = reader.prepare(artifacts, poll_seconds=0.01)
+    assert first.closed
+    assert api.acknowledged == ["retrieval-1"]
+    assert api.created == 2
+    assert len(reader._retrievals) == 1
+    second.close()
+    assert not reader._retrievals
+
+
+@pytest.mark.parametrize("runtime_type", [ClaimedCollectionRuntime, CollectionTransformRuntime])
+def test_maintained_client_runtimes_release_completed_retrievals_promptly(
+    runtime_type: type[Any],
+) -> None:
+    api = RetrievalApi()
+    common = {
+        "claim_id": "claim-1",
+        "fence": 1,
+        "work_id": WORK_ID,
+        "execution_id": EXECUTION_ID,
+    }
+    runtime = (
+        ClaimedCollectionRuntime(api, inputs=_spec().inputs, **common)
+        if runtime_type is ClaimedCollectionRuntime
+        else CollectionTransformRuntime(
+            api,
+            spec=_spec(),
+            controller_evidence=CONTROLLER_EVIDENCE,
+            producer_app="fixture-transform",
+            **common,
+        )
+    )
+    artifacts = tuple(runtime.iter_inventory())
+
+    for _ in range(64):
+        with runtime.prepare_inputs(artifacts, poll_seconds=0.01):
+            assert len(runtime.reader._retrievals) == 1
+        assert not runtime.reader._retrievals
+    with pytest.raises(RuntimeError, match="fixture body failed"):
+        with runtime.prepare_inputs(artifacts, poll_seconds=0.01):
+            raise RuntimeError("fixture body failed")
+    assert not runtime.reader._retrievals
+    assert api.canceled == ["retrieval-1"]
+    runtime.close()
+    runtime.close()
 
 
 class UploadApi:

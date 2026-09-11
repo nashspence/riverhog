@@ -372,7 +372,7 @@ def _services(
     SqlAlchemyRetrievalService,
     BlockingArchiveStore,
 ]:
-    config = RuntimeConfig(database_url=database_url)
+    config = RuntimeConfig.for_testing(database_url=database_url)
     deep = replace(config.archive_store("archive"), name="deep")
     config = replace(
         config,
@@ -506,7 +506,7 @@ def _seal_workflow_claim(
 
 
 def _upload_service(database_url: str) -> SqlAlchemyCollectionUploadService:
-    base = RuntimeConfig(database_url=database_url, archive_scrypt_work_factor=1)
+    base = RuntimeConfig.for_testing(database_url=database_url, archive_scrypt_work_factor=1)
     deep = replace(base.archive_store("archive"), name="deep")
     config = replace(
         base,
@@ -632,7 +632,9 @@ def _seed_derived_output(
         "format": "stove0-controller-evidence/v1",
         "execution_envelope": {"execution_envelope_sha256": execution_id},
     }
-    service = SqlAlchemyCollectionWorkflowService(RuntimeConfig(database_url=database_url))
+    service = SqlAlchemyCollectionWorkflowService(
+        RuntimeConfig.for_testing(database_url=database_url)
+    )
     disposition = ArtifactDisposition(
         input_collection_id=COLLECTION_ID,
         input_archive_root_sha256=root.archive_root_sha256,
@@ -750,7 +752,9 @@ def _seed_multi_input_derived_output(
         "format": "stove0-controller-evidence/v1",
         "execution_envelope": {"execution_envelope_sha256": EXECUTION_ID},
     }
-    service = SqlAlchemyCollectionWorkflowService(RuntimeConfig(database_url=database_url))
+    service = SqlAlchemyCollectionWorkflowService(
+        RuntimeConfig.for_testing(database_url=database_url)
+    )
     dispositions = (
         ArtifactDisposition(
             input_collection_id=COLLECTION_ID,
@@ -1011,7 +1015,9 @@ def test_deletion_marker_rejects_processing_claim_started_during_remote_delete(
 ) -> None:
     _seed(database_url)
     deletion, _retrieval, store = _services(database_url)
-    claim_service = SqlAlchemyCollectionWorkflowService(RuntimeConfig(database_url=database_url))
+    claim_service = SqlAlchemyCollectionWorkflowService(
+        RuntimeConfig.for_testing(database_url=database_url)
+    )
     root = CollectionRootIdentity(COLLECTION_ID, "b" * 64, "0" * 64)
     work = {"format": "stove0-work/v1", "inputs": [root.as_dict()]}
     work_id = canonical_json_sha256(work)
@@ -1054,8 +1060,8 @@ def test_postgres_claim_acquisition_renewal_restart_and_capability_revocation_co
 ) -> None:
     _seed(database_url)
     services = (
-        SqlAlchemyCollectionWorkflowService(RuntimeConfig(database_url=database_url)),
-        SqlAlchemyCollectionWorkflowService(RuntimeConfig(database_url=database_url)),
+        SqlAlchemyCollectionWorkflowService(RuntimeConfig.for_testing(database_url=database_url)),
+        SqlAlchemyCollectionWorkflowService(RuntimeConfig.for_testing(database_url=database_url)),
     )
     root = CollectionRootIdentity(COLLECTION_ID, "b" * 64, "0" * 64)
     work = {"format": "stove0-work/v1", "inputs": [root.as_dict()]}
@@ -1140,7 +1146,9 @@ def test_postgres_exact_output_intent_creation_resumes_one_upload(
     database_url: str,
 ) -> None:
     _seed(database_url)
-    workflows = SqlAlchemyCollectionWorkflowService(RuntimeConfig(database_url=database_url))
+    workflows = SqlAlchemyCollectionWorkflowService(
+        RuntimeConfig.for_testing(database_url=database_url)
+    )
     root, claim = _workflow_claim(workflows)
     claim_id = str(claim["id"])
     _seal_workflow_claim(workflows, claim_id)
@@ -1197,8 +1205,8 @@ def test_postgres_concurrent_first_disposition_and_output_create_one_set(
 ) -> None:
     _seed(database_url)
     services = (
-        SqlAlchemyCollectionWorkflowService(RuntimeConfig(database_url=database_url)),
-        SqlAlchemyCollectionWorkflowService(RuntimeConfig(database_url=database_url)),
+        SqlAlchemyCollectionWorkflowService(RuntimeConfig.for_testing(database_url=database_url)),
+        SqlAlchemyCollectionWorkflowService(RuntimeConfig.for_testing(database_url=database_url)),
     )
     root, claim = _workflow_claim(services[0])
     claim_id = str(claim["id"])
@@ -1265,8 +1273,8 @@ def test_postgres_settlement_replay_converges_on_one_derivation_record(
 ) -> None:
     _seed(database_url)
     services = (
-        SqlAlchemyCollectionWorkflowService(RuntimeConfig(database_url=database_url)),
-        SqlAlchemyCollectionWorkflowService(RuntimeConfig(database_url=database_url)),
+        SqlAlchemyCollectionWorkflowService(RuntimeConfig.for_testing(database_url=database_url)),
+        SqlAlchemyCollectionWorkflowService(RuntimeConfig.for_testing(database_url=database_url)),
     )
     root, claim = _workflow_claim(services[0])
     claim_id = str(claim["id"])
@@ -1311,8 +1319,8 @@ def test_postgres_concurrent_outcome_attachments_are_complete_and_exact(
 ) -> None:
     _seed(database_url)
     services = (
-        SqlAlchemyCollectionWorkflowService(RuntimeConfig(database_url=database_url)),
-        SqlAlchemyCollectionWorkflowService(RuntimeConfig(database_url=database_url)),
+        SqlAlchemyCollectionWorkflowService(RuntimeConfig.for_testing(database_url=database_url)),
+        SqlAlchemyCollectionWorkflowService(RuntimeConfig.for_testing(database_url=database_url)),
     )
     root = CollectionRootIdentity(COLLECTION_ID, "b" * 64, "0" * 64)
     parent_document = {
@@ -1403,8 +1411,8 @@ def test_postgres_last_outcome_attachment_and_claim_closure_converge(
 ) -> None:
     _seed(database_url)
     services = (
-        SqlAlchemyCollectionWorkflowService(RuntimeConfig(database_url=database_url)),
-        SqlAlchemyCollectionWorkflowService(RuntimeConfig(database_url=database_url)),
+        SqlAlchemyCollectionWorkflowService(RuntimeConfig.for_testing(database_url=database_url)),
+        SqlAlchemyCollectionWorkflowService(RuntimeConfig.for_testing(database_url=database_url)),
     )
     root = CollectionRootIdentity(COLLECTION_ID, "b" * 64, "0" * 64)
     parent_document = {
@@ -1542,7 +1550,9 @@ def test_postgres_multi_input_retirement_resumes_after_first_source_deletion(
     first_root = CollectionRootIdentity(COLLECTION_ID, "b" * 64, "0" * 64)
     second_root = _seed_second_input(database_url)
     roots = (first_root, second_root)
-    workflows = SqlAlchemyCollectionWorkflowService(RuntimeConfig(database_url=database_url))
+    workflows = SqlAlchemyCollectionWorkflowService(
+        RuntimeConfig.for_testing(database_url=database_url)
+    )
     work = {"format": "stove0-work/v1", "inputs": [root.as_dict() for root in roots]}
     claim = workflows.create_or_resume_claim(
         work_id=WORK_ID,
@@ -1588,7 +1598,7 @@ def test_postgres_multi_input_retirement_resumes_after_first_source_deletion(
         == "retiring"
     )
 
-    base = RuntimeConfig(database_url=database_url)
+    base = RuntimeConfig.for_testing(database_url=database_url)
     deep = replace(base.archive_store("archive"), name="deep")
     config = replace(
         base,
@@ -1626,7 +1636,7 @@ def test_postgres_multi_input_retirement_resumes_after_first_source_deletion(
     # Reconstruct both authorities at the exact crash boundary where the first
     # immutable input is gone but the second remains under the same claim.
     restarted_workflows = SqlAlchemyCollectionWorkflowService(
-        RuntimeConfig(database_url=database_url)
+        RuntimeConfig.for_testing(database_url=database_url)
     )
     restarted_deletions = SqlAlchemyCollectionDeletionService(config, registry, None)
     resumed = restarted_workflows.get_claim(claim_id, principal=WORKFLOW_PRINCIPAL)
@@ -1674,7 +1684,7 @@ def test_retirement_marker_forces_retrieval_to_replan_onto_a_retained_copy(
 ) -> None:
     _seed(database_url)
     _seed_b2_copy(database_url)
-    base = RuntimeConfig(database_url=database_url)
+    base = RuntimeConfig.for_testing(database_url=database_url)
     archive = base.archive_store("archive")
     b2_config = replace(
         archive,

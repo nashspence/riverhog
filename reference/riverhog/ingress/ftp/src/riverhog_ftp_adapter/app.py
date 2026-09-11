@@ -16,7 +16,7 @@ from pathlib import Path
 from typing import Annotated
 
 import uvicorn
-from fastapi import Depends, FastAPI, Request, Security
+from fastapi import Depends, FastAPI, Query, Request, Security
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
@@ -26,6 +26,7 @@ from http_api_contracts import (
     apply_openapi_error_contract,
     error_code_for_status,
     error_payload,
+    mutable_browse_operation,
 )
 from riverhog_client import ApiClient
 from riverhog_ftp_adapter_api_client import RiverhogFtpAdapterClient
@@ -187,9 +188,13 @@ def create_app(composition: FtpAdapterComposition | None = None) -> FastAPI:
         operation_id="get_ftp_adapter_status",
         dependencies=[Depends(management_auth)],
         tags=["service"],
+        openapi_extra=mutable_browse_operation(),
     )
-    def status() -> dict[str, object]:
-        return resolved.adapter.status()
+    def status(
+        page_size: Annotated[int, Query(ge=1, le=100)] = 25,
+        page_token: Annotated[str | None, Query(min_length=1, max_length=120)] = None,
+    ) -> dict[str, object]:
+        return resolved.adapter.status(page_size=page_size, page_token=page_token)
 
     @app.post(
         "/v1/run",
@@ -239,6 +244,8 @@ def _print(payload: Mapping[str, object], *, json_mode: bool) -> None:
                     f"- {row.get('id')}: claims={row.get('claims')}  "
                     f"scratch={row.get('claim_bytes')} bytes"
                 )
+        if payload.get("next_page_token") is not None:
+            print(f"next page token: {payload['next_page_token']}")
         return
     print(json.dumps(payload, indent=2, sort_keys=True))
 
@@ -261,7 +268,9 @@ def build_parser() -> argparse.ArgumentParser:
     serve.add_argument("--port", type=int, default=8082)
     run = sub.add_parser("run", help="run one landing-source pass")
     run.set_defaults(func=_run_command)
-    status = sub.add_parser("status", help="show bounded scratch and source status")
+    status = sub.add_parser("status", help="show one bounded page of source status")
+    status.add_argument("--page-size", type=int, default=25)
+    status.add_argument("--page-token")
     status.set_defaults(func=_status_command)
     sub.add_parser("check-config", help="validate connected FTP adapter configuration")
     flush = sub.add_parser("flush", help="explicitly close one source batch")
@@ -286,7 +295,10 @@ def _run_command(args: argparse.Namespace) -> None:
 
 def _status_command(args: argparse.Namespace) -> None:
     with _operator_client(args) as client:
-        payload = client.get_ftp_adapter_status()
+        payload = client.get_ftp_adapter_status(
+            page_size=args.page_size,
+            page_token=args.page_token,
+        )
     _print(payload, json_mode=args.json)
 
 

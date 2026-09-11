@@ -188,10 +188,8 @@ def test_architecture_states_the_repo_wide_provenance_authority_policy() -> None
 def test_architecture_states_the_direct_to_final_ingress_authority_policy() -> None:
     architecture = " ".join((REPO / "docs/architecture.md").read_text(encoding="utf-8").split())
 
-    assert (
-        "Ingress encrypts there before writing immutable final-object units to the selected "
-        "archive store; ingress is not a storage tier"
-    ) in architecture
+    assert ("Ingress encrypts there; storage adapters receive ciphertext units") in architecture
+    assert "Ingress is not a storage tier" in architecture
     assert (
         "Only sealed objects and published immutable roots are archive authority"
     ) in architecture

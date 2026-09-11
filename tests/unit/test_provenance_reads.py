@@ -76,7 +76,7 @@ def _omitted_provenance_service(tmp_path: Path) -> SqlAlchemyProvenanceService:
                 file_bytes=0,
             )
         )
-    return SqlAlchemyProvenanceService(RuntimeConfig(database_url=database_url))
+    return SqlAlchemyProvenanceService(RuntimeConfig.for_testing(database_url=database_url))
 
 
 def test_trace_reads_only_reachable_validated_lineage_projection(
@@ -220,7 +220,7 @@ def test_trace_reads_only_reachable_validated_lineage_projection(
                 )
             )
 
-    service = SqlAlchemyProvenanceService(RuntimeConfig(database_url=database_url))
+    service = SqlAlchemyProvenanceService(RuntimeConfig.for_testing(database_url=database_url))
     traced = service.trace_file(
         1,
         "derivative.tar",

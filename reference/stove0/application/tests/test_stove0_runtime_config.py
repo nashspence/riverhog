@@ -13,6 +13,7 @@ def _environment(recipes: Path) -> dict[str, str]:
         "RIVERHOG_BASE_URL": "https://riverhog.invalid",
         "RIVERHOG_TOKEN": "role-specific-riverhog-token",
         "STOVE0_RECIPES_PATH": str(recipes),
+        "STOVE0_BROWSE_TOKEN_SIGNING_KEY": "stove0-test-browse-token-signing-key-v1",
     }
 
 
@@ -112,6 +113,30 @@ def test_runtime_secrets_accept_exactly_one_direct_or_file_source(tmp_path: Path
 def test_operator_api_configuration_requires_its_bearer_secret(tmp_path: Path) -> None:
     with pytest.raises(ValueError, match="STOVE0_API_TOKEN or STOVE0_API_TOKEN_FILE is required"):
         Stove0RuntimeConfig.from_environment(_environment(tmp_path / "recipes.yaml"))
+
+
+def test_every_stove0_role_requires_explicit_browse_signing_material(tmp_path: Path) -> None:
+    environment = _environment(tmp_path / "recipes.yaml")
+    environment.pop("STOVE0_BROWSE_TOKEN_SIGNING_KEY")
+
+    with pytest.raises(
+        ValueError,
+        match=(
+            "STOVE0_BROWSE_TOKEN_SIGNING_KEY or STOVE0_BROWSE_TOKEN_SIGNING_KEY_FILE is required"
+        ),
+    ):
+        Stove0RuntimeConfig.from_environment(environment, require_api_token=False)
+
+
+def test_stove0_runtime_repr_does_not_emit_secret_material(tmp_path: Path) -> None:
+    config = Stove0RuntimeConfig.from_environment(
+        _environment(tmp_path / "recipes.yaml"),
+        require_api_token=False,
+    )
+
+    rendered = repr(config)
+    assert "role-specific-riverhog-token" not in rendered
+    assert "stove0-test-browse-token-signing-key-v1" not in rendered
 
 
 def test_configured_targets_require_an_independent_callback_signing_secret(

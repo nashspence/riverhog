@@ -23,7 +23,9 @@ _SERVER_SOURCE = Path(__file__).parents[2] / "riverhog" / "src"
 
 
 def _config(tmp_path: Path, **overrides: object) -> RuntimeConfig:
-    return RuntimeConfig(database_url=sqlite_url(tmp_path / "state.sqlite3"), **overrides)
+    return RuntimeConfig.for_testing(
+        database_url=sqlite_url(tmp_path / "state.sqlite3"), **overrides
+    )
 
 
 def test_runtime_configuration_fields_have_explicit_production_consumers() -> None:
@@ -34,11 +36,7 @@ def test_runtime_configuration_fields_have_explicit_production_consumers() -> No
         for node in ast.walk(ast.parse(path.read_text()))
         if isinstance(node, ast.Attribute)
     }
-    validation_only = {
-        "archive_active_passphrase_id",
-        "archive_require_explicit_passphrases",
-        "browse_require_explicit_signing_key",
-    }
+    validation_only = {"archive_active_passphrase_id"}
     configuration_fields = {
         field.name
         for model in (
@@ -101,16 +99,29 @@ def test_retrieval_max_lease_covers_the_default_lease(tmp_path: Path) -> None:
         )
 
 
-def test_release_operation_rejects_the_development_browse_signing_key(tmp_path: Path) -> None:
-    with pytest.raises(ValueError, match="rejects the development key"):
-        _config(tmp_path, browse_require_explicit_signing_key=True)
+def test_runtime_config_requires_explicit_secret_fields() -> None:
+    with pytest.raises(ValueError, match="RIVERHOG_BROWSE_TOKEN_SIGNING_KEY"):
+        RuntimeConfig()
+    with pytest.raises(ValueError, match="RIVERHOG_ARCHIVE_PASSPHRASES_JSON"):
+        RuntimeConfig(browse_token_signing_key="x" * 32)
+    with pytest.raises(ValueError, match="RIVERHOG_ARCHIVE_ACTIVE_PASSPHRASE_ID"):
+        RuntimeConfig(
+            browse_token_signing_key="x" * 32,
+            archive_passphrases={"runtime-test-key-v1": "archive-secret"},
+        )
 
-    configured = _config(
-        tmp_path,
-        browse_require_explicit_signing_key=True,
-        browse_token_signing_key="riverhog-release-test-browse-signing-key-v1",
+
+def test_runtime_config_repr_does_not_emit_secret_material() -> None:
+    rendered = repr(
+        RuntimeConfig(
+            archive_passphrases={"runtime-test-key-v1": "archive-secret-value"},
+            archive_active_passphrase_id="runtime-test-key-v1",
+            browse_token_signing_key="browse-secret-value-that-is-at-least-32-bytes",
+        )
     )
-    assert configured.browse_require_explicit_signing_key is True
+
+    assert "archive-secret-value" not in rendered
+    assert "browse-secret-value" not in rendered
 
 
 def test_storage_adapter_registration_is_provider_neutral() -> None:
@@ -124,7 +135,7 @@ def test_storage_adapter_registration_is_provider_neutral() -> None:
         "monthly_download_allowance_bytes",
         "download_safety_buffer_bytes",
     }
-    assert RuntimeConfig().archive_store("archive").allow_insecure_http is False
+    assert RuntimeConfig.for_testing().archive_store("archive").allow_insecure_http is False
 
 
 def test_storage_adapter_http_requires_explicit_opt_in(tmp_path: Path) -> None:
@@ -149,7 +160,6 @@ def test_storage_adapter_http_requires_explicit_opt_in(tmp_path: Path) -> None:
 def test_load_runtime_config_parses_archive_security_settings(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    monkeypatch.setenv("RIVERHOG_ARCHIVE_REQUIRE_EXPLICIT_PASSPHRASES", "true")
     monkeypatch.setenv(
         "RIVERHOG_ARCHIVE_PASSPHRASES_JSON",
         '{"runtime-test-key-v1":"archive-secret"}',
@@ -160,18 +170,37 @@ def test_load_runtime_config_parses_archive_security_settings(
         "RIVERHOG_BROWSE_TOKEN_SIGNING_KEY",
         "riverhog-test-browse-token-signing-key-v1",
     )
-    monkeypatch.setenv("RIVERHOG_BROWSE_REQUIRE_EXPLICIT_SIGNING_KEY", "true")
     monkeypatch.setenv("RIVERHOG_BROWSE_TOKEN_LIFETIME", "2h")
 
     config = load_runtime_config()
 
-    assert config.archive_require_explicit_passphrases is True
     assert config.archive_active_passphrase_id == "runtime-test-key-v1"
     assert config.browse_token_signing_key == "riverhog-test-browse-token-signing-key-v1"
-    assert config.browse_require_explicit_signing_key is True
     assert config.browse_token_lifetime == timedelta(hours=2)
     assert config.archive_passphrase_for("runtime-test-key-v1") == "archive-secret"
     assert config.archive_scrypt_work_factor == 12
+
+
+@pytest.mark.parametrize(
+    ("missing", "message"),
+    (
+        ("RIVERHOG_ARCHIVE_PASSPHRASES_JSON", "RIVERHOG_ARCHIVE_PASSPHRASES_JSON is required"),
+        (
+            "RIVERHOG_ARCHIVE_ACTIVE_PASSPHRASE_ID",
+            "RIVERHOG_ARCHIVE_ACTIVE_PASSPHRASE_ID is required",
+        ),
+        ("RIVERHOG_BROWSE_TOKEN_SIGNING_KEY", "RIVERHOG_BROWSE_TOKEN_SIGNING_KEY is required"),
+    ),
+)
+def test_load_runtime_config_rejects_each_missing_secret(
+    monkeypatch: pytest.MonkeyPatch,
+    missing: str,
+    message: str,
+) -> None:
+    monkeypatch.delenv(missing)
+
+    with pytest.raises(ValueError, match=message):
+        load_runtime_config()
 
 
 def test_archive_key_generations_have_one_explicit_active_binding(tmp_path: Path) -> None:

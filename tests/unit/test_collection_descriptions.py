@@ -35,8 +35,8 @@ from riverhog_core.catalog_models import (
 )
 from riverhog_core.ports.archive_store import CollectionDescriptionReceipt
 from riverhog_core.runtime_config import (
-    DEV_ARCHIVE_PASSPHRASE,
-    DEV_ARCHIVE_PASSPHRASE_ID,
+    TEST_ARCHIVE_PASSPHRASE,
+    TEST_ARCHIVE_PASSPHRASE_ID,
     RuntimeConfig,
 )
 from riverhog_core.services.catalog_sync import SqlAlchemyCatalogSyncService
@@ -202,7 +202,7 @@ def _seed(
         if path is None:
             raise ValueError("path or database_url is required")
         database_url = sqlite_url(path)
-    config = RuntimeConfig(
+    config = RuntimeConfig.for_testing(
         database_url=database_url,
         browse_token_signing_key="description-test-key-000000000000",
     )
@@ -217,7 +217,7 @@ def _seed(
             archive_generation="2" * 64,
             content_identity="3" * 64,
             encryption_format="age-v1-scrypt",
-            passphrase_id=DEV_ARCHIVE_PASSPHRASE_ID,
+            passphrase_id=TEST_ARCHIVE_PASSPHRASE_ID,
             provenance_mode="omitted",
             provenance_identity=None,
             inventory_identity="4" * 64,
@@ -567,7 +567,7 @@ def test_description_replacement_is_durable_searchable_and_syncable(tmp_path: Pa
 
     description_path = f"archives/1/{COLLECTION_DESCRIPTION_RELATIVE_PATH}"
     document = CollectionDescriptionDocument.from_json_bytes(
-        decrypt_age_scrypt(store.objects[description_path], DEV_ARCHIVE_PASSPHRASE)
+        decrypt_age_scrypt(store.objects[description_path], TEST_ARCHIVE_PASSPHRASE)
     )
     assert document.archive_root_sha256 == "5" * 64
     assert document.revision == 2
@@ -877,7 +877,7 @@ def test_delayed_primary_description_writer_cannot_overwrite_newer_authority(
     document = CollectionDescriptionDocument.from_json_bytes(
         decrypt_age_scrypt(
             store.objects[f"archives/1/{COLLECTION_DESCRIPTION_RELATIVE_PATH}"],
-            DEV_ARCHIVE_PASSPHRASE,
+            TEST_ARCHIVE_PASSPHRASE,
         )
     )
     assert document.revision == 2
@@ -966,7 +966,7 @@ def test_delayed_description_replica_cannot_overwrite_newer_authority(
     document = CollectionDescriptionDocument.from_json_bytes(
         decrypt_age_scrypt(
             mirror.objects[f"archives/mirror/1/{COLLECTION_DESCRIPTION_RELATIVE_PATH}"],
-            DEV_ARCHIVE_PASSPHRASE,
+            TEST_ARCHIVE_PASSPHRASE,
         )
     )
     assert document.revision == third["description_revision"] == 3
@@ -1151,7 +1151,7 @@ def test_description_replica_reconciles_exact_ambiguous_attempt_before_newer_des
     document = CollectionDescriptionDocument.from_json_bytes(
         decrypt_age_scrypt(
             mirror.objects[f"archives/mirror/1/{COLLECTION_DESCRIPTION_RELATIVE_PATH}"],
-            DEV_ARCHIVE_PASSPHRASE,
+            TEST_ARCHIVE_PASSPHRASE,
         )
     )
     assert document.revision == newest["description_revision"]
@@ -1243,7 +1243,7 @@ def test_superseded_description_revisions_are_reclaimed_one_at_a_time(
     assert not store.retained_revisions
     path = f"archives/1/{COLLECTION_DESCRIPTION_RELATIVE_PATH}"
     current_document = CollectionDescriptionDocument.from_json_bytes(
-        decrypt_age_scrypt(store.objects[path], DEV_ARCHIVE_PASSPHRASE)
+        decrypt_age_scrypt(store.objects[path], TEST_ARCHIVE_PASSPHRASE)
     )
     assert current_document.revision == 3
     assert current_document.description is None
@@ -1334,7 +1334,7 @@ def test_description_revision_reclamation_reconciles_an_ambiguous_delete(
         assert session.query(CollectionMutableDocumentReclamationRecord).count() == 0
     path = f"archives/1/{COLLECTION_DESCRIPTION_RELATIVE_PATH}"
     current_document = CollectionDescriptionDocument.from_json_bytes(
-        decrypt_age_scrypt(store.objects[path], DEV_ARCHIVE_PASSPHRASE)
+        decrypt_age_scrypt(store.objects[path], TEST_ARCHIVE_PASSPHRASE)
     )
     assert current_document.revision == 2
 

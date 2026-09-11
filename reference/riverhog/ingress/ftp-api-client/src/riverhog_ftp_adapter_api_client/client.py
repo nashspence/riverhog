@@ -85,8 +85,16 @@ class RiverhogFtpAdapterClient:
             self._json("GET", "/health/ready", authenticated=False)
         )
 
-    def get_ftp_adapter_status(self) -> dict[str, Any]:
-        return self._json("GET", "/v1/status")
+    def get_ftp_adapter_status(
+        self,
+        *,
+        page_size: int = 25,
+        page_token: str | None = None,
+    ) -> dict[str, Any]:
+        params: dict[str, str | int] = {"page_size": page_size}
+        if page_token is not None:
+            params["page_token"] = page_token
+        return self._json("GET", "/v1/status", params=params)
 
     def run_ftp_adapter_pass(self) -> dict[str, Any]:
         return self._json("POST", "/v1/run")
@@ -94,10 +102,17 @@ class RiverhogFtpAdapterClient:
     def flush_ftp_adapter_source(self, source_id: str) -> dict[str, Any]:
         return self._json("POST", f"/v1/sources/{quote(source_id, safe='')}/flush")
 
-    def _json(self, method: str, path: str, *, authenticated: bool = True) -> dict[str, Any]:
+    def _json(
+        self,
+        method: str,
+        path: str,
+        *,
+        authenticated: bool = True,
+        params: dict[str, str | int] | None = None,
+    ) -> dict[str, Any]:
         if authenticated and not self.token:
             raise FtpAdapterApiError("RIVERHOG_FTP_ADAPTER_TOKEN is required", code="unauthorized")
-        response = self._http.request(method, path)
+        response = self._http.request(method, path, params=params)
         self._raise(response)
         payload = response.json()
         if not isinstance(payload, dict):

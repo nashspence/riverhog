@@ -7,9 +7,9 @@ Contracts define packages; architecture records ownership.
 - **Archive authority.** Archive stores own encrypted bytes. Only sealed objects and published
   immutable roots are archive authority; caches rebuild. Retirement/deletion mutate archives; archives remain
   recoverable with standard tools without Riverhog's service or database.
-- **Trust boundary.** Riverhog's host is the plaintext/encryption boundary. Ingress encrypts there
-  before writing immutable final-object units to the selected archive store; ingress is not a
-  storage tier.
+- **Trust boundary.** Riverhog's host is the plaintext/encryption boundary. Ingress encrypts there;
+  storage adapters receive ciphertext units. Authorized clients/workers own plaintext custody.
+  Ingress is not a storage tier.
   Collections freeze their encryption format and opaque key identity; configuration owns keys.
 - **Operational state.** Database state records identity, placement, and workflows.
   Checkpoints, unsealed membership, and open resumable writes are not archive authority.

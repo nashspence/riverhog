@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import hashlib
 import importlib.util
 import json
 import sys
@@ -135,6 +136,7 @@ def test_checked_contract_freeze_matches_every_executable_authority() -> None:
     trace = json.loads(TRACE_ARTIFACT.read_text(encoding="utf-8"))
     assert trace["schema"] == "riverhog-contract-trace/v1"
     assert set(trace) == {
+        "boundary_canonical_sha256",
         "contract_canonical_sha256",
         "contract_projection_sha256",
         "contract_schema",
@@ -144,11 +146,13 @@ def test_checked_contract_freeze_matches_every_executable_authority() -> None:
         "segmented_extent_witnesses",
         "sources",
     }
+    boundary_payload = json.dumps(boundaries, separators=(",", ":"), sort_keys=True).encode()
+    assert trace["boundary_canonical_sha256"] == hashlib.sha256(boundary_payload).hexdigest()
     assert trace["coverage"]["source_authorities"] == len(trace["sources"])
     assert trace["coverage"]["source_kinds"] == {
         "cli": 6,
         "configuration": 6,
-        "configuration-environment": 121,
+        "configuration-environment": 119,
         "openapi": 3,
         "protocol": 35,
         "python": 25,

@@ -392,7 +392,7 @@ def _seed_unicode_files(engine: Engine) -> tuple[str, ...]:
 
 def _seal_fixture_inventory(database_url: str) -> None:
     service = SqlAlchemyRetrievalService(
-        RuntimeConfig(database_url=database_url),
+        RuntimeConfig.for_testing(database_url=database_url),
         _qualification_archive_stores(),
         None,
     )
@@ -599,7 +599,7 @@ def _measure_http_path(
     admin: Engine,
     application_name: str,
 ) -> dict[str, object]:
-    config = RuntimeConfig(database_url=database_url)
+    config = RuntimeConfig.for_testing(database_url=database_url)
     collection_tags = SqlAlchemyCollectionTagService(config, _qualification_archive_stores())
     catalog_sync = SqlAlchemyCatalogSyncService(config)
     retrieval = SqlAlchemyRetrievalService(config, _qualification_archive_stores(), None)

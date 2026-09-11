@@ -128,12 +128,10 @@ class ClaimedCollectionReader:
         self.claim_id = claim_id
         self.fence = fence
         self.heartbeat = heartbeat
+        self._retrievals: dict[str, ClaimedRetrieval] = {}
 
     def replace_api(self, api: ClaimedCollectionApi) -> None:
         self.api = api
-
-    def inventory(self, *, include_control: bool = False) -> tuple[ClaimedArtifact, ...]:
-        return tuple(self.iter_inventory(include_control=include_control))
 
     def iter_inventory(self, *, include_control: bool = False) -> Iterator[ClaimedArtifact]:
         previous: ClaimedArtifact | None = None
@@ -182,6 +180,7 @@ class ClaimedCollectionReader:
         poll_seconds: float = 2.0,
         timeout_seconds: float = 24 * 60 * 60,
     ) -> ClaimedRetrieval:
+        self._reconcile_cleanup()
         if lease_seconds < 1:
             raise ValueError("retrieval lease must be positive")
         if artifacts is None:
@@ -230,12 +229,52 @@ class ClaimedCollectionReader:
             failure = str(job.get("failure") or state or "unknown retrieval failure")
             raise RuntimeError(f"claimed collection retrieval is not ready: {failure}")
         _verify_job(job, plan_id=str(plan["id"]), plan_etag=plan_etag)
-        return ClaimedRetrieval(
+        retrieval = ClaimedRetrieval(
             self.api,
             job=job,
             artifacts=selected,
             heartbeat=self.heartbeat,
         )
+        if retrieval.job_id in self._retrievals:
+            raise RuntimeError("Riverhog repeated an active retrieval job identity")
+        self._retrievals[retrieval.job_id] = retrieval
+        retrieval._bind_close_callback(self._release_retrieval)
+        return retrieval
+
+    def close_retrievals(self) -> None:
+        """Settle every retrieval still owned by this reader."""
+
+        failures: list[Exception] = []
+        for retrieval in tuple(self._retrievals.values()):
+            try:
+                if retrieval.cleanup_pending:
+                    retrieval.retry_close()
+                else:
+                    retrieval.close(success=False)
+            except Exception as exc:
+                failures.append(exc)
+        if failures:
+            raise RuntimeError("failed to settle claimed collection retrieval jobs") from failures[
+                0
+            ]
+
+    def _reconcile_cleanup(self) -> None:
+        failures: list[Exception] = []
+        for retrieval in tuple(self._retrievals.values()):
+            if not retrieval.cleanup_pending:
+                continue
+            try:
+                retrieval.retry_close()
+            except Exception as exc:
+                failures.append(exc)
+        if failures:
+            raise RuntimeError(
+                "unresolved claimed retrieval cleanup prevents new admission"
+            ) from failures[0]
+
+    def _release_retrieval(self, retrieval: ClaimedRetrieval) -> None:
+        if self._retrievals.get(retrieval.job_id) is retrieval:
+            del self._retrievals[retrieval.job_id]
 
     def _verify_root(self, expected: CollectionRootIdentity) -> None:
         payload = self.api.get_collection(expected.collection_id)
@@ -269,6 +308,9 @@ class ClaimedRetrieval:
         self._by_key = {current.key: current for current in self.artifacts}
         self.heartbeat = heartbeat
         self._closed = False
+        self._cleanup_pending = False
+        self._close_intent: bool | None = None
+        self._close_callback: Callable[[ClaimedRetrieval], None] | None = None
 
     def __enter__(self) -> Self:
         return self
@@ -279,6 +321,10 @@ class ClaimedRetrieval:
     @property
     def closed(self) -> bool:
         return self._closed
+
+    @property
+    def cleanup_pending(self) -> bool:
+        return self._cleanup_pending
 
     def replace_api(self, api: ClaimedCollectionApi) -> None:
         if self._closed:
@@ -350,20 +396,49 @@ class ClaimedRetrieval:
     def close(self, *, success: bool = True) -> None:
         if self._closed:
             return
+        if self._close_intent is None:
+            self._close_intent = success
+        elif self._close_intent is not success:
+            raise RuntimeError("claimed retrieval close intent cannot change during retry")
         state = str(self.job.get("state") or "")
         if state in _TERMINAL_RETRIEVAL_STATES:
-            self._closed = True
+            self._mark_closed()
             return
-        result = (
-            self.api.acknowledge_retrieval_job(self.job_id)
-            if success
-            else self.api.cancel_retrieval_job(self.job_id)
-        )
+        try:
+            result = (
+                self.api.acknowledge_retrieval_job(self.job_id)
+                if success
+                else self.api.cancel_retrieval_job(self.job_id)
+            )
+        except Exception:
+            self._cleanup_pending = True
+            raise
         expected = "completed" if success else "canceled"
         if str(result.get("state") or "") != expected:
+            self._cleanup_pending = True
             raise RuntimeError(f"Riverhog retrieval close did not reach {expected}")
         self.job = result
+        self._mark_closed()
+
+    def retry_close(self) -> None:
+        """Retry the exact acknowledgement or cancellation that previously failed."""
+
+        if self._closed:
+            return
+        if self._close_intent is None:
+            raise RuntimeError("claimed retrieval has no close operation to retry")
+        self.close(success=self._close_intent)
+
+    def _bind_close_callback(self, callback: Callable[[ClaimedRetrieval], None]) -> None:
+        if self._close_callback is not None:
+            raise RuntimeError("claimed retrieval already has an owner")
+        self._close_callback = callback
+
+    def _mark_closed(self) -> None:
         self._closed = True
+        self._cleanup_pending = False
+        if self._close_callback is not None:
+            self._close_callback(self)
 
     def _require_artifact(self, artifact: ClaimedArtifact) -> ClaimedArtifact:
         if self._closed:

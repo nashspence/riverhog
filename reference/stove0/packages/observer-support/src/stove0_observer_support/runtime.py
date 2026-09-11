@@ -79,7 +79,6 @@ class ObservationRuntime:
             fence=self.fence,
             heartbeat=self.heartbeat,
         )
-        self._retrievals: list[ClaimedRetrieval] = []
         self._closed = False
 
     @classmethod
@@ -171,9 +170,7 @@ class ObservationRuntime:
                 raise ValueError(f"subject is not authorized by this observation: {subject.id}")
             artifacts.append(artifact)
         kwargs.setdefault("restore_policy", self.request.retrieval_policy)
-        retrieval = self.reader.prepare(artifacts, **kwargs)
-        self._retrievals.append(retrieval)
-        return retrieval
+        return self.reader.prepare(artifacts, **kwargs)
 
     @contextmanager
     def stream(
@@ -234,20 +231,12 @@ class ObservationRuntime:
     def close(self) -> None:
         if self._closed:
             return
+        try:
+            self.reader.close_retrievals()
+        except Exception as exc:
+            raise RuntimeError("failed to cancel active observation retrieval jobs") from exc
         self._closed = True
-        failures: list[Exception] = []
-        for retrieval in self._retrievals:
-            if retrieval.closed:
-                continue
-            try:
-                retrieval.close(success=False)
-            except Exception as exc:
-                failures.append(exc)
         self.api.close()
-        if failures:
-            raise RuntimeError("failed to cancel active observation retrieval jobs") from failures[
-                0
-            ]
 
 
 def _token(value: str) -> str:

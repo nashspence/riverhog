@@ -274,14 +274,14 @@ def test_filesystem_recovery_qualification_owns_run_local_images() -> None:
     assert 'chmod 0644 "${proof_root}/oracle/alpha.txt"' in qualification
 
 
-def test_compose_host_interpolation_is_complete_without_an_env_file() -> None:
+def test_compose_host_interpolation_has_a_default_or_explicit_requirement() -> None:
     expressions = re.findall(
         r"(?<!\$)\$\{([^}]+)\}",
         COMPOSE_FILE.read_text(encoding="utf-8"),
     )
 
     assert expressions
-    assert all("-" in expression for expression in expressions)
+    assert all("-" in expression or "?" in expression for expression in expressions)
 
 
 def test_compose_policy_defaults_match_runtime_defaults() -> None:
@@ -292,11 +292,24 @@ def test_compose_policy_defaults_match_runtime_defaults() -> None:
         match = re.fullmatch(r"\$\{[A-Z0-9_]+:?-([^}]*)\}", value)
         compose_environment[name] = match.group(1) if match else value
 
-    assert compose_environment["RIVERHOG_BOOTSTRAP_TOKEN"] == (
-        "riverhog-development-bootstrap-token"
+    explicit_secrets = {
+        "RIVERHOG_ARCHIVE_PASSPHRASES_JSON": '{"compose-test-key-v1":"archive-secret"}',
+        "RIVERHOG_ARCHIVE_ACTIVE_PASSPHRASE_ID": "compose-test-key-v1",
+        "RIVERHOG_BROWSE_TOKEN_SIGNING_KEY": "riverhog-compose-test-browse-signing-key-v1",
+    }
+    compose_environment.update(explicit_secrets)
+    assert str(compose["services"]["app"]["environment"]["RIVERHOG_BOOTSTRAP_TOKEN"]).startswith(
+        "${RIVERHOG_BOOTSTRAP_TOKEN:?"
     )
+    for name in (
+        "RIVERHOG_ARCHIVE_PASSPHRASES_JSON",
+        "RIVERHOG_ARCHIVE_ACTIVE_PASSPHRASE_ID",
+        "RIVERHOG_BROWSE_TOKEN_SIGNING_KEY",
+    ):
+        assert str(compose["services"]["app"]["environment"][name]).startswith(f"${{{name}:?")
+    assert "REQUIRE_EXPLICIT" not in COMPOSE_FILE.read_text(encoding="utf-8")
 
-    with patch.dict(os.environ, {}, clear=True):
+    with patch.dict(os.environ, explicit_secrets, clear=True):
         runtime_defaults = asdict(load_runtime_config())
     with patch.dict(os.environ, compose_environment, clear=True):
         compose_defaults = asdict(load_runtime_config())
@@ -338,7 +351,6 @@ def test_compose_services_publish_the_archive_runtime_configuration() -> None:
         "RIVERHOG_ARCHIVE_WRITE_CONCURRENCY",
         "RIVERHOG_ARCHIVE_PREPARE_CONCURRENCY",
         "RIVERHOG_ARCHIVE_UPLOAD_REQUEST_CONCURRENCY",
-        "RIVERHOG_ARCHIVE_REQUIRE_EXPLICIT_PASSPHRASES",
         "RIVERHOG_ARCHIVE_PASSPHRASES_JSON",
         "RIVERHOG_ARCHIVE_ACTIVE_PASSPHRASE_ID",
         "RIVERHOG_ARCHIVE_SCRYPT_WORK_FACTOR",
@@ -370,6 +382,7 @@ def test_compose_services_publish_the_archive_runtime_configuration() -> None:
         "RIVERHOG_EVENT_SOURCE",
         "RIVERHOG_EVENT_CONTEXT_RETENTION",
         "RIVERHOG_EVENT_CONTEXT_REAP_BATCH_SIZE",
+        "RIVERHOG_BROWSE_TOKEN_SIGNING_KEY",
         "RIVERHOG_CATALOG_SYNC_BOOTSTRAP_LIFETIME",
         "RIVERHOG_CATALOG_SYNC_CURSOR_LIFETIME",
         "RIVERHOG_CATALOG_SYNC_HISTORY_RETENTION",

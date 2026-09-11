@@ -8,6 +8,7 @@ import ast
 import hashlib
 import inspect
 import json
+import os
 import re
 import subprocess
 import sys
@@ -20,6 +21,7 @@ from datetime import UTC, datetime
 from pathlib import Path
 from statistics import median
 from typing import Any, TypeGuard, cast, get_origin, get_type_hints
+from unittest.mock import patch
 
 from fastapi import FastAPI
 from fastapi.routing import APIRoute
@@ -106,6 +108,7 @@ def create_stove0_contract_app() -> FastAPI:
                 capability_ttl_seconds=900,
                 scheduler_interval_seconds=5,
                 operational_state_retention_seconds=2592000,
+                browse_token_signing_key="operation-qualification-browse-signing-key-v1",
             ),
             riverhog_api=cast(ApiClient, _RiverhogContractApi()),
             state=state,
@@ -314,10 +317,21 @@ def _argparse_commands(
 
 
 def application_surfaces() -> tuple[ApplicationSurface, ...]:
+    qualification_secrets = {
+        "RIVERHOG_ARCHIVE_PASSPHRASES_JSON": (
+            '{"operation-qualification-key-v1":"operation-qualification-archive-passphrase"}'
+        ),
+        "RIVERHOG_ARCHIVE_ACTIVE_PASSPHRASE_ID": "operation-qualification-key-v1",
+        "RIVERHOG_BROWSE_TOKEN_SIGNING_KEY": (
+            "operation-qualification-browse-token-signing-key-v1"
+        ),
+    }
+    with patch.dict(os.environ, qualification_secrets):
+        riverhog_app = create_riverhog_app()
     return (
         ApplicationSurface(
             "riverhog",
-            create_riverhog_app(),
+            riverhog_app,
             (ApiClient,),
             tuple(_typer_commands(piggity.app)),
         ),

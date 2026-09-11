@@ -72,6 +72,37 @@ class _Producer:
         )
 
 
+class _ControlledProducer:
+    calls: list[str] = []
+    successes: list[str] = []
+    available = False
+    permanently_failing_paths: set[str] = set()
+
+    def __init__(self, _api: object, **_kwargs: object) -> None:
+        pass
+
+    def publish(self, files: object, **_kwargs: object) -> ProducedCollection:
+        materialized = tuple(files)  # type: ignore[arg-type]
+        path = str(materialized[0].path)
+        self.__class__.calls.append(path)
+        if not self.__class__.available or path in self.__class__.permanently_failing_paths:
+            raise ConnectionError(f"publication unavailable for {path}")
+        self.__class__.successes.append(path)
+        return ProducedCollection(
+            collection_id=len(self.__class__.successes),
+            archive_root_sha256="a" * 64,
+            content_identity="b" * 64,
+            receipt={"state": "finalized"},
+        )
+
+
+def _stable_file(path: Path, content: bytes) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_bytes(content)
+    old = time.time() - 10
+    os.utime(path, (old, old))
+
+
 def test_v1_claim_fixture_retains_payload_and_portable_provenance_identity() -> None:
     fixture_root = REPO_ROOT / "tests/fixtures/state/v1_0001/riverhog-ftp-adapter"
     manifest = json.loads((fixture_root / "claim.json").read_text(encoding="utf-8"))
@@ -114,12 +145,21 @@ def test_landing_adapter_reconciles_lost_response_without_releasing_custody(
 
     second = adapter.run_once()
 
-    assert second == {
-        "format": "riverhog-ftp-adapter-pass/v1",
-        "completed": 1,
-        "failed": [],
-        "sources": ["camera-a"],
-    }
+    assert second["format"] == "riverhog-ftp-adapter-pass/v1"
+    assert second["completed"] == 1
+    assert second["failed"] == []
+    assert second["sources"] == ["camera-a"]
+    assert second["source_results"] == [
+        {
+            "id": "camera-a",
+            "claim_attempts": 1,
+            "completed": 1,
+            "failed": 0,
+            "discovery_entries_examined": 1,
+            "discovery_sweep_complete": True,
+            "admission_deferred": False,
+        }
+    ]
     assert not claims[0].exists()
     assert [call["kwargs"]["idempotency_key"] for call in _Producer.calls] == [
         _Producer.calls[0]["kwargs"]["idempotency_key"],
@@ -130,6 +170,199 @@ def test_landing_adapter_reconciles_lost_response_without_releasing_custody(
         and call["files"][0][:2] == ("camera/clip.mp4", b"immutable camera payload")
         for call in _Producer.calls
     )
+
+
+def test_large_unavailable_backlog_is_bounded_then_drains_exactly_after_restart(
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path: Path,
+) -> None:
+    base = _config(tmp_path)
+    source = base.sources[0].model_copy(update={"max_files": 1})
+    config = base.model_copy(
+        update={
+            "sources": (source,),
+            "pending_claim_capacity": 3,
+            "claim_attempt_budget": 2,
+            "discovery_entry_budget": 32,
+        }
+    )
+    expected = {f"camera-{index:02d}.bin" for index in range(12)}
+    for name in sorted(expected):
+        _stable_file(source.root / name, name.encode())
+    _ControlledProducer.calls = []
+    _ControlledProducer.successes = []
+    _ControlledProducer.available = False
+    _ControlledProducer.permanently_failing_paths = set()
+    monkeypatch.setattr(landing, "CollectionProducer", _ControlledProducer)
+    adapter = FtpAdapter(object(), config)  # type: ignore[arg-type]
+
+    for _ in range(8):
+        result = adapter.run_once()
+        assert result["source_results"][0]["claim_attempts"] <= 2  # type: ignore[index]
+        assert len(result["failed"]) <= 2  # type: ignore[arg-type]
+        assert adapter.status()["sources"][0]["claims"] <= 3  # type: ignore[index]
+
+    assert adapter.status()["sources"][0]["claims"] == 3  # type: ignore[index]
+    assert len(list(source.root.glob("*.bin"))) == len(expected) - 3
+
+    adapter = FtpAdapter(object(), config)  # type: ignore[arg-type]
+    _ControlledProducer.available = True
+    for _ in range(30):
+        result = adapter.run_once()
+        assert result["source_results"][0]["claim_attempts"] <= 2  # type: ignore[index]
+        if (
+            not list(source.root.glob("*.bin"))
+            and adapter.status()["sources"][0][  # type: ignore[index]
+                "claims"
+            ]
+            == 0
+        ):
+            break
+
+    assert set(_ControlledProducer.successes) == expected
+    assert len(_ControlledProducer.successes) == len(expected)
+    assert list(source.root.glob("*.bin")) == []
+    assert adapter.status()["sources"][0]["claims"] == 0  # type: ignore[index]
+
+
+def test_persistent_old_failure_does_not_starve_new_input_across_restart(
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path: Path,
+) -> None:
+    base = _config(tmp_path)
+    source = base.sources[0].model_copy(update={"max_files": 1})
+    config = base.model_copy(
+        update={
+            "sources": (source,),
+            "pending_claim_capacity": 4,
+            "claim_attempt_budget": 2,
+            "discovery_entry_budget": 16,
+        }
+    )
+    _ControlledProducer.calls = []
+    _ControlledProducer.successes = []
+    _ControlledProducer.available = True
+    _ControlledProducer.permanently_failing_paths = {"bad.bin"}
+    monkeypatch.setattr(landing, "CollectionProducer", _ControlledProducer)
+    _stable_file(source.root / "bad.bin", b"bad")
+
+    first = FtpAdapter(object(), config)  # type: ignore[arg-type]
+    assert first.run_once()["failed"]
+    _stable_file(source.root / "good.bin", b"good")
+
+    restarted = FtpAdapter(object(), config)  # type: ignore[arg-type]
+    second = restarted.run_once()
+
+    assert second["source_results"][0]["claim_attempts"] == 2  # type: ignore[index]
+    assert "good.bin" in _ControlledProducer.successes
+    assert restarted.status()["sources"][0]["claims"] == 1  # type: ignore[index]
+    assert not (source.root / "good.bin").exists()
+    assert _ControlledProducer.calls.count("bad.bin") == 2
+
+    # The durable cursor names the now-completed good claim. A later restart
+    # must wrap past that missing entry, retry the old failure, and still admit
+    # new input in the same bounded pass.
+    _stable_file(source.root / "later.bin", b"later")
+    restarted = FtpAdapter(object(), config)  # type: ignore[arg-type]
+    third = restarted.run_once()
+
+    assert third["source_results"][0]["claim_attempts"] == 2  # type: ignore[index]
+    assert _ControlledProducer.successes == ["good.bin", "later.bin"]
+    assert _ControlledProducer.calls.count("bad.bin") == 3
+    assert restarted.status()["sources"][0]["claims"] == 1  # type: ignore[index]
+
+
+def test_changed_claim_remains_in_custody_for_bounded_reconciliation(
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path: Path,
+) -> None:
+    base = _config(tmp_path)
+    source = base.sources[0].model_copy(update={"max_files": 1})
+    config = base.model_copy(
+        update={
+            "sources": (source,),
+            "pending_claim_capacity": 2,
+            "claim_attempt_budget": 2,
+            "discovery_entry_budget": 8,
+        }
+    )
+    _ControlledProducer.calls = []
+    _ControlledProducer.successes = []
+    _ControlledProducer.available = False
+    _ControlledProducer.permanently_failing_paths = set()
+    monkeypatch.setattr(landing, "CollectionProducer", _ControlledProducer)
+    _stable_file(source.root / "changed.bin", b"original")
+
+    first = FtpAdapter(object(), config)  # type: ignore[arg-type]
+    result = first.run_once()
+    assert result["source_results"][0]["claim_attempts"] == 1  # type: ignore[index]
+    claim_root = first._claim_roots(source)[0]
+    claimed_payload = claim_root / "payload" / "changed.bin"
+    claimed_payload.write_bytes(b"tampered")
+
+    _ControlledProducer.available = True
+    restarted = FtpAdapter(object(), config)  # type: ignore[arg-type]
+    result = restarted.run_once()
+
+    assert result["source_results"][0]["claim_attempts"] == 1  # type: ignore[index]
+    assert result["source_results"][0]["failed"] == 1  # type: ignore[index]
+    assert restarted.status()["sources"][0]["claims"] == 1  # type: ignore[index]
+    assert claimed_payload.read_bytes() == b"tampered"
+    assert _ControlledProducer.successes == []
+
+
+def test_pre_manifest_construction_orphan_is_rebuilt_after_restart(
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path: Path,
+) -> None:
+    config = _config(tmp_path)
+    source = config.sources[0].model_copy(update={"max_files": 1})
+    config = config.model_copy(update={"sources": (source,)})
+    payload = source.root / "orphaned.bin"
+    _stable_file(payload, b"orphaned")
+    _Producer.calls = []
+    _Producer.fail_once = False
+    monkeypatch.setattr(landing, "CollectionProducer", _Producer)
+    adapter = FtpAdapter(object(), config)  # type: ignore[arg-type]
+    selected, _, _ = adapter._discover_batch(source, flush=False)
+    event_id = hashlib.sha256(
+        "\n".join(f"{row[1]}\0{row[2].st_size}\0{row[2].st_mtime_ns}" for row in selected).encode()
+    ).hexdigest()
+    claim_id = landing._claim_identity(
+        source.id,
+        event_id,
+        tuple((relative, item.st_size, item.st_dev, item.st_ino) for _, relative, item in selected),
+    )
+    orphan = adapter._claims_root(source) / claim_id
+    orphan.mkdir(mode=0o700, parents=True)
+    (orphan / ".claim.json.part").write_text("interrupted", encoding="utf-8")
+
+    result = FtpAdapter(object(), config).run_once()  # type: ignore[arg-type]
+
+    assert result["completed"] == 1
+    assert result["failed"] == []
+    assert not payload.exists()
+    assert not orphan.exists()
+    assert _Producer.calls[0]["files"][0][1] == b"orphaned"
+
+
+def test_status_pages_sources_without_claiming_an_exact_backlog_snapshot(tmp_path: Path) -> None:
+    base = _config(tmp_path)
+    first = base.sources[0].model_copy(update={"id": "camera-a", "root": tmp_path / "a"})
+    second = base.sources[0].model_copy(update={"id": "camera-b", "root": tmp_path / "b"})
+    adapter = FtpAdapter(
+        object(),  # type: ignore[arg-type]
+        base.model_copy(update={"sources": (first, second)}),
+    )
+
+    page = adapter.status(page_size=1)
+    following = adapter.status(page_size=1, page_token=str(page["next_page_token"]))
+
+    assert [row["id"] for row in page["sources"]] == ["camera-a"]  # type: ignore[index]
+    assert page["next_page_token"] == "camera-a"
+    assert page["snapshot"] is False
+    assert [row["id"] for row in following["sources"]] == ["camera-b"]  # type: ignore[index]
+    assert following["next_page_token"] is None
 
 
 def test_explicit_flush_is_the_same_bounded_claim_and_receipt_path(

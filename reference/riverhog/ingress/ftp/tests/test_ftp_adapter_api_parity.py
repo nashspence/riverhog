@@ -26,10 +26,14 @@ class _Riverhog:
 
 
 class _Adapter:
-    def status(self) -> dict[str, object]:
+    def status(self, *, page_size: int = 25, page_token: str | None = None) -> dict[str, object]:
+        assert (page_size, page_token) == (25, None)
         return {
             "format": "riverhog-ftp-adapter-status/v1",
             "sources": [{"id": "camera-a", "claims": 0, "claim_bytes": 0}],
+            "page_size": page_size,
+            "next_page_token": None,
+            "snapshot": False,
         }
 
     def run_once(self) -> dict[str, object]:
@@ -119,12 +123,12 @@ def test_management_api_and_client_share_versioned_routes(tmp_path: Path) -> Non
         "adapter-token",
         transport=httpx.MockTransport(handler),
     ) as client:
-        client.get_ftp_adapter_status()
+        client.get_ftp_adapter_status(page_size=17, page_token="camera-a")
         client.run_ftp_adapter_pass()
         client.flush_ftp_adapter_source("camera/a")
 
     assert requests == [
-        ("GET", "/v1/status"),
+        ("GET", "/v1/status?page_size=17&page_token=camera-a"),
         ("POST", "/v1/run"),
         ("POST", "/v1/sources/camera%2Fa/flush"),
     ]
@@ -173,8 +177,10 @@ class _OperatorClient:
     def __exit__(self, *_args: object) -> None:
         pass
 
-    def get_ftp_adapter_status(self) -> dict[str, object]:
-        return _Adapter().status()
+    def get_ftp_adapter_status(
+        self, *, page_size: int = 25, page_token: str | None = None
+    ) -> dict[str, object]:
+        return _Adapter().status(page_size=page_size, page_token=page_token)
 
     def run_ftp_adapter_pass(self) -> dict[str, object]:
         return _Adapter().run_once()

@@ -307,7 +307,7 @@ def _seed_collection(
     DirectArchiveStore,
 ]:
     database_url = database_url or sqlite_url(tmp_path / "catalog.sqlite3")
-    config = RuntimeConfig(
+    config = RuntimeConfig.for_testing(
         database_url=database_url,
         archive_scrypt_work_factor=1,
         retrieval_pending_timeout=pending_timeout or timedelta(hours=72),

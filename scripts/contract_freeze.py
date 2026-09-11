@@ -782,10 +782,12 @@ def _environment_trace() -> list[dict[str, object]]:
 
 
 def trace_projection(projection: Mapping[str, object]) -> dict[str, object]:
+    boundaries = cast(Mapping[str, object], projection["boundaries"])
     external = cast(Mapping[str, object], projection["external_contract"])
     extents = cast(Mapping[str, object], external["extents"])
     decisions = cast(list[dict[str, object]], extents["decisions"])
     semantic_payload = json.dumps(projection, separators=(",", ":"), sort_keys=True).encode()
+    boundary_payload = json.dumps(boundaries, separators=(",", ":"), sort_keys=True).encode()
     rendered_payload = (json.dumps(projection, indent=2, sort_keys=True) + "\n").encode()
     sources: list[dict[str, object]] = [
         {"id": "release:release.toml", "source": {"path": "release.toml"}},
@@ -814,6 +816,7 @@ def trace_projection(projection: Mapping[str, object]) -> dict[str, object]:
     return {
         "schema": TRACE_SCHEMA,
         "contract_schema": projection["schema"],
+        "boundary_canonical_sha256": hashlib.sha256(boundary_payload).hexdigest(),
         "contract_canonical_sha256": hashlib.sha256(semantic_payload).hexdigest(),
         "contract_projection_sha256": hashlib.sha256(rendered_payload).hexdigest(),
         "sources": sources,

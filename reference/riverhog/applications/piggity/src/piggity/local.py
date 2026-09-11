@@ -12,9 +12,10 @@ from typing import Annotated, Any, cast
 
 import typer
 from http_api_contracts import BrowseTokenCodec, BrowseTokenError
-from riverhog_client.catalog_sync import CatalogReplica
-from riverhog_client.client import ApiClient, RestorePolicy
-from riverhog_client.downloads import (
+from riverhog_client import (
+    ApiClient,
+    CatalogReplica,
+    RestorePolicy,
     RetrievalDownload,
     configured_download_concurrency,
     configured_download_window,

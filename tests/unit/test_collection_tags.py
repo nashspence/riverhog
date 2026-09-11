@@ -46,7 +46,11 @@ from riverhog_core.catalog_models import (
     CollectionTagVisibilityRecord,
 )
 from riverhog_core.ports.archive_store import CollectionTagObjectReceipt
-from riverhog_core.runtime_config import DEV_ARCHIVE_PASSPHRASE, RuntimeConfig
+from riverhog_core.runtime_config import (
+    TEST_ARCHIVE_PASSPHRASE,
+    TEST_ARCHIVE_PASSPHRASE_ID,
+    RuntimeConfig,
+)
 from riverhog_core.services.catalog_sync import (
     SqlAlchemyCatalogSyncService,
     _reap_unreferenced_tag_history,
@@ -174,7 +178,7 @@ def _service(
         collection_id=archive.collection_id,
         archive_storage_prefix=archive_storage_prefix,
         document=head.to_json_bytes(),
-        passphrase_id="riverhog-dev-key-v1",
+        passphrase_id=TEST_ARCHIVE_PASSPHRASE_ID,
     )
     with session_scope(factory) as session:
         publication = session.get(
@@ -201,7 +205,7 @@ class _EncryptedMemoryTagNodes:
 
     def get(self, digest: str) -> bytes:
         path = f"{self.prefix}/{collection_tag_node_path(digest)}"
-        return decrypt_age_scrypt(self.store.objects[path], DEV_ARCHIVE_PASSPHRASE)
+        return decrypt_age_scrypt(self.store.objects[path], TEST_ARCHIVE_PASSPHRASE)
 
     def put(self, digest: str, encoded: bytes) -> None:
         raise AssertionError((digest, encoded))
@@ -214,7 +218,7 @@ class _EncryptedAdapterTagNodes:
 
     def get(self, digest: str) -> bytes:
         path = f"{self.prefix}/{collection_tag_node_path(digest)}"
-        return decrypt_age_scrypt(self.adapter.objects[path].content, DEV_ARCHIVE_PASSPHRASE)
+        return decrypt_age_scrypt(self.adapter.objects[path].content, TEST_ARCHIVE_PASSPHRASE)
 
     def put(self, digest: str, encoded: bytes) -> None:
         raise AssertionError((digest, encoded))
@@ -228,7 +232,7 @@ def _recover_stored_tags(
     head = CollectionTagHeadDocument.from_json_bytes(
         decrypt_age_scrypt(
             store.objects[f"{prefix}/{COLLECTION_TAG_HEAD_RELATIVE_PATH}"],
-            DEV_ARCHIVE_PASSPHRASE,
+            TEST_ARCHIVE_PASSPHRASE,
         )
     )
     tags = CollectionTagSet(
@@ -246,7 +250,7 @@ def _recover_adapter_tags(
     head = CollectionTagHeadDocument.from_json_bytes(
         decrypt_age_scrypt(
             adapter.objects[f"{prefix}/{COLLECTION_TAG_HEAD_RELATIVE_PATH}"].content,
-            DEV_ARCHIVE_PASSPHRASE,
+            TEST_ARCHIVE_PASSPHRASE,
         )
     )
     tags = CollectionTagSet(
@@ -431,7 +435,7 @@ def test_tag_publication_budget_defers_but_does_not_limit_logical_mutation(
         )
 
     restarted = SqlAlchemyCollectionTagService(
-        RuntimeConfig(database_url=sqlite_url(path)),
+        RuntimeConfig.for_testing(database_url=sqlite_url(path)),
         ArchiveStoreRegistry({"archive": archive_store_binding(store)}),
         session_factory=make_session_factory(sqlite_url(path)),
     )
@@ -544,7 +548,7 @@ def test_tag_removal_emits_exact_loss_of_visibility_without_event_tag_snapshots(
     tags, factory, _store = _service(path)
     principal = _principal("source:camera")
     catalog = SqlAlchemyCatalogSyncService(
-        RuntimeConfig(
+        RuntimeConfig.for_testing(
             database_url=sqlite_url(path),
             browse_token_signing_key="catalog-tag-visibility-test-key-v1",
         ),
@@ -674,7 +678,7 @@ def test_pending_mutation_nodes_survive_maintenance_and_restart(
 
     monkeypatch.setattr(service, "_finish_mutation", paused_finish)
     catalog = SqlAlchemyCatalogSyncService(
-        RuntimeConfig(database_url=sqlite_url(path)),
+        RuntimeConfig.for_testing(database_url=sqlite_url(path)),
         session_factory=factory,
     )
     with ThreadPoolExecutor(max_workers=1) as executor:
@@ -721,7 +725,7 @@ def test_pending_mutation_nodes_survive_maintenance_and_restart(
         result = mutation.result(timeout=10)
 
     restarted = SqlAlchemyCollectionTagService(
-        RuntimeConfig(database_url=sqlite_url(path)),
+        RuntimeConfig.for_testing(database_url=sqlite_url(path)),
         ArchiveStoreRegistry({"archive": archive_store_binding(store)}),
         session_factory=make_session_factory(sqlite_url(path)),
     )
@@ -921,7 +925,7 @@ def test_provider_nodes_for_retained_exact_revisions_remain_recoverable(
         lambda: datetime(2026, 9, 8, tzinfo=UTC),
     )
     catalog = SqlAlchemyCatalogSyncService(
-        RuntimeConfig(
+        RuntimeConfig.for_testing(
             database_url=sqlite_url(tmp_path / "catalog.sqlite3"),
             catalog_sync_history_retention=timedelta(days=1),
             catalog_sync_bootstrap_lifetime=timedelta(hours=1),
@@ -1045,7 +1049,7 @@ def test_tag_replica_reconciles_exact_ambiguous_attempt_before_newer_desired(
     path = tmp_path / "catalog.sqlite3"
     service, factory, primary = _service(path)
     mirror = _VersionedTagHeadStore()
-    config = RuntimeConfig(database_url=sqlite_url(path))
+    config = RuntimeConfig.for_testing(database_url=sqlite_url(path))
     registry = ArchiveStoreRegistry(
         {
             "archive": archive_store_binding(primary),
@@ -1376,7 +1380,7 @@ def test_delayed_old_head_writer_cannot_overwrite_newer_acknowledged_authority(
         )
         assert store.started.wait(timeout=10)
         restarted = SqlAlchemyCollectionTagService(
-            RuntimeConfig(database_url=sqlite_url(tmp_path / "catalog.sqlite3")),
+            RuntimeConfig.for_testing(database_url=sqlite_url(tmp_path / "catalog.sqlite3")),
             ArchiveStoreRegistry({"archive": archive_store_binding(store)}),
             session_factory=factory,
         )
@@ -1549,7 +1553,7 @@ def _assert_delayed_old_tag_gc_result_cannot_change_successor(
     store.fail_delayed_result = fail_old_result
     config_url = database_url if database_url is not None else sqlite_url(path)
     restarted = SqlAlchemyCollectionTagService(
-        RuntimeConfig(database_url=config_url),
+        RuntimeConfig.for_testing(database_url=config_url),
         ArchiveStoreRegistry({"archive": archive_store_binding(store)}),
         session_factory=factory,  # type: ignore[arg-type]
     )
@@ -1699,7 +1703,7 @@ def test_delayed_gc_cannot_delete_a_node_republished_by_a_newer_authority(
         delayed = executor.submit(service.process_due, limit=1)
         assert store.started.wait(timeout=10)
         restarted = SqlAlchemyCollectionTagService(
-            RuntimeConfig(database_url=sqlite_url(path)),
+            RuntimeConfig.for_testing(database_url=sqlite_url(path)),
             ArchiveStoreRegistry({"archive": archive_store_binding(store)}),
             session_factory=factory,
         )
@@ -1808,7 +1812,7 @@ def _expire_prior_tag_authorities(
         lambda: datetime(2026, 9, 8, tzinfo=UTC),
     )
     catalog = SqlAlchemyCatalogSyncService(
-        RuntimeConfig(
+        RuntimeConfig.for_testing(
             database_url=database_url,
             catalog_sync_history_retention=timedelta(days=1),
             catalog_sync_bootstrap_lifetime=timedelta(hours=1),
@@ -1845,7 +1849,7 @@ def _assert_unrelated_head_advance_preserves_interrupted_tag_gc(
 ) -> None:
     adapter = _InterruptedExactTagNodeDeleteAdapter()
     archive = StorageAdapterArchiveStore(
-        RuntimeConfig(),
+        RuntimeConfig.for_testing(),
         name="archive",
         adapter=adapter,
     )
@@ -1958,7 +1962,7 @@ def _assert_unrelated_head_advance_preserves_interrupted_tag_gc(
     assert (node_path, old_revision) in adapter.revisions
 
     restarted = SqlAlchemyCollectionTagService(
-        RuntimeConfig(database_url=config_url),
+        RuntimeConfig.for_testing(database_url=config_url),
         ArchiveStoreRegistry(
             {"archive": archive_store_binding(archive)}  # type: ignore[arg-type]
         ),
@@ -2088,7 +2092,7 @@ def test_tag_node_gc_resumes_idempotently_after_an_ambiguous_delete(tmp_path: Pa
         assert gc is not None and gc.state == "retry_wait"
         gc.next_attempt_at = utc_timestamp_now()
     restarted = SqlAlchemyCollectionTagService(
-        RuntimeConfig(database_url=sqlite_url(path)),
+        RuntimeConfig.for_testing(database_url=sqlite_url(path)),
         ArchiveStoreRegistry({"archive": archive_store_binding(store)}),
         session_factory=factory,
     )
@@ -2138,7 +2142,7 @@ def test_reused_tag_node_advances_its_exact_gc_dependency_through_public_mainten
         lambda: datetime(2026, 9, 8, tzinfo=UTC),
     )
     catalog = SqlAlchemyCatalogSyncService(
-        RuntimeConfig(
+        RuntimeConfig.for_testing(
             database_url=sqlite_url(path),
             catalog_sync_history_retention=timedelta(days=1),
             catalog_sync_bootstrap_lifetime=timedelta(hours=1),
@@ -2220,7 +2224,7 @@ def test_reused_tag_node_advances_its_exact_gc_dependency_through_public_mainten
         gc.next_attempt_at = utc_timestamp_now()
         publication.next_attempt_at = utc_timestamp_now()
     restarted = SqlAlchemyCollectionTagService(
-        RuntimeConfig(database_url=sqlite_url(path)),
+        RuntimeConfig.for_testing(database_url=sqlite_url(path)),
         ArchiveStoreRegistry({"archive": archive_store_binding(store)}),
         session_factory=make_session_factory(sqlite_url(path)),
     )
@@ -2311,7 +2315,7 @@ def test_persistent_tag_gc_failure_is_bounded_and_does_not_starve_other_publicat
         lambda: datetime(2026, 9, 8, tzinfo=UTC),
     )
     catalog = SqlAlchemyCatalogSyncService(
-        RuntimeConfig(
+        RuntimeConfig.for_testing(
             database_url=sqlite_url(path),
             catalog_sync_history_retention=timedelta(days=1),
             catalog_sync_bootstrap_lifetime=timedelta(hours=1),
@@ -2393,7 +2397,7 @@ def test_persistent_tag_gc_failure_is_bounded_and_does_not_starve_other_publicat
         )
 
     restarted = SqlAlchemyCollectionTagService(
-        RuntimeConfig(database_url=sqlite_url(path)),
+        RuntimeConfig.for_testing(database_url=sqlite_url(path)),
         registry,
         session_factory=make_session_factory(sqlite_url(path)),
     )
@@ -2690,7 +2694,7 @@ def test_exact_tag_revisions_expire_with_the_catalog_history_that_names_them(
         lambda: datetime(2026, 9, 8, tzinfo=UTC),
     )
     catalog = SqlAlchemyCatalogSyncService(
-        RuntimeConfig(
+        RuntimeConfig.for_testing(
             database_url=sqlite_url(path),
             catalog_sync_history_retention=timedelta(days=1),
             catalog_sync_bootstrap_lifetime=timedelta(hours=1),
@@ -2703,7 +2707,7 @@ def test_exact_tag_revisions_expire_with_the_catalog_history_that_names_them(
     for _ in range(32):
         assert catalog.reap_expired_history(limit=1) == 0
     restarted = SqlAlchemyCollectionTagService(
-        RuntimeConfig(database_url=sqlite_url(path)),
+        RuntimeConfig.for_testing(database_url=sqlite_url(path)),
         ArchiveStoreRegistry({"archive": archive_store_binding(_store)}),
         session_factory=make_session_factory(sqlite_url(path)),
     )

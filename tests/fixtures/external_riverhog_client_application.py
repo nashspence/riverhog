@@ -9,7 +9,14 @@ from contextlib import contextmanager
 from types import SimpleNamespace
 from typing import Any
 
-from riverhog_client import ApiClient, ProducerArtifactIdentity, ProducerStream
+from riverhog_client import (
+    ApiClient,
+    ProducerArtifactIdentity,
+    ProducerStream,
+    RawSourceHash,
+    create_or_resume_with_initial_collection_tags,
+    hash_raw_source_chunks,
+)
 
 assert not any(name.startswith("riverhog_client.transform") for name in sys.modules)
 
@@ -322,6 +329,29 @@ class SettlementClient(ApiClient):
 
 
 def main() -> None:
+    raw = hash_raw_source_chunks(
+        path="input.bin",
+        chunks=(INPUT_CONTENT,),
+        expected_bytes=len(INPUT_CONTENT),
+        part_plaintext_bytes=65536,
+    )
+    assert isinstance(raw, RawSourceHash)
+    assert raw.summary.sha256 == INPUT_SHA256
+    assert tuple(raw.iter_batches())[0][0] == 0
+    raw.close()
+    staged_tags: list[str] = []
+    session = create_or_resume_with_initial_collection_tags(
+        ("source:external", "workflow:fixture"),
+        create_or_resume=lambda first, _identity: {
+            "collection_id": 2,
+            "state": "open",
+            "first": staged_tags.extend(first),
+        },
+        add_tags=lambda _collection_id, batch: staged_tags.extend(batch),
+    )
+    assert session["collection_id"] == 2
+    assert staged_tags == ["source:external", "workflow:fixture"]
+
     first = ReadApi()
     second = ReadApi()
     capability = CapabilityApiClient(first, owns_client=True)
@@ -351,7 +381,7 @@ def main() -> None:
         claim_id=CLAIM_ID,
         fence=1,
     )
-    artifacts = reader.inventory()
+    artifacts = tuple(reader.iter_inventory())
     assert len(artifacts) == 1
     with reader.prepare(artifacts, poll_seconds=0.01) as retrieval:
         assert retrieval.read_bytes(artifacts[0], maximum_bytes=len(INPUT_CONTENT)) == INPUT_CONTENT

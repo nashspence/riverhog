@@ -70,8 +70,8 @@ from riverhog_core.ports.archive_store import (
 )
 from riverhog_core.ports.download_allowance import DownloadAttribution
 from riverhog_core.runtime_config import (
-    DEV_ARCHIVE_PASSPHRASE,
-    DEV_ARCHIVE_PASSPHRASE_ID,
+    TEST_ARCHIVE_PASSPHRASE,
+    TEST_ARCHIVE_PASSPHRASE_ID,
     RuntimeConfig,
 )
 from riverhog_protocol import (
@@ -274,7 +274,7 @@ def make_archive(
     plan = plan_pack_volume(archive_files, sequence=0)
     plaintext = b"".join(iter_render_pack_upload_unit(plan, 0, lambda path: (files[path],)))
     age_session = ResumableAgeScryptSession.create(
-        DEV_ARCHIVE_PASSPHRASE,
+        TEST_ARCHIVE_PASSPHRASE,
         log_n=1,
         plaintext_size=len(plaintext),
     )
@@ -356,7 +356,7 @@ def make_archive(
             ),
         ]
         for object_id, kind, relative_path, content in artifacts:
-            provenance_ciphertext = encrypt_age_scrypt(content, DEV_ARCHIVE_PASSPHRASE, log_n=1)
+            provenance_ciphertext = encrypt_age_scrypt(content, TEST_ARCHIVE_PASSPHRASE, log_n=1)
             provenance_ciphertexts[relative_path] = provenance_ciphertext
             sealed_provenance.append(
                 SealedProvenanceObject(
@@ -384,7 +384,7 @@ def make_archive(
             f"metadata/volume-{format_archive_sequence(document.volume.sequence)}.json.age"
         )
         main_metadata_ciphertexts[relative_path] = encrypt_age_scrypt(
-            document.to_json_bytes(), DEV_ARCHIVE_PASSPHRASE, log_n=1
+            document.to_json_bytes(), TEST_ARCHIVE_PASSPHRASE, log_n=1
         )
     archive_terminal = build_collection_archive_terminal_document(
         archive_generation=archive_generation,
@@ -393,13 +393,13 @@ def make_archive(
     )
     terminal_path = f"metadata/volume-{format_archive_sequence(archive_terminal.sequence)}.json.age"
     main_metadata_ciphertexts[terminal_path] = encrypt_age_scrypt(
-        archive_terminal.to_json_bytes(), DEV_ARCHIVE_PASSPHRASE, log_n=1
+        archive_terminal.to_json_bytes(), TEST_ARCHIVE_PASSPHRASE, log_n=1
     )
-    manifest_ciphertext = encrypt_age_scrypt(manifest, DEV_ARCHIVE_PASSPHRASE, log_n=1)
+    manifest_ciphertext = encrypt_age_scrypt(manifest, TEST_ARCHIVE_PASSPHRASE, log_n=1)
     recovery_descriptor = RecoveryDescriptor(
         encryption=CollectionEncryptionBinding(
             format=ARCHIVE_ENCRYPTION_FORMAT,
-            passphrase_id=DEV_ARCHIVE_PASSPHRASE_ID,
+            passphrase_id=TEST_ARCHIVE_PASSPHRASE_ID,
         ),
         root=ArchiveRootCiphertextIdentity(
             path="manifest.json.age",
@@ -785,7 +785,7 @@ def seed_archive_copy(
             collection_id=current.collection_id,
             content_identity=content_identity,
             encryption_format=ARCHIVE_ENCRYPTION_FORMAT,
-            passphrase_id=DEV_ARCHIVE_PASSPHRASE_ID,
+            passphrase_id=TEST_ARCHIVE_PASSPHRASE_ID,
             provenance_mode=provenance_mode,
             provenance_identity=provenance_identity,
             files=file_rows,
@@ -798,7 +798,7 @@ def seed_archive_copy(
             archive_generation=json.loads(current.manifest_bytes)["archive_generation"],
             content_identity=content_identity,
             encryption_format=ARCHIVE_ENCRYPTION_FORMAT,
-            passphrase_id=DEV_ARCHIVE_PASSPHRASE_ID,
+            passphrase_id=TEST_ARCHIVE_PASSPHRASE_ID,
             provenance_mode=provenance_mode,
             provenance_identity=provenance_identity,
             inventory_identity=inventory_identity,
@@ -842,7 +842,7 @@ def seed_archive_copy(
             current,
             store=store,
         )
-    config = RuntimeConfig(database_url=database_url)
+    config = RuntimeConfig.for_testing(database_url=database_url)
     if store == "archive":
         return config, current
     configured_store = replace(
@@ -1138,7 +1138,7 @@ class MemoryArchiveStore:
         expected_current_stored_sha256: str | None = None,
     ) -> CollectionDescriptionReceipt:
         assert collection_id == COLLECTION_ID
-        assert passphrase_id == DEV_ARCHIVE_PASSPHRASE_ID
+        assert passphrase_id == TEST_ARCHIVE_PASSPHRASE_ID
         object_path = f"{archive_storage_prefix}/{COLLECTION_DESCRIPTION_RELATIVE_PATH}"
         current = self.objects.get(object_path)
         plaintext_sha256 = hashlib.sha256(document).hexdigest()
@@ -1158,7 +1158,7 @@ class MemoryArchiveStore:
             current is None or hashlib.sha256(current).hexdigest() != expected_current_stored_sha256
         ):
             raise RuntimeError("collection description replacement fence differs")
-        ciphertext = encrypt_age_scrypt(document, DEV_ARCHIVE_PASSPHRASE, log_n=1)
+        ciphertext = encrypt_age_scrypt(document, TEST_ARCHIVE_PASSPHRASE, log_n=1)
         self.objects[object_path] = ciphertext
         self.object_metadata[object_path] = {"riverhog-plaintext-sha256": plaintext_sha256}
         return CollectionDescriptionReceipt(
@@ -1226,7 +1226,7 @@ class MemoryArchiveStore:
         object_path: str,
         plaintext: bytes,
     ) -> CollectionTagObjectReceipt:
-        ciphertext = encrypt_age_scrypt(plaintext, DEV_ARCHIVE_PASSPHRASE, log_n=1)
+        ciphertext = encrypt_age_scrypt(plaintext, TEST_ARCHIVE_PASSPHRASE, log_n=1)
         self.objects[object_path] = ciphertext
         self.object_metadata[object_path] = {
             "riverhog-plaintext-sha256": hashlib.sha256(plaintext).hexdigest()
@@ -1295,11 +1295,11 @@ class MemoryArchiveStore:
         object: ArchiveObjectIdentity,
         passphrase_id: str,
     ) -> ArchiveArtifactRead:
-        assert passphrase_id == DEV_ARCHIVE_PASSPHRASE_ID
+        assert passphrase_id == TEST_ARCHIVE_PASSPHRASE_ID
         assert collection_id == COLLECTION_ID
         assert self.archive is not None
         stored = self._stored_object(object)
-        content = decrypt_age_scrypt(stored, DEV_ARCHIVE_PASSPHRASE)
+        content = decrypt_age_scrypt(stored, TEST_ARCHIVE_PASSPHRASE)
         receipt = ArchiveObjectUploadReceipt(
             object_id=object.object_id,
             kind=object.kind,
@@ -1339,12 +1339,12 @@ class MemoryArchiveStore:
         passphrase_id: str,
         attribution: DownloadAttribution | None = None,
     ) -> Iterator[bytes]:
-        assert passphrase_id == DEV_ARCHIVE_PASSPHRASE_ID
+        assert passphrase_id == TEST_ARCHIVE_PASSPHRASE_ID
         _ = attribution
         assert collection_id == COLLECTION_ID
         assert self.archive is not None
         self.read.append(object.object_id)
-        yield decrypt_age_scrypt(self._stored_object(object), DEV_ARCHIVE_PASSPHRASE)
+        yield decrypt_age_scrypt(self._stored_object(object), TEST_ARCHIVE_PASSPHRASE)
 
     def iter_stored_archive_object(
         self,

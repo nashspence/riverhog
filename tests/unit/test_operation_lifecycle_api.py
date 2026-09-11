@@ -6,6 +6,7 @@ from pathlib import Path
 
 import pytest
 from fastapi.testclient import TestClient
+from http_api_contracts import BrowseTokenCodec
 from riverhog_api.app import create_app
 from riverhog_api.deps import ServiceContainer
 from riverhog_client.client import ApiClient
@@ -75,7 +76,7 @@ def _tag_set_identity(*tags: str) -> str:
 
 def _container(tmp_path: Path) -> ServiceContainer:
     database_url = sqlite_url(tmp_path / "catalog.sqlite3")
-    baseline = RuntimeConfig(database_url=database_url, archive_scrypt_work_factor=1)
+    baseline = RuntimeConfig.for_testing(database_url=database_url, archive_scrypt_work_factor=1)
     primary_config = replace(
         baseline.archive_store("archive"),
         name="primary",
@@ -161,6 +162,10 @@ def _container(tmp_path: Path) -> ServiceContainer:
         ),
         download_quotas=allowances,
         session_factory=session_factory,
+        browse_tokens=BrowseTokenCodec(
+            config.browse_token_signing_key,
+            lifetime_seconds=int(config.browse_token_lifetime.total_seconds()),
+        ),
     )
 
 

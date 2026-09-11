@@ -3,7 +3,7 @@ from __future__ import annotations
 import ast
 import re
 from collections import Counter
-from dataclasses import fields
+from dataclasses import MISSING, fields
 from pathlib import Path
 
 from riverhog_core.collection_plan import CollectionVolumePolicy
@@ -176,6 +176,44 @@ def test_direct_environment_settings_have_explicit_test_witnesses() -> None:
     assert classifications["credential"] > 0
     assert classifications["identity"] > 0
     assert classifications["runtime"] > 0
+
+
+def test_deployable_secret_inputs_have_no_source_known_runtime_defaults() -> None:
+    secret_suffixes = (
+        "_TOKEN",
+        "_SECRET",
+        "_PASSWORD",
+        "_PASSPHRASE",
+        "_SIGNING_KEY",
+        "_SECRET_ACCESS_KEY",
+    )
+    unsafe: list[str] = []
+    for root in PRODUCTION_ROOTS:
+        for path in root.rglob("*.py"):
+            if "tests" in path.parts:
+                continue
+            for node in ast.walk(ast.parse(path.read_text())):
+                if not isinstance(node, ast.Call) or len(node.args) < 2:
+                    continue
+                name, default = node.args[:2]
+                if (
+                    isinstance(name, ast.Constant)
+                    and isinstance(name.value, str)
+                    and _SETTING_NAME.fullmatch(name.value)
+                    and name.value.endswith(secret_suffixes)
+                    and isinstance(default, ast.Constant)
+                    and default.value not in {None, ""}
+                ):
+                    unsafe.append(f"{path.relative_to(REPO_ROOT)}:{name.value}")
+    assert unsafe == []
+
+    riverhog_fields = RuntimeConfig.__dataclass_fields__
+    assert riverhog_fields["archive_passphrases"].default_factory() == {}
+    assert riverhog_fields["archive_active_passphrase_id"].default == ""
+    assert riverhog_fields["browse_token_signing_key"].default == ""
+    assert Stove0RuntimeConfig.__dataclass_fields__["browse_token_signing_key"].default is MISSING
+    assert FtpAdapterConfig.model_fields["riverhog_token"].is_required()
+    assert FtpAdapterConfig.model_fields["api_token"].is_required()
 
 
 def test_parser_owned_settings_have_an_explicit_stable_classification() -> None:
