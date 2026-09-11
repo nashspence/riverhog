@@ -5,6 +5,7 @@ import json
 import threading
 import time
 from concurrent.futures import ThreadPoolExecutor
+from contextlib import closing
 from pathlib import Path
 from typing import Any
 
@@ -96,6 +97,10 @@ class _ControlledProducer:
         )
 
 
+class _SimulatedProcessStop(BaseException):
+    pass
+
+
 def _completed_upload(source: SourceConfig, relative: str, content: bytes) -> Path:
     path = source.root / relative
     path.parent.mkdir(parents=True, exist_ok=True)
@@ -108,6 +113,16 @@ def _append_invalid_completion(source: SourceConfig, raw: bytes = b"invalid\n") 
     CompletionHandoff(source.root, source.id)
     with completion_log_path(source.root).open("ab") as stream:
         stream.write(raw)
+
+
+def _completion_event_rows(adapter: FtpAdapter, source: SourceConfig) -> list[tuple[str, str]]:
+    with closing(adapter._open_state(source)) as connection:
+        return [
+            (str(event_id), str(claim_id))
+            for event_id, claim_id in connection.execute(
+                "SELECT event_id, claim_id FROM completion_events ORDER BY event_id"
+            )
+        ]
 
 
 def test_v1_claim_fixture_retains_payload_and_portable_provenance_identity() -> None:
@@ -175,6 +190,134 @@ def test_landing_adapter_reconciles_lost_response_without_releasing_custody(
         and call["files"][0][:2] == ("camera/clip.mp4", b"immutable camera payload")
         for call in _Producer.calls
     )
+
+
+@pytest.mark.parametrize("claim_root_survives", [False, True])
+def test_durable_receipt_finishes_claim_cleanup_after_process_stop(
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path: Path,
+    claim_root_survives: bool,
+) -> None:
+    config = _config(tmp_path)
+    source = config.sources[0].model_copy(update={"max_files": 1})
+    config = config.model_copy(update={"sources": (source,)})
+    _completed_upload(source, "settled.bin", b"settled once")
+    _Producer.calls = []
+    _Producer.fail_once = False
+    monkeypatch.setattr(landing, "CollectionProducer", _Producer)
+    adapter = FtpAdapter(object(), config)  # type: ignore[arg-type]
+
+    with monkeypatch.context() as crash:
+        if claim_root_survives:
+            remove_tree = landing.shutil.rmtree
+
+            def stop_before_claim_removal(path: Any, *args: Any, **kwargs: Any) -> None:
+                if Path(path).parent.name == "claims":
+                    raise _SimulatedProcessStop
+                remove_tree(path, *args, **kwargs)
+
+            crash.setattr(landing.shutil, "rmtree", stop_before_claim_removal)
+        else:
+
+            def stop_before_claim_retirement(_source: SourceConfig, _claim_id: str) -> None:
+                raise _SimulatedProcessStop
+
+            crash.setattr(adapter, "_forget_claim", stop_before_claim_retirement)
+        with pytest.raises(_SimulatedProcessStop):
+            adapter.run_once()
+
+    receipts = list((source.root / ".riverhog-ftp-adapter" / "receipts").glob("*.json"))
+    claims = list((source.root / ".riverhog-ftp-adapter" / "claims").glob("*/claim.json"))
+    assert len(receipts) == 1
+    assert len(claims) == int(claim_root_survives)
+    assert len(_Producer.calls) == 1
+    assert len(adapter._claim_work(source, limit=10)) == 1
+
+    restarted = FtpAdapter(object(), config)  # type: ignore[arg-type]
+    result = restarted.run_once()
+
+    assert result["completed"] == 1
+    assert result["failed"] == []
+    assert len(_Producer.calls) == 1
+    assert restarted.status()["sources"][0]["claims"] == 0  # type: ignore[index]
+    assert list((source.root / ".riverhog-ftp-adapter" / "claims").glob("*")) == []
+    assert list((source.root / ".riverhog-ftp-adapter" / "handoffs").glob("*")) == []
+
+
+def test_completion_event_replay_guard_survives_until_exact_log_tip(
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path: Path,
+) -> None:
+    base = _config(tmp_path)
+    source = base.sources[0].model_copy(update={"max_files": 1})
+    config = base.model_copy(
+        update={
+            "sources": (source,),
+            "claim_attempt_budget": 1,
+            "discovery_entry_budget": 1,
+        }
+    )
+    path = source.root / "replayed.bin"
+    path.parent.mkdir(parents=True)
+    path.write_bytes(b"one logical publication")
+    record = CompletionHandoff(source.root, source.id).complete(path)
+    with completion_log_path(source.root).open("ab") as stream:
+        stream.write(record.canonical_bytes())
+    _Producer.calls = []
+    _Producer.fail_once = False
+    monkeypatch.setattr(landing, "CollectionProducer", _Producer)
+
+    first = FtpAdapter(object(), config)  # type: ignore[arg-type]
+    assert first.run_once()["completed"] == 1
+    receipts = list((source.root / ".riverhog-ftp-adapter" / "receipts").glob("*.json"))
+    assert len(receipts) == 1
+    assert _completion_event_rows(first, source) == [(record.event_id, receipts[0].stem)]
+    assert len(_Producer.calls) == 1
+
+    restarted = FtpAdapter(object(), config)  # type: ignore[arg-type]
+    assert restarted.run_once()["completed"] == 0
+    assert len(_Producer.calls) == 1
+    assert _completion_event_rows(restarted, source) == []
+
+    with completion_log_path(source.root).open("ab") as stream:
+        stream.write(record.canonical_bytes())
+    corrupted = restarted.run_once()
+    assert corrupted["completed"] == 0
+    assert corrupted["source_results"][0]["completion_failures"] == 1  # type: ignore[index]
+    assert len(_Producer.calls) == 1
+
+
+def test_completion_event_replay_state_reclaims_in_bounded_restartable_pages(
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path: Path,
+) -> None:
+    base = _config(tmp_path)
+    source = base.sources[0].model_copy(update={"max_files": 1})
+    config = base.model_copy(
+        update={
+            "sources": (source,),
+            "claim_attempt_budget": 1,
+            "discovery_entry_budget": 2,
+        }
+    )
+    _Producer.calls = []
+    _Producer.fail_once = False
+    monkeypatch.setattr(landing, "CollectionProducer", _Producer)
+    with monkeypatch.context() as construction:
+        construction.setattr(FtpAdapter, "_reclaim_completion_events", lambda *_args, **_kwargs: 0)
+        adapter = FtpAdapter(object(), config)  # type: ignore[arg-type]
+        for index in range(5):
+            _completed_upload(source, f"settled-{index}.bin", f"settled-{index}".encode())
+            assert adapter.run_once()["completed"] == 1
+
+    assert len(_completion_event_rows(adapter, source)) == 5
+    remaining: list[int] = []
+    for _ in range(3):
+        restarted = FtpAdapter(object(), config)  # type: ignore[arg-type]
+        assert restarted.run_once()["completed"] == 0
+        remaining.append(len(_completion_event_rows(restarted, source)))
+
+    assert remaining == [3, 1, 0]
 
 
 def test_large_unavailable_backlog_is_bounded_then_drains_exactly_after_restart(

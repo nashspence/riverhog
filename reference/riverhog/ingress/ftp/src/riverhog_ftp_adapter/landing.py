@@ -36,6 +36,7 @@ from riverhog_ftp_adapter.completion import (
     completion_log_path,
     initialize_completion_authority,
     parse_completion_record,
+    read_completion_header,
 )
 from riverhog_ftp_adapter.config import FtpAdapterConfig, SourceConfig
 
@@ -279,6 +280,10 @@ class FtpAdapter:
                 except Exception as exc:
                     failed.append({"source": source.id, "claim": "new", "error": str(exc)[:1000]})
                     source_failed += 1
+            self._reclaim_completion_events(
+                source,
+                limit=self.config.discovery_entry_budget,
+            )
             source_results.append(
                 {
                     "id": source.id,
@@ -411,9 +416,7 @@ class FtpAdapter:
         claim_root = self._claims_root(source) / identity
         durable_receipt = self._durable_receipt(source, identity)
         if durable_receipt is not None:
-            if claim_root.exists():
-                shutil.rmtree(claim_root)
-            self._forget_claim(source, identity)
+            self._finish_claim_cleanup(source, identity)
             return durable_receipt
         if self._claim_record(source, identity) is not None:
             self._materialize_registered_claim(source, identity)
@@ -561,6 +564,75 @@ class FtpAdapter:
                 (event_id,),
             ).fetchone()
         return row is not None
+
+    def _reclaim_completion_events(self, source: SourceConfig, *, limit: int) -> int:
+        """Retire a bounded page of replay guards at an exact safe log point."""
+
+        if limit < 1:
+            return 0
+        with closing(self._open_state(source)) as connection:
+            after = _state_value(connection, "completion_event_reclaim_after") or ""
+            rows = connection.execute(
+                "SELECT events.event_id, events.claim_id "
+                "FROM completion_events AS events "
+                "LEFT JOIN claims ON claims.claim_id = events.claim_id "
+                "WHERE claims.claim_id IS NULL AND events.event_id > ? "
+                "ORDER BY events.event_id LIMIT ?",
+                (after, limit),
+            ).fetchall()
+            if len(rows) < limit:
+                rows.extend(
+                    connection.execute(
+                        "SELECT events.event_id, events.claim_id "
+                        "FROM completion_events AS events "
+                        "LEFT JOIN claims ON claims.claim_id = events.claim_id "
+                        "WHERE claims.claim_id IS NULL AND events.event_id <= ? "
+                        "ORDER BY events.event_id LIMIT ?",
+                        (after, limit - len(rows)),
+                    ).fetchall()
+                )
+        candidates = tuple((str(event_id), str(claim_id)) for event_id, claim_id in rows)
+        if not candidates:
+            return 0
+        settled = {
+            (event_id, claim_id)
+            for event_id, claim_id in candidates
+            if self._durable_receipt(source, claim_id) is not None
+        }
+        eligible: set[tuple[str, str]] = set()
+        generation, offset = self._completion_cursor(source)
+        with self._completion_log_path(source).open("rb") as stream:
+            fcntl.lockf(stream.fileno(), fcntl.LOCK_SH)
+            try:
+                current_generation, _header_bytes = read_completion_header(
+                    self._completion_log_path(source)
+                )
+                if current_generation != generation:
+                    raise FtpAdapterError("FTP completion authority changed during reclamation")
+                if os.fstat(stream.fileno()).st_size == offset:
+                    intent_root = self._control_root(source) / "handoff-intents"
+                    eligible = {
+                        (event_id, claim_id)
+                        for event_id, claim_id in settled
+                        if not (intent_root / f"{event_id}.json").exists()
+                    }
+            finally:
+                fcntl.lockf(stream.fileno(), fcntl.LOCK_UN)
+        reclaimed = 0
+        with closing(self._open_state(source)) as connection:
+            for event_id, claim_id in candidates:
+                if (event_id, claim_id) in eligible:
+                    reclaimed += connection.execute(
+                        "DELETE FROM completion_events "
+                        "WHERE event_id = ? AND claim_id = ? "
+                        "AND NOT EXISTS ("
+                        "SELECT 1 FROM claims WHERE claims.claim_id = completion_events.claim_id"
+                        ")",
+                        (event_id, claim_id),
+                    ).rowcount
+                _set_state_value(connection, "completion_event_reclaim_after", event_id)
+                connection.commit()
+        return reclaimed
 
     def _record_completion_failure(
         self,
@@ -775,18 +847,30 @@ class FtpAdapter:
         return ordinal
 
     def _materialize_registered_claim(self, source: SourceConfig, claim_id: str) -> Path:
+        payload = self._registered_claim_manifest(source, claim_id)
+        claim_root = self._claims_root(source) / claim_id
+        manifest_path = claim_root / _MANIFEST
+        if not manifest_path.is_file():
+            _write_json(manifest_path, payload)
+        return claim_root
+
+    def _registered_claim_manifest(
+        self,
+        source: SourceConfig,
+        claim_id: str,
+    ) -> dict[str, object]:
         record = self._claim_record(source, claim_id)
         if record is None:
             raise FtpAdapterError(f"FTP claim is not registered: {claim_id}")
         _ordinal, encoded = record
-        claim_root = self._claims_root(source) / claim_id
-        manifest_path = claim_root / _MANIFEST
-        if not manifest_path.is_file():
-            payload = json.loads(encoded)
-            if not isinstance(payload, dict):
-                raise FtpAdapterError("registered FTP claim manifest is invalid")
-            _write_json(manifest_path, payload)
-        return claim_root
+        payload = json.loads(encoded)
+        if (
+            not isinstance(payload, dict)
+            or payload.get("claim_id") != claim_id
+            or payload.get("source") != source.id
+        ):
+            raise FtpAdapterError("registered FTP claim manifest is invalid")
+        return payload
 
     def _forget_claim(self, source: SourceConfig, claim_id: str) -> None:
         with closing(self._open_state(source)) as connection:
@@ -807,6 +891,25 @@ class FtpAdapter:
                 _set_state_value(connection, "claim_count", str(next_count))
                 _set_state_value(connection, "claim_bytes", str(next_bytes))
             connection.commit()
+
+    def _finish_claim_cleanup(self, source: SourceConfig, claim_id: str) -> None:
+        """Finish receipt-led local cleanup while SQLite retains its manifest."""
+
+        claim_root = self._claims_root(source) / claim_id
+        record = self._claim_record(source, claim_id)
+        if record is None:
+            if claim_root.exists():
+                raise FtpAdapterError("finalized FTP claim has files but no durable manifest")
+            return
+        manifest = self._registered_claim_manifest(source, claim_id)
+        manifest_path = claim_root / _MANIFEST
+        if manifest_path.is_file() and _read_manifest(claim_root) != manifest:
+            raise ClaimCollision(f"registered FTP claim differs from its files: {claim_id}")
+        if claim_root.exists():
+            shutil.rmtree(claim_root)
+        _prune_handoff_parents(source.root, manifest)
+        _prune_claim_parents(source.root, manifest)
+        self._forget_claim(source, claim_id)
 
     def _discover_batch(self, source: SourceConfig, *, flush: bool) -> _DiscoveryBatch:
         if source.close_mode == "explicit-flush" and not flush:
@@ -1124,11 +1227,7 @@ class FtpAdapter:
     def _publish_claim(self, source: SourceConfig, claim_root: Path) -> ProducedCollection:
         durable_receipt = self._durable_receipt(source, claim_root.name)
         if durable_receipt is not None:
-            manifest = _read_manifest(claim_root)
-            shutil.rmtree(claim_root, ignore_errors=True)
-            self._forget_claim(source, claim_root.name)
-            _prune_handoff_parents(source.root, manifest)
-            _prune_claim_parents(source.root, manifest)
+            self._finish_claim_cleanup(source, claim_root.name)
             return durable_receipt
         manifest = self._reconcile_claim(source, claim_root)
         files = tuple(
@@ -1177,10 +1276,7 @@ class FtpAdapter:
         }
         _write_json(claim_root / _RECEIPT, receipt_payload)
         _write_json(self._receipt_path(source, claim_root.name), receipt_payload)
-        shutil.rmtree(claim_root)
-        self._forget_claim(source, claim_root.name)
-        _prune_handoff_parents(source.root, manifest)
-        _prune_claim_parents(source.root, manifest)
+        self._finish_claim_cleanup(source, claim_root.name)
         return receipt
 
     def _receipt_path(self, source: SourceConfig, claim_id: str) -> Path:
