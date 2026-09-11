@@ -6,7 +6,12 @@ from pathlib import Path
 import pytest
 import yaml
 from riverhog_ftp_adapter.app import FtpAdapterComposition
-from riverhog_ftp_adapter.config import FtpAdapterConfig, SourceConfig, load_config
+from riverhog_ftp_adapter.config import (
+    FtpAdapterConfig,
+    SourceConfig,
+    load_config,
+    load_source_config,
+)
 
 REPO_ROOT = Path(__file__).parents[5]
 
@@ -57,6 +62,20 @@ def test_adapter_secrets_accept_exactly_one_direct_or_file_source(
         load_config(config_path)
 
 
+def test_listener_loads_only_its_source_without_riverhog_credentials(tmp_path: Path) -> None:
+    config_path = tmp_path / "ftp-adapter.json"
+    _write_config(
+        config_path,
+        tmp_path / "ftp",
+        host_id="urn:uuid:00000000-0000-4000-8000-000000000001",
+    )
+
+    source = load_source_config(config_path, "ftp")
+
+    assert source.root == (tmp_path / "ftp").resolve()
+    assert source.ingest_source == "ftp:fixture"
+
+
 def test_source_grouping_policy_has_no_hidden_collection_ceiling(tmp_path: Path) -> None:
     source = SourceConfig(
         id="large-source",
@@ -73,34 +92,28 @@ def test_reference_compose_is_ftp_only_bounded_and_unprivileged() -> None:
     compose = yaml.safe_load(path.read_text(encoding="utf-8"))
     services = compose["services"]
 
-    assert set(services) == {"ftp-adapter", "ftp-daemon", "intake-init"}
+    assert set(services) == {"ftp-adapter", "ftp-listener", "intake-init"}
     assert services["ftp-adapter"]["read_only"] is True
     assert services["ftp-adapter"]["user"] == "65532:65532"
     assert services["ftp-adapter"]["group_add"] == [
         "${RIVERHOG_FTP_ADAPTER_SECRET_FILE_GID:-65532}"
     ]
     assert services["ftp-adapter"]["networks"] == ["default", "riverhog-control"]
-    assert "FTP_USER_PASS" not in services["ftp-daemon"]["environment"]
-    assert services["ftp-daemon"]["secrets"] == ["ftp_password"]
-    assert "/run/secrets/ftp_password" in services["ftp-daemon"]["command"][-1]
-    assert services["ftp-daemon"]["environment"]["RIVERHOG_FTP_ADAPTER_SOURCE_ID"] == (
-        "${RIVERHOG_FTP_ADAPTER_SOURCE_ID:-ftp-intake}"
-    )
-    assert (
-        "-O stats:/var/log/riverhog-ftp-completions/"
-        "$${RIVERHOG_FTP_ADAPTER_SOURCE_ID}.log" in services["ftp-daemon"]["command"][-1]
-    )
-    assert set(compose["volumes"]) == {"ftp-completion-data"}
-    assert any(
-        item["source"] == "ftp-completion-data"
-        and item["target"] == "/var/lib/riverhog-ftp-completions"
-        for item in services["ftp-adapter"]["volumes"]
-    )
-    assert any(
-        item["source"] == "ftp-completion-data"
-        and item["target"] == "/var/log/riverhog-ftp-completions"
-        for item in services["ftp-daemon"]["volumes"]
-    )
+    listener = services["ftp-listener"]
+    assert listener["image"] == services["ftp-adapter"]["image"]
+    assert listener["build"] == services["ftp-adapter"]["build"]
+    assert listener["read_only"] is True
+    assert listener["user"] == "65532:65532"
+    assert listener["cap_drop"] == ["ALL"]
+    assert listener["secrets"] == ["ftp_password"]
+    assert listener["command"][:4] == [
+        "riverhog-ftp-adapter",
+        "--config",
+        "/etc/riverhog/ftp-adapter.json",
+        "listen",
+    ]
+    assert "/run/secrets/ftp_password" in listener["command"]
+    assert "volumes" not in compose
     assert compose["networks"]["riverhog-control"] == {
         "external": True,
         "name": "${RIVERHOG_CONTROL_NETWORK:-riverhog_default}",
@@ -117,13 +130,14 @@ def test_reference_compose_is_ftp_only_bounded_and_unprivileged() -> None:
     assert "archive" not in {key.casefold() for key in compose.get("volumes", {})}
 
 
-def test_external_completion_root_is_absolute(tmp_path: Path) -> None:
+def test_completion_failure_work_and_capacity_are_explicit(tmp_path: Path) -> None:
     config = FtpAdapterConfig(
         host_id="test-host",
         riverhog_base_url="https://riverhog.invalid",
         riverhog_token="riverhog-token",
         api_token="adapter-token",
-        completion_root=tmp_path / "completion-authority",
+        completion_failure_capacity=23,
+        completion_failure_attempt_budget=7,
         sources=(
             SourceConfig(
                 id="ftp",
@@ -135,11 +149,8 @@ def test_external_completion_root_is_absolute(tmp_path: Path) -> None:
         ),
     )
 
-    assert config.completion_root == (tmp_path / "completion-authority").resolve()
-    payload = config.model_dump()
-    payload["completion_root"] = "relative"
-    with pytest.raises(ValueError, match="completion root must be absolute"):
-        FtpAdapterConfig.model_validate(payload)
+    assert config.completion_failure_capacity == 23
+    assert config.completion_failure_attempt_budget == 7
 
 
 def test_reference_configuration_is_current_and_secret_injected(
@@ -161,13 +172,14 @@ def test_reference_configuration_is_current_and_secret_injected(
     assert config.pending_claim_capacity == 128
     assert config.claim_attempt_budget == 8
     assert config.discovery_entry_budget == 4096
+    assert config.completion_failure_capacity == 128
+    assert config.completion_failure_attempt_budget == 8
     assert [source.id for source in config.sources] == ["ftp-intake"]
     source = config.source("ftp-intake")
     assert source.ingest_source == "ftp:example-intake"
     assert source.description == "Reference FTP intake"
     assert source.tags == ("source:ftp",)
     assert source.close_mode == "stable"
-    assert config.completion_root == Path("/var/lib/riverhog-ftp-completions")
     assert source.provenance_omission_reason == (
         "The FTP producer cannot observe the source host filesystem."
     )

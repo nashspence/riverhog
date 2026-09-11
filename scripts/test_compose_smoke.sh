@@ -242,7 +242,8 @@ printf '%s\n' '{' \
   '  "pending_claim_capacity": 16,' \
   '  "claim_attempt_budget": 8,' \
   '  "discovery_entry_budget": 4096,' \
-  '  "completion_root": "/var/lib/riverhog-ftp-completions",' \
+  '  "completion_failure_capacity": 16,' \
+  '  "completion_failure_attempt_budget": 8,' \
   '  "sources": [' \
   '    {' \
   '      "id": "ftp-smoke",' \
@@ -294,7 +295,7 @@ export STOVE0_REVIEW_RCLONE_EFFECT_IMAGE_DIGEST="$(printf '7%.0s' {1..64})"
 export STOVE0_OPUS_REVIEW_SAMPLER_DESCRIPTOR_SHA256="$(printf '5%.0s' {1..64})"
 export RIVERHOG_FTP_ADAPTER_API_PORT=0
 export RIVERHOG_FTP_ADAPTER_PORT=0
-export RIVERHOG_FTP_ADAPTER_PUBLIC_HOST=ftp-daemon
+export RIVERHOG_FTP_ADAPTER_PUBLIC_HOST=
 export RIVERHOG_FTP_ADAPTER_SOURCE_ID=ftp-smoke
 export RIVERHOG_FTP_ADAPTER_SECRET_FILE_GID="$(id -g)"
 export RIVERHOG_FTP_ADAPTER_INTAKE_GID="$(id -g)"
@@ -345,7 +346,7 @@ stove0_compose exec -T api python -c "${admission_baseline_code}"
 # Keep Stove0 offline while the autonomous producer finalizes. Its durable
 # catalog cursor must reconcile the missed publication after restart.
 stove0_compose stop controller
-adapter_compose up --detach --build --wait intake-init ftp-adapter ftp-daemon
+adapter_compose up --detach --build --wait intake-init ftp-adapter ftp-listener
 
 adapter_run_code="from ftplib import FTP, all_errors
 from io import BytesIO
@@ -375,29 +376,55 @@ sidecar_payload = b'''<x:xmpmeta xmlns:x="adobe:ns:meta/">
 </x:xmpmeta>
 '''
 uploads = [(source, expected) for source in sources] + [(sidecar, sidecar_payload)]
+
+def connect():
+    ftp = FTP(timeout=10)
+    ftp.connect('ftp-listener', 2121)
+    ftp.login('ftp-intake', 'riverhog-ftp-adapter-compose-smoke-password')
+    return ftp
+
+def upload(source, content, *, rest=None):
+    deadline = time.monotonic() + 30
+    last_error = None
+    while time.monotonic() < deadline:
+        try:
+            with connect() as ftp:
+                ftp.storbinary('STOR ' + source.name, BytesIO(content), rest=rest)
+            return
+        except all_errors as error:
+            last_error = error
+            time.sleep(0.25)
+    raise RuntimeError('FTP listener did not accept completed input') from last_error
+
+first_source, first_content = uploads[0]
+split = max(1, len(first_content) // 3)
 deadline = time.monotonic() + 30
 last_error = None
 while time.monotonic() < deadline:
     try:
-        with FTP('ftp-daemon', timeout=10) as ftp:
-            ftp.login('ftp-intake', 'riverhog-ftp-adapter-compose-smoke-password')
-            for source, content in uploads:
-                ftp.storbinary('STOR ' + source.name, BytesIO(content))
+        ftp = connect()
+        data = ftp.transfercmd('STOR ' + first_source.name)
+        data.sendall(first_content[:split])
+        ftp.close()
+        data.close()
         break
     except all_errors as error:
         last_error = error
         time.sleep(0.25)
 else:
-    raise RuntimeError('FTP listener did not become ready') from last_error
-assert all(source.read_bytes() == content for source, content in uploads)
-completion_log = Path('/var/lib/riverhog-ftp-completions/ftp-smoke.log')
+    raise RuntimeError('FTP listener did not accept interrupted input') from last_error
+upload(first_source, first_content[split:], rest=split)
+for source, content in uploads[1:]:
+    upload(source, content)
+assert all(not source.exists() for source, _content in uploads)
+completion_log = Path('/intake/ftp/.riverhog-ftp-adapter/completed-transfers.log')
 deadline = time.monotonic() + 10
 while time.monotonic() < deadline:
     if completion_log.read_bytes().count(b'\n') >= len(uploads) + 1:
         break
     time.sleep(0.1)
 else:
-    raise AssertionError('Pure-FTPd did not durably report every completed upload')
+    raise AssertionError('FTP listener did not durably hand off every completed upload')
 with RiverhogFtpAdapterClient(
     base_url='http://127.0.0.1:8080',
     token='riverhog-ftp-adapter-compose-smoke-token',

@@ -159,6 +159,7 @@ EXTERNAL_DISTRIBUTION_MODULES = {
     "jsonschema": {"jsonschema"},
     "psycopg": set(),
     "pydantic": {"pydantic"},
+    "pyftpdlib": {"pyftpdlib"},
     "pyyaml": {"yaml"},
     "referencing": {"referencing"},
     "rfc8785": {"rfc8785"},

@@ -8005,6 +8005,113 @@
               }
             ]
           },
+          "listen": {
+            "name": "riverhog-ftp-adapter listen",
+            "parameters": [
+              {
+                "dest": "source",
+                "kind": "_StoreAction",
+                "nargs": null,
+                "options": [
+                  "--source"
+                ],
+                "required": true
+              },
+              {
+                "dest": "username",
+                "kind": "_StoreAction",
+                "nargs": null,
+                "options": [
+                  "--username"
+                ],
+                "required": true
+              },
+              {
+                "dest": "password_file",
+                "kind": "_StoreAction",
+                "nargs": null,
+                "options": [
+                  "--password-file"
+                ],
+                "required": true,
+                "type": "Path"
+              },
+              {
+                "default": "127.0.0.1",
+                "dest": "host",
+                "kind": "_StoreAction",
+                "nargs": null,
+                "options": [
+                  "--host"
+                ],
+                "required": false
+              },
+              {
+                "default": 2121,
+                "dest": "port",
+                "kind": "_StoreAction",
+                "nargs": null,
+                "options": [
+                  "--port"
+                ],
+                "required": false,
+                "type": "int"
+              },
+              {
+                "default": 30000,
+                "dest": "passive_port_start",
+                "kind": "_StoreAction",
+                "nargs": null,
+                "options": [
+                  "--passive-port-start"
+                ],
+                "required": false,
+                "type": "int"
+              },
+              {
+                "default": 30039,
+                "dest": "passive_port_end",
+                "kind": "_StoreAction",
+                "nargs": null,
+                "options": [
+                  "--passive-port-end"
+                ],
+                "required": false,
+                "type": "int"
+              },
+              {
+                "dest": "public_host",
+                "kind": "_StoreAction",
+                "nargs": null,
+                "options": [
+                  "--public-host"
+                ],
+                "required": false
+              },
+              {
+                "default": 256,
+                "dest": "max_connections",
+                "kind": "_StoreAction",
+                "nargs": null,
+                "options": [
+                  "--max-connections"
+                ],
+                "required": false,
+                "type": "int"
+              },
+              {
+                "default": 32,
+                "dest": "max_connections_per_ip",
+                "kind": "_StoreAction",
+                "nargs": null,
+                "options": [
+                  "--max-connections-per-ip"
+                ],
+                "required": false,
+                "type": "int"
+              }
+            ]
+          },
           "run": {
             "name": "riverhog-ftp-adapter run",
             "parameters": []
@@ -9853,18 +9960,17 @@
             "title": "Claim Attempt Budget",
             "type": "integer"
           },
-          "completion_root": {
-            "anyOf": [
-              {
-                "format": "path",
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "default": null,
-            "title": "Completion Root"
+          "completion_failure_attempt_budget": {
+            "default": 8,
+            "minimum": 1,
+            "title": "Completion Failure Attempt Budget",
+            "type": "integer"
+          },
+          "completion_failure_capacity": {
+            "default": 128,
+            "minimum": 1,
+            "title": "Completion Failure Capacity",
+            "type": "integer"
           },
           "discovery_entry_budget": {
             "default": 4096,
