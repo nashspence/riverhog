@@ -5,6 +5,12 @@ source "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/_compose_env.sh"
 
 setup_test_compose_project
 configure_compose_tty
+export RIVERHOG_BOOTSTRAP_TOKEN="${RIVERHOG_BOOTSTRAP_TOKEN:-riverhog-postgres-concurrency-bootstrap-token}"
+if [[ -z "${RIVERHOG_ARCHIVE_PASSPHRASES_JSON:-}" ]]; then
+  export RIVERHOG_ARCHIVE_PASSPHRASES_JSON='{"postgres-concurrency-key-v1":"riverhog-postgres-concurrency-archive-passphrase"}'
+fi
+export RIVERHOG_ARCHIVE_ACTIVE_PASSPHRASE_ID="${RIVERHOG_ARCHIVE_ACTIVE_PASSPHRASE_ID:-postgres-concurrency-key-v1}"
+export RIVERHOG_BROWSE_TOKEN_SIGNING_KEY="${RIVERHOG_BROWSE_TOKEN_SIGNING_KEY:-riverhog-postgres-concurrency-browse-token-key-v1}"
 ensure_compose_image test
 
 cleanup() {

@@ -813,6 +813,12 @@ def test_postgres_concurrency_target_uses_disposable_postgres(tmp_path: Path) ->
     assert "tests/integration/test_retrieval_cache_admission_concurrency.py" in docker_log
     assert " down --volumes --remove-orphans" in docker_log
 
+    harness = (REPO_ROOT / "scripts" / "test_postgres_concurrency.sh").read_text(encoding="utf-8")
+    assert "RIVERHOG_BOOTSTRAP_TOKEN" in harness
+    assert "RIVERHOG_ARCHIVE_PASSPHRASES_JSON" in harness
+    assert "RIVERHOG_ARCHIVE_ACTIVE_PASSPHRASE_ID" in harness
+    assert "RIVERHOG_BROWSE_TOKEN_SIGNING_KEY" in harness
+
 
 def test_dockerfiles_keep_dependency_layers_independent_of_docs_and_tests() -> None:
     app_dockerfile = (REPO_ROOT / "riverhog/Dockerfile").read_text()
