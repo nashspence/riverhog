@@ -26,6 +26,33 @@ QUALIFICATION_INPUTS = {
 }
 
 
+def test_shared_qualification_support_is_owned_outside_test_modules() -> None:
+    database_runner = (REPO_ROOT / "scripts/database_qualification.py").read_text(encoding="utf-8")
+    database_test = (
+        REPO_ROOT / "tests/integration/test_public_selector_plans_postgres.py"
+    ).read_text(encoding="utf-8")
+    installation_runner = (REPO_ROOT / "scripts/qualify_installation.py").read_text(
+        encoding="utf-8"
+    )
+    recovery_test = (REPO_ROOT / "reference/riverhog/recovery/tests/test_recovery.py").read_text(
+        encoding="utf-8"
+    )
+    recovery_materialization = (
+        REPO_ROOT / "tests/harness/filesystem_recovery_materialization.py"
+    ).read_text(encoding="utf-8")
+
+    database_owner = "tests.support.qualification.database_selector_plans"
+    recovery_owner = "tests.support.qualification.recovery_archive"
+    assert database_owner in database_runner
+    assert database_owner in database_test
+    assert recovery_owner in installation_runner
+    assert recovery_owner in recovery_test
+    assert recovery_owner in recovery_materialization
+    assert "tests.integration.test_public_selector_plans_postgres" not in database_runner
+    assert "reference.riverhog.recovery.tests.test_recovery" not in installation_runner
+    assert "reference.riverhog.recovery.tests.test_recovery" not in recovery_materialization
+
+
 def test_every_checked_qualification_input_runs_through_its_real_consumer(
     tmp_path: Path,
     monkeypatch,

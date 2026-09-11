@@ -132,7 +132,6 @@ def _run_make(
     env.pop("MAKEFLAGS", None)
     env.pop("MFLAGS", None)
     env.pop("COMPOSE_ENV_FILE", None)
-    env.pop("SPEC_TESTS", None)
     env.pop("POSTGRES_TESTS", None)
     env.pop("TESTS", None)
     env.pop("MISE_BIN", None)
@@ -424,16 +423,6 @@ def test_compose_services_publish_the_archive_runtime_configuration() -> None:
             "unit",
             ("TESTS=reference/stove0/application/tests/test_stove0_api_parity.py",),
             "python -m pytest -q reference/stove0/application/tests/test_stove0_api_parity.py",
-        ),
-        (
-            "spec",
-            ("args=-k archive",),
-            "python -m pytest -q tests/harness/test_spec_harness.py -k archive",
-        ),
-        (
-            "spec",
-            ("SPEC_TESTS=tests/harness/test_spec_harness.py", "args=-k garage"),
-            "python -m pytest -q tests/harness/test_spec_harness.py -k garage",
         ),
         (
             "operation-qualification",
@@ -1015,15 +1004,6 @@ def test_down_target_uses_compose_down_with_volumes(tmp_path: Path) -> None:
     assert " down --volumes --remove-orphans" in docker_log
 
 
-def test_stop_spec_is_available_when_no_spec_lane_is_running(tmp_path: Path) -> None:
-    completed, docker_log_path, uv_log_path = _run_make(tmp_path, "stop-spec")
-
-    assert completed.returncode == 0, completed.stderr
-    assert "No in-flight spec harness process found." in completed.stdout
-    assert _read_log_lines(docker_log_path) == []
-    assert _read_log_lines(uv_log_path) == []
-
-
 def test_help_describes_make_targets(tmp_path: Path) -> None:
     completed, docker_log_path, uv_log_path = _run_make(tmp_path, "help")
 
@@ -1048,7 +1028,6 @@ def test_help_describes_make_targets(tmp_path: Path) -> None:
     assert "make format-check" in completed.stdout
     assert "make compile" in completed.stdout
     assert "make ruff-fix" in completed.stdout
-    assert "make stop-spec" in completed.stdout
     assert "make test" in completed.stdout
     assert "make transfer-profile" in completed.stdout
     assert "args='...'" in completed.stdout

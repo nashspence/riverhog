@@ -44,15 +44,29 @@ from sqlalchemy.engine import Engine, make_url
 from sqlalchemy.sql.compiler import IdentifierPreparer
 from stove0_core.persistence import stove0_state_schema
 
-from tests.integration.test_public_selector_plans_postgres import (
-    _DATABASE_PLAN_OPERATIONS,
-    _catalog_sync_plan_cases,
-    _index_names,
-    _node_types,
-    _plan_cases,
-    _PlanCase,
-    _seed_selector_relations,
-    _seed_stove0_selector_relations,
+from tests.support.qualification.database_selector_plans import (
+    DATABASE_PLAN_OPERATIONS as _DATABASE_PLAN_OPERATIONS,
+)
+from tests.support.qualification.database_selector_plans import (
+    PlanCase as _PlanCase,
+)
+from tests.support.qualification.database_selector_plans import (
+    catalog_sync_plan_cases as _catalog_sync_plan_cases,
+)
+from tests.support.qualification.database_selector_plans import (
+    index_names as _index_names,
+)
+from tests.support.qualification.database_selector_plans import (
+    node_types as _node_types,
+)
+from tests.support.qualification.database_selector_plans import (
+    plan_cases as _plan_cases,
+)
+from tests.support.qualification.database_selector_plans import (
+    seed_selector_relations as _seed_selector_relations,
+)
+from tests.support.qualification.database_selector_plans import (
+    seed_stove0_selector_relations as _seed_stove0_selector_relations,
 )
 from tests.unit.archive_object_fixtures import MemoryArchiveStore, archive_store_binding
 

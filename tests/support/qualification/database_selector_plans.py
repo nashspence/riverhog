@@ -1,0 +1,1580 @@
+from __future__ import annotations
+
+from dataclasses import dataclass, replace
+
+from http_api_contracts import closed_literal_values
+from riverhog_core.app_permissions import (
+    ALL_RESOURCES,
+    CATALOG_READ,
+    PROVENANCE_READ,
+    ApplicationAccess,
+    ApplicationPrincipal,
+)
+from riverhog_core.browse import keyset_statement
+from riverhog_core.catalog_models import CollectionRecord
+from riverhog_core.collection_access import collection_access_filter
+from riverhog_core.services.app_keys import (
+    _access_list_statement,
+    _app_list_statement,
+    _key_list_statement,
+)
+from riverhog_core.services.archive_copies import _archive_copy_list_statement
+from riverhog_core.services.catalog_sync import (
+    _catalog_change_revision_statement,
+    _catalog_collection_page_statement,
+)
+from riverhog_core.services.collection_tags import _tag_list_statement
+from riverhog_core.services.collection_uploads import _upload_list_statement
+from riverhog_core.services.collection_workflows import _claim_list_statement
+from riverhog_core.services.collections import _collection_list_statement
+from riverhog_core.services.download_allowances import _key_quota_statements
+from riverhog_core.services.provenance import _provenance_file_statement
+from riverhog_core.services.retrieval import _cache_list_statement
+from riverhog_core.services.search import _search_statement
+from riverhog_protocol import (
+    ApplicationAccessSort,
+    ApplicationKeySort,
+    ApplicationSort,
+    ArchiveCopySort,
+    CollectionSort,
+    CollectionUploadSort,
+    DownloadQuotaSort,
+    ProcessingClaimSort,
+    ProvenanceSort,
+    RetrievalCacheSort,
+    SearchSort,
+    collection_tag_set_identity,
+)
+from sqlalchemy import text
+from sqlalchemy.engine import Engine
+from stove0_core.persistence import (
+    _admission_list_statement,
+    _evaluation_list_statement,
+    _work_list_statement,
+)
+from stove0_core.persistence import _keyset_statement as _stove0_keyset_statement
+from stove0_operator_contracts import AdmissionSort, EvaluationSort, WorkSort
+from time_formats import parse_utc_timestamp
+
+_ROWS = 16384
+_NOW = "2026-08-28T00:00:00.000000Z"
+_EMPTY_TAG_SET_IDENTITY = collection_tag_set_identity(None)
+_READER = ApplicationPrincipal(
+    app="qualification",
+    key_id=None,
+    access=frozenset(
+        {
+            ApplicationAccess(CATALOG_READ, ALL_RESOURCES),
+            ApplicationAccess(PROVENANCE_READ, ALL_RESOURCES),
+        }
+    ),
+)
+
+
+def _riverhog_plan_statement(
+    parts: tuple[object, ...],
+    *,
+    order: str,
+    statement_index: int = -2,
+    key_columns_index: int = -1,
+) -> object:
+    return keyset_statement(
+        parts[statement_index],  # type: ignore[arg-type]
+        columns=parts[key_columns_index],  # type: ignore[arg-type]
+        position=None,
+        order=order,
+        page_size=100,
+    )
+
+
+def _stove0_plan_statement(parts: tuple[object, ...], *, order: str) -> object:
+    return _stove0_keyset_statement(
+        parts[-2],  # type: ignore[arg-type]
+        columns=parts[-1],  # type: ignore[arg-type]
+        position=None,
+        order=order,
+        page_size=100,
+    )
+
+
+# Every database-backed public selector maps to one semantic statement family.
+# Page bounds, exact-resource lookups, cursor feeds, and bounded configured-store
+# enumeration are classified separately below; none may disappear between this
+# inventory and the physical-plan proof without failing the suite.
+_DATABASE_PLAN_OPERATIONS = {
+    ("riverhog", "list_app_key_access"): "application-access",
+    ("riverhog", "list_app_keys"): "application-keys",
+    ("riverhog", "list_apps"): "applications",
+    ("riverhog", "list_archive_copy_jobs"): "archive-copies",
+    ("riverhog", "list_collection_provenance"): "provenance",
+    ("riverhog", "list_collection_upload_sessions"): "uploads",
+    ("riverhog", "list_collections"): "collections",
+    ("riverhog", "list_download_quotas"): "download-quotas",
+    ("riverhog", "list_processing_claims"): "processing-claims",
+    ("riverhog", "list_retrieval_cache_objects"): "retrieval-cache",
+    ("riverhog", "search"): "search",
+    ("riverhog", "list_tags"): "tags",
+    ("stove0", "list_evaluations"): "stove0-evaluations",
+    ("stove0", "list_admissions"): "stove0-admissions",
+    ("stove0", "list_work"): "stove0-work",
+}
+_DATABASE_FILTER_SELECTORS = {
+    "application-access": {"active", "app", "key", "permission", "q", "resource"},
+    "application-keys": {"active", "q"},
+    "applications": {"active", "q"},
+    "archive-copies": {"q", "state"},
+    "collections": {"encryption_format", "passphrase_id", "q", "tags"},
+    "download-quotas": {"active", "app", "q"},
+    "processing-claims": {"state"},
+    "provenance": {"q", "status"},
+    "retrieval-cache": {
+        "cache_store",
+        "collection_id",
+        "expires_after",
+        "expires_before",
+        "protection",
+        "q",
+        "source_store",
+        "state",
+    },
+    "search": {"collection", "q"},
+    "tags": {"q"},
+    "stove0-evaluations": {"phase", "q"},
+    "stove0-admissions": {"policy_id", "q", "state"},
+    "stove0-work": {"phase", "q"},
+    "uploads": {"q", "state"},
+}
+_NON_PLAN_QUERY_OPERATIONS = {
+    ("riverhog", "acquire_collection_upload_session_work"): {"limit"},
+    ("riverhog", "download_retrieval_file"): {"collection_id", "path"},
+    ("riverhog", "get_portable_collection_inventory"): {"cursor", "limit"},
+    ("riverhog", "list_archive_stores"): {
+        "order",
+        "page_size",
+        "page_token",
+        "q",
+        "sort",
+    },
+    ("riverhog", "list_processing_claim_artifacts"): {
+        "authority_sha256",
+        "start_ordinal",
+    },
+    ("riverhog", "list_processing_claim_disposition_outputs"): {
+        "authority_sha256",
+        "start_ordinal",
+    },
+    ("riverhog", "list_processing_claim_dispositions"): {
+        "authority_sha256",
+        "start_ordinal",
+    },
+    ("riverhog", "list_processing_claim_inputs"): {
+        "authority_sha256",
+        "start_ordinal",
+    },
+    ("riverhog", "list_processing_claim_outcomes"): {
+        "authority_sha256",
+        "start_ordinal",
+    },
+    ("riverhog", "list_collection_upload_session_files"): {"page_size", "page_token"},
+    ("riverhog", "list_collection_archive_copies"): {"page_size", "page_token"},
+    ("riverhog", "list_collection_tags"): {
+        "page_size",
+        "page_token",
+        "revision",
+        "tag_set_identity",
+    },
+    ("riverhog", "collection_contains_tag"): {"revision", "tag", "tag_set_identity"},
+    ("riverhog", "list_collection_provenance_journal_agents"): {
+        "page_size",
+        "page_token",
+    },
+    ("riverhog", "list_lifecycle_events"): {"after", "limit"},
+    ("riverhog", "list_retrieval_plan_files"): {"page_size", "start_ordinal"},
+    ("riverhog", "plan_collection_deletion"): {"retirement_claim_id"},
+    ("riverhog", "list_catalog_sync_changes"): {"cursor", "limit"},
+    ("riverhog", "list_catalog_sync_collections"): {"cursor", "limit"},
+    ("riverhog", "trace_collection_file_provenance"): {"page_size", "page_token"},
+    ("stove0", "get_artifact_selection"): {"continuation"},
+    ("stove0", "get_recipe"): {"revision"},
+    ("stove0", "get_target_execution_inputs"): {"continuation"},
+    ("stove0", "list_events"): {"after", "limit"},
+}
+
+
+@dataclass(frozen=True)
+class _PlanCase:
+    id: str
+    statement: object
+    expected_indexes: frozenset[str] = frozenset()
+    expected_nodes: frozenset[str] = frozenset()
+    database: str = "riverhog"
+    allow_low_cardinality_seq_scan: bool = False
+    allow_explicit_sort: bool = False
+
+
+def _seed_selector_relations(engine: Engine, *, rows: int) -> None:
+    timestamp = (
+        "'2026-08-28T00:00:' || lpad((g % 60)::text, 2, '0') || '.' || lpad(g::text, 6, '0') || 'Z'"
+    )
+    sha = "repeat(md5(g::text), 2)"
+    with engine.begin() as connection:
+        for statement in (
+            f"""
+            INSERT INTO collection_tags (
+                tag_sha256, tag, search_text, created_at, updated_at, collection_count
+            )
+            SELECT {sha}, 'tag-' || lpad(g::text, 6, '0'),
+                   'tag-' || lpad(g::text, 6, '0'), {timestamp}, {timestamp}, 1
+            FROM generate_series(1, {rows}) AS g
+            """,
+            f"""
+            INSERT INTO collections (
+                id, creation_idempotency_key, creation_identity_sha256,
+                creation_custody_mode, content_identity, encryption_format,
+                passphrase_id, provenance_mode, provenance_identity, inventory_identity,
+                archive_generation, archive_root_sha256, catalog_revision, ingest_source,
+                description, description_search, description_revision, description_identity,
+                created_by_app, created_at, file_count, file_bytes
+            )
+            SELECT g, 'collection-' || g, {sha}, 'producer-retained', {sha},
+                   CASE WHEN g = {rows} THEN 'age-v1-scrypt' ELSE 'age-v1-other' END,
+                   CASE WHEN g = {rows} THEN 'qualification-key-v1'
+                        ELSE 'qualification-key-v2' END,
+                   'omitted', NULL, {sha}, {sha}, {sha}, g,
+                   'fixture-' || lpad(g::text, 6, '0'),
+                   'Reference description ' || lpad(g::text, 6, '0'),
+                   'reference description ' || lpad(g::text, 6, '0'),
+                   1, {sha},
+                   'qualification', {timestamp},
+                   1, g
+            FROM generate_series(1, {rows}) AS g
+            """,
+            f"""
+            INSERT INTO catalog_events (
+                revision, change, collection_id, occurred_at, inventory_identity,
+                archive_root_sha256, content_identity, description, description_revision,
+                description_identity, tag_revision, tag_set_identity, committed_at, published
+            )
+            SELECT g, 'created', g, {timestamp}, {sha}, {sha}, {sha},
+                   'Reference description ' || lpad(g::text, 6, '0'), 1, {sha}, 1, {sha},
+                   {timestamp}, true
+            FROM generate_series(1, {rows}) AS g
+            """,
+            f"""
+            UPDATE catalog_sync_state
+            SET committed_revision = {rows}
+            WHERE singleton = 1
+            """,
+            f"""
+            INSERT INTO collection_files (
+                collection_id, path, bytes, sha256, provenance_status,
+                path_sort_key, search_text, path_search_text
+            )
+            SELECT g, 'camera/file-' || lpad(g::text, 6, '0') || '.bin', g,
+                   {sha}, 'omitted',
+                   convert_to('camera/file-' || lpad(g::text, 6, '0') || '.bin', 'UTF8'),
+                   g || '/camera/file-' || lpad(g::text, 6, '0') || '.bin',
+                   'camera/file-' || lpad(g::text, 6, '0') || '.bin'
+            FROM generate_series(1, {rows}) AS g
+            """,
+            f"""
+            INSERT INTO collection_files (
+                collection_id, path, bytes, sha256, provenance_status,
+                path_sort_key, search_text, path_search_text
+            )
+            SELECT 1, 'archive/member-' || md5(g::text) || '.bin', g,
+                   {sha}, CASE WHEN g % 2 = 0 THEN 'captured' ELSE 'omitted' END,
+                   convert_to('archive/member-' || md5(g::text) || '.bin', 'UTF8'),
+                   '1/archive/member-' || md5(g::text) || '.bin',
+                   'archive/member-' || md5(g::text) || '.bin'
+            FROM generate_series(1, {rows}) AS g
+            """,
+            f"""
+            UPDATE collections SET file_count = {rows + 1},
+                                   file_bytes = {rows * (rows + 1) // 2 + 1}
+            WHERE id = 1
+            """,
+            """
+            INSERT INTO collection_file_provenance (
+                collection_id, path, status, journal_id, current_state_id,
+                omission_reason
+            )
+            SELECT collection_id, path, 'omitted', NULL, NULL, 'qualification fixture'
+            FROM collection_files
+            WHERE provenance_status = 'omitted'
+            """,
+            f"""
+            INSERT INTO collection_tag_memberships (
+                collection_id, tag_sha256, added_at
+            )
+            SELECT g, {sha}, {timestamp}
+            FROM generate_series(1, {rows}) AS g
+            """,
+            f"""
+            INSERT INTO collection_uploads (
+                collection_id, idempotency_key, creation_identity_sha256,
+                initial_tag_set_identity, archive_generation,
+                ingest_source, provenance_mode, provenance_omission_reason,
+                provenance_identity, encryption_format, passphrase_id,
+                initiated_by_app, initiated_by_key_id, event_context_json,
+                state, custody_mode, lease_expires_at, orphaned_at, archive_store,
+                opened_at, last_activity_at, closed_at, archive_phase,
+                archive_phase_updated_at, archive_attempt_count,
+                archive_next_attempt_at, archive_last_attempt_at, archive_failure,
+                archive_storage_prefix, planner_checkpoint_json,
+                file_count, file_bytes, custodied_file_count, custodied_file_bytes,
+                search_text
+            )
+            SELECT {rows} + g, 'upload-' || g, {sha},
+                   '{_EMPTY_TAG_SET_IDENTITY}', {sha},
+                   'source-' || lpad(g::text, 6, '0'), 'omitted',
+                   'qualification fixture', NULL, 'age-v1-scrypt',
+                   'qualification-key-v1', 'qualification', NULL, NULL,
+                   CASE WHEN g = {rows} THEN 'open' ELSE 'orphaned' END,
+                   'producer-retained', NULL,
+                   CASE WHEN g = {rows} THEN NULL ELSE {timestamp} END,
+                   'archive', {timestamp}, {timestamp}, NULL,
+                   CASE WHEN g = {rows} THEN 'planning' ELSE 'orphaned' END,
+                   {timestamp}, 0, NULL, NULL, NULL, 'qualification/' || g,
+                   '{{}}', g % 32, g * 1024, 0, 0,
+                   'source-' || lpad(g::text, 6, '0')
+            FROM generate_series(1, {rows}) AS g
+            """,
+            f"""
+            INSERT INTO app_keys (
+                id, app, token_sha256, monthly_download_quota_bytes,
+                created_at, expires_at, revoked_at, last_used_at
+            )
+            SELECT substring(md5(g::text), 1, 16),
+                   CASE WHEN g <= {rows // 2} THEN 'app-000'
+                        ELSE 'app-' || lpad(g::text, 6, '0') END, {sha},
+                   1000000000 + g, {timestamp},
+                   CASE WHEN g % 3 = 0 THEN '2027-08-28T00:00:00.000000Z' ELSE NULL END,
+                   CASE WHEN g = {rows} THEN NULL ELSE {timestamp} END,
+                   CASE WHEN g % 5 = 0 THEN {timestamp} ELSE NULL END
+            FROM generate_series(1, {rows}) AS g
+            """,
+            f"""
+            INSERT INTO app_key_access_grants (
+                key_id, permission, resource, created_at
+            )
+            SELECT substring(md5(g::text), 1, 16),
+                   CASE WHEN g = {rows} THEN 'provenance:read' ELSE 'catalog:read' END,
+                   CASE WHEN g = {rows} THEN 'tag:tag-000001' ELSE '*' END,
+                   {timestamp}
+            FROM generate_series(1, {rows}) AS g
+            """,
+            f"""
+            INSERT INTO key_download_usage (
+                key_id, month_started_at, accounted_bytes, updated_at
+            )
+            SELECT substring(md5(g::text), 1, 16),
+                   '2026-08-01T00:00:00.000000Z', g * 1000, {timestamp}
+            FROM generate_series(1, {rows}) AS g
+            """,
+            f"""
+            INSERT INTO key_download_reservations (
+                id, key_id, job_id, kind, month_started_at, reserved_bytes,
+                created_at, expires_at
+            )
+            SELECT 'reservation-' || lpad(g::text, 6, '0'),
+                   substring(md5(g::text), 1, 16), 'job-' || g,
+                   CASE WHEN g % 2 = 0 THEN 'job' ELSE 'stream' END,
+                   '2026-08-01T00:00:00.000000Z', g * 10, {timestamp},
+                   CASE WHEN g % 2 = 0 THEN '2027-08-28T00:00:00.000000Z'
+                        ELSE '2026-01-01T00:00:00.000000Z' END
+            FROM generate_series(1, {rows}) AS g
+            """,
+            f"""
+            INSERT INTO collection_archive_copies (
+                collection_id, store, state, archive_storage_prefix,
+                last_uploaded_at, last_verified_at
+            )
+            SELECT g, 'archive-' || lpad((g % 16)::text, 2, '0'), 'uploaded',
+                   'collections/' || g, {timestamp}, {timestamp}
+            FROM generate_series(1, {rows}) AS g
+            """,
+            f"""
+            INSERT INTO collection_archive_objects (
+                collection_id, store, object_id, object_order, kind, object_path,
+                plaintext_bytes, stored_bytes, sha256, stored_sha256, revision,
+                uploaded_at, verified_at
+            )
+            SELECT g, 'archive-' || lpad((g % 16)::text, 2, '0'),
+                   'object-' || lpad(g::text, 6, '0'), repeat('0', 65), 'pack',
+                   'collections/' || g || '/object', g, g + 64, {sha}, {sha},
+                   'revision-' || g, {timestamp}, {timestamp}
+            FROM generate_series(1, {rows}) AS g
+            """,
+            f"""
+            INSERT INTO retrieval_cache_objects (
+                source_store, collection_id, object_id, cache_store, object_path, revision,
+                stored_bytes, stored_sha256, cached_at, verified_at, state
+            )
+            SELECT 'archive-' || lpad((g % 16)::text, 2, '0'), g,
+                   'object-' || lpad(g::text, 6, '0'),
+                   CASE WHEN g % 2 = 0 THEN 'local' ELSE 'elastic' END,
+                   'collections/' || g || '/object', 'revision-' || g,
+                   g + 64, {sha}, {timestamp}, {timestamp},
+                   CASE WHEN g = {rows} THEN 'delete_pending' ELSE 'ready' END
+            FROM generate_series(1, {rows}) AS g
+            """,
+            f"""
+            INSERT INTO retrieval_cache_leases (
+                owner, source_store, collection_id, object_id, expires_at
+            )
+            SELECT 'indexer-' || (g % 8),
+                   'archive-' || lpad((g % 16)::text, 2, '0'), g,
+                   'object-' || lpad(g::text, 6, '0'),
+                   CASE WHEN g % 2 = 0 THEN '2027-08-28T00:00:00.000000Z'
+                        ELSE '2026-01-01T00:00:00.000000Z' END
+            FROM generate_series(1, {rows}) AS g
+            """,
+            f"""
+            INSERT INTO archive_copy_jobs (
+                collection_id, destination_store, destination_storage_prefix,
+                source_store, initiated_by_app, state, requested_at
+            )
+            SELECT g, 'copy-' || lpad((g % 16)::text, 2, '0'),
+                   'copies/' || g, 'archive-' || lpad((g % 16)::text, 2, '0'),
+                   'qualification',
+                   CASE WHEN g = {rows} THEN 'requested' ELSE 'waiting' END,
+                   {timestamp}
+            FROM generate_series(1, {rows}) AS g
+            """,
+            f"""
+            INSERT INTO collection_processing_claims (
+                id, work_id, consumer_app, purpose, work_document_json,
+                work_document_sha256, execution_id,
+                input_count, artifact_count, artifact_bytes,
+                outcome_count, outcome_state, outcome_validation_count,
+                retirement_grace_seconds,
+                state, fence, expires_at, created_at, updated_at
+            )
+            SELECT repeat(md5('claim-' || g), 2), repeat(md5('work-' || g), 2),
+                   'qualification', 'archive-' || g, '{{}}', {sha},
+                   repeat(md5('execution-' || g), 2),
+                   0, 0, 0, 0, 'receiving', 0, 0,
+                   CASE WHEN g % 2 = 0 THEN 'active' ELSE 'settled' END,
+                   1, '2027-08-28T00:00:00.000000Z', {timestamp}, {timestamp}
+            FROM generate_series(1, {rows}) AS g
+            """,
+        ):
+            connection.execute(text(statement))
+        connection.exec_driver_sql("ANALYZE")
+
+
+def _seed_stove0_selector_relations(engine: Engine, *, rows: int) -> None:
+    timestamp = (
+        "'2026-08-28T00:00:' || lpad((g % 60)::text, 2, '0') || '.' || lpad(g::text, 6, '0') || 'Z'"
+    )
+    with engine.begin() as connection:
+        connection.execute(
+            text(
+                f"""
+            INSERT INTO stove0_work_records (
+                work_id, revision, phase, updated_at, document_bytes, document_json
+            )
+            SELECT repeat(md5('stove-work-' || g), 2), 1,
+                   CASE WHEN g % 2 = 0 THEN 'eligible' ELSE 'complete' END,
+                   {timestamp}, 2, '{{}}'
+            FROM generate_series(1, {rows}) AS g
+            """
+            )
+        )
+        connection.execute(
+            text(
+                f"""
+            INSERT INTO stove0_evaluation_records (
+                evaluation_id, revision, phase, updated_at, document_bytes, document_json
+            )
+            SELECT repeat(md5('stove-evaluation-' || g), 2), 1,
+                   CASE WHEN g % 2 = 0 THEN 'planning' ELSE 'complete' END,
+                   {timestamp}, 2, '{{}}'
+            FROM generate_series(1, {rows}) AS g
+            """
+            )
+        )
+        connection.execute(
+            text(
+                f"""
+            INSERT INTO stove0_admission_candidates (
+                admission_id, policy_id, state, preview_sha256, work_id,
+                document_bytes, document_json, preview_bytes, preview_json,
+                attempt_count, next_attempt_at, failure, created_at, updated_at
+            )
+            SELECT repeat(md5('stove-admission-' || g), 2),
+                   'policy-' || lpad((g % 32)::text, 2, '0'),
+                   CASE WHEN g % 3 = 0 THEN 'intent'
+                        WHEN g % 3 = 1 THEN 'previewed'
+                        ELSE 'work_bound' END,
+                   CASE WHEN g % 3 IN (1, 2) THEN repeat(md5('preview-' || g), 2)
+                        ELSE NULL END,
+                   CASE WHEN g % 3 = 2 THEN repeat(md5('work-' || g), 2)
+                        ELSE NULL END,
+                   2, '{{}}', NULL, NULL, 0,
+                   CASE WHEN g % 3 = 2 THEN NULL ELSE {timestamp} END,
+                   NULL, {timestamp}, {timestamp}
+            FROM generate_series(1, {rows}) AS g
+            """
+            )
+        )
+        connection.exec_driver_sql("ANALYZE")
+
+
+def _plan_cases() -> tuple[_PlanCase, ...]:
+    cases: list[_PlanCase] = []
+    collection_indexes = {
+        "id": "collections_pkey",
+        "created_at": "ix_collections_created_at_id",
+        "files": "ix_collections_file_count_id",
+        "bytes": "ix_collections_file_bytes_id",
+    }
+    for sort in sorted(closed_literal_values(CollectionSort)):
+        for order in ("asc", "desc"):
+            statement = _riverhog_plan_statement(
+                _collection_list_statement(
+                    q=None,
+                    encryption_format=None,
+                    passphrase_id=None,
+                    tags=(),
+                    sort=sort,
+                    order=order,
+                    principal=None,
+                ),
+                order=order,
+            )
+            cases.append(
+                _PlanCase(
+                    f"collections.sort.{sort}.{order}",
+                    statement,
+                    frozenset({collection_indexes[sort]}),
+                )
+            )
+    for name, kwargs, index in (
+        (
+            "q",
+            {"q": "description 016384"},
+            "ix_collections_description_search_trgm",
+        ),
+        (
+            "encryption_format",
+            {"encryption_format": "age-v1-scrypt"},
+            "ix_collections_encryption_format",
+        ),
+        (
+            "passphrase_id",
+            {"passphrase_id": "qualification-key-v1"},
+            "ix_collections_passphrase_id",
+        ),
+    ):
+        statement = _riverhog_plan_statement(
+            _collection_list_statement(
+                q=str(kwargs["q"]) if "q" in kwargs else None,
+                encryption_format=(
+                    str(kwargs["encryption_format"]) if "encryption_format" in kwargs else None
+                ),
+                passphrase_id=(str(kwargs["passphrase_id"]) if "passphrase_id" in kwargs else None),
+                tags=(),
+                sort="id",
+                order="asc",
+                principal=None,
+            ),
+            order="asc",
+        )
+        cases.append(_PlanCase(f"collections.filter.{name}", statement, frozenset({index})))
+
+    cases.append(
+        _PlanCase(
+            "collections.filter.tags",
+            _riverhog_plan_statement(
+                _collection_list_statement(
+                    q=None,
+                    encryption_format=None,
+                    passphrase_id=None,
+                    tags=("tag-016384",),
+                    sort="id",
+                    order="asc",
+                    principal=None,
+                ),
+                order="asc",
+            ),
+            frozenset({"ix_collection_tag_memberships_tag"}),
+        )
+    )
+
+    search_indexes = {
+        "file_ref": "ix_collection_files_collection_path",
+        "collection_id": "ix_collection_files_collection_path",
+        "path": "ix_collection_files_path",
+        "bytes": "ix_collection_files_bytes",
+    }
+    for sort in sorted(closed_literal_values(SearchSort)):
+        for order in ("asc", "desc"):
+            statement = _riverhog_plan_statement(
+                _search_statement(
+                    q=None,
+                    collection=None,
+                    sort=sort,
+                    order=order,
+                    principal=None,
+                ),
+                order=order,
+            )
+            cases.append(
+                _PlanCase(
+                    f"search.sort.{sort}.{order}",
+                    statement,
+                    frozenset({search_indexes[sort]}),
+                )
+            )
+    cases.extend(
+        (
+            _PlanCase(
+                "search.filter.q",
+                _riverhog_plan_statement(
+                    _search_statement(
+                        q="file-065536",
+                        collection=None,
+                        sort="file_ref",
+                        order="asc",
+                        principal=None,
+                    ),
+                    order="asc",
+                ),
+                frozenset({"ix_collection_files_search_trgm"}),
+            ),
+            _PlanCase(
+                "search.filter.collection",
+                _riverhog_plan_statement(
+                    _search_statement(
+                        q=None,
+                        collection=1,
+                        sort="file_ref",
+                        order="asc",
+                        principal=None,
+                    ),
+                    order="asc",
+                ),
+                frozenset({"ix_collection_files_collection_path"}),
+            ),
+        )
+    )
+
+    cases.append(
+        _PlanCase(
+            "tags.filter.q",
+            _riverhog_plan_statement(
+                _tag_list_statement(query="tag-016384", principal=None),
+                order="asc",
+            ),
+            frozenset({"ix_collection_tags_search_trgm"}),
+        )
+    )
+
+    upload_indexes = {
+        "id": "collection_uploads_pkey",
+        "created_at": "ix_collection_uploads_opened_at",
+        "state": "ix_collection_uploads_state",
+        "files": "ix_collection_uploads_file_count",
+        "bytes": "ix_collection_uploads_file_bytes",
+    }
+    for sort in sorted(closed_literal_values(CollectionUploadSort)):
+        for order in ("asc", "desc"):
+            statement = _riverhog_plan_statement(
+                _upload_list_statement(
+                    q=None,
+                    state=None,
+                    sort=sort,
+                    order=order,
+                    principal=_READER,
+                ),
+                order=order,
+            )
+            cases.append(
+                _PlanCase(
+                    f"uploads.sort.{sort}.{order}",
+                    statement,
+                    frozenset({upload_indexes[sort]}),
+                )
+            )
+    for name, kwargs, index in (
+        ("q", {"q": "source-065536"}, "ix_collection_uploads_search_trgm"),
+        ("state", {"state": "open"}, "ix_collection_uploads_state"),
+    ):
+        statement = _riverhog_plan_statement(
+            _upload_list_statement(
+                q=str(kwargs["q"]) if "q" in kwargs else None,
+                state=str(kwargs["state"]) if "state" in kwargs else None,
+                sort="id",
+                order="asc",
+                principal=_READER,
+            ),
+            order="asc",
+        )
+        cases.append(_PlanCase(f"uploads.filter.{name}", statement, frozenset({index})))
+
+    provenance_indexes = {
+        "path": "ix_collection_files_collection_path",
+        "bytes": "ix_collection_files_collection_bytes",
+        "status": "ix_collection_files_collection_provenance",
+    }
+    for sort in sorted(closed_literal_values(ProvenanceSort)):
+        for order in ("asc", "desc"):
+            statement = _riverhog_plan_statement(
+                _provenance_file_statement(
+                    collection_id=1,
+                    principal=_READER,
+                    q=None,
+                    status=None,
+                    sort=sort,
+                    order=order,
+                ),
+                order=order,
+            )
+            cases.append(
+                _PlanCase(
+                    f"provenance.sort.{sort}.{order}",
+                    statement,
+                    frozenset({provenance_indexes[sort]}),
+                )
+            )
+    cases.extend(
+        (
+            _PlanCase(
+                "provenance.filter.q",
+                _riverhog_plan_statement(
+                    _provenance_file_statement(
+                        collection_id=1,
+                        principal=_READER,
+                        q="member-297ce0b3c836ae307023d7c2c3a7b1ec",
+                        status=None,
+                        sort="path",
+                        order="asc",
+                    ),
+                    order="asc",
+                ),
+                frozenset({"ix_collection_files_path_search_trgm"}),
+            ),
+            _PlanCase(
+                "provenance.filter.status",
+                _riverhog_plan_statement(
+                    _provenance_file_statement(
+                        collection_id=1,
+                        principal=_READER,
+                        q=None,
+                        status="omitted",
+                        sort="path",
+                        order="asc",
+                    ),
+                    order="asc",
+                ),
+                frozenset({"ix_collection_files_collection_provenance"}),
+            ),
+        )
+    )
+
+    archive_copy_indexes = {
+        "collection_id": "archive_copy_jobs_pkey",
+        "source_store": "ix_archive_copy_jobs_source",
+        "destination_store": "ix_archive_copy_jobs_destination",
+        "state": "ix_archive_copy_jobs_state",
+        "requested_at": "ix_archive_copy_jobs_requested",
+    }
+    for sort in sorted(closed_literal_values(ArchiveCopySort)):
+        for order in ("asc", "desc"):
+            statement = _riverhog_plan_statement(
+                _archive_copy_list_statement(
+                    q=None,
+                    state=None,
+                    sort=sort,
+                    order=order,
+                    principal=None,
+                ),
+                order=order,
+            )
+            cases.append(
+                _PlanCase(
+                    f"archive-copies.sort.{sort}.{order}",
+                    statement,
+                    frozenset({archive_copy_indexes[sort]}),
+                )
+            )
+    cases.extend(
+        (
+            _PlanCase(
+                "archive-copies.filter.q",
+                _riverhog_plan_statement(
+                    _archive_copy_list_statement(
+                        q="65536",
+                        state=None,
+                        sort="collection_id",
+                        order="asc",
+                        principal=None,
+                    ),
+                    order="asc",
+                ),
+                frozenset({"ix_archive_copy_jobs_search_trgm"}),
+            ),
+            _PlanCase(
+                "archive-copies.filter.state",
+                _riverhog_plan_statement(
+                    _archive_copy_list_statement(
+                        q=None,
+                        state="requested",
+                        sort="collection_id",
+                        order="asc",
+                        principal=None,
+                    ),
+                    order="asc",
+                ),
+                frozenset({"ix_archive_copy_jobs_state"}),
+            ),
+        )
+    )
+
+    cache_indexes = {
+        "collection_id": "ix_retrieval_cache_objects_collection",
+        "source_store": "retrieval_cache_objects_pkey",
+        "object_id": "ix_retrieval_cache_objects_object",
+        "stored_bytes": "ix_retrieval_cache_objects_bytes",
+        "cached_at": "ix_retrieval_cache_objects_cached",
+        "verified_at": "ix_retrieval_cache_objects_verified",
+    }
+    for sort in sorted(closed_literal_values(RetrievalCacheSort)):
+        for order in ("asc", "desc"):
+            statement = _riverhog_plan_statement(
+                _cache_list_statement(
+                    q=None,
+                    collection_id=None,
+                    source_store=None,
+                    cache_store=None,
+                    state=None,
+                    protection=None,
+                    expires_before=None,
+                    expires_after=None,
+                    sort=sort,
+                    order=order,
+                    principal=None,
+                    now=_NOW,
+                ),
+                order=order,
+                statement_index=0,
+                key_columns_index=1,
+            )
+            if sort == "protected_until":
+                cases.append(
+                    _PlanCase(
+                        f"retrieval-cache.sort.{sort}.{order}",
+                        statement,
+                        expected_nodes=frozenset({"Aggregate"}),
+                        allow_explicit_sort=True,
+                    )
+                )
+            else:
+                cases.append(
+                    _PlanCase(
+                        f"retrieval-cache.sort.{sort}.{order}",
+                        statement,
+                        frozenset({cache_indexes[sort]}),
+                    )
+                )
+    cache_filters = (
+        (
+            "q",
+            {"q": "object-065536"},
+            "ix_retrieval_cache_objects_search_trgm",
+            None,
+        ),
+        (
+            "collection_id",
+            {"collection_id": 4096},
+            "ix_retrieval_cache_objects_collection",
+            None,
+        ),
+        (
+            "source_store",
+            {"source_store": "archive-00"},
+            (
+                "retrieval_cache_objects_pkey",
+                "ix_retrieval_cache_objects_collection",
+            ),
+            None,
+        ),
+        (
+            "cache_store",
+            {"cache_store": "local"},
+            (
+                "ix_retrieval_cache_objects_store_cleanup",
+                "ix_retrieval_cache_objects_collection",
+            ),
+            None,
+        ),
+        ("state", {"state": "delete_pending"}, "ix_retrieval_cache_objects_cleanup", None),
+        ("protection", {"protection": "protected"}, None, "Aggregate"),
+        (
+            "expires_before",
+            {"expires_before": "2028-08-28T00:00:00.000000Z"},
+            None,
+            "Aggregate",
+        ),
+        (
+            "expires_after",
+            {"expires_after": "2026-08-28T00:00:00.000000Z"},
+            None,
+            "Aggregate",
+        ),
+    )
+    for name, kwargs, index, node in cache_filters:
+        statement = _riverhog_plan_statement(
+            _cache_list_statement(
+                q=str(kwargs["q"]) if "q" in kwargs else None,
+                collection_id=(int(kwargs["collection_id"]) if "collection_id" in kwargs else None),
+                source_store=(str(kwargs["source_store"]) if "source_store" in kwargs else None),
+                cache_store=(str(kwargs["cache_store"]) if "cache_store" in kwargs else None),
+                state=str(kwargs["state"]) if "state" in kwargs else None,
+                protection=(str(kwargs["protection"]) if "protection" in kwargs else None),
+                expires_before=(
+                    str(kwargs["expires_before"]) if "expires_before" in kwargs else None
+                ),
+                expires_after=(str(kwargs["expires_after"]) if "expires_after" in kwargs else None),
+                sort="collection_id",
+                order="asc",
+                principal=None,
+                now=_NOW,
+            ),
+            order="asc",
+            statement_index=0,
+            key_columns_index=1,
+        )
+        cases.append(
+            _PlanCase(
+                f"retrieval-cache.filter.{name}",
+                statement,
+                (
+                    frozenset(index)
+                    if isinstance(index, tuple)
+                    else frozenset({index})
+                    if index is not None
+                    else frozenset()
+                ),
+                frozenset({node}) if node is not None else frozenset(),
+            )
+        )
+
+    claim_indexes = {
+        "created_at": "ix_collection_processing_claims_owner_created",
+        "updated_at": "ix_collection_processing_claims_owner_updated",
+        "expires_at": "ix_collection_processing_claims_owner_expires",
+        "state": "ix_collection_processing_claims_owner_state_id",
+        "work_id": "ix_collection_processing_claims_owner_work_id",
+        "execution_id": "ix_collection_processing_claims_owner_execution",
+    }
+    for sort in sorted(closed_literal_values(ProcessingClaimSort)):
+        for order in ("asc", "desc"):
+            statement = _riverhog_plan_statement(
+                _claim_list_statement(
+                    state=None,
+                    sort=sort,
+                    order=order,
+                    principal=_READER,
+                ),
+                order=order,
+            )
+            cases.append(
+                _PlanCase(
+                    f"processing-claims.sort.{sort}.{order}",
+                    statement,
+                    frozenset({claim_indexes[sort]}),
+                )
+            )
+    cases.append(
+        _PlanCase(
+            "processing-claims.filter.state",
+            _riverhog_plan_statement(
+                _claim_list_statement(
+                    state="active",
+                    sort="updated_at",
+                    order="asc",
+                    principal=_READER,
+                ),
+                order="asc",
+            ),
+            frozenset(
+                {
+                    "ix_collection_processing_claims_owner_state",
+                    "ix_collection_processing_claims_expiry",
+                }
+            ),
+        )
+    )
+
+    key_indexes = {
+        "id": "ix_app_keys_app",
+        "created_at": "ix_app_keys_app_created",
+        "expires_at": "ix_app_keys_app_expires",
+        "last_used_at": "ix_app_keys_app_last_used",
+    }
+    for sort in sorted(closed_literal_values(ApplicationKeySort)):
+        for order in ("asc", "desc"):
+            statement = _riverhog_plan_statement(
+                _key_list_statement(
+                    app="app-000",
+                    q=None,
+                    sort=sort,
+                    order=order,
+                    active=None,
+                    now=_NOW,
+                ),
+                order=order,
+            )
+            cases.append(
+                _PlanCase(
+                    f"application-keys.sort.{sort}.{order}",
+                    statement,
+                    frozenset(
+                        {key_indexes[sort], "app_keys_pkey"}
+                        if sort == "id"
+                        else {key_indexes[sort]}
+                    ),
+                )
+            )
+    cases.extend(
+        (
+            _PlanCase(
+                "application-keys.filter.q",
+                _riverhog_plan_statement(
+                    _key_list_statement(
+                        app="app-000",
+                        q="297ce0b3c836ae30",
+                        sort="id",
+                        order="asc",
+                        active=None,
+                        now=_NOW,
+                    ),
+                    order="asc",
+                ),
+                frozenset({"ix_app_keys_id_trgm"}),
+            ),
+            _PlanCase(
+                "application-keys.filter.active",
+                _riverhog_plan_statement(
+                    _key_list_statement(
+                        app="app-000",
+                        q=None,
+                        sort="id",
+                        order="asc",
+                        active=True,
+                        now=_NOW,
+                    ),
+                    order="asc",
+                ),
+                frozenset({"ix_app_keys_app_active", "ix_app_keys_active"}),
+            ),
+        )
+    )
+
+    access_indexes = {
+        "app": "ix_app_keys_app",
+        "key_id": "app_key_access_grants_pkey",
+        "permission": "ix_app_key_access_grants_permission",
+        "resource": "ix_app_key_access_grants_resource",
+        "created_at": "ix_app_key_access_grants_created",
+    }
+    for sort in sorted(closed_literal_values(ApplicationAccessSort)):
+        for order in ("asc", "desc"):
+            statement = _riverhog_plan_statement(
+                _access_list_statement(
+                    q=None,
+                    sort=sort,
+                    order=order,
+                    app=None,
+                    key_id=None,
+                    permission=None,
+                    resource=None,
+                    active=None,
+                    now=_NOW,
+                ),
+                order=order,
+            )
+            cases.append(
+                _PlanCase(
+                    f"application-access.sort.{sort}.{order}",
+                    statement,
+                    frozenset({access_indexes[sort]}),
+                )
+            )
+    for name, kwargs, indexes in (
+        ("q", {"q": "provenance"}, frozenset({"ix_app_key_access_grants_search_trgm"})),
+        (
+            "app",
+            {"app": "app-000"},
+            frozenset({"ix_app_keys_app", "ix_app_keys_app_trgm"}),
+        ),
+        (
+            "key_id",
+            {"key_id": "f7efa4f864ae9b88"},
+            frozenset({"app_key_access_grants_pkey"}),
+        ),
+        (
+            "permission",
+            {"permission": "provenance:read"},
+            frozenset({"ix_app_key_access_grants_permission"}),
+        ),
+        (
+            "resource",
+            {"resource": "tag:tag-000001"},
+            frozenset({"ix_app_key_access_grants_resource"}),
+        ),
+        ("active", {"active": True}, frozenset({"ix_app_keys_active"})),
+    ):
+        statement = _riverhog_plan_statement(
+            _access_list_statement(
+                q=str(kwargs["q"]) if "q" in kwargs else None,
+                sort="key_id",
+                order="asc",
+                app=str(kwargs["app"]) if "app" in kwargs else None,
+                key_id=str(kwargs["key_id"]) if "key_id" in kwargs else None,
+                permission=(str(kwargs["permission"]) if "permission" in kwargs else None),
+                resource=str(kwargs["resource"]) if "resource" in kwargs else None,
+                active=bool(kwargs["active"]) if "active" in kwargs else None,
+                now=_NOW,
+            ),
+            order="asc",
+        )
+        cases.append(_PlanCase(f"application-access.filter.{name}", statement, indexes))
+
+    for sort in sorted(closed_literal_values(ApplicationSort)):
+        for order in ("asc", "desc"):
+            statement = _riverhog_plan_statement(
+                _app_list_statement(
+                    q=None,
+                    sort=sort,
+                    order=order,
+                    active=None,
+                    now=_NOW,
+                ),
+                order=order,
+            )
+            cases.append(
+                _PlanCase(
+                    f"applications.sort.{sort}.{order}",
+                    statement,
+                    expected_nodes=frozenset({"Aggregate"}),
+                )
+            )
+    cases.extend(
+        (
+            _PlanCase(
+                "applications.filter.q",
+                _riverhog_plan_statement(
+                    _app_list_statement(
+                        q="app-065536",
+                        sort="name",
+                        order="asc",
+                        active=None,
+                        now=_NOW,
+                    ),
+                    order="asc",
+                ),
+                frozenset({"ix_app_keys_app_trgm"}),
+            ),
+            _PlanCase(
+                "applications.filter.active",
+                _riverhog_plan_statement(
+                    _app_list_statement(
+                        q=None,
+                        sort="name",
+                        order="asc",
+                        active=True,
+                        now=_NOW,
+                    ),
+                    order="asc",
+                ),
+                expected_nodes=frozenset({"Aggregate"}),
+            ),
+        )
+    )
+
+    qualification_now = parse_utc_timestamp(_NOW)
+    for sort in sorted(closed_literal_values(DownloadQuotaSort)):
+        for order in ("asc", "desc"):
+            statement = _riverhog_plan_statement(
+                _key_quota_statements(
+                    now=qualification_now,
+                    q=None,
+                    sort=sort,
+                    order=order,
+                    app=None,
+                    active=None,
+                ),
+                order=order,
+            )
+            cases.append(
+                _PlanCase(
+                    f"download-quotas.sort.{sort}.{order}",
+                    statement,
+                    expected_nodes=frozenset({"Aggregate"}),
+                )
+            )
+    cases.extend(
+        (
+            _PlanCase(
+                "download-quotas.filter.q",
+                _riverhog_plan_statement(
+                    _key_quota_statements(
+                        now=qualification_now,
+                        q="297ce0b3c836ae30",
+                        sort="key_id",
+                        order="asc",
+                        app=None,
+                        active=None,
+                    ),
+                    order="asc",
+                ),
+                frozenset({"ix_app_keys_search_trgm"}),
+            ),
+            _PlanCase(
+                "download-quotas.filter.app",
+                _riverhog_plan_statement(
+                    _key_quota_statements(
+                        now=qualification_now,
+                        q=None,
+                        sort="key_id",
+                        order="asc",
+                        app="app-000",
+                        active=None,
+                    ),
+                    order="asc",
+                ),
+                frozenset({"ix_app_keys_app", "ix_app_keys_app_trgm"}),
+            ),
+            _PlanCase(
+                "download-quotas.filter.active",
+                _riverhog_plan_statement(
+                    _key_quota_statements(
+                        now=qualification_now,
+                        q=None,
+                        sort="key_id",
+                        order="asc",
+                        app=None,
+                        active=True,
+                    ),
+                    order="asc",
+                ),
+                expected_nodes=frozenset({"Aggregate"}),
+            ),
+        )
+    )
+
+    work_indexes = {
+        "work_id": "stove0_work_records_pkey",
+        "updated_at": "ix_stove0_work_records_updated_work_id",
+        "phase": "ix_stove0_work_records_phase_work_id",
+    }
+    for sort in sorted(closed_literal_values(WorkSort)):
+        for order in ("asc", "desc"):
+            statement = _stove0_plan_statement(
+                _work_list_statement(
+                    phase=None,
+                    query=None,
+                    sort=sort,
+                    order=order,
+                ),
+                order=order,
+            )
+            cases.append(
+                _PlanCase(
+                    f"stove0-work.sort.{sort}.{order}",
+                    statement,
+                    frozenset({work_indexes[sort]}),
+                    database="stove0",
+                )
+            )
+    cases.extend(
+        (
+            _PlanCase(
+                "stove0-work.filter.q",
+                _stove0_plan_statement(
+                    _work_list_statement(
+                        phase=None,
+                        query="19c611b455303958a1ca8f4c6c382fd4",
+                        sort="work_id",
+                        order="asc",
+                    ),
+                    order="asc",
+                ),
+                frozenset(
+                    {
+                        "ix_stove0_work_records_id_trgm",
+                        "stove0_work_records_pkey",
+                    }
+                ),
+                database="stove0",
+            ),
+            _PlanCase(
+                "stove0-work.filter.phase",
+                _stove0_plan_statement(
+                    _work_list_statement(
+                        phase="eligible",
+                        query=None,
+                        sort="work_id",
+                        order="asc",
+                    ),
+                    order="asc",
+                ),
+                frozenset({"ix_stove0_work_records_phase_work_id"}),
+                database="stove0",
+            ),
+        )
+    )
+
+    admission_indexes = {
+        "admission_id": "stove0_admission_candidates_pkey",
+        "created_at": "ix_stove0_admission_candidates_created",
+        "updated_at": "ix_stove0_admission_candidates_updated",
+        "state": "ix_stove0_admission_candidates_state",
+    }
+    for sort in sorted(closed_literal_values(AdmissionSort)):
+        for order in ("asc", "desc"):
+            statement = _stove0_plan_statement(
+                _admission_list_statement(
+                    policy_id=None,
+                    state=None,
+                    query=None,
+                    sort=sort,
+                    order=order,
+                ),
+                order=order,
+            )
+            cases.append(
+                _PlanCase(
+                    f"stove0-admissions.sort.{sort}.{order}",
+                    statement,
+                    frozenset({admission_indexes[sort]}),
+                    database="stove0",
+                )
+            )
+    cases.extend(
+        (
+            _PlanCase(
+                "stove0-admissions.filter.q",
+                _stove0_plan_statement(
+                    _admission_list_statement(
+                        policy_id=None,
+                        state=None,
+                        query="19c611b455303958a1ca8f4c6c382fd4",
+                        sort="admission_id",
+                        order="asc",
+                    ),
+                    order="asc",
+                ),
+                frozenset(
+                    {
+                        "ix_stove0_admission_candidates_id_trgm",
+                        "ix_stove0_admission_candidates_policy_trgm",
+                        "ix_stove0_admission_candidates_work_trgm",
+                    }
+                ),
+                database="stove0",
+            ),
+            _PlanCase(
+                "stove0-admissions.filter.policy_id",
+                _stove0_plan_statement(
+                    _admission_list_statement(
+                        policy_id="policy-00",
+                        state=None,
+                        query=None,
+                        sort="admission_id",
+                        order="asc",
+                    ),
+                    order="asc",
+                ),
+                frozenset({"ix_stove0_admission_candidates_policy"}),
+                database="stove0",
+            ),
+            _PlanCase(
+                "stove0-admissions.filter.state",
+                _stove0_plan_statement(
+                    _admission_list_statement(
+                        policy_id=None,
+                        state="intent",
+                        query=None,
+                        sort="admission_id",
+                        order="asc",
+                    ),
+                    order="asc",
+                ),
+                frozenset({"ix_stove0_admission_candidates_state"}),
+                database="stove0",
+            ),
+        )
+    )
+
+    evaluation_indexes = {
+        "evaluation_id": "stove0_evaluation_records_pkey",
+        "updated_at": "ix_stove0_evaluation_records_updated_id",
+        "phase": "ix_stove0_evaluation_records_phase_id",
+    }
+    for sort in sorted(closed_literal_values(EvaluationSort)):
+        for order in ("asc", "desc"):
+            statement = _stove0_plan_statement(
+                _evaluation_list_statement(
+                    phase=None,
+                    query=None,
+                    sort=sort,
+                    order=order,
+                ),
+                order=order,
+            )
+            cases.append(
+                _PlanCase(
+                    f"stove0-evaluations.sort.{sort}.{order}",
+                    statement,
+                    frozenset({evaluation_indexes[sort]}),
+                    database="stove0",
+                )
+            )
+    cases.extend(
+        (
+            _PlanCase(
+                "stove0-evaluations.filter.q",
+                _stove0_plan_statement(
+                    _evaluation_list_statement(
+                        phase=None,
+                        query="bccb92b0182c48d41e4dbf870ccd6009",
+                        sort="evaluation_id",
+                        order="asc",
+                    ),
+                    order="asc",
+                ),
+                frozenset(
+                    {
+                        "ix_stove0_evaluation_records_id_trgm",
+                        "stove0_evaluation_records_pkey",
+                    }
+                ),
+                database="stove0",
+            ),
+            _PlanCase(
+                "stove0-evaluations.filter.phase",
+                _stove0_plan_statement(
+                    _evaluation_list_statement(
+                        phase="planning",
+                        query=None,
+                        sort="evaluation_id",
+                        order="asc",
+                    ),
+                    order="asc",
+                ),
+                frozenset({"ix_stove0_evaluation_records_phase_id"}),
+                database="stove0",
+            ),
+        )
+    )
+    # On the smaller qualified relation PostgreSQL may correctly prefer a
+    # sequential scan to a trigram index. Record that reviewed natural-plan
+    # alternative explicitly. Database qualification still requires the
+    # declared trigram operator or this alternative and rejects linear work
+    # growth at the larger cardinality. Aggregate-derived orderings explicitly
+    # permit a database sort; stored-key ordering must remain index-backed.
+    return tuple(
+        replace(
+            case,
+            allow_low_cardinality_seq_scan=(
+                case.allow_low_cardinality_seq_scan
+                or any("trgm" in index for index in case.expected_indexes)
+            ),
+            allow_explicit_sort=(
+                case.allow_explicit_sort
+                or (".sort." in case.id and "Aggregate" in case.expected_nodes)
+            ),
+        )
+        for case in cases
+    )
+
+
+def _catalog_sync_plan_cases() -> tuple[_PlanCase, ...]:
+    visible = collection_access_filter(
+        CollectionRecord.id,
+        _READER,
+        CATALOG_READ,
+        published_filter=CollectionRecord.is_published.is_(True),
+    )
+    return (
+        _PlanCase(
+            "catalog-sync.collections",
+            _catalog_collection_page_statement(
+                visible=visible,
+                after=_ROWS // 2,
+                upper=_ROWS,
+                limit=100,
+            ),
+            frozenset({"collections_pkey"}),
+        ),
+        _PlanCase(
+            "catalog-sync.changes",
+            _catalog_change_revision_statement(
+                after=_ROWS // 2,
+                through=_ROWS,
+                limit=100,
+            ),
+            frozenset({"catalog_events_revision_key", "ix_catalog_events_revision"}),
+        ),
+    )
+
+
+def _index_names(plan: object) -> set[str]:
+    names: set[str] = set()
+    if isinstance(plan, dict):
+        if "Index Name" in plan:
+            names.add(str(plan["Index Name"]))
+        for value in plan.values():
+            names.update(_index_names(value))
+    elif isinstance(plan, list):
+        for value in plan:
+            names.update(_index_names(value))
+    return names
+
+
+def _node_types(plan: object) -> set[str]:
+    nodes: set[str] = set()
+    if isinstance(plan, dict):
+        if "Node Type" in plan:
+            nodes.add(str(plan["Node Type"]))
+        for value in plan.values():
+            nodes.update(_node_types(value))
+    elif isinstance(plan, list):
+        for value in plan:
+            nodes.update(_node_types(value))
+    return nodes
+
+
+# This module is repository-only support shared by the PostgreSQL integration
+# proof and its exact-SHA qualification runner. These names are its intentional
+# internal interface; neither the module nor the names are distributed.
+DATABASE_PLAN_OPERATIONS = _DATABASE_PLAN_OPERATIONS
+DATABASE_FILTER_SELECTORS = _DATABASE_FILTER_SELECTORS
+NON_PLAN_QUERY_OPERATIONS = _NON_PLAN_QUERY_OPERATIONS
+PlanCase = _PlanCase
+catalog_sync_plan_cases = _catalog_sync_plan_cases
+index_names = _index_names
+node_types = _node_types
+plan_cases = _plan_cases
+riverhog_plan_statement = _riverhog_plan_statement
+seed_selector_relations = _seed_selector_relations
+seed_stove0_selector_relations = _seed_stove0_selector_relations
+
+__all__ = [
+    "DATABASE_FILTER_SELECTORS",
+    "DATABASE_PLAN_OPERATIONS",
+    "NON_PLAN_QUERY_OPERATIONS",
+    "PlanCase",
+    "catalog_sync_plan_cases",
+    "index_names",
+    "node_types",
+    "plan_cases",
+    "riverhog_plan_statement",
+    "seed_selector_relations",
+    "seed_stove0_selector_relations",
+]

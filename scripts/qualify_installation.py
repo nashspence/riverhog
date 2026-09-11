@@ -6,7 +6,6 @@ from __future__ import annotations
 import argparse
 import hashlib
 import http.server
-import importlib.util
 import io
 import json
 import os
@@ -1652,28 +1651,15 @@ def _run_gogurt_listener_lifecycle(
 def _run_recovery(
     executable: Path,
     *,
-    source_root: Path,
     scratch: Path,
     environment: dict[str, str],
 ) -> str:
-    fixture_path = source_root / "reference/riverhog/recovery/tests/test_recovery.py"
-    spec = importlib.util.spec_from_file_location(
-        "_riverhog_recovery_qualification_fixture",
-        fixture_path,
-    )
-    if spec is None or spec.loader is None:
-        raise QualificationError("could not load the independent recovery fixture")
-    fixture = importlib.util.module_from_spec(spec)
-    sys.path.insert(0, str(source_root))
-    try:
-        spec.loader.exec_module(fixture)
-    finally:
-        sys.path.remove(str(source_root))
-    passphrase_value = cast(str, fixture.PASSPHRASE)
-    passphrase_id = cast(str, fixture.PASSPHRASE_ID)
-    write_archive = cast(
-        Callable[[Path], tuple[dict[str, bytes], bytes | None]],
-        fixture._write_archive,
+    if str(ROOT) not in sys.path:
+        sys.path.insert(0, str(ROOT))
+    from tests.support.qualification.recovery_archive import (
+        PASSPHRASE,
+        PASSPHRASE_ID,
+        write_archive,
     )
 
     archive = scratch / "recovery-archive"
@@ -1682,7 +1668,7 @@ def _run_recovery(
     passphrases = scratch / "passphrases.json"
     passphrases.write_text(
         # codeql[py/clear-text-storage-sensitive-data]
-        json.dumps({passphrase_id: passphrase_value}, sort_keys=True, separators=(",", ":")),
+        json.dumps({PASSPHRASE_ID: PASSPHRASE}, sort_keys=True, separators=(",", ":")),
         encoding="utf-8",
     )
     passphrases.chmod(0o600)
@@ -1911,7 +1897,6 @@ def _qualify_component(
     else:
         operation = _run_recovery(
             primary,
-            source_root=source_root,
             scratch=scratch,
             environment=environment,
         )
