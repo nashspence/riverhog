@@ -9,6 +9,7 @@ from pathlib import Path
 from typing import Any, Literal, Protocol, Self
 
 from jsonschema import Draft202012Validator
+from jsonschema.exceptions import ValidationError as JsonSchemaValidationError
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 from stove0_observer_client import ContentObserverClient, load_semantic_validator_registry
 from stove0_observer_protocol import (
@@ -21,8 +22,7 @@ from stove0_observer_protocol import (
     SemanticFactsConformanceVectors,
     SemanticValidatorProvider,
     accept_observation_result,
-    canonical_json_bytes,
-    validate_observation_request,
+    validate_observation_result_structure,
 )
 
 OBSERVER_CONFORMANCE_RESULT: Literal["stove0-observer-conformance-result/v1"] = (
@@ -60,6 +60,28 @@ class ObserverSemanticVectorEvidence(_ObserverConformanceModel):
         return self
 
 
+class ObserverSemanticAcceptance(_ObserverConformanceModel):
+    """Exact schema revalidation or explicit conformance-runner attestation."""
+
+    kind: Literal["schema-only-revalidated", "conformance-runner-attestation"]
+    profile_id: str
+    profile_sha256: str = Field(pattern=r"^[0-9a-f]{64}$")
+    vectors: ObserverSemanticVectorEvidence | None = None
+
+    @model_validator(mode="after")
+    def validate_kind(self) -> Self:
+        if (self.kind == "conformance-runner-attestation") != (self.vectors is not None):
+            raise ValueError("observer semantic acceptance evidence differs from its kind")
+        return self
+
+
+def _validate_schema_value(value: object, schema: dict[str, Any], *, label: str) -> None:
+    try:
+        Draft202012Validator(schema).validate(value)
+    except JsonSchemaValidationError as exc:
+        raise ValueError(f"{label} violates its cited schema") from exc
+
+
 class ObserverContractConformanceEvidence(_ObserverConformanceModel):
     request: ObservationRequest
     observation: ObservationResult
@@ -79,8 +101,7 @@ class ObserverContractConformance(_ObserverConformanceModel):
     preferred_subject_batch_size: int = Field(ge=1, strict=True)
     maximum_result_bytes: int = Field(ge=1, strict=True)
     execution: Literal["not-exercised", "exercised"]
-    semantic_conformance: Literal["not-exercised", "schema-only", "exercised"]
-    semantic_vectors: ObserverSemanticVectorEvidence | None = None
+    semantic_acceptance: ObserverSemanticAcceptance | None = None
     evidence: ObserverContractConformanceEvidence | None = None
 
 
@@ -130,44 +151,44 @@ class ObserverConformanceResult(_ObserverConformanceModel):
                 assert report.evidence is not None
                 request = report.evidence.request
                 result = report.evidence.observation
-                validate_observation_request(request, self.descriptor)
+                validate_observation_result_structure(result, request, self.descriptor)
                 if request.observer_contract_id != report.contract_id:
                     raise ValueError("observer evidence names a different contract")
-                if (
-                    result.request_id != request.request_id
-                    or result.observer_contract_id != support.contract_id
-                    or result.observer_contract_sha256 != support.contract_sha256
-                    or result.observer.descriptor_sha256 != self.descriptor.descriptor_sha256
-                    or result.subjects != request.subjects
-                ):
-                    raise ValueError("observer result does not bind its conformance request")
-                if result.state == "observed":
-                    if result.facts_schema != support.facts_schema or result.facts is None:
-                        raise ValueError("observer result uses an unexpected facts schema")
-                    Draft202012Validator(support.facts_schema.document).validate(result.facts)
-                if (
-                    len(canonical_json_bytes(result.model_dump(mode="json", exclude_none=True)))
-                    > request.maximum_result_bytes
-                ):
-                    raise ValueError("observer result exceeds its conformance request limit")
 
             profile = support.facts_semantics
-            if profile == JSON_SCHEMA_ONLY_SEMANTIC_PROFILE:
-                if report.semantic_conformance != "schema-only" or report.semantic_vectors:
-                    raise ValueError("schema-only observer semantics have inconsistent evidence")
-            elif report.semantic_vectors is None:
-                if report.semantic_conformance != "not-exercised":
-                    raise ValueError("observer semantic state lacks vector evidence")
+            acceptance = report.semantic_acceptance
+            if acceptance is None:
                 complete = False
             else:
-                vectors = report.semantic_vectors.vectors
                 if (
-                    report.semantic_conformance != "exercised"
-                    or vectors.profile_id != profile.id
-                    or vectors.sha256 != profile.conformance_vectors_sha256
+                    not has_evidence
+                    or acceptance.profile_id != profile.id
+                    or acceptance.profile_sha256 != profile.profile_sha256
                 ):
-                    raise ValueError("observer semantic evidence differs from its profile")
-            complete = complete and has_evidence
+                    raise ValueError("observer semantic acceptance differs from its profile")
+                if profile == JSON_SCHEMA_ONLY_SEMANTIC_PROFILE:
+                    if acceptance.kind != "schema-only-revalidated":
+                        raise ValueError("schema-only observer acceptance is not revalidated")
+                else:
+                    if (
+                        acceptance.kind != "conformance-runner-attestation"
+                        or acceptance.vectors is None
+                        or acceptance.vectors.vectors.profile_id != profile.id
+                        or acceptance.vectors.vectors.sha256 != profile.conformance_vectors_sha256
+                    ):
+                        raise ValueError("observer runner attestation differs from its profile")
+                    for vector in acceptance.vectors.vectors.vectors:
+                        _validate_schema_value(
+                            vector.options,
+                            support.options_schema.document,
+                            label="observer semantic-vector options",
+                        )
+                        _validate_schema_value(
+                            vector.facts,
+                            support.facts_schema.document,
+                            label="observer semantic-vector facts",
+                        )
+            complete = complete and has_evidence and acceptance is not None
         if self.coverage.exercised != exercised or self.coverage.complete != complete:
             raise ValueError("observer conformance coverage differs from its evidence")
         return self
@@ -214,22 +235,14 @@ def conformance_report(
             "preferred_subject_batch_size": support.preferred_subject_batch_size,
             "maximum_result_bytes": support.maximum_result_bytes,
             "execution": "not-exercised",
-            "semantic_conformance": "not-exercised",
         }
         invocation = invocation_by_contract.get(support.contract_id)
         if invocation is not None:
             request = invocation.request
             if request.observer_contract_sha256 != support.contract_sha256:
                 raise RuntimeError("invocation does not bind the observer's published contract")
-            Draft202012Validator(support.options_schema.document).validate(request.options)
             result = client.observe(invocation, descriptor=descriptor)
             accept_observation_result(result, request, descriptor, semantic_validators)
-            if result.state == "observed":
-                Draft202012Validator(support.facts_schema.document).validate(result.facts)
-            if len(canonical_json_bytes(result.model_dump(mode="json", exclude_none=True))) > (
-                request.maximum_result_bytes
-            ):
-                raise RuntimeError("observer result exceeds the invocation limit")
             entry["execution"] = "exercised"
             entry["evidence"] = {
                 "request": request,
@@ -238,7 +251,12 @@ def conformance_report(
 
         profile = support.facts_semantics
         if profile == JSON_SCHEMA_ONLY_SEMANTIC_PROFILE:
-            entry["semantic_conformance"] = "schema-only"
+            if invocation is not None:
+                entry["semantic_acceptance"] = {
+                    "kind": "schema-only-revalidated",
+                    "profile_id": profile.id,
+                    "profile_sha256": profile.profile_sha256,
+                }
         else:
             expected_vectors_sha256 = profile.conformance_vectors_sha256
             assert expected_vectors_sha256 is not None
@@ -262,8 +280,16 @@ def conformance_report(
                 rejected_ids: list[str] = []
                 base = invocation.request
                 for vector in vectors.vectors:
-                    Draft202012Validator(support.options_schema.document).validate(vector.options)
-                    Draft202012Validator(support.facts_schema.document).validate(vector.facts)
+                    _validate_schema_value(
+                        vector.options,
+                        support.options_schema.document,
+                        label="observer semantic-vector options",
+                    )
+                    _validate_schema_value(
+                        vector.facts,
+                        support.facts_schema.document,
+                        label="observer semantic-vector facts",
+                    )
                     vector_request = ObservationRequest.seal(
                         ObservationRequestPayload(
                             **base.model_dump(
@@ -288,11 +314,15 @@ def conformance_report(
                                 f"semantic validator accepted rejected vector: {vector.id}"
                             )
                         accepted_ids.append(vector.id)
-                entry["semantic_conformance"] = "exercised"
-                entry["semantic_vectors"] = {
-                    "vectors": vectors,
-                    "accepted_vector_ids": accepted_ids,
-                    "rejected_vector_ids": rejected_ids,
+                entry["semantic_acceptance"] = {
+                    "kind": "conformance-runner-attestation",
+                    "profile_id": profile.id,
+                    "profile_sha256": profile.profile_sha256,
+                    "vectors": {
+                        "vectors": vectors,
+                        "accepted_vector_ids": accepted_ids,
+                        "rejected_vector_ids": rejected_ids,
+                    },
                 }
                 consumed_vectors.add((profile.id, expected_vectors_sha256))
         contract_reports.append(entry)
@@ -305,8 +335,7 @@ def conformance_report(
     if consumed_vectors != set(vectors_by_identity):
         raise ValueError("semantic vectors do not bind an advertised observer profile")
     complete = all(
-        item["execution"] == "exercised"
-        and item["semantic_conformance"] in {"schema-only", "exercised"}
+        item["execution"] == "exercised" and item.get("semantic_acceptance") is not None
         for item in contract_reports
     )
     exercised = sum(item["execution"] == "exercised" for item in contract_reports)

@@ -203,6 +203,7 @@ def test_binding_client_and_conformance_share_the_exact_two_endpoint_contract() 
     assert report.sampler.image_digest == _sha("9")
     assert report.request == request
     assert report.sample is not None and report.sample.state == "succeeded"
+    assert type(report).model_validate_json(report.model_dump_json()) == report
     changed = report.model_dump(mode="json")
     changed.pop("request")
     with pytest.raises(ValidationError, match="inconsistent"):
@@ -232,6 +233,24 @@ def test_binding_client_and_conformance_share_the_exact_two_endpoint_contract() 
     }
     assert referenced <= set(bundle["schemas"])
     assert "ErrorResponse" in referenced
+
+
+def test_sampler_conformance_result_revalidates_portable_intent_schema() -> None:
+    sampler = FixtureSampler()
+    descriptor = sampler.descriptor()
+    request = _request(descriptor)
+    report = conformance_report(sampler, request=request)
+    invalid_request = SamplerRequest.seal(
+        SamplerRequestPayload(
+            **request.model_dump(mode="python", exclude={"request_sha256", "portable_intent"}),
+            portable_intent={"bitrate": "invalid"},
+        )
+    )
+    changed = report.model_dump(mode="json")
+    changed["request"] = invalid_request.model_dump(mode="json")
+
+    with pytest.raises(ValidationError, match="portable intent violates its cited schema"):
+        type(report).model_validate(changed)
 
 
 def test_sampler_binding_serializes_workspace_execution_by_default() -> None:

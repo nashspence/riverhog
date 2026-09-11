@@ -10,6 +10,7 @@ from pathlib import Path
 from typing import Literal, Protocol, Self
 
 from jsonschema import Draft202012Validator
+from jsonschema.exceptions import ValidationError as JsonSchemaValidationError
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 from stove0_review_sampler_client.client import ReviewSamplerClient
 from stove0_review_sampler_protocol import (
@@ -40,6 +41,17 @@ class SamplerConformanceCoverage(_SamplerConformanceModel):
         return self
 
 
+def _validate_portable_intent(request: SamplerRequest, descriptor: SamplerDescriptor) -> None:
+    if request.sampler_descriptor_sha256 != descriptor.descriptor_sha256:
+        raise ValueError("sampler request does not bind the conformance descriptor")
+    try:
+        Draft202012Validator(descriptor.portable_intent_schema.document).validate(
+            request.portable_intent
+        )
+    except JsonSchemaValidationError as exc:
+        raise ValueError("sampler portable intent violates its cited schema") from exc
+
+
 class SamplerConformanceResult(_SamplerConformanceModel):
     format: Literal["stove0-review-sampler-conformance-result/v1"] = SAMPLER_CONFORMANCE_RESULT
     status: Literal["conformant", "inspected"]
@@ -62,6 +74,7 @@ class SamplerConformanceResult(_SamplerConformanceModel):
             raise ValueError("sampler conformance result is inconsistent")
         if exercised:
             assert self.request is not None and self.sample is not None
+            _validate_portable_intent(self.request, self.sampler)
             validate_result(self.sample, self.request, self.sampler)
         return self
 
@@ -91,11 +104,7 @@ def conformance_report(
     }
     if request is None:
         return SamplerConformanceResult.model_validate(report)
-    if request.sampler_descriptor_sha256 != descriptor.descriptor_sha256:
-        raise RuntimeError("sampler request does not bind the deployed descriptor")
-    Draft202012Validator(descriptor.portable_intent_schema.document).validate(
-        request.portable_intent
-    )
+    _validate_portable_intent(request, descriptor)
     result = client.sample(request)
     validate_result(result, request, descriptor)
     report["request"] = request

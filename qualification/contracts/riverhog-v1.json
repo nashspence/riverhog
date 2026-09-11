@@ -11938,8 +11938,8 @@
     },
     "extents": {
       "coverage": {
-        "classified": 1948,
-        "discovered": 1948,
+        "classified": 1949,
+        "discovered": 1949,
         "duplicate": 0,
         "missing": 0,
         "owners": {
@@ -11986,7 +11986,7 @@
           "riverhog-storage-adapter-protocol": 66,
           "stove0": 413,
           "stove0-api-client": 1,
-          "stove0-observer-protocol": 76,
+          "stove0-observer-protocol": 77,
           "stove0-recipes": 39,
           "stove0-review-sampler-protocol": 54,
           "stove0-review-target": 4,
@@ -11998,7 +11998,7 @@
         "policies": {
           "contract_max": 432,
           "extension_owned": 55,
-          "fixed": 900,
+          "fixed": 901,
           "operational_policy": 480,
           "segmented_no_total_max": 81
         },
@@ -34349,6 +34349,21 @@
           "unit": "characters"
         },
         {
+          "dimension": "length",
+          "id": "protocol:generated:stove0-observer:definition:ObserverSemanticAcceptance:/properties/profile_sha256:length",
+          "maximum": 64,
+          "minimum": 64,
+          "owner": "stove0-observer-protocol",
+          "policy": "fixed",
+          "reason": "fixed-public-representation",
+          "rule": "schema-bound/v1",
+          "source_constraint": {
+            "pattern": "^[0-9a-f]{64}$"
+          },
+          "source_pointer": "/external_contract/protocol_schemas/generated:stove0-observer/schemas/ObserverConformanceResult/$defs/ObserverSemanticAcceptance/properties/profile_sha256",
+          "unit": "characters"
+        },
+        {
           "capacity_authority": {
             "declared_maximum": null,
             "hidden_maximum": "forbidden",
@@ -40295,7 +40310,7 @@
         }
       },
       "schema": "riverhog-extent-contract/v1",
-      "sha256": "b99dd09a46395b74d74a61f0614beeb40290806bbb52477efc82e6588f17be43"
+      "sha256": "2e370397f75080efbde733235fde1a15bf933cf177d6393ebc44c1fefcb35707"
     },
     "http_openapi": {
       "riverhog": {
@@ -83962,7 +83977,7 @@
           "semantic_acceptance": "semantic_acceptance",
           "structural_models": "schemas"
         },
-        "bundle_sha256": "c44684f32c55e3ef7327dcb341bc14409a18e511c2b65cffc88e4855f5af5cf6",
+        "bundle_sha256": "d7ee01cb66cac26b457031d54882a95ce2b1ae0e163df53590fee00ae1a8f0ce",
         "compatibility": {
           "contract_identity": "canonical-json-sha256",
           "unknown_fields": "reject",
@@ -85379,19 +85394,10 @@
                     "title": "Preferred Subject Batch Size",
                     "type": "integer"
                   },
-                  "semantic_conformance": {
-                    "enum": [
-                      "not-exercised",
-                      "schema-only",
-                      "exercised"
-                    ],
-                    "title": "Semantic Conformance",
-                    "type": "string"
-                  },
-                  "semantic_vectors": {
+                  "semantic_acceptance": {
                     "anyOf": [
                       {
-                        "$ref": "#/$defs/ObserverSemanticVectorEvidence"
+                        "$ref": "#/$defs/ObserverSemanticAcceptance"
                       },
                       {
                         "type": "null"
@@ -85409,8 +85415,7 @@
                   "facts_semantics_sha256",
                   "preferred_subject_batch_size",
                   "maximum_result_bytes",
-                  "execution",
-                  "semantic_conformance"
+                  "execution"
                 ],
                 "title": "ObserverContractConformance",
                 "type": "object"
@@ -85573,6 +85578,47 @@
                   "descriptor_sha256"
                 ],
                 "title": "ObserverImplementation",
+                "type": "object"
+              },
+              "ObserverSemanticAcceptance": {
+                "additionalProperties": false,
+                "description": "Exact schema revalidation or explicit conformance-runner attestation.",
+                "properties": {
+                  "kind": {
+                    "enum": [
+                      "schema-only-revalidated",
+                      "conformance-runner-attestation"
+                    ],
+                    "title": "Kind",
+                    "type": "string"
+                  },
+                  "profile_id": {
+                    "title": "Profile Id",
+                    "type": "string"
+                  },
+                  "profile_sha256": {
+                    "pattern": "^[0-9a-f]{64}$",
+                    "title": "Profile Sha256",
+                    "type": "string"
+                  },
+                  "vectors": {
+                    "anyOf": [
+                      {
+                        "$ref": "#/$defs/ObserverSemanticVectorEvidence"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ],
+                    "default": null
+                  }
+                },
+                "required": [
+                  "kind",
+                  "profile_id",
+                  "profile_sha256"
+                ],
+                "title": "ObserverSemanticAcceptance",
                 "type": "object"
               },
               "ObserverSemanticVectorEvidence": {
@@ -107405,6 +107451,10 @@
           "validate_observation_request": {
             "kind": "function",
             "signature": "(request: 'ObservationRequest', descriptor: 'ObserverDescriptor') -> 'ObserverContractSupport'"
+          },
+          "validate_observation_result_structure": {
+            "kind": "function",
+            "signature": "(result: 'ObservationResult', request: 'ObservationRequest', descriptor: 'ObserverDescriptor') -> 'ObserverContractSupport'"
           }
         },
         "module": "stove0_observer_protocol"
@@ -107540,7 +107590,7 @@
                 "signature": "(self) -> 'Self'"
               }
             },
-            "schema_sha256": "5dd808370ec4b53fabf2190ef04767372551c29cdf5e68d88005883ce181c4ef",
+            "schema_sha256": "e27ed5abfaeb7544a3910aa4ab0216c2fc7f5fe0341296cb0b299304e601db95",
             "signature": "(*, format: Literal['stove0-observer-conformance-result/v1'] = 'stove0-observer-conformance-result/v1', status: Literal['conformant', 'partially-exercised', 'inspected'], descriptor: stove0_protocol.models.ObserverDescriptor, coverage: stove0_observer_support.conformance.ObserverConformanceCoverage, contracts: tuple[stove0_observer_support.conformance.ObserverContractConformance, ...]) -> None"
           },
           "ObserverHttpBinding": {

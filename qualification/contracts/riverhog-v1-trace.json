@@ -1,11 +1,11 @@
 {
   "boundary_canonical_sha256": "5af7171d406deec927ce70092a60eb033f51c53f2da16b7f1cea794e03e807be",
-  "contract_canonical_sha256": "fbde7e9e9ac99ba15f34d5c876ee5e055b6c7df395532eb41ef5565a34bbd7c2",
-  "contract_projection_sha256": "b08346b58f57923f325931f05ae4d9a4a68ffe537a5a94bc00a4fd771674c5b5",
+  "contract_canonical_sha256": "4809c5b35c5f428c8a4647ca079bc44bc16543629e011631fca9bdb3a414aa43",
+  "contract_projection_sha256": "25b518458f27dcc7ffdd6c6c7809f66b97a90c4055c98e7d2a2233eee8a2d633",
   "contract_schema": "riverhog-contract-freeze/v1",
   "coverage": {
-    "extent_decisions": 1948,
-    "extent_source_links": 1948,
+    "extent_decisions": 1949,
+    "extent_source_links": 1949,
     "segmented_decisions": 81,
     "segmented_extent_witness_links": 81,
     "segmented_extent_witnesses": 14,
@@ -7945,6 +7945,11 @@
       "id": "protocol:generated:stove0-observer:definition:ObserverRuntimeAuthority:/properties/riverhog_base_url:length",
       "owner": "stove0-observer-protocol",
       "source_pointer": "/external_contract/protocol_schemas/generated:stove0-observer/schemas/ObservationInvocation/$defs/ObserverRuntimeAuthority/properties/riverhog_base_url"
+    },
+    {
+      "id": "protocol:generated:stove0-observer:definition:ObserverSemanticAcceptance:/properties/profile_sha256:length",
+      "owner": "stove0-observer-protocol",
+      "source_pointer": "/external_contract/protocol_schemas/generated:stove0-observer/schemas/ObserverConformanceResult/$defs/ObserverSemanticAcceptance/properties/profile_sha256"
     },
     {
       "id": "protocol:generated:stove0-observer:definition:ObserverSemanticVectorEvidence:/properties/accepted_vector_ids:cardinality",

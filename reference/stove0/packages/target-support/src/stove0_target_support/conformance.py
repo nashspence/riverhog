@@ -10,6 +10,7 @@ from pathlib import Path
 from typing import Any, Literal, Protocol, Self
 
 from jsonschema import Draft202012Validator
+from jsonschema.exceptions import ValidationError as JsonSchemaValidationError
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 from stove0_target_client.client import (
     TargetClient as HttpTargetClient,
@@ -23,8 +24,10 @@ from stove0_target_protocol import (
     OperationContract,
     SemanticIntentConformanceVectors,
     TargetContract,
+    TargetDeclaration,
     TargetJobRequest,
     TargetJobStatus,
+    TargetOperationSupport,
     TargetPreflightRequest,
     TargetPreflightResponse,
     TargetResultKind,
@@ -110,6 +113,30 @@ class TargetOperationConformanceEvidence(_TargetConformanceModel):
     job_status: TargetJobStatus
 
 
+def _validate_schema_value(value: object, schema: dict[str, Any], *, label: str) -> None:
+    try:
+        Draft202012Validator(schema).validate(value)
+    except JsonSchemaValidationError as exc:
+        raise ValueError(f"{label} violates its cited schema") from exc
+
+
+def _validate_declaration_documents(
+    declaration: TargetDeclaration,
+    operation: OperationContract,
+    support: TargetOperationSupport,
+) -> None:
+    _validate_schema_value(
+        declaration.intent,
+        operation.intent_schema.document,
+        label="target conformance intent",
+    )
+    _validate_schema_value(
+        declaration.target_options,
+        support.options_schema.document,
+        label="target conformance options",
+    )
+
+
 class TargetConformanceResult(_TargetConformanceModel):
     format: Literal["stove0-target-conformance-result/v1"] = TARGET_CONFORMANCE_RESULT
     status: Literal["conformant", "partially-exercised", "inspected"]
@@ -181,6 +208,20 @@ class TargetConformanceResult(_TargetConformanceModel):
                 or semantic.vectors.sha256 != operation.intent_semantics.conformance_vectors_sha256
             ):
                 raise ValueError("target semantic vectors differ from its operation")
+
+            for declaration in (
+                evidence.preflight_request,
+                evidence.preflight.plan,
+                evidence.accepted_job.declaration.plan,
+            ):
+                _validate_declaration_documents(declaration, operation, support)
+            if semantic.vectors is not None:
+                for vector in semantic.vectors.vectors:
+                    _validate_schema_value(
+                        vector.intent,
+                        operation.intent_schema.document,
+                        label="target semantic conformance intent",
+                    )
 
             accepted = evidence.accepted_job
             validate_declaration_against_operation(accepted.declaration.plan, operation)
@@ -285,8 +326,7 @@ def _single_operation_report(
         or declaration.plan.target_contract_sha256 != contract.contract_sha256
     ):
         raise RuntimeError("job request does not bind the deployed target contract")
-    Draft202012Validator(operation.intent_schema.document).validate(declaration.plan.intent)
-    Draft202012Validator(support.options_schema.document).validate(declaration.plan.target_options)
+    _validate_declaration_documents(declaration.plan, operation, support)
     observations = declaration.controller_evidence.execution_envelope.workflow_plan.observations
 
     semantic_proof: dict[str, Any]
@@ -312,7 +352,11 @@ def _single_operation_report(
         accepted_ids: list[str] = []
         rejected_ids: list[str] = []
         for vector in semantic_vectors.vectors:
-            Draft202012Validator(operation.intent_schema.document).validate(vector.intent)
+            _validate_schema_value(
+                vector.intent,
+                operation.intent_schema.document,
+                label="target semantic conformance intent",
+            )
             vector_request = TargetPreflightRequest(
                 protocol=declaration.plan.protocol,
                 operation_id=declaration.plan.operation_id,

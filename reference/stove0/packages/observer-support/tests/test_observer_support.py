@@ -385,6 +385,7 @@ def test_conformance_report_checks_contract_schemas_and_result_binding() -> None
         "exercised": 0,
         "complete": False,
     }
+    assert inspected.contracts[0].semantic_acceptance is None
     invocation = ObservationInvocation(
         request=request,
         claim_id="claim-1",
@@ -410,11 +411,29 @@ def test_conformance_report_checks_contract_schemas_and_result_binding() -> None
     assert contract_result.contract_id == contract.id
     assert contract_result.contract_sha256 == contract.contract_sha256
     assert contract_result.execution == "exercised"
-    assert contract_result.semantic_conformance == "schema-only"
+    assert contract_result.semantic_acceptance is not None
+    assert contract_result.semantic_acceptance.model_dump(mode="json") == {
+        "kind": "schema-only-revalidated",
+        "profile_id": JSON_SCHEMA_ONLY_SEMANTIC_PROFILE.id,
+        "profile_sha256": JSON_SCHEMA_ONLY_SEMANTIC_PROFILE.profile_sha256,
+        "vectors": None,
+    }
+    assert type(report).model_validate_json(report.model_dump_json()) == report
 
     changed = report.model_dump(mode="json")
     changed["contracts"][0]["contract_id"] = "fixture.changed/v1"
     with pytest.raises(ValidationError, match="differs from the descriptor"):
+        type(report).model_validate(changed)
+
+    invalid_result = _result(  # type: ignore[arg-type]
+        request,
+        contract,
+        descriptor,
+        "not-an-integer",
+    )
+    changed = report.model_dump(mode="json")
+    changed["contracts"][0]["evidence"]["observation"] = invalid_result.model_dump(mode="json")
+    with pytest.raises(ValidationError, match="facts violate their advertised schema"):
         type(report).model_validate(changed)
 
 
@@ -495,8 +514,22 @@ def test_conformance_report_exercises_semantics_locally_not_as_observer_calls() 
     )
 
     assert report.status == "conformant"
-    assert report.contracts[0].semantic_conformance == "exercised"
+    acceptance = report.contracts[0].semantic_acceptance
+    assert acceptance is not None
+    assert acceptance.kind == "conformance-runner-attestation"
+    assert (acceptance.profile_id, acceptance.profile_sha256) == (
+        semantics.id,
+        semantics.profile_sha256,
+    )
+    assert acceptance.vectors is not None
+    assert acceptance.vectors.vectors == vectors
+    assert type(report).model_validate_json(report.model_dump_json()) == report
     assert observed_calls == 1
+
+    changed = report.model_dump(mode="json")
+    changed["contracts"][0]["semantic_acceptance"]["profile_id"] = "fixture.other/v1"
+    with pytest.raises(ValidationError, match="acceptance differs from its profile"):
+        type(report).model_validate(changed)
 
 
 def test_result_builder_binds_schema_identity_and_size_limits() -> None:
