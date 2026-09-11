@@ -20,6 +20,7 @@ from riverhog_protocol.errors import (
     Unauthorized,
     error_type_for_code,
 )
+from riverhog_protocol.http_errors import RIVERHOG_HTTP_ERROR_AUTHORITY
 
 __all__ = [
     "BadRequest",
@@ -39,6 +40,7 @@ __all__ = [
     "PreconditionRequired",
     "RiverhogError",
     "RIVERHOG_ERROR_TYPES_BY_CODE",
+    "RIVERHOG_HTTP_ERROR_AUTHORITY",
     "ServiceUnavailable",
     "Unauthorized",
     "error_type_for_code",

@@ -17,6 +17,7 @@ from riverhog_protocol.errors import (
     DownloadAllowanceExceeded,
     Forbidden,
     InvalidState,
+    RiverhogError,
     ServiceUnavailable,
     Unauthorized,
 )
@@ -37,7 +38,13 @@ class RecordingClient(ApiClient):
         super().__init__(base_url="https://example.invalid")
         self.calls: list[tuple[str, str, dict[str, Any]]] = []
 
-    def _request(self, method: str, path: str, **kwargs: Any) -> httpx.Response:
+    def _request(
+        self,
+        operation_id: str,
+        method: str,
+        path: str,
+        **kwargs: Any,
+    ) -> httpx.Response:
         self.calls.append((method, path, kwargs))
         payload: dict[str, Any] = {"ok": True}
         if method == "POST" and path == "/v1/collection-upload-sessions":
@@ -70,8 +77,14 @@ class RecordingClient(ApiClient):
 
 
 class WrongCustodyReceiptClient(RecordingClient):
-    def _request(self, method: str, path: str, **kwargs: Any) -> httpx.Response:
-        response = super()._request(method, path, **kwargs)
+    def _request(
+        self,
+        operation_id: str,
+        method: str,
+        path: str,
+        **kwargs: Any,
+    ) -> httpx.Response:
+        response = super()._request(operation_id, method, path, **kwargs)
         if method != "POST" or not path.endswith("/files"):
             return response
         payload = response.json()
@@ -92,8 +105,14 @@ class WrongCustodyReceiptClient(RecordingClient):
 
 
 class ImpossibleRegistrationStateClient(RecordingClient):
-    def _request(self, method: str, path: str, **kwargs: Any) -> httpx.Response:
-        response = super()._request(method, path, **kwargs)
+    def _request(
+        self,
+        operation_id: str,
+        method: str,
+        path: str,
+        **kwargs: Any,
+    ) -> httpx.Response:
+        response = super()._request(operation_id, method, path, **kwargs)
         if method != "POST" or not path.endswith("/files"):
             return response
         payload = response.json()
@@ -102,8 +121,14 @@ class ImpossibleRegistrationStateClient(RecordingClient):
 
 
 class FailedRetrievalPlanClient(RecordingClient):
-    def _request(self, method: str, path: str, **kwargs: Any) -> httpx.Response:
-        response = super()._request(method, path, **kwargs)
+    def _request(
+        self,
+        operation_id: str,
+        method: str,
+        path: str,
+        **kwargs: Any,
+    ) -> httpx.Response:
+        response = super()._request(operation_id, method, path, **kwargs)
         if method == "POST" and path == "/v1/retrieval-plans":
             return httpx.Response(
                 200,
@@ -143,8 +168,8 @@ def test_client_download_timeout_environment_reaches_download_transport(
 @pytest.mark.parametrize(
     ("code", "error_type", "status"),
     [
-        ("unauthorized", Unauthorized, 400),
-        ("forbidden", Forbidden, 400),
+        ("unauthorized", Unauthorized, 401),
+        ("forbidden", Forbidden, 403),
         ("download_allowance_exceeded", DownloadAllowanceExceeded, 429),
     ],
 )
@@ -161,20 +186,46 @@ def test_client_preserves_actionable_api_error_types(
     )
 
     with pytest.raises(error_type, match="action denied"):
-        client._raise_for_error(response)
+        client._raise_for_error("create_retrieval_job", response)
 
 
-@pytest.mark.parametrize("status", [408, 425, 429, 500, 502, 503, 504])
-def test_client_maps_transient_http_statuses_to_retryable_service_unavailable(status: int) -> None:
+def test_client_preserves_declared_internal_error_as_retryable_service_unavailable() -> None:
     client = ApiClient(base_url="https://example.invalid")
     response = httpx.Response(
-        status,
+        500,
         json={"error": {"code": "internal_error", "message": "retry later"}},
         request=httpx.Request("PUT", "https://example.invalid/v1/collection-upload-sessions/1"),
     )
 
     with pytest.raises(ServiceUnavailable, match="retry later"):
-        client._raise_for_error(response)
+        client._raise_for_error("put_collection_upload_session_unit", response)
+
+
+@pytest.mark.parametrize(
+    ("operation_id", "status", "code"),
+    (
+        ("get_collection", 409, "not_found"),
+        ("get_collection", 404, "conflict"),
+        ("list_collections", 404, "not_found"),
+    ),
+)
+def test_client_rejects_undeclared_operation_error_pairs(
+    operation_id: str,
+    status: int,
+    code: str,
+) -> None:
+    client = ApiClient(base_url="https://example.invalid")
+    response = httpx.Response(
+        status,
+        json={"error": {"code": code, "message": "wrong operation"}},
+        request=httpx.Request("GET", "https://example.invalid/v1/collections/1"),
+    )
+
+    with pytest.raises(RiverhogError) as caught:
+        client._raise_for_error(operation_id, response)
+
+    assert caught.value.code == "invalid_response"
+    assert caught.value.observed_status == status
 
 
 def test_search_uses_current_collection_filters() -> None:
@@ -642,11 +693,16 @@ def test_retrieval_file_download_uses_the_logical_file_endpoint(
     monkeypatch,
 ) -> None:
     client = ApiClient(base_url="https://example.invalid")
-    calls: list[tuple[str, Path]] = []
+    calls: list[tuple[str, str, Path]] = []
     output = tmp_path / "document.txt"
 
-    def download(path: str, destination: Path, **kwargs: object) -> int:
-        calls.append((path, destination))
+    def download(
+        operation_id: str,
+        path: str,
+        destination: Path,
+        **kwargs: object,
+    ) -> int:
+        calls.append((operation_id, path, destination))
         assert kwargs == {"expected_bytes": 42, "expected_sha256": "a" * 64, "progress": None}
         return 42
 
@@ -664,6 +720,7 @@ def test_retrieval_file_download_uses_the_logical_file_endpoint(
     assert result == 42
     assert calls == [
         (
+            "download_retrieval_file",
             "/v1/retrieval-jobs/job-id/content?collection_id=42&path=docs%2Fdocument.txt",
             output,
         )

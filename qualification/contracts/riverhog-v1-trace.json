@@ -1,7 +1,7 @@
 {
   "boundary_canonical_sha256": "5af7171d406deec927ce70092a60eb033f51c53f2da16b7f1cea794e03e807be",
-  "contract_canonical_sha256": "cbee52ac449b09142f9725fe6937e515ce07cfc3cf2118ad84a5c83909383bad",
-  "contract_projection_sha256": "7d347db48055c19c7b1ea56a4e75eb6ce810fa26bdd4af779314bad246e1a266",
+  "contract_canonical_sha256": "fbde7e9e9ac99ba15f34d5c876ee5e055b6c7df395532eb41ef5565a34bbd7c2",
+  "contract_projection_sha256": "b08346b58f57923f325931f05ae4d9a4a68ffe537a5a94bc00a4fd771674c5b5",
   "contract_schema": "riverhog-contract-freeze/v1",
   "coverage": {
     "extent_decisions": 1948,

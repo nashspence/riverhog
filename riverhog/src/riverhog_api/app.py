@@ -24,13 +24,13 @@ from http_api_contracts import (
 )
 from riverhog_core.catalog_db import catalog_state_schema
 from riverhog_core.runtime_config import load_runtime_config
+from riverhog_protocol import RIVERHOG_HTTP_ERROR_AUTHORITY
 from riverhog_protocol.errors import RiverhogError, ServiceUnavailable
 from starlette.exceptions import HTTPException as StarletteHTTPException
 from state_schema import StateSchemaError
 
 from riverhog_api.auth import apply_openapi_permission_contract
 from riverhog_api.deps import ServiceContainer, default_container, get_container
-from riverhog_api.error_contracts import RIVERHOG_OPERATION_ERROR_CODES
 from riverhog_api.routers.apps import router as apps_router
 from riverhog_api.routers.archive import router as archive_router
 from riverhog_api.routers.catalog_sync import router as catalog_sync_router
@@ -439,7 +439,7 @@ def create_app(
     app.include_router(workflows_router, prefix="/v1")
     schema = apply_openapi_error_contract(
         app.openapi(),
-        operation_error_codes=RIVERHOG_OPERATION_ERROR_CODES,
+        operation_error_authority=RIVERHOG_HTTP_ERROR_AUTHORITY,
     )
     app.openapi_schema = apply_openapi_permission_contract(schema, app.routes)
     return app

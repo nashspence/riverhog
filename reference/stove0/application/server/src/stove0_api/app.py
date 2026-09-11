@@ -62,6 +62,7 @@ from stove0_core import (
 )
 from stove0_observer_client import ContentObserverClient, load_semantic_validator_registry
 from stove0_operator_contracts import (
+    STOVE0_HTTP_ERROR_AUTHORITY,
     AdmissionPage,
     AdmissionPolicyCatalogView,
     AdmissionPolicyStatus,
@@ -102,7 +103,6 @@ from stove0_target_protocol import (
 )
 from time_formats import utc_timestamp_now
 
-from stove0_api.error_contracts import STOVE0_OPERATION_ERROR_CODES
 from stove0_api.schemas import (
     ErrorResponse,
     EvaluationReviewIn,
@@ -985,7 +985,7 @@ def create_app(
 
     app.openapi_schema = apply_openapi_error_contract(
         app.openapi(),
-        operation_error_codes=STOVE0_OPERATION_ERROR_CODES,
+        operation_error_authority=STOVE0_HTTP_ERROR_AUTHORITY,
     )
     return app
 

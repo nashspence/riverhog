@@ -45,6 +45,8 @@ from stove0_target_protocol import (
     TargetSettlementAuthority,
 )
 
+from stove0_operator_contracts.http_errors import STOVE0_HTTP_ERROR_AUTHORITY
+
 WorkPhase = Literal[
     "eligible",
     "claimed",
@@ -951,6 +953,7 @@ __all__ = [
     "SchedulerWorkBatch",
     "STOVE0_EVENT_SOURCE",
     "STOVE0_EVENT_TYPES",
+    "STOVE0_HTTP_ERROR_AUTHORITY",
     "SortOrder",
     "Stove0CloudEvent",
     "Stove0EventData",

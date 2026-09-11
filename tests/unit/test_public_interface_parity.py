@@ -27,6 +27,7 @@ from http_api_contracts import (
     JSON_SEQUENCE_MEDIA_TYPE,
     MAX_BROWSE_QUERY_CHARACTERS,
     MAX_BROWSE_TOKEN_BYTES,
+    HttpOperationErrorAuthority,
     closed_literal_values,
     safe_http_base_url,
 )
@@ -38,7 +39,6 @@ from piggity import upload_progress as riverhog_upload_progress
 from pydantic import TypeAdapter, ValidationError
 from riverhog_api.app import create_app as create_riverhog_app
 from riverhog_api.browse import canonical_selectors
-from riverhog_api.error_contracts import RIVERHOG_OPERATION_ERROR_CODES
 from riverhog_application_access import (
     ApplicationPermission as CanonicalApplicationPermission,
 )
@@ -65,6 +65,7 @@ from riverhog_ftp_adapter_api_client import (
     RiverhogFtpAdapterClient,
 )
 from riverhog_protocol import (
+    RIVERHOG_HTTP_ERROR_AUTHORITY,
     ApplicationAccessSort,
     ApplicationKeySort,
     ApplicationSort,
@@ -89,10 +90,10 @@ from riverhog_protocol import (
     SortOrder,
 )
 from riverhog_protocol.errors import BadRequest
-from stove0_api.error_contracts import STOVE0_OPERATION_ERROR_CODES
 from stove0_api_client import HealthResponse as Stove0HealthResponse
 from stove0_api_client import Stove0ApiClient
 from stove0_operator_contracts import (
+    STOVE0_HTTP_ERROR_AUTHORITY,
     AdmissionSort,
     AdmissionState,
     EvaluationPhase,
@@ -114,9 +115,9 @@ from scripts.operation_qualification import (
 
 HTTP_METHODS = {"delete", "get", "patch", "post", "put"}
 REPO_ROOT = Path(__file__).resolve().parents[2]
-OPERATION_ERROR_CODES = {
-    "riverhog": RIVERHOG_OPERATION_ERROR_CODES,
-    "stove0": STOVE0_OPERATION_ERROR_CODES,
+OPERATION_ERROR_AUTHORITIES: dict[str, HttpOperationErrorAuthority] = {
+    "riverhog": RIVERHOG_HTTP_ERROR_AUTHORITY,
+    "stove0": STOVE0_HTTP_ERROR_AUTHORITY,
 }
 SUPPORTED_CLIENT_HELPERS = {
     "riverhog": {
@@ -294,6 +295,75 @@ def test_every_official_client_method_is_current_or_a_supported_helper(
     assert client_methods - operation_ids == SUPPORTED_CLIENT_HELPERS[application]
 
 
+def _explicit_transport_operation_ids(module: object) -> dict[str, set[str]]:
+    path = Path(str(module.__file__))
+    tree = ast.parse(path.read_text(encoding="utf-8"))
+    parents: dict[ast.AST, ast.AST] = {}
+    for node in ast.walk(tree):
+        for child in ast.iter_child_nodes(node):
+            parents[child] = node
+    observed: dict[str, set[str]] = {}
+    transport_helpers = {
+        "_download",
+        "_json",
+        "_raise_for_error",
+        "_request",
+        "_stream_verified_body",
+    }
+    for call in (node for node in ast.walk(tree) if isinstance(node, ast.Call)):
+        if not (
+            isinstance(call.func, ast.Attribute)
+            and isinstance(call.func.value, ast.Name)
+            and call.func.value.id == "self"
+            and call.func.attr in transport_helpers
+        ):
+            continue
+        parent: ast.AST | None = call
+        while parent is not None and not isinstance(parent, ast.FunctionDef):
+            parent = parents.get(parent)
+        assert isinstance(parent, ast.FunctionDef)
+        assert call.args, f"{path}:{call.lineno} omits its operation identity"
+        identity = call.args[0]
+        if parent.name.startswith("_"):
+            assert isinstance(identity, ast.Name) and identity.id in {
+                "http_operation_id",
+                "operation_id",
+            }, f"{path}:{call.lineno} private transport helper loses its operation identity"
+            continue
+        assert isinstance(identity, ast.Constant) and isinstance(identity.value, str), (
+            f"{path}:{call.lineno} public client request has no exact operation identity"
+        )
+        observed.setdefault(parent.name, set()).add(identity.value)
+    return observed
+
+
+def test_control_client_transport_calls_carry_exact_server_operation_identities() -> None:
+    cases = (
+        (
+            (riverhog_client_module, riverhog_workflow_client_module),
+            create_riverhog_app,
+            {
+                "collection_provenance_journal_metadata": {"stream_collection_provenance_journal"},
+                "stream_retrieval_file": {"download_retrieval_file"},
+            },
+        ),
+        ((stove0_client_module,), create_stove0_contract_app, {}),
+    )
+    for modules, app_factory, aliases in cases:
+        schema = app_factory().openapi()
+        server_operations = {
+            str(operation["operationId"])
+            for path_item in schema["paths"].values()
+            for method, operation in path_item.items()
+            if method in {*HTTP_METHODS, "head"}
+        }
+        for module in modules:
+            for method, operations in _explicit_transport_operation_ids(module).items():
+                expected = aliases.get(method, {method})
+                assert operations == expected
+                assert operations <= server_operations
+
+
 @pytest.mark.parametrize(
     ("application", "app_factory"),
     (
@@ -338,8 +408,13 @@ def test_public_http_health_and_error_schemas_are_conventional(
     for route, operation in operations.items():
         responses = operation["responses"]
         operation_id = str(operation["operationId"])
-        expected_codes = {"bad_request", "unauthorized", "forbidden", "internal_error"}
-        expected_codes |= OPERATION_ERROR_CODES.get(application, {}).get(operation_id, set())
+        authority = OPERATION_ERROR_AUTHORITIES.get(application)
+        expected_errors = (
+            authority.errors_for(operation_id)
+            if authority is not None
+            else RIVERHOG_HTTP_ERROR_AUTHORITY.errors_for(operation_id)
+        )
+        expected_codes = {error.code for error in expected_errors}
         actual_codes = {
             code
             for status, response in responses.items()
@@ -355,8 +430,26 @@ def test_public_http_health_and_error_schemas_are_conventional(
             assert responses[status]["content"]["application/json"]["schema"] == {
                 "$ref": "#/components/schemas/ErrorResponse"
             }
-            assert {ERROR_STATUS_BY_CODE[code] for code in response["x-riverhog-error-codes"]} == {
-                int(status)
+            assert {
+                (code, ERROR_STATUS_BY_CODE[code]) for code in response["x-riverhog-error-codes"]
+            } == {
+                (error.code, error.status)
+                for error in expected_errors
+                if error.status == int(status)
+            }
+
+    if application in OPERATION_ERROR_AUTHORITIES:
+        authority = OPERATION_ERROR_AUTHORITIES[application]
+        for operation_id in ("health_live", "health_ready"):
+            operation = schema["paths"][f"/health/{operation_id.removeprefix('health_')}"]["get"]
+            actual = {
+                (code, int(status))
+                for status, response in operation["responses"].items()
+                if status.isdigit() and int(status) >= 400
+                for code in response.get("x-riverhog-error-codes", [])
+            }
+            assert actual == {
+                (error.code, error.status) for error in authority.errors_for(operation_id)
             }
 
 

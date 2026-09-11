@@ -6,6 +6,7 @@ from dataclasses import replace
 from pathlib import Path
 from typing import Any, cast, get_type_hints
 
+import httpx
 import pytest
 from fastapi.routing import APIRoute
 from fastapi.testclient import TestClient
@@ -1101,6 +1102,32 @@ def test_stove0_client_preserves_the_public_wire_error() -> None:
     assert error.code == "unauthorized"
     assert error.observed_status == 401
     assert error.details == {}
+
+
+@pytest.mark.parametrize(
+    ("operation_id", "status", "code"),
+    (
+        ("get_recipe", 409, "not_found"),
+        ("get_recipe", 404, "conflict"),
+        ("list_recipes", 404, "not_found"),
+    ),
+)
+def test_stove0_client_rejects_undeclared_operation_error_pairs(
+    operation_id: str,
+    status: int,
+    code: str,
+) -> None:
+    response = httpx.Response(
+        status,
+        json={"error": {"code": code, "message": "wrong operation"}},
+        request=httpx.Request("GET", "https://example.invalid/v1/recipes"),
+    )
+
+    with pytest.raises(Stove0ApiError) as caught:
+        Stove0ApiClient._raise_for_error(operation_id, response)
+
+    assert caught.value.code == "invalid_response"
+    assert caught.value.observed_status == status
 
 
 def test_stove0_client_transport_configuration_is_connected(

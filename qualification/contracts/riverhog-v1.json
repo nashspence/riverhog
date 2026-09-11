@@ -54178,6 +54178,19 @@
                     }
                   },
                   "description": "Successful Response"
+                },
+                "500": {
+                  "content": {
+                    "application/json": {
+                      "schema": {
+                        "$ref": "#/components/schemas/ErrorResponse"
+                      }
+                    }
+                  },
+                  "description": "Internal Server Error",
+                  "x-riverhog-error-codes": [
+                    "internal_error"
+                  ]
                 }
               },
               "summary": "Health Live",
@@ -54200,6 +54213,19 @@
                   },
                   "description": "Successful Response"
                 },
+                "500": {
+                  "content": {
+                    "application/json": {
+                      "schema": {
+                        "$ref": "#/components/schemas/ErrorResponse"
+                      }
+                    }
+                  },
+                  "description": "Internal Server Error",
+                  "x-riverhog-error-codes": [
+                    "internal_error"
+                  ]
+                },
                 "503": {
                   "content": {
                     "application/json": {
@@ -54208,7 +54234,10 @@
                       }
                     }
                   },
-                  "description": "Service Unavailable"
+                  "description": "Service Unavailable",
+                  "x-riverhog-error-codes": [
+                    "service_unavailable"
+                  ]
                 }
               },
               "summary": "Health Ready",
@@ -75712,6 +75741,19 @@
                     }
                   },
                   "description": "Successful Response"
+                },
+                "500": {
+                  "content": {
+                    "application/json": {
+                      "schema": {
+                        "$ref": "#/components/schemas/ErrorResponse"
+                      }
+                    }
+                  },
+                  "description": "Internal Server Error",
+                  "x-riverhog-error-codes": [
+                    "internal_error"
+                  ]
                 }
               },
               "summary": "Health Live",
@@ -75734,6 +75776,19 @@
                   },
                   "description": "Successful Response"
                 },
+                "500": {
+                  "content": {
+                    "application/json": {
+                      "schema": {
+                        "$ref": "#/components/schemas/ErrorResponse"
+                      }
+                    }
+                  },
+                  "description": "Internal Server Error",
+                  "x-riverhog-error-codes": [
+                    "internal_error"
+                  ]
+                },
                 "503": {
                   "content": {
                     "application/json": {
@@ -75742,7 +75797,10 @@
                       }
                     }
                   },
-                  "description": "Service Unavailable"
+                  "description": "Service Unavailable",
+                  "x-riverhog-error-codes": [
+                    "service_unavailable"
+                  ]
                 }
               },
               "summary": "Health Ready",
@@ -99674,6 +99732,10 @@
             "kind": "object",
             "type": "typing._AnnotatedAlias"
           },
+          "DEFAULT_HTTP_ERROR_AUTHORITY": {
+            "kind": "object",
+            "type": "http_api_contracts.HttpOperationErrorAuthority"
+          },
           "ERROR_STATUS_BY_CODE": {
             "kind": "constant",
             "value": {
@@ -99833,6 +99895,28 @@
             },
             "signature": "(method: \"Literal['GET', 'POST', 'PUT', 'DELETE', 'PATCH']\", path: 'str', request_type: 'object | None' = None, response_type: 'object | None' = None, request_kind: 'HttpBodyKind' = 'none', response_kind: 'HttpBodyKind' = 'json', success_statuses: 'tuple[int, ...]' = (200,), errors: 'tuple[HttpErrorContract, ...]' = (), path_parameters: 'tuple[HttpPathParameterContract, ...]' = (), response_headers: 'tuple[HttpResponseHeaderContract, ...]' = (), error_type: 'type[BaseModel]' = <class 'http_api_contracts.ErrorResponse'>) -> None"
           },
+          "HttpOperationErrorAuthority": {
+            "kind": "class",
+            "members": {
+              "accepts": {
+                "kind": "method",
+                "signature": "(self, operation_id: 'str', *, status: 'int', code: 'str') -> 'bool'"
+              },
+              "errors_for": {
+                "kind": "method",
+                "signature": "(self, operation_id: 'str') -> 'tuple[HttpErrorContract, ...]'"
+              },
+              "from_codes": {
+                "kind": "classmethod",
+                "signature": "(cls, *, common: 'Collection[str]', operation: 'Mapping[str, Collection[str]]', exact: 'Mapping[str, Collection[str]] | None' = None) -> 'HttpOperationErrorAuthority'"
+              },
+              "operation_ids": {
+                "kind": "property",
+                "signature": "(self) -> 'frozenset[str]'"
+              }
+            },
+            "signature": "(*, common: 'Collection[HttpErrorContract]', operation: 'Mapping[str, Collection[HttpErrorContract]]', exact: 'Mapping[str, Collection[HttpErrorContract]] | None' = None) -> 'None'"
+          },
           "HttpPathParameterContract": {
             "fields": [
               {
@@ -99929,7 +100013,7 @@
           },
           "apply_openapi_error_contract": {
             "kind": "function",
-            "signature": "(schema: 'dict[str, Any]', *, operation_error_codes: 'Mapping[str, Collection[str]] | None' = None) -> 'dict[str, Any]'"
+            "signature": "(schema: 'dict[str, Any]', *, operation_error_authority: 'HttpOperationErrorAuthority | None' = None) -> 'dict[str, Any]'"
           },
           "canonical_json_bytes": {
             "kind": "function",
@@ -99994,6 +100078,10 @@
           "parse_error_payload": {
             "kind": "function",
             "signature": "(payload: 'object', *, fallback_message: 'str') -> 'tuple[str, str, dict[str, Any]]'"
+          },
+          "parse_operation_error_payload": {
+            "kind": "function",
+            "signature": "(authority: 'HttpOperationErrorAuthority', operation_id: 'str', *, status: 'int', payload: 'object') -> 'tuple[str, str, dict[str, Any]]'"
           },
           "parse_quoted_sha256_identity": {
             "kind": "function",
@@ -103743,6 +103831,10 @@
               "io.riverhog.riverhog.retrieval.renewed",
               "io.riverhog.riverhog.retrieval.requested"
             ]
+          },
+          "RIVERHOG_HTTP_ERROR_AUTHORITY": {
+            "kind": "object",
+            "type": "http_api_contracts.HttpOperationErrorAuthority"
           },
           "RecipeIdentity": {
             "fields": [
@@ -107762,6 +107854,10 @@
               "io.riverhog.stove0.work.created",
               "io.riverhog.stove0.work.updated"
             ]
+          },
+          "STOVE0_HTTP_ERROR_AUTHORITY": {
+            "kind": "object",
+            "type": "http_api_contracts.HttpOperationErrorAuthority"
           },
           "SchedulerFailure": {
             "kind": "class",

@@ -102,7 +102,13 @@ class CollectionWorkflowMethods:
 
     if TYPE_CHECKING:
 
-        def _json(self, method: str, path: str, **kwargs: Any) -> dict[str, Any]: ...
+        def _json(
+            self,
+            operation_id: str,
+            method: str,
+            path: str,
+            **kwargs: Any,
+        ) -> dict[str, Any]: ...
         def _stream_json_objects(
             self,
             path: str,
@@ -130,7 +136,12 @@ class CollectionWorkflowMethods:
             purpose=purpose,
         )
         claim = ProcessingClaimDocument.model_validate(
-            self._json("POST", "/v1/collection-processing-claims", json=_dump(request))
+            self._json(
+                "create_or_resume_processing_claim",
+                "POST",
+                "/v1/collection-processing-claims",
+                json=_dump(request),
+            )
         )
         ordinal = claim.inputs.count
         if claim.inputs.state == "receiving":
@@ -161,6 +172,7 @@ class CollectionWorkflowMethods:
         )
         return ReceivingSetDocument.model_validate(
             self._json(
+                "append_processing_claim_inputs",
                 "PUT",
                 f"/v1/collection-processing-claims/{_claim_id(claim_id)}/inputs",
                 json=_dump(request),
@@ -175,6 +187,7 @@ class CollectionWorkflowMethods:
     ) -> ReceivingSetDocument:
         return ReceivingSetDocument.model_validate(
             self._json(
+                "seal_processing_claim_inputs",
                 "POST",
                 f"/v1/collection-processing-claims/{_claim_id(claim_id)}/inputs/seal",
                 json=_dump(ProcessingClaimFenceDocument(fence=fence)),
@@ -190,6 +203,7 @@ class CollectionWorkflowMethods:
     ) -> CollectionRootPageDocument:
         return CollectionRootPageDocument.model_validate(
             self._json(
+                "list_processing_claim_inputs",
                 "GET",
                 f"/v1/collection-processing-claims/{_claim_id(claim_id)}/inputs",
                 params={
@@ -202,6 +216,7 @@ class CollectionWorkflowMethods:
     def get_processing_claim(self, claim_id: ProcessingClaimId) -> ProcessingClaimDocument:
         return ProcessingClaimDocument.model_validate(
             self._json(
+                "get_processing_claim",
                 "GET",
                 f"/v1/collection-processing-claims/{_claim_id(claim_id)}",
             )
@@ -230,7 +245,9 @@ class CollectionWorkflowMethods:
         if state:
             params["state"] = _one_of(state, _CLAIM_STATES, "processing-claim state")
         return ProcessingClaimPageDocument.model_validate(
-            self._json("GET", "/v1/collection-processing-claims", params=params)
+            self._json(
+                "list_processing_claims", "GET", "/v1/collection-processing-claims", params=params
+            )
         )
 
     def renew_processing_claim(
@@ -241,7 +258,7 @@ class CollectionWorkflowMethods:
         lease_seconds: int = 1800,
     ) -> ProcessingClaimDocument:
         request = ProcessingClaimRenewDocument(fence=fence, lease_seconds=lease_seconds)
-        return self._claim_response(claim_id, "renew", request)
+        return self._claim_response("renew_processing_claim", claim_id, "renew", request)
 
     def restart_processing_claim(
         self,
@@ -251,7 +268,7 @@ class CollectionWorkflowMethods:
         lease_seconds: int = 1800,
     ) -> ProcessingClaimDocument:
         request = ProcessingClaimRestartDocument(fence=fence, lease_seconds=lease_seconds)
-        return self._claim_response(claim_id, "restart", request)
+        return self._claim_response("restart_processing_claim", claim_id, "restart", request)
 
     def abandon_processing_claim(
         self,
@@ -261,6 +278,7 @@ class CollectionWorkflowMethods:
         reason: str,
     ) -> ProcessingClaimDocument:
         return self._claim_response(
+            "abandon_processing_claim",
             claim_id,
             "abandon",
             ProcessingClaimAbandonDocument(fence=fence, reason=reason),
@@ -300,7 +318,7 @@ class CollectionWorkflowMethods:
             retirement_policy=retirement_policy,
             retirement_grace_seconds=retirement_grace_seconds,
         )
-        return self._claim_response(claim_id, "plan", request)
+        return self._claim_response("seal_processing_claim_plan", claim_id, "plan", request)
 
     def append_processing_claim_artifacts(
         self,
@@ -319,6 +337,7 @@ class CollectionWorkflowMethods:
         )
         return ArtifactReceivingSetDocument.model_validate(
             self._json(
+                "append_processing_claim_artifacts",
                 "PUT",
                 f"/v1/collection-processing-claims/{_claim_id(claim_id)}/plan/artifacts",
                 json=_dump(request),
@@ -333,6 +352,7 @@ class CollectionWorkflowMethods:
     ) -> ArtifactReceivingSetDocument:
         return ArtifactReceivingSetDocument.model_validate(
             self._json(
+                "seal_processing_claim_artifacts",
                 "POST",
                 f"/v1/collection-processing-claims/{_claim_id(claim_id)}/plan/artifacts/seal",
                 json=_dump(ProcessingClaimFenceDocument(fence=fence)),
@@ -348,6 +368,7 @@ class CollectionWorkflowMethods:
     ) -> CollectionArtifactPageDocument:
         return CollectionArtifactPageDocument.model_validate(
             self._json(
+                "list_processing_claim_artifacts",
                 "GET",
                 f"/v1/collection-processing-claims/{_claim_id(claim_id)}/plan/artifacts",
                 params={
@@ -375,6 +396,7 @@ class CollectionWorkflowMethods:
         )
         capability = TransformCapabilityDocument.model_validate(
             self._json(
+                "create_transform_capability",
                 "POST",
                 f"/v1/collection-processing-claims/{_claim_id(claim_id)}/capabilities",
                 json=_dump(request),
@@ -415,6 +437,7 @@ class CollectionWorkflowMethods:
         )
         return ArtifactReceivingSetDocument.model_validate(
             self._json(
+                "append_transform_capability_artifacts",
                 "PUT",
                 f"/v1/collection-processing-claims/{_claim_id(claim_id)}"
                 f"/capabilities/{capability_id}/artifacts",
@@ -431,6 +454,7 @@ class CollectionWorkflowMethods:
     ) -> ArtifactReceivingSetDocument:
         return ArtifactReceivingSetDocument.model_validate(
             self._json(
+                "seal_transform_capability_artifacts",
                 "POST",
                 f"/v1/collection-processing-claims/{_claim_id(claim_id)}"
                 f"/capabilities/{capability_id}/artifacts/seal",
@@ -464,7 +488,7 @@ class CollectionWorkflowMethods:
             derivation=CollectionDerivationDocument.model_validate(derivation),
             outcome=outcome,
         )
-        return self._claim_response(claim_id, "settle", request)
+        return self._claim_response("settle_processing_claim", claim_id, "settle", request)
 
     def record_processing_claim_dispositions(
         self,
@@ -482,6 +506,7 @@ class CollectionWorkflowMethods:
         )
         return ArtifactDispositionSetDocument.model_validate(
             self._json(
+                "record_processing_claim_dispositions",
                 "PUT",
                 f"/v1/collection-processing-claims/{_claim_id(claim_id)}/derivation/dispositions",
                 json=_dump(request),
@@ -497,6 +522,7 @@ class CollectionWorkflowMethods:
     ) -> ArtifactDispositionPageDocument:
         return ArtifactDispositionPageDocument.model_validate(
             self._json(
+                "list_processing_claim_dispositions",
                 "GET",
                 f"/v1/collection-processing-claims/{_claim_id(claim_id)}/derivation/dispositions",
                 params={
@@ -524,6 +550,7 @@ class CollectionWorkflowMethods:
         )
         return ArtifactDispositionSetDocument.model_validate(
             self._json(
+                "record_processing_claim_disposition_outputs",
                 "PUT",
                 f"/v1/collection-processing-claims/{_claim_id(claim_id)}/derivation/output-edges",
                 json=_dump(request),
@@ -539,6 +566,7 @@ class CollectionWorkflowMethods:
     ) -> ArtifactDispositionOutputPageDocument:
         return ArtifactDispositionOutputPageDocument.model_validate(
             self._json(
+                "list_processing_claim_disposition_outputs",
                 "GET",
                 f"/v1/collection-processing-claims/{_claim_id(claim_id)}/derivation/output-edges",
                 params={
@@ -557,6 +585,7 @@ class CollectionWorkflowMethods:
         request = ProcessingClaimFenceDocument(fence=fence)
         return ArtifactDispositionSetDocument.model_validate(
             self._json(
+                "seal_processing_claim_dispositions",
                 "POST",
                 f"/v1/collection-processing-claims/{_claim_id(claim_id)}/derivation/seal",
                 json=_dump(request),
@@ -569,6 +598,7 @@ class CollectionWorkflowMethods:
     ) -> ArtifactDispositionSetDocument:
         return ArtifactDispositionSetDocument.model_validate(
             self._json(
+                "get_processing_claim_dispositions",
                 "GET",
                 f"/v1/collection-processing-claims/{_claim_id(claim_id)}/derivation",
             )
@@ -587,7 +617,12 @@ class CollectionWorkflowMethods:
             retirement_policy=retirement_policy,
             retirement_grace_seconds=retirement_grace_seconds,
         )
-        return self._claim_response(claim_id, "outcomes/settle", request)
+        return self._claim_response(
+            "settle_processing_claim_outcomes",
+            claim_id,
+            "outcomes/settle",
+            request,
+        )
 
     def list_processing_claim_outcomes(
         self,
@@ -598,6 +633,7 @@ class CollectionWorkflowMethods:
     ) -> ProcessingOutcomePageDocument:
         return ProcessingOutcomePageDocument.model_validate(
             self._json(
+                "list_processing_claim_outcomes",
                 "GET",
                 f"/v1/collection-processing-claims/{_claim_id(claim_id)}/outcomes",
                 params={
@@ -614,6 +650,7 @@ class CollectionWorkflowMethods:
         fence: int,
     ) -> ProcessingClaimDocument:
         return self._claim_response(
+            "begin_processing_claim_retirement",
             claim_id,
             "retirement",
             ProcessingClaimFenceDocument(fence=fence),
@@ -626,6 +663,7 @@ class CollectionWorkflowMethods:
         fence: int,
     ) -> ProcessingClaimDocument:
         return self._claim_response(
+            "release_processing_claim",
             claim_id,
             "release",
             ProcessingClaimFenceDocument(fence=fence),
@@ -640,17 +678,21 @@ class CollectionWorkflowMethods:
         except ValidationError as exc:
             raise BadRequest("collection id must be a positive integer") from exc
         return CollectionDerivationResponseDocument.model_validate(
-            self._json("GET", f"/v1/collections/{normalized_id}/derivation")
+            self._json(
+                "get_collection_derivation", "GET", f"/v1/collections/{normalized_id}/derivation"
+            )
         )
 
     def _claim_response(
         self,
+        operation_id: str,
         claim_id: ProcessingClaimId,
         suffix: str,
         request: object,
     ) -> ProcessingClaimDocument:
         return ProcessingClaimDocument.model_validate(
             self._json(
+                operation_id,
                 "POST",
                 f"/v1/collection-processing-claims/{_claim_id(claim_id)}/{suffix}",
                 json=_dump(request),
