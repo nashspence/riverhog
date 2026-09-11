@@ -16,15 +16,11 @@ services:
       - sh
       - -c
       - >-
-        install -d -o 65532 -g "$${INTAKE_GID}" -m 2770 /intake /intake/ftp;
-        install -d -o 65532 -g 65532 -m 0733 /completion
+        install -d -o 65532 -g "$${INTAKE_GID}" -m 2770 /intake /intake/ftp
     volumes:
       - type: bind
         source: ${RIVERHOG_FTP_ADAPTER_INTAKE_HOST_DIR:-./runtime/intake}
         target: /intake
-      - type: volume
-        source: ftp-completion-data
-        target: /completion
 
   ftp-adapter:
     <<: *ftp-adapter-image
@@ -54,9 +50,6 @@ services:
       - type: bind
         source: ${RIVERHOG_FTP_ADAPTER_INTAKE_HOST_DIR:-./runtime/intake}
         target: /intake
-      - type: volume
-        source: ftp-completion-data
-        target: /var/lib/riverhog-ftp-completions
     tmpfs:
       - /tmp:rw,noexec,nosuid,nodev,mode=700,uid=65532,gid=65532
     networks: ["default", "riverhog-control"]
@@ -76,44 +69,72 @@ services:
       retries: 12
       start_period: 10s
 
-  ftp-daemon:
-    image: stilliard/pure-ftpd:trixie-latest@sha256:12b5aeb1a371b789e77d0b6217434a7a5ded9a3b251d52dab1f2e85ccde4cbf8
+  ftp-listener:
+    <<: *ftp-adapter-image
     restart: unless-stopped
+    read_only: true
+    user: "65532:65532"
+    group_add:
+      - "${RIVERHOG_FTP_ADAPTER_SECRET_FILE_GID:-65532}"
+    cap_drop: ["ALL"]
+    security_opt: ["no-new-privileges:true"]
     depends_on:
-      ftp-adapter:
-        condition: service_healthy
+      intake-init:
+        condition: service_completed_successfully
     environment:
       TZ: ${TZ:-UTC}
-      FTP_USER_NAME: ${RIVERHOG_FTP_ADAPTER_USERNAME:-ftp-intake}
-      FTP_USER_HOME: /intake/ftp
-      FTP_USER_UID: "1000"
-      FTP_USER_GID: ${RIVERHOG_FTP_ADAPTER_INTAKE_GID:-65532}
-      RIVERHOG_FTP_ADAPTER_SOURCE_ID: ${RIVERHOG_FTP_ADAPTER_SOURCE_ID:-ftp-intake}
-      FTP_PASSIVE_PORTS: ${RIVERHOG_FTP_ADAPTER_PASSIVE_PORT_START:-30000}:${RIVERHOG_FTP_ADAPTER_PASSIVE_PORT_END:-30039}
-      PUBLICHOST: ${RIVERHOG_FTP_ADAPTER_PUBLIC_HOST:-127.0.0.1}
+      RIVERHOG_FTP_ADAPTER_CONFIG: /etc/riverhog/ftp-adapter.json
     secrets: ["ftp_password"]
     command:
-      - /bin/sh
-      - -ec
-      - >-
-        FTP_USER_PASS="$$(cat /run/secrets/ftp_password)";
-        export FTP_USER_PASS;
-        exec /run.sh -l puredb:/etc/pure-ftpd/pureftpd.pdb -E -j -R
-        -O stats:/var/log/riverhog-ftp-completions/$${RIVERHOG_FTP_ADAPTER_SOURCE_ID}.log
-        -P "$${PUBLICHOST}"
+      - riverhog-ftp-adapter
+      - --config
+      - /etc/riverhog/ftp-adapter.json
+      - listen
+      - --source
+      - ${RIVERHOG_FTP_ADAPTER_SOURCE_ID:-ftp-intake}
+      - --username
+      - ${RIVERHOG_FTP_ADAPTER_USERNAME:-ftp-intake}
+      - --password-file
+      - /run/secrets/ftp_password
+      - --host
+      - 0.0.0.0
+      - --port
+      - "2121"
+      - --passive-port-start
+      - ${RIVERHOG_FTP_ADAPTER_PASSIVE_PORT_START:-30000}
+      - --passive-port-end
+      - ${RIVERHOG_FTP_ADAPTER_PASSIVE_PORT_END:-30039}
+      - --public-host
+      - ${RIVERHOG_FTP_ADAPTER_PUBLIC_HOST:-}
+      - --max-connections
+      - ${RIVERHOG_FTP_ADAPTER_MAX_CONNECTIONS:-256}
+      - --max-connections-per-ip
+      - ${RIVERHOG_FTP_ADAPTER_MAX_CONNECTIONS_PER_IP:-32}
     ports:
-      - "${RIVERHOG_FTP_ADAPTER_INGRESS_BIND_ADDR:-127.0.0.1}:${RIVERHOG_FTP_ADAPTER_PORT:-21}:21"
+      - "${RIVERHOG_FTP_ADAPTER_INGRESS_BIND_ADDR:-127.0.0.1}:${RIVERHOG_FTP_ADAPTER_PORT:-21}:2121"
       - "${RIVERHOG_FTP_ADAPTER_INGRESS_BIND_ADDR:-127.0.0.1}:${RIVERHOG_FTP_ADAPTER_PASSIVE_PORT_START:-30000}-${RIVERHOG_FTP_ADAPTER_PASSIVE_PORT_END:-30039}:30000-30039"
     volumes:
       - type: bind
+        source: ${RIVERHOG_FTP_ADAPTER_CONFIG_HOST_PATH:?RIVERHOG_FTP_ADAPTER_CONFIG_HOST_PATH is required}
+        target: /etc/riverhog/ftp-adapter.json
+        read_only: true
+      - type: bind
         source: ${RIVERHOG_FTP_ADAPTER_INTAKE_HOST_DIR:-./runtime/intake}
         target: /intake
-      - type: volume
-        source: ftp-completion-data
-        target: /var/log/riverhog-ftp-completions
-
-volumes:
-  ftp-completion-data:
+    tmpfs:
+      - /tmp:rw,noexec,nosuid,nodev,mode=700,uid=65532,gid=65532
+    healthcheck:
+      test:
+        - CMD
+        - python
+        - -c
+        - >-
+          import socket;
+          socket.create_connection(('127.0.0.1', 2121), timeout=5).close()
+      interval: 15s
+      timeout: 5s
+      retries: 12
+      start_period: 5s
 
 secrets:
   riverhog_token:

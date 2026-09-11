@@ -70,6 +70,6 @@ RUN apt-get update \
 COPY --from=build /opt/venv /opt/venv
 
 USER 65532:65532
-EXPOSE 8080
+EXPOSE 8080 2121 30000-30039
 ENTRYPOINT ["/usr/bin/tini", "--"]
 CMD ["riverhog-ftp-adapter", "serve", "--host", "0.0.0.0", "--port", "8080"]

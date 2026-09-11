@@ -67,17 +67,8 @@ class FtpAdapterConfig(ConfigModel):
     pending_claim_capacity: int = Field(default=128, ge=1)
     claim_attempt_budget: int = Field(default=8, ge=2)
     discovery_entry_budget: int = Field(default=4096, ge=1)
-    completion_root: Path | None = None
-
-    @field_validator("completion_root")
-    @classmethod
-    def absolute_completion_root(cls, value: Path | None) -> Path | None:
-        if value is None:
-            return None
-        expanded = value.expanduser()
-        if not expanded.is_absolute():
-            raise ValueError("FTP adapter completion root must be absolute")
-        return expanded.resolve()
+    completion_failure_capacity: int = Field(default=128, ge=1)
+    completion_failure_attempt_budget: int = Field(default=8, ge=1)
 
     @field_validator("sources")
     @classmethod
@@ -133,6 +124,26 @@ def load_config(path: Path | None = None) -> FtpAdapterConfig:
     return FtpAdapterConfig.model_validate(payload)
 
 
+def load_source_config(path: Path | None, source_id: str) -> SourceConfig:
+    """Load one listener source without granting it Riverhog credentials."""
+
+    raw_path = str(path) if path is not None else os.environ.get("RIVERHOG_FTP_ADAPTER_CONFIG", "")
+    if not raw_path.strip():
+        raise ValueError("RIVERHOG_FTP_ADAPTER_CONFIG is required")
+    payload = json.loads(Path(raw_path).expanduser().read_text(encoding="utf-8"))
+    raw_sources = payload.get("sources") if isinstance(payload, dict) else None
+    if not isinstance(raw_sources, list):
+        raise ValueError("FTP adapter sources must be a list")
+    matches = [
+        SourceConfig.model_validate(item)
+        for item in raw_sources
+        if isinstance(item, dict) and item.get("id") == source_id
+    ]
+    if len(matches) != 1:
+        raise KeyError(source_id)
+    return matches[0]
+
+
 def _environment_secret(name: str) -> str | None:
     direct = os.environ.get(name, "").strip()
     file_name = os.environ.get(f"{name}_FILE", "").strip()
@@ -144,4 +155,4 @@ def _environment_secret(name: str) -> str | None:
     return value or None
 
 
-__all__ = ["FtpAdapterConfig", "SourceConfig", "load_config"]
+__all__ = ["FtpAdapterConfig", "SourceConfig", "load_config", "load_source_config"]

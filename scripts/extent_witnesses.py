@@ -184,9 +184,19 @@ WITNESSES = (
             "reference/riverhog/ingress/ftp/tests/test_ftp_adapter_custody.py::"
             "test_completion_discovery_progresses_beyond_persistent_prefix_across_restart",
             "reference/riverhog/ingress/ftp/tests/test_ftp_adapter_custody.py::"
-            "test_external_completion_authority_is_restartable_and_writer_only",
+            "test_adapter_owned_completion_authority_is_restartable_and_hidden",
+            "reference/riverhog/ingress/ftp/tests/test_ftp_adapter_custody.py::"
+            "test_full_batch_returns_before_bad_lookahead_record",
+            "reference/riverhog/ingress/ftp/tests/test_ftp_adapter_custody.py::"
+            "test_completion_failure_capacity_backpressures_at_exact_cursor",
             "reference/riverhog/ingress/ftp/tests/test_ftp_adapter_custody.py::"
             "test_lowered_admission_capacity_preserves_bounded_status_and_claim_drain",
+            "reference/riverhog/ingress/ftp/tests/test_ftp_listener.py::"
+            "test_incomplete_upload_is_not_handed_off_and_resumes_after_restart",
+            "reference/riverhog/ingress/ftp/tests/test_ftp_listener.py::"
+            "test_success_ack_follows_exact_durable_handoff_and_path_reuse",
+            "reference/riverhog/ingress/ftp/tests/test_ftp_adapter_custody.py::"
+            "test_completed_portable_sidecar_follows_payload_into_claim",
             "reference/riverhog/ingress/ftp/tests/test_ftp_adapter_api_parity.py::"
             "test_management_api_and_client_share_versioned_routes",
         ),

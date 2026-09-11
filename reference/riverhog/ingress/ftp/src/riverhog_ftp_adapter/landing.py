@@ -10,34 +10,40 @@ import shutil
 import sqlite3
 import stat
 import threading
-import uuid
 from bisect import bisect_right
 from collections.abc import Mapping, Sequence
 from contextlib import closing
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, BinaryIO
+from typing import Any
 
 from riverhog_client import ApiClient
 from riverhog_client.producer import CollectionProducer, ProducedCollection, ProducerFile
 from riverhog_provenance import (
+    SIDECAR_SUFFIX,
     FileProvenanceBinding,
     FileStateObserverFactory,
     canonical_sidecar_path,
     prepare_file_provenance,
 )
 
+from riverhog_ftp_adapter.completion import (
+    CONTROL_DIR,
+    MAX_COMPLETION_RECORD_BYTES,
+    CompletionError,
+    CompletionRecord,
+    completion_log_path,
+    initialize_completion_authority,
+    parse_completion_record,
+)
 from riverhog_ftp_adapter.config import FtpAdapterConfig, SourceConfig
 
-_CONTROL_DIR = ".riverhog-ftp-adapter"
+_CONTROL_DIR = CONTROL_DIR
 _FLUSH_MARKER = ".riverhog-ftp-flush"
 _MANIFEST = "claim.json"
 _RECEIPT = "receipt.json"
 _RECEIPTS_DIR = "receipts"
 _STATE_DB = "state.sqlite3"
-_COMPLETION_LOG = "completed-transfers.log"
-_COMPLETION_LOG_HEADER = "riverhog-ftp-completion-log/v1"
-_MAX_COMPLETION_RECORD_BYTES = 16 * 1024
 
 
 @dataclass(frozen=True, slots=True)
@@ -112,9 +118,7 @@ class FtpAdapter:
         return self._control_root(source) / _STATE_DB
 
     def _completion_log_path(self, source: SourceConfig) -> Path:
-        if self.config.completion_root is not None:
-            return self.config.completion_root / f"{source.id}.log"
-        return self._control_root(source) / _COMPLETION_LOG
+        return completion_log_path(source.root)
 
     def _open_state(self, source: SourceConfig) -> sqlite3.Connection:
         connection = sqlite3.connect(self._state_path(source))
@@ -127,7 +131,7 @@ class FtpAdapter:
         self._control_root(source).mkdir(mode=0o700, parents=True, exist_ok=True)
         with closing(self._open_state(source)) as connection:
             version = int(connection.execute("PRAGMA user_version").fetchone()[0])
-            if version not in {0, 1}:
+            if version not in {0, 2}:
                 raise FtpAdapterError("unsupported FTP adapter operational-state revision")
             connection.executescript(
                 """
@@ -141,7 +145,21 @@ class FtpAdapter:
                     key TEXT PRIMARY KEY,
                     value TEXT NOT NULL
                 );
-                PRAGMA user_version = 1;
+                CREATE TABLE IF NOT EXISTS completion_events (
+                    event_id TEXT PRIMARY KEY,
+                    claim_id TEXT NOT NULL
+                );
+                CREATE TABLE IF NOT EXISTS completion_failures (
+                    ordinal INTEGER PRIMARY KEY,
+                    failure_id TEXT NOT NULL UNIQUE,
+                    generation TEXT NOT NULL,
+                    record_offset INTEGER NOT NULL CHECK (record_offset >= 0),
+                    raw BLOB NOT NULL,
+                    reason TEXT NOT NULL,
+                    retryable INTEGER NOT NULL CHECK (retryable IN (0, 1)),
+                    attempts INTEGER NOT NULL DEFAULT 0 CHECK (attempts >= 0)
+                );
+                PRAGMA user_version = 2;
                 """
             )
             claim_count = _state_value(connection, "claim_count")
@@ -156,20 +174,18 @@ class FtpAdapter:
                     )
                 _set_state_value(connection, "claim_count", "0")
                 _set_state_value(connection, "claim_bytes", "0")
+            failure_count = _state_value(connection, "completion_failure_count")
+            if failure_count is None:
+                existing_failures = int(
+                    connection.execute("SELECT COUNT(*) FROM completion_failures").fetchone()[0]
+                )
+                if existing_failures:
+                    raise FtpAdapterError(
+                        "FTP completion failure accounting is absent for existing obligations"
+                    )
+                _set_state_value(connection, "completion_failure_count", "0")
             connection.commit()
-        path = self._completion_log_path(source)
-        if not path.exists():
-            generation = str(uuid.uuid4())
-            _write_atomic(
-                path,
-                f"{_COMPLETION_LOG_HEADER} {generation}\n".encode("ascii"),
-            )
-        if self.config.completion_root is not None:
-            # This writer-only handoff is mounted outside the FTP user's chroot.
-            # Pure-FTPd opens it before authentication, while the adapter owns
-            # its contents and is the only reader.
-            path.chmod(0o622)
-        generation, header_bytes = _read_completion_header(path)
+        generation, header_bytes = initialize_completion_authority(source.root)
         with closing(self._open_state(source)) as connection:
             stored_generation = _state_value(connection, "completion_generation")
             stored_offset = _state_value(connection, "completion_offset")
@@ -204,6 +220,7 @@ class FtpAdapter:
         failed: list[dict[str, str]] = []
         source_results: list[dict[str, object]] = []
         for source in sources:
+            failure_attempts = self._reconcile_completion_failures(source)
             claim_count, _claim_bytes = self._claim_summary(source)
             capacity_available = claim_count < self.config.pending_claim_capacity
             retry_budget = self.config.claim_attempt_budget - int(capacity_available)
@@ -271,6 +288,8 @@ class FtpAdapter:
                     "admission_deferred": (
                         pending_after_work >= self.config.pending_claim_capacity
                     ),
+                    "completion_failure_attempts": failure_attempts,
+                    "completion_failures": self._completion_failure_count(source),
                 }
             )
         return {
@@ -312,6 +331,7 @@ class FtpAdapter:
         rows: list[dict[str, object]] = []
         for source in selected:
             claim_count, claim_bytes = self._claim_summary(source)
+            failure_count = self._completion_failure_count(source)
             rows.append(
                 {
                     "id": source.id,
@@ -323,6 +343,9 @@ class FtpAdapter:
                     "max_bytes": source.max_bytes,
                     "provenance": source.provenance,
                     "pending_claim_capacity": self.config.pending_claim_capacity,
+                    "completion_failures": failure_count,
+                    "completion_failure_capacity": self.config.completion_failure_capacity,
+                    "oldest_completion_failure": self._oldest_completion_failure(source),
                 }
             )
         next_page_token = (
@@ -508,6 +531,174 @@ class FtpAdapter:
             _set_state_value(connection, "completion_offset", str(offset))
             connection.commit()
 
+    def _completion_failure_count(self, source: SourceConfig) -> int:
+        with closing(self._open_state(source)) as connection:
+            value = _state_value(connection, "completion_failure_count")
+        if value is None:
+            raise FtpAdapterError("FTP completion failure accounting is unavailable")
+        return int(value)
+
+    def _oldest_completion_failure(self, source: SourceConfig) -> dict[str, object] | None:
+        with closing(self._open_state(source)) as connection:
+            row = connection.execute(
+                "SELECT reason, retryable, attempts FROM completion_failures "
+                "ORDER BY ordinal LIMIT 1"
+            ).fetchone()
+        if row is None:
+            return None
+        return {
+            "reason": str(row[0]),
+            "retryable": bool(row[1]),
+            "attempts": int(row[2]),
+        }
+
+    def _known_completion_event(self, source: SourceConfig, event_id: str) -> bool:
+        with closing(self._open_state(source)) as connection:
+            row = connection.execute(
+                "SELECT 1 FROM completion_events WHERE event_id = ?",
+                (event_id,),
+            ).fetchone()
+        return row is not None
+
+    def _record_completion_failure(
+        self,
+        source: SourceConfig,
+        *,
+        generation: str,
+        record_offset: int,
+        next_offset: int,
+        raw: bytes,
+        reason: str,
+        retryable: bool,
+    ) -> None:
+        failure_id = hashlib.sha256(
+            b"\0".join(
+                (
+                    b"riverhog-ftp-completion-failure/v1",
+                    generation.encode("ascii"),
+                    str(record_offset).encode("ascii"),
+                    raw,
+                )
+            )
+        ).hexdigest()
+        with closing(self._open_state(source)) as connection:
+            current_generation = _state_value(connection, "completion_generation")
+            current_offset = _state_value(connection, "completion_offset")
+            current_count = _state_value(connection, "completion_failure_count")
+            if (
+                current_generation != generation
+                or current_offset is None
+                or int(current_offset) > record_offset
+                or current_count is None
+            ):
+                raise FtpAdapterError("FTP completion failure cursor changed during admission")
+            existing = connection.execute(
+                "SELECT raw, reason, retryable FROM completion_failures WHERE failure_id = ?",
+                (failure_id,),
+            ).fetchone()
+            if existing is None:
+                if int(current_count) >= self.config.completion_failure_capacity:
+                    raise FtpAdapterError(
+                        "completion failure capacity is exhausted; FTP admission is deferred"
+                    )
+                connection.execute(
+                    "INSERT INTO completion_failures("
+                    "failure_id, generation, record_offset, raw, reason, retryable"
+                    ") VALUES (?, ?, ?, ?, ?, ?)",
+                    (
+                        failure_id,
+                        generation,
+                        record_offset,
+                        raw,
+                        reason[:1000],
+                        int(retryable),
+                    ),
+                )
+                _set_state_value(
+                    connection,
+                    "completion_failure_count",
+                    str(int(current_count) + 1),
+                )
+            elif (bytes(existing[0]), str(existing[1]), bool(existing[2])) != (
+                raw,
+                reason[:1000],
+                retryable,
+            ):
+                raise ClaimCollision("FTP completion failure identity collision")
+            _set_state_value(connection, "completion_offset", str(next_offset))
+            connection.commit()
+
+    def _reconcile_completion_failures(self, source: SourceConfig) -> int:
+        budget = self.config.completion_failure_attempt_budget
+        with closing(self._open_state(source)) as connection:
+            raw_after = _state_value(connection, "completion_failure_after")
+            after = int(raw_after) if raw_after is not None else 0
+            rows = connection.execute(
+                "SELECT ordinal, failure_id, raw FROM completion_failures "
+                "WHERE retryable = 1 AND ordinal > ? ORDER BY ordinal LIMIT ?",
+                (after, budget),
+            ).fetchall()
+            if len(rows) < budget:
+                rows.extend(
+                    connection.execute(
+                        "SELECT ordinal, failure_id, raw FROM completion_failures "
+                        "WHERE retryable = 1 AND ordinal <= ? ORDER BY ordinal LIMIT ?",
+                        (after, budget - len(rows)),
+                    ).fetchall()
+                )
+        attempts = 0
+        for ordinal, failure_id, raw_value in rows:
+            attempts += 1
+            raw = bytes(raw_value)
+            recovered = False
+            try:
+                record = parse_completion_record(raw)
+                if record.source_id != source.id:
+                    raise CompletionError("FTP completion record names another source")
+                path = source.root / record.custody
+                observed = path.stat(follow_symlinks=False)
+                _require_completion_identity(observed, record)
+            except (CompletionError, OSError, SourceChanged):
+                pass
+            else:
+                self._append_completion_record(source, raw)
+                recovered = True
+            with closing(self._open_state(source)) as connection:
+                current_count = _state_value(connection, "completion_failure_count")
+                if current_count is None:
+                    raise FtpAdapterError("FTP completion failure accounting is unavailable")
+                if recovered:
+                    deleted = connection.execute(
+                        "DELETE FROM completion_failures WHERE failure_id = ?",
+                        (str(failure_id),),
+                    ).rowcount
+                    if deleted:
+                        _set_state_value(
+                            connection,
+                            "completion_failure_count",
+                            str(int(current_count) - 1),
+                        )
+                else:
+                    connection.execute(
+                        "UPDATE completion_failures SET attempts = attempts + 1 "
+                        "WHERE failure_id = ?",
+                        (str(failure_id),),
+                    )
+                _set_state_value(connection, "completion_failure_after", str(int(ordinal)))
+                connection.commit()
+        return attempts
+
+    def _append_completion_record(self, source: SourceConfig, raw: bytes) -> None:
+        path = self._completion_log_path(source)
+        with path.open("ab") as stream:
+            fcntl.lockf(stream.fileno(), fcntl.LOCK_EX)
+            try:
+                stream.write(raw)
+                stream.flush()
+                os.fsync(stream.fileno())
+            finally:
+                fcntl.lockf(stream.fileno(), fcntl.LOCK_UN)
+
     def _claim_record(self, source: SourceConfig, claim_id: str) -> tuple[int, str] | None:
         with closing(self._open_state(source)) as connection:
             row = connection.execute(
@@ -554,6 +745,23 @@ class FtpAdapter:
                 ordinal = int(existing[0])
                 if str(existing[1]) != encoded:
                     raise ClaimCollision(f"claim identity collision: {claim_id}")
+            raw_event_ids = manifest.get("completion_event_ids", [])
+            if not isinstance(raw_event_ids, list) or any(
+                not isinstance(item, str) for item in raw_event_ids
+            ):
+                raise FtpAdapterError("FTP claim completion event identities are invalid")
+            for event_id in raw_event_ids:
+                claimed = connection.execute(
+                    "SELECT claim_id FROM completion_events WHERE event_id = ?",
+                    (event_id,),
+                ).fetchone()
+                if claimed is None:
+                    connection.execute(
+                        "INSERT INTO completion_events(event_id, claim_id) VALUES (?, ?)",
+                        (event_id, claim_id),
+                    )
+                elif str(claimed[0]) != claim_id:
+                    raise ClaimCollision(f"completion event was claimed twice: {event_id}")
             if discovery_generation is not None or discovery_offset is not None:
                 if discovery_generation is None or discovery_offset is None:
                     raise FtpAdapterError("incomplete FTP completion cursor update")
@@ -609,6 +817,7 @@ class FtpAdapter:
         next_offset = offset
         complete = False
         log_path = self._completion_log_path(source)
+        selected_events: set[str] = set()
         with log_path.open("rb") as stream:
             fcntl.lockf(stream.fileno(), fcntl.LOCK_SH)
             try:
@@ -616,61 +825,85 @@ class FtpAdapter:
                     raise FtpAdapterError("FTP completion log ended before its durable cursor")
                 stream.seek(offset)
                 while examined < self.config.discovery_entry_budget:
+                    if selected and (
+                        len(selected) >= source.max_files or total >= source.max_bytes
+                    ):
+                        break
                     record_start = stream.tell()
-                    raw = stream.readline(_MAX_COMPLETION_RECORD_BYTES + 1)
+                    raw = stream.readline(MAX_COMPLETION_RECORD_BYTES + 1)
                     if not raw:
                         complete = True
                         break
-                    if len(raw) > _MAX_COMPLETION_RECORD_BYTES:
-                        raise FtpAdapterError("FTP completion record exceeds its protocol bound")
+                    if len(raw) > MAX_COMPLETION_RECORD_BYTES:
+                        if selected:
+                            break
+                        self._record_completion_failure(
+                            source,
+                            generation=generation,
+                            record_offset=record_start,
+                            next_offset=stream.tell(),
+                            raw=raw,
+                            reason="FTP completion record exceeds its protocol bound",
+                            retryable=False,
+                        )
+                        next_offset = stream.tell()
+                        examined += 1
+                        continue
                     if not raw.endswith(b"\n"):
                         break
                     record_end = stream.tell()
                     examined += 1
-                    parsed = _parse_completion_record(raw)
-                    if parsed is None:
-                        next_offset = record_end
-                        continue
-                    declared_bytes, path = parsed
                     try:
-                        relative = path.relative_to(source.root).as_posix()
-                    except ValueError as exc:
-                        raise FtpAdapterError(
-                            "FTP completion record is outside its configured source"
-                        ) from exc
-                    if path.name.endswith(".riverhog-provenance.json-seq"):
-                        next_offset = record_end
-                        continue
-                    if _CONTROL_DIR in Path(relative).parts:
-                        next_offset = record_end
-                        continue
-                    try:
-                        observed = path.stat(follow_symlinks=False)
-                    except FileNotFoundError as exc:
-                        raise SourceChanged(
-                            f"completed FTP upload is missing before custody: {relative}"
-                        ) from exc
-                    if not stat.S_ISREG(observed.st_mode) or observed.st_size != declared_bytes:
-                        raise SourceChanged(
-                            f"completed FTP upload differs from its transfer record: {relative}"
+                        record = parse_completion_record(raw)
+                        if record.source_id != source.id:
+                            raise CompletionError("FTP completion record names another source")
+                    except CompletionError as exc:
+                        if selected:
+                            next_offset = record_start
+                            break
+                        self._record_completion_failure(
+                            source,
+                            generation=generation,
+                            record_offset=record_start,
+                            next_offset=record_end,
+                            raw=raw,
+                            reason=str(exc),
+                            retryable=False,
                         )
-                    if selected and (
-                        len(selected) >= source.max_files
-                        or total + observed.st_size > source.max_bytes
+                        next_offset = record_end
+                        continue
+                    if record.event_id in selected_events or self._known_completion_event(
+                        source, record.event_id
                     ):
+                        next_offset = record_end
+                        continue
+                    if record.path.endswith(SIDECAR_SUFFIX):
+                        next_offset = record_end
+                        continue
+                    if selected and total + record.bytes > source.max_bytes:
                         next_offset = record_start
                         break
-                    event_identity = hashlib.sha256(
-                        b"\0".join(
-                            (
-                                b"riverhog-ftp-completion-record/v1",
-                                generation.encode("ascii"),
-                                str(record_start).encode("ascii"),
-                                raw,
-                            )
+                    path = source.root / record.custody
+                    try:
+                        observed = path.stat(follow_symlinks=False)
+                        _require_completion_identity(observed, record)
+                    except (FileNotFoundError, SourceChanged) as exc:
+                        if selected:
+                            next_offset = record_start
+                            break
+                        self._record_completion_failure(
+                            source,
+                            generation=generation,
+                            record_offset=record_start,
+                            next_offset=record_end,
+                            raw=raw,
+                            reason=str(exc),
+                            retryable=True,
                         )
-                    ).hexdigest()
-                    selected.append(_DiscoveredFile(path, relative, observed, event_identity))
+                        next_offset = record_end
+                        continue
+                    selected.append(_DiscoveredFile(path, record.path, observed, record.event_id))
+                    selected_events.add(record.event_id)
                     total += observed.st_size
                     next_offset = record_end
             finally:
@@ -781,6 +1014,7 @@ class FtpAdapter:
                 "claim_id": claim_id,
                 "source_event_id": event_id,
                 "source": source.id,
+                "completion_event_ids": [row.event_identity for row in discovery.files],
                 "files": files,
                 "journals": self._persist_journals(claim_root, journals),
             }
@@ -929,6 +1163,7 @@ class FtpAdapter:
         _write_json(self._receipt_path(source, claim_root.name), receipt_payload)
         shutil.rmtree(claim_root)
         self._forget_claim(source, claim_root.name)
+        _prune_handoff_parents(source.root, manifest)
         _prune_claim_parents(source.root, manifest)
         return receipt
 
@@ -1026,6 +1261,18 @@ def _require_identity(current: os.stat_result, row: Mapping[str, object], path: 
         raise SourceChanged(f"FTP adapter source changed during claim: {path}")
 
 
+def _require_completion_identity(
+    current: os.stat_result,
+    record: CompletionRecord,
+) -> None:
+    if not stat.S_ISREG(current.st_mode) or (current.st_size, current.st_dev, current.st_ino) != (
+        record.bytes,
+        record.device,
+        record.inode,
+    ):
+        raise SourceChanged(f"completed FTP upload differs from its durable handoff: {record.path}")
+
+
 def _read_manifest(claim_root: Path) -> dict[str, object]:
     payload = json.loads((claim_root / _MANIFEST).read_text(encoding="utf-8"))
     if not isinstance(payload, dict) or payload.get("format") != "riverhog-ftp-adapter-claim/v1":
@@ -1116,39 +1363,6 @@ def _set_state_value(connection: sqlite3.Connection, key: str, value: str) -> No
     )
 
 
-def _read_completion_header(path: Path) -> tuple[str, int]:
-    with path.open("rb") as stream:
-        return _read_completion_header_stream(stream)
-
-
-def _read_completion_header_stream(stream: BinaryIO) -> tuple[str, int]:
-    stream.seek(0)
-    raw = stream.readline(256)
-    try:
-        prefix, generation = raw.decode("ascii").rstrip("\n").split(" ", 1)
-    except (UnicodeDecodeError, ValueError) as exc:
-        raise FtpAdapterError("FTP completion log header is invalid") from exc
-    if prefix != _COMPLETION_LOG_HEADER or str(uuid.UUID(generation)) != generation:
-        raise FtpAdapterError("FTP completion log authority is invalid")
-    return generation, len(raw)
-
-
-def _parse_completion_record(raw: bytes) -> tuple[int, Path] | None:
-    if raw.startswith(f"{_COMPLETION_LOG_HEADER} ".encode("ascii")):
-        return None
-    fields = raw.rstrip(b"\n").split(b" ", 7)
-    if len(fields) != 8:
-        raise FtpAdapterError("FTP completion record is invalid")
-    if fields[4] == b"D":
-        return None
-    if fields[4] != b"U" or not fields[5].isdigit():
-        raise FtpAdapterError("FTP completion record has invalid transfer semantics")
-    path = Path(os.fsdecode(fields[7]))
-    if not path.is_absolute():
-        raise FtpAdapterError("FTP completion record path is not absolute")
-    return int(fields[5]), path
-
-
 def _write_json(path: Path, payload: Mapping[str, object]) -> None:
     _write_atomic(
         path,
@@ -1181,6 +1395,23 @@ def _prune_claim_parents(root: Path, manifest: Mapping[str, object]) -> None:
     for path in sorted(candidates, key=lambda item: len(item.parts), reverse=True):
         try:
             path.rmdir()
+        except OSError:
+            pass
+
+
+def _prune_handoff_parents(root: Path, manifest: Mapping[str, object]) -> None:
+    handoffs_root = root / _CONTROL_DIR / "handoffs"
+    for row in _file_rows(manifest):
+        original = Path(str(row["original"]))
+        try:
+            relative = original.relative_to(handoffs_root)
+        except ValueError:
+            continue
+        if not relative.parts:
+            continue
+        event_root = handoffs_root / relative.parts[0]
+        try:
+            event_root.rmdir()
         except OSError:
             pass
 

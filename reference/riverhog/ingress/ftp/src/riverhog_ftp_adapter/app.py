@@ -5,6 +5,7 @@ from __future__ import annotations
 import argparse
 import asyncio
 import importlib.metadata
+import ipaddress
 import json
 import logging
 import secrets
@@ -33,8 +34,9 @@ from riverhog_ftp_adapter_api_client import RiverhogFtpAdapterClient
 from riverhog_provenance import resolve_provenance_observer
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
-from riverhog_ftp_adapter.config import FtpAdapterConfig, load_config
+from riverhog_ftp_adapter.config import FtpAdapterConfig, load_config, load_source_config
 from riverhog_ftp_adapter.landing import FtpAdapter
+from riverhog_ftp_adapter.listener import serve_ftp
 
 BEARER = HTTPBearer(auto_error=False, scheme_name="RiverhogFtpAdapterBearer")
 LOGGER = logging.getLogger(__name__)
@@ -242,8 +244,12 @@ def _print(payload: Mapping[str, object], *, json_mode: bool) -> None:
             if isinstance(row, Mapping):
                 print(
                     f"- {row.get('id')}: claims={row.get('claims')}  "
-                    f"scratch={row.get('claim_bytes')} bytes"
+                    f"scratch={row.get('claim_bytes')} bytes  "
+                    f"completion-failures={row.get('completion_failures')}"
                 )
+                oldest = row.get("oldest_completion_failure")
+                if isinstance(oldest, Mapping):
+                    print(f"  oldest completion failure: {oldest.get('reason')}")
         if payload.get("next_page_token") is not None:
             print(f"next page token: {payload['next_page_token']}")
         return
@@ -266,6 +272,17 @@ def build_parser() -> argparse.ArgumentParser:
     serve = sub.add_parser("serve", help="run the adapter API and background poller")
     serve.add_argument("--host", default="127.0.0.1")
     serve.add_argument("--port", type=int, default=8082)
+    listen = sub.add_parser("listen", help="run the success-qualified FTP listener")
+    listen.add_argument("--source", required=True)
+    listen.add_argument("--username", required=True)
+    listen.add_argument("--password-file", type=Path, required=True)
+    listen.add_argument("--host", default="127.0.0.1")
+    listen.add_argument("--port", type=int, default=2121)
+    listen.add_argument("--passive-port-start", type=int, default=30000)
+    listen.add_argument("--passive-port-end", type=int, default=30039)
+    listen.add_argument("--public-host")
+    listen.add_argument("--max-connections", type=int, default=256)
+    listen.add_argument("--max-connections-per-ip", type=int, default=32)
     run = sub.add_parser("run", help="run one landing-source pass")
     run.set_defaults(func=_run_command)
     status = sub.add_parser("status", help="show one bounded page of source status")
@@ -325,6 +342,40 @@ def main(argv: Sequence[str] | None = None) -> int:
             "sources": len(config.sources),
         }
         _print(payload, json_mode=args.json)
+        return 0
+    if command == "listen":
+        source = load_source_config(args.config, args.source)
+        if not args.username or args.username.strip() != args.username or len(args.username) > 128:
+            raise ValueError("FTP listener username must be 1..128 canonical characters")
+        password_size = args.password_file.stat().st_size
+        if not 1 <= password_size <= 4097:
+            raise ValueError("FTP listener password file must be 1..4097 bytes")
+        password = args.password_file.read_text(encoding="utf-8").strip()
+        if not password:
+            raise ValueError("FTP listener password file is empty")
+        if len(password.encode("utf-8")) > 4096:
+            raise ValueError("FTP listener password exceeds 4096 UTF-8 bytes")
+        if not args.host or len(args.host) > 255:
+            raise ValueError("FTP listener bind host must be 1..255 characters")
+        if not 1 <= args.port <= 65535:
+            raise ValueError("FTP listener port must be in 1..65535")
+        if not 1 <= args.passive_port_start <= args.passive_port_end <= 65535:
+            raise ValueError("FTP passive port range is invalid")
+        if args.max_connections < 1 or args.max_connections_per_ip < 1:
+            raise ValueError("FTP connection limits must be positive")
+        public_host = str(ipaddress.IPv4Address(args.public_host)) if args.public_host else None
+        serve_ftp(
+            source_root=source.root,
+            source_id=source.id,
+            username=args.username,
+            password=password,
+            host=args.host,
+            port=args.port,
+            passive_ports=range(args.passive_port_start, args.passive_port_end + 1),
+            public_host=public_host,
+            max_connections=args.max_connections,
+            max_connections_per_ip=args.max_connections_per_ip,
+        )
         return 0
     callback = getattr(args, "func", None)
     if callback is None:

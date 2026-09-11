@@ -6,7 +6,8 @@
   "pending_claim_capacity": 128,
   "claim_attempt_budget": 8,
   "discovery_entry_budget": 4096,
-  "completion_root": "/var/lib/riverhog-ftp-completions",
+  "completion_failure_capacity": 128,
+  "completion_failure_attempt_budget": 8,
   "sources": [
     {
       "id": "ftp-intake",
