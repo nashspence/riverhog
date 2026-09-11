@@ -49,6 +49,20 @@ def _install_fake_command(tmp_path: Path, name: str, log_name: str) -> Path:
                     'if [[ "$*" == *"/v1/apps/smoke/keys"* ]]; then',
                     "  printf 'fake-application-token\\n'",
                     "fi",
+                    'if [[ "$*" == *"RIVERHOG_SMOKE_PARTITION_OUTPUT=1"* ]]; then',
+                    (
+                        "  printf '%s\\n' "
+                        '\'[{"archive_root_sha256":"'
+                        + "5" * 64
+                        + '","collection_id":1,"content_identity":"'
+                        + "6" * 64
+                        + '"},{"archive_root_sha256":"'
+                        + "7" * 64
+                        + '","collection_id":2,"content_identity":"'
+                        + "8" * 64
+                        + "\"}]'"
+                    ),
+                    "fi",
                     'if [[ "$*" == *"RIVERHOG_SMOKE_RECEIPT_OUTPUT=1"* ]]; then',
                     (
                         "  printf '%s\\n' "

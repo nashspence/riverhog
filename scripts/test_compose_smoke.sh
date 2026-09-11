@@ -252,8 +252,8 @@ printf '%s\n' '{' \
   '      "close_mode": "explicit-flush",' \
   "      \"max_files\": ${smoke_claim_file_count}," \
   "      \"max_bytes\": ${smoke_max_bytes}," \
-  '      "description": "Classified FTP compose qualification",' \
-  '      "tags": ["stove0/conformance"],' \
+  '      "description": "FTP exact-event compose qualification",' \
+  '      "tags": [],' \
   '      "provenance": "omit",' \
   '      "provenance_omission_reason": "The FTP producer cannot observe the source host filesystem."' \
   '    }' \
@@ -348,6 +348,151 @@ stove0_compose exec -T api python -c "${admission_baseline_code}"
 stove0_compose stop controller
 adapter_compose up --detach --build --wait intake-init ftp-adapter ftp-listener
 
+partition_run_code="from ftplib import FTP, all_errors
+from io import BytesIO
+import json
+from pathlib import Path
+import time
+from riverhog_ftp_adapter_api_client import RiverhogFtpAdapterClient
+same_path = Path('/intake/ftp/same-path.bin')
+expected = (b'first exact FTP event', b'second distinct exact FTP event')
+
+def connect():
+    ftp = FTP(timeout=10)
+    ftp.connect('ftp-listener', 2121)
+    ftp.login('ftp-intake', 'riverhog-ftp-adapter-compose-smoke-password')
+    return ftp
+
+def upload(content):
+    deadline = time.monotonic() + 30
+    last_error = None
+    while time.monotonic() < deadline:
+        try:
+            with connect() as ftp:
+                ftp.storbinary('STOR ' + same_path.name, BytesIO(content))
+            return
+        except all_errors as error:
+            last_error = error
+            time.sleep(0.25)
+    raise RuntimeError('FTP listener did not accept same-path input') from last_error
+
+# Both terminal transfers enter listener custody before the adapter consumes
+# either one. Reuse of the visible pathname must not overwrite the first event.
+for content in expected:
+    upload(content)
+    assert not same_path.exists()
+completion_log = Path('/intake/ftp/.riverhog-ftp-adapter/completed-transfers.log')
+assert completion_log.read_bytes().count(b'\n') == 3
+with RiverhogFtpAdapterClient(
+    base_url='http://127.0.0.1:8080',
+    token='riverhog-ftp-adapter-compose-smoke-token',
+    allow_insecure_http=True,
+) as client:
+    result = client.flush_ftp_adapter_source('ftp-smoke')
+    assert result['failed'] == [], result
+    deadline = time.monotonic() + 60
+    while time.monotonic() < deadline:
+        receipt_paths = sorted(
+            Path('/intake/ftp/.riverhog-ftp-adapter/receipts').glob('*.json')
+        )
+        status = client.get_ftp_adapter_status()
+        if len(receipt_paths) == 2 and status['sources'][0]['claims'] == 0:
+            break
+        time.sleep(0.25)
+    else:
+        raise AssertionError({'receipts': receipt_paths, 'status': status})
+assert len(receipt_paths) == 2, receipt_paths
+receipts = sorted(
+    (json.loads(path.read_text(encoding='utf-8')) for path in receipt_paths),
+    key=lambda row: row['collection_id'],
+)
+assert receipts[0]['collection_id'] != receipts[1]['collection_id']
+print(json.dumps([
+    {
+        key: receipt[key]
+        for key in ('collection_id', 'archive_root_sha256', 'content_identity')
+    }
+    for receipt in receipts
+], sort_keys=True))"
+partition_receipts_json="$(adapter_compose exec -T \
+  --env RIVERHOG_SMOKE_PARTITION_OUTPUT=1 \
+  ftp-adapter python -c "${partition_run_code}")"
+test "$(printf '%s' "${partition_receipts_json}" | jq 'length')" -eq 2
+
+# Restart both owners before inspecting cleanup. The listener retires any exact
+# acquisition marker and the adapter reclaims replay guards only at the locked
+# completion-log tip.
+adapter_compose restart ftp-adapter ftp-listener
+adapter_compose up --detach --wait ftp-adapter ftp-listener
+partition_cleanup_code="import sqlite3
+from pathlib import Path
+import time
+control = Path('/intake/ftp/.riverhog-ftp-adapter')
+deadline = time.monotonic() + 30
+while time.monotonic() < deadline:
+    with sqlite3.connect(control / 'state.sqlite3') as connection:
+        claims = connection.execute('SELECT COUNT(*) FROM claims').fetchone()[0]
+        events = connection.execute('SELECT COUNT(*) FROM completion_events').fetchone()[0]
+    retained = {
+        name: list((control / name).glob('*'))
+        for name in ('claims', 'handoffs', 'handoff-intents')
+    }
+    if claims == 0 and events == 0 and all(not paths for paths in retained.values()):
+        break
+    time.sleep(0.25)
+else:
+    raise AssertionError({'claims': claims, 'events': events, 'retained': retained})
+assert len(list((control / 'receipts').glob('*.json'))) == 2"
+adapter_compose exec -T ftp-adapter python -c "${partition_cleanup_code}"
+
+partition_verify_code="import hashlib
+import json
+import os
+from riverhog_client import ApiClient
+receipts = json.loads(os.environ['PARTITION_RECEIPTS'])
+expected = (b'first exact FTP event', b'second distinct exact FTP event')
+with ApiClient() as client:
+    for receipt, content in zip(receipts, expected, strict=True):
+        collection_id = receipt['collection_id']
+        page = client.get_portable_collection_inventory(collection_id, limit=100)
+        assert page.complete, page
+        by_path = {artifact.path: artifact for artifact in page.files}
+        assert set(by_path) == {
+            'riverhog/producer-evidence.json',
+            'same-path.bin',
+        }, page
+        artifact = by_path['same-path.bin']
+        assert artifact.bytes == len(content)
+        assert artifact.sha256 == hashlib.sha256(content).hexdigest()
+        plan = client.plan_retrieval(
+            [(collection_id, artifact.path)],
+            restore_policy='never',
+        )
+        job = client.create_retrieval_job(plan['id'], plan_etag=plan['etag'])
+        assert job['state'] == 'ready', job
+        with client.stream_retrieval_file(
+            job['id'],
+            collection_id=collection_id,
+            path=artifact.path,
+            expected_bytes=artifact.bytes,
+            expected_sha256=artifact.sha256,
+        ) as chunks:
+            assert b''.join(chunks) == content
+        assert client.acknowledge_retrieval_job(job['id'])['state'] == 'completed'"
+compose run --rm "${COMPOSE_RUN_TTY_ARGS[@]}" "${client_environment[@]}" \
+  --env "PARTITION_RECEIPTS=${partition_receipts_json}" \
+  --entrypoint python test -c "${partition_verify_code}"
+
+# Reload the same independently deployed reference with the classified source
+# policy used by the established Riverhog-to-Stove0 compose proof.
+adapter_config_next="${smoke_root}/ftp-adapter.next.json"
+jq '.sources[0].description = "Classified FTP compose qualification"
+  | .sources[0].tags = ["stove0/conformance"]' \
+  "${adapter_config}" > "${adapter_config_next}"
+chmod 0640 "${adapter_config_next}"
+mv "${adapter_config_next}" "${adapter_config}"
+adapter_compose up --detach --force-recreate --wait ftp-adapter ftp-listener
+
 adapter_run_code="from ftplib import FTP, all_errors
 from io import BytesIO
 import json
@@ -376,6 +521,8 @@ sidecar_payload = b'''<x:xmpmeta xmlns:x="adobe:ns:meta/">
 </x:xmpmeta>
 '''
 uploads = [(source, expected) for source in sources] + [(sidecar, sidecar_payload)]
+receipt_root = Path('/intake/ftp/.riverhog-ftp-adapter/receipts')
+existing_receipts = {path.name for path in receipt_root.glob('*.json')}
 
 def connect():
     ftp = FTP(timeout=10)
@@ -420,7 +567,7 @@ assert all(not source.exists() for source, _content in uploads)
 completion_log = Path('/intake/ftp/.riverhog-ftp-adapter/completed-transfers.log')
 deadline = time.monotonic() + 10
 while time.monotonic() < deadline:
-    if completion_log.read_bytes().count(b'\n') >= len(uploads) + 1:
+    if completion_log.read_bytes().count(b'\n') == len(uploads) + 3:
         break
     time.sleep(0.1)
 else:
@@ -439,9 +586,11 @@ with RiverhogFtpAdapterClient(
     status = client.get_ftp_adapter_status()
     assert status['sources'][0]['claims'] == 0, status
 assert all(not source.exists() for source, _content in uploads)
-receipts = sorted(Path('/intake/ftp/.riverhog-ftp-adapter/receipts').glob('*.json'))
-assert len(receipts) == 1, receipts
-receipt = json.loads(receipts[0].read_text(encoding='utf-8'))
+receipts = sorted(receipt_root.glob('*.json'))
+new_receipts = [path for path in receipts if path.name not in existing_receipts]
+assert len(receipts) == 3, receipts
+assert len(new_receipts) == 1, new_receipts
+receipt = json.loads(new_receipts[0].read_text(encoding='utf-8'))
 print(json.dumps({
     key: receipt[key]
     for key in ('collection_id', 'archive_root_sha256', 'content_identity')
