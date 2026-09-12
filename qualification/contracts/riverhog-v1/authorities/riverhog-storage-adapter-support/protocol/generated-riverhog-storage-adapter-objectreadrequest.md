@@ -27,7 +27,7 @@
 - Proof: `make dist-smoke`
 - Proof: `make build`
 
-## Contract
+## Contract summary
 
 - `title`: ObjectReadRequest
 - `type`: object
@@ -46,3 +46,89 @@
 | Definition | Shape |
 |---|---|
 | `ObjectLocator` | object |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 8f080cf57778767bde220ff2111c9ba3501ad753c8492b1759db04b8451d108d -->
+
+```json
+{
+  "$defs": {
+    "ObjectLocator": {
+      "additionalProperties": false,
+      "properties": {
+        "object_path": {
+          "maxLength": 4096,
+          "minLength": 1,
+          "title": "Object Path",
+          "type": "string"
+        },
+        "revision": {
+          "anyOf": [
+            {
+              "maxLength": 2000,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Revision"
+        }
+      },
+      "required": [
+        "object_path"
+      ],
+      "title": "ObjectLocator",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "expected_bytes": {
+      "minimum": 0,
+      "title": "Expected Bytes",
+      "type": "integer"
+    },
+    "object": {
+      "$ref": "#/$defs/ObjectLocator"
+    },
+    "offset": {
+      "anyOf": [
+        {
+          "minimum": 0,
+          "type": "integer"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Offset"
+    },
+    "size": {
+      "anyOf": [
+        {
+          "minimum": 0,
+          "type": "integer"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Size"
+    }
+  },
+  "required": [
+    "object",
+    "expected_bytes"
+  ],
+  "title": "ObjectReadRequest",
+  "type": "object"
+}
+```

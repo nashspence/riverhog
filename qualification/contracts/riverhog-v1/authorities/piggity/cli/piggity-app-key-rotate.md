@@ -41,7 +41,7 @@
 | cardinality | values-per-occurrence | `fixed` | maximum=1, minimum=1, reason=fixed-command-argument-arity |
 | cardinality | values-per-occurrence | `fixed` | maximum=1, minimum=1, reason=fixed-command-argument-arity |
 
-## Contract
+## Contract summary
 
 - Parser name: `rotate`
 
@@ -52,3 +52,75 @@
 | `app_name` | TyperArgument | yes | {'class': 'typer._click.types.StringParamType', 'name': 'text'} | app_name |
 | `key_id` | TyperArgument | yes | {'class': 'typer._click.types.StringParamType', 'name': 'text'} | key_id |
 | `json_mode` | TyperOption | no | {'class': 'typer._click.types.BoolParamType', 'name': 'boolean'} | --json |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+### `/external_contract/cli/piggity/commands/app/commands/key/commands/rotate/name`
+
+<!-- exact-contract-value: f66ab9323564942157c358fa5caee94868c1433e5c3e672e8456f747813b9a59 -->
+
+```json
+"rotate"
+```
+
+### `/external_contract/cli/piggity/commands/app/commands/key/commands/rotate/parameters`
+
+<!-- exact-contract-value: 1749f130449a17b41843bc114da325f40e7d6ade60854043985e5bcec11d2cad -->
+
+```json
+[
+  {
+    "envvar": null,
+    "kind": "TyperArgument",
+    "multiple": false,
+    "name": "app_name",
+    "nargs": 1,
+    "options": [
+      "app_name"
+    ],
+    "required": true,
+    "secondary_options": [],
+    "type": {
+      "class": "typer._click.types.StringParamType",
+      "name": "text"
+    }
+  },
+  {
+    "envvar": null,
+    "kind": "TyperArgument",
+    "multiple": false,
+    "name": "key_id",
+    "nargs": 1,
+    "options": [
+      "key_id"
+    ],
+    "required": true,
+    "secondary_options": [],
+    "type": {
+      "class": "typer._click.types.StringParamType",
+      "name": "text"
+    }
+  },
+  {
+    "count": false,
+    "default": false,
+    "envvar": null,
+    "is_flag": true,
+    "kind": "TyperOption",
+    "multiple": false,
+    "name": "json_mode",
+    "nargs": 1,
+    "options": [
+      "--json"
+    ],
+    "required": false,
+    "secondary_options": [],
+    "type": {
+      "class": "typer._click.types.BoolParamType",
+      "name": "boolean"
+    }
+  }
+]
+```

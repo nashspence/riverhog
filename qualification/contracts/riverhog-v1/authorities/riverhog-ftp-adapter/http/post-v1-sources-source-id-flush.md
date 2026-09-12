@@ -32,13 +32,17 @@
 
 - [Operation parity: flush_ftp_adapter_source](../operation/operation-parity-flush-ftp-adapter-source.md)
 
+## Referenced contract dossiers
+
+- [schemas: ErrorResponse](schemas-errorresponse.md)
+
 ## Extent decisions
 
 | Dimension | Unit | Policy | Bounds/reason |
 |---|---|---|---|
 | cardinality | entries | `operational_policy` | maximum=None, reason=no-declared-semantic-maximum |
 
-## Contract
+## Contract summary
 
 - `operationId`: flush_ftp_adapter_source
 - `summary`: Flush
@@ -59,3 +63,101 @@
 | `401` | Unauthorized |
 | `403` | Forbidden |
 | `500` | Internal Server Error |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 9606950cef18df30221388969787db2bb44fcce1a0a93c83ad7e22630416bf30 -->
+
+```json
+{
+  "operationId": "flush_ftp_adapter_source",
+  "parameters": [
+    {
+      "in": "path",
+      "name": "source_id",
+      "required": true,
+      "schema": {
+        "title": "Source Id",
+        "type": "string"
+      }
+    }
+  ],
+  "responses": {
+    "200": {
+      "content": {
+        "application/json": {
+          "schema": {
+            "additionalProperties": true,
+            "title": "Response Flush Ftp Adapter Source",
+            "type": "object"
+          }
+        }
+      },
+      "description": "Successful Response"
+    },
+    "400": {
+      "content": {
+        "application/json": {
+          "schema": {
+            "$ref": "#/components/schemas/ErrorResponse"
+          }
+        }
+      },
+      "description": "Bad Request",
+      "x-riverhog-error-codes": [
+        "bad_request"
+      ]
+    },
+    "401": {
+      "content": {
+        "application/json": {
+          "schema": {
+            "$ref": "#/components/schemas/ErrorResponse"
+          }
+        }
+      },
+      "description": "Unauthorized",
+      "x-riverhog-error-codes": [
+        "unauthorized"
+      ]
+    },
+    "403": {
+      "content": {
+        "application/json": {
+          "schema": {
+            "$ref": "#/components/schemas/ErrorResponse"
+          }
+        }
+      },
+      "description": "Forbidden",
+      "x-riverhog-error-codes": [
+        "forbidden"
+      ]
+    },
+    "500": {
+      "content": {
+        "application/json": {
+          "schema": {
+            "$ref": "#/components/schemas/ErrorResponse"
+          }
+        }
+      },
+      "description": "Internal Server Error",
+      "x-riverhog-error-codes": [
+        "internal_error"
+      ]
+    }
+  },
+  "security": [
+    {
+      "RiverhogFtpAdapterBearer": []
+    }
+  ],
+  "summary": "Flush",
+  "tags": [
+    "operations"
+  ]
+}
+```

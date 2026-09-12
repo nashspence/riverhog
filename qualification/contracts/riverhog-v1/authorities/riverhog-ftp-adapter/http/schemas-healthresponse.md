@@ -27,7 +27,7 @@
 - Proof: `make operation-qualification`
 - Proof: `make compose-smoke`
 
-## Contract
+## Contract summary
 
 - `title`: HealthResponse
 - `type`: object
@@ -38,3 +38,33 @@
 |---|---:|---|---|
 | `service` | yes | string |  |
 | `status` | yes | string |  |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 873f58b65973a85d82bd4e352acd595a8f32f6058c4500f11514358669b42b31 -->
+
+```json
+{
+  "additionalProperties": false,
+  "properties": {
+    "service": {
+      "minLength": 1,
+      "title": "Service",
+      "type": "string"
+    },
+    "status": {
+      "const": "ok",
+      "title": "Status",
+      "type": "string"
+    }
+  },
+  "required": [
+    "service",
+    "status"
+  ],
+  "title": "HealthResponse",
+  "type": "object"
+}
+```

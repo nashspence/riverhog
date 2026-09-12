@@ -29,6 +29,12 @@
 - Proof: `make operation-qualification`
 - Proof: `make compose-smoke`
 
+## Referenced contract dossiers
+
+- [schemas: CollectionDeletionArchiveCopyOut](schemas-collectiondeletionarchivecopyout.md)
+- [schemas: CollectionId](schemas-collectionid.md)
+- [schemas: RetirementClaimReferenceDocument](schemas-retirementclaimreferencedocument.md)
+
 ## Extent decisions
 
 | Dimension | Unit | Policy | Bounds/reason |
@@ -40,7 +46,7 @@
 | value | schema-value | `operational_policy` | maximum=None, reason=no-declared-semantic-maximum |
 | cardinality | entries | `operational_policy` | maximum=None, reason=no-declared-semantic-maximum |
 
-## Contract
+## Contract summary
 
 - `title`: CollectionDeletionPlanOut
 - `type`: object
@@ -65,3 +71,163 @@
 | `status` | yes | string |  |
 | `upload_file_count` | yes | integer |  |
 | `warning` | yes | string |  |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: c45b1e900ac654c02b79b444cd1069c7afa157fcd5e00f8632f6b6b9c6adb342 -->
+
+```json
+{
+  "additionalProperties": false,
+  "oneOf": [
+    {
+      "properties": {
+        "blockers": {
+          "minItems": 1
+        },
+        "challenge": {
+          "type": "null"
+        },
+        "status": {
+          "const": "blocked"
+        }
+      }
+    },
+    {
+      "properties": {
+        "blockers": {
+          "maxItems": 0
+        },
+        "challenge": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "status": {
+          "enum": [
+            "ready",
+            "deleting"
+          ]
+        }
+      }
+    }
+  ],
+  "properties": {
+    "archive_copies": {
+      "items": {
+        "$ref": "#/components/schemas/CollectionDeletionArchiveCopyOut"
+      },
+      "title": "Archive Copies",
+      "type": "array"
+    },
+    "archive_object_count": {
+      "title": "Archive Object Count",
+      "type": "integer"
+    },
+    "billing_note": {
+      "title": "Billing Note",
+      "type": "string"
+    },
+    "blockers": {
+      "items": {
+        "type": "string"
+      },
+      "maxItems": 55,
+      "title": "Blockers",
+      "type": "array",
+      "x-riverhog-extent": {
+        "policy": "contract_max",
+        "reason": "bounded-diagnostic-sample-with-explicit-overflow-markers"
+      }
+    },
+    "bytes": {
+      "title": "Bytes",
+      "type": "integer"
+    },
+    "challenge": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Challenge"
+    },
+    "collection_id": {
+      "$ref": "#/components/schemas/CollectionId"
+    },
+    "expires_at": {
+      "title": "Expires At",
+      "type": "string"
+    },
+    "file_count": {
+      "title": "File Count",
+      "type": "integer"
+    },
+    "inventory_identity": {
+      "title": "Inventory Identity",
+      "type": "string"
+    },
+    "metadata_rows": {
+      "additionalProperties": {
+        "type": "integer"
+      },
+      "title": "Metadata Rows",
+      "type": "object"
+    },
+    "remote_storage_bytes": {
+      "title": "Remote Storage Bytes",
+      "type": "integer"
+    },
+    "retirement_claim": {
+      "anyOf": [
+        {
+          "$ref": "#/components/schemas/RetirementClaimReferenceDocument"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "status": {
+      "enum": [
+        "ready",
+        "blocked",
+        "deleting"
+      ],
+      "title": "Status",
+      "type": "string"
+    },
+    "upload_file_count": {
+      "title": "Upload File Count",
+      "type": "integer"
+    },
+    "warning": {
+      "title": "Warning",
+      "type": "string"
+    }
+  },
+  "required": [
+    "status",
+    "collection_id",
+    "warning",
+    "expires_at",
+    "challenge",
+    "file_count",
+    "bytes",
+    "archive_copies",
+    "archive_object_count",
+    "remote_storage_bytes",
+    "upload_file_count",
+    "inventory_identity",
+    "metadata_rows",
+    "blockers",
+    "billing_note"
+  ],
+  "title": "CollectionDeletionPlanOut",
+  "type": "object"
+}
+```

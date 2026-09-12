@@ -27,7 +27,18 @@
 - Proof: `make unit`
 - Proof: `make compose-smoke`
 
-## Contract
+## Contract summary
+
+| Field | Shape |
+|---|---|
+| `consumers` | array (1 items) |
+| `name` | "RIVERHOG_FTP_ADAPTER_TOKEN" |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 738c8930bff67546a294f9b392414512b4711b5f54b2de19c5c6b67c78ba2018 -->
 
 ```json
 {

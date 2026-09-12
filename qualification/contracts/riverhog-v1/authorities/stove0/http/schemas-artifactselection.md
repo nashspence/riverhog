@@ -29,6 +29,10 @@
 - Proof: `make operation-qualification`
 - Proof: `make compose-smoke`
 
+## Referenced contract dossiers
+
+- [schemas: ArtifactSubject](schemas-artifactsubject.md)
+
 ## Extent decisions
 
 | Dimension | Unit | Policy | Bounds/reason |
@@ -36,7 +40,7 @@
 | cardinality | items | `operational_policy` | maximum=None, reason=no-declared-semantic-maximum |
 | length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
 
-## Contract
+## Contract summary
 
 - `title`: ArtifactSelection
 - `description`: One exact, content-addressed selection of immutable artifacts.
@@ -51,3 +55,55 @@
 | `format` | no | string |  |
 | `selection_sha256` | yes | string |  |
 | `total_bytes` | yes | integer |  |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 8af48804a1c059e6b44aa3f4ab91efe8fccf666f2e8c8f0bc454359fb12b95ca -->
+
+```json
+{
+  "additionalProperties": false,
+  "description": "One exact, content-addressed selection of immutable artifacts.",
+  "properties": {
+    "artifact_count": {
+      "minimum": 1,
+      "title": "Artifact Count",
+      "type": "integer"
+    },
+    "artifacts": {
+      "items": {
+        "$ref": "#/components/schemas/ArtifactSubject"
+      },
+      "minItems": 1,
+      "title": "Artifacts",
+      "type": "array"
+    },
+    "format": {
+      "const": "stove0-artifact-selection/v1",
+      "default": "stove0-artifact-selection/v1",
+      "title": "Format",
+      "type": "string"
+    },
+    "selection_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Selection Sha256",
+      "type": "string"
+    },
+    "total_bytes": {
+      "minimum": 0,
+      "title": "Total Bytes",
+      "type": "integer"
+    }
+  },
+  "required": [
+    "artifacts",
+    "artifact_count",
+    "total_bytes",
+    "selection_sha256"
+  ],
+  "title": "ArtifactSelection",
+  "type": "object"
+}
+```

@@ -27,7 +27,11 @@
 - Proof: `make operation-qualification`
 - Proof: `make compose-smoke`
 
-## Contract
+## Referenced contract dossiers
+
+- [schemas: MonthlyDownloadQuotaBytes](schemas-monthlydownloadquotabytes.md)
+
+## Contract summary
 
 - `title`: SetKeyDownloadQuotaRequest
 - `type`: object
@@ -37,3 +41,32 @@
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | `monthly_bytes` | yes | object (1 fields) |  |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 5db7dca3d11b00250fcdfb044e4521283e93acdaaece25d0d55ba8256d0bdd24 -->
+
+```json
+{
+  "additionalProperties": false,
+  "properties": {
+    "monthly_bytes": {
+      "anyOf": [
+        {
+          "$ref": "#/components/schemas/MonthlyDownloadQuotaBytes"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    }
+  },
+  "required": [
+    "monthly_bytes"
+  ],
+  "title": "SetKeyDownloadQuotaRequest",
+  "type": "object"
+}
+```

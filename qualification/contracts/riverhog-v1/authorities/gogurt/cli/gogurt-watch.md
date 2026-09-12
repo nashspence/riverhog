@@ -42,7 +42,7 @@
 | cardinality | values-per-occurrence | `fixed` | maximum=1, minimum=1, reason=fixed-command-argument-arity |
 | cardinality | values-per-occurrence | `fixed` | maximum=1, minimum=1, reason=fixed-command-argument-arity |
 
-## Contract
+## Contract summary
 
 - Parser name: `watch`
 
@@ -57,3 +57,156 @@
 | `autorun` | TyperOption | no | {'class': 'typer._click.types.BoolParamType', 'name': 'boolean'} | --autorun |
 | `dry_run` | TyperOption | no | {'class': 'typer._click.types.BoolParamType', 'name': 'boolean'} | --dry-run |
 | `mounted_volume_provider` | TyperOption | no | {'class': 'typer._click.types.StringParamType', 'name': 'text'} | --mounted-volume-provider |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+### `/external_contract/cli/gogurt/commands/watch/name`
+
+<!-- exact-contract-value: 73da76bff71a604995ddd94e223ffa8b7c171b54e0a953c0fb794ac85a61534b -->
+
+```json
+"watch"
+```
+
+### `/external_contract/cli/gogurt/commands/watch/parameters`
+
+<!-- exact-contract-value: 6bec3188ced3d683b8f7e52e79c65d56854b89bea563459705f2462b7798cc5a -->
+
+```json
+[
+  {
+    "count": false,
+    "envvar": null,
+    "is_flag": false,
+    "kind": "TyperOption",
+    "multiple": false,
+    "name": "config",
+    "nargs": 1,
+    "options": [
+      "--config"
+    ],
+    "required": false,
+    "secondary_options": [],
+    "type": {
+      "class": "typer.models.TyperPath",
+      "name": "path"
+    }
+  },
+  {
+    "count": false,
+    "envvar": null,
+    "is_flag": false,
+    "kind": "TyperOption",
+    "multiple": false,
+    "name": "actions_dir",
+    "nargs": 1,
+    "options": [
+      "--actions-dir"
+    ],
+    "required": false,
+    "secondary_options": [],
+    "type": {
+      "class": "typer.models.TyperPath",
+      "name": "path"
+    }
+  },
+  {
+    "count": false,
+    "default": 2,
+    "envvar": null,
+    "is_flag": false,
+    "kind": "TyperOption",
+    "multiple": false,
+    "name": "interval_seconds",
+    "nargs": 1,
+    "options": [
+      "--interval"
+    ],
+    "required": false,
+    "secondary_options": [],
+    "type": {
+      "class": "typer._click.types.FloatRange",
+      "maximum": 3600,
+      "minimum": 0.1,
+      "name": "float range"
+    }
+  },
+  {
+    "count": false,
+    "default": false,
+    "envvar": null,
+    "is_flag": true,
+    "kind": "TyperOption",
+    "multiple": false,
+    "name": "include_existing",
+    "nargs": 1,
+    "options": [
+      "--include-existing"
+    ],
+    "required": false,
+    "secondary_options": [],
+    "type": {
+      "class": "typer._click.types.BoolParamType",
+      "name": "boolean"
+    }
+  },
+  {
+    "count": false,
+    "default": false,
+    "envvar": null,
+    "is_flag": true,
+    "kind": "TyperOption",
+    "multiple": false,
+    "name": "autorun",
+    "nargs": 1,
+    "options": [
+      "--autorun"
+    ],
+    "required": false,
+    "secondary_options": [],
+    "type": {
+      "class": "typer._click.types.BoolParamType",
+      "name": "boolean"
+    }
+  },
+  {
+    "count": false,
+    "default": false,
+    "envvar": null,
+    "is_flag": true,
+    "kind": "TyperOption",
+    "multiple": false,
+    "name": "dry_run",
+    "nargs": 1,
+    "options": [
+      "--dry-run"
+    ],
+    "required": false,
+    "secondary_options": [],
+    "type": {
+      "class": "typer._click.types.BoolParamType",
+      "name": "boolean"
+    }
+  },
+  {
+    "count": false,
+    "envvar": "GOGURT_MOUNTED_VOLUME_PROVIDER",
+    "is_flag": false,
+    "kind": "TyperOption",
+    "multiple": false,
+    "name": "mounted_volume_provider",
+    "nargs": 1,
+    "options": [
+      "--mounted-volume-provider"
+    ],
+    "required": false,
+    "secondary_options": [],
+    "type": {
+      "class": "typer._click.types.StringParamType",
+      "name": "text"
+    }
+  }
+]
+```

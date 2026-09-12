@@ -34,7 +34,18 @@
 |---|---|---|---|
 | value | configured-value | `operational_policy` | maximum=None, reason=operator-configured-capacity |
 
-## Contract
+## Contract summary
+
+| Field | Shape |
+|---|---|
+| `consumers` | array (1 items) |
+| `name` | "RIVERHOG_UPLOAD_TIMEOUT_SECONDS" |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 9f61ccdb9b3b414711281f34e686a61dcda01ae6af40bcf20387e1e616454592 -->
 
 ```json
 {

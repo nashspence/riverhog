@@ -28,6 +28,10 @@
 - Proof: `make operation-qualification`
 - Proof: `make compose-smoke`
 
+## Referenced contract dossiers
+
+- [schemas: CollectionId](schemas-collectionid.md)
+
 ## Extent decisions
 
 | Dimension | Unit | Policy | Bounds/reason |
@@ -36,7 +40,7 @@
 | length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
 | length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
 
-## Contract
+## Contract summary
 
 - `title`: OutputCollectionRef
 - `type`: object
@@ -49,3 +53,43 @@
 | `collection_id` | yes | #/components/schemas/CollectionId |  |
 | `content_identity` | yes | string |  |
 | `derivation_sha256` | yes | string |  |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 19ca688621632e9d81cbcdf19a39aa9501954cc449ab51d8b2d63d639f943583 -->
+
+```json
+{
+  "additionalProperties": false,
+  "properties": {
+    "archive_root_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Archive Root Sha256",
+      "type": "string"
+    },
+    "collection_id": {
+      "$ref": "#/components/schemas/CollectionId"
+    },
+    "content_identity": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Content Identity",
+      "type": "string"
+    },
+    "derivation_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Derivation Sha256",
+      "type": "string"
+    }
+  },
+  "required": [
+    "collection_id",
+    "archive_root_sha256",
+    "content_identity",
+    "derivation_sha256"
+  ],
+  "title": "OutputCollectionRef",
+  "type": "object"
+}
+```

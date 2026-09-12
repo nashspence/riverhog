@@ -29,6 +29,10 @@
 - Proof: `make operation-qualification`
 - Proof: `make compose-smoke`
 
+## Referenced contract dossiers
+
+- [schemas: PreviewTargetExpectationView](schemas-previewtargetexpectationview.md)
+
 ## Extent decisions
 
 | Dimension | Unit | Policy | Bounds/reason |
@@ -37,7 +41,7 @@
 | length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
 | cardinality | items | `operational_policy` | maximum=None, reason=no-declared-semantic-maximum |
 
-## Contract
+## Contract summary
 
 - `title`: PreviewAcceptanceView
 - `type`: object
@@ -49,3 +53,41 @@
 | `branch_set_sha256` | yes | string |  |
 | `preview_sha256` | yes | string |  |
 | `target_plans` | yes | array |  |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: e903a5a8059f4c069db940e9fbb02a433f66d3d048c897077e9e35dcac7e90d7 -->
+
+```json
+{
+  "additionalProperties": false,
+  "properties": {
+    "branch_set_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Branch Set Sha256",
+      "type": "string"
+    },
+    "preview_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Preview Sha256",
+      "type": "string"
+    },
+    "target_plans": {
+      "items": {
+        "$ref": "#/components/schemas/PreviewTargetExpectationView"
+      },
+      "title": "Target Plans",
+      "type": "array"
+    }
+  },
+  "required": [
+    "preview_sha256",
+    "branch_set_sha256",
+    "target_plans"
+  ],
+  "title": "PreviewAcceptanceView",
+  "type": "object"
+}
+```

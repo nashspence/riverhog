@@ -28,6 +28,26 @@
 - Proof: `make dist-smoke`
 - Proof: `make operation-qualification`
 
-## Contract
+## Contract summary
 
 - Parser name: `mango-fish state`
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+### `/external_contract/cli/mango-fish/commands/state/name`
+
+<!-- exact-contract-value: 2da81d12dee936888358b1379880f349035cf6f33994352b7dc4e1c09e5dba7f -->
+
+```json
+"mango-fish state"
+```
+
+### `/external_contract/cli/mango-fish/commands/state/parameters`
+
+<!-- exact-contract-value: 4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945 -->
+
+```json
+[]
+```

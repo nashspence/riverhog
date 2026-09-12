@@ -28,6 +28,11 @@
 - Proof: `make operation-qualification`
 - Proof: `make compose-smoke`
 
+## Referenced contract dossiers
+
+- [schemas: CollectionId](schemas-collectionid.md)
+- [schemas: CollectionTag](schemas-collectiontag.md)
+
 ## Extent decisions
 
 | Dimension | Unit | Policy | Bounds/reason |
@@ -35,7 +40,7 @@
 | value | schema-value | `contract_max` | maximum=9007199254740991, minimum=1, reason=schema-maximum |
 | length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
 
-## Contract
+## Contract summary
 
 - `title`: CollectionTagMembershipOut
 - `type`: object
@@ -49,3 +54,47 @@
 | `revision` | yes | integer |  |
 | `tag` | yes | #/components/schemas/CollectionTag |  |
 | `tag_set_identity` | yes | string |  |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 5738ba195894d75eda6ed2223cfb464e17eaa62270678415546f6c0f887dd89f -->
+
+```json
+{
+  "additionalProperties": false,
+  "properties": {
+    "collection_id": {
+      "$ref": "#/components/schemas/CollectionId"
+    },
+    "present": {
+      "title": "Present",
+      "type": "boolean"
+    },
+    "revision": {
+      "maximum": 9007199254740991,
+      "minimum": 1,
+      "title": "Revision",
+      "type": "integer"
+    },
+    "tag": {
+      "$ref": "#/components/schemas/CollectionTag"
+    },
+    "tag_set_identity": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Tag Set Identity",
+      "type": "string"
+    }
+  },
+  "required": [
+    "collection_id",
+    "revision",
+    "tag_set_identity",
+    "tag",
+    "present"
+  ],
+  "title": "CollectionTagMembershipOut",
+  "type": "object"
+}
+```

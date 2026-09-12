@@ -28,13 +28,20 @@
 - Proof: `make operation-qualification`
 - Proof: `make compose-smoke`
 
+## Referenced contract dossiers
+
+- [schemas: ArchiveStoreName](schemas-archivestorename.md)
+- [schemas: CollectionId](schemas-collectionid.md)
+- [schemas: RetrievalCacheState](schemas-retrievalcachestate.md)
+- [schemas: RetrievalCacheStoreName](schemas-retrievalcachestorename.md)
+
 ## Extent decisions
 
 | Dimension | Unit | Policy | Bounds/reason |
 |---|---|---|---|
 | cardinality | items | `operational_policy` | maximum=None, reason=no-declared-semantic-maximum |
 
-## Contract
+## Contract summary
 
 - `title`: RetrievalCacheObjectOut
 - `type`: object
@@ -56,3 +63,110 @@
 | `stored_bytes` | yes | integer |  |
 | `stored_sha256` | yes | object (2 fields) |  |
 | `verified_at` | yes | string |  |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 9cffc6baaebb7190c36f83db762b17e8a4892c78028fb285265bfe08e054a3e4 -->
+
+```json
+{
+  "additionalProperties": false,
+  "properties": {
+    "cache_store": {
+      "$ref": "#/components/schemas/RetrievalCacheStoreName"
+    },
+    "cached_at": {
+      "title": "Cached At",
+      "type": "string"
+    },
+    "collection_id": {
+      "$ref": "#/components/schemas/CollectionId"
+    },
+    "lease_categories": {
+      "items": {
+        "enum": [
+          "new_archive",
+          "retrieval_job"
+        ],
+        "type": "string"
+      },
+      "title": "Lease Categories",
+      "type": "array"
+    },
+    "new_archive_expires_at": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "New Archive Expires At"
+    },
+    "object_id": {
+      "title": "Object Id",
+      "type": "string"
+    },
+    "protected_until": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Protected Until"
+    },
+    "retrieval_job_leases": {
+      "title": "Retrieval Job Leases",
+      "type": "integer"
+    },
+    "source_store": {
+      "$ref": "#/components/schemas/ArchiveStoreName"
+    },
+    "state": {
+      "$ref": "#/components/schemas/RetrievalCacheState"
+    },
+    "stored_bytes": {
+      "title": "Stored Bytes",
+      "type": "integer"
+    },
+    "stored_sha256": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Stored Sha256"
+    },
+    "verified_at": {
+      "title": "Verified At",
+      "type": "string"
+    }
+  },
+  "required": [
+    "collection_id",
+    "source_store",
+    "cache_store",
+    "object_id",
+    "state",
+    "stored_bytes",
+    "stored_sha256",
+    "cached_at",
+    "verified_at",
+    "protected_until",
+    "new_archive_expires_at",
+    "lease_categories",
+    "retrieval_job_leases"
+  ],
+  "title": "RetrievalCacheObjectOut",
+  "type": "object"
+}
+```

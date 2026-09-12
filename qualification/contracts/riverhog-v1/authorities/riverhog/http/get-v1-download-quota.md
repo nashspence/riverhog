@@ -31,7 +31,12 @@
 
 - [Operation parity: get_download_quota](../operation/operation-parity-get-download-quota.md)
 
-## Contract
+## Referenced contract dossiers
+
+- [schemas: ErrorResponse](schemas-errorresponse.md)
+- [schemas: KeyDownloadQuotaOut](schemas-keydownloadquotaout.md)
+
+## Contract summary
 
 - `operationId`: get_download_quota
 - `summary`: Get Download Quota
@@ -48,3 +53,121 @@
 | `404` | Not Found |
 | `429` | Too Many Requests |
 | `500` | Internal Server Error |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 8c5311ef3e34ab2135e9dcade123a6aa12b8b52eb738e4ab951291400fcdd9ab -->
+
+```json
+{
+  "operationId": "get_download_quota",
+  "responses": {
+    "200": {
+      "content": {
+        "application/json": {
+          "schema": {
+            "$ref": "#/components/schemas/KeyDownloadQuotaOut"
+          }
+        }
+      },
+      "description": "Successful Response"
+    },
+    "400": {
+      "content": {
+        "application/json": {
+          "schema": {
+            "$ref": "#/components/schemas/ErrorResponse"
+          }
+        }
+      },
+      "description": "Bad Request",
+      "x-riverhog-error-codes": [
+        "bad_request"
+      ]
+    },
+    "401": {
+      "content": {
+        "application/json": {
+          "schema": {
+            "$ref": "#/components/schemas/ErrorResponse"
+          }
+        }
+      },
+      "description": "Unauthorized",
+      "x-riverhog-error-codes": [
+        "unauthorized"
+      ]
+    },
+    "403": {
+      "content": {
+        "application/json": {
+          "schema": {
+            "$ref": "#/components/schemas/ErrorResponse"
+          }
+        }
+      },
+      "description": "Forbidden",
+      "x-riverhog-error-codes": [
+        "forbidden"
+      ]
+    },
+    "404": {
+      "content": {
+        "application/json": {
+          "schema": {
+            "$ref": "#/components/schemas/ErrorResponse"
+          }
+        }
+      },
+      "description": "Not Found",
+      "x-riverhog-error-codes": [
+        "not_found"
+      ]
+    },
+    "429": {
+      "content": {
+        "application/json": {
+          "schema": {
+            "$ref": "#/components/schemas/ErrorResponse"
+          }
+        }
+      },
+      "description": "Too Many Requests",
+      "x-riverhog-error-codes": [
+        "download_allowance_exceeded"
+      ]
+    },
+    "500": {
+      "content": {
+        "application/json": {
+          "schema": {
+            "$ref": "#/components/schemas/ErrorResponse"
+          }
+        }
+      },
+      "description": "Internal Server Error",
+      "x-riverhog-error-codes": [
+        "internal_error"
+      ]
+    }
+  },
+  "security": [
+    {
+      "HTTPBearer": []
+    }
+  ],
+  "summary": "Get Download Quota",
+  "tags": [
+    "download quotas"
+  ],
+  "x-riverhog-permission-requirements": [
+    {
+      "any_of": [
+        "retrieval:manage"
+      ]
+    }
+  ]
+}
+```

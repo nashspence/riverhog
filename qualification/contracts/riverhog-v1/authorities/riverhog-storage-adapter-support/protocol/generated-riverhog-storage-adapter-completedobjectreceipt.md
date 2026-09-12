@@ -40,7 +40,7 @@
 | encoded-size | bytes | `contract_max` | maximum=16384, reason=bounded-object-identity-assertion-envelope |
 | cardinality | entries | `contract_max` | maximum=64, reason=bounded-object-identity-assertion-envelope |
 
-## Contract
+## Contract summary
 
 - `title`: CompletedObjectReceipt
 - `type`: object
@@ -57,3 +57,100 @@
 | `verified_content_type` | yes | string |  |
 | `verified_identity_assertions` | yes | object | Inert caller-owned facts used only to identify and reconcile an exact stored object. Adapters canonicalize, persist, return, and compare these assertions; they must not interpret them as routing, retrieval, retention, credentials, placement, or provider-control instructions. Adapters may retain additional adapter-private assertions. |
 | `verified_placement` | yes | string |  |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 209031565e0ef889aecef270878eea3fc57d0b15a42c37d7610d1dbf208def6a -->
+
+```json
+{
+  "additionalProperties": false,
+  "properties": {
+    "completed_at": {
+      "maxLength": 100,
+      "minLength": 1,
+      "title": "Completed At",
+      "type": "string"
+    },
+    "entity_token": {
+      "anyOf": [
+        {
+          "maxLength": 4000,
+          "minLength": 1,
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Entity Token"
+    },
+    "object_path": {
+      "maxLength": 4096,
+      "minLength": 1,
+      "title": "Object Path",
+      "type": "string"
+    },
+    "revision": {
+      "anyOf": [
+        {
+          "maxLength": 2000,
+          "minLength": 1,
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Revision"
+    },
+    "stored_bytes": {
+      "minimum": 1,
+      "title": "Stored Bytes",
+      "type": "integer"
+    },
+    "verified_content_type": {
+      "maxLength": 255,
+      "minLength": 1,
+      "title": "Verified Content Type",
+      "type": "string"
+    },
+    "verified_identity_assertions": {
+      "additionalProperties": {
+        "type": "string"
+      },
+      "description": "Inert caller-owned facts used only to identify and reconcile an exact stored object. Adapters canonicalize, persist, return, and compare these assertions; they must not interpret them as routing, retrieval, retention, credentials, placement, or provider-control instructions. Adapters may retain additional adapter-private assertions.",
+      "maxProperties": 64,
+      "title": "Verified Identity Assertions",
+      "type": "object",
+      "x-riverhog-encoded-bytes-max": 16384,
+      "x-riverhog-extent": {
+        "policy": "contract_max",
+        "reason": "bounded-object-identity-assertion-envelope"
+      }
+    },
+    "verified_placement": {
+      "enum": [
+        "archive",
+        "immediate"
+      ],
+      "title": "Verified Placement",
+      "type": "string"
+    }
+  },
+  "required": [
+    "object_path",
+    "stored_bytes",
+    "verified_content_type",
+    "verified_identity_assertions",
+    "verified_placement",
+    "completed_at"
+  ],
+  "title": "CompletedObjectReceipt",
+  "type": "object"
+}
+```

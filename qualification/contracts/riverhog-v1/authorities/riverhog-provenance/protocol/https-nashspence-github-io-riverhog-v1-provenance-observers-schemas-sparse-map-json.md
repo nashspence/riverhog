@@ -36,7 +36,7 @@
 | value | schema-value | `operational_policy` | maximum=None, reason=no-declared-semantic-maximum |
 | cardinality | items | `operational_policy` | maximum=None, reason=no-declared-semantic-maximum |
 
-## Contract
+## Contract summary
 
 - `$id`: https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/sparse-map.json
 - `type`: object
@@ -47,3 +47,55 @@
 |---|---:|---|---|
 | `complete` | yes | boolean |  |
 | `extents` | yes | array |  |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: ac19cca6ba66bef85e5e0f2a52be5ef2fc630a83d507ef595009be8e534ad3eb -->
+
+```json
+{
+  "$id": "https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/sparse-map.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "complete": {
+      "type": "boolean"
+    },
+    "extents": {
+      "items": {
+        "additionalProperties": false,
+        "properties": {
+          "kind": {
+            "enum": [
+              "data",
+              "hole"
+            ]
+          },
+          "length": {
+            "minimum": 0,
+            "type": "integer"
+          },
+          "offset": {
+            "minimum": 0,
+            "type": "integer"
+          }
+        },
+        "required": [
+          "kind",
+          "offset",
+          "length"
+        ],
+        "type": "object"
+      },
+      "type": "array"
+    }
+  },
+  "required": [
+    "complete",
+    "extents"
+  ],
+  "type": "object"
+}
+```

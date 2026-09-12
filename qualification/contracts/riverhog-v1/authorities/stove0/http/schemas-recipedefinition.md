@@ -28,6 +28,14 @@
 - Proof: `make operation-qualification`
 - Proof: `make compose-smoke`
 
+## Referenced contract dossiers
+
+- [schemas: ArtifactAssociation](schemas-artifactassociation.md)
+- [schemas: ObserverUse](schemas-observeruse.md)
+- [schemas: RecipeCoordinationRoute](schemas-recipecoordinationroute.md)
+- [schemas: RecipeJoin](schemas-recipejoin.md)
+- [schemas: RecipeRoute](schemas-reciperoute.md)
+
 ## Extent decisions
 
 | Dimension | Unit | Policy | Bounds/reason |
@@ -36,7 +44,7 @@
 | cardinality | items | `operational_policy` | maximum=None, reason=no-declared-semantic-maximum |
 | cardinality | items | `operational_policy` | maximum=None, reason=no-declared-semantic-maximum |
 
-## Contract
+## Contract summary
 
 - `title`: RecipeDefinition
 - `type`: object
@@ -56,3 +64,117 @@
 | `routes` | yes | array |  |
 | `source_retirement_policy` | no | string |  |
 | `unmatched_artifact_disposition` | yes | string |  |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 52f1f9e36a3f8419274fd929261ca66a4b3c186ef485463299ad5d704efe1005 -->
+
+```json
+{
+  "additionalProperties": false,
+  "properties": {
+    "allow_derived_inputs": {
+      "default": false,
+      "title": "Allow Derived Inputs",
+      "type": "boolean"
+    },
+    "artifact_associations": {
+      "default": [],
+      "items": {
+        "$ref": "#/components/schemas/ArtifactAssociation"
+      },
+      "title": "Artifact Associations",
+      "type": "array"
+    },
+    "event_input_closure": {
+      "const": "single-finalized-collection",
+      "default": "single-finalized-collection",
+      "title": "Event Input Closure",
+      "type": "string"
+    },
+    "id": {
+      "pattern": "^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$",
+      "title": "Id",
+      "type": "string"
+    },
+    "join": {
+      "anyOf": [
+        {
+          "$ref": "#/components/schemas/RecipeJoin"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "observers": {
+      "default": [],
+      "items": {
+        "$ref": "#/components/schemas/ObserverUse"
+      },
+      "title": "Observers",
+      "type": "array"
+    },
+    "retirement_grace_seconds": {
+      "default": 0,
+      "minimum": 0,
+      "title": "Retirement Grace Seconds",
+      "type": "integer"
+    },
+    "revision": {
+      "minimum": 1,
+      "title": "Revision",
+      "type": "integer"
+    },
+    "routes": {
+      "items": {
+        "discriminator": {
+          "mapping": {
+            "coordination": "#/components/schemas/RecipeCoordinationRoute",
+            "operation": "#/components/schemas/RecipeRoute"
+          },
+          "propertyName": "kind"
+        },
+        "oneOf": [
+          {
+            "$ref": "#/components/schemas/RecipeRoute"
+          },
+          {
+            "$ref": "#/components/schemas/RecipeCoordinationRoute"
+          }
+        ]
+      },
+      "minItems": 1,
+      "title": "Routes",
+      "type": "array"
+    },
+    "source_retirement_policy": {
+      "default": "retain",
+      "enum": [
+        "retain",
+        "retire-after-verified-output"
+      ],
+      "title": "Source Retirement Policy",
+      "type": "string"
+    },
+    "unmatched_artifact_disposition": {
+      "enum": [
+        "retain-in-source",
+        "reject-work"
+      ],
+      "title": "Unmatched Artifact Disposition",
+      "type": "string"
+    }
+  },
+  "required": [
+    "id",
+    "revision",
+    "routes",
+    "unmatched_artifact_disposition"
+  ],
+  "title": "RecipeDefinition",
+  "type": "object"
+}
+```

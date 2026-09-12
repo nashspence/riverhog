@@ -34,7 +34,7 @@
 |---|---|---|---|
 | value | schema-value | `contract_max` | maximum=100, minimum=1, reason=schema-maximum |
 
-## Contract
+## Contract summary
 
 - `title`: SchedulerRunIn
 - `type`: object
@@ -45,3 +45,36 @@
 |---|---:|---|---|
 | `role` | no | string |  |
 | `work_limit` | no | integer |  |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: bb6999171d296c228fdb5ff3ba85eb17a54fcbccdc9cfd7f0af37f0db3209dd5 -->
+
+```json
+{
+  "additionalProperties": false,
+  "properties": {
+    "role": {
+      "default": "combined",
+      "enum": [
+        "controller",
+        "worker",
+        "combined"
+      ],
+      "title": "Role",
+      "type": "string"
+    },
+    "work_limit": {
+      "default": 25,
+      "maximum": 100,
+      "minimum": 1,
+      "title": "Work Limit",
+      "type": "integer"
+    }
+  },
+  "title": "SchedulerRunIn",
+  "type": "object"
+}
+```

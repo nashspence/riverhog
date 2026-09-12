@@ -36,7 +36,7 @@
 | value | schema-value | `operational_policy` | maximum=None, reason=no-declared-semantic-maximum |
 | length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
 
-## Contract
+## Contract summary
 
 - `title`: ExactSetAuthorityDocument
 - `description`: Small immutable identity for an exact canonically ordered logical set.
@@ -48,3 +48,34 @@
 |---|---:|---|---|
 | `count` | yes | integer |  |
 | `sha256` | yes | string |  |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 0e76c36b1c505c66210c9cf901dd3efa34b370a4bd6f585964942ba8d834c3db -->
+
+```json
+{
+  "additionalProperties": false,
+  "description": "Small immutable identity for an exact canonically ordered logical set.",
+  "properties": {
+    "count": {
+      "minimum": 1,
+      "title": "Count",
+      "type": "integer"
+    },
+    "sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Sha256",
+      "type": "string"
+    }
+  },
+  "required": [
+    "count",
+    "sha256"
+  ],
+  "title": "ExactSetAuthorityDocument",
+  "type": "object"
+}
+```

@@ -27,7 +27,19 @@
 - Proof: `make contract-freeze`
 - Proof: `make operation-qualification`
 
-## Contract
+## Contract summary
+
+| Field | Shape |
+|---|---|
+| `authority` | "the independently versioned extension contract" |
+| `core_semantic_maximum` | null |
+| `policy` | "extension_owned" |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: efca5346e716188b9a70547266ccd8626625735fffbb778123b478aa23865ec2 -->
 
 ```json
 {

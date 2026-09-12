@@ -35,7 +35,7 @@
 | length | characters | `contract_max` | maximum=160, minimum=1, reason=schema-maximum |
 | length | characters | `contract_max` | maximum=300, minimum=1, reason=schema-maximum |
 
-## Contract
+## Contract summary
 
 - `title`: RiverhogActor
 - `type`: object
@@ -46,3 +46,41 @@
 |---|---:|---|---|
 | `app` | yes | string |  |
 | `key_id` | no | object (2 fields) |  |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: ae88be9c9fa5a2e60977b689011476674a5c673474d5e841bf78ebb369101905 -->
+
+```json
+{
+  "additionalProperties": false,
+  "properties": {
+    "app": {
+      "maxLength": 160,
+      "minLength": 1,
+      "title": "App",
+      "type": "string"
+    },
+    "key_id": {
+      "anyOf": [
+        {
+          "maxLength": 300,
+          "minLength": 1,
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Key Id"
+    }
+  },
+  "required": [
+    "app"
+  ],
+  "title": "RiverhogActor",
+  "type": "object"
+}
+```

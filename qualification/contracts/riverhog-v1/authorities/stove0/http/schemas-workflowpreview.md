@@ -29,6 +29,15 @@
 - Proof: `make operation-qualification`
 - Proof: `make compose-smoke`
 
+## Referenced contract dossiers
+
+- [schemas: ArtifactSelection](schemas-artifactselection.md)
+- [schemas: BranchSetPlan](schemas-branchsetplan.md)
+- [schemas: BranchTargetPreview](schemas-branchtargetpreview.md)
+- [schemas: ObservationEvidence](schemas-observationevidence.md)
+- [schemas: PreviewOutcome](schemas-previewoutcome.md)
+- [schemas: WorkIdentity](schemas-workidentity.md)
+
 ## Extent decisions
 
 | Dimension | Unit | Policy | Bounds/reason |
@@ -41,7 +50,7 @@
 | cardinality | items | `operational_policy` | maximum=None, reason=no-declared-semantic-maximum |
 | cardinality | items | `operational_policy` | maximum=None, reason=no-declared-semantic-maximum |
 
-## Contract
+## Contract summary
 
 - `title`: WorkflowPreview
 - `type`: object
@@ -62,3 +71,114 @@
 | `target_plans` | no | array |  |
 | `warnings` | no | array |  |
 | `work` | yes | #/components/schemas/WorkIdentity |  |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 0891d6903a60a9ac3c1ff0faaef93b801d2931190371903616f95a2f55110d2b -->
+
+```json
+{
+  "additionalProperties": false,
+  "properties": {
+    "branch_set_plan": {
+      "anyOf": [
+        {
+          "$ref": "#/components/schemas/BranchSetPlan"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "branch_sets": {
+      "default": [],
+      "items": {
+        "$ref": "#/components/schemas/BranchSetPlan"
+      },
+      "title": "Branch Sets",
+      "type": "array"
+    },
+    "format": {
+      "const": "stove0-workflow-preview/v1",
+      "default": "stove0-workflow-preview/v1",
+      "title": "Format",
+      "type": "string"
+    },
+    "observations": {
+      "default": [],
+      "items": {
+        "$ref": "#/components/schemas/ObservationEvidence"
+      },
+      "title": "Observations",
+      "type": "array"
+    },
+    "outcome": {
+      "anyOf": [
+        {
+          "$ref": "#/components/schemas/PreviewOutcome"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "preview_id": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Preview Id",
+      "type": "string"
+    },
+    "preview_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Preview Sha256",
+      "type": "string"
+    },
+    "selections": {
+      "default": [],
+      "items": {
+        "$ref": "#/components/schemas/ArtifactSelection"
+      },
+      "title": "Selections",
+      "type": "array"
+    },
+    "state": {
+      "enum": [
+        "ready",
+        "inapplicable",
+        "failed",
+        "canceled"
+      ],
+      "title": "State",
+      "type": "string"
+    },
+    "target_plans": {
+      "default": [],
+      "items": {
+        "$ref": "#/components/schemas/BranchTargetPreview"
+      },
+      "title": "Target Plans",
+      "type": "array"
+    },
+    "warnings": {
+      "default": [],
+      "items": {
+        "type": "string"
+      },
+      "title": "Warnings",
+      "type": "array"
+    },
+    "work": {
+      "$ref": "#/components/schemas/WorkIdentity"
+    }
+  },
+  "required": [
+    "preview_id",
+    "state",
+    "work",
+    "preview_sha256"
+  ],
+  "title": "WorkflowPreview",
+  "type": "object"
+}
+```

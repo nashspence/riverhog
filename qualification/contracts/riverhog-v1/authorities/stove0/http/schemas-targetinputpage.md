@@ -29,6 +29,11 @@
 - Proof: `make operation-qualification`
 - Proof: `make compose-smoke`
 
+## Referenced contract dossiers
+
+- [schemas: InputArtifact](schemas-inputartifact.md)
+- [schemas: TargetInputAuthority](schemas-targetinputauthority.md)
+
 ## Extent decisions
 
 | Dimension | Unit | Policy | Bounds/reason |
@@ -37,7 +42,7 @@
 | length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
 | length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
 
-## Contract
+## Contract summary
 
 - `title`: TargetInputPage
 - `description`: One bounded continuation step through the exact target input authority.
@@ -52,3 +57,69 @@
 | `complete` | yes | boolean |  |
 | `continuation` | no | object (2 fields) |  |
 | `next_continuation` | no | object (2 fields) |  |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: b1c887c93d95d18edb5a101a431fd89de17e4147cb72970ca4884f8998ffc070 -->
+
+```json
+{
+  "additionalProperties": false,
+  "description": "One bounded continuation step through the exact target input authority.",
+  "properties": {
+    "artifacts": {
+      "items": {
+        "$ref": "#/components/schemas/InputArtifact"
+      },
+      "maxItems": 256,
+      "title": "Artifacts",
+      "type": "array",
+      "x-riverhog-extent": {
+        "policy": "segmented_no_total_max",
+        "progression": "authority-bound-start_ordinal",
+        "reason": "bounded-target-input-page"
+      }
+    },
+    "authority": {
+      "$ref": "#/components/schemas/TargetInputAuthority"
+    },
+    "complete": {
+      "title": "Complete",
+      "type": "boolean"
+    },
+    "continuation": {
+      "anyOf": [
+        {
+          "pattern": "^[0-9a-f]{64}$",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Continuation"
+    },
+    "next_continuation": {
+      "anyOf": [
+        {
+          "pattern": "^[0-9a-f]{64}$",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Next Continuation"
+    }
+  },
+  "required": [
+    "authority",
+    "complete",
+    "artifacts"
+  ],
+  "title": "TargetInputPage",
+  "type": "object"
+}
+```

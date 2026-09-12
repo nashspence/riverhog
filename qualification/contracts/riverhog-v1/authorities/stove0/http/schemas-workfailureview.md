@@ -35,7 +35,7 @@
 | length | characters | `contract_max` | maximum=160, minimum=1, reason=schema-maximum |
 | length | characters | `contract_max` | maximum=1000, minimum=1, reason=schema-maximum |
 
-## Contract
+## Contract summary
 
 - `title`: WorkFailureView
 - `type`: object
@@ -47,3 +47,40 @@
 | `code` | yes | string |  |
 | `message` | yes | string |  |
 | `retryable` | yes | boolean |  |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 3a61374424ae470a2c694ac13502faf98f91af05992638c02e1d5b5380dac0c4 -->
+
+```json
+{
+  "additionalProperties": false,
+  "properties": {
+    "code": {
+      "maxLength": 160,
+      "minLength": 1,
+      "title": "Code",
+      "type": "string"
+    },
+    "message": {
+      "maxLength": 1000,
+      "minLength": 1,
+      "title": "Message",
+      "type": "string"
+    },
+    "retryable": {
+      "title": "Retryable",
+      "type": "boolean"
+    }
+  },
+  "required": [
+    "code",
+    "message",
+    "retryable"
+  ],
+  "title": "WorkFailureView",
+  "type": "object"
+}
+```

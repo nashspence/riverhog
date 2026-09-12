@@ -31,7 +31,13 @@
 
 - [Operation parity: create_or_resume_collection_upload_session](../operation/operation-parity-create-or-resume-collection-upload-session.md)
 
-## Contract
+## Referenced contract dossiers
+
+- [schemas: CreateOrResumeCollectionUploadSessionOut](schemas-createorresumecollectionuploadsessionout.md)
+- [schemas: CreateOrResumeCollectionUploadSessionRequest](schemas-createorresumecollectionuploadsessionrequest.md)
+- [schemas: ErrorResponse](schemas-errorresponse.md)
+
+## Contract summary
 
 - `operationId`: create_or_resume_collection_upload_session
 - `summary`: Create Or Resume Collection Upload Session
@@ -51,3 +57,119 @@
 | `403` | Forbidden |
 | `409` | Conflict |
 | `500` | Internal Server Error |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 5a79f7f613f17b679d5f0a6e2a80b8a76ac5d4e18d28961712e5bafd1a5c115f -->
+
+```json
+{
+  "operationId": "create_or_resume_collection_upload_session",
+  "requestBody": {
+    "content": {
+      "application/json": {
+        "schema": {
+          "$ref": "#/components/schemas/CreateOrResumeCollectionUploadSessionRequest"
+        }
+      }
+    },
+    "required": true
+  },
+  "responses": {
+    "200": {
+      "content": {
+        "application/json": {
+          "schema": {
+            "$ref": "#/components/schemas/CreateOrResumeCollectionUploadSessionOut"
+          }
+        }
+      },
+      "description": "Successful Response"
+    },
+    "400": {
+      "content": {
+        "application/json": {
+          "schema": {
+            "$ref": "#/components/schemas/ErrorResponse"
+          }
+        }
+      },
+      "description": "Bad Request",
+      "x-riverhog-error-codes": [
+        "bad_request"
+      ]
+    },
+    "401": {
+      "content": {
+        "application/json": {
+          "schema": {
+            "$ref": "#/components/schemas/ErrorResponse"
+          }
+        }
+      },
+      "description": "Unauthorized",
+      "x-riverhog-error-codes": [
+        "unauthorized"
+      ]
+    },
+    "403": {
+      "content": {
+        "application/json": {
+          "schema": {
+            "$ref": "#/components/schemas/ErrorResponse"
+          }
+        }
+      },
+      "description": "Forbidden",
+      "x-riverhog-error-codes": [
+        "forbidden"
+      ]
+    },
+    "409": {
+      "content": {
+        "application/json": {
+          "schema": {
+            "$ref": "#/components/schemas/ErrorResponse"
+          }
+        }
+      },
+      "description": "Conflict",
+      "x-riverhog-error-codes": [
+        "conflict"
+      ]
+    },
+    "500": {
+      "content": {
+        "application/json": {
+          "schema": {
+            "$ref": "#/components/schemas/ErrorResponse"
+          }
+        }
+      },
+      "description": "Internal Server Error",
+      "x-riverhog-error-codes": [
+        "internal_error"
+      ]
+    }
+  },
+  "security": [
+    {
+      "HTTPBearer": []
+    }
+  ],
+  "summary": "Create Or Resume Collection Upload Session",
+  "tags": [
+    "collections"
+  ],
+  "x-riverhog-interface": "client-only-primitive",
+  "x-riverhog-permission-requirements": [
+    {
+      "any_of": [
+        "collections:create"
+      ]
+    }
+  ]
+}
+```

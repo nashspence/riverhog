@@ -4,6 +4,10 @@
 
 Contract elements: **1** · Extent decisions: **0**
 
+| Family | Count |
+|---|---:|
+| `components` | 1 |
+
 | Policy | Count |
 |---|---:|
 | `boundary/frozen-authority/v1` | 1 |

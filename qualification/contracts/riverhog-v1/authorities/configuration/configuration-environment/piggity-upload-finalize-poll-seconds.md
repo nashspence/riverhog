@@ -34,7 +34,18 @@
 |---|---|---|---|
 | value | configured-value | `operational_policy` | maximum=None, reason=operator-configured-capacity |
 
-## Contract
+## Contract summary
+
+| Field | Shape |
+|---|---|
+| `consumers` | array (1 items) |
+| `name` | "PIGGITY_UPLOAD_FINALIZE_POLL_SECONDS" |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: e8fe9cc66b3ddf76f9a71f4d2f1af74152b2d746b6188cdd977d31202fd1f86b -->
 
 ```json
 {

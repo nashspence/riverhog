@@ -28,6 +28,26 @@
 - Proof: `make dist-smoke`
 - Proof: `make operation-qualification`
 
-## Contract
+## Contract summary
 
 - Parser name: `cache`
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+### `/external_contract/cli/piggity/commands/retrieval/commands/cache/name`
+
+<!-- exact-contract-value: c87a83e09642a735845aad980110537acda99378a410740ff0c4454499eea392 -->
+
+```json
+"cache"
+```
+
+### `/external_contract/cli/piggity/commands/retrieval/commands/cache/parameters`
+
+<!-- exact-contract-value: 4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945 -->
+
+```json
+[]
+```

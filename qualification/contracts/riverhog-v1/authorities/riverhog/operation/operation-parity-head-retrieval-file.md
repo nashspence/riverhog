@@ -28,7 +28,7 @@
 - `operations:operation-matrix` — `scripts/operation_qualification.py::operation_matrix`
 - Proof: `make operation-qualification`
 
-## Contract
+## Contract summary
 
 | Concern | Contract |
 |---|---|
@@ -42,3 +42,24 @@
 | `provider_evidence` | None |
 | `read_collection` | None |
 | `response_authority` | stream-or-empty |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: c7fee6f5cae24b3cea55a8bd94a26766eb4ec068b682579b1a8adeca299b4d29 -->
+
+```json
+{
+  "application": "riverhog",
+  "classification": "standard-tool/protocol",
+  "cli_commands": [],
+  "client": null,
+  "method": "HEAD",
+  "operation_id": "head_retrieval_file",
+  "path": "/v1/retrieval-jobs/{job_id}/content",
+  "provider_evidence": null,
+  "read_collection": null,
+  "response_authority": "stream-or-empty"
+}
+```

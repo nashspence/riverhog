@@ -45,7 +45,7 @@
 | cardinality | values-per-occurrence | `fixed` | maximum=1, minimum=1, reason=fixed-command-argument-arity |
 | cardinality | values-per-occurrence | `fixed` | maximum=1, minimum=1, reason=fixed-command-argument-arity |
 
-## Contract
+## Contract summary
 
 - Parser name: `add`
 
@@ -59,3 +59,130 @@
 | `tag_set_identity` | TyperOption | no | {'class': 'typer._click.types.StringParamType', 'name': 'text'} | --tag-set-identity |
 | `operation_id` | TyperOption | no | {'class': 'typer._click.types.StringParamType', 'name': 'text'} | --operation-id |
 | `json_mode` | TyperOption | no | {'class': 'typer._click.types.BoolParamType', 'name': 'boolean'} | --json |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+### `/external_contract/cli/piggity/commands/collection/commands/tag/commands/add/name`
+
+<!-- exact-contract-value: 7b8a6f33b43ca26a3f2aa73e408748f9ceb391ac21dfe746c94563016ab72f85 -->
+
+```json
+"add"
+```
+
+### `/external_contract/cli/piggity/commands/collection/commands/tag/commands/add/parameters`
+
+<!-- exact-contract-value: 1c409adfdd49b30b7c29eafa845578a90b1754270c23c112375011f77caeccb3 -->
+
+```json
+[
+  {
+    "envvar": null,
+    "kind": "TyperArgument",
+    "multiple": false,
+    "name": "collection_id",
+    "nargs": 1,
+    "options": [
+      "collection_id"
+    ],
+    "required": true,
+    "secondary_options": [],
+    "type": {
+      "class": "typer._click.types.IntParamType",
+      "name": "integer"
+    }
+  },
+  {
+    "envvar": null,
+    "kind": "TyperArgument",
+    "multiple": false,
+    "name": "tag",
+    "nargs": 1,
+    "options": [
+      "tag"
+    ],
+    "required": true,
+    "secondary_options": [],
+    "type": {
+      "class": "typer._click.types.StringParamType",
+      "name": "text"
+    }
+  },
+  {
+    "count": false,
+    "envvar": null,
+    "is_flag": false,
+    "kind": "TyperOption",
+    "multiple": false,
+    "name": "revision",
+    "nargs": 1,
+    "options": [
+      "--revision"
+    ],
+    "required": false,
+    "secondary_options": [],
+    "type": {
+      "class": "typer._click.types.IntRange",
+      "minimum": 1,
+      "name": "integer range"
+    }
+  },
+  {
+    "count": false,
+    "envvar": null,
+    "is_flag": false,
+    "kind": "TyperOption",
+    "multiple": false,
+    "name": "tag_set_identity",
+    "nargs": 1,
+    "options": [
+      "--tag-set-identity"
+    ],
+    "required": false,
+    "secondary_options": [],
+    "type": {
+      "class": "typer._click.types.StringParamType",
+      "name": "text"
+    }
+  },
+  {
+    "count": false,
+    "envvar": null,
+    "is_flag": false,
+    "kind": "TyperOption",
+    "multiple": false,
+    "name": "operation_id",
+    "nargs": 1,
+    "options": [
+      "--operation-id"
+    ],
+    "required": false,
+    "secondary_options": [],
+    "type": {
+      "class": "typer._click.types.StringParamType",
+      "name": "text"
+    }
+  },
+  {
+    "count": false,
+    "default": false,
+    "envvar": null,
+    "is_flag": true,
+    "kind": "TyperOption",
+    "multiple": false,
+    "name": "json_mode",
+    "nargs": 1,
+    "options": [
+      "--json"
+    ],
+    "required": false,
+    "secondary_options": [],
+    "type": {
+      "class": "typer._click.types.BoolParamType",
+      "name": "boolean"
+    }
+  }
+]
+```

@@ -41,7 +41,7 @@
 | value | schema-value | `operational_policy` | maximum=None, reason=no-declared-semantic-maximum |
 | value | schema-value | `operational_policy` | maximum=None, reason=no-declared-semantic-maximum |
 
-## Contract
+## Contract summary
 
 - `$id`: https://nashspence.github.io/riverhog/v1/schemas/riverhog-provenance-volume-v1.schema.json
 - `title`: Riverhog v1 bounded provenance volume
@@ -65,3 +65,147 @@
 |---|---|
 | `sequence` | string |
 | `sha256` | string |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 651e89ee007b6d340ef86662f3f052343a26f03cfac91327491edf6b2931c768 -->
+
+```json
+{
+  "$defs": {
+    "sequence": {
+      "pattern": "^[0-9a-f]{64}$",
+      "type": "string"
+    },
+    "sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "type": "string"
+    }
+  },
+  "$id": "https://nashspence.github.io/riverhog/v1/schemas/riverhog-provenance-volume-v1.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "oneOf": [
+    {
+      "not": {
+        "required": [
+          "journal_range"
+        ]
+      },
+      "required": [
+        "binding_range"
+      ]
+    },
+    {
+      "not": {
+        "required": [
+          "binding_range"
+        ]
+      },
+      "required": [
+        "journal_range"
+      ]
+    }
+  ],
+  "properties": {
+    "archive_generation": {
+      "$ref": "#/$defs/sha256"
+    },
+    "archive_tree_sha256": {
+      "$ref": "#/$defs/sha256"
+    },
+    "binding_range": {
+      "additionalProperties": false,
+      "properties": {
+        "file_count": {
+          "maximum": 512,
+          "minimum": 1,
+          "type": "integer"
+        },
+        "first_file_order": {
+          "minimum": 0,
+          "type": "integer"
+        }
+      },
+      "required": [
+        "first_file_order",
+        "file_count"
+      ],
+      "type": "object"
+    },
+    "journal_range": {
+      "additionalProperties": false,
+      "properties": {
+        "bytes": {
+          "minimum": 1,
+          "type": "integer"
+        },
+        "journal_id": {
+          "pattern": "^urn:uuid:[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$",
+          "type": "string"
+        },
+        "offset": {
+          "minimum": 0,
+          "type": "integer"
+        },
+        "sha256": {
+          "$ref": "#/$defs/sha256"
+        }
+      },
+      "required": [
+        "journal_id",
+        "offset",
+        "bytes",
+        "sha256"
+      ],
+      "type": "object"
+    },
+    "payload": {
+      "additionalProperties": false,
+      "properties": {
+        "bytes": {
+          "minimum": 1,
+          "type": "integer"
+        },
+        "kind": {
+          "enum": [
+            "bindings",
+            "journal"
+          ]
+        },
+        "path": {
+          "pattern": "^provenance/payloads/volume-[0-9a-f]{64}\\.bin\\.age$",
+          "type": "string"
+        },
+        "sha256": {
+          "$ref": "#/$defs/sha256"
+        }
+      },
+      "required": [
+        "kind",
+        "path",
+        "bytes",
+        "sha256"
+      ],
+      "type": "object"
+    },
+    "schema": {
+      "const": "riverhog-provenance-volume/v1"
+    },
+    "sequence": {
+      "$ref": "#/$defs/sequence"
+    }
+  },
+  "required": [
+    "schema",
+    "archive_generation",
+    "archive_tree_sha256",
+    "sequence",
+    "payload"
+  ],
+  "title": "Riverhog v1 bounded provenance volume",
+  "type": "object"
+}
+```

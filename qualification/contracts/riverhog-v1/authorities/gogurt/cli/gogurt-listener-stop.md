@@ -36,7 +36,7 @@
 | cardinality | values-per-occurrence | `fixed` | maximum=1, minimum=1, reason=fixed-command-argument-arity |
 | cardinality | values-per-occurrence | `fixed` | maximum=1, minimum=1, reason=fixed-command-argument-arity |
 
-## Contract
+## Contract summary
 
 - Parser name: `stop`
 
@@ -46,3 +46,61 @@
 |---|---|---:|---|---|
 | `listener_host_provider` | TyperOption | no | {'class': 'typer._click.types.StringParamType', 'name': 'text'} | --listener-host-provider |
 | `json_mode` | TyperOption | no | {'class': 'typer._click.types.BoolParamType', 'name': 'boolean'} | --json |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+### `/external_contract/cli/gogurt/commands/listener/commands/stop/name`
+
+<!-- exact-contract-value: 6f2be2fe58ca2ba48e809c9588269fb710ce2535ba22acafb1123cdbb7421a02 -->
+
+```json
+"stop"
+```
+
+### `/external_contract/cli/gogurt/commands/listener/commands/stop/parameters`
+
+<!-- exact-contract-value: fe7b56d2906ac79e76d31abc11e3bbc7c7ed0b66ee89c57133a60c8c1242d2fb -->
+
+```json
+[
+  {
+    "count": false,
+    "envvar": "GOGURT_LISTENER_HOST_PROVIDER",
+    "is_flag": false,
+    "kind": "TyperOption",
+    "multiple": false,
+    "name": "listener_host_provider",
+    "nargs": 1,
+    "options": [
+      "--listener-host-provider"
+    ],
+    "required": false,
+    "secondary_options": [],
+    "type": {
+      "class": "typer._click.types.StringParamType",
+      "name": "text"
+    }
+  },
+  {
+    "count": false,
+    "default": false,
+    "envvar": null,
+    "is_flag": true,
+    "kind": "TyperOption",
+    "multiple": false,
+    "name": "json_mode",
+    "nargs": 1,
+    "options": [
+      "--json"
+    ],
+    "required": false,
+    "secondary_options": [],
+    "type": {
+      "class": "typer._click.types.BoolParamType",
+      "name": "boolean"
+    }
+  }
+]
+```

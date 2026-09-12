@@ -35,7 +35,7 @@
 | length | characters | `contract_max` | maximum=120, minimum=1, reason=schema-maximum |
 | length | characters | `contract_max` | maximum=40, minimum=1, reason=schema-maximum |
 
-## Contract
+## Contract summary
 
 - `title`: TargetProgress
 - `type`: object
@@ -48,3 +48,59 @@
 | `phase` | yes | string |  |
 | `total` | no | object (2 fields) |  |
 | `unit` | no | object (2 fields) |  |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 39df6fbc583523c116848af049b9e80abb672fa8af47887fcd5f7a791684498a -->
+
+```json
+{
+  "additionalProperties": false,
+  "properties": {
+    "completed": {
+      "minimum": 0,
+      "title": "Completed",
+      "type": "integer"
+    },
+    "phase": {
+      "maxLength": 120,
+      "minLength": 1,
+      "title": "Phase",
+      "type": "string"
+    },
+    "total": {
+      "anyOf": [
+        {
+          "minimum": 0,
+          "type": "integer"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Total"
+    },
+    "unit": {
+      "anyOf": [
+        {
+          "maxLength": 40,
+          "minLength": 1,
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Unit"
+    }
+  },
+  "required": [
+    "phase",
+    "completed"
+  ],
+  "title": "TargetProgress",
+  "type": "object"
+}
+```

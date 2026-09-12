@@ -29,6 +29,10 @@
 - Proof: `make operation-qualification`
 - Proof: `make compose-smoke`
 
+## Referenced contract dossiers
+
+- [schemas: RecipeView](schemas-recipeview.md)
+
 ## Extent decisions
 
 | Dimension | Unit | Policy | Bounds/reason |
@@ -36,7 +40,7 @@
 | length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
 | cardinality | items | `operational_policy` | maximum=None, reason=no-declared-semantic-maximum |
 
-## Contract
+## Contract summary
 
 - `title`: RecipeCatalogView
 - `type`: object
@@ -47,3 +51,35 @@
 |---|---:|---|---|
 | `catalog_sha256` | yes | string |  |
 | `recipes` | yes | array |  |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: d6fcb9e5527342a1d384115f206f2bf6257a2e8a7ed0d10afae020d23a4fa667 -->
+
+```json
+{
+  "additionalProperties": false,
+  "properties": {
+    "catalog_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Catalog Sha256",
+      "type": "string"
+    },
+    "recipes": {
+      "items": {
+        "$ref": "#/components/schemas/RecipeView"
+      },
+      "title": "Recipes",
+      "type": "array"
+    }
+  },
+  "required": [
+    "catalog_sha256",
+    "recipes"
+  ],
+  "title": "RecipeCatalogView",
+  "type": "object"
+}
+```

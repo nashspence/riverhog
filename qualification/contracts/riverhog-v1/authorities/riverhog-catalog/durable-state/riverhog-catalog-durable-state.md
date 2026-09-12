@@ -27,6 +27,24 @@
 - Proof: `make release-check`
 - Proof: `make database-qualification`
 
-## Contract
+## Contract summary
 
 - `format`: state-schema/postgresql
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: c6f90a3b0c440c77926b608ea9007e4d5153484f7a506f5eaac7660fa8166e08 -->
+
+```json
+{
+  "distribution": "riverhog-server",
+  "fixture_sha256s": [
+    "8b337f69f6bdc2665afd1b24a645301878925997d1a4416b607c82204d68bc96"
+  ],
+  "format": "state-schema/postgresql",
+  "head": "v1_0001",
+  "id": "riverhog-catalog"
+}
+```

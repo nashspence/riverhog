@@ -31,7 +31,13 @@
 
 - [Operation parity: retire_archive_copy](../operation/operation-parity-retire-archive-copy.md)
 
-## Contract
+## Referenced contract dossiers
+
+- [schemas: ArchiveCopyRetirementResultOut](schemas-archivecopyretirementresultout.md)
+- [schemas: ErrorResponse](schemas-errorresponse.md)
+- [schemas: RetireArchiveCopyRequest](schemas-retirearchivecopyrequest.md)
+
+## Contract summary
 
 - `operationId`: retire_archive_copy
 - `summary`: Retire Archive Copy
@@ -53,3 +59,145 @@
 | `409` | Conflict |
 | `500` | Internal Server Error |
 | `503` | Service Unavailable |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 159685c11b3f5bdf37c5ebdd193be0bb4d5d736ccb37534c69abd59d282a0508 -->
+
+```json
+{
+  "operationId": "retire_archive_copy",
+  "requestBody": {
+    "content": {
+      "application/json": {
+        "schema": {
+          "$ref": "#/components/schemas/RetireArchiveCopyRequest"
+        }
+      }
+    },
+    "required": true
+  },
+  "responses": {
+    "200": {
+      "content": {
+        "application/json": {
+          "schema": {
+            "$ref": "#/components/schemas/ArchiveCopyRetirementResultOut"
+          }
+        }
+      },
+      "description": "Successful Response"
+    },
+    "400": {
+      "content": {
+        "application/json": {
+          "schema": {
+            "$ref": "#/components/schemas/ErrorResponse"
+          }
+        }
+      },
+      "description": "Bad Request",
+      "x-riverhog-error-codes": [
+        "bad_request"
+      ]
+    },
+    "401": {
+      "content": {
+        "application/json": {
+          "schema": {
+            "$ref": "#/components/schemas/ErrorResponse"
+          }
+        }
+      },
+      "description": "Unauthorized",
+      "x-riverhog-error-codes": [
+        "unauthorized"
+      ]
+    },
+    "403": {
+      "content": {
+        "application/json": {
+          "schema": {
+            "$ref": "#/components/schemas/ErrorResponse"
+          }
+        }
+      },
+      "description": "Forbidden",
+      "x-riverhog-error-codes": [
+        "forbidden"
+      ]
+    },
+    "404": {
+      "content": {
+        "application/json": {
+          "schema": {
+            "$ref": "#/components/schemas/ErrorResponse"
+          }
+        }
+      },
+      "description": "Not Found",
+      "x-riverhog-error-codes": [
+        "not_found"
+      ]
+    },
+    "409": {
+      "content": {
+        "application/json": {
+          "schema": {
+            "$ref": "#/components/schemas/ErrorResponse"
+          }
+        }
+      },
+      "description": "Conflict",
+      "x-riverhog-error-codes": [
+        "conflict",
+        "invalid_state"
+      ]
+    },
+    "500": {
+      "content": {
+        "application/json": {
+          "schema": {
+            "$ref": "#/components/schemas/ErrorResponse"
+          }
+        }
+      },
+      "description": "Internal Server Error",
+      "x-riverhog-error-codes": [
+        "internal_error"
+      ]
+    },
+    "503": {
+      "content": {
+        "application/json": {
+          "schema": {
+            "$ref": "#/components/schemas/ErrorResponse"
+          }
+        }
+      },
+      "description": "Service Unavailable",
+      "x-riverhog-error-codes": [
+        "service_unavailable"
+      ]
+    }
+  },
+  "security": [
+    {
+      "HTTPBearer": []
+    }
+  ],
+  "summary": "Retire Archive Copy",
+  "tags": [
+    "archive"
+  ],
+  "x-riverhog-permission-requirements": [
+    {
+      "any_of": [
+        "archives:manage"
+      ]
+    }
+  ]
+}
+```

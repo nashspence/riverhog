@@ -27,7 +27,22 @@
 - Proof: `make release-check`
 - Proof: `make build`
 
-## Contract
+## Contract summary
+
+| Field | Shape |
+|---|---|
+| `console_scripts` | object (2 fields) |
+| `dependencies` | array (3 items) |
+| `distribution` | "riverhog-storage-adapter-filesystem" |
+| `optional_dependencies` | object (0 fields) |
+| `path` | "reference/riverhog/storage/filesystem" |
+| `role` | "reference_component" |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 886f6b1081eb2cba5d63269ceb08b550402f0a081d46399435e74b1282275d40 -->
 
 ```json
 {

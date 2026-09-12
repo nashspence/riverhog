@@ -28,7 +28,7 @@
 - Proof: `make dist-smoke`
 - Proof: `make operation-qualification`
 
-## Contract
+## Contract summary
 
 - Parser name: `stove0-observer-conformance`
 
@@ -40,3 +40,63 @@
 | `` | _AppendAction | no | Path | --invocation |
 | `` | _AppendAction | no | Path | --semantic-vectors |
 | `` | _AppendAction | no |  | --semantic-validator-provider |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+### `/external_contract/cli/stove0-observer-conformance/name`
+
+<!-- exact-contract-value: e0b72013170271e2f13e91746ae3838974b2346286ccc7288e52e35f176d8677 -->
+
+```json
+"stove0-observer-conformance"
+```
+
+### `/external_contract/cli/stove0-observer-conformance/parameters`
+
+<!-- exact-contract-value: 081d1ac083ce7b64aa00e86ad69c85cc777077719787c8513002aaf88d4360fe -->
+
+```json
+[
+  {
+    "dest": "base_url",
+    "kind": "_StoreAction",
+    "nargs": null,
+    "options": [],
+    "required": true
+  },
+  {
+    "default": [],
+    "dest": "invocation",
+    "kind": "_AppendAction",
+    "nargs": null,
+    "options": [
+      "--invocation"
+    ],
+    "required": false,
+    "type": "Path"
+  },
+  {
+    "default": [],
+    "dest": "semantic_vectors",
+    "kind": "_AppendAction",
+    "nargs": null,
+    "options": [
+      "--semantic-vectors"
+    ],
+    "required": false,
+    "type": "Path"
+  },
+  {
+    "default": [],
+    "dest": "semantic_validator_provider",
+    "kind": "_AppendAction",
+    "nargs": null,
+    "options": [
+      "--semantic-validator-provider"
+    ],
+    "required": false
+  }
+]
+```

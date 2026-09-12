@@ -42,7 +42,7 @@
 | value | cli-value | `contract_max` | maximum=100, minimum=1, reason=schema-maximum |
 | cardinality | values-per-occurrence | `fixed` | maximum=1, minimum=1, reason=fixed-command-argument-arity |
 
-## Contract
+## Contract summary
 
 - Parser name: `list`
 
@@ -53,3 +53,82 @@
 | `after` | TyperOption | no | {'class': 'typer._click.types.StringParamType', 'name': 'text'} | --after |
 | `limit` | TyperOption | no | {'class': 'typer._click.types.IntRange', 'maximum': 100, 'minimum': 1, 'name': 'integer range'} | --limit |
 | `json_mode` | TyperOption | no | {'class': 'typer._click.types.BoolParamType', 'name': 'boolean'} | --json |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+### `/external_contract/cli/piggity/commands/event/commands/list/name`
+
+<!-- exact-contract-value: dcb452a982945e5e2957930d83d36af5ceee19805ec0c3b30529ae8f44f6e49e -->
+
+```json
+"list"
+```
+
+### `/external_contract/cli/piggity/commands/event/commands/list/parameters`
+
+<!-- exact-contract-value: d1dcd264e4d0682fb677304f77f84a4be86a712b177dc7e1262e2177ea8f6694 -->
+
+```json
+[
+  {
+    "count": false,
+    "envvar": null,
+    "is_flag": false,
+    "kind": "TyperOption",
+    "multiple": false,
+    "name": "after",
+    "nargs": 1,
+    "options": [
+      "--after"
+    ],
+    "required": false,
+    "secondary_options": [],
+    "type": {
+      "class": "typer._click.types.StringParamType",
+      "name": "text"
+    }
+  },
+  {
+    "count": false,
+    "default": 100,
+    "envvar": null,
+    "is_flag": false,
+    "kind": "TyperOption",
+    "multiple": false,
+    "name": "limit",
+    "nargs": 1,
+    "options": [
+      "--limit"
+    ],
+    "required": false,
+    "secondary_options": [],
+    "type": {
+      "class": "typer._click.types.IntRange",
+      "maximum": 100,
+      "minimum": 1,
+      "name": "integer range"
+    }
+  },
+  {
+    "count": false,
+    "default": false,
+    "envvar": null,
+    "is_flag": true,
+    "kind": "TyperOption",
+    "multiple": false,
+    "name": "json_mode",
+    "nargs": 1,
+    "options": [
+      "--json"
+    ],
+    "required": false,
+    "secondary_options": [],
+    "type": {
+      "class": "typer._click.types.BoolParamType",
+      "name": "boolean"
+    }
+  }
+]
+```

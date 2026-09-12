@@ -32,7 +32,7 @@
 
 - [POST /v1/collection-processing-claims/{claim_id}/abandon](../http/post-v1-collection-processing-claims-claim-id-abandon.md)
 
-## Contract
+## Contract summary
 
 | Concern | Contract |
 |---|---|
@@ -46,3 +46,24 @@
 | `provider_evidence` | None |
 | `read_collection` | None |
 | `response_authority` | canonical-document |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: fffb5468d6f227524aa437e1917af1750a0c30320d4bf6a937cd3ecfa7a24400 -->
+
+```json
+{
+  "application": "riverhog",
+  "classification": "client-only-primitive",
+  "cli_commands": [],
+  "client": "ApiClient",
+  "method": "POST",
+  "operation_id": "abandon_processing_claim",
+  "path": "/v1/collection-processing-claims/{claim_id}/abandon",
+  "provider_evidence": null,
+  "read_collection": null,
+  "response_authority": "canonical-document"
+}
+```

@@ -2,13 +2,87 @@
 
 This generated atlas is the human navigation of the exact monolithic machine closure in `../riverhog-v1.json`. It is organized by authority, interface, and native semantic dossier; no page boundary changes contract identity.
 
-Semantic contract: `f0fccc8ee3b98bf6f719e9a4bd31649cd5f22251d6bff884e455a6ba88be4bcb`
+## Closure status
 
-Contract elements: **1208** · Extent decisions: **1962** · Excluded candidates: **13**
+Status: **complete** — every discovered candidate has exactly one disposition and every contractual fact has exactly one human owner.
 
-[Policy registry](policies/index.md)
+Contract elements: **1208** · Extent decisions: **1962** · Excluded candidates: **13** · Source authorities: **217** · Atlas documents: **1620**
 
-## Authorities
+### Closure anomalies
+
+| Anomaly | Count |
+|---|---:|
+| `missing` | 0 |
+| `duplicate` | 0 |
+| `stale` | 0 |
+| `undecided` | 0 |
+| `multiply_disposed` | 0 |
+| `multiply_represented` | 0 |
+
+### Independent evidence identities
+
+| Identity domain | SHA-256 |
+|---|---|
+| `boundary_canonical_sha256` | `5af7171d406deec927ce70092a60eb033f51c53f2da16b7f1cea794e03e807be` |
+| `boundary_legacy_sha256` | `5af7171d406deec927ce70092a60eb033f51c53f2da16b7f1cea794e03e807be` |
+| `external_contract_sha256` | `c7e0f637b07409e63ddef600a4700ec6f213f5562c3c3b92f5bbc210694c61db` |
+| `semantic_contract_sha256` | `f0fccc8ee3b98bf6f719e9a4bd31649cd5f22251d6bff884e455a6ba88be4bcb` |
+| `coverage_sha256` | `d5a3846787aab654c12ccc98dabe41b3c1128957b95554868978b4ec21960f76` |
+| `trace_sha256` | `1ebb9e0edcd9d0ba7ee7ad617bf47177632f7f725a38667570074e7c312948f7` |
+
+The byte-exact `atlas_representation_sha256` is recorded at `/identities/atlas_representation_sha256` in the machine closure. It cannot be embedded inside the document bytes that it identifies.
+
+## Audit navigation
+
+- [Relationship-aware boundary map](relationships/index.md)
+- [Contract-policy registry](policies/index.md)
+- [Explicit exclusions](exclusions/index.md)
+- [Executable sources and qualification routes](evidence/index.md)
+
+## Aggregate contract shape
+
+| Interface | Count |
+|---|---:|
+| `boundary` | 85 |
+| `cli` | 167 |
+| `configuration` | 6 |
+| `configuration-environment` | 120 |
+| `durable-state` | 9 |
+| `extent` | 15 |
+| `http` | 544 |
+| `operation` | 147 |
+| `protocol` | 78 |
+| `python` | 25 |
+| `release` | 12 |
+
+| Detector | Count |
+|---|---:|
+| `boundary` | 85 |
+| `cli-tree` | 167 |
+| `configuration-document` | 6 |
+| `configuration-environment` | 120 |
+| `durable-state` | 9 |
+| `extent` | 15 |
+| `http-openapi` | 544 |
+| `operation-matrix` | 147 |
+| `protocol-schema` | 78 |
+| `python-export` | 25 |
+| `release-metadata` | 12 |
+
+| Qualification route | Count |
+|---|---:|
+| `make build` | 200 |
+| `make compose-smoke` | 670 |
+| `make contract-freeze` | 15 |
+| `make database-qualification` | 9 |
+| `make dist-smoke` | 270 |
+| `make operation-qualification` | 873 |
+| `make release-check` | 106 |
+| `make unit` | 126 |
+
+## Complete authority inventory
+
+The relationship map explains how these authorities interact. This flat inventory remains the exact completeness view.
 
 | Authority | Contract elements | Interfaces |
 |---|---:|---|
@@ -111,19 +185,3 @@ Contract elements: **1208** · Extent decisions: **1962** · Excluded candidates
 | [stove0-target-schemas](authorities/stove0-target-schemas/index.md) | 1 | `cli` |
 | [stove0-target-support](authorities/stove0-target-support/index.md) | 11 | `boundary`, `protocol`, `python` |
 | [time-formats](authorities/time-formats/index.md) | 1 | `boundary` |
-
-## Aggregate interface counts
-
-| Interface | Count |
-|---|---:|
-| `boundary` | 85 |
-| `cli` | 167 |
-| `configuration` | 6 |
-| `configuration-environment` | 120 |
-| `durable-state` | 9 |
-| `extent` | 15 |
-| `http` | 544 |
-| `operation` | 147 |
-| `protocol` | 78 |
-| `python` | 25 |
-| `release` | 12 |

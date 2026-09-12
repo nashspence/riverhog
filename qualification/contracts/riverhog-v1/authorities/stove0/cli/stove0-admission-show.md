@@ -39,7 +39,7 @@
 |---|---|---|---|
 | cardinality | values-per-occurrence | `fixed` | maximum=1, minimum=1, reason=fixed-command-argument-arity |
 
-## Contract
+## Contract summary
 
 - Parser name: `show`
 
@@ -48,3 +48,40 @@
 | Name | Kind | Required | Type | Options |
 |---|---|---:|---|---|
 | `admission_id` | TyperArgument | yes | {'class': 'typer._click.types.StringParamType', 'name': 'text'} | admission_id |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+### `/external_contract/cli/stove0/commands/admission/commands/show/name`
+
+<!-- exact-contract-value: 8f06acb02230bb5a194e0d7f4143d2ecaa508ef645f91340e0e7629981ca6044 -->
+
+```json
+"show"
+```
+
+### `/external_contract/cli/stove0/commands/admission/commands/show/parameters`
+
+<!-- exact-contract-value: f0147f7c85fb6352af335636f4d2091373b3e3691b02d05f9bf96424681ec398 -->
+
+```json
+[
+  {
+    "envvar": null,
+    "kind": "TyperArgument",
+    "multiple": false,
+    "name": "admission_id",
+    "nargs": 1,
+    "options": [
+      "admission_id"
+    ],
+    "required": true,
+    "secondary_options": [],
+    "type": {
+      "class": "typer._click.types.StringParamType",
+      "name": "text"
+    }
+  }
+]
+```

@@ -36,7 +36,7 @@
 | cardinality | items | `extension_owned` | maximum=None, reason=independently-versioned-extension-authority |
 | cardinality | items | `extension_owned` | maximum=None, reason=independently-versioned-extension-authority |
 
-## Contract
+## Contract summary
 
 - `$id`: https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/linux-mount-context.json
 - `type`: object
@@ -55,3 +55,74 @@
 | `root` | yes | string |  |
 | `source` | yes | string |  |
 | `super_options` | yes | array |  |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: a0443a380bfbe8e785650c1ee81ec9e13f188682a1e33f80dc7e4df05a087bc0 -->
+
+```json
+{
+  "$id": "https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/linux-mount-context.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "device": {
+      "type": "string"
+    },
+    "filesystem_type": {
+      "minLength": 1,
+      "type": "string"
+    },
+    "mount_id": {
+      "minimum": 0,
+      "type": "integer"
+    },
+    "mount_options": {
+      "items": {
+        "type": "string"
+      },
+      "type": "array"
+    },
+    "mount_point": {
+      "type": "string"
+    },
+    "optional_fields": {
+      "items": {
+        "type": "string"
+      },
+      "type": "array"
+    },
+    "parent_id": {
+      "minimum": 0,
+      "type": "integer"
+    },
+    "root": {
+      "type": "string"
+    },
+    "source": {
+      "type": "string"
+    },
+    "super_options": {
+      "items": {
+        "type": "string"
+      },
+      "type": "array"
+    }
+  },
+  "required": [
+    "mount_id",
+    "parent_id",
+    "device",
+    "root",
+    "mount_point",
+    "mount_options",
+    "optional_fields",
+    "filesystem_type",
+    "source",
+    "super_options"
+  ],
+  "type": "object"
+}
+```

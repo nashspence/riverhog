@@ -27,7 +27,18 @@
 - Proof: `make unit`
 - Proof: `make compose-smoke`
 
-## Contract
+## Contract summary
+
+| Field | Shape |
+|---|---|
+| `consumers` | array (1 items) |
+| `name` | "STOVE0_ALLOW_INSECURE_HTTP" |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 840ec66382e0b1e00ee135e9bcfc95c207a44355a6498f9dc4398eae6af5e771 -->
 
 ```json
 {

@@ -33,7 +33,7 @@
 - [GET /v1/recipes/{recipe_id}](../http/get-v1-recipes-recipe-id.md)
 - [stove0 recipe show](../cli/stove0-recipe-show.md)
 
-## Contract
+## Contract summary
 
 | Concern | Contract |
 |---|---|
@@ -47,3 +47,26 @@
 | `provider_evidence` | None |
 | `read_collection` | None |
 | `response_authority` | operator-projection |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 056806de4682ba2122393ac1620d561c9efc8f9f520303afefdd324dffaf72b5 -->
+
+```json
+{
+  "application": "stove0",
+  "classification": "human-cli+json",
+  "cli_commands": [
+    "recipe show"
+  ],
+  "client": "Stove0ApiClient",
+  "method": "GET",
+  "operation_id": "get_recipe",
+  "path": "/v1/recipes/{recipe_id}",
+  "provider_evidence": null,
+  "read_collection": null,
+  "response_authority": "operator-projection"
+}
+```

@@ -28,13 +28,17 @@
 - Proof: `make operation-qualification`
 - Proof: `make compose-smoke`
 
+## Referenced contract dossiers
+
+- [schemas: RecipeDefinition](schemas-recipedefinition.md)
+
 ## Extent decisions
 
 | Dimension | Unit | Policy | Bounds/reason |
 |---|---|---|---|
 | length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
 
-## Contract
+## Contract summary
 
 - `title`: RecipeView
 - `type`: object
@@ -45,3 +49,31 @@
 |---|---:|---|---|
 | `definition` | yes | #/components/schemas/RecipeDefinition |  |
 | `sha256` | yes | string |  |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 0fb10c4f0bc4fa85299c43525cd92cfb7f971e991eb10d48453846545d46029a -->
+
+```json
+{
+  "additionalProperties": false,
+  "properties": {
+    "definition": {
+      "$ref": "#/components/schemas/RecipeDefinition"
+    },
+    "sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Sha256",
+      "type": "string"
+    }
+  },
+  "required": [
+    "definition",
+    "sha256"
+  ],
+  "title": "RecipeView",
+  "type": "object"
+}
+```

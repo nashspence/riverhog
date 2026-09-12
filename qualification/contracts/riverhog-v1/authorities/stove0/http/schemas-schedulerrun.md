@@ -27,7 +27,13 @@
 - Proof: `make operation-qualification`
 - Proof: `make compose-smoke`
 
-## Contract
+## Referenced contract dossiers
+
+- [schemas: AdmissionRun](schemas-admissionrun.md)
+- [schemas: SchedulerPruning](schemas-schedulerpruning.md)
+- [schemas: SchedulerWorkBatch](schemas-schedulerworkbatch.md)
+
+## Contract summary
 
 - `title`: SchedulerRun
 - `type`: object
@@ -39,3 +45,46 @@
 | `admission` | no | object (1 fields) |  |
 | `pruning` | yes | object (1 fields) |  |
 | `work` | yes | #/components/schemas/SchedulerWorkBatch |  |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 18340e39255b5eeffda73125a891665cd47056ed52aae5e771c92c75a8d1cac8 -->
+
+```json
+{
+  "additionalProperties": false,
+  "properties": {
+    "admission": {
+      "anyOf": [
+        {
+          "$ref": "#/components/schemas/AdmissionRun"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "pruning": {
+      "anyOf": [
+        {
+          "$ref": "#/components/schemas/SchedulerPruning"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "work": {
+      "$ref": "#/components/schemas/SchedulerWorkBatch"
+    }
+  },
+  "required": [
+    "pruning",
+    "work"
+  ],
+  "title": "SchedulerRun",
+  "type": "object"
+}
+```

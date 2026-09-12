@@ -32,7 +32,7 @@
 
 - [GET /v1/retrieval-plans/{plan_id}](../http/get-v1-retrieval-plans-plan-id.md)
 
-## Contract
+## Contract summary
 
 | Concern | Contract |
 |---|---|
@@ -46,3 +46,24 @@
 | `provider_evidence` | provider-qualification:#442 |
 | `read_collection` | None |
 | `response_authority` | http-json |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: e32bfe94ff0f9dc1e23e876a0ca1f9f6121ea0f2e5d035ad7b41a1a44db8cad8 -->
+
+```json
+{
+  "application": "riverhog",
+  "classification": "client-only-primitive",
+  "cli_commands": [],
+  "client": "ApiClient",
+  "method": "GET",
+  "operation_id": "get_retrieval_plan",
+  "path": "/v1/retrieval-plans/{plan_id}",
+  "provider_evidence": "provider-qualification:#442",
+  "read_collection": null,
+  "response_authority": "http-json"
+}
+```

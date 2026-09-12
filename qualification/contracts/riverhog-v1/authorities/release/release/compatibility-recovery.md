@@ -27,7 +27,15 @@
 - Proof: `make release-check`
 - Proof: `make build`
 
-## Contract
+## Contract summary
+
+- Shape: "Every later v1 recovery release reads every valid earlier v1 archive and provenance set."
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 5f7f0f48d479c3063f37943c291f033ea396284b3228af54b185b755b0b3e968 -->
 
 ```json
 "Every later v1 recovery release reads every valid earlier v1 archive and provenance set."

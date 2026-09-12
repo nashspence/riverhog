@@ -34,7 +34,18 @@
 |---|---|---|---|
 | value | configured-value | `operational_policy` | maximum=None, reason=operator-configured-capacity |
 
-## Contract
+## Contract summary
+
+| Field | Shape |
+|---|---|
+| `consumers` | array (1 items) |
+| `name` | "RIVERHOG_EVENT_CONTEXT_REAP_BATCH_SIZE" |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: afd313c075766908be097411390f7e51b843be812fb38dbb6372f13164a15e97 -->
 
 ```json
 {

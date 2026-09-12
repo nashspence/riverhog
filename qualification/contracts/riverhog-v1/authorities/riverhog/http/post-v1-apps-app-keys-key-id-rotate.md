@@ -32,13 +32,18 @@
 
 - [Operation parity: rotate_app_key](../operation/operation-parity-rotate-app-key.md)
 
+## Referenced contract dossiers
+
+- [schemas: AppKeyCreatedOut](schemas-appkeycreatedout.md)
+- [schemas: ErrorResponse](schemas-errorresponse.md)
+
 ## Extent decisions
 
 | Dimension | Unit | Policy | Bounds/reason |
 |---|---|---|---|
 | length | characters | `fixed` | maximum=16, minimum=16, reason=fixed-public-representation |
 
-## Contract
+## Contract summary
 
 - `operationId`: rotate_app_key
 - `summary`: Rotate App Key
@@ -61,3 +66,130 @@
 | `403` | Forbidden |
 | `404` | Not Found |
 | `500` | Internal Server Error |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 455ebdeabfdf8d0a7c9cfdc5d8e7f1d6ddd5d44698b7d5abdac76bc544747828 -->
+
+```json
+{
+  "operationId": "rotate_app_key",
+  "parameters": [
+    {
+      "in": "path",
+      "name": "app",
+      "required": true,
+      "schema": {
+        "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$",
+        "title": "App",
+        "type": "string"
+      }
+    },
+    {
+      "in": "path",
+      "name": "key_id",
+      "required": true,
+      "schema": {
+        "pattern": "^[0-9a-f]{16}$",
+        "title": "Key Id",
+        "type": "string"
+      }
+    }
+  ],
+  "responses": {
+    "200": {
+      "content": {
+        "application/json": {
+          "schema": {
+            "$ref": "#/components/schemas/AppKeyCreatedOut"
+          }
+        }
+      },
+      "description": "Successful Response"
+    },
+    "400": {
+      "content": {
+        "application/json": {
+          "schema": {
+            "$ref": "#/components/schemas/ErrorResponse"
+          }
+        }
+      },
+      "description": "Bad Request",
+      "x-riverhog-error-codes": [
+        "bad_request"
+      ]
+    },
+    "401": {
+      "content": {
+        "application/json": {
+          "schema": {
+            "$ref": "#/components/schemas/ErrorResponse"
+          }
+        }
+      },
+      "description": "Unauthorized",
+      "x-riverhog-error-codes": [
+        "unauthorized"
+      ]
+    },
+    "403": {
+      "content": {
+        "application/json": {
+          "schema": {
+            "$ref": "#/components/schemas/ErrorResponse"
+          }
+        }
+      },
+      "description": "Forbidden",
+      "x-riverhog-error-codes": [
+        "forbidden"
+      ]
+    },
+    "404": {
+      "content": {
+        "application/json": {
+          "schema": {
+            "$ref": "#/components/schemas/ErrorResponse"
+          }
+        }
+      },
+      "description": "Not Found",
+      "x-riverhog-error-codes": [
+        "not_found"
+      ]
+    },
+    "500": {
+      "content": {
+        "application/json": {
+          "schema": {
+            "$ref": "#/components/schemas/ErrorResponse"
+          }
+        }
+      },
+      "description": "Internal Server Error",
+      "x-riverhog-error-codes": [
+        "internal_error"
+      ]
+    }
+  },
+  "security": [
+    {
+      "HTTPBearer": []
+    }
+  ],
+  "summary": "Rotate App Key",
+  "tags": [
+    "apps"
+  ],
+  "x-riverhog-permission-requirements": [
+    {
+      "any_of": [
+        "keys:manage"
+      ]
+    }
+  ]
+}
+```

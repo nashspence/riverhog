@@ -34,7 +34,18 @@
 |---|---|---|---|
 | value | configured-value | `operational_policy` | maximum=None, reason=operator-configured-capacity |
 
-## Contract
+## Contract summary
+
+| Field | Shape |
+|---|---|
+| `consumers` | array (1 items) |
+| `name` | "RIVERHOG_ARCHIVE_PART_PLAINTEXT_BYTES" |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 8236289827114dba9ae21db7c38c84754a82e74cd14bdac22ffd556074299e8e -->
 
 ```json
 {

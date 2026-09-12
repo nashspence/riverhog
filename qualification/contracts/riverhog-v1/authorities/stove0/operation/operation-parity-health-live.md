@@ -33,7 +33,7 @@
 - [GET /health/live](../http/get-health-live.md)
 - [stove0 health](../cli/stove0-health.md)
 
-## Contract
+## Contract summary
 
 | Concern | Contract |
 |---|---|
@@ -47,3 +47,26 @@
 | `provider_evidence` | None |
 | `read_collection` | None |
 | `response_authority` | http-json |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: c3bb17dd1416005d0eedae12c18e64e483a0c55bcadd67848073db7c288008e5 -->
+
+```json
+{
+  "application": "stove0",
+  "classification": "standard-tool/protocol",
+  "cli_commands": [
+    "health"
+  ],
+  "client": "Stove0ApiClient",
+  "method": "GET",
+  "operation_id": "health_live",
+  "path": "/health/live",
+  "provider_evidence": null,
+  "read_collection": null,
+  "response_authority": "http-json"
+}
+```

@@ -33,7 +33,7 @@
 - [GET /v1/events](../http/get-v1-events.md)
 - [piggity event list](../../piggity/cli/piggity-event-list.md)
 
-## Contract
+## Contract summary
 
 | Concern | Contract |
 |---|---|
@@ -47,3 +47,30 @@
 | `provider_evidence` | None |
 | `read_collection` | {"cursor_parameter": "after", "kind": "cursor-feed", "limit_parameter": "limit"} |
 | `response_authority` | canonical-document |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 300db08967b5419dbd0cc793dafc6b232dd99eb7ba3190a7c2cf75d4bcf167f1 -->
+
+```json
+{
+  "application": "riverhog",
+  "classification": "human-cli+json",
+  "cli_commands": [
+    "event list"
+  ],
+  "client": "ApiClient",
+  "method": "GET",
+  "operation_id": "list_lifecycle_events",
+  "path": "/v1/events",
+  "provider_evidence": null,
+  "read_collection": {
+    "cursor_parameter": "after",
+    "kind": "cursor-feed",
+    "limit_parameter": "limit"
+  },
+  "response_authority": "canonical-document"
+}
+```

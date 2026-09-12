@@ -27,7 +27,7 @@
 - Proof: `make operation-qualification`
 - Proof: `make compose-smoke`
 
-## Contract
+## Contract summary
 
 - `title`: ProvenanceJournalAgentOut
 - `type`: object
@@ -37,3 +37,26 @@
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | `agent_id` | yes | string |  |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: f583f1b6cd0a63844e10b628bea016e3aa237fb18e598f3e20a7dd739a3d0151 -->
+
+```json
+{
+  "additionalProperties": false,
+  "properties": {
+    "agent_id": {
+      "title": "Agent Id",
+      "type": "string"
+    }
+  },
+  "required": [
+    "agent_id"
+  ],
+  "title": "ProvenanceJournalAgentOut",
+  "type": "object"
+}
+```

@@ -29,6 +29,12 @@
 - Proof: `make operation-qualification`
 - Proof: `make compose-smoke`
 
+## Referenced contract dossiers
+
+- [schemas: CollectionId](schemas-collectionid.md)
+- [schemas: RiverhogActor](schemas-riverhogactor.md)
+- [schemas: RiverhogEventCause](schemas-riverhogeventcause.md)
+
 ## Extent decisions
 
 | Dimension | Unit | Policy | Bounds/reason |
@@ -39,7 +45,7 @@
 | cardinality | entries | `operational_policy` | maximum=None, reason=no-declared-semantic-maximum |
 | value | schema-value | `operational_policy` | maximum=None, reason=no-declared-semantic-maximum |
 
-## Contract
+## Contract summary
 
 - `title`: CollectionDeletedData
 - `type`: object
@@ -57,3 +63,85 @@
 | `files` | yes | integer |  |
 | `initiator` | yes | #/components/schemas/RiverhogActor |  |
 | `remote_storage_bytes` | yes | integer |  |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: c0b9a189a887a7f1070840f2395d318877c36d055780d5b36fb19f6f0411956d -->
+
+```json
+{
+  "additionalProperties": false,
+  "properties": {
+    "actor": {
+      "$ref": "#/components/schemas/RiverhogActor"
+    },
+    "bytes": {
+      "minimum": 0,
+      "title": "Bytes",
+      "type": "integer"
+    },
+    "cause": {
+      "anyOf": [
+        {
+          "$ref": "#/components/schemas/RiverhogEventCause"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "collection_created_at": {
+      "maxLength": 64,
+      "minLength": 1,
+      "title": "Collection Created At",
+      "type": "string"
+    },
+    "collection_id": {
+      "$ref": "#/components/schemas/CollectionId"
+    },
+    "context": {
+      "anyOf": [
+        {
+          "additionalProperties": true,
+          "type": "object",
+          "x-riverhog-encoded-bytes-max": 4096,
+          "x-riverhog-extent": {
+            "policy": "contract_max",
+            "reason": "bounded-lifecycle-event-context"
+          }
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Context"
+    },
+    "files": {
+      "minimum": 0,
+      "title": "Files",
+      "type": "integer"
+    },
+    "initiator": {
+      "$ref": "#/components/schemas/RiverhogActor"
+    },
+    "remote_storage_bytes": {
+      "minimum": 0,
+      "title": "Remote Storage Bytes",
+      "type": "integer"
+    }
+  },
+  "required": [
+    "actor",
+    "initiator",
+    "collection_id",
+    "collection_created_at",
+    "files",
+    "bytes",
+    "remote_storage_bytes"
+  ],
+  "title": "CollectionDeletedData",
+  "type": "object"
+}
+```

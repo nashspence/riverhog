@@ -27,7 +27,7 @@
 - Proof: `make dist-smoke`
 - Proof: `make build`
 
-## Contract
+## Contract summary
 
 - `$id`: https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/windows-reparse-point.json
 - `type`: object
@@ -40,3 +40,40 @@
 | `name_surrogate` | yes | boolean |  |
 | `reparse_tag` | yes | integer |  |
 | `reparse_tag_hex` | yes | string |  |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 6098b111132c6f51c8d317c0f4514814fbd97c875063fa81abfb96f01c80e77a -->
+
+```json
+{
+  "$id": "https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/windows-reparse-point.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "followed_for_primary_content": {
+      "type": "boolean"
+    },
+    "name_surrogate": {
+      "type": "boolean"
+    },
+    "reparse_tag": {
+      "minimum": 0,
+      "type": "integer"
+    },
+    "reparse_tag_hex": {
+      "pattern": "^0x[0-9a-f]{8}$",
+      "type": "string"
+    }
+  },
+  "required": [
+    "reparse_tag",
+    "reparse_tag_hex",
+    "name_surrogate",
+    "followed_for_primary_content"
+  ],
+  "type": "object"
+}
+```

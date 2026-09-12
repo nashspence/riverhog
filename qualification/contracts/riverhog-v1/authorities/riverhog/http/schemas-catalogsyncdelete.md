@@ -28,13 +28,17 @@
 - Proof: `make operation-qualification`
 - Proof: `make compose-smoke`
 
+## Referenced contract dossiers
+
+- [schemas: CollectionId](schemas-collectionid.md)
+
 ## Extent decisions
 
 | Dimension | Unit | Policy | Bounds/reason |
 |---|---|---|---|
 | length | characters | `contract_max` | maximum=19, minimum=1, reason=schema-maximum |
 
-## Contract
+## Contract summary
 
 - `title`: CatalogSyncDelete
 - `type`: object
@@ -46,3 +50,39 @@
 | `collection_id` | yes | #/components/schemas/CollectionId |  |
 | `operation` | no | string |  |
 | `revision` | yes | string |  |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 6f3fb51bea4d0b80c512399c325902293c78eb4ff2a0040187f78eff54653eb0 -->
+
+```json
+{
+  "additionalProperties": false,
+  "properties": {
+    "collection_id": {
+      "$ref": "#/components/schemas/CollectionId"
+    },
+    "operation": {
+      "const": "delete",
+      "default": "delete",
+      "title": "Operation",
+      "type": "string"
+    },
+    "revision": {
+      "maxLength": 19,
+      "minLength": 1,
+      "pattern": "^(?:[1-9][0-9]{0,17}|[1-8][0-9]{18})$",
+      "title": "Revision",
+      "type": "string"
+    }
+  },
+  "required": [
+    "collection_id",
+    "revision"
+  ],
+  "title": "CatalogSyncDelete",
+  "type": "object"
+}
+```

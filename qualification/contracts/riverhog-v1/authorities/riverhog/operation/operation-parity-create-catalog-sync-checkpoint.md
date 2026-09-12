@@ -33,7 +33,7 @@
 - [GET /v1/catalog-sync/checkpoint](../http/get-v1-catalog-sync-checkpoint.md)
 - [piggity catalog-sync checkpoint](../../piggity/cli/piggity-catalog-sync-checkpoint.md)
 
-## Contract
+## Contract summary
 
 | Concern | Contract |
 |---|---|
@@ -47,3 +47,26 @@
 | `provider_evidence` | None |
 | `read_collection` | None |
 | `response_authority` | canonical-document |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: af8b41ee7c4ea7c87741552923de4491d7047f4d0e63680b13da89181c557e61 -->
+
+```json
+{
+  "application": "riverhog",
+  "classification": "client-only-primitive",
+  "cli_commands": [
+    "catalog-sync checkpoint"
+  ],
+  "client": "ApiClient",
+  "method": "GET",
+  "operation_id": "create_catalog_sync_checkpoint",
+  "path": "/v1/catalog-sync/checkpoint",
+  "provider_evidence": null,
+  "read_collection": null,
+  "response_authority": "canonical-document"
+}
+```

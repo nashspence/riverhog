@@ -27,7 +27,11 @@
 - Proof: `make operation-qualification`
 - Proof: `make compose-smoke`
 
-## Contract
+## Referenced contract dossiers
+
+- [schemas: ApplicationName](schemas-applicationname.md)
+
+## Contract summary
 
 - `title`: AppSummaryOut
 - `type`: object
@@ -40,3 +44,47 @@
 | `keys` | yes | integer |  |
 | `last_used_at` | yes | object (2 fields) |  |
 | `name` | yes | #/components/schemas/ApplicationName |  |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: a648910ef6f83e51e08d9cec0bcc14ba96ab319b0811a1203f9260ac13a404cb -->
+
+```json
+{
+  "additionalProperties": false,
+  "properties": {
+    "active_keys": {
+      "title": "Active Keys",
+      "type": "integer"
+    },
+    "keys": {
+      "title": "Keys",
+      "type": "integer"
+    },
+    "last_used_at": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Last Used At"
+    },
+    "name": {
+      "$ref": "#/components/schemas/ApplicationName"
+    }
+  },
+  "required": [
+    "name",
+    "keys",
+    "active_keys",
+    "last_used_at"
+  ],
+  "title": "AppSummaryOut",
+  "type": "object"
+}
+```

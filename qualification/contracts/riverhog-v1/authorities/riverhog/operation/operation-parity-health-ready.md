@@ -32,7 +32,7 @@
 
 - [GET /health/ready](../http/get-health-ready.md)
 
-## Contract
+## Contract summary
 
 | Concern | Contract |
 |---|---|
@@ -46,3 +46,24 @@
 | `provider_evidence` | None |
 | `read_collection` | None |
 | `response_authority` | http-json |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 7dfaac98b8b1d5d5cf803515b95c18d10d3812eaf49414299ccf2217fec48daa -->
+
+```json
+{
+  "application": "riverhog",
+  "classification": "standard-tool/protocol",
+  "cli_commands": [],
+  "client": null,
+  "method": "GET",
+  "operation_id": "health_ready",
+  "path": "/health/ready",
+  "provider_evidence": null,
+  "read_collection": null,
+  "response_authority": "http-json"
+}
+```

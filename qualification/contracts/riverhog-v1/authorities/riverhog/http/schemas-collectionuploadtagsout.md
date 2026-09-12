@@ -27,7 +27,11 @@
 - Proof: `make operation-qualification`
 - Proof: `make compose-smoke`
 
-## Contract
+## Referenced contract dossiers
+
+- [schemas: CollectionId](schemas-collectionid.md)
+
+## Contract summary
 
 - `title`: CollectionUploadTagsOut
 - `type`: object
@@ -39,3 +43,37 @@
 | `added` | yes | integer |  |
 | `collection_id` | yes | #/components/schemas/CollectionId |  |
 | `tag_count` | yes | integer |  |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 4c2e980a84f0c1aca7b9eec8edfe249d27310773f6adbb3c8db687924abf9196 -->
+
+```json
+{
+  "additionalProperties": false,
+  "properties": {
+    "added": {
+      "minimum": 0,
+      "title": "Added",
+      "type": "integer"
+    },
+    "collection_id": {
+      "$ref": "#/components/schemas/CollectionId"
+    },
+    "tag_count": {
+      "minimum": 0,
+      "title": "Tag Count",
+      "type": "integer"
+    }
+  },
+  "required": [
+    "collection_id",
+    "added",
+    "tag_count"
+  ],
+  "title": "CollectionUploadTagsOut",
+  "type": "object"
+}
+```

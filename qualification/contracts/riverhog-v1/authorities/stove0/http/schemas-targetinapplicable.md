@@ -34,7 +34,7 @@
 |---|---|---|---|
 | length | characters | `contract_max` | maximum=1000, minimum=1, reason=schema-maximum |
 
-## Contract
+## Contract summary
 
 - `title`: TargetInapplicable
 - `type`: object
@@ -45,3 +45,34 @@
 |---|---:|---|---|
 | `code` | yes | string |  |
 | `message` | yes | string |  |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: e6e7b7f0a6d88757ed930e374dc9c6877fd96d32d1a689c2d8fbc8e6a3838457 -->
+
+```json
+{
+  "additionalProperties": false,
+  "properties": {
+    "code": {
+      "pattern": "^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$",
+      "title": "Code",
+      "type": "string"
+    },
+    "message": {
+      "maxLength": 1000,
+      "minLength": 1,
+      "title": "Message",
+      "type": "string"
+    }
+  },
+  "required": [
+    "code",
+    "message"
+  ],
+  "title": "TargetInapplicable",
+  "type": "object"
+}
+```

@@ -29,6 +29,11 @@
 - Proof: `make operation-qualification`
 - Proof: `make compose-smoke`
 
+## Referenced contract dossiers
+
+- [schemas: CollectionId](schemas-collectionid.md)
+- [schemas: ExactSetAuthorityDocument](schemas-exactsetauthoritydocument.md)
+
 ## Extent decisions
 
 | Dimension | Unit | Policy | Bounds/reason |
@@ -38,7 +43,7 @@
 | length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
 | length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
 
-## Contract
+## Contract summary
 
 - `title`: RetirementClaimReferenceDocument
 - `description`: Exact claim evidence authorizing one retirement deletion plan.
@@ -54,3 +59,107 @@
 | `outcomes` | no | object (1 fields) |  |
 | `output_collection_id` | no | object (1 fields) |  |
 | `work_id` | yes | string |  |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: b7bf2593b59150209bcbb33413d688188b7cde9cae8da595c8bbd627946da79b -->
+
+```json
+{
+  "additionalProperties": false,
+  "description": "Exact claim evidence authorizing one retirement deletion plan.",
+  "oneOf": [
+    {
+      "properties": {
+        "execution_id": {
+          "type": "string"
+        },
+        "outcomes": {
+          "type": "null"
+        },
+        "output_collection_id": {
+          "type": "integer"
+        }
+      },
+      "required": [
+        "execution_id",
+        "output_collection_id"
+      ]
+    },
+    {
+      "properties": {
+        "execution_id": {
+          "type": "null"
+        },
+        "outcomes": {
+          "type": "object"
+        },
+        "output_collection_id": {
+          "type": "null"
+        }
+      },
+      "required": [
+        "outcomes"
+      ]
+    }
+  ],
+  "properties": {
+    "claim_id": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Claim Id",
+      "type": "string"
+    },
+    "execution_id": {
+      "anyOf": [
+        {
+          "pattern": "^[0-9a-f]{64}$",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Execution Id"
+    },
+    "fence": {
+      "minimum": 1,
+      "title": "Fence",
+      "type": "integer"
+    },
+    "outcomes": {
+      "anyOf": [
+        {
+          "$ref": "#/components/schemas/ExactSetAuthorityDocument"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "output_collection_id": {
+      "anyOf": [
+        {
+          "$ref": "#/components/schemas/CollectionId"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "work_id": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Work Id",
+      "type": "string"
+    }
+  },
+  "required": [
+    "claim_id",
+    "fence",
+    "work_id"
+  ],
+  "title": "RetirementClaimReferenceDocument",
+  "type": "object"
+}
+```

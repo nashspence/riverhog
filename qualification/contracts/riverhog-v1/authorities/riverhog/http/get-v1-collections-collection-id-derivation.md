@@ -31,7 +31,12 @@
 
 - [Operation parity: get_collection_derivation](../operation/operation-parity-get-collection-derivation.md)
 
-## Contract
+## Referenced contract dossiers
+
+- [schemas: CollectionDerivationResponseDocument](schemas-collectionderivationresponsedocument.md)
+- [schemas: ErrorResponse](schemas-errorresponse.md)
+
+## Contract summary
 
 - `operationId`: get_collection_derivation
 - `summary`: Get Collection Derivation
@@ -53,3 +58,121 @@
 | `403` | Forbidden |
 | `404` | Not Found |
 | `500` | Internal Server Error |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: cfbeb1091f1056ab3d85415e5f7216f5fbd9cfdf177d711ecf683c8eb35f55f4 -->
+
+```json
+{
+  "operationId": "get_collection_derivation",
+  "parameters": [
+    {
+      "in": "path",
+      "name": "collection_id",
+      "required": true,
+      "schema": {
+        "minimum": 1,
+        "title": "Collection Id",
+        "type": "integer"
+      }
+    }
+  ],
+  "responses": {
+    "200": {
+      "content": {
+        "application/json": {
+          "schema": {
+            "$ref": "#/components/schemas/CollectionDerivationResponseDocument"
+          }
+        }
+      },
+      "description": "Successful Response"
+    },
+    "400": {
+      "content": {
+        "application/json": {
+          "schema": {
+            "$ref": "#/components/schemas/ErrorResponse"
+          }
+        }
+      },
+      "description": "Bad Request",
+      "x-riverhog-error-codes": [
+        "bad_request"
+      ]
+    },
+    "401": {
+      "content": {
+        "application/json": {
+          "schema": {
+            "$ref": "#/components/schemas/ErrorResponse"
+          }
+        }
+      },
+      "description": "Unauthorized",
+      "x-riverhog-error-codes": [
+        "unauthorized"
+      ]
+    },
+    "403": {
+      "content": {
+        "application/json": {
+          "schema": {
+            "$ref": "#/components/schemas/ErrorResponse"
+          }
+        }
+      },
+      "description": "Forbidden",
+      "x-riverhog-error-codes": [
+        "forbidden"
+      ]
+    },
+    "404": {
+      "content": {
+        "application/json": {
+          "schema": {
+            "$ref": "#/components/schemas/ErrorResponse"
+          }
+        }
+      },
+      "description": "Not Found",
+      "x-riverhog-error-codes": [
+        "not_found"
+      ]
+    },
+    "500": {
+      "content": {
+        "application/json": {
+          "schema": {
+            "$ref": "#/components/schemas/ErrorResponse"
+          }
+        }
+      },
+      "description": "Internal Server Error",
+      "x-riverhog-error-codes": [
+        "internal_error"
+      ]
+    }
+  },
+  "security": [
+    {
+      "HTTPBearer": []
+    }
+  ],
+  "summary": "Get Collection Derivation",
+  "tags": [
+    "collection-workflows"
+  ],
+  "x-riverhog-interface": "client-only-primitive",
+  "x-riverhog-permission-requirements": [
+    {
+      "any_of": [
+        "collection-transforms:control"
+      ]
+    }
+  ]
+}
+```

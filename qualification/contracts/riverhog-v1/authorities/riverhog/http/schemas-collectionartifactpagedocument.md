@@ -28,13 +28,18 @@
 - Proof: `make operation-qualification`
 - Proof: `make compose-smoke`
 
+## Referenced contract dossiers
+
+- [schemas: ArtifactSetAuthorityDocument](schemas-artifactsetauthoritydocument.md)
+- [schemas: CollectionArtifactIdentityDocument](schemas-collectionartifactidentitydocument.md)
+
 ## Extent decisions
 
 | Dimension | Unit | Policy | Bounds/reason |
 |---|---|---|---|
 | cardinality | items | `segmented_no_total_max` | maximum=128, reason=bounded-route-page |
 
-## Contract
+## Contract summary
 
 - `title`: CollectionArtifactPageDocument
 - `type`: object
@@ -47,3 +52,57 @@
 | `authority` | yes | #/components/schemas/ArtifactSetAuthorityDocument |  |
 | `next_ordinal` | no | object (2 fields) |  |
 | `start_ordinal` | yes | integer |  |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 8d36dba622d1c18ba09c32f815f78c7a8f4a1995796134145366ce2ddaee0d3d -->
+
+```json
+{
+  "additionalProperties": false,
+  "properties": {
+    "artifacts": {
+      "items": {
+        "$ref": "#/components/schemas/CollectionArtifactIdentityDocument"
+      },
+      "maxItems": 128,
+      "title": "Artifacts",
+      "type": "array",
+      "x-riverhog-extent": {
+        "policy": "segmented_no_total_max",
+        "progression": "authority-bound-start_ordinal",
+        "reason": "bounded-authority-page"
+      }
+    },
+    "authority": {
+      "$ref": "#/components/schemas/ArtifactSetAuthorityDocument"
+    },
+    "next_ordinal": {
+      "anyOf": [
+        {
+          "minimum": 1,
+          "type": "integer"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Next Ordinal"
+    },
+    "start_ordinal": {
+      "minimum": 0,
+      "title": "Start Ordinal",
+      "type": "integer"
+    }
+  },
+  "required": [
+    "authority",
+    "start_ordinal",
+    "artifacts"
+  ],
+  "title": "CollectionArtifactPageDocument",
+  "type": "object"
+}
+```

@@ -39,7 +39,7 @@
 | value | schema-value | `operational_policy` | maximum=None, reason=no-declared-semantic-maximum |
 | value | schema-value | `operational_policy` | maximum=None, reason=no-declared-semantic-maximum |
 
-## Contract
+## Contract summary
 
 - `$id`: https://nashspence.github.io/riverhog/v1/schemas/collection-archive-manifest-v1.schema.json
 - `title`: Riverhog v1 immutable collection archive root
@@ -64,3 +64,159 @@
 | `provenance_root` | object |
 | `sha256` | string |
 | `tree` | object |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: d4717825d249f0b6484c03aedc9c2d41d25dd99a15b6a9c895c8b300fe6f1156 -->
+
+```json
+{
+  "$comment": "This schema is the structural projection. riverhog_archive_contracts.CollectionArchiveManifest is the canonical semantic, identity, and canonical-JSON authority.",
+  "$defs": {
+    "provenance": {
+      "additionalProperties": false,
+      "properties": {
+        "identity": {
+          "$ref": "#/$defs/sha256"
+        },
+        "root": {
+          "$ref": "#/$defs/provenance_root"
+        }
+      },
+      "required": [
+        "identity",
+        "root"
+      ],
+      "type": "object"
+    },
+    "provenance_root": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "const": "provenance-root"
+        },
+        "kind": {
+          "const": "provenance-root"
+        },
+        "path": {
+          "const": "provenance/root.json.age"
+        },
+        "plaintext_bytes": {
+          "minimum": 1,
+          "type": "integer"
+        },
+        "sha256": {
+          "$ref": "#/$defs/sha256"
+        },
+        "stored_bytes": {
+          "minimum": 1,
+          "type": "integer"
+        },
+        "stored_sha256": {
+          "$ref": "#/$defs/sha256"
+        }
+      },
+      "required": [
+        "id",
+        "kind",
+        "path",
+        "plaintext_bytes",
+        "sha256",
+        "stored_bytes",
+        "stored_sha256"
+      ],
+      "type": "object"
+    },
+    "sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "type": "string"
+    },
+    "tree": {
+      "additionalProperties": false,
+      "properties": {
+        "bytes": {
+          "minimum": 0,
+          "type": "integer"
+        },
+        "files": {
+          "minimum": 1,
+          "type": "integer"
+        },
+        "sha256": {
+          "$ref": "#/$defs/sha256"
+        }
+      },
+      "required": [
+        "files",
+        "bytes",
+        "sha256"
+      ],
+      "type": "object"
+    }
+  },
+  "$id": "https://nashspence.github.io/riverhog/v1/schemas/collection-archive-manifest-v1.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "archive_generation": {
+      "$ref": "#/$defs/sha256"
+    },
+    "format": {
+      "additionalProperties": false,
+      "properties": {
+        "encryption": {
+          "const": "age-v1-scrypt"
+        },
+        "pack_index": {
+          "const": "riverhog-pack-index/v1"
+        },
+        "part_digest": {
+          "const": "sha256"
+        },
+        "selective_read": {
+          "const": "age-chunk-range/v1"
+        }
+      },
+      "required": [
+        "encryption",
+        "pack_index",
+        "part_digest",
+        "selective_read"
+      ],
+      "type": "object"
+    },
+    "provenance": {
+      "$ref": "#/$defs/provenance"
+    },
+    "schema": {
+      "const": "collection-archive-manifest/v1"
+    },
+    "tree": {
+      "$ref": "#/$defs/tree"
+    },
+    "volume_sequence": {
+      "additionalProperties": false,
+      "properties": {
+        "sha256": {
+          "$ref": "#/$defs/sha256"
+        }
+      },
+      "required": [
+        "sha256"
+      ],
+      "type": "object"
+    }
+  },
+  "required": [
+    "schema",
+    "archive_generation",
+    "format",
+    "tree",
+    "volume_sequence"
+  ],
+  "title": "Riverhog v1 immutable collection archive root",
+  "type": "object"
+}
+```

@@ -29,6 +29,12 @@
 - Proof: `make operation-qualification`
 - Proof: `make compose-smoke`
 
+## Referenced contract dossiers
+
+- [schemas: CollectionId](schemas-collectionid.md)
+- [schemas: RiverhogActor](schemas-riverhogactor.md)
+- [schemas: RiverhogEventCause](schemas-riverhogeventcause.md)
+
 ## Extent decisions
 
 | Dimension | Unit | Policy | Bounds/reason |
@@ -40,7 +46,7 @@
 | length | characters | `contract_max` | maximum=1000, minimum=1, reason=schema-maximum |
 | length | characters | `contract_max` | maximum=300, minimum=1, reason=schema-maximum |
 
-## Contract
+## Contract summary
 
 - `title`: RetrievalCanceledData
 - `type`: object
@@ -59,3 +65,114 @@
 | `reason` | no | object (2 fields) |  |
 | `retrieval_id` | yes | string |  |
 | `state` | yes | string |  |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: d346a3eb451b6e4ec525eea143d888c4a96bc7203c2ec867ae0410fffa57dc4a -->
+
+```json
+{
+  "additionalProperties": false,
+  "properties": {
+    "actor": {
+      "$ref": "#/components/schemas/RiverhogActor"
+    },
+    "cause": {
+      "anyOf": [
+        {
+          "$ref": "#/components/schemas/RiverhogEventCause"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "collection_created_at": {
+      "anyOf": [
+        {
+          "maxLength": 64,
+          "minLength": 1,
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Collection Created At"
+    },
+    "collection_id": {
+      "anyOf": [
+        {
+          "$ref": "#/components/schemas/CollectionId"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "collection_ids": {
+      "items": {
+        "$ref": "#/components/schemas/CollectionId"
+      },
+      "minItems": 1,
+      "title": "Collection Ids",
+      "type": "array"
+    },
+    "context": {
+      "anyOf": [
+        {
+          "additionalProperties": true,
+          "type": "object",
+          "x-riverhog-encoded-bytes-max": 4096,
+          "x-riverhog-extent": {
+            "policy": "contract_max",
+            "reason": "bounded-lifecycle-event-context"
+          }
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Context"
+    },
+    "initiator": {
+      "$ref": "#/components/schemas/RiverhogActor"
+    },
+    "reason": {
+      "anyOf": [
+        {
+          "maxLength": 1000,
+          "minLength": 1,
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Reason"
+    },
+    "retrieval_id": {
+      "maxLength": 300,
+      "minLength": 1,
+      "title": "Retrieval Id",
+      "type": "string"
+    },
+    "state": {
+      "const": "canceled",
+      "title": "State",
+      "type": "string"
+    }
+  },
+  "required": [
+    "actor",
+    "initiator",
+    "retrieval_id",
+    "collection_ids",
+    "state"
+  ],
+  "title": "RetrievalCanceledData",
+  "type": "object"
+}
+```

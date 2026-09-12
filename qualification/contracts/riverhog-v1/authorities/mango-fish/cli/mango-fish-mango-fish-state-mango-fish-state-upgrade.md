@@ -35,7 +35,7 @@
 |---|---|---|---|
 | cardinality | values-per-occurrence | `fixed` | maximum=0, minimum=0, reason=fixed-command-argument-arity |
 
-## Contract
+## Contract summary
 
 - Parser name: `mango-fish state upgrade`
 
@@ -44,3 +44,34 @@
 | Name | Kind | Required | Type | Options |
 |---|---|---:|---|---|
 | `` | _StoreTrueAction | no |  | --json |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+### `/external_contract/cli/mango-fish/commands/state/commands/upgrade/name`
+
+<!-- exact-contract-value: 6c87db9d632bfdae0883d34c415798e02d392a141213ec3a8911b509b2cc965c -->
+
+```json
+"mango-fish state upgrade"
+```
+
+### `/external_contract/cli/mango-fish/commands/state/commands/upgrade/parameters`
+
+<!-- exact-contract-value: a4eee56605df36f2261ef19e35bdc3c16631d89a610d870dece837b2b2866441 -->
+
+```json
+[
+  {
+    "default": false,
+    "dest": "json",
+    "kind": "_StoreTrueAction",
+    "nargs": 0,
+    "options": [
+      "--json"
+    ],
+    "required": false
+  }
+]
+```

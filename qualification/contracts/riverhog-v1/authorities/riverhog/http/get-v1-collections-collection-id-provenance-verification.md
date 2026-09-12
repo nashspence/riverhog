@@ -31,7 +31,12 @@
 
 - [Operation parity: get_collection_provenance_verification](../operation/operation-parity-get-collection-provenance-verification.md)
 
-## Contract
+## Referenced contract dossiers
+
+- [schemas: CollectionProvenanceVerificationJobOut](schemas-collectionprovenanceverificationjobout.md)
+- [schemas: ErrorResponse](schemas-errorresponse.md)
+
+## Contract summary
 
 - `operationId`: get_collection_provenance_verification
 - `summary`: Get Collection Provenance Verification
@@ -53,3 +58,120 @@
 | `403` | Forbidden |
 | `404` | Not Found |
 | `500` | Internal Server Error |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: a06799ad2ad530afa9f473f7288f959dde3daca0b6b52eb255312ea350fd0412 -->
+
+```json
+{
+  "operationId": "get_collection_provenance_verification",
+  "parameters": [
+    {
+      "in": "path",
+      "name": "collection_id",
+      "required": true,
+      "schema": {
+        "minimum": 1,
+        "title": "Collection Id",
+        "type": "integer"
+      }
+    }
+  ],
+  "responses": {
+    "200": {
+      "content": {
+        "application/json": {
+          "schema": {
+            "$ref": "#/components/schemas/CollectionProvenanceVerificationJobOut"
+          }
+        }
+      },
+      "description": "Successful Response"
+    },
+    "400": {
+      "content": {
+        "application/json": {
+          "schema": {
+            "$ref": "#/components/schemas/ErrorResponse"
+          }
+        }
+      },
+      "description": "Bad Request",
+      "x-riverhog-error-codes": [
+        "bad_request"
+      ]
+    },
+    "401": {
+      "content": {
+        "application/json": {
+          "schema": {
+            "$ref": "#/components/schemas/ErrorResponse"
+          }
+        }
+      },
+      "description": "Unauthorized",
+      "x-riverhog-error-codes": [
+        "unauthorized"
+      ]
+    },
+    "403": {
+      "content": {
+        "application/json": {
+          "schema": {
+            "$ref": "#/components/schemas/ErrorResponse"
+          }
+        }
+      },
+      "description": "Forbidden",
+      "x-riverhog-error-codes": [
+        "forbidden"
+      ]
+    },
+    "404": {
+      "content": {
+        "application/json": {
+          "schema": {
+            "$ref": "#/components/schemas/ErrorResponse"
+          }
+        }
+      },
+      "description": "Not Found",
+      "x-riverhog-error-codes": [
+        "not_found"
+      ]
+    },
+    "500": {
+      "content": {
+        "application/json": {
+          "schema": {
+            "$ref": "#/components/schemas/ErrorResponse"
+          }
+        }
+      },
+      "description": "Internal Server Error",
+      "x-riverhog-error-codes": [
+        "internal_error"
+      ]
+    }
+  },
+  "security": [
+    {
+      "HTTPBearer": []
+    }
+  ],
+  "summary": "Get Collection Provenance Verification",
+  "tags": [
+    "provenance"
+  ],
+  "x-riverhog-permission-requirements": [
+    {
+      "any_of": [
+        "provenance:read"
+      ]
+    }
+  ]
+}
+```

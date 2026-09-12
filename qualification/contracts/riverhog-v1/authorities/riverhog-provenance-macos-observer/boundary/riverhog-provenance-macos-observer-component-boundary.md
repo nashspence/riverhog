@@ -27,7 +27,22 @@
 - Proof: `make release-check`
 - Proof: `make build`
 
-## Contract
+## Contract summary
+
+| Field | Shape |
+|---|---|
+| `console_scripts` | object (0 fields) |
+| `dependencies` | array (2 items) |
+| `distribution` | "riverhog-provenance-macos-observer" |
+| `optional_dependencies` | object (0 fields) |
+| `path` | "reference/riverhog/provenance/observers/macos" |
+| `role` | "reference_component" |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 0a28689f84efafe5040c4dd714ea3b438ba0ece129602437923f37bd6c969a23 -->
 
 ```json
 {

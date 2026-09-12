@@ -29,6 +29,11 @@
 - Proof: `make operation-qualification`
 - Proof: `make compose-smoke`
 
+## Referenced contract dossiers
+
+- [schemas: ProvenanceJournalId](schemas-provenancejournalid.md)
+- [schemas: ProvenanceStateId](schemas-provenancestateid.md)
+
 ## Extent decisions
 
 | Dimension | Unit | Policy | Bounds/reason |
@@ -37,7 +42,7 @@
 | length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
 | length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
 
-## Contract
+## Contract summary
 
 - `title`: CollectionUploadProvenanceJournalStatusDocument
 - `type`: object
@@ -56,3 +61,110 @@
 | `journal_id` | yes | #/components/schemas/ProvenanceJournalId |  |
 | `sha256` | yes | string |  |
 | `state` | yes | string |  |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 5c7fc6e75fbd9fde5ed7dcae5ff41845ece61b2feec55575dc2a37b709bdc269 -->
+
+```json
+{
+  "additionalProperties": false,
+  "properties": {
+    "accepted_bytes": {
+      "minimum": 0,
+      "title": "Accepted Bytes",
+      "type": "integer"
+    },
+    "bytes": {
+      "minimum": 1,
+      "title": "Bytes",
+      "type": "integer"
+    },
+    "current_bytes": {
+      "anyOf": [
+        {
+          "minimum": 0,
+          "type": "integer"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Current Bytes"
+    },
+    "current_path": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Current Path"
+    },
+    "current_sha256": {
+      "anyOf": [
+        {
+          "pattern": "^[0-9a-f]{64}$",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Current Sha256"
+    },
+    "current_state_id": {
+      "anyOf": [
+        {
+          "$ref": "#/components/schemas/ProvenanceStateId"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "failure": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Failure"
+    },
+    "journal_id": {
+      "$ref": "#/components/schemas/ProvenanceJournalId"
+    },
+    "sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Sha256",
+      "type": "string"
+    },
+    "state": {
+      "enum": [
+        "accepting",
+        "validating",
+        "sealed",
+        "failed"
+      ],
+      "title": "State",
+      "type": "string"
+    }
+  },
+  "required": [
+    "journal_id",
+    "state",
+    "bytes",
+    "sha256",
+    "accepted_bytes"
+  ],
+  "title": "CollectionUploadProvenanceJournalStatusDocument",
+  "type": "object"
+}
+```

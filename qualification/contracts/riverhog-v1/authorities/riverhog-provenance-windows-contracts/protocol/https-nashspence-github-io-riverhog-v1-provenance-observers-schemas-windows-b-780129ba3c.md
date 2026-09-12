@@ -35,7 +35,7 @@
 | cardinality | items | `extension_owned` | maximum=None, reason=independently-versioned-extension-authority |
 | value | schema-value | `extension_owned` | maximum=None, reason=independently-versioned-extension-authority |
 
-## Contract
+## Contract summary
 
 - `$id`: https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/windows-backup-stream-info.json
 - `type`: object
@@ -50,3 +50,53 @@
 | `stream_attributes` | yes | integer |  |
 | `stream_id` | yes | integer |  |
 | `stream_size` | yes | integer |  |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 5749ab8c4944e69d57543fc32f3be4ed3f02eb66c903884166f368a98a0e4b44 -->
+
+```json
+{
+  "$id": "https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/windows-backup-stream-info.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "ea_flags": {
+      "minimum": 0,
+      "type": "integer"
+    },
+    "need_ea": {
+      "type": "boolean"
+    },
+    "stream_attribute_names": {
+      "items": {
+        "minLength": 1,
+        "type": "string"
+      },
+      "type": "array",
+      "uniqueItems": true
+    },
+    "stream_attributes": {
+      "minimum": 0,
+      "type": "integer"
+    },
+    "stream_id": {
+      "minimum": 0,
+      "type": "integer"
+    },
+    "stream_size": {
+      "minimum": 0,
+      "type": "integer"
+    }
+  },
+  "required": [
+    "stream_id",
+    "stream_attributes",
+    "stream_attribute_names",
+    "stream_size"
+  ],
+  "type": "object"
+}
+```

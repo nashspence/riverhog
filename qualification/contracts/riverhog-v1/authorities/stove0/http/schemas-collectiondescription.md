@@ -35,6 +35,26 @@
 | encoded-size | bytes | `contract_max` | maximum=32768, reason=bounded-human-authored-catalog-description |
 | length | characters | `contract_max` | maximum=32768, minimum=1, reason=schema-maximum |
 
-## Contract
+## Contract summary
 
 - `type`: string
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: daefae928b8ba365eb083c697fe3d6d1635c9772e1689e8785f4b8c33183cf9a -->
+
+```json
+{
+  "maxLength": 32768,
+  "minLength": 1,
+  "type": "string",
+  "x-riverhog-encoded-bytes-max": 32768,
+  "x-riverhog-extent": {
+    "policy": "contract_max",
+    "reason": "bounded-human-authored-catalog-description"
+  },
+  "x-unicode-normalization": "NFC"
+}
+```

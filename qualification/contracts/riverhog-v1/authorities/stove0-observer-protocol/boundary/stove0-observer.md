@@ -27,6 +27,41 @@
 - Proof: `make release-check`
 - Proof: `make build`
 
-## Contract
+## Contract summary
 
 - `protocols`: ["stove0-content-observer/v1"]
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 1f2b5585a504e73c2a5166cc9541eb0d28f4708324b5531fad9eeb1bc79e941b -->
+
+```json
+{
+  "binding": "http",
+  "binding_support": "stove0-observer-support",
+  "binding_support_role": "reusable_library",
+  "contract_owner": "stove0-observer-protocol",
+  "contract_owner_role": "reusable_library",
+  "name": "stove0-observer",
+  "protocols": [
+    "stove0-content-observer/v1"
+  ],
+  "providers": [
+    {
+      "distribution": "stove0-exiftool-observer",
+      "images": [
+        "stove0-exiftool-observer"
+      ]
+    },
+    {
+      "distribution": "stove0-ffprobe-sampling-observer",
+      "images": [
+        "stove0-ffprobe-sampling-observer"
+      ]
+    }
+  ],
+  "schema_bundle_format": "stove0-observer-schema-bundle/v1"
+}
+```

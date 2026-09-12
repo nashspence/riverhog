@@ -34,7 +34,7 @@
 |---|---|---|---|
 | length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
 
-## Contract
+## Contract summary
 
 - `title`: TargetOutputBindingSetIdentity
 - `type`: object
@@ -46,3 +46,39 @@
 | `artifact_count` | yes | integer |  |
 | `sha256` | yes | string |  |
 | `total_bytes` | yes | integer |  |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: daf38f19dc312122935afd84d58bf963fa26e233d8633d1f209196e4f92d8e9a -->
+
+```json
+{
+  "additionalProperties": false,
+  "properties": {
+    "artifact_count": {
+      "minimum": 1,
+      "title": "Artifact Count",
+      "type": "integer"
+    },
+    "sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Sha256",
+      "type": "string"
+    },
+    "total_bytes": {
+      "minimum": 0,
+      "title": "Total Bytes",
+      "type": "integer"
+    }
+  },
+  "required": [
+    "artifact_count",
+    "total_bytes",
+    "sha256"
+  ],
+  "title": "TargetOutputBindingSetIdentity",
+  "type": "object"
+}
+```

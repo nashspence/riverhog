@@ -28,6 +28,10 @@
 - Proof: `make operation-qualification`
 - Proof: `make compose-smoke`
 
+## Referenced contract dossiers
+
+- [schemas: ArtifactDispositionSetIdentityDocument](schemas-artifactdispositionsetidentitydocument.md)
+
 ## Extent decisions
 
 | Dimension | Unit | Policy | Bounds/reason |
@@ -35,7 +39,7 @@
 | length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
 | length | characters | `contract_max` | maximum=1000, minimum=1, reason=schema-maximum |
 
-## Contract
+## Contract summary
 
 - `title`: ArtifactDispositionSetDocument
 - `type`: object
@@ -51,3 +55,79 @@
 | `output_artifact_count` | yes | integer |  |
 | `output_edge_count` | yes | integer |  |
 | `state` | yes | string |  |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 193ec959876d910dbd237e2dd02b3d7d30c9441335c81112f9d9631a1dc43523 -->
+
+```json
+{
+  "additionalProperties": false,
+  "properties": {
+    "claim_id": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Claim Id",
+      "type": "string"
+    },
+    "disposition_count": {
+      "minimum": 0,
+      "title": "Disposition Count",
+      "type": "integer"
+    },
+    "failure": {
+      "anyOf": [
+        {
+          "maxLength": 1000,
+          "minLength": 1,
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Failure"
+    },
+    "identity": {
+      "anyOf": [
+        {
+          "$ref": "#/components/schemas/ArtifactDispositionSetIdentityDocument"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "output_artifact_count": {
+      "minimum": 0,
+      "title": "Output Artifact Count",
+      "type": "integer"
+    },
+    "output_edge_count": {
+      "minimum": 0,
+      "title": "Output Edge Count",
+      "type": "integer"
+    },
+    "state": {
+      "enum": [
+        "receiving",
+        "sealing",
+        "sealed",
+        "failed"
+      ],
+      "title": "State",
+      "type": "string"
+    }
+  },
+  "required": [
+    "claim_id",
+    "state",
+    "disposition_count",
+    "output_edge_count",
+    "output_artifact_count"
+  ],
+  "title": "ArtifactDispositionSetDocument",
+  "type": "object"
+}
+```

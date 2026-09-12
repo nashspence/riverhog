@@ -37,7 +37,7 @@
 | length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
 | length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
 
-## Contract
+## Contract summary
 
 - `title`: JoinAdmittedEventData
 - `type`: object
@@ -52,3 +52,57 @@
 | `phase` | yes | string |  |
 | `revision` | yes | integer |  |
 | `work_id` | yes | string |  |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: dab536a055b1029ef8bc9d5c83589286aaeab4d73dbf9d5fc9a1f6b951f16e8d -->
+
+```json
+{
+  "additionalProperties": false,
+  "properties": {
+    "branch_set_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Branch Set Sha256",
+      "type": "string"
+    },
+    "join_plan_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Join Plan Sha256",
+      "type": "string"
+    },
+    "join_work_id": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Join Work Id",
+      "type": "string"
+    },
+    "phase": {
+      "const": "coordinating",
+      "title": "Phase",
+      "type": "string"
+    },
+    "revision": {
+      "minimum": 2,
+      "title": "Revision",
+      "type": "integer"
+    },
+    "work_id": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Work Id",
+      "type": "string"
+    }
+  },
+  "required": [
+    "work_id",
+    "phase",
+    "revision",
+    "branch_set_sha256",
+    "join_plan_sha256",
+    "join_work_id"
+  ],
+  "title": "JoinAdmittedEventData",
+  "type": "object"
+}
+```

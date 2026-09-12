@@ -29,6 +29,10 @@
 - Proof: `make operation-qualification`
 - Proof: `make compose-smoke`
 
+## Referenced contract dossiers
+
+- [schemas: CanonicalRelPath](schemas-canonicalrelpath.md)
+
 ## Extent decisions
 
 | Dimension | Unit | Policy | Bounds/reason |
@@ -36,7 +40,7 @@
 | value | schema-value | `operational_policy` | maximum=None, reason=no-declared-semantic-maximum |
 | length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
 
-## Contract
+## Contract summary
 
 - `title`: ImmutableFileIdentityDocument
 - `description`: The exact path, length, and plaintext digest shared by file projections.
@@ -49,3 +53,38 @@
 | `bytes` | yes | integer |  |
 | `path` | yes | #/components/schemas/CanonicalRelPath |  |
 | `sha256` | yes | string |  |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 8c2805986926e29a6c406c80c224e37296c6bd56550bcb6c78776369f757a75c -->
+
+```json
+{
+  "additionalProperties": false,
+  "description": "The exact path, length, and plaintext digest shared by file projections.",
+  "properties": {
+    "bytes": {
+      "minimum": 0,
+      "title": "Bytes",
+      "type": "integer"
+    },
+    "path": {
+      "$ref": "#/components/schemas/CanonicalRelPath"
+    },
+    "sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Sha256",
+      "type": "string"
+    }
+  },
+  "required": [
+    "path",
+    "bytes",
+    "sha256"
+  ],
+  "title": "ImmutableFileIdentityDocument",
+  "type": "object"
+}
+```

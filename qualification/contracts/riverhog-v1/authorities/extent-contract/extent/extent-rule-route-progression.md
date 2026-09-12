@@ -27,7 +27,19 @@
 - Proof: `make contract-freeze`
 - Proof: `make operation-qualification`
 
-## Contract
+## Contract summary
+
+| Field | Shape |
+|---|---|
+| `authority` | "the route-owned x-riverhog-read-collection declaration" |
+| `completion` | "the owning progression contract" |
+| `policy` | "segmented_no_total_max" |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 524dea7a4d43815099baefe219d38866fbdfabfb1e615203e0c41da3cc11fca0 -->
 
 ```json
 {

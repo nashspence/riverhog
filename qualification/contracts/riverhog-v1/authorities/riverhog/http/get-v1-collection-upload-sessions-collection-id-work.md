@@ -32,13 +32,18 @@
 
 - [Operation parity: acquire_collection_upload_session_work](../operation/operation-parity-acquire-collection-upload-session-work.md)
 
+## Referenced contract dossiers
+
+- [schemas: CollectionUploadWorkBatchDocument](schemas-collectionuploadworkbatchdocument.md)
+- [schemas: ErrorResponse](schemas-errorresponse.md)
+
 ## Extent decisions
 
 | Dimension | Unit | Policy | Bounds/reason |
 |---|---|---|---|
 | value | schema-value | `contract_max` | maximum=64, minimum=1, reason=schema-maximum |
 
-## Contract
+## Contract summary
 
 - `operationId`: acquire_collection_upload_session_work
 - `summary`: Acquire Collection Upload Session Work
@@ -61,3 +66,133 @@
 | `403` | Forbidden |
 | `404` | Not Found |
 | `500` | Internal Server Error |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: a7b7066a0533582660a7058aaa74180c78e9fd766403f5200ac8e4c0d772a890 -->
+
+```json
+{
+  "operationId": "acquire_collection_upload_session_work",
+  "parameters": [
+    {
+      "in": "path",
+      "name": "collection_id",
+      "required": true,
+      "schema": {
+        "minimum": 1,
+        "title": "Collection Id",
+        "type": "integer"
+      }
+    },
+    {
+      "in": "query",
+      "name": "limit",
+      "required": false,
+      "schema": {
+        "default": 16,
+        "maximum": 64,
+        "minimum": 1,
+        "title": "Limit",
+        "type": "integer"
+      }
+    }
+  ],
+  "responses": {
+    "200": {
+      "content": {
+        "application/json": {
+          "schema": {
+            "$ref": "#/components/schemas/CollectionUploadWorkBatchDocument"
+          }
+        }
+      },
+      "description": "Successful Response"
+    },
+    "400": {
+      "content": {
+        "application/json": {
+          "schema": {
+            "$ref": "#/components/schemas/ErrorResponse"
+          }
+        }
+      },
+      "description": "Bad Request",
+      "x-riverhog-error-codes": [
+        "bad_request"
+      ]
+    },
+    "401": {
+      "content": {
+        "application/json": {
+          "schema": {
+            "$ref": "#/components/schemas/ErrorResponse"
+          }
+        }
+      },
+      "description": "Unauthorized",
+      "x-riverhog-error-codes": [
+        "unauthorized"
+      ]
+    },
+    "403": {
+      "content": {
+        "application/json": {
+          "schema": {
+            "$ref": "#/components/schemas/ErrorResponse"
+          }
+        }
+      },
+      "description": "Forbidden",
+      "x-riverhog-error-codes": [
+        "forbidden"
+      ]
+    },
+    "404": {
+      "content": {
+        "application/json": {
+          "schema": {
+            "$ref": "#/components/schemas/ErrorResponse"
+          }
+        }
+      },
+      "description": "Not Found",
+      "x-riverhog-error-codes": [
+        "not_found"
+      ]
+    },
+    "500": {
+      "content": {
+        "application/json": {
+          "schema": {
+            "$ref": "#/components/schemas/ErrorResponse"
+          }
+        }
+      },
+      "description": "Internal Server Error",
+      "x-riverhog-error-codes": [
+        "internal_error"
+      ]
+    }
+  },
+  "security": [
+    {
+      "HTTPBearer": []
+    }
+  ],
+  "summary": "Acquire Collection Upload Session Work",
+  "tags": [
+    "collections"
+  ],
+  "x-riverhog-interface": "client-only-primitive",
+  "x-riverhog-permission-requirements": [
+    {
+      "any_of": [
+        "collections:create"
+      ]
+    }
+  ]
+}
+```

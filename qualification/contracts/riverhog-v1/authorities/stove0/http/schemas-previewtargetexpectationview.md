@@ -36,7 +36,7 @@
 | length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
 | length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
 
-## Contract
+## Contract summary
 
 - `title`: PreviewTargetExpectationView
 - `type`: object
@@ -48,3 +48,40 @@
 | `branch_id` | yes | string |  |
 | `plan_sha256` | yes | string |  |
 | `work_id` | yes | string |  |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 581425e1055d7eec18f490cb5b2d2a5831a8516dd03460d4c159ee3743e6df34 -->
+
+```json
+{
+  "additionalProperties": false,
+  "properties": {
+    "branch_id": {
+      "maxLength": 160,
+      "minLength": 1,
+      "title": "Branch Id",
+      "type": "string"
+    },
+    "plan_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Plan Sha256",
+      "type": "string"
+    },
+    "work_id": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Work Id",
+      "type": "string"
+    }
+  },
+  "required": [
+    "branch_id",
+    "work_id",
+    "plan_sha256"
+  ],
+  "title": "PreviewTargetExpectationView",
+  "type": "object"
+}
+```

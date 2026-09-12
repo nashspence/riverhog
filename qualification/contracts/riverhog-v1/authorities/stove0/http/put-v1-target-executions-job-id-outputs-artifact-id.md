@@ -31,7 +31,13 @@
 
 - [Operation parity: declare_target_execution_output](../operation/operation-parity-declare-target-execution-output.md)
 
-## Contract
+## Referenced contract dossiers
+
+- [schemas: ErrorResponse](schemas-errorresponse.md)
+- [schemas: OutputArtifact](schemas-outputartifact.md)
+- [schemas: TargetCallbackAcknowledgement](schemas-targetcallbackacknowledgement.md)
+
+## Contract summary
 
 - `operationId`: declare_target_execution_output
 - `summary`: Declare Target Execution Output
@@ -56,3 +62,114 @@
 | `401` | Unauthorized |
 | `403` | Forbidden |
 | `500` | Internal Server Error |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 54e3fa1eda84cc1c723219b1813ac10c24a1ee1b32c153fe97170e9e039d79dd -->
+
+```json
+{
+  "operationId": "declare_target_execution_output",
+  "parameters": [
+    {
+      "in": "path",
+      "name": "job_id",
+      "required": true,
+      "schema": {
+        "title": "Job Id",
+        "type": "string"
+      }
+    },
+    {
+      "in": "path",
+      "name": "artifact_id",
+      "required": true,
+      "schema": {
+        "title": "Artifact Id",
+        "type": "string"
+      }
+    }
+  ],
+  "requestBody": {
+    "content": {
+      "application/json": {
+        "schema": {
+          "$ref": "#/components/schemas/OutputArtifact"
+        }
+      }
+    },
+    "required": true
+  },
+  "responses": {
+    "200": {
+      "content": {
+        "application/json": {
+          "schema": {
+            "$ref": "#/components/schemas/TargetCallbackAcknowledgement"
+          }
+        }
+      },
+      "description": "Successful Response"
+    },
+    "400": {
+      "content": {
+        "application/json": {
+          "schema": {
+            "$ref": "#/components/schemas/ErrorResponse"
+          }
+        }
+      },
+      "description": "Bad Request",
+      "x-riverhog-error-codes": [
+        "bad_request"
+      ]
+    },
+    "401": {
+      "content": {
+        "application/json": {
+          "schema": {
+            "$ref": "#/components/schemas/ErrorResponse"
+          }
+        }
+      },
+      "description": "Unauthorized",
+      "x-riverhog-error-codes": [
+        "unauthorized"
+      ]
+    },
+    "403": {
+      "content": {
+        "application/json": {
+          "schema": {
+            "$ref": "#/components/schemas/ErrorResponse"
+          }
+        }
+      },
+      "description": "Forbidden",
+      "x-riverhog-error-codes": [
+        "forbidden"
+      ]
+    },
+    "500": {
+      "content": {
+        "application/json": {
+          "schema": {
+            "$ref": "#/components/schemas/ErrorResponse"
+          }
+        }
+      },
+      "description": "Internal Server Error",
+      "x-riverhog-error-codes": [
+        "internal_error"
+      ]
+    }
+  },
+  "summary": "Declare Target Execution Output",
+  "tags": [
+    "target-executions"
+  ],
+  "x-riverhog-interface": "client-only-primitive"
+}
+```

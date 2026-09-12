@@ -41,7 +41,7 @@
 | cardinality | values-per-occurrence | `fixed` | maximum=1, minimum=1, reason=fixed-command-argument-arity |
 | cardinality | values-per-occurrence | `fixed` | maximum=1, minimum=1, reason=fixed-command-argument-arity |
 
-## Contract
+## Contract summary
 
 - Parser name: `preview`
 
@@ -53,3 +53,92 @@
 | `inputs` | TyperArgument | yes | {'class': 'typer._click.types.StringParamType', 'name': 'text'} | inputs |
 | `revision` | TyperOption | no | {'class': 'typer._click.types.IntParamType', 'name': 'integer'} | --revision |
 | `intent` | TyperOption | no | {'class': 'typer.models.TyperPath', 'name': 'file'} | --intent |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+### `/external_contract/cli/stove0/commands/preview/name`
+
+<!-- exact-contract-value: 99e505dc299c68bc16363d9d8ee5b76599ce41e2154ddb0dc8e2a00c57dec7a5 -->
+
+```json
+"preview"
+```
+
+### `/external_contract/cli/stove0/commands/preview/parameters`
+
+<!-- exact-contract-value: fbd2f667e95fa41096ff61d53335fbd2ff64a22dd74a9f1a7fadbbba9ab33231 -->
+
+```json
+[
+  {
+    "envvar": null,
+    "kind": "TyperArgument",
+    "multiple": false,
+    "name": "recipe_id",
+    "nargs": 1,
+    "options": [
+      "recipe_id"
+    ],
+    "required": true,
+    "secondary_options": [],
+    "type": {
+      "class": "typer._click.types.StringParamType",
+      "name": "text"
+    }
+  },
+  {
+    "envvar": null,
+    "kind": "TyperArgument",
+    "multiple": false,
+    "name": "inputs",
+    "nargs": -1,
+    "options": [
+      "inputs"
+    ],
+    "required": true,
+    "secondary_options": [],
+    "type": {
+      "class": "typer._click.types.StringParamType",
+      "name": "text"
+    }
+  },
+  {
+    "count": false,
+    "envvar": null,
+    "is_flag": false,
+    "kind": "TyperOption",
+    "multiple": false,
+    "name": "revision",
+    "nargs": 1,
+    "options": [
+      "--revision"
+    ],
+    "required": false,
+    "secondary_options": [],
+    "type": {
+      "class": "typer._click.types.IntParamType",
+      "name": "integer"
+    }
+  },
+  {
+    "count": false,
+    "envvar": null,
+    "is_flag": false,
+    "kind": "TyperOption",
+    "multiple": false,
+    "name": "intent",
+    "nargs": 1,
+    "options": [
+      "--intent"
+    ],
+    "required": false,
+    "secondary_options": [],
+    "type": {
+      "class": "typer.models.TyperPath",
+      "name": "file"
+    }
+  }
+]
+```

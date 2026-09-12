@@ -31,7 +31,12 @@
 
 - [Operation parity: cancel_collection_upload_session](../operation/operation-parity-cancel-collection-upload-session.md)
 
-## Contract
+## Referenced contract dossiers
+
+- [schemas: CollectionUploadSessionOut](schemas-collectionuploadsessionout.md)
+- [schemas: ErrorResponse](schemas-errorresponse.md)
+
+## Contract summary
 
 - `operationId`: cancel_collection_upload_session
 - `summary`: Cancel Collection Upload Session
@@ -54,3 +59,133 @@
 | `404` | Not Found |
 | `409` | Conflict |
 | `500` | Internal Server Error |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: f4e85211891dd738bbec2599f8065d258fdfba0f6626f0eb4af8d35688a0ace7 -->
+
+```json
+{
+  "operationId": "cancel_collection_upload_session",
+  "parameters": [
+    {
+      "in": "path",
+      "name": "collection_id",
+      "required": true,
+      "schema": {
+        "minimum": 1,
+        "title": "Collection Id",
+        "type": "integer"
+      }
+    }
+  ],
+  "responses": {
+    "200": {
+      "content": {
+        "application/json": {
+          "schema": {
+            "$ref": "#/components/schemas/CollectionUploadSessionOut"
+          }
+        }
+      },
+      "description": "Successful Response"
+    },
+    "400": {
+      "content": {
+        "application/json": {
+          "schema": {
+            "$ref": "#/components/schemas/ErrorResponse"
+          }
+        }
+      },
+      "description": "Bad Request",
+      "x-riverhog-error-codes": [
+        "bad_request"
+      ]
+    },
+    "401": {
+      "content": {
+        "application/json": {
+          "schema": {
+            "$ref": "#/components/schemas/ErrorResponse"
+          }
+        }
+      },
+      "description": "Unauthorized",
+      "x-riverhog-error-codes": [
+        "unauthorized"
+      ]
+    },
+    "403": {
+      "content": {
+        "application/json": {
+          "schema": {
+            "$ref": "#/components/schemas/ErrorResponse"
+          }
+        }
+      },
+      "description": "Forbidden",
+      "x-riverhog-error-codes": [
+        "forbidden"
+      ]
+    },
+    "404": {
+      "content": {
+        "application/json": {
+          "schema": {
+            "$ref": "#/components/schemas/ErrorResponse"
+          }
+        }
+      },
+      "description": "Not Found",
+      "x-riverhog-error-codes": [
+        "not_found"
+      ]
+    },
+    "409": {
+      "content": {
+        "application/json": {
+          "schema": {
+            "$ref": "#/components/schemas/ErrorResponse"
+          }
+        }
+      },
+      "description": "Conflict",
+      "x-riverhog-error-codes": [
+        "conflict"
+      ]
+    },
+    "500": {
+      "content": {
+        "application/json": {
+          "schema": {
+            "$ref": "#/components/schemas/ErrorResponse"
+          }
+        }
+      },
+      "description": "Internal Server Error",
+      "x-riverhog-error-codes": [
+        "internal_error"
+      ]
+    }
+  },
+  "security": [
+    {
+      "HTTPBearer": []
+    }
+  ],
+  "summary": "Cancel Collection Upload Session",
+  "tags": [
+    "collections"
+  ],
+  "x-riverhog-permission-requirements": [
+    {
+      "any_of": [
+        "collections:create"
+      ]
+    }
+  ]
+}
+```

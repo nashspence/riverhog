@@ -29,6 +29,14 @@
 - Proof: `make operation-qualification`
 - Proof: `make compose-smoke`
 
+## Referenced contract dossiers
+
+- [schemas: BrowsePageToken](schemas-browsepagetoken.md)
+- [schemas: CollectionId](schemas-collectionid.md)
+- [schemas: SearchFileOut](schemas-searchfileout.md)
+- [schemas: SearchSort](schemas-searchsort.md)
+- [schemas: SortOrder](schemas-sortorder.md)
+
 ## Extent decisions
 
 | Dimension | Unit | Policy | Bounds/reason |
@@ -36,7 +44,7 @@
 | cardinality | items | `segmented_no_total_max` | reason=bounded-route-page |
 | value | schema-value | `contract_max` | maximum=100, minimum=1, reason=schema-maximum |
 
-## Contract
+## Contract summary
 
 - `title`: SearchResponse
 - `type`: object
@@ -52,3 +60,78 @@
 | `page_size` | yes | integer |  |
 | `query` | yes | object (2 fields) |  |
 | `sort` | yes | #/components/schemas/SearchSort |  |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 6ed630bdc4c9235091cc489b393e79151caf1d0a557362e967e5e4a202eb75ff -->
+
+```json
+{
+  "additionalProperties": false,
+  "properties": {
+    "collection": {
+      "anyOf": [
+        {
+          "$ref": "#/components/schemas/CollectionId"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "files": {
+      "items": {
+        "$ref": "#/components/schemas/SearchFileOut"
+      },
+      "title": "Files",
+      "type": "array"
+    },
+    "next_page_token": {
+      "anyOf": [
+        {
+          "$ref": "#/components/schemas/BrowsePageToken"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "order": {
+      "$ref": "#/components/schemas/SortOrder"
+    },
+    "page_size": {
+      "maximum": 100,
+      "minimum": 1,
+      "title": "Page Size",
+      "type": "integer"
+    },
+    "query": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Query"
+    },
+    "sort": {
+      "$ref": "#/components/schemas/SearchSort"
+    }
+  },
+  "required": [
+    "query",
+    "collection",
+    "page_size",
+    "next_page_token",
+    "sort",
+    "order",
+    "files"
+  ],
+  "title": "SearchResponse",
+  "type": "object"
+}
+```

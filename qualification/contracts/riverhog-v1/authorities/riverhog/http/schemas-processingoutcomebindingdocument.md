@@ -34,7 +34,7 @@
 |---|---|---|---|
 | length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
 
-## Contract
+## Contract summary
 
 - `title`: ProcessingOutcomeBindingDocument
 - `type`: object
@@ -46,3 +46,39 @@
 | `claim_id` | yes | string |  |
 | `fence` | yes | integer |  |
 | `outcome_id` | yes | string |  |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 53b400e47c4282f39ca9413347f8cd65db26d06e70dab9ef036d89feaa731635 -->
+
+```json
+{
+  "additionalProperties": false,
+  "properties": {
+    "claim_id": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Claim Id",
+      "type": "string"
+    },
+    "fence": {
+      "minimum": 1,
+      "title": "Fence",
+      "type": "integer"
+    },
+    "outcome_id": {
+      "pattern": "^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$",
+      "title": "Outcome Id",
+      "type": "string"
+    }
+  },
+  "required": [
+    "claim_id",
+    "fence",
+    "outcome_id"
+  ],
+  "title": "ProcessingOutcomeBindingDocument",
+  "type": "object"
+}
+```

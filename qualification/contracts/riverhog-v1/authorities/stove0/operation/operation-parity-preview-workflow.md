@@ -33,7 +33,7 @@
 - [POST /v1/workflow-previews](../http/post-v1-workflow-previews.md)
 - [stove0 preview](../cli/stove0-preview.md)
 
-## Contract
+## Contract summary
 
 | Concern | Contract |
 |---|---|
@@ -47,3 +47,26 @@
 | `provider_evidence` | None |
 | `read_collection` | None |
 | `response_authority` | canonical-document |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: a08bfda804ba810ec6d11616c614ad0a1e35324e9a79c7c3cadc2c5b5b8ff213 -->
+
+```json
+{
+  "application": "stove0",
+  "classification": "human-cli+json",
+  "cli_commands": [
+    "preview"
+  ],
+  "client": "Stove0ApiClient",
+  "method": "POST",
+  "operation_id": "preview_workflow",
+  "path": "/v1/workflow-previews",
+  "provider_evidence": null,
+  "read_collection": null,
+  "response_authority": "canonical-document"
+}
+```

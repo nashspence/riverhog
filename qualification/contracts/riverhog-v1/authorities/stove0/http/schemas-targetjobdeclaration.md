@@ -28,6 +28,12 @@
 - Proof: `make operation-qualification`
 - Proof: `make compose-smoke`
 
+## Referenced contract dossiers
+
+- [schemas: ControllerEvidence](schemas-controllerevidence.md)
+- [schemas: EffectPlan](schemas-effectplan.md)
+- [schemas: TransformPlan](schemas-transformplan.md)
+
 ## Extent decisions
 
 | Dimension | Unit | Policy | Bounds/reason |
@@ -35,7 +41,7 @@
 | length | characters | `contract_max` | maximum=160, minimum=1, reason=schema-maximum |
 | length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
 
-## Contract
+## Contract summary
 
 - `title`: TargetJobDeclaration
 - `type`: object
@@ -50,3 +56,72 @@
 | `job_id` | yes | string |  |
 | `plan` | yes | object (3 fields) |  |
 | `workspace_assurance` | yes | string |  |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 931894652141910434181fada4867f2288433e65db2fa98abec088e78533ef4a -->
+
+```json
+{
+  "additionalProperties": false,
+  "properties": {
+    "claim_id": {
+      "maxLength": 160,
+      "minLength": 1,
+      "title": "Claim Id",
+      "type": "string"
+    },
+    "controller_evidence": {
+      "$ref": "#/components/schemas/ControllerEvidence"
+    },
+    "fence": {
+      "minimum": 1,
+      "title": "Fence",
+      "type": "integer"
+    },
+    "job_id": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Job Id",
+      "type": "string"
+    },
+    "plan": {
+      "discriminator": {
+        "mapping": {
+          "stove0-effect-target/v1": "#/components/schemas/EffectPlan",
+          "stove0-transform-target/v1": "#/components/schemas/TransformPlan"
+        },
+        "propertyName": "protocol"
+      },
+      "oneOf": [
+        {
+          "$ref": "#/components/schemas/TransformPlan"
+        },
+        {
+          "$ref": "#/components/schemas/EffectPlan"
+        }
+      ],
+      "title": "Plan"
+    },
+    "workspace_assurance": {
+      "enum": [
+        "encrypted",
+        "ephemeral"
+      ],
+      "title": "Workspace Assurance",
+      "type": "string"
+    }
+  },
+  "required": [
+    "job_id",
+    "claim_id",
+    "fence",
+    "controller_evidence",
+    "plan",
+    "workspace_assurance"
+  ],
+  "title": "TargetJobDeclaration",
+  "type": "object"
+}
+```

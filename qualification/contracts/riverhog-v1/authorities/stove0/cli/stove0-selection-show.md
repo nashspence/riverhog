@@ -40,7 +40,7 @@
 | cardinality | values-per-occurrence | `fixed` | maximum=1, minimum=1, reason=fixed-command-argument-arity |
 | cardinality | values-per-occurrence | `fixed` | maximum=1, minimum=1, reason=fixed-command-argument-arity |
 
-## Contract
+## Contract summary
 
 - Parser name: `show`
 
@@ -50,3 +50,58 @@
 |---|---|---:|---|---|
 | `selection_sha256` | TyperArgument | yes | {'class': 'typer._click.types.StringParamType', 'name': 'text'} | selection_sha256 |
 | `continuation` | TyperOption | no | {'class': 'typer._click.types.StringParamType', 'name': 'text'} | --continuation |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+### `/external_contract/cli/stove0/commands/selection/commands/show/name`
+
+<!-- exact-contract-value: 8f06acb02230bb5a194e0d7f4143d2ecaa508ef645f91340e0e7629981ca6044 -->
+
+```json
+"show"
+```
+
+### `/external_contract/cli/stove0/commands/selection/commands/show/parameters`
+
+<!-- exact-contract-value: 0b10d00386773bfc4b66ab848fefb0e9ce0dfa31cd1793be7c11acef3238bc00 -->
+
+```json
+[
+  {
+    "envvar": null,
+    "kind": "TyperArgument",
+    "multiple": false,
+    "name": "selection_sha256",
+    "nargs": 1,
+    "options": [
+      "selection_sha256"
+    ],
+    "required": true,
+    "secondary_options": [],
+    "type": {
+      "class": "typer._click.types.StringParamType",
+      "name": "text"
+    }
+  },
+  {
+    "count": false,
+    "envvar": null,
+    "is_flag": false,
+    "kind": "TyperOption",
+    "multiple": false,
+    "name": "continuation",
+    "nargs": 1,
+    "options": [
+      "--continuation"
+    ],
+    "required": false,
+    "secondary_options": [],
+    "type": {
+      "class": "typer._click.types.StringParamType",
+      "name": "text"
+    }
+  }
+]
+```

@@ -34,7 +34,7 @@
 |---|---|---|---|
 | length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
 
-## Contract
+## Contract summary
 
 - `title`: CollectionUploadRawPartsIn
 - `type`: object
@@ -46,3 +46,39 @@
 | `ordered_sha256` | yes | string |  |
 | `part_count` | yes | integer |  |
 | `part_plaintext_bytes` | yes | integer |  |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 76ccb435180670cd87a5f21b23e35a4dfbc75f28f4535248bc6671c05f6a8baf -->
+
+```json
+{
+  "additionalProperties": false,
+  "properties": {
+    "ordered_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Ordered Sha256",
+      "type": "string"
+    },
+    "part_count": {
+      "minimum": 1,
+      "title": "Part Count",
+      "type": "integer"
+    },
+    "part_plaintext_bytes": {
+      "minimum": 65536,
+      "title": "Part Plaintext Bytes",
+      "type": "integer"
+    }
+  },
+  "required": [
+    "part_plaintext_bytes",
+    "part_count",
+    "ordered_sha256"
+  ],
+  "title": "CollectionUploadRawPartsIn",
+  "type": "object"
+}
+```

@@ -35,7 +35,7 @@
 |---|---|---|---|
 | cardinality | values-per-occurrence | `fixed` | maximum=1, minimum=1, reason=fixed-command-argument-arity |
 
-## Contract
+## Contract summary
 
 - Parser name: `upgrade`
 
@@ -44,3 +44,43 @@
 | Name | Kind | Required | Type | Options |
 |---|---|---:|---|---|
 | `json_mode` | TyperOption | no | {'class': 'typer._click.types.BoolParamType', 'name': 'boolean'} | --json |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+### `/external_contract/cli/piggity/commands/local/commands/state/commands/upgrade/name`
+
+<!-- exact-contract-value: 192e80d1fe4e27d140b2db67853ff131d7a670e024c440098f759d2df9f2c230 -->
+
+```json
+"upgrade"
+```
+
+### `/external_contract/cli/piggity/commands/local/commands/state/commands/upgrade/parameters`
+
+<!-- exact-contract-value: f2cf9ed04ac608b58219dbcf22fc63be2fdf35901bc058f443df21b229aefd32 -->
+
+```json
+[
+  {
+    "count": false,
+    "default": false,
+    "envvar": null,
+    "is_flag": true,
+    "kind": "TyperOption",
+    "multiple": false,
+    "name": "json_mode",
+    "nargs": 1,
+    "options": [
+      "--json"
+    ],
+    "required": false,
+    "secondary_options": [],
+    "type": {
+      "class": "typer._click.types.BoolParamType",
+      "name": "boolean"
+    }
+  }
+]
+```

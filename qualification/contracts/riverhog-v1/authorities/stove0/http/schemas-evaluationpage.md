@@ -30,6 +30,12 @@
 - Proof: `make operation-qualification`
 - Proof: `make compose-smoke`
 
+## Referenced contract dossiers
+
+- [schemas: BrowsePageToken](schemas-browsepagetoken.md)
+- [schemas: EvaluationView](schemas-evaluationview.md)
+- [schemas: JsonValue](schemas-jsonvalue.md)
+
 ## Extent decisions
 
 | Dimension | Unit | Policy | Bounds/reason |
@@ -38,7 +44,7 @@
 | cardinality | entries | `operational_policy` | maximum=None, reason=no-declared-semantic-maximum |
 | value | schema-value | `contract_max` | maximum=100, minimum=1, reason=schema-maximum |
 
-## Contract
+## Contract summary
 
 - `title`: EvaluationPage
 - `type`: object
@@ -53,3 +59,74 @@
 | `order` | yes | string |  |
 | `page_size` | yes | integer |  |
 | `sort` | yes | string |  |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: cee0d603fb538ed2c5a3cbf91eac88d0608b0b76d76e243725d7daca7f568a9d -->
+
+```json
+{
+  "additionalProperties": false,
+  "properties": {
+    "evaluations": {
+      "items": {
+        "$ref": "#/components/schemas/EvaluationView"
+      },
+      "title": "Evaluations",
+      "type": "array"
+    },
+    "filters": {
+      "additionalProperties": {
+        "$ref": "#/components/schemas/JsonValue"
+      },
+      "title": "Filters",
+      "type": "object"
+    },
+    "next_page_token": {
+      "anyOf": [
+        {
+          "$ref": "#/components/schemas/BrowsePageToken"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "order": {
+      "enum": [
+        "asc",
+        "desc"
+      ],
+      "title": "Order",
+      "type": "string"
+    },
+    "page_size": {
+      "maximum": 100,
+      "minimum": 1,
+      "title": "Page Size",
+      "type": "integer"
+    },
+    "sort": {
+      "enum": [
+        "updated_at",
+        "phase",
+        "evaluation_id"
+      ],
+      "title": "Sort",
+      "type": "string"
+    }
+  },
+  "required": [
+    "page_size",
+    "next_page_token",
+    "sort",
+    "order",
+    "filters",
+    "evaluations"
+  ],
+  "title": "EvaluationPage",
+  "type": "object"
+}
+```

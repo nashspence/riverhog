@@ -33,7 +33,7 @@
 - [POST /v1/archive/copies](../http/post-v1-archive-copies.md)
 - [piggity archive copy start](../../piggity/cli/piggity-archive-copy-start.md)
 
-## Contract
+## Contract summary
 
 | Concern | Contract |
 |---|---|
@@ -47,3 +47,26 @@
 | `provider_evidence` | provider-qualification:#442 |
 | `read_collection` | None |
 | `response_authority` | http-json |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 2e7c4963425ffef94099b0c90954ef0c94d99c9588d62a81f9311aa38b282afa -->
+
+```json
+{
+  "application": "riverhog",
+  "classification": "human-cli+json",
+  "cli_commands": [
+    "archive copy start"
+  ],
+  "client": "ApiClient",
+  "method": "POST",
+  "operation_id": "create_or_resume_archive_copy",
+  "path": "/v1/archive/copies",
+  "provider_evidence": "provider-qualification:#442",
+  "read_collection": null,
+  "response_authority": "http-json"
+}
+```

@@ -27,7 +27,15 @@
 - Proof: `make release-check`
 - Proof: `make build`
 
-## Contract
+## Contract summary
+
+- Shape: "A supported deployment runs components from one coordinated product version."
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: b2f0f3bfa6f92cd063f8130be900cbf2e446f38b94c0b918ea0fa6c36c24e295 -->
 
 ```json
 "A supported deployment runs components from one coordinated product version."

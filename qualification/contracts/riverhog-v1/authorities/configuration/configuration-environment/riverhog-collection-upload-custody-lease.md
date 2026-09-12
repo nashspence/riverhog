@@ -34,7 +34,18 @@
 |---|---|---|---|
 | value | configured-value | `operational_policy` | maximum=None, reason=operator-configured-capacity |
 
-## Contract
+## Contract summary
+
+| Field | Shape |
+|---|---|
+| `consumers` | array (1 items) |
+| `name` | "RIVERHOG_COLLECTION_UPLOAD_CUSTODY_LEASE" |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 449cd7855ac1a721fa4bfcbff9f7ba902aa239ddfc68a8ed1ff06a371acd3fb0 -->
 
 ```json
 {

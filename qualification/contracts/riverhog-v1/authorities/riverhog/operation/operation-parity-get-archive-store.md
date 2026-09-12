@@ -33,7 +33,7 @@
 - [GET /v1/archive/stores/{store}](../http/get-v1-archive-stores-store.md)
 - [piggity archive store show](../../piggity/cli/piggity-archive-store-show.md)
 
-## Contract
+## Contract summary
 
 | Concern | Contract |
 |---|---|
@@ -47,3 +47,26 @@
 | `provider_evidence` | None |
 | `read_collection` | None |
 | `response_authority` | http-json |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 71a948d7a22290a138112f74eeb39455b2f2fefdc5ea52a1041a9e8572fa62da -->
+
+```json
+{
+  "application": "riverhog",
+  "classification": "human-cli+json",
+  "cli_commands": [
+    "archive store show"
+  ],
+  "client": "ApiClient",
+  "method": "GET",
+  "operation_id": "get_archive_store",
+  "path": "/v1/archive/stores/{store}",
+  "provider_evidence": null,
+  "read_collection": null,
+  "response_authority": "http-json"
+}
+```

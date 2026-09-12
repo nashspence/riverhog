@@ -27,7 +27,7 @@
 - Proof: `make operation-qualification`
 - Proof: `make compose-smoke`
 
-## Contract
+## Contract summary
 
 - `title`: ArtifactFactBinding
 - `description`: Locate subject-keyed records inside one observer's declared facts schema.
@@ -39,3 +39,34 @@
 |---|---:|---|---|
 | `artifact_id_pointer` | no | string |  |
 | `records_pointer` | yes | string |  |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: be2e042f0f939418ce250f41c4b0fb8be5f7c53668a50eff8f53679cc92e6567 -->
+
+```json
+{
+  "additionalProperties": false,
+  "description": "Locate subject-keyed records inside one observer's declared facts schema.",
+  "properties": {
+    "artifact_id_pointer": {
+      "default": "/artifact_id",
+      "pattern": "^(?:|/(?:[^~/]|~[01])*(?:/(?:[^~/]|~[01])*)*)$",
+      "title": "Artifact Id Pointer",
+      "type": "string"
+    },
+    "records_pointer": {
+      "pattern": "^(?:|/(?:[^~/]|~[01])*(?:/(?:[^~/]|~[01])*)*)$",
+      "title": "Records Pointer",
+      "type": "string"
+    }
+  },
+  "required": [
+    "records_pointer"
+  ],
+  "title": "ArtifactFactBinding",
+  "type": "object"
+}
+```

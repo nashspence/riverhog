@@ -28,14 +28,29 @@
 - Proof: `make operation-qualification`
 - Proof: `make compose-smoke`
 
-## Contract
+## Contract summary
+
+- Shape: array (2 items)
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+### `/external_contract/http_openapi/stove0/info`
+
+<!-- exact-contract-value: 8efe0b064f3632809c49e59335183be057833f7d28881e38d811f60d7977f104 -->
 
 ```json
-[
-  {
-    "title": "stove0",
-    "version": "1"
-  },
-  "3.1.0"
-]
+{
+  "title": "stove0",
+  "version": "1"
+}
+```
+
+### `/external_contract/http_openapi/stove0/openapi`
+
+<!-- exact-contract-value: 536c8d78e8a0acbef96c0881c0b313c1dc7090176417df5982b2c7c82423ca16 -->
+
+```json
+"3.1.0"
 ```

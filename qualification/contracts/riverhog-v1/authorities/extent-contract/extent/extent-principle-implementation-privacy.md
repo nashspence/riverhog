@@ -27,7 +27,15 @@
 - Proof: `make contract-freeze`
 - Proof: `make operation-qualification`
 
-## Contract
+## Contract summary
+
+- Shape: "Buffers, provider mechanics, database layout, and other non-observable implementation extents are not frozen here."
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 07993a79f7c7765bcaed9507d56d48ca824daa5f17f94597b36afa302dc99e93 -->
 
 ```json
 "Buffers, provider mechanics, database layout, and other non-observable implementation extents are not frozen here."

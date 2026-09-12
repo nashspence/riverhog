@@ -4,6 +4,29 @@
 
 Contract elements: **362** · Extent decisions: **493**
 
+| Family | Count |
+|---|---:|
+| `app-key-access` | 1 |
+| `apps` | 9 |
+| `archive` | 8 |
+| `catalog` | 1 |
+| `catalog-sync` | 3 |
+| `collection-processing-claims` | 27 |
+| `collection-upload-sessions` | 19 |
+| `collections` | 19 |
+| `download-quota` | 1 |
+| `download-quotas` | 1 |
+| `events` | 1 |
+| `health` | 2 |
+| `retrieval-cache` | 3 |
+| `retrieval-jobs` | 6 |
+| `retrieval-plans` | 4 |
+| `schemas` | 253 |
+| `search` | 1 |
+| `securitySchemes` | 1 |
+| `service` | 1 |
+| `tags` | 1 |
+
 | Policy | Count |
 |---|---:|
 | `compatibility/http-api/v1` | 362 |
@@ -12,369 +35,27 @@ Contract elements: **362** · Extent decisions: **493**
 | `extent-rule/route-progression/v1` | 53 |
 | `extent-rule/schema-bound/v1` | 180 |
 
-## Semantic dossiers
+## Semantic families
 
-| Dossier | Family | Extent decisions |
-|---|---|---:|
-| [GET /v1/app-key-access](get-v1-app-key-access.md) | `app-key-access` | 2 |
-| [DELETE /v1/apps/{app}/keys/{key_id}/access](delete-v1-apps-app-keys-key-id-access.md) | `apps` | 1 |
-| [GET /v1/apps](get-v1-apps.md) | `apps` | 2 |
-| [GET /v1/apps/{app}/keys](get-v1-apps-app-keys.md) | `apps` | 2 |
-| [POST /v1/apps/{app}/keys](post-v1-apps-app-keys.md) | `apps` | 0 |
-| [POST /v1/apps/{app}/keys/{key_id}/access](post-v1-apps-app-keys-key-id-access.md) | `apps` | 1 |
-| [POST /v1/apps/{app}/keys/{key_id}/revoke](post-v1-apps-app-keys-key-id-revoke.md) | `apps` | 1 |
-| [POST /v1/apps/{app}/keys/{key_id}/rotate](post-v1-apps-app-keys-key-id-rotate.md) | `apps` | 1 |
-| [PUT /v1/apps/{app}/keys/{key_id}/access](put-v1-apps-app-keys-key-id-access.md) | `apps` | 1 |
-| [PUT /v1/apps/{app}/keys/{key_id}/download-quota](put-v1-apps-app-keys-key-id-download-quota.md) | `apps` | 1 |
-| [DELETE /v1/archive/copies/{collection_id}/{destination_store}](delete-v1-archive-copies-collection-id-destination-store.md) | `archive` | 0 |
-| [GET /v1/archive/copies](get-v1-archive-copies.md) | `archive` | 2 |
-| [GET /v1/archive/copies/{collection_id}/{destination_store}](get-v1-archive-copies-collection-id-destination-store.md) | `archive` | 0 |
-| [GET /v1/archive/stores](get-v1-archive-stores.md) | `archive` | 2 |
-| [GET /v1/archive/stores/{store}](get-v1-archive-stores-store.md) | `archive` | 0 |
-| [POST /v1/archive/copies](post-v1-archive-copies.md) | `archive` | 0 |
-| [POST /v1/archive/copies/retire](post-v1-archive-copies-retire.md) | `archive` | 0 |
-| [POST /v1/archive/copies/retirement-plan](post-v1-archive-copies-retirement-plan.md) | `archive` | 0 |
-| [GET /v1/catalog/collections/{collection_id}/inventory](get-v1-catalog-collections-collection-id-inventory.md) | `catalog` | 3 |
-| [GET /v1/catalog-sync/changes](get-v1-catalog-sync-changes.md) | `catalog-sync` | 3 |
-| [GET /v1/catalog-sync/checkpoint](get-v1-catalog-sync-checkpoint.md) | `catalog-sync` | 0 |
-| [GET /v1/catalog-sync/collections](get-v1-catalog-sync-collections.md) | `catalog-sync` | 3 |
-| [GET /v1/collection-processing-claims](get-v1-collection-processing-claims.md) | `collection-processing-claims` | 2 |
-| [GET /v1/collection-processing-claims/{claim_id}](get-v1-collection-processing-claims-claim-id.md) | `collection-processing-claims` | 1 |
-| [GET /v1/collection-processing-claims/{claim_id}/derivation](get-v1-collection-processing-claims-claim-id-derivation.md) | `collection-processing-claims` | 1 |
-| [GET /v1/collection-processing-claims/{claim_id}/derivation/dispositions](get-v1-collection-processing-claims-claim-id-derivation-dispositions.md) | `collection-processing-claims` | 3 |
-| [GET /v1/collection-processing-claims/{claim_id}/derivation/output-edges](get-v1-collection-processing-claims-claim-id-derivation-output-edges.md) | `collection-processing-claims` | 3 |
-| [GET /v1/collection-processing-claims/{claim_id}/inputs](get-v1-collection-processing-claims-claim-id-inputs.md) | `collection-processing-claims` | 3 |
-| [GET /v1/collection-processing-claims/{claim_id}/outcomes](get-v1-collection-processing-claims-claim-id-outcomes.md) | `collection-processing-claims` | 3 |
-| [GET /v1/collection-processing-claims/{claim_id}/plan/artifacts](get-v1-collection-processing-claims-claim-id-plan-artifacts.md) | `collection-processing-claims` | 3 |
-| [POST /v1/collection-processing-claims](post-v1-collection-processing-claims.md) | `collection-processing-claims` | 0 |
-| [POST /v1/collection-processing-claims/{claim_id}/abandon](post-v1-collection-processing-claims-claim-id-abandon.md) | `collection-processing-claims` | 1 |
-| [POST /v1/collection-processing-claims/{claim_id}/capabilities](post-v1-collection-processing-claims-claim-id-capabilities.md) | `collection-processing-claims` | 1 |
-| [POST /v1/collection-processing-claims/{claim_id}/capabilities/{capability_id}/artifacts/seal](post-v1-collection-processing-claims-claim-id-capabilities-capability-id-artifacts-seal.md) | `collection-processing-claims` | 1 |
-| [POST /v1/collection-processing-claims/{claim_id}/derivation/seal](post-v1-collection-processing-claims-claim-id-derivation-seal.md) | `collection-processing-claims` | 1 |
-| [POST /v1/collection-processing-claims/{claim_id}/inputs/seal](post-v1-collection-processing-claims-claim-id-inputs-seal.md) | `collection-processing-claims` | 1 |
-| [POST /v1/collection-processing-claims/{claim_id}/outcomes/settle](post-v1-collection-processing-claims-claim-id-outcomes-settle.md) | `collection-processing-claims` | 1 |
-| [POST /v1/collection-processing-claims/{claim_id}/plan](post-v1-collection-processing-claims-claim-id-plan.md) | `collection-processing-claims` | 1 |
-| [POST /v1/collection-processing-claims/{claim_id}/plan/artifacts/seal](post-v1-collection-processing-claims-claim-id-plan-artifacts-seal.md) | `collection-processing-claims` | 1 |
-| [POST /v1/collection-processing-claims/{claim_id}/release](post-v1-collection-processing-claims-claim-id-release.md) | `collection-processing-claims` | 1 |
-| [POST /v1/collection-processing-claims/{claim_id}/renew](post-v1-collection-processing-claims-claim-id-renew.md) | `collection-processing-claims` | 1 |
-| [POST /v1/collection-processing-claims/{claim_id}/restart](post-v1-collection-processing-claims-claim-id-restart.md) | `collection-processing-claims` | 1 |
-| [POST /v1/collection-processing-claims/{claim_id}/retirement](post-v1-collection-processing-claims-claim-id-retirement.md) | `collection-processing-claims` | 1 |
-| [POST /v1/collection-processing-claims/{claim_id}/settle](post-v1-collection-processing-claims-claim-id-settle.md) | `collection-processing-claims` | 1 |
-| [PUT /v1/collection-processing-claims/{claim_id}/capabilities/{capability_id}/artifacts](put-v1-collection-processing-claims-claim-id-capabilities-capability-id-artifacts.md) | `collection-processing-claims` | 1 |
-| [PUT /v1/collection-processing-claims/{claim_id}/derivation/dispositions](put-v1-collection-processing-claims-claim-id-derivation-dispositions.md) | `collection-processing-claims` | 1 |
-| [PUT /v1/collection-processing-claims/{claim_id}/derivation/output-edges](put-v1-collection-processing-claims-claim-id-derivation-output-edges.md) | `collection-processing-claims` | 1 |
-| [PUT /v1/collection-processing-claims/{claim_id}/inputs](put-v1-collection-processing-claims-claim-id-inputs.md) | `collection-processing-claims` | 1 |
-| [PUT /v1/collection-processing-claims/{claim_id}/plan/artifacts](put-v1-collection-processing-claims-claim-id-plan-artifacts.md) | `collection-processing-claims` | 1 |
-| [GET /v1/collection-upload-sessions](get-v1-collection-upload-sessions.md) | `collection-upload-sessions` | 2 |
-| [GET /v1/collection-upload-sessions/{collection_id}](get-v1-collection-upload-sessions-collection-id.md) | `collection-upload-sessions` | 0 |
-| [GET /v1/collection-upload-sessions/{collection_id}/files](get-v1-collection-upload-sessions-collection-id-files.md) | `collection-upload-sessions` | 2 |
-| [GET /v1/collection-upload-sessions/{collection_id}/provenance/journals/{journal_id}](get-v1-collection-upload-sessions-collection-id-provenance-journals-journal-id.md) | `collection-upload-sessions` | 0 |
-| [GET /v1/collection-upload-sessions/{collection_id}/volumes/{volume_id}/units/{unit}](get-v1-collection-upload-sessions-collection-id-volumes-volume-id-units-unit.md) | `collection-upload-sessions` | 0 |
-| [GET /v1/collection-upload-sessions/{collection_id}/work](get-v1-collection-upload-sessions-collection-id-work.md) | `collection-upload-sessions` | 1 |
-| [PATCH /v1/collection-upload-sessions/{collection_id}/provenance/journals/{journal_id}](patch-v1-collection-upload-sessions-collection-id-provenance-journals-journal-id.md) | `collection-upload-sessions` | 1 |
-| [POST /v1/collection-upload-sessions](post-v1-collection-upload-sessions.md) | `collection-upload-sessions` | 0 |
-| [POST /v1/collection-upload-sessions/{collection_id}/cancel](post-v1-collection-upload-sessions-collection-id-cancel.md) | `collection-upload-sessions` | 0 |
-| [POST /v1/collection-upload-sessions/{collection_id}/complete](post-v1-collection-upload-sessions-collection-id-complete.md) | `collection-upload-sessions` | 0 |
-| [POST /v1/collection-upload-sessions/{collection_id}/discard](post-v1-collection-upload-sessions-collection-id-discard.md) | `collection-upload-sessions` | 0 |
-| [POST /v1/collection-upload-sessions/{collection_id}/discard-plan](post-v1-collection-upload-sessions-collection-id-discard-plan.md) | `collection-upload-sessions` | 0 |
-| [POST /v1/collection-upload-sessions/{collection_id}/files](post-v1-collection-upload-sessions-collection-id-files.md) | `collection-upload-sessions` | 0 |
-| [POST /v1/collection-upload-sessions/{collection_id}/heartbeat](post-v1-collection-upload-sessions-collection-id-heartbeat.md) | `collection-upload-sessions` | 0 |
-| [POST /v1/collection-upload-sessions/{collection_id}/provenance/journals/{journal_id}/seal](post-v1-collection-upload-sessions-collection-id-provenance-journals-journal-id-seal.md) | `collection-upload-sessions` | 0 |
-| [POST /v1/collection-upload-sessions/{collection_id}/raw-part-digests](post-v1-collection-upload-sessions-collection-id-raw-part-digests.md) | `collection-upload-sessions` | 0 |
-| [POST /v1/collection-upload-sessions/{collection_id}/tags](post-v1-collection-upload-sessions-collection-id-tags.md) | `collection-upload-sessions` | 0 |
-| [PUT /v1/collection-upload-sessions/{collection_id}/provenance/journals/{journal_id}](put-v1-collection-upload-sessions-collection-id-provenance-journals-journal-id.md) | `collection-upload-sessions` | 0 |
-| [PUT /v1/collection-upload-sessions/{collection_id}/volumes/{volume_id}/units/{unit}](put-v1-collection-upload-sessions-collection-id-volumes-volume-id-units-unit.md) | `collection-upload-sessions` | 0 |
-| [DELETE /v1/collections/{collection_id}/provenance/verification](delete-v1-collections-collection-id-provenance-verification.md) | `collections` | 0 |
-| [GET /v1/collections](get-v1-collections.md) | `collections` | 3 |
-| [GET /v1/collections/{collection_id}](get-v1-collections-collection-id.md) | `collections` | 0 |
-| [GET /v1/collections/{collection_id}/archive-copies](get-v1-collections-collection-id-archive-copies.md) | `collections` | 2 |
-| [GET /v1/collections/{collection_id}/derivation](get-v1-collections-collection-id-derivation.md) | `collections` | 0 |
-| [GET /v1/collections/{collection_id}/provenance/files](get-v1-collections-collection-id-provenance-files.md) | `collections` | 2 |
-| [GET /v1/collections/{collection_id}/provenance/files/{path}](get-v1-collections-collection-id-provenance-files-path.md) | `collections` | 1 |
-| [GET /v1/collections/{collection_id}/provenance/journals/{journal_id}](get-v1-collections-collection-id-provenance-journals-journal-id.md) | `collections` | 0 |
-| [GET /v1/collections/{collection_id}/provenance/journals/{journal_id}/agents](get-v1-collections-collection-id-provenance-journals-journal-id-agents.md) | `collections` | 2 |
-| [GET /v1/collections/{collection_id}/provenance/trace/{path}](get-v1-collections-collection-id-provenance-trace-path.md) | `collections` | 3 |
-| [GET /v1/collections/{collection_id}/provenance/verification](get-v1-collections-collection-id-provenance-verification.md) | `collections` | 0 |
-| [GET /v1/collections/{collection_id}/tags](get-v1-collections-collection-id-tags.md) | `collections` | 3 |
-| [GET /v1/collections/{collection_id}/tags:contains](get-v1-collections-collection-id-tags-contains.md) | `collections` | 1 |
-| [POST /v1/collections/{collection_id}/delete](post-v1-collections-collection-id-delete.md) | `collections` | 0 |
-| [POST /v1/collections/{collection_id}/deletion-plan](post-v1-collections-collection-id-deletion-plan.md) | `collections` | 1 |
-| [POST /v1/collections/{collection_id}/provenance/verification](post-v1-collections-collection-id-provenance-verification.md) | `collections` | 0 |
-| [POST /v1/collections/{collection_id}/tags:add](post-v1-collections-collection-id-tags-add.md) | `collections` | 0 |
-| [POST /v1/collections/{collection_id}/tags:remove](post-v1-collections-collection-id-tags-remove.md) | `collections` | 0 |
-| [PUT /v1/collections/{collection_id}/description](put-v1-collections-collection-id-description.md) | `collections` | 0 |
-| [GET /v1/download-quota](get-v1-download-quota.md) | `download-quota` | 0 |
-| [GET /v1/download-quotas](get-v1-download-quotas.md) | `download-quotas` | 2 |
-| [GET /v1/events](get-v1-events.md) | `events` | 2 |
-| [GET /health/live](get-health-live.md) | `health` | 0 |
-| [GET /health/ready](get-health-ready.md) | `health` | 0 |
-| [GET /v1/retrieval-cache](get-v1-retrieval-cache.md) | `retrieval-cache` | 0 |
-| [GET /v1/retrieval-cache/objects](get-v1-retrieval-cache-objects.md) | `retrieval-cache` | 2 |
-| [GET /v1/retrieval-cache/objects/{collection_id}/{source_store}/{object_id}](get-v1-retrieval-cache-objects-collection-id-source-store-object-id.md) | `retrieval-cache` | 0 |
-| [DELETE /v1/retrieval-jobs/{job_id}](delete-v1-retrieval-jobs-job-id.md) | `retrieval-jobs` | 0 |
-| [GET /v1/retrieval-jobs/{job_id}](get-v1-retrieval-jobs-job-id.md) | `retrieval-jobs` | 0 |
-| [GET /v1/retrieval-jobs/{job_id}/content](get-v1-retrieval-jobs-job-id-content.md) | `retrieval-jobs` | 0 |
-| [POST /v1/retrieval-jobs](post-v1-retrieval-jobs.md) | `retrieval-jobs` | 0 |
-| [POST /v1/retrieval-jobs/{job_id}/ack](post-v1-retrieval-jobs-job-id-ack.md) | `retrieval-jobs` | 0 |
-| [POST /v1/retrieval-jobs/{job_id}/renew](post-v1-retrieval-jobs-job-id-renew.md) | `retrieval-jobs` | 0 |
-| [GET /v1/retrieval-plans/{plan_id}](get-v1-retrieval-plans-plan-id.md) | `retrieval-plans` | 0 |
-| [GET /v1/retrieval-plans/{plan_id}/files](get-v1-retrieval-plans-plan-id-files.md) | `retrieval-plans` | 3 |
-| [POST /v1/retrieval-plans](post-v1-retrieval-plans.md) | `retrieval-plans` | 0 |
-| [POST /v1/retrieval-plans/{plan_id}/advance](post-v1-retrieval-plans-plan-id-advance.md) | `retrieval-plans` | 0 |
-| [schemas: AddCollectionUploadTagsRequest](schemas-addcollectionuploadtagsrequest.md) | `schemas` | 1 |
-| [schemas: AppAccessListFiltersOut](schemas-appaccesslistfiltersout.md) | `schemas` | 0 |
-| [schemas: AppAccessListItemOut](schemas-appaccesslistitemout.md) | `schemas` | 0 |
-| [schemas: AppAccessListOut](schemas-appaccesslistout.md) | `schemas` | 2 |
-| [schemas: AppAccessSetOut](schemas-appaccesssetout.md) | `schemas` | 0 |
-| [schemas: AppKeyCreatedOut](schemas-appkeycreatedout.md) | `schemas` | 0 |
-| [schemas: AppKeyListOut](schemas-appkeylistout.md) | `schemas` | 2 |
-| [schemas: AppKeyOut](schemas-appkeyout.md) | `schemas` | 0 |
-| [schemas: AppListOut](schemas-applistout.md) | `schemas` | 2 |
-| [schemas: AppSummaryOut](schemas-appsummaryout.md) | `schemas` | 0 |
-| [schemas: ApplicationAccessGrant](schemas-applicationaccessgrant.md) | `schemas` | 0 |
-| [schemas: ApplicationAccessGrantSet](schemas-applicationaccessgrantset.md) | `schemas` | 2 |
-| [schemas: ApplicationAccessSort](schemas-applicationaccesssort.md) | `schemas` | 0 |
-| [schemas: ApplicationKeyId](schemas-applicationkeyid.md) | `schemas` | 1 |
-| [schemas: ApplicationKeySort](schemas-applicationkeysort.md) | `schemas` | 0 |
-| [schemas: ApplicationName](schemas-applicationname.md) | `schemas` | 0 |
-| [schemas: ApplicationPermission](schemas-applicationpermission.md) | `schemas` | 0 |
-| [schemas: ApplicationResource](schemas-applicationresource.md) | `schemas` | 0 |
-| [schemas: ApplicationSort](schemas-applicationsort.md) | `schemas` | 0 |
-| [schemas: ArchiveCopyCanceledData](schemas-archivecopycanceleddata.md) | `schemas` | 3 |
-| [schemas: ArchiveCopyCanceledEvent](schemas-archivecopycanceledevent.md) | `schemas` | 0 |
-| [schemas: ArchiveCopyCompletedData](schemas-archivecopycompleteddata.md) | `schemas` | 3 |
-| [schemas: ArchiveCopyCompletedEvent](schemas-archivecopycompletedevent.md) | `schemas` | 0 |
-| [schemas: ArchiveCopyIssueData](schemas-archivecopyissuedata.md) | `schemas` | 4 |
-| [schemas: ArchiveCopyIssueEvent](schemas-archivecopyissueevent.md) | `schemas` | 0 |
-| [schemas: ArchiveCopyJobListFiltersOut](schemas-archivecopyjoblistfiltersout.md) | `schemas` | 0 |
-| [schemas: ArchiveCopyJobListOut](schemas-archivecopyjoblistout.md) | `schemas` | 2 |
-| [schemas: ArchiveCopyJobOut](schemas-archivecopyjobout.md) | `schemas` | 0 |
-| [schemas: ArchiveCopyOut](schemas-archivecopyout.md) | `schemas` | 0 |
-| [schemas: ArchiveCopyRequestedData](schemas-archivecopyrequesteddata.md) | `schemas` | 3 |
-| [schemas: ArchiveCopyRequestedEvent](schemas-archivecopyrequestedevent.md) | `schemas` | 0 |
-| [schemas: ArchiveCopyRetirementPlanOut](schemas-archivecopyretirementplanout.md) | `schemas` | 4 |
-| [schemas: ArchiveCopyRetirementRequest](schemas-archivecopyretirementrequest.md) | `schemas` | 0 |
-| [schemas: ArchiveCopyRetirementResultOut](schemas-archivecopyretirementresultout.md) | `schemas` | 0 |
-| [schemas: ArchiveCopyRetirementRetainedOut](schemas-archivecopyretirementretainedout.md) | `schemas` | 0 |
-| [schemas: ArchiveCopyRetirementTargetOut](schemas-archivecopyretirementtargetout.md) | `schemas` | 0 |
-| [schemas: ArchiveCopySort](schemas-archivecopysort.md) | `schemas` | 0 |
-| [schemas: ArchiveCopyState](schemas-archivecopystate.md) | `schemas` | 0 |
-| [schemas: ArchiveDownloadAllowanceOut](schemas-archivedownloadallowanceout.md) | `schemas` | 0 |
-| [schemas: ArchiveStoreListOut](schemas-archivestorelistout.md) | `schemas` | 2 |
-| [schemas: ArchiveStoreName](schemas-archivestorename.md) | `schemas` | 0 |
-| [schemas: ArchiveStoreOut](schemas-archivestoreout.md) | `schemas` | 0 |
-| [schemas: ArchiveStoreSort](schemas-archivestoresort.md) | `schemas` | 0 |
-| [schemas: ArtifactDispositionBatchDocument](schemas-artifactdispositionbatchdocument.md) | `schemas` | 1 |
-| [schemas: ArtifactDispositionDocument](schemas-artifactdispositiondocument.md) | `schemas` | 0 |
-| [schemas: ArtifactDispositionFailureDocument](schemas-artifactdispositionfailuredocument.md) | `schemas` | 1 |
-| [schemas: ArtifactDispositionInputDocument](schemas-artifactdispositioninputdocument.md) | `schemas` | 1 |
-| [schemas: ArtifactDispositionOutputBatchDocument](schemas-artifactdispositionoutputbatchdocument.md) | `schemas` | 1 |
-| [schemas: ArtifactDispositionOutputDocument](schemas-artifactdispositionoutputdocument.md) | `schemas` | 0 |
-| [schemas: ArtifactDispositionOutputPageDocument](schemas-artifactdispositionoutputpagedocument.md) | `schemas` | 1 |
-| [schemas: ArtifactDispositionPageDocument](schemas-artifactdispositionpagedocument.md) | `schemas` | 1 |
-| [schemas: ArtifactDispositionSetDocument](schemas-artifactdispositionsetdocument.md) | `schemas` | 2 |
-| [schemas: ArtifactDispositionSetIdentityDocument](schemas-artifactdispositionsetidentitydocument.md) | `schemas` | 1 |
-| [schemas: ArtifactReceivingSetDocument](schemas-artifactreceivingsetdocument.md) | `schemas` | 1 |
-| [schemas: ArtifactSetAuthorityDocument](schemas-artifactsetauthoritydocument.md) | `schemas` | 2 |
-| [schemas: BrowsePageToken](schemas-browsepagetoken.md) | `schemas` | 1 |
-| [schemas: BrowseQuery](schemas-browsequery.md) | `schemas` | 1 |
-| [schemas: CanonicalRelPath](schemas-canonicalrelpath.md) | `schemas` | 1 |
-| [schemas: CapturedCollectionFileProvenanceDetailOut](schemas-capturedcollectionfileprovenancedetailout.md) | `schemas` | 2 |
-| [schemas: CapturedCollectionFileProvenanceOut](schemas-capturedcollectionfileprovenanceout.md) | `schemas` | 2 |
-| [schemas: CapturedCollectionFileProvenancePage](schemas-capturedcollectionfileprovenancepage.md) | `schemas` | 3 |
-| [schemas: CapturedCollectionFileProvenanceTraceOut](schemas-capturedcollectionfileprovenancetraceout.md) | `schemas` | 4 |
-| [schemas: CapturedCollectionProvenanceVerification](schemas-capturedcollectionprovenanceverification.md) | `schemas` | 2 |
-| [schemas: CapturedFileProvenanceBinding](schemas-capturedfileprovenancebinding.md) | `schemas` | 0 |
-| [schemas: CatalogSyncChangePage](schemas-catalogsyncchangepage.md) | `schemas` | 5 |
-| [schemas: CatalogSyncCheckpoint](schemas-catalogsynccheckpoint.md) | `schemas` | 3 |
-| [schemas: CatalogSyncCollectionPage](schemas-catalogsynccollectionpage.md) | `schemas` | 5 |
-| [schemas: CatalogSyncDelete](schemas-catalogsyncdelete.md) | `schemas` | 1 |
-| [schemas: CatalogSyncDescriptor](schemas-catalogsyncdescriptor.md) | `schemas` | 7 |
-| [schemas: CatalogSyncUpsert](schemas-catalogsyncupsert.md) | `schemas` | 7 |
-| [schemas: ClaimFenceDocument](schemas-claimfencedocument.md) | `schemas` | 1 |
-| [schemas: CollectionArchiveCopyListOut](schemas-collectionarchivecopylistout.md) | `schemas` | 2 |
-| [schemas: CollectionArtifactBatchDocument](schemas-collectionartifactbatchdocument.md) | `schemas` | 1 |
-| [schemas: CollectionArtifactIdentityDocument](schemas-collectionartifactidentitydocument.md) | `schemas` | 2 |
-| [schemas: CollectionArtifactPageDocument](schemas-collectionartifactpagedocument.md) | `schemas` | 1 |
-| [schemas: CollectionDeletedData](schemas-collectiondeleteddata.md) | `schemas` | 5 |
-| [schemas: CollectionDeletedEvent](schemas-collectiondeletedevent.md) | `schemas` | 0 |
-| [schemas: CollectionDeletionArchiveCopyOut](schemas-collectiondeletionarchivecopyout.md) | `schemas` | 0 |
-| [schemas: CollectionDeletionPlanOut](schemas-collectiondeletionplanout.md) | `schemas` | 6 |
-| [schemas: CollectionDeletionResultOut](schemas-collectiondeletionresultout.md) | `schemas` | 2 |
-| [schemas: CollectionDerivationDocument](schemas-collectionderivationdocument.md) | `schemas` | 8 |
-| [schemas: CollectionDerivationResponseDocument](schemas-collectionderivationresponsedocument.md) | `schemas` | 1 |
-| [schemas: CollectionDescription](schemas-collectiondescription.md) | `schemas` | 2 |
-| [schemas: CollectionDescriptionOut](schemas-collectiondescriptionout.md) | `schemas` | 2 |
-| [schemas: CollectionFileProvenanceDetailOut](schemas-collectionfileprovenancedetailout.md) | `schemas` | 0 |
-| [schemas: CollectionFileProvenanceTraceOut](schemas-collectionfileprovenancetraceout.md) | `schemas` | 0 |
-| [schemas: CollectionFinalizedData](schemas-collectionfinalizeddata.md) | `schemas` | 4 |
-| [schemas: CollectionFinalizedEvent](schemas-collectionfinalizedevent.md) | `schemas` | 0 |
-| [schemas: CollectionId](schemas-collectionid.md) | `schemas` | 0 |
-| [schemas: CollectionIdParameter](schemas-collectionidparameter.md) | `schemas` | 0 |
-| [schemas: CollectionProvenanceVerificationJobOut](schemas-collectionprovenanceverificationjobout.md) | `schemas` | 0 |
-| [schemas: CollectionProvenanceVerificationOut](schemas-collectionprovenanceverificationout.md) | `schemas` | 0 |
-| [schemas: CollectionRootBatchDocument](schemas-collectionrootbatchdocument.md) | `schemas` | 1 |
-| [schemas: CollectionRootIdentityDocument](schemas-collectionrootidentitydocument.md) | `schemas` | 2 |
-| [schemas: CollectionRootPageDocument](schemas-collectionrootpagedocument.md) | `schemas` | 1 |
-| [schemas: CollectionSort](schemas-collectionsort.md) | `schemas` | 0 |
-| [schemas: CollectionSummaryOut](schemas-collectionsummaryout.md) | `schemas` | 8 |
-| [schemas: CollectionTag](schemas-collectiontag.md) | `schemas` | 2 |
-| [schemas: CollectionTagListOut](schemas-collectiontaglistout.md) | `schemas` | 4 |
-| [schemas: CollectionTagMembershipOut](schemas-collectiontagmembershipout.md) | `schemas` | 2 |
-| [schemas: CollectionTagMutationOut](schemas-collectiontagmutationout.md) | `schemas` | 4 |
-| [schemas: CollectionTagMutationRequest](schemas-collectiontagmutationrequest.md) | `schemas` | 3 |
-| [schemas: CollectionUploadArtifactCustodyReceiptDocument](schemas-collectionuploadartifactcustodyreceiptdocument.md) | `schemas` | 4 |
-| [schemas: CollectionUploadDiscardPlanOut](schemas-collectionuploaddiscardplanout.md) | `schemas` | 3 |
-| [schemas: CollectionUploadDiscardResultOut](schemas-collectionuploaddiscardresultout.md) | `schemas` | 2 |
-| [schemas: CollectionUploadFileIn](schemas-collectionuploadfilein.md) | `schemas` | 2 |
-| [schemas: CollectionUploadFileOut](schemas-collectionuploadfileout.md) | `schemas` | 2 |
-| [schemas: CollectionUploadListFiltersOut](schemas-collectionuploadlistfiltersout.md) | `schemas` | 0 |
-| [schemas: CollectionUploadListItemOut](schemas-collectionuploadlistitemout.md) | `schemas` | 6 |
-| [schemas: CollectionUploadProvenanceJournalCreateDocument](schemas-collectionuploadprovenancejournalcreatedocument.md) | `schemas` | 2 |
-| [schemas: CollectionUploadProvenanceJournalStatusDocument](schemas-collectionuploadprovenancejournalstatusdocument.md) | `schemas` | 3 |
-| [schemas: CollectionUploadRawDigestBatchDocument](schemas-collectionuploadrawdigestbatchdocument.md) | `schemas` | 2 |
-| [schemas: CollectionUploadRawDigestProgressDocument](schemas-collectionuploadrawdigestprogressdocument.md) | `schemas` | 0 |
-| [schemas: CollectionUploadRawPartsIn](schemas-collectionuploadrawpartsin.md) | `schemas` | 1 |
-| [schemas: CollectionUploadRegistrationConstraintsOut](schemas-collectionuploadregistrationconstraintsout.md) | `schemas` | 0 |
-| [schemas: CollectionUploadSessionFilesRegistrationOut](schemas-collectionuploadsessionfilesregistrationout.md) | `schemas` | 2 |
-| [schemas: CollectionUploadSessionOut](schemas-collectionuploadsessionout.md) | `schemas` | 9 |
-| [schemas: CollectionUploadSort](schemas-collectionuploadsort.md) | `schemas` | 0 |
-| [schemas: CollectionUploadState](schemas-collectionuploadstate.md) | `schemas` | 0 |
-| [schemas: CollectionUploadTagsOut](schemas-collectionuploadtagsout.md) | `schemas` | 0 |
-| [schemas: CollectionUploadUnitAssignmentDocument](schemas-collectionuploadunitassignmentdocument.md) | `schemas` | 1 |
-| [schemas: CollectionUploadUnitSourceDocument](schemas-collectionuploadunitsourcedocument.md) | `schemas` | 3 |
-| [schemas: CollectionUploadUnitWorkDocument](schemas-collectionuploadunitworkdocument.md) | `schemas` | 1 |
-| [schemas: CollectionUploadVolumeSummaryDocument](schemas-collectionuploadvolumesummarydocument.md) | `schemas` | 0 |
-| [schemas: CollectionUploadWorkBatchDocument](schemas-collectionuploadworkbatchdocument.md) | `schemas` | 1 |
-| [schemas: CompleteCollectionUploadCustodyOut](schemas-completecollectionuploadcustodyout.md) | `schemas` | 0 |
-| [schemas: CreateAppKeyRequest](schemas-createappkeyrequest.md) | `schemas` | 0 |
-| [schemas: CreateArchiveCopyRequest](schemas-createarchivecopyrequest.md) | `schemas` | 2 |
-| [schemas: CreateOrResumeCollectionUploadSessionOut](schemas-createorresumecollectionuploadsessionout.md) | `schemas` | 9 |
-| [schemas: CreateOrResumeCollectionUploadSessionRequest](schemas-createorresumecollectionuploadsessionrequest.md) | `schemas` | 5 |
-| [schemas: CreateRetrievalJobRequest](schemas-createretrievaljobrequest.md) | `schemas` | 2 |
-| [schemas: DeleteCollectionRequest](schemas-deletecollectionrequest.md) | `schemas` | 3 |
-| [schemas: DiscardCollectionUploadRequest](schemas-discardcollectionuploadrequest.md) | `schemas` | 0 |
-| [schemas: DownloadQuotaSort](schemas-downloadquotasort.md) | `schemas` | 0 |
-| [schemas: ErrorBody](schemas-errorbody.md) | `schemas` | 1 |
-| [schemas: ErrorResponse](schemas-errorresponse.md) | `schemas` | 0 |
-| [schemas: ExactSetAuthorityDocument](schemas-exactsetauthoritydocument.md) | `schemas` | 2 |
-| [schemas: FailedArchiveCopyOut](schemas-failedarchivecopyout.md) | `schemas` | 0 |
-| [schemas: FailedArchiveRootPublicationOut](schemas-failedarchiverootpublicationout.md) | `schemas` | 1 |
-| [schemas: HTTPValidationError](schemas-httpvalidationerror.md) | `schemas` | 1 |
-| [schemas: HealthResponse](schemas-healthresponse.md) | `schemas` | 0 |
-| [schemas: ImmutableFileIdentityDocument](schemas-immutablefileidentitydocument.md) | `schemas` | 2 |
-| [schemas: IncompleteArchiveCopyOut](schemas-incompletearchivecopyout.md) | `schemas` | 0 |
-| [schemas: KeyDownloadQuotaListOut](schemas-keydownloadquotalistout.md) | `schemas` | 2 |
-| [schemas: KeyDownloadQuotaOut](schemas-keydownloadquotaout.md) | `schemas` | 0 |
-| [schemas: LifecycleEventCursor](schemas-lifecycleeventcursor.md) | `schemas` | 1 |
-| [schemas: ListCollectionFileProvenanceResponse](schemas-listcollectionfileprovenanceresponse.md) | `schemas` | 0 |
-| [schemas: ListCollectionUploadSessionFilesResponse](schemas-listcollectionuploadsessionfilesresponse.md) | `schemas` | 2 |
-| [schemas: ListCollectionUploadSessionsResponse](schemas-listcollectionuploadsessionsresponse.md) | `schemas` | 2 |
-| [schemas: ListCollectionsResponse](schemas-listcollectionsresponse.md) | `schemas` | 3 |
-| [schemas: ListProvenanceJournalAgentsResponse](schemas-listprovenancejournalagentsresponse.md) | `schemas` | 2 |
-| [schemas: MixedCollectionFileProvenancePage](schemas-mixedcollectionfileprovenancepage.md) | `schemas` | 3 |
-| [schemas: MonthlyDownloadQuotaBytes](schemas-monthlydownloadquotabytes.md) | `schemas` | 0 |
-| [schemas: MutateAppAccessRequest](schemas-mutateappaccessrequest.md) | `schemas` | 0 |
-| [schemas: OmittedCollectionFileProvenanceDetailOut](schemas-omittedcollectionfileprovenancedetailout.md) | `schemas` | 2 |
-| [schemas: OmittedCollectionFileProvenanceOut](schemas-omittedcollectionfileprovenanceout.md) | `schemas` | 2 |
-| [schemas: OmittedCollectionFileProvenancePage](schemas-omittedcollectionfileprovenancepage.md) | `schemas` | 2 |
-| [schemas: OmittedCollectionFileProvenanceTraceOut](schemas-omittedcollectionfileprovenancetraceout.md) | `schemas` | 4 |
-| [schemas: OmittedCollectionProvenanceVerification](schemas-omittedcollectionprovenanceverification.md) | `schemas` | 1 |
-| [schemas: OmittedFileProvenanceBinding](schemas-omittedfileprovenancebinding.md) | `schemas` | 0 |
-| [schemas: OperationIdentityDocument](schemas-operationidentitydocument.md) | `schemas` | 1 |
-| [schemas: OutcomeSetDocument](schemas-outcomesetdocument.md) | `schemas` | 2 |
-| [schemas: PendingArchiveRootPublicationOut](schemas-pendingarchiverootpublicationout.md) | `schemas` | 1 |
-| [schemas: PendingCollectionUploadCustodyOut](schemas-pendingcollectionuploadcustodyout.md) | `schemas` | 2 |
-| [schemas: PortableCollectionHeader](schemas-portablecollectionheader.md) | `schemas` | 2 |
-| [schemas: PortableCollectionInventoryAuthority](schemas-portablecollectioninventoryauthority.md) | `schemas` | 1 |
-| [schemas: PortableCollectionInventoryPage](schemas-portablecollectioninventorypage.md) | `schemas` | 2 |
-| [schemas: ProcessingClaimAbandonDocument](schemas-processingclaimabandondocument.md) | `schemas` | 1 |
-| [schemas: ProcessingClaimConsumerDocument](schemas-processingclaimconsumerdocument.md) | `schemas` | 1 |
-| [schemas: ProcessingClaimCreateDocument](schemas-processingclaimcreatedocument.md) | `schemas` | 6 |
-| [schemas: ProcessingClaimDocument](schemas-processingclaimdocument.md) | `schemas` | 13 |
-| [schemas: ProcessingClaimFenceDocument](schemas-processingclaimfencedocument.md) | `schemas` | 0 |
-| [schemas: ProcessingClaimFiltersDocument](schemas-processingclaimfiltersdocument.md) | `schemas` | 0 |
-| [schemas: ProcessingClaimOutcomeSettlementDocument](schemas-processingclaimoutcomesettlementdocument.md) | `schemas` | 0 |
-| [schemas: ProcessingClaimOutcomesSettleDocument](schemas-processingclaimoutcomessettledocument.md) | `schemas` | 0 |
-| [schemas: ProcessingClaimPageDocument](schemas-processingclaimpagedocument.md) | `schemas` | 2 |
-| [schemas: ProcessingClaimPlanDocument](schemas-processingclaimplandocument.md) | `schemas` | 5 |
-| [schemas: ProcessingClaimPlanSealDocument](schemas-processingclaimplansealdocument.md) | `schemas` | 4 |
-| [schemas: ProcessingClaimRenewDocument](schemas-processingclaimrenewdocument.md) | `schemas` | 1 |
-| [schemas: ProcessingClaimRestartDocument](schemas-processingclaimrestartdocument.md) | `schemas` | 1 |
-| [schemas: ProcessingClaimSettleDocument](schemas-processingclaimsettledocument.md) | `schemas` | 0 |
-| [schemas: ProcessingClaimSort](schemas-processingclaimsort.md) | `schemas` | 0 |
-| [schemas: ProcessingOutcomeBindingDocument](schemas-processingoutcomebindingdocument.md) | `schemas` | 1 |
-| [schemas: ProcessingOutcomeIdentityDocument](schemas-processingoutcomeidentitydocument.md) | `schemas` | 2 |
-| [schemas: ProcessingOutcomePageDocument](schemas-processingoutcomepagedocument.md) | `schemas` | 1 |
-| [schemas: ProvenanceEntryId](schemas-provenanceentryid.md) | `schemas` | 0 |
-| [schemas: ProvenanceExternalStateReferenceOut](schemas-provenanceexternalstatereferenceout.md) | `schemas` | 1 |
-| [schemas: ProvenanceJournalAgentOut](schemas-provenancejournalagentout.md) | `schemas` | 0 |
-| [schemas: ProvenanceJournalId](schemas-provenancejournalid.md) | `schemas` | 0 |
-| [schemas: ProvenanceJournalOut](schemas-provenancejournalout.md) | `schemas` | 5 |
-| [schemas: ProvenanceSort](schemas-provenancesort.md) | `schemas` | 0 |
-| [schemas: ProvenanceStateId](schemas-provenancestateid.md) | `schemas` | 0 |
-| [schemas: ProvenanceStatus](schemas-provenancestatus.md) | `schemas` | 0 |
-| [schemas: ProvenanceTraceExternalStateReferenceItemOut](schemas-provenancetraceexternalstatereferenceitemout.md) | `schemas` | 0 |
-| [schemas: ProvenanceTraceItemOut](schemas-provenancetraceitemout.md) | `schemas` | 0 |
-| [schemas: ProvenanceTraceJournalItemOut](schemas-provenancetracejournalitemout.md) | `schemas` | 0 |
-| [schemas: ReceivingSetDocument](schemas-receivingsetdocument.md) | `schemas` | 1 |
-| [schemas: RecipeIdentityDocument](schemas-recipeidentitydocument.md) | `schemas` | 1 |
-| [schemas: RegisterCollectionUploadSessionFilesRequest](schemas-registercollectionuploadsessionfilesrequest.md) | `schemas` | 1 |
-| [schemas: RenewRetrievalJobRequest](schemas-renewretrievaljobrequest.md) | `schemas` | 0 |
-| [schemas: ReplaceAppAccessRequest](schemas-replaceappaccessrequest.md) | `schemas` | 0 |
-| [schemas: ReplaceCollectionDescriptionRequest](schemas-replacecollectiondescriptionrequest.md) | `schemas` | 0 |
-| [schemas: RetireArchiveCopyRequest](schemas-retirearchivecopyrequest.md) | `schemas` | 0 |
-| [schemas: RetirementClaimReferenceDocument](schemas-retirementclaimreferencedocument.md) | `schemas` | 4 |
-| [schemas: RetrievalCacheObjectListFiltersOut](schemas-retrievalcacheobjectlistfiltersout.md) | `schemas` | 0 |
-| [schemas: RetrievalCacheObjectListOut](schemas-retrievalcacheobjectlistout.md) | `schemas` | 2 |
-| [schemas: RetrievalCacheObjectOut](schemas-retrievalcacheobjectout.md) | `schemas` | 1 |
-| [schemas: RetrievalCachePolicyOut](schemas-retrievalcachepolicyout.md) | `schemas` | 0 |
-| [schemas: RetrievalCacheProtection](schemas-retrievalcacheprotection.md) | `schemas` | 0 |
-| [schemas: RetrievalCacheSort](schemas-retrievalcachesort.md) | `schemas` | 0 |
-| [schemas: RetrievalCacheState](schemas-retrievalcachestate.md) | `schemas` | 0 |
-| [schemas: RetrievalCacheStatusOut](schemas-retrievalcachestatusout.md) | `schemas` | 1 |
-| [schemas: RetrievalCacheStoreName](schemas-retrievalcachestorename.md) | `schemas` | 0 |
-| [schemas: RetrievalCacheStoreStatusOut](schemas-retrievalcachestorestatusout.md) | `schemas` | 0 |
-| [schemas: RetrievalCanceledData](schemas-retrievalcanceleddata.md) | `schemas` | 6 |
-| [schemas: RetrievalCanceledEvent](schemas-retrievalcanceledevent.md) | `schemas` | 0 |
-| [schemas: RetrievalCompletedData](schemas-retrievalcompleteddata.md) | `schemas` | 5 |
-| [schemas: RetrievalCompletedEvent](schemas-retrievalcompletedevent.md) | `schemas` | 0 |
-| [schemas: RetrievalExpiredData](schemas-retrievalexpireddata.md) | `schemas` | 5 |
-| [schemas: RetrievalExpiredEvent](schemas-retrievalexpiredevent.md) | `schemas` | 0 |
-| [schemas: RetrievalFailedData](schemas-retrievalfaileddata.md) | `schemas` | 6 |
-| [schemas: RetrievalFailedEvent](schemas-retrievalfailedevent.md) | `schemas` | 0 |
-| [schemas: RetrievalFileReferenceDocument](schemas-retrievalfilereferencedocument.md) | `schemas` | 0 |
-| [schemas: RetrievalIssueData](schemas-retrievalissuedata.md) | `schemas` | 6 |
-| [schemas: RetrievalIssueEvent](schemas-retrievalissueevent.md) | `schemas` | 0 |
-| [schemas: RetrievalJobOut](schemas-retrievaljobout.md) | `schemas` | 1 |
-| [schemas: RetrievalPlanFileOut](schemas-retrievalplanfileout.md) | `schemas` | 2 |
-| [schemas: RetrievalPlanFilePageOut](schemas-retrievalplanfilepageout.md) | `schemas` | 4 |
-| [schemas: RetrievalPlanOut](schemas-retrievalplanout.md) | `schemas` | 2 |
-| [schemas: RetrievalPlanRequest](schemas-retrievalplanrequest.md) | `schemas` | 2 |
-| [schemas: RetrievalReadyData](schemas-retrievalreadydata.md) | `schemas` | 6 |
-| [schemas: RetrievalReadyEvent](schemas-retrievalreadyevent.md) | `schemas` | 0 |
-| [schemas: RetrievalRenewedData](schemas-retrievalreneweddata.md) | `schemas` | 6 |
-| [schemas: RetrievalRenewedEvent](schemas-retrievalrenewedevent.md) | `schemas` | 0 |
-| [schemas: RetrievalRequestedData](schemas-retrievalrequesteddata.md) | `schemas` | 6 |
-| [schemas: RetrievalRequestedEvent](schemas-retrievalrequestedevent.md) | `schemas` | 0 |
-| [schemas: RiverhogActor](schemas-riverhogactor.md) | `schemas` | 2 |
-| [schemas: RiverhogEventCause](schemas-riverhogeventcause.md) | `schemas` | 4 |
-| [schemas: RiverhogEventPage](schemas-riverhogeventpage.md) | `schemas` | 1 |
-| [schemas: RiverhogLifecycleEvent](schemas-riverhoglifecycleevent.md) | `schemas` | 0 |
-| [schemas: SearchFileOut](schemas-searchfileout.md) | `schemas` | 2 |
-| [schemas: SearchResponse](schemas-searchresponse.md) | `schemas` | 2 |
-| [schemas: SearchSort](schemas-searchsort.md) | `schemas` | 0 |
-| [schemas: SetKeyDownloadQuotaRequest](schemas-setkeydownloadquotarequest.md) | `schemas` | 0 |
-| [schemas: SortOrder](schemas-sortorder.md) | `schemas` | 0 |
-| [schemas: TagListOut](schemas-taglistout.md) | `schemas` | 2 |
-| [schemas: TagSummaryOut](schemas-tagsummaryout.md) | `schemas` | 0 |
-| [schemas: TransformCapabilityCreateDocument](schemas-transformcapabilitycreatedocument.md) | `schemas` | 2 |
-| [schemas: TransformCapabilityDocument](schemas-transformcapabilitydocument.md) | `schemas` | 5 |
-| [schemas: UploadedArchiveCopyOut](schemas-uploadedarchivecopyout.md) | `schemas` | 0 |
-| [schemas: UploadedArchiveRootPublicationOut](schemas-uploadedarchiverootpublicationout.md) | `schemas` | 1 |
-| [schemas: ValidationError](schemas-validationerror.md) | `schemas` | 1 |
-| [schemas: _FileProvenanceOut](schemas-fileprovenanceout.md) | `schemas` | 0 |
-| [GET /v1/search](get-v1-search.md) | `search` | 2 |
-| [securitySchemes: HTTPBearer](securityschemes-httpbearer.md) | `securitySchemes` | 0 |
-| [riverhog HTTP service](riverhog-http-service.md) | `service` | 0 |
-| [GET /v1/tags](get-v1-tags.md) | `tags` | 2 |
+| Family | Contract elements | Extent decisions |
+|---|---:|---:|
+| [app-key-access](families/app-key-access/index.md) | 1 | 2 |
+| [apps](families/apps/index.md) | 9 | 10 |
+| [archive](families/archive/index.md) | 8 | 4 |
+| [catalog](families/catalog/index.md) | 1 | 3 |
+| [catalog-sync](families/catalog-sync/index.md) | 3 | 6 |
+| [collection-processing-claims](families/collection-processing-claims/index.md) | 27 | 37 |
+| [collection-upload-sessions](families/collection-upload-sessions/index.md) | 19 | 6 |
+| [collections](families/collections/index.md) | 19 | 18 |
+| [download-quota](families/download-quota/index.md) | 1 | 0 |
+| [download-quotas](families/download-quotas/index.md) | 1 | 2 |
+| [events](families/events/index.md) | 1 | 2 |
+| [health](families/health/index.md) | 2 | 0 |
+| [retrieval-cache](families/retrieval-cache/index.md) | 3 | 2 |
+| [retrieval-jobs](families/retrieval-jobs/index.md) | 6 | 0 |
+| [retrieval-plans](families/retrieval-plans/index.md) | 4 | 3 |
+| [schemas](families/schemas/index.md) | 253 | 394 |
+| [search](families/search/index.md) | 1 | 2 |
+| [securitySchemes](families/securityschemes/index.md) | 1 | 0 |
+| [service](families/service/index.md) | 1 | 0 |
+| [tags](families/tags/index.md) | 1 | 2 |

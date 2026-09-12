@@ -27,7 +27,13 @@
 - Proof: `make operation-qualification`
 - Proof: `make compose-smoke`
 
-## Contract
+## Referenced contract dossiers
+
+- [schemas: ApplicationAccessGrantSet](schemas-applicationaccessgrantset.md)
+- [schemas: ApplicationKeyId](schemas-applicationkeyid.md)
+- [schemas: ApplicationName](schemas-applicationname.md)
+
+## Contract summary
 
 - `title`: AppAccessSetOut
 - `type`: object
@@ -39,3 +45,33 @@
 | `access` | yes | #/components/schemas/ApplicationAccessGrantSet |  |
 | `app` | yes | #/components/schemas/ApplicationName |  |
 | `key_id` | yes | #/components/schemas/ApplicationKeyId |  |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 8a2fe582b3f2d8be4000b822c697d94e382f3620ce1c2e6f75bafe2848bc27d9 -->
+
+```json
+{
+  "additionalProperties": false,
+  "properties": {
+    "access": {
+      "$ref": "#/components/schemas/ApplicationAccessGrantSet"
+    },
+    "app": {
+      "$ref": "#/components/schemas/ApplicationName"
+    },
+    "key_id": {
+      "$ref": "#/components/schemas/ApplicationKeyId"
+    }
+  },
+  "required": [
+    "app",
+    "key_id",
+    "access"
+  ],
+  "title": "AppAccessSetOut",
+  "type": "object"
+}
+```

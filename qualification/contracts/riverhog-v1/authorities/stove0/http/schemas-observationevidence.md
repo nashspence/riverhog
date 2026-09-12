@@ -27,7 +27,12 @@
 - Proof: `make operation-qualification`
 - Proof: `make compose-smoke`
 
-## Contract
+## Referenced contract dossiers
+
+- [schemas: ObservationRequest](schemas-observationrequest.md)
+- [schemas: ObservationResult](schemas-observationresult.md)
+
+## Contract summary
 
 - `title`: ObservationEvidence
 - `description`: Complete routing evidence: immutable request plus accepted result.
@@ -39,3 +44,30 @@
 |---|---:|---|---|
 | `request` | yes | #/components/schemas/ObservationRequest |  |
 | `result` | yes | #/components/schemas/ObservationResult |  |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: a06d5d9e675fcc32ff369ef0d620be72d9a5f4c330e1025f97210e12985be6cc -->
+
+```json
+{
+  "additionalProperties": false,
+  "description": "Complete routing evidence: immutable request plus accepted result.",
+  "properties": {
+    "request": {
+      "$ref": "#/components/schemas/ObservationRequest"
+    },
+    "result": {
+      "$ref": "#/components/schemas/ObservationResult"
+    }
+  },
+  "required": [
+    "request",
+    "result"
+  ],
+  "title": "ObservationEvidence",
+  "type": "object"
+}
+```

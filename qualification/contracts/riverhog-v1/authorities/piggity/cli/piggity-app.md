@@ -28,6 +28,26 @@
 - Proof: `make dist-smoke`
 - Proof: `make operation-qualification`
 
-## Contract
+## Contract summary
 
 - Parser name: `app`
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+### `/external_contract/cli/piggity/commands/app/name`
+
+<!-- exact-contract-value: 4e5ef144c51cd25230c144c3e1d8e842b9860b7a3cec2699d4e24e6517fc4b20 -->
+
+```json
+"app"
+```
+
+### `/external_contract/cli/piggity/commands/app/parameters`
+
+<!-- exact-contract-value: 4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945 -->
+
+```json
+[]
+```

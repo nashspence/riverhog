@@ -4,6 +4,16 @@
 
 Contract elements: **7** · Extent decisions: **3**
 
+| Family | Count |
+|---|---:|
+| `riverhog-ftp-adapter check-config` | 1 |
+| `riverhog-ftp-adapter flush` | 1 |
+| `riverhog-ftp-adapter listen` | 1 |
+| `riverhog-ftp-adapter run` | 1 |
+| `riverhog-ftp-adapter serve` | 1 |
+| `riverhog-ftp-adapter status` | 1 |
+| `root` | 1 |
+
 | Policy | Count |
 |---|---:|
 | `compatibility/cli/v1` | 7 |

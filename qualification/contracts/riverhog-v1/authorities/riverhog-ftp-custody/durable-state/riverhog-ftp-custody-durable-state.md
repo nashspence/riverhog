@@ -27,6 +27,25 @@
 - Proof: `make release-check`
 - Proof: `make database-qualification`
 
-## Contract
+## Contract summary
 
 - `format`: riverhog-ftp-adapter-claim/v1
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: a1cdcddcc2603b2a8b9a3d31106e7a4f808cf1c62f3ff7a5e45b180e9deee710 -->
+
+```json
+{
+  "distribution": "riverhog-ftp-adapter",
+  "fixture_sha256s": [
+    "4ade71a24a784d4893d8f447fedecbab4cdde5257d21e174b2ccd654027be95f",
+    "565b24bc77ebeee74f70f6c608e099956666c3589ed85146fcea7e77d9f25356"
+  ],
+  "format": "riverhog-ftp-adapter-claim/v1",
+  "head": "v1",
+  "id": "riverhog-ftp-custody"
+}
+```

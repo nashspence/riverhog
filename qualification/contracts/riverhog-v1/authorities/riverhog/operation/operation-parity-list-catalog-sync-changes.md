@@ -33,7 +33,7 @@
 - [GET /v1/catalog-sync/changes](../http/get-v1-catalog-sync-changes.md)
 - [piggity catalog-sync changes](../../piggity/cli/piggity-catalog-sync-changes.md)
 
-## Contract
+## Contract summary
 
 | Concern | Contract |
 |---|---|
@@ -47,3 +47,30 @@
 | `provider_evidence` | None |
 | `read_collection` | {"cursor_parameter": "cursor", "kind": "cursor-feed", "limit_parameter": "limit"} |
 | `response_authority` | canonical-document |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: b378a5e8238e25c0c199abb1583169cd7e8ea53f23b1c18e87e2a31f15582491 -->
+
+```json
+{
+  "application": "riverhog",
+  "classification": "human-cli+json",
+  "cli_commands": [
+    "catalog-sync changes"
+  ],
+  "client": "ApiClient",
+  "method": "GET",
+  "operation_id": "list_catalog_sync_changes",
+  "path": "/v1/catalog-sync/changes",
+  "provider_evidence": null,
+  "read_collection": {
+    "cursor_parameter": "cursor",
+    "kind": "cursor-feed",
+    "limit_parameter": "limit"
+  },
+  "response_authority": "canonical-document"
+}
+```

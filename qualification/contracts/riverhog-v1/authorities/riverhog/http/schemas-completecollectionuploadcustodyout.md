@@ -27,7 +27,7 @@
 - Proof: `make operation-qualification`
 - Proof: `make compose-smoke`
 
-## Contract
+## Contract summary
 
 - `title`: CompleteCollectionUploadCustodyOut
 - `type`: object
@@ -37,3 +37,27 @@
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | `state` | yes | string |  |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: e2710a21f095aac00ba34d113f099bded56cbe528cf70ce4f2f25eb490f5b758 -->
+
+```json
+{
+  "additionalProperties": false,
+  "properties": {
+    "state": {
+      "const": "complete",
+      "title": "State",
+      "type": "string"
+    }
+  },
+  "required": [
+    "state"
+  ],
+  "title": "CompleteCollectionUploadCustodyOut",
+  "type": "object"
+}
+```

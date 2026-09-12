@@ -27,7 +27,18 @@
 - Proof: `make unit`
 - Proof: `make compose-smoke`
 
-## Contract
+## Contract summary
+
+| Field | Shape |
+|---|---|
+| `consumers` | array (1 items) |
+| `name` | "STOVE0_FFPROBE_SAMPLING_OBSERVER_WORKSPACE" |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: c301b6b4fcc48e78c0ead5cf7db7769735e0fbf678d702bf701a23408a88ff83 -->
 
 ```json
 {

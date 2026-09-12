@@ -33,7 +33,7 @@
 - [GET /v1/catalog-sync/collections](../http/get-v1-catalog-sync-collections.md)
 - [piggity catalog-sync collections](../../piggity/cli/piggity-catalog-sync-collections.md)
 
-## Contract
+## Contract summary
 
 | Concern | Contract |
 |---|---|
@@ -47,3 +47,31 @@
 | `provider_evidence` | None |
 | `read_collection` | {"authority": "catalog-sync-bootstrap", "cursor_parameter": "cursor", "kind": "exact-authority-page", "limit_parameter": "limit"} |
 | `response_authority` | canonical-document |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 22d10a82c92bd18d6191764e205b850f51ffa4d2eb59bd601648c38b35bd2e78 -->
+
+```json
+{
+  "application": "riverhog",
+  "classification": "human-cli+json",
+  "cli_commands": [
+    "catalog-sync collections"
+  ],
+  "client": "ApiClient",
+  "method": "GET",
+  "operation_id": "list_catalog_sync_collections",
+  "path": "/v1/catalog-sync/collections",
+  "provider_evidence": null,
+  "read_collection": {
+    "authority": "catalog-sync-bootstrap",
+    "cursor_parameter": "cursor",
+    "kind": "exact-authority-page",
+    "limit_parameter": "limit"
+  },
+  "response_authority": "canonical-document"
+}
+```

@@ -27,7 +27,18 @@
 - Proof: `make unit`
 - Proof: `make compose-smoke`
 
-## Contract
+## Contract summary
+
+| Field | Shape |
+|---|---|
+| `consumers` | array (1 items) |
+| `name` | "RIVERHOG_CATALOG_SYNC_BOOTSTRAP_LIFETIME" |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 7861381bd46ac3942751c1911dddf1719991b529a02d6fbe21fdaa5d72b7e4ed -->
 
 ```json
 {

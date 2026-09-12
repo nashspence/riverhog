@@ -27,7 +27,7 @@
 - Proof: `make operation-qualification`
 - Proof: `make compose-smoke`
 
-## Contract
+## Contract summary
 
 - `title`: ArtifactDispositionSetIdentity
 - `description`: Small identity for one sealed claim-scoped relational disposition set.
@@ -41,3 +41,41 @@
 | `output_artifact_count` | yes | integer |  |
 | `output_edge_count` | yes | integer |  |
 | `sha256` | yes | string |  |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: da785cc36d08d32c679afa80abf4b3cf2f569a2109a8cb53b212571d59d8b187 -->
+
+```json
+{
+  "description": "Small identity for one sealed claim-scoped relational disposition set.",
+  "properties": {
+    "disposition_count": {
+      "title": "Disposition Count",
+      "type": "integer"
+    },
+    "output_artifact_count": {
+      "title": "Output Artifact Count",
+      "type": "integer"
+    },
+    "output_edge_count": {
+      "title": "Output Edge Count",
+      "type": "integer"
+    },
+    "sha256": {
+      "title": "Sha256",
+      "type": "string"
+    }
+  },
+  "required": [
+    "disposition_count",
+    "output_edge_count",
+    "output_artifact_count",
+    "sha256"
+  ],
+  "title": "ArtifactDispositionSetIdentity",
+  "type": "object"
+}
+```

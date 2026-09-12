@@ -27,7 +27,19 @@
 - Proof: `make dist-smoke`
 - Proof: `make build`
 
-## Contract
+## Contract summary
+
+| Field | Shape |
+|---|---|
+| `distribution` | "lifecycle-events" |
+| `exports` | object (12 fields) |
+| `module` | "lifecycle_events" |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 4d287dd1a47decf294ed3ca4223dbd5292015376ff5148180676bf2890491805 -->
 
 ```json
 {

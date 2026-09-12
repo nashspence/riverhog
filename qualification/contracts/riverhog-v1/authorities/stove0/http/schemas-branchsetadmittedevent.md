@@ -27,7 +27,11 @@
 - Proof: `make operation-qualification`
 - Proof: `make compose-smoke`
 
-## Contract
+## Referenced contract dossiers
+
+- [schemas: BranchSetAdmittedEventData](schemas-branchsetadmittedeventdata.md)
+
+## Contract summary
 
 - `title`: BranchSetAdmittedEvent
 - `type`: object
@@ -44,3 +48,66 @@
 | `subject` | yes | string |  |
 | `time` | yes | string |  |
 | `type` | yes | string |  |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 8aa2c593f2c75b53aa50c593b8c5037816a0439827d84adb52b65acd2b7e84d4 -->
+
+```json
+{
+  "additionalProperties": false,
+  "properties": {
+    "data": {
+      "$ref": "#/components/schemas/BranchSetAdmittedEventData"
+    },
+    "datacontenttype": {
+      "const": "application/json",
+      "default": "application/json",
+      "title": "Datacontenttype",
+      "type": "string"
+    },
+    "id": {
+      "minLength": 1,
+      "title": "Id",
+      "type": "string"
+    },
+    "source": {
+      "const": "urn:riverhog:stove0",
+      "title": "Source",
+      "type": "string"
+    },
+    "specversion": {
+      "const": "1.0",
+      "default": "1.0",
+      "title": "Specversion",
+      "type": "string"
+    },
+    "subject": {
+      "minLength": 1,
+      "title": "Subject",
+      "type": "string"
+    },
+    "time": {
+      "title": "Time",
+      "type": "string"
+    },
+    "type": {
+      "const": "io.riverhog.stove0.branch-set.admitted",
+      "title": "Type",
+      "type": "string"
+    }
+  },
+  "required": [
+    "id",
+    "source",
+    "type",
+    "subject",
+    "time",
+    "data"
+  ],
+  "title": "BranchSetAdmittedEvent",
+  "type": "object"
+}
+```

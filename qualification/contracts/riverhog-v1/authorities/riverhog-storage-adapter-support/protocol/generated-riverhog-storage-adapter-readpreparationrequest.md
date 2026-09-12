@@ -34,7 +34,7 @@
 |---|---|---|---|
 | cardinality | items | `operational_policy` | maximum=None, reason=no-declared-semantic-maximum |
 
-## Contract
+## Contract summary
 
 - `title`: ReadPreparationRequest
 - `type`: object
@@ -50,3 +50,62 @@
 | Definition | Shape |
 |---|---|
 | `ObjectLocator` | object |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: a1096dde3495131448c778944da805d24cbfabda7630aa9d927684235cb42635 -->
+
+```json
+{
+  "$defs": {
+    "ObjectLocator": {
+      "additionalProperties": false,
+      "properties": {
+        "object_path": {
+          "maxLength": 4096,
+          "minLength": 1,
+          "title": "Object Path",
+          "type": "string"
+        },
+        "revision": {
+          "anyOf": [
+            {
+              "maxLength": 2000,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Revision"
+        }
+      },
+      "required": [
+        "object_path"
+      ],
+      "title": "ObjectLocator",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "objects": {
+      "items": {
+        "$ref": "#/$defs/ObjectLocator"
+      },
+      "minItems": 1,
+      "title": "Objects",
+      "type": "array"
+    }
+  },
+  "required": [
+    "objects"
+  ],
+  "title": "ReadPreparationRequest",
+  "type": "object"
+}
+```

@@ -103,6 +103,47 @@ def test_atlas_rollups_and_dossiers_are_exact_and_descriptive() -> None:
     assert hashlib.sha256(checked.files[root["atlas"]["root"]]).hexdigest() == next(
         item["sha256"] for item in documents if item["kind"] == "root-index"
     )
+    assert max(len(payload) for payload in checked.files.values()) <= atlas.MAX_HUMAN_DOCUMENT_BYTES
+    assert all(b"## Complete owned contract" in checked.files[item["dossier"]] for item in elements)
+
+
+def test_human_entrypoint_exposes_closure_exclusions_and_relationships() -> None:
+    checked = atlas.load_atlas(ARTIFACT)
+    root = checked.root
+    root_page = checked.files[root["atlas"]["root"]].decode()
+    exclusions_page = checked.files["riverhog-v1/exclusions/index.md"].decode()
+    relationships_page = checked.files["riverhog-v1/relationships/index.md"].decode()
+    relationship = root["atlas"]["relationships"]
+
+    assert root_page.index("## Closure status") < root_page.index("## Complete authority inventory")
+    assert root_page.index("## Aggregate contract shape") < root_page.index(
+        "## Complete authority inventory"
+    )
+    assert all(f"| `{name}` | 0 |" in root_page for name in root["discovery"]["anomalies"])
+    assert "Relationship-aware boundary map" in root_page
+    assert exclusions_page.count("| `excluded:") == root["counts"]["excluded_candidates"]
+    assert "## Riverhog service boundary" in relationships_page
+    assert "Public service | [riverhog]" in relationships_page
+    assert "Packaged implementation | [riverhog-server]" in relationships_page
+    assert relationship["schema"] == atlas.RELATIONSHIP_SCHEMA
+    assert any(item["kind"] == "runtime-image" for item in relationship["nodes"])
+    assert any(item["type"] == "implements-protocol" for item in relationship["edges"])
+
+
+def test_large_interfaces_route_through_semantic_families_and_local_references() -> None:
+    checked = atlas.load_atlas(ARTIFACT)
+    documents = checked.root["atlas"]["documents"]
+    family_documents = [item for item in documents if item["kind"] == "family-index"]
+
+    assert family_documents
+    assert all(item["counts"]["contract_elements"] > 0 for item in family_documents)
+    retrieval_cache = checked.files[
+        "riverhog-v1/authorities/riverhog/http/get-v1-retrieval-cache.md"
+    ].decode()
+    assert "## Referenced contract dossiers" in retrieval_cache
+    assert (
+        "[schemas: RetrievalCacheStatusOut](schemas-retrievalcachestatusout.md)" in retrieval_cache
+    )
 
 
 def test_policy_registry_is_contract_focused_and_application_counted() -> None:

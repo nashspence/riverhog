@@ -35,7 +35,7 @@
 | length | characters | `contract_max` | maximum=4000, minimum=1, reason=schema-maximum |
 | length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
 
-## Contract
+## Contract summary
 
 - `title`: WriteSegmentReceipt
 - `type`: object
@@ -48,3 +48,53 @@
 | `segment_token` | yes | string |  |
 | `stored_bytes` | yes | integer |  |
 | `stored_sha256` | no | object (3 fields) |  |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 78f82d84ff68316a37a5d4d95d212d082ea0eada74506b6745aee67978f169da -->
+
+```json
+{
+  "additionalProperties": false,
+  "properties": {
+    "number": {
+      "minimum": 1,
+      "title": "Number",
+      "type": "integer"
+    },
+    "segment_token": {
+      "maxLength": 4000,
+      "minLength": 1,
+      "title": "Segment Token",
+      "type": "string"
+    },
+    "stored_bytes": {
+      "minimum": 1,
+      "title": "Stored Bytes",
+      "type": "integer"
+    },
+    "stored_sha256": {
+      "anyOf": [
+        {
+          "pattern": "^[0-9a-f]{64}$",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Stored Sha256"
+    }
+  },
+  "required": [
+    "number",
+    "segment_token",
+    "stored_bytes"
+  ],
+  "title": "WriteSegmentReceipt",
+  "type": "object"
+}
+```

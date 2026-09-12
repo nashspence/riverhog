@@ -26,7 +26,15 @@
 - Proof: `make release-check`
 - Proof: `make database-qualification`
 
-## Contract
+## Contract summary
+
+- Shape: "riverhog-durable-state-inventory/v1"
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 33e0f7a0e9f84749771439a08cfacb4ca4a4bb137d3d73c7ceed47d9dc782083 -->
 
 ```json
 "riverhog-durable-state-inventory/v1"

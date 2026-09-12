@@ -35,7 +35,7 @@
 | length | characters | `contract_max` | maximum=4000, minimum=1, reason=schema-maximum |
 | value | schema-value | `contract_max` | maximum=5, minimum=1, reason=schema-maximum |
 
-## Contract
+## Contract summary
 
 - `title`: EvaluationReviewIn
 - `type`: object
@@ -46,3 +46,68 @@
 |---|---:|---|---|
 | `note` | no | object (2 fields) |  |
 | `rating` | no | object (2 fields) |  |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 22ba7fe36a5ebd9409bb48d166bbeac955c2bf05eeb07b27d5a6185157f277a3 -->
+
+```json
+{
+  "additionalProperties": false,
+  "anyOf": [
+    {
+      "properties": {
+        "rating": {
+          "type": "integer"
+        }
+      },
+      "required": [
+        "rating"
+      ]
+    },
+    {
+      "properties": {
+        "note": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "note"
+      ]
+    }
+  ],
+  "properties": {
+    "note": {
+      "anyOf": [
+        {
+          "maxLength": 4000,
+          "minLength": 1,
+          "pattern": "^\\S(?:[\\s\\S]*\\S)?$",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Note"
+    },
+    "rating": {
+      "anyOf": [
+        {
+          "maximum": 5,
+          "minimum": 1,
+          "type": "integer"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Rating"
+    }
+  },
+  "title": "EvaluationReviewIn",
+  "type": "object"
+}
+```

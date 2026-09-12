@@ -27,7 +27,21 @@
 - Proof: `make release-check`
 - Proof: `make build`
 
-## Contract
+## Contract summary
+
+| Field | Shape |
+|---|---|
+| `group` | "riverhog.provenance-contracts" |
+| `owner` | "riverhog-provenance-contracts" |
+| `owner_constant` | "PROVENANCE_CONTRACT_ENTRY_POINT_GROUP" |
+| `owner_path` | "packages/riverhog-provenance-contracts" |
+| `providers` | array (3 items) |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 95c7cde4ca6777b48f9b3333bd7539e7b96cc1fdd0e18aae6ebbefae97dcb7e6 -->
 
 ```json
 {

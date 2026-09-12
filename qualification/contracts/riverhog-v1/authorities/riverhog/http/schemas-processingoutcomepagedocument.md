@@ -28,13 +28,18 @@
 - Proof: `make operation-qualification`
 - Proof: `make compose-smoke`
 
+## Referenced contract dossiers
+
+- [schemas: ExactSetAuthorityDocument](schemas-exactsetauthoritydocument.md)
+- [schemas: ProcessingOutcomeIdentityDocument](schemas-processingoutcomeidentitydocument.md)
+
 ## Extent decisions
 
 | Dimension | Unit | Policy | Bounds/reason |
 |---|---|---|---|
 | cardinality | items | `segmented_no_total_max` | maximum=128, reason=bounded-route-page |
 
-## Contract
+## Contract summary
 
 - `title`: ProcessingOutcomePageDocument
 - `type`: object
@@ -47,3 +52,57 @@
 | `next_ordinal` | no | object (2 fields) |  |
 | `outcomes` | yes | array |  |
 | `start_ordinal` | yes | integer |  |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 54b774bdbd2db22e10c18834277f07064e74c84bd6c884b3bf64b5552f73aaf1 -->
+
+```json
+{
+  "additionalProperties": false,
+  "properties": {
+    "authority": {
+      "$ref": "#/components/schemas/ExactSetAuthorityDocument"
+    },
+    "next_ordinal": {
+      "anyOf": [
+        {
+          "minimum": 1,
+          "type": "integer"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Next Ordinal"
+    },
+    "outcomes": {
+      "items": {
+        "$ref": "#/components/schemas/ProcessingOutcomeIdentityDocument"
+      },
+      "maxItems": 128,
+      "title": "Outcomes",
+      "type": "array",
+      "x-riverhog-extent": {
+        "policy": "segmented_no_total_max",
+        "progression": "authority-bound-start_ordinal",
+        "reason": "bounded-authority-page"
+      }
+    },
+    "start_ordinal": {
+      "minimum": 0,
+      "title": "Start Ordinal",
+      "type": "integer"
+    }
+  },
+  "required": [
+    "authority",
+    "start_ordinal",
+    "outcomes"
+  ],
+  "title": "ProcessingOutcomePageDocument",
+  "type": "object"
+}
+```

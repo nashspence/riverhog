@@ -33,7 +33,7 @@
 - [DELETE /v1/archive/copies/{collection_id}/{destination_store}](../http/delete-v1-archive-copies-collection-id-destination-store.md)
 - [piggity archive copy cancel](../../piggity/cli/piggity-archive-copy-cancel.md)
 
-## Contract
+## Contract summary
 
 | Concern | Contract |
 |---|---|
@@ -47,3 +47,26 @@
 | `provider_evidence` | provider-qualification:#442 |
 | `read_collection` | None |
 | `response_authority` | http-json |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: da66bcb27abaea166a31f55049f3ecee442e520e16352e7e5b772f5f688319c5 -->
+
+```json
+{
+  "application": "riverhog",
+  "classification": "human-cli+json",
+  "cli_commands": [
+    "archive copy cancel"
+  ],
+  "client": "ApiClient",
+  "method": "DELETE",
+  "operation_id": "cancel_archive_copy_job",
+  "path": "/v1/archive/copies/{collection_id}/{destination_store}",
+  "provider_evidence": "provider-qualification:#442",
+  "read_collection": null,
+  "response_authority": "http-json"
+}
+```

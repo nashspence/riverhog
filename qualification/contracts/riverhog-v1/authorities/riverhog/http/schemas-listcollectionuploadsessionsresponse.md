@@ -29,6 +29,14 @@
 - Proof: `make operation-qualification`
 - Proof: `make compose-smoke`
 
+## Referenced contract dossiers
+
+- [schemas: BrowsePageToken](schemas-browsepagetoken.md)
+- [schemas: CollectionUploadListFiltersOut](schemas-collectionuploadlistfiltersout.md)
+- [schemas: CollectionUploadListItemOut](schemas-collectionuploadlistitemout.md)
+- [schemas: CollectionUploadSort](schemas-collectionuploadsort.md)
+- [schemas: SortOrder](schemas-sortorder.md)
+
 ## Extent decisions
 
 | Dimension | Unit | Policy | Bounds/reason |
@@ -36,7 +44,7 @@
 | value | schema-value | `contract_max` | maximum=100, minimum=1, reason=schema-maximum |
 | cardinality | items | `segmented_no_total_max` | reason=bounded-route-page |
 
-## Contract
+## Contract summary
 
 - `title`: ListCollectionUploadSessionsResponse
 - `type`: object
@@ -52,3 +60,71 @@
 | `query` | yes | object (2 fields) |  |
 | `sort` | yes | #/components/schemas/CollectionUploadSort |  |
 | `uploads` | yes | array |  |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 1d1d503b61867473e1610211e1cffb036c25172263cacad79e7ddd59e0aa8717 -->
+
+```json
+{
+  "additionalProperties": false,
+  "properties": {
+    "filters": {
+      "$ref": "#/components/schemas/CollectionUploadListFiltersOut"
+    },
+    "next_page_token": {
+      "anyOf": [
+        {
+          "$ref": "#/components/schemas/BrowsePageToken"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "order": {
+      "$ref": "#/components/schemas/SortOrder"
+    },
+    "page_size": {
+      "maximum": 100,
+      "minimum": 1,
+      "title": "Page Size",
+      "type": "integer"
+    },
+    "query": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Query"
+    },
+    "sort": {
+      "$ref": "#/components/schemas/CollectionUploadSort"
+    },
+    "uploads": {
+      "items": {
+        "$ref": "#/components/schemas/CollectionUploadListItemOut"
+      },
+      "title": "Uploads",
+      "type": "array"
+    }
+  },
+  "required": [
+    "page_size",
+    "next_page_token",
+    "sort",
+    "order",
+    "query",
+    "filters",
+    "uploads"
+  ],
+  "title": "ListCollectionUploadSessionsResponse",
+  "type": "object"
+}
+```

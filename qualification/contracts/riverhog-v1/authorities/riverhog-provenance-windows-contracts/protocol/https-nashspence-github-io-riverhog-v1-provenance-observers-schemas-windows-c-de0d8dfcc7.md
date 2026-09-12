@@ -34,7 +34,7 @@
 |---|---|---|---|
 | value | schema-value | `extension_owned` | maximum=None, reason=independently-versioned-extension-authority |
 
-## Contract
+## Contract summary
 
 - `$id`: https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/windows-compression-state.json
 - `type`: object
@@ -50,3 +50,56 @@
 | `compression_format_name` | yes | string |  |
 | `compression_unit_shift` | yes | integer |  |
 | `file_attribute_compressed` | yes | boolean |  |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 136807e5ab3720e22873df3b3b79f28d20fb61114088a774f4238bb55903c169 -->
+
+```json
+{
+  "$id": "https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/windows-compression-state.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "chunk_shift": {
+      "minimum": 0,
+      "type": "integer"
+    },
+    "cluster_shift": {
+      "minimum": 0,
+      "type": "integer"
+    },
+    "compressed_size": {
+      "minimum": 0,
+      "type": "integer"
+    },
+    "compression_format": {
+      "minimum": 0,
+      "type": "integer"
+    },
+    "compression_format_name": {
+      "minLength": 1,
+      "type": "string"
+    },
+    "compression_unit_shift": {
+      "minimum": 0,
+      "type": "integer"
+    },
+    "file_attribute_compressed": {
+      "type": "boolean"
+    }
+  },
+  "required": [
+    "file_attribute_compressed",
+    "compressed_size",
+    "compression_format",
+    "compression_format_name",
+    "compression_unit_shift",
+    "chunk_shift",
+    "cluster_shift"
+  ],
+  "type": "object"
+}
+```

@@ -27,7 +27,23 @@
 - Proof: `make contract-freeze`
 - Proof: `make operation-qualification`
 
-## Contract
+## Contract summary
+
+| Field | Shape |
+|---|---|
+| `authority` | "the owning schema's deliberate absence of a semantic maximum" |
+| `declared_operational_maximum` | null |
+| `future_capacity_behavior` | "explicit-configured-reject-defer-or-throttle" |
+| `hidden_maximum` | "forbidden" |
+| `policy` | "operational_policy" |
+| `semantic_maximum` | null |
+| `silent_truncation` | "forbidden" |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 74ed836834648a8834851fe68e382be2989d41657f840c93889a7817b65f8f32 -->
 
 ```json
 {

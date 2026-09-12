@@ -34,7 +34,7 @@
 |---|---|---|---|
 | length | characters | `contract_max` | maximum=4096, minimum=1, reason=schema-maximum |
 
-## Contract
+## Contract summary
 
 - `title`: DeletePrefixRequest
 - `type`: object
@@ -45,3 +45,34 @@
 |---|---:|---|---|
 | `mode` | no | string |  |
 | `object_prefix` | yes | string |  |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 26f1798a7e22e1a72e0c6932bfbe66dca3e80273a417c3e5c18fdc0e4bd59a3f -->
+
+```json
+{
+  "additionalProperties": false,
+  "properties": {
+    "mode": {
+      "const": "all_versions",
+      "default": "all_versions",
+      "title": "Mode",
+      "type": "string"
+    },
+    "object_prefix": {
+      "maxLength": 4096,
+      "minLength": 1,
+      "title": "Object Prefix",
+      "type": "string"
+    }
+  },
+  "required": [
+    "object_prefix"
+  ],
+  "title": "DeletePrefixRequest",
+  "type": "object"
+}
+```

@@ -28,13 +28,17 @@
 - Proof: `make operation-qualification`
 - Proof: `make compose-smoke`
 
+## Referenced contract dossiers
+
+- [schemas: ArtifactDispositionDocument](schemas-artifactdispositiondocument.md)
+
 ## Extent decisions
 
 | Dimension | Unit | Policy | Bounds/reason |
 |---|---|---|---|
 | cardinality | items | `segmented_no_total_max` | maximum=128, minimum=1, reason=bounded-disposition-append |
 
-## Contract
+## Contract summary
 
 - `title`: ArtifactDispositionBatchDocument
 - `type`: object
@@ -45,3 +49,43 @@
 |---|---:|---|---|
 | `dispositions` | yes | array |  |
 | `fence` | yes | integer |  |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: b1905264e4be951db4e91aec60d3b0a67e294b4bbdd8bdaf7a98c87b545f79e3 -->
+
+```json
+{
+  "additionalProperties": false,
+  "properties": {
+    "dispositions": {
+      "items": {
+        "$ref": "#/components/schemas/ArtifactDispositionDocument"
+      },
+      "maxItems": 128,
+      "minItems": 1,
+      "title": "Dispositions",
+      "type": "array",
+      "uniqueItems": true,
+      "x-riverhog-extent": {
+        "policy": "segmented_no_total_max",
+        "progression": "sealed-disposition-authority",
+        "reason": "bounded-disposition-append"
+      }
+    },
+    "fence": {
+      "minimum": 1,
+      "title": "Fence",
+      "type": "integer"
+    }
+  },
+  "required": [
+    "fence",
+    "dispositions"
+  ],
+  "title": "ArtifactDispositionBatchDocument",
+  "type": "object"
+}
+```

@@ -35,7 +35,7 @@
 | length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
 | length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
 
-## Contract
+## Contract summary
 
 - `$id`: https://nashspence.github.io/riverhog/v1/schemas/collection-archive-terminal-v1.schema.json
 - `title`: Riverhog v1 authenticated archive-volume terminator
@@ -56,3 +56,54 @@
 | Definition | Shape |
 |---|---|
 | `sha256` | string |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 5c1f9e18d46186672c66a5798bae3eb362c1e8b9d8668c1dae2d67fe5836c8db -->
+
+```json
+{
+  "$comment": "This schema is the structural projection. riverhog_archive_contracts.CollectionArchiveTerminalDocument is the canonical semantic, identity, and canonical-JSON authority.",
+  "$defs": {
+    "sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "type": "string"
+    }
+  },
+  "$id": "https://nashspence.github.io/riverhog/v1/schemas/collection-archive-terminal-v1.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "archive_generation": {
+      "$ref": "#/$defs/sha256"
+    },
+    "archive_tree_sha256": {
+      "$ref": "#/$defs/sha256"
+    },
+    "kind": {
+      "const": "terminal"
+    },
+    "schema": {
+      "const": "collection-archive-terminal/v1"
+    },
+    "sequence": {
+      "not": {
+        "const": "0000000000000000000000000000000000000000000000000000000000000000"
+      },
+      "pattern": "^[0-9a-f]{64}$",
+      "type": "string"
+    }
+  },
+  "required": [
+    "schema",
+    "archive_generation",
+    "archive_tree_sha256",
+    "sequence",
+    "kind"
+  ],
+  "title": "Riverhog v1 authenticated archive-volume terminator",
+  "type": "object"
+}
+```

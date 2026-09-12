@@ -35,7 +35,7 @@
 |---|---|---|---|
 | cardinality | values-per-occurrence | `fixed` | maximum=1, minimum=1, reason=fixed-command-argument-arity |
 
-## Contract
+## Contract summary
 
 - Parser name: `validate`
 
@@ -44,3 +44,40 @@
 | Name | Kind | Required | Type | Options |
 |---|---|---:|---|---|
 | `path` | TyperArgument | yes | {'class': 'typer.models.TyperPath', 'name': 'file'} | path |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+### `/external_contract/cli/stove0/commands/recipe/commands/validate/name`
+
+<!-- exact-contract-value: 2c9877104bf173f3ecf6b4d44be3e77da3b1b3c87e448be5f6cec01b12ccf804 -->
+
+```json
+"validate"
+```
+
+### `/external_contract/cli/stove0/commands/recipe/commands/validate/parameters`
+
+<!-- exact-contract-value: 16bb2841bd48031955d2caf741ae9c4ff040273016852cfe532eb80ee09dbe8b -->
+
+```json
+[
+  {
+    "envvar": null,
+    "kind": "TyperArgument",
+    "multiple": false,
+    "name": "path",
+    "nargs": 1,
+    "options": [
+      "path"
+    ],
+    "required": true,
+    "secondary_options": [],
+    "type": {
+      "class": "typer.models.TyperPath",
+      "name": "file"
+    }
+  }
+]
+```

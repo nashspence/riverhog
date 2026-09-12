@@ -40,7 +40,7 @@
 | value | schema-value | `extension_owned` | maximum=None, reason=independently-versioned-extension-authority |
 | cardinality | items | `extension_owned` | maximum=None, reason=independently-versioned-extension-authority |
 
-## Contract
+## Contract summary
 
 - `$id`: https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/macos-volume-context.json
 - `type`: object
@@ -60,3 +60,87 @@
 | `mounted_from` | yes | string |  |
 | `valid_capabilities` | no | array |  |
 | `volume_uuid` | no | string |  |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 61053cf50b05a17a636ea109f39ec9fd2749d14271871a9eee5d83775112e933 -->
+
+```json
+{
+  "$id": "https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/macos-volume-context.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "block_size": {
+      "minimum": 0,
+      "type": "integer"
+    },
+    "capabilities": {
+      "items": {
+        "minimum": 0,
+        "type": "integer"
+      },
+      "type": "array"
+    },
+    "filesystem_subtype": {
+      "minimum": 0,
+      "type": "integer"
+    },
+    "filesystem_type": {
+      "minLength": 1,
+      "type": "string"
+    },
+    "fsid": {
+      "items": false,
+      "prefixItems": [
+        {
+          "type": "integer"
+        },
+        {
+          "type": "integer"
+        }
+      ],
+      "type": "array"
+    },
+    "io_size": {
+      "minimum": 0,
+      "type": "integer"
+    },
+    "mount_flags": {
+      "minimum": 0,
+      "type": "integer"
+    },
+    "mount_point": {
+      "type": "string"
+    },
+    "mounted_from": {
+      "type": "string"
+    },
+    "valid_capabilities": {
+      "items": {
+        "minimum": 0,
+        "type": "integer"
+      },
+      "type": "array"
+    },
+    "volume_uuid": {
+      "format": "uuid",
+      "pattern": "^[0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{12}$",
+      "type": "string"
+    }
+  },
+  "required": [
+    "filesystem_type",
+    "mount_point",
+    "mounted_from",
+    "fsid",
+    "mount_flags",
+    "filesystem_subtype",
+    "io_size",
+    "block_size"
+  ],
+  "type": "object"
+}
+```

@@ -33,7 +33,7 @@
 - [POST /v1/apps/{app}/keys/{key_id}/revoke](../http/post-v1-apps-app-keys-key-id-revoke.md)
 - [piggity app key revoke](../../piggity/cli/piggity-app-key-revoke.md)
 
-## Contract
+## Contract summary
 
 | Concern | Contract |
 |---|---|
@@ -47,3 +47,26 @@
 | `provider_evidence` | None |
 | `read_collection` | None |
 | `response_authority` | http-json |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: c03a8a21f91f1a7f6444dfa8dc3bffcec1a04e13fd32ae055b912ebc48696cc0 -->
+
+```json
+{
+  "application": "riverhog",
+  "classification": "human-cli+json",
+  "cli_commands": [
+    "app key revoke"
+  ],
+  "client": "ApiClient",
+  "method": "POST",
+  "operation_id": "revoke_app_key",
+  "path": "/v1/apps/{app}/keys/{key_id}/revoke",
+  "provider_evidence": null,
+  "read_collection": null,
+  "response_authority": "http-json"
+}
+```

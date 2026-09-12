@@ -34,7 +34,36 @@
 |---|---|---|---|
 | length | characters | `contract_max` | maximum=4096, minimum=1, reason=schema-maximum |
 
-## Contract
+## Contract summary
 
 - `type`: string
 - `format`: riverhog-canonical-relpath-v1
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: fa3392977e23c3c604f49fed3024ddfc514d329289c0f292c3ebe3e4c3748e66 -->
+
+```json
+{
+  "allOf": [
+    {
+      "not": {
+        "pattern": "(?:^|/)\\.{1,2}(?:/|$)"
+      }
+    },
+    {
+      "not": {
+        "pattern": "^\\s|\\s$"
+      }
+    }
+  ],
+  "format": "riverhog-canonical-relpath-v1",
+  "maxLength": 4096,
+  "minLength": 1,
+  "pattern": "^[^/\\\\]+(?:/[^/\\\\]+)*$",
+  "type": "string",
+  "x-unicode-normalization": "NFC"
+}
+```

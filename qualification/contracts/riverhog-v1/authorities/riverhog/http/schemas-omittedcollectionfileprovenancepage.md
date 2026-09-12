@@ -29,6 +29,15 @@
 - Proof: `make operation-qualification`
 - Proof: `make compose-smoke`
 
+## Referenced contract dossiers
+
+- [schemas: BrowsePageToken](schemas-browsepagetoken.md)
+- [schemas: CollectionId](schemas-collectionid.md)
+- [schemas: OmittedCollectionFileProvenanceOut](schemas-omittedcollectionfileprovenanceout.md)
+- [schemas: ProvenanceSort](schemas-provenancesort.md)
+- [schemas: ProvenanceStatus](schemas-provenancestatus.md)
+- [schemas: SortOrder](schemas-sortorder.md)
+
 ## Extent decisions
 
 | Dimension | Unit | Policy | Bounds/reason |
@@ -36,7 +45,7 @@
 | cardinality | items | `operational_policy` | maximum=None, reason=no-declared-semantic-maximum |
 | value | schema-value | `contract_max` | maximum=100, minimum=1, reason=schema-maximum |
 
-## Contract
+## Contract summary
 
 - `title`: OmittedCollectionFileProvenancePage
 - `type`: object
@@ -55,3 +64,93 @@
 | `query` | yes | object (2 fields) |  |
 | `sort` | yes | #/components/schemas/ProvenanceSort |  |
 | `status` | yes | object (1 fields) |  |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 4e0bcbee438bf78c2cb28fd0b8815533930a2c131df3393a0c28b175d839fcf4 -->
+
+```json
+{
+  "additionalProperties": false,
+  "properties": {
+    "collection_id": {
+      "$ref": "#/components/schemas/CollectionId"
+    },
+    "files": {
+      "items": {
+        "$ref": "#/components/schemas/OmittedCollectionFileProvenanceOut"
+      },
+      "title": "Files",
+      "type": "array"
+    },
+    "next_page_token": {
+      "anyOf": [
+        {
+          "$ref": "#/components/schemas/BrowsePageToken"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "order": {
+      "$ref": "#/components/schemas/SortOrder"
+    },
+    "page_size": {
+      "maximum": 100,
+      "minimum": 1,
+      "title": "Page Size",
+      "type": "integer"
+    },
+    "provenance_identity": {
+      "title": "Provenance Identity",
+      "type": "null"
+    },
+    "provenance_mode": {
+      "const": "omitted",
+      "title": "Provenance Mode",
+      "type": "string"
+    },
+    "query": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Query"
+    },
+    "sort": {
+      "$ref": "#/components/schemas/ProvenanceSort"
+    },
+    "status": {
+      "anyOf": [
+        {
+          "$ref": "#/components/schemas/ProvenanceStatus"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    }
+  },
+  "required": [
+    "page_size",
+    "next_page_token",
+    "sort",
+    "order",
+    "query",
+    "status",
+    "collection_id",
+    "provenance_mode",
+    "provenance_identity",
+    "files"
+  ],
+  "title": "OmittedCollectionFileProvenancePage",
+  "type": "object"
+}
+```

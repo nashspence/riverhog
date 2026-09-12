@@ -27,7 +27,20 @@
 - Proof: `make contract-freeze`
 - Proof: `make operation-qualification`
 
-## Contract
+## Contract summary
+
+| Field | Shape |
+|---|---|
+| `authority` | "the source-linked operator configuration field" |
+| `capacity_behavior` | "explicit-reject-defer-or-throttle" |
+| `policy` | "operational_policy" |
+| `silent_truncation` | "forbidden" |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: d22ade33fd6b9425ca71fc8bcf777549db5a17856ba18d64838679ec8d004742 -->
 
 ```json
 {

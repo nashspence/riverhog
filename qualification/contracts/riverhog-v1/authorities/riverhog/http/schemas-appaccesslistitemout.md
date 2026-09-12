@@ -27,7 +27,14 @@
 - Proof: `make operation-qualification`
 - Proof: `make compose-smoke`
 
-## Contract
+## Referenced contract dossiers
+
+- [schemas: ApplicationKeyId](schemas-applicationkeyid.md)
+- [schemas: ApplicationName](schemas-applicationname.md)
+- [schemas: ApplicationPermission](schemas-applicationpermission.md)
+- [schemas: ApplicationResource](schemas-applicationresource.md)
+
+## Contract summary
 
 - `title`: AppAccessListItemOut
 - `type`: object
@@ -42,3 +49,129 @@
 | `key_status` | yes | string |  |
 | `permission` | yes | #/components/schemas/ApplicationPermission |  |
 | `resource` | no | #/components/schemas/ApplicationResource |  |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 7bc29c0ddede1e5fd1ca2063d9f2dc96c470b99584e673394ed043ac5cb2c095 -->
+
+```json
+{
+  "additionalProperties": false,
+  "allOf": [
+    {
+      "oneOf": [
+        {
+          "properties": {
+            "permission": {
+              "const": "*"
+            },
+            "resource": {
+              "const": "*"
+            }
+          },
+          "required": [
+            "permission"
+          ]
+        },
+        {
+          "properties": {
+            "permission": {
+              "const": "collections:create"
+            },
+            "resource": {
+              "pattern": "^(?:\\*|tag:.+)$",
+              "type": "string"
+            }
+          },
+          "required": [
+            "permission"
+          ]
+        },
+        {
+          "properties": {
+            "permission": {
+              "enum": [
+                "archives:manage",
+                "archives:read",
+                "catalog:read",
+                "collection-descriptions:manage",
+                "collection-tags:manage",
+                "collections:delete",
+                "provenance:export",
+                "provenance:read",
+                "retrieval:manage"
+              ]
+            },
+            "resource": {
+              "pattern": "^(?:\\*|tag:.+|collection:[1-9][0-9]*)$",
+              "type": "string"
+            }
+          },
+          "required": [
+            "permission"
+          ]
+        },
+        {
+          "properties": {
+            "permission": {
+              "enum": [
+                "collection-transforms:control",
+                "collection-transforms:execute",
+                "events:read",
+                "events:read_all",
+                "keys:manage",
+                "quotas:manage"
+              ]
+            },
+            "resource": {
+              "const": "*"
+            }
+          },
+          "required": [
+            "permission"
+          ]
+        }
+      ]
+    }
+  ],
+  "properties": {
+    "app": {
+      "$ref": "#/components/schemas/ApplicationName"
+    },
+    "created_at": {
+      "title": "Created At",
+      "type": "string"
+    },
+    "key_id": {
+      "$ref": "#/components/schemas/ApplicationKeyId"
+    },
+    "key_status": {
+      "enum": [
+        "active",
+        "expired",
+        "revoked"
+      ],
+      "title": "Key Status",
+      "type": "string"
+    },
+    "permission": {
+      "$ref": "#/components/schemas/ApplicationPermission"
+    },
+    "resource": {
+      "$ref": "#/components/schemas/ApplicationResource",
+      "default": "*"
+    }
+  },
+  "required": [
+    "permission",
+    "app",
+    "key_id",
+    "key_status",
+    "created_at"
+  ],
+  "title": "AppAccessListItemOut",
+  "type": "object"
+}
+```

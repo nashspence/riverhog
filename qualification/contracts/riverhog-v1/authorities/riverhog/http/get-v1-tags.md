@@ -33,6 +33,13 @@
 
 - [Operation parity: list_tags](../operation/operation-parity-list-tags.md)
 
+## Referenced contract dossiers
+
+- [schemas: BrowsePageToken](schemas-browsepagetoken.md)
+- [schemas: BrowseQuery](schemas-browsequery.md)
+- [schemas: ErrorResponse](schemas-errorresponse.md)
+- [schemas: TagListOut](schemas-taglistout.md)
+
 ## Extent decisions
 
 | Dimension | Unit | Policy | Bounds/reason |
@@ -40,7 +47,7 @@
 | logical-result-cardinality | items | `segmented_no_total_max` | reason=bounded-route-progression |
 | value | schema-value | `contract_max` | maximum=100, minimum=1, reason=schema-maximum |
 
-## Contract
+## Contract summary
 
 - `operationId`: list_tags
 - `summary`: List Tags
@@ -63,3 +70,149 @@
 | `401` | Unauthorized |
 | `403` | Forbidden |
 | `500` | Internal Server Error |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: b13dae6b585d7d2fa0567e6c4ea650bf116f1ae187a57c3b1cd094893817eeb8 -->
+
+```json
+{
+  "operationId": "list_tags",
+  "parameters": [
+    {
+      "in": "query",
+      "name": "page_size",
+      "required": false,
+      "schema": {
+        "default": 25,
+        "maximum": 100,
+        "minimum": 1,
+        "title": "Page Size",
+        "type": "integer"
+      }
+    },
+    {
+      "in": "query",
+      "name": "page_token",
+      "required": false,
+      "schema": {
+        "anyOf": [
+          {
+            "$ref": "#/components/schemas/BrowsePageToken"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "title": "Page Token"
+      }
+    },
+    {
+      "in": "query",
+      "name": "q",
+      "required": false,
+      "schema": {
+        "anyOf": [
+          {
+            "$ref": "#/components/schemas/BrowseQuery"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "title": "Q"
+      }
+    }
+  ],
+  "responses": {
+    "200": {
+      "content": {
+        "application/json": {
+          "schema": {
+            "$ref": "#/components/schemas/TagListOut"
+          }
+        }
+      },
+      "description": "Successful Response"
+    },
+    "400": {
+      "content": {
+        "application/json": {
+          "schema": {
+            "$ref": "#/components/schemas/ErrorResponse"
+          }
+        }
+      },
+      "description": "Bad Request",
+      "x-riverhog-error-codes": [
+        "bad_request"
+      ]
+    },
+    "401": {
+      "content": {
+        "application/json": {
+          "schema": {
+            "$ref": "#/components/schemas/ErrorResponse"
+          }
+        }
+      },
+      "description": "Unauthorized",
+      "x-riverhog-error-codes": [
+        "unauthorized"
+      ]
+    },
+    "403": {
+      "content": {
+        "application/json": {
+          "schema": {
+            "$ref": "#/components/schemas/ErrorResponse"
+          }
+        }
+      },
+      "description": "Forbidden",
+      "x-riverhog-error-codes": [
+        "forbidden"
+      ]
+    },
+    "500": {
+      "content": {
+        "application/json": {
+          "schema": {
+            "$ref": "#/components/schemas/ErrorResponse"
+          }
+        }
+      },
+      "description": "Internal Server Error",
+      "x-riverhog-error-codes": [
+        "internal_error"
+      ]
+    }
+  },
+  "security": [
+    {
+      "HTTPBearer": []
+    }
+  ],
+  "summary": "List Tags",
+  "tags": [
+    "collection-tags"
+  ],
+  "x-riverhog-permission-requirements": [
+    {
+      "any_of": [
+        "catalog:read"
+      ]
+    }
+  ],
+  "x-riverhog-read-collection": {
+    "default_page_size": 25,
+    "kind": "mutable-browse",
+    "maximum_page_size": 100,
+    "next_page_token_field": "next_page_token",
+    "page_size_parameter": "page_size",
+    "page_token_parameter": "page_token"
+  }
+}
+```

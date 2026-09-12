@@ -35,7 +35,7 @@
 | value | schema-value | `extension_owned` | maximum=None, reason=independently-versioned-extension-authority |
 | value | schema-value | `extension_owned` | maximum=None, reason=independently-versioned-extension-authority |
 
-## Contract
+## Contract summary
 
 - `$id`: https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/windows-usn-record.json
 - `type`: object
@@ -56,3 +56,78 @@
 | `record_length` | yes | integer |  |
 | `security_id` | no | integer |  |
 | `usn` | no | string |  |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: ccf844e8f4946745670a67f5dc85a9302e6bb0fe8feb65132592898e18221c8b -->
+
+```json
+{
+  "$id": "https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/windows-usn-record.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "file_attributes": {
+      "minimum": 0,
+      "type": "integer"
+    },
+    "file_name": {
+      "type": "string"
+    },
+    "file_name_role": {
+      "enum": [
+        "exact",
+        "display"
+      ]
+    },
+    "file_name_utf16le_base64": {
+      "contentEncoding": "base64",
+      "type": "string"
+    },
+    "file_reference_number": {
+      "pattern": "^[0-9a-f]+$",
+      "type": "string"
+    },
+    "major_version": {
+      "minimum": 0,
+      "type": "integer"
+    },
+    "minor_version": {
+      "minimum": 0,
+      "type": "integer"
+    },
+    "parent_file_reference_number": {
+      "pattern": "^[0-9a-f]+$",
+      "type": "string"
+    },
+    "parse_status": {
+      "enum": [
+        "parsed",
+        "unresolved",
+        "unsupported_version"
+      ]
+    },
+    "record_length": {
+      "minimum": 0,
+      "type": "integer"
+    },
+    "security_id": {
+      "minimum": 0,
+      "type": "integer"
+    },
+    "usn": {
+      "pattern": "^-?(?:0|[1-9][0-9]*)$",
+      "type": "string"
+    }
+  },
+  "required": [
+    "record_length",
+    "major_version",
+    "minor_version",
+    "parse_status"
+  ],
+  "type": "object"
+}
+```

@@ -27,7 +27,7 @@
 - Proof: `make operation-qualification`
 - Proof: `make compose-smoke`
 
-## Contract
+## Contract summary
 
 - `title`: SchedulerPruning
 - `type`: object
@@ -44,3 +44,69 @@
 | `selections` | yes | integer |  |
 | `work` | yes | integer |  |
 | `work_bytes` | yes | integer |  |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 639614e3a2443f84fe63c2477757b5c11d526671cd5d37014cf1699993cccc8c -->
+
+```json
+{
+  "additionalProperties": false,
+  "properties": {
+    "evaluation_bytes": {
+      "minimum": 0,
+      "title": "Evaluation Bytes",
+      "type": "integer"
+    },
+    "evaluations": {
+      "minimum": 0,
+      "title": "Evaluations",
+      "type": "integer"
+    },
+    "event_bytes": {
+      "minimum": 0,
+      "title": "Event Bytes",
+      "type": "integer"
+    },
+    "events": {
+      "minimum": 0,
+      "title": "Events",
+      "type": "integer"
+    },
+    "selection_bytes": {
+      "minimum": 0,
+      "title": "Selection Bytes",
+      "type": "integer"
+    },
+    "selections": {
+      "minimum": 0,
+      "title": "Selections",
+      "type": "integer"
+    },
+    "work": {
+      "minimum": 0,
+      "title": "Work",
+      "type": "integer"
+    },
+    "work_bytes": {
+      "minimum": 0,
+      "title": "Work Bytes",
+      "type": "integer"
+    }
+  },
+  "required": [
+    "work",
+    "work_bytes",
+    "evaluations",
+    "evaluation_bytes",
+    "selections",
+    "selection_bytes",
+    "events",
+    "event_bytes"
+  ],
+  "title": "SchedulerPruning",
+  "type": "object"
+}
+```

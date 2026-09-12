@@ -33,7 +33,7 @@
 - [GET /v1/admin/scheduler](../http/get-v1-admin-scheduler.md)
 - [stove0 scheduler status](../cli/stove0-scheduler-status.md)
 
-## Contract
+## Contract summary
 
 | Concern | Contract |
 |---|---|
@@ -47,3 +47,26 @@
 | `provider_evidence` | None |
 | `read_collection` | None |
 | `response_authority` | operator-projection |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: ae0201cec0085f087322403983e0a8d2926ee73c04fd8dc18356d4d2e7dc2b31 -->
+
+```json
+{
+  "application": "stove0",
+  "classification": "human-cli+json",
+  "cli_commands": [
+    "scheduler status"
+  ],
+  "client": "Stove0ApiClient",
+  "method": "GET",
+  "operation_id": "scheduler_status",
+  "path": "/v1/admin/scheduler",
+  "provider_evidence": null,
+  "read_collection": null,
+  "response_authority": "operator-projection"
+}
+```

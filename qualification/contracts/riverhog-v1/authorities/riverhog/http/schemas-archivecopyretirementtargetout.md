@@ -27,7 +27,11 @@
 - Proof: `make operation-qualification`
 - Proof: `make compose-smoke`
 
-## Contract
+## Referenced contract dossiers
+
+- [schemas: ArchiveStoreName](schemas-archivestorename.md)
+
+## Contract summary
 
 - `title`: ArchiveCopyRetirementTargetOut
 - `type`: object
@@ -40,3 +44,40 @@
 | `object_count` | yes | integer |  |
 | `remote_storage_bytes` | yes | integer |  |
 | `store` | yes | #/components/schemas/ArchiveStoreName |  |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 644fcc1fb33a87da56a4ef230512696f5a547d855e15361bef9f27105e20a11a -->
+
+```json
+{
+  "additionalProperties": false,
+  "properties": {
+    "last_verified_at": {
+      "title": "Last Verified At",
+      "type": "string"
+    },
+    "object_count": {
+      "title": "Object Count",
+      "type": "integer"
+    },
+    "remote_storage_bytes": {
+      "title": "Remote Storage Bytes",
+      "type": "integer"
+    },
+    "store": {
+      "$ref": "#/components/schemas/ArchiveStoreName"
+    }
+  },
+  "required": [
+    "store",
+    "last_verified_at",
+    "remote_storage_bytes",
+    "object_count"
+  ],
+  "title": "ArchiveCopyRetirementTargetOut",
+  "type": "object"
+}
+```

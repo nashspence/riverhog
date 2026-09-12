@@ -31,7 +31,13 @@
 
 - [Operation parity: review_evaluation_variant](../operation/operation-parity-review-evaluation-variant.md)
 
-## Contract
+## Referenced contract dossiers
+
+- [schemas: ErrorResponse](schemas-errorresponse.md)
+- [schemas: EvaluationReviewIn](schemas-evaluationreviewin.md)
+- [schemas: EvaluationView](schemas-evaluationview.md)
+
+## Contract summary
 
 - `operationId`: review_evaluation_variant
 - `summary`: Review Evaluation Variant
@@ -58,3 +64,139 @@
 | `404` | Not Found |
 | `409` | Conflict |
 | `500` | Internal Server Error |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: fb16c91f67e058ffebb868f3416e277e583e882a6a7019fdb174e50e562b4d13 -->
+
+```json
+{
+  "operationId": "review_evaluation_variant",
+  "parameters": [
+    {
+      "in": "path",
+      "name": "evaluation_id",
+      "required": true,
+      "schema": {
+        "title": "Evaluation Id",
+        "type": "string"
+      }
+    },
+    {
+      "in": "path",
+      "name": "variant_id",
+      "required": true,
+      "schema": {
+        "title": "Variant Id",
+        "type": "string"
+      }
+    }
+  ],
+  "requestBody": {
+    "content": {
+      "application/json": {
+        "schema": {
+          "$ref": "#/components/schemas/EvaluationReviewIn"
+        }
+      }
+    },
+    "required": true
+  },
+  "responses": {
+    "200": {
+      "content": {
+        "application/json": {
+          "schema": {
+            "$ref": "#/components/schemas/EvaluationView"
+          }
+        }
+      },
+      "description": "Successful Response"
+    },
+    "400": {
+      "content": {
+        "application/json": {
+          "schema": {
+            "$ref": "#/components/schemas/ErrorResponse"
+          }
+        }
+      },
+      "description": "Bad Request",
+      "x-riverhog-error-codes": [
+        "bad_request"
+      ]
+    },
+    "401": {
+      "content": {
+        "application/json": {
+          "schema": {
+            "$ref": "#/components/schemas/ErrorResponse"
+          }
+        }
+      },
+      "description": "Unauthorized",
+      "x-riverhog-error-codes": [
+        "unauthorized"
+      ]
+    },
+    "403": {
+      "content": {
+        "application/json": {
+          "schema": {
+            "$ref": "#/components/schemas/ErrorResponse"
+          }
+        }
+      },
+      "description": "Forbidden",
+      "x-riverhog-error-codes": [
+        "forbidden"
+      ]
+    },
+    "404": {
+      "content": {
+        "application/json": {
+          "schema": {
+            "$ref": "#/components/schemas/ErrorResponse"
+          }
+        }
+      },
+      "description": "Not Found",
+      "x-riverhog-error-codes": [
+        "not_found"
+      ]
+    },
+    "409": {
+      "content": {
+        "application/json": {
+          "schema": {
+            "$ref": "#/components/schemas/ErrorResponse"
+          }
+        }
+      },
+      "description": "Conflict",
+      "x-riverhog-error-codes": [
+        "conflict"
+      ]
+    },
+    "500": {
+      "content": {
+        "application/json": {
+          "schema": {
+            "$ref": "#/components/schemas/ErrorResponse"
+          }
+        }
+      },
+      "description": "Internal Server Error",
+      "x-riverhog-error-codes": [
+        "internal_error"
+      ]
+    }
+  },
+  "summary": "Review Evaluation Variant",
+  "tags": [
+    "evaluations"
+  ]
+}
+```

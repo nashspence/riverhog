@@ -27,10 +27,719 @@
 - Proof: `make dist-smoke`
 - Proof: `make build`
 
-## Contract
+## Contract summary
 
 | Field | Shape |
 |---|---|
 | `distribution` | "stove0-target-support" |
 | `exports` | object (73 fields) |
 | `module` | "stove0_target_support" |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 2352495caa8a5e024a348fac9f0f4fcb72cb15b5995e2a4381e0ae2d500c778f -->
+
+```json
+{
+  "distribution": "stove0-target-support",
+  "exports": {
+    "ARTIFACT_ID_PATTERN": {
+      "kind": "constant",
+      "value": "^[A-Za-z0-9]\u0028?:[A-Za-z0-9._-]{0,158}[A-Za-z0-9])?$"
+    },
+    "AcceptedTargetJob": {
+      "kind": "class",
+      "members": {
+        "verify_digest": {
+          "kind": "method",
+          "signature": "(self) -> 'Self'"
+        }
+      },
+      "schema_sha256": "d6edef74a94d6ff90c51b59d72f6c750c6e411f0d80816c3136379e41e828867",
+      "signature": "(*, declaration: stove0_target_protocol.protocol.TargetJobDeclaration, request_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)]) -> None"
+    },
+    "DEFAULT_TERMINAL_STATE_RETENTION_SECONDS": {
+      "kind": "constant",
+      "value": 2592000
+    },
+    "EFFECT_RECEIPT_FORMAT": {
+      "kind": "constant",
+      "value": "stove0-external-effect-receipt/v1"
+    },
+    "EFFECT_TARGET_PROTOCOL": {
+      "kind": "constant",
+      "value": "stove0-effect-target/v1"
+    },
+    "EffectPlan": {
+      "kind": "class",
+      "members": {
+        "binding_document": {
+          "kind": "method",
+          "signature": "(self) -> 'dict[str, JsonValue]'"
+        },
+        "seal": {
+          "kind": "classmethod",
+          "signature": "(cls, payload: 'EffectPlanPayload') -> 'EffectPlan'"
+        },
+        "verify_digest": {
+          "kind": "method",
+          "signature": "(self) -> 'Self'"
+        }
+      },
+      "schema_sha256": "017da00dc3a677999f1c2a61f4eebffe278e4b2c76f094adda813cdb2a72b220",
+      "signature": "(*, operation_id: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$', ascii_only=None)], operation_contract_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)], inputs: stove0_target_protocol.protocol.TargetInputAuthority, intent: dict[str, JsonValue], target_options: dict[str, JsonValue] = <factory>, protocol: Literal['stove0-effect-target/v1'] = 'stove0-effect-target/v1', target_implementation_id: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$', ascii_only=None)], target_contract_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)], observation_result_sha256s: tuple[typing.Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)], ...] = (), plan_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)]) -> None"
+    },
+    "EffectPlanPayload": {
+      "kind": "class",
+      "members": {
+        "canonical_observation_results": {
+          "kind": "classmethod",
+          "signature": "(cls, value: 'tuple[str, ...]') -> 'tuple[str, ...]'"
+        }
+      },
+      "schema_sha256": "48b5632c032d7f4db1bf0ef5bb07926abc843434dca8cf052526b161b3157b3c",
+      "signature": "(*, operation_id: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$', ascii_only=None)], operation_contract_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)], inputs: stove0_target_protocol.protocol.TargetInputAuthority, intent: dict[str, JsonValue], target_options: dict[str, JsonValue] = <factory>, protocol: Literal['stove0-effect-target/v1'] = 'stove0-effect-target/v1', target_implementation_id: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$', ascii_only=None)], target_contract_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)], observation_result_sha256s: tuple[typing.Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)], ...] = ()) -> None"
+    },
+    "ExternalEffectReceipt": {
+      "kind": "class",
+      "members": {
+        "seal": {
+          "kind": "classmethod",
+          "signature": "(cls, payload: 'ExternalEffectReceiptPayload') -> 'ExternalEffectReceipt'"
+        },
+        "verify_digest": {
+          "kind": "method",
+          "signature": "(self) -> 'Self'"
+        }
+      },
+      "schema_sha256": "d35b7a54eb7db5847253bd3315189fea8ca2a702b3516d1e794dca0d3c880621",
+      "signature": "(*, format: Literal['stove0-external-effect-receipt/v1'] = 'stove0-external-effect-receipt/v1', job_id: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)], request_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)], target_contract_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)], operation_contract_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)], plan_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)], execution_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)], result: dict[str, JsonValue], receipt_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)]) -> None"
+    },
+    "ExternalEffectReceiptPayload": {
+      "kind": "class",
+      "members": {
+        "bounded_result": {
+          "kind": "method",
+          "signature": "(self) -> 'Self'"
+        }
+      },
+      "schema_sha256": "d3489bc5c57692d8e98b5c61032d8c138fa5e476ccad3c14201bc96374d42f10",
+      "signature": "(*, format: Literal['stove0-external-effect-receipt/v1'] = 'stove0-external-effect-receipt/v1', job_id: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)], request_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)], target_contract_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)], operation_contract_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)], plan_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)], execution_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)], result: dict[str, JsonValue]) -> None"
+    },
+    "InputArtifact": {
+      "kind": "class",
+      "members": {
+        "canonical_path": {
+          "kind": "classmethod",
+          "signature": "(cls, value: 'str') -> 'str'"
+        }
+      },
+      "schema_sha256": "6bae5bc6fdacfc380db9fd5107b64cf18ed580f1888a45a1b1a6e37731e60168",
+      "signature": "(*, id: Annotated[str, _PydanticGeneralMetadata(pattern='^[A-Za-z0-9]\u0028?:[A-Za-z0-9._-]{0,158}[A-Za-z0-9])?$')], role: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$', ascii_only=None)], collection: stove0_protocol.models.CollectionRootRef, path: Annotated[str, MinLen(min_length=1), MaxLen(max_length=4096)], bytes: Annotated[int, Ge(ge=0)], sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)], media_type: Annotated[str | None, MinLen(min_length=1), MaxLen(max_length=255)] = None) -> None"
+    },
+    "InputArtifactContract": {
+      "kind": "class",
+      "members": {
+        "canonical_dispositions": {
+          "kind": "classmethod",
+          "signature": "(cls, value: 'tuple[InputDisposition, ...] | None') -> 'tuple[InputDisposition, ...] | None'"
+        },
+        "validate_cardinality": {
+          "kind": "method",
+          "signature": "(self) -> 'Self'"
+        }
+      },
+      "schema_sha256": "a77940dd0cdd6154e96246459b292378e83a95b94bd488f79c5ead938fb2a73c",
+      "signature": "(*, role: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$', ascii_only=None)], minimum: Annotated[int, Ge(ge=0)] = 1, maximum: Annotated[int | None, Ge(ge=1)] = None, allowed_dispositions: tuple[typing.Literal['transformed', 'preserved', 'omitted', 'rejected'], ...] | None = None) -> None"
+    },
+    "InputDisposition": {
+      "kind": "object",
+      "type": "typing._LiteralGenericAlias"
+    },
+    "IntentSemanticValidator": {
+      "kind": "object",
+      "type": "collections.abc._CallableGenericAlias"
+    },
+    "JSON_SCHEMA_ONLY_SEMANTIC_PROFILE": {
+      "kind": "object",
+      "type": "stove0_protocol.models.SemanticValidationProfile"
+    },
+    "JobExecutor": {
+      "kind": "object",
+      "type": "collections.abc._CallableGenericAlias"
+    },
+    "OperationContract": {
+      "kind": "class",
+      "members": {
+        "seal": {
+          "kind": "classmethod",
+          "signature": "(cls, payload: 'OperationContractPayload') -> 'OperationContract'"
+        },
+        "verify_digest": {
+          "kind": "method",
+          "signature": "(self) -> 'Self'"
+        }
+      },
+      "schema_sha256": "aa2a5d676e27f1328d9ac0508bb514c28355ff594b7e72c052731d4fbc4edd22",
+      "signature": "(*, id: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$', ascii_only=None)], result_kind: Literal['collection', 'external-effect'] = 'collection', intent_schema: stove0_protocol.models.JsonSchemaDocument, intent_semantics: stove0_protocol.models.SemanticValidationProfile, inputs: Annotated[tuple[stove0_target_protocol.protocol.InputArtifactContract, ...], MinLen(min_length=1)], outputs: tuple[stove0_target_protocol.protocol.OutputArtifactContract, ...] = (), effect_receipt_schema: stove0_protocol.models.JsonSchemaDocument | None = None, source_retirement_permitted: bool = False, contract_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)]) -> None"
+    },
+    "OperationContractPayload": {
+      "kind": "class",
+      "members": {
+        "bind_semantic_conformance_vectors": {
+          "kind": "method",
+          "signature": "(self) -> 'Self'"
+        },
+        "validate_roles": {
+          "kind": "method",
+          "signature": "(self) -> 'Self'"
+        }
+      },
+      "schema_sha256": "81f42d05e99391558a8842214e784f88daef258d34fe0579d6cdb9ca136913db",
+      "signature": "(*, id: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$', ascii_only=None)], result_kind: Literal['collection', 'external-effect'] = 'collection', intent_schema: stove0_protocol.models.JsonSchemaDocument, intent_semantics: stove0_protocol.models.SemanticValidationProfile, inputs: Annotated[tuple[stove0_target_protocol.protocol.InputArtifactContract, ...], MinLen(min_length=1)], outputs: tuple[stove0_target_protocol.protocol.OutputArtifactContract, ...] = (), effect_receipt_schema: stove0_protocol.models.JsonSchemaDocument | None = None, source_retirement_permitted: bool = False) -> None"
+    },
+    "OutputArtifact": {
+      "kind": "class",
+      "members": {
+        "canonical_path": {
+          "kind": "classmethod",
+          "signature": "(cls, value: 'str') -> 'str'"
+        }
+      },
+      "schema_sha256": "199abbe3d7d9a3ea586f4c18283a58e117b7bb43bdd4897f373220d08ee83dc1",
+      "signature": "(*, id: Annotated[str, _PydanticGeneralMetadata(pattern='^[A-Za-z0-9]\u0028?:[A-Za-z0-9._-]{0,158}[A-Za-z0-9])?$')], role: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$', ascii_only=None)], path: Annotated[str, MinLen(min_length=1), MaxLen(max_length=4096)], bytes: Annotated[int, Ge(ge=0)], sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)], media_type: Annotated[str | None, MinLen(min_length=1), MaxLen(max_length=255)] = None) -> None"
+    },
+    "OutputArtifactContract": {
+      "kind": "class",
+      "members": {
+        "unique_roles": {
+          "kind": "classmethod",
+          "signature": "(cls, value: 'tuple[str, ...]') -> 'tuple[str, ...]'"
+        },
+        "validate_cardinality": {
+          "kind": "method",
+          "signature": "(self) -> 'Self'"
+        }
+      },
+      "schema_sha256": "4f754cfeb5d4d5d0a51d99f9a9d9d066ad7a0517a1a2dd82862bd72810813f4e",
+      "signature": "(*, role: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$', ascii_only=None)], minimum: Annotated[int, Ge(ge=0)] = 1, maximum: Annotated[int | None, Ge(ge=1)] = None, derived_from_roles: Annotated[tuple[Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$', ascii_only=None)], ...], MinLen(min_length=1)]) -> None"
+    },
+    "OutputCollectionRef": {
+      "kind": "class",
+      "schema_sha256": "5e114f49bd35594b81763b7a7bd469021694265597f256e3648d44f6284201e1",
+      "signature": "(*, collection_id: CollectionId, archive_root_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)], content_identity: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)], derivation_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)]) -> None"
+    },
+    "PersistentTargetService": {
+      "kind": "class",
+      "members": {
+        "cancel_job": {
+          "kind": "method",
+          "signature": "(self, job_id: 'str') -> 'TargetJobStatus'"
+        },
+        "close": {
+          "kind": "method",
+          "signature": "(self) -> 'None'"
+        },
+        "contract": {
+          "kind": "method",
+          "signature": "(self) -> 'TargetContract'"
+        },
+        "get_job": {
+          "kind": "method",
+          "signature": "(self, job_id: 'str') -> 'TargetJobStatus'"
+        },
+        "preflight": {
+          "kind": "method",
+          "signature": "(self, request: 'TargetPreflightRequest') -> 'TargetPreflightResponse'"
+        },
+        "prune_terminal_state": {
+          "kind": "method",
+          "signature": "(self, *, now: 'float | None' = None) -> 'dict[str, int]'"
+        },
+        "put_job": {
+          "kind": "method",
+          "signature": "(self, request: 'TargetJobRequest') -> 'TargetJobStatus'"
+        }
+      },
+      "signature": "(*, contract: 'TargetContract', operations: 'Mapping[str, OperationContract]', state_root: 'Path', execute: 'JobExecutor', intent_semantic_validators: 'Mapping[str, IntentSemanticValidator] | None' = None, maximum_workers: 'int' = 1, terminal_state_retention_seconds: 'int' = 2592000) -> 'None'"
+    },
+    "SHA256_PATTERN": {
+      "kind": "constant",
+      "value": "^[0-9a-f]{64}$"
+    },
+    "SemanticId": {
+      "kind": "object",
+      "type": "typing._AnnotatedAlias"
+    },
+    "Sha256": {
+      "kind": "object",
+      "type": "typing._AnnotatedAlias"
+    },
+    "TARGET_CONFORMANCE_RESULT": {
+      "kind": "constant",
+      "value": "stove0-target-conformance-result/v1"
+    },
+    "TARGET_HTTP_OPERATIONS": {
+      "kind": "object",
+      "type": "builtins.tuple"
+    },
+    "TARGET_SCHEMA_BUNDLE_FORMAT": {
+      "kind": "constant",
+      "value": "stove0-target-schema-bundle/v1"
+    },
+    "TARGET_TERMINAL_STATE_RETENTION_ENV": {
+      "kind": "constant",
+      "value": "STOVE0_TARGET_TERMINAL_STATE_RETENTION_SECONDS"
+    },
+    "TRANSFORM_TARGET_PROTOCOL": {
+      "kind": "constant",
+      "value": "stove0-transform-target/v1"
+    },
+    "TargetClient": {
+      "kind": "class",
+      "members": {
+        "contract": {
+          "kind": "method",
+          "signature": "(self) -> 'TargetContract'"
+        },
+        "preflight": {
+          "kind": "method",
+          "signature": "(self, request: 'TargetPreflightRequest') -> 'TargetPreflightResponse'"
+        },
+        "put_job": {
+          "kind": "method",
+          "signature": "(self, request: 'TargetJobRequest', *, operation: 'OperationContract') -> 'TargetJobStatus'"
+        },
+        "status": {
+          "kind": "method",
+          "signature": "(self, request: 'TargetJobRequest', *, operation: 'OperationContract') -> 'TargetJobStatus'"
+        }
+      },
+      "signature": "(*args, **kwargs)"
+    },
+    "TargetCollectionPublication": {
+      "kind": "class",
+      "members": {
+        "append": {
+          "kind": "method",
+          "signature": "(self, source: 'ProducerInput', artifact: 'OutputArtifact', *, derived_from: 'Iterable[str]') -> 'tuple[ProducerArtifactCustody, ...]'"
+        },
+        "finish_success": {
+          "kind": "method",
+          "signature": "(self, *, operation: 'OperationContract', execution_sha256: 'str', attempt: 'int' = 1, runtime_evidence: 'Mapping[str, object] | None' = None, **kwargs: 'Any') -> 'TargetJobStatus'"
+        }
+      },
+      "signature": "(execution: 'TargetExecutionRuntime', writer: 'IncrementalDerivedCollectionWriter') -> 'None'"
+    },
+    "TargetConformanceCase": {
+      "fields": [
+        {
+          "default": "required",
+          "name": "operation",
+          "type": "'OperationContract'"
+        },
+        {
+          "default": "required",
+          "name": "job_request",
+          "type": "'TargetJobRequest'"
+        },
+        {
+          "default": "None",
+          "name": "semantic_vectors",
+          "type": "'SemanticIntentConformanceVectors | None'"
+        }
+      ],
+      "kind": "class",
+      "signature": "(operation: 'OperationContract', job_request: 'TargetJobRequest', semantic_vectors: 'SemanticIntentConformanceVectors | None' = None) -> None"
+    },
+    "TargetConformanceResult": {
+      "kind": "class",
+      "members": {
+        "validate_result": {
+          "kind": "method",
+          "signature": "(self) -> 'Self'"
+        }
+      },
+      "schema_sha256": "dacd9898c46672af35bfeb83fabcf79bcb811edbef134d19b75e3c4a7f66b543",
+      "signature": "(*, format: Literal['stove0-target-conformance-result/v1'] = 'stove0-target-conformance-result/v1', status: Literal['conformant', 'partially-exercised', 'inspected'], target: stove0_target_protocol.protocol.TargetContract, coverage: stove0_target_support.conformance.TargetConformanceCoverage, operations: tuple[stove0_target_support.conformance.TargetOperationConformance, ...], operation_evidence: tuple[stove0_target_support.conformance.TargetOperationConformanceEvidence, ...] = ()) -> None"
+    },
+    "TargetContract": {
+      "kind": "class",
+      "members": {
+        "seal": {
+          "kind": "classmethod",
+          "signature": "(cls, payload: 'TargetContractPayload') -> 'TargetContract'"
+        },
+        "support_for": {
+          "kind": "method",
+          "signature": "(self, operation_id: 'str') -> 'TargetOperationSupport'"
+        },
+        "verify_digest": {
+          "kind": "method",
+          "signature": "(self) -> 'Self'"
+        }
+      },
+      "schema_sha256": "444d776c4e61c75ff1edfdfeac88aa1e2ca815679fc44af9eae1992e4dde5bf0",
+      "signature": "(*, protocol: Literal['stove0-transform-target/v1', 'stove0-effect-target/v1'] = 'stove0-transform-target/v1', implementation_id: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$', ascii_only=None)], implementation_version: Annotated[str, MinLen(min_length=1), MaxLen(max_length=120)], source_revision: Annotated[str, MinLen(min_length=1), MaxLen(max_length=200)], image_digest: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)], transport: Literal['riverhog-capability/v1'] = 'riverhog-capability/v1', operations: Annotated[tuple[stove0_target_protocol.protocol.TargetOperationSupport, ...], MinLen(min_length=1)], contract_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)]) -> None"
+    },
+    "TargetContractPayload": {
+      "kind": "class",
+      "members": {
+        "bind_result_kind": {
+          "kind": "method",
+          "signature": "(self) -> 'Self'"
+        },
+        "canonical_operations": {
+          "kind": "classmethod",
+          "signature": "(cls, value: 'tuple[TargetOperationSupport, ...]') -> 'tuple[TargetOperationSupport, ...]'"
+        }
+      },
+      "schema_sha256": "ee590c3be91952c47c3452289eef103fef83febe06ce4775481be63c2b40d821",
+      "signature": "(*, protocol: Literal['stove0-transform-target/v1', 'stove0-effect-target/v1'] = 'stove0-transform-target/v1', implementation_id: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$', ascii_only=None)], implementation_version: Annotated[str, MinLen(min_length=1), MaxLen(max_length=120)], source_revision: Annotated[str, MinLen(min_length=1), MaxLen(max_length=200)], image_digest: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)], transport: Literal['riverhog-capability/v1'] = 'riverhog-capability/v1', operations: Annotated[tuple[stove0_target_protocol.protocol.TargetOperationSupport, ...], MinLen(min_length=1)]) -> None"
+    },
+    "TargetDeclaration": {
+      "kind": "class",
+      "schema_sha256": "2799fc17c1e3def4ba574b3d4ac58984d664b817f1a646a63e4f35c7343b6997",
+      "signature": "(*, operation_id: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$', ascii_only=None)], operation_contract_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)], inputs: stove0_target_protocol.protocol.TargetInputAuthority, intent: dict[str, JsonValue], target_options: dict[str, JsonValue] = <factory>) -> None"
+    },
+    "TargetEffectCommitUncertain": {
+      "kind": "class",
+      "signature": "unavailable"
+    },
+    "TargetExecutionCanceled": {
+      "kind": "class",
+      "signature": "unavailable"
+    },
+    "TargetExecutionEvidence": {
+      "kind": "class",
+      "schema_sha256": "f76617128b8960e01b2b657a4031d97d1632c188c092473b906be914186ef931",
+      "signature": "(*, target_contract_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)], operation_contract_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)], plan_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)], execution_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)], runtime: dict[str, JsonValue] = <factory>) -> None"
+    },
+    "TargetExecutionFailure": {
+      "kind": "class",
+      "signature": "(code: 'str', message: 'str', *, retryable: 'bool') -> 'None'"
+    },
+    "TargetExecutionInapplicable": {
+      "kind": "class",
+      "signature": "(code: 'str', message: 'str') -> 'None'"
+    },
+    "TargetExecutionRuntime": {
+      "kind": "class",
+      "members": {
+        "completed": {
+          "kind": "property",
+          "signature": "(self) -> 'bool'"
+        },
+        "declare_disposition": {
+          "kind": "method",
+          "signature": "(self, input_id: 'str', status: 'InputDisposition') -> 'None'"
+        },
+        "effect_success": {
+          "kind": "method",
+          "signature": "(self, result: 'Mapping[str, JsonValue]', *, operation: 'OperationContract', execution_sha256: 'str', attempt: 'int' = 1, runtime_evidence: 'Mapping[str, object] | None' = None) -> 'TargetJobStatus'"
+        },
+        "from_request": {
+          "kind": "classmethod",
+          "signature": "(cls, request: 'TargetJobRequest', *, cancellation_check: 'CancellationCheck | None' = None, producer_version: 'str' = 'development', session: 'TargetExecutionSession | None' = None) -> 'TargetExecutionRuntime'"
+        },
+        "iter_inputs": {
+          "kind": "method",
+          "signature": "(self) -> 'Iterator[tuple[InputArtifact, ClaimedArtifact]]'"
+        },
+        "job_id": {
+          "kind": "property",
+          "signature": "(self) -> 'str'"
+        },
+        "open_collection_publication": {
+          "kind": "method",
+          "signature": "(self, *, source_context: 'Mapping[str, object] | None' = None) -> 'TargetCollectionPublication'"
+        },
+        "open_workspace": {
+          "kind": "method",
+          "signature": "(self, root: 'Path') -> 'TransformWorkspace'"
+        },
+        "prepare_inputs": {
+          "kind": "method",
+          "signature": "(self, inputs: 'Sequence[InputArtifact] | None' = None, **kwargs: 'Any') -> 'ClaimedRetrieval'"
+        },
+        "refresh_capability": {
+          "kind": "method",
+          "signature": "(self, token: 'str') -> 'None'"
+        },
+        "resolve_input_ids": {
+          "kind": "method",
+          "signature": "(self, input_ids: 'Sequence[str]') -> 'tuple[ClaimedArtifact, ...]'"
+        }
+      },
+      "signature": "(request: 'TargetJobRequest', runtime: 'ClaimedCollectionRuntime | CollectionTransformRuntime', *, session: 'TargetExecutionSession | None' = None) -> 'None'"
+    },
+    "TargetExecutionSession": {
+      "kind": "class",
+      "members": {
+        "completed_status": {
+          "kind": "property",
+          "signature": "(self) -> 'TargetJobStatus | None'"
+        },
+        "record_completed": {
+          "kind": "method",
+          "signature": "(self, status: 'TargetJobStatus') -> 'None'"
+        }
+      },
+      "signature": "(request: 'TargetJobRequest', attempt: 'int', runtime_registry: 'ClaimedCollectionRuntimeRegistry') -> 'None'"
+    },
+    "TargetFailure": {
+      "kind": "class",
+      "schema_sha256": "1f3471f4274fa0dc57b46bac02964b1e6b6f07bbd8a9a19f618b2031ccb0c065",
+      "signature": "(*, code: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$', ascii_only=None)], message: Annotated[str, MinLen(min_length=1), MaxLen(max_length=1000)], retryable: bool) -> None"
+    },
+    "TargetHttpBinding": {
+      "kind": "class",
+      "members": {
+        "handle": {
+          "kind": "method",
+          "signature": "(self, method: 'str', path: 'str', body: 'bytes' = b'') -> 'TargetHttpResponse'"
+        }
+      },
+      "signature": "(target: 'TargetService', *, maximum_request_bytes: 'int' = 16777216) -> 'None'"
+    },
+    "TargetHttpResponse": {
+      "fields": [
+        {
+          "default": "required",
+          "name": "status",
+          "type": "'int'"
+        },
+        {
+          "default": "required",
+          "name": "headers",
+          "type": "'tuple[tuple[str, str], ...]'"
+        },
+        {
+          "default": "required",
+          "name": "body",
+          "type": "'bytes'"
+        }
+      ],
+      "kind": "class",
+      "signature": "(status: 'int', headers: 'tuple[tuple[str, str], ...]', body: 'bytes') -> None"
+    },
+    "TargetInapplicable": {
+      "kind": "class",
+      "schema_sha256": "e6e7b7f0a6d88757ed930e374dc9c6877fd96d32d1a689c2d8fbc8e6a3838457",
+      "signature": "(*, code: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$', ascii_only=None)], message: Annotated[str, MinLen(min_length=1), MaxLen(max_length=1000)]) -> None"
+    },
+    "TargetJobDeclaration": {
+      "kind": "class",
+      "members": {
+        "bind_execution": {
+          "kind": "method",
+          "signature": "(self) -> 'Self'"
+        },
+        "canonical_claim_id": {
+          "kind": "classmethod",
+          "signature": "(cls, value: 'str') -> 'str'"
+        }
+      },
+      "schema_sha256": "a0db588dffc46f0fcadc83e704edb92879ec0aa3f006d9c2d369f36c76e0f4a9",
+      "signature": "(*, job_id: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)], claim_id: Annotated[str, MinLen(min_length=1), MaxLen(max_length=160)], fence: Annotated[int, Ge(ge=1)], controller_evidence: stove0_protocol.models.ControllerEvidence, plan: stove0_target_protocol.protocol.TransformPlan | stove0_target_protocol.protocol.EffectPlan, workspace_assurance: Literal['encrypted', 'ephemeral']) -> None"
+    },
+    "TargetJobRequest": {
+      "kind": "class",
+      "members": {
+        "accepted": {
+          "kind": "method",
+          "signature": "(self) -> 'AcceptedTargetJob'"
+        },
+        "seal": {
+          "kind": "classmethod",
+          "signature": "(cls, declaration: 'TargetJobDeclaration', runtime: 'TargetRuntimeAuthority', callback_access: 'TargetCallbackAccess') -> 'TargetJobRequest'"
+        },
+        "verify_digest": {
+          "kind": "method",
+          "signature": "(self) -> 'Self'"
+        }
+      },
+      "schema_sha256": "a9548cb0b668b182a9fdebb904bc5e91d9299131bbf9c38cff8a5c19c450063e",
+      "signature": "(*, declaration: stove0_target_protocol.protocol.TargetJobDeclaration, runtime: stove0_target_protocol.protocol.TargetRuntimeAuthority, callback_access: stove0_target_protocol.protocol.TargetCallbackAccess, request_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)]) -> None"
+    },
+    "TargetJobState": {
+      "kind": "object",
+      "type": "typing._LiteralGenericAlias"
+    },
+    "TargetJobStatus": {
+      "kind": "class",
+      "members": {
+        "canonical_derivation": {
+          "kind": "classmethod",
+          "signature": "(cls, value: 'dict[str, Any] | None') -> 'dict[str, Any] | None'"
+        },
+        "validate_terminal_shape": {
+          "kind": "method",
+          "signature": "(self) -> 'Self'"
+        }
+      },
+      "schema_sha256": "c29a6125c1975f597c8de13fed65f3aa4e4286f4616fa74161074c7217e67684",
+      "signature": "(*, protocol: Literal['stove0-transform-target/v1', 'stove0-effect-target/v1'] = 'stove0-transform-target/v1', job_id: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)], state: Literal['queued', 'running', 'canceling', 'interrupted', 'inapplicable', 'succeeded', 'failed', 'canceled'], attempt: Annotated[int, Ge(ge=1)], request_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)], plan_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)], progress: stove0_target_protocol.protocol.TargetProgress, production: stove0_target_protocol.protocol.TargetProductionAuthority | None = None, output_collection: stove0_target_protocol.protocol.OutputCollectionRef | None = None, execution_evidence: stove0_target_protocol.protocol.TargetExecutionEvidence | None = None, derivation: dict[str, typing.Any] | None = None, effect_receipt: stove0_target_protocol.protocol.ExternalEffectReceipt | None = None, failure: stove0_target_protocol.protocol.TargetFailure | None = None, inapplicable: stove0_target_protocol.protocol.TargetInapplicable | None = None) -> None"
+    },
+    "TargetOperationSupport": {
+      "kind": "class",
+      "schema_sha256": "6d124a4d31728580104c9df9fec11f2f903e65acc80d328b6449bf5ac33d4def",
+      "signature": "(*, operation_id: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$', ascii_only=None)], operation_contract_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)], result_kind: Literal['collection', 'external-effect'] = 'collection', options_schema: stove0_protocol.models.JsonSchemaDocument) -> None"
+    },
+    "TargetPlan": {
+      "kind": "object",
+      "type": "typing._AnnotatedAlias"
+    },
+    "TargetPreflightRequest": {
+      "kind": "class",
+      "members": {
+        "canonical_observations": {
+          "kind": "classmethod",
+          "signature": "(cls, value: 'tuple[ObservationEvidence, ...]') -> 'tuple[ObservationEvidence, ...]'"
+        }
+      },
+      "schema_sha256": "c8edfde8d715a2d94c2d913d1e5e0d71a5b583830587bb7712098fa3b1ce301f",
+      "signature": "(*, operation_id: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$', ascii_only=None)], operation_contract_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)], inputs: stove0_target_protocol.protocol.TargetInputAuthority, intent: dict[str, JsonValue], target_options: dict[str, JsonValue] = <factory>, protocol: Literal['stove0-transform-target/v1', 'stove0-effect-target/v1'] = 'stove0-transform-target/v1', observations: tuple[stove0_protocol.models.ObservationEvidence, ...] = ()) -> None"
+    },
+    "TargetPreflightResponse": {
+      "kind": "class",
+      "members": {
+        "bind_protocol": {
+          "kind": "method",
+          "signature": "(self) -> 'Self'"
+        }
+      },
+      "schema_sha256": "2de154a75245f705341e8f659ce900ce6f3b2bef59a16b22d7980249391824e9",
+      "signature": "(*, target: stove0_target_protocol.protocol.TargetContract, plan: stove0_target_protocol.protocol.TransformPlan | stove0_target_protocol.protocol.EffectPlan) -> None"
+    },
+    "TargetProgress": {
+      "kind": "class",
+      "members": {
+        "validate_total": {
+          "kind": "method",
+          "signature": "(self) -> 'Self'"
+        }
+      },
+      "schema_sha256": "3b531b19161c4e085385a0c27312bc32072b1dda15095512891696fd64be3fca",
+      "signature": "(*, phase: Annotated[str, MinLen(min_length=1), MaxLen(max_length=120)], completed: Annotated[int, Ge(ge=0)], total: Annotated[int | None, Ge(ge=0)] = None, unit: Annotated[str | None, MinLen(min_length=1), MaxLen(max_length=40)] = None) -> None"
+    },
+    "TargetProtocol": {
+      "kind": "object",
+      "type": "typing._LiteralGenericAlias"
+    },
+    "TargetProtocolModel": {
+      "kind": "class",
+      "schema_sha256": "c93552e6289487dd5fa8baeb3416b24ed8657c354167fb0ed7a8de1e1a8ccb90",
+      "signature": "() -> None"
+    },
+    "TargetResultKind": {
+      "kind": "object",
+      "type": "typing._LiteralGenericAlias"
+    },
+    "TargetRuntimeAuthority": {
+      "kind": "class",
+      "schema_sha256": "6ac4b25b7019574c8a208af672bd8cd7caa8a1b22ac48d6ddf6946379a4bafa7",
+      "signature": "(*, transport: Literal['riverhog-capability/v1'] = 'riverhog-capability/v1', riverhog_base_url: Annotated[str, MinLen(min_length=1), MaxLen(max_length=2048)], capability_token: Annotated[str, MinLen(min_length=1), MaxLen(max_length=4096)], allow_insecure_http: bool = False) -> None"
+    },
+    "TargetService": {
+      "kind": "class",
+      "members": {
+        "cancel_job": {
+          "kind": "method",
+          "signature": "(self, job_id: 'str') -> 'TargetJobStatus'"
+        },
+        "contract": {
+          "kind": "method",
+          "signature": "(self) -> 'TargetContract'"
+        },
+        "get_job": {
+          "kind": "method",
+          "signature": "(self, job_id: 'str') -> 'TargetJobStatus'"
+        },
+        "preflight": {
+          "kind": "method",
+          "signature": "(self, request: 'TargetPreflightRequest') -> 'TargetPreflightResponse'"
+        },
+        "put_job": {
+          "kind": "method",
+          "signature": "(self, request: 'TargetJobRequest') -> 'TargetJobStatus'"
+        }
+      },
+      "signature": "(*args, **kwargs)"
+    },
+    "TargetServiceError": {
+      "kind": "class",
+      "signature": "(status: 'int', code: 'TargetHttpErrorCode', message: 'str') -> 'None'"
+    },
+    "TransformPlan": {
+      "kind": "class",
+      "members": {
+        "binding_document": {
+          "kind": "method",
+          "signature": "(self) -> 'dict[str, JsonValue]'"
+        },
+        "seal": {
+          "kind": "classmethod",
+          "signature": "(cls, payload: 'TransformPlanPayload') -> 'TransformPlan'"
+        },
+        "verify_digest": {
+          "kind": "method",
+          "signature": "(self) -> 'Self'"
+        }
+      },
+      "schema_sha256": "6f59b836f3424c3b6ad464e31db0949cba1c594122b94d6c7adf6d756ca618c7",
+      "signature": "(*, operation_id: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$', ascii_only=None)], operation_contract_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)], inputs: stove0_target_protocol.protocol.TargetInputAuthority, intent: dict[str, JsonValue], target_options: dict[str, JsonValue] = <factory>, protocol: Literal['stove0-transform-target/v1'] = 'stove0-transform-target/v1', target_implementation_id: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$', ascii_only=None)], target_contract_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)], observation_result_sha256s: tuple[typing.Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)], ...] = (), plan_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)]) -> None"
+    },
+    "TransformPlanPayload": {
+      "kind": "class",
+      "members": {
+        "canonical_observation_results": {
+          "kind": "classmethod",
+          "signature": "(cls, value: 'tuple[str, ...]') -> 'tuple[str, ...]'"
+        }
+      },
+      "schema_sha256": "aeb7f795159621c7f469ce34008b3a33414d8f519c71753d3b355f2e2489efcc",
+      "signature": "(*, operation_id: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$', ascii_only=None)], operation_contract_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)], inputs: stove0_target_protocol.protocol.TargetInputAuthority, intent: dict[str, JsonValue], target_options: dict[str, JsonValue] = <factory>, protocol: Literal['stove0-transform-target/v1'] = 'stove0-transform-target/v1', target_implementation_id: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$', ascii_only=None)], target_contract_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)], observation_result_sha256s: tuple[typing.Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)], ...] = ()) -> None"
+    },
+    "WorkspaceAssurance": {
+      "kind": "object",
+      "type": "typing._LiteralGenericAlias"
+    },
+    "canonical_json_bytes": {
+      "kind": "function",
+      "signature": "(value: 'object') -> 'bytes'"
+    },
+    "canonical_json_sha256": {
+      "kind": "function",
+      "signature": "(value: 'object') -> 'str'"
+    },
+    "conformance_report": {
+      "kind": "function",
+      "signature": "(client: 'TargetClient', *, cases: 'Sequence[TargetConformanceCase]' = ()) -> 'TargetConformanceResult'"
+    },
+    "target_schema_bundle": {
+      "kind": "function",
+      "signature": "() -> 'dict[str, Any]'"
+    },
+    "terminal_state_retention_seconds": {
+      "kind": "function",
+      "signature": "(environ: 'Mapping[str, str] | None' = None) -> 'int'"
+    },
+    "validate_declaration_against_operation": {
+      "kind": "function",
+      "signature": "(declaration: 'TargetDeclaration', operation: 'OperationContract') -> 'None'"
+    },
+    "validate_preflight_response_against_request": {
+      "kind": "function",
+      "signature": "(response: 'TargetPreflightResponse', request: 'TargetPreflightRequest') -> 'None'"
+    },
+    "validate_status_against_request": {
+      "kind": "function",
+      "signature": "(status: 'TargetJobStatus', request: 'TargetJobRequest | AcceptedTargetJob', operation: 'OperationContract') -> 'None'"
+    }
+  },
+  "module": "stove0_target_support"
+}
+```

@@ -35,7 +35,7 @@
 | value | schema-value | `operational_policy` | maximum=None, reason=no-declared-semantic-maximum |
 | value | schema-value | `operational_policy` | maximum=None, reason=no-declared-semantic-maximum |
 
-## Contract
+## Contract summary
 
 - `title`: PendingCollectionUploadCustodyOut
 - `type`: object
@@ -47,3 +47,39 @@
 | `bytes` | yes | integer |  |
 | `files` | yes | integer |  |
 | `state` | yes | string |  |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: bba3c06332a578b2b21e4382d6c7fffbc08107d4af02df1ec79ed7e4a839cbb7 -->
+
+```json
+{
+  "additionalProperties": false,
+  "properties": {
+    "bytes": {
+      "minimum": 0,
+      "title": "Bytes",
+      "type": "integer"
+    },
+    "files": {
+      "minimum": 0,
+      "title": "Files",
+      "type": "integer"
+    },
+    "state": {
+      "const": "pending",
+      "title": "State",
+      "type": "string"
+    }
+  },
+  "required": [
+    "state",
+    "files",
+    "bytes"
+  ],
+  "title": "PendingCollectionUploadCustodyOut",
+  "type": "object"
+}
+```

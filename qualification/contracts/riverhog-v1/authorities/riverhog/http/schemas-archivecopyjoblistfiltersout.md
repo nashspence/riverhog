@@ -27,7 +27,11 @@
 - Proof: `make operation-qualification`
 - Proof: `make compose-smoke`
 
-## Contract
+## Referenced contract dossiers
+
+- [schemas: ArchiveCopyState](schemas-archivecopystate.md)
+
+## Contract summary
 
 - `title`: ArchiveCopyJobListFiltersOut
 - `type`: object
@@ -37,3 +41,29 @@
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | `state` | no | object (1 fields) |  |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: ffadbfe6a984f8ff781319075ed287f5e4ad500921415287dad46c363a38e567 -->
+
+```json
+{
+  "additionalProperties": false,
+  "properties": {
+    "state": {
+      "anyOf": [
+        {
+          "$ref": "#/components/schemas/ArchiveCopyState"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    }
+  },
+  "title": "ArchiveCopyJobListFiltersOut",
+  "type": "object"
+}
+```

@@ -29,6 +29,11 @@
 - Proof: `make operation-qualification`
 - Proof: `make compose-smoke`
 
+## Referenced contract dossiers
+
+- [schemas: JsonValue](schemas-jsonvalue.md)
+- [schemas: OperationRef](schemas-operationref.md)
+
 ## Extent decisions
 
 | Dimension | Unit | Policy | Bounds/reason |
@@ -37,7 +42,7 @@
 | cardinality | entries | `operational_policy` | maximum=None, reason=no-declared-semantic-maximum |
 | length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
 
-## Contract
+## Contract summary
 
 - `title`: WorkflowPlanIntent
 - `description`: Work-independent fields that deterministically materialize a workflow plan.
@@ -56,3 +61,85 @@
 | `retirement_policy` | no | string |  |
 | `target_contract_sha256` | yes | string |  |
 | `target_registration_id` | yes | string |  |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 4a242960bc5e6c8b004dd1edcfd1c9d4e5ee9b8b9bf2b7ff9e74c71118e1de37 -->
+
+```json
+{
+  "additionalProperties": false,
+  "description": "Work-independent fields that deterministically materialize a workflow plan.",
+  "properties": {
+    "input_retrieval_policy": {
+      "default": "available-only",
+      "enum": [
+        "available-only",
+        "allow"
+      ],
+      "title": "Input Retrieval Policy",
+      "type": "string"
+    },
+    "operation": {
+      "$ref": "#/components/schemas/OperationRef"
+    },
+    "output_policy": {
+      "additionalProperties": {
+        "$ref": "#/components/schemas/JsonValue"
+      },
+      "title": "Output Policy",
+      "type": "object"
+    },
+    "requested_target_options": {
+      "additionalProperties": {
+        "$ref": "#/components/schemas/JsonValue"
+      },
+      "title": "Requested Target Options",
+      "type": "object"
+    },
+    "result_kind": {
+      "default": "collection",
+      "enum": [
+        "collection",
+        "external-effect"
+      ],
+      "title": "Result Kind",
+      "type": "string"
+    },
+    "retirement_grace_seconds": {
+      "default": 0,
+      "minimum": 0,
+      "title": "Retirement Grace Seconds",
+      "type": "integer"
+    },
+    "retirement_policy": {
+      "default": "retain",
+      "enum": [
+        "retain",
+        "retire-after-verified-output"
+      ],
+      "title": "Retirement Policy",
+      "type": "string"
+    },
+    "target_contract_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Target Contract Sha256",
+      "type": "string"
+    },
+    "target_registration_id": {
+      "pattern": "^[a-z0-9]\u0028?:[a-z0-9.-]{0,118}[a-z0-9])?$",
+      "title": "Target Registration Id",
+      "type": "string"
+    }
+  },
+  "required": [
+    "operation",
+    "target_registration_id",
+    "target_contract_sha256"
+  ],
+  "title": "WorkflowPlanIntent",
+  "type": "object"
+}
+```

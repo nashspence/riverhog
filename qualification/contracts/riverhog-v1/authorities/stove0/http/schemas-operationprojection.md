@@ -27,7 +27,7 @@
 - Proof: `make operation-qualification`
 - Proof: `make compose-smoke`
 
-## Contract
+## Contract summary
 
 - `title`: OperationProjection
 - `description`: One declarative JSON-pointer copy into an operation request.
@@ -41,3 +41,52 @@
 | `destination_pointer` | yes | string |  |
 | `source` | yes | string |  |
 | `source_pointer` | yes | string |  |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 412cc6fe371170daf347f525d51353e79834de6222531002457e205e033c56fa -->
+
+```json
+{
+  "additionalProperties": false,
+  "description": "One declarative JSON-pointer copy into an operation request.",
+  "properties": {
+    "destination": {
+      "enum": [
+        "intent",
+        "target-options"
+      ],
+      "title": "Destination",
+      "type": "string"
+    },
+    "destination_pointer": {
+      "pattern": "^(?:|/(?:[^~/]|~[01])*(?:/(?:[^~/]|~[01])*)*)$",
+      "title": "Destination Pointer",
+      "type": "string"
+    },
+    "source": {
+      "enum": [
+        "work-effective-intent",
+        "work-evaluation"
+      ],
+      "title": "Source",
+      "type": "string"
+    },
+    "source_pointer": {
+      "pattern": "^(?:|/(?:[^~/]|~[01])*(?:/(?:[^~/]|~[01])*)*)$",
+      "title": "Source Pointer",
+      "type": "string"
+    }
+  },
+  "required": [
+    "source",
+    "source_pointer",
+    "destination",
+    "destination_pointer"
+  ],
+  "title": "OperationProjection",
+  "type": "object"
+}
+```

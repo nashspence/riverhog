@@ -33,7 +33,7 @@
 - [GET /v1/collections/{collection_id}/provenance/journals/{journal_id}/agents](../http/get-v1-collections-collection-id-provenance-journals-journal-id-agents.md)
 - [piggity collection provenance agents](../../piggity/cli/piggity-collection-provenance-agents.md)
 
-## Contract
+## Contract summary
 
 | Concern | Contract |
 |---|---|
@@ -47,3 +47,33 @@
 | `provider_evidence` | None |
 | `read_collection` | {"default_page_size": 25, "kind": "mutable-browse", "maximum_page_size": 100, "next_page_token_field": "next_page_token", "page_size_parameter": "page_size", "page_token_parameter": "page_token"} |
 | `response_authority` | http-json |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 5d43a79812a981f960df9921c9567f9872dbd3b532d4129225b010e6d6f21e50 -->
+
+```json
+{
+  "application": "riverhog",
+  "classification": "human-cli+json",
+  "cli_commands": [
+    "collection provenance agents"
+  ],
+  "client": "ApiClient",
+  "method": "GET",
+  "operation_id": "list_collection_provenance_journal_agents",
+  "path": "/v1/collections/{collection_id}/provenance/journals/{journal_id}/agents",
+  "provider_evidence": null,
+  "read_collection": {
+    "default_page_size": 25,
+    "kind": "mutable-browse",
+    "maximum_page_size": 100,
+    "next_page_token_field": "next_page_token",
+    "page_size_parameter": "page_size",
+    "page_token_parameter": "page_token"
+  },
+  "response_authority": "http-json"
+}
+```

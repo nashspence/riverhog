@@ -34,7 +34,7 @@
 |---|---|---|---|
 | cardinality | items | `extension_owned` | maximum=None, reason=independently-versioned-extension-authority |
 
-## Contract
+## Contract summary
 
 - `$id`: https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/windows-file-attributes.json
 - `type`: object
@@ -47,3 +47,46 @@
 | `hex` | yes | string |  |
 | `names` | yes | array |  |
 | `reparse_tag` | yes | integer |  |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 37bba6822376342893fc3815b03e3da54ba3828bdbeb7cfe4fa6cd763a3055d4 -->
+
+```json
+{
+  "$id": "https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/windows-file-attributes.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "bitmask": {
+      "minimum": 0,
+      "type": "integer"
+    },
+    "hex": {
+      "pattern": "^0x[0-9a-f]{8}$",
+      "type": "string"
+    },
+    "names": {
+      "items": {
+        "minLength": 1,
+        "type": "string"
+      },
+      "type": "array",
+      "uniqueItems": true
+    },
+    "reparse_tag": {
+      "minimum": 0,
+      "type": "integer"
+    }
+  },
+  "required": [
+    "bitmask",
+    "hex",
+    "names",
+    "reparse_tag"
+  ],
+  "type": "object"
+}
+```

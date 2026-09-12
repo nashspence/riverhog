@@ -28,6 +28,26 @@
 - Proof: `make dist-smoke`
 - Proof: `make operation-qualification`
 
-## Contract
+## Contract summary
 
 - Parser name: `riverhog-ftp-adapter check-config`
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+### `/external_contract/cli/riverhog-ftp-adapter/commands/check-config/name`
+
+<!-- exact-contract-value: a6d4ce9a9f294cf8cc78becfbfa94a4115e21ab41070ff57b1ffef71049e3f31 -->
+
+```json
+"riverhog-ftp-adapter check-config"
+```
+
+### `/external_contract/cli/riverhog-ftp-adapter/commands/check-config/parameters`
+
+<!-- exact-contract-value: 4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945 -->
+
+```json
+[]
+```

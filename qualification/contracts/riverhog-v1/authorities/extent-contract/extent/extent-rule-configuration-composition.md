@@ -27,7 +27,22 @@
 - Proof: `make contract-freeze`
 - Proof: `make operation-qualification`
 
-## Contract
+## Contract summary
+
+| Field | Shape |
+|---|---|
+| `authority` | "the owning validated deployment configuration document" |
+| `declared_operational_maximum` | null |
+| `hidden_maximum` | "forbidden" |
+| `policy` | "operational_policy" |
+| `semantic_maximum` | null |
+| `silent_truncation` | "forbidden" |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 3ba1d5cdf00d6737eee66c195f42c64dcb0914af7bd8fd8bc1bbc7102b560420 -->
 
 ```json
 {

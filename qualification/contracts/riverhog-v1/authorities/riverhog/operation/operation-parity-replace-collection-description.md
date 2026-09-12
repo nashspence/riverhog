@@ -33,7 +33,7 @@
 - [PUT /v1/collections/{collection_id}/description](../http/put-v1-collections-collection-id-description.md)
 - [piggity collection describe](../../piggity/cli/piggity-collection-describe.md)
 
-## Contract
+## Contract summary
 
 | Concern | Contract |
 |---|---|
@@ -47,3 +47,26 @@
 | `provider_evidence` | None |
 | `read_collection` | None |
 | `response_authority` | http-json |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: dfb4f8db18d330335224d579c3b794b62d8331c2c992379113ac55bc32cc515f -->
+
+```json
+{
+  "application": "riverhog",
+  "classification": "human-cli+json",
+  "cli_commands": [
+    "collection describe"
+  ],
+  "client": "ApiClient",
+  "method": "PUT",
+  "operation_id": "replace_collection_description",
+  "path": "/v1/collections/{collection_id}/description",
+  "provider_evidence": null,
+  "read_collection": null,
+  "response_authority": "http-json"
+}
+```

@@ -40,7 +40,7 @@
 |---|---|---|---|
 | cardinality | values-per-occurrence | `fixed` | maximum=1, minimum=1, reason=fixed-command-argument-arity |
 
-## Contract
+## Contract summary
 
 - Parser name: `health`
 
@@ -49,3 +49,43 @@
 | Name | Kind | Required | Type | Options |
 |---|---|---:|---|---|
 | `ready` | TyperOption | no | {'class': 'typer._click.types.BoolParamType', 'name': 'boolean'} | --ready |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+### `/external_contract/cli/stove0/commands/health/name`
+
+<!-- exact-contract-value: 69b7c75b4a0260f2e018aae0172314b00e80b3899c79ba4d71e070ba74cd8db4 -->
+
+```json
+"health"
+```
+
+### `/external_contract/cli/stove0/commands/health/parameters`
+
+<!-- exact-contract-value: bb7aa89b48a0fb797521cb9cfad5a62b55dce8cb3a19bcda2acbd80306355cb4 -->
+
+```json
+[
+  {
+    "count": false,
+    "default": false,
+    "envvar": null,
+    "is_flag": true,
+    "kind": "TyperOption",
+    "multiple": false,
+    "name": "ready",
+    "nargs": 1,
+    "options": [
+      "--ready"
+    ],
+    "required": false,
+    "secondary_options": [],
+    "type": {
+      "class": "typer._click.types.BoolParamType",
+      "name": "boolean"
+    }
+  }
+]
+```

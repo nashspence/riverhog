@@ -34,7 +34,7 @@
 |---|---|---|---|
 | cardinality | items | `operational_policy` | maximum=None, reason=no-declared-semantic-maximum |
 
-## Contract
+## Contract summary
 
 - `title`: RecipeJoinMember
 - `type`: object
@@ -45,3 +45,37 @@
 |---|---:|---|---|
 | `branch_id` | yes | string |  |
 | `output_roles` | yes | array |  |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: f96f0cc79aff67369a99fa4bb8d4b8f29e89bdd258e990af58d3e937574ad43f -->
+
+```json
+{
+  "additionalProperties": false,
+  "properties": {
+    "branch_id": {
+      "pattern": "^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$",
+      "title": "Branch Id",
+      "type": "string"
+    },
+    "output_roles": {
+      "items": {
+        "pattern": "^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$",
+        "type": "string"
+      },
+      "minItems": 1,
+      "title": "Output Roles",
+      "type": "array"
+    }
+  },
+  "required": [
+    "branch_id",
+    "output_roles"
+  ],
+  "title": "RecipeJoinMember",
+  "type": "object"
+}
+```

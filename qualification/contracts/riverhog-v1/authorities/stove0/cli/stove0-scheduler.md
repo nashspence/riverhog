@@ -28,6 +28,26 @@
 - Proof: `make dist-smoke`
 - Proof: `make operation-qualification`
 
-## Contract
+## Contract summary
 
 - Parser name: `scheduler`
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+### `/external_contract/cli/stove0/commands/scheduler/name`
+
+<!-- exact-contract-value: 877fc37669cb9960b62ee3b97e9e47bf8732dc50cc93fb34e447fa6318d23920 -->
+
+```json
+"scheduler"
+```
+
+### `/external_contract/cli/stove0/commands/scheduler/parameters`
+
+<!-- exact-contract-value: 4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945 -->
+
+```json
+[]
+```

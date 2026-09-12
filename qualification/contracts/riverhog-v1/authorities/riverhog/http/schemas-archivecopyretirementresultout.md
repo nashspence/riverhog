@@ -27,7 +27,12 @@
 - Proof: `make operation-qualification`
 - Proof: `make compose-smoke`
 
-## Contract
+## Referenced contract dossiers
+
+- [schemas: ArchiveStoreName](schemas-archivestorename.md)
+- [schemas: CollectionId](schemas-collectionid.md)
+
+## Contract summary
 
 - `title`: ArchiveCopyRetirementResultOut
 - `type`: object
@@ -41,3 +46,54 @@
 | `status` | yes | string |  |
 | `store` | yes | #/components/schemas/ArchiveStoreName |  |
 | `verified_store` | yes | object (1 fields) |  |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 7e7caad5ef04fee87801c920d47e6384a7bd1d8b0929f69cc7816ad28f90cb51 -->
+
+```json
+{
+  "additionalProperties": false,
+  "properties": {
+    "collection_id": {
+      "$ref": "#/components/schemas/CollectionId"
+    },
+    "remote_storage_bytes": {
+      "title": "Remote Storage Bytes",
+      "type": "integer"
+    },
+    "status": {
+      "enum": [
+        "retired",
+        "already_absent"
+      ],
+      "title": "Status",
+      "type": "string"
+    },
+    "store": {
+      "$ref": "#/components/schemas/ArchiveStoreName"
+    },
+    "verified_store": {
+      "anyOf": [
+        {
+          "$ref": "#/components/schemas/ArchiveStoreName"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    }
+  },
+  "required": [
+    "status",
+    "collection_id",
+    "store",
+    "remote_storage_bytes",
+    "verified_store"
+  ],
+  "title": "ArchiveCopyRetirementResultOut",
+  "type": "object"
+}
+```

@@ -27,7 +27,22 @@
 - Proof: `make release-check`
 - Proof: `make build`
 
-## Contract
+## Contract summary
+
+| Field | Shape |
+|---|---|
+| `console_scripts` | object (1 fields) |
+| `dependencies` | array (2 items) |
+| `distribution` | "mango-fish" |
+| `optional_dependencies` | object (0 fields) |
+| `path` | "reference/riverhog/applications/mango-fish" |
+| `role` | "reference_application" |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 113e1f07a2dadb12b61fe99c441ef6fe3a3fa0f3d7be453dccb6c61757b7a072 -->
 
 ```json
 {

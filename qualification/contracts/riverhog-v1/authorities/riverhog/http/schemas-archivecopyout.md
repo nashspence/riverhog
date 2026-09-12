@@ -27,6 +27,45 @@
 - Proof: `make operation-qualification`
 - Proof: `make compose-smoke`
 
-## Contract
+## Referenced contract dossiers
+
+- [schemas: FailedArchiveCopyOut](schemas-failedarchivecopyout.md)
+- [schemas: IncompleteArchiveCopyOut](schemas-incompletearchivecopyout.md)
+- [schemas: UploadedArchiveCopyOut](schemas-uploadedarchivecopyout.md)
+
+## Contract summary
 
 - `title`: ArchiveCopyOut
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 978aa8902a1ae7506a429f1503173c2cdfaa37ba4d366b316b2ab3a8a939c385 -->
+
+```json
+{
+  "discriminator": {
+    "mapping": {
+      "failed": "#/components/schemas/FailedArchiveCopyOut",
+      "pending": "#/components/schemas/IncompleteArchiveCopyOut",
+      "retrying": "#/components/schemas/IncompleteArchiveCopyOut",
+      "uploaded": "#/components/schemas/UploadedArchiveCopyOut",
+      "uploading": "#/components/schemas/IncompleteArchiveCopyOut"
+    },
+    "propertyName": "state"
+  },
+  "oneOf": [
+    {
+      "$ref": "#/components/schemas/IncompleteArchiveCopyOut"
+    },
+    {
+      "$ref": "#/components/schemas/UploadedArchiveCopyOut"
+    },
+    {
+      "$ref": "#/components/schemas/FailedArchiveCopyOut"
+    }
+  ],
+  "title": "ArchiveCopyOut"
+}
+```

@@ -32,13 +32,19 @@
 
 - [Operation parity: seal_processing_claim_artifacts](../operation/operation-parity-seal-processing-claim-artifacts.md)
 
+## Referenced contract dossiers
+
+- [schemas: ArtifactReceivingSetDocument](schemas-artifactreceivingsetdocument.md)
+- [schemas: ErrorResponse](schemas-errorresponse.md)
+- [schemas: ProcessingClaimFenceDocument](schemas-processingclaimfencedocument.md)
+
 ## Extent decisions
 
 | Dimension | Unit | Policy | Bounds/reason |
 |---|---|---|---|
 | length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
 
-## Contract
+## Contract summary
 
 - `operationId`: seal_processing_claim_artifacts
 - `summary`: Seal Processing Claim Artifacts
@@ -63,3 +69,118 @@
 | `401` | Unauthorized |
 | `403` | Forbidden |
 | `500` | Internal Server Error |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 18485e9b42c9b6d86dec9939a2fea31ae582d93b0b70e56166a3f9d7efc738b5 -->
+
+```json
+{
+  "operationId": "seal_processing_claim_artifacts",
+  "parameters": [
+    {
+      "in": "path",
+      "name": "claim_id",
+      "required": true,
+      "schema": {
+        "pattern": "^[0-9a-f]{64}$",
+        "title": "Claim Id",
+        "type": "string"
+      }
+    }
+  ],
+  "requestBody": {
+    "content": {
+      "application/json": {
+        "schema": {
+          "$ref": "#/components/schemas/ProcessingClaimFenceDocument"
+        }
+      }
+    },
+    "required": true
+  },
+  "responses": {
+    "200": {
+      "content": {
+        "application/json": {
+          "schema": {
+            "$ref": "#/components/schemas/ArtifactReceivingSetDocument"
+          }
+        }
+      },
+      "description": "Successful Response"
+    },
+    "400": {
+      "content": {
+        "application/json": {
+          "schema": {
+            "$ref": "#/components/schemas/ErrorResponse"
+          }
+        }
+      },
+      "description": "Bad Request",
+      "x-riverhog-error-codes": [
+        "bad_request"
+      ]
+    },
+    "401": {
+      "content": {
+        "application/json": {
+          "schema": {
+            "$ref": "#/components/schemas/ErrorResponse"
+          }
+        }
+      },
+      "description": "Unauthorized",
+      "x-riverhog-error-codes": [
+        "unauthorized"
+      ]
+    },
+    "403": {
+      "content": {
+        "application/json": {
+          "schema": {
+            "$ref": "#/components/schemas/ErrorResponse"
+          }
+        }
+      },
+      "description": "Forbidden",
+      "x-riverhog-error-codes": [
+        "forbidden"
+      ]
+    },
+    "500": {
+      "content": {
+        "application/json": {
+          "schema": {
+            "$ref": "#/components/schemas/ErrorResponse"
+          }
+        }
+      },
+      "description": "Internal Server Error",
+      "x-riverhog-error-codes": [
+        "internal_error"
+      ]
+    }
+  },
+  "security": [
+    {
+      "HTTPBearer": []
+    }
+  ],
+  "summary": "Seal Processing Claim Artifacts",
+  "tags": [
+    "collection-workflows"
+  ],
+  "x-riverhog-interface": "client-only-primitive",
+  "x-riverhog-permission-requirements": [
+    {
+      "any_of": [
+        "collection-transforms:control"
+      ]
+    }
+  ]
+}
+```

@@ -33,7 +33,7 @@
 - [DELETE /v1/collections/{collection_id}/provenance/verification](../http/delete-v1-collections-collection-id-provenance-verification.md)
 - [piggity collection provenance verification-cancel](../../piggity/cli/piggity-collection-provenance-verification-cancel.md)
 
-## Contract
+## Contract summary
 
 | Concern | Contract |
 |---|---|
@@ -47,3 +47,26 @@
 | `provider_evidence` | None |
 | `read_collection` | None |
 | `response_authority` | http-json |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 224aa036ea4bd10ed5d542d08485c0a864b7859e6227caddf17e2694e2d14664 -->
+
+```json
+{
+  "application": "riverhog",
+  "classification": "human-cli+json",
+  "cli_commands": [
+    "collection provenance verification-cancel"
+  ],
+  "client": "ApiClient",
+  "method": "DELETE",
+  "operation_id": "cancel_collection_provenance_verification",
+  "path": "/v1/collections/{collection_id}/provenance/verification",
+  "provider_evidence": null,
+  "read_collection": null,
+  "response_authority": "http-json"
+}
+```

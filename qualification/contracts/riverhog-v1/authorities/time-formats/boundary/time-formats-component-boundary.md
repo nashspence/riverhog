@@ -27,7 +27,22 @@
 - Proof: `make release-check`
 - Proof: `make build`
 
-## Contract
+## Contract summary
+
+| Field | Shape |
+|---|---|
+| `console_scripts` | object (0 fields) |
+| `dependencies` | array (0 items) |
+| `distribution` | "time-formats" |
+| `optional_dependencies` | object (0 fields) |
+| `path` | "packages/time-formats" |
+| `role` | "internal_build_unit" |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: a7af59e30a3a75be2fd9ddc30d73e4f3a8e6ace25b88fe9409cfddfb81c60e48 -->
 
 ```json
 {

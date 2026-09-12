@@ -32,7 +32,7 @@
 
 - [GET /v1/collection-processing-claims/{claim_id}](../http/get-v1-collection-processing-claims-claim-id.md)
 
-## Contract
+## Contract summary
 
 | Concern | Contract |
 |---|---|
@@ -46,3 +46,24 @@
 | `provider_evidence` | None |
 | `read_collection` | None |
 | `response_authority` | canonical-document |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 87a90814e68a34cb73645f4d311d695c3ec17bda9824f1dd0c2ae0e58532727f -->
+
+```json
+{
+  "application": "riverhog",
+  "classification": "client-only-primitive",
+  "cli_commands": [],
+  "client": "ApiClient",
+  "method": "GET",
+  "operation_id": "get_processing_claim",
+  "path": "/v1/collection-processing-claims/{claim_id}",
+  "provider_evidence": null,
+  "read_collection": null,
+  "response_authority": "canonical-document"
+}
+```

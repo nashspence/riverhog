@@ -33,7 +33,7 @@
 - [GET /v1/collection-upload-sessions/{collection_id}/work](../http/get-v1-collection-upload-sessions-collection-id-work.md)
 - [piggity collection upload start](../../piggity/cli/piggity-collection-upload-start.md)
 
-## Contract
+## Contract summary
 
 | Concern | Contract |
 |---|---|
@@ -47,3 +47,26 @@
 | `provider_evidence` | None |
 | `read_collection` | None |
 | `response_authority` | canonical-document |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 1f7e5d99e65daeeeb760bc150b95325f1d1efcf14483997108c4bdbf1bfee19d -->
+
+```json
+{
+  "application": "riverhog",
+  "classification": "client-only-primitive",
+  "cli_commands": [
+    "collection upload start"
+  ],
+  "client": "ApiClient",
+  "method": "GET",
+  "operation_id": "acquire_collection_upload_session_work",
+  "path": "/v1/collection-upload-sessions/{collection_id}/work",
+  "provider_evidence": null,
+  "read_collection": null,
+  "response_authority": "canonical-document"
+}
+```

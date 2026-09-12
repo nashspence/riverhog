@@ -27,7 +27,15 @@
 - Proof: `make release-check`
 - Proof: `make build`
 
-## Contract
+## Contract summary
+
+- Shape: "Published v1 HTTP and CloudEvents contracts remain backward compatible throughout v1."
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 2585cfdddab6eb45045fb1e0a19776f07029a40553fc17b28811f710586512ac -->
 
 ```json
 "Published v1 HTTP and CloudEvents contracts remain backward compatible throughout v1."

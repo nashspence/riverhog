@@ -39,7 +39,7 @@
 | length | characters | `contract_max` | maximum=4096, minimum=1, reason=schema-maximum |
 | length | characters | `contract_max` | maximum=4000, minimum=1, reason=schema-maximum |
 
-## Contract
+## Contract summary
 
 - `title`: WriteCompleteRequest
 - `type`: object
@@ -61,3 +61,129 @@
 |---|---|
 | `WriteCompletionAuthority` | object |
 | `WriteSession` | object |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 3b6857dbea430d76de035e4b9a4d2e0306c6b78a8f4fd827d729da581b4e9f10 -->
+
+```json
+{
+  "$defs": {
+    "WriteCompletionAuthority": {
+      "additionalProperties": false,
+      "description": "Adapter-issued terminal authority for one exact active-write state.\n\nConsumers echo the opaque token unchanged. It is neither a credential nor a\nbearer capability; completion remains independently authorized. Once an exact\nimmutable object is published, its completed-object identity supersedes this\ntransport authority for terminal reconciliation.",
+      "properties": {
+        "authority_token": {
+          "description": "Bounded opaque adapter-issued authority for the exact accepted state of an active write. The token grants no authority and must be echoed unchanged.",
+          "maxLength": 4000,
+          "minLength": 1,
+          "title": "Authority Token",
+          "type": "string"
+        },
+        "segment_count": {
+          "minimum": 0,
+          "title": "Segment Count",
+          "type": "integer"
+        },
+        "stored_bytes": {
+          "minimum": 0,
+          "title": "Stored Bytes",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "segment_count",
+        "stored_bytes",
+        "authority_token"
+      ],
+      "title": "WriteCompletionAuthority",
+      "type": "object"
+    },
+    "WriteSession": {
+      "additionalProperties": false,
+      "properties": {
+        "expected_bytes": {
+          "description": "Exact immutable-object byte length admitted by this write session. The value remains fixed until the write becomes terminal.",
+          "minimum": 1,
+          "title": "Expected Bytes",
+          "type": "integer"
+        },
+        "object_path": {
+          "maxLength": 4096,
+          "minLength": 1,
+          "title": "Object Path",
+          "type": "string"
+        },
+        "write_token": {
+          "description": "Opaque adapter-owned persistable continuation handle. For the same configured adapter it remains replayable across client, transport, Riverhog, and adapter process restarts until completion, explicit abort, or caller-authorized incomplete-write reclamation makes the write terminal.",
+          "maxLength": 4000,
+          "minLength": 1,
+          "title": "Write Token",
+          "type": "string"
+        }
+      },
+      "required": [
+        "object_path",
+        "expected_bytes",
+        "write_token"
+      ],
+      "title": "WriteSession",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "completion": {
+      "$ref": "#/$defs/WriteCompletionAuthority"
+    },
+    "expected_bytes": {
+      "minimum": 1,
+      "title": "Expected Bytes",
+      "type": "integer"
+    },
+    "expected_content_type": {
+      "maxLength": 255,
+      "minLength": 1,
+      "title": "Expected Content Type",
+      "type": "string"
+    },
+    "expected_placement": {
+      "enum": [
+        "archive",
+        "immediate"
+      ],
+      "title": "Expected Placement",
+      "type": "string"
+    },
+    "required_identity_assertions": {
+      "additionalProperties": {
+        "type": "string"
+      },
+      "description": "Inert caller-owned facts used only to identify and reconcile an exact stored object. Adapters canonicalize, persist, return, and compare these assertions; they must not interpret them as routing, retrieval, retention, credentials, placement, or provider-control instructions. Adapters may retain additional adapter-private assertions.",
+      "maxProperties": 64,
+      "title": "Required Identity Assertions",
+      "type": "object",
+      "x-riverhog-encoded-bytes-max": 16384,
+      "x-riverhog-extent": {
+        "policy": "contract_max",
+        "reason": "bounded-object-identity-assertion-envelope"
+      }
+    },
+    "session": {
+      "$ref": "#/$defs/WriteSession"
+    }
+  },
+  "required": [
+    "session",
+    "completion",
+    "expected_bytes",
+    "expected_content_type",
+    "required_identity_assertions",
+    "expected_placement"
+  ],
+  "title": "WriteCompleteRequest",
+  "type": "object"
+}
+```

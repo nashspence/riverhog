@@ -27,7 +27,27 @@
 - Proof: `make operation-qualification`
 - Proof: `make compose-smoke`
 
-## Contract
+## Referenced contract dossiers
+
+- [schemas: BranchSetAdmittedEvent](schemas-branchsetadmittedevent.md)
+- [schemas: EvaluationCreatedEvent](schemas-evaluationcreatedevent.md)
+- [schemas: EvaluationUpdatedEvent](schemas-evaluationupdatedevent.md)
+- [schemas: JoinAdmittedEvent](schemas-joinadmittedevent.md)
+- [schemas: WorkCreatedEvent](schemas-workcreatedevent.md)
+- [schemas: WorkUpdatedEvent](schemas-workupdatedevent.md)
+
+## Contract summary
+
+| Field | Shape |
+|---|---|
+| `discriminator` | object (2 fields) |
+| `oneOf` | array (6 items) |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 9dd3a7f5b95c308928d539c76b611464def73897f79ea4d3881961f238c06a9b -->
 
 ```json
 {

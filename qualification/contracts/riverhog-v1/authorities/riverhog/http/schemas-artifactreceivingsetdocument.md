@@ -28,13 +28,17 @@
 - Proof: `make operation-qualification`
 - Proof: `make compose-smoke`
 
+## Referenced contract dossiers
+
+- [schemas: ArtifactSetAuthorityDocument](schemas-artifactsetauthoritydocument.md)
+
 ## Extent decisions
 
 | Dimension | Unit | Policy | Bounds/reason |
 |---|---|---|---|
 | value | schema-value | `operational_policy` | maximum=None, reason=no-declared-semantic-maximum |
 
-## Contract
+## Contract summary
 
 - `title`: ArtifactReceivingSetDocument
 - `type`: object
@@ -47,3 +51,52 @@
 | `count` | yes | integer |  |
 | `state` | yes | string |  |
 | `total_bytes` | yes | integer |  |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: b9a5b3f9d1aeb47fe357397baeee9b1dbeb64055a21618883199489f4789bcbb -->
+
+```json
+{
+  "additionalProperties": false,
+  "properties": {
+    "authority": {
+      "anyOf": [
+        {
+          "$ref": "#/components/schemas/ArtifactSetAuthorityDocument"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "count": {
+      "minimum": 0,
+      "title": "Count",
+      "type": "integer"
+    },
+    "state": {
+      "enum": [
+        "receiving",
+        "sealed"
+      ],
+      "title": "State",
+      "type": "string"
+    },
+    "total_bytes": {
+      "minimum": 0,
+      "title": "Total Bytes",
+      "type": "integer"
+    }
+  },
+  "required": [
+    "state",
+    "count",
+    "total_bytes"
+  ],
+  "title": "ArtifactReceivingSetDocument",
+  "type": "object"
+}
+```

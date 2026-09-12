@@ -29,6 +29,12 @@
 - Proof: `make operation-qualification`
 - Proof: `make compose-smoke`
 
+## Referenced contract dossiers
+
+- [schemas: BrowsePageToken](schemas-browsepagetoken.md)
+- [schemas: CollectionId](schemas-collectionid.md)
+- [schemas: CollectionUploadFileOut](schemas-collectionuploadfileout.md)
+
 ## Extent decisions
 
 | Dimension | Unit | Policy | Bounds/reason |
@@ -36,7 +42,7 @@
 | cardinality | items | `segmented_no_total_max` | reason=bounded-route-page |
 | value | schema-value | `contract_max` | maximum=100, minimum=1, reason=schema-maximum |
 
-## Contract
+## Contract summary
 
 - `title`: ListCollectionUploadSessionFilesResponse
 - `type`: object
@@ -49,3 +55,51 @@
 | `files` | yes | array |  |
 | `next_page_token` | yes | object (1 fields) |  |
 | `page_size` | yes | integer |  |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: e89541d5cbf7f7a0a8e2feaa403f3c83357fdb6beabcc85d398d7d7c90eeb2df -->
+
+```json
+{
+  "additionalProperties": false,
+  "properties": {
+    "collection_id": {
+      "$ref": "#/components/schemas/CollectionId"
+    },
+    "files": {
+      "items": {
+        "$ref": "#/components/schemas/CollectionUploadFileOut"
+      },
+      "title": "Files",
+      "type": "array"
+    },
+    "next_page_token": {
+      "anyOf": [
+        {
+          "$ref": "#/components/schemas/BrowsePageToken"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "page_size": {
+      "maximum": 100,
+      "minimum": 1,
+      "title": "Page Size",
+      "type": "integer"
+    }
+  },
+  "required": [
+    "collection_id",
+    "page_size",
+    "next_page_token",
+    "files"
+  ],
+  "title": "ListCollectionUploadSessionFilesResponse",
+  "type": "object"
+}
+```

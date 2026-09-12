@@ -34,7 +34,7 @@
 |---|---|---|---|
 | length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
 
-## Contract
+## Contract summary
 
 - `title`: WorkUpdatedEventData
 - `type`: object
@@ -46,3 +46,57 @@
 | `phase` | yes | string |  |
 | `revision` | yes | integer |  |
 | `work_id` | yes | string |  |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: ccdca8ddb59e6f6e51efd841d9b827e5b954d845a51a4146d07e9d1b2d80900a -->
+
+```json
+{
+  "additionalProperties": false,
+  "properties": {
+    "phase": {
+      "enum": [
+        "eligible",
+        "claimed",
+        "observing",
+        "planning",
+        "target_preflight",
+        "queued",
+        "executing",
+        "output_finalizing",
+        "verifying",
+        "settled",
+        "retirement_pending",
+        "coordinating",
+        "abandon_pending",
+        "complete",
+        "inapplicable",
+        "failed",
+        "canceled"
+      ],
+      "title": "Phase",
+      "type": "string"
+    },
+    "revision": {
+      "minimum": 2,
+      "title": "Revision",
+      "type": "integer"
+    },
+    "work_id": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Work Id",
+      "type": "string"
+    }
+  },
+  "required": [
+    "work_id",
+    "phase",
+    "revision"
+  ],
+  "title": "WorkUpdatedEventData",
+  "type": "object"
+}
+```

@@ -34,7 +34,7 @@
 - [piggity archive copy show](../../piggity/cli/piggity-archive-copy-show.md)
 - [piggity archive copy watch](../../piggity/cli/piggity-archive-copy-watch.md)
 
-## Contract
+## Contract summary
 
 | Concern | Contract |
 |---|---|
@@ -48,3 +48,27 @@
 | `provider_evidence` | provider-qualification:#442 |
 | `read_collection` | None |
 | `response_authority` | http-json |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 74e8a128af8f5b244f14163eb363c7b0a2171ee853fbda6236776af5e061d260 -->
+
+```json
+{
+  "application": "riverhog",
+  "classification": "human-cli+json",
+  "cli_commands": [
+    "archive copy show",
+    "archive copy watch"
+  ],
+  "client": "ApiClient",
+  "method": "GET",
+  "operation_id": "get_archive_copy_job",
+  "path": "/v1/archive/copies/{collection_id}/{destination_store}",
+  "provider_evidence": "provider-qualification:#442",
+  "read_collection": null,
+  "response_authority": "http-json"
+}
+```

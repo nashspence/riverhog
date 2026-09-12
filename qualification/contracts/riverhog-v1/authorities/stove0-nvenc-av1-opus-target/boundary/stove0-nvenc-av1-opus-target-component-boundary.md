@@ -27,7 +27,22 @@
 - Proof: `make release-check`
 - Proof: `make build`
 
-## Contract
+## Contract summary
+
+| Field | Shape |
+|---|---|
+| `console_scripts` | object (1 fields) |
+| `dependencies` | array (7 items) |
+| `distribution` | "stove0-nvenc-av1-opus-target" |
+| `optional_dependencies` | object (0 fields) |
+| `path` | "reference/stove0/targets/nvenc-av1-opus/target" |
+| `role` | "reference_component" |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 12caa1c19ae6b5d1acfe1a006bd60299eb16aeb0a1830b7f864f15e1da6541e7 -->
 
 ```json
 {

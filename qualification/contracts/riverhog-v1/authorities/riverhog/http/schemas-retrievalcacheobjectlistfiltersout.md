@@ -27,7 +27,15 @@
 - Proof: `make operation-qualification`
 - Proof: `make compose-smoke`
 
-## Contract
+## Referenced contract dossiers
+
+- [schemas: ArchiveStoreName](schemas-archivestorename.md)
+- [schemas: CollectionId](schemas-collectionid.md)
+- [schemas: RetrievalCacheProtection](schemas-retrievalcacheprotection.md)
+- [schemas: RetrievalCacheState](schemas-retrievalcachestate.md)
+- [schemas: RetrievalCacheStoreName](schemas-retrievalcachestorename.md)
+
+## Contract summary
 
 - `title`: RetrievalCacheObjectListFiltersOut
 - `type`: object
@@ -43,3 +51,100 @@
 | `protection` | yes | object (1 fields) |  |
 | `source_store` | yes | object (1 fields) |  |
 | `state` | yes | object (1 fields) |  |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 8f3e6df8386f6a8c76b650fb20684a81bc78f1b82279e1d056b7a032345a3ae8 -->
+
+```json
+{
+  "additionalProperties": false,
+  "properties": {
+    "cache_store": {
+      "anyOf": [
+        {
+          "$ref": "#/components/schemas/RetrievalCacheStoreName"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "collection_id": {
+      "anyOf": [
+        {
+          "$ref": "#/components/schemas/CollectionId"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "expires_after": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Expires After"
+    },
+    "expires_before": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Expires Before"
+    },
+    "protection": {
+      "anyOf": [
+        {
+          "$ref": "#/components/schemas/RetrievalCacheProtection"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "source_store": {
+      "anyOf": [
+        {
+          "$ref": "#/components/schemas/ArchiveStoreName"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "state": {
+      "anyOf": [
+        {
+          "$ref": "#/components/schemas/RetrievalCacheState"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    }
+  },
+  "required": [
+    "collection_id",
+    "source_store",
+    "cache_store",
+    "state",
+    "protection",
+    "expires_before",
+    "expires_after"
+  ],
+  "title": "RetrievalCacheObjectListFiltersOut",
+  "type": "object"
+}
+```

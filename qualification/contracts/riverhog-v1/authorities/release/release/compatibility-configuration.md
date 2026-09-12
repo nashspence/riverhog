@@ -27,7 +27,15 @@
 - Proof: `make release-check`
 - Proof: `make build`
 
-## Contract
+## Contract summary
+
+- Shape: "Accepted v1 configuration remains valid throughout v1 unless an unsafe value must be rejected."
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: de93df3805314638224be1b8f0f4a7b30bd0b1d03e6c8b6938130f9b08122aec -->
 
 ```json
 "Accepted v1 configuration remains valid throughout v1 unless an unsafe value must be rejected."

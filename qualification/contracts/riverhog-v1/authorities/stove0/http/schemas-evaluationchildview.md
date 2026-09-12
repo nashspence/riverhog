@@ -28,6 +28,10 @@
 - Proof: `make operation-qualification`
 - Proof: `make compose-smoke`
 
+## Referenced contract dossiers
+
+- [schemas: OutputCollectionRef](schemas-outputcollectionref.md)
+
 ## Extent decisions
 
 | Dimension | Unit | Policy | Bounds/reason |
@@ -35,7 +39,7 @@
 | length | characters | `contract_max` | maximum=160, minimum=1, reason=schema-maximum |
 | length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
 
-## Contract
+## Contract summary
 
 - `title`: EvaluationChildView
 - `type`: object
@@ -48,3 +52,57 @@
 | `state` | yes | string |  |
 | `variant_id` | yes | string |  |
 | `work_id` | yes | string |  |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 1092b50b2f3a5e988601a981685280dc7968d0b009e510be37e11e1b87eaab9d -->
+
+```json
+{
+  "additionalProperties": false,
+  "properties": {
+    "output": {
+      "anyOf": [
+        {
+          "$ref": "#/components/schemas/OutputCollectionRef"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "state": {
+      "enum": [
+        "pending",
+        "active",
+        "complete",
+        "inapplicable",
+        "failed",
+        "canceled"
+      ],
+      "title": "State",
+      "type": "string"
+    },
+    "variant_id": {
+      "maxLength": 160,
+      "minLength": 1,
+      "title": "Variant Id",
+      "type": "string"
+    },
+    "work_id": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Work Id",
+      "type": "string"
+    }
+  },
+  "required": [
+    "variant_id",
+    "work_id",
+    "state"
+  ],
+  "title": "EvaluationChildView",
+  "type": "object"
+}
+```

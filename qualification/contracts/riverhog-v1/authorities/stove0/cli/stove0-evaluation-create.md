@@ -39,7 +39,7 @@
 |---|---|---|---|
 | cardinality | values-per-occurrence | `fixed` | maximum=1, minimum=1, reason=fixed-command-argument-arity |
 
-## Contract
+## Contract summary
 
 - Parser name: `create`
 
@@ -48,3 +48,40 @@
 | Name | Kind | Required | Type | Options |
 |---|---|---:|---|---|
 | `definition` | TyperArgument | yes | {'class': 'typer.models.TyperPath', 'name': 'path'} | definition |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+### `/external_contract/cli/stove0/commands/evaluation/commands/create/name`
+
+<!-- exact-contract-value: 5498a731a187f424a5800943afcba027f3a6cd684e38fe6e40c02bee1753152d -->
+
+```json
+"create"
+```
+
+### `/external_contract/cli/stove0/commands/evaluation/commands/create/parameters`
+
+<!-- exact-contract-value: 4fb330ee8d838285ee3bb2f2f8c99dccc40350eb1951a541aaaddd3d0f750f22 -->
+
+```json
+[
+  {
+    "envvar": null,
+    "kind": "TyperArgument",
+    "multiple": false,
+    "name": "definition",
+    "nargs": 1,
+    "options": [
+      "definition"
+    ],
+    "required": true,
+    "secondary_options": [],
+    "type": {
+      "class": "typer.models.TyperPath",
+      "name": "path"
+    }
+  }
+]
+```

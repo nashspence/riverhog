@@ -36,7 +36,7 @@
 | encoded-size | bytes | `contract_max` | maximum=4096, reason=bounded-lifecycle-event-context |
 | cardinality | entries | `operational_policy` | maximum=None, reason=no-declared-semantic-maximum |
 
-## Contract
+## Contract summary
 
 - `title`: CreateRetrievalJobRequest
 - `type`: object
@@ -47,3 +47,43 @@
 |---|---:|---|---|
 | `event_context` | no | object (2 fields) |  |
 | `plan_id` | yes | string |  |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: a8be23595a98af525a48d70ccd78c62c429aef2a8b7e0676da7c4ab1a2ddca0b -->
+
+```json
+{
+  "additionalProperties": false,
+  "properties": {
+    "event_context": {
+      "anyOf": [
+        {
+          "additionalProperties": true,
+          "type": "object",
+          "x-riverhog-encoded-bytes-max": 4096,
+          "x-riverhog-extent": {
+            "policy": "contract_max",
+            "reason": "bounded-lifecycle-event-context"
+          }
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Event Context"
+    },
+    "plan_id": {
+      "title": "Plan Id",
+      "type": "string"
+    }
+  },
+  "required": [
+    "plan_id"
+  ],
+  "title": "CreateRetrievalJobRequest",
+  "type": "object"
+}
+```

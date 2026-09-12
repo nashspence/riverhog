@@ -34,7 +34,7 @@
 |---|---|---|---|
 | length | characters | `contract_max` | maximum=1000, minimum=1, reason=schema-maximum |
 
-## Contract
+## Contract summary
 
 - `title`: ProcessingClaimAbandonDocument
 - `type`: object
@@ -45,3 +45,34 @@
 |---|---:|---|---|
 | `fence` | yes | integer |  |
 | `reason` | yes | string |  |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: db2136a2c3b36883b975822f17c927e5ac2386f19c8c8c8fa80ac47af99be5f0 -->
+
+```json
+{
+  "additionalProperties": false,
+  "properties": {
+    "fence": {
+      "minimum": 1,
+      "title": "Fence",
+      "type": "integer"
+    },
+    "reason": {
+      "maxLength": 1000,
+      "minLength": 1,
+      "title": "Reason",
+      "type": "string"
+    }
+  },
+  "required": [
+    "fence",
+    "reason"
+  ],
+  "title": "ProcessingClaimAbandonDocument",
+  "type": "object"
+}
+```

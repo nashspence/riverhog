@@ -27,7 +27,15 @@
 - Proof: `make release-check`
 - Proof: `make build`
 
-## Contract
+## Contract summary
+
+- Shape: "Checked-in references form a closed, tightly scoped, maintainer-selected, nonnormative conformance set."
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 1ee596dce1a6280dbfac583d7a7a3d7fabc07aa011ba421729b83179d8126cd3 -->
 
 ```json
 "Checked-in references form a closed, tightly scoped, maintainer-selected, nonnormative conformance set."

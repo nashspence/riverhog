@@ -4,6 +4,11 @@
 
 Contract elements: **9** · Extent decisions: **162**
 
+| Family | Count |
+|---|---:|
+| `protocol` | 1 |
+| `schemas` | 8 |
+
 | Policy | Count |
 |---|---:|
 | `compatibility/components/v1` | 9 |

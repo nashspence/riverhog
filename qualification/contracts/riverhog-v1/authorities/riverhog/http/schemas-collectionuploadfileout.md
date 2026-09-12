@@ -29,6 +29,13 @@
 - Proof: `make operation-qualification`
 - Proof: `make compose-smoke`
 
+## Referenced contract dossiers
+
+- [schemas: CanonicalRelPath](schemas-canonicalrelpath.md)
+- [schemas: CapturedFileProvenanceBinding](schemas-capturedfileprovenancebinding.md)
+- [schemas: CollectionUploadArtifactCustodyReceiptDocument](schemas-collectionuploadartifactcustodyreceiptdocument.md)
+- [schemas: OmittedFileProvenanceBinding](schemas-omittedfileprovenancebinding.md)
+
 ## Extent decisions
 
 | Dimension | Unit | Policy | Bounds/reason |
@@ -36,7 +43,7 @@
 | value | schema-value | `operational_policy` | maximum=None, reason=no-declared-semantic-maximum |
 | length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
 
-## Contract
+## Contract summary
 
 - `title`: CollectionUploadFileOut
 - `type`: object
@@ -50,3 +57,72 @@
 | `path` | yes | #/components/schemas/CanonicalRelPath |  |
 | `provenance` | no | object (2 fields) |  |
 | `sha256` | yes | string |  |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 1cff73a0c8a8a45230c37d8bceb1313519ef87900f6a5cc798d446c3fd8ed7ff -->
+
+```json
+{
+  "additionalProperties": false,
+  "properties": {
+    "bytes": {
+      "minimum": 0,
+      "title": "Bytes",
+      "type": "integer"
+    },
+    "custody_receipt": {
+      "anyOf": [
+        {
+          "$ref": "#/components/schemas/CollectionUploadArtifactCustodyReceiptDocument"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "path": {
+      "$ref": "#/components/schemas/CanonicalRelPath"
+    },
+    "provenance": {
+      "anyOf": [
+        {
+          "discriminator": {
+            "mapping": {
+              "captured": "#/components/schemas/CapturedFileProvenanceBinding",
+              "omitted": "#/components/schemas/OmittedFileProvenanceBinding"
+            },
+            "propertyName": "status"
+          },
+          "oneOf": [
+            {
+              "$ref": "#/components/schemas/CapturedFileProvenanceBinding"
+            },
+            {
+              "$ref": "#/components/schemas/OmittedFileProvenanceBinding"
+            }
+          ]
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Provenance"
+    },
+    "sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Sha256",
+      "type": "string"
+    }
+  },
+  "required": [
+    "path",
+    "bytes",
+    "sha256"
+  ],
+  "title": "CollectionUploadFileOut",
+  "type": "object"
+}
+```

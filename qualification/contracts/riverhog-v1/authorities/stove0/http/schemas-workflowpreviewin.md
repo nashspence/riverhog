@@ -29,6 +29,11 @@
 - Proof: `make operation-qualification`
 - Proof: `make compose-smoke`
 
+## Referenced contract dossiers
+
+- [schemas: CollectionRootRef](schemas-collectionrootref.md)
+- [schemas: JsonValue](schemas-jsonvalue.md)
+
 ## Extent decisions
 
 | Dimension | Unit | Policy | Bounds/reason |
@@ -37,7 +42,7 @@
 | cardinality | items | `operational_policy` | maximum=None, reason=no-declared-semantic-maximum |
 | length | characters | `contract_max` | maximum=160, minimum=1, reason=schema-maximum |
 
-## Contract
+## Contract summary
 
 - `title`: WorkflowPreviewIn
 - `type`: object
@@ -50,3 +55,56 @@
 | `inputs` | yes | array |  |
 | `recipe_id` | yes | string |  |
 | `recipe_revision` | no | object (2 fields) |  |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: d7a96d936032649ccfe393754cd7845b9f8251a631eef1e7af249617d68aecea -->
+
+```json
+{
+  "additionalProperties": false,
+  "properties": {
+    "effective_intent": {
+      "additionalProperties": {
+        "$ref": "#/components/schemas/JsonValue"
+      },
+      "title": "Effective Intent",
+      "type": "object"
+    },
+    "inputs": {
+      "items": {
+        "$ref": "#/components/schemas/CollectionRootRef"
+      },
+      "minItems": 1,
+      "title": "Inputs",
+      "type": "array"
+    },
+    "recipe_id": {
+      "maxLength": 160,
+      "minLength": 1,
+      "title": "Recipe Id",
+      "type": "string"
+    },
+    "recipe_revision": {
+      "anyOf": [
+        {
+          "minimum": 1,
+          "type": "integer"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Recipe Revision"
+    }
+  },
+  "required": [
+    "recipe_id",
+    "inputs"
+  ],
+  "title": "WorkflowPreviewIn",
+  "type": "object"
+}
+```

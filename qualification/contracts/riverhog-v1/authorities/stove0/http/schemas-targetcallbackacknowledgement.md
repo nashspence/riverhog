@@ -27,7 +27,7 @@
 - Proof: `make operation-qualification`
 - Proof: `make compose-smoke`
 
-## Contract
+## Contract summary
 
 - `title`: TargetCallbackAcknowledgement
 - `description`: Idempotent acceptance of one execution-scoped declaration.
@@ -38,3 +38,26 @@
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | `accepted` | no | boolean |  |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 888aeb6259ebbfb946fb389f43530f2e7f42b0aaa47127fc93cde9b46c06ccfc -->
+
+```json
+{
+  "additionalProperties": false,
+  "description": "Idempotent acceptance of one execution-scoped declaration.",
+  "properties": {
+    "accepted": {
+      "const": true,
+      "default": true,
+      "title": "Accepted",
+      "type": "boolean"
+    }
+  },
+  "title": "TargetCallbackAcknowledgement",
+  "type": "object"
+}
+```

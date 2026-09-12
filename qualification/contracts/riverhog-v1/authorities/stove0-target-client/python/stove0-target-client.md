@@ -27,7 +27,19 @@
 - Proof: `make dist-smoke`
 - Proof: `make build`
 
-## Contract
+## Contract summary
+
+| Field | Shape |
+|---|---|
+| `distribution` | "stove0-target-client" |
+| `exports` | object (3 fields) |
+| `module` | "stove0_target_client" |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 2b3058a4540ed54acfdebc584b785d5b5042fcec5f815c4b188b76aa1629e387 -->
 
 ```json
 {

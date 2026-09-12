@@ -34,7 +34,7 @@
 |---|---|---|---|
 | length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
 
-## Contract
+## Contract summary
 
 - `title`: ArtifactDispositionSetIdentityDocument
 - `type`: object
@@ -47,3 +47,45 @@
 | `output_artifact_count` | yes | integer |  |
 | `output_edge_count` | yes | integer |  |
 | `sha256` | yes | string |  |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: e58430ac8dbd95e932c4d52b253787a3a26e728ac17e0a7c2d640ae94904af8f -->
+
+```json
+{
+  "additionalProperties": false,
+  "properties": {
+    "disposition_count": {
+      "minimum": 1,
+      "title": "Disposition Count",
+      "type": "integer"
+    },
+    "output_artifact_count": {
+      "minimum": 1,
+      "title": "Output Artifact Count",
+      "type": "integer"
+    },
+    "output_edge_count": {
+      "minimum": 1,
+      "title": "Output Edge Count",
+      "type": "integer"
+    },
+    "sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Sha256",
+      "type": "string"
+    }
+  },
+  "required": [
+    "disposition_count",
+    "output_edge_count",
+    "output_artifact_count",
+    "sha256"
+  ],
+  "title": "ArtifactDispositionSetIdentityDocument",
+  "type": "object"
+}
+```

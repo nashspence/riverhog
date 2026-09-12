@@ -29,6 +29,12 @@
 - Proof: `make operation-qualification`
 - Proof: `make compose-smoke`
 
+## Referenced contract dossiers
+
+- [schemas: BrowsePageToken](schemas-browsepagetoken.md)
+- [schemas: CollectionId](schemas-collectionid.md)
+- [schemas: CollectionTag](schemas-collectiontag.md)
+
 ## Extent decisions
 
 | Dimension | Unit | Policy | Bounds/reason |
@@ -38,7 +44,7 @@
 | length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
 | cardinality | items | `segmented_no_total_max` | reason=bounded-route-page |
 
-## Contract
+## Contract summary
 
 - `title`: CollectionTagListOut
 - `type`: object
@@ -53,3 +59,64 @@
 | `revision` | yes | integer |  |
 | `tag_set_identity` | yes | string |  |
 | `tags` | yes | array |  |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 9842f4b5487bf8be7af46821a59efdf08f93bd5ad6368a3470be8094cac56011 -->
+
+```json
+{
+  "additionalProperties": false,
+  "properties": {
+    "collection_id": {
+      "$ref": "#/components/schemas/CollectionId"
+    },
+    "next_page_token": {
+      "anyOf": [
+        {
+          "$ref": "#/components/schemas/BrowsePageToken"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "page_size": {
+      "maximum": 100,
+      "minimum": 1,
+      "title": "Page Size",
+      "type": "integer"
+    },
+    "revision": {
+      "maximum": 9007199254740991,
+      "minimum": 1,
+      "title": "Revision",
+      "type": "integer"
+    },
+    "tag_set_identity": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Tag Set Identity",
+      "type": "string"
+    },
+    "tags": {
+      "items": {
+        "$ref": "#/components/schemas/CollectionTag"
+      },
+      "title": "Tags",
+      "type": "array"
+    }
+  },
+  "required": [
+    "collection_id",
+    "revision",
+    "tag_set_identity",
+    "page_size",
+    "next_page_token",
+    "tags"
+  ],
+  "title": "CollectionTagListOut",
+  "type": "object"
+}
+```

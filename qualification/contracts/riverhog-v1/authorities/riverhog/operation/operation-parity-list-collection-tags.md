@@ -36,7 +36,7 @@
 - [piggity local repair](../../piggity/cli/piggity-local-repair.md)
 - [piggity local sync](../../piggity/cli/piggity-local-sync.md)
 
-## Contract
+## Contract summary
 
 | Concern | Contract |
 |---|---|
@@ -50,3 +50,35 @@
 | `provider_evidence` | None |
 | `read_collection` | {"authority": "collection-tag-set", "authority_parameter": "tag_set_identity", "cursor_parameter": "page_token", "kind": "exact-authority-page", "limit_parameter": "page_size"} |
 | `response_authority` | http-json |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 20990a57b375fcd0baecbbc019829538f5213f93eeef4f6b867969ee27f76de3 -->
+
+```json
+{
+  "application": "riverhog",
+  "classification": "human-cli+json",
+  "cli_commands": [
+    "collection tag list",
+    "local add",
+    "local repair",
+    "local sync"
+  ],
+  "client": "ApiClient",
+  "method": "GET",
+  "operation_id": "list_collection_tags",
+  "path": "/v1/collections/{collection_id}/tags",
+  "provider_evidence": null,
+  "read_collection": {
+    "authority": "collection-tag-set",
+    "authority_parameter": "tag_set_identity",
+    "cursor_parameter": "page_token",
+    "kind": "exact-authority-page",
+    "limit_parameter": "page_size"
+  },
+  "response_authority": "http-json"
+}
+```

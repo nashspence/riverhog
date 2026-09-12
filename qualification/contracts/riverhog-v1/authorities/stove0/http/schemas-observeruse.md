@@ -29,6 +29,11 @@
 - Proof: `make operation-qualification`
 - Proof: `make compose-smoke`
 
+## Referenced contract dossiers
+
+- [schemas: ArtifactRule](schemas-artifactrule.md)
+- [schemas: JsonValue](schemas-jsonvalue.md)
+
 ## Extent decisions
 
 | Dimension | Unit | Policy | Bounds/reason |
@@ -39,7 +44,7 @@
 | cardinality | entries | `operational_policy` | maximum=None, reason=no-declared-semantic-maximum |
 | value | schema-value | `contract_max` | maximum=86400, minimum=1, reason=schema-maximum |
 
-## Contract
+## Contract summary
 
 - `title`: ObserverUse
 - `type`: object
@@ -56,3 +61,81 @@
 | `registration_id` | yes | string |  |
 | `retrieval_policy` | no | string |  |
 | `timeout_seconds` | no | integer |  |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 980cd90a66ccdcdbd0d8a24a5f1ae06e4ecf6f268c9e89d2cfb1a5cc662c3b87 -->
+
+```json
+{
+  "additionalProperties": false,
+  "properties": {
+    "artifact_rules": {
+      "default": [
+        {
+          "glob": "*",
+          "role": "stove0.source/v1"
+        }
+      ],
+      "items": {
+        "$ref": "#/components/schemas/ArtifactRule"
+      },
+      "title": "Artifact Rules",
+      "type": "array"
+    },
+    "contract_id": {
+      "pattern": "^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$",
+      "title": "Contract Id",
+      "type": "string"
+    },
+    "contract_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Contract Sha256",
+      "type": "string"
+    },
+    "maximum_result_bytes": {
+      "default": 1048576,
+      "maximum": 67108864,
+      "minimum": 1,
+      "title": "Maximum Result Bytes",
+      "type": "integer"
+    },
+    "options": {
+      "additionalProperties": {
+        "$ref": "#/components/schemas/JsonValue"
+      },
+      "title": "Options",
+      "type": "object"
+    },
+    "registration_id": {
+      "title": "Registration Id",
+      "type": "string"
+    },
+    "retrieval_policy": {
+      "default": "available-only",
+      "enum": [
+        "available-only",
+        "allow"
+      ],
+      "title": "Retrieval Policy",
+      "type": "string"
+    },
+    "timeout_seconds": {
+      "default": 300,
+      "maximum": 86400,
+      "minimum": 1,
+      "title": "Timeout Seconds",
+      "type": "integer"
+    }
+  },
+  "required": [
+    "registration_id",
+    "contract_id",
+    "contract_sha256"
+  ],
+  "title": "ObserverUse",
+  "type": "object"
+}
+```

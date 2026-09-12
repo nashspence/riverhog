@@ -29,6 +29,12 @@
 - Proof: `make operation-qualification`
 - Proof: `make compose-smoke`
 
+## Referenced contract dossiers
+
+- [schemas: ArtifactSetAuthorityDocument](schemas-artifactsetauthoritydocument.md)
+- [schemas: ExactSetAuthorityDocument](schemas-exactsetauthoritydocument.md)
+- [schemas: OperationIdentityDocument](schemas-operationidentitydocument.md)
+
 ## Extent decisions
 
 | Dimension | Unit | Policy | Bounds/reason |
@@ -39,7 +45,7 @@
 | length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
 | length | characters | `contract_max` | maximum=64, minimum=1, reason=schema-maximum |
 
-## Contract
+## Contract summary
 
 - `title`: ProcessingClaimPlanDocument
 - `type`: object
@@ -57,3 +63,92 @@
 | `retirement_grace_seconds` | yes | integer |  |
 | `retirement_policy` | yes | string |  |
 | `sealed_at` | yes | string |  |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: c782ec1e7e9f82a2050027187b4f010e5c02d15a1518bc4a009c6856fb7dd042 -->
+
+```json
+{
+  "additionalProperties": false,
+  "if": {
+    "properties": {
+      "retirement_policy": {
+        "const": "retain"
+      }
+    }
+  },
+  "properties": {
+    "artifacts": {
+      "$ref": "#/components/schemas/ArtifactSetAuthorityDocument"
+    },
+    "controller_evidence": {
+      "additionalProperties": true,
+      "title": "Controller Evidence",
+      "type": "object",
+      "x-riverhog-encoded-bytes-max": 16777216,
+      "x-riverhog-extent": {
+        "policy": "contract_max",
+        "reason": "bounded-controller-evidence-envelope"
+      }
+    },
+    "controller_evidence_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Controller Evidence Sha256",
+      "type": "string"
+    },
+    "execution_id": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Execution Id",
+      "type": "string"
+    },
+    "inputs": {
+      "$ref": "#/components/schemas/ExactSetAuthorityDocument"
+    },
+    "operation": {
+      "$ref": "#/components/schemas/OperationIdentityDocument"
+    },
+    "retirement_grace_seconds": {
+      "minimum": 0,
+      "title": "Retirement Grace Seconds",
+      "type": "integer"
+    },
+    "retirement_policy": {
+      "enum": [
+        "retain",
+        "retire-after-verified-output"
+      ],
+      "title": "Retirement Policy",
+      "type": "string"
+    },
+    "sealed_at": {
+      "maxLength": 64,
+      "minLength": 1,
+      "title": "Sealed At",
+      "type": "string"
+    }
+  },
+  "required": [
+    "execution_id",
+    "controller_evidence",
+    "controller_evidence_sha256",
+    "operation",
+    "inputs",
+    "artifacts",
+    "retirement_policy",
+    "retirement_grace_seconds",
+    "sealed_at"
+  ],
+  "then": {
+    "properties": {
+      "retirement_grace_seconds": {
+        "const": 0
+      }
+    }
+  },
+  "title": "ProcessingClaimPlanDocument",
+  "type": "object"
+}
+```

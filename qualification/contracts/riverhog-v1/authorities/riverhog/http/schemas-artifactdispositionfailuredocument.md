@@ -34,7 +34,7 @@
 |---|---|---|---|
 | length | characters | `contract_max` | maximum=500, minimum=1, reason=schema-maximum |
 
-## Contract
+## Contract summary
 
 - `title`: ArtifactDispositionFailureDocument
 - `type`: object
@@ -45,3 +45,34 @@
 |---|---:|---|---|
 | `code` | yes | string |  |
 | `message` | yes | string |  |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: bb1686770d101da119a837092e0db98866f1ce367c5cec0c865061898dcc3642 -->
+
+```json
+{
+  "additionalProperties": false,
+  "properties": {
+    "code": {
+      "pattern": "^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$",
+      "title": "Code",
+      "type": "string"
+    },
+    "message": {
+      "maxLength": 500,
+      "minLength": 1,
+      "title": "Message",
+      "type": "string"
+    }
+  },
+  "required": [
+    "code",
+    "message"
+  ],
+  "title": "ArtifactDispositionFailureDocument",
+  "type": "object"
+}
+```

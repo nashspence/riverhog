@@ -27,7 +27,22 @@
 - Proof: `make release-check`
 - Proof: `make build`
 
-## Contract
+## Contract summary
+
+| Field | Shape |
+|---|---|
+| `console_scripts` | object (0 fields) |
+| `dependencies` | array (2 items) |
+| `distribution` | "gogurt-path-volume-support" |
+| `optional_dependencies` | object (0 fields) |
+| `path` | "reference/gogurt/mounted-volume/path-support" |
+| `role` | "reference_component" |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 41d7be3cea5bba8db0ae3711119e2a9fb2f5b3635c4450b39f1d07e74181657d -->
 
 ```json
 {

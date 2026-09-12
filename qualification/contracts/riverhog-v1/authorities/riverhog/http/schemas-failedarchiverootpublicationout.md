@@ -34,7 +34,7 @@
 |---|---|---|---|
 | length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
 
-## Contract
+## Contract summary
 
 - `title`: FailedArchiveRootPublicationOut
 - `type`: object
@@ -46,3 +46,51 @@
 | `object_path` | no | object (2 fields) |  |
 | `sha256` | no | object (2 fields) |  |
 | `state` | yes | string |  |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 6062323e444b0d20ceaf5f060e09481a418d2d0383d8054565dadc26b529123d -->
+
+```json
+{
+  "additionalProperties": false,
+  "properties": {
+    "object_path": {
+      "anyOf": [
+        {
+          "minLength": 1,
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Object Path"
+    },
+    "sha256": {
+      "anyOf": [
+        {
+          "pattern": "^[0-9a-f]{64}$",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Sha256"
+    },
+    "state": {
+      "const": "failed",
+      "title": "State",
+      "type": "string"
+    }
+  },
+  "required": [
+    "state"
+  ],
+  "title": "FailedArchiveRootPublicationOut",
+  "type": "object"
+}
+```

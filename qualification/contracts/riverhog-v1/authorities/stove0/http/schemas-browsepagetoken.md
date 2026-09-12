@@ -34,6 +34,20 @@
 |---|---|---|---|
 | length | characters | `contract_max` | maximum=8192, minimum=1, reason=schema-maximum |
 
-## Contract
+## Contract summary
 
 - `type`: string
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: e79254cb03a2db7ca0c300bf476208d2b8f5c67326e71c49874f1090fb082f47 -->
+
+```json
+{
+  "maxLength": 8192,
+  "minLength": 1,
+  "type": "string"
+}
+```

@@ -27,7 +27,15 @@
 - Proof: `make contract-freeze`
 - Proof: `make operation-qualification`
 
-## Contract
+## Contract summary
+
+- Shape: "5d4140fe5135d4f71b2d86c1153a8ad70862c74572e6723b2712cc9e8e4ee5a8"
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 2c13f5388fc7cc2970a5c10b12c388cff282bd05b8f2eb97de5abdedf29dbe9c -->
 
 ```json
 "5d4140fe5135d4f71b2d86c1153a8ad70862c74572e6723b2712cc9e8e4ee5a8"

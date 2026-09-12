@@ -33,7 +33,7 @@
 - [POST /v1/admin/scheduler/run](../http/post-v1-admin-scheduler-run.md)
 - [stove0 scheduler run](../cli/stove0-scheduler-run.md)
 
-## Contract
+## Contract summary
 
 | Concern | Contract |
 |---|---|
@@ -47,3 +47,26 @@
 | `provider_evidence` | None |
 | `read_collection` | None |
 | `response_authority` | operator-projection |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 37067a8669a5f1333adfc5b51cb4f919826b1256e84020265443093a6ca72bd7 -->
+
+```json
+{
+  "application": "stove0",
+  "classification": "human-cli+json",
+  "cli_commands": [
+    "scheduler run"
+  ],
+  "client": "Stove0ApiClient",
+  "method": "POST",
+  "operation_id": "run_scheduler",
+  "path": "/v1/admin/scheduler/run",
+  "provider_evidence": null,
+  "read_collection": null,
+  "response_authority": "operator-projection"
+}
+```

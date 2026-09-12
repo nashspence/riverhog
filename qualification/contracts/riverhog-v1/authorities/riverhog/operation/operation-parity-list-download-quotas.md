@@ -33,7 +33,7 @@
 - [GET /v1/download-quotas](../http/get-v1-download-quotas.md)
 - [piggity app key quota list](../../piggity/cli/piggity-app-key-quota-list.md)
 
-## Contract
+## Contract summary
 
 | Concern | Contract |
 |---|---|
@@ -47,3 +47,33 @@
 | `provider_evidence` | None |
 | `read_collection` | {"default_page_size": 25, "kind": "mutable-browse", "maximum_page_size": 100, "next_page_token_field": "next_page_token", "page_size_parameter": "page_size", "page_token_parameter": "page_token"} |
 | `response_authority` | http-json |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: a32f8d22b1f745a6a8ad4e74c75a318a57c1d25b48babfec0648eb8859ee9f0a -->
+
+```json
+{
+  "application": "riverhog",
+  "classification": "human-cli+json",
+  "cli_commands": [
+    "app key quota list"
+  ],
+  "client": "ApiClient",
+  "method": "GET",
+  "operation_id": "list_download_quotas",
+  "path": "/v1/download-quotas",
+  "provider_evidence": null,
+  "read_collection": {
+    "default_page_size": 25,
+    "kind": "mutable-browse",
+    "maximum_page_size": 100,
+    "next_page_token_field": "next_page_token",
+    "page_size_parameter": "page_size",
+    "page_token_parameter": "page_token"
+  },
+  "response_authority": "http-json"
+}
+```

@@ -29,6 +29,10 @@
 - Proof: `make operation-qualification`
 - Proof: `make compose-smoke`
 
+## Referenced contract dossiers
+
+- [schemas: JsonValue](schemas-jsonvalue.md)
+
 ## Extent decisions
 
 | Dimension | Unit | Policy | Bounds/reason |
@@ -37,7 +41,7 @@
 | length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
 | cardinality | entries | `operational_policy` | maximum=None, reason=no-declared-semantic-maximum |
 
-## Contract
+## Contract summary
 
 - `title`: EvaluationBinding
 - `description`: Immutable membership of one work item in a trial/evaluation matrix.
@@ -51,3 +55,47 @@
 | `matrix_sha256` | yes | string |  |
 | `parameters` | no | object |  |
 | `variant_id` | yes | string |  |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 7e2445a55677db47a8bf6815b4e0bdea90186cd0fa199e2761b789fabc3c17be -->
+
+```json
+{
+  "additionalProperties": false,
+  "description": "Immutable membership of one work item in a trial/evaluation matrix.",
+  "properties": {
+    "evaluation_id": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Evaluation Id",
+      "type": "string"
+    },
+    "matrix_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Matrix Sha256",
+      "type": "string"
+    },
+    "parameters": {
+      "additionalProperties": {
+        "$ref": "#/components/schemas/JsonValue"
+      },
+      "title": "Parameters",
+      "type": "object"
+    },
+    "variant_id": {
+      "pattern": "^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$",
+      "title": "Variant Id",
+      "type": "string"
+    }
+  },
+  "required": [
+    "evaluation_id",
+    "matrix_sha256",
+    "variant_id"
+  ],
+  "title": "EvaluationBinding",
+  "type": "object"
+}
+```

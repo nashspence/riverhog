@@ -36,7 +36,7 @@
 - [piggity local repair](../../piggity/cli/piggity-local-repair.md)
 - [piggity local sync](../../piggity/cli/piggity-local-sync.md)
 
-## Contract
+## Contract summary
 
 | Concern | Contract |
 |---|---|
@@ -50,3 +50,29 @@
 | `provider_evidence` | provider-qualification:#442 |
 | `read_collection` | None |
 | `response_authority` | http-json |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: eb6388fd19b67aa937620b0ba6ea97b609f2ea27846e78d2f8f47c000e17d667 -->
+
+```json
+{
+  "application": "riverhog",
+  "classification": "client-only-primitive",
+  "cli_commands": [
+    "local evict",
+    "local remove",
+    "local repair",
+    "local sync"
+  ],
+  "client": "ApiClient",
+  "method": "GET",
+  "operation_id": "get_retrieval_job",
+  "path": "/v1/retrieval-jobs/{job_id}",
+  "provider_evidence": "provider-qualification:#442",
+  "read_collection": null,
+  "response_authority": "http-json"
+}
+```

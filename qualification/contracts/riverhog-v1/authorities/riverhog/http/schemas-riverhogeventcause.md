@@ -37,7 +37,7 @@
 | length | characters | `contract_max` | maximum=1000, minimum=1, reason=schema-maximum |
 | length | characters | `contract_max` | maximum=300, minimum=1, reason=schema-maximum |
 
-## Contract
+## Contract summary
 
 - `title`: RiverhogEventCause
 - `type`: object
@@ -50,3 +50,55 @@
 | `source` | yes | string |  |
 | `subject` | no | object (2 fields) |  |
 | `type` | yes | string |  |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: ac29075e27ddb589a896c56213e369861c512dd5f6d747bf10c49fe01431fcb2 -->
+
+```json
+{
+  "additionalProperties": false,
+  "properties": {
+    "id": {
+      "maxLength": 300,
+      "minLength": 1,
+      "title": "Id",
+      "type": "string"
+    },
+    "source": {
+      "maxLength": 1000,
+      "minLength": 1,
+      "title": "Source",
+      "type": "string"
+    },
+    "subject": {
+      "anyOf": [
+        {
+          "maxLength": 1000,
+          "minLength": 1,
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Subject"
+    },
+    "type": {
+      "maxLength": 300,
+      "minLength": 1,
+      "title": "Type",
+      "type": "string"
+    }
+  },
+  "required": [
+    "id",
+    "source",
+    "type"
+  ],
+  "title": "RiverhogEventCause",
+  "type": "object"
+}
+```

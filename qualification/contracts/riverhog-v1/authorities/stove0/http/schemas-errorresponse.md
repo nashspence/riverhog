@@ -27,7 +27,11 @@
 - Proof: `make operation-qualification`
 - Proof: `make compose-smoke`
 
-## Contract
+## Referenced contract dossiers
+
+- [schemas: ErrorBody](schemas-errorbody.md)
+
+## Contract summary
 
 - `title`: ErrorResponse
 - `type`: object
@@ -37,3 +41,25 @@
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | `error` | yes | #/components/schemas/ErrorBody |  |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: f512af6aea84106cb490abc5a849a56c6836aec507f2a2906f6d3301ed551137 -->
+
+```json
+{
+  "additionalProperties": false,
+  "properties": {
+    "error": {
+      "$ref": "#/components/schemas/ErrorBody"
+    }
+  },
+  "required": [
+    "error"
+  ],
+  "title": "ErrorResponse",
+  "type": "object"
+}
+```

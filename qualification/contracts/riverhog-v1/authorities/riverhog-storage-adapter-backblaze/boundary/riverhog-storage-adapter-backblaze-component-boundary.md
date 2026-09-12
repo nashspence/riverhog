@@ -27,7 +27,22 @@
 - Proof: `make release-check`
 - Proof: `make build`
 
-## Contract
+## Contract summary
+
+| Field | Shape |
+|---|---|
+| `console_scripts` | object (1 fields) |
+| `dependencies` | array (2 items) |
+| `distribution` | "riverhog-storage-adapter-backblaze" |
+| `optional_dependencies` | object (0 fields) |
+| `path` | "reference/riverhog/storage/backblaze" |
+| `role` | "reference_component" |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 95a7f8988b0c86e176800a81be67ab0e489cd28e8b81454ea4c0db6c6543433c -->
 
 ```json
 {

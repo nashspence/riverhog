@@ -27,7 +27,21 @@
 - Proof: `make release-check`
 - Proof: `make build`
 
-## Contract
+## Contract summary
+
+| Field | Shape |
+|---|---|
+| `group` | "stove0.observer-semantic-validators" |
+| `owner` | "stove0-observer-client" |
+| `owner_constant` | "SEMANTIC_VALIDATOR_ENTRY_POINT_GROUP" |
+| `owner_path` | "reference/stove0/packages/observer-client" |
+| `providers` | array (2 items) |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: a8fe8bdaba3fb926a4aec91fa0096c0f94a3d9e4e4e85c7cbf9ede2b8f4feb5c -->
 
 ```json
 {

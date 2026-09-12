@@ -27,7 +27,22 @@
 - Proof: `make release-check`
 - Proof: `make build`
 
-## Contract
+## Contract summary
+
+| Field | Shape |
+|---|---|
+| `console_scripts` | object (1 fields) |
+| `dependencies` | array (5 items) |
+| `distribution` | "riverhog-ftp-adapter" |
+| `optional_dependencies` | object (0 fields) |
+| `path` | "reference/riverhog/ingress/ftp" |
+| `role` | "reference_component" |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 59d9e4097d12863a20e0d3c3d2fff5e7c2253b4dc1e0cdebce56e74f8bb883af -->
 
 ```json
 {

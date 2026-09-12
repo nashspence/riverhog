@@ -32,13 +32,19 @@
 
 - [Operation parity: append_transform_capability_artifacts](../operation/operation-parity-append-transform-capability-artifacts.md)
 
+## Referenced contract dossiers
+
+- [schemas: ArtifactReceivingSetDocument](schemas-artifactreceivingsetdocument.md)
+- [schemas: CollectionArtifactBatchDocument](schemas-collectionartifactbatchdocument.md)
+- [schemas: ErrorResponse](schemas-errorresponse.md)
+
 ## Extent decisions
 
 | Dimension | Unit | Policy | Bounds/reason |
 |---|---|---|---|
 | length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
 
-## Contract
+## Contract summary
 
 - `operationId`: append_transform_capability_artifacts
 - `summary`: Append Transform Capability Artifacts
@@ -64,3 +70,127 @@
 | `401` | Unauthorized |
 | `403` | Forbidden |
 | `500` | Internal Server Error |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 919d806868b16b4c4ad965ee965a67a935d6d629dd371bb93af95c7cde77fe6c -->
+
+```json
+{
+  "operationId": "append_transform_capability_artifacts",
+  "parameters": [
+    {
+      "in": "path",
+      "name": "claim_id",
+      "required": true,
+      "schema": {
+        "pattern": "^[0-9a-f]{64}$",
+        "title": "Claim Id",
+        "type": "string"
+      }
+    },
+    {
+      "in": "path",
+      "name": "capability_id",
+      "required": true,
+      "schema": {
+        "title": "Capability Id",
+        "type": "string"
+      }
+    }
+  ],
+  "requestBody": {
+    "content": {
+      "application/json": {
+        "schema": {
+          "$ref": "#/components/schemas/CollectionArtifactBatchDocument"
+        }
+      }
+    },
+    "required": true
+  },
+  "responses": {
+    "200": {
+      "content": {
+        "application/json": {
+          "schema": {
+            "$ref": "#/components/schemas/ArtifactReceivingSetDocument"
+          }
+        }
+      },
+      "description": "Successful Response"
+    },
+    "400": {
+      "content": {
+        "application/json": {
+          "schema": {
+            "$ref": "#/components/schemas/ErrorResponse"
+          }
+        }
+      },
+      "description": "Bad Request",
+      "x-riverhog-error-codes": [
+        "bad_request"
+      ]
+    },
+    "401": {
+      "content": {
+        "application/json": {
+          "schema": {
+            "$ref": "#/components/schemas/ErrorResponse"
+          }
+        }
+      },
+      "description": "Unauthorized",
+      "x-riverhog-error-codes": [
+        "unauthorized"
+      ]
+    },
+    "403": {
+      "content": {
+        "application/json": {
+          "schema": {
+            "$ref": "#/components/schemas/ErrorResponse"
+          }
+        }
+      },
+      "description": "Forbidden",
+      "x-riverhog-error-codes": [
+        "forbidden"
+      ]
+    },
+    "500": {
+      "content": {
+        "application/json": {
+          "schema": {
+            "$ref": "#/components/schemas/ErrorResponse"
+          }
+        }
+      },
+      "description": "Internal Server Error",
+      "x-riverhog-error-codes": [
+        "internal_error"
+      ]
+    }
+  },
+  "security": [
+    {
+      "HTTPBearer": []
+    }
+  ],
+  "summary": "Append Transform Capability Artifacts",
+  "tags": [
+    "collection-workflows"
+  ],
+  "x-riverhog-interface": "client-only-primitive",
+  "x-riverhog-permission-requirements": [
+    {
+      "any_of": [
+        "collection-transforms:control"
+      ]
+    }
+  ]
+}
+```

@@ -27,7 +27,7 @@
 - Proof: `make dist-smoke`
 - Proof: `make build`
 
-## Contract
+## Contract summary
 
 - `$id`: https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/windows-security-descriptor.json
 - `type`: object
@@ -41,3 +41,46 @@
 | `owner_sid` | yes | string |  |
 | `sacl_included` | yes | boolean |  |
 | `security_information` | yes | integer |  |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 60dd20fce868257efd0bb6c6f4e9c85e392b00a5a9614541a4762da252705893 -->
+
+```json
+{
+  "$id": "https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/windows-security-descriptor.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "control": {
+      "minimum": 0,
+      "type": "integer"
+    },
+    "group_sid": {
+      "pattern": "^(?:|S-[0-9-]+)$",
+      "type": "string"
+    },
+    "owner_sid": {
+      "pattern": "^(?:|S-[0-9-]+)$",
+      "type": "string"
+    },
+    "sacl_included": {
+      "type": "boolean"
+    },
+    "security_information": {
+      "minimum": 0,
+      "type": "integer"
+    }
+  },
+  "required": [
+    "security_information",
+    "control",
+    "owner_sid",
+    "group_sid",
+    "sacl_included"
+  ],
+  "type": "object"
+}
+```

@@ -27,7 +27,24 @@
 - Proof: `make contract-freeze`
 - Proof: `make operation-qualification`
 
-## Contract
+## Contract summary
+
+| Field | Shape |
+|---|---|
+| `classified` | 1962 |
+| `discovered` | 1962 |
+| `duplicate` | 0 |
+| `missing` | 0 |
+| `owners` | object (57 fields) |
+| `policies` | object (5 fields) |
+| `stale` | 0 |
+| `undecided` | 0 |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 23e6446882410f742735186485ed5759430778bca07054ac9d16b076386aae57 -->
 
 ```json
 {

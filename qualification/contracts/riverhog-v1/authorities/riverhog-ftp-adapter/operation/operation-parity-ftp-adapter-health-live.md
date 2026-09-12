@@ -32,7 +32,7 @@
 
 - [GET /health/live](../http/get-health-live.md)
 
-## Contract
+## Contract summary
 
 | Concern | Contract |
 |---|---|
@@ -46,3 +46,24 @@
 | `provider_evidence` | None |
 | `read_collection` | None |
 | `response_authority` | http-json |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 7e3a9c1399bd595e3430922247dd8abe6605cf1528d5eb1086acaca7952bb9b0 -->
+
+```json
+{
+  "application": "riverhog-ftp-adapter",
+  "classification": "standard-tool/protocol",
+  "cli_commands": [],
+  "client": "RiverhogFtpAdapterClient",
+  "method": "GET",
+  "operation_id": "ftp_adapter_health_live",
+  "path": "/health/live",
+  "provider_evidence": null,
+  "read_collection": null,
+  "response_authority": "http-json"
+}
+```

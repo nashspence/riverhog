@@ -27,7 +27,12 @@
 - Proof: `make operation-qualification`
 - Proof: `make compose-smoke`
 
-## Contract
+## Referenced contract dossiers
+
+- [schemas: CollectionId](schemas-collectionid.md)
+- [schemas: CollectionProvenanceVerificationOut](schemas-collectionprovenanceverificationout.md)
+
+## Contract summary
 
 - `title`: CollectionProvenanceVerificationJobOut
 - `type`: object
@@ -44,3 +49,96 @@
 | `result` | yes | object (1 fields) |  |
 | `started_at` | yes | object (2 fields) |  |
 | `state` | yes | string |  |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: de7cbad7331cf2f94febc0c3d07c3b32e066668ffe9796a2c2c66063f8e4cfc5 -->
+
+```json
+{
+  "additionalProperties": false,
+  "properties": {
+    "attempts": {
+      "minimum": 0,
+      "title": "Attempts",
+      "type": "integer"
+    },
+    "collection_id": {
+      "$ref": "#/components/schemas/CollectionId"
+    },
+    "failure": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Failure"
+    },
+    "finished_at": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Finished At"
+    },
+    "requested_at": {
+      "title": "Requested At",
+      "type": "string"
+    },
+    "result": {
+      "anyOf": [
+        {
+          "$ref": "#/components/schemas/CollectionProvenanceVerificationOut"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "started_at": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Started At"
+    },
+    "state": {
+      "enum": [
+        "queued",
+        "running",
+        "canceling",
+        "succeeded",
+        "failed",
+        "canceled"
+      ],
+      "title": "State",
+      "type": "string"
+    }
+  },
+  "required": [
+    "collection_id",
+    "state",
+    "requested_at",
+    "started_at",
+    "finished_at",
+    "attempts",
+    "result",
+    "failure"
+  ],
+  "title": "CollectionProvenanceVerificationJobOut",
+  "type": "object"
+}
+```

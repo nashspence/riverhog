@@ -33,7 +33,7 @@
 - [POST /v1/apps/{app}/keys/{key_id}/rotate](../http/post-v1-apps-app-keys-key-id-rotate.md)
 - [piggity app key rotate](../../piggity/cli/piggity-app-key-rotate.md)
 
-## Contract
+## Contract summary
 
 | Concern | Contract |
 |---|---|
@@ -47,3 +47,26 @@
 | `provider_evidence` | None |
 | `read_collection` | None |
 | `response_authority` | http-json |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 3fd8763e0247baadfc564ffa5aa432e4e4ea824ae729dfebe44c8ad4bad238ea -->
+
+```json
+{
+  "application": "riverhog",
+  "classification": "human-cli+json",
+  "cli_commands": [
+    "app key rotate"
+  ],
+  "client": "ApiClient",
+  "method": "POST",
+  "operation_id": "rotate_app_key",
+  "path": "/v1/apps/{app}/keys/{key_id}/rotate",
+  "provider_evidence": null,
+  "read_collection": null,
+  "response_authority": "http-json"
+}
+```

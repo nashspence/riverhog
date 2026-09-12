@@ -36,7 +36,7 @@
 | cardinality | items | `operational_policy` | maximum=None, reason=no-declared-semantic-maximum |
 | length | characters | `contract_max` | maximum=120, minimum=1, reason=schema-maximum |
 
-## Contract
+## Contract summary
 
 - `title`: StorageAdapterConformanceResult
 - `description`: Stable positive evidence returned after the complete check set passes.
@@ -58,3 +58,129 @@
 | Definition | Shape |
 |---|---|
 | `AdapterDescriptor` | object |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: af805afd4d0dffb329ba08dde971222ad008eab2aec7afc4abc0303dd1956caf -->
+
+```json
+{
+  "$defs": {
+    "AdapterDescriptor": {
+      "additionalProperties": false,
+      "properties": {
+        "implementation_id": {
+          "pattern": "^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$",
+          "title": "Implementation Id",
+          "type": "string"
+        },
+        "implementation_version": {
+          "maxLength": 120,
+          "minLength": 1,
+          "title": "Implementation Version",
+          "type": "string"
+        },
+        "maximum_segment_bytes": {
+          "anyOf": [
+            {
+              "minimum": 1,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Maximum Segment Bytes"
+        },
+        "maximum_segment_count": {
+          "anyOf": [
+            {
+              "minimum": 1,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Maximum Segment Count"
+        },
+        "minimum_nonfinal_segment_bytes": {
+          "minimum": 1,
+          "title": "Minimum Nonfinal Segment Bytes",
+          "type": "integer"
+        },
+        "protocol": {
+          "const": "riverhog-storage-adapter/v1",
+          "default": "riverhog-storage-adapter/v1",
+          "title": "Protocol",
+          "type": "string"
+        },
+        "read_mode": {
+          "enum": [
+            "immediate",
+            "restore_required"
+          ],
+          "title": "Read Mode",
+          "type": "string"
+        }
+      },
+      "required": [
+        "implementation_id",
+        "implementation_version",
+        "read_mode",
+        "minimum_nonfinal_segment_bytes"
+      ],
+      "title": "AdapterDescriptor",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "description": "Stable positive evidence returned after the complete check set passes.",
+  "properties": {
+    "checks": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Checks",
+      "type": "array"
+    },
+    "coverage": {
+      "const": "complete",
+      "default": "complete",
+      "title": "Coverage",
+      "type": "string"
+    },
+    "descriptor": {
+      "$ref": "#/$defs/AdapterDescriptor"
+    },
+    "format": {
+      "const": "riverhog-storage-adapter-conformance-result/v1",
+      "default": "riverhog-storage-adapter-conformance-result/v1",
+      "title": "Format",
+      "type": "string"
+    },
+    "protocol": {
+      "const": "riverhog-storage-adapter/v1",
+      "default": "riverhog-storage-adapter/v1",
+      "title": "Protocol",
+      "type": "string"
+    },
+    "status": {
+      "const": "conformant",
+      "default": "conformant",
+      "title": "Status",
+      "type": "string"
+    }
+  },
+  "required": [
+    "descriptor",
+    "checks"
+  ],
+  "title": "StorageAdapterConformanceResult",
+  "type": "object"
+}
+```

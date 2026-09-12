@@ -27,7 +27,35 @@
 - Proof: `make operation-qualification`
 - Proof: `make compose-smoke`
 
-## Contract
+## Referenced contract dossiers
+
+- [schemas: ArchiveCopyCanceledEvent](schemas-archivecopycanceledevent.md)
+- [schemas: ArchiveCopyCompletedEvent](schemas-archivecopycompletedevent.md)
+- [schemas: ArchiveCopyIssueEvent](schemas-archivecopyissueevent.md)
+- [schemas: ArchiveCopyRequestedEvent](schemas-archivecopyrequestedevent.md)
+- [schemas: CollectionDeletedEvent](schemas-collectiondeletedevent.md)
+- [schemas: CollectionFinalizedEvent](schemas-collectionfinalizedevent.md)
+- [schemas: RetrievalCanceledEvent](schemas-retrievalcanceledevent.md)
+- [schemas: RetrievalCompletedEvent](schemas-retrievalcompletedevent.md)
+- [schemas: RetrievalExpiredEvent](schemas-retrievalexpiredevent.md)
+- [schemas: RetrievalFailedEvent](schemas-retrievalfailedevent.md)
+- [schemas: RetrievalIssueEvent](schemas-retrievalissueevent.md)
+- [schemas: RetrievalReadyEvent](schemas-retrievalreadyevent.md)
+- [schemas: RetrievalRenewedEvent](schemas-retrievalrenewedevent.md)
+- [schemas: RetrievalRequestedEvent](schemas-retrievalrequestedevent.md)
+
+## Contract summary
+
+| Field | Shape |
+|---|---|
+| `discriminator` | object (2 fields) |
+| `oneOf` | array (14 items) |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 69f21b5465255b2ea035e2798606f1662500dde6f394a0abf8e0e647836b8663 -->
 
 ```json
 {

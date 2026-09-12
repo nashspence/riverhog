@@ -33,7 +33,7 @@
 - [PUT /v1/collection-upload-sessions/{collection_id}/volumes/{volume_id}/units/{unit}](../http/put-v1-collection-upload-sessions-collection-id-volumes-volume-id-units-unit.md)
 - [piggity collection upload start](../../piggity/cli/piggity-collection-upload-start.md)
 
-## Contract
+## Contract summary
 
 | Concern | Contract |
 |---|---|
@@ -47,3 +47,26 @@
 | `provider_evidence` | provider-qualification:#442 |
 | `read_collection` | None |
 | `response_authority` | canonical-document |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: da06e5f32e5dd8d587173bf5a352365333387c9995a0bef19c33fae42e21b64c -->
+
+```json
+{
+  "application": "riverhog",
+  "classification": "client-only-primitive",
+  "cli_commands": [
+    "collection upload start"
+  ],
+  "client": "ApiClient",
+  "method": "PUT",
+  "operation_id": "put_collection_upload_session_unit",
+  "path": "/v1/collection-upload-sessions/{collection_id}/volumes/{volume_id}/units/{unit}",
+  "provider_evidence": "provider-qualification:#442",
+  "read_collection": null,
+  "response_authority": "canonical-document"
+}
+```

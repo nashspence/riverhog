@@ -29,6 +29,13 @@
 - Proof: `make operation-qualification`
 - Proof: `make compose-smoke`
 
+## Referenced contract dossiers
+
+- [schemas: ArchiveStoreName](schemas-archivestorename.md)
+- [schemas: CollectionId](schemas-collectionid.md)
+- [schemas: RiverhogActor](schemas-riverhogactor.md)
+- [schemas: RiverhogEventCause](schemas-riverhogeventcause.md)
+
 ## Extent decisions
 
 | Dimension | Unit | Policy | Bounds/reason |
@@ -37,7 +44,7 @@
 | encoded-size | bytes | `contract_max` | maximum=4096, reason=bounded-lifecycle-event-context |
 | cardinality | entries | `operational_policy` | maximum=None, reason=no-declared-semantic-maximum |
 
-## Contract
+## Contract summary
 
 - `title`: ArchiveCopyCompletedData
 - `type`: object
@@ -55,3 +62,81 @@
 | `initiator` | yes | #/components/schemas/RiverhogActor |  |
 | `source_store` | yes | #/components/schemas/ArchiveStoreName |  |
 | `state` | yes | string |  |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 8f06a049f4ff271de96e141d02dda07a41678a130ce3ac9f610fbdbd4aa3adb5 -->
+
+```json
+{
+  "additionalProperties": false,
+  "properties": {
+    "actor": {
+      "$ref": "#/components/schemas/RiverhogActor"
+    },
+    "cause": {
+      "anyOf": [
+        {
+          "$ref": "#/components/schemas/RiverhogEventCause"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "collection_created_at": {
+      "maxLength": 64,
+      "minLength": 1,
+      "title": "Collection Created At",
+      "type": "string"
+    },
+    "collection_id": {
+      "$ref": "#/components/schemas/CollectionId"
+    },
+    "context": {
+      "anyOf": [
+        {
+          "additionalProperties": true,
+          "type": "object",
+          "x-riverhog-encoded-bytes-max": 4096,
+          "x-riverhog-extent": {
+            "policy": "contract_max",
+            "reason": "bounded-lifecycle-event-context"
+          }
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Context"
+    },
+    "destination_store": {
+      "$ref": "#/components/schemas/ArchiveStoreName"
+    },
+    "initiator": {
+      "$ref": "#/components/schemas/RiverhogActor"
+    },
+    "source_store": {
+      "$ref": "#/components/schemas/ArchiveStoreName"
+    },
+    "state": {
+      "const": "completed",
+      "title": "State",
+      "type": "string"
+    }
+  },
+  "required": [
+    "actor",
+    "initiator",
+    "collection_id",
+    "collection_created_at",
+    "source_store",
+    "destination_store",
+    "state"
+  ],
+  "title": "ArchiveCopyCompletedData",
+  "type": "object"
+}
+```

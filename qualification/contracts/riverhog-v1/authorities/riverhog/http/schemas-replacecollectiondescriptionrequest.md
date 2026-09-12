@@ -27,7 +27,11 @@
 - Proof: `make operation-qualification`
 - Proof: `make compose-smoke`
 
-## Contract
+## Referenced contract dossiers
+
+- [schemas: CollectionDescription](schemas-collectiondescription.md)
+
+## Contract summary
 
 - `title`: ReplaceCollectionDescriptionRequest
 - `type`: object
@@ -37,3 +41,32 @@
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | `description` | yes | object (1 fields) |  |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: d4ad12a4df50fa39cb8315778965953000c4534f6e8a07749fb3d3fe84e2ad95 -->
+
+```json
+{
+  "additionalProperties": false,
+  "properties": {
+    "description": {
+      "anyOf": [
+        {
+          "$ref": "#/components/schemas/CollectionDescription"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    }
+  },
+  "required": [
+    "description"
+  ],
+  "title": "ReplaceCollectionDescriptionRequest",
+  "type": "object"
+}
+```

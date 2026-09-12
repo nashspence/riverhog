@@ -27,7 +27,7 @@
 - Proof: `make dist-smoke`
 - Proof: `make build`
 
-## Contract
+## Contract summary
 
 - `title`: MaintenanceResult
 - `type`: object
@@ -37,3 +37,27 @@
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | `affected` | yes | integer |  |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 1b8ad376bb41a2eb81c64450d4ccb99a09150f8f1c72f6203ecdad2b933a565c -->
+
+```json
+{
+  "additionalProperties": false,
+  "properties": {
+    "affected": {
+      "minimum": 0,
+      "title": "Affected",
+      "type": "integer"
+    }
+  },
+  "required": [
+    "affected"
+  ],
+  "title": "MaintenanceResult",
+  "type": "object"
+}
+```

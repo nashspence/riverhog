@@ -35,7 +35,7 @@
 | length | characters | `contract_max` | maximum=1000, minimum=1, reason=schema-maximum |
 | length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
 
-## Contract
+## Contract summary
 
 - `title`: SchedulerFailure
 - `type`: object
@@ -47,3 +47,51 @@
 | `error` | yes | string |  |
 | `event_id` | no | object (2 fields) |  |
 | `work_id` | no | object (2 fields) |  |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: dff37a74ff588a433e131221fee37f28f528269756151350ad46117bf156245c -->
+
+```json
+{
+  "additionalProperties": false,
+  "properties": {
+    "error": {
+      "maxLength": 1000,
+      "minLength": 1,
+      "title": "Error",
+      "type": "string"
+    },
+    "event_id": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Event Id"
+    },
+    "work_id": {
+      "anyOf": [
+        {
+          "pattern": "^[0-9a-f]{64}$",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Work Id"
+    }
+  },
+  "required": [
+    "error"
+  ],
+  "title": "SchedulerFailure",
+  "type": "object"
+}
+```

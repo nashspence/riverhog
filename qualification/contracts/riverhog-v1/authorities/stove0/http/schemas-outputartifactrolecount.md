@@ -34,7 +34,7 @@
 |---|---|---|---|
 | value | schema-value | `operational_policy` | maximum=None, reason=no-declared-semantic-maximum |
 
-## Contract
+## Contract summary
 
 - `title`: OutputArtifactRoleCount
 - `type`: object
@@ -45,3 +45,33 @@
 |---|---:|---|---|
 | `count` | yes | integer |  |
 | `role` | yes | string |  |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 932e988623cd6631a9f8d0b64a0098cab1ac4a1f70d8609fa8b89676f3c82caf -->
+
+```json
+{
+  "additionalProperties": false,
+  "properties": {
+    "count": {
+      "minimum": 1,
+      "title": "Count",
+      "type": "integer"
+    },
+    "role": {
+      "pattern": "^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$",
+      "title": "Role",
+      "type": "string"
+    }
+  },
+  "required": [
+    "role",
+    "count"
+  ],
+  "title": "OutputArtifactRoleCount",
+  "type": "object"
+}
+```

@@ -27,7 +27,29 @@
 - Proof: `make release-check`
 - Proof: `make build`
 
-## Contract
+## Contract summary
+
+| Field | Shape |
+|---|---|
+| `mango-fish` | object (4 fields) |
+| `riverhog` | object (4 fields) |
+| `riverhog-ftp-adapter` | object (4 fields) |
+| `riverhog-storage-adapter-aws` | object (4 fields) |
+| `riverhog-storage-adapter-backblaze` | object (4 fields) |
+| `riverhog-storage-adapter-filesystem` | object (4 fields) |
+| `stove0` | object (4 fields) |
+| `stove0-exiftool-observer` | object (4 fields) |
+| `stove0-ffprobe-sampling-observer` | object (4 fields) |
+| `stove0-nvenc-av1-opus-target` | object (4 fields) |
+| `stove0-opus-target` | object (4 fields) |
+| `stove0-review-materialize-target` | object (4 fields) |
+| `stove0-review-rclone-effect-target` | object (4 fields) |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: c6f43774c53a9c18841f23500fa652a943887a34c636f309f5f34496e687171f -->
 
 ```json
 {

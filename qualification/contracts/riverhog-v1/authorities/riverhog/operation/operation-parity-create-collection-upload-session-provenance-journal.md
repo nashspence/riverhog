@@ -32,7 +32,7 @@
 
 - [PUT /v1/collection-upload-sessions/{collection_id}/provenance/journals/{journal_id}](../http/put-v1-collection-upload-sessions-collection-id-provenance-journals-journal-id.md)
 
-## Contract
+## Contract summary
 
 | Concern | Contract |
 |---|---|
@@ -46,3 +46,24 @@
 | `provider_evidence` | None |
 | `read_collection` | None |
 | `response_authority` | canonical-document |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: d1e231932e780859c4574009ba5b766e4d4a89f16b15be95a99b158ebcaa4f64 -->
+
+```json
+{
+  "application": "riverhog",
+  "classification": "client-only-primitive",
+  "cli_commands": [],
+  "client": "ApiClient",
+  "method": "PUT",
+  "operation_id": "create_collection_upload_session_provenance_journal",
+  "path": "/v1/collection-upload-sessions/{collection_id}/provenance/journals/{journal_id}",
+  "provider_evidence": null,
+  "read_collection": null,
+  "response_authority": "canonical-document"
+}
+```

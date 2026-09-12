@@ -34,7 +34,7 @@
 |---|---|---|---|
 | length | characters | `contract_max` | maximum=2000, minimum=1, reason=schema-maximum |
 
-## Contract
+## Contract summary
 
 - `title`: StorageAdapterError
 - `type`: object
@@ -50,3 +50,66 @@
 | Definition | Shape |
 |---|---|
 | `StorageAdapterErrorBody` | object |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 19b906afcdf8d94d77f5aef65b4facf0cb084d382ef94d440ae8a5cd58e7aa7f -->
+
+```json
+{
+  "$defs": {
+    "StorageAdapterErrorBody": {
+      "additionalProperties": false,
+      "properties": {
+        "code": {
+          "enum": [
+            "unauthorized",
+            "invalid_request",
+            "not_found",
+            "method_not_allowed",
+            "length_required",
+            "request_too_large",
+            "insufficient_storage",
+            "identity_conflict",
+            "traversal_invalidated",
+            "invalid_path",
+            "invalid_range",
+            "read_not_ready",
+            "read_expired",
+            "integrity_failure",
+            "provider_unavailable",
+            "internal_failure"
+          ],
+          "title": "Code",
+          "type": "string"
+        },
+        "message": {
+          "maxLength": 2000,
+          "minLength": 1,
+          "title": "Message",
+          "type": "string"
+        }
+      },
+      "required": [
+        "code",
+        "message"
+      ],
+      "title": "StorageAdapterErrorBody",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "error": {
+      "$ref": "#/$defs/StorageAdapterErrorBody"
+    }
+  },
+  "required": [
+    "error"
+  ],
+  "title": "StorageAdapterError",
+  "type": "object"
+}
+```

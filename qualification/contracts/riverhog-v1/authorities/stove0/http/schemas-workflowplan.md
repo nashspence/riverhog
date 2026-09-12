@@ -29,6 +29,13 @@
 - Proof: `make operation-qualification`
 - Proof: `make compose-smoke`
 
+## Referenced contract dossiers
+
+- [schemas: JsonValue](schemas-jsonvalue.md)
+- [schemas: ObservationEvidence](schemas-observationevidence.md)
+- [schemas: OperationRef](schemas-operationref.md)
+- [schemas: WorkIdentity](schemas-workidentity.md)
+
 ## Extent decisions
 
 | Dimension | Unit | Policy | Bounds/reason |
@@ -39,7 +46,7 @@
 | length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
 | length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
 
-## Contract
+## Contract summary
 
 - `title`: WorkflowPlan
 - `type`: object
@@ -61,3 +68,108 @@
 | `target_registration_id` | yes | string |  |
 | `work` | yes | #/components/schemas/WorkIdentity |  |
 | `workflow_plan_sha256` | yes | string |  |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 1ac28da8e579dbffb0ead200dbc696f5253dae3438526682093a5f3e85c9c7bf -->
+
+```json
+{
+  "additionalProperties": false,
+  "properties": {
+    "format": {
+      "const": "stove0-workflow-plan/v1",
+      "default": "stove0-workflow-plan/v1",
+      "title": "Format",
+      "type": "string"
+    },
+    "input_retrieval_policy": {
+      "default": "available-only",
+      "enum": [
+        "available-only",
+        "allow"
+      ],
+      "title": "Input Retrieval Policy",
+      "type": "string"
+    },
+    "observations": {
+      "default": [],
+      "items": {
+        "$ref": "#/components/schemas/ObservationEvidence"
+      },
+      "title": "Observations",
+      "type": "array"
+    },
+    "operation": {
+      "$ref": "#/components/schemas/OperationRef"
+    },
+    "output_policy": {
+      "additionalProperties": {
+        "$ref": "#/components/schemas/JsonValue"
+      },
+      "title": "Output Policy",
+      "type": "object"
+    },
+    "requested_target_options": {
+      "additionalProperties": {
+        "$ref": "#/components/schemas/JsonValue"
+      },
+      "title": "Requested Target Options",
+      "type": "object"
+    },
+    "result_kind": {
+      "default": "collection",
+      "enum": [
+        "collection",
+        "external-effect"
+      ],
+      "title": "Result Kind",
+      "type": "string"
+    },
+    "retirement_grace_seconds": {
+      "default": 0,
+      "minimum": 0,
+      "title": "Retirement Grace Seconds",
+      "type": "integer"
+    },
+    "retirement_policy": {
+      "default": "retain",
+      "enum": [
+        "retain",
+        "retire-after-verified-output"
+      ],
+      "title": "Retirement Policy",
+      "type": "string"
+    },
+    "target_contract_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Target Contract Sha256",
+      "type": "string"
+    },
+    "target_registration_id": {
+      "pattern": "^[a-z0-9]\u0028?:[a-z0-9.-]{0,118}[a-z0-9])?$",
+      "title": "Target Registration Id",
+      "type": "string"
+    },
+    "work": {
+      "$ref": "#/components/schemas/WorkIdentity"
+    },
+    "workflow_plan_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Workflow Plan Sha256",
+      "type": "string"
+    }
+  },
+  "required": [
+    "work",
+    "operation",
+    "target_registration_id",
+    "target_contract_sha256",
+    "workflow_plan_sha256"
+  ],
+  "title": "WorkflowPlan",
+  "type": "object"
+}
+```

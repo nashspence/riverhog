@@ -27,7 +27,7 @@
 - Proof: `make operation-qualification`
 - Proof: `make compose-smoke`
 
-## Contract
+## Contract summary
 
 - `title`: OmittedFileProvenanceBinding
 - `type`: object
@@ -38,3 +38,34 @@
 |---|---:|---|---|
 | `omission_reason` | yes | string |  |
 | `status` | yes | string |  |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 5eba6adbe60f961048cf4ff31b645ca43fb22f9f4ff95b3476666b75a05b8a3c -->
+
+```json
+{
+  "additionalProperties": false,
+  "properties": {
+    "omission_reason": {
+      "minLength": 1,
+      "pattern": "^\\S(?:[\\s\\S]*\\S)?$",
+      "title": "Omission Reason",
+      "type": "string"
+    },
+    "status": {
+      "const": "omitted",
+      "title": "Status",
+      "type": "string"
+    }
+  },
+  "required": [
+    "status",
+    "omission_reason"
+  ],
+  "title": "OmittedFileProvenanceBinding",
+  "type": "object"
+}
+```

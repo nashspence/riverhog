@@ -4,6 +4,10 @@
 
 Contract elements: **1** · Extent decisions: **0**
 
+| Family | Count |
+|---|---:|
+| `format` | 1 |
+
 | Policy | Count |
 |---|---:|
 | `compatibility/components/v1` | 1 |

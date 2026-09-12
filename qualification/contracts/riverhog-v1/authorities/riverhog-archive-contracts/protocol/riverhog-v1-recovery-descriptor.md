@@ -36,7 +36,7 @@
 | value | schema-value | `operational_policy` | maximum=None, reason=no-declared-semantic-maximum |
 | length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
 
-## Contract
+## Contract summary
 
 - `$id`: https://nashspence.github.io/riverhog/v1/schemas/riverhog-recovery-descriptor-v1.schema.json
 - `title`: Riverhog v1 recovery descriptor
@@ -49,3 +49,68 @@
 | `encryption` | yes | object |  |
 | `root` | yes | object |  |
 | `schema` | yes | object (1 fields) |  |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 70e187d12431366bc3f4ef919e9afca355e3ec4ca9ba8a7cb1a98a393ed034fb -->
+
+```json
+{
+  "$id": "https://nashspence.github.io/riverhog/v1/schemas/riverhog-recovery-descriptor-v1.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "encryption": {
+      "additionalProperties": false,
+      "properties": {
+        "format": {
+          "const": "age-v1-scrypt"
+        },
+        "passphrase_id": {
+          "pattern": "^[A-Za-z0-9_-]{16,128}$",
+          "type": "string"
+        }
+      },
+      "required": [
+        "format",
+        "passphrase_id"
+      ],
+      "type": "object"
+    },
+    "root": {
+      "additionalProperties": false,
+      "properties": {
+        "path": {
+          "const": "manifest.json.age"
+        },
+        "stored_bytes": {
+          "minimum": 1,
+          "type": "integer"
+        },
+        "stored_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "type": "string"
+        }
+      },
+      "required": [
+        "path",
+        "stored_bytes",
+        "stored_sha256"
+      ],
+      "type": "object"
+    },
+    "schema": {
+      "const": "riverhog-recovery-descriptor/v1"
+    }
+  },
+  "required": [
+    "schema",
+    "encryption",
+    "root"
+  ],
+  "title": "Riverhog v1 recovery descriptor",
+  "type": "object"
+}
+```

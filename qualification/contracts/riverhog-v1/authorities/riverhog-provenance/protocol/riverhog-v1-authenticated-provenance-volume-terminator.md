@@ -35,7 +35,7 @@
 | length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
 | length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
 
-## Contract
+## Contract summary
 
 - `$id`: https://nashspence.github.io/riverhog/v1/schemas/riverhog-provenance-terminal-v1.schema.json
 - `title`: Riverhog v1 authenticated provenance-volume terminator
@@ -56,3 +56,53 @@
 | Definition | Shape |
 |---|---|
 | `sha256` | string |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 0adc252e32d2acdca092eeb7a30601d8ce840fa83722504eb594598f501ee97d -->
+
+```json
+{
+  "$defs": {
+    "sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "type": "string"
+    }
+  },
+  "$id": "https://nashspence.github.io/riverhog/v1/schemas/riverhog-provenance-terminal-v1.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "archive_generation": {
+      "$ref": "#/$defs/sha256"
+    },
+    "archive_tree_sha256": {
+      "$ref": "#/$defs/sha256"
+    },
+    "kind": {
+      "const": "terminal"
+    },
+    "schema": {
+      "const": "riverhog-provenance-terminal/v1"
+    },
+    "sequence": {
+      "not": {
+        "const": "0000000000000000000000000000000000000000000000000000000000000000"
+      },
+      "pattern": "^[0-9a-f]{64}$",
+      "type": "string"
+    }
+  },
+  "required": [
+    "schema",
+    "archive_generation",
+    "archive_tree_sha256",
+    "sequence",
+    "kind"
+  ],
+  "title": "Riverhog v1 authenticated provenance-volume terminator",
+  "type": "object"
+}
+```

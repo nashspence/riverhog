@@ -38,7 +38,7 @@
 | length | characters | `contract_max` | maximum=4000, minimum=1, reason=schema-maximum |
 | length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
 
-## Contract
+## Contract summary
 
 - `title`: WriteSegmentPage
 - `description`: One bounded page under an adapter-owned immutable traversal view.
@@ -61,3 +61,175 @@
 | `WriteCompletionAuthority` | object |
 | `WriteSegmentReceipt` | object |
 | `WriteSession` | object |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: d1d971aecf4fda3444d770576aa32bb6527302511e9401a9b027918ec8ae3b38 -->
+
+```json
+{
+  "$defs": {
+    "WriteCompletionAuthority": {
+      "additionalProperties": false,
+      "description": "Adapter-issued terminal authority for one exact active-write state.\n\nConsumers echo the opaque token unchanged. It is neither a credential nor a\nbearer capability; completion remains independently authorized. Once an exact\nimmutable object is published, its completed-object identity supersedes this\ntransport authority for terminal reconciliation.",
+      "properties": {
+        "authority_token": {
+          "description": "Bounded opaque adapter-issued authority for the exact accepted state of an active write. The token grants no authority and must be echoed unchanged.",
+          "maxLength": 4000,
+          "minLength": 1,
+          "title": "Authority Token",
+          "type": "string"
+        },
+        "segment_count": {
+          "minimum": 0,
+          "title": "Segment Count",
+          "type": "integer"
+        },
+        "stored_bytes": {
+          "minimum": 0,
+          "title": "Stored Bytes",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "segment_count",
+        "stored_bytes",
+        "authority_token"
+      ],
+      "title": "WriteCompletionAuthority",
+      "type": "object"
+    },
+    "WriteSegmentReceipt": {
+      "additionalProperties": false,
+      "properties": {
+        "number": {
+          "minimum": 1,
+          "title": "Number",
+          "type": "integer"
+        },
+        "segment_token": {
+          "maxLength": 4000,
+          "minLength": 1,
+          "title": "Segment Token",
+          "type": "string"
+        },
+        "stored_bytes": {
+          "minimum": 1,
+          "title": "Stored Bytes",
+          "type": "integer"
+        },
+        "stored_sha256": {
+          "anyOf": [
+            {
+              "pattern": "^[0-9a-f]{64}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Stored Sha256"
+        }
+      },
+      "required": [
+        "number",
+        "segment_token",
+        "stored_bytes"
+      ],
+      "title": "WriteSegmentReceipt",
+      "type": "object"
+    },
+    "WriteSession": {
+      "additionalProperties": false,
+      "properties": {
+        "expected_bytes": {
+          "description": "Exact immutable-object byte length admitted by this write session. The value remains fixed until the write becomes terminal.",
+          "minimum": 1,
+          "title": "Expected Bytes",
+          "type": "integer"
+        },
+        "object_path": {
+          "maxLength": 4096,
+          "minLength": 1,
+          "title": "Object Path",
+          "type": "string"
+        },
+        "write_token": {
+          "description": "Opaque adapter-owned persistable continuation handle. For the same configured adapter it remains replayable across client, transport, Riverhog, and adapter process restarts until completion, explicit abort, or caller-authorized incomplete-write reclamation makes the write terminal.",
+          "maxLength": 4000,
+          "minLength": 1,
+          "title": "Write Token",
+          "type": "string"
+        }
+      },
+      "required": [
+        "object_path",
+        "expected_bytes",
+        "write_token"
+      ],
+      "title": "WriteSession",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "description": "One bounded page under an adapter-owned immutable traversal view.",
+  "properties": {
+    "completion": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/WriteCompletionAuthority"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    },
+    "next_after_number": {
+      "anyOf": [
+        {
+          "minimum": 1,
+          "type": "integer"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Next After Number"
+    },
+    "segments": {
+      "default": [],
+      "items": {
+        "$ref": "#/$defs/WriteSegmentReceipt"
+      },
+      "maxItems": 128,
+      "title": "Segments",
+      "type": "array",
+      "x-riverhog-extent": {
+        "policy": "segmented_no_total_max",
+        "progression": "exact-adapter-write-traversal",
+        "reason": "bounded-storage-write-segment-page"
+      }
+    },
+    "session": {
+      "$ref": "#/$defs/WriteSession"
+    },
+    "traversal_token": {
+      "maxLength": 4000,
+      "minLength": 1,
+      "title": "Traversal Token",
+      "type": "string"
+    }
+  },
+  "required": [
+    "session",
+    "traversal_token"
+  ],
+  "title": "WriteSegmentPage",
+  "type": "object"
+}
+```

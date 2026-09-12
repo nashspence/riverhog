@@ -32,7 +32,7 @@
 
 - [GET /v1/collection-upload-sessions/{collection_id}/provenance/journals/{journal_id}](../http/get-v1-collection-upload-sessions-collection-id-provenance-journals-journal-id.md)
 
-## Contract
+## Contract summary
 
 | Concern | Contract |
 |---|---|
@@ -46,3 +46,24 @@
 | `provider_evidence` | provider-qualification:#442 |
 | `read_collection` | None |
 | `response_authority` | canonical-document |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: d05d4c5db4373d6d9222b0e299ccae974380fdc6bc6d913959ec17d79fdd8f3f -->
+
+```json
+{
+  "application": "riverhog",
+  "classification": "client-only-primitive",
+  "cli_commands": [],
+  "client": "ApiClient",
+  "method": "GET",
+  "operation_id": "get_collection_upload_session_provenance_journal",
+  "path": "/v1/collection-upload-sessions/{collection_id}/provenance/journals/{journal_id}",
+  "provider_evidence": "provider-qualification:#442",
+  "read_collection": null,
+  "response_authority": "canonical-document"
+}
+```

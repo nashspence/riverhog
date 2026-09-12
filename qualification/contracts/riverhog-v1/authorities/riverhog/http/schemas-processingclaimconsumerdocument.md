@@ -34,7 +34,7 @@
 |---|---|---|---|
 | length | characters | `contract_max` | maximum=300, minimum=1, reason=schema-maximum |
 
-## Contract
+## Contract summary
 
 - `title`: ProcessingClaimConsumerDocument
 - `type`: object
@@ -45,3 +45,40 @@
 |---|---:|---|---|
 | `app` | yes | string |  |
 | `key_id` | no | object (2 fields) |  |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 7cd765d2f05f41f51d27802da1d22e63f901cd257453447ccce3a8705be74d9b -->
+
+```json
+{
+  "additionalProperties": false,
+  "properties": {
+    "app": {
+      "pattern": "^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$",
+      "title": "App",
+      "type": "string"
+    },
+    "key_id": {
+      "anyOf": [
+        {
+          "maxLength": 300,
+          "minLength": 1,
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Key Id"
+    }
+  },
+  "required": [
+    "app"
+  ],
+  "title": "ProcessingClaimConsumerDocument",
+  "type": "object"
+}
+```

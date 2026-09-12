@@ -28,13 +28,19 @@
 - Proof: `make operation-qualification`
 - Proof: `make compose-smoke`
 
+## Referenced contract dossiers
+
+- [schemas: ProvenanceEntryId](schemas-provenanceentryid.md)
+- [schemas: ProvenanceJournalId](schemas-provenancejournalid.md)
+- [schemas: ProvenanceStateId](schemas-provenancestateid.md)
+
 ## Extent decisions
 
 | Dimension | Unit | Policy | Bounds/reason |
 |---|---|---|---|
 | length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
 
-## Contract
+## Contract summary
 
 - `title`: ProvenanceExternalStateReferenceOut
 - `type`: object
@@ -48,3 +54,43 @@
 | `from_journal_id` | yes | #/components/schemas/ProvenanceJournalId |  |
 | `state_id` | yes | #/components/schemas/ProvenanceStateId |  |
 | `to_journal_id` | yes | #/components/schemas/ProvenanceJournalId |  |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 0be22da19b0a8f539bd3883f9540fdeb932c4ee27c46a109f44a17090f8e9865 -->
+
+```json
+{
+  "additionalProperties": false,
+  "properties": {
+    "entry_id": {
+      "$ref": "#/components/schemas/ProvenanceEntryId"
+    },
+    "entry_json_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Entry Json Sha256",
+      "type": "string"
+    },
+    "from_journal_id": {
+      "$ref": "#/components/schemas/ProvenanceJournalId"
+    },
+    "state_id": {
+      "$ref": "#/components/schemas/ProvenanceStateId"
+    },
+    "to_journal_id": {
+      "$ref": "#/components/schemas/ProvenanceJournalId"
+    }
+  },
+  "required": [
+    "from_journal_id",
+    "to_journal_id",
+    "state_id",
+    "entry_id",
+    "entry_json_sha256"
+  ],
+  "title": "ProvenanceExternalStateReferenceOut",
+  "type": "object"
+}
+```

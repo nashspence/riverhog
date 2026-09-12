@@ -33,7 +33,7 @@
 - [GET /v1/admissions/{admission_id}](../http/get-v1-admissions-admission-id.md)
 - [stove0 admission show](../cli/stove0-admission-show.md)
 
-## Contract
+## Contract summary
 
 | Concern | Contract |
 |---|---|
@@ -47,3 +47,26 @@
 | `provider_evidence` | None |
 | `read_collection` | None |
 | `response_authority` | operator-projection |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: e3a42d0b21023ba9f33fceb4516991d3decb42d3ee253c5ce4c281364e7c23ef -->
+
+```json
+{
+  "application": "stove0",
+  "classification": "human-cli+json",
+  "cli_commands": [
+    "admission show"
+  ],
+  "client": "Stove0ApiClient",
+  "method": "GET",
+  "operation_id": "get_admission",
+  "path": "/v1/admissions/{admission_id}",
+  "provider_evidence": null,
+  "read_collection": null,
+  "response_authority": "operator-projection"
+}
+```

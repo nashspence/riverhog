@@ -28,6 +28,26 @@
 - Proof: `make dist-smoke`
 - Proof: `make operation-qualification`
 
-## Contract
+## Contract summary
 
 - Parser name: `evaluation`
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+### `/external_contract/cli/stove0/commands/evaluation/name`
+
+<!-- exact-contract-value: 825cff9607c815f556865135b4bd35491d8509f05a986a6faba376dec4ab503e -->
+
+```json
+"evaluation"
+```
+
+### `/external_contract/cli/stove0/commands/evaluation/parameters`
+
+<!-- exact-contract-value: 4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945 -->
+
+```json
+[]
+```

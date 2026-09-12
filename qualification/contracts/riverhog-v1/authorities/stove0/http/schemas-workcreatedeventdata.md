@@ -37,7 +37,7 @@
 | length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
 | length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
 
-## Contract
+## Contract summary
 
 - `title`: WorkCreatedEventData
 - `type`: object
@@ -51,3 +51,87 @@
 | `parent_work_id` | no | object (2 fields) |  |
 | `phase` | yes | string |  |
 | `work_id` | yes | string |  |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 15e73ba78808d3cbf0eb37d99e952a1899d1266f2ae521f01c1865583f936b0c -->
+
+```json
+{
+  "additionalProperties": false,
+  "properties": {
+    "branch_set_sha256": {
+      "anyOf": [
+        {
+          "pattern": "^[0-9a-f]{64}$",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Branch Set Sha256"
+    },
+    "join_plan_sha256": {
+      "anyOf": [
+        {
+          "pattern": "^[0-9a-f]{64}$",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Join Plan Sha256"
+    },
+    "parent_work_id": {
+      "anyOf": [
+        {
+          "pattern": "^[0-9a-f]{64}$",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Parent Work Id"
+    },
+    "phase": {
+      "enum": [
+        "eligible",
+        "claimed",
+        "observing",
+        "planning",
+        "target_preflight",
+        "queued",
+        "executing",
+        "output_finalizing",
+        "verifying",
+        "settled",
+        "retirement_pending",
+        "coordinating",
+        "abandon_pending",
+        "complete",
+        "inapplicable",
+        "failed",
+        "canceled"
+      ],
+      "title": "Phase",
+      "type": "string"
+    },
+    "work_id": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Work Id",
+      "type": "string"
+    }
+  },
+  "required": [
+    "work_id",
+    "phase"
+  ],
+  "title": "WorkCreatedEventData",
+  "type": "object"
+}
+```

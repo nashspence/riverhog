@@ -29,6 +29,13 @@
 - Proof: `make operation-qualification`
 - Proof: `make compose-smoke`
 
+## Referenced contract dossiers
+
+- [schemas: BrowsePageToken](schemas-browsepagetoken.md)
+- [schemas: CollectionId](schemas-collectionid.md)
+- [schemas: ProvenanceJournalAgentOut](schemas-provenancejournalagentout.md)
+- [schemas: ProvenanceJournalId](schemas-provenancejournalid.md)
+
 ## Extent decisions
 
 | Dimension | Unit | Policy | Bounds/reason |
@@ -36,7 +43,7 @@
 | cardinality | items | `segmented_no_total_max` | reason=bounded-route-page |
 | value | schema-value | `contract_max` | maximum=100, minimum=1, reason=schema-maximum |
 
-## Contract
+## Contract summary
 
 - `title`: ListProvenanceJournalAgentsResponse
 - `type`: object
@@ -50,3 +57,55 @@
 | `journal_id` | yes | #/components/schemas/ProvenanceJournalId |  |
 | `next_page_token` | yes | object (1 fields) |  |
 | `page_size` | yes | integer |  |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 49714167644d18cabb26c9bef93acc269985c01433f93c17107afa90c22980aa -->
+
+```json
+{
+  "additionalProperties": false,
+  "properties": {
+    "agents": {
+      "items": {
+        "$ref": "#/components/schemas/ProvenanceJournalAgentOut"
+      },
+      "title": "Agents",
+      "type": "array"
+    },
+    "collection_id": {
+      "$ref": "#/components/schemas/CollectionId"
+    },
+    "journal_id": {
+      "$ref": "#/components/schemas/ProvenanceJournalId"
+    },
+    "next_page_token": {
+      "anyOf": [
+        {
+          "$ref": "#/components/schemas/BrowsePageToken"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "page_size": {
+      "maximum": 100,
+      "minimum": 1,
+      "title": "Page Size",
+      "type": "integer"
+    }
+  },
+  "required": [
+    "collection_id",
+    "journal_id",
+    "page_size",
+    "next_page_token",
+    "agents"
+  ],
+  "title": "ListProvenanceJournalAgentsResponse",
+  "type": "object"
+}
+```

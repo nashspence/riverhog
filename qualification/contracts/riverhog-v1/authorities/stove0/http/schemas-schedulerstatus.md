@@ -34,7 +34,7 @@
 |---|---|---|---|
 | cardinality | items | `operational_policy` | maximum=None, reason=no-declared-semantic-maximum |
 
-## Contract
+## Contract summary
 
 - `title`: SchedulerStatus
 - `type`: object
@@ -46,3 +46,45 @@
 | `interval_seconds` | yes | number |  |
 | `roles` | yes | array |  |
 | `running` | yes | boolean |  |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 7a4eac0cdfe53ec109a9dd097dd163c7a16e9c52f9f04684ef04035f8d303bd5 -->
+
+```json
+{
+  "additionalProperties": false,
+  "properties": {
+    "interval_seconds": {
+      "exclusiveMinimum": 0,
+      "title": "Interval Seconds",
+      "type": "number"
+    },
+    "roles": {
+      "items": {
+        "enum": [
+          "controller",
+          "worker",
+          "combined"
+        ],
+        "type": "string"
+      },
+      "title": "Roles",
+      "type": "array"
+    },
+    "running": {
+      "title": "Running",
+      "type": "boolean"
+    }
+  },
+  "required": [
+    "running",
+    "interval_seconds",
+    "roles"
+  ],
+  "title": "SchedulerStatus",
+  "type": "object"
+}
+```

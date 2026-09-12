@@ -29,6 +29,12 @@
 - Proof: `make operation-qualification`
 - Proof: `make compose-smoke`
 
+## Referenced contract dossiers
+
+- [schemas: EvaluationChildView](schemas-evaluationchildview.md)
+- [schemas: EvaluationDefinition](schemas-evaluationdefinition.md)
+- [schemas: EvaluationReviewView](schemas-evaluationreviewview.md)
+
 ## Extent decisions
 
 | Dimension | Unit | Policy | Bounds/reason |
@@ -37,7 +43,7 @@
 | length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
 | cardinality | items | `operational_policy` | maximum=None, reason=no-declared-semantic-maximum |
 
-## Contract
+## Contract summary
 
 - `title`: EvaluationView
 - `description`: Operator projection of a materialized evaluation, not its identity.
@@ -54,3 +60,73 @@
 | `phase` | yes | string |  |
 | `reviews` | no | array |  |
 | `revision` | yes | integer |  |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 94f5278bcc3670da961904a0eec89e1172e5874922b8ab76ff47c80dae0703e3 -->
+
+```json
+{
+  "additionalProperties": false,
+  "description": "Operator projection of a materialized evaluation, not its identity.",
+  "properties": {
+    "children": {
+      "items": {
+        "$ref": "#/components/schemas/EvaluationChildView"
+      },
+      "title": "Children",
+      "type": "array"
+    },
+    "definition": {
+      "$ref": "#/components/schemas/EvaluationDefinition"
+    },
+    "evaluation_id": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Evaluation Id",
+      "type": "string"
+    },
+    "format": {
+      "const": "stove0-evaluation-view/v1",
+      "default": "stove0-evaluation-view/v1",
+      "title": "Format",
+      "type": "string"
+    },
+    "phase": {
+      "enum": [
+        "planning",
+        "running",
+        "partially_complete",
+        "complete",
+        "failed",
+        "canceled"
+      ],
+      "title": "Phase",
+      "type": "string"
+    },
+    "reviews": {
+      "default": [],
+      "items": {
+        "$ref": "#/components/schemas/EvaluationReviewView"
+      },
+      "title": "Reviews",
+      "type": "array"
+    },
+    "revision": {
+      "minimum": 1,
+      "title": "Revision",
+      "type": "integer"
+    }
+  },
+  "required": [
+    "evaluation_id",
+    "definition",
+    "phase",
+    "revision",
+    "children"
+  ],
+  "title": "EvaluationView",
+  "type": "object"
+}
+```

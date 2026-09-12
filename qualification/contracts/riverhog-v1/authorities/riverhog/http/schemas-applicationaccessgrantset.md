@@ -29,6 +29,10 @@
 - Proof: `make operation-qualification`
 - Proof: `make compose-smoke`
 
+## Referenced contract dossiers
+
+- [schemas: ApplicationAccessGrant](schemas-applicationaccessgrant.md)
+
 ## Extent decisions
 
 | Dimension | Unit | Policy | Bounds/reason |
@@ -36,8 +40,51 @@
 | cardinality | items | `contract_max` | maximum=1, reason=wildcard-access-grant-is-exclusive |
 | cardinality | items | `operational_policy` | maximum=None, reason=no-declared-semantic-maximum |
 
-## Contract
+## Contract summary
 
 - `title`: ApplicationAccessGrantSet
 - `description`: A nonempty, duplicate-free public grant set with canonical wildcard use.
 - `type`: array
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 5133bc9028edbe95e0ad3ec9b476cda4bdb9c92a1c4942973660db9d1df5bd06 -->
+
+```json
+{
+  "allOf": [
+    {
+      "if": {
+        "contains": {
+          "properties": {
+            "permission": {
+              "const": "*"
+            }
+          },
+          "required": [
+            "permission"
+          ],
+          "type": "object"
+        }
+      },
+      "then": {
+        "maxItems": 1,
+        "x-riverhog-extent": {
+          "policy": "contract_max",
+          "reason": "wildcard-access-grant-is-exclusive"
+        }
+      }
+    }
+  ],
+  "description": "A nonempty, duplicate-free public grant set with canonical wildcard use.",
+  "items": {
+    "$ref": "#/components/schemas/ApplicationAccessGrant"
+  },
+  "minItems": 1,
+  "title": "ApplicationAccessGrantSet",
+  "type": "array",
+  "uniqueItems": true
+}
+```

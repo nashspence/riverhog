@@ -33,7 +33,7 @@
 - [GET /health/ready](../http/get-health-ready.md)
 - [stove0 health](../cli/stove0-health.md)
 
-## Contract
+## Contract summary
 
 | Concern | Contract |
 |---|---|
@@ -47,3 +47,26 @@
 | `provider_evidence` | None |
 | `read_collection` | None |
 | `response_authority` | http-json |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 60cebda6865bee636c94554b29e742fda4bde6bbfa1b36a6bf7cbd8b0fa51fd9 -->
+
+```json
+{
+  "application": "stove0",
+  "classification": "standard-tool/protocol",
+  "cli_commands": [
+    "health"
+  ],
+  "client": "Stove0ApiClient",
+  "method": "GET",
+  "operation_id": "health_ready",
+  "path": "/health/ready",
+  "provider_evidence": null,
+  "read_collection": null,
+  "response_authority": "http-json"
+}
+```

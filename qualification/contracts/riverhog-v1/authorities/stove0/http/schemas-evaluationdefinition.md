@@ -29,6 +29,13 @@
 - Proof: `make operation-qualification`
 - Proof: `make compose-smoke`
 
+## Referenced contract dossiers
+
+- [schemas: CollectionRootRef](schemas-collectionrootref.md)
+- [schemas: EvaluationMatrix](schemas-evaluationmatrix.md)
+- [schemas: JsonValue](schemas-jsonvalue.md)
+- [schemas: RecipeRef](schemas-reciperef.md)
+
 ## Extent decisions
 
 | Dimension | Unit | Policy | Bounds/reason |
@@ -37,7 +44,7 @@
 | length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
 | cardinality | items | `operational_policy` | maximum=None, reason=no-declared-semantic-maximum |
 
-## Contract
+## Contract summary
 
 - `title`: EvaluationDefinition
 - `type`: object
@@ -53,3 +60,66 @@
 | `matrix` | yes | #/components/schemas/EvaluationMatrix |  |
 | `purpose` | no | string |  |
 | `recipe` | yes | #/components/schemas/RecipeRef |  |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 85776fbbcc3b08f22d7521fb69c1035be3f997f9c685220d179af7cd994e096a -->
+
+```json
+{
+  "additionalProperties": false,
+  "properties": {
+    "common_intent": {
+      "additionalProperties": {
+        "$ref": "#/components/schemas/JsonValue"
+      },
+      "title": "Common Intent",
+      "type": "object"
+    },
+    "evaluation_id": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Evaluation Id",
+      "type": "string"
+    },
+    "format": {
+      "const": "stove0-evaluation-definition/v1",
+      "default": "stove0-evaluation-definition/v1",
+      "title": "Format",
+      "type": "string"
+    },
+    "inputs": {
+      "items": {
+        "$ref": "#/components/schemas/CollectionRootRef"
+      },
+      "minItems": 1,
+      "title": "Inputs",
+      "type": "array"
+    },
+    "matrix": {
+      "$ref": "#/components/schemas/EvaluationMatrix"
+    },
+    "purpose": {
+      "default": "evaluation",
+      "enum": [
+        "trial",
+        "evaluation"
+      ],
+      "title": "Purpose",
+      "type": "string"
+    },
+    "recipe": {
+      "$ref": "#/components/schemas/RecipeRef"
+    }
+  },
+  "required": [
+    "recipe",
+    "inputs",
+    "matrix",
+    "evaluation_id"
+  ],
+  "title": "EvaluationDefinition",
+  "type": "object"
+}
+```

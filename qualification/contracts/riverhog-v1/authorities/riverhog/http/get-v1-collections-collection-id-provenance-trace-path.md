@@ -33,6 +33,12 @@
 
 - [Operation parity: trace_collection_file_provenance](../operation/operation-parity-trace-collection-file-provenance.md)
 
+## Referenced contract dossiers
+
+- [schemas: BrowsePageToken](schemas-browsepagetoken.md)
+- [schemas: CollectionFileProvenanceTraceOut](schemas-collectionfileprovenancetraceout.md)
+- [schemas: ErrorResponse](schemas-errorresponse.md)
+
 ## Extent decisions
 
 | Dimension | Unit | Policy | Bounds/reason |
@@ -41,7 +47,7 @@
 | length | characters | `contract_max` | maximum=4096, minimum=1, reason=schema-maximum |
 | value | schema-value | `contract_max` | maximum=100, minimum=1, reason=schema-maximum |
 
-## Contract
+## Contract summary
 
 - `operationId`: trace_collection_file_provenance
 - `summary`: Trace Collection File Provenance
@@ -67,3 +73,195 @@
 | `404` | Not Found |
 | `409` | Conflict |
 | `500` | Internal Server Error |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: e2e17f498f9da3e41263e7867cb7d5dcca0565f76eb8b2ddb7c19543c2985659 -->
+
+```json
+{
+  "operationId": "trace_collection_file_provenance",
+  "parameters": [
+    {
+      "in": "path",
+      "name": "collection_id",
+      "required": true,
+      "schema": {
+        "minimum": 1,
+        "title": "Collection Id",
+        "type": "integer"
+      }
+    },
+    {
+      "in": "path",
+      "name": "path",
+      "required": true,
+      "schema": {
+        "allOf": [
+          {
+            "not": {
+              "pattern": "(?:^|/)\\.{1,2}(?:/|$)"
+            }
+          },
+          {
+            "not": {
+              "pattern": "^\\s|\\s$"
+            }
+          }
+        ],
+        "format": "riverhog-canonical-relpath-v1",
+        "maxLength": 4096,
+        "minLength": 1,
+        "pattern": "^[^/\\\\]+(?:/[^/\\\\]+)*$",
+        "title": "Path",
+        "type": "string",
+        "x-unicode-normalization": "NFC"
+      }
+    },
+    {
+      "in": "query",
+      "name": "page_size",
+      "required": false,
+      "schema": {
+        "default": 25,
+        "maximum": 100,
+        "minimum": 1,
+        "title": "Page Size",
+        "type": "integer"
+      }
+    },
+    {
+      "in": "query",
+      "name": "page_token",
+      "required": false,
+      "schema": {
+        "anyOf": [
+          {
+            "$ref": "#/components/schemas/BrowsePageToken"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "title": "Page Token"
+      }
+    }
+  ],
+  "responses": {
+    "200": {
+      "content": {
+        "application/json": {
+          "schema": {
+            "$ref": "#/components/schemas/CollectionFileProvenanceTraceOut"
+          }
+        }
+      },
+      "description": "Successful Response"
+    },
+    "400": {
+      "content": {
+        "application/json": {
+          "schema": {
+            "$ref": "#/components/schemas/ErrorResponse"
+          }
+        }
+      },
+      "description": "Bad Request",
+      "x-riverhog-error-codes": [
+        "bad_request"
+      ]
+    },
+    "401": {
+      "content": {
+        "application/json": {
+          "schema": {
+            "$ref": "#/components/schemas/ErrorResponse"
+          }
+        }
+      },
+      "description": "Unauthorized",
+      "x-riverhog-error-codes": [
+        "unauthorized"
+      ]
+    },
+    "403": {
+      "content": {
+        "application/json": {
+          "schema": {
+            "$ref": "#/components/schemas/ErrorResponse"
+          }
+        }
+      },
+      "description": "Forbidden",
+      "x-riverhog-error-codes": [
+        "forbidden"
+      ]
+    },
+    "404": {
+      "content": {
+        "application/json": {
+          "schema": {
+            "$ref": "#/components/schemas/ErrorResponse"
+          }
+        }
+      },
+      "description": "Not Found",
+      "x-riverhog-error-codes": [
+        "not_found"
+      ]
+    },
+    "409": {
+      "content": {
+        "application/json": {
+          "schema": {
+            "$ref": "#/components/schemas/ErrorResponse"
+          }
+        }
+      },
+      "description": "Conflict",
+      "x-riverhog-error-codes": [
+        "invalid_state"
+      ]
+    },
+    "500": {
+      "content": {
+        "application/json": {
+          "schema": {
+            "$ref": "#/components/schemas/ErrorResponse"
+          }
+        }
+      },
+      "description": "Internal Server Error",
+      "x-riverhog-error-codes": [
+        "internal_error"
+      ]
+    }
+  },
+  "security": [
+    {
+      "HTTPBearer": []
+    }
+  ],
+  "summary": "Trace Collection File Provenance",
+  "tags": [
+    "provenance"
+  ],
+  "x-riverhog-permission-requirements": [
+    {
+      "any_of": [
+        "provenance:read"
+      ]
+    }
+  ],
+  "x-riverhog-read-collection": {
+    "default_page_size": 25,
+    "kind": "mutable-browse",
+    "maximum_page_size": 100,
+    "next_page_token_field": "next_page_token",
+    "page_size_parameter": "page_size",
+    "page_token_parameter": "page_token"
+  }
+}
+```

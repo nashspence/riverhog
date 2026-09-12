@@ -28,6 +28,26 @@
 - Proof: `make dist-smoke`
 - Proof: `make operation-qualification`
 
-## Contract
+## Contract summary
 
 - Parser name: `provider`
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+### `/external_contract/cli/gogurt/commands/provider/name`
+
+<!-- exact-contract-value: ae2250bb2563882a230d0bc3a65275643452aa6461380b2508ef449e9d752f91 -->
+
+```json
+"provider"
+```
+
+### `/external_contract/cli/gogurt/commands/provider/parameters`
+
+<!-- exact-contract-value: 4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945 -->
+
+```json
+[]
+```

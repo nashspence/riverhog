@@ -29,6 +29,11 @@
 - Proof: `make operation-qualification`
 - Proof: `make compose-smoke`
 
+## Referenced contract dossiers
+
+- [schemas: ArchiveStoreName](schemas-archivestorename.md)
+- [schemas: CollectionId](schemas-collectionid.md)
+
 ## Extent decisions
 
 | Dimension | Unit | Policy | Bounds/reason |
@@ -36,7 +41,7 @@
 | encoded-size | bytes | `contract_max` | maximum=4096, reason=bounded-lifecycle-event-context |
 | cardinality | entries | `operational_policy` | maximum=None, reason=no-declared-semantic-maximum |
 
-## Contract
+## Contract summary
 
 - `title`: CreateArchiveCopyRequest
 - `type`: object
@@ -49,3 +54,56 @@
 | `destination_store` | yes | #/components/schemas/ArchiveStoreName |  |
 | `event_context` | no | object (2 fields) |  |
 | `source_store` | no | object (1 fields) |  |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: a5493e5019fc9c586c040f7d02199813484647c01b099208fdf016ff7d98b5c7 -->
+
+```json
+{
+  "additionalProperties": false,
+  "properties": {
+    "collection_id": {
+      "$ref": "#/components/schemas/CollectionId"
+    },
+    "destination_store": {
+      "$ref": "#/components/schemas/ArchiveStoreName"
+    },
+    "event_context": {
+      "anyOf": [
+        {
+          "additionalProperties": true,
+          "type": "object",
+          "x-riverhog-encoded-bytes-max": 4096,
+          "x-riverhog-extent": {
+            "policy": "contract_max",
+            "reason": "bounded-lifecycle-event-context"
+          }
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Event Context"
+    },
+    "source_store": {
+      "anyOf": [
+        {
+          "$ref": "#/components/schemas/ArchiveStoreName"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    }
+  },
+  "required": [
+    "destination_store",
+    "collection_id"
+  ],
+  "title": "CreateArchiveCopyRequest",
+  "type": "object"
+}
+```

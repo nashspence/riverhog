@@ -27,7 +27,12 @@
 - Proof: `make operation-qualification`
 - Proof: `make compose-smoke`
 
-## Contract
+## Referenced contract dossiers
+
+- [schemas: ArchiveStoreName](schemas-archivestorename.md)
+- [schemas: CollectionId](schemas-collectionid.md)
+
+## Contract summary
 
 - `title`: ArchiveCopyRetirementRequest
 - `type`: object
@@ -38,3 +43,29 @@
 |---|---:|---|---|
 | `collection_id` | yes | #/components/schemas/CollectionId |  |
 | `store` | yes | #/components/schemas/ArchiveStoreName |  |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 4447a83a2a2fdddbbfa03921214e61db3f906add5b347f352d0fe01d5d0327f6 -->
+
+```json
+{
+  "additionalProperties": false,
+  "properties": {
+    "collection_id": {
+      "$ref": "#/components/schemas/CollectionId"
+    },
+    "store": {
+      "$ref": "#/components/schemas/ArchiveStoreName"
+    }
+  },
+  "required": [
+    "collection_id",
+    "store"
+  ],
+  "title": "ArchiveCopyRetirementRequest",
+  "type": "object"
+}
+```

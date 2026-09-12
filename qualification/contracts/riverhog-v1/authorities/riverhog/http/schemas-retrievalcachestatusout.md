@@ -28,13 +28,18 @@
 - Proof: `make operation-qualification`
 - Proof: `make compose-smoke`
 
+## Referenced contract dossiers
+
+- [schemas: RetrievalCachePolicyOut](schemas-retrievalcachepolicyout.md)
+- [schemas: RetrievalCacheStoreStatusOut](schemas-retrievalcachestorestatusout.md)
+
 ## Extent decisions
 
 | Dimension | Unit | Policy | Bounds/reason |
 |---|---|---|---|
 | cardinality | items | `operational_policy` | maximum=None, reason=no-declared-semantic-maximum |
 
-## Contract
+## Contract summary
 
 - `title`: RetrievalCacheStatusOut
 - `type`: object
@@ -51,3 +56,63 @@
 | `stored_bytes` | yes | integer |  |
 | `stores` | yes | array |  |
 | `unleased_objects` | yes | integer |  |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 61092d75a6bc2c2885c00ee6210558fcbf09b31f3414181c97fc286a499c4073 -->
+
+```json
+{
+  "additionalProperties": false,
+  "properties": {
+    "configured": {
+      "title": "Configured",
+      "type": "boolean"
+    },
+    "new_archive_enabled": {
+      "title": "New Archive Enabled",
+      "type": "boolean"
+    },
+    "objects": {
+      "title": "Objects",
+      "type": "integer"
+    },
+    "policy": {
+      "$ref": "#/components/schemas/RetrievalCachePolicyOut"
+    },
+    "protected_objects": {
+      "title": "Protected Objects",
+      "type": "integer"
+    },
+    "stored_bytes": {
+      "title": "Stored Bytes",
+      "type": "integer"
+    },
+    "stores": {
+      "items": {
+        "$ref": "#/components/schemas/RetrievalCacheStoreStatusOut"
+      },
+      "title": "Stores",
+      "type": "array"
+    },
+    "unleased_objects": {
+      "title": "Unleased Objects",
+      "type": "integer"
+    }
+  },
+  "required": [
+    "configured",
+    "new_archive_enabled",
+    "objects",
+    "stored_bytes",
+    "protected_objects",
+    "unleased_objects",
+    "stores",
+    "policy"
+  ],
+  "title": "RetrievalCacheStatusOut",
+  "type": "object"
+}
+```

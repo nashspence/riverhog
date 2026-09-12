@@ -33,7 +33,7 @@
 - [POST /v1/collection-upload-sessions/{collection_id}/raw-part-digests](../http/post-v1-collection-upload-sessions-collection-id-raw-part-digests.md)
 - [piggity collection upload start](../../piggity/cli/piggity-collection-upload-start.md)
 
-## Contract
+## Contract summary
 
 | Concern | Contract |
 |---|---|
@@ -47,3 +47,26 @@
 | `provider_evidence` | provider-qualification:#442 |
 | `read_collection` | None |
 | `response_authority` | canonical-document |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: cc08b386800cd3843d23ac80251ca562cf39b003222d00e3af2ca2e8b373d6e1 -->
+
+```json
+{
+  "application": "riverhog",
+  "classification": "client-only-primitive",
+  "cli_commands": [
+    "collection upload start"
+  ],
+  "client": "ApiClient",
+  "method": "POST",
+  "operation_id": "register_collection_upload_session_raw_part_digests",
+  "path": "/v1/collection-upload-sessions/{collection_id}/raw-part-digests",
+  "provider_evidence": "provider-qualification:#442",
+  "read_collection": null,
+  "response_authority": "canonical-document"
+}
+```

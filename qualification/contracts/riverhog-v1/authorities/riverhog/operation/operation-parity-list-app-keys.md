@@ -33,7 +33,7 @@
 - [GET /v1/apps/{app}/keys](../http/get-v1-apps-app-keys.md)
 - [piggity app key list](../../piggity/cli/piggity-app-key-list.md)
 
-## Contract
+## Contract summary
 
 | Concern | Contract |
 |---|---|
@@ -47,3 +47,33 @@
 | `provider_evidence` | None |
 | `read_collection` | {"default_page_size": 25, "kind": "mutable-browse", "maximum_page_size": 100, "next_page_token_field": "next_page_token", "page_size_parameter": "page_size", "page_token_parameter": "page_token"} |
 | `response_authority` | http-json |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 885a61841dc5109beb79feaf2d8bf9fba3cec47b56c4380588e5afb89c103666 -->
+
+```json
+{
+  "application": "riverhog",
+  "classification": "human-cli+json",
+  "cli_commands": [
+    "app key list"
+  ],
+  "client": "ApiClient",
+  "method": "GET",
+  "operation_id": "list_app_keys",
+  "path": "/v1/apps/{app}/keys",
+  "provider_evidence": null,
+  "read_collection": {
+    "default_page_size": 25,
+    "kind": "mutable-browse",
+    "maximum_page_size": 100,
+    "next_page_token_field": "next_page_token",
+    "page_size_parameter": "page_size",
+    "page_token_parameter": "page_token"
+  },
+  "response_authority": "http-json"
+}
+```

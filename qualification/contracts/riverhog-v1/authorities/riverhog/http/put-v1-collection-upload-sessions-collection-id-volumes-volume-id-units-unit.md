@@ -31,7 +31,12 @@
 
 - [Operation parity: put_collection_upload_session_unit](../operation/operation-parity-put-collection-upload-session-unit.md)
 
-## Contract
+## Referenced contract dossiers
+
+- [schemas: CollectionUploadUnitWorkDocument](schemas-collectionuploadunitworkdocument.md)
+- [schemas: ErrorResponse](schemas-errorresponse.md)
+
+## Contract summary
 
 - `operationId`: put_collection_upload_session_unit
 - `summary`: Put Collection Upload Session Unit
@@ -63,3 +68,200 @@
 | `409` | Conflict |
 | `411` | Length Required |
 | `500` | Internal Server Error |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: bee866fb9f1ae678eaaa1e6d06eeb6d83778096d28cf742e850e6f73d99f405e -->
+
+```json
+{
+  "operationId": "put_collection_upload_session_unit",
+  "parameters": [
+    {
+      "in": "path",
+      "name": "collection_id",
+      "required": true,
+      "schema": {
+        "minimum": 1,
+        "title": "Collection Id",
+        "type": "integer"
+      }
+    },
+    {
+      "in": "path",
+      "name": "volume_id",
+      "required": true,
+      "schema": {
+        "pattern": "^(?:pack|segment)-[0-9a-f]{64}$",
+        "title": "Volume Id",
+        "type": "string"
+      }
+    },
+    {
+      "in": "path",
+      "name": "unit",
+      "required": true,
+      "schema": {
+        "minimum": 0,
+        "title": "Unit",
+        "type": "integer"
+      }
+    },
+    {
+      "in": "header",
+      "name": "If-Match",
+      "required": true,
+      "schema": {
+        "pattern": "^\"[0-9a-f]{64}\"$",
+        "title": "If-Match",
+        "type": "string"
+      }
+    },
+    {
+      "description": "Exact request-body length in bytes.",
+      "in": "header",
+      "name": "Content-Length",
+      "required": true,
+      "schema": {
+        "minimum": 0,
+        "type": "integer"
+      }
+    }
+  ],
+  "requestBody": {
+    "content": {
+      "application/octet-stream": {
+        "schema": {
+          "contentMediaType": "application/octet-stream",
+          "format": "binary",
+          "title": "Content",
+          "type": "string"
+        }
+      }
+    },
+    "required": true
+  },
+  "responses": {
+    "200": {
+      "content": {
+        "application/json": {
+          "schema": {
+            "$ref": "#/components/schemas/CollectionUploadUnitWorkDocument"
+          }
+        }
+      },
+      "description": "Successful Response"
+    },
+    "400": {
+      "content": {
+        "application/json": {
+          "schema": {
+            "$ref": "#/components/schemas/ErrorResponse"
+          }
+        }
+      },
+      "description": "Bad Request",
+      "x-riverhog-error-codes": [
+        "bad_request"
+      ]
+    },
+    "401": {
+      "content": {
+        "application/json": {
+          "schema": {
+            "$ref": "#/components/schemas/ErrorResponse"
+          }
+        }
+      },
+      "description": "Unauthorized",
+      "x-riverhog-error-codes": [
+        "unauthorized"
+      ]
+    },
+    "403": {
+      "content": {
+        "application/json": {
+          "schema": {
+            "$ref": "#/components/schemas/ErrorResponse"
+          }
+        }
+      },
+      "description": "Forbidden",
+      "x-riverhog-error-codes": [
+        "forbidden"
+      ]
+    },
+    "404": {
+      "content": {
+        "application/json": {
+          "schema": {
+            "$ref": "#/components/schemas/ErrorResponse"
+          }
+        }
+      },
+      "description": "Not Found",
+      "x-riverhog-error-codes": [
+        "not_found"
+      ]
+    },
+    "409": {
+      "content": {
+        "application/json": {
+          "schema": {
+            "$ref": "#/components/schemas/ErrorResponse"
+          }
+        }
+      },
+      "description": "Conflict",
+      "x-riverhog-error-codes": [
+        "conflict"
+      ]
+    },
+    "411": {
+      "content": {
+        "application/json": {
+          "schema": {
+            "$ref": "#/components/schemas/ErrorResponse"
+          }
+        }
+      },
+      "description": "Length Required",
+      "x-riverhog-error-codes": [
+        "length_required"
+      ]
+    },
+    "500": {
+      "content": {
+        "application/json": {
+          "schema": {
+            "$ref": "#/components/schemas/ErrorResponse"
+          }
+        }
+      },
+      "description": "Internal Server Error",
+      "x-riverhog-error-codes": [
+        "internal_error"
+      ]
+    }
+  },
+  "security": [
+    {
+      "HTTPBearer": []
+    }
+  ],
+  "summary": "Put Collection Upload Session Unit",
+  "tags": [
+    "collections"
+  ],
+  "x-riverhog-interface": "client-only-primitive",
+  "x-riverhog-permission-requirements": [
+    {
+      "any_of": [
+        "collections:create"
+      ]
+    }
+  ]
+}
+```

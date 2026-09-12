@@ -4,6 +4,13 @@
 
 Contract elements: **5** · Extent decisions: **0**
 
+| Family | Count |
+|---|---:|
+| `health` | 2 |
+| `run` | 1 |
+| `sources` | 1 |
+| `status` | 1 |
+
 | Policy | Count |
 |---|---:|
 | `compatibility/cli/v1` | 5 |

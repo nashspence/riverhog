@@ -33,7 +33,7 @@
 - [GET /v1/download-quota](../http/get-v1-download-quota.md)
 - [piggity app key quota show](../../piggity/cli/piggity-app-key-quota-show.md)
 
-## Contract
+## Contract summary
 
 | Concern | Contract |
 |---|---|
@@ -47,3 +47,26 @@
 | `provider_evidence` | None |
 | `read_collection` | None |
 | `response_authority` | http-json |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 1934e1e5223ce0d568d120ef1049c3ad248db06f41904936bc51db603c4ede52 -->
+
+```json
+{
+  "application": "riverhog",
+  "classification": "human-cli+json",
+  "cli_commands": [
+    "app key quota show"
+  ],
+  "client": "ApiClient",
+  "method": "GET",
+  "operation_id": "get_download_quota",
+  "path": "/v1/download-quota",
+  "provider_evidence": null,
+  "read_collection": null,
+  "response_authority": "http-json"
+}
+```

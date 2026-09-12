@@ -4,6 +4,17 @@
 
 Contract elements: **21** · Extent decisions: **55**
 
+| Family | Count |
+|---|---:|
+| `list` | 1 |
+| `listener` | 8 |
+| `mounts` | 1 |
+| `provider` | 7 |
+| `root` | 1 |
+| `run` | 1 |
+| `watch` | 1 |
+| `write` | 1 |
+
 | Policy | Count |
 |---|---:|
 | `compatibility/cli/v1` | 21 |

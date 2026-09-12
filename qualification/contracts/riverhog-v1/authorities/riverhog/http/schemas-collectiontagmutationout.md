@@ -28,6 +28,11 @@
 - Proof: `make operation-qualification`
 - Proof: `make compose-smoke`
 
+## Referenced contract dossiers
+
+- [schemas: CollectionId](schemas-collectionid.md)
+- [schemas: CollectionTag](schemas-collectiontag.md)
+
 ## Extent decisions
 
 | Dimension | Unit | Policy | Bounds/reason |
@@ -37,7 +42,7 @@
 | length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
 | length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
 
-## Contract
+## Contract summary
 
 - `title`: CollectionTagMutationOut
 - `type`: object
@@ -56,3 +61,92 @@
 | `state` | yes | string |  |
 | `tag` | yes | #/components/schemas/CollectionTag |  |
 | `tag_set_identity` | yes | string |  |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 9b998f00d5a88ea2831690b43733ac89b267e4a3befa8f624f559bcf642a0509 -->
+
+```json
+{
+  "additionalProperties": false,
+  "properties": {
+    "action": {
+      "enum": [
+        "add",
+        "remove"
+      ],
+      "title": "Action",
+      "type": "string"
+    },
+    "changed": {
+      "title": "Changed",
+      "type": "boolean"
+    },
+    "collection_id": {
+      "$ref": "#/components/schemas/CollectionId"
+    },
+    "head_identity": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Head Identity",
+      "type": "string"
+    },
+    "operation_id": {
+      "minLength": 1,
+      "pattern": "^\\S(?:[\\s\\S]*\\S)?$",
+      "title": "Operation Id",
+      "type": "string"
+    },
+    "revision": {
+      "maximum": 9007199254740991,
+      "minimum": 1,
+      "title": "Revision",
+      "type": "integer"
+    },
+    "root_sha256": {
+      "anyOf": [
+        {
+          "pattern": "^[0-9a-f]{64}$",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Root Sha256"
+    },
+    "state": {
+      "enum": [
+        "pending",
+        "retry_wait",
+        "succeeded"
+      ],
+      "title": "State",
+      "type": "string"
+    },
+    "tag": {
+      "$ref": "#/components/schemas/CollectionTag"
+    },
+    "tag_set_identity": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Tag Set Identity",
+      "type": "string"
+    }
+  },
+  "required": [
+    "collection_id",
+    "operation_id",
+    "action",
+    "tag",
+    "changed",
+    "revision",
+    "root_sha256",
+    "tag_set_identity",
+    "head_identity",
+    "state"
+  ],
+  "title": "CollectionTagMutationOut",
+  "type": "object"
+}
+```

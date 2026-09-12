@@ -28,6 +28,10 @@
 - Proof: `make operation-qualification`
 - Proof: `make compose-smoke`
 
+## Referenced contract dossiers
+
+- [schemas: SchedulerFailure](schemas-schedulerfailure.md)
+
 ## Extent decisions
 
 | Dimension | Unit | Policy | Bounds/reason |
@@ -35,7 +39,7 @@
 | cardinality | items | `operational_policy` | maximum=None, reason=no-declared-semantic-maximum |
 | cardinality | items | `operational_policy` | maximum=None, reason=no-declared-semantic-maximum |
 
-## Contract
+## Contract summary
 
 - `title`: AdmissionRun
 - `type`: object
@@ -46,3 +50,37 @@
 |---|---:|---|---|
 | `failures` | no | array |  |
 | `progressed` | yes | array |  |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 0bbd87e19c427d12cb899be4bfee0310f6a65555bc5c9dd350752e31f181080e -->
+
+```json
+{
+  "additionalProperties": false,
+  "properties": {
+    "failures": {
+      "default": [],
+      "items": {
+        "$ref": "#/components/schemas/SchedulerFailure"
+      },
+      "title": "Failures",
+      "type": "array"
+    },
+    "progressed": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Progressed",
+      "type": "array"
+    }
+  },
+  "required": [
+    "progressed"
+  ],
+  "title": "AdmissionRun",
+  "type": "object"
+}
+```

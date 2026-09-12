@@ -41,7 +41,7 @@
 | value | cli-value | `contract_max` | maximum=100, minimum=1, reason=schema-maximum |
 | cardinality | values-per-occurrence | `fixed` | maximum=1, minimum=1, reason=fixed-command-argument-arity |
 
-## Contract
+## Contract summary
 
 - Parser name: `run`
 
@@ -51,3 +51,64 @@
 |---|---|---:|---|---|
 | `role` | TyperOption | no | {'class': 'typer._click.types.StringParamType', 'name': 'text'} | --role |
 | `work_limit` | TyperOption | no | {'class': 'typer._click.types.IntRange', 'maximum': 100, 'minimum': 1, 'name': 'integer range'} | --work-limit |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+### `/external_contract/cli/stove0/commands/scheduler/commands/run/name`
+
+<!-- exact-contract-value: 5e87f618bd8837e87070ae7f83753c6a23ff095f43de6ededcd38ae535031c29 -->
+
+```json
+"run"
+```
+
+### `/external_contract/cli/stove0/commands/scheduler/commands/run/parameters`
+
+<!-- exact-contract-value: 198dc1e55bab3f6ecd224ceb7b0ff54337834c094dafda254b965b16a742f4f1 -->
+
+```json
+[
+  {
+    "count": false,
+    "default": "combined",
+    "envvar": null,
+    "is_flag": false,
+    "kind": "TyperOption",
+    "multiple": false,
+    "name": "role",
+    "nargs": 1,
+    "options": [
+      "--role"
+    ],
+    "required": false,
+    "secondary_options": [],
+    "type": {
+      "class": "typer._click.types.StringParamType",
+      "name": "text"
+    }
+  },
+  {
+    "count": false,
+    "default": 25,
+    "envvar": null,
+    "is_flag": false,
+    "kind": "TyperOption",
+    "multiple": false,
+    "name": "work_limit",
+    "nargs": 1,
+    "options": [
+      "--work-limit"
+    ],
+    "required": false,
+    "secondary_options": [],
+    "type": {
+      "class": "typer._click.types.IntRange",
+      "maximum": 100,
+      "minimum": 1,
+      "name": "integer range"
+    }
+  }
+]
+```

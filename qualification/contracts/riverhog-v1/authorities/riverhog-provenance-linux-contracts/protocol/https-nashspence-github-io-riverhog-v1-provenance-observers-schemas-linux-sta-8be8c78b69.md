@@ -35,7 +35,7 @@
 | cardinality | items | `extension_owned` | maximum=None, reason=independently-versioned-extension-authority |
 | cardinality | items | `extension_owned` | maximum=None, reason=independently-versioned-extension-authority |
 
-## Contract
+## Contract summary
 
 - `$id`: https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/linux-statx-attributes.json
 - `type`: object
@@ -48,3 +48,48 @@
 | `attributes_mask` | yes | integer |  |
 | `set_names` | yes | array |  |
 | `supported_names` | yes | array |  |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 56fc562c3d49ff461fc7c95a24a26dc1c57814bd8fce8bbaec9ceb2eff4f9351 -->
+
+```json
+{
+  "$id": "https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/linux-statx-attributes.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "attributes": {
+      "minimum": 0,
+      "type": "integer"
+    },
+    "attributes_mask": {
+      "minimum": 0,
+      "type": "integer"
+    },
+    "set_names": {
+      "items": {
+        "type": "string"
+      },
+      "type": "array",
+      "uniqueItems": true
+    },
+    "supported_names": {
+      "items": {
+        "type": "string"
+      },
+      "type": "array",
+      "uniqueItems": true
+    }
+  },
+  "required": [
+    "attributes",
+    "attributes_mask",
+    "set_names",
+    "supported_names"
+  ],
+  "type": "object"
+}
+```

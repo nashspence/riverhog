@@ -27,7 +27,11 @@
 - Proof: `make operation-qualification`
 - Proof: `make compose-smoke`
 
-## Contract
+## Referenced contract dossiers
+
+- [schemas: CollectionUploadState](schemas-collectionuploadstate.md)
+
+## Contract summary
 
 - `title`: CollectionUploadListFiltersOut
 - `type`: object
@@ -37,3 +41,32 @@
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | `state` | yes | object (1 fields) |  |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 2367deaea2a301a7886ae46cf9df477060428a27b716384f27d61e80cd32b82c -->
+
+```json
+{
+  "additionalProperties": false,
+  "properties": {
+    "state": {
+      "anyOf": [
+        {
+          "$ref": "#/components/schemas/CollectionUploadState"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    }
+  },
+  "required": [
+    "state"
+  ],
+  "title": "CollectionUploadListFiltersOut",
+  "type": "object"
+}
+```

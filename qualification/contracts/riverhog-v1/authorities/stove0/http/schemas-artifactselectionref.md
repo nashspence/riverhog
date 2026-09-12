@@ -34,7 +34,7 @@
 |---|---|---|---|
 | length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
 
-## Contract
+## Contract summary
 
 - `title`: ArtifactSelectionRef
 - `description`: Closed reference to a separately retained selection document.
@@ -47,3 +47,40 @@
 | `artifact_count` | yes | integer |  |
 | `selection_sha256` | yes | string |  |
 | `total_bytes` | yes | integer |  |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: e8cd0eea202ee0c8f3d19552216aa1b0d50521d431df3a185e911bfe1c3aa4c7 -->
+
+```json
+{
+  "additionalProperties": false,
+  "description": "Closed reference to a separately retained selection document.",
+  "properties": {
+    "artifact_count": {
+      "minimum": 1,
+      "title": "Artifact Count",
+      "type": "integer"
+    },
+    "selection_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Selection Sha256",
+      "type": "string"
+    },
+    "total_bytes": {
+      "minimum": 0,
+      "title": "Total Bytes",
+      "type": "integer"
+    }
+  },
+  "required": [
+    "selection_sha256",
+    "artifact_count",
+    "total_bytes"
+  ],
+  "title": "ArtifactSelectionRef",
+  "type": "object"
+}
+```

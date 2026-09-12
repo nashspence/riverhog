@@ -29,6 +29,11 @@
 - Proof: `make operation-qualification`
 - Proof: `make compose-smoke`
 
+## Referenced contract dossiers
+
+- [schemas: CollectionDescription](schemas-collectiondescription.md)
+- [schemas: CollectionId](schemas-collectionid.md)
+
 ## Extent decisions
 
 | Dimension | Unit | Policy | Bounds/reason |
@@ -42,7 +47,7 @@
 | value | schema-value | `contract_max` | maximum=9007199254740991, minimum=1, reason=schema-maximum |
 | length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
 
-## Contract
+## Contract summary
 
 - `title`: CollectionSummaryOut
 - `type`: object
@@ -68,3 +73,130 @@
 | `tag_publication` | yes | string |  |
 | `tag_revision` | yes | integer |  |
 | `tag_set_identity` | yes | string |  |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 4cd5a125d37eac748c8a3bb9e6b711adaefc92edcc8b19d4485cdff4b505e975 -->
+
+```json
+{
+  "additionalProperties": false,
+  "properties": {
+    "archive_copy_count": {
+      "minimum": 0,
+      "title": "Archive Copy Count",
+      "type": "integer"
+    },
+    "archive_root_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Archive Root Sha256",
+      "type": "string"
+    },
+    "bytes": {
+      "title": "Bytes",
+      "type": "integer"
+    },
+    "content_identity": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Content Identity",
+      "type": "string"
+    },
+    "created_at": {
+      "title": "Created At",
+      "type": "string"
+    },
+    "description": {
+      "anyOf": [
+        {
+          "$ref": "#/components/schemas/CollectionDescription"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "description_identity": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Description Identity",
+      "type": "string"
+    },
+    "description_publication": {
+      "enum": [
+        "not_required",
+        "current",
+        "reconciling"
+      ],
+      "title": "Description Publication",
+      "type": "string"
+    },
+    "description_revision": {
+      "maximum": 9007199254740991,
+      "minimum": 0,
+      "title": "Description Revision",
+      "type": "integer"
+    },
+    "encryption_format": {
+      "title": "Encryption Format",
+      "type": "string"
+    },
+    "files": {
+      "title": "Files",
+      "type": "integer"
+    },
+    "id": {
+      "$ref": "#/components/schemas/CollectionId"
+    },
+    "passphrase_id": {
+      "pattern": "^[A-Za-z0-9_-]{16,128}$",
+      "title": "Passphrase Id",
+      "type": "string"
+    },
+    "remote_storage_bytes": {
+      "title": "Remote Storage Bytes",
+      "type": "integer"
+    },
+    "tag_publication": {
+      "enum": [
+        "current",
+        "reconciling"
+      ],
+      "title": "Tag Publication",
+      "type": "string"
+    },
+    "tag_revision": {
+      "maximum": 9007199254740991,
+      "minimum": 1,
+      "title": "Tag Revision",
+      "type": "integer"
+    },
+    "tag_set_identity": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Tag Set Identity",
+      "type": "string"
+    }
+  },
+  "required": [
+    "id",
+    "created_at",
+    "description",
+    "description_revision",
+    "description_identity",
+    "description_publication",
+    "tag_revision",
+    "tag_set_identity",
+    "tag_publication",
+    "content_identity",
+    "archive_root_sha256",
+    "encryption_format",
+    "passphrase_id",
+    "files",
+    "bytes",
+    "remote_storage_bytes",
+    "archive_copy_count"
+  ],
+  "title": "CollectionSummaryOut",
+  "type": "object"
+}
+```

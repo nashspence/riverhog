@@ -29,6 +29,10 @@
 - Proof: `make operation-qualification`
 - Proof: `make compose-smoke`
 
+## Referenced contract dossiers
+
+- [schemas: ExactSetAuthorityDocument](schemas-exactsetauthoritydocument.md)
+
 ## Extent decisions
 
 | Dimension | Unit | Policy | Bounds/reason |
@@ -36,7 +40,7 @@
 | value | schema-value | `operational_policy` | maximum=None, reason=no-declared-semantic-maximum |
 | length | characters | `contract_max` | maximum=1000, minimum=1, reason=schema-maximum |
 
-## Contract
+## Contract summary
 
 - `title`: OutcomeSetDocument
 - `type`: object
@@ -49,3 +53,61 @@
 | `count` | yes | integer |  |
 | `failure` | no | object (2 fields) |  |
 | `state` | yes | string |  |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 8576ac8304a0301e16f6f81bd65ae1e818011299bdb236ea4db30959d6365dc5 -->
+
+```json
+{
+  "additionalProperties": false,
+  "properties": {
+    "authority": {
+      "anyOf": [
+        {
+          "$ref": "#/components/schemas/ExactSetAuthorityDocument"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "count": {
+      "minimum": 0,
+      "title": "Count",
+      "type": "integer"
+    },
+    "failure": {
+      "anyOf": [
+        {
+          "maxLength": 1000,
+          "minLength": 1,
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Failure"
+    },
+    "state": {
+      "enum": [
+        "receiving",
+        "sealing",
+        "sealed",
+        "failed"
+      ],
+      "title": "State",
+      "type": "string"
+    }
+  },
+  "required": [
+    "state",
+    "count"
+  ],
+  "title": "OutcomeSetDocument",
+  "type": "object"
+}
+```

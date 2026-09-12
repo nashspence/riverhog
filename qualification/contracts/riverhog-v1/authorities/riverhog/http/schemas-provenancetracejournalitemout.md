@@ -27,7 +27,11 @@
 - Proof: `make operation-qualification`
 - Proof: `make compose-smoke`
 
-## Contract
+## Referenced contract dossiers
+
+- [schemas: ProvenanceJournalOut](schemas-provenancejournalout.md)
+
+## Contract summary
 
 - `title`: ProvenanceTraceJournalItemOut
 - `type`: object
@@ -38,3 +42,31 @@
 |---|---:|---|---|
 | `journal` | yes | #/components/schemas/ProvenanceJournalOut |  |
 | `kind` | yes | string |  |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 60175e4be5e1b36c1cfca848086a59e5d4cca9f8a0223bc4e4d3c01d2fc1aaad -->
+
+```json
+{
+  "additionalProperties": false,
+  "properties": {
+    "journal": {
+      "$ref": "#/components/schemas/ProvenanceJournalOut"
+    },
+    "kind": {
+      "const": "journal",
+      "title": "Kind",
+      "type": "string"
+    }
+  },
+  "required": [
+    "kind",
+    "journal"
+  ],
+  "title": "ProvenanceTraceJournalItemOut",
+  "type": "object"
+}
+```

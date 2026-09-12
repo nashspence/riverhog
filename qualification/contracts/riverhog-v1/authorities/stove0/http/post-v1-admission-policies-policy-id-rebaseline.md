@@ -31,7 +31,12 @@
 
 - [Operation parity: rebaseline_admission_policy](../operation/operation-parity-rebaseline-admission-policy.md)
 
-## Contract
+## Referenced contract dossiers
+
+- [schemas: AdmissionPolicyStatus](schemas-admissionpolicystatus.md)
+- [schemas: ErrorResponse](schemas-errorresponse.md)
+
+## Contract summary
 
 - `operationId`: rebaseline_admission_policy
 - `summary`: Rebaseline Admission Policy
@@ -51,3 +56,94 @@
 | `401` | Unauthorized |
 | `403` | Forbidden |
 | `500` | Internal Server Error |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 438b32a39bf99f0d50510eadbe88270a08edeacc923a7cc64072a142ee402897 -->
+
+```json
+{
+  "operationId": "rebaseline_admission_policy",
+  "parameters": [
+    {
+      "in": "path",
+      "name": "policy_id",
+      "required": true,
+      "schema": {
+        "title": "Policy Id",
+        "type": "string"
+      }
+    }
+  ],
+  "responses": {
+    "200": {
+      "content": {
+        "application/json": {
+          "schema": {
+            "$ref": "#/components/schemas/AdmissionPolicyStatus"
+          }
+        }
+      },
+      "description": "Successful Response"
+    },
+    "400": {
+      "content": {
+        "application/json": {
+          "schema": {
+            "$ref": "#/components/schemas/ErrorResponse"
+          }
+        }
+      },
+      "description": "Bad Request",
+      "x-riverhog-error-codes": [
+        "bad_request"
+      ]
+    },
+    "401": {
+      "content": {
+        "application/json": {
+          "schema": {
+            "$ref": "#/components/schemas/ErrorResponse"
+          }
+        }
+      },
+      "description": "Unauthorized",
+      "x-riverhog-error-codes": [
+        "unauthorized"
+      ]
+    },
+    "403": {
+      "content": {
+        "application/json": {
+          "schema": {
+            "$ref": "#/components/schemas/ErrorResponse"
+          }
+        }
+      },
+      "description": "Forbidden",
+      "x-riverhog-error-codes": [
+        "forbidden"
+      ]
+    },
+    "500": {
+      "content": {
+        "application/json": {
+          "schema": {
+            "$ref": "#/components/schemas/ErrorResponse"
+          }
+        }
+      },
+      "description": "Internal Server Error",
+      "x-riverhog-error-codes": [
+        "internal_error"
+      ]
+    }
+  },
+  "summary": "Rebaseline Admission Policy",
+  "tags": [
+    "admissions"
+  ]
+}
+```

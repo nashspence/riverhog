@@ -33,7 +33,7 @@
 - [POST /v1/work/{work_id}/step](../http/post-v1-work-work-id-step.md)
 - [stove0 work step](../cli/stove0-work-step.md)
 
-## Contract
+## Contract summary
 
 | Concern | Contract |
 |---|---|
@@ -47,3 +47,26 @@
 | `provider_evidence` | None |
 | `read_collection` | None |
 | `response_authority` | operator-projection |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 45be03422b3371bbe34dd93762c950bdd8d1c8df72074a0c5b002015b989d586 -->
+
+```json
+{
+  "application": "stove0",
+  "classification": "human-cli+json",
+  "cli_commands": [
+    "work step"
+  ],
+  "client": "Stove0ApiClient",
+  "method": "POST",
+  "operation_id": "step_work",
+  "path": "/v1/work/{work_id}/step",
+  "provider_evidence": null,
+  "read_collection": null,
+  "response_authority": "operator-projection"
+}
+```

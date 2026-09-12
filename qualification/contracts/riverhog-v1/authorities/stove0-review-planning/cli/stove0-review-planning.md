@@ -28,6 +28,26 @@
 - Proof: `make dist-smoke`
 - Proof: `make operation-qualification`
 
-## Contract
+## Contract summary
 
 - Parser name: `stove0-review-planning`
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+### `/external_contract/cli/stove0-review-planning/name`
+
+<!-- exact-contract-value: 5d8ffc9dd6189ed095a3b442507a319ce446bbd6db2c2de9e1dea956495a0614 -->
+
+```json
+"stove0-review-planning"
+```
+
+### `/external_contract/cli/stove0-review-planning/parameters`
+
+<!-- exact-contract-value: 4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945 -->
+
+```json
+[]
+```

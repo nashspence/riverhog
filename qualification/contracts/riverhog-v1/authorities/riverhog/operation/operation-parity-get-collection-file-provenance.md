@@ -33,7 +33,7 @@
 - [GET /v1/collections/{collection_id}/provenance/files/{path}](../http/get-v1-collections-collection-id-provenance-files-path.md)
 - [piggity collection provenance show](../../piggity/cli/piggity-collection-provenance-show.md)
 
-## Contract
+## Contract summary
 
 | Concern | Contract |
 |---|---|
@@ -47,3 +47,26 @@
 | `provider_evidence` | None |
 | `read_collection` | None |
 | `response_authority` | http-json |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: dab9ba3f33afa5f2615082519fd2a680c2b8b310099bf62942db8b1bcb71f108 -->
+
+```json
+{
+  "application": "riverhog",
+  "classification": "human-cli+json",
+  "cli_commands": [
+    "collection provenance show"
+  ],
+  "client": "ApiClient",
+  "method": "GET",
+  "operation_id": "get_collection_file_provenance",
+  "path": "/v1/collections/{collection_id}/provenance/files/{path}",
+  "provider_evidence": null,
+  "read_collection": null,
+  "response_authority": "http-json"
+}
+```

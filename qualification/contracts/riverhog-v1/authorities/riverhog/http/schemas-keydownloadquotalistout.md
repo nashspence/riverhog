@@ -29,6 +29,14 @@
 - Proof: `make operation-qualification`
 - Proof: `make compose-smoke`
 
+## Referenced contract dossiers
+
+- [schemas: ApplicationName](schemas-applicationname.md)
+- [schemas: BrowsePageToken](schemas-browsepagetoken.md)
+- [schemas: DownloadQuotaSort](schemas-downloadquotasort.md)
+- [schemas: KeyDownloadQuotaOut](schemas-keydownloadquotaout.md)
+- [schemas: SortOrder](schemas-sortorder.md)
+
 ## Extent decisions
 
 | Dimension | Unit | Policy | Bounds/reason |
@@ -36,7 +44,7 @@
 | value | schema-value | `contract_max` | maximum=100, minimum=1, reason=schema-maximum |
 | cardinality | items | `segmented_no_total_max` | reason=bounded-route-page |
 
-## Contract
+## Contract summary
 
 - `title`: KeyDownloadQuotaListOut
 - `type`: object
@@ -53,3 +61,90 @@
 | `query` | yes | object (2 fields) |  |
 | `quotas` | yes | array |  |
 | `sort` | yes | #/components/schemas/DownloadQuotaSort |  |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: d68828b6fa1bc770b61fd004382ac4add988c481d8466b71720edb67bae1e564 -->
+
+```json
+{
+  "additionalProperties": false,
+  "properties": {
+    "active": {
+      "anyOf": [
+        {
+          "type": "boolean"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Active"
+    },
+    "app": {
+      "anyOf": [
+        {
+          "$ref": "#/components/schemas/ApplicationName"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "next_page_token": {
+      "anyOf": [
+        {
+          "$ref": "#/components/schemas/BrowsePageToken"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "order": {
+      "$ref": "#/components/schemas/SortOrder"
+    },
+    "page_size": {
+      "maximum": 100,
+      "minimum": 1,
+      "title": "Page Size",
+      "type": "integer"
+    },
+    "query": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Query"
+    },
+    "quotas": {
+      "items": {
+        "$ref": "#/components/schemas/KeyDownloadQuotaOut"
+      },
+      "title": "Quotas",
+      "type": "array"
+    },
+    "sort": {
+      "$ref": "#/components/schemas/DownloadQuotaSort"
+    }
+  },
+  "required": [
+    "page_size",
+    "next_page_token",
+    "sort",
+    "order",
+    "query",
+    "app",
+    "active",
+    "quotas"
+  ],
+  "title": "KeyDownloadQuotaListOut",
+  "type": "object"
+}
+```

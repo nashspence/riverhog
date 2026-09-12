@@ -28,13 +28,18 @@
 - Proof: `make operation-qualification`
 - Proof: `make compose-smoke`
 
+## Referenced contract dossiers
+
+- [schemas: LifecycleEventCursor](schemas-lifecycleeventcursor.md)
+- [schemas: RiverhogLifecycleEvent](schemas-riverhoglifecycleevent.md)
+
 ## Extent decisions
 
 | Dimension | Unit | Policy | Bounds/reason |
 |---|---|---|---|
 | cardinality | items | `segmented_no_total_max` | reason=bounded-route-page |
 
-## Contract
+## Contract summary
 
 - `title`: RiverhogEventPage
 - `type`: object
@@ -46,3 +51,38 @@
 | `events` | yes | array |  |
 | `has_more` | yes | boolean |  |
 | `next_cursor` | yes | #/components/schemas/LifecycleEventCursor |  |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 208d1e3875fbbe12f9fc7bac4ed788355006eb1344dfe8490a86a725fb0cbc6b -->
+
+```json
+{
+  "additionalProperties": false,
+  "properties": {
+    "events": {
+      "items": {
+        "$ref": "#/components/schemas/RiverhogLifecycleEvent"
+      },
+      "title": "Events",
+      "type": "array"
+    },
+    "has_more": {
+      "title": "Has More",
+      "type": "boolean"
+    },
+    "next_cursor": {
+      "$ref": "#/components/schemas/LifecycleEventCursor"
+    }
+  },
+  "required": [
+    "events",
+    "next_cursor",
+    "has_more"
+  ],
+  "title": "RiverhogEventPage",
+  "type": "object"
+}
+```

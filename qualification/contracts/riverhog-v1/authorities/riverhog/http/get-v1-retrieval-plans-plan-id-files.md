@@ -33,6 +33,11 @@
 
 - [Operation parity: list_retrieval_plan_files](../operation/operation-parity-list-retrieval-plan-files.md)
 
+## Referenced contract dossiers
+
+- [schemas: ErrorResponse](schemas-errorresponse.md)
+- [schemas: RetrievalPlanFilePageOut](schemas-retrievalplanfilepageout.md)
+
 ## Extent decisions
 
 | Dimension | Unit | Policy | Bounds/reason |
@@ -41,7 +46,7 @@
 | value | schema-value | `contract_max` | maximum=100, minimum=1, reason=schema-maximum |
 | value | schema-value | `contract_max` | maximum=10000, minimum=0, reason=schema-maximum |
 
-## Contract
+## Contract summary
 
 - `operationId`: list_retrieval_plan_files
 - `summary`: List Retrieval Plan Files
@@ -68,3 +73,186 @@
 | `409` | Conflict |
 | `412` | Precondition Failed |
 | `500` | Internal Server Error |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 30ff87fc6f5061dfb011295d2a61be5e3438af1a1a740de1bdb922b4736c6065 -->
+
+```json
+{
+  "operationId": "list_retrieval_plan_files",
+  "parameters": [
+    {
+      "in": "path",
+      "name": "plan_id",
+      "required": true,
+      "schema": {
+        "title": "Plan Id",
+        "type": "string"
+      }
+    },
+    {
+      "in": "query",
+      "name": "start_ordinal",
+      "required": false,
+      "schema": {
+        "default": 0,
+        "maximum": 10000,
+        "minimum": 0,
+        "title": "Start Ordinal",
+        "type": "integer"
+      }
+    },
+    {
+      "in": "query",
+      "name": "page_size",
+      "required": false,
+      "schema": {
+        "default": 100,
+        "maximum": 100,
+        "minimum": 1,
+        "title": "Page Size",
+        "type": "integer"
+      }
+    },
+    {
+      "in": "header",
+      "name": "If-Match",
+      "required": true,
+      "schema": {
+        "pattern": "^\"[0-9a-f]{64}\"$",
+        "title": "If-Match",
+        "type": "string"
+      }
+    }
+  ],
+  "responses": {
+    "200": {
+      "content": {
+        "application/json": {
+          "schema": {
+            "$ref": "#/components/schemas/RetrievalPlanFilePageOut"
+          }
+        }
+      },
+      "description": "Successful Response"
+    },
+    "400": {
+      "content": {
+        "application/json": {
+          "schema": {
+            "$ref": "#/components/schemas/ErrorResponse"
+          }
+        }
+      },
+      "description": "Bad Request",
+      "x-riverhog-error-codes": [
+        "bad_request"
+      ]
+    },
+    "401": {
+      "content": {
+        "application/json": {
+          "schema": {
+            "$ref": "#/components/schemas/ErrorResponse"
+          }
+        }
+      },
+      "description": "Unauthorized",
+      "x-riverhog-error-codes": [
+        "unauthorized"
+      ]
+    },
+    "403": {
+      "content": {
+        "application/json": {
+          "schema": {
+            "$ref": "#/components/schemas/ErrorResponse"
+          }
+        }
+      },
+      "description": "Forbidden",
+      "x-riverhog-error-codes": [
+        "forbidden"
+      ]
+    },
+    "404": {
+      "content": {
+        "application/json": {
+          "schema": {
+            "$ref": "#/components/schemas/ErrorResponse"
+          }
+        }
+      },
+      "description": "Not Found",
+      "x-riverhog-error-codes": [
+        "not_found"
+      ]
+    },
+    "409": {
+      "content": {
+        "application/json": {
+          "schema": {
+            "$ref": "#/components/schemas/ErrorResponse"
+          }
+        }
+      },
+      "description": "Conflict",
+      "x-riverhog-error-codes": [
+        "invalid_state"
+      ]
+    },
+    "412": {
+      "content": {
+        "application/json": {
+          "schema": {
+            "$ref": "#/components/schemas/ErrorResponse"
+          }
+        }
+      },
+      "description": "Precondition Failed",
+      "x-riverhog-error-codes": [
+        "precondition_failed"
+      ]
+    },
+    "500": {
+      "content": {
+        "application/json": {
+          "schema": {
+            "$ref": "#/components/schemas/ErrorResponse"
+          }
+        }
+      },
+      "description": "Internal Server Error",
+      "x-riverhog-error-codes": [
+        "internal_error"
+      ]
+    }
+  },
+  "security": [
+    {
+      "HTTPBearer": []
+    }
+  ],
+  "summary": "List Retrieval Plan Files",
+  "tags": [
+    "retrieval"
+  ],
+  "x-riverhog-interface": "client-only-primitive",
+  "x-riverhog-permission-requirements": [
+    {
+      "any_of": [
+        "retrieval:manage"
+      ]
+    }
+  ],
+  "x-riverhog-read-collection": {
+    "authority": "retrieval-plan-files",
+    "cursor_parameter": "start_ordinal",
+    "kind": "exact-authority-page",
+    "limit_parameter": "page_size"
+  }
+}
+```

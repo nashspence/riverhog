@@ -35,7 +35,7 @@
 | length | characters | `contract_max` | maximum=4096, minimum=1, reason=schema-maximum |
 | length | characters | `contract_max` | maximum=4000, minimum=1, reason=schema-maximum |
 
-## Contract
+## Contract summary
 
 - `title`: WriteSession
 - `type`: object
@@ -47,3 +47,43 @@
 | `expected_bytes` | yes | integer | Exact immutable-object byte length admitted by this write session. The value remains fixed until the write becomes terminal. |
 | `object_path` | yes | string |  |
 | `write_token` | yes | string | Opaque adapter-owned persistable continuation handle. For the same configured adapter it remains replayable across client, transport, Riverhog, and adapter process restarts until completion, explicit abort, or caller-authorized incomplete-write reclamation makes the write terminal. |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 8273b4a0c12b6fa55f8669267e1ed4d9a0091e43944c85d6f7e1c16aa6e892ac -->
+
+```json
+{
+  "additionalProperties": false,
+  "properties": {
+    "expected_bytes": {
+      "description": "Exact immutable-object byte length admitted by this write session. The value remains fixed until the write becomes terminal.",
+      "minimum": 1,
+      "title": "Expected Bytes",
+      "type": "integer"
+    },
+    "object_path": {
+      "maxLength": 4096,
+      "minLength": 1,
+      "title": "Object Path",
+      "type": "string"
+    },
+    "write_token": {
+      "description": "Opaque adapter-owned persistable continuation handle. For the same configured adapter it remains replayable across client, transport, Riverhog, and adapter process restarts until completion, explicit abort, or caller-authorized incomplete-write reclamation makes the write terminal.",
+      "maxLength": 4000,
+      "minLength": 1,
+      "title": "Write Token",
+      "type": "string"
+    }
+  },
+  "required": [
+    "object_path",
+    "expected_bytes",
+    "write_token"
+  ],
+  "title": "WriteSession",
+  "type": "object"
+}
+```

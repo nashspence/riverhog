@@ -27,7 +27,11 @@
 - Proof: `make operation-qualification`
 - Proof: `make compose-smoke`
 
-## Contract
+## Referenced contract dossiers
+
+- [schemas: EvaluationCreatedEventData](schemas-evaluationcreatedeventdata.md)
+
+## Contract summary
 
 - `title`: EvaluationCreatedEvent
 - `type`: object
@@ -44,3 +48,66 @@
 | `subject` | yes | string |  |
 | `time` | yes | string |  |
 | `type` | yes | string |  |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 1e9f4023a06d936d53b69cbb92aa15c70781eed06c2c9c6322a3084b9e1b4339 -->
+
+```json
+{
+  "additionalProperties": false,
+  "properties": {
+    "data": {
+      "$ref": "#/components/schemas/EvaluationCreatedEventData"
+    },
+    "datacontenttype": {
+      "const": "application/json",
+      "default": "application/json",
+      "title": "Datacontenttype",
+      "type": "string"
+    },
+    "id": {
+      "minLength": 1,
+      "title": "Id",
+      "type": "string"
+    },
+    "source": {
+      "const": "urn:riverhog:stove0",
+      "title": "Source",
+      "type": "string"
+    },
+    "specversion": {
+      "const": "1.0",
+      "default": "1.0",
+      "title": "Specversion",
+      "type": "string"
+    },
+    "subject": {
+      "minLength": 1,
+      "title": "Subject",
+      "type": "string"
+    },
+    "time": {
+      "title": "Time",
+      "type": "string"
+    },
+    "type": {
+      "const": "io.riverhog.stove0.evaluation.created",
+      "title": "Type",
+      "type": "string"
+    }
+  },
+  "required": [
+    "id",
+    "source",
+    "type",
+    "subject",
+    "time",
+    "data"
+  ],
+  "title": "EvaluationCreatedEvent",
+  "type": "object"
+}
+```

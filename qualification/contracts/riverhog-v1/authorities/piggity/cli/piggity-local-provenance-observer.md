@@ -28,6 +28,26 @@
 - Proof: `make dist-smoke`
 - Proof: `make operation-qualification`
 
-## Contract
+## Contract summary
 
 - Parser name: `provenance-observer`
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+### `/external_contract/cli/piggity/commands/local/commands/provenance-observer/name`
+
+<!-- exact-contract-value: 9a274a23ecfd214275ad5e6ec65b7ddb001f01bdc958a7d41c955e9592ba5b40 -->
+
+```json
+"provenance-observer"
+```
+
+### `/external_contract/cli/piggity/commands/local/commands/provenance-observer/parameters`
+
+<!-- exact-contract-value: 4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945 -->
+
+```json
+[]
+```

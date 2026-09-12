@@ -37,7 +37,7 @@
 | cardinality | entries | `operational_policy` | maximum=None, reason=no-declared-semantic-maximum |
 | length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
 
-## Contract
+## Contract summary
 
 - `title`: DeleteCollectionRequest
 - `type`: object
@@ -49,3 +49,55 @@
 | `challenge` | yes | string |  |
 | `event_context` | no | object (2 fields) |  |
 | `retirement_claim_id` | no | object (2 fields) |  |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: c22cd89335617ccdcf6b1675cd71064d6573c80ac6515a180f5300e5b6b8c3a0 -->
+
+```json
+{
+  "additionalProperties": false,
+  "properties": {
+    "challenge": {
+      "title": "Challenge",
+      "type": "string"
+    },
+    "event_context": {
+      "anyOf": [
+        {
+          "additionalProperties": true,
+          "type": "object",
+          "x-riverhog-encoded-bytes-max": 4096,
+          "x-riverhog-extent": {
+            "policy": "contract_max",
+            "reason": "bounded-lifecycle-event-context"
+          }
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Event Context"
+    },
+    "retirement_claim_id": {
+      "anyOf": [
+        {
+          "pattern": "^[0-9a-f]{64}$",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Retirement Claim Id"
+    }
+  },
+  "required": [
+    "challenge"
+  ],
+  "title": "DeleteCollectionRequest",
+  "type": "object"
+}
+```

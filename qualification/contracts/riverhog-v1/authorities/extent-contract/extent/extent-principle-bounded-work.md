@@ -27,7 +27,15 @@
 - Proof: `make contract-freeze`
 - Proof: `make operation-qualification`
 
-## Contract
+## Contract summary
+
+- Shape: "Large logical totals cross bounded pages, segments, or restartable work steps; a carrier bound does not redefine the logical total."
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: fdf4c6fb3f2418116e1a885f6866aa02879968698041a235f10b58b57d8d26f8 -->
 
 ```json
 "Large logical totals cross bounded pages, segments, or restartable work steps; a carrier bound does not redefine the logical total."

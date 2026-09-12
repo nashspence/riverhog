@@ -27,7 +27,12 @@
 - Proof: `make operation-qualification`
 - Proof: `make compose-smoke`
 
-## Contract
+## Referenced contract dossiers
+
+- [schemas: ArtifactDispositionFailureDocument](schemas-artifactdispositionfailuredocument.md)
+- [schemas: ArtifactDispositionInputDocument](schemas-artifactdispositioninputdocument.md)
+
+## Contract summary
 
 - `title`: ArtifactDispositionDocument
 - `type`: object
@@ -39,3 +44,77 @@
 | `failure` | no | object (1 fields) |  |
 | `input` | yes | #/components/schemas/ArtifactDispositionInputDocument |  |
 | `status` | yes | string |  |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: edfafa82144c8be20244c30934ad87c7fee86c5237da936cff0d58ef40a5a48c -->
+
+```json
+{
+  "additionalProperties": false,
+  "oneOf": [
+    {
+      "properties": {
+        "failure": {
+          "type": "null"
+        },
+        "status": {
+          "enum": [
+            "transformed",
+            "preserved"
+          ]
+        }
+      }
+    },
+    {
+      "properties": {
+        "failure": {
+          "type": "object"
+        },
+        "status": {
+          "enum": [
+            "omitted",
+            "rejected"
+          ]
+        }
+      },
+      "required": [
+        "failure"
+      ]
+    }
+  ],
+  "properties": {
+    "failure": {
+      "anyOf": [
+        {
+          "$ref": "#/components/schemas/ArtifactDispositionFailureDocument"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "input": {
+      "$ref": "#/components/schemas/ArtifactDispositionInputDocument"
+    },
+    "status": {
+      "enum": [
+        "transformed",
+        "preserved",
+        "omitted",
+        "rejected"
+      ],
+      "title": "Status",
+      "type": "string"
+    }
+  },
+  "required": [
+    "input",
+    "status"
+  ],
+  "title": "ArtifactDispositionDocument",
+  "type": "object"
+}
+```

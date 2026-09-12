@@ -30,6 +30,12 @@
 - Proof: `make operation-qualification`
 - Proof: `make compose-smoke`
 
+## Referenced contract dossiers
+
+- [schemas: AdmissionView](schemas-admissionview.md)
+- [schemas: BrowsePageToken](schemas-browsepagetoken.md)
+- [schemas: JsonValue](schemas-jsonvalue.md)
+
 ## Extent decisions
 
 | Dimension | Unit | Policy | Bounds/reason |
@@ -38,7 +44,7 @@
 | cardinality | entries | `operational_policy` | maximum=None, reason=no-declared-semantic-maximum |
 | value | schema-value | `contract_max` | maximum=100, minimum=1, reason=schema-maximum |
 
-## Contract
+## Contract summary
 
 - `title`: AdmissionPage
 - `type`: object
@@ -55,3 +61,104 @@
 | `policy_id` | yes | object (2 fields) |  |
 | `sort` | yes | string |  |
 | `state` | yes | object (2 fields) |  |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 64c354d167a868fd912f6e49e4b65f39165b214ae9d619e5381d7286c259a40f -->
+
+```json
+{
+  "additionalProperties": false,
+  "properties": {
+    "admissions": {
+      "items": {
+        "$ref": "#/components/schemas/AdmissionView"
+      },
+      "title": "Admissions",
+      "type": "array"
+    },
+    "filters": {
+      "additionalProperties": {
+        "$ref": "#/components/schemas/JsonValue"
+      },
+      "title": "Filters",
+      "type": "object"
+    },
+    "next_page_token": {
+      "anyOf": [
+        {
+          "$ref": "#/components/schemas/BrowsePageToken"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "order": {
+      "enum": [
+        "asc",
+        "desc"
+      ],
+      "title": "Order",
+      "type": "string"
+    },
+    "page_size": {
+      "maximum": 100,
+      "minimum": 1,
+      "title": "Page Size",
+      "type": "integer"
+    },
+    "policy_id": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Policy Id"
+    },
+    "sort": {
+      "enum": [
+        "created_at",
+        "updated_at",
+        "state",
+        "admission_id"
+      ],
+      "title": "Sort",
+      "type": "string"
+    },
+    "state": {
+      "anyOf": [
+        {
+          "enum": [
+            "intent",
+            "previewed",
+            "work_bound"
+          ],
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "State"
+    }
+  },
+  "required": [
+    "page_size",
+    "next_page_token",
+    "sort",
+    "order",
+    "filters",
+    "policy_id",
+    "state",
+    "admissions"
+  ],
+  "title": "AdmissionPage",
+  "type": "object"
+}
+```

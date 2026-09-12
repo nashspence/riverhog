@@ -29,6 +29,13 @@
 - Proof: `make operation-qualification`
 - Proof: `make compose-smoke`
 
+## Referenced contract dossiers
+
+- [schemas: ArtifactDispositionSetIdentityDocument](schemas-artifactdispositionsetidentitydocument.md)
+- [schemas: ClaimFenceDocument](schemas-claimfencedocument.md)
+- [schemas: OperationIdentityDocument](schemas-operationidentitydocument.md)
+- [schemas: RecipeIdentityDocument](schemas-recipeidentitydocument.md)
+
 ## Extent decisions
 
 | Dimension | Unit | Policy | Bounds/reason |
@@ -42,7 +49,7 @@
 | length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
 | length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
 
-## Contract
+## Contract summary
 
 - `title`: CollectionDerivationDocument
 - `type`: object
@@ -63,3 +70,90 @@
 | `input_set_sha256` | yes | string |  |
 | `operation` | yes | #/components/schemas/OperationIdentityDocument |  |
 | `recipe` | yes | #/components/schemas/RecipeIdentityDocument |  |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 5ce117b7cd1e65da4bf41e7e3c1caf9588903351cad722ee7fbc1f7ffd042a2c -->
+
+```json
+{
+  "additionalProperties": false,
+  "properties": {
+    "artifact_set_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Artifact Set Sha256",
+      "type": "string"
+    },
+    "claim": {
+      "$ref": "#/components/schemas/ClaimFenceDocument"
+    },
+    "controller_evidence": {
+      "additionalProperties": true,
+      "title": "Controller Evidence",
+      "type": "object",
+      "x-riverhog-encoded-bytes-max": 16777216,
+      "x-riverhog-extent": {
+        "policy": "contract_max",
+        "reason": "bounded-controller-evidence-envelope"
+      }
+    },
+    "controller_evidence_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Controller Evidence Sha256",
+      "type": "string"
+    },
+    "disposition_set": {
+      "$ref": "#/components/schemas/ArtifactDispositionSetIdentityDocument"
+    },
+    "execution_envelope_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Execution Envelope Sha256",
+      "type": "string"
+    },
+    "execution_id": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Execution Id",
+      "type": "string"
+    },
+    "execution_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Execution Sha256",
+      "type": "string"
+    },
+    "format": {
+      "const": "riverhog-collection-derivation/v1",
+      "title": "Format",
+      "type": "string"
+    },
+    "input_set_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Input Set Sha256",
+      "type": "string"
+    },
+    "operation": {
+      "$ref": "#/components/schemas/OperationIdentityDocument"
+    },
+    "recipe": {
+      "$ref": "#/components/schemas/RecipeIdentityDocument"
+    }
+  },
+  "required": [
+    "format",
+    "execution_id",
+    "claim",
+    "recipe",
+    "operation",
+    "input_set_sha256",
+    "artifact_set_sha256",
+    "execution_envelope_sha256",
+    "execution_sha256",
+    "controller_evidence",
+    "controller_evidence_sha256",
+    "disposition_set"
+  ],
+  "title": "CollectionDerivationDocument",
+  "type": "object"
+}
+```

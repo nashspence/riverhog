@@ -27,7 +27,18 @@
 - Proof: `make unit`
 - Proof: `make compose-smoke`
 
-## Contract
+## Contract summary
+
+| Field | Shape |
+|---|---|
+| `consumers` | array (1 items) |
+| `name` | "GOGURT_MOUNTED_VOLUME_PROVIDER" |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 09fd0c5a895533f8f9d7bba28538d2f69f9e685dd837e93dcbc59a861da66b34 -->
 
 ```json
 {

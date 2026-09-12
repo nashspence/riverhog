@@ -27,7 +27,18 @@
 - Proof: `make unit`
 - Proof: `make compose-smoke`
 
-## Contract
+## Contract summary
+
+| Field | Shape |
+|---|---|
+| `consumers` | array (4 items) |
+| `name` | "STOVE0_FFMPEG_BIN" |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 413f1a9293c253aeb8b41eb3dcc1501edcd3bc1265a39ef4b2571b643c7da447 -->
 
 ```json
 {

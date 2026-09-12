@@ -27,7 +27,22 @@
 - Proof: `make release-check`
 - Proof: `make build`
 
-## Contract
+## Contract summary
+
+| Field | Shape |
+|---|---|
+| `contract` | "riverhog-v1-contract.tar.gz" |
+| `documentation` | "riverhog-docs-v{version}.tar.gz" |
+| `evidence` | array (8 items) |
+| `notices` | object (5 fields) |
+| `python_formats` | array (2 items) |
+| `source` | "riverhog-source-v{version}.tar.gz" |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: fcfd825e8168e132444c279da15d33ceb66eb3a7c7565af9dcb94c366e9def3f -->
 
 ```json
 {

@@ -36,7 +36,7 @@
 | value | schema-value | `operational_policy` | maximum=None, reason=no-declared-semantic-maximum |
 | length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
 
-## Contract
+## Contract summary
 
 - `title`: CollectionUploadProvenanceJournalCreateDocument
 - `type`: object
@@ -47,3 +47,33 @@
 |---|---:|---|---|
 | `bytes` | yes | integer |  |
 | `sha256` | yes | string |  |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 44d861666e69c14f866d6b8948c4fc7a9c7a1534b331276b15a5ec2117e26cf9 -->
+
+```json
+{
+  "additionalProperties": false,
+  "properties": {
+    "bytes": {
+      "minimum": 1,
+      "title": "Bytes",
+      "type": "integer"
+    },
+    "sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Sha256",
+      "type": "string"
+    }
+  },
+  "required": [
+    "bytes",
+    "sha256"
+  ],
+  "title": "CollectionUploadProvenanceJournalCreateDocument",
+  "type": "object"
+}
+```

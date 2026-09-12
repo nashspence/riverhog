@@ -32,7 +32,7 @@
 
 - [POST /v1/collection-upload-sessions/{collection_id}/heartbeat](../http/post-v1-collection-upload-sessions-collection-id-heartbeat.md)
 
-## Contract
+## Contract summary
 
 | Concern | Contract |
 |---|---|
@@ -46,3 +46,24 @@
 | `provider_evidence` | None |
 | `read_collection` | None |
 | `response_authority` | http-json |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 75fa3a256212f4c3d9750f7453f35ca69678512e45ba366ce2f31491dd1b30fd -->
+
+```json
+{
+  "application": "riverhog",
+  "classification": "client-only-primitive",
+  "cli_commands": [],
+  "client": "ApiClient",
+  "method": "POST",
+  "operation_id": "heartbeat_collection_upload_session",
+  "path": "/v1/collection-upload-sessions/{collection_id}/heartbeat",
+  "provider_evidence": null,
+  "read_collection": null,
+  "response_authority": "http-json"
+}
+```

@@ -32,13 +32,18 @@
 
 - [Operation parity: get_target_execution_inputs](../operation/operation-parity-get-target-execution-inputs.md)
 
+## Referenced contract dossiers
+
+- [schemas: ErrorResponse](schemas-errorresponse.md)
+- [schemas: TargetInputPage](schemas-targetinputpage.md)
+
 ## Extent decisions
 
 | Dimension | Unit | Policy | Bounds/reason |
 |---|---|---|---|
 | logical-result-cardinality | items | `segmented_no_total_max` | reason=bounded-route-progression |
 
-## Contract
+## Contract summary
 
 - `operationId`: get_target_execution_inputs
 - `summary`: Get Target Execution Inputs
@@ -59,3 +64,117 @@
 | `401` | Unauthorized |
 | `403` | Forbidden |
 | `500` | Internal Server Error |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 41d8c05b37cd6eaa1c9a042facbd01f171daf2c624193e40dbf9d662003e104f -->
+
+```json
+{
+  "operationId": "get_target_execution_inputs",
+  "parameters": [
+    {
+      "in": "path",
+      "name": "job_id",
+      "required": true,
+      "schema": {
+        "title": "Job Id",
+        "type": "string"
+      }
+    },
+    {
+      "in": "query",
+      "name": "continuation",
+      "required": false,
+      "schema": {
+        "anyOf": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "title": "Continuation"
+      }
+    }
+  ],
+  "responses": {
+    "200": {
+      "content": {
+        "application/json": {
+          "schema": {
+            "$ref": "#/components/schemas/TargetInputPage"
+          }
+        }
+      },
+      "description": "Successful Response"
+    },
+    "400": {
+      "content": {
+        "application/json": {
+          "schema": {
+            "$ref": "#/components/schemas/ErrorResponse"
+          }
+        }
+      },
+      "description": "Bad Request",
+      "x-riverhog-error-codes": [
+        "bad_request"
+      ]
+    },
+    "401": {
+      "content": {
+        "application/json": {
+          "schema": {
+            "$ref": "#/components/schemas/ErrorResponse"
+          }
+        }
+      },
+      "description": "Unauthorized",
+      "x-riverhog-error-codes": [
+        "unauthorized"
+      ]
+    },
+    "403": {
+      "content": {
+        "application/json": {
+          "schema": {
+            "$ref": "#/components/schemas/ErrorResponse"
+          }
+        }
+      },
+      "description": "Forbidden",
+      "x-riverhog-error-codes": [
+        "forbidden"
+      ]
+    },
+    "500": {
+      "content": {
+        "application/json": {
+          "schema": {
+            "$ref": "#/components/schemas/ErrorResponse"
+          }
+        }
+      },
+      "description": "Internal Server Error",
+      "x-riverhog-error-codes": [
+        "internal_error"
+      ]
+    }
+  },
+  "summary": "Get Target Execution Inputs",
+  "tags": [
+    "target-executions"
+  ],
+  "x-riverhog-interface": "client-only-primitive",
+  "x-riverhog-read-collection": {
+    "authority": "target-input-authority",
+    "cursor_parameter": "continuation",
+    "fixed_limit": 256,
+    "kind": "exact-authority-page"
+  }
+}
+```

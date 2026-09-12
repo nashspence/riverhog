@@ -28,13 +28,17 @@
 - Proof: `make operation-qualification`
 - Proof: `make compose-smoke`
 
+## Referenced contract dossiers
+
+- [schemas: TargetJobDeclaration](schemas-targetjobdeclaration.md)
+
 ## Extent decisions
 
 | Dimension | Unit | Policy | Bounds/reason |
 |---|---|---|---|
 | length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
 
-## Contract
+## Contract summary
 
 - `title`: AcceptedTargetJob
 - `description`: Durable, non-secret identity of one accepted target job request.
@@ -46,3 +50,32 @@
 |---|---:|---|---|
 | `declaration` | yes | #/components/schemas/TargetJobDeclaration |  |
 | `request_sha256` | yes | string |  |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 5f00e108b9ab996f28a1dfd3928c40b9045b480dd5240737de55621c6ceb42bd -->
+
+```json
+{
+  "additionalProperties": false,
+  "description": "Durable, non-secret identity of one accepted target job request.",
+  "properties": {
+    "declaration": {
+      "$ref": "#/components/schemas/TargetJobDeclaration"
+    },
+    "request_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Request Sha256",
+      "type": "string"
+    }
+  },
+  "required": [
+    "declaration",
+    "request_sha256"
+  ],
+  "title": "AcceptedTargetJob",
+  "type": "object"
+}
+```

@@ -33,7 +33,7 @@
 - [POST /v1/apps/{app}/keys/{key_id}/access](../http/post-v1-apps-app-keys-key-id-access.md)
 - [piggity app key access add](../../piggity/cli/piggity-app-key-access-add.md)
 
-## Contract
+## Contract summary
 
 | Concern | Contract |
 |---|---|
@@ -47,3 +47,26 @@
 | `provider_evidence` | None |
 | `read_collection` | None |
 | `response_authority` | http-json |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 5390c4f2dfb83da38f4bfc18b45c430b88bfad13f0b61f6b1555afebe9d5ac99 -->
+
+```json
+{
+  "application": "riverhog",
+  "classification": "human-cli+json",
+  "cli_commands": [
+    "app key access add"
+  ],
+  "client": "ApiClient",
+  "method": "POST",
+  "operation_id": "add_app_key_access",
+  "path": "/v1/apps/{app}/keys/{key_id}/access",
+  "provider_evidence": null,
+  "read_collection": null,
+  "response_authority": "http-json"
+}
+```

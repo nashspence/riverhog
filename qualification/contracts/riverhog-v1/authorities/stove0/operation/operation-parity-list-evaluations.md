@@ -33,7 +33,7 @@
 - [GET /v1/evaluations](../http/get-v1-evaluations.md)
 - [stove0 evaluation list](../cli/stove0-evaluation-list.md)
 
-## Contract
+## Contract summary
 
 | Concern | Contract |
 |---|---|
@@ -47,3 +47,33 @@
 | `provider_evidence` | None |
 | `read_collection` | {"default_page_size": 25, "kind": "mutable-browse", "maximum_page_size": 100, "next_page_token_field": "next_page_token", "page_size_parameter": "page_size", "page_token_parameter": "page_token"} |
 | `response_authority` | operator-projection |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 865aeb16d697b8f80c2d4db80cc7c949b692c64da1006ff99c2d8581c38b1c0a -->
+
+```json
+{
+  "application": "stove0",
+  "classification": "human-cli+json",
+  "cli_commands": [
+    "evaluation list"
+  ],
+  "client": "Stove0ApiClient",
+  "method": "GET",
+  "operation_id": "list_evaluations",
+  "path": "/v1/evaluations",
+  "provider_evidence": null,
+  "read_collection": {
+    "default_page_size": 25,
+    "kind": "mutable-browse",
+    "maximum_page_size": 100,
+    "next_page_token_field": "next_page_token",
+    "page_size_parameter": "page_size",
+    "page_token_parameter": "page_token"
+  },
+  "response_authority": "operator-projection"
+}
+```

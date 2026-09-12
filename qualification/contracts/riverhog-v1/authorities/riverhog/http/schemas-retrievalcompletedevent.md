@@ -27,7 +27,11 @@
 - Proof: `make operation-qualification`
 - Proof: `make compose-smoke`
 
-## Contract
+## Referenced contract dossiers
+
+- [schemas: RetrievalCompletedData](schemas-retrievalcompleteddata.md)
+
+## Contract summary
 
 - `title`: RetrievalCompletedEvent
 - `type`: object
@@ -44,3 +48,72 @@
 | `subject` | no | object (2 fields) |  |
 | `time` | yes | string |  |
 | `type` | yes | string |  |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 435139366870d8b25f95ceb73edc6edecd1daf7486713f7713771bfbb81a4ee0 -->
+
+```json
+{
+  "additionalProperties": false,
+  "properties": {
+    "data": {
+      "$ref": "#/components/schemas/RetrievalCompletedData"
+    },
+    "datacontenttype": {
+      "const": "application/json",
+      "default": "application/json",
+      "title": "Datacontenttype",
+      "type": "string"
+    },
+    "id": {
+      "minLength": 1,
+      "title": "Id",
+      "type": "string"
+    },
+    "source": {
+      "minLength": 1,
+      "title": "Source",
+      "type": "string"
+    },
+    "specversion": {
+      "const": "1.0",
+      "default": "1.0",
+      "title": "Specversion",
+      "type": "string"
+    },
+    "subject": {
+      "anyOf": [
+        {
+          "minLength": 1,
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Subject"
+    },
+    "time": {
+      "title": "Time",
+      "type": "string"
+    },
+    "type": {
+      "const": "io.riverhog.riverhog.retrieval.completed",
+      "title": "Type",
+      "type": "string"
+    }
+  },
+  "required": [
+    "id",
+    "source",
+    "type",
+    "time",
+    "data"
+  ],
+  "title": "RetrievalCompletedEvent",
+  "type": "object"
+}
+```

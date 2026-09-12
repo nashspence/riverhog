@@ -27,7 +27,12 @@
 - Proof: `make operation-qualification`
 - Proof: `make compose-smoke`
 
-## Contract
+## Referenced contract dossiers
+
+- [schemas: ArtifactDispositionInputDocument](schemas-artifactdispositioninputdocument.md)
+- [schemas: CanonicalRelPath](schemas-canonicalrelpath.md)
+
+## Contract summary
 
 - `title`: ArtifactDispositionOutputDocument
 - `type`: object
@@ -38,3 +43,29 @@
 |---|---:|---|---|
 | `input` | yes | #/components/schemas/ArtifactDispositionInputDocument |  |
 | `output_path` | yes | #/components/schemas/CanonicalRelPath |  |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 25a191e6c3727e1412f128c608919ce9f585a2394ba042b73150e611b36c98ea -->
+
+```json
+{
+  "additionalProperties": false,
+  "properties": {
+    "input": {
+      "$ref": "#/components/schemas/ArtifactDispositionInputDocument"
+    },
+    "output_path": {
+      "$ref": "#/components/schemas/CanonicalRelPath"
+    }
+  },
+  "required": [
+    "input",
+    "output_path"
+  ],
+  "title": "ArtifactDispositionOutputDocument",
+  "type": "object"
+}
+```

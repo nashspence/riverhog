@@ -28,13 +28,18 @@
 - Proof: `make operation-qualification`
 - Proof: `make compose-smoke`
 
+## Referenced contract dossiers
+
+- [schemas: CanonicalRelPath](schemas-canonicalrelpath.md)
+- [schemas: CollectionId](schemas-collectionid.md)
+
 ## Extent decisions
 
 | Dimension | Unit | Policy | Bounds/reason |
 |---|---|---|---|
 | length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
 
-## Contract
+## Contract summary
 
 - `title`: ArtifactDispositionInputDocument
 - `type`: object
@@ -46,3 +51,35 @@
 | `archive_root_sha256` | yes | string |  |
 | `collection_id` | yes | #/components/schemas/CollectionId |  |
 | `path` | yes | #/components/schemas/CanonicalRelPath |  |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 18a9d379929f7e070761f6950cd137bfefaf471c2866f75d414b7faec3e731b0 -->
+
+```json
+{
+  "additionalProperties": false,
+  "properties": {
+    "archive_root_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Archive Root Sha256",
+      "type": "string"
+    },
+    "collection_id": {
+      "$ref": "#/components/schemas/CollectionId"
+    },
+    "path": {
+      "$ref": "#/components/schemas/CanonicalRelPath"
+    }
+  },
+  "required": [
+    "collection_id",
+    "archive_root_sha256",
+    "path"
+  ],
+  "title": "ArtifactDispositionInputDocument",
+  "type": "object"
+}
+```

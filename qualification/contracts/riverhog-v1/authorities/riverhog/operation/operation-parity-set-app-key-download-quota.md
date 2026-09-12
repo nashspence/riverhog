@@ -33,7 +33,7 @@
 - [PUT /v1/apps/{app}/keys/{key_id}/download-quota](../http/put-v1-apps-app-keys-key-id-download-quota.md)
 - [piggity app key quota set](../../piggity/cli/piggity-app-key-quota-set.md)
 
-## Contract
+## Contract summary
 
 | Concern | Contract |
 |---|---|
@@ -47,3 +47,26 @@
 | `provider_evidence` | None |
 | `read_collection` | None |
 | `response_authority` | http-json |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: e2a4ce7aa2243bbe80d31d61af9830710799fe00be7d579d1d2cca175d3ece47 -->
+
+```json
+{
+  "application": "riverhog",
+  "classification": "human-cli+json",
+  "cli_commands": [
+    "app key quota set"
+  ],
+  "client": "ApiClient",
+  "method": "PUT",
+  "operation_id": "set_app_key_download_quota",
+  "path": "/v1/apps/{app}/keys/{key_id}/download-quota",
+  "provider_evidence": null,
+  "read_collection": null,
+  "response_authority": "http-json"
+}
+```

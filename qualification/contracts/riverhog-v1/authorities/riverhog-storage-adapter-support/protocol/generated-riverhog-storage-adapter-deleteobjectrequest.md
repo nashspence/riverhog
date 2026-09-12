@@ -36,7 +36,7 @@
 | length | characters | `contract_max` | maximum=4096, minimum=1, reason=schema-maximum |
 | length | characters | `contract_max` | maximum=2000, minimum=1, reason=schema-maximum |
 
-## Contract
+## Contract summary
 
 - `title`: DeleteObjectRequest
 - `type`: object
@@ -54,3 +54,80 @@
 | Definition | Shape |
 |---|---|
 | `ObjectLocator` | object |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 46f15404c356f50e3a381b04f209d8f64b9114cce82ef9e8c42967f06b59fad8 -->
+
+```json
+{
+  "$defs": {
+    "ObjectLocator": {
+      "additionalProperties": false,
+      "properties": {
+        "object_path": {
+          "maxLength": 4096,
+          "minLength": 1,
+          "title": "Object Path",
+          "type": "string"
+        },
+        "revision": {
+          "anyOf": [
+            {
+              "maxLength": 2000,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Revision"
+        }
+      },
+      "required": [
+        "object_path"
+      ],
+      "title": "ObjectLocator",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "expected_current_stored_sha256": {
+      "anyOf": [
+        {
+          "pattern": "^[0-9a-f]{64}$",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Expected Current Stored Sha256"
+    },
+    "mode": {
+      "enum": [
+        "current",
+        "exact_revision",
+        "all_versions"
+      ],
+      "title": "Mode",
+      "type": "string"
+    },
+    "object": {
+      "$ref": "#/$defs/ObjectLocator"
+    }
+  },
+  "required": [
+    "object",
+    "mode"
+  ],
+  "title": "DeleteObjectRequest",
+  "type": "object"
+}
+```

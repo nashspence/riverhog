@@ -29,6 +29,12 @@
 - Proof: `make operation-qualification`
 - Proof: `make compose-smoke`
 
+## Referenced contract dossiers
+
+- [schemas: CanonicalRelPath](schemas-canonicalrelpath.md)
+- [schemas: CollectionId](schemas-collectionid.md)
+- [schemas: OmittedFileProvenanceBinding](schemas-omittedfileprovenancebinding.md)
+
 ## Extent decisions
 
 | Dimension | Unit | Policy | Bounds/reason |
@@ -36,7 +42,7 @@
 | value | schema-value | `operational_policy` | maximum=None, reason=no-declared-semantic-maximum |
 | length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
 
-## Contract
+## Contract summary
 
 - `title`: OmittedCollectionFileProvenanceOut
 - `type`: object
@@ -50,3 +56,45 @@
 | `path` | yes | #/components/schemas/CanonicalRelPath |  |
 | `provenance` | yes | #/components/schemas/OmittedFileProvenanceBinding |  |
 | `sha256` | yes | string |  |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: fdfa74d2d3788b7a0534e4be864dda053c9646ca6c450a6d00024248f6f3235d -->
+
+```json
+{
+  "additionalProperties": false,
+  "properties": {
+    "bytes": {
+      "minimum": 0,
+      "title": "Bytes",
+      "type": "integer"
+    },
+    "collection_id": {
+      "$ref": "#/components/schemas/CollectionId"
+    },
+    "path": {
+      "$ref": "#/components/schemas/CanonicalRelPath"
+    },
+    "provenance": {
+      "$ref": "#/components/schemas/OmittedFileProvenanceBinding"
+    },
+    "sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Sha256",
+      "type": "string"
+    }
+  },
+  "required": [
+    "path",
+    "bytes",
+    "sha256",
+    "collection_id",
+    "provenance"
+  ],
+  "title": "OmittedCollectionFileProvenanceOut",
+  "type": "object"
+}
+```

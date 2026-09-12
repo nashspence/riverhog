@@ -27,6 +27,25 @@
 - Proof: `make operation-qualification`
 - Proof: `make compose-smoke`
 
-## Contract
+## Contract summary
 
 - `type`: string
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: e27584858b517910bd876710bd89ee72545ba20fd128ae09bd8364928327d337 -->
+
+```json
+{
+  "enum": [
+    "collection_id",
+    "source_store",
+    "destination_store",
+    "state",
+    "requested_at"
+  ],
+  "type": "string"
+}
+```

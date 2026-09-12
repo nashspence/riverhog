@@ -33,7 +33,7 @@
 - [GET /v1/events](../http/get-v1-events.md)
 - [stove0 event list](../cli/stove0-event-list.md)
 
-## Contract
+## Contract summary
 
 | Concern | Contract |
 |---|---|
@@ -47,3 +47,30 @@
 | `provider_evidence` | None |
 | `read_collection` | {"cursor_parameter": "after", "kind": "cursor-feed", "limit_parameter": "limit"} |
 | `response_authority` | operator-projection |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 228f282bb54b7032346e272d028770a325fda12102aef4d7dae9f41f3b364a08 -->
+
+```json
+{
+  "application": "stove0",
+  "classification": "human-cli+json",
+  "cli_commands": [
+    "event list"
+  ],
+  "client": "Stove0ApiClient",
+  "method": "GET",
+  "operation_id": "list_events",
+  "path": "/v1/events",
+  "provider_evidence": null,
+  "read_collection": {
+    "cursor_parameter": "after",
+    "kind": "cursor-feed",
+    "limit_parameter": "limit"
+  },
+  "response_authority": "operator-projection"
+}
+```

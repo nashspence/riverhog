@@ -28,13 +28,17 @@
 - Proof: `make operation-qualification`
 - Proof: `make compose-smoke`
 
+## Referenced contract dossiers
+
+- [schemas: Stove0LifecycleEvent](schemas-stove0lifecycleevent.md)
+
 ## Extent decisions
 
 | Dimension | Unit | Policy | Bounds/reason |
 |---|---|---|---|
 | cardinality | items | `segmented_no_total_max` | reason=bounded-route-page |
 
-## Contract
+## Contract summary
 
 - `title`: Stove0EventPage
 - `type`: object
@@ -46,3 +50,39 @@
 | `events` | yes | array |  |
 | `has_more` | yes | boolean |  |
 | `next_cursor` | yes | string |  |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 4d8c540fb948db60713013d0ef55dbacdc480b5aefdf0df87abe2698a052140c -->
+
+```json
+{
+  "additionalProperties": false,
+  "properties": {
+    "events": {
+      "items": {
+        "$ref": "#/components/schemas/Stove0LifecycleEvent"
+      },
+      "title": "Events",
+      "type": "array"
+    },
+    "has_more": {
+      "title": "Has More",
+      "type": "boolean"
+    },
+    "next_cursor": {
+      "title": "Next Cursor",
+      "type": "string"
+    }
+  },
+  "required": [
+    "events",
+    "next_cursor",
+    "has_more"
+  ],
+  "title": "Stove0EventPage",
+  "type": "object"
+}
+```

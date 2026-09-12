@@ -38,7 +38,7 @@
 | length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
 | value | schema-value | `contract_max` | maximum=9007199254740991, minimum=1, reason=schema-maximum |
 
-## Contract
+## Contract summary
 
 - `$id`: https://nashspence.github.io/riverhog/v1/schemas/riverhog-collection-description-v1.schema.json
 - `title`: Riverhog collection description document v1
@@ -53,3 +53,66 @@
 | `description_identity` | yes | string |  |
 | `format` | yes | object (1 fields) |  |
 | `revision` | yes | integer |  |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: cc0c384f58432075d0c9df58afd0af1c50307749fa4873380bb8bb093c2ad9c8 -->
+
+```json
+{
+  "$id": "https://nashspence.github.io/riverhog/v1/schemas/riverhog-collection-description-v1.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "archive_root_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "type": "string"
+    },
+    "description": {
+      "oneOf": [
+        {
+          "maxLength": 32768,
+          "minLength": 1,
+          "type": "string",
+          "x-riverhog-encoded-bytes-max": 32768,
+          "x-riverhog-extent": {
+            "policy": "contract_max",
+            "reason": "bounded-human-authored-catalog-description"
+          },
+          "x-unicode-normalization": "NFC"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "description_identity": {
+      "pattern": "^[0-9a-f]{64}$",
+      "type": "string"
+    },
+    "format": {
+      "const": "riverhog-collection-description/v1"
+    },
+    "revision": {
+      "maximum": 9007199254740991,
+      "minimum": 1,
+      "type": "integer",
+      "x-riverhog-extent": {
+        "policy": "fixed",
+        "reason": "exact-json-safe-monotonic-description-revision"
+      }
+    }
+  },
+  "required": [
+    "archive_root_sha256",
+    "description",
+    "description_identity",
+    "format",
+    "revision"
+  ],
+  "title": "Riverhog collection description document v1",
+  "type": "object"
+}
+```

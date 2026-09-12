@@ -32,7 +32,7 @@
 
 - [GET /v1/collection-processing-claims/{claim_id}/derivation/output-edges](../http/get-v1-collection-processing-claims-claim-id-derivation-output-edges.md)
 
-## Contract
+## Contract summary
 
 | Concern | Contract |
 |---|---|
@@ -46,3 +46,30 @@
 | `provider_evidence` | None |
 | `read_collection` | {"authority": "processing-claim-disposition-outputs", "authority_parameter": "authority_sha256", "cursor_parameter": "start_ordinal", "fixed_limit": 128, "kind": "exact-authority-page"} |
 | `response_authority` | canonical-document |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: da28414a08f2fe8c6c158a7fc98077f759532eef1084a9e3732e88ef7810f7ec -->
+
+```json
+{
+  "application": "riverhog",
+  "classification": "client-only-primitive",
+  "cli_commands": [],
+  "client": "ApiClient",
+  "method": "GET",
+  "operation_id": "list_processing_claim_disposition_outputs",
+  "path": "/v1/collection-processing-claims/{claim_id}/derivation/output-edges",
+  "provider_evidence": null,
+  "read_collection": {
+    "authority": "processing-claim-disposition-outputs",
+    "authority_parameter": "authority_sha256",
+    "cursor_parameter": "start_ordinal",
+    "fixed_limit": 128,
+    "kind": "exact-authority-page"
+  },
+  "response_authority": "canonical-document"
+}
+```

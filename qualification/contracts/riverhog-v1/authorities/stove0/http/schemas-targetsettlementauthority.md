@@ -28,6 +28,11 @@
 - Proof: `make operation-qualification`
 - Proof: `make compose-smoke`
 
+## Referenced contract dossiers
+
+- [schemas: OutputCollectionRef](schemas-outputcollectionref.md)
+- [schemas: TargetOutputBindingSetIdentity](schemas-targetoutputbindingsetidentity.md)
+
 ## Extent decisions
 
 | Dimension | Unit | Policy | Bounds/reason |
@@ -36,7 +41,7 @@
 | length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
 | length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
 
-## Contract
+## Contract summary
 
 - `title`: TargetSettlementAuthority
 - `type`: object
@@ -51,3 +56,53 @@
 | `output_collection` | yes | #/components/schemas/OutputCollectionRef |  |
 | `production_sha256` | yes | string |  |
 | `settlement_sha256` | yes | string |  |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: a811b1b88f435f8192083bd5bb9cab621322a012a9d17a39beebcbf46f0b2e02 -->
+
+```json
+{
+  "additionalProperties": false,
+  "properties": {
+    "format": {
+      "const": "stove0-target-settlement/v1",
+      "default": "stove0-target-settlement/v1",
+      "title": "Format",
+      "type": "string"
+    },
+    "job_id": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Job Id",
+      "type": "string"
+    },
+    "output_bindings": {
+      "$ref": "#/components/schemas/TargetOutputBindingSetIdentity"
+    },
+    "output_collection": {
+      "$ref": "#/components/schemas/OutputCollectionRef"
+    },
+    "production_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Production Sha256",
+      "type": "string"
+    },
+    "settlement_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Settlement Sha256",
+      "type": "string"
+    }
+  },
+  "required": [
+    "job_id",
+    "production_sha256",
+    "output_collection",
+    "output_bindings",
+    "settlement_sha256"
+  ],
+  "title": "TargetSettlementAuthority",
+  "type": "object"
+}
+```

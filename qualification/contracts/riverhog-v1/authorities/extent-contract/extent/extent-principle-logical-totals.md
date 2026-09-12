@@ -27,7 +27,15 @@
 - Proof: `make contract-freeze`
 - Proof: `make operation-qualification`
 
-## Contract
+## Contract summary
+
+- Shape: "A finite logical total has no product-level semantic maximum unless its owning contract declares one."
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 0afc2a854d4a4bd05de44b981fc84a5b0ee1e83e4feb5c6b9711288513cc8a60 -->
 
 ```json
 "A finite logical total has no product-level semantic maximum unless its owning contract declares one."

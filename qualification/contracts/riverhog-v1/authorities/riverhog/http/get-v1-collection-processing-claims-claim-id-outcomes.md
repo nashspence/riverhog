@@ -33,6 +33,11 @@
 
 - [Operation parity: list_processing_claim_outcomes](../operation/operation-parity-list-processing-claim-outcomes.md)
 
+## Referenced contract dossiers
+
+- [schemas: ErrorResponse](schemas-errorresponse.md)
+- [schemas: ProcessingOutcomePageDocument](schemas-processingoutcomepagedocument.md)
+
 ## Extent decisions
 
 | Dimension | Unit | Policy | Bounds/reason |
@@ -41,7 +46,7 @@
 | length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
 | length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
 
-## Contract
+## Contract summary
 
 - `operationId`: list_processing_claim_outcomes
 - `summary`: List Processing Claim Outcomes
@@ -64,3 +69,136 @@
 | `401` | Unauthorized |
 | `403` | Forbidden |
 | `500` | Internal Server Error |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 5dc162109e8f3660a195aa7ceaf34f029be4aaa4c1472e38366f48a68e5f12a3 -->
+
+```json
+{
+  "operationId": "list_processing_claim_outcomes",
+  "parameters": [
+    {
+      "in": "path",
+      "name": "claim_id",
+      "required": true,
+      "schema": {
+        "pattern": "^[0-9a-f]{64}$",
+        "title": "Claim Id",
+        "type": "string"
+      }
+    },
+    {
+      "in": "query",
+      "name": "authority_sha256",
+      "required": true,
+      "schema": {
+        "pattern": "^[0-9a-f]{64}$",
+        "title": "Authority Sha256",
+        "type": "string"
+      }
+    },
+    {
+      "in": "query",
+      "name": "start_ordinal",
+      "required": false,
+      "schema": {
+        "default": 0,
+        "minimum": 0,
+        "title": "Start Ordinal",
+        "type": "integer"
+      }
+    }
+  ],
+  "responses": {
+    "200": {
+      "content": {
+        "application/json": {
+          "schema": {
+            "$ref": "#/components/schemas/ProcessingOutcomePageDocument"
+          }
+        }
+      },
+      "description": "Successful Response"
+    },
+    "400": {
+      "content": {
+        "application/json": {
+          "schema": {
+            "$ref": "#/components/schemas/ErrorResponse"
+          }
+        }
+      },
+      "description": "Bad Request",
+      "x-riverhog-error-codes": [
+        "bad_request"
+      ]
+    },
+    "401": {
+      "content": {
+        "application/json": {
+          "schema": {
+            "$ref": "#/components/schemas/ErrorResponse"
+          }
+        }
+      },
+      "description": "Unauthorized",
+      "x-riverhog-error-codes": [
+        "unauthorized"
+      ]
+    },
+    "403": {
+      "content": {
+        "application/json": {
+          "schema": {
+            "$ref": "#/components/schemas/ErrorResponse"
+          }
+        }
+      },
+      "description": "Forbidden",
+      "x-riverhog-error-codes": [
+        "forbidden"
+      ]
+    },
+    "500": {
+      "content": {
+        "application/json": {
+          "schema": {
+            "$ref": "#/components/schemas/ErrorResponse"
+          }
+        }
+      },
+      "description": "Internal Server Error",
+      "x-riverhog-error-codes": [
+        "internal_error"
+      ]
+    }
+  },
+  "security": [
+    {
+      "HTTPBearer": []
+    }
+  ],
+  "summary": "List Processing Claim Outcomes",
+  "tags": [
+    "collection-workflows"
+  ],
+  "x-riverhog-interface": "client-only-primitive",
+  "x-riverhog-permission-requirements": [
+    {
+      "any_of": [
+        "collection-transforms:control"
+      ]
+    }
+  ],
+  "x-riverhog-read-collection": {
+    "authority": "processing-claim-outcomes",
+    "authority_parameter": "authority_sha256",
+    "cursor_parameter": "start_ordinal",
+    "fixed_limit": 128,
+    "kind": "exact-authority-page"
+  }
+}
+```

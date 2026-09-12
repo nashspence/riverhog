@@ -33,7 +33,7 @@
 - [PUT /v1/evaluations/{evaluation_id}/variants/{variant_id}/review](../http/put-v1-evaluations-evaluation-id-variants-variant-id-review.md)
 - [stove0 evaluation review](../cli/stove0-evaluation-review.md)
 
-## Contract
+## Contract summary
 
 | Concern | Contract |
 |---|---|
@@ -47,3 +47,26 @@
 | `provider_evidence` | None |
 | `read_collection` | None |
 | `response_authority` | operator-projection |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: bbf7a2af7e628242a794efe06f244899ed65da54ff8dc1707314d500e8eecd6c -->
+
+```json
+{
+  "application": "stove0",
+  "classification": "human-cli+json",
+  "cli_commands": [
+    "evaluation review"
+  ],
+  "client": "Stove0ApiClient",
+  "method": "PUT",
+  "operation_id": "review_evaluation_variant",
+  "path": "/v1/evaluations/{evaluation_id}/variants/{variant_id}/review",
+  "provider_evidence": null,
+  "read_collection": null,
+  "response_authority": "operator-projection"
+}
+```

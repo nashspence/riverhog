@@ -4,6 +4,16 @@
 
 Contract elements: **12** · Extent decisions: **9**
 
+| Family | Count |
+|---|---:|
+| `health` | 2 |
+| `run` | 1 |
+| `schemas` | 5 |
+| `securitySchemes` | 1 |
+| `service` | 1 |
+| `sources` | 1 |
+| `status` | 1 |
+
 | Policy | Count |
 |---|---:|
 | `compatibility/http-api/v1` | 12 |

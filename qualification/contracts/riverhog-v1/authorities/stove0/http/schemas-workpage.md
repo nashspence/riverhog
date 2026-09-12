@@ -30,6 +30,12 @@
 - Proof: `make operation-qualification`
 - Proof: `make compose-smoke`
 
+## Referenced contract dossiers
+
+- [schemas: BrowsePageToken](schemas-browsepagetoken.md)
+- [schemas: JsonValue](schemas-jsonvalue.md)
+- [schemas: WorkView](schemas-workview.md)
+
 ## Extent decisions
 
 | Dimension | Unit | Policy | Bounds/reason |
@@ -38,7 +44,7 @@
 | value | schema-value | `contract_max` | maximum=100, minimum=1, reason=schema-maximum |
 | cardinality | items | `segmented_no_total_max` | reason=bounded-route-page |
 
-## Contract
+## Contract summary
 
 - `title`: WorkPage
 - `type`: object
@@ -53,3 +59,74 @@
 | `page_size` | yes | integer |  |
 | `sort` | yes | string |  |
 | `work` | yes | array |  |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: e6370febf612ce20fe00988b97796d80b355395d5318e554b75ab17fc261c6f5 -->
+
+```json
+{
+  "additionalProperties": false,
+  "properties": {
+    "filters": {
+      "additionalProperties": {
+        "$ref": "#/components/schemas/JsonValue"
+      },
+      "title": "Filters",
+      "type": "object"
+    },
+    "next_page_token": {
+      "anyOf": [
+        {
+          "$ref": "#/components/schemas/BrowsePageToken"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "order": {
+      "enum": [
+        "asc",
+        "desc"
+      ],
+      "title": "Order",
+      "type": "string"
+    },
+    "page_size": {
+      "maximum": 100,
+      "minimum": 1,
+      "title": "Page Size",
+      "type": "integer"
+    },
+    "sort": {
+      "enum": [
+        "updated_at",
+        "phase",
+        "work_id"
+      ],
+      "title": "Sort",
+      "type": "string"
+    },
+    "work": {
+      "items": {
+        "$ref": "#/components/schemas/WorkView"
+      },
+      "title": "Work",
+      "type": "array"
+    }
+  },
+  "required": [
+    "page_size",
+    "next_page_token",
+    "sort",
+    "order",
+    "filters",
+    "work"
+  ],
+  "title": "WorkPage",
+  "type": "object"
+}
+```

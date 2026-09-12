@@ -33,6 +33,11 @@
 
 - [Operation parity: list_catalog_sync_changes](../operation/operation-parity-list-catalog-sync-changes.md)
 
+## Referenced contract dossiers
+
+- [schemas: CatalogSyncChangePage](schemas-catalogsyncchangepage.md)
+- [schemas: ErrorResponse](schemas-errorresponse.md)
+
 ## Extent decisions
 
 | Dimension | Unit | Policy | Bounds/reason |
@@ -41,7 +46,7 @@
 | length | characters | `contract_max` | maximum=4096, minimum=1, reason=schema-maximum |
 | value | schema-value | `contract_max` | maximum=100, minimum=1, reason=schema-maximum |
 
-## Contract
+## Contract summary
 
 - `operationId`: list_catalog_sync_changes
 - `summary`: List Catalog Sync Changes
@@ -65,3 +70,153 @@
 | `409` | Conflict |
 | `410` | Gone |
 | `500` | Internal Server Error |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: a7b98ddfda7bf097f3f2497ff7f428f78f2d0450bb3f28ac1a059a321c541107 -->
+
+```json
+{
+  "operationId": "list_catalog_sync_changes",
+  "parameters": [
+    {
+      "in": "query",
+      "name": "cursor",
+      "required": true,
+      "schema": {
+        "maxLength": 4096,
+        "minLength": 1,
+        "title": "Cursor",
+        "type": "string"
+      }
+    },
+    {
+      "in": "query",
+      "name": "limit",
+      "required": false,
+      "schema": {
+        "default": 100,
+        "maximum": 100,
+        "minimum": 1,
+        "title": "Limit",
+        "type": "integer"
+      }
+    }
+  ],
+  "responses": {
+    "200": {
+      "content": {
+        "application/json": {
+          "schema": {
+            "$ref": "#/components/schemas/CatalogSyncChangePage"
+          }
+        }
+      },
+      "description": "Successful Response"
+    },
+    "400": {
+      "content": {
+        "application/json": {
+          "schema": {
+            "$ref": "#/components/schemas/ErrorResponse"
+          }
+        }
+      },
+      "description": "Bad Request",
+      "x-riverhog-error-codes": [
+        "bad_request"
+      ]
+    },
+    "401": {
+      "content": {
+        "application/json": {
+          "schema": {
+            "$ref": "#/components/schemas/ErrorResponse"
+          }
+        }
+      },
+      "description": "Unauthorized",
+      "x-riverhog-error-codes": [
+        "unauthorized"
+      ]
+    },
+    "403": {
+      "content": {
+        "application/json": {
+          "schema": {
+            "$ref": "#/components/schemas/ErrorResponse"
+          }
+        }
+      },
+      "description": "Forbidden",
+      "x-riverhog-error-codes": [
+        "forbidden"
+      ]
+    },
+    "409": {
+      "content": {
+        "application/json": {
+          "schema": {
+            "$ref": "#/components/schemas/ErrorResponse"
+          }
+        }
+      },
+      "description": "Conflict",
+      "x-riverhog-error-codes": [
+        "catalog_sync_source_changed",
+        "catalog_sync_view_changed"
+      ]
+    },
+    "410": {
+      "content": {
+        "application/json": {
+          "schema": {
+            "$ref": "#/components/schemas/ErrorResponse"
+          }
+        }
+      },
+      "description": "Gone",
+      "x-riverhog-error-codes": [
+        "catalog_sync_cursor_expired",
+        "catalog_sync_history_expired"
+      ]
+    },
+    "500": {
+      "content": {
+        "application/json": {
+          "schema": {
+            "$ref": "#/components/schemas/ErrorResponse"
+          }
+        }
+      },
+      "description": "Internal Server Error",
+      "x-riverhog-error-codes": [
+        "internal_error"
+      ]
+    }
+  },
+  "security": [
+    {
+      "HTTPBearer": []
+    }
+  ],
+  "summary": "List Catalog Sync Changes",
+  "tags": [
+    "catalog synchronization"
+  ],
+  "x-riverhog-permission-requirements": [
+    {
+      "any_of": [
+        "catalog:read"
+      ]
+    }
+  ],
+  "x-riverhog-read-collection": {
+    "cursor_parameter": "cursor",
+    "kind": "cursor-feed",
+    "limit_parameter": "limit"
+  }
+}
+```

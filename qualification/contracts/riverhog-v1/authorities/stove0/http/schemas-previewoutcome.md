@@ -34,7 +34,7 @@
 |---|---|---|---|
 | length | characters | `contract_max` | maximum=1000, minimum=1, reason=schema-maximum |
 
-## Contract
+## Contract summary
 
 - `title`: PreviewOutcome
 - `type`: object
@@ -46,3 +46,45 @@
 | `code` | yes | string |  |
 | `message` | yes | string |  |
 | `retryable` | no | object (2 fields) |  |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: aadb99fcf4c17ef573a7c408d01e471d92f225af9f5eee9137fb980cbd4f3124 -->
+
+```json
+{
+  "additionalProperties": false,
+  "properties": {
+    "code": {
+      "pattern": "^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$",
+      "title": "Code",
+      "type": "string"
+    },
+    "message": {
+      "maxLength": 1000,
+      "minLength": 1,
+      "title": "Message",
+      "type": "string"
+    },
+    "retryable": {
+      "anyOf": [
+        {
+          "type": "boolean"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Retryable"
+    }
+  },
+  "required": [
+    "code",
+    "message"
+  ],
+  "title": "PreviewOutcome",
+  "type": "object"
+}
+```

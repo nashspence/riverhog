@@ -4,6 +4,11 @@
 
 Contract elements: **12** · Extent decisions: **0**
 
+| Family | Count |
+|---|---:|
+| `compatibility` | 7 |
+| `release-contract` | 5 |
+
 | Policy | Count |
 |---|---:|
 | `compatibility/archive/v1` | 1 |

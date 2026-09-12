@@ -27,7 +27,21 @@
 - Proof: `make release-check`
 - Proof: `make build`
 
-## Contract
+## Contract summary
+
+| Field | Shape |
+|---|---|
+| `group` | "gogurt.mounted-volume-providers" |
+| `owner` | "gogurt-core" |
+| `owner_constant` | "GOGURT_MOUNTED_VOLUME_PROVIDER_ENTRY_POINT_GROUP" |
+| `owner_path` | "reference/gogurt/packages/core" |
+| `providers` | array (3 items) |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 013b7c8cf9f3dec34750c3568d2377c0a18ed2e6dcacc38c2a6b1818c2a6d20c -->
 
 ```json
 {

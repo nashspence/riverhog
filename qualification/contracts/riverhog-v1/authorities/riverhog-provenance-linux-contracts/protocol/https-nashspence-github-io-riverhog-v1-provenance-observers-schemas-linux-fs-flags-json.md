@@ -34,7 +34,7 @@
 |---|---|---|---|
 | cardinality | items | `extension_owned` | maximum=None, reason=independently-versioned-extension-authority |
 
-## Contract
+## Contract summary
 
 - `$id`: https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/linux-fs-flags.json
 - `type`: object
@@ -45,3 +45,35 @@
 |---|---:|---|---|
 | `raw` | yes | integer |  |
 | `set_names` | yes | array |  |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: db4e0172d68ed4679f01a318962ea89f52c0ae405d53335fc21458b7b9cf74ec -->
+
+```json
+{
+  "$id": "https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/linux-fs-flags.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "raw": {
+      "minimum": 0,
+      "type": "integer"
+    },
+    "set_names": {
+      "items": {
+        "type": "string"
+      },
+      "type": "array",
+      "uniqueItems": true
+    }
+  },
+  "required": [
+    "raw",
+    "set_names"
+  ],
+  "type": "object"
+}
+```

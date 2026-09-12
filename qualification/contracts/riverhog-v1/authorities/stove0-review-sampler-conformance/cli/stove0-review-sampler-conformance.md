@@ -36,7 +36,7 @@
 | cardinality | values-per-occurrence | `fixed` | maximum=0, minimum=0, reason=fixed-command-argument-arity |
 | cardinality | values-per-occurrence | `fixed` | maximum=0, minimum=0, reason=fixed-command-argument-arity |
 
-## Contract
+## Contract summary
 
 - Parser name: `stove0-review-sampler-conformance`
 
@@ -49,3 +49,70 @@
 | `` | _StoreAction | no | Path | --request |
 | `` | _StoreTrueAction | no |  | --allow-insecure-http |
 | `` | _VersionAction | no |  | --version |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+### `/external_contract/cli/stove0-review-sampler-conformance/name`
+
+<!-- exact-contract-value: 2be934e3e5c6d2b8852132daa56e7eacc7a61415aa715a8e2ecb0373352b3905 -->
+
+```json
+"stove0-review-sampler-conformance"
+```
+
+### `/external_contract/cli/stove0-review-sampler-conformance/parameters`
+
+<!-- exact-contract-value: 49cca455fdf894c8d637d0b2169d59ee01d635b1ff796a41e3b609b0e826eb3e -->
+
+```json
+[
+  {
+    "dest": "base_url",
+    "kind": "_StoreAction",
+    "nargs": null,
+    "options": [],
+    "required": true
+  },
+  {
+    "dest": "token_file",
+    "kind": "_StoreAction",
+    "nargs": null,
+    "options": [
+      "--token-file"
+    ],
+    "required": true,
+    "type": "Path"
+  },
+  {
+    "dest": "request",
+    "kind": "_StoreAction",
+    "nargs": null,
+    "options": [
+      "--request"
+    ],
+    "required": false,
+    "type": "Path"
+  },
+  {
+    "default": false,
+    "dest": "allow_insecure_http",
+    "kind": "_StoreTrueAction",
+    "nargs": 0,
+    "options": [
+      "--allow-insecure-http"
+    ],
+    "required": false
+  },
+  {
+    "dest": "version",
+    "kind": "_VersionAction",
+    "nargs": 0,
+    "options": [
+      "--version"
+    ],
+    "required": false
+  }
+]
+```

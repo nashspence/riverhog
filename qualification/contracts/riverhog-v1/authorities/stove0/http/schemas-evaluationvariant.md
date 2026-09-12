@@ -28,13 +28,17 @@
 - Proof: `make operation-qualification`
 - Proof: `make compose-smoke`
 
+## Referenced contract dossiers
+
+- [schemas: JsonValue](schemas-jsonvalue.md)
+
 ## Extent decisions
 
 | Dimension | Unit | Policy | Bounds/reason |
 |---|---|---|---|
 | cardinality | entries | `operational_policy` | maximum=None, reason=no-declared-semantic-maximum |
 
-## Contract
+## Contract summary
 
 - `title`: EvaluationVariant
 - `type`: object
@@ -45,3 +49,34 @@
 |---|---:|---|---|
 | `id` | yes | string |  |
 | `parameters` | no | object |  |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 3e8958115a2db11803c3309a3413ad857ef50c32a66a2eebb3bbe835315ec19d -->
+
+```json
+{
+  "additionalProperties": false,
+  "properties": {
+    "id": {
+      "pattern": "^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$",
+      "title": "Id",
+      "type": "string"
+    },
+    "parameters": {
+      "additionalProperties": {
+        "$ref": "#/components/schemas/JsonValue"
+      },
+      "title": "Parameters",
+      "type": "object"
+    }
+  },
+  "required": [
+    "id"
+  ],
+  "title": "EvaluationVariant",
+  "type": "object"
+}
+```

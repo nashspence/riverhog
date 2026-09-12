@@ -32,7 +32,7 @@
 
 - [PUT /v1/target-executions/{job_id}/source-edges/{output_id}/{input_id}](../http/put-v1-target-executions-job-id-source-edges-output-id-input-id.md)
 
-## Contract
+## Contract summary
 
 | Concern | Contract |
 |---|---|
@@ -46,3 +46,24 @@
 | `provider_evidence` | None |
 | `read_collection` | None |
 | `response_authority` | canonical-document |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 1dd127ead922cc2bbbcc319291b27f974d873982a39ea56658c7d08dd63476fb -->
+
+```json
+{
+  "application": "stove0",
+  "classification": "client-only-primitive",
+  "cli_commands": [],
+  "client": "TargetCallbackClient",
+  "method": "PUT",
+  "operation_id": "declare_target_execution_source_edge",
+  "path": "/v1/target-executions/{job_id}/source-edges/{output_id}/{input_id}",
+  "provider_evidence": null,
+  "read_collection": null,
+  "response_authority": "canonical-document"
+}
+```

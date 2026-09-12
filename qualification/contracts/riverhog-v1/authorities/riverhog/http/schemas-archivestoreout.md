@@ -27,7 +27,12 @@
 - Proof: `make operation-qualification`
 - Proof: `make compose-smoke`
 
-## Contract
+## Referenced contract dossiers
+
+- [schemas: ArchiveDownloadAllowanceOut](schemas-archivedownloadallowanceout.md)
+- [schemas: ArchiveStoreName](schemas-archivestorename.md)
+
+## Contract summary
 
 - `title`: ArchiveStoreOut
 - `type`: object
@@ -44,3 +49,70 @@
 | `store` | yes | #/components/schemas/ArchiveStoreName |  |
 | `stored_bytes` | yes | integer |  |
 | `write_target` | yes | boolean |  |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 63b4747d492a9117cbf7db30dbe0694eed06b814ae9ed0648d2808cffe495d8e -->
+
+```json
+{
+  "additionalProperties": false,
+  "properties": {
+    "collections": {
+      "title": "Collections",
+      "type": "integer"
+    },
+    "download_allowance": {
+      "anyOf": [
+        {
+          "$ref": "#/components/schemas/ArchiveDownloadAllowanceOut"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "objects": {
+      "title": "Objects",
+      "type": "integer"
+    },
+    "read_mode": {
+      "enum": [
+        "immediate",
+        "restore_required"
+      ],
+      "title": "Read Mode",
+      "type": "string"
+    },
+    "read_priority": {
+      "title": "Read Priority",
+      "type": "integer"
+    },
+    "store": {
+      "$ref": "#/components/schemas/ArchiveStoreName"
+    },
+    "stored_bytes": {
+      "title": "Stored Bytes",
+      "type": "integer"
+    },
+    "write_target": {
+      "title": "Write Target",
+      "type": "boolean"
+    }
+  },
+  "required": [
+    "store",
+    "read_mode",
+    "read_priority",
+    "write_target",
+    "collections",
+    "objects",
+    "stored_bytes",
+    "download_allowance"
+  ],
+  "title": "ArchiveStoreOut",
+  "type": "object"
+}
+```

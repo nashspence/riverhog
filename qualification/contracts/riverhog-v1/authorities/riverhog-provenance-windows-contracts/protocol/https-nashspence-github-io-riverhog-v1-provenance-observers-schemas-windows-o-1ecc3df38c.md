@@ -34,7 +34,7 @@
 |---|---|---|---|
 | length | characters | `fixed` | maximum=32, minimum=32, reason=fixed-public-representation |
 
-## Contract
+## Contract summary
 
 - `$id`: https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/windows-object-id.json
 - `type`: object
@@ -45,3 +45,32 @@
 |---|---:|---|---|
 | `extended_info` | yes | string |  |
 | `object_id` | yes | string |  |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 430a561b65a9b122a328d3b778f6554d4595b652086d22adef84174b8d892a00 -->
+
+```json
+{
+  "$id": "https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/windows-object-id.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "extended_info": {
+      "pattern": "^[0-9a-f]{0,96}$",
+      "type": "string"
+    },
+    "object_id": {
+      "pattern": "^[0-9a-f]{32}$",
+      "type": "string"
+    }
+  },
+  "required": [
+    "object_id",
+    "extended_info"
+  ],
+  "type": "object"
+}
+```

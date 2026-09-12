@@ -27,7 +27,11 @@
 - Proof: `make operation-qualification`
 - Proof: `make compose-smoke`
 
-## Contract
+## Referenced contract dossiers
+
+- [schemas: ProvenanceExternalStateReferenceOut](schemas-provenanceexternalstatereferenceout.md)
+
+## Contract summary
 
 - `title`: ProvenanceTraceExternalStateReferenceItemOut
 - `type`: object
@@ -38,3 +42,31 @@
 |---|---:|---|---|
 | `kind` | yes | string |  |
 | `reference` | yes | #/components/schemas/ProvenanceExternalStateReferenceOut |  |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 14775eb0d4995fb0d8d72c90bed4aef8f5075c75e67f45ac5a8720eaf6eb1e67 -->
+
+```json
+{
+  "additionalProperties": false,
+  "properties": {
+    "kind": {
+      "const": "external_state_reference",
+      "title": "Kind",
+      "type": "string"
+    },
+    "reference": {
+      "$ref": "#/components/schemas/ProvenanceExternalStateReferenceOut"
+    }
+  },
+  "required": [
+    "kind",
+    "reference"
+  ],
+  "title": "ProvenanceTraceExternalStateReferenceItemOut",
+  "type": "object"
+}
+```

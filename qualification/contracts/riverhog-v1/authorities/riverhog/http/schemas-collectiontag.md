@@ -35,6 +35,26 @@
 | encoded-size | bytes | `contract_max` | maximum=65536, reason=bounded-human-authored-collection-tag |
 | length | characters | `contract_max` | maximum=65536, minimum=1, reason=schema-maximum |
 
-## Contract
+## Contract summary
 
 - `type`: string
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 5b6917e633cfcae1991f58fecc90c7c91406e442bcbfea53917a973300b49dc7 -->
+
+```json
+{
+  "maxLength": 65536,
+  "minLength": 1,
+  "type": "string",
+  "x-riverhog-encoded-bytes-max": 65536,
+  "x-riverhog-extent": {
+    "policy": "contract_max",
+    "reason": "bounded-human-authored-collection-tag"
+  },
+  "x-unicode-normalization": "NFC"
+}
+```

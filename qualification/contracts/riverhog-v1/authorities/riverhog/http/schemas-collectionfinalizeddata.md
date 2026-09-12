@@ -29,6 +29,12 @@
 - Proof: `make operation-qualification`
 - Proof: `make compose-smoke`
 
+## Referenced contract dossiers
+
+- [schemas: CollectionId](schemas-collectionid.md)
+- [schemas: RiverhogActor](schemas-riverhogactor.md)
+- [schemas: RiverhogEventCause](schemas-riverhogeventcause.md)
+
 ## Extent decisions
 
 | Dimension | Unit | Policy | Bounds/reason |
@@ -38,7 +44,7 @@
 | encoded-size | bytes | `contract_max` | maximum=4096, reason=bounded-lifecycle-event-context |
 | cardinality | entries | `operational_policy` | maximum=None, reason=no-declared-semantic-maximum |
 
-## Contract
+## Contract summary
 
 - `title`: CollectionFinalizedData
 - `type`: object
@@ -56,3 +62,85 @@
 | `context` | no | object (2 fields) |  |
 | `files_total` | yes | integer |  |
 | `initiator` | yes | #/components/schemas/RiverhogActor |  |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 4e2c740a3d21713a89eac6de594b9e49845d3ba53b838c2e9c7bf03af2c89231 -->
+
+```json
+{
+  "additionalProperties": false,
+  "properties": {
+    "actor": {
+      "$ref": "#/components/schemas/RiverhogActor"
+    },
+    "archive_root_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Archive Root Sha256",
+      "type": "string"
+    },
+    "bytes_total": {
+      "minimum": 0,
+      "title": "Bytes Total",
+      "type": "integer"
+    },
+    "cause": {
+      "anyOf": [
+        {
+          "$ref": "#/components/schemas/RiverhogEventCause"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "collection_created_at": {
+      "maxLength": 64,
+      "minLength": 1,
+      "title": "Collection Created At",
+      "type": "string"
+    },
+    "collection_id": {
+      "$ref": "#/components/schemas/CollectionId"
+    },
+    "context": {
+      "anyOf": [
+        {
+          "additionalProperties": true,
+          "type": "object",
+          "x-riverhog-encoded-bytes-max": 4096,
+          "x-riverhog-extent": {
+            "policy": "contract_max",
+            "reason": "bounded-lifecycle-event-context"
+          }
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Context"
+    },
+    "files_total": {
+      "minimum": 0,
+      "title": "Files Total",
+      "type": "integer"
+    },
+    "initiator": {
+      "$ref": "#/components/schemas/RiverhogActor"
+    }
+  },
+  "required": [
+    "actor",
+    "initiator",
+    "collection_id",
+    "collection_created_at",
+    "files_total",
+    "bytes_total",
+    "archive_root_sha256"
+  ],
+  "title": "CollectionFinalizedData",
+  "type": "object"
+}
+```

@@ -34,6 +34,19 @@
 |---|---|---|---|
 | length | characters | `fixed` | maximum=16, minimum=16, reason=fixed-public-representation |
 
-## Contract
+## Contract summary
 
 - `type`: string
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 9caba0a8f686e516ef41e01c762ddecc2dac32510acaa72d16df2d566c77f84c -->
+
+```json
+{
+  "pattern": "^[0-9a-f]{16}$",
+  "type": "string"
+}
+```

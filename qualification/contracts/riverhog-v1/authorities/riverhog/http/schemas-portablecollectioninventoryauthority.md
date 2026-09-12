@@ -28,13 +28,17 @@
 - Proof: `make operation-qualification`
 - Proof: `make compose-smoke`
 
+## Referenced contract dossiers
+
+- [schemas: PortableCollectionHeader](schemas-portablecollectionheader.md)
+
 ## Extent decisions
 
 | Dimension | Unit | Policy | Bounds/reason |
 |---|---|---|---|
 | length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
 
-## Contract
+## Contract summary
 
 - `title`: PortableCollectionInventoryAuthority
 - `description`: The immutable authority shared by every bounded inventory page.
@@ -48,3 +52,44 @@
 | `file_count` | yes | integer |  |
 | `header` | yes | #/components/schemas/PortableCollectionHeader |  |
 | `inventory_identity` | yes | string |  |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 98ff10220bdc7d51fc7ea37e5234aa18214324afa3fdcb4155f079fed05bc4cb -->
+
+```json
+{
+  "additionalProperties": false,
+  "description": "The immutable authority shared by every bounded inventory page.",
+  "properties": {
+    "file_bytes": {
+      "minimum": 0,
+      "title": "File Bytes",
+      "type": "integer"
+    },
+    "file_count": {
+      "minimum": 1,
+      "title": "File Count",
+      "type": "integer"
+    },
+    "header": {
+      "$ref": "#/components/schemas/PortableCollectionHeader"
+    },
+    "inventory_identity": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Inventory Identity",
+      "type": "string"
+    }
+  },
+  "required": [
+    "header",
+    "inventory_identity",
+    "file_count",
+    "file_bytes"
+  ],
+  "title": "PortableCollectionInventoryAuthority",
+  "type": "object"
+}
+```

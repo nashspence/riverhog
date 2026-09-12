@@ -27,7 +27,23 @@
 - Proof: `make operation-qualification`
 - Proof: `make compose-smoke`
 
-## Contract
+## Referenced contract dossiers
+
+- [schemas: ProvenanceTraceExternalStateReferenceItemOut](schemas-provenancetraceexternalstatereferenceitemout.md)
+- [schemas: ProvenanceTraceJournalItemOut](schemas-provenancetracejournalitemout.md)
+
+## Contract summary
+
+| Field | Shape |
+|---|---|
+| `discriminator` | object (2 fields) |
+| `oneOf` | array (2 items) |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 87420641aa260811cc4582e164bbd05cee21465ad23b0e05d84c4feef7205ddc -->
 
 ```json
 {

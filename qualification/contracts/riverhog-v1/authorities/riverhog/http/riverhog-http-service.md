@@ -28,14 +28,29 @@
 - Proof: `make operation-qualification`
 - Proof: `make compose-smoke`
 
-## Contract
+## Contract summary
+
+- Shape: array (2 items)
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+### `/external_contract/http_openapi/riverhog/info`
+
+<!-- exact-contract-value: 63c58fb42b0faf830caf4de555bc17b6921244a8cc0c58406dbd2fe34afddb39 -->
 
 ```json
-[
-  {
-    "title": "riverhog API",
-    "version": "0.1.0"
-  },
-  "3.1.0"
-]
+{
+  "title": "riverhog API",
+  "version": "0.1.0"
+}
+```
+
+### `/external_contract/http_openapi/riverhog/openapi`
+
+<!-- exact-contract-value: 536c8d78e8a0acbef96c0881c0b313c1dc7090176417df5982b2c7c82423ca16 -->
+
+```json
+"3.1.0"
 ```

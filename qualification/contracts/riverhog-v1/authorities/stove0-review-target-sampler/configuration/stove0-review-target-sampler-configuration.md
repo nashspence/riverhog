@@ -36,7 +36,7 @@
 | length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
 | length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
 
-## Contract
+## Contract summary
 
 - `title`: SamplerConfig
 - `type`: object
@@ -51,3 +51,57 @@
 | `id` | yes | string |  |
 | `image_digest` | yes | string |  |
 | `token_file` | yes | string |  |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: f41a6e541ec173a2e5d15cf28386e186b3440a8e7345c69f22509c6add3dad8e -->
+
+```json
+{
+  "additionalProperties": false,
+  "properties": {
+    "allow_insecure_http": {
+      "default": false,
+      "title": "Allow Insecure Http",
+      "type": "boolean"
+    },
+    "base_url": {
+      "maxLength": 2048,
+      "minLength": 1,
+      "title": "Base Url",
+      "type": "string"
+    },
+    "descriptor_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Descriptor Sha256",
+      "type": "string"
+    },
+    "id": {
+      "pattern": "^[a-z0-9]\u0028?:[a-z0-9._-]{0,118}[a-z0-9])?$",
+      "title": "Id",
+      "type": "string"
+    },
+    "image_digest": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Image Digest",
+      "type": "string"
+    },
+    "token_file": {
+      "format": "path",
+      "title": "Token File",
+      "type": "string"
+    }
+  },
+  "required": [
+    "id",
+    "base_url",
+    "token_file",
+    "descriptor_sha256",
+    "image_digest"
+  ],
+  "title": "SamplerConfig",
+  "type": "object"
+}
+```

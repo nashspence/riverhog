@@ -1,0 +1,134 @@
+# configuration: configuration-environment: variables
+
+[Atlas](../../../../../index.md) · [Authority](../../../index.md) · [Interface](../../index.md) · [Policies](../../../../../policies/index.md)
+
+Contract elements: **119** · Extent decisions: **49**
+
+| Policy | Count |
+|---|---:|
+| `compatibility/configuration/v1` | 119 |
+| `extent-rule/configured-capacity/v1` | 49 |
+
+## Semantic dossiers
+
+| Dossier | Extent decisions |
+|---|---:|
+| [GOGURT_LISTENER_HOST_PROVIDER](../../gogurt-listener-host-provider.md) | 0 |
+| [GOGURT_MOUNTED_VOLUME_PROVIDER](../../gogurt-mounted-volume-provider.md) | 0 |
+| [PIGGITY_LOCAL_DATABASE](../../piggity-local-database.md) | 0 |
+| [PIGGITY_LOCAL_ROOT](../../piggity-local-root.md) | 0 |
+| [PIGGITY_PLAIN](../../piggity-plain.md) | 0 |
+| [PIGGITY_PROVENANCE_OBSERVER](../../piggity-provenance-observer.md) | 0 |
+| [PIGGITY_UPLOAD_FILE_LOG_BYTES](../../piggity-upload-file-log-bytes.md) | 1 |
+| [PIGGITY_UPLOAD_FINALIZE_POLL_SECONDS](../../piggity-upload-finalize-poll-seconds.md) | 1 |
+| [PIGGITY_UPLOAD_FINALIZE_TIMEOUT_SECONDS](../../piggity-upload-finalize-timeout-seconds.md) | 1 |
+| [RIVERHOG_AGE_SESSION_CACHE_ENTRIES](../../riverhog-age-session-cache-entries.md) | 1 |
+| [RIVERHOG_AGE_SESSION_DERIVATION_CONCURRENCY](../../riverhog-age-session-derivation-concurrency.md) | 1 |
+| [RIVERHOG_ALLOW_INSECURE_HTTP](../../riverhog-allow-insecure-http.md) | 0 |
+| [RIVERHOG_ARCHIVE_ACTIVE_PASSPHRASE_ID](../../riverhog-archive-active-passphrase-id.md) | 0 |
+| [RIVERHOG_ARCHIVE_PART_PLAINTEXT_BYTES](../../riverhog-archive-part-plaintext-bytes.md) | 1 |
+| [RIVERHOG_ARCHIVE_PASSPHRASES_JSON](../../riverhog-archive-passphrases-json.md) | 0 |
+| [RIVERHOG_ARCHIVE_PREPARE_CONCURRENCY](../../riverhog-archive-prepare-concurrency.md) | 1 |
+| [RIVERHOG_ARCHIVE_READ_ORDER](../../riverhog-archive-read-order.md) | 0 |
+| [RIVERHOG_ARCHIVE_SCRYPT_WORK_FACTOR](../../riverhog-archive-scrypt-work-factor.md) | 0 |
+| [RIVERHOG_ARCHIVE_STORES](../../riverhog-archive-stores.md) | 0 |
+| [RIVERHOG_ARCHIVE_UPLOAD_REQUEST_CONCURRENCY](../../riverhog-archive-upload-request-concurrency.md) | 1 |
+| [RIVERHOG_ARCHIVE_UPLOAD_SWEEP_INTERVAL](../../riverhog-archive-upload-sweep-interval.md) | 1 |
+| [RIVERHOG_ARCHIVE_WRITE_CONCURRENCY](../../riverhog-archive-write-concurrency.md) | 1 |
+| [RIVERHOG_ARCHIVE_WRITE_STORE](../../riverhog-archive-write-store.md) | 0 |
+| [RIVERHOG_BASE_URL](../../riverhog-base-url.md) | 0 |
+| [RIVERHOG_BOOTSTRAP_TOKEN](../../riverhog-bootstrap-token.md) | 0 |
+| [RIVERHOG_BROWSE_TOKEN_LIFETIME](../../riverhog-browse-token-lifetime.md) | 0 |
+| [RIVERHOG_BROWSE_TOKEN_SIGNING_KEY](../../riverhog-browse-token-signing-key.md) | 0 |
+| [RIVERHOG_CATALOG_SYNC_BOOTSTRAP_LIFETIME](../../riverhog-catalog-sync-bootstrap-lifetime.md) | 0 |
+| [RIVERHOG_CATALOG_SYNC_CURSOR_LIFETIME](../../riverhog-catalog-sync-cursor-lifetime.md) | 0 |
+| [RIVERHOG_CATALOG_SYNC_HISTORY_REAP_BATCH_SIZE](../../riverhog-catalog-sync-history-reap-batch-size.md) | 1 |
+| [RIVERHOG_CATALOG_SYNC_HISTORY_RETENTION](../../riverhog-catalog-sync-history-retention.md) | 1 |
+| [RIVERHOG_CATALOG_SYNC_PAGE_SIZE_MAX](../../riverhog-catalog-sync-page-size-max.md) | 1 |
+| [RIVERHOG_COLLECTION_UPLOAD_CUSTODY_LEASE](../../riverhog-collection-upload-custody-lease.md) | 1 |
+| [RIVERHOG_DATABASE_URL](../../riverhog-database-url.md) | 0 |
+| [RIVERHOG_DOWNLOAD_FILE_CONCURRENCY](../../riverhog-download-file-concurrency.md) | 1 |
+| [RIVERHOG_DOWNLOAD_FILE_WINDOW](../../riverhog-download-file-window.md) | 1 |
+| [RIVERHOG_DOWNLOAD_TIMEOUT_SECONDS](../../riverhog-download-timeout-seconds.md) | 1 |
+| [RIVERHOG_EVENT_CONTEXT_REAP_BATCH_SIZE](../../riverhog-event-context-reap-batch-size.md) | 1 |
+| [RIVERHOG_EVENT_CONTEXT_RETENTION](../../riverhog-event-context-retention.md) | 1 |
+| [RIVERHOG_EVENT_SOURCE](../../riverhog-event-source.md) | 0 |
+| [RIVERHOG_FTP_ADAPTER_ALLOW_INSECURE_HTTP](../../riverhog-ftp-adapter-allow-insecure-http.md) | 0 |
+| [RIVERHOG_FTP_ADAPTER_BASE_URL](../../riverhog-ftp-adapter-base-url.md) | 0 |
+| [RIVERHOG_FTP_ADAPTER_CONFIG](../../riverhog-ftp-adapter-config.md) | 0 |
+| [RIVERHOG_FTP_ADAPTER_HTTP2](../../riverhog-ftp-adapter-http2.md) | 0 |
+| [RIVERHOG_FTP_ADAPTER_HTTP_TIMEOUT_SECONDS](../../riverhog-ftp-adapter-http-timeout-seconds.md) | 1 |
+| [RIVERHOG_FTP_ADAPTER_TOKEN](../../riverhog-ftp-adapter-token.md) | 0 |
+| [RIVERHOG_HOST_HEADER](../../riverhog-host-header.md) | 0 |
+| [RIVERHOG_HTTP2](../../riverhog-http2.md) | 0 |
+| [RIVERHOG_HTTP_TIMEOUT_SECONDS](../../riverhog-http-timeout-seconds.md) | 1 |
+| [RIVERHOG_INGRESS_MAX_INFLIGHT_BYTES](../../riverhog-ingress-max-inflight-bytes.md) | 1 |
+| [RIVERHOG_INGRESS_SOURCE_READ_CHUNK_BYTES](../../riverhog-ingress-source-read-chunk-bytes.md) | 1 |
+| [RIVERHOG_LOG_LEVEL](../../riverhog-log-level.md) | 0 |
+| [RIVERHOG_PACK_FILES](../../riverhog-pack-files.md) | 0 |
+| [RIVERHOG_PACK_MEMBER_BYTES](../../riverhog-pack-member-bytes.md) | 1 |
+| [RIVERHOG_PACK_SOURCE_BYTES](../../riverhog-pack-source-bytes.md) | 1 |
+| [RIVERHOG_PROVENANCE_STATE_HOME](../../riverhog-provenance-state-home.md) | 0 |
+| [RIVERHOG_PUBLIC_BASE_URL](../../riverhog-public-base-url.md) | 0 |
+| [RIVERHOG_RAW_VOLUME_PLAINTEXT_BYTES](../../riverhog-raw-volume-plaintext-bytes.md) | 1 |
+| [RIVERHOG_RETRIEVAL_CACHE_NEW_ARCHIVE_ENABLED](../../riverhog-retrieval-cache-new-archive-enabled.md) | 0 |
+| [RIVERHOG_RETRIEVAL_CACHE_NEW_ARCHIVE_LEASE](../../riverhog-retrieval-cache-new-archive-lease.md) | 1 |
+| [RIVERHOG_RETRIEVAL_CACHE_STORES](../../riverhog-retrieval-cache-stores.md) | 0 |
+| [RIVERHOG_RETRIEVAL_CACHE_SWEEP_INTERVAL](../../riverhog-retrieval-cache-sweep-interval.md) | 1 |
+| [RIVERHOG_RETRIEVAL_CACHE_WRITE_SEGMENT_BYTES](../../riverhog-retrieval-cache-write-segment-bytes.md) | 1 |
+| [RIVERHOG_RETRIEVAL_DEFAULT_LEASE](../../riverhog-retrieval-default-lease.md) | 1 |
+| [RIVERHOG_RETRIEVAL_ESTIMATED_LATENCY](../../riverhog-retrieval-estimated-latency.md) | 0 |
+| [RIVERHOG_RETRIEVAL_MAX_INFLIGHT_BYTES](../../riverhog-retrieval-max-inflight-bytes.md) | 1 |
+| [RIVERHOG_RETRIEVAL_MAX_LEASE](../../riverhog-retrieval-max-lease.md) | 1 |
+| [RIVERHOG_RETRIEVAL_MAX_RANGE_BYTES](../../riverhog-retrieval-max-range-bytes.md) | 1 |
+| [RIVERHOG_RETRIEVAL_PENDING_TIMEOUT](../../riverhog-retrieval-pending-timeout.md) | 1 |
+| [RIVERHOG_RETRIEVAL_RANGE_BILLING_MODE](../../riverhog-retrieval-range-billing-mode.md) | 0 |
+| [RIVERHOG_RETRIEVAL_RANGE_MERGE_GAP_BYTES](../../riverhog-retrieval-range-merge-gap-bytes.md) | 1 |
+| [RIVERHOG_RETRIEVAL_READ_CHUNK_BYTES](../../riverhog-retrieval-read-chunk-bytes.md) | 1 |
+| [RIVERHOG_RETRIEVAL_REQUEST_CONCURRENCY](../../riverhog-retrieval-request-concurrency.md) | 1 |
+| [RIVERHOG_RETRIEVAL_RESTORE_POLL_INTERVAL](../../riverhog-retrieval-restore-poll-interval.md) | 1 |
+| [RIVERHOG_TOKEN](../../riverhog-token.md) | 0 |
+| [RIVERHOG_UPLOAD_FILE_CONCURRENCY](../../riverhog-upload-file-concurrency.md) | 1 |
+| [RIVERHOG_UPLOAD_FILE_WINDOW](../../riverhog-upload-file-window.md) | 1 |
+| [RIVERHOG_UPLOAD_TIMEOUT_SECONDS](../../riverhog-upload-timeout-seconds.md) | 1 |
+| [STOVE0_ADMISSIONS_PATH](../../stove0-admissions-path.md) | 0 |
+| [STOVE0_ALLOW_INSECURE_HTTP](../../stove0-allow-insecure-http.md) | 0 |
+| [STOVE0_API_TOKEN](../../stove0-api-token.md) | 0 |
+| [STOVE0_BASE_URL](../../stove0-base-url.md) | 0 |
+| [STOVE0_BROWSE_TOKEN_LIFETIME_SECONDS](../../stove0-browse-token-lifetime-seconds.md) | 1 |
+| [STOVE0_BROWSE_TOKEN_SIGNING_KEY](../../stove0-browse-token-signing-key.md) | 0 |
+| [STOVE0_CAPABILITY_TTL_SECONDS](../../stove0-capability-ttl-seconds.md) | 1 |
+| [STOVE0_CLAIM_LEASE_SECONDS](../../stove0-claim-lease-seconds.md) | 1 |
+| [STOVE0_DATABASE_URL](../../stove0-database-url.md) | 0 |
+| [STOVE0_EXIFTOOL_BIN](../../stove0-exiftool-bin.md) | 0 |
+| [STOVE0_EXIFTOOL_OBSERVER_HOST](../../stove0-exiftool-observer-host.md) | 0 |
+| [STOVE0_EXIFTOOL_OBSERVER_IMAGE_DIGEST](../../stove0-exiftool-observer-image-digest.md) | 0 |
+| [STOVE0_EXIFTOOL_OBSERVER_PORT](../../stove0-exiftool-observer-port.md) | 0 |
+| [STOVE0_EXIFTOOL_OBSERVER_SOURCE_REVISION](../../stove0-exiftool-observer-source-revision.md) | 0 |
+| [STOVE0_EXIFTOOL_OBSERVER_TOKEN](../../stove0-exiftool-observer-token.md) | 0 |
+| [STOVE0_EXIFTOOL_OBSERVER_TOKEN_FILE](../../stove0-exiftool-observer-token-file.md) | 0 |
+| [STOVE0_EXIFTOOL_OBSERVER_WORKSPACE](../../stove0-exiftool-observer-workspace.md) | 0 |
+| [STOVE0_FFMPEG_BIN](../../stove0-ffmpeg-bin.md) | 0 |
+| [STOVE0_FFPROBE_BIN](../../stove0-ffprobe-bin.md) | 0 |
+| [STOVE0_FFPROBE_SAMPLING_OBSERVER_HOST](../../stove0-ffprobe-sampling-observer-host.md) | 0 |
+| [STOVE0_FFPROBE_SAMPLING_OBSERVER_IMAGE_DIGEST](../../stove0-ffprobe-sampling-observer-image-digest.md) | 0 |
+| [STOVE0_FFPROBE_SAMPLING_OBSERVER_PORT](../../stove0-ffprobe-sampling-observer-port.md) | 0 |
+| [STOVE0_FFPROBE_SAMPLING_OBSERVER_SOURCE_REVISION](../../stove0-ffprobe-sampling-observer-source-revision.md) | 0 |
+| [STOVE0_FFPROBE_SAMPLING_OBSERVER_TOKEN](../../stove0-ffprobe-sampling-observer-token.md) | 0 |
+| [STOVE0_FFPROBE_SAMPLING_OBSERVER_TOKEN_FILE](../../stove0-ffprobe-sampling-observer-token-file.md) | 0 |
+| [STOVE0_FFPROBE_SAMPLING_OBSERVER_WORKSPACE](../../stove0-ffprobe-sampling-observer-workspace.md) | 0 |
+| [STOVE0_HTTP2](../../stove0-http2.md) | 0 |
+| [STOVE0_HTTP_TIMEOUT_SECONDS](../../stove0-http-timeout-seconds.md) | 1 |
+| [STOVE0_NVENC_AV1_OPUS_TARGET_ZSTD](../../stove0-nvenc-av1-opus-target-zstd.md) | 0 |
+| [STOVE0_OBSERVERS_JSON](../../stove0-observers-json.md) | 0 |
+| [STOVE0_OPERATIONAL_STATE_RETENTION_SECONDS](../../stove0-operational-state-retention-seconds.md) | 1 |
+| [STOVE0_RECIPES_PATH](../../stove0-recipes-path.md) | 0 |
+| [STOVE0_SCHEDULER_INTERVAL_SECONDS](../../stove0-scheduler-interval-seconds.md) | 1 |
+| [STOVE0_TARGETS_JSON](../../stove0-targets-json.md) | 0 |
+| [STOVE0_TARGET_AUTHORITY_BATCH_SIZE](../../stove0-target-authority-batch-size.md) | 1 |
+| [STOVE0_TARGET_CALLBACK_ALLOW_INSECURE_HTTP](../../stove0-target-callback-allow-insecure-http.md) | 0 |
+| [STOVE0_TARGET_CALLBACK_BASE_URL](../../stove0-target-callback-base-url.md) | 0 |
+| [STOVE0_TARGET_CALLBACK_SIGNING_KEY](../../stove0-target-callback-signing-key.md) | 0 |
+| [STOVE0_TARGET_TERMINAL_STATE_RETENTION_SECONDS](../../stove0-target-terminal-state-retention-seconds.md) | 1 |
+| [STOVE0_TOKEN](../../stove0-token.md) | 0 |
+| [STOVE0_WORKSPACE_ASSURANCE](../../stove0-workspace-assurance.md) | 0 |

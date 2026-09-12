@@ -33,7 +33,7 @@
 - [POST /v1/collections/{collection_id}/delete](../http/post-v1-collections-collection-id-delete.md)
 - [piggity collection delete](../../piggity/cli/piggity-collection-delete.md)
 
-## Contract
+## Contract summary
 
 | Concern | Contract |
 |---|---|
@@ -47,3 +47,26 @@
 | `provider_evidence` | provider-qualification:#442 |
 | `read_collection` | None |
 | `response_authority` | http-json |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: d777f37738101b07d05bf08df890f121abe16efb7f12757119392befac4945d9 -->
+
+```json
+{
+  "application": "riverhog",
+  "classification": "human-cli+json",
+  "cli_commands": [
+    "collection delete"
+  ],
+  "client": "ApiClient",
+  "method": "POST",
+  "operation_id": "delete_collection",
+  "path": "/v1/collections/{collection_id}/delete",
+  "provider_evidence": "provider-qualification:#442",
+  "read_collection": null,
+  "response_authority": "http-json"
+}
+```

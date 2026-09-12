@@ -33,6 +33,11 @@
 
 - [Operation parity: list_processing_claim_dispositions](../operation/operation-parity-list-processing-claim-dispositions.md)
 
+## Referenced contract dossiers
+
+- [schemas: ArtifactDispositionPageDocument](schemas-artifactdispositionpagedocument.md)
+- [schemas: ErrorResponse](schemas-errorresponse.md)
+
 ## Extent decisions
 
 | Dimension | Unit | Policy | Bounds/reason |
@@ -41,7 +46,7 @@
 | length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
 | length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
 
-## Contract
+## Contract summary
 
 - `operationId`: list_processing_claim_dispositions
 - `summary`: List Processing Claim Dispositions
@@ -66,3 +71,163 @@
 | `404` | Not Found |
 | `409` | Conflict |
 | `500` | Internal Server Error |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 3c8bc9e89e9474862215b3cadb3d8d1bfae74b5b5d555efe5df4f8596fcbc4b5 -->
+
+```json
+{
+  "operationId": "list_processing_claim_dispositions",
+  "parameters": [
+    {
+      "in": "path",
+      "name": "claim_id",
+      "required": true,
+      "schema": {
+        "pattern": "^[0-9a-f]{64}$",
+        "title": "Claim Id",
+        "type": "string"
+      }
+    },
+    {
+      "in": "query",
+      "name": "authority_sha256",
+      "required": true,
+      "schema": {
+        "pattern": "^[0-9a-f]{64}$",
+        "title": "Authority Sha256",
+        "type": "string"
+      }
+    },
+    {
+      "in": "query",
+      "name": "start_ordinal",
+      "required": false,
+      "schema": {
+        "default": 0,
+        "minimum": 0,
+        "title": "Start Ordinal",
+        "type": "integer"
+      }
+    }
+  ],
+  "responses": {
+    "200": {
+      "content": {
+        "application/json": {
+          "schema": {
+            "$ref": "#/components/schemas/ArtifactDispositionPageDocument"
+          }
+        }
+      },
+      "description": "Successful Response"
+    },
+    "400": {
+      "content": {
+        "application/json": {
+          "schema": {
+            "$ref": "#/components/schemas/ErrorResponse"
+          }
+        }
+      },
+      "description": "Bad Request",
+      "x-riverhog-error-codes": [
+        "bad_request"
+      ]
+    },
+    "401": {
+      "content": {
+        "application/json": {
+          "schema": {
+            "$ref": "#/components/schemas/ErrorResponse"
+          }
+        }
+      },
+      "description": "Unauthorized",
+      "x-riverhog-error-codes": [
+        "unauthorized"
+      ]
+    },
+    "403": {
+      "content": {
+        "application/json": {
+          "schema": {
+            "$ref": "#/components/schemas/ErrorResponse"
+          }
+        }
+      },
+      "description": "Forbidden",
+      "x-riverhog-error-codes": [
+        "forbidden"
+      ]
+    },
+    "404": {
+      "content": {
+        "application/json": {
+          "schema": {
+            "$ref": "#/components/schemas/ErrorResponse"
+          }
+        }
+      },
+      "description": "Not Found",
+      "x-riverhog-error-codes": [
+        "not_found"
+      ]
+    },
+    "409": {
+      "content": {
+        "application/json": {
+          "schema": {
+            "$ref": "#/components/schemas/ErrorResponse"
+          }
+        }
+      },
+      "description": "Conflict",
+      "x-riverhog-error-codes": [
+        "conflict"
+      ]
+    },
+    "500": {
+      "content": {
+        "application/json": {
+          "schema": {
+            "$ref": "#/components/schemas/ErrorResponse"
+          }
+        }
+      },
+      "description": "Internal Server Error",
+      "x-riverhog-error-codes": [
+        "internal_error"
+      ]
+    }
+  },
+  "security": [
+    {
+      "HTTPBearer": []
+    }
+  ],
+  "summary": "List Processing Claim Dispositions",
+  "tags": [
+    "collection-workflows"
+  ],
+  "x-riverhog-interface": "client-only-primitive",
+  "x-riverhog-permission-requirements": [
+    {
+      "any_of": [
+        "collection-transforms:control",
+        "collection-transforms:execute"
+      ]
+    }
+  ],
+  "x-riverhog-read-collection": {
+    "authority": "processing-claim-dispositions",
+    "authority_parameter": "authority_sha256",
+    "cursor_parameter": "start_ordinal",
+    "fixed_limit": 128,
+    "kind": "exact-authority-page"
+  }
+}
+```

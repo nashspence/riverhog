@@ -27,7 +27,18 @@
 - Proof: `make unit`
 - Proof: `make compose-smoke`
 
-## Contract
+## Contract summary
+
+| Field | Shape |
+|---|---|
+| `consumers` | array (1 items) |
+| `name` | "STOVE0_NVENC_AV1_OPUS_TARGET_ZSTD" |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 06523f8282fa53b1c6d15af90137aa9ebaaf1cdfd9556c4c92a12d8f4c4928e0 -->
 
 ```json
 {

@@ -35,7 +35,7 @@
 | value | schema-value | `extension_owned` | maximum=None, reason=independently-versioned-extension-authority |
 | value | schema-value | `extension_owned` | maximum=None, reason=independently-versioned-extension-authority |
 
-## Contract
+## Contract summary
 
 - `$id`: https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/windows-integrity-info.json
 - `type`: object
@@ -48,3 +48,42 @@
 | `checksum_chunk_size` | yes | integer |  |
 | `cluster_size` | yes | integer |  |
 | `flags` | yes | integer |  |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 986c12768cb14d0aceae4c926c74f7230aac4e51cd9cbb0c04e6453b35a2aaad -->
+
+```json
+{
+  "$id": "https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/windows-integrity-info.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "checksum_algorithm": {
+      "minimum": 0,
+      "type": "integer"
+    },
+    "checksum_chunk_size": {
+      "minimum": 0,
+      "type": "integer"
+    },
+    "cluster_size": {
+      "minimum": 0,
+      "type": "integer"
+    },
+    "flags": {
+      "minimum": 0,
+      "type": "integer"
+    }
+  },
+  "required": [
+    "checksum_algorithm",
+    "flags",
+    "checksum_chunk_size",
+    "cluster_size"
+  ],
+  "type": "object"
+}
+```

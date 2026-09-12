@@ -32,7 +32,7 @@
 
 - [PUT /v1/collection-processing-claims/{claim_id}/capabilities/{capability_id}/artifacts](../http/put-v1-collection-processing-claims-claim-id-capabilities-capability-id-artifacts.md)
 
-## Contract
+## Contract summary
 
 | Concern | Contract |
 |---|---|
@@ -46,3 +46,24 @@
 | `provider_evidence` | None |
 | `read_collection` | None |
 | `response_authority` | canonical-document |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 025a9f977d9d40474ee72cc381d4fe447d833f8274d29cdd9f8932ff9b247a8f -->
+
+```json
+{
+  "application": "riverhog",
+  "classification": "client-only-primitive",
+  "cli_commands": [],
+  "client": "ApiClient",
+  "method": "PUT",
+  "operation_id": "append_transform_capability_artifacts",
+  "path": "/v1/collection-processing-claims/{claim_id}/capabilities/{capability_id}/artifacts",
+  "provider_evidence": null,
+  "read_collection": null,
+  "response_authority": "canonical-document"
+}
+```

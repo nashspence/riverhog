@@ -27,6 +27,19 @@
 - Proof: `make operation-qualification`
 - Proof: `make compose-smoke`
 
-## Contract
+## Contract summary
 
 - `type`: integer
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: c28aae62bdc356cc0b0c6d727693510d8b5cc93095f623f0886059f25ad32962 -->
+
+```json
+{
+  "ge": 0,
+  "type": "integer"
+}
+```

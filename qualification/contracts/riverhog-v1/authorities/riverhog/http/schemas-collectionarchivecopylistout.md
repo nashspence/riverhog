@@ -29,6 +29,12 @@
 - Proof: `make operation-qualification`
 - Proof: `make compose-smoke`
 
+## Referenced contract dossiers
+
+- [schemas: ArchiveCopyOut](schemas-archivecopyout.md)
+- [schemas: BrowsePageToken](schemas-browsepagetoken.md)
+- [schemas: CollectionId](schemas-collectionid.md)
+
 ## Extent decisions
 
 | Dimension | Unit | Policy | Bounds/reason |
@@ -36,7 +42,7 @@
 | cardinality | items | `segmented_no_total_max` | reason=bounded-route-page |
 | value | schema-value | `contract_max` | maximum=100, minimum=1, reason=schema-maximum |
 
-## Contract
+## Contract summary
 
 - `title`: CollectionArchiveCopyListOut
 - `type`: object
@@ -49,3 +55,51 @@
 | `copies` | yes | array |  |
 | `next_page_token` | yes | object (1 fields) |  |
 | `page_size` | yes | integer |  |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 32d0f1ea2a25e46086d96f1d485b97af83099433ef4dde85cfe972815dc0abb7 -->
+
+```json
+{
+  "additionalProperties": false,
+  "properties": {
+    "collection_id": {
+      "$ref": "#/components/schemas/CollectionId"
+    },
+    "copies": {
+      "items": {
+        "$ref": "#/components/schemas/ArchiveCopyOut"
+      },
+      "title": "Copies",
+      "type": "array"
+    },
+    "next_page_token": {
+      "anyOf": [
+        {
+          "$ref": "#/components/schemas/BrowsePageToken"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "page_size": {
+      "maximum": 100,
+      "minimum": 1,
+      "title": "Page Size",
+      "type": "integer"
+    }
+  },
+  "required": [
+    "collection_id",
+    "page_size",
+    "next_page_token",
+    "copies"
+  ],
+  "title": "CollectionArchiveCopyListOut",
+  "type": "object"
+}
+```

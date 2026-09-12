@@ -27,6 +27,24 @@
 - Proof: `make release-check`
 - Proof: `make database-qualification`
 
-## Contract
+## Contract summary
 
 - `format`: gogurt-listener-state/v1
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 8a324964b8ea8088c138048b7c54a67ab0944954314a1f147f44ab64dd1b38f4 -->
+
+```json
+{
+  "distribution": "gogurt-listener-runtime",
+  "fixture_sha256s": [
+    "278ff26b6357b89c6af934f31b31917557cd3c377ecdddf8308eb3d9962cd15a"
+  ],
+  "format": "gogurt-listener-state/v1",
+  "head": "1",
+  "id": "gogurt-listener"
+}
+```

@@ -31,7 +31,12 @@
 
 - [Operation parity: health_live](../operation/operation-parity-health-live.md)
 
-## Contract
+## Referenced contract dossiers
+
+- [schemas: ErrorResponse](schemas-errorresponse.md)
+- [schemas: HealthResponse](schemas-healthresponse.md)
+
+## Contract summary
 
 - `operationId`: health_live
 - `summary`: Health Live
@@ -42,3 +47,44 @@
 |---|---|
 | `200` | Successful Response |
 | `500` | Internal Server Error |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: cc5ca13fd3c259e2a7f72bf552be42bd70202efd06ac4ceac673e8899edb356c -->
+
+```json
+{
+  "operationId": "health_live",
+  "responses": {
+    "200": {
+      "content": {
+        "application/json": {
+          "schema": {
+            "$ref": "#/components/schemas/HealthResponse"
+          }
+        }
+      },
+      "description": "Successful Response"
+    },
+    "500": {
+      "content": {
+        "application/json": {
+          "schema": {
+            "$ref": "#/components/schemas/ErrorResponse"
+          }
+        }
+      },
+      "description": "Internal Server Error",
+      "x-riverhog-error-codes": [
+        "internal_error"
+      ]
+    }
+  },
+  "summary": "Health Live",
+  "tags": [
+    "health"
+  ]
+}
+```

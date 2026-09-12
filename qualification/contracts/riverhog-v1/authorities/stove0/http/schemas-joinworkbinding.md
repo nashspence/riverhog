@@ -29,6 +29,10 @@
 - Proof: `make operation-qualification`
 - Proof: `make compose-smoke`
 
+## Referenced contract dossiers
+
+- [schemas: JoinWorkMemberBinding](schemas-joinworkmemberbinding.md)
+
 ## Extent decisions
 
 | Dimension | Unit | Policy | Bounds/reason |
@@ -37,7 +41,7 @@
 | cardinality | items | `operational_policy` | maximum=None, reason=no-declared-semantic-maximum |
 | length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
 
-## Contract
+## Contract summary
 
 - `title`: JoinWorkBinding
 - `description`: Stable branch-set lineage for one ordinary join work identity.
@@ -51,3 +55,49 @@
 | `kind` | no | string |  |
 | `members` | yes | array |  |
 | `parent_work_id` | yes | string |  |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 2f2994411487c2f5a213ce07a72a8092d94a0e6a56dcccb7110296f6f222b472 -->
+
+```json
+{
+  "additionalProperties": false,
+  "description": "Stable branch-set lineage for one ordinary join work identity.",
+  "properties": {
+    "branch_set_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Branch Set Sha256",
+      "type": "string"
+    },
+    "kind": {
+      "const": "join",
+      "default": "join",
+      "title": "Kind",
+      "type": "string"
+    },
+    "members": {
+      "items": {
+        "$ref": "#/components/schemas/JoinWorkMemberBinding"
+      },
+      "minItems": 2,
+      "title": "Members",
+      "type": "array"
+    },
+    "parent_work_id": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Parent Work Id",
+      "type": "string"
+    }
+  },
+  "required": [
+    "parent_work_id",
+    "branch_set_sha256",
+    "members"
+  ],
+  "title": "JoinWorkBinding",
+  "type": "object"
+}
+```

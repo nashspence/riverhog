@@ -34,7 +34,7 @@
 |---|---|---|---|
 | length | characters | `contract_max` | maximum=160, minimum=1, reason=schema-maximum |
 
-## Contract
+## Contract summary
 
 - `title`: WorkClaimView
 - `type`: object
@@ -45,3 +45,34 @@
 |---|---:|---|---|
 | `claim_id` | yes | string |  |
 | `fence` | yes | integer |  |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 5836e31fafa2f07e9c5cb14ccd4562b4c1e719d136d58b41e3f193e6c594bc53 -->
+
+```json
+{
+  "additionalProperties": false,
+  "properties": {
+    "claim_id": {
+      "maxLength": 160,
+      "minLength": 1,
+      "title": "Claim Id",
+      "type": "string"
+    },
+    "fence": {
+      "minimum": 1,
+      "title": "Fence",
+      "type": "integer"
+    }
+  },
+  "required": [
+    "claim_id",
+    "fence"
+  ],
+  "title": "WorkClaimView",
+  "type": "object"
+}
+```

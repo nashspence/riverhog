@@ -27,7 +27,7 @@
 - Proof: `make operation-qualification`
 - Proof: `make compose-smoke`
 
-## Contract
+## Contract summary
 
 - `title`: CollectionUploadRawDigestProgressDocument
 - `type`: object
@@ -40,3 +40,43 @@
 | `complete` | yes | boolean |  |
 | `expected_parts` | yes | integer |  |
 | `path` | yes | string |  |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 65617a770d19d14c6eaf53cf21c753767836d93c430135b0465dcfe6d6f219bd -->
+
+```json
+{
+  "additionalProperties": false,
+  "properties": {
+    "accepted_parts": {
+      "minimum": 0,
+      "title": "Accepted Parts",
+      "type": "integer"
+    },
+    "complete": {
+      "title": "Complete",
+      "type": "boolean"
+    },
+    "expected_parts": {
+      "minimum": 1,
+      "title": "Expected Parts",
+      "type": "integer"
+    },
+    "path": {
+      "title": "Path",
+      "type": "string"
+    }
+  },
+  "required": [
+    "path",
+    "accepted_parts",
+    "expected_parts",
+    "complete"
+  ],
+  "title": "CollectionUploadRawDigestProgressDocument",
+  "type": "object"
+}
+```

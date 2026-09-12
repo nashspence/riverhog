@@ -32,7 +32,7 @@
 
 - [POST /v1/collection-upload-sessions/{collection_id}/provenance/journals/{journal_id}/seal](../http/post-v1-collection-upload-sessions-collection-id-provenance-journals-journal-id-seal.md)
 
-## Contract
+## Contract summary
 
 | Concern | Contract |
 |---|---|
@@ -46,3 +46,24 @@
 | `provider_evidence` | None |
 | `read_collection` | None |
 | `response_authority` | canonical-document |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 23876f58801ea4afcf07ea9fb71f4e70efbf3f3ab730be9651c851512f2df84f -->
+
+```json
+{
+  "application": "riverhog",
+  "classification": "client-only-primitive",
+  "cli_commands": [],
+  "client": "ApiClient",
+  "method": "POST",
+  "operation_id": "seal_collection_upload_session_provenance_journal",
+  "path": "/v1/collection-upload-sessions/{collection_id}/provenance/journals/{journal_id}/seal",
+  "provider_evidence": null,
+  "read_collection": null,
+  "response_authority": "canonical-document"
+}
+```

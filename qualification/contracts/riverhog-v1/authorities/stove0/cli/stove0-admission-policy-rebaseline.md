@@ -39,7 +39,7 @@
 |---|---|---|---|
 | cardinality | values-per-occurrence | `fixed` | maximum=1, minimum=1, reason=fixed-command-argument-arity |
 
-## Contract
+## Contract summary
 
 - Parser name: `rebaseline`
 
@@ -48,3 +48,40 @@
 | Name | Kind | Required | Type | Options |
 |---|---|---:|---|---|
 | `policy_id` | TyperArgument | yes | {'class': 'typer._click.types.StringParamType', 'name': 'text'} | policy_id |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+### `/external_contract/cli/stove0/commands/admission/commands/policy/commands/rebaseline/name`
+
+<!-- exact-contract-value: 6d6afe02995e3b8523f798f248dce3c58f9efae832d68eb5f8626c5ebdbf8423 -->
+
+```json
+"rebaseline"
+```
+
+### `/external_contract/cli/stove0/commands/admission/commands/policy/commands/rebaseline/parameters`
+
+<!-- exact-contract-value: c2ba15d022e17d87c4fef6b4fc54fd47ee4a58f77e072e2fddfb95ae64e3222a -->
+
+```json
+[
+  {
+    "envvar": null,
+    "kind": "TyperArgument",
+    "multiple": false,
+    "name": "policy_id",
+    "nargs": 1,
+    "options": [
+      "policy_id"
+    ],
+    "required": true,
+    "secondary_options": [],
+    "type": {
+      "class": "typer._click.types.StringParamType",
+      "name": "text"
+    }
+  }
+]
+```

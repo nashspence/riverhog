@@ -33,7 +33,7 @@
 - [POST /v1/evaluations](../http/post-v1-evaluations.md)
 - [stove0 evaluation create](../cli/stove0-evaluation-create.md)
 
-## Contract
+## Contract summary
 
 | Concern | Contract |
 |---|---|
@@ -47,3 +47,26 @@
 | `provider_evidence` | None |
 | `read_collection` | None |
 | `response_authority` | operator-projection |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 12e9bfc10407812b8facc18d4b76500a002fd71e033371806d2c33ebfb87cd85 -->
+
+```json
+{
+  "application": "stove0",
+  "classification": "human-cli+json",
+  "cli_commands": [
+    "evaluation create"
+  ],
+  "client": "Stove0ApiClient",
+  "method": "POST",
+  "operation_id": "create_evaluation",
+  "path": "/v1/evaluations",
+  "provider_evidence": null,
+  "read_collection": null,
+  "response_authority": "operator-projection"
+}
+```

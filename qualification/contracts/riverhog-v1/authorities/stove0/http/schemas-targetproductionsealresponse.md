@@ -27,7 +27,11 @@
 - Proof: `make operation-qualification`
 - Proof: `make compose-smoke`
 
-## Contract
+## Referenced contract dossiers
+
+- [schemas: TargetProductionAuthority](schemas-targetproductionauthority.md)
+
+## Contract summary
 
 - `title`: TargetProductionSealResponse
 - `type`: object
@@ -38,3 +42,40 @@
 |---|---:|---|---|
 | `production` | no | object (1 fields) |  |
 | `state` | yes | string |  |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 28acdd3e4f69ff52a99c9e90610d9fdf05e9ac3f95c6ca688b864d0bd0e73fe5 -->
+
+```json
+{
+  "additionalProperties": false,
+  "properties": {
+    "production": {
+      "anyOf": [
+        {
+          "$ref": "#/components/schemas/TargetProductionAuthority"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "state": {
+      "enum": [
+        "sealing",
+        "sealed"
+      ],
+      "title": "State",
+      "type": "string"
+    }
+  },
+  "required": [
+    "state"
+  ],
+  "title": "TargetProductionSealResponse",
+  "type": "object"
+}
+```

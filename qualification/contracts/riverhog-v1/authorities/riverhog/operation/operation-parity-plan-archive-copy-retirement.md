@@ -33,7 +33,7 @@
 - [POST /v1/archive/copies/retirement-plan](../http/post-v1-archive-copies-retirement-plan.md)
 - [piggity archive retire](../../piggity/cli/piggity-archive-retire.md)
 
-## Contract
+## Contract summary
 
 | Concern | Contract |
 |---|---|
@@ -47,3 +47,26 @@
 | `provider_evidence` | provider-qualification:#442 |
 | `read_collection` | None |
 | `response_authority` | http-json |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 5140b4139f0920dc71be4e41a6dcda6ad290e8defcca0d375136a4342ebab44d -->
+
+```json
+{
+  "application": "riverhog",
+  "classification": "human-cli+json",
+  "cli_commands": [
+    "archive retire"
+  ],
+  "client": "ApiClient",
+  "method": "POST",
+  "operation_id": "plan_archive_copy_retirement",
+  "path": "/v1/archive/copies/retirement-plan",
+  "provider_evidence": "provider-qualification:#442",
+  "read_collection": null,
+  "response_authority": "http-json"
+}
+```

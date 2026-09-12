@@ -36,7 +36,7 @@
 | value | schema-value | `extension_owned` | maximum=None, reason=independently-versioned-extension-authority |
 | cardinality | items | `extension_owned` | maximum=None, reason=independently-versioned-extension-authority |
 
-## Contract
+## Contract summary
 
 - `$id`: https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/linux-fsxattr.json
 - `type`: object
@@ -51,3 +51,55 @@
 | `project_id` | yes | integer |  |
 | `xflag_names` | yes | array |  |
 | `xflags` | yes | integer |  |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: fa34df9dec8d9b0062148907b6cd8645a40bd941ffa212387bcbd09f922747b1 -->
+
+```json
+{
+  "$id": "https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/linux-fsxattr.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "cow_extent_size": {
+      "minimum": 0,
+      "type": "integer"
+    },
+    "extent_size": {
+      "minimum": 0,
+      "type": "integer"
+    },
+    "nextents": {
+      "minimum": 0,
+      "type": "integer"
+    },
+    "project_id": {
+      "minimum": 0,
+      "type": "integer"
+    },
+    "xflag_names": {
+      "items": {
+        "type": "string"
+      },
+      "type": "array",
+      "uniqueItems": true
+    },
+    "xflags": {
+      "minimum": 0,
+      "type": "integer"
+    }
+  },
+  "required": [
+    "xflags",
+    "xflag_names",
+    "extent_size",
+    "nextents",
+    "project_id",
+    "cow_extent_size"
+  ],
+  "type": "object"
+}
+```

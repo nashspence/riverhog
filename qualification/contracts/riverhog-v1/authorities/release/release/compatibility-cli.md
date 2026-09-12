@@ -27,7 +27,15 @@
 - Proof: `make release-check`
 - Proof: `make build`
 
-## Contract
+## Contract summary
+
+- Shape: "Command names, options, exit status, and structured output remain backward compatible throughout v1; prose output is for people."
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: e729f79071583e4a90de990d6f8b6da8a2e7eb3dbd228a7383834c7f95993d70 -->
 
 ```json
 "Command names, options, exit status, and structured output remain backward compatible throughout v1; prose output is for people."

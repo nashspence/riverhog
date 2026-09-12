@@ -27,7 +27,7 @@
 - Proof: `make operation-qualification`
 - Proof: `make compose-smoke`
 
-## Contract
+## Contract summary
 
 - `title`: ProcessingClaimFenceDocument
 - `type`: object
@@ -37,3 +37,27 @@
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | `fence` | yes | integer |  |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: eabbed4a890891c7bfbd4c978da08de3bbd73ad40fb1a9fb9249a8a5ccf814d4 -->
+
+```json
+{
+  "additionalProperties": false,
+  "properties": {
+    "fence": {
+      "minimum": 1,
+      "title": "Fence",
+      "type": "integer"
+    }
+  },
+  "required": [
+    "fence"
+  ],
+  "title": "ProcessingClaimFenceDocument",
+  "type": "object"
+}
+```

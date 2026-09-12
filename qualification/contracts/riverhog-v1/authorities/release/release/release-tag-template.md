@@ -27,7 +27,15 @@
 - Proof: `make release-check`
 - Proof: `make build`
 
-## Contract
+## Contract summary
+
+- Shape: "v{version}"
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 268982a6c7e0cdd99400f4c234214a775df3b3dc046efd372f71ad85d564ff3e -->
 
 ```json
 "v{version}"

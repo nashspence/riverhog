@@ -27,7 +27,15 @@
 - Proof: `make contract-freeze`
 - Proof: `make operation-qualification`
 
-## Contract
+## Contract summary
+
+- Shape: "Hardware- or environment-dependent limits that observably affect accepted work are operator-configurable and source-linked."
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: ad9c9db446693f985358d6094a1ca38d63c535fab151fb471f1916d1d9425083 -->
 
 ```json
 "Hardware- or environment-dependent limits that observably affect accepted work are operator-configurable and source-linked."

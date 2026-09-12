@@ -34,7 +34,7 @@
 |---|---|---|---|
 | length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
 
-## Contract
+## Contract summary
 
 - `title`: ClaimFenceDocument
 - `type`: object
@@ -45,3 +45,33 @@
 |---|---:|---|---|
 | `fence` | yes | integer |  |
 | `id` | yes | string |  |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 8b4a48bad1d6f0f80b34316c1d147a3ba35c6f8c7341ffc096d514d8b5b9b5ff -->
+
+```json
+{
+  "additionalProperties": false,
+  "properties": {
+    "fence": {
+      "minimum": 1,
+      "title": "Fence",
+      "type": "integer"
+    },
+    "id": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Id",
+      "type": "string"
+    }
+  },
+  "required": [
+    "id",
+    "fence"
+  ],
+  "title": "ClaimFenceDocument",
+  "type": "object"
+}
+```

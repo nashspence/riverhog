@@ -35,7 +35,7 @@
 - [piggity collection upload start](../../piggity/cli/piggity-collection-upload-start.md)
 - [piggity collection upload watch](../../piggity/cli/piggity-collection-upload-watch.md)
 
-## Contract
+## Contract summary
 
 | Concern | Contract |
 |---|---|
@@ -49,3 +49,28 @@
 | `provider_evidence` | provider-qualification:#442 |
 | `read_collection` | None |
 | `response_authority` | http-json |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: e0dd7f6275581bcc8379381c696ffd3ac7ffd74142f303050a46c92a6639bb9e -->
+
+```json
+{
+  "application": "riverhog",
+  "classification": "human-cli+json",
+  "cli_commands": [
+    "collection upload show",
+    "collection upload start",
+    "collection upload watch"
+  ],
+  "client": "ApiClient",
+  "method": "GET",
+  "operation_id": "get_collection_upload_session",
+  "path": "/v1/collection-upload-sessions/{collection_id}",
+  "provider_evidence": "provider-qualification:#442",
+  "read_collection": null,
+  "response_authority": "http-json"
+}
+```

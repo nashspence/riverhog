@@ -36,7 +36,7 @@
 | length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
 | length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
 
-## Contract
+## Contract summary
 
 - `title`: BranchWorkBinding
 - `description`: Stable parent/branch lineage for one ordinary child work identity.
@@ -51,3 +51,52 @@
 | `decision_sha256` | yes | string |  |
 | `kind` | no | string |  |
 | `parent_work_id` | yes | string |  |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 0c3297729fbc53bc25d0dcb1bf587a91b7991848f5584c8248180f28b506ecd9 -->
+
+```json
+{
+  "additionalProperties": false,
+  "description": "Stable parent/branch lineage for one ordinary child work identity.",
+  "properties": {
+    "artifact_selection_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Artifact Selection Sha256",
+      "type": "string"
+    },
+    "branch_id": {
+      "pattern": "^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$",
+      "title": "Branch Id",
+      "type": "string"
+    },
+    "decision_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Decision Sha256",
+      "type": "string"
+    },
+    "kind": {
+      "const": "branch",
+      "default": "branch",
+      "title": "Kind",
+      "type": "string"
+    },
+    "parent_work_id": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Parent Work Id",
+      "type": "string"
+    }
+  },
+  "required": [
+    "parent_work_id",
+    "branch_id",
+    "decision_sha256",
+    "artifact_selection_sha256"
+  ],
+  "title": "BranchWorkBinding",
+  "type": "object"
+}
+```

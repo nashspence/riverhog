@@ -29,6 +29,10 @@
 - Proof: `make operation-qualification`
 - Proof: `make compose-smoke`
 
+## Referenced contract dossiers
+
+- [schemas: AdmissionPolicyStatus](schemas-admissionpolicystatus.md)
+
 ## Extent decisions
 
 | Dimension | Unit | Policy | Bounds/reason |
@@ -36,7 +40,7 @@
 | length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
 | cardinality | items | `operational_policy` | maximum=None, reason=no-declared-semantic-maximum |
 
-## Contract
+## Contract summary
 
 - `title`: AdmissionPolicyCatalogView
 - `type`: object
@@ -47,3 +51,35 @@
 |---|---:|---|---|
 | `catalog_sha256` | yes | string |  |
 | `policies` | yes | array |  |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 04298da17774d7c5d89b5b02199638603037f7be9d0a675d5e4ca71ff7612af8 -->
+
+```json
+{
+  "additionalProperties": false,
+  "properties": {
+    "catalog_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Catalog Sha256",
+      "type": "string"
+    },
+    "policies": {
+      "items": {
+        "$ref": "#/components/schemas/AdmissionPolicyStatus"
+      },
+      "title": "Policies",
+      "type": "array"
+    }
+  },
+  "required": [
+    "catalog_sha256",
+    "policies"
+  ],
+  "title": "AdmissionPolicyCatalogView",
+  "type": "object"
+}
+```

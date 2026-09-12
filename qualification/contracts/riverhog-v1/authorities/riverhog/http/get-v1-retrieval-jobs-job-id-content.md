@@ -31,7 +31,12 @@
 
 - [Operation parity: download_retrieval_file](../operation/operation-parity-download-retrieval-file.md)
 
-## Contract
+## Referenced contract dossiers
+
+- [schemas: CollectionIdParameter](schemas-collectionidparameter.md)
+- [schemas: ErrorResponse](schemas-errorresponse.md)
+
+## Contract summary
 
 - `operationId`: download_retrieval_file
 - `summary`: Download Retrieval File
@@ -62,3 +67,224 @@
 | `416` | Requested Range Not Satisfiable |
 | `429` | Too Many Requests |
 | `500` | Internal Server Error |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 5cafaf341ac9a8ea2eee63c5c1503cbc0b1ae38ce86d6e8ceb7075d031ce1950 -->
+
+```json
+{
+  "operationId": "download_retrieval_file",
+  "parameters": [
+    {
+      "in": "path",
+      "name": "job_id",
+      "required": true,
+      "schema": {
+        "title": "Job Id",
+        "type": "string"
+      }
+    },
+    {
+      "in": "query",
+      "name": "collection_id",
+      "required": true,
+      "schema": {
+        "$ref": "#/components/schemas/CollectionIdParameter"
+      }
+    },
+    {
+      "in": "query",
+      "name": "path",
+      "required": true,
+      "schema": {
+        "title": "Path",
+        "type": "string"
+      }
+    },
+    {
+      "in": "header",
+      "name": "If-Match",
+      "required": true,
+      "schema": {
+        "pattern": "^\"[0-9a-f]{64}\"$",
+        "title": "If-Match",
+        "type": "string"
+      }
+    },
+    {
+      "in": "header",
+      "name": "Range",
+      "required": false,
+      "schema": {
+        "anyOf": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "title": "Range"
+      }
+    },
+    {
+      "in": "header",
+      "name": "If-None-Match",
+      "required": false,
+      "schema": {
+        "anyOf": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "title": "If-None-Match"
+      }
+    }
+  ],
+  "responses": {
+    "200": {
+      "description": "Successful Response"
+    },
+    "400": {
+      "content": {
+        "application/json": {
+          "schema": {
+            "$ref": "#/components/schemas/ErrorResponse"
+          }
+        }
+      },
+      "description": "Bad Request",
+      "x-riverhog-error-codes": [
+        "bad_request"
+      ]
+    },
+    "401": {
+      "content": {
+        "application/json": {
+          "schema": {
+            "$ref": "#/components/schemas/ErrorResponse"
+          }
+        }
+      },
+      "description": "Unauthorized",
+      "x-riverhog-error-codes": [
+        "unauthorized"
+      ]
+    },
+    "403": {
+      "content": {
+        "application/json": {
+          "schema": {
+            "$ref": "#/components/schemas/ErrorResponse"
+          }
+        }
+      },
+      "description": "Forbidden",
+      "x-riverhog-error-codes": [
+        "forbidden"
+      ]
+    },
+    "404": {
+      "content": {
+        "application/json": {
+          "schema": {
+            "$ref": "#/components/schemas/ErrorResponse"
+          }
+        }
+      },
+      "description": "Not Found",
+      "x-riverhog-error-codes": [
+        "not_found"
+      ]
+    },
+    "409": {
+      "content": {
+        "application/json": {
+          "schema": {
+            "$ref": "#/components/schemas/ErrorResponse"
+          }
+        }
+      },
+      "description": "Conflict",
+      "x-riverhog-error-codes": [
+        "invalid_state"
+      ]
+    },
+    "412": {
+      "content": {
+        "application/json": {
+          "schema": {
+            "$ref": "#/components/schemas/ErrorResponse"
+          }
+        }
+      },
+      "description": "Precondition Failed",
+      "x-riverhog-error-codes": [
+        "precondition_failed"
+      ]
+    },
+    "416": {
+      "content": {
+        "application/json": {
+          "schema": {
+            "$ref": "#/components/schemas/ErrorResponse"
+          }
+        }
+      },
+      "description": "Requested Range Not Satisfiable",
+      "x-riverhog-error-codes": [
+        "invalid_range"
+      ]
+    },
+    "429": {
+      "content": {
+        "application/json": {
+          "schema": {
+            "$ref": "#/components/schemas/ErrorResponse"
+          }
+        }
+      },
+      "description": "Too Many Requests",
+      "x-riverhog-error-codes": [
+        "download_allowance_exceeded"
+      ]
+    },
+    "500": {
+      "content": {
+        "application/json": {
+          "schema": {
+            "$ref": "#/components/schemas/ErrorResponse"
+          }
+        }
+      },
+      "description": "Internal Server Error",
+      "x-riverhog-error-codes": [
+        "internal_error"
+      ]
+    }
+  },
+  "security": [
+    {
+      "HTTPBearer": []
+    }
+  ],
+  "summary": "Download Retrieval File",
+  "tags": [
+    "retrieval"
+  ],
+  "x-riverhog-interface": "client-only-primitive",
+  "x-riverhog-permission-requirements": [
+    {
+      "any_of": [
+        "retrieval:manage"
+      ]
+    }
+  ]
+}
+```

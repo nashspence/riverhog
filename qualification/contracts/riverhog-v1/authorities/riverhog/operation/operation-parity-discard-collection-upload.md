@@ -33,7 +33,7 @@
 - [POST /v1/collection-upload-sessions/{collection_id}/discard](../http/post-v1-collection-upload-sessions-collection-id-discard.md)
 - [piggity collection upload discard](../../piggity/cli/piggity-collection-upload-discard.md)
 
-## Contract
+## Contract summary
 
 | Concern | Contract |
 |---|---|
@@ -47,3 +47,26 @@
 | `provider_evidence` | None |
 | `read_collection` | None |
 | `response_authority` | http-json |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 801ebb6126f094888c7f18d3b5a64afac285fd712928ec2ef6fee07f16dff411 -->
+
+```json
+{
+  "application": "riverhog",
+  "classification": "human-cli+json",
+  "cli_commands": [
+    "collection upload discard"
+  ],
+  "client": "ApiClient",
+  "method": "POST",
+  "operation_id": "discard_collection_upload",
+  "path": "/v1/collection-upload-sessions/{collection_id}/discard",
+  "provider_evidence": null,
+  "read_collection": null,
+  "response_authority": "http-json"
+}
+```

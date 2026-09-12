@@ -32,7 +32,7 @@
 
 - [GET /v1/target-executions/{job_id}/inputs](../http/get-v1-target-executions-job-id-inputs.md)
 
-## Contract
+## Contract summary
 
 | Concern | Contract |
 |---|---|
@@ -46,3 +46,29 @@
 | `provider_evidence` | None |
 | `read_collection` | {"authority": "target-input-authority", "cursor_parameter": "continuation", "fixed_limit": 256, "kind": "exact-authority-page"} |
 | `response_authority` | canonical-document |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 6086e30fcebe16289130b8161394f6e07c2e1584c5a6846af3aaba1257b4f388 -->
+
+```json
+{
+  "application": "stove0",
+  "classification": "client-only-primitive",
+  "cli_commands": [],
+  "client": "TargetCallbackClient",
+  "method": "GET",
+  "operation_id": "get_target_execution_inputs",
+  "path": "/v1/target-executions/{job_id}/inputs",
+  "provider_evidence": null,
+  "read_collection": {
+    "authority": "target-input-authority",
+    "cursor_parameter": "continuation",
+    "fixed_limit": 256,
+    "kind": "exact-authority-page"
+  },
+  "response_authority": "canonical-document"
+}
+```

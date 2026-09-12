@@ -28,13 +28,17 @@
 - Proof: `make operation-qualification`
 - Proof: `make compose-smoke`
 
+## Referenced contract dossiers
+
+- [schemas: CollectionId](schemas-collectionid.md)
+
 ## Extent decisions
 
 | Dimension | Unit | Policy | Bounds/reason |
 |---|---|---|---|
 | value | schema-value | `operational_policy` | maximum=None, reason=no-declared-semantic-maximum |
 
-## Contract
+## Contract summary
 
 - `title`: OmittedCollectionProvenanceVerification
 - `type`: object
@@ -50,3 +54,60 @@
 | `provenance_identity` | yes | null |  |
 | `provenance_mode` | yes | string |  |
 | `valid` | yes | boolean |  |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 380bb6a46a823168d6eacdf3c7af3bc5a239d61761518db099828c581b756074 -->
+
+```json
+{
+  "additionalProperties": false,
+  "properties": {
+    "collection_id": {
+      "$ref": "#/components/schemas/CollectionId"
+    },
+    "entities": {
+      "const": 0,
+      "title": "Entities",
+      "type": "integer"
+    },
+    "files": {
+      "minimum": 0,
+      "title": "Files",
+      "type": "integer"
+    },
+    "journals": {
+      "const": 0,
+      "title": "Journals",
+      "type": "integer"
+    },
+    "provenance_identity": {
+      "title": "Provenance Identity",
+      "type": "null"
+    },
+    "provenance_mode": {
+      "const": "omitted",
+      "title": "Provenance Mode",
+      "type": "string"
+    },
+    "valid": {
+      "const": true,
+      "title": "Valid",
+      "type": "boolean"
+    }
+  },
+  "required": [
+    "collection_id",
+    "valid",
+    "files",
+    "entities",
+    "provenance_mode",
+    "provenance_identity",
+    "journals"
+  ],
+  "title": "OmittedCollectionProvenanceVerification",
+  "type": "object"
+}
+```

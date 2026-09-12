@@ -27,7 +27,12 @@
 - Proof: `make operation-qualification`
 - Proof: `make compose-smoke`
 
-## Contract
+## Referenced contract dossiers
+
+- [schemas: ArchiveStoreName](schemas-archivestorename.md)
+- [schemas: CollectionId](schemas-collectionid.md)
+
+## Contract summary
 
 - `title`: RetireArchiveCopyRequest
 - `type`: object
@@ -39,3 +44,34 @@
 | `challenge` | yes | string |  |
 | `collection_id` | yes | #/components/schemas/CollectionId |  |
 | `store` | yes | #/components/schemas/ArchiveStoreName |  |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: a7657b155bbfe998f725e6bba8a5ee650a6dca5b5543e08b474e65648b4a4eae -->
+
+```json
+{
+  "additionalProperties": false,
+  "properties": {
+    "challenge": {
+      "title": "Challenge",
+      "type": "string"
+    },
+    "collection_id": {
+      "$ref": "#/components/schemas/CollectionId"
+    },
+    "store": {
+      "$ref": "#/components/schemas/ArchiveStoreName"
+    }
+  },
+  "required": [
+    "collection_id",
+    "store",
+    "challenge"
+  ],
+  "title": "RetireArchiveCopyRequest",
+  "type": "object"
+}
+```

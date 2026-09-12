@@ -28,7 +28,7 @@
 - Proof: `make dist-smoke`
 - Proof: `make operation-qualification`
 
-## Contract
+## Contract summary
 
 - Parser name: `stove0-target-conformance`
 
@@ -38,3 +38,42 @@
 |---|---|---:|---|---|
 | `` | _StoreAction | yes |  |  |
 | `` | _AppendAction | no | Path | --case |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+### `/external_contract/cli/stove0-target-conformance/name`
+
+<!-- exact-contract-value: 7d2f3eb433195f93988d5c7dcbf7137865b0f1e5c179664a7c5c265cb50162aa -->
+
+```json
+"stove0-target-conformance"
+```
+
+### `/external_contract/cli/stove0-target-conformance/parameters`
+
+<!-- exact-contract-value: ea7099ca96775fc4d87b2bb319c3f57a9777a35ab2c40592b9644eb27f9ab03b -->
+
+```json
+[
+  {
+    "dest": "base_url",
+    "kind": "_StoreAction",
+    "nargs": null,
+    "options": [],
+    "required": true
+  },
+  {
+    "default": [],
+    "dest": "case",
+    "kind": "_AppendAction",
+    "nargs": null,
+    "options": [
+      "--case"
+    ],
+    "required": false,
+    "type": "Path"
+  }
+]
+```

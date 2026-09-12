@@ -27,7 +27,7 @@
 - Proof: `make operation-qualification`
 - Proof: `make compose-smoke`
 
-## Contract
+## Contract summary
 
 - `title`: ProcessingClaimFiltersDocument
 - `type`: object
@@ -37,3 +37,37 @@
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | `state` | no | object (2 fields) |  |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 59b4d8bb229a8c43d763c982eebd067a71e6bccd1c8851ee169948435abc1158 -->
+
+```json
+{
+  "additionalProperties": false,
+  "properties": {
+    "state": {
+      "anyOf": [
+        {
+          "enum": [
+            "active",
+            "settled",
+            "retiring",
+            "abandoned",
+            "released"
+          ],
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "State"
+    }
+  },
+  "title": "ProcessingClaimFiltersDocument",
+  "type": "object"
+}
+```

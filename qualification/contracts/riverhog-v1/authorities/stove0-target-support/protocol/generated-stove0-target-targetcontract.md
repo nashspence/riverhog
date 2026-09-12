@@ -39,7 +39,7 @@
 | cardinality | items | `operational_policy` | maximum=None, reason=no-declared-semantic-maximum |
 | length | characters | `contract_max` | maximum=200, minimum=1, reason=schema-maximum |
 
-## Contract
+## Contract summary
 
 - `title`: TargetContract
 - `type`: object
@@ -64,3 +64,155 @@
 | `JsonSchemaDocument` | object |
 | `JsonValue` | object (0 fields) |
 | `TargetOperationSupport` | object |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 444d776c4e61c75ff1edfdfeac88aa1e2ca815679fc44af9eae1992e4dde5bf0 -->
+
+```json
+{
+  "$defs": {
+    "JsonSchemaDocument": {
+      "additionalProperties": false,
+      "properties": {
+        "dialect": {
+          "const": "https://json-schema.org/draft/2020-12/schema",
+          "default": "https://json-schema.org/draft/2020-12/schema",
+          "title": "Dialect",
+          "type": "string"
+        },
+        "format_policy": {
+          "const": "annotation-only",
+          "default": "annotation-only",
+          "title": "Format Policy",
+          "type": "string"
+        },
+        "id": {
+          "pattern": "^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$",
+          "title": "Id",
+          "type": "string"
+        },
+        "schema": {
+          "additionalProperties": {
+            "$ref": "#/$defs/JsonValue"
+          },
+          "title": "Schema",
+          "type": "object"
+        },
+        "sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Sha256",
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "sha256",
+        "schema"
+      ],
+      "title": "JsonSchemaDocument",
+      "type": "object"
+    },
+    "JsonValue": {},
+    "TargetOperationSupport": {
+      "additionalProperties": false,
+      "properties": {
+        "operation_contract_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Operation Contract Sha256",
+          "type": "string"
+        },
+        "operation_id": {
+          "pattern": "^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$",
+          "title": "Operation Id",
+          "type": "string"
+        },
+        "options_schema": {
+          "$ref": "#/$defs/JsonSchemaDocument"
+        },
+        "result_kind": {
+          "default": "collection",
+          "enum": [
+            "collection",
+            "external-effect"
+          ],
+          "title": "Result Kind",
+          "type": "string"
+        }
+      },
+      "required": [
+        "operation_id",
+        "operation_contract_sha256",
+        "options_schema"
+      ],
+      "title": "TargetOperationSupport",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "contract_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Contract Sha256",
+      "type": "string"
+    },
+    "image_digest": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Image Digest",
+      "type": "string"
+    },
+    "implementation_id": {
+      "pattern": "^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$",
+      "title": "Implementation Id",
+      "type": "string"
+    },
+    "implementation_version": {
+      "maxLength": 120,
+      "minLength": 1,
+      "title": "Implementation Version",
+      "type": "string"
+    },
+    "operations": {
+      "items": {
+        "$ref": "#/$defs/TargetOperationSupport"
+      },
+      "minItems": 1,
+      "title": "Operations",
+      "type": "array"
+    },
+    "protocol": {
+      "default": "stove0-transform-target/v1",
+      "enum": [
+        "stove0-transform-target/v1",
+        "stove0-effect-target/v1"
+      ],
+      "title": "Protocol",
+      "type": "string"
+    },
+    "source_revision": {
+      "maxLength": 200,
+      "minLength": 1,
+      "title": "Source Revision",
+      "type": "string"
+    },
+    "transport": {
+      "const": "riverhog-capability/v1",
+      "default": "riverhog-capability/v1",
+      "title": "Transport",
+      "type": "string"
+    }
+  },
+  "required": [
+    "implementation_id",
+    "implementation_version",
+    "source_revision",
+    "image_digest",
+    "operations",
+    "contract_sha256"
+  ],
+  "title": "TargetContract",
+  "type": "object"
+}
+```

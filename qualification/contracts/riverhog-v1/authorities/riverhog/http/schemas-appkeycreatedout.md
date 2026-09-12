@@ -27,7 +27,14 @@
 - Proof: `make operation-qualification`
 - Proof: `make compose-smoke`
 
-## Contract
+## Referenced contract dossiers
+
+- [schemas: ApplicationAccessGrantSet](schemas-applicationaccessgrantset.md)
+- [schemas: ApplicationKeyId](schemas-applicationkeyid.md)
+- [schemas: ApplicationName](schemas-applicationname.md)
+- [schemas: MonthlyDownloadQuotaBytes](schemas-monthlydownloadquotabytes.md)
+
+## Contract summary
 
 - `title`: AppKeyCreatedOut
 - `type`: object
@@ -46,3 +53,141 @@
 | `revoked_at` | yes | object (2 fields) |  |
 | `status` | yes | string |  |
 | `token` | yes | string |  |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: b48fb472f2850c9929f5c7614e7848aef64643b02496b07bd0661060b148c76b -->
+
+```json
+{
+  "additionalProperties": false,
+  "allOf": [
+    {
+      "else": {
+        "properties": {
+          "revoked_at": {
+            "type": "null"
+          }
+        }
+      },
+      "if": {
+        "properties": {
+          "status": {
+            "const": "revoked"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "revoked_at": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "status": {
+            "const": "expired"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "expires_at": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  ],
+  "properties": {
+    "access": {
+      "$ref": "#/components/schemas/ApplicationAccessGrantSet"
+    },
+    "app": {
+      "$ref": "#/components/schemas/ApplicationName"
+    },
+    "created_at": {
+      "title": "Created At",
+      "type": "string"
+    },
+    "expires_at": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Expires At"
+    },
+    "id": {
+      "$ref": "#/components/schemas/ApplicationKeyId"
+    },
+    "last_used_at": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Last Used At"
+    },
+    "monthly_download_quota_bytes": {
+      "anyOf": [
+        {
+          "$ref": "#/components/schemas/MonthlyDownloadQuotaBytes"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "revoked_at": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Revoked At"
+    },
+    "status": {
+      "enum": [
+        "active",
+        "expired",
+        "revoked"
+      ],
+      "title": "Status",
+      "type": "string"
+    },
+    "token": {
+      "title": "Token",
+      "type": "string"
+    }
+  },
+  "required": [
+    "id",
+    "app",
+    "access",
+    "monthly_download_quota_bytes",
+    "status",
+    "created_at",
+    "expires_at",
+    "revoked_at",
+    "last_used_at",
+    "token"
+  ],
+  "title": "AppKeyCreatedOut",
+  "type": "object"
+}
+```

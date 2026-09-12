@@ -29,6 +29,10 @@
 - Proof: `make operation-qualification`
 - Proof: `make compose-smoke`
 
+## Referenced contract dossiers
+
+- [schemas: EvaluationVariant](schemas-evaluationvariant.md)
+
 ## Extent decisions
 
 | Dimension | Unit | Policy | Bounds/reason |
@@ -36,7 +40,7 @@
 | length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
 | cardinality | items | `operational_policy` | maximum=None, reason=no-declared-semantic-maximum |
 
-## Contract
+## Contract summary
 
 - `title`: EvaluationMatrix
 - `type`: object
@@ -48,3 +52,42 @@
 | `format` | no | string |  |
 | `matrix_sha256` | yes | string |  |
 | `variants` | yes | array |  |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: a2ca6c94739f3ab55f1dd9a80c12df7af452e1bab0cff3d020cdc543918b73e9 -->
+
+```json
+{
+  "additionalProperties": false,
+  "properties": {
+    "format": {
+      "const": "stove0-evaluation-matrix/v1",
+      "default": "stove0-evaluation-matrix/v1",
+      "title": "Format",
+      "type": "string"
+    },
+    "matrix_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Matrix Sha256",
+      "type": "string"
+    },
+    "variants": {
+      "items": {
+        "$ref": "#/components/schemas/EvaluationVariant"
+      },
+      "minItems": 1,
+      "title": "Variants",
+      "type": "array"
+    }
+  },
+  "required": [
+    "variants",
+    "matrix_sha256"
+  ],
+  "title": "EvaluationMatrix",
+  "type": "object"
+}
+```

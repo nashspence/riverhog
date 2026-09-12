@@ -27,7 +27,22 @@
 - Proof: `make release-check`
 - Proof: `make build`
 
-## Contract
+## Contract summary
+
+| Field | Shape |
+|---|---|
+| `console_scripts` | object (1 fields) |
+| `dependencies` | array (5 items) |
+| `distribution` | "stove0-review-rclone-effect-target" |
+| `optional_dependencies` | object (0 fields) |
+| `path` | "reference/stove0/targets/review/rclone-effect-target" |
+| `role` | "reference_component" |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 4e79e8d3823950947e237347ed5551f7665fec65cc063f3edae49427861bdc5f -->
 
 ```json
 {

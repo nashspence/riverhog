@@ -32,13 +32,19 @@
 
 - [Operation parity: replace_app_key_access](../operation/operation-parity-replace-app-key-access.md)
 
+## Referenced contract dossiers
+
+- [schemas: AppAccessSetOut](schemas-appaccesssetout.md)
+- [schemas: ErrorResponse](schemas-errorresponse.md)
+- [schemas: ReplaceAppAccessRequest](schemas-replaceappaccessrequest.md)
+
 ## Extent decisions
 
 | Dimension | Unit | Policy | Bounds/reason |
 |---|---|---|---|
 | length | characters | `fixed` | maximum=16, minimum=16, reason=fixed-public-representation |
 
-## Contract
+## Contract summary
 
 - `operationId`: replace_app_key_access
 - `summary`: Replace App Key Access
@@ -65,3 +71,140 @@
 | `403` | Forbidden |
 | `404` | Not Found |
 | `500` | Internal Server Error |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 88e3b7fb49a9144e254f8e612efbcba1d3fdfdc4e90f8bdb26d355a6dbffaae9 -->
+
+```json
+{
+  "operationId": "replace_app_key_access",
+  "parameters": [
+    {
+      "in": "path",
+      "name": "app",
+      "required": true,
+      "schema": {
+        "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$",
+        "title": "App",
+        "type": "string"
+      }
+    },
+    {
+      "in": "path",
+      "name": "key_id",
+      "required": true,
+      "schema": {
+        "pattern": "^[0-9a-f]{16}$",
+        "title": "Key Id",
+        "type": "string"
+      }
+    }
+  ],
+  "requestBody": {
+    "content": {
+      "application/json": {
+        "schema": {
+          "$ref": "#/components/schemas/ReplaceAppAccessRequest"
+        }
+      }
+    },
+    "required": true
+  },
+  "responses": {
+    "200": {
+      "content": {
+        "application/json": {
+          "schema": {
+            "$ref": "#/components/schemas/AppAccessSetOut"
+          }
+        }
+      },
+      "description": "Successful Response"
+    },
+    "400": {
+      "content": {
+        "application/json": {
+          "schema": {
+            "$ref": "#/components/schemas/ErrorResponse"
+          }
+        }
+      },
+      "description": "Bad Request",
+      "x-riverhog-error-codes": [
+        "bad_request"
+      ]
+    },
+    "401": {
+      "content": {
+        "application/json": {
+          "schema": {
+            "$ref": "#/components/schemas/ErrorResponse"
+          }
+        }
+      },
+      "description": "Unauthorized",
+      "x-riverhog-error-codes": [
+        "unauthorized"
+      ]
+    },
+    "403": {
+      "content": {
+        "application/json": {
+          "schema": {
+            "$ref": "#/components/schemas/ErrorResponse"
+          }
+        }
+      },
+      "description": "Forbidden",
+      "x-riverhog-error-codes": [
+        "forbidden"
+      ]
+    },
+    "404": {
+      "content": {
+        "application/json": {
+          "schema": {
+            "$ref": "#/components/schemas/ErrorResponse"
+          }
+        }
+      },
+      "description": "Not Found",
+      "x-riverhog-error-codes": [
+        "not_found"
+      ]
+    },
+    "500": {
+      "content": {
+        "application/json": {
+          "schema": {
+            "$ref": "#/components/schemas/ErrorResponse"
+          }
+        }
+      },
+      "description": "Internal Server Error",
+      "x-riverhog-error-codes": [
+        "internal_error"
+      ]
+    }
+  },
+  "security": [
+    {
+      "HTTPBearer": []
+    }
+  ],
+  "summary": "Replace App Key Access",
+  "tags": [
+    "apps"
+  ],
+  "x-riverhog-permission-requirements": [
+    {
+      "any_of": [
+        "keys:manage"
+      ]
+    }
+  ]
+}
+```

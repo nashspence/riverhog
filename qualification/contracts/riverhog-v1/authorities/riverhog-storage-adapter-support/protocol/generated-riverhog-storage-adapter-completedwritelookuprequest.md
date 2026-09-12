@@ -37,7 +37,7 @@
 | encoded-size | bytes | `contract_max` | maximum=16384, reason=bounded-object-identity-assertion-envelope |
 | cardinality | entries | `contract_max` | maximum=64, reason=bounded-object-identity-assertion-envelope |
 
-## Contract
+## Contract summary
 
 - `title`: CompletedWriteLookupRequest
 - `type`: object
@@ -51,3 +51,65 @@
 | `expected_placement` | yes | string |  |
 | `object_path` | yes | string |  |
 | `required_identity_assertions` | yes | object | Inert caller-owned facts used only to identify and reconcile an exact stored object. Adapters canonicalize, persist, return, and compare these assertions; they must not interpret them as routing, retrieval, retention, credentials, placement, or provider-control instructions. Adapters may retain additional adapter-private assertions. |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 3f6289ea7cdb8562a130c3d3df28e4217ae0490a38d84f2f2158dafb98e18689 -->
+
+```json
+{
+  "additionalProperties": false,
+  "properties": {
+    "expected_bytes": {
+      "minimum": 1,
+      "title": "Expected Bytes",
+      "type": "integer"
+    },
+    "expected_content_type": {
+      "maxLength": 255,
+      "minLength": 1,
+      "title": "Expected Content Type",
+      "type": "string"
+    },
+    "expected_placement": {
+      "enum": [
+        "archive",
+        "immediate"
+      ],
+      "title": "Expected Placement",
+      "type": "string"
+    },
+    "object_path": {
+      "maxLength": 4096,
+      "minLength": 1,
+      "title": "Object Path",
+      "type": "string"
+    },
+    "required_identity_assertions": {
+      "additionalProperties": {
+        "type": "string"
+      },
+      "description": "Inert caller-owned facts used only to identify and reconcile an exact stored object. Adapters canonicalize, persist, return, and compare these assertions; they must not interpret them as routing, retrieval, retention, credentials, placement, or provider-control instructions. Adapters may retain additional adapter-private assertions.",
+      "maxProperties": 64,
+      "title": "Required Identity Assertions",
+      "type": "object",
+      "x-riverhog-encoded-bytes-max": 16384,
+      "x-riverhog-extent": {
+        "policy": "contract_max",
+        "reason": "bounded-object-identity-assertion-envelope"
+      }
+    }
+  },
+  "required": [
+    "object_path",
+    "expected_bytes",
+    "expected_content_type",
+    "required_identity_assertions",
+    "expected_placement"
+  ],
+  "title": "CompletedWriteLookupRequest",
+  "type": "object"
+}
+```

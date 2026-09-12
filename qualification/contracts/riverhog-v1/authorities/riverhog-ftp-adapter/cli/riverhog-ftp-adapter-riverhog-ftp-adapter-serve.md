@@ -28,7 +28,7 @@
 - Proof: `make dist-smoke`
 - Proof: `make operation-qualification`
 
-## Contract
+## Contract summary
 
 - Parser name: `riverhog-ftp-adapter serve`
 
@@ -38,3 +38,45 @@
 |---|---|---:|---|---|
 | `` | _StoreAction | no |  | --host |
 | `` | _StoreAction | no | int | --port |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+### `/external_contract/cli/riverhog-ftp-adapter/commands/serve/name`
+
+<!-- exact-contract-value: 2ca0d748a201f8644f74e0c9571e9ca013591256b58b5fd1efa0f35af93b9aab -->
+
+```json
+"riverhog-ftp-adapter serve"
+```
+
+### `/external_contract/cli/riverhog-ftp-adapter/commands/serve/parameters`
+
+<!-- exact-contract-value: 2aadd7953ad93b810b29e6f222682b668f490090359802191f32bd6331f8b9d1 -->
+
+```json
+[
+  {
+    "default": "127.0.0.1",
+    "dest": "host",
+    "kind": "_StoreAction",
+    "nargs": null,
+    "options": [
+      "--host"
+    ],
+    "required": false
+  },
+  {
+    "default": 8082,
+    "dest": "port",
+    "kind": "_StoreAction",
+    "nargs": null,
+    "options": [
+      "--port"
+    ],
+    "required": false,
+    "type": "int"
+  }
+]
+```

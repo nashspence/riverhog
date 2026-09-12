@@ -4,6 +4,12 @@
 
 Contract elements: **5** · Extent decisions: **0**
 
+| Family | Count |
+|---|---:|
+| `identity` | 1 |
+| `references` | 1 |
+| `runtime-images` | 3 |
+
 | Policy | Count |
 |---|---:|
 | `boundary/frozen-authority/v1` | 5 |

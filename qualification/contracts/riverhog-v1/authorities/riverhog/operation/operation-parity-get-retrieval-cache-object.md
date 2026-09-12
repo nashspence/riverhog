@@ -33,7 +33,7 @@
 - [GET /v1/retrieval-cache/objects/{collection_id}/{source_store}/{object_id}](../http/get-v1-retrieval-cache-objects-collection-id-source-store-object-id.md)
 - [piggity retrieval cache show](../../piggity/cli/piggity-retrieval-cache-show.md)
 
-## Contract
+## Contract summary
 
 | Concern | Contract |
 |---|---|
@@ -47,3 +47,26 @@
 | `provider_evidence` | provider-qualification:#442 |
 | `read_collection` | None |
 | `response_authority` | http-json |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 80bb7a9afd828c148050dd5685a715e8cfcfe32e6ada8683bbeabc0d0fd5281a -->
+
+```json
+{
+  "application": "riverhog",
+  "classification": "human-cli+json",
+  "cli_commands": [
+    "retrieval cache show"
+  ],
+  "client": "ApiClient",
+  "method": "GET",
+  "operation_id": "get_retrieval_cache_object",
+  "path": "/v1/retrieval-cache/objects/{collection_id}/{source_store}/{object_id}",
+  "provider_evidence": "provider-qualification:#442",
+  "read_collection": null,
+  "response_authority": "http-json"
+}
+```

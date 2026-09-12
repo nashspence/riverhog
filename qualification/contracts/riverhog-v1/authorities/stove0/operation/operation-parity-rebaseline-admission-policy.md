@@ -33,7 +33,7 @@
 - [POST /v1/admission-policies/{policy_id}:rebaseline](../http/post-v1-admission-policies-policy-id-rebaseline.md)
 - [stove0 admission policy rebaseline](../cli/stove0-admission-policy-rebaseline.md)
 
-## Contract
+## Contract summary
 
 | Concern | Contract |
 |---|---|
@@ -47,3 +47,26 @@
 | `provider_evidence` | None |
 | `read_collection` | None |
 | `response_authority` | operator-projection |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: a55800a0a74eff6cf05d00938b4b96dcfecf31063a50fa752cf956ef945de65c -->
+
+```json
+{
+  "application": "stove0",
+  "classification": "human-cli+json",
+  "cli_commands": [
+    "admission policy rebaseline"
+  ],
+  "client": "Stove0ApiClient",
+  "method": "POST",
+  "operation_id": "rebaseline_admission_policy",
+  "path": "/v1/admission-policies/{policy_id}:rebaseline",
+  "provider_evidence": null,
+  "read_collection": null,
+  "response_authority": "operator-projection"
+}
+```

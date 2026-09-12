@@ -34,7 +34,7 @@
 |---|---|---|---|
 | length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
 
-## Contract
+## Contract summary
 
 - `title`: EvaluationUpdatedEventData
 - `type`: object
@@ -46,3 +46,46 @@
 | `evaluation_id` | yes | string |  |
 | `phase` | yes | string |  |
 | `revision` | yes | integer |  |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 564ef285d77d3c9dad1bf60136e69ab8f2b535cfdc729c7830aa6ecdb46fd671 -->
+
+```json
+{
+  "additionalProperties": false,
+  "properties": {
+    "evaluation_id": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Evaluation Id",
+      "type": "string"
+    },
+    "phase": {
+      "enum": [
+        "planning",
+        "running",
+        "partially_complete",
+        "complete",
+        "failed",
+        "canceled"
+      ],
+      "title": "Phase",
+      "type": "string"
+    },
+    "revision": {
+      "minimum": 2,
+      "title": "Revision",
+      "type": "integer"
+    }
+  },
+  "required": [
+    "evaluation_id",
+    "phase",
+    "revision"
+  ],
+  "title": "EvaluationUpdatedEventData",
+  "type": "object"
+}
+```

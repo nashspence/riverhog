@@ -35,7 +35,7 @@
 | length | characters | `contract_max` | maximum=160, minimum=1, reason=schema-maximum |
 | length | characters | `contract_max` | maximum=1000, minimum=1, reason=schema-maximum |
 
-## Contract
+## Contract summary
 
 - `title`: WorkInapplicableView
 - `type`: object
@@ -46,3 +46,35 @@
 |---|---:|---|---|
 | `code` | yes | string |  |
 | `message` | yes | string |  |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 6656e1447c29d937de4ad76ebaf92f3aee0431f6a1303726a004083da0376789 -->
+
+```json
+{
+  "additionalProperties": false,
+  "properties": {
+    "code": {
+      "maxLength": 160,
+      "minLength": 1,
+      "title": "Code",
+      "type": "string"
+    },
+    "message": {
+      "maxLength": 1000,
+      "minLength": 1,
+      "title": "Message",
+      "type": "string"
+    }
+  },
+  "required": [
+    "code",
+    "message"
+  ],
+  "title": "WorkInapplicableView",
+  "type": "object"
+}
+```

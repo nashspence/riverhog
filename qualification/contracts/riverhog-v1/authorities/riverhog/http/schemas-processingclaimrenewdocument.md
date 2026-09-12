@@ -34,7 +34,7 @@
 |---|---|---|---|
 | value | schema-value | `contract_max` | maximum=86400, minimum=30, reason=schema-maximum |
 
-## Contract
+## Contract summary
 
 - `title`: ProcessingClaimRenewDocument
 - `type`: object
@@ -45,3 +45,34 @@
 |---|---:|---|---|
 | `fence` | yes | integer |  |
 | `lease_seconds` | no | integer |  |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 653180bef69a08ae3179fd94db145a2e362fe71ddfe0e1bbfd4e65e8ced1f146 -->
+
+```json
+{
+  "additionalProperties": false,
+  "properties": {
+    "fence": {
+      "minimum": 1,
+      "title": "Fence",
+      "type": "integer"
+    },
+    "lease_seconds": {
+      "default": 1800,
+      "maximum": 86400,
+      "minimum": 30,
+      "title": "Lease Seconds",
+      "type": "integer"
+    }
+  },
+  "required": [
+    "fence"
+  ],
+  "title": "ProcessingClaimRenewDocument",
+  "type": "object"
+}
+```

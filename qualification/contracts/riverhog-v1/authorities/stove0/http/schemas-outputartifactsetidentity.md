@@ -29,6 +29,10 @@
 - Proof: `make operation-qualification`
 - Proof: `make compose-smoke`
 
+## Referenced contract dossiers
+
+- [schemas: OutputArtifactRoleCount](schemas-outputartifactrolecount.md)
+
 ## Extent decisions
 
 | Dimension | Unit | Policy | Bounds/reason |
@@ -36,7 +40,7 @@
 | cardinality | items | `operational_policy` | maximum=None, reason=no-declared-semantic-maximum |
 | length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
 
-## Contract
+## Contract summary
 
 - `title`: OutputArtifactSetIdentity
 - `description`: Small identity for target outputs already registered with Riverhog.
@@ -50,3 +54,49 @@
 | `roles` | yes | array |  |
 | `sha256` | yes | string |  |
 | `total_bytes` | yes | integer |  |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 5b8358c7d637b9865f6fa839ce95492058b0b03b126cf898f334be2dd855020c -->
+
+```json
+{
+  "additionalProperties": false,
+  "description": "Small identity for target outputs already registered with Riverhog.",
+  "properties": {
+    "artifact_count": {
+      "minimum": 1,
+      "title": "Artifact Count",
+      "type": "integer"
+    },
+    "roles": {
+      "items": {
+        "$ref": "#/components/schemas/OutputArtifactRoleCount"
+      },
+      "minItems": 1,
+      "title": "Roles",
+      "type": "array"
+    },
+    "sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Sha256",
+      "type": "string"
+    },
+    "total_bytes": {
+      "minimum": 0,
+      "title": "Total Bytes",
+      "type": "integer"
+    }
+  },
+  "required": [
+    "artifact_count",
+    "total_bytes",
+    "roles",
+    "sha256"
+  ],
+  "title": "OutputArtifactSetIdentity",
+  "type": "object"
+}
+```

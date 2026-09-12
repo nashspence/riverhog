@@ -27,7 +27,7 @@
 - Proof: `make operation-qualification`
 - Proof: `make compose-smoke`
 
-## Contract
+## Contract summary
 
 - `title`: OutputSourceEdge
 - `type`: object
@@ -38,3 +38,33 @@
 |---|---:|---|---|
 | `input_id` | yes | string |  |
 | `output_id` | yes | string |  |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 972b082324ce99560dcf290aaa2190dca0d8d4ad38ed3ae820655588e94db2f4 -->
+
+```json
+{
+  "additionalProperties": false,
+  "properties": {
+    "input_id": {
+      "pattern": "^[A-Za-z0-9]\u0028?:[A-Za-z0-9._-]{0,158}[A-Za-z0-9])?$",
+      "title": "Input Id",
+      "type": "string"
+    },
+    "output_id": {
+      "pattern": "^[A-Za-z0-9]\u0028?:[A-Za-z0-9._-]{0,158}[A-Za-z0-9])?$",
+      "title": "Output Id",
+      "type": "string"
+    }
+  },
+  "required": [
+    "output_id",
+    "input_id"
+  ],
+  "title": "OutputSourceEdge",
+  "type": "object"
+}
+```

@@ -27,7 +27,7 @@
 - Proof: `make operation-qualification`
 - Proof: `make compose-smoke`
 
-## Contract
+## Contract summary
 
 - `title`: RenewRetrievalJobRequest
 - `type`: object
@@ -37,3 +37,27 @@
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | `lease_seconds` | yes | integer |  |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: c340f9b632598fe59aae3fc711a245ed0211b36c94b1b056c43b0a5bc95e419b -->
+
+```json
+{
+  "additionalProperties": false,
+  "properties": {
+    "lease_seconds": {
+      "minimum": 1,
+      "title": "Lease Seconds",
+      "type": "integer"
+    }
+  },
+  "required": [
+    "lease_seconds"
+  ],
+  "title": "RenewRetrievalJobRequest",
+  "type": "object"
+}
+```

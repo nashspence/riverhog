@@ -29,6 +29,10 @@
 - Proof: `make operation-qualification`
 - Proof: `make compose-smoke`
 
+## Referenced contract dossiers
+
+- [schemas: SchedulerFailure](schemas-schedulerfailure.md)
+
 ## Extent decisions
 
 | Dimension | Unit | Policy | Bounds/reason |
@@ -37,7 +41,7 @@
 | length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
 | cardinality | items | `operational_policy` | maximum=None, reason=no-declared-semantic-maximum |
 
-## Contract
+## Contract summary
 
 - `title`: SchedulerWorkBatch
 - `type`: object
@@ -51,3 +55,58 @@
 | `next_cursor` | yes | string |  |
 | `progressed` | yes | array |  |
 | `role` | yes | string |  |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 8bc39e7070ed70678d9f49add76a6806022e801c3461554beebb6ae95228e285 -->
+
+```json
+{
+  "additionalProperties": false,
+  "properties": {
+    "cursor": {
+      "title": "Cursor",
+      "type": "string"
+    },
+    "failures": {
+      "items": {
+        "$ref": "#/components/schemas/SchedulerFailure"
+      },
+      "title": "Failures",
+      "type": "array"
+    },
+    "next_cursor": {
+      "title": "Next Cursor",
+      "type": "string"
+    },
+    "progressed": {
+      "items": {
+        "pattern": "^[0-9a-f]{64}$",
+        "type": "string"
+      },
+      "title": "Progressed",
+      "type": "array"
+    },
+    "role": {
+      "enum": [
+        "controller",
+        "worker",
+        "combined"
+      ],
+      "title": "Role",
+      "type": "string"
+    }
+  },
+  "required": [
+    "role",
+    "cursor",
+    "next_cursor",
+    "progressed",
+    "failures"
+  ],
+  "title": "SchedulerWorkBatch",
+  "type": "object"
+}
+```

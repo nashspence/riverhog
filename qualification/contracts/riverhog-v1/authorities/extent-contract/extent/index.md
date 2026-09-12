@@ -4,6 +4,12 @@
 
 Contract elements: **15** · Extent decisions: **0**
 
+| Family | Count |
+|---|---:|
+| `policy` | 3 |
+| `principles` | 5 |
+| `rules` | 7 |
+
 | Policy | Count |
 |---|---:|
 | `extent-principle/bounded-work/v1` | 1 |

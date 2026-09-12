@@ -28,6 +28,11 @@
 - Proof: `make operation-qualification`
 - Proof: `make compose-smoke`
 
+## Referenced contract dossiers
+
+- [schemas: ArtifactSelectionRef](schemas-artifactselectionref.md)
+- [schemas: CollectionRootRef](schemas-collectionrootref.md)
+
 ## Extent decisions
 
 | Dimension | Unit | Policy | Bounds/reason |
@@ -38,7 +43,7 @@
 | length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
 | length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
 
-## Contract
+## Contract summary
 
 - `title`: BranchSettlement
 - `description`: Success-only, Riverhog-verified result of one branch workflow plan.
@@ -57,3 +62,72 @@
 | `settlement_sha256` | yes | string |  |
 | `work_id` | yes | string |  |
 | `workflow_plan_sha256` | yes | string |  |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: ff3841fca031acff04876a69b8405ed3e2b279985c48de34ca24abbe802cbf08 -->
+
+```json
+{
+  "additionalProperties": false,
+  "description": "Success-only, Riverhog-verified result of one branch workflow plan.",
+  "properties": {
+    "branch_id": {
+      "pattern": "^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$",
+      "title": "Branch Id",
+      "type": "string"
+    },
+    "derivation_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Derivation Sha256",
+      "type": "string"
+    },
+    "format": {
+      "const": "stove0-branch-settlement/v1",
+      "default": "stove0-branch-settlement/v1",
+      "title": "Format",
+      "type": "string"
+    },
+    "output_collection": {
+      "$ref": "#/components/schemas/CollectionRootRef"
+    },
+    "output_selection": {
+      "$ref": "#/components/schemas/ArtifactSelectionRef"
+    },
+    "producer_settlement_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Producer Settlement Sha256",
+      "type": "string"
+    },
+    "settlement_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Settlement Sha256",
+      "type": "string"
+    },
+    "work_id": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Work Id",
+      "type": "string"
+    },
+    "workflow_plan_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Workflow Plan Sha256",
+      "type": "string"
+    }
+  },
+  "required": [
+    "branch_id",
+    "work_id",
+    "workflow_plan_sha256",
+    "derivation_sha256",
+    "producer_settlement_sha256",
+    "output_collection",
+    "output_selection",
+    "settlement_sha256"
+  ],
+  "title": "BranchSettlement",
+  "type": "object"
+}
+```

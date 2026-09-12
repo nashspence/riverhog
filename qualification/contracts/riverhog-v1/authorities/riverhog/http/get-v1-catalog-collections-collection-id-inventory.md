@@ -33,6 +33,11 @@
 
 - [Operation parity: get_portable_collection_inventory](../operation/operation-parity-get-portable-collection-inventory.md)
 
+## Referenced contract dossiers
+
+- [schemas: ErrorResponse](schemas-errorresponse.md)
+- [schemas: PortableCollectionInventoryPage](schemas-portablecollectioninventorypage.md)
+
 ## Extent decisions
 
 | Dimension | Unit | Policy | Bounds/reason |
@@ -41,7 +46,7 @@
 | length | characters | `contract_max` | maximum=8192, minimum=1, reason=schema-maximum |
 | value | schema-value | `contract_max` | maximum=1000, minimum=1, reason=schema-maximum |
 
-## Contract
+## Contract summary
 
 - `operationId`: get_portable_collection_inventory
 - `summary`: Get Portable Collection Inventory
@@ -68,3 +73,210 @@
 | `412` | Precondition Failed |
 | `428` | Precondition Required |
 | `500` | Internal Server Error |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 3422ec3acc10c1715c4b1f195c211da88d6a6c391f2aebc2903ad8d88beaf538 -->
+
+```json
+{
+  "operationId": "get_portable_collection_inventory",
+  "parameters": [
+    {
+      "in": "path",
+      "name": "collection_id",
+      "required": true,
+      "schema": {
+        "minimum": 1,
+        "title": "Collection Id",
+        "type": "integer"
+      }
+    },
+    {
+      "in": "query",
+      "name": "cursor",
+      "required": false,
+      "schema": {
+        "anyOf": [
+          {
+            "maxLength": 8192,
+            "minLength": 1,
+            "type": "string"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "title": "Cursor"
+      }
+    },
+    {
+      "in": "query",
+      "name": "limit",
+      "required": false,
+      "schema": {
+        "default": 100,
+        "maximum": 1000,
+        "minimum": 1,
+        "title": "Limit",
+        "type": "integer"
+      }
+    },
+    {
+      "in": "header",
+      "name": "If-Match",
+      "required": false,
+      "schema": {
+        "anyOf": [
+          {
+            "pattern": "^\"[0-9a-f]{64}\"$",
+            "type": "string"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "title": "If-Match"
+      }
+    }
+  ],
+  "responses": {
+    "200": {
+      "content": {
+        "application/json": {
+          "schema": {
+            "$ref": "#/components/schemas/PortableCollectionInventoryPage"
+          }
+        }
+      },
+      "description": "Successful Response",
+      "headers": {
+        "ETag": {
+          "description": "Strong identity of the immutable inventory authority.",
+          "schema": {
+            "pattern": "^\"[0-9a-f]{64}\"$",
+            "type": "string"
+          }
+        }
+      }
+    },
+    "400": {
+      "content": {
+        "application/json": {
+          "schema": {
+            "$ref": "#/components/schemas/ErrorResponse"
+          }
+        }
+      },
+      "description": "Bad Request",
+      "x-riverhog-error-codes": [
+        "bad_request"
+      ]
+    },
+    "401": {
+      "content": {
+        "application/json": {
+          "schema": {
+            "$ref": "#/components/schemas/ErrorResponse"
+          }
+        }
+      },
+      "description": "Unauthorized",
+      "x-riverhog-error-codes": [
+        "unauthorized"
+      ]
+    },
+    "403": {
+      "content": {
+        "application/json": {
+          "schema": {
+            "$ref": "#/components/schemas/ErrorResponse"
+          }
+        }
+      },
+      "description": "Forbidden",
+      "x-riverhog-error-codes": [
+        "forbidden"
+      ]
+    },
+    "404": {
+      "content": {
+        "application/json": {
+          "schema": {
+            "$ref": "#/components/schemas/ErrorResponse"
+          }
+        }
+      },
+      "description": "Not Found",
+      "x-riverhog-error-codes": [
+        "not_found"
+      ]
+    },
+    "412": {
+      "content": {
+        "application/json": {
+          "schema": {
+            "$ref": "#/components/schemas/ErrorResponse"
+          }
+        }
+      },
+      "description": "Precondition Failed",
+      "x-riverhog-error-codes": [
+        "precondition_failed"
+      ]
+    },
+    "428": {
+      "content": {
+        "application/json": {
+          "schema": {
+            "$ref": "#/components/schemas/ErrorResponse"
+          }
+        }
+      },
+      "description": "Precondition Required",
+      "x-riverhog-error-codes": [
+        "precondition_required"
+      ]
+    },
+    "500": {
+      "content": {
+        "application/json": {
+          "schema": {
+            "$ref": "#/components/schemas/ErrorResponse"
+          }
+        }
+      },
+      "description": "Internal Server Error",
+      "x-riverhog-error-codes": [
+        "internal_error"
+      ]
+    }
+  },
+  "security": [
+    {
+      "HTTPBearer": []
+    }
+  ],
+  "summary": "Get Portable Collection Inventory",
+  "tags": [
+    "catalog"
+  ],
+  "x-riverhog-interface": "standard-tool/protocol",
+  "x-riverhog-permission-requirements": [
+    {
+      "any_of": [
+        "catalog:read"
+      ]
+    }
+  ],
+  "x-riverhog-read-collection": {
+    "authority": "portable-collection-inventory",
+    "cursor_parameter": "cursor",
+    "kind": "exact-set-page",
+    "limit_parameter": "limit",
+    "validator_header": "If-Match"
+  }
+}
+```

@@ -27,7 +27,19 @@
 - Proof: `make dist-smoke`
 - Proof: `make build`
 
-## Contract
+## Contract summary
+
+| Field | Shape |
+|---|---|
+| `distribution` | "gogurt-listener-runtime" |
+| `exports` | object (33 fields) |
+| `module` | "gogurt_listener_runtime" |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 41173d54de2d90b1dad2313e619dfea4cea4cd43eb9eb333af8dfdc67a9d6b68 -->
 
 ```json
 {

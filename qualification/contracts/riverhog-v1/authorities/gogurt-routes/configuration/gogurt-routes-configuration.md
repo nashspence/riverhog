@@ -35,7 +35,7 @@
 | cardinality | items | `operational_policy` | maximum=None, reason=validated-deployment-composition |
 | cardinality | entries | `operational_policy` | maximum=None, reason=validated-deployment-composition |
 
-## Contract
+## Contract summary
 
 - `type`: object
 
@@ -46,3 +46,58 @@
 | `kind` | yes | string |  |
 | `routes` | yes | object |  |
 | `schema_version` | yes | integer |  |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: ae7ddc44e19c9813d6eb0f696216b605cec53befe69bcf2a2b45d533d6b6c671 -->
+
+```json
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "kind": {
+      "const": "gogurt.routes",
+      "type": "string"
+    },
+    "routes": {
+      "additionalProperties": {
+        "additionalProperties": false,
+        "properties": {
+          "command": {
+            "items": {
+              "minLength": 1,
+              "type": "string"
+            },
+            "minItems": 1,
+            "type": "array"
+          },
+          "enabled": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "command"
+        ],
+        "type": "object"
+      },
+      "propertyNames": {
+        "pattern": "^[a-z0-9]\u0028?:[a-z0-9-]{0,61}[a-z0-9])?$"
+      },
+      "type": "object"
+    },
+    "schema_version": {
+      "const": 1,
+      "type": "integer"
+    }
+  },
+  "required": [
+    "schema_version",
+    "kind",
+    "routes"
+  ],
+  "type": "object"
+}
+```

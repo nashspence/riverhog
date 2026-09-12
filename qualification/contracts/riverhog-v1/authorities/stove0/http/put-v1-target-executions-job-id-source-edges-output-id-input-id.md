@@ -31,7 +31,13 @@
 
 - [Operation parity: declare_target_execution_source_edge](../operation/operation-parity-declare-target-execution-source-edge.md)
 
-## Contract
+## Referenced contract dossiers
+
+- [schemas: ErrorResponse](schemas-errorresponse.md)
+- [schemas: OutputSourceEdge](schemas-outputsourceedge.md)
+- [schemas: TargetCallbackAcknowledgement](schemas-targetcallbackacknowledgement.md)
+
+## Contract summary
 
 - `operationId`: declare_target_execution_source_edge
 - `summary`: Declare Target Execution Source Edge
@@ -57,3 +63,123 @@
 | `401` | Unauthorized |
 | `403` | Forbidden |
 | `500` | Internal Server Error |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: caf04471a028ef215ea47a144fd9f080e2d18e4033c5a8d5e428ad315e424fe8 -->
+
+```json
+{
+  "operationId": "declare_target_execution_source_edge",
+  "parameters": [
+    {
+      "in": "path",
+      "name": "job_id",
+      "required": true,
+      "schema": {
+        "title": "Job Id",
+        "type": "string"
+      }
+    },
+    {
+      "in": "path",
+      "name": "output_id",
+      "required": true,
+      "schema": {
+        "title": "Output Id",
+        "type": "string"
+      }
+    },
+    {
+      "in": "path",
+      "name": "input_id",
+      "required": true,
+      "schema": {
+        "title": "Input Id",
+        "type": "string"
+      }
+    }
+  ],
+  "requestBody": {
+    "content": {
+      "application/json": {
+        "schema": {
+          "$ref": "#/components/schemas/OutputSourceEdge"
+        }
+      }
+    },
+    "required": true
+  },
+  "responses": {
+    "200": {
+      "content": {
+        "application/json": {
+          "schema": {
+            "$ref": "#/components/schemas/TargetCallbackAcknowledgement"
+          }
+        }
+      },
+      "description": "Successful Response"
+    },
+    "400": {
+      "content": {
+        "application/json": {
+          "schema": {
+            "$ref": "#/components/schemas/ErrorResponse"
+          }
+        }
+      },
+      "description": "Bad Request",
+      "x-riverhog-error-codes": [
+        "bad_request"
+      ]
+    },
+    "401": {
+      "content": {
+        "application/json": {
+          "schema": {
+            "$ref": "#/components/schemas/ErrorResponse"
+          }
+        }
+      },
+      "description": "Unauthorized",
+      "x-riverhog-error-codes": [
+        "unauthorized"
+      ]
+    },
+    "403": {
+      "content": {
+        "application/json": {
+          "schema": {
+            "$ref": "#/components/schemas/ErrorResponse"
+          }
+        }
+      },
+      "description": "Forbidden",
+      "x-riverhog-error-codes": [
+        "forbidden"
+      ]
+    },
+    "500": {
+      "content": {
+        "application/json": {
+          "schema": {
+            "$ref": "#/components/schemas/ErrorResponse"
+          }
+        }
+      },
+      "description": "Internal Server Error",
+      "x-riverhog-error-codes": [
+        "internal_error"
+      ]
+    }
+  },
+  "summary": "Declare Target Execution Source Edge",
+  "tags": [
+    "target-executions"
+  ],
+  "x-riverhog-interface": "client-only-primitive"
+}
+```

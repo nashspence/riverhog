@@ -31,7 +31,12 @@
 
 - [Operation parity: ftp_adapter_health_ready](../operation/operation-parity-ftp-adapter-health-ready.md)
 
-## Contract
+## Referenced contract dossiers
+
+- [schemas: ErrorResponse](schemas-errorresponse.md)
+- [schemas: HealthResponse](schemas-healthresponse.md)
+
+## Contract summary
 
 - `operationId`: ftp_adapter_health_ready
 - `summary`: Health Ready
@@ -42,3 +47,41 @@
 |---|---|
 | `200` | Successful Response |
 | `503` | Service Unavailable |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 29fd47a83019e36c295edfb3f7fddd8951196a3feaf23f6ce34cc043219d4bb9 -->
+
+```json
+{
+  "operationId": "ftp_adapter_health_ready",
+  "responses": {
+    "200": {
+      "content": {
+        "application/json": {
+          "schema": {
+            "$ref": "#/components/schemas/HealthResponse"
+          }
+        }
+      },
+      "description": "Successful Response"
+    },
+    "503": {
+      "content": {
+        "application/json": {
+          "schema": {
+            "$ref": "#/components/schemas/ErrorResponse"
+          }
+        }
+      },
+      "description": "Service Unavailable"
+    }
+  },
+  "summary": "Health Ready",
+  "tags": [
+    "health"
+  ]
+}
+```

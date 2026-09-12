@@ -29,6 +29,11 @@
 - Proof: `make operation-qualification`
 - Proof: `make compose-smoke`
 
+## Referenced contract dossiers
+
+- [schemas: CatalogSyncDelete](schemas-catalogsyncdelete.md)
+- [schemas: CatalogSyncUpsert](schemas-catalogsyncupsert.md)
+
 ## Extent decisions
 
 | Dimension | Unit | Policy | Bounds/reason |
@@ -39,7 +44,7 @@
 | length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
 | length | characters | `contract_max` | maximum=19, minimum=1, reason=schema-maximum |
 
-## Contract
+## Contract summary
 
 - `title`: CatalogSyncChangePage
 - `type`: object
@@ -55,3 +60,86 @@
 | `next_cursor` | yes | string |  |
 | `source_identity` | yes | string |  |
 | `through_revision` | yes | string |  |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: f9134d3884d10ad80c358ca088ef4cb1983554941cd38bf93eb6e4c22d95cd09 -->
+
+```json
+{
+  "additionalProperties": false,
+  "properties": {
+    "authorization_view_identity": {
+      "maxLength": 64,
+      "minLength": 64,
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Authorization View Identity",
+      "type": "string"
+    },
+    "caught_up": {
+      "title": "Caught Up",
+      "type": "boolean"
+    },
+    "changes": {
+      "items": {
+        "discriminator": {
+          "mapping": {
+            "delete": "#/components/schemas/CatalogSyncDelete",
+            "upsert": "#/components/schemas/CatalogSyncUpsert"
+          },
+          "propertyName": "operation"
+        },
+        "oneOf": [
+          {
+            "$ref": "#/components/schemas/CatalogSyncUpsert"
+          },
+          {
+            "$ref": "#/components/schemas/CatalogSyncDelete"
+          }
+        ]
+      },
+      "maxItems": 100,
+      "title": "Changes",
+      "type": "array"
+    },
+    "format": {
+      "const": "riverhog-catalog-sync/v1",
+      "default": "riverhog-catalog-sync/v1",
+      "title": "Format",
+      "type": "string"
+    },
+    "next_cursor": {
+      "maxLength": 4096,
+      "minLength": 1,
+      "title": "Next Cursor",
+      "type": "string"
+    },
+    "source_identity": {
+      "maxLength": 64,
+      "minLength": 64,
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Source Identity",
+      "type": "string"
+    },
+    "through_revision": {
+      "maxLength": 19,
+      "minLength": 1,
+      "pattern": "^(?:0|[1-9][0-9]{0,17}|[1-8][0-9]{18})$",
+      "title": "Through Revision",
+      "type": "string"
+    }
+  },
+  "required": [
+    "source_identity",
+    "authorization_view_identity",
+    "changes",
+    "next_cursor",
+    "caught_up",
+    "through_revision"
+  ],
+  "title": "CatalogSyncChangePage",
+  "type": "object"
+}
+```

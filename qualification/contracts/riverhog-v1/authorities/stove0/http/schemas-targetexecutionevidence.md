@@ -29,6 +29,10 @@
 - Proof: `make operation-qualification`
 - Proof: `make compose-smoke`
 
+## Referenced contract dossiers
+
+- [schemas: JsonValue](schemas-jsonvalue.md)
+
 ## Extent decisions
 
 | Dimension | Unit | Policy | Bounds/reason |
@@ -39,7 +43,7 @@
 | cardinality | entries | `operational_policy` | maximum=None, reason=no-declared-semantic-maximum |
 | length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
 
-## Contract
+## Contract summary
 
 - `title`: TargetExecutionEvidence
 - `type`: object
@@ -53,3 +57,52 @@
 | `plan_sha256` | yes | string |  |
 | `runtime` | no | object |  |
 | `target_contract_sha256` | yes | string |  |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 49ee579a04f4aeb23dc0b1a4c6638cde055c1e5198c38a2b31b859c65580563f -->
+
+```json
+{
+  "additionalProperties": false,
+  "properties": {
+    "execution_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Execution Sha256",
+      "type": "string"
+    },
+    "operation_contract_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Operation Contract Sha256",
+      "type": "string"
+    },
+    "plan_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Plan Sha256",
+      "type": "string"
+    },
+    "runtime": {
+      "additionalProperties": {
+        "$ref": "#/components/schemas/JsonValue"
+      },
+      "title": "Runtime",
+      "type": "object"
+    },
+    "target_contract_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Target Contract Sha256",
+      "type": "string"
+    }
+  },
+  "required": [
+    "target_contract_sha256",
+    "operation_contract_sha256",
+    "plan_sha256",
+    "execution_sha256"
+  ],
+  "title": "TargetExecutionEvidence",
+  "type": "object"
+}
+```

@@ -29,6 +29,13 @@
 - Proof: `make operation-qualification`
 - Proof: `make compose-smoke`
 
+## Referenced contract dossiers
+
+- [schemas: JoinMemberDeclaration](schemas-joinmemberdeclaration.md)
+- [schemas: JsonValue](schemas-jsonvalue.md)
+- [schemas: RecipeRef](schemas-reciperef.md)
+- [schemas: WorkflowPlanIntent](schemas-workflowplanintent.md)
+
 ## Extent decisions
 
 | Dimension | Unit | Policy | Bounds/reason |
@@ -37,7 +44,7 @@
 | length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
 | cardinality | items | `operational_policy` | maximum=None, reason=no-declared-semantic-maximum |
 
-## Contract
+## Contract summary
 
 - `title`: JoinDeclaration
 - `description`: One optional exact named-subset join declaration.
@@ -53,3 +60,58 @@
 | `members` | yes | array |  |
 | `recipe` | yes | #/components/schemas/RecipeRef |  |
 | `workflow_intent` | yes | #/components/schemas/WorkflowPlanIntent |  |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: f5546eba1b0ee2da6a3a1215a3422b2bbd3ea9083d64eff4344c803b089b9ecb -->
+
+```json
+{
+  "additionalProperties": false,
+  "description": "One optional exact named-subset join declaration.",
+  "properties": {
+    "effective_intent": {
+      "additionalProperties": {
+        "$ref": "#/components/schemas/JsonValue"
+      },
+      "title": "Effective Intent",
+      "type": "object"
+    },
+    "format": {
+      "const": "stove0-join-declaration/v1",
+      "default": "stove0-join-declaration/v1",
+      "title": "Format",
+      "type": "string"
+    },
+    "join_declaration_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Join Declaration Sha256",
+      "type": "string"
+    },
+    "members": {
+      "items": {
+        "$ref": "#/components/schemas/JoinMemberDeclaration"
+      },
+      "minItems": 2,
+      "title": "Members",
+      "type": "array"
+    },
+    "recipe": {
+      "$ref": "#/components/schemas/RecipeRef"
+    },
+    "workflow_intent": {
+      "$ref": "#/components/schemas/WorkflowPlanIntent"
+    }
+  },
+  "required": [
+    "members",
+    "recipe",
+    "workflow_intent",
+    "join_declaration_sha256"
+  ],
+  "title": "JoinDeclaration",
+  "type": "object"
+}
+```

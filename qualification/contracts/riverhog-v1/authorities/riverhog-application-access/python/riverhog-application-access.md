@@ -27,7 +27,19 @@
 - Proof: `make dist-smoke`
 - Proof: `make build`
 
-## Contract
+## Contract summary
+
+| Field | Shape |
+|---|---|
+| `distribution` | "riverhog-application-access" |
+| `exports` | object (44 fields) |
+| `module` | "riverhog_application_access" |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 09a41f6eae0338b377ad4a80b56a4b00ee98c104c843b3ef974fd8ac6b07e309 -->
 
 ```json
 {

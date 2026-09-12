@@ -29,6 +29,11 @@
 - Proof: `make operation-qualification`
 - Proof: `make compose-smoke`
 
+## Referenced contract dossiers
+
+- [schemas: CanonicalRelPath](schemas-canonicalrelpath.md)
+- [schemas: CollectionRootIdentityDocument](schemas-collectionrootidentitydocument.md)
+
 ## Extent decisions
 
 | Dimension | Unit | Policy | Bounds/reason |
@@ -36,7 +41,7 @@
 | value | schema-value | `operational_policy` | maximum=None, reason=no-declared-semantic-maximum |
 | length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
 
-## Contract
+## Contract summary
 
 - `title`: CollectionArtifactIdentityDocument
 - `type`: object
@@ -49,3 +54,41 @@
 | `collection` | yes | #/components/schemas/CollectionRootIdentityDocument |  |
 | `path` | yes | #/components/schemas/CanonicalRelPath |  |
 | `sha256` | yes | string |  |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 8b8626cf1976bfbc2e82542d7692f060d2d1c3405916812bac4a427a99f649c0 -->
+
+```json
+{
+  "additionalProperties": false,
+  "properties": {
+    "bytes": {
+      "minimum": 0,
+      "title": "Bytes",
+      "type": "integer"
+    },
+    "collection": {
+      "$ref": "#/components/schemas/CollectionRootIdentityDocument"
+    },
+    "path": {
+      "$ref": "#/components/schemas/CanonicalRelPath"
+    },
+    "sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Sha256",
+      "type": "string"
+    }
+  },
+  "required": [
+    "collection",
+    "path",
+    "bytes",
+    "sha256"
+  ],
+  "title": "CollectionArtifactIdentityDocument",
+  "type": "object"
+}
+```

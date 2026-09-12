@@ -27,7 +27,20 @@
 - Proof: `make contract-freeze`
 - Proof: `make operation-qualification`
 
-## Contract
+## Contract summary
+
+| Field | Shape |
+|---|---|
+| `authority` | "the projected JSON Schema constraint" |
+| `exceeded` | "schema-validation-error" |
+| `policy` | "fixed-or-contract-max" |
+| `requirement` | "a non-fixed set maximum carries an owning reason declaration" |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 67a37a1700f335d04859cdd7551d06b87954e7eb258eadcfcec4e38f8d01a96d -->
 
 ```json
 {

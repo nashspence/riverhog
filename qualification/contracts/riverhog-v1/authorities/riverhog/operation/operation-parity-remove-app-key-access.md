@@ -33,7 +33,7 @@
 - [DELETE /v1/apps/{app}/keys/{key_id}/access](../http/delete-v1-apps-app-keys-key-id-access.md)
 - [piggity app key access remove](../../piggity/cli/piggity-app-key-access-remove.md)
 
-## Contract
+## Contract summary
 
 | Concern | Contract |
 |---|---|
@@ -47,3 +47,26 @@
 | `provider_evidence` | None |
 | `read_collection` | None |
 | `response_authority` | http-json |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 204b2eb6478fd030999853284413622b780548f95aa489dc610e1f1d6a60a166 -->
+
+```json
+{
+  "application": "riverhog",
+  "classification": "human-cli+json",
+  "cli_commands": [
+    "app key access remove"
+  ],
+  "client": "ApiClient",
+  "method": "DELETE",
+  "operation_id": "remove_app_key_access",
+  "path": "/v1/apps/{app}/keys/{key_id}/access",
+  "provider_evidence": null,
+  "read_collection": null,
+  "response_authority": "http-json"
+}
+```

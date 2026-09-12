@@ -34,7 +34,7 @@
 - [piggity local evict](../../piggity/cli/piggity-local-evict.md)
 - [piggity local remove](../../piggity/cli/piggity-local-remove.md)
 
-## Contract
+## Contract summary
 
 | Concern | Contract |
 |---|---|
@@ -48,3 +48,27 @@
 | `provider_evidence` | provider-qualification:#442 |
 | `read_collection` | None |
 | `response_authority` | http-json |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 2a80f6050751748ab5d39d17996d10b7f96f11b6aa047adb239875f1f95d7445 -->
+
+```json
+{
+  "application": "riverhog",
+  "classification": "client-only-primitive",
+  "cli_commands": [
+    "local evict",
+    "local remove"
+  ],
+  "client": "ApiClient",
+  "method": "DELETE",
+  "operation_id": "cancel_retrieval_job",
+  "path": "/v1/retrieval-jobs/{job_id}",
+  "provider_evidence": "provider-qualification:#442",
+  "read_collection": null,
+  "response_authority": "http-json"
+}
+```

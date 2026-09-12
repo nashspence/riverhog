@@ -29,6 +29,15 @@
 - Proof: `make operation-qualification`
 - Proof: `make compose-smoke`
 
+## Referenced contract dossiers
+
+- [schemas: BranchWorkBinding](schemas-branchworkbinding.md)
+- [schemas: CollectionRootRef](schemas-collectionrootref.md)
+- [schemas: EvaluationBinding](schemas-evaluationbinding.md)
+- [schemas: JoinWorkBinding](schemas-joinworkbinding.md)
+- [schemas: JsonValue](schemas-jsonvalue.md)
+- [schemas: RecipeRef](schemas-reciperef.md)
+
 ## Extent decisions
 
 | Dimension | Unit | Policy | Bounds/reason |
@@ -37,7 +46,7 @@
 | cardinality | items | `operational_policy` | maximum=None, reason=no-declared-semantic-maximum |
 | length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
 
-## Contract
+## Contract summary
 
 - `title`: WorkIdentity
 - `type`: object
@@ -53,3 +62,88 @@
 | `inputs` | yes | array |  |
 | `recipe` | yes | #/components/schemas/RecipeRef |  |
 | `work_id` | yes | string |  |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 3a16e4895513ac18dd61fd4a29fd1b576cb62b2fc14b92e330784efec26186c4 -->
+
+```json
+{
+  "additionalProperties": false,
+  "properties": {
+    "effective_intent": {
+      "additionalProperties": {
+        "$ref": "#/components/schemas/JsonValue"
+      },
+      "title": "Effective Intent",
+      "type": "object"
+    },
+    "evaluation": {
+      "anyOf": [
+        {
+          "$ref": "#/components/schemas/EvaluationBinding"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "fork_join": {
+      "anyOf": [
+        {
+          "discriminator": {
+            "mapping": {
+              "branch": "#/components/schemas/BranchWorkBinding",
+              "join": "#/components/schemas/JoinWorkBinding"
+            },
+            "propertyName": "kind"
+          },
+          "oneOf": [
+            {
+              "$ref": "#/components/schemas/BranchWorkBinding"
+            },
+            {
+              "$ref": "#/components/schemas/JoinWorkBinding"
+            }
+          ]
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Fork Join"
+    },
+    "format": {
+      "const": "stove0-work/v1",
+      "default": "stove0-work/v1",
+      "title": "Format",
+      "type": "string"
+    },
+    "inputs": {
+      "items": {
+        "$ref": "#/components/schemas/CollectionRootRef"
+      },
+      "minItems": 1,
+      "title": "Inputs",
+      "type": "array"
+    },
+    "recipe": {
+      "$ref": "#/components/schemas/RecipeRef"
+    },
+    "work_id": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Work Id",
+      "type": "string"
+    }
+  },
+  "required": [
+    "recipe",
+    "inputs",
+    "work_id"
+  ],
+  "title": "WorkIdentity",
+  "type": "object"
+}
+```

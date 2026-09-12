@@ -27,7 +27,7 @@
 - Proof: `make operation-qualification`
 - Proof: `make compose-smoke`
 
-## Contract
+## Contract summary
 
 - `title`: RetrievalCachePolicyOut
 - `type`: object
@@ -42,3 +42,51 @@
 | `retrieval_default_lease_seconds` | yes | integer |  |
 | `retrieval_max_lease_seconds` | yes | integer |  |
 | `sweep_interval_seconds` | yes | integer |  |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 740de456c0f1474303689e5327befe189dd96d45b7fb36c67e1bc6d49fb71815 -->
+
+```json
+{
+  "additionalProperties": false,
+  "properties": {
+    "new_archive_lease_seconds": {
+      "title": "New Archive Lease Seconds",
+      "type": "integer"
+    },
+    "pending_timeout_seconds": {
+      "title": "Pending Timeout Seconds",
+      "type": "integer"
+    },
+    "restore_poll_interval_seconds": {
+      "title": "Restore Poll Interval Seconds",
+      "type": "integer"
+    },
+    "retrieval_default_lease_seconds": {
+      "title": "Retrieval Default Lease Seconds",
+      "type": "integer"
+    },
+    "retrieval_max_lease_seconds": {
+      "title": "Retrieval Max Lease Seconds",
+      "type": "integer"
+    },
+    "sweep_interval_seconds": {
+      "title": "Sweep Interval Seconds",
+      "type": "integer"
+    }
+  },
+  "required": [
+    "new_archive_lease_seconds",
+    "retrieval_default_lease_seconds",
+    "retrieval_max_lease_seconds",
+    "pending_timeout_seconds",
+    "sweep_interval_seconds",
+    "restore_poll_interval_seconds"
+  ],
+  "title": "RetrievalCachePolicyOut",
+  "type": "object"
+}
+```

@@ -27,7 +27,23 @@
 - Proof: `make release-check`
 - Proof: `make build`
 
-## Contract
+## Contract summary
+
+| Field | Shape |
+|---|---|
+| `listener` | object (6 fields) |
+| `lock_format` | "pylock.toml" |
+| `managed_python` | true |
+| `method` | "uv-tool" |
+| `roots` | array (4 items) |
+| `simple_index_path` | "artifacts/v{version}/simple/" |
+| `wheel_only` | true |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 630504f7554a37df84f3b9370d2936a2f64a98eaef8bdc31f98b5e3eac0face8 -->
 
 ```json
 {

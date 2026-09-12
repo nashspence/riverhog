@@ -35,7 +35,7 @@
 | length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
 | length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
 
-## Contract
+## Contract summary
 
 - `title`: BranchSetAdmittedEventData
 - `type`: object
@@ -50,3 +50,57 @@
 | `phase` | yes | string |  |
 | `revision` | yes | integer |  |
 | `work_id` | yes | string |  |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 8915aca1dade95650ccfb03c5ac47cf18fb3cd693a2c2becad387ba7624688f6 -->
+
+```json
+{
+  "additionalProperties": false,
+  "properties": {
+    "admitted_work_count": {
+      "minimum": 1,
+      "title": "Admitted Work Count",
+      "type": "integer"
+    },
+    "branch_count": {
+      "minimum": 1,
+      "title": "Branch Count",
+      "type": "integer"
+    },
+    "branch_set_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Branch Set Sha256",
+      "type": "string"
+    },
+    "phase": {
+      "const": "coordinating",
+      "title": "Phase",
+      "type": "string"
+    },
+    "revision": {
+      "minimum": 2,
+      "title": "Revision",
+      "type": "integer"
+    },
+    "work_id": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Work Id",
+      "type": "string"
+    }
+  },
+  "required": [
+    "work_id",
+    "phase",
+    "revision",
+    "branch_set_sha256",
+    "branch_count",
+    "admitted_work_count"
+  ],
+  "title": "BranchSetAdmittedEventData",
+  "type": "object"
+}
+```

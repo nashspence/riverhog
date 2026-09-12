@@ -37,7 +37,7 @@
 | cardinality | values-per-occurrence | `fixed` | maximum=0, minimum=0, reason=fixed-command-argument-arity |
 | cardinality | values-per-occurrence | `fixed` | maximum=0, minimum=0, reason=fixed-command-argument-arity |
 
-## Contract
+## Contract summary
 
 - Parser name: `riverhog-storage-adapter-filesystem-materialize`
 
@@ -52,3 +52,89 @@
 | `` | _AppendAction | no |  | --prefix |
 | `` | _StoreTrueAction | no |  | --all |
 | `` | _StoreTrueAction | no |  | --json |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+### `/external_contract/cli/riverhog-storage-adapter-filesystem-materialize/name`
+
+<!-- exact-contract-value: 82696eaa2ee2ddb3450856c064f738d1f49e10fc6f8808ba26ca0962387019ae -->
+
+```json
+"riverhog-storage-adapter-filesystem-materialize"
+```
+
+### `/external_contract/cli/riverhog-storage-adapter-filesystem-materialize/parameters`
+
+<!-- exact-contract-value: f8a7ef39da8b15ad5f557610d25478cad6509560fa0249ed688e23cc17e9cc01 -->
+
+```json
+[
+  {
+    "dest": "version",
+    "kind": "_VersionAction",
+    "nargs": 0,
+    "options": [
+      "--version"
+    ],
+    "required": false
+  },
+  {
+    "dest": "source",
+    "kind": "_StoreAction",
+    "nargs": null,
+    "options": [],
+    "required": true,
+    "type": "Path"
+  },
+  {
+    "dest": "destination",
+    "kind": "_StoreAction",
+    "nargs": null,
+    "options": [],
+    "required": true,
+    "type": "Path"
+  },
+  {
+    "default": [],
+    "dest": "path",
+    "kind": "_AppendAction",
+    "nargs": null,
+    "options": [
+      "--path"
+    ],
+    "required": false
+  },
+  {
+    "default": [],
+    "dest": "prefix",
+    "kind": "_AppendAction",
+    "nargs": null,
+    "options": [
+      "--prefix"
+    ],
+    "required": false
+  },
+  {
+    "default": false,
+    "dest": "all_objects",
+    "kind": "_StoreTrueAction",
+    "nargs": 0,
+    "options": [
+      "--all"
+    ],
+    "required": false
+  },
+  {
+    "default": false,
+    "dest": "json",
+    "kind": "_StoreTrueAction",
+    "nargs": 0,
+    "options": [
+      "--json"
+    ],
+    "required": false
+  }
+]
+```

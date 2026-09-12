@@ -27,7 +27,13 @@
 - Proof: `make operation-qualification`
 - Proof: `make compose-smoke`
 
-## Contract
+## Referenced contract dossiers
+
+- [schemas: CollectionDerivationDocument](schemas-collectionderivationdocument.md)
+- [schemas: CollectionId](schemas-collectionid.md)
+- [schemas: ProcessingOutcomeBindingDocument](schemas-processingoutcomebindingdocument.md)
+
+## Contract summary
 
 - `title`: ProcessingClaimSettleDocument
 - `type`: object
@@ -40,3 +46,45 @@
 | `fence` | yes | integer |  |
 | `outcome` | no | object (1 fields) |  |
 | `output_collection_id` | yes | #/components/schemas/CollectionId |  |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: f4eaad05bdbec113776443566aec0733a8a2e4ddde45eaf7609d7cad63baebb5 -->
+
+```json
+{
+  "additionalProperties": false,
+  "properties": {
+    "derivation": {
+      "$ref": "#/components/schemas/CollectionDerivationDocument"
+    },
+    "fence": {
+      "minimum": 1,
+      "title": "Fence",
+      "type": "integer"
+    },
+    "outcome": {
+      "anyOf": [
+        {
+          "$ref": "#/components/schemas/ProcessingOutcomeBindingDocument"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "output_collection_id": {
+      "$ref": "#/components/schemas/CollectionId"
+    }
+  },
+  "required": [
+    "fence",
+    "output_collection_id",
+    "derivation"
+  ],
+  "title": "ProcessingClaimSettleDocument",
+  "type": "object"
+}
+```

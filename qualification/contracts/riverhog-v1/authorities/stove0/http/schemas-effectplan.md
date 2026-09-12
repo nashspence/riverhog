@@ -29,6 +29,11 @@
 - Proof: `make operation-qualification`
 - Proof: `make compose-smoke`
 
+## Referenced contract dossiers
+
+- [schemas: JsonValue](schemas-jsonvalue.md)
+- [schemas: TargetInputAuthority](schemas-targetinputauthority.md)
+
 ## Extent decisions
 
 | Dimension | Unit | Policy | Bounds/reason |
@@ -41,7 +46,7 @@
 | length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
 | cardinality | entries | `operational_policy` | maximum=None, reason=no-declared-semantic-maximum |
 
-## Contract
+## Contract summary
 
 - `title`: EffectPlan
 - `type`: object
@@ -60,3 +65,85 @@
 | `target_contract_sha256` | yes | string |  |
 | `target_implementation_id` | yes | string |  |
 | `target_options` | no | object |  |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: ff477804d70b8b67a6b1410e7f173bcfc7bf1a7f62febcb6afb86dd51a88f0a1 -->
+
+```json
+{
+  "additionalProperties": false,
+  "properties": {
+    "inputs": {
+      "$ref": "#/components/schemas/TargetInputAuthority"
+    },
+    "intent": {
+      "additionalProperties": {
+        "$ref": "#/components/schemas/JsonValue"
+      },
+      "title": "Intent",
+      "type": "object"
+    },
+    "observation_result_sha256s": {
+      "default": [],
+      "items": {
+        "pattern": "^[0-9a-f]{64}$",
+        "type": "string"
+      },
+      "title": "Observation Result Sha256S",
+      "type": "array"
+    },
+    "operation_contract_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Operation Contract Sha256",
+      "type": "string"
+    },
+    "operation_id": {
+      "pattern": "^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$",
+      "title": "Operation Id",
+      "type": "string"
+    },
+    "plan_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Plan Sha256",
+      "type": "string"
+    },
+    "protocol": {
+      "const": "stove0-effect-target/v1",
+      "default": "stove0-effect-target/v1",
+      "title": "Protocol",
+      "type": "string"
+    },
+    "target_contract_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Target Contract Sha256",
+      "type": "string"
+    },
+    "target_implementation_id": {
+      "pattern": "^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$",
+      "title": "Target Implementation Id",
+      "type": "string"
+    },
+    "target_options": {
+      "additionalProperties": {
+        "$ref": "#/components/schemas/JsonValue"
+      },
+      "title": "Target Options",
+      "type": "object"
+    }
+  },
+  "required": [
+    "operation_id",
+    "operation_contract_sha256",
+    "inputs",
+    "intent",
+    "target_implementation_id",
+    "target_contract_sha256",
+    "plan_sha256"
+  ],
+  "title": "EffectPlan",
+  "type": "object"
+}
+```

@@ -27,6 +27,39 @@
 - Proof: `make operation-qualification`
 - Proof: `make compose-smoke`
 
-## Contract
+## Referenced contract dossiers
+
+- [schemas: CapturedCollectionProvenanceVerification](schemas-capturedcollectionprovenanceverification.md)
+- [schemas: OmittedCollectionProvenanceVerification](schemas-omittedcollectionprovenanceverification.md)
+
+## Contract summary
 
 - `title`: CollectionProvenanceVerificationOut
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: bab7fea3f2032a486a9745607f077373aefca57e6ce2b7f13b6581e01c85a662 -->
+
+```json
+{
+  "discriminator": {
+    "mapping": {
+      "captured": "#/components/schemas/CapturedCollectionProvenanceVerification",
+      "mixed": "#/components/schemas/CapturedCollectionProvenanceVerification",
+      "omitted": "#/components/schemas/OmittedCollectionProvenanceVerification"
+    },
+    "propertyName": "provenance_mode"
+  },
+  "oneOf": [
+    {
+      "$ref": "#/components/schemas/CapturedCollectionProvenanceVerification"
+    },
+    {
+      "$ref": "#/components/schemas/OmittedCollectionProvenanceVerification"
+    }
+  ],
+  "title": "CollectionProvenanceVerificationOut"
+}
+```

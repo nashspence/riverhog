@@ -29,6 +29,11 @@
 - Proof: `make operation-qualification`
 - Proof: `make compose-smoke`
 
+## Referenced contract dossiers
+
+- [schemas: ArtifactSelectionRef](schemas-artifactselectionref.md)
+- [schemas: ArtifactSubject](schemas-artifactsubject.md)
+
 ## Extent decisions
 
 | Dimension | Unit | Policy | Bounds/reason |
@@ -37,7 +42,7 @@
 | length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
 | length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
 
-## Contract
+## Contract summary
 
 - `title`: ArtifactSelectionPage
 - `description`: One bounded continuation step through an immutable artifact selection.
@@ -52,3 +57,69 @@
 | `complete` | yes | boolean |  |
 | `continuation` | no | object (2 fields) |  |
 | `next_continuation` | no | object (2 fields) |  |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 02d0861511675ea88bb1eabb52ffb7a83cbbce075c250e5d031e6bf71a902702 -->
+
+```json
+{
+  "additionalProperties": false,
+  "description": "One bounded continuation step through an immutable artifact selection.",
+  "properties": {
+    "artifacts": {
+      "items": {
+        "$ref": "#/components/schemas/ArtifactSubject"
+      },
+      "maxItems": 256,
+      "title": "Artifacts",
+      "type": "array",
+      "x-riverhog-extent": {
+        "policy": "segmented_no_total_max",
+        "progression": "selection-bound-start_ordinal",
+        "reason": "bounded-artifact-selection-page"
+      }
+    },
+    "authority": {
+      "$ref": "#/components/schemas/ArtifactSelectionRef"
+    },
+    "complete": {
+      "title": "Complete",
+      "type": "boolean"
+    },
+    "continuation": {
+      "anyOf": [
+        {
+          "pattern": "^[0-9a-f]{64}$",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Continuation"
+    },
+    "next_continuation": {
+      "anyOf": [
+        {
+          "pattern": "^[0-9a-f]{64}$",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Next Continuation"
+    }
+  },
+  "required": [
+    "authority",
+    "complete",
+    "artifacts"
+  ],
+  "title": "ArtifactSelectionPage",
+  "type": "object"
+}
+```

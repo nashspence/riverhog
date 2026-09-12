@@ -27,7 +27,22 @@
 - Proof: `make release-check`
 - Proof: `make build`
 
-## Contract
+## Contract summary
+
+| Field | Shape |
+|---|---|
+| `console_scripts` | object (1 fields) |
+| `dependencies` | array (4 items) |
+| `distribution` | "stove0-exiftool-observer" |
+| `optional_dependencies` | object (0 fields) |
+| `path` | "reference/stove0/observers/exiftool" |
+| `role` | "reference_component" |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 761f99f35b6dce0d9e7f34864664c64de99867f2e86b08c70fdbfbe48c0d8ec0 -->
 
 ```json
 {

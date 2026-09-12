@@ -27,7 +27,7 @@
 - Proof: `make operation-qualification`
 - Proof: `make compose-smoke`
 
-## Contract
+## Contract summary
 
 - `title`: ProcessingClaimOutcomesSettleDocument
 - `type`: object
@@ -39,3 +39,56 @@
 | `fence` | yes | integer |  |
 | `retirement_grace_seconds` | no | integer |  |
 | `retirement_policy` | no | string |  |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 52b850839b3d9d5f6dfb73fc055199f04030f6a5c9294298c368ae3bf1550d69 -->
+
+```json
+{
+  "additionalProperties": false,
+  "if": {
+    "properties": {
+      "retirement_policy": {
+        "const": "retain"
+      }
+    }
+  },
+  "properties": {
+    "fence": {
+      "minimum": 1,
+      "title": "Fence",
+      "type": "integer"
+    },
+    "retirement_grace_seconds": {
+      "default": 0,
+      "minimum": 0,
+      "title": "Retirement Grace Seconds",
+      "type": "integer"
+    },
+    "retirement_policy": {
+      "default": "retain",
+      "enum": [
+        "retain",
+        "retire-after-verified-output"
+      ],
+      "title": "Retirement Policy",
+      "type": "string"
+    }
+  },
+  "required": [
+    "fence"
+  ],
+  "then": {
+    "properties": {
+      "retirement_grace_seconds": {
+        "const": 0
+      }
+    }
+  },
+  "title": "ProcessingClaimOutcomesSettleDocument",
+  "type": "object"
+}
+```

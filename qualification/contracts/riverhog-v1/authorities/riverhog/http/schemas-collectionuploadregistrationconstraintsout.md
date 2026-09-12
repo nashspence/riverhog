@@ -27,7 +27,7 @@
 - Proof: `make operation-qualification`
 - Proof: `make compose-smoke`
 
-## Contract
+## Contract summary
 
 - `title`: CollectionUploadRegistrationConstraintsOut
 - `type`: object
@@ -38,3 +38,34 @@
 |---|---:|---|---|
 | `pack_member_bytes` | yes | integer |  |
 | `raw_part_plaintext_bytes` | yes | integer |  |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 7aac28c92c49ffe2bfe22febf49889b4b3668893294ddc9413e878b7641b98de -->
+
+```json
+{
+  "additionalProperties": false,
+  "properties": {
+    "pack_member_bytes": {
+      "minimum": 1,
+      "title": "Pack Member Bytes",
+      "type": "integer"
+    },
+    "raw_part_plaintext_bytes": {
+      "minimum": 65536,
+      "multipleOf": 65536,
+      "title": "Raw Part Plaintext Bytes",
+      "type": "integer"
+    }
+  },
+  "required": [
+    "pack_member_bytes",
+    "raw_part_plaintext_bytes"
+  ],
+  "title": "CollectionUploadRegistrationConstraintsOut",
+  "type": "object"
+}
+```

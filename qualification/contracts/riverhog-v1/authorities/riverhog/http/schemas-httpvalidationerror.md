@@ -28,13 +28,17 @@
 - Proof: `make operation-qualification`
 - Proof: `make compose-smoke`
 
+## Referenced contract dossiers
+
+- [schemas: ValidationError](schemas-validationerror.md)
+
 ## Extent decisions
 
 | Dimension | Unit | Policy | Bounds/reason |
 |---|---|---|---|
 | cardinality | items | `operational_policy` | maximum=None, reason=no-declared-semantic-maximum |
 
-## Contract
+## Contract summary
 
 - `title`: HTTPValidationError
 - `type`: object
@@ -44,3 +48,25 @@
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | `detail` | no | array |  |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 7373c21f1389312367e27e440140ba11d587693c56d8aa27249b36d3f58c10c6 -->
+
+```json
+{
+  "properties": {
+    "detail": {
+      "items": {
+        "$ref": "#/components/schemas/ValidationError"
+      },
+      "title": "Detail",
+      "type": "array"
+    }
+  },
+  "title": "HTTPValidationError",
+  "type": "object"
+}
+```

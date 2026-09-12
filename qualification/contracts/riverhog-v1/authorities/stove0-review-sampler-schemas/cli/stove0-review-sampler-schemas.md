@@ -35,7 +35,7 @@
 |---|---|---|---|
 | cardinality | values-per-occurrence | `fixed` | maximum=0, minimum=0, reason=fixed-command-argument-arity |
 
-## Contract
+## Contract summary
 
 - Parser name: `stove0-review-sampler-schemas`
 
@@ -44,3 +44,33 @@
 | Name | Kind | Required | Type | Options |
 |---|---|---:|---|---|
 | `` | _VersionAction | no |  | --version |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+### `/external_contract/cli/stove0-review-sampler-schemas/name`
+
+<!-- exact-contract-value: 162a3ef3dc87aa1b3b1b2b34823d4702440ce3754ea9e31d325df3f59ec24a0c -->
+
+```json
+"stove0-review-sampler-schemas"
+```
+
+### `/external_contract/cli/stove0-review-sampler-schemas/parameters`
+
+<!-- exact-contract-value: 280890e414521dae90aaec62414808f8ed59735cf99b00ca647a8e328fd86c02 -->
+
+```json
+[
+  {
+    "dest": "version",
+    "kind": "_VersionAction",
+    "nargs": 0,
+    "options": [
+      "--version"
+    ],
+    "required": false
+  }
+]
+```

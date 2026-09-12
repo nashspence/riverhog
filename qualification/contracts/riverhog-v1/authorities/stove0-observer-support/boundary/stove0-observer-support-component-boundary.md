@@ -27,7 +27,22 @@
 - Proof: `make release-check`
 - Proof: `make build`
 
-## Contract
+## Contract summary
+
+| Field | Shape |
+|---|---|
+| `console_scripts` | object (2 fields) |
+| `dependencies` | array (4 items) |
+| `distribution` | "stove0-observer-support" |
+| `optional_dependencies` | object (0 fields) |
+| `path` | "reference/stove0/packages/observer-support" |
+| `role` | "reusable_library" |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 76adbdbfbaa7c3989dbc9f0c557be0aa0b3a430876321d5bf9f4413a60f7ff41 -->
 
 ```json
 {

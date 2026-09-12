@@ -32,13 +32,19 @@
 
 - [Operation parity: set_app_key_download_quota](../operation/operation-parity-set-app-key-download-quota.md)
 
+## Referenced contract dossiers
+
+- [schemas: ErrorResponse](schemas-errorresponse.md)
+- [schemas: KeyDownloadQuotaOut](schemas-keydownloadquotaout.md)
+- [schemas: SetKeyDownloadQuotaRequest](schemas-setkeydownloadquotarequest.md)
+
 ## Extent decisions
 
 | Dimension | Unit | Policy | Bounds/reason |
 |---|---|---|---|
 | length | characters | `fixed` | maximum=16, minimum=16, reason=fixed-public-representation |
 
-## Contract
+## Contract summary
 
 - `operationId`: set_app_key_download_quota
 - `summary`: Set App Key Download Quota
@@ -66,3 +72,153 @@
 | `404` | Not Found |
 | `429` | Too Many Requests |
 | `500` | Internal Server Error |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: addcbf5eacdc4600d7277ecad5290f4b30a4a63c6e97fbd0a282df094b876b0a -->
+
+```json
+{
+  "operationId": "set_app_key_download_quota",
+  "parameters": [
+    {
+      "in": "path",
+      "name": "app",
+      "required": true,
+      "schema": {
+        "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$",
+        "title": "App",
+        "type": "string"
+      }
+    },
+    {
+      "in": "path",
+      "name": "key_id",
+      "required": true,
+      "schema": {
+        "pattern": "^[0-9a-f]{16}$",
+        "title": "Key Id",
+        "type": "string"
+      }
+    }
+  ],
+  "requestBody": {
+    "content": {
+      "application/json": {
+        "schema": {
+          "$ref": "#/components/schemas/SetKeyDownloadQuotaRequest"
+        }
+      }
+    },
+    "required": true
+  },
+  "responses": {
+    "200": {
+      "content": {
+        "application/json": {
+          "schema": {
+            "$ref": "#/components/schemas/KeyDownloadQuotaOut"
+          }
+        }
+      },
+      "description": "Successful Response"
+    },
+    "400": {
+      "content": {
+        "application/json": {
+          "schema": {
+            "$ref": "#/components/schemas/ErrorResponse"
+          }
+        }
+      },
+      "description": "Bad Request",
+      "x-riverhog-error-codes": [
+        "bad_request"
+      ]
+    },
+    "401": {
+      "content": {
+        "application/json": {
+          "schema": {
+            "$ref": "#/components/schemas/ErrorResponse"
+          }
+        }
+      },
+      "description": "Unauthorized",
+      "x-riverhog-error-codes": [
+        "unauthorized"
+      ]
+    },
+    "403": {
+      "content": {
+        "application/json": {
+          "schema": {
+            "$ref": "#/components/schemas/ErrorResponse"
+          }
+        }
+      },
+      "description": "Forbidden",
+      "x-riverhog-error-codes": [
+        "forbidden"
+      ]
+    },
+    "404": {
+      "content": {
+        "application/json": {
+          "schema": {
+            "$ref": "#/components/schemas/ErrorResponse"
+          }
+        }
+      },
+      "description": "Not Found",
+      "x-riverhog-error-codes": [
+        "not_found"
+      ]
+    },
+    "429": {
+      "content": {
+        "application/json": {
+          "schema": {
+            "$ref": "#/components/schemas/ErrorResponse"
+          }
+        }
+      },
+      "description": "Too Many Requests",
+      "x-riverhog-error-codes": [
+        "download_allowance_exceeded"
+      ]
+    },
+    "500": {
+      "content": {
+        "application/json": {
+          "schema": {
+            "$ref": "#/components/schemas/ErrorResponse"
+          }
+        }
+      },
+      "description": "Internal Server Error",
+      "x-riverhog-error-codes": [
+        "internal_error"
+      ]
+    }
+  },
+  "security": [
+    {
+      "HTTPBearer": []
+    }
+  ],
+  "summary": "Set App Key Download Quota",
+  "tags": [
+    "download quotas"
+  ],
+  "x-riverhog-permission-requirements": [
+    {
+      "any_of": [
+        "quotas:manage"
+      ]
+    }
+  ]
+}
+```

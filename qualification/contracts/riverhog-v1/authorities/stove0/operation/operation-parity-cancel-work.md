@@ -33,7 +33,7 @@
 - [POST /v1/work/{work_id}/cancel](../http/post-v1-work-work-id-cancel.md)
 - [stove0 work cancel](../cli/stove0-work-cancel.md)
 
-## Contract
+## Contract summary
 
 | Concern | Contract |
 |---|---|
@@ -47,3 +47,26 @@
 | `provider_evidence` | None |
 | `read_collection` | None |
 | `response_authority` | operator-projection |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 7d7d7cc8c3f791ee185dc47321cd4fc3cf6478e28f83269cd4dbfe3dbdf5e2bb -->
+
+```json
+{
+  "application": "stove0",
+  "classification": "human-cli+json",
+  "cli_commands": [
+    "work cancel"
+  ],
+  "client": "Stove0ApiClient",
+  "method": "POST",
+  "operation_id": "cancel_work",
+  "path": "/v1/work/{work_id}/cancel",
+  "provider_evidence": null,
+  "read_collection": null,
+  "response_authority": "operator-projection"
+}
+```

@@ -32,7 +32,7 @@
 
 - [GET /v1/status](../http/get-v1-status.md)
 
-## Contract
+## Contract summary
 
 | Concern | Contract |
 |---|---|
@@ -46,3 +46,33 @@
 | `provider_evidence` | None |
 | `read_collection` | {"default_page_size": 25, "kind": "mutable-browse", "maximum_page_size": 100, "next_page_token_field": "next_page_token", "page_size_parameter": "page_size", "page_token_parameter": "page_token"} |
 | `response_authority` | http-json |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: d06aadedfd288a7e24fbbbdca307009dfcf50f37fb1b96d9b0b062ef03462436 -->
+
+```json
+{
+  "application": "riverhog-ftp-adapter",
+  "classification": "human-cli+json",
+  "cli_commands": [
+    "status"
+  ],
+  "client": "RiverhogFtpAdapterClient",
+  "method": "GET",
+  "operation_id": "get_ftp_adapter_status",
+  "path": "/v1/status",
+  "provider_evidence": null,
+  "read_collection": {
+    "default_page_size": 25,
+    "kind": "mutable-browse",
+    "maximum_page_size": 100,
+    "next_page_token_field": "next_page_token",
+    "page_size_parameter": "page_size",
+    "page_token_parameter": "page_token"
+  },
+  "response_authority": "http-json"
+}
+```

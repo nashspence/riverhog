@@ -32,7 +32,7 @@
 
 - [PUT /v1/collection-processing-claims/{claim_id}/derivation/dispositions](../http/put-v1-collection-processing-claims-claim-id-derivation-dispositions.md)
 
-## Contract
+## Contract summary
 
 | Concern | Contract |
 |---|---|
@@ -46,3 +46,24 @@
 | `provider_evidence` | None |
 | `read_collection` | None |
 | `response_authority` | canonical-document |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: e9a940ae650b2d7df7e7735f9c2dbb62ef2f8a9898d96e5c9658ef1d0450266f -->
+
+```json
+{
+  "application": "riverhog",
+  "classification": "client-only-primitive",
+  "cli_commands": [],
+  "client": "ApiClient",
+  "method": "PUT",
+  "operation_id": "record_processing_claim_dispositions",
+  "path": "/v1/collection-processing-claims/{claim_id}/derivation/dispositions",
+  "provider_evidence": null,
+  "read_collection": null,
+  "response_authority": "canonical-document"
+}
+```

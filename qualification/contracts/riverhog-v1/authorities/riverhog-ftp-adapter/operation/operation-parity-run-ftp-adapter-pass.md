@@ -32,7 +32,7 @@
 
 - [POST /v1/run](../http/post-v1-run.md)
 
-## Contract
+## Contract summary
 
 | Concern | Contract |
 |---|---|
@@ -46,3 +46,26 @@
 | `provider_evidence` | None |
 | `read_collection` | None |
 | `response_authority` | http-json |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: ed458d5ef46788b6f27bc9567d45adb4de10dac8dbea5a300b70d0f9a5f4d0d9 -->
+
+```json
+{
+  "application": "riverhog-ftp-adapter",
+  "classification": "human-cli+json",
+  "cli_commands": [
+    "run"
+  ],
+  "client": "RiverhogFtpAdapterClient",
+  "method": "POST",
+  "operation_id": "run_ftp_adapter_pass",
+  "path": "/v1/run",
+  "provider_evidence": null,
+  "read_collection": null,
+  "response_authority": "http-json"
+}
+```

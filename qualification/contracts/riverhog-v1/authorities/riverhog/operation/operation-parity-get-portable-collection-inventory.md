@@ -35,7 +35,7 @@
 - [piggity local repair](../../piggity/cli/piggity-local-repair.md)
 - [piggity local sync](../../piggity/cli/piggity-local-sync.md)
 
-## Contract
+## Contract summary
 
 | Concern | Contract |
 |---|---|
@@ -49,3 +49,34 @@
 | `provider_evidence` | None |
 | `read_collection` | {"authority": "portable-collection-inventory", "cursor_parameter": "cursor", "kind": "exact-set-page", "limit_parameter": "limit", "validator_header": "If-Match"} |
 | `response_authority` | canonical-document |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 8213f8a842ae33333a64887e3b95137b436ef1bba715eadfaf52fea8b74928f4 -->
+
+```json
+{
+  "application": "riverhog",
+  "classification": "standard-tool/protocol",
+  "cli_commands": [
+    "local add",
+    "local repair",
+    "local sync"
+  ],
+  "client": "ApiClient",
+  "method": "GET",
+  "operation_id": "get_portable_collection_inventory",
+  "path": "/v1/catalog/collections/{collection_id}/inventory",
+  "provider_evidence": null,
+  "read_collection": {
+    "authority": "portable-collection-inventory",
+    "cursor_parameter": "cursor",
+    "kind": "exact-set-page",
+    "limit_parameter": "limit",
+    "validator_header": "If-Match"
+  },
+  "response_authority": "canonical-document"
+}
+```

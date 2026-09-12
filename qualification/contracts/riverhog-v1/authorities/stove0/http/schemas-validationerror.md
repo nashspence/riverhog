@@ -34,7 +34,7 @@
 |---|---|---|---|
 | cardinality | items | `operational_policy` | maximum=None, reason=no-declared-semantic-maximum |
 
-## Contract
+## Contract summary
 
 - `title`: ValidationError
 - `type`: object
@@ -48,3 +48,52 @@
 | `loc` | yes | array |  |
 | `msg` | yes | string |  |
 | `type` | yes | string |  |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: ca285d0c0e64c42844efd2e860edb239e77cc49d87f065c5ccb7d2f55331b862 -->
+
+```json
+{
+  "properties": {
+    "ctx": {
+      "title": "Context",
+      "type": "object"
+    },
+    "input": {
+      "title": "Input"
+    },
+    "loc": {
+      "items": {
+        "anyOf": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "integer"
+          }
+        ]
+      },
+      "title": "Location",
+      "type": "array"
+    },
+    "msg": {
+      "title": "Message",
+      "type": "string"
+    },
+    "type": {
+      "title": "Error Type",
+      "type": "string"
+    }
+  },
+  "required": [
+    "loc",
+    "msg",
+    "type"
+  ],
+  "title": "ValidationError",
+  "type": "object"
+}
+```

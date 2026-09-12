@@ -37,7 +37,7 @@
 | cardinality | values-per-occurrence | `fixed` | maximum=0, minimum=0, reason=fixed-command-argument-arity |
 | cardinality | values-per-occurrence | `fixed` | maximum=0, minimum=0, reason=fixed-command-argument-arity |
 
-## Contract
+## Contract summary
 
 - Parser name: `riverhog-ftp-adapter`
 
@@ -51,3 +51,80 @@
 | `` | _StoreAction | no |  | --token |
 | `` | _StoreTrueAction | no |  | --allow-insecure-http |
 | `` | _StoreTrueAction | no |  | --json |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+### `/external_contract/cli/riverhog-ftp-adapter/name`
+
+<!-- exact-contract-value: 7e14ae24d5b05761347a785bd381607ae0f3f00e29d17470741f0a64d8f9e3bc -->
+
+```json
+"riverhog-ftp-adapter"
+```
+
+### `/external_contract/cli/riverhog-ftp-adapter/parameters`
+
+<!-- exact-contract-value: 5b0240d1d5a69359f4143950fdd586f7ee977d825a9f22f78b4493462265d79a -->
+
+```json
+[
+  {
+    "dest": "version",
+    "kind": "_VersionAction",
+    "nargs": 0,
+    "options": [
+      "--version"
+    ],
+    "required": false
+  },
+  {
+    "dest": "config",
+    "kind": "_StoreAction",
+    "nargs": null,
+    "options": [
+      "--config"
+    ],
+    "required": false,
+    "type": "Path"
+  },
+  {
+    "dest": "base_url",
+    "kind": "_StoreAction",
+    "nargs": null,
+    "options": [
+      "--base-url"
+    ],
+    "required": false
+  },
+  {
+    "dest": "token",
+    "kind": "_StoreAction",
+    "nargs": null,
+    "options": [
+      "--token"
+    ],
+    "required": false
+  },
+  {
+    "dest": "allow_insecure_http",
+    "kind": "_StoreTrueAction",
+    "nargs": 0,
+    "options": [
+      "--allow-insecure-http"
+    ],
+    "required": false
+  },
+  {
+    "default": false,
+    "dest": "json",
+    "kind": "_StoreTrueAction",
+    "nargs": 0,
+    "options": [
+      "--json"
+    ],
+    "required": false
+  }
+]
+```

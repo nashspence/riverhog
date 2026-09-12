@@ -35,7 +35,7 @@
 | value | schema-value | `extension_owned` | maximum=None, reason=independently-versioned-extension-authority |
 | value | schema-value | `extension_owned` | maximum=None, reason=independently-versioned-extension-authority |
 
-## Contract
+## Contract summary
 
 - `$id`: https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/windows-volume-context.json
 - `type`: object
@@ -55,3 +55,73 @@
 | `volume_guid_path` | yes | string |  |
 | `volume_label` | yes | string |  |
 | `volume_serial_number` | yes | integer |  |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 74c63c0471ae132d4e4c3c695e5cb9250813ff3c243d70d7636d8973ffb05481 -->
+
+```json
+{
+  "$id": "https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/windows-volume-context.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "bytes_per_sector": {
+      "minimum": 0,
+      "type": "integer"
+    },
+    "drive_type": {
+      "minimum": 0,
+      "type": "integer"
+    },
+    "filesystem_flags": {
+      "minimum": 0,
+      "type": "integer"
+    },
+    "filesystem_name": {
+      "minLength": 1,
+      "type": "string"
+    },
+    "final_path": {
+      "type": "string"
+    },
+    "maximum_component_length": {
+      "minimum": 0,
+      "type": "integer"
+    },
+    "mount_path": {
+      "type": "string"
+    },
+    "sectors_per_cluster": {
+      "minimum": 0,
+      "type": "integer"
+    },
+    "volume_guid_path": {
+      "type": "string"
+    },
+    "volume_label": {
+      "type": "string"
+    },
+    "volume_serial_number": {
+      "minimum": 0,
+      "type": "integer"
+    }
+  },
+  "required": [
+    "filesystem_name",
+    "volume_label",
+    "volume_serial_number",
+    "maximum_component_length",
+    "filesystem_flags",
+    "mount_path",
+    "volume_guid_path",
+    "drive_type",
+    "sectors_per_cluster",
+    "bytes_per_sector",
+    "final_path"
+  ],
+  "type": "object"
+}
+```

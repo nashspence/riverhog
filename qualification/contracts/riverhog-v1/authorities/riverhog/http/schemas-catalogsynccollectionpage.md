@@ -29,6 +29,10 @@
 - Proof: `make operation-qualification`
 - Proof: `make compose-smoke`
 
+## Referenced contract dossiers
+
+- [schemas: CatalogSyncDescriptor](schemas-catalogsyncdescriptor.md)
+
 ## Extent decisions
 
 | Dimension | Unit | Policy | Bounds/reason |
@@ -39,7 +43,7 @@
 | length | characters | `contract_max` | maximum=4096, minimum=1, reason=schema-maximum |
 | length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
 
-## Contract
+## Contract summary
 
 - `title`: CatalogSyncCollectionPage
 - `type`: object
@@ -54,3 +58,78 @@
 | `format` | no | string |  |
 | `next_cursor` | no | object (2 fields) |  |
 | `source_identity` | yes | string |  |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 6f827ad0f12c48d5d82537082dfcdf9301e028023919f79fbce029e31b3013ab -->
+
+```json
+{
+  "additionalProperties": false,
+  "properties": {
+    "authorization_view_identity": {
+      "maxLength": 64,
+      "minLength": 64,
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Authorization View Identity",
+      "type": "string"
+    },
+    "changes_cursor": {
+      "anyOf": [
+        {
+          "maxLength": 4096,
+          "minLength": 1,
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Changes Cursor"
+    },
+    "collections": {
+      "items": {
+        "$ref": "#/components/schemas/CatalogSyncDescriptor"
+      },
+      "maxItems": 100,
+      "title": "Collections",
+      "type": "array"
+    },
+    "format": {
+      "const": "riverhog-catalog-sync/v1",
+      "default": "riverhog-catalog-sync/v1",
+      "title": "Format",
+      "type": "string"
+    },
+    "next_cursor": {
+      "anyOf": [
+        {
+          "maxLength": 4096,
+          "minLength": 1,
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Next Cursor"
+    },
+    "source_identity": {
+      "maxLength": 64,
+      "minLength": 64,
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Source Identity",
+      "type": "string"
+    }
+  },
+  "required": [
+    "source_identity",
+    "authorization_view_identity",
+    "collections"
+  ],
+  "title": "CatalogSyncCollectionPage",
+  "type": "object"
+}
+```

@@ -32,7 +32,7 @@
 
 - [GET /v1/collection-processing-claims/{claim_id}/inputs](../http/get-v1-collection-processing-claims-claim-id-inputs.md)
 
-## Contract
+## Contract summary
 
 | Concern | Contract |
 |---|---|
@@ -46,3 +46,30 @@
 | `provider_evidence` | None |
 | `read_collection` | {"authority": "processing-claim-inputs", "authority_parameter": "authority_sha256", "cursor_parameter": "start_ordinal", "fixed_limit": 128, "kind": "exact-authority-page"} |
 | `response_authority` | canonical-document |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 82e5c4207be5425f305da39a6aafab096e1235509747f8e8523bd0e0e9e943ac -->
+
+```json
+{
+  "application": "riverhog",
+  "classification": "client-only-primitive",
+  "cli_commands": [],
+  "client": "ApiClient",
+  "method": "GET",
+  "operation_id": "list_processing_claim_inputs",
+  "path": "/v1/collection-processing-claims/{claim_id}/inputs",
+  "provider_evidence": null,
+  "read_collection": {
+    "authority": "processing-claim-inputs",
+    "authority_parameter": "authority_sha256",
+    "cursor_parameter": "start_ordinal",
+    "fixed_limit": 128,
+    "kind": "exact-authority-page"
+  },
+  "response_authority": "canonical-document"
+}
+```

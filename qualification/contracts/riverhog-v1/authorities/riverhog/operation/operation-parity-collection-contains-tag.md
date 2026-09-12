@@ -33,7 +33,7 @@
 - [GET /v1/collections/{collection_id}/tags:contains](../http/get-v1-collections-collection-id-tags-contains.md)
 - [piggity collection tag contains](../../piggity/cli/piggity-collection-tag-contains.md)
 
-## Contract
+## Contract summary
 
 | Concern | Contract |
 |---|---|
@@ -47,3 +47,26 @@
 | `provider_evidence` | None |
 | `read_collection` | None |
 | `response_authority` | http-json |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 666571d1cacf9d4490a0982374a5c878043ad7cf37fee56a573c23b7db847cb3 -->
+
+```json
+{
+  "application": "riverhog",
+  "classification": "human-cli+json",
+  "cli_commands": [
+    "collection tag contains"
+  ],
+  "client": "ApiClient",
+  "method": "GET",
+  "operation_id": "collection_contains_tag",
+  "path": "/v1/collections/{collection_id}/tags:contains",
+  "provider_evidence": null,
+  "read_collection": null,
+  "response_authority": "http-json"
+}
+```

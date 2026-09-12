@@ -4,6 +4,11 @@
 
 Contract elements: **5** · Extent decisions: **6**
 
+| Family | Count |
+|---|---:|
+| `mango-fish state` | 4 |
+| `root` | 1 |
+
 | Policy | Count |
 |---|---:|
 | `compatibility/cli/v1` | 5 |

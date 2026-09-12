@@ -29,6 +29,14 @@
 - Proof: `make operation-qualification`
 - Proof: `make compose-smoke`
 
+## Referenced contract dossiers
+
+- [schemas: BrowsePageToken](schemas-browsepagetoken.md)
+- [schemas: CanonicalRelPath](schemas-canonicalrelpath.md)
+- [schemas: CollectionId](schemas-collectionid.md)
+- [schemas: OmittedFileProvenanceBinding](schemas-omittedfileprovenancebinding.md)
+- [schemas: ProvenanceTraceItemOut](schemas-provenancetraceitemout.md)
+
 ## Extent decisions
 
 | Dimension | Unit | Policy | Bounds/reason |
@@ -38,7 +46,7 @@
 | value | schema-value | `contract_max` | maximum=100, minimum=1, reason=schema-maximum |
 | length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
 
-## Contract
+## Contract summary
 
 - `title`: OmittedCollectionFileProvenanceTraceOut
 - `type`: object
@@ -56,3 +64,75 @@
 | `path` | yes | #/components/schemas/CanonicalRelPath |  |
 | `provenance` | yes | #/components/schemas/OmittedFileProvenanceBinding |  |
 | `sha256` | yes | string |  |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: bc9a52607f8e75504f0de665e0a2cdbf05c0b91dd8118de1cacaa2571f9e176c -->
+
+```json
+{
+  "additionalProperties": false,
+  "properties": {
+    "bytes": {
+      "minimum": 0,
+      "title": "Bytes",
+      "type": "integer"
+    },
+    "collection_id": {
+      "$ref": "#/components/schemas/CollectionId"
+    },
+    "items": {
+      "items": {
+        "$ref": "#/components/schemas/ProvenanceTraceItemOut"
+      },
+      "title": "Items",
+      "type": "array"
+    },
+    "journal": {
+      "title": "Journal",
+      "type": "null"
+    },
+    "next_page_token": {
+      "anyOf": [
+        {
+          "$ref": "#/components/schemas/BrowsePageToken"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "page_size": {
+      "maximum": 100,
+      "minimum": 1,
+      "title": "Page Size",
+      "type": "integer"
+    },
+    "path": {
+      "$ref": "#/components/schemas/CanonicalRelPath"
+    },
+    "provenance": {
+      "$ref": "#/components/schemas/OmittedFileProvenanceBinding"
+    },
+    "sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Sha256",
+      "type": "string"
+    }
+  },
+  "required": [
+    "page_size",
+    "next_page_token",
+    "items",
+    "path",
+    "bytes",
+    "sha256",
+    "collection_id",
+    "provenance"
+  ],
+  "title": "OmittedCollectionFileProvenanceTraceOut",
+  "type": "object"
+}
+```

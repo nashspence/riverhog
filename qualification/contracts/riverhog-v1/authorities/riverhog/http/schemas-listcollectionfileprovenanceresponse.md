@@ -27,6 +27,43 @@
 - Proof: `make operation-qualification`
 - Proof: `make compose-smoke`
 
-## Contract
+## Referenced contract dossiers
+
+- [schemas: CapturedCollectionFileProvenancePage](schemas-capturedcollectionfileprovenancepage.md)
+- [schemas: MixedCollectionFileProvenancePage](schemas-mixedcollectionfileprovenancepage.md)
+- [schemas: OmittedCollectionFileProvenancePage](schemas-omittedcollectionfileprovenancepage.md)
+
+## Contract summary
 
 - `title`: ListCollectionFileProvenanceResponse
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 1958a6ac97dfb941a4083e304b6d96461650baf008d19010a45960c7aa31ed38 -->
+
+```json
+{
+  "discriminator": {
+    "mapping": {
+      "captured": "#/components/schemas/CapturedCollectionFileProvenancePage",
+      "mixed": "#/components/schemas/MixedCollectionFileProvenancePage",
+      "omitted": "#/components/schemas/OmittedCollectionFileProvenancePage"
+    },
+    "propertyName": "provenance_mode"
+  },
+  "oneOf": [
+    {
+      "$ref": "#/components/schemas/CapturedCollectionFileProvenancePage"
+    },
+    {
+      "$ref": "#/components/schemas/MixedCollectionFileProvenancePage"
+    },
+    {
+      "$ref": "#/components/schemas/OmittedCollectionFileProvenancePage"
+    }
+  ],
+  "title": "ListCollectionFileProvenanceResponse"
+}
+```

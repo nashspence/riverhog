@@ -36,7 +36,7 @@
 | cardinality | items | `operational_policy` | maximum=None, reason=no-declared-semantic-maximum |
 | value | schema-value | `contract_max` | maximum=86400, minimum=30, reason=schema-maximum |
 
-## Contract
+## Contract summary
 
 - `title`: TransformCapabilityCreateDocument
 - `type`: object
@@ -49,3 +49,65 @@
 | `audience` | yes | string |  |
 | `fence` | yes | integer |  |
 | `ttl_seconds` | no | integer |  |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 017e09367938982b92e94f62bb0ccb5a6249b1f8a8ecf328be4883bbd0b76738 -->
+
+```json
+{
+  "additionalProperties": false,
+  "properties": {
+    "actions": {
+      "items": {
+        "enum": [
+          "read-inputs",
+          "write-output"
+        ],
+        "type": "string"
+      },
+      "minItems": 1,
+      "oneOf": [
+        {
+          "const": [
+            "read-inputs"
+          ]
+        },
+        {
+          "const": [
+            "read-inputs",
+            "write-output"
+          ]
+        }
+      ],
+      "title": "Actions",
+      "type": "array"
+    },
+    "audience": {
+      "pattern": "^[a-z0-9][a-z0-9._:/-]{0,299}$",
+      "title": "Audience",
+      "type": "string"
+    },
+    "fence": {
+      "minimum": 1,
+      "title": "Fence",
+      "type": "integer"
+    },
+    "ttl_seconds": {
+      "default": 900,
+      "maximum": 86400,
+      "minimum": 30,
+      "title": "Ttl Seconds",
+      "type": "integer"
+    }
+  },
+  "required": [
+    "fence",
+    "audience"
+  ],
+  "title": "TransformCapabilityCreateDocument",
+  "type": "object"
+}
+```

@@ -29,6 +29,14 @@
 - Proof: `make operation-qualification`
 - Proof: `make compose-smoke`
 
+## Referenced contract dossiers
+
+- [schemas: ArchiveCopyJobListFiltersOut](schemas-archivecopyjoblistfiltersout.md)
+- [schemas: ArchiveCopyJobOut](schemas-archivecopyjobout.md)
+- [schemas: ArchiveCopySort](schemas-archivecopysort.md)
+- [schemas: BrowsePageToken](schemas-browsepagetoken.md)
+- [schemas: SortOrder](schemas-sortorder.md)
+
 ## Extent decisions
 
 | Dimension | Unit | Policy | Bounds/reason |
@@ -36,7 +44,7 @@
 | cardinality | items | `segmented_no_total_max` | reason=bounded-route-page |
 | value | schema-value | `contract_max` | maximum=100, minimum=1, reason=schema-maximum |
 
-## Contract
+## Contract summary
 
 - `title`: ArchiveCopyJobListOut
 - `type`: object
@@ -52,3 +60,71 @@
 | `page_size` | yes | integer |  |
 | `query` | yes | object (2 fields) |  |
 | `sort` | yes | #/components/schemas/ArchiveCopySort |  |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 30eab820038f814255f58c7bc6e17b93f72f43e4fd06287596eac6dea9ef82c1 -->
+
+```json
+{
+  "additionalProperties": false,
+  "properties": {
+    "copies": {
+      "items": {
+        "$ref": "#/components/schemas/ArchiveCopyJobOut"
+      },
+      "title": "Copies",
+      "type": "array"
+    },
+    "filters": {
+      "$ref": "#/components/schemas/ArchiveCopyJobListFiltersOut"
+    },
+    "next_page_token": {
+      "anyOf": [
+        {
+          "$ref": "#/components/schemas/BrowsePageToken"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "order": {
+      "$ref": "#/components/schemas/SortOrder"
+    },
+    "page_size": {
+      "maximum": 100,
+      "minimum": 1,
+      "title": "Page Size",
+      "type": "integer"
+    },
+    "query": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Query"
+    },
+    "sort": {
+      "$ref": "#/components/schemas/ArchiveCopySort"
+    }
+  },
+  "required": [
+    "page_size",
+    "next_page_token",
+    "sort",
+    "order",
+    "query",
+    "filters",
+    "copies"
+  ],
+  "title": "ArchiveCopyJobListOut",
+  "type": "object"
+}
+```

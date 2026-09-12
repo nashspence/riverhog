@@ -27,7 +27,11 @@
 - Proof: `make operation-qualification`
 - Proof: `make compose-smoke`
 
-## Contract
+## Referenced contract dossiers
+
+- [schemas: ArchiveStoreName](schemas-archivestorename.md)
+
+## Contract summary
 
 - `title`: CollectionDeletionArchiveCopyOut
 - `type`: object
@@ -39,3 +43,35 @@
 | `objects` | yes | integer |  |
 | `store` | yes | #/components/schemas/ArchiveStoreName |  |
 | `stored_bytes` | yes | integer |  |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 42d4bdcc75153940ccad496bbce0aa33749ab018e46dded25dddf95544b3db51 -->
+
+```json
+{
+  "additionalProperties": false,
+  "properties": {
+    "objects": {
+      "title": "Objects",
+      "type": "integer"
+    },
+    "store": {
+      "$ref": "#/components/schemas/ArchiveStoreName"
+    },
+    "stored_bytes": {
+      "title": "Stored Bytes",
+      "type": "integer"
+    }
+  },
+  "required": [
+    "store",
+    "objects",
+    "stored_bytes"
+  ],
+  "title": "CollectionDeletionArchiveCopyOut",
+  "type": "object"
+}
+```

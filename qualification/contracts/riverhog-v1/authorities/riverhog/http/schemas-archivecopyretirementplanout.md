@@ -29,6 +29,13 @@
 - Proof: `make operation-qualification`
 - Proof: `make compose-smoke`
 
+## Referenced contract dossiers
+
+- [schemas: ArchiveCopyRetirementRetainedOut](schemas-archivecopyretirementretainedout.md)
+- [schemas: ArchiveCopyRetirementTargetOut](schemas-archivecopyretirementtargetout.md)
+- [schemas: ArchiveStoreName](schemas-archivestorename.md)
+- [schemas: CollectionId](schemas-collectionid.md)
+
 ## Extent decisions
 
 | Dimension | Unit | Policy | Bounds/reason |
@@ -38,7 +45,7 @@
 | cardinality | items | `operational_policy` | maximum=None, reason=no-declared-semantic-maximum |
 | cardinality | items | `operational_policy` | maximum=None, reason=no-declared-semantic-maximum |
 
-## Contract
+## Contract summary
 
 - `title`: ArchiveCopyRetirementPlanOut
 - `type`: object
@@ -59,3 +66,128 @@
 | `target_copy` | yes | #/components/schemas/ArchiveCopyRetirementTargetOut |  |
 | `verification_note` | yes | string |  |
 | `warning` | yes | string |  |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 25fb81614c8184e917269d3bdba07c7340d77e680d89b0fc832b24319e5900e2 -->
+
+```json
+{
+  "additionalProperties": false,
+  "oneOf": [
+    {
+      "properties": {
+        "blockers": {
+          "minItems": 1
+        },
+        "challenge": {
+          "type": "null"
+        },
+        "status": {
+          "const": "blocked"
+        }
+      }
+    },
+    {
+      "properties": {
+        "blockers": {
+          "maxItems": 0
+        },
+        "challenge": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "status": {
+          "enum": [
+            "ready",
+            "retiring"
+          ]
+        }
+      }
+    }
+  ],
+  "properties": {
+    "billing_note": {
+      "title": "Billing Note",
+      "type": "string"
+    },
+    "blockers": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Blockers",
+      "type": "array"
+    },
+    "challenge": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Challenge"
+    },
+    "collection_id": {
+      "$ref": "#/components/schemas/CollectionId"
+    },
+    "expires_at": {
+      "title": "Expires At",
+      "type": "string"
+    },
+    "retained_copies": {
+      "items": {
+        "$ref": "#/components/schemas/ArchiveCopyRetirementRetainedOut"
+      },
+      "title": "Retained Copies",
+      "type": "array"
+    },
+    "retired_retrieval_job_count": {
+      "title": "Retired Retrieval Job Count",
+      "type": "integer"
+    },
+    "status": {
+      "enum": [
+        "ready",
+        "blocked",
+        "retiring"
+      ],
+      "title": "Status",
+      "type": "string"
+    },
+    "store": {
+      "$ref": "#/components/schemas/ArchiveStoreName"
+    },
+    "target_copy": {
+      "$ref": "#/components/schemas/ArchiveCopyRetirementTargetOut"
+    },
+    "verification_note": {
+      "title": "Verification Note",
+      "type": "string"
+    },
+    "warning": {
+      "title": "Warning",
+      "type": "string"
+    }
+  },
+  "required": [
+    "status",
+    "collection_id",
+    "store",
+    "warning",
+    "expires_at",
+    "challenge",
+    "target_copy",
+    "retained_copies",
+    "retired_retrieval_job_count",
+    "blockers",
+    "verification_note",
+    "billing_note"
+  ],
+  "title": "ArchiveCopyRetirementPlanOut",
+  "type": "object"
+}
+```

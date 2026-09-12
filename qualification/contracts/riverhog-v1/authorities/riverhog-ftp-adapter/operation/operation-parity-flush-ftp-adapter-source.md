@@ -32,7 +32,7 @@
 
 - [POST /v1/sources/{source_id}/flush](../http/post-v1-sources-source-id-flush.md)
 
-## Contract
+## Contract summary
 
 | Concern | Contract |
 |---|---|
@@ -46,3 +46,26 @@
 | `provider_evidence` | None |
 | `read_collection` | None |
 | `response_authority` | http-json |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: df9f25bf18577e80f9f417ed9806ca4716395dd67a2028700fd2a7be09f6be99 -->
+
+```json
+{
+  "application": "riverhog-ftp-adapter",
+  "classification": "human-cli+json",
+  "cli_commands": [
+    "flush"
+  ],
+  "client": "RiverhogFtpAdapterClient",
+  "method": "POST",
+  "operation_id": "flush_ftp_adapter_source",
+  "path": "/v1/sources/{source_id}/flush",
+  "provider_evidence": null,
+  "read_collection": null,
+  "response_authority": "http-json"
+}
+```

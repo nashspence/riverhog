@@ -40,7 +40,7 @@
 | length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
 | length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
 
-## Contract
+## Contract summary
 
 - `title`: ProcessingClaimCreateDocument
 - `type`: object
@@ -54,3 +54,58 @@
 | `work_document` | yes | object |  |
 | `work_document_sha256` | yes | string |  |
 | `work_id` | yes | string |  |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 7f81f54843c68bd43b662283b523cf02085ec0e8d673cd66cdb5201223ea00a6 -->
+
+```json
+{
+  "additionalProperties": false,
+  "properties": {
+    "lease_seconds": {
+      "default": 1800,
+      "maximum": 86400,
+      "minimum": 30,
+      "title": "Lease Seconds",
+      "type": "integer"
+    },
+    "purpose": {
+      "default": "collection-work/v1",
+      "maxLength": 160,
+      "minLength": 1,
+      "title": "Purpose",
+      "type": "string"
+    },
+    "work_document": {
+      "additionalProperties": true,
+      "title": "Work Document",
+      "type": "object",
+      "x-riverhog-encoded-bytes-max": 4194304,
+      "x-riverhog-extent": {
+        "policy": "contract_max",
+        "reason": "bounded-work-document-envelope"
+      }
+    },
+    "work_document_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Work Document Sha256",
+      "type": "string"
+    },
+    "work_id": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Work Id",
+      "type": "string"
+    }
+  },
+  "required": [
+    "work_id",
+    "work_document",
+    "work_document_sha256"
+  ],
+  "title": "ProcessingClaimCreateDocument",
+  "type": "object"
+}
+```

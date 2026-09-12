@@ -27,7 +27,12 @@
 - Proof: `make operation-qualification`
 - Proof: `make compose-smoke`
 
-## Contract
+## Referenced contract dossiers
+
+- [schemas: CanonicalRelPath](schemas-canonicalrelpath.md)
+- [schemas: CollectionId](schemas-collectionid.md)
+
+## Contract summary
 
 - `title`: RetrievalFileReferenceDocument
 - `type`: object
@@ -38,3 +43,29 @@
 |---|---:|---|---|
 | `collection_id` | yes | #/components/schemas/CollectionId |  |
 | `path` | yes | #/components/schemas/CanonicalRelPath |  |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: f8f3e9fa619df11c44efee5673f38655aa2c7e6c6cc06c75f060a520cb75b148 -->
+
+```json
+{
+  "additionalProperties": false,
+  "properties": {
+    "collection_id": {
+      "$ref": "#/components/schemas/CollectionId"
+    },
+    "path": {
+      "$ref": "#/components/schemas/CanonicalRelPath"
+    }
+  },
+  "required": [
+    "collection_id",
+    "path"
+  ],
+  "title": "RetrievalFileReferenceDocument",
+  "type": "object"
+}
+```

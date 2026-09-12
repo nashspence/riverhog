@@ -4,6 +4,10 @@
 
 Contract elements: **2** · Extent decisions: **0**
 
+| Family | Count |
+|---|---:|
+| `modules` | 2 |
+
 | Policy | Count |
 |---|---:|
 | `compatibility/python-api/v1` | 2 |

@@ -28,13 +28,17 @@
 - Proof: `make operation-qualification`
 - Proof: `make compose-smoke`
 
+## Referenced contract dossiers
+
+- [schemas: CollectionArtifactIdentityDocument](schemas-collectionartifactidentitydocument.md)
+
 ## Extent decisions
 
 | Dimension | Unit | Policy | Bounds/reason |
 |---|---|---|---|
 | cardinality | items | `segmented_no_total_max` | maximum=128, minimum=1, reason=bounded-authority-append |
 
-## Contract
+## Contract summary
 
 - `title`: CollectionArtifactBatchDocument
 - `type`: object
@@ -46,3 +50,49 @@
 | `artifacts` | yes | array |  |
 | `fence` | yes | integer |  |
 | `start_ordinal` | yes | integer |  |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 469c71d8d60e04f3a4aca348b18563579dcf35173ecb0758d55bb914324e21f3 -->
+
+```json
+{
+  "additionalProperties": false,
+  "properties": {
+    "artifacts": {
+      "items": {
+        "$ref": "#/components/schemas/CollectionArtifactIdentityDocument"
+      },
+      "maxItems": 128,
+      "minItems": 1,
+      "title": "Artifacts",
+      "type": "array",
+      "uniqueItems": true,
+      "x-riverhog-extent": {
+        "policy": "segmented_no_total_max",
+        "progression": "start_ordinal",
+        "reason": "bounded-authority-append"
+      }
+    },
+    "fence": {
+      "minimum": 1,
+      "title": "Fence",
+      "type": "integer"
+    },
+    "start_ordinal": {
+      "minimum": 0,
+      "title": "Start Ordinal",
+      "type": "integer"
+    }
+  },
+  "required": [
+    "fence",
+    "start_ordinal",
+    "artifacts"
+  ],
+  "title": "CollectionArtifactBatchDocument",
+  "type": "object"
+}
+```

@@ -32,7 +32,7 @@
 
 - [POST /v1/collection-processing-claims/{claim_id}/inputs/seal](../http/post-v1-collection-processing-claims-claim-id-inputs-seal.md)
 
-## Contract
+## Contract summary
 
 | Concern | Contract |
 |---|---|
@@ -46,3 +46,24 @@
 | `provider_evidence` | None |
 | `read_collection` | None |
 | `response_authority` | canonical-document |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: f992258e2a74ccf7d781cd0b0477c30fffc2ec769bb3879e01a0830a7aab5c45 -->
+
+```json
+{
+  "application": "riverhog",
+  "classification": "client-only-primitive",
+  "cli_commands": [],
+  "client": "ApiClient",
+  "method": "POST",
+  "operation_id": "seal_processing_claim_inputs",
+  "path": "/v1/collection-processing-claims/{claim_id}/inputs/seal",
+  "provider_evidence": null,
+  "read_collection": null,
+  "response_authority": "canonical-document"
+}
+```

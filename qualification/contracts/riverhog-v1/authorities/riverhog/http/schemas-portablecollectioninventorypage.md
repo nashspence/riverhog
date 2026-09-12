@@ -29,6 +29,11 @@
 - Proof: `make operation-qualification`
 - Proof: `make compose-smoke`
 
+## Referenced contract dossiers
+
+- [schemas: ImmutableFileIdentityDocument](schemas-immutablefileidentitydocument.md)
+- [schemas: PortableCollectionInventoryAuthority](schemas-portablecollectioninventoryauthority.md)
+
 ## Extent decisions
 
 | Dimension | Unit | Policy | Bounds/reason |
@@ -36,7 +41,7 @@
 | cardinality | items | `segmented_no_total_max` | maximum=1000, reason=bounded-route-page |
 | length | characters | `contract_max` | maximum=8192, minimum=1, reason=schema-maximum |
 
-## Contract
+## Contract summary
 
 - `title`: PortableCollectionInventoryPage
 - `description`: One bounded, canonically ordered slice of an immutable inventory.
@@ -51,3 +56,64 @@
 | `files` | yes | array |  |
 | `format` | no | string |  |
 | `next_cursor` | no | object (2 fields) |  |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 3c391f6247e6df02e588c62fb69f461cc6b0976d24b07a65ed33578c67969860 -->
+
+```json
+{
+  "additionalProperties": false,
+  "description": "One bounded, canonically ordered slice of an immutable inventory.",
+  "properties": {
+    "authority": {
+      "$ref": "#/components/schemas/PortableCollectionInventoryAuthority"
+    },
+    "complete": {
+      "title": "Complete",
+      "type": "boolean"
+    },
+    "files": {
+      "items": {
+        "$ref": "#/components/schemas/ImmutableFileIdentityDocument"
+      },
+      "maxItems": 1000,
+      "title": "Files",
+      "type": "array",
+      "x-riverhog-extent": {
+        "policy": "segmented_no_total_max",
+        "progression": "authority-bound-cursor",
+        "reason": "bounded-portable-inventory-page"
+      }
+    },
+    "format": {
+      "const": "riverhog-collection-inventory-page/v1",
+      "default": "riverhog-collection-inventory-page/v1",
+      "title": "Format",
+      "type": "string"
+    },
+    "next_cursor": {
+      "anyOf": [
+        {
+          "maxLength": 8192,
+          "minLength": 1,
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Next Cursor"
+    }
+  },
+  "required": [
+    "authority",
+    "files",
+    "complete"
+  ],
+  "title": "PortableCollectionInventoryPage",
+  "type": "object"
+}
+```

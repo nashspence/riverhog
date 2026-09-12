@@ -27,7 +27,21 @@
 - Proof: `make release-check`
 - Proof: `make build`
 
-## Contract
+## Contract summary
+
+| Field | Shape |
+|---|---|
+| `group` | "gogurt.listener-host-providers" |
+| `owner` | "gogurt-listener-runtime" |
+| `owner_constant` | "GOGURT_LISTENER_HOST_PROVIDER_ENTRY_POINT_GROUP" |
+| `owner_path` | "reference/gogurt/packages/listener-runtime" |
+| `providers` | array (3 items) |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: a037abeaa91a8c58f20dd4ad0b0c473111587f48b1fb4a89d9691111cc4fc5dd -->
 
 ```json
 {

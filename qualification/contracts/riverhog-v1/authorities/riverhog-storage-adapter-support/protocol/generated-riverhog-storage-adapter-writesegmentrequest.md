@@ -27,7 +27,7 @@
 - Proof: `make dist-smoke`
 - Proof: `make build`
 
-## Contract
+## Contract summary
 
 - `title`: WriteSegmentRequest
 - `type`: object
@@ -45,3 +45,70 @@
 | Definition | Shape |
 |---|---|
 | `WriteSession` | object |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: e51e90e06c0f6a6ca83920b56cbb0696ced3950650ea8d743c33191cb2cf7d31 -->
+
+```json
+{
+  "$defs": {
+    "WriteSession": {
+      "additionalProperties": false,
+      "properties": {
+        "expected_bytes": {
+          "description": "Exact immutable-object byte length admitted by this write session. The value remains fixed until the write becomes terminal.",
+          "minimum": 1,
+          "title": "Expected Bytes",
+          "type": "integer"
+        },
+        "object_path": {
+          "maxLength": 4096,
+          "minLength": 1,
+          "title": "Object Path",
+          "type": "string"
+        },
+        "write_token": {
+          "description": "Opaque adapter-owned persistable continuation handle. For the same configured adapter it remains replayable across client, transport, Riverhog, and adapter process restarts until completion, explicit abort, or caller-authorized incomplete-write reclamation makes the write terminal.",
+          "maxLength": 4000,
+          "minLength": 1,
+          "title": "Write Token",
+          "type": "string"
+        }
+      },
+      "required": [
+        "object_path",
+        "expected_bytes",
+        "write_token"
+      ],
+      "title": "WriteSession",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "number": {
+      "minimum": 1,
+      "title": "Number",
+      "type": "integer"
+    },
+    "session": {
+      "$ref": "#/$defs/WriteSession"
+    },
+    "stored_bytes": {
+      "minimum": 1,
+      "title": "Stored Bytes",
+      "type": "integer"
+    }
+  },
+  "required": [
+    "session",
+    "number",
+    "stored_bytes"
+  ],
+  "title": "WriteSegmentRequest",
+  "type": "object"
+}
+```

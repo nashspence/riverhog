@@ -28,6 +28,26 @@
 - Proof: `make dist-smoke`
 - Proof: `make operation-qualification`
 
-## Contract
+## Contract summary
 
 - Parser name: `upload`
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+### `/external_contract/cli/piggity/commands/collection/commands/upload/name`
+
+<!-- exact-contract-value: ca46c99db89d195dd2c09991ded495b0dd2f30f4146271520bfbeff8a732d465 -->
+
+```json
+"upload"
+```
+
+### `/external_contract/cli/piggity/commands/collection/commands/upload/parameters`
+
+<!-- exact-contract-value: 4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945 -->
+
+```json
+[]
+```

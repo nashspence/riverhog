@@ -34,7 +34,7 @@
 |---|---|---|---|
 | length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
 
-## Contract
+## Contract summary
 
 - `title`: PendingArchiveRootPublicationOut
 - `type`: object
@@ -46,3 +46,49 @@
 | `object_path` | no | object (2 fields) |  |
 | `sha256` | no | object (2 fields) |  |
 | `state` | no | string |  |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 270f8f453df5bf9a03a87bc68ad94f0f932b5a11c6974579ec7bd7809c18a960 -->
+
+```json
+{
+  "additionalProperties": false,
+  "properties": {
+    "object_path": {
+      "anyOf": [
+        {
+          "minLength": 1,
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Object Path"
+    },
+    "sha256": {
+      "anyOf": [
+        {
+          "pattern": "^[0-9a-f]{64}$",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Sha256"
+    },
+    "state": {
+      "const": "pending",
+      "default": "pending",
+      "title": "State",
+      "type": "string"
+    }
+  },
+  "title": "PendingArchiveRootPublicationOut",
+  "type": "object"
+}
+```

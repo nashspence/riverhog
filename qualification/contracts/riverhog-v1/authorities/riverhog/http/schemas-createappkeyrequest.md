@@ -27,7 +27,11 @@
 - Proof: `make operation-qualification`
 - Proof: `make compose-smoke`
 
-## Contract
+## Referenced contract dossiers
+
+- [schemas: ApplicationAccessGrantSet](schemas-applicationaccessgrantset.md)
+
+## Contract summary
 
 - `title`: CreateAppKeyRequest
 - `type`: object
@@ -38,3 +42,37 @@
 |---|---:|---|---|
 | `access` | yes | #/components/schemas/ApplicationAccessGrantSet |  |
 | `expires_in_seconds` | no | object (2 fields) |  |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 2839386f89d3f9b0df156fcde75a23999719d77b217a25de451b7f40aa3c7125 -->
+
+```json
+{
+  "additionalProperties": false,
+  "properties": {
+    "access": {
+      "$ref": "#/components/schemas/ApplicationAccessGrantSet"
+    },
+    "expires_in_seconds": {
+      "anyOf": [
+        {
+          "minimum": 1,
+          "type": "integer"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Expires In Seconds"
+    }
+  },
+  "required": [
+    "access"
+  ],
+  "title": "CreateAppKeyRequest",
+  "type": "object"
+}
+```

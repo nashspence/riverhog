@@ -32,13 +32,18 @@
 
 - [Operation parity: get_artifact_selection](../operation/operation-parity-get-artifact-selection.md)
 
+## Referenced contract dossiers
+
+- [schemas: ArtifactSelectionPage](schemas-artifactselectionpage.md)
+- [schemas: ErrorResponse](schemas-errorresponse.md)
+
 ## Extent decisions
 
 | Dimension | Unit | Policy | Bounds/reason |
 |---|---|---|---|
 | logical-result-cardinality | items | `segmented_no_total_max` | reason=bounded-route-progression |
 
-## Contract
+## Contract summary
 
 - `operationId`: get_artifact_selection
 - `summary`: Get Artifact Selection
@@ -60,3 +65,130 @@
 | `403` | Forbidden |
 | `404` | Not Found |
 | `500` | Internal Server Error |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: c16c1450d2de53dd0091b71063fb9fd368e7cebbc183a834b07f252de6009801 -->
+
+```json
+{
+  "operationId": "get_artifact_selection",
+  "parameters": [
+    {
+      "in": "path",
+      "name": "selection_sha256",
+      "required": true,
+      "schema": {
+        "title": "Selection Sha256",
+        "type": "string"
+      }
+    },
+    {
+      "in": "query",
+      "name": "continuation",
+      "required": false,
+      "schema": {
+        "anyOf": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "title": "Continuation"
+      }
+    }
+  ],
+  "responses": {
+    "200": {
+      "content": {
+        "application/json": {
+          "schema": {
+            "$ref": "#/components/schemas/ArtifactSelectionPage"
+          }
+        }
+      },
+      "description": "Successful Response"
+    },
+    "400": {
+      "content": {
+        "application/json": {
+          "schema": {
+            "$ref": "#/components/schemas/ErrorResponse"
+          }
+        }
+      },
+      "description": "Bad Request",
+      "x-riverhog-error-codes": [
+        "bad_request"
+      ]
+    },
+    "401": {
+      "content": {
+        "application/json": {
+          "schema": {
+            "$ref": "#/components/schemas/ErrorResponse"
+          }
+        }
+      },
+      "description": "Unauthorized",
+      "x-riverhog-error-codes": [
+        "unauthorized"
+      ]
+    },
+    "403": {
+      "content": {
+        "application/json": {
+          "schema": {
+            "$ref": "#/components/schemas/ErrorResponse"
+          }
+        }
+      },
+      "description": "Forbidden",
+      "x-riverhog-error-codes": [
+        "forbidden"
+      ]
+    },
+    "404": {
+      "content": {
+        "application/json": {
+          "schema": {
+            "$ref": "#/components/schemas/ErrorResponse"
+          }
+        }
+      },
+      "description": "Not Found",
+      "x-riverhog-error-codes": [
+        "not_found"
+      ]
+    },
+    "500": {
+      "content": {
+        "application/json": {
+          "schema": {
+            "$ref": "#/components/schemas/ErrorResponse"
+          }
+        }
+      },
+      "description": "Internal Server Error",
+      "x-riverhog-error-codes": [
+        "internal_error"
+      ]
+    }
+  },
+  "summary": "Get Artifact Selection",
+  "tags": [
+    "artifact-selections"
+  ],
+  "x-riverhog-read-collection": {
+    "authority": "artifact-selection",
+    "authority_parameter": "selection_sha256",
+    "cursor_parameter": "continuation",
+    "fixed_limit": 256,
+    "kind": "exact-authority-page"
+  }
+}
+```

@@ -32,7 +32,7 @@
 
 - [GET /health/live](../http/get-health-live.md)
 
-## Contract
+## Contract summary
 
 | Concern | Contract |
 |---|---|
@@ -46,3 +46,24 @@
 | `provider_evidence` | None |
 | `read_collection` | None |
 | `response_authority` | http-json |
+
+## Complete owned contract
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 69366580c4dcb0ec633c62eabf8bd22f06606bd0b4b667c6b4675dade29fab98 -->
+
+```json
+{
+  "application": "riverhog",
+  "classification": "standard-tool/protocol",
+  "cli_commands": [],
+  "client": null,
+  "method": "GET",
+  "operation_id": "health_live",
+  "path": "/health/live",
+  "provider_evidence": null,
+  "read_collection": null,
+  "response_authority": "http-json"
+}
+```
