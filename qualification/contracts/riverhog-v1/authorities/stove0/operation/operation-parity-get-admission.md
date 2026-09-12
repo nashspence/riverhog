@@ -35,7 +35,7 @@ Exact externally visible contract owned by this semantic dossier.
 ### Related interface records
 
 - [GET /v1/admissions/{admission_id}](../http/get-v1-admissions-admission-id.md)
-- [stove0 admission show](../cli/stove0-admission-show.md)
+- [stove0-client admission show](../../stove0-client/cli/stove0-client-admission-show.md)
 
 ## Governing policies
 

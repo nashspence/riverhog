@@ -35,7 +35,7 @@ Exact externally visible contract owned by this semantic dossier.
 ### Related interface records
 
 - [GET /v1/artifact-selections/{selection_sha256}](../http/get-v1-artifact-selections-selection-sha256.md)
-- [stove0 selection show](../cli/stove0-selection-show.md)
+- [stove0-client selection show](../../stove0-client/cli/stove0-client-selection-show.md)
 
 ## Governing policies
 

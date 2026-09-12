@@ -80,6 +80,13 @@ provider_qualification_runtime = "provider-qualification"
 status = "frozen"
 boundary_canonical_sha256 = "5af7171d406deec927ce70092a60eb033f51c53f2da16b7f1cea794e03e807be"
 
+[contract_authorities]
+repository = "Repository-owned v1 boundary and packaging promises."
+release = "Coordinated v1 compatibility and publication promises."
+riverhog = "The Riverhog service API and its maintained cross-interface operation parity."
+stove0 = "The Stove0 reference application API and its maintained cross-interface operation parity."
+extent-contract = "Repository-wide v1 external extent principles and rules."
+
 [compatibility]
 components = "A supported deployment runs components from one coordinated product version."
 http_api = "Published v1 HTTP and CloudEvents contracts remain backward compatible throughout v1."

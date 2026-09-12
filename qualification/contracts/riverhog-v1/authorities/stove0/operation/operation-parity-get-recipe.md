@@ -35,7 +35,7 @@ Exact externally visible contract owned by this semantic dossier.
 ### Related interface records
 
 - [GET /v1/recipes/{recipe_id}](../http/get-v1-recipes-recipe-id.md)
-- [stove0 recipe show](../cli/stove0-recipe-show.md)
+- [stove0-client recipe show](../../stove0-client/cli/stove0-client-recipe-show.md)
 
 ## Governing policies
 

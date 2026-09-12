@@ -298,7 +298,7 @@ def test_extent_relevant_deployment_configuration_is_source_linked() -> None:
     }
 
     cache_lease = decisions[
-        "configuration-environment:RIVERHOG_RETRIEVAL_CACHE_NEW_ARCHIVE_LEASE:value"
+        "configuration-environment:riverhog-server:RIVERHOG_RETRIEVAL_CACHE_NEW_ARCHIVE_LEASE:value"
     ]
     assert cache_lease["policy"] == "operational_policy"
     assert cache_lease["configuration"] == "RIVERHOG_RETRIEVAL_CACHE_NEW_ARCHIVE_LEASE"
@@ -307,7 +307,7 @@ def test_extent_relevant_deployment_configuration_is_source_linked() -> None:
     trace = _checked_trace()
     trace_sources = {item["id"]: item for item in trace["sources"]}
     cache_lease_trace = trace_sources[
-        "configuration-environment:RIVERHOG_RETRIEVAL_CACHE_NEW_ARCHIVE_LEASE"
+        "configuration-environment:riverhog-server:RIVERHOG_RETRIEVAL_CACHE_NEW_ARCHIVE_LEASE"
     ]
     assert cache_lease_trace["bindings"]
     assert all((REPO_ROOT / binding["path"]).exists() for binding in cache_lease_trace["bindings"])
@@ -324,10 +324,14 @@ def test_extent_relevant_deployment_configuration_is_source_linked() -> None:
         source = _resolve_pointer(projection, decision["source_pointer"])
         if decision["id"].startswith("configuration-environment:"):
             assert decision["configuration"] == source["name"]
+            assert decision["owner"] == source["owner"]
+            assert decision["consumers"] == source["consumers"]
             assert source["consumers"]
-            binding = trace_sources[f"configuration-environment:{source['name']}"]
+            binding = trace_sources[f"configuration-environment:{source['owner']}:{source['name']}"]
             assert binding["bindings"]
         else:
+            assert decision["owner"] == source["owner"]
+            assert decision["consumers"] == source["consumers"]
             assert decision["configuration"] in source["parameters"]["setting"]
 
 

@@ -35,7 +35,7 @@ Exact externally visible contract owned by this semantic dossier.
 ### Related interface records
 
 - [POST /v1/evaluations/{evaluation_id}/variants/{variant_id}/retry](../http/post-v1-evaluations-evaluation-id-variants-variant-id-retry.md)
-- [stove0 evaluation retry](../cli/stove0-evaluation-retry.md)
+- [stove0-client evaluation retry](../../stove0-client/cli/stove0-client-evaluation-retry.md)
 
 ## Governing policies
 

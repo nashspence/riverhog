@@ -35,7 +35,7 @@ Exact externally visible contract owned by this semantic dossier.
 ### Related interface records
 
 - [GET /v1/work/{work_id}/coordination](../http/get-v1-work-work-id-coordination.md)
-- [stove0 work coordination](../cli/stove0-work-coordination.md)
+- [stove0-client work coordination](../../stove0-client/cli/stove0-client-work-coordination.md)
 
 ## Governing policies
 

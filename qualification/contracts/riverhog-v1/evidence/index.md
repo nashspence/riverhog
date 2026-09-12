@@ -19,15 +19,16 @@ This layer answers whether the discovered external universe was accounted for ex
 
 | Measure | Value |
 |---|---:|
-| Contract elements | 1208 |
+| Contract elements | 1211 |
 | Extent decisions | 1962 |
 | Explicit exclusions | 13 |
-| Source authorities | 217 |
+| Source authorities | 226 |
 
 ## Exact evidence
 
 - [Explicit exclusions](exclusions.md)
 - [Exact authority inventory](authorities.md)
+- [Configuration ownership registry](configuration.md)
 - [Source and qualification inventory](sources.md)
 - [Relationship-edge inventory](relationships.md)
 - [Identity domains](identities.md)

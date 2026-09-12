@@ -35,7 +35,7 @@ Exact externally visible contract owned by this semantic dossier.
 ### Related interface records
 
 - [POST /v1/admission-policies/{policy_id}:backfill](../http/post-v1-admission-policies-policy-id-backfill.md)
-- [stove0 admission policy backfill](../cli/stove0-admission-policy-backfill.md)
+- [stove0-client admission policy backfill](../../stove0-client/cli/stove0-client-admission-policy-backfill.md)
 
 ## Governing policies
 

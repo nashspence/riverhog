@@ -35,7 +35,7 @@ Exact externally visible contract owned by this semantic dossier.
 ### Related interface records
 
 - [POST /v1/work/{work_id}/cancel](../http/post-v1-work-work-id-cancel.md)
-- [stove0 work cancel](../cli/stove0-work-cancel.md)
+- [stove0-client work cancel](../../stove0-client/cli/stove0-client-work-cancel.md)
 
 ## Governing policies
 

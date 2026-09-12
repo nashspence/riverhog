@@ -126,7 +126,8 @@ def test_checked_contract_freeze_matches_every_executable_authority() -> None:
     assert trace["coverage"]["source_kinds"] == {
         "cli": 16,
         "configuration": 6,
-        "configuration-environment": 119,
+        "configuration-environment": 127,
+        "configuration-environment-pattern": 1,
         "openapi": 3,
         "protocol": 35,
         "python": 25,
@@ -134,6 +135,71 @@ def test_checked_contract_freeze_matches_every_executable_authority() -> None:
         "state": 8,
     }
     assert trace["coverage"]["extent_decisions"] == len(extents["decisions"])
+    authority_registry = trace["authority_registry"]
+    assert authority_registry["schema"] == "riverhog-contract-authority-registry/v1"
+    assert {item["id"] for item in authority_registry["declared_authorities"]} == {
+        "extent-contract",
+        "release",
+        "repository",
+        "riverhog",
+        "stove0",
+    }
+    assert {item["id"] for item in authority_registry["noncontractual_projection"]} == {
+        "contract-projection-envelope",
+        "durable-state-registry-envelope",
+        "extent-projection-envelope",
+    }
+    sources = {item["id"]: item for item in trace["sources"]}
+    assert sources["cli:stove0"]["owner"] == "stove0-client"
+    assert (
+        sources["cli:riverhog-storage-adapter-conformance"]["owner"]
+        == "riverhog-storage-adapter-support"
+    )
+    assert sources["configuration:gogurt-routes"]["owner"] == "gogurt-core"
+    assert sources["configuration:stove0-recipes"]["owner"] == "stove0-recipe-config"
+    configuration = trace["configuration_registry"]
+    assert configuration["counts"] == {
+        "contracts": 127,
+        "patterns": 1,
+        "unique_environment_names": 119,
+        "by_owner": {
+            "gogurt": 2,
+            "piggity": 7,
+            "riverhog-client": 12,
+            "riverhog-ftp-adapter": 3,
+            "riverhog-ftp-adapter-api-client": 5,
+            "riverhog-provenance": 1,
+            "riverhog-server": 50,
+            "stove0-api-client": 5,
+            "stove0-exiftool-observer": 8,
+            "stove0-ffprobe-sampling-observer": 8,
+            "stove0-nvenc-av1-opus-review-sampler": 1,
+            "stove0-nvenc-av1-opus-target": 2,
+            "stove0-opus-review-sampler": 1,
+            "stove0-opus-target": 1,
+            "stove0-server": 20,
+            "stove0-target-support": 1,
+        },
+        "by_classification": {"credential": 16, "identity": 42, "runtime": 69},
+        "by_disposition": {"contractual": 127},
+    }
+    assert set(configuration["coverage"].values()) == {0}
+    components = {item["distribution"] for item in projection["boundaries"]["components"]}
+    assert {item["owner"] for item in configuration["records"]} <= components
+    assert {consumer for item in configuration["records"] for consumer in item["consumers"]} <= (
+        components
+    )
+    assert {
+        item["owner"] for item in configuration["records"] if item["name"] == "RIVERHOG_BASE_URL"
+    } == {"riverhog-client", "riverhog-ftp-adapter", "stove0-server"}
+    assert not any(item["authority"] == "configuration" for item in checked.root["elements"])
+    assert not {
+        "durable-state",
+        "gogurt-routes",
+        "stove0-recipes",
+        "stove0-review-target",
+        "stove0-review-target-sampler",
+    } & {item["authority"] for item in checked.root["elements"]}
 
     root = checked.root
     assert root["schema"] == "riverhog-contract-machine-closure/v1"
@@ -173,6 +239,23 @@ def test_contract_regeneration_cannot_bless_undeclared_boundary_drift(
 
     monkeypatch.setattr(module, "_component_boundaries", changed_component_boundaries)
     with pytest.raises(module.ContractFreezeError, match="maintainer-declared freeze"):
+        module.contract_projection()
+
+
+def test_configuration_contract_fails_closed_on_an_owner_outside_the_frozen_topology(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    module = load_script()
+    changed = (
+        (REPO_ROOT / "qualification/configuration-contract.toml")
+        .read_text(encoding="utf-8")
+        .replace('owner = "gogurt"', 'owner = "unowned-setting"', 1)
+    )
+    contract = tmp_path / "configuration-contract.toml"
+    contract.write_text(changed, encoding="utf-8")
+    monkeypatch.setattr(module, "CONFIGURATION_CONTRACT", contract)
+
+    with pytest.raises(module.ContractFreezeError, match="not an existing authority"):
         module.contract_projection()
 
 

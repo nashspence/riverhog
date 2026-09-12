@@ -44,6 +44,15 @@ REFERENCE_POLICY = (
     "Checked-in references form a closed, tightly scoped, maintainer-selected, nonnormative "
     "conformance set."
 )
+CONTRACT_AUTHORITIES = {
+    "extent-contract": "Repository-wide v1 external extent principles and rules.",
+    "release": "Coordinated v1 compatibility and publication promises.",
+    "repository": "Repository-owned v1 boundary and packaging promises.",
+    "riverhog": "The Riverhog service API and its maintained cross-interface operation parity.",
+    "stove0": (
+        "The Stove0 reference application API and its maintained cross-interface operation parity."
+    ),
+}
 GOGURT_REFERENCE_QUALIFICATION = {
     "purpose": "Maintainer-selected Gogurt reference conformance.",
     "linux-x64": {
@@ -541,6 +550,8 @@ def validate_release_contract(root: Path, *, expected_version: str | None = None
         raise ReleaseError("Riverhog requires one coordinated product version")
     if config.get("references") != {"policy": REFERENCE_POLICY}:
         raise ReleaseError("release.toml differs from the first-party reference policy")
+    if config.get("contract_authorities") != CONTRACT_AUTHORITIES:
+        raise ReleaseError("release.toml differs from the explicit contract authorities")
     if config.get("qualification") != {
         "gogurt_reference": GOGURT_REFERENCE_QUALIFICATION,
         "storage_reference": STORAGE_REFERENCE_QUALIFICATION,

@@ -35,7 +35,7 @@ Exact externally visible contract owned by this semantic dossier.
 ### Related interface records
 
 - [POST /v1/workflow-previews](../http/post-v1-workflow-previews.md)
-- [stove0 preview](../cli/stove0-preview.md)
+- [stove0-client preview](../../stove0-client/cli/stove0-client-preview.md)
 
 ## Governing policies
 

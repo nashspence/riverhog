@@ -35,7 +35,7 @@ Exact externally visible contract owned by this semantic dossier.
 ### Related interface records
 
 - [PUT /v1/evaluations/{evaluation_id}/variants/{variant_id}/review](../http/put-v1-evaluations-evaluation-id-variants-variant-id-review.md)
-- [stove0 evaluation review](../cli/stove0-evaluation-review.md)
+- [stove0-client evaluation review](../../stove0-client/cli/stove0-client-evaluation-review.md)
 
 ## Governing policies
 

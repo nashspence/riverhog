@@ -1,0 +1,262 @@
+schema = "riverhog-configuration-contract/v1"
+
+# These are normative ownership decisions, not a discovered inventory. The
+# contract generator independently discovers consumers and fails when either
+# side has no exact match.
+
+[[environment]]
+owner = "gogurt"
+consumer = "gogurt"
+classification = "identity"
+disposition = "contractual"
+names = ["GOGURT_LISTENER_HOST_PROVIDER", "GOGURT_MOUNTED_VOLUME_PROVIDER"]
+
+[[environment]]
+owner = "piggity"
+consumer = "piggity"
+classification = "identity"
+disposition = "contractual"
+names = ["PIGGITY_LOCAL_DATABASE", "PIGGITY_LOCAL_ROOT", "PIGGITY_PROVENANCE_OBSERVER"]
+
+[[environment]]
+owner = "piggity"
+consumer = "piggity"
+classification = "runtime"
+disposition = "contractual"
+names = ["PIGGITY_PLAIN", "PIGGITY_UPLOAD_FILE_LOG_BYTES", "PIGGITY_UPLOAD_FINALIZE_POLL_SECONDS", "PIGGITY_UPLOAD_FINALIZE_TIMEOUT_SECONDS"]
+
+[[environment]]
+owner = "riverhog-client"
+consumer = "riverhog-client"
+classification = "credential"
+disposition = "contractual"
+names = ["RIVERHOG_TOKEN"]
+
+[[environment]]
+owner = "riverhog-client"
+consumer = "riverhog-client"
+classification = "identity"
+disposition = "contractual"
+names = ["RIVERHOG_BASE_URL", "RIVERHOG_HOST_HEADER"]
+
+[[environment]]
+owner = "riverhog-client"
+consumer = "riverhog-client"
+classification = "runtime"
+disposition = "contractual"
+names = ["RIVERHOG_ALLOW_INSECURE_HTTP", "RIVERHOG_DOWNLOAD_FILE_CONCURRENCY", "RIVERHOG_DOWNLOAD_FILE_WINDOW", "RIVERHOG_DOWNLOAD_TIMEOUT_SECONDS", "RIVERHOG_HTTP2", "RIVERHOG_HTTP_TIMEOUT_SECONDS", "RIVERHOG_UPLOAD_FILE_CONCURRENCY", "RIVERHOG_UPLOAD_FILE_WINDOW", "RIVERHOG_UPLOAD_TIMEOUT_SECONDS"]
+
+[[environment]]
+owner = "riverhog-ftp-adapter"
+consumer = "riverhog-ftp-adapter"
+classification = "identity"
+disposition = "contractual"
+names = ["RIVERHOG_BASE_URL", "RIVERHOG_FTP_ADAPTER_CONFIG"]
+
+[[environment]]
+owner = "riverhog-ftp-adapter"
+consumer = "riverhog-ftp-adapter"
+classification = "runtime"
+disposition = "contractual"
+names = ["RIVERHOG_ALLOW_INSECURE_HTTP"]
+
+[[environment]]
+owner = "riverhog-ftp-adapter-api-client"
+consumer = "riverhog-ftp-adapter-api-client"
+classification = "credential"
+disposition = "contractual"
+names = ["RIVERHOG_FTP_ADAPTER_TOKEN"]
+
+[[environment]]
+owner = "riverhog-ftp-adapter-api-client"
+consumer = "riverhog-ftp-adapter-api-client"
+classification = "identity"
+disposition = "contractual"
+names = ["RIVERHOG_FTP_ADAPTER_BASE_URL"]
+
+[[environment]]
+owner = "riverhog-ftp-adapter-api-client"
+consumer = "riverhog-ftp-adapter-api-client"
+classification = "runtime"
+disposition = "contractual"
+names = ["RIVERHOG_FTP_ADAPTER_ALLOW_INSECURE_HTTP", "RIVERHOG_FTP_ADAPTER_HTTP2", "RIVERHOG_FTP_ADAPTER_HTTP_TIMEOUT_SECONDS"]
+
+[[environment]]
+owner = "riverhog-provenance"
+consumer = "riverhog-provenance"
+classification = "identity"
+disposition = "contractual"
+names = ["RIVERHOG_PROVENANCE_STATE_HOME"]
+
+[[environment]]
+owner = "riverhog-server"
+consumer = "riverhog-server"
+classification = "credential"
+disposition = "contractual"
+names = ["RIVERHOG_ARCHIVE_PASSPHRASES_JSON", "RIVERHOG_BOOTSTRAP_TOKEN", "RIVERHOG_BROWSE_TOKEN_SIGNING_KEY", "RIVERHOG_DATABASE_URL"]
+
+[[environment]]
+owner = "riverhog-server"
+consumer = "riverhog-server"
+classification = "identity"
+disposition = "contractual"
+names = ["RIVERHOG_ARCHIVE_ACTIVE_PASSPHRASE_ID", "RIVERHOG_ARCHIVE_READ_ORDER", "RIVERHOG_ARCHIVE_STORES", "RIVERHOG_ARCHIVE_WRITE_STORE", "RIVERHOG_EVENT_SOURCE", "RIVERHOG_PUBLIC_BASE_URL", "RIVERHOG_RETRIEVAL_CACHE_STORES"]
+
+[[environment]]
+owner = "riverhog-server"
+consumer = "riverhog-server"
+classification = "runtime"
+disposition = "contractual"
+names = [
+  "RIVERHOG_AGE_SESSION_CACHE_ENTRIES",
+  "RIVERHOG_AGE_SESSION_DERIVATION_CONCURRENCY",
+  "RIVERHOG_ARCHIVE_PART_PLAINTEXT_BYTES",
+  "RIVERHOG_ARCHIVE_PREPARE_CONCURRENCY",
+  "RIVERHOG_ARCHIVE_SCRYPT_WORK_FACTOR",
+  "RIVERHOG_ARCHIVE_UPLOAD_REQUEST_CONCURRENCY",
+  "RIVERHOG_ARCHIVE_UPLOAD_SWEEP_INTERVAL",
+  "RIVERHOG_ARCHIVE_WRITE_CONCURRENCY",
+  "RIVERHOG_BROWSE_TOKEN_LIFETIME",
+  "RIVERHOG_CATALOG_SYNC_BOOTSTRAP_LIFETIME",
+  "RIVERHOG_CATALOG_SYNC_CURSOR_LIFETIME",
+  "RIVERHOG_CATALOG_SYNC_HISTORY_REAP_BATCH_SIZE",
+  "RIVERHOG_CATALOG_SYNC_HISTORY_RETENTION",
+  "RIVERHOG_CATALOG_SYNC_PAGE_SIZE_MAX",
+  "RIVERHOG_COLLECTION_UPLOAD_CUSTODY_LEASE",
+  "RIVERHOG_EVENT_CONTEXT_REAP_BATCH_SIZE",
+  "RIVERHOG_EVENT_CONTEXT_RETENTION",
+  "RIVERHOG_INGRESS_MAX_INFLIGHT_BYTES",
+  "RIVERHOG_INGRESS_SOURCE_READ_CHUNK_BYTES",
+  "RIVERHOG_LOG_LEVEL",
+  "RIVERHOG_PACK_FILES",
+  "RIVERHOG_PACK_MEMBER_BYTES",
+  "RIVERHOG_PACK_SOURCE_BYTES",
+  "RIVERHOG_RAW_VOLUME_PLAINTEXT_BYTES",
+  "RIVERHOG_RETRIEVAL_CACHE_NEW_ARCHIVE_ENABLED",
+  "RIVERHOG_RETRIEVAL_CACHE_NEW_ARCHIVE_LEASE",
+  "RIVERHOG_RETRIEVAL_CACHE_SWEEP_INTERVAL",
+  "RIVERHOG_RETRIEVAL_CACHE_WRITE_SEGMENT_BYTES",
+  "RIVERHOG_RETRIEVAL_DEFAULT_LEASE",
+  "RIVERHOG_RETRIEVAL_ESTIMATED_LATENCY",
+  "RIVERHOG_RETRIEVAL_MAX_INFLIGHT_BYTES",
+  "RIVERHOG_RETRIEVAL_MAX_LEASE",
+  "RIVERHOG_RETRIEVAL_MAX_RANGE_BYTES",
+  "RIVERHOG_RETRIEVAL_PENDING_TIMEOUT",
+  "RIVERHOG_RETRIEVAL_RANGE_BILLING_MODE",
+  "RIVERHOG_RETRIEVAL_RANGE_MERGE_GAP_BYTES",
+  "RIVERHOG_RETRIEVAL_READ_CHUNK_BYTES",
+  "RIVERHOG_RETRIEVAL_REQUEST_CONCURRENCY",
+  "RIVERHOG_RETRIEVAL_RESTORE_POLL_INTERVAL",
+]
+
+[[environment]]
+owner = "stove0-api-client"
+consumer = "stove0-api-client"
+classification = "credential"
+disposition = "contractual"
+names = ["STOVE0_TOKEN"]
+
+[[environment]]
+owner = "stove0-api-client"
+consumer = "stove0-api-client"
+classification = "identity"
+disposition = "contractual"
+names = ["STOVE0_BASE_URL"]
+
+[[environment]]
+owner = "stove0-api-client"
+consumer = "stove0-api-client"
+classification = "runtime"
+disposition = "contractual"
+names = ["STOVE0_ALLOW_INSECURE_HTTP", "STOVE0_HTTP2", "STOVE0_HTTP_TIMEOUT_SECONDS"]
+
+[[environment]]
+owner = "stove0-exiftool-observer"
+consumer = "stove0-exiftool-observer"
+classification = "credential"
+disposition = "contractual"
+names = ["STOVE0_EXIFTOOL_OBSERVER_TOKEN", "STOVE0_EXIFTOOL_OBSERVER_TOKEN_FILE"]
+
+[[environment]]
+owner = "stove0-exiftool-observer"
+consumer = "stove0-exiftool-observer"
+classification = "identity"
+disposition = "contractual"
+names = ["STOVE0_EXIFTOOL_BIN", "STOVE0_EXIFTOOL_OBSERVER_HOST", "STOVE0_EXIFTOOL_OBSERVER_IMAGE_DIGEST", "STOVE0_EXIFTOOL_OBSERVER_PORT", "STOVE0_EXIFTOOL_OBSERVER_SOURCE_REVISION", "STOVE0_EXIFTOOL_OBSERVER_WORKSPACE"]
+
+[[environment]]
+owner = "stove0-ffprobe-sampling-observer"
+consumer = "stove0-ffprobe-sampling-observer"
+classification = "credential"
+disposition = "contractual"
+names = ["STOVE0_FFPROBE_SAMPLING_OBSERVER_TOKEN", "STOVE0_FFPROBE_SAMPLING_OBSERVER_TOKEN_FILE"]
+
+[[environment]]
+owner = "stove0-ffprobe-sampling-observer"
+consumer = "stove0-ffprobe-sampling-observer"
+classification = "identity"
+disposition = "contractual"
+names = ["STOVE0_FFPROBE_BIN", "STOVE0_FFPROBE_SAMPLING_OBSERVER_HOST", "STOVE0_FFPROBE_SAMPLING_OBSERVER_IMAGE_DIGEST", "STOVE0_FFPROBE_SAMPLING_OBSERVER_PORT", "STOVE0_FFPROBE_SAMPLING_OBSERVER_SOURCE_REVISION", "STOVE0_FFPROBE_SAMPLING_OBSERVER_WORKSPACE"]
+
+[[environment]]
+owner = "stove0-nvenc-av1-opus-review-sampler"
+consumer = "stove0-nvenc-av1-opus-review-sampler"
+classification = "identity"
+disposition = "contractual"
+names = ["STOVE0_FFMPEG_BIN"]
+
+[[environment]]
+owner = "stove0-nvenc-av1-opus-target"
+consumer = "stove0-nvenc-av1-opus-target"
+classification = "identity"
+disposition = "contractual"
+names = ["STOVE0_FFMPEG_BIN", "STOVE0_NVENC_AV1_OPUS_TARGET_ZSTD"]
+
+[[environment]]
+owner = "stove0-opus-review-sampler"
+consumer = "stove0-opus-review-sampler"
+classification = "identity"
+disposition = "contractual"
+names = ["STOVE0_FFMPEG_BIN"]
+
+[[environment]]
+owner = "stove0-opus-target"
+consumer = "stove0-opus-target"
+classification = "identity"
+disposition = "contractual"
+names = ["STOVE0_FFMPEG_BIN"]
+
+[[environment]]
+owner = "stove0-server"
+consumer = "stove0-server"
+classification = "credential"
+disposition = "contractual"
+names = ["RIVERHOG_TOKEN", "STOVE0_API_TOKEN", "STOVE0_BROWSE_TOKEN_SIGNING_KEY", "STOVE0_DATABASE_URL", "STOVE0_TARGET_CALLBACK_SIGNING_KEY"]
+
+[[environment]]
+owner = "stove0-server"
+consumer = "stove0-server"
+classification = "identity"
+disposition = "contractual"
+names = ["RIVERHOG_BASE_URL", "STOVE0_ADMISSIONS_PATH", "STOVE0_OBSERVERS_JSON", "STOVE0_RECIPES_PATH", "STOVE0_TARGETS_JSON", "STOVE0_TARGET_CALLBACK_BASE_URL"]
+
+[[environment]]
+owner = "stove0-server"
+consumer = "stove0-server"
+classification = "runtime"
+disposition = "contractual"
+names = ["RIVERHOG_ALLOW_INSECURE_HTTP", "STOVE0_BROWSE_TOKEN_LIFETIME_SECONDS", "STOVE0_CAPABILITY_TTL_SECONDS", "STOVE0_CLAIM_LEASE_SECONDS", "STOVE0_OPERATIONAL_STATE_RETENTION_SECONDS", "STOVE0_SCHEDULER_INTERVAL_SECONDS", "STOVE0_TARGET_AUTHORITY_BATCH_SIZE", "STOVE0_TARGET_CALLBACK_ALLOW_INSECURE_HTTP", "STOVE0_WORKSPACE_ASSURANCE"]
+
+[[environment]]
+owner = "stove0-target-support"
+consumer = "stove0-target-support"
+classification = "runtime"
+disposition = "contractual"
+names = ["STOVE0_TARGET_TERMINAL_STATE_RETENTION_SECONDS"]
+
+[[environment_pattern]]
+owner = "riverhog-server"
+consumer = "riverhog-server"
+template = "RIVERHOG_ARCHIVE_STORE_{store}_{setting}"
+disposition = "contractual"
+classifications = { ADAPTER_URL = "identity", ADAPTER_TOKEN_FILE = "credential", ADAPTER_ALLOW_INSECURE_HTTP = "runtime", ADAPTER_MAX_CONNECTIONS = "runtime", ADAPTER_TIMEOUT_SECONDS = "runtime", MONTHLY_DOWNLOAD_ALLOWANCE_BYTES = "runtime", DOWNLOAD_SAFETY_BUFFER_BYTES = "runtime" }

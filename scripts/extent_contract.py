@@ -922,6 +922,7 @@ def _configuration_environment_decisions(
     decisions: list[dict[str, object]] = []
     for index, environment in enumerate(environments):
         name = str(environment.get("name") or "")
+        owner = str(environment.get("owner") or "")
         if not _CONFIGURATION_EXTENT_NAME.search(name):
             continue
         consumers = environment.get("consumers", [])
@@ -929,8 +930,8 @@ def _configuration_environment_decisions(
             raise ExtentContractError(f"configuration consumers are invalid: {name}")
         decisions.append(
             {
-                "id": f"configuration-environment:{name}:value",
-                "owner": ",".join(str(value) for value in consumers),
+                "id": f"configuration-environment:{owner}:{name}:value",
+                "owner": owner,
                 "source_pointer": _pointer(
                     "external_contract", "configuration_environment", str(index)
                 ),
@@ -941,19 +942,23 @@ def _configuration_environment_decisions(
                 "reason": "operator-configured-capacity",
                 "maximum": None,
                 "configuration": name,
+                "consumers": consumers,
             }
         )
     for pattern_index, pattern in enumerate(patterns):
         parameters = pattern.get("parameters", {})
         settings = parameters.get("setting", []) if isinstance(parameters, Mapping) else []
+        owner = str(pattern.get("owner") or "")
+        consumers = pattern.get("consumers", [])
+        classifications = pattern.get("classifications", {})
         for setting in settings if isinstance(settings, list) else []:
             name = str(setting)
             if not _CONFIGURATION_EXTENT_NAME.search(name):
                 continue
             decisions.append(
                 {
-                    "id": f"configuration-pattern:{pattern.get('template')}:{name}:value",
-                    "owner": str(pattern.get("consumer") or ""),
+                    "id": (f"configuration-pattern:{owner}:{pattern.get('template')}:{name}:value"),
+                    "owner": owner,
                     "source_pointer": _pointer(
                         "external_contract",
                         "configuration_environment_patterns",
@@ -966,6 +971,10 @@ def _configuration_environment_decisions(
                     "reason": "operator-configured-capacity",
                     "maximum": None,
                     "configuration": name,
+                    "consumers": consumers,
+                    "classification": (
+                        classifications.get(name) if isinstance(classifications, Mapping) else None
+                    ),
                 }
             )
     return decisions

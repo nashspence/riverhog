@@ -35,7 +35,7 @@ Exact externally visible contract owned by this semantic dossier.
 ### Related interface records
 
 - [GET /v1/admin/scheduler](../http/get-v1-admin-scheduler.md)
-- [stove0 scheduler status](../cli/stove0-scheduler-status.md)
+- [stove0-client scheduler status](../../stove0-client/cli/stove0-client-scheduler-status.md)
 
 ## Governing policies
 

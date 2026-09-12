@@ -35,7 +35,7 @@ Exact externally visible contract owned by this semantic dossier.
 ### Related interface records
 
 - [GET /v1/events](../http/get-v1-events.md)
-- [stove0 event list](../cli/stove0-event-list.md)
+- [stove0-client event list](../../stove0-client/cli/stove0-client-event-list.md)
 
 ## Governing policies
 

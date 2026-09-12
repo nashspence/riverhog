@@ -35,7 +35,7 @@ Exact externally visible contract owned by this semantic dossier.
 ### Related interface records
 
 - [POST /v1/admission-policies/{policy_id}:rebaseline](../http/post-v1-admission-policies-policy-id-rebaseline.md)
-- [stove0 admission policy rebaseline](../cli/stove0-admission-policy-rebaseline.md)
+- [stove0-client admission policy rebaseline](../../stove0-client/cli/stove0-client-admission-policy-rebaseline.md)
 
 ## Governing policies
 

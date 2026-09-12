@@ -35,7 +35,7 @@ Exact externally visible contract owned by this semantic dossier.
 ### Related interface records
 
 - [POST /v1/work/{work_id}/step](../http/post-v1-work-work-id-step.md)
-- [stove0 work step](../cli/stove0-work-step.md)
+- [stove0-client work step](../../stove0-client/cli/stove0-client-work-step.md)
 
 ## Governing policies
 

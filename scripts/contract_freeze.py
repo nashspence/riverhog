@@ -72,11 +72,41 @@ ROOT = Path(__file__).resolve().parents[1]
 OUTPUT = ROOT / "qualification/contracts/riverhog-v1.json"
 ATLAS_DIRECTORY = ROOT / "qualification/contracts/riverhog-v1"
 LEGACY_TRACE_OUTPUT = ROOT / "qualification/contracts/riverhog-v1-trace.json"
+CONFIGURATION_CONTRACT = ROOT / "qualification/configuration-contract.toml"
 SCHEMA = "riverhog-contract-freeze/v1"
 TRACE_SCHEMA = "riverhog-contract-trace/v1"
+CONFIGURATION_CONTRACT_SCHEMA = "riverhog-configuration-contract/v1"
+AUTHORITY_REGISTRY_SCHEMA = "riverhog-contract-authority-registry/v1"
+CONFIGURATION_CLASSIFICATIONS = frozenset(
+    {"credential", "identity", "runtime", "build-only", "workflow-only", "test-only"}
+)
+CONFIGURATION_DISPOSITIONS = frozenset({"contractual", "excluded"})
 ENVIRONMENT_NAME = re.compile(r"^[A-Z][A-Z0-9_]+$")
 CONFIGURATION_ENVIRONMENT_NAME = re.compile(
     r"^(?:GOGURT|MANGO|PIGGITY|RIVERHOG|STOVE0|VCRUNCH)_[A-Z0-9_]+$"
+)
+NONCONTRACTUAL_PROJECTION_AUTHORITIES: tuple[dict[str, object], ...] = (
+    {
+        "id": "contract-projection-envelope",
+        "pointers": ["/schema", "/series"],
+        "reason": "Machine projection identity, not an external product promise.",
+    },
+    {
+        "id": "durable-state-registry-envelope",
+        "pointers": ["/external_contract/durable_state/schema"],
+        "reason": (
+            "Registry format identity; each durable-state promise belongs to its named owner."
+        ),
+    },
+    {
+        "id": "extent-projection-envelope",
+        "pointers": [
+            "/external_contract/extents/coverage",
+            "/external_contract/extents/schema",
+            "/external_contract/extents/sha256",
+        ],
+        "reason": "Generated coverage and identity metadata, not external extent semantics.",
+    },
 )
 PROCESS_SCHEMA_BUNDLES: dict[str, Callable[[], dict[str, Any]]] = {
     "riverhog-storage-adapter": storage_adapter_schema_bundle,
@@ -538,6 +568,117 @@ def _cli_surfaces() -> dict[str, object]:
     }
 
 
+def _configuration_declarations(
+    projects: list[release_contract.Project],
+) -> tuple[dict[tuple[str, str], dict[str, str]], list[dict[str, object]]]:
+    document = _project_config(CONFIGURATION_CONTRACT)
+    if set(document) != {"schema", "environment", "environment_pattern"}:
+        raise ContractFreezeError("configuration contract has unexpected top-level fields")
+    if document["schema"] != CONFIGURATION_CONTRACT_SCHEMA:
+        raise ContractFreezeError("configuration contract has another schema")
+    authorities = {project.name for project in projects}
+    declarations: dict[tuple[str, str], dict[str, str]] = {}
+    for index, group in enumerate(document["environment"]):
+        if set(group) != {"owner", "consumer", "classification", "disposition", "names"}:
+            raise ContractFreezeError(f"configuration declaration {index} has unexpected fields")
+        owner = str(group["owner"])
+        consumer = str(group["consumer"])
+        classification = str(group["classification"])
+        disposition = str(group["disposition"])
+        names = group["names"]
+        if owner not in authorities:
+            raise ContractFreezeError(f"configuration owner is not an existing authority: {owner}")
+        if consumer not in authorities:
+            raise ContractFreezeError(
+                f"configuration consumer is not an existing component: {consumer}"
+            )
+        if classification not in CONFIGURATION_CLASSIFICATIONS:
+            raise ContractFreezeError(
+                f"configuration declaration has unknown classification: {classification}"
+            )
+        if disposition not in CONFIGURATION_DISPOSITIONS:
+            raise ContractFreezeError(
+                f"configuration declaration has unknown disposition: {disposition}"
+            )
+        if (
+            not isinstance(names, list)
+            or not names
+            or any(
+                not isinstance(name, str) or CONFIGURATION_ENVIRONMENT_NAME.fullmatch(name) is None
+                for name in names
+            )
+            or len(names) != len(set(names))
+        ):
+            raise ContractFreezeError(f"configuration declaration {index} has invalid names")
+        for name in names:
+            key = (str(name), consumer)
+            if key in declarations:
+                raise ContractFreezeError(
+                    f"configuration binding is declared more than once: {name}:{consumer}"
+                )
+            declarations[key] = {
+                "owner": owner,
+                "consumer": consumer,
+                "classification": classification,
+                "disposition": disposition,
+                "declaration_pointer": f"/environment/{index}/names",
+            }
+
+    patterns: list[dict[str, object]] = []
+    for index, pattern in enumerate(document["environment_pattern"]):
+        if set(pattern) != {
+            "owner",
+            "consumer",
+            "template",
+            "disposition",
+            "classifications",
+        }:
+            raise ContractFreezeError(
+                f"configuration pattern declaration {index} has unexpected fields"
+            )
+        owner = str(pattern["owner"])
+        consumer = str(pattern["consumer"])
+        template = str(pattern["template"])
+        disposition = str(pattern["disposition"])
+        classifications = pattern["classifications"]
+        if owner not in authorities:
+            raise ContractFreezeError(
+                f"configuration pattern owner is not an existing authority: {owner}"
+            )
+        if consumer not in authorities:
+            raise ContractFreezeError(
+                f"configuration pattern consumer is not an existing component: {consumer}"
+            )
+        if disposition not in CONFIGURATION_DISPOSITIONS:
+            raise ContractFreezeError(
+                f"configuration pattern has unknown disposition: {disposition}"
+            )
+        if not isinstance(classifications, dict) or not classifications:
+            raise ContractFreezeError("configuration pattern lacks setting classifications")
+        if any(
+            not isinstance(name, str)
+            or not isinstance(classification, str)
+            or classification not in CONFIGURATION_CLASSIFICATIONS
+            for name, classification in classifications.items()
+        ):
+            raise ContractFreezeError("configuration pattern classifications are invalid")
+        patterns.append(
+            {
+                "id": f"{owner}:environment-pattern:{template}",
+                "owner": owner,
+                "consumers": [consumer],
+                "template": template,
+                "disposition": disposition,
+                "classifications": dict(sorted(classifications.items())),
+                "declaration_pointer": f"/environment_pattern/{index}",
+            }
+        )
+    pattern_ids = [str(pattern["id"]) for pattern in patterns]
+    if len(pattern_ids) != len(set(pattern_ids)):
+        raise ContractFreezeError("configuration pattern authority is declared more than once")
+    return declarations, patterns
+
+
 def _environment_inventory(
     projects: list[release_contract.Project],
 ) -> list[dict[str, object]]:
@@ -587,25 +728,90 @@ def _environment_inventory(
                             ast.unparse(node),
                         )
                     )
-    return [
-        {
-            "name": name,
-            "consumers": sorted({consumer for consumer, _, _ in values}),
-            "bindings": [
-                {"consumer": consumer, "path": path, "expression": expression}
-                for consumer, path, expression in sorted(values)
-            ],
-        }
-        for name, values in sorted(bindings.items())
-    ]
+    declarations, _patterns = _configuration_declarations(projects)
+    discovered = {
+        (name, consumer)
+        for name, values in bindings.items()
+        for consumer in {value[0] for value in values}
+    }
+    declared = set(declarations)
+    if discovered - declared:
+        raise ContractFreezeError(
+            f"configuration bindings lack ownership declarations: {sorted(discovered - declared)}"
+        )
+    if declared - discovered:
+        raise ContractFreezeError(
+            f"configuration ownership declarations are stale: {sorted(declared - discovered)}"
+        )
+
+    contracts: dict[tuple[str, str], dict[str, object]] = {}
+    for name, consumer in sorted(discovered):
+        declaration = declarations[(name, consumer)]
+        owner = declaration["owner"]
+        key = (owner, name)
+        current = contracts.setdefault(
+            key,
+            {
+                "id": f"{owner}:environment:{name}",
+                "name": name,
+                "owner": owner,
+                "consumers": [],
+                "classification": declaration["classification"],
+                "disposition": declaration["disposition"],
+                "declarations": [],
+                "bindings": [],
+            },
+        )
+        if (
+            current["classification"] != declaration["classification"]
+            or current["disposition"] != declaration["disposition"]
+        ):
+            raise ContractFreezeError(
+                f"configuration authority has conflicting semantics: {owner}:{name}"
+            )
+        cast(list[str], current["consumers"]).append(consumer)
+        cast(list[dict[str, str]], current["declarations"]).append(
+            {
+                "path": CONFIGURATION_CONTRACT.relative_to(ROOT).as_posix(),
+                "pointer": declaration["declaration_pointer"],
+            }
+        )
+        cast(list[dict[str, str]], current["bindings"]).extend(
+            {"consumer": value_consumer, "path": path, "expression": expression}
+            for value_consumer, path, expression in sorted(bindings[name])
+            if value_consumer == consumer
+        )
+    result = list(contracts.values())
+    for contract in result:
+        contract["consumers"] = sorted(set(cast(list[str], contract["consumers"])))
+        contract["declarations"] = sorted(
+            cast(list[dict[str, str]], contract["declarations"]),
+            key=lambda value: (value["path"], value["pointer"]),
+        )
+        contract["bindings"] = sorted(
+            cast(list[dict[str, str]], contract["bindings"]),
+            key=lambda value: (value["consumer"], value["path"], value["expression"]),
+        )
+    return sorted(result, key=lambda value: (str(value["owner"]), str(value["name"])))
 
 
 def _environment_names(
     projects: list[release_contract.Project],
 ) -> list[dict[str, object]]:
     return [
-        {"name": item["name"], "consumers": item["consumers"]}
+        {
+            key: item[key]
+            for key in (
+                "id",
+                "name",
+                "owner",
+                "consumers",
+                "classification",
+                "disposition",
+            )
+        }
         for item in _environment_inventory(projects)
+        if item["disposition"] == "contractual"
     ]
 
 
@@ -621,19 +827,54 @@ def _configuration_documents() -> dict[str, object]:
     return dict(sorted(documents.items()))
 
 
-def _configuration_environment_patterns() -> list[dict[str, object]]:
+def _configuration_environment_patterns(
+    projects: list[release_contract.Project],
+) -> list[dict[str, object]]:
+    _declarations, patterns = _configuration_declarations(projects)
+    expected = {
+        (
+            "riverhog-server",
+            "riverhog-server",
+            ARCHIVE_STORE_ENVIRONMENT_TEMPLATE,
+            tuple(sorted(ARCHIVE_STORE_ENVIRONMENT_SETTINGS)),
+        )
+    }
+    observed = {
+        (
+            str(pattern["owner"]),
+            str(cast(list[str], pattern["consumers"])[0]),
+            str(pattern["template"]),
+            tuple(sorted(cast(dict[str, str], pattern["classifications"]))),
+        )
+        for pattern in patterns
+    }
+    if observed != expected:
+        raise ContractFreezeError(
+            "configuration pattern declarations differ from executable pattern authority"
+        )
     return [
         {
-            "consumer": "riverhog-server",
-            "template": ARCHIVE_STORE_ENVIRONMENT_TEMPLATE,
+            key: pattern[key]
+            for key in (
+                "id",
+                "owner",
+                "consumers",
+                "template",
+                "disposition",
+                "classifications",
+            )
+        }
+        | {
             "parameters": {
                 "store": {
                     "source": "RIVERHOG_ARCHIVE_STORES",
                     "normalization": "uppercase-dashes-to-underscores",
                 },
                 "setting": list(ARCHIVE_STORE_ENVIRONMENT_SETTINGS),
-            },
+            }
         }
+        for pattern in patterns
+        if pattern["disposition"] == "contractual"
     ]
 
 
@@ -696,6 +937,23 @@ def _source_ref(value: object) -> dict[str, str]:
     return result
 
 
+def _source_owner(projects: list[release_contract.Project], source: Mapping[str, str]) -> str:
+    path = source.get("path")
+    if path is None:
+        raise ContractFreezeError("public source has no repository-owned distribution")
+    candidates = [
+        project
+        for project in projects
+        if path == project.path or path.startswith(f"{project.path}/")
+    ]
+    if not candidates:
+        raise ContractFreezeError(f"public source is outside every component: {path}")
+    owner = max(candidates, key=lambda project: len(project.path))
+    if sum(project.path == owner.path for project in candidates) != 1:
+        raise ContractFreezeError(f"public source has ambiguous component ownership: {path}")
+    return owner.name
+
+
 def _openapi_trace() -> list[dict[str, object]]:
     traced: list[dict[str, object]] = []
     for surface in operation_qualification.application_surfaces():
@@ -726,7 +984,9 @@ def _openapi_trace() -> list[dict[str, object]]:
     return traced
 
 
-def _configuration_trace() -> list[dict[str, object]]:
+def _configuration_trace(
+    projects: list[release_contract.Project],
+) -> list[dict[str, object]]:
     authorities = {
         "gogurt-routes": gogurt_core,
         "mango-fish": MangoFishConfig,
@@ -735,10 +995,17 @@ def _configuration_trace() -> list[dict[str, object]]:
         "stove0-review-target": ReviewTargetConfig,
         "stove0-review-target-sampler": SamplerConfig,
     }
-    return [
-        {"id": f"configuration:{name}", "source": _source_ref(value)}
-        for name, value in sorted(authorities.items())
-    ]
+    traced: list[dict[str, object]] = []
+    for name, value in sorted(authorities.items()):
+        source = _source_ref(value)
+        traced.append(
+            {
+                "id": f"configuration:{name}",
+                "owner": _source_owner(projects, source),
+                "source": source,
+            }
+        )
+    return traced
 
 
 def _protocol_trace() -> list[dict[str, object]]:
@@ -767,7 +1034,7 @@ def _protocol_trace() -> list[dict[str, object]]:
     return traced
 
 
-def _cli_trace() -> list[dict[str, object]]:
+def _cli_trace(projects: list[release_contract.Project]) -> list[dict[str, object]]:
     modules = {
         "gogurt": "gogurt.cli",
         "mango-fish": "mango_fish.cli",
@@ -788,13 +1055,17 @@ def _cli_trace() -> list[dict[str, object]]:
         "stove0-target-conformance": "stove0_target_support.conformance",
         "stove0-target-schemas": "stove0_target_support.schemas",
     }
-    return [
-        {
-            "id": f"cli:{name}",
-            "source": _source_ref(importlib.import_module(module)),
-        }
-        for name, module in sorted(modules.items())
-    ]
+    traced: list[dict[str, object]] = []
+    for name, module in sorted(modules.items()):
+        source = _source_ref(importlib.import_module(module))
+        traced.append(
+            {
+                "id": f"cli:{name}",
+                "owner": _source_owner(projects, source),
+                "source": source,
+            }
+        )
+    return traced
 
 
 def _python_trace(projection: Mapping[str, object]) -> list[dict[str, object]]:
@@ -835,11 +1106,138 @@ def _environment_trace() -> list[dict[str, object]]:
     projects = release_contract.validate_release_contract(ROOT)
     return [
         {
-            "id": f"configuration-environment:{item['name']}",
+            "id": f"configuration-environment:{item['owner']}:{item['name']}",
+            "declarations": item["declarations"],
             "bindings": item["bindings"],
         }
         for item in _environment_inventory(projects)
     ]
+
+
+def _configuration_pattern_trace() -> list[dict[str, object]]:
+    projects = release_contract.validate_release_contract(ROOT)
+    _declarations, patterns = _configuration_declarations(projects)
+    return [
+        {
+            "id": f"configuration-environment-pattern:{pattern['owner']}:{pattern['template']}",
+            "declarations": [
+                {
+                    "path": CONFIGURATION_CONTRACT.relative_to(ROOT).as_posix(),
+                    "pointer": pattern["declaration_pointer"],
+                }
+            ],
+            "bindings": [
+                {
+                    "consumer": cast(list[str], pattern["consumers"])[0],
+                    "path": "riverhog/src/riverhog_core/runtime_config.py",
+                    "expression": (
+                        "ARCHIVE_STORE_ENVIRONMENT_TEMPLATE and ARCHIVE_STORE_ENVIRONMENT_SETTINGS"
+                    ),
+                }
+            ],
+        }
+        for pattern in patterns
+    ]
+
+
+def _configuration_registry(projects: list[release_contract.Project]) -> dict[str, object]:
+    contracts = _environment_inventory(projects)
+    _declarations, patterns = _configuration_declarations(projects)
+    records = [
+        {
+            key: contract[key]
+            for key in (
+                "id",
+                "name",
+                "owner",
+                "consumers",
+                "classification",
+                "disposition",
+            )
+        }
+        | {
+            "source_authority_id": (
+                f"configuration-environment:{contract['owner']}:{contract['name']}"
+            )
+        }
+        for contract in contracts
+    ]
+    pattern_records = [
+        {
+            key: pattern[key]
+            for key in (
+                "id",
+                "owner",
+                "consumers",
+                "template",
+                "disposition",
+                "classifications",
+            )
+        }
+        | {
+            "source_authority_id": (
+                f"configuration-environment-pattern:{pattern['owner']}:{pattern['template']}"
+            )
+        }
+        for pattern in patterns
+    ]
+    return {
+        "schema": CONFIGURATION_CONTRACT_SCHEMA,
+        "declaration_source": CONFIGURATION_CONTRACT.relative_to(ROOT).as_posix(),
+        "records": records,
+        "patterns": pattern_records,
+        "counts": {
+            "contracts": len(records),
+            "patterns": len(pattern_records),
+            "unique_environment_names": len({str(record["name"]) for record in records}),
+            "by_owner": dict(sorted(Counter(str(record["owner"]) for record in records).items())),
+            "by_classification": dict(
+                sorted(Counter(str(record["classification"]) for record in records).items())
+            ),
+            "by_disposition": dict(
+                sorted(Counter(str(record["disposition"]) for record in records).items())
+            ),
+        },
+        "coverage": {
+            "unowned": 0,
+            "unconsumed": 0,
+            "ambiguous": 0,
+            "duplicate_conflicts": 0,
+            "missing_disposition": 0,
+            "stale_declarations": 0,
+        },
+    }
+
+
+def _authority_registry(
+    projects: list[release_contract.Project], projection: Mapping[str, object]
+) -> dict[str, object]:
+    config = _project_config(ROOT / "release.toml")
+    external = cast(Mapping[str, object], projection["external_contract"])
+    state = cast(Mapping[str, object], external["durable_state"])
+    component_authorities = sorted(project.name for project in projects)
+    state_authorities = sorted(
+        str(owner["id"]) for owner in cast(list[dict[str, object]], state["owners"])
+    )
+    declared = [
+        {"id": name, "meaning": meaning}
+        for name, meaning in sorted(cast(dict[str, str], config["contract_authorities"]).items())
+    ]
+    identities = [
+        *component_authorities,
+        *state_authorities,
+        *(str(item["id"]) for item in declared),
+    ]
+    if len(identities) != len(set(identities)):
+        raise ContractFreezeError("contract authority registry contains duplicate identities")
+    return {
+        "schema": AUTHORITY_REGISTRY_SCHEMA,
+        "declaration_source": "release.toml",
+        "component_authorities": component_authorities,
+        "state_authorities": state_authorities,
+        "declared_authorities": declared,
+        "noncontractual_projection": [dict(item) for item in NONCONTRACTUAL_PROJECTION_AUTHORITIES],
+    }
 
 
 def trace_projection(projection: Mapping[str, object]) -> dict[str, object]:
@@ -849,12 +1247,16 @@ def trace_projection(projection: Mapping[str, object]) -> dict[str, object]:
     decisions = cast(list[dict[str, object]], extents["decisions"])
     semantic_payload = json.dumps(projection, separators=(",", ":"), sort_keys=True).encode()
     rendered_payload = (json.dumps(projection, indent=2, sort_keys=True) + "\n").encode()
+    projects = release_contract.validate_release_contract(ROOT)
+    configuration_registry = _configuration_registry(projects)
+    authority_registry = _authority_registry(projects, projection)
     sources: list[dict[str, object]] = [
         {"id": "release:release.toml", "source": {"path": "release.toml"}},
         *_openapi_trace(),
-        *_cli_trace(),
-        *_configuration_trace(),
+        *_cli_trace(projects),
+        *_configuration_trace(projects),
         *_environment_trace(),
+        *_configuration_pattern_trace(),
         *_protocol_trace(),
         *_python_trace(projection),
         *_state_trace(),
@@ -898,6 +1300,8 @@ def trace_projection(projection: Mapping[str, object]) -> dict[str, object]:
             }
             for decision in decisions
         ],
+        "authority_registry": authority_registry,
+        "configuration_registry": configuration_registry,
         "coverage": {
             "source_authorities": len(sources),
             "source_kinds": source_kinds,
@@ -930,7 +1334,7 @@ def contract_projection() -> dict[str, object]:
         ],
         "cli": _cli_surfaces(),
         "configuration_environment": _environment_names(projects),
-        "configuration_environment_patterns": _configuration_environment_patterns(),
+        "configuration_environment_patterns": _configuration_environment_patterns(projects),
         "configuration_documents": _configuration_documents(),
         "protocol_schemas": _schema_documents(),
         "python": python_surfaces,

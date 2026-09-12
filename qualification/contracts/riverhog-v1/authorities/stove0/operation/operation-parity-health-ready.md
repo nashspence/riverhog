@@ -35,7 +35,7 @@ Exact externally visible contract owned by this semantic dossier.
 ### Related interface records
 
 - [GET /health/ready](../http/get-health-ready.md)
-- [stove0 health](../cli/stove0-health.md)
+- [stove0-client health](../../stove0-client/cli/stove0-client-health.md)
 
 ## Governing policies
 

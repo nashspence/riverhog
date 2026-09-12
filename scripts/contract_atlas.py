@@ -213,8 +213,7 @@ def _source_index(trace: Mapping[str, object]) -> dict[str, dict[str, object]]:
             "configuration-environment:inventory": {
                 "id": "configuration-environment:inventory",
                 "source": {
-                    "path": "scripts/contract_freeze.py",
-                    "symbol": "_environment_inventory",
+                    "path": "qualification/configuration-contract.toml",
                 },
             },
         }
@@ -333,16 +332,6 @@ def _boundary_elements(projection: Mapping[str, object]) -> list[dict[str, objec
         elements,
         authority="repository",
         interface="boundary",
-        family="identity",
-        title="Contract projection identity",
-        pointers=["/schema", "/series"],
-        detector="boundary",
-        source_ids=["release:release.toml"],
-    )
-    _add_element(
-        elements,
-        authority="repository",
-        interface="boundary",
         family="references",
         title="Reference component policy",
         pointers=["/boundaries/reference_policy"],
@@ -400,6 +389,8 @@ def _walk_cli(
     node: Mapping[str, object],
     pointer: str,
     command_path: tuple[str, ...],
+    *,
+    source_id: str,
 ) -> None:
     name = str(node.get("name") or (command_path[-1] if command_path else authority))
     current_path = (
@@ -414,7 +405,7 @@ def _walk_cli(
         title=" ".join(current_path),
         pointers=pointers,
         detector="cli-tree",
-        source_ids=[f"cli:{authority}"],
+        source_ids=[source_id],
         details={"command_path": list(current_path)},
     )
     for child_name, child in sorted(
@@ -426,6 +417,7 @@ def _walk_cli(
             child,
             f"{pointer}/commands/{_escape_pointer(child_name)}",
             current_path,
+            source_id=source_id,
         )
 
 
@@ -449,6 +441,7 @@ def _external_elements(
     projection: Mapping[str, object], trace: Mapping[str, object]
 ) -> list[dict[str, object]]:
     external = cast(Mapping[str, object], projection["external_contract"])
+    sources = _source_index(trace)
     elements: list[dict[str, object]] = []
 
     for name, value in sorted(cast(Mapping[str, object], external["release"]).items()):
@@ -588,45 +581,55 @@ def _external_elements(
     for authority, node in sorted(
         cast(Mapping[str, Mapping[str, object]], external["cli"]).items()
     ):
+        source_id = f"cli:{authority}"
+        owner = str(sources[source_id]["owner"])
         _walk_cli(
             elements,
-            authority,
+            owner,
             node,
             f"/external_contract/cli/{_escape_pointer(authority)}",
             (),
+            source_id=source_id,
         )
 
     for section in ("configuration_environment", "configuration_environment_patterns"):
         for index, item in enumerate(cast(Sequence[Mapping[str, object]], external[section])):
-            name = str(item.get("name", f"{section}-{index}"))
+            name = str(item.get("name", item.get("template", f"{section}-{index}")))
+            authority = str(item["owner"])
+            classification = str(item.get("classification", "patterns"))
             _add_element(
                 elements,
-                authority="configuration",
+                authority=authority,
                 interface="configuration-environment",
-                family="patterns" if section.endswith("patterns") else "variables",
+                family="patterns" if section.endswith("patterns") else classification,
                 title=name,
                 pointers=[f"/external_contract/{section}/{index}"],
                 detector="configuration-environment",
                 source_ids=[
-                    "configuration-environment:inventory"
+                    "configuration-environment:inventory",
+                    (f"configuration-environment-pattern:{authority}:{item['template']}")
                     if section.endswith("patterns")
-                    else f"configuration-environment:{name}"
+                    else f"configuration-environment:{authority}:{name}",
                 ],
+                details={
+                    "classification": classification,
+                    "consumers": list(cast(Sequence[str], item["consumers"])),
+                },
             )
 
     for authority in sorted(cast(Mapping[str, object], external["configuration_documents"])):
+        source_id = f"configuration:{authority}"
         _add_element(
             elements,
-            authority=authority,
+            authority=str(sources[source_id]["owner"]),
             interface="configuration",
             family="documents",
             title=f"{authority} configuration",
             pointers=[f"/external_contract/configuration_documents/{_escape_pointer(authority)}"],
             detector="configuration-document",
-            source_ids=[f"configuration:{authority}"],
+            source_ids=[source_id],
         )
 
-    sources = _source_index(trace)
     for schema_authority, document in sorted(
         cast(Mapping[str, Mapping[str, object]], external["protocol_schemas"]).items()
     ):
@@ -687,18 +690,8 @@ def _external_elements(
         )
 
     state = cast(Mapping[str, object], external["durable_state"])
-    _add_element(
-        elements,
-        authority="durable-state",
-        interface="durable-state",
-        family="format",
-        title="Durable-state contract",
-        pointers=["/external_contract/durable_state/schema"],
-        detector="durable-state",
-        source_ids=["generator:contract-projection"],
-    )
-    for index, owner in enumerate(cast(Sequence[Mapping[str, object]], state["owners"])):
-        authority = str(owner["id"])
+    for index, state_owner in enumerate(cast(Sequence[Mapping[str, object]], state["owners"])):
+        authority = str(state_owner["id"])
         _add_element(
             elements,
             authority=authority,
@@ -711,17 +704,6 @@ def _external_elements(
         )
 
     extents = cast(Mapping[str, object], external["extents"])
-    for key in ("schema", "coverage", "sha256"):
-        _add_element(
-            elements,
-            authority="extent-contract",
-            interface="extent",
-            family="policy",
-            title=f"Extent {key.replace('_', ' ')}",
-            pointers=[f"/external_contract/extents/{key}"],
-            detector="extent",
-            source_ids=["extent:extent-contract"],
-        )
     for key in sorted(cast(Mapping[str, object], extents["principles"])):
         element = _add_element(
             elements,
@@ -825,7 +807,7 @@ def _link_operation_parity(
     cli_authority = {
         "riverhog": "piggity",
         "riverhog-ftp-adapter": "riverhog-ftp-adapter",
-        "stove0": "stove0",
+        "stove0": "stove0-client",
     }
     for key, operation in operations.items():
         # The operation projection is the exact authority for HTTP/CLI parity.
@@ -1036,12 +1018,35 @@ def _terminal_pointers(value: object, pointer: str = "") -> list[str]:
 
 
 def _projection_coverage(
-    elements: Sequence[Mapping[str, object]], projection: Mapping[str, object]
+    elements: Sequence[Mapping[str, object]],
+    projection: Mapping[str, object],
+    noncontractual_projection: Sequence[Mapping[str, object]],
 ) -> dict[str, object]:
     pointers = [pointer for item in elements for pointer in cast(Sequence[str], item["pointers"])]
+    noncontractual_pointers = [
+        pointer
+        for item in noncontractual_projection
+        for pointer in cast(Sequence[str], item["pointers"])
+    ]
     terminals = _terminal_pointers(projection)
     extent_prefix = "/external_contract/extents/decisions/"
-    semantic_terminals = [pointer for pointer in terminals if not pointer.startswith(extent_prefix)]
+    noncontractual_terminals = [
+        pointer
+        for pointer in terminals
+        if any(
+            pointer == excluded or pointer.startswith(f"{excluded}/")
+            for excluded in noncontractual_pointers
+        )
+    ]
+    semantic_terminals = [
+        pointer
+        for pointer in terminals
+        if not pointer.startswith(extent_prefix)
+        and not any(
+            pointer == excluded or pointer.startswith(f"{excluded}/")
+            for excluded in noncontractual_pointers
+        )
+    ]
     owned = {
         terminal: [
             pointer
@@ -1066,6 +1071,7 @@ def _projection_coverage(
     return {
         "projection_terminals": len(terminals),
         "semantic_terminals": len(semantic_terminals),
+        "noncontractual_terminals": len(noncontractual_terminals),
         "extent_decisions": len(declared_decision_ids),
         "missing": sum(not owners for owners in owned.values())
         + len(set(declared_decision_ids) - set(represented_decision_ids)),
@@ -1074,6 +1080,60 @@ def _projection_coverage(
         - len(set(represented_decision_ids)),
         "stale": len(set(represented_decision_ids) - set(declared_decision_ids)),
     }
+
+
+def _validate_authority_registry(
+    elements: Sequence[Mapping[str, object]],
+    projection: Mapping[str, object],
+    trace: Mapping[str, object],
+) -> Sequence[Mapping[str, object]]:
+    registry = cast(Mapping[str, object], trace["authority_registry"])
+    if registry.get("schema") != "riverhog-contract-authority-registry/v1":
+        raise ContractAtlasError("contract authority registry has another schema")
+    declared = cast(Sequence[Mapping[str, object]], registry["declared_authorities"])
+    declared_ids = [str(item["id"]) for item in declared]
+    if len(declared_ids) != len(set(declared_ids)) or any(
+        not str(item.get("meaning", "")).strip() for item in declared
+    ):
+        raise ContractAtlasError("declared contract authorities are incomplete")
+    allowed = {
+        *cast(Sequence[str], registry["component_authorities"]),
+        *cast(Sequence[str], registry["state_authorities"]),
+        *declared_ids,
+    }
+    unknown = sorted({str(item["authority"]) for item in elements} - allowed)
+    if unknown:
+        raise ContractAtlasError(f"contract elements lack legitimate authorities: {unknown}")
+
+    noncontractual = cast(Sequence[Mapping[str, object]], registry["noncontractual_projection"])
+    record_ids = [str(item["id"]) for item in noncontractual]
+    pointers = [
+        str(pointer)
+        for item in noncontractual
+        for pointer in cast(Sequence[str], item.get("pointers", ()))
+    ]
+    if (
+        len(record_ids) != len(set(record_ids))
+        or len(pointers) != len(set(pointers))
+        or any(not str(item.get("reason", "")).strip() for item in noncontractual)
+    ):
+        raise ContractAtlasError("non-contractual projection dispositions are incomplete")
+    for pointer in pointers:
+        pointer_value(projection, pointer)
+    owned_pointers = [
+        str(pointer) for item in elements for pointer in cast(Sequence[str], item["pointers"])
+    ]
+    overlap = sorted(
+        pointer
+        for pointer in pointers
+        if any(
+            pointer == owned or pointer.startswith(f"{owned}/") or owned.startswith(f"{pointer}/")
+            for owned in owned_pointers
+        )
+    )
+    if overlap:
+        raise ContractAtlasError(f"non-contractual projection is also owned as contract: {overlap}")
+    return noncontractual
 
 
 def _assign_dossiers(elements: list[dict[str, object]]) -> None:
@@ -1879,13 +1939,57 @@ def _render_dossier(
     for source_id in cast(Sequence[str], element["source_authority_ids"]):
         source = source_index[source_id]
         location = cast(Mapping[str, object], source.get("source", {}))
-        rendered = str(location.get("path", location.get("module", source_id)))
+        bindings = cast(Sequence[Mapping[str, object]], source.get("bindings", ()))
+        declarations = cast(Sequence[Mapping[str, object]], source.get("declarations", ()))
+        rendered = str(
+            location.get(
+                "path",
+                location.get(
+                    "module",
+                    bindings[0]["path"]
+                    if bindings
+                    else declarations[0]["path"]
+                    if declarations
+                    else source_id,
+                ),
+            )
+        )
         symbol = f"::{location['symbol']}" if "symbol" in location else ""
         lines.append(
             f"- [{_md(source_id)}]"
             f"({_anchor_link(path, source_evidence_path, _source_anchor(source_id))}) — "
             f"`{rendered}{symbol}`"
         )
+    if element["interface"] == "configuration-environment":
+        configuration_sources = [
+            source_index[source_id]
+            for source_id in cast(Sequence[str], element["source_authority_ids"])
+            if source_index[source_id].get("bindings")
+        ]
+        lines.extend(
+            [
+                "",
+                "### Configuration authority and bindings",
+                "",
+                "The declaration fixes normative ownership and classification. The parser "
+                "expression is the source-linked authority for the accepted domain and effective "
+                "default exercised by qualification.",
+                "",
+                "| Kind | Consumer | Source | Authority |",
+                "|---|---|---|---|",
+            ]
+        )
+        for source in configuration_sources:
+            for declaration in cast(Sequence[Mapping[str, object]], source.get("declarations", ())):
+                lines.append(
+                    f"| declaration | — | `{_md(declaration['path'])}` | "
+                    f"`{_md(declaration['pointer'])}` |"
+                )
+            for binding in cast(Sequence[Mapping[str, object]], source["bindings"]):
+                lines.append(
+                    f"| parser | `{_md(binding['consumer'])}` | `{_md(binding['path'])}` | "
+                    f"`{_md(binding['expression'])}` |"
+                )
     lines.extend(
         [
             "",
@@ -2894,6 +2998,7 @@ def _render_atlas(
     evidence_path = f"{ATLAS_DIRECTORY}/evidence/index.md"
     exclusion_path = f"{ATLAS_DIRECTORY}/evidence/exclusions.md"
     authority_evidence_path = f"{ATLAS_DIRECTORY}/evidence/authorities.md"
+    configuration_evidence_path = f"{ATLAS_DIRECTORY}/evidence/configuration.md"
     source_evidence_path = f"{ATLAS_DIRECTORY}/evidence/sources.md"
     relationship_evidence_path = f"{ATLAS_DIRECTORY}/evidence/relationships.md"
     identity_evidence_path = f"{ATLAS_DIRECTORY}/evidence/identities.md"
@@ -2997,13 +3102,138 @@ def _render_atlas(
     for source_id, count in source_counts.items():
         source_record = source_index[source_id]
         location = cast(Mapping[str, object], source_record.get("source", {}))
-        rendered = str(location.get("path", location.get("module", source_id)))
+        bindings = cast(Sequence[Mapping[str, object]], source_record.get("bindings", ()))
+        declarations = cast(Sequence[Mapping[str, object]], source_record.get("declarations", ()))
+        rendered = str(
+            location.get(
+                "path",
+                location.get(
+                    "module",
+                    bindings[0]["path"]
+                    if bindings
+                    else declarations[0]["path"]
+                    if declarations
+                    else source_id,
+                ),
+            )
+        )
+        if len(bindings) > 1:
+            rendered += f" (+{len(bindings) - 1} binding)"
         symbol = f"::{location['symbol']}" if "symbol" in location else ""
         source_lines.append(
             f"| {_html_anchor(_source_anchor(source_id))}`{_md(source_id)}` | {count} | "
             f"`{_md(rendered + symbol)}` |"
         )
     files[source_evidence_path] = ("\n".join(source_lines).rstrip() + "\n").encode()
+
+    authority_registry = cast(Mapping[str, object], trace["authority_registry"])
+    declared_authorities = cast(
+        Sequence[Mapping[str, object]], authority_registry["declared_authorities"]
+    )
+    noncontractual_projection = cast(
+        Sequence[Mapping[str, object]], authority_registry["noncontractual_projection"]
+    )
+    configuration_registry = cast(Mapping[str, object], trace["configuration_registry"])
+    configuration_counts = cast(Mapping[str, object], configuration_registry["counts"])
+    configuration_coverage = cast(Mapping[str, object], configuration_registry["coverage"])
+    configuration_dossiers: dict[str, str] = {}
+    for element in elements:
+        if element["interface"] != "configuration-environment":
+            continue
+        for pointer in cast(Sequence[str], element["pointers"]):
+            value = pointer_value(projection, pointer)
+            if isinstance(value, Mapping) and isinstance(value.get("id"), str):
+                configuration_dossiers[str(value["id"])] = str(element["dossier"])
+    configuration_lines = [
+        "# Configuration ownership registry",
+        "",
+        f"[Atlas]({_relative_link(configuration_evidence_path, root_path)}) · "
+        f"[Freeze evidence]({_relative_link(configuration_evidence_path, evidence_path)})",
+        "",
+        "This is the exhaustive discovery and reconciliation view. It does not own any "
+        "setting's semantics; every contractual entry links to its normative owner's dossier.",
+        "",
+        "## Coverage",
+        "",
+        "| Check | Result |",
+        "|---|---:|",
+        *(
+            f"| {_md(name.replace('_', ' '))} | {'pass' if count == 0 else count} |"
+            for name, count in configuration_coverage.items()
+        ),
+        "",
+        "## Shape",
+        "",
+        f"Environment contracts: **{configuration_counts['contracts']}** · "
+        f"Unique names: **{configuration_counts['unique_environment_names']}** · "
+        f"Parameterized families: **{configuration_counts['patterns']}**",
+        "",
+        *_table_counts(
+            cast(Mapping[str, object], configuration_counts["by_owner"]), "Normative owner"
+        ),
+        "",
+        *_table_counts(
+            cast(Mapping[str, object], configuration_counts["by_classification"]),
+            "Classification",
+        ),
+        "",
+        "## Exact environment contracts",
+        "",
+        "| Normative owner | Setting | Consumers | Classification | Disposition | Source |",
+        "|---|---|---|---|---|---|",
+    ]
+    for record in cast(Sequence[Mapping[str, object]], configuration_registry["records"]):
+        contract_id = str(record["id"])
+        dossier = configuration_dossiers.get(contract_id)
+        setting = (
+            f"[{_md(record['name'])}]({_relative_link(configuration_evidence_path, dossier)})"
+            if dossier is not None
+            else f"`{_md(record['name'])}`"
+        )
+        source_id = str(record["source_authority_id"])
+        source_link = _anchor_link(
+            configuration_evidence_path,
+            source_evidence_path,
+            _source_anchor(source_id),
+        )
+        configuration_lines.append(
+            f"| `{_md(record['owner'])}` | {setting} | "
+            f"`{_md(', '.join(cast(Sequence[str], record['consumers'])))}` | "
+            f"`{_md(record['classification'])}` | `{_md(record['disposition'])}` | "
+            f"[{_md(source_id)}]({source_link}) |"
+        )
+    patterns = cast(Sequence[Mapping[str, object]], configuration_registry["patterns"])
+    if patterns:
+        configuration_lines.extend(
+            [
+                "",
+                "## Parameterized families",
+                "",
+                "| Normative owner | Template | Consumers | Setting classifications | "
+                "Disposition |",
+                "|---|---|---|---|---|",
+            ]
+        )
+        for pattern in patterns:
+            dossier = configuration_dossiers.get(str(pattern["id"]))
+            template = (
+                f"[{_md(pattern['template'])}]"
+                f"({_relative_link(configuration_evidence_path, dossier)})"
+                if dossier is not None
+                else f"`{_md(pattern['template'])}`"
+            )
+            classifications = ", ".join(
+                f"{name}: {classification}"
+                for name, classification in cast(
+                    Mapping[str, str], pattern["classifications"]
+                ).items()
+            )
+            configuration_lines.append(
+                f"| `{_md(pattern['owner'])}` | {template} | "
+                f"`{_md(', '.join(cast(Sequence[str], pattern['consumers'])))}` | "
+                f"{_md(classifications)} | `{_md(pattern['disposition'])}` |"
+            )
+    files[configuration_evidence_path] = ("\n".join(configuration_lines).rstrip() + "\n").encode()
 
     authority_lines = [
         "# Exact authority inventory",
@@ -3017,6 +3247,29 @@ def _render_atlas(
         "## Aggregate ownership",
         "",
         *_table_counts(cast(Mapping[str, object], root_counts["by_interface"]), "Interface"),
+        "",
+        "## Declared aggregate authorities",
+        "",
+        "These cross-component authorities are explicit repository decisions. Component and "
+        "durable-state authorities come directly from their frozen registries.",
+        "",
+        "| Authority | Normative scope |",
+        "|---|---|",
+        *(f"| `{_md(item['id'])}` | {_md(item['meaning'])} |" for item in declared_authorities),
+        "",
+        "## Non-contractual projection machinery",
+        "",
+        "These values remain in the exact machine projection for validation, but do not own "
+        "external product promises.",
+        "",
+        "| Projection record | Machine authority | Reason |",
+        "|---|---|---|",
+        *(
+            f"| `{_md(item['id'])}` | "
+            f"`{_md(', '.join(cast(Sequence[str], item['pointers'])))}` | "
+            f"{_md(item['reason'])} |"
+            for item in noncontractual_projection
+        ),
         "",
         "## Authorities",
         "",
@@ -3152,6 +3405,8 @@ def _render_atlas(
         "",
         f"- [Explicit exclusions]({_relative_link(evidence_path, exclusion_path)})",
         f"- [Exact authority inventory]({_relative_link(evidence_path, authority_evidence_path)})",
+        "- [Configuration ownership registry]"
+        f"({_relative_link(evidence_path, configuration_evidence_path)})",
         "- [Source and qualification inventory]"
         f"({_relative_link(evidence_path, source_evidence_path)})",
         "- [Relationship-edge inventory]"
@@ -3208,8 +3463,18 @@ def _render_atlas(
             }
             kind = "evidence-index"
         elif path == authority_evidence_path:
-            document_counts = {"authorities": len(grouped)}
+            document_counts = {
+                "authorities": len(grouped),
+                "declared_aggregate_authorities": len(declared_authorities),
+                "noncontractual_projection_records": len(noncontractual_projection),
+            }
             kind = "evidence-authority-inventory"
+        elif path == configuration_evidence_path:
+            document_counts = {
+                "configuration_contracts": configuration_counts["contracts"],
+                "configuration_patterns": configuration_counts["patterns"],
+            }
+            kind = "evidence-configuration-inventory"
         elif path == source_evidence_path:
             document_counts = {
                 "source_authorities": len(source_index),
@@ -3303,6 +3568,9 @@ def build_atlas(
     ]
     _attach_extent_decisions(elements, normalized_projection)
     _link_operation_parity(elements, normalized_projection)
+    noncontractual_projection = _validate_authority_registry(
+        elements, normalized_projection, normalized_trace
+    )
     ids = [str(item["id"]) for item in elements]
     if len(ids) != len(set(ids)):
         raise ContractAtlasError("semantic contract element identities are not unique")
@@ -3337,7 +3605,9 @@ def build_atlas(
         for item in elements
     ]
     meta_closure = _detector_meta_closure(normalized_projection)
-    projection_coverage = _projection_coverage(elements, normalized_projection)
+    projection_coverage = _projection_coverage(
+        elements, normalized_projection, noncontractual_projection
+    )
     discovery = {
         "detectors": list(DETECTORS),
         "meta_closure": meta_closure,
@@ -3669,6 +3939,7 @@ def validate_atlas(
                     f"atlas dossier does not route its referenced contract: {item['id']}"
                 )
 
+    trace_value = cast(Mapping[str, object], root["trace"])
     discovery = cast(Mapping[str, object], root["discovery"])
     if discovery["anomalies"] != {
         "missing": 0,
@@ -3679,7 +3950,12 @@ def validate_atlas(
         "multiply_represented": 0,
     }:
         raise ContractAtlasError("contract discovery contains unresolved anomalies")
-    observed_projection_coverage = _projection_coverage(elements, projection_value)
+    noncontractual_projection = _validate_authority_registry(
+        elements, projection_value, trace_value
+    )
+    observed_projection_coverage = _projection_coverage(
+        elements, projection_value, noncontractual_projection
+    )
     if discovery["projection_coverage"] != observed_projection_coverage:
         raise ContractAtlasError("projection-to-atlas coverage is stale")
     candidates = cast(Sequence[Mapping[str, object]], discovery["candidates"])
@@ -3691,7 +3967,6 @@ def validate_atlas(
     ):
         raise ContractAtlasError("contractual discovery candidates do not match atlas elements")
 
-    trace_value = cast(Mapping[str, object], root["trace"])
     source_index = _source_index(trace_value)
     checked_sources = {
         str(item["id"]): dict(item)
@@ -3699,6 +3974,41 @@ def validate_atlas(
     }
     if checked_sources != source_index:
         raise ContractAtlasError("source authority index is stale")
+    configuration_registry = cast(Mapping[str, object], trace_value["configuration_registry"])
+    configuration_coverage = cast(Mapping[str, object], configuration_registry["coverage"])
+    if any(configuration_coverage.values()):
+        raise ContractAtlasError("configuration registry contains unresolved ownership anomalies")
+    external = cast(Mapping[str, object], projection_value["external_contract"])
+    projected_configuration = [
+        *cast(Sequence[Mapping[str, object]], external["configuration_environment"]),
+        *cast(Sequence[Mapping[str, object]], external["configuration_environment_patterns"]),
+    ]
+    registry_configuration = [
+        *(
+            record
+            for record in cast(Sequence[Mapping[str, object]], configuration_registry["records"])
+            if record["disposition"] == "contractual"
+        ),
+        *(
+            record
+            for record in cast(Sequence[Mapping[str, object]], configuration_registry["patterns"])
+            if record["disposition"] == "contractual"
+        ),
+    ]
+    if {str(record["id"]) for record in projected_configuration} != {
+        str(record["id"]) for record in registry_configuration
+    }:
+        raise ContractAtlasError("configuration registry differs from external contract")
+    configuration_element_ids = {
+        str(value["id"])
+        for item in elements
+        if item["interface"] == "configuration-environment"
+        for pointer in cast(Sequence[str], item["pointers"])
+        if isinstance((value := pointer_value(projection_value, pointer)), Mapping)
+        and isinstance(value.get("id"), str)
+    }
+    if configuration_element_ids != {str(record["id"]) for record in projected_configuration}:
+        raise ContractAtlasError("configuration registry does not have exact atlas ownership")
     exclusions = cast(Sequence[Mapping[str, object]], discovery["exclusions"])
     policies = cast(Mapping[str, object], root["policies"])
     declared_policy_ids = {
@@ -3882,6 +4192,24 @@ def validate_atlas(
             raise ContractAtlasError(f"human contract map omits exact authority: {authority}")
         if f"]({inventory_link})" not in authority_inventory_page:
             raise ContractAtlasError(f"authority evidence omits exact authority: {authority}")
+    authority_registry = cast(Mapping[str, object], trace_value["authority_registry"])
+    for item in cast(Sequence[Mapping[str, object]], authority_registry["declared_authorities"]):
+        if any(_md(item[key]) not in authority_inventory_page for key in ("id", "meaning")):
+            raise ContractAtlasError(
+                f"authority evidence omits aggregate declaration: {item['id']}"
+            )
+    for item in cast(
+        Sequence[Mapping[str, object]], authority_registry["noncontractual_projection"]
+    ):
+        authority_required = [
+            item["id"],
+            item["reason"],
+            *cast(Sequence[str], item["pointers"]),
+        ]
+        if any(_md(value) not in authority_inventory_page for value in authority_required):
+            raise ContractAtlasError(
+                f"authority evidence omits non-contractual projection: {item['id']}"
+            )
     relationship_page = atlas.files[f"{ATLAS_DIRECTORY}/evidence/relationships.md"].decode()
     for node in relationship_nodes:
         required = (node["id"], node["kind"], node["name"], node["description"])
@@ -3923,7 +4251,28 @@ def validate_atlas(
                 "source_authorities": len(source_index),
             }
         elif kind == "evidence-authority-inventory":
-            expected_counts = {"authorities": len(exact_authorities)}
+            authority_registry = cast(Mapping[str, object], trace_value["authority_registry"])
+            expected_counts = {
+                "authorities": len(exact_authorities),
+                "declared_aggregate_authorities": len(
+                    cast(
+                        Sequence[Mapping[str, object]],
+                        authority_registry["declared_authorities"],
+                    )
+                ),
+                "noncontractual_projection_records": len(
+                    cast(
+                        Sequence[Mapping[str, object]],
+                        authority_registry["noncontractual_projection"],
+                    )
+                ),
+            }
+        elif kind == "evidence-configuration-inventory":
+            configuration_counts = cast(Mapping[str, object], configuration_registry["counts"])
+            expected_counts = {
+                "configuration_contracts": configuration_counts["contracts"],
+                "configuration_patterns": configuration_counts["patterns"],
+            }
         elif kind == "evidence-source-inventory":
             expected_counts = {
                 "source_authorities": len(source_index),

@@ -35,7 +35,7 @@ Exact externally visible contract owned by this semantic dossier.
 ### Related interface records
 
 - [POST /v1/work/{work_id}/retry](../http/post-v1-work-work-id-retry.md)
-- [stove0 work retry](../cli/stove0-work-retry.md)
+- [stove0-client work retry](../../stove0-client/cli/stove0-client-work-retry.md)
 
 ## Governing policies
 

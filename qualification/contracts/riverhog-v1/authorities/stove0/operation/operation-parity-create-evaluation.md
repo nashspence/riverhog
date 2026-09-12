@@ -35,7 +35,7 @@ Exact externally visible contract owned by this semantic dossier.
 ### Related interface records
 
 - [POST /v1/evaluations](../http/post-v1-evaluations.md)
-- [stove0 evaluation create](../cli/stove0-evaluation-create.md)
+- [stove0-client evaluation create](../../stove0-client/cli/stove0-client-evaluation-create.md)
 
 ## Governing policies
 

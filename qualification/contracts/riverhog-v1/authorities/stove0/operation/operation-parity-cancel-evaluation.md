@@ -35,7 +35,7 @@ Exact externally visible contract owned by this semantic dossier.
 ### Related interface records
 
 - [POST /v1/evaluations/{evaluation_id}/cancel](../http/post-v1-evaluations-evaluation-id-cancel.md)
-- [stove0 evaluation cancel](../cli/stove0-evaluation-cancel.md)
+- [stove0-client evaluation cancel](../../stove0-client/cli/stove0-client-evaluation-cancel.md)
 
 ## Governing policies
 

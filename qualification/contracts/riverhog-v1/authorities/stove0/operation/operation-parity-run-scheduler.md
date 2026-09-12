@@ -35,7 +35,7 @@ Exact externally visible contract owned by this semantic dossier.
 ### Related interface records
 
 - [POST /v1/admin/scheduler/run](../http/post-v1-admin-scheduler-run.md)
-- [stove0 scheduler run](../cli/stove0-scheduler-run.md)
+- [stove0-client scheduler run](../../stove0-client/cli/stove0-client-scheduler-run.md)
 
 ## Governing policies
 

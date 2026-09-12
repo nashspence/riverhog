@@ -2,12 +2,12 @@
 
 [Atlas](../../index.md) · [Policies](../../policies/index.md)
 
-Contract elements: **15** · Extent decisions: **0**
+Contract elements: **12** · Extent decisions: **0**
 
 | Interface | Count |
 |---|---:|
-| `extent` | 15 |
+| `extent` | 12 |
 
 ## Interfaces
 
-- [extent](extent/index.md) — 15 elements
+- [extent](extent/index.md) — 12 elements
