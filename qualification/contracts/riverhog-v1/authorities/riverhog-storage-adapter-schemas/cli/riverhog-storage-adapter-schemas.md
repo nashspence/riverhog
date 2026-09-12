@@ -8,45 +8,49 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Audit field | Value |
 |---|---|
-| Authority | `riverhog-storage-adapter-schemas` |
-| Interface | `cli` |
-| Family | `root` |
+| Authority | [riverhog-storage-adapter-schemas](../index.md) |
+| Interface | [cli](index.md) |
+| Family | [root](index.md#f-45e97b65b76e) |
 | Contract elements | 1 |
 | Extent decisions | 1 |
 
 ## External contract
 
-- Parser name: `riverhog-storage-adapter-schemas`
+- <a id="s-1ea2979964fe"></a>Parser name: `riverhog-storage-adapter-schemas`
 
 ### Parameters
 
 | Name | Kind | Required | Type | Options |
 |---|---|---:|---|---|
-| `` | _StoreAction | no | Path | --output |
-| `` | _StoreTrueAction | no |  | --compact |
+| <a id="s-c7cd964cecce"></a>`` | _StoreAction | no | Path | --output |
+| <a id="s-38128e604600"></a>`` | _StoreTrueAction | no |  | --compact |
 
 ### Progression, limits, and lifecycle
 
-| Dimension | Unit | Policy | Bounds or reason |
-|---|---|---|---|
-| cardinality | values-per-occurrence | `fixed` | maximum=0, minimum=0, reason=fixed-command-argument-arity |
+#### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
+
+Shared facts for every subject below: maximum=0; minimum=0; reason="fixed-command-argument-arity"; source_constraint={"field":"nargs"}
+
+| Applies to | Contract | Bounds or reason |
+|---|---|---|
+| [CLI parameter --compact](#s-38128e604600) | `cardinality · values-per-occurrence · fixed` | shared above |
 
 ## Governing policies
 
-- `compatibility/cli/v1`
-- `extent-rule/schema-bound/v1`
+- <a id="pa-6032d4ad7b80"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de7f)
+- <a id="pa-ab654c018556"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
 
 ## Evidence
 
 ### Qualification
 
-- `make dist-smoke`
-- `make operation-qualification`
+- [make dist-smoke](../../../evidence/sources.md#q-0ba2578a3eb7)
+- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459fb8)
 
 ### Executable sources
 
-- `cli:riverhog-storage-adapter-schemas` — `packages/riverhog-storage-adapter-support/src/riverhog_storage_adapter_support/schemas.py::<module>`
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
+- [cli:riverhog-storage-adapter-schemas](../../../evidence/sources.md#src-b90a9d08ff5b) — `packages/riverhog-storage-adapter-support/src/riverhog_storage_adapter_support/schemas.py::<module>`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
 
 ### Machine authority
 

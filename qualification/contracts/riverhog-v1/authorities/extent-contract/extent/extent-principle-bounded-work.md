@@ -8,31 +8,32 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Audit field | Value |
 |---|---|
-| Authority | `extent-contract` |
-| Interface | `extent` |
-| Family | `principles` |
+| Authority | [extent-contract](../index.md) |
+| Interface | [extent](index.md) |
+| Family | [principles](index.md#f-38214870c85d) |
 | Contract elements | 1 |
 | Extent decisions | 0 |
 
 ## External contract
 
+<a id="s-c57d03c1ac00"></a>
 - Shape: "Large logical totals cross bounded pages, segments, or restartable work steps; a carrier bound does not redefine the logical total."
 
 ## Governing policies
 
-- `extent-principle/bounded-work/v1`
+- <a id="pa-ca06a308d1ad"></a>[extent-principle/bounded-work/v1](../../../policies/index.md#p-a16724dfa091)
 
 ## Evidence
 
 ### Qualification
 
-- `make contract-freeze`
-- `make operation-qualification`
+- [make contract-freeze](../../../evidence/sources.md#q-8c74349e71e4)
+- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459fb8)
 
 ### Executable sources
 
-- `extent:extent-contract` — `scripts/extent_contract.py::extent_projection`
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
+- [extent:extent-contract](../../../evidence/sources.md#src-5ac94d0a12e8) — `scripts/extent_contract.py::extent_projection`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
 
 ### Machine authority
 

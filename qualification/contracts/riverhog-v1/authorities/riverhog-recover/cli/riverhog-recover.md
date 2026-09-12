@@ -8,52 +8,56 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Audit field | Value |
 |---|---|
-| Authority | `riverhog-recover` |
-| Interface | `cli` |
-| Family | `root` |
+| Authority | [riverhog-recover](../index.md) |
+| Interface | [cli](index.md) |
+| Family | [root](index.md#f-67c1311009ab) |
 | Contract elements | 1 |
 | Extent decisions | 3 |
 
 ## External contract
 
-- Parser name: `riverhog-recover`
+- <a id="s-c9dbdcd91594"></a>Parser name: `riverhog-recover`
 
 ### Parameters
 
 | Name | Kind | Required | Type | Options |
 |---|---|---:|---|---|
-| `` | _VersionAction | no |  | --version |
-| `` | _StoreAction | yes | Path |  |
-| `` | _StoreAction | no | Path |  |
-| `` | _StoreTrueAction | no |  | --description-only |
-| `` | _StoreTrueAction | no |  | --tags-only |
-| `` | _StoreAction | no | Path | --passphrases-file |
-| `` | _StoreAction | no |  | --age-command |
+| <a id="s-bd0c880f02b6"></a>`` | _VersionAction | no |  | --version |
+| <a id="s-3af69a838ada"></a>`` | _StoreAction | yes | Path |  |
+| <a id="s-15d3edeac135"></a>`` | _StoreAction | no | Path |  |
+| <a id="s-ae476bc56983"></a>`` | _StoreTrueAction | no |  | --description-only |
+| <a id="s-27589f8407d1"></a>`` | _StoreTrueAction | no |  | --tags-only |
+| <a id="s-bc196a266165"></a>`` | _StoreAction | no | Path | --passphrases-file |
+| <a id="s-95cdb2042d42"></a>`` | _StoreAction | no |  | --age-command |
 
 ### Progression, limits, and lifecycle
 
-| Dimension | Unit | Policy | Bounds or reason |
-|---|---|---|---|
-| cardinality | values-per-occurrence | `fixed` | maximum=0, minimum=0, reason=fixed-command-argument-arity |
-| cardinality | values-per-occurrence | `fixed` | maximum=0, minimum=0, reason=fixed-command-argument-arity |
-| cardinality | values-per-occurrence | `fixed` | maximum=0, minimum=0, reason=fixed-command-argument-arity |
+#### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
+
+Shared facts for every subject below: maximum=0; minimum=0; reason="fixed-command-argument-arity"; source_constraint={"field":"nargs"}
+
+| Applies to | Contract | Bounds or reason |
+|---|---|---|
+| [CLI parameter --version](#s-bd0c880f02b6) | `cardinality · values-per-occurrence · fixed` | shared above |
+| [CLI parameter --description-only](#s-ae476bc56983) | `cardinality · values-per-occurrence · fixed` | shared above |
+| [CLI parameter --tags-only](#s-27589f8407d1) | `cardinality · values-per-occurrence · fixed` | shared above |
 
 ## Governing policies
 
-- `compatibility/cli/v1`
-- `extent-rule/schema-bound/v1`
+- <a id="pa-aa263439cde7"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de7f)
+- <a id="pa-ecc54738d336"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
 
 ## Evidence
 
 ### Qualification
 
-- `make dist-smoke`
-- `make operation-qualification`
+- [make dist-smoke](../../../evidence/sources.md#q-0ba2578a3eb7)
+- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459fb8)
 
 ### Executable sources
 
-- `cli:riverhog-recover` — `reference/riverhog/recovery/src/riverhog_recover/cli.py::<module>`
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
+- [cli:riverhog-recover](../../../evidence/sources.md#src-375119d633c0) — `reference/riverhog/recovery/src/riverhog_recover/cli.py::<module>`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
 
 ### Machine authority
 

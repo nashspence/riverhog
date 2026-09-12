@@ -8,36 +8,37 @@ Get Retrieval Cache Object
 
 | Audit field | Value |
 |---|---|
-| Authority | `riverhog` |
-| Interface | `http` |
-| Family | `retrieval-cache` |
+| Authority | [riverhog](../index.md) |
+| Interface | [http](index.md) |
+| Family | [retrieval-cache](families/retrieval-cache/index.md) |
 | Contract elements | 1 |
 | Extent decisions | 0 |
 
 ## External contract
 
-- `operationId`: get_retrieval_cache_object
-- `summary`: Get Retrieval Cache Object
-- `security`: `[{"HTTPBearer": []}]`
+<a id="s-9a8ec3392d94"></a>
+- <a id="s-ef02a9d664dc"></a>`operationId`: get_retrieval_cache_object
+- <a id="s-3da411fdfb18"></a>`summary`: Get Retrieval Cache Object
+- <a id="s-1a2535641bb6"></a>`security`: `[{"HTTPBearer": []}]`
 
 ### Parameters
 
 | Name | In | Required | Schema |
 |---|---|---:|---|
-| `collection_id` | path | yes | type="integer"; minimum=1 |
-| `source_store` | path | yes | type="string"; pattern="^[a-z0-9]+(?:-[a-z0-9]+)*$" |
-| `object_id` | path | yes | type="string" |
+| <a id="s-3f640503ffb9"></a>`collection_id` | path | yes | type="integer"; minimum=1 |
+| <a id="s-b5fc534559e9"></a>`source_store` | path | yes | type="string"; pattern="^[a-z0-9]+(?:-[a-z0-9]+)*$" |
+| <a id="s-847eae74a706"></a>`object_id` | path | yes | type="string" |
 
 ### Responses
 
 | Status | Description |
 |---|---|
-| `200` | Successful Response |
-| `400` | Bad Request |
-| `401` | Unauthorized |
-| `403` | Forbidden |
-| `404` | Not Found |
-| `500` | Internal Server Error |
+| <a id="s-ffc0a1dc71f8"></a>`200` | Successful Response |
+| <a id="s-dff249924ed1"></a>`400` | Bad Request |
+| <a id="s-8a8490528c10"></a>`401` | Unauthorized |
+| <a id="s-c757eebef1f9"></a>`403` | Forbidden |
+| <a id="s-610fc23789e1"></a>`404` | Not Found |
+| <a id="s-948f582d708f"></a>`500` | Internal Server Error |
 
 ## Maintained corroboration
 
@@ -52,19 +53,19 @@ Get Retrieval Cache Object
 
 ## Governing policies
 
-- `compatibility/http-api/v1`
+- <a id="pa-2d3d7cb50aa3"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0ba)
 
 ## Evidence
 
 ### Qualification
 
-- `make operation-qualification`
-- `make compose-smoke`
+- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459fb8)
+- [make compose-smoke](../../../evidence/sources.md#q-413b0b241ba8)
 
 ### Executable sources
 
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `openapi:riverhog` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
+- [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc960) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
 
 ### Machine authority
 

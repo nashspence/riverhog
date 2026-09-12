@@ -8,26 +8,27 @@ Seal Transform Capability Artifacts
 
 | Audit field | Value |
 |---|---|
-| Authority | `riverhog` |
-| Interface | `http` |
-| Family | `collection-processing-claims` |
+| Authority | [riverhog](../index.md) |
+| Interface | [http](index.md) |
+| Family | [collection-processing-claims](families/collection-processing-claims/index.md) |
 | Contract elements | 1 |
 | Extent decisions | 1 |
 
 ## External contract
 
-- `operationId`: seal_transform_capability_artifacts
-- `summary`: Seal Transform Capability Artifacts
-- `security`: `[{"HTTPBearer": []}]`
+<a id="s-96e665725435"></a>
+- <a id="s-7d42e7a5feb9"></a>`operationId`: seal_transform_capability_artifacts
+- <a id="s-495f2933da69"></a>`summary`: Seal Transform Capability Artifacts
+- <a id="s-5e482a2c546e"></a>`security`: `[{"HTTPBearer": []}]`
 
 ### Parameters
 
 | Name | In | Required | Schema |
 |---|---|---:|---|
-| `claim_id` | path | yes | type="string"; pattern="^[0-9a-f]{64}$" |
-| `capability_id` | path | yes | type="string" |
+| <a id="s-a77e4086ba74"></a>`claim_id` | path | yes | type="string"; pattern="^[0-9a-f]{64}$" |
+| <a id="s-5564f94db3c2"></a>`capability_id` | path | yes | type="string" |
 
-### Request body
+### <a id="s-740e76aa1890"></a>Request body
 
 `{"content": {"application/json": {"schema": {"$ref": "#/components/schemas/ProcessingClaimFenceDocument"}}}, "required": true}`
 
@@ -35,17 +36,21 @@ Seal Transform Capability Artifacts
 
 | Status | Description |
 |---|---|
-| `200` | Successful Response |
-| `400` | Bad Request |
-| `401` | Unauthorized |
-| `403` | Forbidden |
-| `500` | Internal Server Error |
+| <a id="s-52c6a2aa5e26"></a>`200` | Successful Response |
+| <a id="s-5e78616014c8"></a>`400` | Bad Request |
+| <a id="s-c16d957b8678"></a>`401` | Unauthorized |
+| <a id="s-148fc325be18"></a>`403` | Forbidden |
+| <a id="s-3c05b5acb70c"></a>`500` | Internal Server Error |
 
 ### Progression, limits, and lifecycle
 
-| Dimension | Unit | Policy | Bounds or reason |
-|---|---|---|---|
-| length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
+#### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
+
+Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"}
+
+| Applies to | Contract | Bounds or reason |
+|---|---|---|
+| <a id="s-f5b80bff84dd"></a>parameter claim_id | `length · characters · fixed` | shared above |
 
 ## Maintained corroboration
 
@@ -61,20 +66,20 @@ Seal Transform Capability Artifacts
 
 ## Governing policies
 
-- `compatibility/http-api/v1`
-- `extent-rule/schema-bound/v1`
+- <a id="pa-5e6f59742beb"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0ba)
+- <a id="pa-d58e367d489d"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
 
 ## Evidence
 
 ### Qualification
 
-- `make operation-qualification`
-- `make compose-smoke`
+- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459fb8)
+- [make compose-smoke](../../../evidence/sources.md#q-413b0b241ba8)
 
 ### Executable sources
 
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `openapi:riverhog` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
+- [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc960) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
 
 ### Machine authority
 

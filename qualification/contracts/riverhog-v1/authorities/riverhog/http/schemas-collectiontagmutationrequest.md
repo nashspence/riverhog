@@ -8,33 +8,36 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Audit field | Value |
 |---|---|
-| Authority | `riverhog` |
-| Interface | `http` |
-| Family | `schemas` |
+| Authority | [riverhog](../index.md) |
+| Interface | [http](index.md) |
+| Family | [schemas](families/schemas/index.md) |
 | Contract elements | 1 |
 | Extent decisions | 3 |
 
 ## External contract
 
-- `title`: CollectionTagMutationRequest
-- `type`: object
+<a id="s-b4c101929169"></a>
+- <a id="s-7c61c1615e39"></a>`title`: CollectionTagMutationRequest
+- <a id="s-e89d2a522126"></a>`type`: object
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| `expected_revision` | yes | type="integer"; minimum=1; maximum=9007199254740991 |  |
-| `expected_tag_set_identity` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| `operation_id` | yes | type="string"; minLength=1; maxLength=256; pattern="^\\S(?:[\\s\\S]*\\S)?$" |  |
-| `tag` | yes | #/components/schemas/CollectionTag |  |
+| <a id="s-8fd34b59f5fb"></a>`expected_revision` | yes | type="integer"; minimum=1; maximum=9007199254740991 |  |
+| <a id="s-a799f22e274e"></a>`expected_tag_set_identity` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-6dd84f6a27f9"></a>`operation_id` | yes | type="string"; minLength=1; maxLength=256; pattern="^\\S(?:[\\s\\S]*\\S)?$" |  |
+| <a id="s-39c36b25556e"></a>`tag` | yes | #/components/schemas/CollectionTag |  |
 
 ### Progression, limits, and lifecycle
 
-| Dimension | Unit | Policy | Bounds or reason |
-|---|---|---|---|
-| value | schema-value | `contract_max` | maximum=9007199254740991, minimum=1, reason=schema-maximum |
-| length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
-| length | characters | `contract_max` | maximum=256, minimum=1, reason=schema-maximum |
+#### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
+
+| Applies to | Contract | Bounds or reason |
+|---|---|---|
+| [field expected_revision](#s-8fd34b59f5fb) | `value · schema-value · contract_max` | maximum=9007199254740991; minimum=1; reason="schema-maximum" |
+| [field expected_tag_set_identity](#s-a799f22e274e) | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
+| [field operation_id](#s-6dd84f6a27f9) | `length · characters · contract_max` | maximum=256; minimum=1; reason="schema-maximum" |
 
 ## Maintained corroboration
 
@@ -44,20 +47,20 @@ Exact externally visible contract owned by this semantic dossier.
 
 ## Governing policies
 
-- `compatibility/http-api/v1`
-- `extent-rule/schema-bound/v1`
+- <a id="pa-609864da8652"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0ba)
+- <a id="pa-d9420140fa1c"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
 
 ## Evidence
 
 ### Qualification
 
-- `make operation-qualification`
-- `make compose-smoke`
+- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459fb8)
+- [make compose-smoke](../../../evidence/sources.md#q-413b0b241ba8)
 
 ### Executable sources
 
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `openapi:riverhog` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
+- [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc960) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
 
 ### Machine authority
 

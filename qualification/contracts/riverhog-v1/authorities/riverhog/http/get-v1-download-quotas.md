@@ -8,46 +8,58 @@ List Download Quotas
 
 | Audit field | Value |
 |---|---|
-| Authority | `riverhog` |
-| Interface | `http` |
-| Family | `download-quotas` |
+| Authority | [riverhog](../index.md) |
+| Interface | [http](index.md) |
+| Family | [download-quotas](families/download-quotas/index.md) |
 | Contract elements | 1 |
 | Extent decisions | 2 |
 
 ## External contract
 
-- `operationId`: list_download_quotas
-- `summary`: List Download Quotas
-- `security`: `[{"HTTPBearer": []}]`
+<a id="s-64ebb1eab62d"></a>
+- <a id="s-db2b3b65b9ae"></a>`operationId`: list_download_quotas
+- <a id="s-887bd4832def"></a>`summary`: List Download Quotas
+- <a id="s-b2ea6e55520c"></a>`security`: `[{"HTTPBearer": []}]`
 
 ### Parameters
 
 | Name | In | Required | Schema |
 |---|---|---:|---|
-| `page_size` | query | no | type="integer"; minimum=1; maximum=100 |
-| `page_token` | query | no | anyOf=#/components/schemas/BrowsePageToken \| type="null" |
-| `sort` | query | no | $ref="#/components/schemas/DownloadQuotaSort" |
-| `order` | query | no | $ref="#/components/schemas/SortOrder" |
-| `q` | query | no | anyOf=#/components/schemas/BrowseQuery \| type="null" |
-| `app` | query | no | anyOf=#/components/schemas/ApplicationName \| type="null" |
-| `active` | query | no | anyOf=type="boolean" \| type="null" |
+| <a id="s-bf5a76fe35a6"></a>`page_size` | query | no | type="integer"; minimum=1; maximum=100 |
+| <a id="s-5b0ea802cc9a"></a>`page_token` | query | no | anyOf=#/components/schemas/BrowsePageToken \| type="null" |
+| <a id="s-1e0b21dfc5e5"></a>`sort` | query | no | $ref="#/components/schemas/DownloadQuotaSort" |
+| <a id="s-b28e08ffe93a"></a>`order` | query | no | $ref="#/components/schemas/SortOrder" |
+| <a id="s-b29b8e0ba280"></a>`q` | query | no | anyOf=#/components/schemas/BrowseQuery \| type="null" |
+| <a id="s-06c5d460e7af"></a>`app` | query | no | anyOf=#/components/schemas/ApplicationName \| type="null" |
+| <a id="s-7a2a85af8b64"></a>`active` | query | no | anyOf=type="boolean" \| type="null" |
 
 ### Responses
 
 | Status | Description |
 |---|---|
-| `200` | Successful Response |
-| `400` | Bad Request |
-| `401` | Unauthorized |
-| `403` | Forbidden |
-| `500` | Internal Server Error |
+| <a id="s-514d9c191d29"></a>`200` | Successful Response |
+| <a id="s-33a1603a36cb"></a>`400` | Bad Request |
+| <a id="s-6ca38d9b2638"></a>`401` | Unauthorized |
+| <a id="s-8e2a78f382b6"></a>`403` | Forbidden |
+| <a id="s-aa1663d8f474"></a>`500` | Internal Server Error |
 
 ### Progression, limits, and lifecycle
 
-| Dimension | Unit | Policy | Bounds or reason |
-|---|---|---|---|
-| logical-result-cardinality | items | `segmented_no_total_max` | reason=bounded-route-progression |
-| value | schema-value | `contract_max` | maximum=100, minimum=1, reason=schema-maximum |
+#### [extent-rule/route-progression/v1](../../../policies/index.md#p-6b76b527cb21)
+
+Shared facts for every subject below: progression={"default_page_size":25,"kind":"mutable-browse","maximum_page_size":100,"next_page_token_field":"next_page_token","page_size_parameter":"page_size","page_token_parameter":"page_token"}; reason="bounded-route-progression"
+
+| Applies to | Contract | Bounds or reason |
+|---|---|---|
+| [GET /v1/download-quotas](#s-64ebb1eab62d) | `logical-result-cardinality · items · segmented_no_total_max` | shared above |
+
+#### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
+
+Shared facts for every subject below: maximum=100; minimum=1; reason="schema-maximum"
+
+| Applies to | Contract | Bounds or reason |
+|---|---|---|
+| <a id="s-a39854d6cdd2"></a>parameter page_size | `value · schema-value · contract_max` | shared above |
 
 ## Maintained corroboration
 
@@ -67,21 +79,21 @@ List Download Quotas
 
 ## Governing policies
 
-- `compatibility/http-api/v1`
-- `extent-rule/route-progression/v1`
-- `extent-rule/schema-bound/v1`
+- <a id="pa-1ed9671bc6fb"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0ba)
+- <a id="pa-d12792399738"></a>[extent-rule/route-progression/v1](../../../policies/index.md#p-6b76b527cb21)
+- <a id="pa-e94f39e191a9"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
 
 ## Evidence
 
 ### Qualification
 
-- `make operation-qualification`
-- `make compose-smoke`
+- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459fb8)
+- [make compose-smoke](../../../evidence/sources.md#q-413b0b241ba8)
 
 ### Executable sources
 
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `openapi:riverhog` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
+- [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc960) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
 
 ### Machine authority
 

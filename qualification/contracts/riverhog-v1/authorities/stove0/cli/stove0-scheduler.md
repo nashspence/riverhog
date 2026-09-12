@@ -8,31 +8,31 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Audit field | Value |
 |---|---|
-| Authority | `stove0` |
-| Interface | `cli` |
-| Family | `scheduler` |
+| Authority | [stove0](../index.md) |
+| Interface | [cli](index.md) |
+| Family | [scheduler](families/scheduler/index.md) |
 | Contract elements | 1 |
 | Extent decisions | 0 |
 
 ## External contract
 
-- Parser name: `scheduler`
+- <a id="s-23be569f9182"></a>Parser name: `scheduler`
 
 ## Governing policies
 
-- `compatibility/cli/v1`
+- <a id="pa-466a9465dca7"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de7f)
 
 ## Evidence
 
 ### Qualification
 
-- `make dist-smoke`
-- `make operation-qualification`
+- [make dist-smoke](../../../evidence/sources.md#q-0ba2578a3eb7)
+- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459fb8)
 
 ### Executable sources
 
-- `cli:stove0` — `reference/stove0/application/client/src/stove0_cli/main.py::<module>`
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
+- [cli:stove0](../../../evidence/sources.md#src-6203ae7d8812) — `reference/stove0/application/client/src/stove0_cli/main.py::<module>`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
 
 ### Machine authority
 

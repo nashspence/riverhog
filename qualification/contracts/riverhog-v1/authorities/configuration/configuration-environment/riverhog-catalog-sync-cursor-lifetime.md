@@ -8,34 +8,35 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Audit field | Value |
 |---|---|
-| Authority | `configuration` |
-| Interface | `configuration-environment` |
-| Family | `variables` |
+| Authority | [configuration](../index.md) |
+| Interface | [configuration-environment](index.md) |
+| Family | [variables](families/variables/index.md) |
 | Contract elements | 1 |
 | Extent decisions | 0 |
 
 ## External contract
 
+<a id="s-d7a4e6e0e880"></a>
 | Field | Shape |
 |---|---|
-| `consumers` | ["riverhog-server"] |
-| `name` | "RIVERHOG_CATALOG_SYNC_CURSOR_LIFETIME" |
+| <a id="s-a5e7a20adbee"></a>`consumers` | ["riverhog-server"] |
+| <a id="s-495c4fd74d13"></a>`name` | "RIVERHOG_CATALOG_SYNC_CURSOR_LIFETIME" |
 
 ## Governing policies
 
-- `compatibility/configuration/v1`
+- <a id="pa-7809adc88b12"></a>[compatibility/configuration/v1](../../../policies/index.md#p-8dc08bb46173)
 
 ## Evidence
 
 ### Qualification
 
-- `make unit`
-- `make compose-smoke`
+- [make unit](../../../evidence/sources.md#q-ce47068f504c)
+- [make compose-smoke](../../../evidence/sources.md#q-413b0b241ba8)
 
 ### Executable sources
 
-- `configuration-environment:RIVERHOG_CATALOG_SYNC_CURSOR_LIFETIME` — `configuration-environment:RIVERHOG_CATALOG_SYNC_CURSOR_LIFETIME`
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
+- [configuration-environment:RIVERHOG_CATALOG_SYNC_CURSOR_LIFETIME](../../../evidence/sources.md#src-00e8bb321ec5) — `configuration-environment:RIVERHOG_CATALOG_SYNC_CURSOR_LIFETIME`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
 
 ### Machine authority
 

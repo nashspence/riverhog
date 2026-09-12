@@ -8,46 +8,50 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Audit field | Value |
 |---|---|
-| Authority | `gogurt` |
-| Interface | `cli` |
-| Family | `provider` |
+| Authority | [gogurt](../index.md) |
+| Interface | [cli](index.md) |
+| Family | [provider](index.md#f-35c12cf73ea8) |
 | Contract elements | 1 |
 | Extent decisions | 2 |
 
 ## External contract
 
-- Parser name: `list`
+- <a id="s-b69581520f96"></a>Parser name: `list`
 
 ### Parameters
 
 | Name | Kind | Required | Type | Options |
 |---|---|---:|---|---|
-| `ids` | TyperOption | no | {'class': 'typer._click.types.BoolParamType', 'name': 'boolean'} | --ids |
-| `json_mode` | TyperOption | no | {'class': 'typer._click.types.BoolParamType', 'name': 'boolean'} | --json |
+| <a id="s-39f1dc9eb203"></a>`ids` | TyperOption | no | {'class': 'typer._click.types.BoolParamType', 'name': 'boolean'} | --ids |
+| <a id="s-20a1505b6584"></a>`json_mode` | TyperOption | no | {'class': 'typer._click.types.BoolParamType', 'name': 'boolean'} | --json |
 
 ### Progression, limits, and lifecycle
 
-| Dimension | Unit | Policy | Bounds or reason |
-|---|---|---|---|
-| cardinality | values-per-occurrence | `fixed` | maximum=1, minimum=1, reason=fixed-command-argument-arity |
-| cardinality | values-per-occurrence | `fixed` | maximum=1, minimum=1, reason=fixed-command-argument-arity |
+#### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
+
+Shared facts for every subject below: maximum=1; minimum=1; reason="fixed-command-argument-arity"; source_constraint={"field":"nargs"}
+
+| Applies to | Contract | Bounds or reason |
+|---|---|---|
+| [CLI parameter --ids](#s-39f1dc9eb203) | `cardinality · values-per-occurrence · fixed` | shared above |
+| [CLI parameter --json](#s-20a1505b6584) | `cardinality · values-per-occurrence · fixed` | shared above |
 
 ## Governing policies
 
-- `compatibility/cli/v1`
-- `extent-rule/schema-bound/v1`
+- <a id="pa-6df96fc2aa48"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de7f)
+- <a id="pa-3feca9cfc7a0"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
 
 ## Evidence
 
 ### Qualification
 
-- `make dist-smoke`
-- `make operation-qualification`
+- [make dist-smoke](../../../evidence/sources.md#q-0ba2578a3eb7)
+- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459fb8)
 
 ### Executable sources
 
-- `cli:gogurt` — `reference/gogurt/application/src/gogurt/cli.py::<module>`
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
+- [cli:gogurt](../../../evidence/sources.md#src-3b2297c37dfe) — `reference/gogurt/application/src/gogurt/cli.py::<module>`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
 
 ### Machine authority
 

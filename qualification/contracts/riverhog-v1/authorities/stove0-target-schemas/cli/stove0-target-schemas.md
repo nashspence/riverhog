@@ -8,45 +8,49 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Audit field | Value |
 |---|---|
-| Authority | `stove0-target-schemas` |
-| Interface | `cli` |
-| Family | `root` |
+| Authority | [stove0-target-schemas](../index.md) |
+| Interface | [cli](index.md) |
+| Family | [root](index.md#f-746ade78675c) |
 | Contract elements | 1 |
 | Extent decisions | 1 |
 
 ## External contract
 
-- Parser name: `stove0-target-schemas`
+- <a id="s-bf1e05e507da"></a>Parser name: `stove0-target-schemas`
 
 ### Parameters
 
 | Name | Kind | Required | Type | Options |
 |---|---|---:|---|---|
-| `` | _StoreAction | no | Path | --output |
-| `` | _StoreTrueAction | no |  | --compact |
+| <a id="s-2ed9764c8b0a"></a>`` | _StoreAction | no | Path | --output |
+| <a id="s-e30f06cf8192"></a>`` | _StoreTrueAction | no |  | --compact |
 
 ### Progression, limits, and lifecycle
 
-| Dimension | Unit | Policy | Bounds or reason |
-|---|---|---|---|
-| cardinality | values-per-occurrence | `fixed` | maximum=0, minimum=0, reason=fixed-command-argument-arity |
+#### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
+
+Shared facts for every subject below: maximum=0; minimum=0; reason="fixed-command-argument-arity"; source_constraint={"field":"nargs"}
+
+| Applies to | Contract | Bounds or reason |
+|---|---|---|
+| [CLI parameter --compact](#s-e30f06cf8192) | `cardinality · values-per-occurrence · fixed` | shared above |
 
 ## Governing policies
 
-- `compatibility/cli/v1`
-- `extent-rule/schema-bound/v1`
+- <a id="pa-1dd3b80293dd"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de7f)
+- <a id="pa-c62f66069fe1"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
 
 ## Evidence
 
 ### Qualification
 
-- `make dist-smoke`
-- `make operation-qualification`
+- [make dist-smoke](../../../evidence/sources.md#q-0ba2578a3eb7)
+- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459fb8)
 
 ### Executable sources
 
-- `cli:stove0-target-schemas` — `reference/stove0/packages/target-support/src/stove0_target_support/schemas.py::<module>`
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
+- [cli:stove0-target-schemas](../../../evidence/sources.md#src-71d64b87b598) — `reference/stove0/packages/target-support/src/stove0_target_support/schemas.py::<module>`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
 
 ### Machine authority
 

@@ -8,47 +8,52 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Audit field | Value |
 |---|---|
-| Authority | `riverhog` |
-| Interface | `http` |
-| Family | `schemas` |
+| Authority | [riverhog](../index.md) |
+| Interface | [http](index.md) |
+| Family | [schemas](families/schemas/index.md) |
 | Contract elements | 1 |
 | Extent decisions | 1 |
 
 ## External contract
 
-- `title`: RecipeIdentityDocument
-- `type`: object
+<a id="s-ea79e7a45952"></a>
+- <a id="s-dea0e54233b5"></a>`title`: RecipeIdentityDocument
+- <a id="s-9dcef87c0d04"></a>`type`: object
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| `id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
-| `revision` | yes | type="integer"; minimum=1 |  |
-| `sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-f07e8a5b5d8d"></a>`id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
+| <a id="s-ad7ed5d2c1d4"></a>`revision` | yes | type="integer"; minimum=1 |  |
+| <a id="s-e06a4072d5ca"></a>`sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 
 ### Progression, limits, and lifecycle
 
-| Dimension | Unit | Policy | Bounds or reason |
-|---|---|---|---|
-| length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
+#### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
+
+Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"}
+
+| Applies to | Contract | Bounds or reason |
+|---|---|---|
+| [field sha256](#s-e06a4072d5ca) | `length · characters · fixed` | shared above |
 
 ## Governing policies
 
-- `compatibility/http-api/v1`
-- `extent-rule/schema-bound/v1`
+- <a id="pa-fbf163b37ad8"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0ba)
+- <a id="pa-9f652f501d62"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
 
 ## Evidence
 
 ### Qualification
 
-- `make operation-qualification`
-- `make compose-smoke`
+- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459fb8)
+- [make compose-smoke](../../../evidence/sources.md#q-413b0b241ba8)
 
 ### Executable sources
 
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `openapi:riverhog` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
+- [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc960) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
 
 ### Machine authority
 

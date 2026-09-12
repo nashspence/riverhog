@@ -8,24 +8,25 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Audit field | Value |
 |---|---|
-| Authority | `riverhog` |
-| Interface | `http` |
-| Family | `schemas` |
+| Authority | [riverhog](../index.md) |
+| Interface | [http](index.md) |
+| Family | [schemas](families/schemas/index.md) |
 | Contract elements | 1 |
 | Extent decisions | 0 |
 
 ## External contract
 
-- `title`: AppAccessSetOut
-- `type`: object
+<a id="s-cc50975939f1"></a>
+- <a id="s-c8eb7eeab2d1"></a>`title`: AppAccessSetOut
+- <a id="s-d7ff4023f1ce"></a>`type`: object
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| `access` | yes | #/components/schemas/ApplicationAccessGrantSet |  |
-| `app` | yes | #/components/schemas/ApplicationName |  |
-| `key_id` | yes | #/components/schemas/ApplicationKeyId |  |
+| <a id="s-090ca1903c27"></a>`access` | yes | #/components/schemas/ApplicationAccessGrantSet |  |
+| <a id="s-0c227a46cf2a"></a>`app` | yes | #/components/schemas/ApplicationName |  |
+| <a id="s-b5f450fea36f"></a>`key_id` | yes | #/components/schemas/ApplicationKeyId |  |
 
 ## Maintained corroboration
 
@@ -37,19 +38,19 @@ Exact externally visible contract owned by this semantic dossier.
 
 ## Governing policies
 
-- `compatibility/http-api/v1`
+- <a id="pa-e879a73710c0"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0ba)
 
 ## Evidence
 
 ### Qualification
 
-- `make operation-qualification`
-- `make compose-smoke`
+- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459fb8)
+- [make compose-smoke](../../../evidence/sources.md#q-413b0b241ba8)
 
 ### Executable sources
 
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `openapi:riverhog` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
+- [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc960) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
 
 ### Machine authority
 

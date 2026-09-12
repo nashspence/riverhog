@@ -8,40 +8,41 @@ Locate subject-keyed records inside one observer's declared facts schema.
 
 | Audit field | Value |
 |---|---|
-| Authority | `stove0` |
-| Interface | `http` |
-| Family | `schemas` |
+| Authority | [stove0](../index.md) |
+| Interface | [http](index.md) |
+| Family | [schemas](families/schemas/index.md) |
 | Contract elements | 1 |
 | Extent decisions | 0 |
 
 ## External contract
 
-- `title`: ArtifactFactBinding
-- `description`: Locate subject-keyed records inside one observer's declared facts schema.
-- `type`: object
+<a id="s-ceab5b82fbcd"></a>
+- <a id="s-62a5af53344a"></a>`title`: ArtifactFactBinding
+- <a id="s-e417b95fbe65"></a>`description`: Locate subject-keyed records inside one observer's declared facts schema.
+- <a id="s-3dec4792e95a"></a>`type`: object
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| `artifact_id_pointer` | no | type="string"; pattern="^(?:\|/(?:[^~/]\|~[01])*(?:/(?:[^~/]\|~[01])*)*)$" |  |
-| `records_pointer` | yes | type="string"; pattern="^(?:\|/(?:[^~/]\|~[01])*(?:/(?:[^~/]\|~[01])*)*)$" |  |
+| <a id="s-ced3f84eac21"></a>`artifact_id_pointer` | no | type="string"; pattern="^(?:\|/(?:[^~/]\|~[01])*(?:/(?:[^~/]\|~[01])*)*)$" |  |
+| <a id="s-1cd1f7bbbed4"></a>`records_pointer` | yes | type="string"; pattern="^(?:\|/(?:[^~/]\|~[01])*(?:/(?:[^~/]\|~[01])*)*)$" |  |
 
 ## Governing policies
 
-- `compatibility/http-api/v1`
+- <a id="pa-1b089294549d"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0ba)
 
 ## Evidence
 
 ### Qualification
 
-- `make operation-qualification`
-- `make compose-smoke`
+- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459fb8)
+- [make compose-smoke](../../../evidence/sources.md#q-413b0b241ba8)
 
 ### Executable sources
 
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `openapi:stove0` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
+- [openapi:stove0](../../../evidence/sources.md#src-52e6e3212451) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
 
 ### Machine authority
 

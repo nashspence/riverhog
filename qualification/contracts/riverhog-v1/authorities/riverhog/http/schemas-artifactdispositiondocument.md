@@ -8,24 +8,25 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Audit field | Value |
 |---|---|
-| Authority | `riverhog` |
-| Interface | `http` |
-| Family | `schemas` |
+| Authority | [riverhog](../index.md) |
+| Interface | [http](index.md) |
+| Family | [schemas](families/schemas/index.md) |
 | Contract elements | 1 |
 | Extent decisions | 0 |
 
 ## External contract
 
-- `title`: ArtifactDispositionDocument
-- `type`: object
+<a id="s-24a8ecfb8537"></a>
+- <a id="s-48f677b91a89"></a>`title`: ArtifactDispositionDocument
+- <a id="s-517aea0476f2"></a>`type`: object
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| `failure` | no | anyOf=#/components/schemas/ArtifactDispositionFailureDocument \| type="null" |  |
-| `input` | yes | #/components/schemas/ArtifactDispositionInputDocument |  |
-| `status` | yes | type="string"; enum=["transformed","preserved","omitted","rejected"] |  |
+| <a id="s-f848c334947f"></a>`failure` | no | anyOf=#/components/schemas/ArtifactDispositionFailureDocument \| type="null" |  |
+| <a id="s-f7c6e570c32f"></a>`input` | yes | #/components/schemas/ArtifactDispositionInputDocument |  |
+| <a id="s-f50673322391"></a>`status` | yes | type="string"; enum=["transformed","preserved","omitted","rejected"] |  |
 
 ## Maintained corroboration
 
@@ -36,19 +37,19 @@ Exact externally visible contract owned by this semantic dossier.
 
 ## Governing policies
 
-- `compatibility/http-api/v1`
+- <a id="pa-7371be968e7d"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0ba)
 
 ## Evidence
 
 ### Qualification
 
-- `make operation-qualification`
-- `make compose-smoke`
+- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459fb8)
+- [make compose-smoke](../../../evidence/sources.md#q-413b0b241ba8)
 
 ### Executable sources
 
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `openapi:riverhog` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
+- [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc960) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
 
 ### Machine authority
 

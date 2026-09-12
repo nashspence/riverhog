@@ -8,23 +8,24 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Audit field | Value |
 |---|---|
-| Authority | `riverhog` |
-| Interface | `http` |
-| Family | `schemas` |
+| Authority | [riverhog](../index.md) |
+| Interface | [http](index.md) |
+| Family | [schemas](families/schemas/index.md) |
 | Contract elements | 1 |
 | Extent decisions | 0 |
 
 ## External contract
 
-- `title`: MutateAppAccessRequest
-- `type`: object
+<a id="s-3ba8013e137a"></a>
+- <a id="s-433bff20f9c0"></a>`title`: MutateAppAccessRequest
+- <a id="s-9d31a8ba7aed"></a>`type`: object
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| `permission` | yes | #/components/schemas/ApplicationPermission |  |
-| `resource` | no | $ref="#/components/schemas/ApplicationResource" |  |
+| <a id="s-cedbc6789a95"></a>`permission` | yes | #/components/schemas/ApplicationPermission |  |
+| <a id="s-55c7639541be"></a>`resource` | no | $ref="#/components/schemas/ApplicationResource" |  |
 
 ## Maintained corroboration
 
@@ -35,19 +36,19 @@ Exact externally visible contract owned by this semantic dossier.
 
 ## Governing policies
 
-- `compatibility/http-api/v1`
+- <a id="pa-986ec98eea11"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0ba)
 
 ## Evidence
 
 ### Qualification
 
-- `make operation-qualification`
-- `make compose-smoke`
+- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459fb8)
+- [make compose-smoke](../../../evidence/sources.md#q-413b0b241ba8)
 
 ### Executable sources
 
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `openapi:riverhog` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
+- [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc960) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
 
 ### Machine authority
 

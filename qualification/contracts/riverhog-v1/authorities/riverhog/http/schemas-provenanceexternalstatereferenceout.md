@@ -8,32 +8,37 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Audit field | Value |
 |---|---|
-| Authority | `riverhog` |
-| Interface | `http` |
-| Family | `schemas` |
+| Authority | [riverhog](../index.md) |
+| Interface | [http](index.md) |
+| Family | [schemas](families/schemas/index.md) |
 | Contract elements | 1 |
 | Extent decisions | 1 |
 
 ## External contract
 
-- `title`: ProvenanceExternalStateReferenceOut
-- `type`: object
+<a id="s-92a2f30f2751"></a>
+- <a id="s-c0aacb1f95ba"></a>`title`: ProvenanceExternalStateReferenceOut
+- <a id="s-b150d10b08e9"></a>`type`: object
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| `entry_id` | yes | #/components/schemas/ProvenanceEntryId |  |
-| `entry_json_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| `from_journal_id` | yes | #/components/schemas/ProvenanceJournalId |  |
-| `state_id` | yes | #/components/schemas/ProvenanceStateId |  |
-| `to_journal_id` | yes | #/components/schemas/ProvenanceJournalId |  |
+| <a id="s-4ef91bcc8e42"></a>`entry_id` | yes | #/components/schemas/ProvenanceEntryId |  |
+| <a id="s-889c79b7b371"></a>`entry_json_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-451589e10192"></a>`from_journal_id` | yes | #/components/schemas/ProvenanceJournalId |  |
+| <a id="s-1913a68c5229"></a>`state_id` | yes | #/components/schemas/ProvenanceStateId |  |
+| <a id="s-f5a4b84f5e47"></a>`to_journal_id` | yes | #/components/schemas/ProvenanceJournalId |  |
 
 ### Progression, limits, and lifecycle
 
-| Dimension | Unit | Policy | Bounds or reason |
-|---|---|---|---|
-| length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
+#### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
+
+Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"}
+
+| Applies to | Contract | Bounds or reason |
+|---|---|---|
+| [field entry_json_sha256](#s-889c79b7b371) | `length · characters · fixed` | shared above |
 
 ## Maintained corroboration
 
@@ -45,20 +50,20 @@ Exact externally visible contract owned by this semantic dossier.
 
 ## Governing policies
 
-- `compatibility/http-api/v1`
-- `extent-rule/schema-bound/v1`
+- <a id="pa-1cd077740c51"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0ba)
+- <a id="pa-c138c2518a56"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
 
 ## Evidence
 
 ### Qualification
 
-- `make operation-qualification`
-- `make compose-smoke`
+- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459fb8)
+- [make compose-smoke](../../../evidence/sources.md#q-413b0b241ba8)
 
 ### Executable sources
 
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `openapi:riverhog` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
+- [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc960) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
 
 ### Machine authority
 

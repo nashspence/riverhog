@@ -8,35 +8,47 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Audit field | Value |
 |---|---|
-| Authority | `riverhog` |
-| Interface | `http` |
-| Family | `schemas` |
+| Authority | [riverhog](../index.md) |
+| Interface | [http](index.md) |
+| Family | [schemas](families/schemas/index.md) |
 | Contract elements | 1 |
 | Extent decisions | 2 |
 
 ## External contract
 
-- `title`: AppAccessListOut
-- `type`: object
+<a id="s-dd90b8f9faf4"></a>
+- <a id="s-8f19d8bf6148"></a>`title`: AppAccessListOut
+- <a id="s-9594c65264a9"></a>`type`: object
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| `access` | yes | type="array"; items=(#/components/schemas/AppAccessListItemOut) |  |
-| `filters` | yes | #/components/schemas/AppAccessListFiltersOut |  |
-| `next_page_token` | yes | anyOf=#/components/schemas/BrowsePageToken \| type="null" |  |
-| `order` | yes | #/components/schemas/SortOrder |  |
-| `page_size` | yes | type="integer"; minimum=1; maximum=100 |  |
-| `query` | yes | anyOf=type="string" \| type="null" |  |
-| `sort` | yes | #/components/schemas/ApplicationAccessSort |  |
+| <a id="s-227c4d3cb0b1"></a>`access` | yes | type="array"; items=(#/components/schemas/AppAccessListItemOut) |  |
+| <a id="s-3a7cadd94653"></a>`filters` | yes | #/components/schemas/AppAccessListFiltersOut |  |
+| <a id="s-b1450b3d35c5"></a>`next_page_token` | yes | anyOf=#/components/schemas/BrowsePageToken \| type="null" |  |
+| <a id="s-aa5e6807e0cf"></a>`order` | yes | #/components/schemas/SortOrder |  |
+| <a id="s-5dabba4ac6c4"></a>`page_size` | yes | type="integer"; minimum=1; maximum=100 |  |
+| <a id="s-d9fbae8b3256"></a>`query` | yes | anyOf=type="string" \| type="null" |  |
+| <a id="s-49383a15981e"></a>`sort` | yes | #/components/schemas/ApplicationAccessSort |  |
 
 ### Progression, limits, and lifecycle
 
-| Dimension | Unit | Policy | Bounds or reason |
-|---|---|---|---|
-| cardinality | items | `segmented_no_total_max` | reason=bounded-route-page |
-| value | schema-value | `contract_max` | maximum=100, minimum=1, reason=schema-maximum |
+#### [extent-rule/route-progression/v1](../../../policies/index.md#p-6b76b527cb21)
+
+Shared facts for every subject below: progression={"default_page_size":25,"kind":"mutable-browse","maximum_page_size":100,"next_page_token_field":"next_page_token","page_size_parameter":"page_size","page_token_parameter":"page_token"}; reason="bounded-route-page"
+
+| Applies to | Contract | Bounds or reason |
+|---|---|---|
+| [field access](#s-227c4d3cb0b1) | `cardinality · items · segmented_no_total_max` | shared above |
+
+#### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
+
+Shared facts for every subject below: maximum=100; minimum=1; reason="schema-maximum"
+
+| Applies to | Contract | Bounds or reason |
+|---|---|---|
+| [field page_size](#s-5dabba4ac6c4) | `value · schema-value · contract_max` | shared above |
 
 ## Maintained corroboration
 
@@ -50,21 +62,21 @@ Exact externally visible contract owned by this semantic dossier.
 
 ## Governing policies
 
-- `compatibility/http-api/v1`
-- `extent-rule/route-progression/v1`
-- `extent-rule/schema-bound/v1`
+- <a id="pa-d7a5c53072f8"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0ba)
+- <a id="pa-3d56d9348064"></a>[extent-rule/route-progression/v1](../../../policies/index.md#p-6b76b527cb21)
+- <a id="pa-a6fc96c85231"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
 
 ## Evidence
 
 ### Qualification
 
-- `make operation-qualification`
-- `make compose-smoke`
+- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459fb8)
+- [make compose-smoke](../../../evidence/sources.md#q-413b0b241ba8)
 
 ### Executable sources
 
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `openapi:riverhog` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
+- [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc960) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
 
 ### Machine authority
 

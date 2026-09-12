@@ -8,34 +8,35 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Audit field | Value |
 |---|---|
-| Authority | `configuration` |
-| Interface | `configuration-environment` |
-| Family | `variables` |
+| Authority | [configuration](../index.md) |
+| Interface | [configuration-environment](index.md) |
+| Family | [variables](families/variables/index.md) |
 | Contract elements | 1 |
 | Extent decisions | 0 |
 
 ## External contract
 
+<a id="s-51bdf3ea7314"></a>
 | Field | Shape |
 |---|---|
-| `consumers` | ["riverhog-server"] |
-| `name` | "RIVERHOG_RETRIEVAL_CACHE_STORES" |
+| <a id="s-46d639723248"></a>`consumers` | ["riverhog-server"] |
+| <a id="s-cb037aed18f4"></a>`name` | "RIVERHOG_RETRIEVAL_CACHE_STORES" |
 
 ## Governing policies
 
-- `compatibility/configuration/v1`
+- <a id="pa-4a7239ecd745"></a>[compatibility/configuration/v1](../../../policies/index.md#p-8dc08bb46173)
 
 ## Evidence
 
 ### Qualification
 
-- `make unit`
-- `make compose-smoke`
+- [make unit](../../../evidence/sources.md#q-ce47068f504c)
+- [make compose-smoke](../../../evidence/sources.md#q-413b0b241ba8)
 
 ### Executable sources
 
-- `configuration-environment:RIVERHOG_RETRIEVAL_CACHE_STORES` — `configuration-environment:RIVERHOG_RETRIEVAL_CACHE_STORES`
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
+- [configuration-environment:RIVERHOG_RETRIEVAL_CACHE_STORES](../../../evidence/sources.md#src-0b55d52d12ac) — `configuration-environment:RIVERHOG_RETRIEVAL_CACHE_STORES`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
 
 ### Machine authority
 

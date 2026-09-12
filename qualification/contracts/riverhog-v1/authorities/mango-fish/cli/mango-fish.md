@@ -8,49 +8,53 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Audit field | Value |
 |---|---|
-| Authority | `mango-fish` |
-| Interface | `cli` |
-| Family | `root` |
+| Authority | [mango-fish](../index.md) |
+| Interface | [cli](index.md) |
+| Family | [root](index.md#f-e95e81e4dd95) |
 | Contract elements | 1 |
 | Extent decisions | 3 |
 
 ## External contract
 
-- Parser name: `mango-fish`
+- <a id="s-8e837eac2f2f"></a>Parser name: `mango-fish`
 
 ### Parameters
 
 | Name | Kind | Required | Type | Options |
 |---|---|---:|---|---|
-| `` | _VersionAction | no |  | --version |
-| `` | _StoreAction | yes | Path | --config |
-| `` | _StoreTrueAction | no |  | --check |
-| `` | _StoreTrueAction | no |  | --once |
+| <a id="s-1368f192cf16"></a>`` | _VersionAction | no |  | --version |
+| <a id="s-b3bbac485dbf"></a>`` | _StoreAction | yes | Path | --config |
+| <a id="s-55e6dc25a495"></a>`` | _StoreTrueAction | no |  | --check |
+| <a id="s-04b810bfdff9"></a>`` | _StoreTrueAction | no |  | --once |
 
 ### Progression, limits, and lifecycle
 
-| Dimension | Unit | Policy | Bounds or reason |
-|---|---|---|---|
-| cardinality | values-per-occurrence | `fixed` | maximum=0, minimum=0, reason=fixed-command-argument-arity |
-| cardinality | values-per-occurrence | `fixed` | maximum=0, minimum=0, reason=fixed-command-argument-arity |
-| cardinality | values-per-occurrence | `fixed` | maximum=0, minimum=0, reason=fixed-command-argument-arity |
+#### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
+
+Shared facts for every subject below: maximum=0; minimum=0; reason="fixed-command-argument-arity"; source_constraint={"field":"nargs"}
+
+| Applies to | Contract | Bounds or reason |
+|---|---|---|
+| [CLI parameter --version](#s-1368f192cf16) | `cardinality · values-per-occurrence · fixed` | shared above |
+| [CLI parameter --check](#s-55e6dc25a495) | `cardinality · values-per-occurrence · fixed` | shared above |
+| [CLI parameter --once](#s-04b810bfdff9) | `cardinality · values-per-occurrence · fixed` | shared above |
 
 ## Governing policies
 
-- `compatibility/cli/v1`
-- `extent-rule/schema-bound/v1`
+- <a id="pa-6b1303b6ff11"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de7f)
+- <a id="pa-03e056b27932"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
 
 ## Evidence
 
 ### Qualification
 
-- `make dist-smoke`
-- `make operation-qualification`
+- [make dist-smoke](../../../evidence/sources.md#q-0ba2578a3eb7)
+- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459fb8)
 
 ### Executable sources
 
-- `cli:mango-fish` — `reference/riverhog/applications/mango-fish/src/mango_fish/cli.py::<module>`
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
+- [cli:mango-fish](../../../evidence/sources.md#src-3dcd5eedf2a0) — `reference/riverhog/applications/mango-fish/src/mango_fish/cli.py::<module>`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
 
 ### Machine authority
 

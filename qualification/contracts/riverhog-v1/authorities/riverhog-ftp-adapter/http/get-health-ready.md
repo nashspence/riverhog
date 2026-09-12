@@ -8,23 +8,24 @@ Health Ready
 
 | Audit field | Value |
 |---|---|
-| Authority | `riverhog-ftp-adapter` |
-| Interface | `http` |
-| Family | `health` |
+| Authority | [riverhog-ftp-adapter](../index.md) |
+| Interface | [http](index.md) |
+| Family | [health](index.md#f-290093cc876a) |
 | Contract elements | 1 |
 | Extent decisions | 0 |
 
 ## External contract
 
-- `operationId`: ftp_adapter_health_ready
-- `summary`: Health Ready
+<a id="s-46355a8b994c"></a>
+- <a id="s-07449a20f62e"></a>`operationId`: ftp_adapter_health_ready
+- <a id="s-d03f68c7018a"></a>`summary`: Health Ready
 
 ### Responses
 
 | Status | Description |
 |---|---|
-| `200` | Successful Response |
-| `503` | Service Unavailable |
+| <a id="s-6d25b467efab"></a>`200` | Successful Response |
+| <a id="s-fb421d46a9e0"></a>`503` | Service Unavailable |
 
 ## Maintained corroboration
 
@@ -39,19 +40,19 @@ Health Ready
 
 ## Governing policies
 
-- `compatibility/http-api/v1`
+- <a id="pa-4e707ea273ca"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0ba)
 
 ## Evidence
 
 ### Qualification
 
-- `make operation-qualification`
-- `make compose-smoke`
+- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459fb8)
+- [make compose-smoke](../../../evidence/sources.md#q-413b0b241ba8)
 
 ### Executable sources
 
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `openapi:riverhog-ftp-adapter` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
+- [openapi:riverhog-ftp-adapter](../../../evidence/sources.md#src-c3a51ac29ac7) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
 
 ### Machine authority
 

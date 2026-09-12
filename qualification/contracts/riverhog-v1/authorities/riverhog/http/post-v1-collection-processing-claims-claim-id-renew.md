@@ -8,25 +8,26 @@ Renew Processing Claim
 
 | Audit field | Value |
 |---|---|
-| Authority | `riverhog` |
-| Interface | `http` |
-| Family | `collection-processing-claims` |
+| Authority | [riverhog](../index.md) |
+| Interface | [http](index.md) |
+| Family | [collection-processing-claims](families/collection-processing-claims/index.md) |
 | Contract elements | 1 |
 | Extent decisions | 1 |
 
 ## External contract
 
-- `operationId`: renew_processing_claim
-- `summary`: Renew Processing Claim
-- `security`: `[{"HTTPBearer": []}]`
+<a id="s-d31deddf8217"></a>
+- <a id="s-b183cbd7fccb"></a>`operationId`: renew_processing_claim
+- <a id="s-c1337a9b2302"></a>`summary`: Renew Processing Claim
+- <a id="s-ea7943f1c1e9"></a>`security`: `[{"HTTPBearer": []}]`
 
 ### Parameters
 
 | Name | In | Required | Schema |
 |---|---|---:|---|
-| `claim_id` | path | yes | type="string"; pattern="^[0-9a-f]{64}$" |
+| <a id="s-84b65d13d3d5"></a>`claim_id` | path | yes | type="string"; pattern="^[0-9a-f]{64}$" |
 
-### Request body
+### <a id="s-d10260b036b4"></a>Request body
 
 `{"content": {"application/json": {"schema": {"$ref": "#/components/schemas/ProcessingClaimRenewDocument"}}}, "required": true}`
 
@@ -34,19 +35,23 @@ Renew Processing Claim
 
 | Status | Description |
 |---|---|
-| `200` | Successful Response |
-| `400` | Bad Request |
-| `401` | Unauthorized |
-| `403` | Forbidden |
-| `404` | Not Found |
-| `409` | Conflict |
-| `500` | Internal Server Error |
+| <a id="s-b7cb7edcbcb2"></a>`200` | Successful Response |
+| <a id="s-282f88126273"></a>`400` | Bad Request |
+| <a id="s-f2e4145a8227"></a>`401` | Unauthorized |
+| <a id="s-411b8d95af45"></a>`403` | Forbidden |
+| <a id="s-ceb17b6f69e4"></a>`404` | Not Found |
+| <a id="s-86a8e74460a2"></a>`409` | Conflict |
+| <a id="s-0563cee0e6b1"></a>`500` | Internal Server Error |
 
 ### Progression, limits, and lifecycle
 
-| Dimension | Unit | Policy | Bounds or reason |
-|---|---|---|---|
-| length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
+#### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
+
+Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"}
+
+| Applies to | Contract | Bounds or reason |
+|---|---|---|
+| <a id="s-b3df11014481"></a>parameter claim_id | `length · characters · fixed` | shared above |
 
 ## Maintained corroboration
 
@@ -62,20 +67,20 @@ Renew Processing Claim
 
 ## Governing policies
 
-- `compatibility/http-api/v1`
-- `extent-rule/schema-bound/v1`
+- <a id="pa-f608eced31b4"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0ba)
+- <a id="pa-399bf1f6909c"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
 
 ## Evidence
 
 ### Qualification
 
-- `make operation-qualification`
-- `make compose-smoke`
+- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459fb8)
+- [make compose-smoke](../../../evidence/sources.md#q-413b0b241ba8)
 
 ### Executable sources
 
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `openapi:riverhog` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
+- [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc960) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
 
 ### Machine authority
 

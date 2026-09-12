@@ -8,37 +8,47 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Audit field | Value |
 |---|---|
-| Authority | `riverhog` |
-| Interface | `http` |
-| Family | `schemas` |
+| Authority | [riverhog](../index.md) |
+| Interface | [http](index.md) |
+| Family | [schemas](families/schemas/index.md) |
 | Contract elements | 1 |
 | Extent decisions | 4 |
 
 ## External contract
 
-- `title`: ProcessingClaimPlanSealDocument
-- `type`: object
+<a id="s-6b1eb6853785"></a>
+- <a id="s-3646380164c3"></a>`title`: ProcessingClaimPlanSealDocument
+- <a id="s-bb18e4de0b0a"></a>`type`: object
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| `controller_evidence` | yes | type="object"; additional keys=`additionalProperties`, `x-riverhog-encoded-bytes-max`, `x-riverhog-extent` |  |
-| `controller_evidence_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| `execution_id` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| `fence` | yes | type="integer"; minimum=1 |  |
-| `operation` | yes | #/components/schemas/OperationIdentityDocument |  |
-| `retirement_grace_seconds` | no | type="integer"; minimum=0 |  |
-| `retirement_policy` | no | type="string"; enum=["retain","retire-after-verified-output"] |  |
+| <a id="s-bbf892079333"></a>`controller_evidence` | yes | type="object"; additional keys=`additionalProperties`, `x-riverhog-encoded-bytes-max`, `x-riverhog-extent` |  |
+| <a id="s-2b58360cd0bb"></a>`controller_evidence_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-d28fb6737061"></a>`execution_id` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-58a14c2ad670"></a>`fence` | yes | type="integer"; minimum=1 |  |
+| <a id="s-36b7aad5604d"></a>`operation` | yes | #/components/schemas/OperationIdentityDocument |  |
+| <a id="s-e7d70e2eb2ef"></a>`retirement_grace_seconds` | no | type="integer"; minimum=0 |  |
+| <a id="s-d32887c14446"></a>`retirement_policy` | no | type="string"; enum=["retain","retire-after-verified-output"] |  |
 
 ### Progression, limits, and lifecycle
 
-| Dimension | Unit | Policy | Bounds or reason |
-|---|---|---|---|
-| encoded-size | bytes | `contract_max` | maximum=16777216, reason=bounded-controller-evidence-envelope |
-| cardinality | entries | `operational_policy` | maximum=None, reason=no-declared-semantic-maximum |
-| length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
-| length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
+#### [extent-rule/no-semantic-maximum/v1](../../../policies/index.md#p-574724b48af0)
+
+Shared facts for every subject below: capacity_authority={"declared_maximum":null,"hidden_maximum":"forbidden","owner":"riverhog"}; maximum=null; reason="no-declared-semantic-maximum"
+
+| Applies to | Contract | Bounds or reason |
+|---|---|---|
+| [field controller_evidence](#s-bbf892079333) | `cardinality · entries · operational_policy` | shared above |
+
+#### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
+
+| Applies to | Contract | Bounds or reason |
+|---|---|---|
+| [field controller_evidence](#s-bbf892079333) | `encoded-size · bytes · contract_max` | maximum=16777216; reason="bounded-controller-evidence-envelope"; source_constraint={"field":"x-riverhog-encoded-bytes-max"} |
+| [field controller_evidence_sha256](#s-2b58360cd0bb) | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
+| [field execution_id](#s-d28fb6737061) | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
 
 ## Maintained corroboration
 
@@ -48,21 +58,21 @@ Exact externally visible contract owned by this semantic dossier.
 
 ## Governing policies
 
-- `compatibility/http-api/v1`
-- `extent-rule/no-semantic-maximum/v1`
-- `extent-rule/schema-bound/v1`
+- <a id="pa-0d739db4795b"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0ba)
+- <a id="pa-f610ff7581eb"></a>[extent-rule/no-semantic-maximum/v1](../../../policies/index.md#p-574724b48af0)
+- <a id="pa-3420dfd6ee5a"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
 
 ## Evidence
 
 ### Qualification
 
-- `make operation-qualification`
-- `make compose-smoke`
+- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459fb8)
+- [make compose-smoke](../../../evidence/sources.md#q-413b0b241ba8)
 
 ### Executable sources
 
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `openapi:riverhog` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
+- [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc960) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
 
 ### Machine authority
 

@@ -8,34 +8,35 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Audit field | Value |
 |---|---|
-| Authority | `configuration` |
-| Interface | `configuration-environment` |
-| Family | `variables` |
+| Authority | [configuration](../index.md) |
+| Interface | [configuration-environment](index.md) |
+| Family | [variables](families/variables/index.md) |
 | Contract elements | 1 |
 | Extent decisions | 0 |
 
 ## External contract
 
+<a id="s-bf86dd537bbe"></a>
 | Field | Shape |
 |---|---|
-| `consumers` | ["piggity"] |
-| `name` | "PIGGITY_LOCAL_ROOT" |
+| <a id="s-98d6331adc55"></a>`consumers` | ["piggity"] |
+| <a id="s-ffbf567bef15"></a>`name` | "PIGGITY_LOCAL_ROOT" |
 
 ## Governing policies
 
-- `compatibility/configuration/v1`
+- <a id="pa-06a5e4a047de"></a>[compatibility/configuration/v1](../../../policies/index.md#p-8dc08bb46173)
 
 ## Evidence
 
 ### Qualification
 
-- `make unit`
-- `make compose-smoke`
+- [make unit](../../../evidence/sources.md#q-ce47068f504c)
+- [make compose-smoke](../../../evidence/sources.md#q-413b0b241ba8)
 
 ### Executable sources
 
-- `configuration-environment:PIGGITY_LOCAL_ROOT` — `configuration-environment:PIGGITY_LOCAL_ROOT`
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
+- [configuration-environment:PIGGITY_LOCAL_ROOT](../../../evidence/sources.md#src-a3bab32771f4) — `configuration-environment:PIGGITY_LOCAL_ROOT`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
 
 ### Machine authority
 

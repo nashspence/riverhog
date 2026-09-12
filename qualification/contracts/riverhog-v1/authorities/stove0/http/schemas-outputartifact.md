@@ -8,54 +8,64 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Audit field | Value |
 |---|---|
-| Authority | `stove0` |
-| Interface | `http` |
-| Family | `schemas` |
+| Authority | [stove0](../index.md) |
+| Interface | [http](index.md) |
+| Family | [schemas](families/schemas/index.md) |
 | Contract elements | 1 |
 | Extent decisions | 4 |
 
 ## External contract
 
-- `title`: OutputArtifact
-- `type`: object
+<a id="s-ba28f35168a2"></a>
+- <a id="s-0933ddd17de3"></a>`title`: OutputArtifact
+- <a id="s-290d04a226d3"></a>`type`: object
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| `bytes` | yes | type="integer"; minimum=0 |  |
-| `id` | yes | type="string"; pattern="^[A-Za-z0-9]&#40;?:[A-Za-z0-9._-]{0,158}[A-Za-z0-9])?$" |  |
-| `media_type` | no | anyOf=type="string"; minLength=1; maxLength=255 \| type="null" |  |
-| `path` | yes | type="string"; minLength=1; maxLength=4096 |  |
-| `role` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
-| `sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-33cd874f9a8f"></a>`bytes` | yes | type="integer"; minimum=0 |  |
+| <a id="s-c0eef192f6c3"></a>`id` | yes | type="string"; pattern="^[A-Za-z0-9]&#40;?:[A-Za-z0-9._-]{0,158}[A-Za-z0-9])?$" |  |
+| <a id="s-ab3a2479f9b2"></a>`media_type` | no | anyOf=type="string"; minLength=1; maxLength=255 \| type="null" |  |
+| <a id="s-da4738004d51"></a>`path` | yes | type="string"; minLength=1; maxLength=4096 |  |
+| <a id="s-93d3f4387ee8"></a>`role` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
+| <a id="s-072090e0b719"></a>`sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 
 ### Progression, limits, and lifecycle
 
-| Dimension | Unit | Policy | Bounds or reason |
-|---|---|---|---|
-| value | schema-value | `operational_policy` | maximum=None, reason=no-declared-semantic-maximum |
-| length | characters | `contract_max` | maximum=255, minimum=1, reason=schema-maximum |
-| length | characters | `contract_max` | maximum=4096, minimum=1, reason=schema-maximum |
-| length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
+#### [extent-rule/no-semantic-maximum/v1](../../../policies/index.md#p-574724b48af0)
+
+Shared facts for every subject below: capacity_authority={"declared_maximum":null,"hidden_maximum":"forbidden","owner":"stove0"}; maximum=null; reason="no-declared-semantic-maximum"
+
+| Applies to | Contract | Bounds or reason |
+|---|---|---|
+| [field bytes](#s-33cd874f9a8f) | `value · schema-value · operational_policy` | shared above |
+
+#### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
+
+| Applies to | Contract | Bounds or reason |
+|---|---|---|
+| <a id="s-65956949a699"></a>field media_type · anyOf alternative 1 | `length · characters · contract_max` | maximum=255; minimum=1; reason="schema-maximum" |
+| [field path](#s-da4738004d51) | `length · characters · contract_max` | maximum=4096; minimum=1; reason="schema-maximum" |
+| [field sha256](#s-072090e0b719) | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
 
 ## Governing policies
 
-- `compatibility/http-api/v1`
-- `extent-rule/no-semantic-maximum/v1`
-- `extent-rule/schema-bound/v1`
+- <a id="pa-18bf9c14da3f"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0ba)
+- <a id="pa-c41aa00b2f76"></a>[extent-rule/no-semantic-maximum/v1](../../../policies/index.md#p-574724b48af0)
+- <a id="pa-0adbfa282ac5"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
 
 ## Evidence
 
 ### Qualification
 
-- `make operation-qualification`
-- `make compose-smoke`
+- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459fb8)
+- [make compose-smoke](../../../evidence/sources.md#q-413b0b241ba8)
 
 ### Executable sources
 
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `openapi:stove0` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
+- [openapi:stove0](../../../evidence/sources.md#src-52e6e3212451) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
 
 ### Machine authority
 

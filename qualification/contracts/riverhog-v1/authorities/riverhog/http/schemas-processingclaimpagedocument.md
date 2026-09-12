@@ -8,34 +8,46 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Audit field | Value |
 |---|---|
-| Authority | `riverhog` |
-| Interface | `http` |
-| Family | `schemas` |
+| Authority | [riverhog](../index.md) |
+| Interface | [http](index.md) |
+| Family | [schemas](families/schemas/index.md) |
 | Contract elements | 1 |
 | Extent decisions | 2 |
 
 ## External contract
 
-- `title`: ProcessingClaimPageDocument
-- `type`: object
+<a id="s-6041073899ad"></a>
+- <a id="s-a020b53a87ba"></a>`title`: ProcessingClaimPageDocument
+- <a id="s-8ce43a30b120"></a>`type`: object
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| `claims` | yes | type="array"; items=(#/components/schemas/ProcessingClaimDocument) |  |
-| `filters` | yes | #/components/schemas/ProcessingClaimFiltersDocument |  |
-| `next_page_token` | yes | anyOf=#/components/schemas/BrowsePageToken \| type="null" |  |
-| `order` | yes | #/components/schemas/SortOrder |  |
-| `page_size` | yes | type="integer"; minimum=1; maximum=100 |  |
-| `sort` | yes | #/components/schemas/ProcessingClaimSort |  |
+| <a id="s-8e545456d5c5"></a>`claims` | yes | type="array"; items=(#/components/schemas/ProcessingClaimDocument) |  |
+| <a id="s-ef1ff79919ee"></a>`filters` | yes | #/components/schemas/ProcessingClaimFiltersDocument |  |
+| <a id="s-7409e9be1780"></a>`next_page_token` | yes | anyOf=#/components/schemas/BrowsePageToken \| type="null" |  |
+| <a id="s-aad6de037e9a"></a>`order` | yes | #/components/schemas/SortOrder |  |
+| <a id="s-a12a255dad40"></a>`page_size` | yes | type="integer"; minimum=1; maximum=100 |  |
+| <a id="s-239812ea9003"></a>`sort` | yes | #/components/schemas/ProcessingClaimSort |  |
 
 ### Progression, limits, and lifecycle
 
-| Dimension | Unit | Policy | Bounds or reason |
-|---|---|---|---|
-| cardinality | items | `segmented_no_total_max` | reason=bounded-route-page |
-| value | schema-value | `contract_max` | maximum=100, minimum=1, reason=schema-maximum |
+#### [extent-rule/route-progression/v1](../../../policies/index.md#p-6b76b527cb21)
+
+Shared facts for every subject below: progression={"default_page_size":25,"kind":"mutable-browse","maximum_page_size":100,"next_page_token_field":"next_page_token","page_size_parameter":"page_size","page_token_parameter":"page_token"}; reason="bounded-route-page"
+
+| Applies to | Contract | Bounds or reason |
+|---|---|---|
+| [field claims](#s-8e545456d5c5) | `cardinality · items · segmented_no_total_max` | shared above |
+
+#### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
+
+Shared facts for every subject below: maximum=100; minimum=1; reason="schema-maximum"
+
+| Applies to | Contract | Bounds or reason |
+|---|---|---|
+| [field page_size](#s-a12a255dad40) | `value · schema-value · contract_max` | shared above |
 
 ## Maintained corroboration
 
@@ -49,21 +61,21 @@ Exact externally visible contract owned by this semantic dossier.
 
 ## Governing policies
 
-- `compatibility/http-api/v1`
-- `extent-rule/route-progression/v1`
-- `extent-rule/schema-bound/v1`
+- <a id="pa-c7001c3e06d8"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0ba)
+- <a id="pa-1f08537b8740"></a>[extent-rule/route-progression/v1](../../../policies/index.md#p-6b76b527cb21)
+- <a id="pa-950ff56f53d0"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
 
 ## Evidence
 
 ### Qualification
 
-- `make operation-qualification`
-- `make compose-smoke`
+- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459fb8)
+- [make compose-smoke](../../../evidence/sources.md#q-413b0b241ba8)
 
 ### Executable sources
 
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `openapi:riverhog` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
+- [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc960) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
 
 ### Machine authority
 

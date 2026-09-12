@@ -8,104 +8,114 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Audit field | Value |
 |---|---|
-| Authority | `stove0-observer-support` |
-| Interface | `protocol` |
-| Family | `schemas` |
+| Authority | [stove0-observer-support](../index.md) |
+| Interface | [protocol](index.md) |
+| Family | [schemas](index.md#f-d47202b295e8) |
 | Contract elements | 1 |
 | Extent decisions | 30 |
 
 ## External contract
 
-- `title`: ObserverConformanceResult
-- `type`: object
+<a id="s-fc5a6c3beff0"></a>
+- <a id="s-c607c4203bb5"></a>`title`: ObserverConformanceResult
+- <a id="s-79c5c6f59403"></a>`type`: object
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| `contracts` | yes | type="array"; items=(#/$defs/ObserverContractConformance) |  |
-| `coverage` | yes | #/$defs/ObserverConformanceCoverage |  |
-| `descriptor` | yes | #/$defs/ObserverDescriptor |  |
-| `format` | no | type="string"; const="stove0-observer-conformance-result/v1" |  |
-| `status` | yes | type="string"; enum=["conformant","partially-exercised","inspected"] |  |
+| <a id="s-11cb6cb7b0ee"></a>`contracts` | yes | type="array"; items=(#/$defs/ObserverContractConformance) |  |
+| <a id="s-6e150e7a08f9"></a>`coverage` | yes | #/$defs/ObserverConformanceCoverage |  |
+| <a id="s-503986d75d58"></a>`descriptor` | yes | #/$defs/ObserverDescriptor |  |
+| <a id="s-f07392d54143"></a>`format` | no | type="string"; const="stove0-observer-conformance-result/v1" |  |
+| <a id="s-86e322f70a12"></a>`status` | yes | type="string"; enum=["conformant","partially-exercised","inspected"] |  |
 
 ### Definitions
 
 | Definition | Shape |
 |---|---|
-| `ArtifactSubject` | type="object"; fields=`bytes`, `collection`, `id`, `media_type`, `path`, `role`, `sha256`; additional keys=`additionalProperties`, `required` |
-| `CollectionId` | type="integer"; minimum=1 |
-| `CollectionRootRef` | type="object"; fields=`archive_root_sha256`, `collection_id`, `content_identity`; additional keys=`additionalProperties`, `required` |
-| `JsonSchemaDocument` | type="object"; fields=`dialect`, `format_policy`, `id`, `schema`, `sha256`; additional keys=`additionalProperties`, `required` |
-| `JsonValue` | empty object |
-| `ObservationFailure` | type="object"; fields=`code`, `message`, `retryable`; additional keys=`additionalProperties`, `required` |
-| `ObservationInapplicable` | type="object"; fields=`code`, `message`; additional keys=`additionalProperties`, `required` |
-| `ObservationRequest` | type="object"; fields=`format`, `maximum_result_bytes`, `observer_contract_id`, `observer_contract_sha256`, `observer_descriptor_sha256`, `observer_registration_id`, `options`, `request_id`, `retrieval_policy`, `subjects`, `timeout_seconds`, `work_id`; additional keys=`additionalProperties`, `required` |
-| `ObservationResult` | type="object"; fields=`execution_evidence`, `facts`, `facts_schema`, `facts_sha256`, `failure`, `format`, `inapplicable`, `observer`, `observer_contract_id`, `observer_contract_sha256`, `request_id`, `result_sha256`, `state`, `subjects`; additional keys=`additionalProperties`, `required` |
-| `ObserverConformanceCoverage` | type="object"; fields=`advertised`, `complete`, `exercised`; additional keys=`additionalProperties`, `required` |
-| `ObserverContractConformance` | type="object"; fields=`contract_id`, `contract_sha256`, `evidence`, `execution`, `facts_schema_sha256`, `facts_semantics_conformance_vectors_sha256`, `facts_semantics_id`, `facts_semantics_sha256`, `maximum_result_bytes`, `options_schema_sha256`, `preferred_subject_batch_size`, `semantic_acceptance`; additional keys=`additionalProperties`, `required` |
-| `ObserverContractConformanceEvidence` | type="object"; fields=`observation`, `request`; additional keys=`additionalProperties`, `required` |
-| `ObserverContractSupport` | type="object"; fields=`contract_id`, `contract_sha256`, `facts_schema`, `facts_semantics`, `maximum_result_bytes`, `options_schema`, `preferred_subject_batch_size`; additional keys=`additionalProperties`, `required` |
-| `ObserverDescriptor` | type="object"; fields=`contracts`, `descriptor_sha256`, `image_digest`, `implementation_id`, `implementation_version`, `protocol`, `source_revision`; additional keys=`additionalProperties`, `required` |
-| `ObserverImplementation` | type="object"; fields=`descriptor_sha256`, `id`, `protocol`, `source_revision`, `version`; additional keys=`additionalProperties`, `required` |
-| `ObserverSemanticAcceptance` | type="object"; fields=`kind`, `profile_id`, `profile_sha256`, `vectors`; additional keys=`additionalProperties`, `required` |
-| `ObserverSemanticVectorEvidence` | type="object"; fields=`accepted_vector_ids`, `rejected_vector_ids`, `vectors`; additional keys=`additionalProperties`, `required` |
-| `SemanticFactsConformanceVector` | type="object"; fields=`accepted`, `facts`, `id`, `options`, `subjects`; additional keys=`additionalProperties`, `required` |
-| `SemanticFactsConformanceVectors` | type="object"; fields=`format`, `profile_id`, `vectors`; additional keys=`additionalProperties`, `required` |
-| `SemanticValidationProfile` | type="object"; fields=`conformance_vectors_sha256`, `id`, `profile_sha256`, `rules`; additional keys=`additionalProperties`, `required` |
+| <a id="s-6da8dc866c3a"></a>`ArtifactSubject` | type="object"; fields=`bytes`, `collection`, `id`, `media_type`, `path`, `role`, `sha256`; additional keys=`additionalProperties`, `required` |
+| <a id="s-31ea8cf25bfd"></a>`CollectionId` | type="integer"; minimum=1 |
+| <a id="s-44b34c0b44ab"></a>`CollectionRootRef` | type="object"; fields=`archive_root_sha256`, `collection_id`, `content_identity`; additional keys=`additionalProperties`, `required` |
+| <a id="s-1bf0987e08ce"></a>`JsonSchemaDocument` | type="object"; fields=`dialect`, `format_policy`, `id`, `schema`, `sha256`; additional keys=`additionalProperties`, `required` |
+| <a id="s-ff4601229e60"></a>`JsonValue` | empty object |
+| <a id="s-50f0629b745f"></a>`ObservationFailure` | type="object"; fields=`code`, `message`, `retryable`; additional keys=`additionalProperties`, `required` |
+| <a id="s-93a287d09a41"></a>`ObservationInapplicable` | type="object"; fields=`code`, `message`; additional keys=`additionalProperties`, `required` |
+| <a id="s-257aa2bfb3fd"></a>`ObservationRequest` | type="object"; fields=`format`, `maximum_result_bytes`, `observer_contract_id`, `observer_contract_sha256`, `observer_descriptor_sha256`, `observer_registration_id`, `options`, `request_id`, `retrieval_policy`, `subjects`, `timeout_seconds`, `work_id`; additional keys=`additionalProperties`, `required` |
+| <a id="s-c17307bef80c"></a>`ObservationResult` | type="object"; fields=`execution_evidence`, `facts`, `facts_schema`, `facts_sha256`, `failure`, `format`, `inapplicable`, `observer`, `observer_contract_id`, `observer_contract_sha256`, `request_id`, `result_sha256`, `state`, `subjects`; additional keys=`additionalProperties`, `required` |
+| <a id="s-a0b35db38ebf"></a>`ObserverConformanceCoverage` | type="object"; fields=`advertised`, `complete`, `exercised`; additional keys=`additionalProperties`, `required` |
+| <a id="s-3429ae0b0c4d"></a>`ObserverContractConformance` | type="object"; fields=`contract_id`, `contract_sha256`, `evidence`, `execution`, `facts_schema_sha256`, `facts_semantics_conformance_vectors_sha256`, `facts_semantics_id`, `facts_semantics_sha256`, `maximum_result_bytes`, `options_schema_sha256`, `preferred_subject_batch_size`, `semantic_acceptance`; additional keys=`additionalProperties`, `required` |
+| <a id="s-6014cd696059"></a>`ObserverContractConformanceEvidence` | type="object"; fields=`observation`, `request`; additional keys=`additionalProperties`, `required` |
+| <a id="s-c7de29acfc02"></a>`ObserverContractSupport` | type="object"; fields=`contract_id`, `contract_sha256`, `facts_schema`, `facts_semantics`, `maximum_result_bytes`, `options_schema`, `preferred_subject_batch_size`; additional keys=`additionalProperties`, `required` |
+| <a id="s-c720233b4b14"></a>`ObserverDescriptor` | type="object"; fields=`contracts`, `descriptor_sha256`, `image_digest`, `implementation_id`, `implementation_version`, `protocol`, `source_revision`; additional keys=`additionalProperties`, `required` |
+| <a id="s-ff3c4a891ae4"></a>`ObserverImplementation` | type="object"; fields=`descriptor_sha256`, `id`, `protocol`, `source_revision`, `version`; additional keys=`additionalProperties`, `required` |
+| <a id="s-cb936e6e5e7a"></a>`ObserverSemanticAcceptance` | type="object"; fields=`kind`, `profile_id`, `profile_sha256`, `vectors`; additional keys=`additionalProperties`, `required` |
+| <a id="s-cadb8352a7c3"></a>`ObserverSemanticVectorEvidence` | type="object"; fields=`accepted_vector_ids`, `rejected_vector_ids`, `vectors`; additional keys=`additionalProperties`, `required` |
+| <a id="s-c3aa3f50511f"></a>`SemanticFactsConformanceVector` | type="object"; fields=`accepted`, `facts`, `id`, `options`, `subjects`; additional keys=`additionalProperties`, `required` |
+| <a id="s-02d07e8151c9"></a>`SemanticFactsConformanceVectors` | type="object"; fields=`format`, `profile_id`, `vectors`; additional keys=`additionalProperties`, `required` |
+| <a id="s-5fcce07d86c8"></a>`SemanticValidationProfile` | type="object"; fields=`conformance_vectors_sha256`, `id`, `profile_sha256`, `rules`; additional keys=`additionalProperties`, `required` |
 
 ### Progression, limits, and lifecycle
 
-| Dimension | Unit | Policy | Bounds or reason |
-|---|---|---|---|
-| cardinality | items | `operational_policy` | maximum=None, reason=no-declared-semantic-maximum |
-| cardinality | entries | `operational_policy` | maximum=None, reason=no-declared-semantic-maximum |
-| cardinality | entries | `operational_policy` | maximum=None, reason=no-declared-semantic-maximum |
-| length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
-| length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
-| length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
-| length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
-| cardinality | items | `operational_policy` | maximum=None, reason=no-declared-semantic-maximum |
-| length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
-| length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
-| length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
-| length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
-| length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
-| length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
-| value | schema-value | `contract_max` | maximum=67108864, minimum=1, reason=schema-maximum |
-| cardinality | items | `operational_policy` | maximum=None, reason=no-declared-semantic-maximum |
-| length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
-| length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
-| length | characters | `contract_max` | maximum=120, minimum=1, reason=schema-maximum |
-| length | characters | `contract_max` | maximum=200, minimum=1, reason=schema-maximum |
-| length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
-| cardinality | items | `operational_policy` | maximum=None, reason=no-declared-semantic-maximum |
-| cardinality | items | `operational_policy` | maximum=None, reason=no-declared-semantic-maximum |
-| cardinality | entries | `operational_policy` | maximum=None, reason=no-declared-semantic-maximum |
-| cardinality | entries | `operational_policy` | maximum=None, reason=no-declared-semantic-maximum |
-| cardinality | items | `operational_policy` | maximum=None, reason=no-declared-semantic-maximum |
-| cardinality | items | `operational_policy` | maximum=None, reason=no-declared-semantic-maximum |
-| length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
-| length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
-| cardinality | items | `operational_policy` | maximum=None, reason=no-declared-semantic-maximum |
+#### [extent-rule/no-semantic-maximum/v1](../../../policies/index.md#p-574724b48af0)
+
+Shared facts for every subject below: capacity_authority={"declared_maximum":null,"hidden_maximum":"forbidden","owner":"stove0-observer-protocol"}; maximum=null; reason="no-declared-semantic-maximum"
+
+| Applies to | Contract | Bounds or reason |
+|---|---|---|
+| [field contracts](#s-11cb6cb7b0ee) | `cardinality · items · operational_policy` | shared above |
+| <a id="s-18fec8dde8bd"></a>definition ObservationResult · field execution_evidence | `cardinality · entries · operational_policy` | shared above |
+| <a id="s-454b88910233"></a>definition ObservationResult · field facts · anyOf alternative 1 | `cardinality · entries · operational_policy` | shared above |
+| <a id="s-f5c3f9cb963c"></a>definition ObservationResult · field subjects | `cardinality · items · operational_policy` | shared above |
+| <a id="s-2ef1f8a48742"></a>definition ObserverDescriptor · field contracts | `cardinality · items · operational_policy` | shared above |
+| <a id="s-84a0c0984623"></a>definition ObserverSemanticVectorEvidence · field accepted_vector_ids | `cardinality · items · operational_policy` | shared above |
+| <a id="s-a7a7a2ea7ce8"></a>definition ObserverSemanticVectorEvidence · field rejected_vector_ids | `cardinality · items · operational_policy` | shared above |
+| <a id="s-b56714fb4e37"></a>definition SemanticFactsConformanceVector · field facts | `cardinality · entries · operational_policy` | shared above |
+| <a id="s-14bd5c07e0af"></a>definition SemanticFactsConformanceVector · field options | `cardinality · entries · operational_policy` | shared above |
+| <a id="s-a0524302e682"></a>definition SemanticFactsConformanceVector · field subjects | `cardinality · items · operational_policy` | shared above |
+| <a id="s-34b15007e4e2"></a>definition SemanticFactsConformanceVectors · field vectors | `cardinality · items · operational_policy` | shared above |
+| <a id="s-90fed6464fce"></a>definition SemanticValidationProfile · field rules | `cardinality · items · operational_policy` | shared above |
+
+#### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
+
+| Applies to | Contract | Bounds or reason |
+|---|---|---|
+| <a id="s-689a9a00f00d"></a>definition ObservationResult · field facts_sha256 · anyOf alternative 1 | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
+| <a id="s-0cc5d9dcbc43"></a>definition ObservationResult · field observer_contract_sha256 | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
+| <a id="s-8e01b8f9e559"></a>definition ObservationResult · field request_id | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
+| <a id="s-0d1cf88363cd"></a>definition ObservationResult · field result_sha256 | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
+| <a id="s-61309d58efac"></a>definition ObserverContractConformance · field contract_sha256 | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
+| <a id="s-38d741705101"></a>definition ObserverContractConformance · field facts_schema_sha256 | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
+| <a id="s-24b459cc3296"></a>definition ObserverContractConformance · field facts_semantics_conformance_vectors_sha256 · anyOf alternative 1 | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
+| <a id="s-4d9c57cb7ae5"></a>definition ObserverContractConformance · field facts_semantics_sha256 | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
+| <a id="s-f25ed6d63b3d"></a>definition ObserverContractConformance · field options_schema_sha256 | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
+| <a id="s-0bf8abada42b"></a>definition ObserverContractSupport · field contract_sha256 | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
+| <a id="s-6c87e3c09e12"></a>definition ObserverContractSupport · field maximum_result_bytes | `value · schema-value · contract_max` | maximum=67108864; minimum=1; reason="schema-maximum" |
+| <a id="s-42cfeceeffcb"></a>definition ObserverDescriptor · field descriptor_sha256 | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
+| <a id="s-f9bf8ce9e8a9"></a>definition ObserverDescriptor · field image_digest | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
+| <a id="s-dceba6dd812f"></a>definition ObserverDescriptor · field implementation_version | `length · characters · contract_max` | maximum=120; minimum=1; reason="schema-maximum" |
+| <a id="s-065ca78d50a8"></a>definition ObserverDescriptor · field source_revision | `length · characters · contract_max` | maximum=200; minimum=1; reason="schema-maximum" |
+| <a id="s-4696fbe59acf"></a>definition ObserverSemanticAcceptance · field profile_sha256 | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
+| <a id="s-2852262eab73"></a>definition SemanticValidationProfile · field conformance_vectors_sha256 · anyOf alternative 1 | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
+| <a id="s-45433a22b149"></a>definition SemanticValidationProfile · field profile_sha256 | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
 
 ## Governing policies
 
-- `compatibility/components/v1`
-- `extent-rule/no-semantic-maximum/v1`
-- `extent-rule/schema-bound/v1`
+- <a id="pa-5a18b69d6833"></a>[compatibility/components/v1](../../../policies/index.md#p-95e9a1225947)
+- <a id="pa-e4c6b3bdefd5"></a>[extent-rule/no-semantic-maximum/v1](../../../policies/index.md#p-574724b48af0)
+- <a id="pa-eb6dc04fe458"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
 
 ## Evidence
 
 ### Qualification
 
-- `make dist-smoke`
-- `make build`
+- [make dist-smoke](../../../evidence/sources.md#q-0ba2578a3eb7)
+- [make build](../../../evidence/sources.md#q-d1121e35fa7a)
 
 ### Executable sources
 
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `protocol:generated:stove0-observer` — `reference/stove0/packages/observer-support/src/stove0_observer_support/schemas.py::observer_schema_bundle`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
+- [protocol:generated:stove0-observer](../../../evidence/sources.md#src-dcc0b5485b73) — `reference/stove0/packages/observer-support/src/stove0_observer_support/schemas.py::observer_schema_bundle`
 
 ### Machine authority
 

@@ -8,24 +8,25 @@ One canonical public application-access request or response grant.
 
 | Audit field | Value |
 |---|---|
-| Authority | `riverhog` |
-| Interface | `http` |
-| Family | `schemas` |
+| Authority | [riverhog](../index.md) |
+| Interface | [http](index.md) |
+| Family | [schemas](families/schemas/index.md) |
 | Contract elements | 1 |
 | Extent decisions | 0 |
 
 ## External contract
 
-- `title`: ApplicationAccessGrant
-- `description`: One canonical public application-access request or response grant.
-- `type`: object
+<a id="s-ee1b3c97d725"></a>
+- <a id="s-bdfdb13bfbba"></a>`title`: ApplicationAccessGrant
+- <a id="s-5f6a2a8d903f"></a>`description`: One canonical public application-access request or response grant.
+- <a id="s-2c007891617c"></a>`type`: object
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| `permission` | yes | #/components/schemas/ApplicationPermission |  |
-| `resource` | no | $ref="#/components/schemas/ApplicationResource" |  |
+| <a id="s-c2cd54ec8646"></a>`permission` | yes | #/components/schemas/ApplicationPermission |  |
+| <a id="s-ea597f207af1"></a>`resource` | no | $ref="#/components/schemas/ApplicationResource" |  |
 
 ## Maintained corroboration
 
@@ -36,19 +37,19 @@ One canonical public application-access request or response grant.
 
 ## Governing policies
 
-- `compatibility/http-api/v1`
+- <a id="pa-15bf992bf328"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0ba)
 
 ## Evidence
 
 ### Qualification
 
-- `make operation-qualification`
-- `make compose-smoke`
+- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459fb8)
+- [make compose-smoke](../../../evidence/sources.md#q-413b0b241ba8)
 
 ### Executable sources
 
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `openapi:riverhog` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
+- [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc960) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
 
 ### Machine authority
 

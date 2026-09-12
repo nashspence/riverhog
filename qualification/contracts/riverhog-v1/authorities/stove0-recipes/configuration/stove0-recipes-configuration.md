@@ -8,109 +8,119 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Audit field | Value |
 |---|---|
-| Authority | `stove0-recipes` |
-| Interface | `configuration` |
-| Family | `documents` |
+| Authority | [stove0-recipes](../index.md) |
+| Interface | [configuration](index.md) |
+| Family | [documents](index.md#f-ea5c21230f46) |
 | Contract elements | 1 |
 | Extent decisions | 39 |
 
 ## External contract
 
-- `title`: RecipeCatalog
-- `type`: object
+<a id="s-221fa0a965e3"></a>
+- <a id="s-8f6f89291583"></a>`title`: RecipeCatalog
+- <a id="s-768a70141fba"></a>`type`: object
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| `format` | no | type="string"; const="stove0-recipes/v1" |  |
-| `operations` | yes | type="array"; items=(#/$defs/OperationContract) |  |
-| `recipes` | yes | type="array"; items=(#/$defs/RecipeDefinition) |  |
+| <a id="s-2fd0ccd0e9af"></a>`format` | no | type="string"; const="stove0-recipes/v1" |  |
+| <a id="s-68008b09dbdf"></a>`operations` | yes | type="array"; items=(#/$defs/OperationContract) |  |
+| <a id="s-4171241e9d83"></a>`recipes` | yes | type="array"; items=(#/$defs/RecipeDefinition) |  |
 
 ### Definitions
 
 | Definition | Shape |
 |---|---|
-| `ArtifactAssociation` | type="object"; fields=`associated_roles`, `path_identity`, `primary_role`; additional keys=`additionalProperties`, `required` |
-| `ArtifactFactBinding` | type="object"; fields=`artifact_id_pointer`, `records_pointer`; additional keys=`additionalProperties`, `required` |
-| `ArtifactRule` | type="object"; fields=`glob`, `media_type`, `role`; additional keys=`additionalProperties` |
-| `FactPredicate` | type="object"; fields=`artifact_facts`, `artifact_roles`, `observation_contract_id`, `operator`, `pointer`, `value`; additional keys=`additionalProperties`, `required` |
-| `InputArtifactContract` | type="object"; fields=`allowed_dispositions`, `maximum`, `minimum`, `role`; additional keys=`additionalProperties`, `required` |
-| `JsonSchemaDocument` | type="object"; fields=`dialect`, `format_policy`, `id`, `schema`, `sha256`; additional keys=`additionalProperties`, `required` |
-| `JsonValue` | empty object |
-| `ObserverUse` | type="object"; fields=`artifact_rules`, `contract_id`, `contract_sha256`, `maximum_result_bytes`, `options`, `registration_id`, `retrieval_policy`, `timeout_seconds`; additional keys=`additionalProperties`, `required` |
-| `OperationContract` | type="object"; fields=`contract_sha256`, `effect_receipt_schema`, `id`, `inputs`, `intent_schema`, `intent_semantics`, `outputs`, `result_kind`, `source_retirement_permitted`; additional keys=`additionalProperties`, `required` |
-| `OperationProjection` | type="object"; fields=`destination`, `destination_pointer`, `source`, `source_pointer`; additional keys=`additionalProperties`, `required` |
-| `OutputArtifactContract` | type="object"; fields=`derived_from_roles`, `maximum`, `minimum`, `role`; additional keys=`additionalProperties`, `required` |
-| `RecipeCoordinationRoute` | type="object"; fields=`artifact_rules`, `associated_roles`, `id`, `intent`, `kind`, `primary_role`, `projections`, `recipe`, `when`; additional keys=`additionalProperties`, `required` |
-| `RecipeDefinition` | type="object"; fields=`allow_derived_inputs`, `artifact_associations`, `event_input_closure`, `id`, `join`, `observers`, `retirement_grace_seconds`, `revision`, `routes`, `source_retirement_policy`, `unmatched_artifact_disposition`; additional keys=`additionalProperties`, `required` |
-| `RecipeJoin` | type="object"; fields=`id`, `input_retrieval_policy`, `intent`, `members`, `operation_id`, `projections`, `target_options`, `target_registration_id`; additional keys=`additionalProperties`, `required` |
-| `RecipeJoinMember` | type="object"; fields=`branch_id`, `output_roles`; additional keys=`additionalProperties`, `required` |
-| `RecipeRef` | type="object"; fields=`id`, `revision`, `sha256`; additional keys=`additionalProperties`, `required` |
-| `RecipeRoute` | type="object"; fields=`artifact_rules`, `associated_roles`, `id`, `input_retrieval_policy`, `intent`, `kind`, `operation_id`, `primary_role`, `projections`, `target_options`, `target_registration_id`, `when`; additional keys=`additionalProperties`, `required` |
-| `SemanticValidationProfile` | type="object"; fields=`conformance_vectors_sha256`, `id`, `profile_sha256`, `rules`; additional keys=`additionalProperties`, `required` |
+| <a id="s-f8993709b36d"></a>`ArtifactAssociation` | type="object"; fields=`associated_roles`, `path_identity`, `primary_role`; additional keys=`additionalProperties`, `required` |
+| <a id="s-1ac2e2eec0c4"></a>`ArtifactFactBinding` | type="object"; fields=`artifact_id_pointer`, `records_pointer`; additional keys=`additionalProperties`, `required` |
+| <a id="s-74fb3a895769"></a>`ArtifactRule` | type="object"; fields=`glob`, `media_type`, `role`; additional keys=`additionalProperties` |
+| <a id="s-6722cc772aa8"></a>`FactPredicate` | type="object"; fields=`artifact_facts`, `artifact_roles`, `observation_contract_id`, `operator`, `pointer`, `value`; additional keys=`additionalProperties`, `required` |
+| <a id="s-e7c2f1bec346"></a>`InputArtifactContract` | type="object"; fields=`allowed_dispositions`, `maximum`, `minimum`, `role`; additional keys=`additionalProperties`, `required` |
+| <a id="s-19363cecd141"></a>`JsonSchemaDocument` | type="object"; fields=`dialect`, `format_policy`, `id`, `schema`, `sha256`; additional keys=`additionalProperties`, `required` |
+| <a id="s-48ccd9a7b034"></a>`JsonValue` | empty object |
+| <a id="s-f0c1398faa84"></a>`ObserverUse` | type="object"; fields=`artifact_rules`, `contract_id`, `contract_sha256`, `maximum_result_bytes`, `options`, `registration_id`, `retrieval_policy`, `timeout_seconds`; additional keys=`additionalProperties`, `required` |
+| <a id="s-abf24f7610dc"></a>`OperationContract` | type="object"; fields=`contract_sha256`, `effect_receipt_schema`, `id`, `inputs`, `intent_schema`, `intent_semantics`, `outputs`, `result_kind`, `source_retirement_permitted`; additional keys=`additionalProperties`, `required` |
+| <a id="s-90f40eb31e94"></a>`OperationProjection` | type="object"; fields=`destination`, `destination_pointer`, `source`, `source_pointer`; additional keys=`additionalProperties`, `required` |
+| <a id="s-66f8e50fb531"></a>`OutputArtifactContract` | type="object"; fields=`derived_from_roles`, `maximum`, `minimum`, `role`; additional keys=`additionalProperties`, `required` |
+| <a id="s-95a727a4692b"></a>`RecipeCoordinationRoute` | type="object"; fields=`artifact_rules`, `associated_roles`, `id`, `intent`, `kind`, `primary_role`, `projections`, `recipe`, `when`; additional keys=`additionalProperties`, `required` |
+| <a id="s-a74ca7000015"></a>`RecipeDefinition` | type="object"; fields=`allow_derived_inputs`, `artifact_associations`, `event_input_closure`, `id`, `join`, `observers`, `retirement_grace_seconds`, `revision`, `routes`, `source_retirement_policy`, `unmatched_artifact_disposition`; additional keys=`additionalProperties`, `required` |
+| <a id="s-a82890c5d16b"></a>`RecipeJoin` | type="object"; fields=`id`, `input_retrieval_policy`, `intent`, `members`, `operation_id`, `projections`, `target_options`, `target_registration_id`; additional keys=`additionalProperties`, `required` |
+| <a id="s-e8351b399f0a"></a>`RecipeJoinMember` | type="object"; fields=`branch_id`, `output_roles`; additional keys=`additionalProperties`, `required` |
+| <a id="s-855a5a5840c2"></a>`RecipeRef` | type="object"; fields=`id`, `revision`, `sha256`; additional keys=`additionalProperties`, `required` |
+| <a id="s-6e85f80f5e39"></a>`RecipeRoute` | type="object"; fields=`artifact_rules`, `associated_roles`, `id`, `input_retrieval_policy`, `intent`, `kind`, `operation_id`, `primary_role`, `projections`, `target_options`, `target_registration_id`, `when`; additional keys=`additionalProperties`, `required` |
+| <a id="s-8f0d0431c98b"></a>`SemanticValidationProfile` | type="object"; fields=`conformance_vectors_sha256`, `id`, `profile_sha256`, `rules`; additional keys=`additionalProperties`, `required` |
 
 ### Progression, limits, and lifecycle
 
-| Dimension | Unit | Policy | Bounds or reason |
-|---|---|---|---|
-| cardinality | items | `operational_policy` | maximum=None, reason=validated-deployment-composition |
-| cardinality | items | `operational_policy` | maximum=None, reason=validated-deployment-composition |
-| cardinality | items | `operational_policy` | maximum=None, reason=validated-deployment-composition |
-| cardinality | entries | `operational_policy` | maximum=None, reason=validated-deployment-composition |
-| length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
-| cardinality | items | `operational_policy` | maximum=None, reason=validated-deployment-composition |
-| length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
-| value | schema-value | `contract_max` | maximum=67108864, minimum=1, reason=schema-maximum |
-| cardinality | entries | `operational_policy` | maximum=None, reason=validated-deployment-composition |
-| value | schema-value | `contract_max` | maximum=86400, minimum=1, reason=schema-maximum |
-| length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
-| cardinality | items | `operational_policy` | maximum=None, reason=validated-deployment-composition |
-| cardinality | items | `operational_policy` | maximum=None, reason=validated-deployment-composition |
-| cardinality | items | `operational_policy` | maximum=None, reason=validated-deployment-composition |
-| cardinality | items | `operational_policy` | maximum=None, reason=validated-deployment-composition |
-| cardinality | items | `operational_policy` | maximum=None, reason=validated-deployment-composition |
-| cardinality | entries | `operational_policy` | maximum=None, reason=validated-deployment-composition |
-| cardinality | items | `operational_policy` | maximum=None, reason=validated-deployment-composition |
-| cardinality | items | `operational_policy` | maximum=None, reason=validated-deployment-composition |
-| cardinality | items | `operational_policy` | maximum=None, reason=validated-deployment-composition |
-| cardinality | items | `operational_policy` | maximum=None, reason=validated-deployment-composition |
-| cardinality | items | `operational_policy` | maximum=None, reason=validated-deployment-composition |
-| cardinality | entries | `operational_policy` | maximum=None, reason=validated-deployment-composition |
-| cardinality | items | `operational_policy` | maximum=None, reason=validated-deployment-composition |
-| cardinality | items | `operational_policy` | maximum=None, reason=validated-deployment-composition |
-| cardinality | entries | `operational_policy` | maximum=None, reason=validated-deployment-composition |
-| cardinality | items | `operational_policy` | maximum=None, reason=validated-deployment-composition |
-| length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
-| cardinality | items | `operational_policy` | maximum=None, reason=validated-deployment-composition |
-| cardinality | items | `operational_policy` | maximum=None, reason=validated-deployment-composition |
-| cardinality | entries | `operational_policy` | maximum=None, reason=validated-deployment-composition |
-| cardinality | items | `operational_policy` | maximum=None, reason=validated-deployment-composition |
-| cardinality | entries | `operational_policy` | maximum=None, reason=validated-deployment-composition |
-| cardinality | items | `operational_policy` | maximum=None, reason=validated-deployment-composition |
-| length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
-| length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
-| cardinality | items | `operational_policy` | maximum=None, reason=validated-deployment-composition |
-| cardinality | items | `operational_policy` | maximum=None, reason=validated-deployment-composition |
-| cardinality | items | `operational_policy` | maximum=None, reason=validated-deployment-composition |
+#### [extent-rule/configuration-composition/v1](../../../policies/index.md#p-dcd344e8e519)
+
+Shared facts for every subject below: capacity_authority={"declared_maximum":null,"hidden_maximum":"forbidden","owner":"stove0-recipes"}; maximum=null; reason="validated-deployment-composition"
+
+| Applies to | Contract | Bounds or reason |
+|---|---|---|
+| <a id="s-79e347b06f5a"></a>definition ArtifactAssociation · field associated_roles | `cardinality · items · operational_policy` | shared above |
+| <a id="s-24352bad9269"></a>definition FactPredicate · field artifact_roles | `cardinality · items · operational_policy` | shared above |
+| <a id="s-6e692f90709f"></a>definition InputArtifactContract · field allowed_dispositions · anyOf alternative 1 | `cardinality · items · operational_policy` | shared above |
+| <a id="s-32722a8a2155"></a>definition JsonSchemaDocument · field schema | `cardinality · entries · operational_policy` | shared above |
+| <a id="s-fbf5087c91d3"></a>definition ObserverUse · field artifact_rules | `cardinality · items · operational_policy` | shared above |
+| <a id="s-563d8c2f2a59"></a>definition ObserverUse · field options | `cardinality · entries · operational_policy` | shared above |
+| <a id="s-759b3075225d"></a>definition OperationContract · field inputs | `cardinality · items · operational_policy` | shared above |
+| <a id="s-a38244c72434"></a>definition OperationContract · field outputs | `cardinality · items · operational_policy` | shared above |
+| <a id="s-ebd07c4756a2"></a>definition OutputArtifactContract · field derived_from_roles | `cardinality · items · operational_policy` | shared above |
+| <a id="s-095d82b98870"></a>definition RecipeCoordinationRoute · field artifact_rules | `cardinality · items · operational_policy` | shared above |
+| <a id="s-5d2c43b0ec9b"></a>definition RecipeCoordinationRoute · field associated_roles | `cardinality · items · operational_policy` | shared above |
+| <a id="s-f796207661d5"></a>definition RecipeCoordinationRoute · field intent | `cardinality · entries · operational_policy` | shared above |
+| <a id="s-53d552cb6f1c"></a>definition RecipeCoordinationRoute · field projections | `cardinality · items · operational_policy` | shared above |
+| <a id="s-e0d4bd8d8640"></a>definition RecipeCoordinationRoute · field when | `cardinality · items · operational_policy` | shared above |
+| <a id="s-b2bd9cd4558a"></a>definition RecipeDefinition · field artifact_associations | `cardinality · items · operational_policy` | shared above |
+| <a id="s-6d97c935465e"></a>definition RecipeDefinition · field observers | `cardinality · items · operational_policy` | shared above |
+| <a id="s-ee9fba6a6fdb"></a>definition RecipeDefinition · field routes | `cardinality · items · operational_policy` | shared above |
+| <a id="s-e92c72713cac"></a>definition RecipeJoin · field intent | `cardinality · entries · operational_policy` | shared above |
+| <a id="s-2f9b4bff1ccd"></a>definition RecipeJoin · field members | `cardinality · items · operational_policy` | shared above |
+| <a id="s-db7a24389a7a"></a>definition RecipeJoin · field projections | `cardinality · items · operational_policy` | shared above |
+| <a id="s-c14fc5d54a89"></a>definition RecipeJoin · field target_options | `cardinality · entries · operational_policy` | shared above |
+| <a id="s-7fd9a1fd26c1"></a>definition RecipeJoinMember · field output_roles | `cardinality · items · operational_policy` | shared above |
+| <a id="s-05cdf6590ea9"></a>definition RecipeRoute · field artifact_rules | `cardinality · items · operational_policy` | shared above |
+| <a id="s-1a01f403d843"></a>definition RecipeRoute · field associated_roles | `cardinality · items · operational_policy` | shared above |
+| <a id="s-0fe6517726f1"></a>definition RecipeRoute · field intent | `cardinality · entries · operational_policy` | shared above |
+| <a id="s-da3367be40a2"></a>definition RecipeRoute · field projections | `cardinality · items · operational_policy` | shared above |
+| <a id="s-ea9b1b09f461"></a>definition RecipeRoute · field target_options | `cardinality · entries · operational_policy` | shared above |
+| <a id="s-18674239aa70"></a>definition RecipeRoute · field when | `cardinality · items · operational_policy` | shared above |
+| <a id="s-3ee14bf8eeaf"></a>definition SemanticValidationProfile · field rules | `cardinality · items · operational_policy` | shared above |
+| [field operations](#s-68008b09dbdf) | `cardinality · items · operational_policy` | shared above |
+| [field recipes](#s-4171241e9d83) | `cardinality · items · operational_policy` | shared above |
+
+#### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
+
+| Applies to | Contract | Bounds or reason |
+|---|---|---|
+| <a id="s-dee5d7dc5176"></a>definition JsonSchemaDocument · field sha256 | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
+| <a id="s-81de8e14629e"></a>definition ObserverUse · field contract_sha256 | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
+| <a id="s-ac56d8259110"></a>definition ObserverUse · field maximum_result_bytes | `value · schema-value · contract_max` | maximum=67108864; minimum=1; reason="schema-maximum" |
+| <a id="s-f63b38f1ec2f"></a>definition ObserverUse · field timeout_seconds | `value · schema-value · contract_max` | maximum=86400; minimum=1; reason="schema-maximum" |
+| <a id="s-e335a2a2d641"></a>definition OperationContract · field contract_sha256 | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
+| <a id="s-36094cbef7a9"></a>definition RecipeRef · field sha256 | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
+| <a id="s-440a691bce77"></a>definition SemanticValidationProfile · field conformance_vectors_sha256 · anyOf alternative 1 | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
+| <a id="s-7e99ada17aca"></a>definition SemanticValidationProfile · field profile_sha256 | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
 
 ## Governing policies
 
-- `compatibility/configuration/v1`
-- `extent-rule/configuration-composition/v1`
-- `extent-rule/schema-bound/v1`
+- <a id="pa-b39452c0b7d4"></a>[compatibility/configuration/v1](../../../policies/index.md#p-8dc08bb46173)
+- <a id="pa-331c72872104"></a>[extent-rule/configuration-composition/v1](../../../policies/index.md#p-dcd344e8e519)
+- <a id="pa-9ef170f56de0"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
 
 ## Evidence
 
 ### Qualification
 
-- `make unit`
-- `make compose-smoke`
+- [make unit](../../../evidence/sources.md#q-ce47068f504c)
+- [make compose-smoke](../../../evidence/sources.md#q-413b0b241ba8)
 
 ### Executable sources
 
-- `configuration:stove0-recipes` — `reference/stove0/packages/recipe-config/src/stove0_recipe_config/models.py::RecipeCatalog`
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
+- [configuration:stove0-recipes](../../../evidence/sources.md#src-49c5fe0ba636) — `reference/stove0/packages/recipe-config/src/stove0_recipe_config/models.py::RecipeCatalog`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
 
 ### Machine authority
 

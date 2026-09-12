@@ -8,73 +8,83 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Audit field | Value |
 |---|---|
-| Authority | `stove0-observer-support` |
-| Interface | `protocol` |
-| Family | `schemas` |
+| Authority | [stove0-observer-support](../index.md) |
+| Interface | [protocol](index.md) |
+| Family | [schemas](index.md#f-d47202b295e8) |
 | Contract elements | 1 |
 | Extent decisions | 8 |
 
 ## External contract
 
-- `title`: ObservationRequest
-- `type`: object
+<a id="s-648efb272930"></a>
+- <a id="s-ac748326373f"></a>`title`: ObservationRequest
+- <a id="s-5731607badd6"></a>`type`: object
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| `format` | no | type="string"; const="stove0-observation-request/v1" |  |
-| `maximum_result_bytes` | no | type="integer"; minimum=1; maximum=67108864 |  |
-| `observer_contract_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
-| `observer_contract_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| `observer_descriptor_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| `observer_registration_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9.-]{0,118}[a-z0-9])?$" |  |
-| `options` | no | type="object"; additional keys=`additionalProperties` |  |
-| `request_id` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| `retrieval_policy` | no | type="string"; enum=["available-only","allow"] |  |
-| `subjects` | yes | type="array"; minItems=1; items=(#/$defs/ArtifactSubject) |  |
-| `timeout_seconds` | no | type="integer"; minimum=1; maximum=86400 |  |
-| `work_id` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-1a84ef3fb69d"></a>`format` | no | type="string"; const="stove0-observation-request/v1" |  |
+| <a id="s-116a37912ca2"></a>`maximum_result_bytes` | no | type="integer"; minimum=1; maximum=67108864 |  |
+| <a id="s-cb3089e46f21"></a>`observer_contract_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
+| <a id="s-73d893643f4d"></a>`observer_contract_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-b0690945961f"></a>`observer_descriptor_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-c4054e481229"></a>`observer_registration_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9.-]{0,118}[a-z0-9])?$" |  |
+| <a id="s-20284f860468"></a>`options` | no | type="object"; additional keys=`additionalProperties` |  |
+| <a id="s-4d97eaf49fd6"></a>`request_id` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-a2e65475daed"></a>`retrieval_policy` | no | type="string"; enum=["available-only","allow"] |  |
+| <a id="s-255eaccaeeac"></a>`subjects` | yes | type="array"; minItems=1; items=(#/$defs/ArtifactSubject) |  |
+| <a id="s-14e8b087afb6"></a>`timeout_seconds` | no | type="integer"; minimum=1; maximum=86400 |  |
+| <a id="s-f786831d72f6"></a>`work_id` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 
 ### Definitions
 
 | Definition | Shape |
 |---|---|
-| `ArtifactSubject` | type="object"; fields=`bytes`, `collection`, `id`, `media_type`, `path`, `role`, `sha256`; additional keys=`additionalProperties`, `required` |
-| `CollectionId` | type="integer"; minimum=1 |
-| `CollectionRootRef` | type="object"; fields=`archive_root_sha256`, `collection_id`, `content_identity`; additional keys=`additionalProperties`, `required` |
-| `JsonValue` | empty object |
+| <a id="s-5f3cf64beb55"></a>`ArtifactSubject` | type="object"; fields=`bytes`, `collection`, `id`, `media_type`, `path`, `role`, `sha256`; additional keys=`additionalProperties`, `required` |
+| <a id="s-6c4195474588"></a>`CollectionId` | type="integer"; minimum=1 |
+| <a id="s-6505b70cc16d"></a>`CollectionRootRef` | type="object"; fields=`archive_root_sha256`, `collection_id`, `content_identity`; additional keys=`additionalProperties`, `required` |
+| <a id="s-0d24c87770a3"></a>`JsonValue` | empty object |
 
 ### Progression, limits, and lifecycle
 
-| Dimension | Unit | Policy | Bounds or reason |
-|---|---|---|---|
-| value | schema-value | `contract_max` | maximum=67108864, minimum=1, reason=schema-maximum |
-| length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
-| length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
-| cardinality | entries | `operational_policy` | maximum=None, reason=no-declared-semantic-maximum |
-| length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
-| cardinality | items | `operational_policy` | maximum=None, reason=no-declared-semantic-maximum |
-| value | schema-value | `contract_max` | maximum=86400, minimum=1, reason=schema-maximum |
-| length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
+#### [extent-rule/no-semantic-maximum/v1](../../../policies/index.md#p-574724b48af0)
+
+Shared facts for every subject below: capacity_authority={"declared_maximum":null,"hidden_maximum":"forbidden","owner":"stove0-observer-protocol"}; maximum=null; reason="no-declared-semantic-maximum"
+
+| Applies to | Contract | Bounds or reason |
+|---|---|---|
+| [field options](#s-20284f860468) | `cardinality · entries · operational_policy` | shared above |
+| [field subjects](#s-255eaccaeeac) | `cardinality · items · operational_policy` | shared above |
+
+#### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
+
+| Applies to | Contract | Bounds or reason |
+|---|---|---|
+| [field maximum_result_bytes](#s-116a37912ca2) | `value · schema-value · contract_max` | maximum=67108864; minimum=1; reason="schema-maximum" |
+| [field observer_contract_sha256](#s-73d893643f4d) | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
+| [field observer_descriptor_sha256](#s-b0690945961f) | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
+| [field request_id](#s-4d97eaf49fd6) | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
+| [field timeout_seconds](#s-14e8b087afb6) | `value · schema-value · contract_max` | maximum=86400; minimum=1; reason="schema-maximum" |
+| [field work_id](#s-f786831d72f6) | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
 
 ## Governing policies
 
-- `compatibility/components/v1`
-- `extent-rule/no-semantic-maximum/v1`
-- `extent-rule/schema-bound/v1`
+- <a id="pa-6debc8d3b5b7"></a>[compatibility/components/v1](../../../policies/index.md#p-95e9a1225947)
+- <a id="pa-40bf5f99dbbb"></a>[extent-rule/no-semantic-maximum/v1](../../../policies/index.md#p-574724b48af0)
+- <a id="pa-33404d05d2e1"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
 
 ## Evidence
 
 ### Qualification
 
-- `make dist-smoke`
-- `make build`
+- [make dist-smoke](../../../evidence/sources.md#q-0ba2578a3eb7)
+- [make build](../../../evidence/sources.md#q-d1121e35fa7a)
 
 ### Executable sources
 
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `protocol:generated:stove0-observer` — `reference/stove0/packages/observer-support/src/stove0_observer_support/schemas.py::observer_schema_bundle`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
+- [protocol:generated:stove0-observer](../../../evidence/sources.md#src-dcc0b5485b73) — `reference/stove0/packages/observer-support/src/stove0_observer_support/schemas.py::observer_schema_bundle`
 
 ### Machine authority
 

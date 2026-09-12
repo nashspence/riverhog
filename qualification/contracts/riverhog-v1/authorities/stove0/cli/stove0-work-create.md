@@ -8,34 +8,38 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Audit field | Value |
 |---|---|
-| Authority | `stove0` |
-| Interface | `cli` |
-| Family | `work` |
+| Authority | [stove0](../index.md) |
+| Interface | [cli](index.md) |
+| Family | [work](families/work/index.md) |
 | Contract elements | 1 |
 | Extent decisions | 4 |
 
 ## External contract
 
-- Parser name: `create`
+- <a id="s-168e30cf752d"></a>Parser name: `create`
 
 ### Parameters
 
 | Name | Kind | Required | Type | Options |
 |---|---|---:|---|---|
-| `recipe_id` | TyperArgument | yes | {'class': 'typer._click.types.StringParamType', 'name': 'text'} | recipe_id |
-| `inputs` | TyperArgument | yes | {'class': 'typer._click.types.StringParamType', 'name': 'text'} | inputs |
-| `preview_sha256` | TyperOption | yes | {'class': 'typer._click.types.StringParamType', 'name': 'text'} | --preview-sha256 |
-| `revision` | TyperOption | no | {'class': 'typer._click.types.IntParamType', 'name': 'integer'} | --revision |
-| `intent` | TyperOption | no | {'class': 'typer.models.TyperPath', 'name': 'file'} | --intent |
+| <a id="s-688412187aff"></a>`recipe_id` | TyperArgument | yes | {'class': 'typer._click.types.StringParamType', 'name': 'text'} | recipe_id |
+| <a id="s-2e82af2b5082"></a>`inputs` | TyperArgument | yes | {'class': 'typer._click.types.StringParamType', 'name': 'text'} | inputs |
+| <a id="s-ad519fa0aa44"></a>`preview_sha256` | TyperOption | yes | {'class': 'typer._click.types.StringParamType', 'name': 'text'} | --preview-sha256 |
+| <a id="s-cade0041aec8"></a>`revision` | TyperOption | no | {'class': 'typer._click.types.IntParamType', 'name': 'integer'} | --revision |
+| <a id="s-ee4bb44d8cad"></a>`intent` | TyperOption | no | {'class': 'typer.models.TyperPath', 'name': 'file'} | --intent |
 
 ### Progression, limits, and lifecycle
 
-| Dimension | Unit | Policy | Bounds or reason |
-|---|---|---|---|
-| cardinality | values-per-occurrence | `fixed` | maximum=1, minimum=1, reason=fixed-command-argument-arity |
-| cardinality | values-per-occurrence | `fixed` | maximum=1, minimum=1, reason=fixed-command-argument-arity |
-| cardinality | values-per-occurrence | `fixed` | maximum=1, minimum=1, reason=fixed-command-argument-arity |
-| cardinality | values-per-occurrence | `fixed` | maximum=1, minimum=1, reason=fixed-command-argument-arity |
+#### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
+
+Shared facts for every subject below: maximum=1; minimum=1; reason="fixed-command-argument-arity"; source_constraint={"field":"nargs"}
+
+| Applies to | Contract | Bounds or reason |
+|---|---|---|
+| [CLI parameter --intent](#s-ee4bb44d8cad) | `cardinality · values-per-occurrence · fixed` | shared above |
+| [CLI parameter --preview-sha256](#s-ad519fa0aa44) | `cardinality · values-per-occurrence · fixed` | shared above |
+| [CLI parameter recipe_id](#s-688412187aff) | `cardinality · values-per-occurrence · fixed` | shared above |
+| [CLI parameter --revision](#s-cade0041aec8) | `cardinality · values-per-occurrence · fixed` | shared above |
 
 ## Maintained corroboration
 
@@ -45,20 +49,20 @@ Exact externally visible contract owned by this semantic dossier.
 
 ## Governing policies
 
-- `compatibility/cli/v1`
-- `extent-rule/schema-bound/v1`
+- <a id="pa-6747d3d14873"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de7f)
+- <a id="pa-387404dcf37a"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
 
 ## Evidence
 
 ### Qualification
 
-- `make dist-smoke`
-- `make operation-qualification`
+- [make dist-smoke](../../../evidence/sources.md#q-0ba2578a3eb7)
+- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459fb8)
 
 ### Executable sources
 
-- `cli:stove0` — `reference/stove0/application/client/src/stove0_cli/main.py::<module>`
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
+- [cli:stove0](../../../evidence/sources.md#src-6203ae7d8812) — `reference/stove0/application/client/src/stove0_cli/main.py::<module>`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
 
 ### Machine authority
 

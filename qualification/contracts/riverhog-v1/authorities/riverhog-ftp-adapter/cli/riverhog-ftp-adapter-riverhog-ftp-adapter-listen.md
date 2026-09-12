@@ -8,46 +8,46 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Audit field | Value |
 |---|---|
-| Authority | `riverhog-ftp-adapter` |
-| Interface | `cli` |
-| Family | `riverhog-ftp-adapter listen` |
+| Authority | [riverhog-ftp-adapter](../index.md) |
+| Interface | [cli](index.md) |
+| Family | [riverhog-ftp-adapter listen](index.md#f-56671c01da68) |
 | Contract elements | 1 |
 | Extent decisions | 0 |
 
 ## External contract
 
-- Parser name: `riverhog-ftp-adapter listen`
+- <a id="s-74be9905cbde"></a>Parser name: `riverhog-ftp-adapter listen`
 
 ### Parameters
 
 | Name | Kind | Required | Type | Options |
 |---|---|---:|---|---|
-| `` | _StoreAction | yes |  | --source |
-| `` | _StoreAction | yes |  | --username |
-| `` | _StoreAction | yes | Path | --password-file |
-| `` | _StoreAction | no |  | --host |
-| `` | _StoreAction | no | int | --port |
-| `` | _StoreAction | no | int | --passive-port-start |
-| `` | _StoreAction | no | int | --passive-port-end |
-| `` | _StoreAction | no |  | --public-host |
-| `` | _StoreAction | no | int | --max-connections |
-| `` | _StoreAction | no | int | --max-connections-per-ip |
+| <a id="s-726cd2685bb0"></a>`` | _StoreAction | yes |  | --source |
+| <a id="s-1fa0ebe49383"></a>`` | _StoreAction | yes |  | --username |
+| <a id="s-1d574ff9ed70"></a>`` | _StoreAction | yes | Path | --password-file |
+| <a id="s-c920a0e18030"></a>`` | _StoreAction | no |  | --host |
+| <a id="s-c5f9e261117a"></a>`` | _StoreAction | no | int | --port |
+| <a id="s-5ab0d6d68c50"></a>`` | _StoreAction | no | int | --passive-port-start |
+| <a id="s-c3c71e786a32"></a>`` | _StoreAction | no | int | --passive-port-end |
+| <a id="s-afdf255e72d9"></a>`` | _StoreAction | no |  | --public-host |
+| <a id="s-ba15d7ef39f9"></a>`` | _StoreAction | no | int | --max-connections |
+| <a id="s-9d17fa83705c"></a>`` | _StoreAction | no | int | --max-connections-per-ip |
 
 ## Governing policies
 
-- `compatibility/cli/v1`
+- <a id="pa-d393b3410eb1"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de7f)
 
 ## Evidence
 
 ### Qualification
 
-- `make dist-smoke`
-- `make operation-qualification`
+- [make dist-smoke](../../../evidence/sources.md#q-0ba2578a3eb7)
+- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459fb8)
 
 ### Executable sources
 
-- `cli:riverhog-ftp-adapter` — `reference/riverhog/ingress/ftp/src/riverhog_ftp_adapter/app.py::<module>`
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
+- [cli:riverhog-ftp-adapter](../../../evidence/sources.md#src-303f765bca1e) — `reference/riverhog/ingress/ftp/src/riverhog_ftp_adapter/app.py::<module>`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
 
 ### Machine authority
 

@@ -8,18 +8,19 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Audit field | Value |
 |---|---|
-| Authority | `stove0` |
-| Interface | `http` |
-| Family | `schemas` |
+| Authority | [stove0](../index.md) |
+| Interface | [http](index.md) |
+| Family | [schemas](families/schemas/index.md) |
 | Contract elements | 1 |
 | Extent decisions | 0 |
 
 ## External contract
 
+<a id="s-63a02222a037"></a>
 | Field | Shape |
 |---|---|
-| `discriminator` | additional keys=`mapping`, `propertyName` |
-| `oneOf` | items=#/components/schemas/WorkCreatedEvent \| #/components/schemas/WorkUpdatedEvent \| #/components/schemas/BranchSetAdmittedEvent \| #/components/schemas/JoinAdmittedEvent \| #/components/schemas/EvaluationCreatedEvent \| #/components/schemas/EvaluationUpdatedEvent |
+| <a id="s-9d9bc62db07b"></a>`discriminator` | additional keys=`mapping`, `propertyName` |
+| <a id="s-8f85ecfde2eb"></a>`oneOf` | items=#/components/schemas/WorkCreatedEvent \| #/components/schemas/WorkUpdatedEvent \| #/components/schemas/BranchSetAdmittedEvent \| #/components/schemas/JoinAdmittedEvent \| #/components/schemas/EvaluationCreatedEvent \| #/components/schemas/EvaluationUpdatedEvent |
 
 ## Maintained corroboration
 
@@ -34,19 +35,19 @@ Exact externally visible contract owned by this semantic dossier.
 
 ## Governing policies
 
-- `compatibility/http-api/v1`
+- <a id="pa-8a7759e13eb3"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0ba)
 
 ## Evidence
 
 ### Qualification
 
-- `make operation-qualification`
-- `make compose-smoke`
+- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459fb8)
+- [make compose-smoke](../../../evidence/sources.md#q-413b0b241ba8)
 
 ### Executable sources
 
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `openapi:stove0` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
+- [openapi:stove0](../../../evidence/sources.md#src-52e6e3212451) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
 
 ### Machine authority
 

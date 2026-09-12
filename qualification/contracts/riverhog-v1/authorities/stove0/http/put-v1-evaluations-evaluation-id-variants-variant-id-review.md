@@ -8,25 +8,26 @@ Review Evaluation Variant
 
 | Audit field | Value |
 |---|---|
-| Authority | `stove0` |
-| Interface | `http` |
-| Family | `evaluations` |
+| Authority | [stove0](../index.md) |
+| Interface | [http](index.md) |
+| Family | [evaluations](families/evaluations/index.md) |
 | Contract elements | 1 |
 | Extent decisions | 0 |
 
 ## External contract
 
-- `operationId`: review_evaluation_variant
-- `summary`: Review Evaluation Variant
+<a id="s-a59018dd23fb"></a>
+- <a id="s-0cdb6ecda93d"></a>`operationId`: review_evaluation_variant
+- <a id="s-8cb5c2b984d5"></a>`summary`: Review Evaluation Variant
 
 ### Parameters
 
 | Name | In | Required | Schema |
 |---|---|---:|---|
-| `evaluation_id` | path | yes | type="string" |
-| `variant_id` | path | yes | type="string" |
+| <a id="s-7d6d76bff46d"></a>`evaluation_id` | path | yes | type="string" |
+| <a id="s-d5d468b277ba"></a>`variant_id` | path | yes | type="string" |
 
-### Request body
+### <a id="s-f2b96df34ff2"></a>Request body
 
 `{"content": {"application/json": {"schema": {"$ref": "#/components/schemas/EvaluationReviewIn"}}}, "required": true}`
 
@@ -34,13 +35,13 @@ Review Evaluation Variant
 
 | Status | Description |
 |---|---|
-| `200` | Successful Response |
-| `400` | Bad Request |
-| `401` | Unauthorized |
-| `403` | Forbidden |
-| `404` | Not Found |
-| `409` | Conflict |
-| `500` | Internal Server Error |
+| <a id="s-efd76461f6c9"></a>`200` | Successful Response |
+| <a id="s-a90a718e0514"></a>`400` | Bad Request |
+| <a id="s-3b25eb3bf77f"></a>`401` | Unauthorized |
+| <a id="s-7cd394e1c817"></a>`403` | Forbidden |
+| <a id="s-009996cdec7c"></a>`404` | Not Found |
+| <a id="s-34eb7fb837d4"></a>`409` | Conflict |
+| <a id="s-3c3dc958bd76"></a>`500` | Internal Server Error |
 
 ## Maintained corroboration
 
@@ -56,19 +57,19 @@ Review Evaluation Variant
 
 ## Governing policies
 
-- `compatibility/http-api/v1`
+- <a id="pa-9dad7419fb6f"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0ba)
 
 ## Evidence
 
 ### Qualification
 
-- `make operation-qualification`
-- `make compose-smoke`
+- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459fb8)
+- [make compose-smoke](../../../evidence/sources.md#q-413b0b241ba8)
 
 ### Executable sources
 
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `openapi:stove0` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
+- [openapi:stove0](../../../evidence/sources.md#src-52e6e3212451) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
 
 ### Machine authority
 

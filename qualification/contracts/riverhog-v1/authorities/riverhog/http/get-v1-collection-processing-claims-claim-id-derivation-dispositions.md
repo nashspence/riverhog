@@ -8,45 +8,57 @@ List Processing Claim Dispositions
 
 | Audit field | Value |
 |---|---|
-| Authority | `riverhog` |
-| Interface | `http` |
-| Family | `collection-processing-claims` |
+| Authority | [riverhog](../index.md) |
+| Interface | [http](index.md) |
+| Family | [collection-processing-claims](families/collection-processing-claims/index.md) |
 | Contract elements | 1 |
 | Extent decisions | 3 |
 
 ## External contract
 
-- `operationId`: list_processing_claim_dispositions
-- `summary`: List Processing Claim Dispositions
-- `security`: `[{"HTTPBearer": []}]`
+<a id="s-87d7b3cd4c96"></a>
+- <a id="s-78033437b06c"></a>`operationId`: list_processing_claim_dispositions
+- <a id="s-1f9d93a92a82"></a>`summary`: List Processing Claim Dispositions
+- <a id="s-963206e37e6c"></a>`security`: `[{"HTTPBearer": []}]`
 
 ### Parameters
 
 | Name | In | Required | Schema |
 |---|---|---:|---|
-| `claim_id` | path | yes | type="string"; pattern="^[0-9a-f]{64}$" |
-| `authority_sha256` | query | yes | type="string"; pattern="^[0-9a-f]{64}$" |
-| `start_ordinal` | query | no | type="integer"; minimum=0 |
+| <a id="s-0f745bdd93a9"></a>`claim_id` | path | yes | type="string"; pattern="^[0-9a-f]{64}$" |
+| <a id="s-a4f0794ce109"></a>`authority_sha256` | query | yes | type="string"; pattern="^[0-9a-f]{64}$" |
+| <a id="s-ec518364be61"></a>`start_ordinal` | query | no | type="integer"; minimum=0 |
 
 ### Responses
 
 | Status | Description |
 |---|---|
-| `200` | Successful Response |
-| `400` | Bad Request |
-| `401` | Unauthorized |
-| `403` | Forbidden |
-| `404` | Not Found |
-| `409` | Conflict |
-| `500` | Internal Server Error |
+| <a id="s-b06559bbbb4e"></a>`200` | Successful Response |
+| <a id="s-22cc2147ed76"></a>`400` | Bad Request |
+| <a id="s-da9cdf4956c7"></a>`401` | Unauthorized |
+| <a id="s-ae073b9fe1f7"></a>`403` | Forbidden |
+| <a id="s-f97d6c4d354d"></a>`404` | Not Found |
+| <a id="s-595b2ddd23cc"></a>`409` | Conflict |
+| <a id="s-8d070d90273d"></a>`500` | Internal Server Error |
 
 ### Progression, limits, and lifecycle
 
-| Dimension | Unit | Policy | Bounds or reason |
-|---|---|---|---|
-| logical-result-cardinality | items | `segmented_no_total_max` | reason=bounded-route-progression |
-| length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
-| length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
+#### [extent-rule/route-progression/v1](../../../policies/index.md#p-6b76b527cb21)
+
+Shared facts for every subject below: progression={"authority":"processing-claim-dispositions","authority_parameter":"authority_sha256","cursor_parameter":"start_ordinal","fixed_limit":128,"kind":"exact-authority-page"}; reason="bounded-route-progression"
+
+| Applies to | Contract | Bounds or reason |
+|---|---|---|
+| [GET /v1/collection-processing-claims/{claim_id}/derivation/dispositions](#s-87d7b3cd4c96) | `logical-result-cardinality · items · segmented_no_total_max` | shared above |
+
+#### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
+
+Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"}
+
+| Applies to | Contract | Bounds or reason |
+|---|---|---|
+| <a id="s-d06c8c99aef3"></a>parameter claim_id | `length · characters · fixed` | shared above |
+| <a id="s-699b5999fafc"></a>parameter authority_sha256 | `length · characters · fixed` | shared above |
 
 ## Maintained corroboration
 
@@ -61,21 +73,21 @@ List Processing Claim Dispositions
 
 ## Governing policies
 
-- `compatibility/http-api/v1`
-- `extent-rule/route-progression/v1`
-- `extent-rule/schema-bound/v1`
+- <a id="pa-b8c467868bf9"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0ba)
+- <a id="pa-a195a2d91362"></a>[extent-rule/route-progression/v1](../../../policies/index.md#p-6b76b527cb21)
+- <a id="pa-d7e3b9a5db8f"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
 
 ## Evidence
 
 ### Qualification
 
-- `make operation-qualification`
-- `make compose-smoke`
+- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459fb8)
+- [make compose-smoke](../../../evidence/sources.md#q-413b0b241ba8)
 
 ### Executable sources
 
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `openapi:riverhog` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
+- [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc960) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
 
 ### Machine authority
 

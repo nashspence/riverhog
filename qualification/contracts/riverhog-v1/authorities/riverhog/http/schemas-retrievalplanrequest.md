@@ -8,32 +8,44 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Audit field | Value |
 |---|---|
-| Authority | `riverhog` |
-| Interface | `http` |
-| Family | `schemas` |
+| Authority | [riverhog](../index.md) |
+| Interface | [http](index.md) |
+| Family | [schemas](families/schemas/index.md) |
 | Contract elements | 1 |
 | Extent decisions | 2 |
 
 ## External contract
 
-- `title`: RetrievalPlanRequest
-- `type`: object
+<a id="s-4b2e57f624a6"></a>
+- <a id="s-8aa7907ec097"></a>`title`: RetrievalPlanRequest
+- <a id="s-4a8dc3ad10f3"></a>`type`: object
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| `files` | yes | type="array"; minItems=1; maxItems=10000; items=(#/components/schemas/RetrievalFileReferenceDocument); additional keys=`x-riverhog-extent` |  |
-| `idempotency_key` | yes | type="string"; minLength=1; maxLength=200; pattern="^\\S(?:[\\s\\S]*\\S)?$" |  |
-| `lease_seconds` | no | anyOf=type="integer"; minimum=1 \| type="null" |  |
-| `restore_policy` | no | type="string"; enum=["allow","never"] |  |
+| <a id="s-92156c516434"></a>`files` | yes | type="array"; minItems=1; maxItems=10000; items=(#/components/schemas/RetrievalFileReferenceDocument); additional keys=`x-riverhog-extent` |  |
+| <a id="s-1281abc0446c"></a>`idempotency_key` | yes | type="string"; minLength=1; maxLength=200; pattern="^\\S(?:[\\s\\S]*\\S)?$" |  |
+| <a id="s-ca9836474f01"></a>`lease_seconds` | no | anyOf=type="integer"; minimum=1 \| type="null" |  |
+| <a id="s-f33de244d2f1"></a>`restore_policy` | no | type="string"; enum=["allow","never"] |  |
 
 ### Progression, limits, and lifecycle
 
-| Dimension | Unit | Policy | Bounds or reason |
-|---|---|---|---|
-| cardinality | items | `segmented_no_total_max` | maximum=10000, minimum=1, reason=bounded-retrieval-work-request |
-| length | characters | `contract_max` | maximum=200, minimum=1, reason=schema-maximum |
+#### [extent-rule/bounded-segment/v1](../../../policies/index.md#p-2b3f3f1594af)
+
+Shared facts for every subject below: maximum=10000; minimum=1; progression={"progression":"multiple-retrieval-jobs"}; reason="bounded-retrieval-work-request"
+
+| Applies to | Contract | Bounds or reason |
+|---|---|---|
+| [field files](#s-92156c516434) | `cardinality · items · segmented_no_total_max` | shared above |
+
+#### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
+
+Shared facts for every subject below: maximum=200; minimum=1; reason="schema-maximum"
+
+| Applies to | Contract | Bounds or reason |
+|---|---|---|
+| [field idempotency_key](#s-1281abc0446c) | `length · characters · contract_max` | shared above |
 
 ## Maintained corroboration
 
@@ -43,21 +55,21 @@ Exact externally visible contract owned by this semantic dossier.
 
 ## Governing policies
 
-- `compatibility/http-api/v1`
-- `extent-rule/bounded-segment/v1`
-- `extent-rule/schema-bound/v1`
+- <a id="pa-8f5ee328bdc7"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0ba)
+- <a id="pa-fb5ce1c7c4f3"></a>[extent-rule/bounded-segment/v1](../../../policies/index.md#p-2b3f3f1594af)
+- <a id="pa-8b81cc93e0f3"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
 
 ## Evidence
 
 ### Qualification
 
-- `make operation-qualification`
-- `make compose-smoke`
+- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459fb8)
+- [make compose-smoke](../../../evidence/sources.md#q-413b0b241ba8)
 
 ### Executable sources
 
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `openapi:riverhog` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
+- [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc960) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
 
 ### Machine authority
 

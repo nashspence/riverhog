@@ -8,26 +8,27 @@ Remove App Key Access
 
 | Audit field | Value |
 |---|---|
-| Authority | `riverhog` |
-| Interface | `http` |
-| Family | `apps` |
+| Authority | [riverhog](../index.md) |
+| Interface | [http](index.md) |
+| Family | [apps](families/apps/index.md) |
 | Contract elements | 1 |
 | Extent decisions | 1 |
 
 ## External contract
 
-- `operationId`: remove_app_key_access
-- `summary`: Remove App Key Access
-- `security`: `[{"HTTPBearer": []}]`
+<a id="s-93019e7f6974"></a>
+- <a id="s-74fd40eab3ef"></a>`operationId`: remove_app_key_access
+- <a id="s-b4936a98aeca"></a>`summary`: Remove App Key Access
+- <a id="s-27cf1bd9a00f"></a>`security`: `[{"HTTPBearer": []}]`
 
 ### Parameters
 
 | Name | In | Required | Schema |
 |---|---|---:|---|
-| `app` | path | yes | type="string"; pattern="^[a-z0-9]+(?:-[a-z0-9]+)*$" |
-| `key_id` | path | yes | type="string"; pattern="^[0-9a-f]{16}$" |
+| <a id="s-e5f73035e2bb"></a>`app` | path | yes | type="string"; pattern="^[a-z0-9]+(?:-[a-z0-9]+)*$" |
+| <a id="s-5c6ecaca53d0"></a>`key_id` | path | yes | type="string"; pattern="^[0-9a-f]{16}$" |
 
-### Request body
+### <a id="s-12d608fc8936"></a>Request body
 
 `{"content": {"application/json": {"schema": {"$ref": "#/components/schemas/MutateAppAccessRequest"}}}, "required": true}`
 
@@ -35,18 +36,22 @@ Remove App Key Access
 
 | Status | Description |
 |---|---|
-| `200` | Successful Response |
-| `400` | Bad Request |
-| `401` | Unauthorized |
-| `403` | Forbidden |
-| `404` | Not Found |
-| `500` | Internal Server Error |
+| <a id="s-80b8e8801007"></a>`200` | Successful Response |
+| <a id="s-7ac32028a08d"></a>`400` | Bad Request |
+| <a id="s-7884df787347"></a>`401` | Unauthorized |
+| <a id="s-5350a888a6a2"></a>`403` | Forbidden |
+| <a id="s-7f8ee891c247"></a>`404` | Not Found |
+| <a id="s-b64a8eeabefe"></a>`500` | Internal Server Error |
 
 ### Progression, limits, and lifecycle
 
-| Dimension | Unit | Policy | Bounds or reason |
-|---|---|---|---|
-| length | characters | `fixed` | maximum=16, minimum=16, reason=fixed-public-representation |
+#### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
+
+Shared facts for every subject below: maximum=16; minimum=16; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{16}$"}
+
+| Applies to | Contract | Bounds or reason |
+|---|---|---|
+| <a id="s-4917745dc428"></a>parameter key_id | `length · characters · fixed` | shared above |
 
 ## Maintained corroboration
 
@@ -62,20 +67,20 @@ Remove App Key Access
 
 ## Governing policies
 
-- `compatibility/http-api/v1`
-- `extent-rule/schema-bound/v1`
+- <a id="pa-707fb55664eb"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0ba)
+- <a id="pa-467c61ebcfb6"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
 
 ## Evidence
 
 ### Qualification
 
-- `make operation-qualification`
-- `make compose-smoke`
+- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459fb8)
+- [make compose-smoke](../../../evidence/sources.md#q-413b0b241ba8)
 
 ### Executable sources
 
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `openapi:riverhog` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
+- [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc960) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
 
 ### Machine authority
 

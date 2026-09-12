@@ -8,38 +8,39 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Audit field | Value |
 |---|---|
-| Authority | `riverhog-storage-adapter-filesystem` |
-| Interface | `boundary` |
-| Family | `components` |
+| Authority | [riverhog-storage-adapter-filesystem](../index.md) |
+| Interface | [boundary](index.md) |
+| Family | [components](index.md#f-d45a257d1e63) |
 | Contract elements | 1 |
 | Extent decisions | 0 |
 
 ## External contract
 
+<a id="s-d534ae2d2931"></a>
 | Field | Shape |
 |---|---|
-| `console_scripts` | additional keys=`riverhog-storage-adapter-filesystem`, `riverhog-storage-adapter-filesystem-materialize` |
-| `dependencies` | ["riverhog-storage-adapter-asgi-support","riverhog-storage-adapter-protocol","time-formats"] |
-| `distribution` | "riverhog-storage-adapter-filesystem" |
-| `optional_dependencies` | empty object |
-| `path` | "reference/riverhog/storage/filesystem" |
-| `role` | "reference_component" |
+| <a id="s-17063c078051"></a>`console_scripts` | additional keys=`riverhog-storage-adapter-filesystem`, `riverhog-storage-adapter-filesystem-materialize` |
+| <a id="s-c7dcf9a55f45"></a>`dependencies` | ["riverhog-storage-adapter-asgi-support","riverhog-storage-adapter-protocol","time-formats"] |
+| <a id="s-f04bf16e0aff"></a>`distribution` | "riverhog-storage-adapter-filesystem" |
+| <a id="s-4a4d4768da15"></a>`optional_dependencies` | empty object |
+| <a id="s-41385a978952"></a>`path` | "reference/riverhog/storage/filesystem" |
+| <a id="s-46884d03658b"></a>`role` | "reference_component" |
 
 ## Governing policies
 
-- `boundary/frozen-authority/v1`
+- <a id="pa-299cd802b916"></a>[boundary/frozen-authority/v1](../../../policies/index.md#p-61994d3f0fa8)
 
 ## Evidence
 
 ### Qualification
 
-- `make release-check`
-- `make build`
+- [make release-check](../../../evidence/sources.md#q-8d8d22d6a6b1)
+- [make build](../../../evidence/sources.md#q-d1121e35fa7a)
 
 ### Executable sources
 
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `release:release.toml` — `release.toml`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
+- [release:release.toml](../../../evidence/sources.md#src-c5380dbe5fe0) — `release.toml`
 
 ### Machine authority
 

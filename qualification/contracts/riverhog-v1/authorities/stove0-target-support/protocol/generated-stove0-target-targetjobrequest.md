@@ -8,88 +8,91 @@ Secret-bearing target invocation; never store this document durably.
 
 | Audit field | Value |
 |---|---|
-| Authority | `stove0-target-support` |
-| Interface | `protocol` |
-| Family | `schemas` |
+| Authority | [stove0-target-support](../index.md) |
+| Interface | [protocol](index.md) |
+| Family | [schemas](index.md#f-3862b77c4ff3) |
 | Contract elements | 1 |
 | Extent decisions | 5 |
 
 ## External contract
 
-- `title`: TargetJobRequest
-- `description`: Secret-bearing target invocation; never store this document durably.
-- `type`: object
+<a id="s-b7e2cff5c02f"></a>
+- <a id="s-ba65af0f1607"></a>`title`: TargetJobRequest
+- <a id="s-aa1f317f99b9"></a>`description`: Secret-bearing target invocation; never store this document durably.
+- <a id="s-410c8a40ce24"></a>`type`: object
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| `callback_access` | yes | #/$defs/TargetCallbackAccess |  |
-| `declaration` | yes | #/$defs/TargetJobDeclaration |  |
-| `request_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| `runtime` | yes | #/$defs/TargetRuntimeAuthority |  |
+| <a id="s-fa20dcc90c09"></a>`callback_access` | yes | #/$defs/TargetCallbackAccess |  |
+| <a id="s-c5d8e654072d"></a>`declaration` | yes | #/$defs/TargetJobDeclaration |  |
+| <a id="s-8724456f3042"></a>`request_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-5614a253d3da"></a>`runtime` | yes | #/$defs/TargetRuntimeAuthority |  |
 
 ### Definitions
 
 | Definition | Shape |
 |---|---|
-| `ArtifactSelectionRef` | type="object"; fields=`artifact_count`, `selection_sha256`, `total_bytes`; additional keys=`additionalProperties`, `required` |
-| `ArtifactSubject` | type="object"; fields=`bytes`, `collection`, `id`, `media_type`, `path`, `role`, `sha256`; additional keys=`additionalProperties`, `required` |
-| `BranchWorkBinding` | type="object"; fields=`artifact_selection_sha256`, `branch_id`, `decision_sha256`, `kind`, `parent_work_id`; additional keys=`additionalProperties`, `required` |
-| `CollectionId` | type="integer"; minimum=1 |
-| `CollectionRootRef` | type="object"; fields=`archive_root_sha256`, `collection_id`, `content_identity`; additional keys=`additionalProperties`, `required` |
-| `ControllerEvidence` | type="object"; fields=`controller_evidence_sha256`, `execution_envelope`, `format`; additional keys=`additionalProperties`, `required` |
-| `EffectPlan` | type="object"; fields=`inputs`, `intent`, `observation_result_sha256s`, `operation_contract_sha256`, `operation_id`, `plan_sha256`, `protocol`, `target_contract_sha256`, `target_implementation_id`, `target_options`; additional keys=`additionalProperties`, `required` |
-| `EvaluationBinding` | type="object"; fields=`evaluation_id`, `matrix_sha256`, `parameters`, `variant_id`; additional keys=`additionalProperties`, `required` |
-| `ExecutionEnvelope` | type="object"; fields=`claim_id`, `execution_envelope_sha256`, `fence`, `format`, `target_plan`, `workflow_plan`; additional keys=`additionalProperties`, `required` |
-| `JoinWorkBinding` | type="object"; fields=`branch_set_sha256`, `kind`, `members`, `parent_work_id`; additional keys=`additionalProperties`, `required` |
-| `JoinWorkMemberBinding` | type="object"; fields=`artifact_selection_sha256`, `branch_id`, `producer_settlement_sha256`, `settlement_sha256`; additional keys=`additionalProperties`, `required` |
-| `JsonSchemaDocument` | type="object"; fields=`dialect`, `format_policy`, `id`, `schema`, `sha256`; additional keys=`additionalProperties`, `required` |
-| `JsonValue` | empty object |
-| `ObservationEvidence` | type="object"; fields=`request`, `result`; additional keys=`additionalProperties`, `required` |
-| `ObservationFailure` | type="object"; fields=`code`, `message`, `retryable`; additional keys=`additionalProperties`, `required` |
-| `ObservationInapplicable` | type="object"; fields=`code`, `message`; additional keys=`additionalProperties`, `required` |
-| `ObservationRequest` | type="object"; fields=`format`, `maximum_result_bytes`, `observer_contract_id`, `observer_contract_sha256`, `observer_descriptor_sha256`, `observer_registration_id`, `options`, `request_id`, `retrieval_policy`, `subjects`, `timeout_seconds`, `work_id`; additional keys=`additionalProperties`, `required` |
-| `ObservationResult` | type="object"; fields=`execution_evidence`, `facts`, `facts_schema`, `facts_sha256`, `failure`, `format`, `inapplicable`, `observer`, `observer_contract_id`, `observer_contract_sha256`, `request_id`, `result_sha256`, `state`, `subjects`; additional keys=`additionalProperties`, `required` |
-| `ObserverImplementation` | type="object"; fields=`descriptor_sha256`, `id`, `protocol`, `source_revision`, `version`; additional keys=`additionalProperties`, `required` |
-| `OperationRef` | type="object"; fields=`id`, `sha256`; additional keys=`additionalProperties`, `required` |
-| `RecipeRef` | type="object"; fields=`id`, `revision`, `sha256`; additional keys=`additionalProperties`, `required` |
-| `TargetCallbackAccess` | type="object"; fields=`allow_insecure_http`, `stove0_base_url`, `token`; additional keys=`additionalProperties`, `required` |
-| `TargetInputAuthority` | type="object"; fields=`roles`, `selection`; additional keys=`additionalProperties`, `required` |
-| `TargetInputRoleCount` | type="object"; fields=`count`, `role`; additional keys=`additionalProperties`, `required` |
-| `TargetJobDeclaration` | type="object"; fields=`claim_id`, `controller_evidence`, `fence`, `job_id`, `plan`, `workspace_assurance`; additional keys=`additionalProperties`, `required` |
-| `TargetPlanBinding` | type="object"; fields=`operation_contract_sha256`, `plan`, `plan_sha256`, `protocol`, `target_contract_sha256`, `target_implementation_id`; additional keys=`additionalProperties`, `required` |
-| `TargetRuntimeAuthority` | type="object"; fields=`allow_insecure_http`, `capability_token`, `riverhog_base_url`, `transport`; additional keys=`additionalProperties`, `required` |
-| `TransformPlan` | type="object"; fields=`inputs`, `intent`, `observation_result_sha256s`, `operation_contract_sha256`, `operation_id`, `plan_sha256`, `protocol`, `target_contract_sha256`, `target_implementation_id`, `target_options`; additional keys=`additionalProperties`, `required` |
-| `WorkIdentity` | type="object"; fields=`effective_intent`, `evaluation`, `fork_join`, `format`, `inputs`, `recipe`, `work_id`; additional keys=`additionalProperties`, `required` |
-| `WorkflowPlan` | type="object"; fields=`format`, `input_retrieval_policy`, `observations`, `operation`, `output_policy`, `requested_target_options`, `result_kind`, `retirement_grace_seconds`, `retirement_policy`, `target_contract_sha256`, `target_registration_id`, `work`, `workflow_plan_sha256`; additional keys=`additionalProperties`, `required` |
+| <a id="s-657a10e518f1"></a>`ArtifactSelectionRef` | type="object"; fields=`artifact_count`, `selection_sha256`, `total_bytes`; additional keys=`additionalProperties`, `required` |
+| <a id="s-b9f62c892951"></a>`ArtifactSubject` | type="object"; fields=`bytes`, `collection`, `id`, `media_type`, `path`, `role`, `sha256`; additional keys=`additionalProperties`, `required` |
+| <a id="s-21ae5562706b"></a>`BranchWorkBinding` | type="object"; fields=`artifact_selection_sha256`, `branch_id`, `decision_sha256`, `kind`, `parent_work_id`; additional keys=`additionalProperties`, `required` |
+| <a id="s-78cd023b6826"></a>`CollectionId` | type="integer"; minimum=1 |
+| <a id="s-082053253dbb"></a>`CollectionRootRef` | type="object"; fields=`archive_root_sha256`, `collection_id`, `content_identity`; additional keys=`additionalProperties`, `required` |
+| <a id="s-ba0cab1e94a9"></a>`ControllerEvidence` | type="object"; fields=`controller_evidence_sha256`, `execution_envelope`, `format`; additional keys=`additionalProperties`, `required` |
+| <a id="s-81cfff670408"></a>`EffectPlan` | type="object"; fields=`inputs`, `intent`, `observation_result_sha256s`, `operation_contract_sha256`, `operation_id`, `plan_sha256`, `protocol`, `target_contract_sha256`, `target_implementation_id`, `target_options`; additional keys=`additionalProperties`, `required` |
+| <a id="s-fcab002bb257"></a>`EvaluationBinding` | type="object"; fields=`evaluation_id`, `matrix_sha256`, `parameters`, `variant_id`; additional keys=`additionalProperties`, `required` |
+| <a id="s-d6d1b4266349"></a>`ExecutionEnvelope` | type="object"; fields=`claim_id`, `execution_envelope_sha256`, `fence`, `format`, `target_plan`, `workflow_plan`; additional keys=`additionalProperties`, `required` |
+| <a id="s-465ef625e031"></a>`JoinWorkBinding` | type="object"; fields=`branch_set_sha256`, `kind`, `members`, `parent_work_id`; additional keys=`additionalProperties`, `required` |
+| <a id="s-b02b34545d18"></a>`JoinWorkMemberBinding` | type="object"; fields=`artifact_selection_sha256`, `branch_id`, `producer_settlement_sha256`, `settlement_sha256`; additional keys=`additionalProperties`, `required` |
+| <a id="s-82ad700d3572"></a>`JsonSchemaDocument` | type="object"; fields=`dialect`, `format_policy`, `id`, `schema`, `sha256`; additional keys=`additionalProperties`, `required` |
+| <a id="s-35500bba5fe6"></a>`JsonValue` | empty object |
+| <a id="s-81090ce01dcd"></a>`ObservationEvidence` | type="object"; fields=`request`, `result`; additional keys=`additionalProperties`, `required` |
+| <a id="s-076b3c43df71"></a>`ObservationFailure` | type="object"; fields=`code`, `message`, `retryable`; additional keys=`additionalProperties`, `required` |
+| <a id="s-31a12061edd9"></a>`ObservationInapplicable` | type="object"; fields=`code`, `message`; additional keys=`additionalProperties`, `required` |
+| <a id="s-1da5927bb58c"></a>`ObservationRequest` | type="object"; fields=`format`, `maximum_result_bytes`, `observer_contract_id`, `observer_contract_sha256`, `observer_descriptor_sha256`, `observer_registration_id`, `options`, `request_id`, `retrieval_policy`, `subjects`, `timeout_seconds`, `work_id`; additional keys=`additionalProperties`, `required` |
+| <a id="s-6679c8fb810f"></a>`ObservationResult` | type="object"; fields=`execution_evidence`, `facts`, `facts_schema`, `facts_sha256`, `failure`, `format`, `inapplicable`, `observer`, `observer_contract_id`, `observer_contract_sha256`, `request_id`, `result_sha256`, `state`, `subjects`; additional keys=`additionalProperties`, `required` |
+| <a id="s-53f5ddfdf64d"></a>`ObserverImplementation` | type="object"; fields=`descriptor_sha256`, `id`, `protocol`, `source_revision`, `version`; additional keys=`additionalProperties`, `required` |
+| <a id="s-07c60793739e"></a>`OperationRef` | type="object"; fields=`id`, `sha256`; additional keys=`additionalProperties`, `required` |
+| <a id="s-adef91c9d782"></a>`RecipeRef` | type="object"; fields=`id`, `revision`, `sha256`; additional keys=`additionalProperties`, `required` |
+| <a id="s-4a6151aff8ee"></a>`TargetCallbackAccess` | type="object"; fields=`allow_insecure_http`, `stove0_base_url`, `token`; additional keys=`additionalProperties`, `required` |
+| <a id="s-32ba1dc94bd5"></a>`TargetInputAuthority` | type="object"; fields=`roles`, `selection`; additional keys=`additionalProperties`, `required` |
+| <a id="s-44780440f4cf"></a>`TargetInputRoleCount` | type="object"; fields=`count`, `role`; additional keys=`additionalProperties`, `required` |
+| <a id="s-2833c36a5876"></a>`TargetJobDeclaration` | type="object"; fields=`claim_id`, `controller_evidence`, `fence`, `job_id`, `plan`, `workspace_assurance`; additional keys=`additionalProperties`, `required` |
+| <a id="s-30e6867f9415"></a>`TargetPlanBinding` | type="object"; fields=`operation_contract_sha256`, `plan`, `plan_sha256`, `protocol`, `target_contract_sha256`, `target_implementation_id`; additional keys=`additionalProperties`, `required` |
+| <a id="s-0dadecd6af93"></a>`TargetRuntimeAuthority` | type="object"; fields=`allow_insecure_http`, `capability_token`, `riverhog_base_url`, `transport`; additional keys=`additionalProperties`, `required` |
+| <a id="s-d9d22e348c46"></a>`TransformPlan` | type="object"; fields=`inputs`, `intent`, `observation_result_sha256s`, `operation_contract_sha256`, `operation_id`, `plan_sha256`, `protocol`, `target_contract_sha256`, `target_implementation_id`, `target_options`; additional keys=`additionalProperties`, `required` |
+| <a id="s-fa0e1b5a44b9"></a>`WorkIdentity` | type="object"; fields=`effective_intent`, `evaluation`, `fork_join`, `format`, `inputs`, `recipe`, `work_id`; additional keys=`additionalProperties`, `required` |
+| <a id="s-06c3ebb67680"></a>`WorkflowPlan` | type="object"; fields=`format`, `input_retrieval_policy`, `observations`, `operation`, `output_policy`, `requested_target_options`, `result_kind`, `retirement_grace_seconds`, `retirement_policy`, `target_contract_sha256`, `target_registration_id`, `work`, `workflow_plan_sha256`; additional keys=`additionalProperties`, `required` |
 
 ### Progression, limits, and lifecycle
 
-| Dimension | Unit | Policy | Bounds or reason |
-|---|---|---|---|
-| length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
-| length | characters | `contract_max` | maximum=2048, minimum=1, reason=schema-maximum |
-| length | characters | `contract_max` | maximum=4096, minimum=1, reason=schema-maximum |
-| length | characters | `contract_max` | maximum=4096, minimum=1, reason=schema-maximum |
-| length | characters | `contract_max` | maximum=2048, minimum=1, reason=schema-maximum |
+#### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
+
+| Applies to | Contract | Bounds or reason |
+|---|---|---|
+| [field request_sha256](#s-8724456f3042) | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
+| <a id="s-1e9177a27f9d"></a>definition TargetCallbackAccess · field stove0_base_url | `length · characters · contract_max` | maximum=2048; minimum=1; reason="schema-maximum" |
+| <a id="s-ee37b0e41e4a"></a>definition TargetCallbackAccess · field token | `length · characters · contract_max` | maximum=4096; minimum=1; reason="schema-maximum" |
+| <a id="s-77d9ec5ed542"></a>definition TargetRuntimeAuthority · field capability_token | `length · characters · contract_max` | maximum=4096; minimum=1; reason="schema-maximum" |
+| <a id="s-a98bb1d70d55"></a>definition TargetRuntimeAuthority · field riverhog_base_url | `length · characters · contract_max` | maximum=2048; minimum=1; reason="schema-maximum" |
 
 ## Governing policies
 
-- `compatibility/components/v1`
-- `extent-rule/schema-bound/v1`
+- <a id="pa-0320d432ccba"></a>[compatibility/components/v1](../../../policies/index.md#p-95e9a1225947)
+- <a id="pa-1107963d3582"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
 
 ## Evidence
 
 ### Qualification
 
-- `make dist-smoke`
-- `make build`
+- [make dist-smoke](../../../evidence/sources.md#q-0ba2578a3eb7)
+- [make build](../../../evidence/sources.md#q-d1121e35fa7a)
 
 ### Executable sources
 
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `protocol:generated:stove0-target` — `reference/stove0/packages/target-support/src/stove0_target_support/schemas.py::target_schema_bundle`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
+- [protocol:generated:stove0-target](../../../evidence/sources.md#src-2c42f9d39a0b) — `reference/stove0/packages/target-support/src/stove0_target_support/schemas.py::target_schema_bundle`
 
 ### Machine authority
 

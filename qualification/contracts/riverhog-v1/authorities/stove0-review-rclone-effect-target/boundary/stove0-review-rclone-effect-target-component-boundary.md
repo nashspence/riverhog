@@ -8,38 +8,39 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Audit field | Value |
 |---|---|
-| Authority | `stove0-review-rclone-effect-target` |
-| Interface | `boundary` |
-| Family | `components` |
+| Authority | [stove0-review-rclone-effect-target](../index.md) |
+| Interface | [boundary](index.md) |
+| Family | [components](index.md#f-63fb220dd5ac) |
 | Contract elements | 1 |
 | Extent decisions | 0 |
 
 ## External contract
 
+<a id="s-34b7b408f9b3"></a>
 | Field | Shape |
 |---|---|
-| `console_scripts` | additional keys=`stove0-review-rclone-effect-target` |
-| `dependencies` | ["riverhog-client","riverhog-protocol","stove0-review-target-contracts","stove0-review-target-support","stove0-target-support"] |
-| `distribution` | "stove0-review-rclone-effect-target" |
-| `optional_dependencies` | empty object |
-| `path` | "reference/stove0/targets/review/rclone-effect-target" |
-| `role` | "reference_component" |
+| <a id="s-52161c7a4bda"></a>`console_scripts` | additional keys=`stove0-review-rclone-effect-target` |
+| <a id="s-b6605a43d517"></a>`dependencies` | ["riverhog-client","riverhog-protocol","stove0-review-target-contracts","stove0-review-target-support","stove0-target-support"] |
+| <a id="s-f9ce12e51209"></a>`distribution` | "stove0-review-rclone-effect-target" |
+| <a id="s-a840a54e4e2b"></a>`optional_dependencies` | empty object |
+| <a id="s-490915dd7711"></a>`path` | "reference/stove0/targets/review/rclone-effect-target" |
+| <a id="s-a8d4b28a0ea0"></a>`role` | "reference_component" |
 
 ## Governing policies
 
-- `boundary/frozen-authority/v1`
+- <a id="pa-7390687c5540"></a>[boundary/frozen-authority/v1](../../../policies/index.md#p-61994d3f0fa8)
 
 ## Evidence
 
 ### Qualification
 
-- `make release-check`
-- `make build`
+- [make release-check](../../../evidence/sources.md#q-8d8d22d6a6b1)
+- [make build](../../../evidence/sources.md#q-d1121e35fa7a)
 
 ### Executable sources
 
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `release:release.toml` — `release.toml`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
+- [release:release.toml](../../../evidence/sources.md#src-c5380dbe5fe0) — `release.toml`
 
 ### Machine authority
 

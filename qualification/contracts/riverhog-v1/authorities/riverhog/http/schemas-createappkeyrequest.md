@@ -8,23 +8,24 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Audit field | Value |
 |---|---|
-| Authority | `riverhog` |
-| Interface | `http` |
-| Family | `schemas` |
+| Authority | [riverhog](../index.md) |
+| Interface | [http](index.md) |
+| Family | [schemas](families/schemas/index.md) |
 | Contract elements | 1 |
 | Extent decisions | 0 |
 
 ## External contract
 
-- `title`: CreateAppKeyRequest
-- `type`: object
+<a id="s-8489af8a616a"></a>
+- <a id="s-3458023d0e8a"></a>`title`: CreateAppKeyRequest
+- <a id="s-387c6d382378"></a>`type`: object
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| `access` | yes | #/components/schemas/ApplicationAccessGrantSet |  |
-| `expires_in_seconds` | no | anyOf=type="integer"; minimum=1 \| type="null" |  |
+| <a id="s-c99d7d5a3425"></a>`access` | yes | #/components/schemas/ApplicationAccessGrantSet |  |
+| <a id="s-cf3b3599cf26"></a>`expires_in_seconds` | no | anyOf=type="integer"; minimum=1 \| type="null" |  |
 
 ## Maintained corroboration
 
@@ -34,19 +35,19 @@ Exact externally visible contract owned by this semantic dossier.
 
 ## Governing policies
 
-- `compatibility/http-api/v1`
+- <a id="pa-14a2fce8a50b"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0ba)
 
 ## Evidence
 
 ### Qualification
 
-- `make operation-qualification`
-- `make compose-smoke`
+- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459fb8)
+- [make compose-smoke](../../../evidence/sources.md#q-413b0b241ba8)
 
 ### Executable sources
 
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `openapi:riverhog` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
+- [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc960) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
 
 ### Machine authority
 

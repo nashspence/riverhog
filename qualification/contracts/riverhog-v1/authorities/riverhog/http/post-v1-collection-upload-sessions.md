@@ -8,19 +8,20 @@ Create Or Resume Collection Upload Session
 
 | Audit field | Value |
 |---|---|
-| Authority | `riverhog` |
-| Interface | `http` |
-| Family | `collection-upload-sessions` |
+| Authority | [riverhog](../index.md) |
+| Interface | [http](index.md) |
+| Family | [collection-upload-sessions](families/collection-upload-sessions/index.md) |
 | Contract elements | 1 |
 | Extent decisions | 0 |
 
 ## External contract
 
-- `operationId`: create_or_resume_collection_upload_session
-- `summary`: Create Or Resume Collection Upload Session
-- `security`: `[{"HTTPBearer": []}]`
+<a id="s-179e7e60d9a9"></a>
+- <a id="s-fff99c5076ef"></a>`operationId`: create_or_resume_collection_upload_session
+- <a id="s-ad6863fb6091"></a>`summary`: Create Or Resume Collection Upload Session
+- <a id="s-3c88b322fadf"></a>`security`: `[{"HTTPBearer": []}]`
 
-### Request body
+### <a id="s-c4627822137d"></a>Request body
 
 `{"content": {"application/json": {"schema": {"$ref": "#/components/schemas/CreateOrResumeCollectionUploadSessionRequest"}}}, "required": true}`
 
@@ -28,12 +29,12 @@ Create Or Resume Collection Upload Session
 
 | Status | Description |
 |---|---|
-| `200` | Successful Response |
-| `400` | Bad Request |
-| `401` | Unauthorized |
-| `403` | Forbidden |
-| `409` | Conflict |
-| `500` | Internal Server Error |
+| <a id="s-3094ef177ac0"></a>`200` | Successful Response |
+| <a id="s-7747b101f749"></a>`400` | Bad Request |
+| <a id="s-5aabb4476daf"></a>`401` | Unauthorized |
+| <a id="s-f6e118473b4f"></a>`403` | Forbidden |
+| <a id="s-729c665c429d"></a>`409` | Conflict |
+| <a id="s-e72adfdcf0c4"></a>`500` | Internal Server Error |
 
 ## Maintained corroboration
 
@@ -49,19 +50,19 @@ Create Or Resume Collection Upload Session
 
 ## Governing policies
 
-- `compatibility/http-api/v1`
+- <a id="pa-3ff2ff7fc331"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0ba)
 
 ## Evidence
 
 ### Qualification
 
-- `make operation-qualification`
-- `make compose-smoke`
+- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459fb8)
+- [make compose-smoke](../../../evidence/sources.md#q-413b0b241ba8)
 
 ### Executable sources
 
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `openapi:riverhog` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
+- [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc960) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
 
 ### Machine authority
 

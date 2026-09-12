@@ -8,34 +8,35 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Audit field | Value |
 |---|---|
-| Authority | `configuration` |
-| Interface | `configuration-environment` |
-| Family | `variables` |
+| Authority | [configuration](../index.md) |
+| Interface | [configuration-environment](index.md) |
+| Family | [variables](families/variables/index.md) |
 | Contract elements | 1 |
 | Extent decisions | 0 |
 
 ## External contract
 
+<a id="s-8f9926b885c8"></a>
 | Field | Shape |
 |---|---|
-| `consumers` | ["riverhog-client","riverhog-ftp-adapter","stove0-server"] |
-| `name` | "RIVERHOG_ALLOW_INSECURE_HTTP" |
+| <a id="s-9172f4f7f02c"></a>`consumers` | ["riverhog-client","riverhog-ftp-adapter","stove0-server"] |
+| <a id="s-1fd2f143d53a"></a>`name` | "RIVERHOG_ALLOW_INSECURE_HTTP" |
 
 ## Governing policies
 
-- `compatibility/configuration/v1`
+- <a id="pa-36241f92f098"></a>[compatibility/configuration/v1](../../../policies/index.md#p-8dc08bb46173)
 
 ## Evidence
 
 ### Qualification
 
-- `make unit`
-- `make compose-smoke`
+- [make unit](../../../evidence/sources.md#q-ce47068f504c)
+- [make compose-smoke](../../../evidence/sources.md#q-413b0b241ba8)
 
 ### Executable sources
 
-- `configuration-environment:RIVERHOG_ALLOW_INSECURE_HTTP` — `configuration-environment:RIVERHOG_ALLOW_INSECURE_HTTP`
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
+- [configuration-environment:RIVERHOG_ALLOW_INSECURE_HTTP](../../../evidence/sources.md#src-50282d297a88) — `configuration-environment:RIVERHOG_ALLOW_INSECURE_HTTP`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
 
 ### Machine authority
 

@@ -8,33 +8,38 @@ Run Pass
 
 | Audit field | Value |
 |---|---|
-| Authority | `riverhog-ftp-adapter` |
-| Interface | `http` |
-| Family | `run` |
+| Authority | [riverhog-ftp-adapter](../index.md) |
+| Interface | [http](index.md) |
+| Family | [run](index.md#f-7869babba685) |
 | Contract elements | 1 |
 | Extent decisions | 1 |
 
 ## External contract
 
-- `operationId`: run_ftp_adapter_pass
-- `summary`: Run Pass
-- `security`: `[{"RiverhogFtpAdapterBearer": []}]`
+<a id="s-98a41252cc43"></a>
+- <a id="s-b09291ebea56"></a>`operationId`: run_ftp_adapter_pass
+- <a id="s-a1173de3e15f"></a>`summary`: Run Pass
+- <a id="s-3f252e3855f5"></a>`security`: `[{"RiverhogFtpAdapterBearer": []}]`
 
 ### Responses
 
 | Status | Description |
 |---|---|
-| `200` | Successful Response |
-| `400` | Bad Request |
-| `401` | Unauthorized |
-| `403` | Forbidden |
-| `500` | Internal Server Error |
+| <a id="s-52ad3c0e193e"></a>`200` | Successful Response |
+| <a id="s-5adeebb41172"></a>`400` | Bad Request |
+| <a id="s-d23416f25860"></a>`401` | Unauthorized |
+| <a id="s-2d6c5f3affe9"></a>`403` | Forbidden |
+| <a id="s-3a833d8f3804"></a>`500` | Internal Server Error |
 
 ### Progression, limits, and lifecycle
 
-| Dimension | Unit | Policy | Bounds or reason |
-|---|---|---|---|
-| cardinality | entries | `operational_policy` | maximum=None, reason=no-declared-semantic-maximum |
+#### [extent-rule/no-semantic-maximum/v1](../../../policies/index.md#p-574724b48af0)
+
+Shared facts for every subject below: capacity_authority={"declared_maximum":null,"hidden_maximum":"forbidden","owner":"riverhog-ftp-adapter"}; maximum=null; reason="no-declared-semantic-maximum"
+
+| Applies to | Contract | Bounds or reason |
+|---|---|---|
+| <a id="s-b44fcc10a7a8"></a>response 200 · content · application/json | `cardinality · entries · operational_policy` | shared above |
 
 ## Maintained corroboration
 
@@ -48,20 +53,20 @@ Run Pass
 
 ## Governing policies
 
-- `compatibility/http-api/v1`
-- `extent-rule/no-semantic-maximum/v1`
+- <a id="pa-b4ec76deb7ef"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0ba)
+- <a id="pa-3cd5637e3c1b"></a>[extent-rule/no-semantic-maximum/v1](../../../policies/index.md#p-574724b48af0)
 
 ## Evidence
 
 ### Qualification
 
-- `make operation-qualification`
-- `make compose-smoke`
+- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459fb8)
+- [make compose-smoke](../../../evidence/sources.md#q-413b0b241ba8)
 
 ### Executable sources
 
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `openapi:riverhog-ftp-adapter` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
+- [openapi:riverhog-ftp-adapter](../../../evidence/sources.md#src-c3a51ac29ac7) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
 
 ### Machine authority
 

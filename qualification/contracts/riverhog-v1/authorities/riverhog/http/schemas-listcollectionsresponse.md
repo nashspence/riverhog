@@ -8,38 +8,50 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Audit field | Value |
 |---|---|
-| Authority | `riverhog` |
-| Interface | `http` |
-| Family | `schemas` |
+| Authority | [riverhog](../index.md) |
+| Interface | [http](index.md) |
+| Family | [schemas](families/schemas/index.md) |
 | Contract elements | 1 |
 | Extent decisions | 3 |
 
 ## External contract
 
-- `title`: ListCollectionsResponse
-- `type`: object
+<a id="s-d9858fd321ec"></a>
+- <a id="s-54809b9c434a"></a>`title`: ListCollectionsResponse
+- <a id="s-77f4f9b8da21"></a>`type`: object
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| `collections` | yes | type="array"; items=(#/components/schemas/CollectionSummaryOut) |  |
-| `encryption_format` | yes | anyOf=type="string" \| type="null" |  |
-| `next_page_token` | yes | anyOf=#/components/schemas/BrowsePageToken \| type="null" |  |
-| `order` | yes | #/components/schemas/SortOrder |  |
-| `page_size` | yes | type="integer"; minimum=1; maximum=100 |  |
-| `passphrase_id` | yes | anyOf=type="string" \| type="null" |  |
-| `query` | yes | anyOf=type="string" \| type="null" |  |
-| `sort` | yes | #/components/schemas/CollectionSort |  |
-| `tags` | yes | type="array"; maxItems=100; items=(#/components/schemas/CollectionTag); additional keys=`x-riverhog-extent` |  |
+| <a id="s-1d875f0d2603"></a>`collections` | yes | type="array"; items=(#/components/schemas/CollectionSummaryOut) |  |
+| <a id="s-a2ba0da47981"></a>`encryption_format` | yes | anyOf=type="string" \| type="null" |  |
+| <a id="s-a18815df9e5d"></a>`next_page_token` | yes | anyOf=#/components/schemas/BrowsePageToken \| type="null" |  |
+| <a id="s-e0b450d7ecfb"></a>`order` | yes | #/components/schemas/SortOrder |  |
+| <a id="s-f6b9eb37e966"></a>`page_size` | yes | type="integer"; minimum=1; maximum=100 |  |
+| <a id="s-585f47498ae0"></a>`passphrase_id` | yes | anyOf=type="string" \| type="null" |  |
+| <a id="s-316d14721e63"></a>`query` | yes | anyOf=type="string" \| type="null" |  |
+| <a id="s-15d2c2d92482"></a>`sort` | yes | #/components/schemas/CollectionSort |  |
+| <a id="s-3ce334b3ba99"></a>`tags` | yes | type="array"; maxItems=100; items=(#/components/schemas/CollectionTag); additional keys=`x-riverhog-extent` |  |
 
 ### Progression, limits, and lifecycle
 
-| Dimension | Unit | Policy | Bounds or reason |
-|---|---|---|---|
-| cardinality | items | `operational_policy` | maximum=None, reason=no-declared-semantic-maximum |
-| value | schema-value | `contract_max` | maximum=100, minimum=1, reason=schema-maximum |
-| cardinality | items | `contract_max` | maximum=100, reason=bounded-exact-tag-selector-batch |
+#### [extent-rule/no-semantic-maximum/v1](../../../policies/index.md#p-574724b48af0)
+
+Shared facts for every subject below: capacity_authority={"declared_maximum":null,"hidden_maximum":"forbidden","owner":"riverhog"}; maximum=null; reason="no-declared-semantic-maximum"
+
+| Applies to | Contract | Bounds or reason |
+|---|---|---|
+| [field collections](#s-1d875f0d2603) | `cardinality · items · operational_policy` | shared above |
+
+#### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
+
+Shared facts for every subject below: maximum=100
+
+| Applies to | Contract | Bounds or reason |
+|---|---|---|
+| [field page_size](#s-f6b9eb37e966) | `value · schema-value · contract_max` | minimum=1; reason="schema-maximum" |
+| [field tags](#s-3ce334b3ba99) | `cardinality · items · contract_max` | reason="bounded-exact-tag-selector-batch" |
 
 ## Maintained corroboration
 
@@ -53,21 +65,21 @@ Exact externally visible contract owned by this semantic dossier.
 
 ## Governing policies
 
-- `compatibility/http-api/v1`
-- `extent-rule/no-semantic-maximum/v1`
-- `extent-rule/schema-bound/v1`
+- <a id="pa-97cae48eab38"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0ba)
+- <a id="pa-aad9f6e7edf3"></a>[extent-rule/no-semantic-maximum/v1](../../../policies/index.md#p-574724b48af0)
+- <a id="pa-268551f70b95"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
 
 ## Evidence
 
 ### Qualification
 
-- `make operation-qualification`
-- `make compose-smoke`
+- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459fb8)
+- [make compose-smoke](../../../evidence/sources.md#q-413b0b241ba8)
 
 ### Executable sources
 
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `openapi:riverhog` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
+- [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc960) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
 
 ### Machine authority
 

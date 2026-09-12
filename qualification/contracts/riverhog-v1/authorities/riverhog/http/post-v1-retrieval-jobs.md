@@ -8,25 +8,26 @@ Create Retrieval Job
 
 | Audit field | Value |
 |---|---|
-| Authority | `riverhog` |
-| Interface | `http` |
-| Family | `retrieval-jobs` |
+| Authority | [riverhog](../index.md) |
+| Interface | [http](index.md) |
+| Family | [retrieval-jobs](families/retrieval-jobs/index.md) |
 | Contract elements | 1 |
 | Extent decisions | 0 |
 
 ## External contract
 
-- `operationId`: create_retrieval_job
-- `summary`: Create Retrieval Job
-- `security`: `[{"HTTPBearer": []}]`
+<a id="s-75436bdcc80c"></a>
+- <a id="s-1b2e0cfdae75"></a>`operationId`: create_retrieval_job
+- <a id="s-a09136103cae"></a>`summary`: Create Retrieval Job
+- <a id="s-78c10226e639"></a>`security`: `[{"HTTPBearer": []}]`
 
 ### Parameters
 
 | Name | In | Required | Schema |
 |---|---|---:|---|
-| `If-Match` | header | yes | type="string"; pattern="^\"[0-9a-f]{64}\"$" |
+| <a id="s-791d68906d53"></a>`If-Match` | header | yes | type="string"; pattern="^\"[0-9a-f]{64}\"$" |
 
-### Request body
+### <a id="s-b4debbc758e6"></a>Request body
 
 `{"content": {"application/json": {"schema": {"$ref": "#/components/schemas/CreateRetrievalJobRequest"}}}, "required": true}`
 
@@ -34,14 +35,14 @@ Create Retrieval Job
 
 | Status | Description |
 |---|---|
-| `200` | Successful Response |
-| `400` | Bad Request |
-| `401` | Unauthorized |
-| `403` | Forbidden |
-| `404` | Not Found |
-| `409` | Conflict |
-| `429` | Too Many Requests |
-| `500` | Internal Server Error |
+| <a id="s-905ed75ccb8d"></a>`200` | Successful Response |
+| <a id="s-ad1824e9e54c"></a>`400` | Bad Request |
+| <a id="s-9100a1ca8be8"></a>`401` | Unauthorized |
+| <a id="s-a9bd872e3a74"></a>`403` | Forbidden |
+| <a id="s-9b58850a833d"></a>`404` | Not Found |
+| <a id="s-63a5b41e29e6"></a>`409` | Conflict |
+| <a id="s-f8eb2292f636"></a>`429` | Too Many Requests |
+| <a id="s-973c8dc5f6ae"></a>`500` | Internal Server Error |
 
 ## Maintained corroboration
 
@@ -57,19 +58,19 @@ Create Retrieval Job
 
 ## Governing policies
 
-- `compatibility/http-api/v1`
+- <a id="pa-b16edad57138"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0ba)
 
 ## Evidence
 
 ### Qualification
 
-- `make operation-qualification`
-- `make compose-smoke`
+- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459fb8)
+- [make compose-smoke](../../../evidence/sources.md#q-413b0b241ba8)
 
 ### Executable sources
 
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `openapi:riverhog` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
+- [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc960) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
 
 ### Machine authority
 

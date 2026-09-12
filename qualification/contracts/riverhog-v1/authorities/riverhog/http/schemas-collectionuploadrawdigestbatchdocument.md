@@ -8,50 +8,62 @@ One append-only bounded slice of a registered raw source digest sequence.
 
 | Audit field | Value |
 |---|---|
-| Authority | `riverhog` |
-| Interface | `http` |
-| Family | `schemas` |
+| Authority | [riverhog](../index.md) |
+| Interface | [http](index.md) |
+| Family | [schemas](families/schemas/index.md) |
 | Contract elements | 1 |
 | Extent decisions | 2 |
 
 ## External contract
 
-- `title`: CollectionUploadRawDigestBatchDocument
-- `description`: One append-only bounded slice of a registered raw source digest sequence.
-- `type`: object
+<a id="s-8c2dbc8625ef"></a>
+- <a id="s-383d2b173ef2"></a>`title`: CollectionUploadRawDigestBatchDocument
+- <a id="s-04494a12222e"></a>`description`: One append-only bounded slice of a registered raw source digest sequence.
+- <a id="s-eb89fa257f17"></a>`type`: object
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| `first_part` | yes | type="integer"; minimum=0 |  |
-| `path` | yes | type="string" |  |
-| `sha256s` | yes | type="array"; minItems=1; maxItems=1024; items=(type="string"; pattern="^[0-9a-f]{64}$"); additional keys=`x-riverhog-extent` |  |
+| <a id="s-65e7a28bb357"></a>`first_part` | yes | type="integer"; minimum=0 |  |
+| <a id="s-a0efbe2329d3"></a>`path` | yes | type="string" |  |
+| <a id="s-2c064419380c"></a>`sha256s` | yes | type="array"; minItems=1; maxItems=1024; items=(type="string"; pattern="^[0-9a-f]{64}$"); additional keys=`x-riverhog-extent` |  |
 
 ### Progression, limits, and lifecycle
 
-| Dimension | Unit | Policy | Bounds or reason |
-|---|---|---|---|
-| length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
-| cardinality | items | `segmented_no_total_max` | maximum=1024, minimum=1, reason=bounded-raw-digest-append |
+#### [extent-rule/bounded-segment/v1](../../../policies/index.md#p-2b3f3f1594af)
+
+Shared facts for every subject below: maximum=1024; minimum=1; progression={"progression":"first_part"}; reason="bounded-raw-digest-append"
+
+| Applies to | Contract | Bounds or reason |
+|---|---|---|
+| [field sha256s](#s-2c064419380c) | `cardinality · items · segmented_no_total_max` | shared above |
+
+#### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
+
+Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"}
+
+| Applies to | Contract | Bounds or reason |
+|---|---|---|
+| <a id="s-ef3601ab556b"></a>field sha256s · items | `length · characters · fixed` | shared above |
 
 ## Governing policies
 
-- `compatibility/http-api/v1`
-- `extent-rule/bounded-segment/v1`
-- `extent-rule/schema-bound/v1`
+- <a id="pa-1d7256555804"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0ba)
+- <a id="pa-4729aa64964a"></a>[extent-rule/bounded-segment/v1](../../../policies/index.md#p-2b3f3f1594af)
+- <a id="pa-3142094a425b"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
 
 ## Evidence
 
 ### Qualification
 
-- `make operation-qualification`
-- `make compose-smoke`
+- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459fb8)
+- [make compose-smoke](../../../evidence/sources.md#q-413b0b241ba8)
 
 ### Executable sources
 
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `openapi:riverhog` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
+- [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc960) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
 
 ### Machine authority
 

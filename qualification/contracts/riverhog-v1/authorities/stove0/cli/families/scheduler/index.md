@@ -6,8 +6,8 @@ Contract elements: **3** · Extent decisions: **3**
 
 | Policy | Count |
 |---|---:|
-| `compatibility/cli/v1` | 3 |
-| `extent-rule/schema-bound/v1` | 1 |
+| [compatibility/cli/v1](../../../../../policies/index.md#p-48a89776de7f) | 3 |
+| [extent-rule/schema-bound/v1](../../../../../policies/index.md#p-c0db822fc034) | 1 |
 
 ## Semantic dossiers
 

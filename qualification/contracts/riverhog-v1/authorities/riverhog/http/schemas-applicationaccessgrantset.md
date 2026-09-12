@@ -8,24 +8,36 @@ A nonempty, duplicate-free public grant set with canonical wildcard use.
 
 | Audit field | Value |
 |---|---|
-| Authority | `riverhog` |
-| Interface | `http` |
-| Family | `schemas` |
+| Authority | [riverhog](../index.md) |
+| Interface | [http](index.md) |
+| Family | [schemas](families/schemas/index.md) |
 | Contract elements | 1 |
 | Extent decisions | 2 |
 
 ## External contract
 
-- `title`: ApplicationAccessGrantSet
-- `description`: A nonempty, duplicate-free public grant set with canonical wildcard use.
-- `type`: array
+<a id="s-0f785b069adf"></a>
+- <a id="s-5859614d27c9"></a>`title`: ApplicationAccessGrantSet
+- <a id="s-03ba28cdba56"></a>`description`: A nonempty, duplicate-free public grant set with canonical wildcard use.
+- <a id="s-88edbaab8a4d"></a>`type`: array
 
 ### Progression, limits, and lifecycle
 
-| Dimension | Unit | Policy | Bounds or reason |
-|---|---|---|---|
-| cardinality | items | `contract_max` | maximum=1, reason=wildcard-access-grant-is-exclusive |
-| cardinality | items | `operational_policy` | maximum=None, reason=no-declared-semantic-maximum |
+#### [extent-rule/no-semantic-maximum/v1](../../../policies/index.md#p-574724b48af0)
+
+Shared facts for every subject below: capacity_authority={"declared_maximum":null,"hidden_maximum":"forbidden","owner":"riverhog"}; maximum=null; reason="no-declared-semantic-maximum"
+
+| Applies to | Contract | Bounds or reason |
+|---|---|---|
+| [schemas: ApplicationAccessGrantSet](#s-0f785b069adf) | `cardinality · items · operational_policy` | shared above |
+
+#### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
+
+Shared facts for every subject below: maximum=1; reason="wildcard-access-grant-is-exclusive"
+
+| Applies to | Contract | Bounds or reason |
+|---|---|---|
+| <a id="s-699746dac792"></a>allOf alternative 1 · then | `cardinality · items · contract_max` | shared above |
 
 ## Maintained corroboration
 
@@ -35,21 +47,21 @@ A nonempty, duplicate-free public grant set with canonical wildcard use.
 
 ## Governing policies
 
-- `compatibility/http-api/v1`
-- `extent-rule/no-semantic-maximum/v1`
-- `extent-rule/schema-bound/v1`
+- <a id="pa-eafc4c84b852"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0ba)
+- <a id="pa-21e72bebec78"></a>[extent-rule/no-semantic-maximum/v1](../../../policies/index.md#p-574724b48af0)
+- <a id="pa-440c4c486c10"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
 
 ## Evidence
 
 ### Qualification
 
-- `make operation-qualification`
-- `make compose-smoke`
+- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459fb8)
+- [make compose-smoke](../../../evidence/sources.md#q-413b0b241ba8)
 
 ### Executable sources
 
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `openapi:riverhog` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
+- [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc960) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
 
 ### Machine authority
 

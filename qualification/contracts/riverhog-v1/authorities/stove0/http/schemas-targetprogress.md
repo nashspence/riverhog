@@ -8,49 +8,54 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Audit field | Value |
 |---|---|
-| Authority | `stove0` |
-| Interface | `http` |
-| Family | `schemas` |
+| Authority | [stove0](../index.md) |
+| Interface | [http](index.md) |
+| Family | [schemas](families/schemas/index.md) |
 | Contract elements | 1 |
 | Extent decisions | 2 |
 
 ## External contract
 
-- `title`: TargetProgress
-- `type`: object
+<a id="s-8286fd24371c"></a>
+- <a id="s-b3591114aeb1"></a>`title`: TargetProgress
+- <a id="s-34d45a8485b8"></a>`type`: object
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| `completed` | yes | type="integer"; minimum=0 |  |
-| `phase` | yes | type="string"; minLength=1; maxLength=120 |  |
-| `total` | no | anyOf=type="integer"; minimum=0 \| type="null" |  |
-| `unit` | no | anyOf=type="string"; minLength=1; maxLength=40 \| type="null" |  |
+| <a id="s-76d78c2b9f97"></a>`completed` | yes | type="integer"; minimum=0 |  |
+| <a id="s-ded255a1abaa"></a>`phase` | yes | type="string"; minLength=1; maxLength=120 |  |
+| <a id="s-edfb3f4d4415"></a>`total` | no | anyOf=type="integer"; minimum=0 \| type="null" |  |
+| <a id="s-5abc9e6e1c28"></a>`unit` | no | anyOf=type="string"; minLength=1; maxLength=40 \| type="null" |  |
 
 ### Progression, limits, and lifecycle
 
-| Dimension | Unit | Policy | Bounds or reason |
-|---|---|---|---|
-| length | characters | `contract_max` | maximum=120, minimum=1, reason=schema-maximum |
-| length | characters | `contract_max` | maximum=40, minimum=1, reason=schema-maximum |
+#### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
+
+Shared facts for every subject below: minimum=1; reason="schema-maximum"
+
+| Applies to | Contract | Bounds or reason |
+|---|---|---|
+| [field phase](#s-ded255a1abaa) | `length · characters · contract_max` | maximum=120 |
+| <a id="s-df67201d67a5"></a>field unit · anyOf alternative 1 | `length · characters · contract_max` | maximum=40 |
 
 ## Governing policies
 
-- `compatibility/http-api/v1`
-- `extent-rule/schema-bound/v1`
+- <a id="pa-48c4325efbae"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0ba)
+- <a id="pa-8a728fab5c52"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
 
 ## Evidence
 
 ### Qualification
 
-- `make operation-qualification`
-- `make compose-smoke`
+- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459fb8)
+- [make compose-smoke](../../../evidence/sources.md#q-413b0b241ba8)
 
 ### Executable sources
 
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `openapi:stove0` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
+- [openapi:stove0](../../../evidence/sources.md#src-52e6e3212451) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
 
 ### Machine authority
 

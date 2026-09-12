@@ -8,40 +8,41 @@ Stream Collection Provenance Journal
 
 | Audit field | Value |
 |---|---|
-| Authority | `riverhog` |
-| Interface | `http` |
-| Family | `collections` |
+| Authority | [riverhog](../index.md) |
+| Interface | [http](index.md) |
+| Family | [collections](families/collections/index.md) |
 | Contract elements | 1 |
 | Extent decisions | 0 |
 
 ## External contract
 
-- `operationId`: stream_collection_provenance_journal
-- `summary`: Stream Collection Provenance Journal
-- `security`: `[{"HTTPBearer": []}]`
+<a id="s-134aff881beb"></a>
+- <a id="s-4c94154a95cb"></a>`operationId`: stream_collection_provenance_journal
+- <a id="s-c4c0625828ad"></a>`summary`: Stream Collection Provenance Journal
+- <a id="s-87943351effc"></a>`security`: `[{"HTTPBearer": []}]`
 
 ### Parameters
 
 | Name | In | Required | Schema |
 |---|---|---:|---|
-| `collection_id` | path | yes | type="integer"; minimum=1 |
-| `journal_id` | path | yes | type="string"; pattern="^urn:uuid:[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$" |
-| `Range` | header | no | anyOf=type="string" \| type="null" |
-| `If-Match` | header | no | anyOf=type="string" \| type="null" |
+| <a id="s-a4ef2bea49fe"></a>`collection_id` | path | yes | type="integer"; minimum=1 |
+| <a id="s-c5835bbcc53c"></a>`journal_id` | path | yes | type="string"; pattern="^urn:uuid:[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$" |
+| <a id="s-4fba5c289331"></a>`Range` | header | no | anyOf=type="string" \| type="null" |
+| <a id="s-c8fe3179f91b"></a>`If-Match` | header | no | anyOf=type="string" \| type="null" |
 
 ### Responses
 
 | Status | Description |
 |---|---|
-| `200` | Exact immutable provenance journal. |
-| `206` | Exact immutable provenance journal byte range. |
-| `400` | Bad Request |
-| `401` | Unauthorized |
-| `403` | Forbidden |
-| `404` | Not Found |
-| `412` | Precondition Failed |
-| `428` | Precondition Required |
-| `500` | Internal Server Error |
+| <a id="s-92f2a107ee97"></a>`200` | Exact immutable provenance journal. |
+| <a id="s-97663fb9b736"></a>`206` | Exact immutable provenance journal byte range. |
+| <a id="s-92337c450c1b"></a>`400` | Bad Request |
+| <a id="s-d3af89913303"></a>`401` | Unauthorized |
+| <a id="s-a469d6dc90c2"></a>`403` | Forbidden |
+| <a id="s-31ed9a3535c2"></a>`404` | Not Found |
+| <a id="s-b74cf514a818"></a>`412` | Precondition Failed |
+| <a id="s-2fff5173f276"></a>`428` | Precondition Required |
+| <a id="s-2339147e1d39"></a>`500` | Internal Server Error |
 
 ## Maintained corroboration
 
@@ -55,19 +56,19 @@ Stream Collection Provenance Journal
 
 ## Governing policies
 
-- `compatibility/http-api/v1`
+- <a id="pa-c38fc8ddacce"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0ba)
 
 ## Evidence
 
 ### Qualification
 
-- `make operation-qualification`
-- `make compose-smoke`
+- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459fb8)
+- [make compose-smoke](../../../evidence/sources.md#q-413b0b241ba8)
 
 ### Executable sources
 
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `openapi:riverhog` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
+- [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc960) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
 
 ### Machine authority
 

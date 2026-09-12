@@ -8,35 +8,47 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Audit field | Value |
 |---|---|
-| Authority | `riverhog` |
-| Interface | `http` |
-| Family | `schemas` |
+| Authority | [riverhog](../index.md) |
+| Interface | [http](index.md) |
+| Family | [schemas](families/schemas/index.md) |
 | Contract elements | 1 |
 | Extent decisions | 2 |
 
 ## External contract
 
-- `title`: CapturedCollectionProvenanceVerification
-- `type`: object
+<a id="s-74e5c2af8169"></a>
+- <a id="s-4be1783134dd"></a>`title`: CapturedCollectionProvenanceVerification
+- <a id="s-ce742574d3e1"></a>`type`: object
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| `collection_id` | yes | #/components/schemas/CollectionId |  |
-| `entities` | yes | type="integer"; minimum=0 |  |
-| `files` | yes | type="integer"; minimum=0 |  |
-| `journals` | yes | type="integer"; minimum=1 |  |
-| `provenance_identity` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| `provenance_mode` | yes | type="string"; enum=["captured","mixed"] |  |
-| `valid` | yes | type="boolean"; const=true |  |
+| <a id="s-87ba9aa6578c"></a>`collection_id` | yes | #/components/schemas/CollectionId |  |
+| <a id="s-43af0c7bb16c"></a>`entities` | yes | type="integer"; minimum=0 |  |
+| <a id="s-bb1cbb5ae80d"></a>`files` | yes | type="integer"; minimum=0 |  |
+| <a id="s-bbffa50bf8ed"></a>`journals` | yes | type="integer"; minimum=1 |  |
+| <a id="s-4e4fa3e79b7b"></a>`provenance_identity` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-f9e255b72eff"></a>`provenance_mode` | yes | type="string"; enum=["captured","mixed"] |  |
+| <a id="s-2e4362d4dc82"></a>`valid` | yes | type="boolean"; const=true |  |
 
 ### Progression, limits, and lifecycle
 
-| Dimension | Unit | Policy | Bounds or reason |
-|---|---|---|---|
-| value | schema-value | `operational_policy` | maximum=None, reason=no-declared-semantic-maximum |
-| length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
+#### [extent-rule/no-semantic-maximum/v1](../../../policies/index.md#p-574724b48af0)
+
+Shared facts for every subject below: capacity_authority={"declared_maximum":null,"hidden_maximum":"forbidden","owner":"riverhog"}; maximum=null; reason="no-declared-semantic-maximum"
+
+| Applies to | Contract | Bounds or reason |
+|---|---|---|
+| [field files](#s-bb1cbb5ae80d) | `value · schema-value · operational_policy` | shared above |
+
+#### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
+
+Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"}
+
+| Applies to | Contract | Bounds or reason |
+|---|---|---|
+| [field provenance_identity](#s-4e4fa3e79b7b) | `length · characters · fixed` | shared above |
 
 ## Maintained corroboration
 
@@ -46,21 +58,21 @@ Exact externally visible contract owned by this semantic dossier.
 
 ## Governing policies
 
-- `compatibility/http-api/v1`
-- `extent-rule/no-semantic-maximum/v1`
-- `extent-rule/schema-bound/v1`
+- <a id="pa-fb0e31eb57ef"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0ba)
+- <a id="pa-0166e2d19f4e"></a>[extent-rule/no-semantic-maximum/v1](../../../policies/index.md#p-574724b48af0)
+- <a id="pa-7eaffa80c63f"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
 
 ## Evidence
 
 ### Qualification
 
-- `make operation-qualification`
-- `make compose-smoke`
+- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459fb8)
+- [make compose-smoke](../../../evidence/sources.md#q-413b0b241ba8)
 
 ### Executable sources
 
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `openapi:riverhog` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
+- [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc960) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
 
 ### Machine authority
 

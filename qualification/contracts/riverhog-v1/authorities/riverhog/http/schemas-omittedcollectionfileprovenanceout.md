@@ -8,33 +8,45 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Audit field | Value |
 |---|---|
-| Authority | `riverhog` |
-| Interface | `http` |
-| Family | `schemas` |
+| Authority | [riverhog](../index.md) |
+| Interface | [http](index.md) |
+| Family | [schemas](families/schemas/index.md) |
 | Contract elements | 1 |
 | Extent decisions | 2 |
 
 ## External contract
 
-- `title`: OmittedCollectionFileProvenanceOut
-- `type`: object
+<a id="s-65bb876d788c"></a>
+- <a id="s-2a0e9ef8da4f"></a>`title`: OmittedCollectionFileProvenanceOut
+- <a id="s-5c0e8a0452bc"></a>`type`: object
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| `bytes` | yes | type="integer"; minimum=0 |  |
-| `collection_id` | yes | #/components/schemas/CollectionId |  |
-| `path` | yes | #/components/schemas/CanonicalRelPath |  |
-| `provenance` | yes | #/components/schemas/OmittedFileProvenanceBinding |  |
-| `sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-54be311c326f"></a>`bytes` | yes | type="integer"; minimum=0 |  |
+| <a id="s-b4234dc0d1ca"></a>`collection_id` | yes | #/components/schemas/CollectionId |  |
+| <a id="s-314e2a6fc66c"></a>`path` | yes | #/components/schemas/CanonicalRelPath |  |
+| <a id="s-78bb1e70c0fd"></a>`provenance` | yes | #/components/schemas/OmittedFileProvenanceBinding |  |
+| <a id="s-6377f41a680d"></a>`sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 
 ### Progression, limits, and lifecycle
 
-| Dimension | Unit | Policy | Bounds or reason |
-|---|---|---|---|
-| value | schema-value | `operational_policy` | maximum=None, reason=no-declared-semantic-maximum |
-| length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
+#### [extent-rule/no-semantic-maximum/v1](../../../policies/index.md#p-574724b48af0)
+
+Shared facts for every subject below: capacity_authority={"declared_maximum":null,"hidden_maximum":"forbidden","owner":"riverhog"}; maximum=null; reason="no-declared-semantic-maximum"
+
+| Applies to | Contract | Bounds or reason |
+|---|---|---|
+| [field bytes](#s-54be311c326f) | `value · schema-value · operational_policy` | shared above |
+
+#### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
+
+Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"}
+
+| Applies to | Contract | Bounds or reason |
+|---|---|---|
+| [field sha256](#s-6377f41a680d) | `length · characters · fixed` | shared above |
 
 ## Maintained corroboration
 
@@ -46,21 +58,21 @@ Exact externally visible contract owned by this semantic dossier.
 
 ## Governing policies
 
-- `compatibility/http-api/v1`
-- `extent-rule/no-semantic-maximum/v1`
-- `extent-rule/schema-bound/v1`
+- <a id="pa-5ff2fa6f52f6"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0ba)
+- <a id="pa-6672c4c1117a"></a>[extent-rule/no-semantic-maximum/v1](../../../policies/index.md#p-574724b48af0)
+- <a id="pa-4800143ee309"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
 
 ## Evidence
 
 ### Qualification
 
-- `make operation-qualification`
-- `make compose-smoke`
+- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459fb8)
+- [make compose-smoke](../../../evidence/sources.md#q-413b0b241ba8)
 
 ### Executable sources
 
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `openapi:riverhog` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
+- [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc960) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
 
 ### Machine authority
 

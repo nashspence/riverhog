@@ -8,18 +8,19 @@ Run Scheduler Once
 
 | Audit field | Value |
 |---|---|
-| Authority | `stove0` |
-| Interface | `http` |
-| Family | `admin` |
+| Authority | [stove0](../index.md) |
+| Interface | [http](index.md) |
+| Family | [admin](families/admin/index.md) |
 | Contract elements | 1 |
 | Extent decisions | 0 |
 
 ## External contract
 
-- `operationId`: run_scheduler
-- `summary`: Run Scheduler Once
+<a id="s-07f314ca3b1f"></a>
+- <a id="s-10624f023952"></a>`operationId`: run_scheduler
+- <a id="s-ae0ebf4d0870"></a>`summary`: Run Scheduler Once
 
-### Request body
+### <a id="s-7f9f86f6c7b4"></a>Request body
 
 `{"content": {"application/json": {"schema": {"$ref": "#/components/schemas/SchedulerRunIn"}}}, "required": true}`
 
@@ -27,12 +28,12 @@ Run Scheduler Once
 
 | Status | Description |
 |---|---|
-| `200` | Successful Response |
-| `400` | Bad Request |
-| `401` | Unauthorized |
-| `403` | Forbidden |
-| `409` | Conflict |
-| `500` | Internal Server Error |
+| <a id="s-2c882565d956"></a>`200` | Successful Response |
+| <a id="s-b4d23ae89604"></a>`400` | Bad Request |
+| <a id="s-57b6683d8a16"></a>`401` | Unauthorized |
+| <a id="s-88686cdefa6f"></a>`403` | Forbidden |
+| <a id="s-5afdaa597fce"></a>`409` | Conflict |
+| <a id="s-91ff119ad2bc"></a>`500` | Internal Server Error |
 
 ## Maintained corroboration
 
@@ -48,19 +49,19 @@ Run Scheduler Once
 
 ## Governing policies
 
-- `compatibility/http-api/v1`
+- <a id="pa-78c76e268b73"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0ba)
 
 ## Evidence
 
 ### Qualification
 
-- `make operation-qualification`
-- `make compose-smoke`
+- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459fb8)
+- [make compose-smoke](../../../evidence/sources.md#q-413b0b241ba8)
 
 ### Executable sources
 
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `openapi:stove0` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
+- [openapi:stove0](../../../evidence/sources.md#src-52e6e3212451) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
 
 ### Machine authority
 

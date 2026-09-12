@@ -8,38 +8,38 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Audit field | Value |
 |---|---|
-| Authority | `riverhog-ftp-adapter` |
-| Interface | `cli` |
-| Family | `riverhog-ftp-adapter status` |
+| Authority | [riverhog-ftp-adapter](../index.md) |
+| Interface | [cli](index.md) |
+| Family | [riverhog-ftp-adapter status](index.md#f-ca752dc011b2) |
 | Contract elements | 1 |
 | Extent decisions | 0 |
 
 ## External contract
 
-- Parser name: `riverhog-ftp-adapter status`
+- <a id="s-f81d8fd65a79"></a>Parser name: `riverhog-ftp-adapter status`
 
 ### Parameters
 
 | Name | Kind | Required | Type | Options |
 |---|---|---:|---|---|
-| `` | _StoreAction | no | int | --page-size |
-| `` | _StoreAction | no |  | --page-token |
+| <a id="s-f54fd55b0254"></a>`` | _StoreAction | no | int | --page-size |
+| <a id="s-2a51aae1b2cd"></a>`` | _StoreAction | no |  | --page-token |
 
 ## Governing policies
 
-- `compatibility/cli/v1`
+- <a id="pa-482ff0204807"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de7f)
 
 ## Evidence
 
 ### Qualification
 
-- `make dist-smoke`
-- `make operation-qualification`
+- [make dist-smoke](../../../evidence/sources.md#q-0ba2578a3eb7)
+- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459fb8)
 
 ### Executable sources
 
-- `cli:riverhog-ftp-adapter` — `reference/riverhog/ingress/ftp/src/riverhog_ftp_adapter/app.py::<module>`
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
+- [cli:riverhog-ftp-adapter](../../../evidence/sources.md#src-303f765bca1e) — `reference/riverhog/ingress/ftp/src/riverhog_ftp_adapter/app.py::<module>`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
 
 ### Machine authority
 

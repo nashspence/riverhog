@@ -8,32 +8,33 @@ Backfill Admission Policy
 
 | Audit field | Value |
 |---|---|
-| Authority | `stove0` |
-| Interface | `http` |
-| Family | `admission-policies` |
+| Authority | [stove0](../index.md) |
+| Interface | [http](index.md) |
+| Family | [admission-policies](families/admission-policies/index.md) |
 | Contract elements | 1 |
 | Extent decisions | 0 |
 
 ## External contract
 
-- `operationId`: backfill_admission_policy
-- `summary`: Backfill Admission Policy
+<a id="s-a03a7864139f"></a>
+- <a id="s-4b5fd3fd50b3"></a>`operationId`: backfill_admission_policy
+- <a id="s-51b7a7f933ce"></a>`summary`: Backfill Admission Policy
 
 ### Parameters
 
 | Name | In | Required | Schema |
 |---|---|---:|---|
-| `policy_id` | path | yes | type="string" |
+| <a id="s-b6cc543640a1"></a>`policy_id` | path | yes | type="string" |
 
 ### Responses
 
 | Status | Description |
 |---|---|
-| `200` | Successful Response |
-| `400` | Bad Request |
-| `401` | Unauthorized |
-| `403` | Forbidden |
-| `500` | Internal Server Error |
+| <a id="s-c589a46b0346"></a>`200` | Successful Response |
+| <a id="s-33d86e5074ec"></a>`400` | Bad Request |
+| <a id="s-96370e1b48bb"></a>`401` | Unauthorized |
+| <a id="s-15c08c80dd72"></a>`403` | Forbidden |
+| <a id="s-06c122ae8e0f"></a>`500` | Internal Server Error |
 
 ## Maintained corroboration
 
@@ -48,19 +49,19 @@ Backfill Admission Policy
 
 ## Governing policies
 
-- `compatibility/http-api/v1`
+- <a id="pa-4d3f809d2f8a"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0ba)
 
 ## Evidence
 
 ### Qualification
 
-- `make operation-qualification`
-- `make compose-smoke`
+- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459fb8)
+- [make compose-smoke](../../../evidence/sources.md#q-413b0b241ba8)
 
 ### Executable sources
 
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `openapi:stove0` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
+- [openapi:stove0](../../../evidence/sources.md#src-52e6e3212451) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
 
 ### Machine authority
 

@@ -8,47 +8,52 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Audit field | Value |
 |---|---|
-| Authority | `riverhog-ftp-adapter` |
-| Interface | `http` |
-| Family | `schemas` |
+| Authority | [riverhog-ftp-adapter](../index.md) |
+| Interface | [http](index.md) |
+| Family | [schemas](index.md#f-2f7960c10650) |
 | Contract elements | 1 |
 | Extent decisions | 1 |
 
 ## External contract
 
-- `title`: ErrorBody
-- `type`: object
+<a id="s-18b7660b76bd"></a>
+- <a id="s-5b1d2cf51527"></a>`title`: ErrorBody
+- <a id="s-6866a946b781"></a>`type`: object
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| `code` | yes | type="string"; minLength=1 |  |
-| `details` | no | anyOf=type="object"; additional keys=`additionalProperties` \| type="null" |  |
-| `message` | yes | type="string"; minLength=1 |  |
+| <a id="s-cd03e78d1310"></a>`code` | yes | type="string"; minLength=1 |  |
+| <a id="s-d62f0c60eb36"></a>`details` | no | anyOf=type="object"; additional keys=`additionalProperties` \| type="null" |  |
+| <a id="s-47d449052984"></a>`message` | yes | type="string"; minLength=1 |  |
 
 ### Progression, limits, and lifecycle
 
-| Dimension | Unit | Policy | Bounds or reason |
-|---|---|---|---|
-| cardinality | entries | `operational_policy` | maximum=None, reason=no-declared-semantic-maximum |
+#### [extent-rule/no-semantic-maximum/v1](../../../policies/index.md#p-574724b48af0)
+
+Shared facts for every subject below: capacity_authority={"declared_maximum":null,"hidden_maximum":"forbidden","owner":"riverhog-ftp-adapter"}; maximum=null; reason="no-declared-semantic-maximum"
+
+| Applies to | Contract | Bounds or reason |
+|---|---|---|
+| <a id="s-a569b40d2f96"></a>field details · anyOf alternative 1 | `cardinality · entries · operational_policy` | shared above |
 
 ## Governing policies
 
-- `compatibility/http-api/v1`
-- `extent-rule/no-semantic-maximum/v1`
+- <a id="pa-9baae4e8db4e"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0ba)
+- <a id="pa-b41cb6f9559a"></a>[extent-rule/no-semantic-maximum/v1](../../../policies/index.md#p-574724b48af0)
 
 ## Evidence
 
 ### Qualification
 
-- `make operation-qualification`
-- `make compose-smoke`
+- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459fb8)
+- [make compose-smoke](../../../evidence/sources.md#q-413b0b241ba8)
 
 ### Executable sources
 
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `openapi:riverhog-ftp-adapter` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
+- [openapi:riverhog-ftp-adapter](../../../evidence/sources.md#src-c3a51ac29ac7) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
 
 ### Machine authority
 

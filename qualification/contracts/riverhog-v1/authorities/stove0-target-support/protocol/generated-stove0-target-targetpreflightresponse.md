@@ -8,53 +8,54 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Audit field | Value |
 |---|---|
-| Authority | `stove0-target-support` |
-| Interface | `protocol` |
-| Family | `schemas` |
+| Authority | [stove0-target-support](../index.md) |
+| Interface | [protocol](index.md) |
+| Family | [schemas](index.md#f-3862b77c4ff3) |
 | Contract elements | 1 |
 | Extent decisions | 0 |
 
 ## External contract
 
-- `title`: TargetPreflightResponse
-- `type`: object
+<a id="s-98bf5efc844c"></a>
+- <a id="s-160f48c14ca2"></a>`title`: TargetPreflightResponse
+- <a id="s-8265320694a2"></a>`type`: object
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| `plan` | yes | oneOf=#/$defs/TransformPlan \| #/$defs/EffectPlan; additional keys=`discriminator` |  |
-| `target` | yes | #/$defs/TargetContract |  |
+| <a id="s-b2eadc07e622"></a>`plan` | yes | oneOf=#/$defs/TransformPlan \| #/$defs/EffectPlan; additional keys=`discriminator` |  |
+| <a id="s-e6c89ac6df29"></a>`target` | yes | #/$defs/TargetContract |  |
 
 ### Definitions
 
 | Definition | Shape |
 |---|---|
-| `ArtifactSelectionRef` | type="object"; fields=`artifact_count`, `selection_sha256`, `total_bytes`; additional keys=`additionalProperties`, `required` |
-| `EffectPlan` | type="object"; fields=`inputs`, `intent`, `observation_result_sha256s`, `operation_contract_sha256`, `operation_id`, `plan_sha256`, `protocol`, `target_contract_sha256`, `target_implementation_id`, `target_options`; additional keys=`additionalProperties`, `required` |
-| `JsonSchemaDocument` | type="object"; fields=`dialect`, `format_policy`, `id`, `schema`, `sha256`; additional keys=`additionalProperties`, `required` |
-| `JsonValue` | empty object |
-| `TargetContract` | type="object"; fields=`contract_sha256`, `image_digest`, `implementation_id`, `implementation_version`, `operations`, `protocol`, `source_revision`, `transport`; additional keys=`additionalProperties`, `required` |
-| `TargetInputAuthority` | type="object"; fields=`roles`, `selection`; additional keys=`additionalProperties`, `required` |
-| `TargetInputRoleCount` | type="object"; fields=`count`, `role`; additional keys=`additionalProperties`, `required` |
-| `TargetOperationSupport` | type="object"; fields=`operation_contract_sha256`, `operation_id`, `options_schema`, `result_kind`; additional keys=`additionalProperties`, `required` |
-| `TransformPlan` | type="object"; fields=`inputs`, `intent`, `observation_result_sha256s`, `operation_contract_sha256`, `operation_id`, `plan_sha256`, `protocol`, `target_contract_sha256`, `target_implementation_id`, `target_options`; additional keys=`additionalProperties`, `required` |
+| <a id="s-6e82db4fba18"></a>`ArtifactSelectionRef` | type="object"; fields=`artifact_count`, `selection_sha256`, `total_bytes`; additional keys=`additionalProperties`, `required` |
+| <a id="s-11bebc4dd292"></a>`EffectPlan` | type="object"; fields=`inputs`, `intent`, `observation_result_sha256s`, `operation_contract_sha256`, `operation_id`, `plan_sha256`, `protocol`, `target_contract_sha256`, `target_implementation_id`, `target_options`; additional keys=`additionalProperties`, `required` |
+| <a id="s-60608cfe3bed"></a>`JsonSchemaDocument` | type="object"; fields=`dialect`, `format_policy`, `id`, `schema`, `sha256`; additional keys=`additionalProperties`, `required` |
+| <a id="s-885012f602c0"></a>`JsonValue` | empty object |
+| <a id="s-d29225bb031c"></a>`TargetContract` | type="object"; fields=`contract_sha256`, `image_digest`, `implementation_id`, `implementation_version`, `operations`, `protocol`, `source_revision`, `transport`; additional keys=`additionalProperties`, `required` |
+| <a id="s-18093afb67a3"></a>`TargetInputAuthority` | type="object"; fields=`roles`, `selection`; additional keys=`additionalProperties`, `required` |
+| <a id="s-026358c5f8e9"></a>`TargetInputRoleCount` | type="object"; fields=`count`, `role`; additional keys=`additionalProperties`, `required` |
+| <a id="s-40a67f974a96"></a>`TargetOperationSupport` | type="object"; fields=`operation_contract_sha256`, `operation_id`, `options_schema`, `result_kind`; additional keys=`additionalProperties`, `required` |
+| <a id="s-2398dee3b831"></a>`TransformPlan` | type="object"; fields=`inputs`, `intent`, `observation_result_sha256s`, `operation_contract_sha256`, `operation_id`, `plan_sha256`, `protocol`, `target_contract_sha256`, `target_implementation_id`, `target_options`; additional keys=`additionalProperties`, `required` |
 
 ## Governing policies
 
-- `compatibility/components/v1`
+- <a id="pa-40e085e5ea91"></a>[compatibility/components/v1](../../../policies/index.md#p-95e9a1225947)
 
 ## Evidence
 
 ### Qualification
 
-- `make dist-smoke`
-- `make build`
+- [make dist-smoke](../../../evidence/sources.md#q-0ba2578a3eb7)
+- [make build](../../../evidence/sources.md#q-d1121e35fa7a)
 
 ### Executable sources
 
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `protocol:generated:stove0-target` — `reference/stove0/packages/target-support/src/stove0_target_support/schemas.py::target_schema_bundle`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
+- [protocol:generated:stove0-target](../../../evidence/sources.md#src-2c42f9d39a0b) — `reference/stove0/packages/target-support/src/stove0_target_support/schemas.py::target_schema_bundle`
 
 ### Machine authority
 

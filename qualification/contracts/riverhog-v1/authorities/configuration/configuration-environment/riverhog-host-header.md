@@ -8,34 +8,35 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Audit field | Value |
 |---|---|
-| Authority | `configuration` |
-| Interface | `configuration-environment` |
-| Family | `variables` |
+| Authority | [configuration](../index.md) |
+| Interface | [configuration-environment](index.md) |
+| Family | [variables](families/variables/index.md) |
 | Contract elements | 1 |
 | Extent decisions | 0 |
 
 ## External contract
 
+<a id="s-c5d59cd44bcd"></a>
 | Field | Shape |
 |---|---|
-| `consumers` | ["riverhog-client"] |
-| `name` | "RIVERHOG_HOST_HEADER" |
+| <a id="s-4676feab29aa"></a>`consumers` | ["riverhog-client"] |
+| <a id="s-0774de54c088"></a>`name` | "RIVERHOG_HOST_HEADER" |
 
 ## Governing policies
 
-- `compatibility/configuration/v1`
+- <a id="pa-633b63c3ae20"></a>[compatibility/configuration/v1](../../../policies/index.md#p-8dc08bb46173)
 
 ## Evidence
 
 ### Qualification
 
-- `make unit`
-- `make compose-smoke`
+- [make unit](../../../evidence/sources.md#q-ce47068f504c)
+- [make compose-smoke](../../../evidence/sources.md#q-413b0b241ba8)
 
 ### Executable sources
 
-- `configuration-environment:RIVERHOG_HOST_HEADER` — `configuration-environment:RIVERHOG_HOST_HEADER`
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
+- [configuration-environment:RIVERHOG_HOST_HEADER](../../../evidence/sources.md#src-d40a0dd07986) — `configuration-environment:RIVERHOG_HOST_HEADER`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
 
 ### Machine authority
 

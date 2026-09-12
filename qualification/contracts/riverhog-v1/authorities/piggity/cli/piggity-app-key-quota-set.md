@@ -8,33 +8,37 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Audit field | Value |
 |---|---|
-| Authority | `piggity` |
-| Interface | `cli` |
-| Family | `app` |
+| Authority | [piggity](../index.md) |
+| Interface | [cli](index.md) |
+| Family | [app](families/app/index.md) |
 | Contract elements | 1 |
 | Extent decisions | 4 |
 
 ## External contract
 
-- Parser name: `set`
+- <a id="s-e9e1b2971e84"></a>Parser name: `set`
 
 ### Parameters
 
 | Name | Kind | Required | Type | Options |
 |---|---|---:|---|---|
-| `app_name` | TyperArgument | yes | {'class': 'typer._click.types.StringParamType', 'name': 'text'} | app_name |
-| `key_id` | TyperArgument | yes | {'class': 'typer._click.types.StringParamType', 'name': 'text'} | key_id |
-| `limit` | TyperArgument | yes | {'class': 'typer._click.types.StringParamType', 'name': 'text'} | limit |
-| `json_mode` | TyperOption | no | {'class': 'typer._click.types.BoolParamType', 'name': 'boolean'} | --json |
+| <a id="s-9e2a6fbded4a"></a>`app_name` | TyperArgument | yes | {'class': 'typer._click.types.StringParamType', 'name': 'text'} | app_name |
+| <a id="s-1fdbbe9e7445"></a>`key_id` | TyperArgument | yes | {'class': 'typer._click.types.StringParamType', 'name': 'text'} | key_id |
+| <a id="s-face82c0e99e"></a>`limit` | TyperArgument | yes | {'class': 'typer._click.types.StringParamType', 'name': 'text'} | limit |
+| <a id="s-d1f18c84927f"></a>`json_mode` | TyperOption | no | {'class': 'typer._click.types.BoolParamType', 'name': 'boolean'} | --json |
 
 ### Progression, limits, and lifecycle
 
-| Dimension | Unit | Policy | Bounds or reason |
-|---|---|---|---|
-| cardinality | values-per-occurrence | `fixed` | maximum=1, minimum=1, reason=fixed-command-argument-arity |
-| cardinality | values-per-occurrence | `fixed` | maximum=1, minimum=1, reason=fixed-command-argument-arity |
-| cardinality | values-per-occurrence | `fixed` | maximum=1, minimum=1, reason=fixed-command-argument-arity |
-| cardinality | values-per-occurrence | `fixed` | maximum=1, minimum=1, reason=fixed-command-argument-arity |
+#### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
+
+Shared facts for every subject below: maximum=1; minimum=1; reason="fixed-command-argument-arity"; source_constraint={"field":"nargs"}
+
+| Applies to | Contract | Bounds or reason |
+|---|---|---|
+| [CLI parameter app_name](#s-9e2a6fbded4a) | `cardinality · values-per-occurrence · fixed` | shared above |
+| [CLI parameter --json](#s-d1f18c84927f) | `cardinality · values-per-occurrence · fixed` | shared above |
+| [CLI parameter key_id](#s-1fdbbe9e7445) | `cardinality · values-per-occurrence · fixed` | shared above |
+| [CLI parameter limit](#s-face82c0e99e) | `cardinality · values-per-occurrence · fixed` | shared above |
 
 ## Maintained corroboration
 
@@ -44,20 +48,20 @@ Exact externally visible contract owned by this semantic dossier.
 
 ## Governing policies
 
-- `compatibility/cli/v1`
-- `extent-rule/schema-bound/v1`
+- <a id="pa-df3ce639c97c"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de7f)
+- <a id="pa-1bf616ba6b19"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
 
 ## Evidence
 
 ### Qualification
 
-- `make dist-smoke`
-- `make operation-qualification`
+- [make dist-smoke](../../../evidence/sources.md#q-0ba2578a3eb7)
+- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459fb8)
 
 ### Executable sources
 
-- `cli:piggity` — `reference/riverhog/applications/piggity/src/piggity/main.py::<module>`
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
+- [cli:piggity](../../../evidence/sources.md#src-094022231f2c) — `reference/riverhog/applications/piggity/src/piggity/main.py::<module>`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
 
 ### Machine authority
 

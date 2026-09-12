@@ -8,41 +8,46 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Audit field | Value |
 |---|---|
-| Authority | `configuration` |
-| Interface | `configuration-environment` |
-| Family | `variables` |
+| Authority | [configuration](../index.md) |
+| Interface | [configuration-environment](index.md) |
+| Family | [variables](families/variables/index.md) |
 | Contract elements | 1 |
 | Extent decisions | 1 |
 
 ## External contract
 
+<a id="s-1545d1acc241"></a>
 | Field | Shape |
 |---|---|
-| `consumers` | ["riverhog-client"] |
-| `name` | "RIVERHOG_DOWNLOAD_FILE_CONCURRENCY" |
+| <a id="s-5a43b644636c"></a>`consumers` | ["riverhog-client"] |
+| <a id="s-e838cafed447"></a>`name` | "RIVERHOG_DOWNLOAD_FILE_CONCURRENCY" |
 
 ### Progression, limits, and lifecycle
 
-| Dimension | Unit | Policy | Bounds or reason |
-|---|---|---|---|
-| value | configured-value | `operational_policy` | maximum=None, reason=operator-configured-capacity |
+#### [extent-rule/configured-capacity/v1](../../../policies/index.md#p-3ebc61fc9972)
+
+Shared facts for every subject below: configuration="RIVERHOG_DOWNLOAD_FILE_CONCURRENCY"; maximum=null; reason="operator-configured-capacity"
+
+| Applies to | Contract | Bounds or reason |
+|---|---|---|
+| [RIVERHOG_DOWNLOAD_FILE_CONCURRENCY](#s-1545d1acc241) | `value · configured-value · operational_policy` | shared above |
 
 ## Governing policies
 
-- `compatibility/configuration/v1`
-- `extent-rule/configured-capacity/v1`
+- <a id="pa-5c0905a3e6f2"></a>[compatibility/configuration/v1](../../../policies/index.md#p-8dc08bb46173)
+- <a id="pa-11b482a447e7"></a>[extent-rule/configured-capacity/v1](../../../policies/index.md#p-3ebc61fc9972)
 
 ## Evidence
 
 ### Qualification
 
-- `make unit`
-- `make compose-smoke`
+- [make unit](../../../evidence/sources.md#q-ce47068f504c)
+- [make compose-smoke](../../../evidence/sources.md#q-413b0b241ba8)
 
 ### Executable sources
 
-- `configuration-environment:RIVERHOG_DOWNLOAD_FILE_CONCURRENCY` — `configuration-environment:RIVERHOG_DOWNLOAD_FILE_CONCURRENCY`
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
+- [configuration-environment:RIVERHOG_DOWNLOAD_FILE_CONCURRENCY](../../../evidence/sources.md#src-2d3f1d8a6694) — `configuration-environment:RIVERHOG_DOWNLOAD_FILE_CONCURRENCY`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
 
 ### Machine authority
 

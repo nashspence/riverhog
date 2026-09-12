@@ -8,35 +8,40 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Audit field | Value |
 |---|---|
-| Authority | `stove0` |
-| Interface | `http` |
-| Family | `schemas` |
+| Authority | [stove0](../index.md) |
+| Interface | [http](index.md) |
+| Family | [schemas](families/schemas/index.md) |
 | Contract elements | 1 |
 | Extent decisions | 3 |
 
 ## External contract
 
-- `title`: TargetSettlementAuthority
-- `type`: object
+<a id="s-428567adad46"></a>
+- <a id="s-6bb82eba89a8"></a>`title`: TargetSettlementAuthority
+- <a id="s-49261af54d67"></a>`type`: object
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| `format` | no | type="string"; const="stove0-target-settlement/v1" |  |
-| `job_id` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| `output_bindings` | yes | #/components/schemas/TargetOutputBindingSetIdentity |  |
-| `output_collection` | yes | #/components/schemas/OutputCollectionRef |  |
-| `production_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| `settlement_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-ea9a996c0a77"></a>`format` | no | type="string"; const="stove0-target-settlement/v1" |  |
+| <a id="s-cde8f4457302"></a>`job_id` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-55ad886411d8"></a>`output_bindings` | yes | #/components/schemas/TargetOutputBindingSetIdentity |  |
+| <a id="s-4b257ebb6b1b"></a>`output_collection` | yes | #/components/schemas/OutputCollectionRef |  |
+| <a id="s-525e441ceb72"></a>`production_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-3bfcddaed76b"></a>`settlement_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 
 ### Progression, limits, and lifecycle
 
-| Dimension | Unit | Policy | Bounds or reason |
-|---|---|---|---|
-| length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
-| length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
-| length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
+#### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
+
+Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"}
+
+| Applies to | Contract | Bounds or reason |
+|---|---|---|
+| [field job_id](#s-cde8f4457302) | `length · characters · fixed` | shared above |
+| [field production_sha256](#s-525e441ceb72) | `length · characters · fixed` | shared above |
+| [field settlement_sha256](#s-3bfcddaed76b) | `length · characters · fixed` | shared above |
 
 ## Maintained corroboration
 
@@ -47,20 +52,20 @@ Exact externally visible contract owned by this semantic dossier.
 
 ## Governing policies
 
-- `compatibility/http-api/v1`
-- `extent-rule/schema-bound/v1`
+- <a id="pa-f868984d3354"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0ba)
+- <a id="pa-e031b012bf18"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
 
 ## Evidence
 
 ### Qualification
 
-- `make operation-qualification`
-- `make compose-smoke`
+- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459fb8)
+- [make compose-smoke](../../../evidence/sources.md#q-413b0b241ba8)
 
 ### Executable sources
 
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `openapi:stove0` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
+- [openapi:stove0](../../../evidence/sources.md#src-52e6e3212451) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
 
 ### Machine authority
 

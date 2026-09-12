@@ -6,11 +6,11 @@ Contract elements: **1** · Extent decisions: **0**
 
 | Family | Count |
 |---|---:|
-| `modules` | 1 |
+| <a id="f-862b3dda9b77"></a>`modules` | 1 |
 
 | Policy | Count |
 |---|---:|
-| `compatibility/python-api/v1` | 1 |
+| [compatibility/python-api/v1](../../../policies/index.md#p-e574772ba506) | 1 |
 
 ## Semantic dossiers
 

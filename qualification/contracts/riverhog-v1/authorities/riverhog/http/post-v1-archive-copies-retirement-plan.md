@@ -8,19 +8,20 @@ Plan Archive Copy Retirement
 
 | Audit field | Value |
 |---|---|
-| Authority | `riverhog` |
-| Interface | `http` |
-| Family | `archive` |
+| Authority | [riverhog](../index.md) |
+| Interface | [http](index.md) |
+| Family | [archive](families/archive/index.md) |
 | Contract elements | 1 |
 | Extent decisions | 0 |
 
 ## External contract
 
-- `operationId`: plan_archive_copy_retirement
-- `summary`: Plan Archive Copy Retirement
-- `security`: `[{"HTTPBearer": []}]`
+<a id="s-36e9f6b51cd3"></a>
+- <a id="s-3bfd8f184cd8"></a>`operationId`: plan_archive_copy_retirement
+- <a id="s-50499b084e3a"></a>`summary`: Plan Archive Copy Retirement
+- <a id="s-2b66881c4012"></a>`security`: `[{"HTTPBearer": []}]`
 
-### Request body
+### <a id="s-1af9509e1788"></a>Request body
 
 `{"content": {"application/json": {"schema": {"$ref": "#/components/schemas/ArchiveCopyRetirementRequest"}}}, "required": true}`
 
@@ -28,13 +29,13 @@ Plan Archive Copy Retirement
 
 | Status | Description |
 |---|---|
-| `200` | Successful Response |
-| `400` | Bad Request |
-| `401` | Unauthorized |
-| `403` | Forbidden |
-| `404` | Not Found |
-| `409` | Conflict |
-| `500` | Internal Server Error |
+| <a id="s-75066bfe2a9a"></a>`200` | Successful Response |
+| <a id="s-f96efd060bfa"></a>`400` | Bad Request |
+| <a id="s-50ba041d14cc"></a>`401` | Unauthorized |
+| <a id="s-338f4f888d1e"></a>`403` | Forbidden |
+| <a id="s-1e1bb0b74b88"></a>`404` | Not Found |
+| <a id="s-c79f703bb8c7"></a>`409` | Conflict |
+| <a id="s-a454625b8053"></a>`500` | Internal Server Error |
 
 ## Maintained corroboration
 
@@ -50,19 +51,19 @@ Plan Archive Copy Retirement
 
 ## Governing policies
 
-- `compatibility/http-api/v1`
+- <a id="pa-70d4161d1aab"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0ba)
 
 ## Evidence
 
 ### Qualification
 
-- `make operation-qualification`
-- `make compose-smoke`
+- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459fb8)
+- [make compose-smoke](../../../evidence/sources.md#q-413b0b241ba8)
 
 ### Executable sources
 
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `openapi:riverhog` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
+- [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc960) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
 
 ### Machine authority
 

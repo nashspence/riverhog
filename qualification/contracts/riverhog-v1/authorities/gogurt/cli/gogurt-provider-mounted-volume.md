@@ -8,31 +8,31 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Audit field | Value |
 |---|---|
-| Authority | `gogurt` |
-| Interface | `cli` |
-| Family | `provider` |
+| Authority | [gogurt](../index.md) |
+| Interface | [cli](index.md) |
+| Family | [provider](index.md#f-35c12cf73ea8) |
 | Contract elements | 1 |
 | Extent decisions | 0 |
 
 ## External contract
 
-- Parser name: `mounted-volume`
+- <a id="s-d9ba8ed0af60"></a>Parser name: `mounted-volume`
 
 ## Governing policies
 
-- `compatibility/cli/v1`
+- <a id="pa-3ab12d7ee885"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de7f)
 
 ## Evidence
 
 ### Qualification
 
-- `make dist-smoke`
-- `make operation-qualification`
+- [make dist-smoke](../../../evidence/sources.md#q-0ba2578a3eb7)
+- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459fb8)
 
 ### Executable sources
 
-- `cli:gogurt` — `reference/gogurt/application/src/gogurt/cli.py::<module>`
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
+- [cli:gogurt](../../../evidence/sources.md#src-3b2297c37dfe) — `reference/gogurt/application/src/gogurt/cli.py::<module>`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
 
 ### Machine authority
 

@@ -8,33 +8,38 @@ One named required branch-bound child coordinator.
 
 | Audit field | Value |
 |---|---|
-| Authority | `stove0` |
-| Interface | `http` |
-| Family | `schemas` |
+| Authority | [stove0](../index.md) |
+| Interface | [http](index.md) |
+| Family | [schemas](families/schemas/index.md) |
 | Contract elements | 1 |
 | Extent decisions | 1 |
 
 ## External contract
 
-- `title`: CoordinationBranchPlan
-- `description`: One named required branch-bound child coordinator.
-- `type`: object
+<a id="s-88cc4139d6a8"></a>
+- <a id="s-4ea2e8050070"></a>`title`: CoordinationBranchPlan
+- <a id="s-83a52d4c7d76"></a>`description`: One named required branch-bound child coordinator.
+- <a id="s-36097ac18fbb"></a>`type`: object
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| `artifact_selection` | yes | #/components/schemas/ArtifactSelectionRef |  |
-| `branch_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
-| `branch_set_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| `kind` | no | type="string"; const="coordination" |  |
-| `work` | yes | #/components/schemas/WorkIdentity |  |
+| <a id="s-bba86c9b0ff5"></a>`artifact_selection` | yes | #/components/schemas/ArtifactSelectionRef |  |
+| <a id="s-7754ad69f6c7"></a>`branch_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
+| <a id="s-42606304691b"></a>`branch_set_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-329b8ba6f968"></a>`kind` | no | type="string"; const="coordination" |  |
+| <a id="s-fcffcaa804b3"></a>`work` | yes | #/components/schemas/WorkIdentity |  |
 
 ### Progression, limits, and lifecycle
 
-| Dimension | Unit | Policy | Bounds or reason |
-|---|---|---|---|
-| length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
+#### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
+
+Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"}
+
+| Applies to | Contract | Bounds or reason |
+|---|---|---|
+| [field branch_set_sha256](#s-42606304691b) | `length · characters · fixed` | shared above |
 
 ## Maintained corroboration
 
@@ -45,20 +50,20 @@ One named required branch-bound child coordinator.
 
 ## Governing policies
 
-- `compatibility/http-api/v1`
-- `extent-rule/schema-bound/v1`
+- <a id="pa-494d5671f99b"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0ba)
+- <a id="pa-26ea2e753f3e"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
 
 ## Evidence
 
 ### Qualification
 
-- `make operation-qualification`
-- `make compose-smoke`
+- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459fb8)
+- [make compose-smoke](../../../evidence/sources.md#q-413b0b241ba8)
 
 ### Executable sources
 
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `openapi:stove0` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
+- [openapi:stove0](../../../evidence/sources.md#src-52e6e3212451) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
 
 ### Machine authority
 

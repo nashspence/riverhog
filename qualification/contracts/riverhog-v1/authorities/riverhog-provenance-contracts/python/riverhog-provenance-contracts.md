@@ -8,35 +8,36 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Audit field | Value |
 |---|---|
-| Authority | `riverhog-provenance-contracts` |
-| Interface | `python` |
-| Family | `modules` |
+| Authority | [riverhog-provenance-contracts](../index.md) |
+| Interface | [python](index.md) |
+| Family | [modules](index.md#f-70ad9a87870d) |
 | Contract elements | 1 |
 | Extent decisions | 0 |
 
 ## External contract
 
+<a id="s-086605c88377"></a>
 | Field | Shape |
 |---|---|
-| `distribution` | "riverhog-provenance-contracts" |
-| `exports` | additional keys=`CANONICAL_UUID_URN_PATTERN`, `PROVENANCE_CONTRACT_BINDING_FORMAT`, `PROVENANCE_CONTRACT_ENTRY_POINT_GROUP`, `PROVENANCE_CONTRACT_REFERENCE_FORMAT`, `PROVENANCE_SCHEMA_DIALECT`, `PROVENANCE_SCHEMA_FORMAT_POLICY`, `ProvenanceContractBinding`, `ProvenanceEntryId`, `ProvenanceJournalId`, `ProvenanceJournalStateReference`, `ProvenanceStateId`, `SHA256_PATTERN`, `index_schema_documents`, `require_canonical_uuid_urn` |
-| `module` | "riverhog_provenance_contracts" |
+| <a id="s-514882f13508"></a>`distribution` | "riverhog-provenance-contracts" |
+| <a id="s-9c1a297173dc"></a>`exports` | additional keys=`CANONICAL_UUID_URN_PATTERN`, `PROVENANCE_CONTRACT_BINDING_FORMAT`, `PROVENANCE_CONTRACT_ENTRY_POINT_GROUP`, `PROVENANCE_CONTRACT_REFERENCE_FORMAT`, `PROVENANCE_SCHEMA_DIALECT`, `PROVENANCE_SCHEMA_FORMAT_POLICY`, `ProvenanceContractBinding`, `ProvenanceEntryId`, `ProvenanceJournalId`, `ProvenanceJournalStateReference`, `ProvenanceStateId`, `SHA256_PATTERN`, `index_schema_documents`, `require_canonical_uuid_urn` |
+| <a id="s-033f7e67b14e"></a>`module` | "riverhog_provenance_contracts" |
 
 ## Governing policies
 
-- `compatibility/python-api/v1`
+- <a id="pa-38c65189cb98"></a>[compatibility/python-api/v1](../../../policies/index.md#p-e574772ba506)
 
 ## Evidence
 
 ### Qualification
 
-- `make dist-smoke`
-- `make build`
+- [make dist-smoke](../../../evidence/sources.md#q-0ba2578a3eb7)
+- [make build](../../../evidence/sources.md#q-d1121e35fa7a)
 
 ### Executable sources
 
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `python:riverhog-provenance-contracts` — `packages/riverhog-provenance-contracts/src/riverhog_provenance_contracts/__init__.py::<module>`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
+- [python:riverhog-provenance-contracts](../../../evidence/sources.md#src-7722019950e5) — `packages/riverhog-provenance-contracts/src/riverhog_provenance_contracts/__init__.py::<module>`
 
 ### Machine authority
 

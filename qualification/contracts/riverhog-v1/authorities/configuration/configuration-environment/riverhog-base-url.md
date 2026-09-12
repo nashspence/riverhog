@@ -8,34 +8,35 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Audit field | Value |
 |---|---|
-| Authority | `configuration` |
-| Interface | `configuration-environment` |
-| Family | `variables` |
+| Authority | [configuration](../index.md) |
+| Interface | [configuration-environment](index.md) |
+| Family | [variables](families/variables/index.md) |
 | Contract elements | 1 |
 | Extent decisions | 0 |
 
 ## External contract
 
+<a id="s-b211a29ced43"></a>
 | Field | Shape |
 |---|---|
-| `consumers` | ["riverhog-client","riverhog-ftp-adapter","stove0-server"] |
-| `name` | "RIVERHOG_BASE_URL" |
+| <a id="s-9c278af545a2"></a>`consumers` | ["riverhog-client","riverhog-ftp-adapter","stove0-server"] |
+| <a id="s-18bbe5ebd05a"></a>`name` | "RIVERHOG_BASE_URL" |
 
 ## Governing policies
 
-- `compatibility/configuration/v1`
+- <a id="pa-1bb3fdadf33b"></a>[compatibility/configuration/v1](../../../policies/index.md#p-8dc08bb46173)
 
 ## Evidence
 
 ### Qualification
 
-- `make unit`
-- `make compose-smoke`
+- [make unit](../../../evidence/sources.md#q-ce47068f504c)
+- [make compose-smoke](../../../evidence/sources.md#q-413b0b241ba8)
 
 ### Executable sources
 
-- `configuration-environment:RIVERHOG_BASE_URL` — `configuration-environment:RIVERHOG_BASE_URL`
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
+- [configuration-environment:RIVERHOG_BASE_URL](../../../evidence/sources.md#src-0396e6ba9f28) — `configuration-environment:RIVERHOG_BASE_URL`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
 
 ### Machine authority
 

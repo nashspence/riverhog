@@ -8,38 +8,39 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Audit field | Value |
 |---|---|
-| Authority | `riverhog-provenance-macos-observer` |
-| Interface | `boundary` |
-| Family | `components` |
+| Authority | [riverhog-provenance-macos-observer](../index.md) |
+| Interface | [boundary](index.md) |
+| Family | [components](index.md#f-e52e61da9e0a) |
 | Contract elements | 1 |
 | Extent decisions | 0 |
 
 ## External contract
 
+<a id="s-13ac9267979b"></a>
 | Field | Shape |
 |---|---|
-| `console_scripts` | empty object |
-| `dependencies` | ["riverhog-provenance","riverhog-provenance-macos-contracts"] |
-| `distribution` | "riverhog-provenance-macos-observer" |
-| `optional_dependencies` | empty object |
-| `path` | "reference/riverhog/provenance/observers/macos" |
-| `role` | "reference_component" |
+| <a id="s-e3393bbb066f"></a>`console_scripts` | empty object |
+| <a id="s-e5f3a5e01b0d"></a>`dependencies` | ["riverhog-provenance","riverhog-provenance-macos-contracts"] |
+| <a id="s-ea80c801b4bf"></a>`distribution` | "riverhog-provenance-macos-observer" |
+| <a id="s-fb42c4b0867d"></a>`optional_dependencies` | empty object |
+| <a id="s-f127efb7d739"></a>`path` | "reference/riverhog/provenance/observers/macos" |
+| <a id="s-1ed6717f468b"></a>`role` | "reference_component" |
 
 ## Governing policies
 
-- `boundary/frozen-authority/v1`
+- <a id="pa-f22d7310b3b7"></a>[boundary/frozen-authority/v1](../../../policies/index.md#p-61994d3f0fa8)
 
 ## Evidence
 
 ### Qualification
 
-- `make release-check`
-- `make build`
+- [make release-check](../../../evidence/sources.md#q-8d8d22d6a6b1)
+- [make build](../../../evidence/sources.md#q-d1121e35fa7a)
 
 ### Executable sources
 
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `release:release.toml` — `release.toml`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
+- [release:release.toml](../../../evidence/sources.md#src-c5380dbe5fe0) — `release.toml`
 
 ### Machine authority
 

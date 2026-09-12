@@ -8,59 +8,71 @@ Stable positive evidence returned after the complete check set passes.
 
 | Audit field | Value |
 |---|---|
-| Authority | `riverhog-storage-adapter-support` |
-| Interface | `protocol` |
-| Family | `schemas` |
+| Authority | [riverhog-storage-adapter-support](../index.md) |
+| Interface | [protocol](index.md) |
+| Family | [schemas](families/schemas/index.md) |
 | Contract elements | 1 |
 | Extent decisions | 2 |
 
 ## External contract
 
-- `title`: StorageAdapterConformanceResult
-- `description`: Stable positive evidence returned after the complete check set passes.
-- `type`: object
+<a id="s-d1efcb83902a"></a>
+- <a id="s-4c4e89854cc9"></a>`title`: StorageAdapterConformanceResult
+- <a id="s-8b747e633b97"></a>`description`: Stable positive evidence returned after the complete check set passes.
+- <a id="s-8e95ad152b14"></a>`type`: object
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| `checks` | yes | type="array"; items=(type="string") |  |
-| `coverage` | no | type="string"; const="complete" |  |
-| `descriptor` | yes | #/$defs/AdapterDescriptor |  |
-| `format` | no | type="string"; const="riverhog-storage-adapter-conformance-result/v1" |  |
-| `protocol` | no | type="string"; const="riverhog-storage-adapter/v1" |  |
-| `status` | no | type="string"; const="conformant" |  |
+| <a id="s-ee5757dee321"></a>`checks` | yes | type="array"; items=(type="string") |  |
+| <a id="s-c25d196daeba"></a>`coverage` | no | type="string"; const="complete" |  |
+| <a id="s-6eaad858d9cd"></a>`descriptor` | yes | #/$defs/AdapterDescriptor |  |
+| <a id="s-6166d1ce52c6"></a>`format` | no | type="string"; const="riverhog-storage-adapter-conformance-result/v1" |  |
+| <a id="s-7a5a35d6e2f3"></a>`protocol` | no | type="string"; const="riverhog-storage-adapter/v1" |  |
+| <a id="s-0d4e848375c6"></a>`status` | no | type="string"; const="conformant" |  |
 
 ### Definitions
 
 | Definition | Shape |
 |---|---|
-| `AdapterDescriptor` | type="object"; fields=`implementation_id`, `implementation_version`, `maximum_segment_bytes`, `maximum_segment_count`, `minimum_nonfinal_segment_bytes`, `protocol`, `read_mode`; additional keys=`additionalProperties`, `required` |
+| <a id="s-941580622ec6"></a>`AdapterDescriptor` | type="object"; fields=`implementation_id`, `implementation_version`, `maximum_segment_bytes`, `maximum_segment_count`, `minimum_nonfinal_segment_bytes`, `protocol`, `read_mode`; additional keys=`additionalProperties`, `required` |
 
 ### Progression, limits, and lifecycle
 
-| Dimension | Unit | Policy | Bounds or reason |
-|---|---|---|---|
-| cardinality | items | `operational_policy` | maximum=None, reason=no-declared-semantic-maximum |
-| length | characters | `contract_max` | maximum=120, minimum=1, reason=schema-maximum |
+#### [extent-rule/no-semantic-maximum/v1](../../../policies/index.md#p-574724b48af0)
+
+Shared facts for every subject below: capacity_authority={"declared_maximum":null,"hidden_maximum":"forbidden","owner":"riverhog-storage-adapter-protocol"}; maximum=null; reason="no-declared-semantic-maximum"
+
+| Applies to | Contract | Bounds or reason |
+|---|---|---|
+| [field checks](#s-ee5757dee321) | `cardinality · items · operational_policy` | shared above |
+
+#### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
+
+Shared facts for every subject below: maximum=120; minimum=1; reason="schema-maximum"
+
+| Applies to | Contract | Bounds or reason |
+|---|---|---|
+| <a id="s-92ca0aae9564"></a>definition AdapterDescriptor · field implementation_version | `length · characters · contract_max` | shared above |
 
 ## Governing policies
 
-- `compatibility/components/v1`
-- `extent-rule/no-semantic-maximum/v1`
-- `extent-rule/schema-bound/v1`
+- <a id="pa-5946f0b285e9"></a>[compatibility/components/v1](../../../policies/index.md#p-95e9a1225947)
+- <a id="pa-422cf9150f44"></a>[extent-rule/no-semantic-maximum/v1](../../../policies/index.md#p-574724b48af0)
+- <a id="pa-c643ed932f9c"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
 
 ## Evidence
 
 ### Qualification
 
-- `make dist-smoke`
-- `make build`
+- [make dist-smoke](../../../evidence/sources.md#q-0ba2578a3eb7)
+- [make build](../../../evidence/sources.md#q-d1121e35fa7a)
 
 ### Executable sources
 
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `protocol:generated:riverhog-storage-adapter` — `packages/riverhog-storage-adapter-support/src/riverhog_storage_adapter_support/schemas.py::storage_adapter_schema_bundle`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
+- [protocol:generated:riverhog-storage-adapter](../../../evidence/sources.md#src-ef281f2471a9) — `packages/riverhog-storage-adapter-support/src/riverhog_storage_adapter_support/schemas.py::storage_adapter_schema_bundle`
 
 ### Machine authority
 

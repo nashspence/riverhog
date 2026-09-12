@@ -8,25 +8,26 @@ Seal Processing Claim Artifacts
 
 | Audit field | Value |
 |---|---|
-| Authority | `riverhog` |
-| Interface | `http` |
-| Family | `collection-processing-claims` |
+| Authority | [riverhog](../index.md) |
+| Interface | [http](index.md) |
+| Family | [collection-processing-claims](families/collection-processing-claims/index.md) |
 | Contract elements | 1 |
 | Extent decisions | 1 |
 
 ## External contract
 
-- `operationId`: seal_processing_claim_artifacts
-- `summary`: Seal Processing Claim Artifacts
-- `security`: `[{"HTTPBearer": []}]`
+<a id="s-961acda27cd5"></a>
+- <a id="s-46487cdba10e"></a>`operationId`: seal_processing_claim_artifacts
+- <a id="s-33d7a8e253fe"></a>`summary`: Seal Processing Claim Artifacts
+- <a id="s-61083210c403"></a>`security`: `[{"HTTPBearer": []}]`
 
 ### Parameters
 
 | Name | In | Required | Schema |
 |---|---|---:|---|
-| `claim_id` | path | yes | type="string"; pattern="^[0-9a-f]{64}$" |
+| <a id="s-2eaf539a0b2c"></a>`claim_id` | path | yes | type="string"; pattern="^[0-9a-f]{64}$" |
 
-### Request body
+### <a id="s-28e953db5dce"></a>Request body
 
 `{"content": {"application/json": {"schema": {"$ref": "#/components/schemas/ProcessingClaimFenceDocument"}}}, "required": true}`
 
@@ -34,17 +35,21 @@ Seal Processing Claim Artifacts
 
 | Status | Description |
 |---|---|
-| `200` | Successful Response |
-| `400` | Bad Request |
-| `401` | Unauthorized |
-| `403` | Forbidden |
-| `500` | Internal Server Error |
+| <a id="s-2777fa99f8e1"></a>`200` | Successful Response |
+| <a id="s-38636842d59d"></a>`400` | Bad Request |
+| <a id="s-363fe61b6e4f"></a>`401` | Unauthorized |
+| <a id="s-c785902f4ae4"></a>`403` | Forbidden |
+| <a id="s-2d397fca00cb"></a>`500` | Internal Server Error |
 
 ### Progression, limits, and lifecycle
 
-| Dimension | Unit | Policy | Bounds or reason |
-|---|---|---|---|
-| length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
+#### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
+
+Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"}
+
+| Applies to | Contract | Bounds or reason |
+|---|---|---|
+| <a id="s-778b7cd13192"></a>parameter claim_id | `length · characters · fixed` | shared above |
 
 ## Maintained corroboration
 
@@ -60,20 +65,20 @@ Seal Processing Claim Artifacts
 
 ## Governing policies
 
-- `compatibility/http-api/v1`
-- `extent-rule/schema-bound/v1`
+- <a id="pa-14d70bd78e71"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0ba)
+- <a id="pa-e4815661ea95"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
 
 ## Evidence
 
 ### Qualification
 
-- `make operation-qualification`
-- `make compose-smoke`
+- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459fb8)
+- [make compose-smoke](../../../evidence/sources.md#q-413b0b241ba8)
 
 ### Executable sources
 
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `openapi:riverhog` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
+- [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc960) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
 
 ### Machine authority
 

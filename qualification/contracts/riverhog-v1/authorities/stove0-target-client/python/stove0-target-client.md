@@ -8,35 +8,36 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Audit field | Value |
 |---|---|
-| Authority | `stove0-target-client` |
-| Interface | `python` |
-| Family | `modules` |
+| Authority | [stove0-target-client](../index.md) |
+| Interface | [python](index.md) |
+| Family | [modules](index.md#f-9d700f6e49c8) |
 | Contract elements | 1 |
 | Extent decisions | 0 |
 
 ## External contract
 
+<a id="s-2e5e0a4832ad"></a>
 | Field | Shape |
 |---|---|
-| `distribution` | "stove0-target-client" |
-| `exports` | additional keys=`TargetCallbackClient`, `TargetClient`, `TargetProtocolError` |
-| `module` | "stove0_target_client" |
+| <a id="s-08ba1ea7618f"></a>`distribution` | "stove0-target-client" |
+| <a id="s-908f6494d3a2"></a>`exports` | additional keys=`TargetCallbackClient`, `TargetClient`, `TargetProtocolError` |
+| <a id="s-6e59ef568f1e"></a>`module` | "stove0_target_client" |
 
 ## Governing policies
 
-- `compatibility/python-api/v1`
+- <a id="pa-fe221101625a"></a>[compatibility/python-api/v1](../../../policies/index.md#p-e574772ba506)
 
 ## Evidence
 
 ### Qualification
 
-- `make dist-smoke`
-- `make build`
+- [make dist-smoke](../../../evidence/sources.md#q-0ba2578a3eb7)
+- [make build](../../../evidence/sources.md#q-d1121e35fa7a)
 
 ### Executable sources
 
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `python:stove0-target-client` — `reference/stove0/packages/target-client/src/stove0_target_client/__init__.py::<module>`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
+- [python:stove0-target-client](../../../evidence/sources.md#src-23a662423507) — `reference/stove0/packages/target-client/src/stove0_target_client/__init__.py::<module>`
 
 ### Machine authority
 

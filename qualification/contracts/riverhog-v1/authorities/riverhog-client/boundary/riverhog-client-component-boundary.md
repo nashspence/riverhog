@@ -8,38 +8,39 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Audit field | Value |
 |---|---|
-| Authority | `riverhog-client` |
-| Interface | `boundary` |
-| Family | `components` |
+| Authority | [riverhog-client](../index.md) |
+| Interface | [boundary](index.md) |
+| Family | [components](index.md#f-467493217fb9) |
 | Contract elements | 1 |
 | Extent decisions | 0 |
 
 ## External contract
 
+<a id="s-5178530295f7"></a>
 | Field | Shape |
 |---|---|
-| `console_scripts` | empty object |
-| `dependencies` | ["http-api-contracts","riverhog-application-access","riverhog-protocol","riverhog-provenance-contracts"] |
-| `distribution` | "riverhog-client" |
-| `optional_dependencies` | empty object |
-| `path` | "packages/riverhog-client" |
-| `role` | "reusable_library" |
+| <a id="s-3ffa683045f5"></a>`console_scripts` | empty object |
+| <a id="s-f1e77bae118f"></a>`dependencies` | ["http-api-contracts","riverhog-application-access","riverhog-protocol","riverhog-provenance-contracts"] |
+| <a id="s-5a95a76d7632"></a>`distribution` | "riverhog-client" |
+| <a id="s-230ffe877cc6"></a>`optional_dependencies` | empty object |
+| <a id="s-e0dad484a4cf"></a>`path` | "packages/riverhog-client" |
+| <a id="s-12071d4f2251"></a>`role` | "reusable_library" |
 
 ## Governing policies
 
-- `boundary/frozen-authority/v1`
+- <a id="pa-6fe48bfd21e3"></a>[boundary/frozen-authority/v1](../../../policies/index.md#p-61994d3f0fa8)
 
 ## Evidence
 
 ### Qualification
 
-- `make release-check`
-- `make build`
+- [make release-check](../../../evidence/sources.md#q-8d8d22d6a6b1)
+- [make build](../../../evidence/sources.md#q-d1121e35fa7a)
 
 ### Executable sources
 
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `release:release.toml` — `release.toml`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
+- [release:release.toml](../../../evidence/sources.md#src-c5380dbe5fe0) — `release.toml`
 
 ### Machine authority
 

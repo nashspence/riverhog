@@ -8,59 +8,62 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Audit field | Value |
 |---|---|
-| Authority | `stove0-observer-support` |
-| Interface | `protocol` |
-| Family | `schemas` |
+| Authority | [stove0-observer-support](../index.md) |
+| Interface | [protocol](index.md) |
+| Family | [schemas](index.md#f-d47202b295e8) |
 | Contract elements | 1 |
 | Extent decisions | 2 |
 
 ## External contract
 
-- `title`: ObserverContract
-- `type`: object
+<a id="s-aa1a382aedd8"></a>
+- <a id="s-b62b596dee85"></a>`title`: ObserverContract
+- <a id="s-a0fb97db451f"></a>`type`: object
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| `contract_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| `facts_schema` | yes | #/$defs/JsonSchemaDocument |  |
-| `facts_semantics` | yes | #/$defs/SemanticValidationProfile |  |
-| `id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
-| `maximum_result_bytes` | no | type="integer"; minimum=1; maximum=67108864 |  |
-| `options_schema` | yes | #/$defs/JsonSchemaDocument |  |
+| <a id="s-85313ce2b5fd"></a>`contract_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-61f54127804b"></a>`facts_schema` | yes | #/$defs/JsonSchemaDocument |  |
+| <a id="s-081de5bb8e10"></a>`facts_semantics` | yes | #/$defs/SemanticValidationProfile |  |
+| <a id="s-69e52675a469"></a>`id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
+| <a id="s-6e47cc249754"></a>`maximum_result_bytes` | no | type="integer"; minimum=1; maximum=67108864 |  |
+| <a id="s-d234b7bcaf72"></a>`options_schema` | yes | #/$defs/JsonSchemaDocument |  |
 
 ### Definitions
 
 | Definition | Shape |
 |---|---|
-| `JsonSchemaDocument` | type="object"; fields=`dialect`, `format_policy`, `id`, `schema`, `sha256`; additional keys=`additionalProperties`, `required` |
-| `JsonValue` | empty object |
-| `SemanticValidationProfile` | type="object"; fields=`conformance_vectors_sha256`, `id`, `profile_sha256`, `rules`; additional keys=`additionalProperties`, `required` |
+| <a id="s-481f0f7d22cd"></a>`JsonSchemaDocument` | type="object"; fields=`dialect`, `format_policy`, `id`, `schema`, `sha256`; additional keys=`additionalProperties`, `required` |
+| <a id="s-9b0b8d807ad9"></a>`JsonValue` | empty object |
+| <a id="s-e626583caf3c"></a>`SemanticValidationProfile` | type="object"; fields=`conformance_vectors_sha256`, `id`, `profile_sha256`, `rules`; additional keys=`additionalProperties`, `required` |
 
 ### Progression, limits, and lifecycle
 
-| Dimension | Unit | Policy | Bounds or reason |
-|---|---|---|---|
-| length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
-| value | schema-value | `contract_max` | maximum=67108864, minimum=1, reason=schema-maximum |
+#### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
+
+| Applies to | Contract | Bounds or reason |
+|---|---|---|
+| [field contract_sha256](#s-85313ce2b5fd) | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
+| [field maximum_result_bytes](#s-6e47cc249754) | `value · schema-value · contract_max` | maximum=67108864; minimum=1; reason="schema-maximum" |
 
 ## Governing policies
 
-- `compatibility/components/v1`
-- `extent-rule/schema-bound/v1`
+- <a id="pa-6d5f344af648"></a>[compatibility/components/v1](../../../policies/index.md#p-95e9a1225947)
+- <a id="pa-f827c460019c"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
 
 ## Evidence
 
 ### Qualification
 
-- `make dist-smoke`
-- `make build`
+- [make dist-smoke](../../../evidence/sources.md#q-0ba2578a3eb7)
+- [make build](../../../evidence/sources.md#q-d1121e35fa7a)
 
 ### Executable sources
 
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `protocol:generated:stove0-observer` — `reference/stove0/packages/observer-support/src/stove0_observer_support/schemas.py::observer_schema_bundle`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
+- [protocol:generated:stove0-observer](../../../evidence/sources.md#src-dcc0b5485b73) — `reference/stove0/packages/observer-support/src/stove0_observer_support/schemas.py::observer_schema_bundle`
 
 ### Machine authority
 

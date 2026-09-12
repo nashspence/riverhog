@@ -8,31 +8,32 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Audit field | Value |
 |---|---|
-| Authority | `gogurt-listener` |
-| Interface | `durable-state` |
-| Family | `owners` |
+| Authority | [gogurt-listener](../index.md) |
+| Interface | [durable-state](index.md) |
+| Family | [owners](index.md#f-0b118dc18fdc) |
 | Contract elements | 1 |
 | Extent decisions | 0 |
 
 ## External contract
 
-- `format`: gogurt-listener-state/v1
+<a id="s-5808fcd77b64"></a>
+- <a id="s-dfdb8345df1b"></a>`format`: gogurt-listener-state/v1
 
 ## Governing policies
 
-- `compatibility/components/v1`
+- <a id="pa-44bdb6fdf94c"></a>[compatibility/components/v1](../../../policies/index.md#p-95e9a1225947)
 
 ## Evidence
 
 ### Qualification
 
-- `make release-check`
-- `make database-qualification`
+- [make release-check](../../../evidence/sources.md#q-8d8d22d6a6b1)
+- [make database-qualification](../../../evidence/sources.md#q-27f281b51ec6)
 
 ### Executable sources
 
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `state:gogurt-listener` — `state:gogurt-listener`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
+- [state:gogurt-listener](../../../evidence/sources.md#src-6b3ecfced37f) — `state:gogurt-listener`
 
 ### Machine authority
 

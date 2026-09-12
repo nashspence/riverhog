@@ -8,34 +8,35 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Audit field | Value |
 |---|---|
-| Authority | `configuration` |
-| Interface | `configuration-environment` |
-| Family | `variables` |
+| Authority | [configuration](../index.md) |
+| Interface | [configuration-environment](index.md) |
+| Family | [variables](families/variables/index.md) |
 | Contract elements | 1 |
 | Extent decisions | 0 |
 
 ## External contract
 
+<a id="s-b200cddc4715"></a>
 | Field | Shape |
 |---|---|
-| `consumers` | ["riverhog-ftp-adapter-api-client"] |
-| `name` | "RIVERHOG_FTP_ADAPTER_BASE_URL" |
+| <a id="s-a64ea888cd84"></a>`consumers` | ["riverhog-ftp-adapter-api-client"] |
+| <a id="s-5b43242159e1"></a>`name` | "RIVERHOG_FTP_ADAPTER_BASE_URL" |
 
 ## Governing policies
 
-- `compatibility/configuration/v1`
+- <a id="pa-237a09520cff"></a>[compatibility/configuration/v1](../../../policies/index.md#p-8dc08bb46173)
 
 ## Evidence
 
 ### Qualification
 
-- `make unit`
-- `make compose-smoke`
+- [make unit](../../../evidence/sources.md#q-ce47068f504c)
+- [make compose-smoke](../../../evidence/sources.md#q-413b0b241ba8)
 
 ### Executable sources
 
-- `configuration-environment:RIVERHOG_FTP_ADAPTER_BASE_URL` — `configuration-environment:RIVERHOG_FTP_ADAPTER_BASE_URL`
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
+- [configuration-environment:RIVERHOG_FTP_ADAPTER_BASE_URL](../../../evidence/sources.md#src-b54fad905c74) — `configuration-environment:RIVERHOG_FTP_ADAPTER_BASE_URL`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
 
 ### Machine authority
 

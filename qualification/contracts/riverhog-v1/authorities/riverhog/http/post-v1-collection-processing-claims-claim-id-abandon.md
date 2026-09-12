@@ -8,25 +8,26 @@ Abandon Processing Claim
 
 | Audit field | Value |
 |---|---|
-| Authority | `riverhog` |
-| Interface | `http` |
-| Family | `collection-processing-claims` |
+| Authority | [riverhog](../index.md) |
+| Interface | [http](index.md) |
+| Family | [collection-processing-claims](families/collection-processing-claims/index.md) |
 | Contract elements | 1 |
 | Extent decisions | 1 |
 
 ## External contract
 
-- `operationId`: abandon_processing_claim
-- `summary`: Abandon Processing Claim
-- `security`: `[{"HTTPBearer": []}]`
+<a id="s-bb0491d68a1f"></a>
+- <a id="s-1cb209d973bb"></a>`operationId`: abandon_processing_claim
+- <a id="s-a3d89260087e"></a>`summary`: Abandon Processing Claim
+- <a id="s-9c5b5d11ac93"></a>`security`: `[{"HTTPBearer": []}]`
 
 ### Parameters
 
 | Name | In | Required | Schema |
 |---|---|---:|---|
-| `claim_id` | path | yes | type="string"; pattern="^[0-9a-f]{64}$" |
+| <a id="s-2c5a34b5e084"></a>`claim_id` | path | yes | type="string"; pattern="^[0-9a-f]{64}$" |
 
-### Request body
+### <a id="s-6ec569e30a9f"></a>Request body
 
 `{"content": {"application/json": {"schema": {"$ref": "#/components/schemas/ProcessingClaimAbandonDocument"}}}, "required": true}`
 
@@ -34,19 +35,23 @@ Abandon Processing Claim
 
 | Status | Description |
 |---|---|
-| `200` | Successful Response |
-| `400` | Bad Request |
-| `401` | Unauthorized |
-| `403` | Forbidden |
-| `404` | Not Found |
-| `409` | Conflict |
-| `500` | Internal Server Error |
+| <a id="s-1ce07523dcc1"></a>`200` | Successful Response |
+| <a id="s-09260ac7eb39"></a>`400` | Bad Request |
+| <a id="s-0e67591ad052"></a>`401` | Unauthorized |
+| <a id="s-86ea45f3f08c"></a>`403` | Forbidden |
+| <a id="s-2aa283f3367d"></a>`404` | Not Found |
+| <a id="s-6dfe5d4ad781"></a>`409` | Conflict |
+| <a id="s-cee60c8270f9"></a>`500` | Internal Server Error |
 
 ### Progression, limits, and lifecycle
 
-| Dimension | Unit | Policy | Bounds or reason |
-|---|---|---|---|
-| length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
+#### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
+
+Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"}
+
+| Applies to | Contract | Bounds or reason |
+|---|---|---|
+| <a id="s-83d1678c8f6e"></a>parameter claim_id | `length · characters · fixed` | shared above |
 
 ## Maintained corroboration
 
@@ -62,20 +67,20 @@ Abandon Processing Claim
 
 ## Governing policies
 
-- `compatibility/http-api/v1`
-- `extent-rule/schema-bound/v1`
+- <a id="pa-b2a79a178b6e"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0ba)
+- <a id="pa-b4c469006d86"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
 
 ## Evidence
 
 ### Qualification
 
-- `make operation-qualification`
-- `make compose-smoke`
+- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459fb8)
+- [make compose-smoke](../../../evidence/sources.md#q-413b0b241ba8)
 
 ### Executable sources
 
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `openapi:riverhog` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
+- [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc960) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
 
 ### Machine authority
 

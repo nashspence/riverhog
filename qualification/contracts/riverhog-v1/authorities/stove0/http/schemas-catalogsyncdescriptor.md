@@ -8,42 +8,45 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Audit field | Value |
 |---|---|
-| Authority | `stove0` |
-| Interface | `http` |
-| Family | `schemas` |
+| Authority | [stove0](../index.md) |
+| Interface | [http](index.md) |
+| Family | [schemas](families/schemas/index.md) |
 | Contract elements | 1 |
 | Extent decisions | 7 |
 
 ## External contract
 
-- `title`: CatalogSyncDescriptor
-- `type`: object
+<a id="s-f02e615f06a7"></a>
+- <a id="s-105c0bd5a802"></a>`title`: CatalogSyncDescriptor
+- <a id="s-934d07f6c507"></a>`type`: object
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| `archive_root_sha256` | yes | type="string"; minLength=64; maxLength=64; pattern="^[0-9a-f]{64}$" |  |
-| `collection_id` | yes | #/components/schemas/CollectionId |  |
-| `content_identity` | yes | type="string"; minLength=64; maxLength=64; pattern="^[0-9a-f]{64}$" |  |
-| `description` | yes | anyOf=#/components/schemas/CollectionDescription \| type="null" |  |
-| `description_identity` | yes | type="string"; minLength=64; maxLength=64; pattern="^[0-9a-f]{64}$" |  |
-| `description_revision` | yes | type="integer"; minimum=0; maximum=9007199254740991 |  |
-| `revision` | yes | type="string"; minLength=1; maxLength=19; pattern="^(?:[1-9][0-9]{0,17}\|[1-8][0-9]{18})$" |  |
-| `tag_revision` | yes | type="integer"; minimum=1; maximum=9007199254740991 |  |
-| `tag_set_identity` | yes | type="string"; minLength=64; maxLength=64; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-8ad78fe25ff2"></a>`archive_root_sha256` | yes | type="string"; minLength=64; maxLength=64; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-6d82f6e56679"></a>`collection_id` | yes | #/components/schemas/CollectionId |  |
+| <a id="s-6c31e8327f45"></a>`content_identity` | yes | type="string"; minLength=64; maxLength=64; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-08da37b2cc7b"></a>`description` | yes | anyOf=#/components/schemas/CollectionDescription \| type="null" |  |
+| <a id="s-e9cfc0106a6d"></a>`description_identity` | yes | type="string"; minLength=64; maxLength=64; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-2d3eed1f81c5"></a>`description_revision` | yes | type="integer"; minimum=0; maximum=9007199254740991 |  |
+| <a id="s-0cca83b7262a"></a>`revision` | yes | type="string"; minLength=1; maxLength=19; pattern="^(?:[1-9][0-9]{0,17}\|[1-8][0-9]{18})$" |  |
+| <a id="s-f0e881c2dfbf"></a>`tag_revision` | yes | type="integer"; minimum=1; maximum=9007199254740991 |  |
+| <a id="s-fb420e022037"></a>`tag_set_identity` | yes | type="string"; minLength=64; maxLength=64; pattern="^[0-9a-f]{64}$" |  |
 
 ### Progression, limits, and lifecycle
 
-| Dimension | Unit | Policy | Bounds or reason |
-|---|---|---|---|
-| length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
-| length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
-| length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
-| value | schema-value | `contract_max` | maximum=9007199254740991, minimum=0, reason=schema-maximum |
-| length | characters | `contract_max` | maximum=19, minimum=1, reason=schema-maximum |
-| value | schema-value | `contract_max` | maximum=9007199254740991, minimum=1, reason=schema-maximum |
-| length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
+#### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
+
+| Applies to | Contract | Bounds or reason |
+|---|---|---|
+| [field archive_root_sha256](#s-8ad78fe25ff2) | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation" |
+| [field content_identity](#s-6c31e8327f45) | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation" |
+| [field description_identity](#s-e9cfc0106a6d) | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation" |
+| [field description_revision](#s-2d3eed1f81c5) | `value · schema-value · contract_max` | maximum=9007199254740991; minimum=0; reason="schema-maximum" |
+| [field revision](#s-0cca83b7262a) | `length · characters · contract_max` | maximum=19; minimum=1; reason="schema-maximum" |
+| [field tag_revision](#s-f0e881c2dfbf) | `value · schema-value · contract_max` | maximum=9007199254740991; minimum=1; reason="schema-maximum" |
+| [field tag_set_identity](#s-fb420e022037) | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation" |
 
 ## Maintained corroboration
 
@@ -54,20 +57,20 @@ Exact externally visible contract owned by this semantic dossier.
 
 ## Governing policies
 
-- `compatibility/http-api/v1`
-- `extent-rule/schema-bound/v1`
+- <a id="pa-ae2f99f08d32"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0ba)
+- <a id="pa-bd9b2df642a2"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
 
 ## Evidence
 
 ### Qualification
 
-- `make operation-qualification`
-- `make compose-smoke`
+- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459fb8)
+- [make compose-smoke](../../../evidence/sources.md#q-413b0b241ba8)
 
 ### Executable sources
 
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `openapi:stove0` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
+- [openapi:stove0](../../../evidence/sources.md#src-52e6e3212451) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
 
 ### Machine authority
 

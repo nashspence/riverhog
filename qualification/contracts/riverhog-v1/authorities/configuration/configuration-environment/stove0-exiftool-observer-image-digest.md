@@ -8,34 +8,35 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Audit field | Value |
 |---|---|
-| Authority | `configuration` |
-| Interface | `configuration-environment` |
-| Family | `variables` |
+| Authority | [configuration](../index.md) |
+| Interface | [configuration-environment](index.md) |
+| Family | [variables](families/variables/index.md) |
 | Contract elements | 1 |
 | Extent decisions | 0 |
 
 ## External contract
 
+<a id="s-3a00485a0df7"></a>
 | Field | Shape |
 |---|---|
-| `consumers` | ["stove0-exiftool-observer"] |
-| `name` | "STOVE0_EXIFTOOL_OBSERVER_IMAGE_DIGEST" |
+| <a id="s-f4162f50d7f9"></a>`consumers` | ["stove0-exiftool-observer"] |
+| <a id="s-811edc1b8460"></a>`name` | "STOVE0_EXIFTOOL_OBSERVER_IMAGE_DIGEST" |
 
 ## Governing policies
 
-- `compatibility/configuration/v1`
+- <a id="pa-854b07b1d860"></a>[compatibility/configuration/v1](../../../policies/index.md#p-8dc08bb46173)
 
 ## Evidence
 
 ### Qualification
 
-- `make unit`
-- `make compose-smoke`
+- [make unit](../../../evidence/sources.md#q-ce47068f504c)
+- [make compose-smoke](../../../evidence/sources.md#q-413b0b241ba8)
 
 ### Executable sources
 
-- `configuration-environment:STOVE0_EXIFTOOL_OBSERVER_IMAGE_DIGEST` — `configuration-environment:STOVE0_EXIFTOOL_OBSERVER_IMAGE_DIGEST`
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
+- [configuration-environment:STOVE0_EXIFTOOL_OBSERVER_IMAGE_DIGEST](../../../evidence/sources.md#src-37e81b0b87c2) — `configuration-environment:STOVE0_EXIFTOOL_OBSERVER_IMAGE_DIGEST`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
 
 ### Machine authority
 

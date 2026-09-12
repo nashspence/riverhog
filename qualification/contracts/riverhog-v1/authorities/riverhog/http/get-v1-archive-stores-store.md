@@ -8,34 +8,35 @@ Get Archive Store
 
 | Audit field | Value |
 |---|---|
-| Authority | `riverhog` |
-| Interface | `http` |
-| Family | `archive` |
+| Authority | [riverhog](../index.md) |
+| Interface | [http](index.md) |
+| Family | [archive](families/archive/index.md) |
 | Contract elements | 1 |
 | Extent decisions | 0 |
 
 ## External contract
 
-- `operationId`: get_archive_store
-- `summary`: Get Archive Store
-- `security`: `[{"HTTPBearer": []}]`
+<a id="s-54ed75001a3c"></a>
+- <a id="s-e0da451e48f3"></a>`operationId`: get_archive_store
+- <a id="s-cf1105a3ac07"></a>`summary`: Get Archive Store
+- <a id="s-0ebb68c0e758"></a>`security`: `[{"HTTPBearer": []}]`
 
 ### Parameters
 
 | Name | In | Required | Schema |
 |---|---|---:|---|
-| `store` | path | yes | type="string"; pattern="^[a-z0-9]+(?:-[a-z0-9]+)*$" |
+| <a id="s-7b748f31c673"></a>`store` | path | yes | type="string"; pattern="^[a-z0-9]+(?:-[a-z0-9]+)*$" |
 
 ### Responses
 
 | Status | Description |
 |---|---|
-| `200` | Successful Response |
-| `400` | Bad Request |
-| `401` | Unauthorized |
-| `403` | Forbidden |
-| `404` | Not Found |
-| `500` | Internal Server Error |
+| <a id="s-0c14d5abd4d0"></a>`200` | Successful Response |
+| <a id="s-d77497a05a66"></a>`400` | Bad Request |
+| <a id="s-40f929e655b5"></a>`401` | Unauthorized |
+| <a id="s-ca9e03ec211d"></a>`403` | Forbidden |
+| <a id="s-848bef10e05d"></a>`404` | Not Found |
+| <a id="s-d42d32e2d58c"></a>`500` | Internal Server Error |
 
 ## Maintained corroboration
 
@@ -50,19 +51,19 @@ Get Archive Store
 
 ## Governing policies
 
-- `compatibility/http-api/v1`
+- <a id="pa-b6ac3e08dd6f"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0ba)
 
 ## Evidence
 
 ### Qualification
 
-- `make operation-qualification`
-- `make compose-smoke`
+- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459fb8)
+- [make compose-smoke](../../../evidence/sources.md#q-413b0b241ba8)
 
 ### Executable sources
 
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `openapi:riverhog` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
+- [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc960) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
 
 ### Machine authority
 

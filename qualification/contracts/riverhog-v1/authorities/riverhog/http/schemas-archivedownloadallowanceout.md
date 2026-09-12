@@ -8,31 +8,32 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Audit field | Value |
 |---|---|
-| Authority | `riverhog` |
-| Interface | `http` |
-| Family | `schemas` |
+| Authority | [riverhog](../index.md) |
+| Interface | [http](index.md) |
+| Family | [schemas](families/schemas/index.md) |
 | Contract elements | 1 |
 | Extent decisions | 0 |
 
 ## External contract
 
-- `title`: ArchiveDownloadAllowanceOut
-- `type`: object
+<a id="s-46f521de7969"></a>
+- <a id="s-4519ce4635c0"></a>`title`: ArchiveDownloadAllowanceOut
+- <a id="s-7270dcd7afb4"></a>`type`: object
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| `accounted_bytes` | yes | type="integer" |  |
-| `allowance_bytes` | yes | type="integer" |  |
-| `effective_limit_bytes` | yes | type="integer" |  |
-| `month_started_at` | yes | type="string" |  |
-| `remaining_bytes` | yes | type="integer" |  |
-| `reserved_bytes` | yes | type="integer" |  |
-| `resets_at` | yes | type="string" |  |
-| `safety_buffer_bytes` | yes | type="integer" |  |
-| `state` | yes | type="string"; enum=["open","closed"] |  |
-| `store` | yes | #/components/schemas/ArchiveStoreName |  |
+| <a id="s-8ef21559a15a"></a>`accounted_bytes` | yes | type="integer" |  |
+| <a id="s-e79165f0f276"></a>`allowance_bytes` | yes | type="integer" |  |
+| <a id="s-9ff4a596cd16"></a>`effective_limit_bytes` | yes | type="integer" |  |
+| <a id="s-099dbcfcba66"></a>`month_started_at` | yes | type="string" |  |
+| <a id="s-3c3696723310"></a>`remaining_bytes` | yes | type="integer" |  |
+| <a id="s-2b5c28bc1444"></a>`reserved_bytes` | yes | type="integer" |  |
+| <a id="s-138f1ddbccc3"></a>`resets_at` | yes | type="string" |  |
+| <a id="s-3b2f6d1df241"></a>`safety_buffer_bytes` | yes | type="integer" |  |
+| <a id="s-38ef97275a1e"></a>`state` | yes | type="string"; enum=["open","closed"] |  |
+| <a id="s-51a26ac5cc56"></a>`store` | yes | #/components/schemas/ArchiveStoreName |  |
 
 ## Maintained corroboration
 
@@ -42,19 +43,19 @@ Exact externally visible contract owned by this semantic dossier.
 
 ## Governing policies
 
-- `compatibility/http-api/v1`
+- <a id="pa-0c428bb06200"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0ba)
 
 ## Evidence
 
 ### Qualification
 
-- `make operation-qualification`
-- `make compose-smoke`
+- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459fb8)
+- [make compose-smoke](../../../evidence/sources.md#q-413b0b241ba8)
 
 ### Executable sources
 
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `openapi:riverhog` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
+- [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc960) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
 
 ### Machine authority
 

@@ -8,38 +8,39 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Audit field | Value |
 |---|---|
-| Authority | `mango-fish` |
-| Interface | `boundary` |
-| Family | `components` |
+| Authority | [mango-fish](../index.md) |
+| Interface | [boundary](index.md) |
+| Family | [components](index.md#f-6b5411943710) |
 | Contract elements | 1 |
 | Extent decisions | 0 |
 
 ## External contract
 
+<a id="s-f6f91b83effd"></a>
 | Field | Shape |
 |---|---|
-| `console_scripts` | additional keys=`mango-fish` |
-| `dependencies` | ["lifecycle-events","state-schema"] |
-| `distribution` | "mango-fish" |
-| `optional_dependencies` | empty object |
-| `path` | "reference/riverhog/applications/mango-fish" |
-| `role` | "reference_application" |
+| <a id="s-010073a0d2b4"></a>`console_scripts` | additional keys=`mango-fish` |
+| <a id="s-8e18a00e214e"></a>`dependencies` | ["lifecycle-events","state-schema"] |
+| <a id="s-8a37451c42ec"></a>`distribution` | "mango-fish" |
+| <a id="s-b18cfd346363"></a>`optional_dependencies` | empty object |
+| <a id="s-081bbe85d486"></a>`path` | "reference/riverhog/applications/mango-fish" |
+| <a id="s-b1740bfa519d"></a>`role` | "reference_application" |
 
 ## Governing policies
 
-- `boundary/frozen-authority/v1`
+- <a id="pa-334a08180aa4"></a>[boundary/frozen-authority/v1](../../../policies/index.md#p-61994d3f0fa8)
 
 ## Evidence
 
 ### Qualification
 
-- `make release-check`
-- `make build`
+- [make release-check](../../../evidence/sources.md#q-8d8d22d6a6b1)
+- [make build](../../../evidence/sources.md#q-d1121e35fa7a)
 
 ### Executable sources
 
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `release:release.toml` — `release.toml`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
+- [release:release.toml](../../../evidence/sources.md#src-c5380dbe5fe0) — `release.toml`
 
 ### Machine authority
 

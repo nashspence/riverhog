@@ -8,31 +8,39 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Audit field | Value |
 |---|---|
-| Authority | `riverhog-storage-adapter-support` |
-| Interface | `protocol` |
-| Family | `protocol` |
+| Authority | [riverhog-storage-adapter-support](../index.md) |
+| Interface | [protocol](index.md) |
+| Family | [protocol](families/protocol/index.md) |
 | Contract elements | 1 |
 | Extent decisions | 0 |
 
 ## External contract
 
-- Shape: items=additional keys=`http_operations`, `semantic_acceptance`, `structural_models` | "ed6a7530471c36528ec0c944a389ae5b9f06bb3f643b45ff61c0f8bd47cc4ec6" | additional keys=`provider_ontology`, `unknown_fields` | "riverhog-storage-adapter-schema-bundle/v1" | additional keys=`operations` | "riverhog-storage-adapter/v1" | additional keys=`conformance`, `kind`
+| Subject | Shape |
+|---|---|
+| <a id="s-4c3e2d176972"></a>`authorities` | additional keys=`http_operations`, `semantic_acceptance`, `structural_models` |
+| <a id="s-73519fff7706"></a>`bundle_sha256` | "ed6a7530471c36528ec0c944a389ae5b9f06bb3f643b45ff61c0f8bd47cc4ec6" |
+| <a id="s-85201da1d0df"></a>`compatibility` | additional keys=`provider_ontology`, `unknown_fields` |
+| <a id="s-de29ee0e6e98"></a>`format` | "riverhog-storage-adapter-schema-bundle/v1" |
+| <a id="s-3f23366d89be"></a>`http_binding` | additional keys=`operations` |
+| <a id="s-8343e7f06b36"></a>`protocol` | "riverhog-storage-adapter/v1" |
+| <a id="s-da65a692e55b"></a>`semantic_acceptance` | additional keys=`conformance`, `kind` |
 
 ## Governing policies
 
-- `compatibility/components/v1`
+- <a id="pa-1c7f7e829936"></a>[compatibility/components/v1](../../../policies/index.md#p-95e9a1225947)
 
 ## Evidence
 
 ### Qualification
 
-- `make dist-smoke`
-- `make build`
+- [make dist-smoke](../../../evidence/sources.md#q-0ba2578a3eb7)
+- [make build](../../../evidence/sources.md#q-d1121e35fa7a)
 
 ### Executable sources
 
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `protocol:generated:riverhog-storage-adapter` — `packages/riverhog-storage-adapter-support/src/riverhog_storage_adapter_support/schemas.py::storage_adapter_schema_bundle`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
+- [protocol:generated:riverhog-storage-adapter](../../../evidence/sources.md#src-ef281f2471a9) — `packages/riverhog-storage-adapter-support/src/riverhog_storage_adapter_support/schemas.py::storage_adapter_schema_bundle`
 
 ### Machine authority
 

@@ -8,25 +8,26 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Audit field | Value |
 |---|---|
-| Authority | `riverhog` |
-| Interface | `http` |
-| Family | `schemas` |
+| Authority | [riverhog](../index.md) |
+| Interface | [http](index.md) |
+| Family | [schemas](families/schemas/index.md) |
 | Contract elements | 1 |
 | Extent decisions | 0 |
 
 ## External contract
 
-- `title`: AppSummaryOut
-- `type`: object
+<a id="s-328309782088"></a>
+- <a id="s-0ab68a0e8e01"></a>`title`: AppSummaryOut
+- <a id="s-5040e209144a"></a>`type`: object
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| `active_keys` | yes | type="integer" |  |
-| `keys` | yes | type="integer" |  |
-| `last_used_at` | yes | anyOf=type="string" \| type="null" |  |
-| `name` | yes | #/components/schemas/ApplicationName |  |
+| <a id="s-b581e74b722b"></a>`active_keys` | yes | type="integer" |  |
+| <a id="s-ce23c1fe4727"></a>`keys` | yes | type="integer" |  |
+| <a id="s-7cdb39204708"></a>`last_used_at` | yes | anyOf=type="string" \| type="null" |  |
+| <a id="s-514d86a11e21"></a>`name` | yes | #/components/schemas/ApplicationName |  |
 
 ## Maintained corroboration
 
@@ -36,19 +37,19 @@ Exact externally visible contract owned by this semantic dossier.
 
 ## Governing policies
 
-- `compatibility/http-api/v1`
+- <a id="pa-b6847062d1b5"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0ba)
 
 ## Evidence
 
 ### Qualification
 
-- `make operation-qualification`
-- `make compose-smoke`
+- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459fb8)
+- [make compose-smoke](../../../evidence/sources.md#q-413b0b241ba8)
 
 ### Executable sources
 
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `openapi:riverhog` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
+- [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc960) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
 
 ### Machine authority
 

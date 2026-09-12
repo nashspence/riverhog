@@ -8,35 +8,36 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Audit field | Value |
 |---|---|
-| Authority | `stove0-operator-contracts` |
-| Interface | `python` |
-| Family | `modules` |
+| Authority | [stove0-operator-contracts](../index.md) |
+| Interface | [python](index.md) |
+| Family | [modules](index.md#f-51f3ead2ada9) |
 | Contract elements | 1 |
 | Extent decisions | 0 |
 
 ## External contract
 
+<a id="s-9a2627e76f32"></a>
 | Field | Shape |
 |---|---|
-| `distribution` | "stove0-operator-contracts" |
-| `exports` | additional keys=`ADMISSION_POLICY_COUNT_MAX`, `AdmissionCatalog`, `AdmissionIntent`, `AdmissionPage`, `AdmissionPhase`, `AdmissionPolicy`, `AdmissionPolicyCatalogView`, `AdmissionPolicyStatus`, `AdmissionRun`, `AdmissionSort`, `AdmissionState`, `AdmissionView`, `ArtifactSelectionPage`, `BRANCH_SET_ADMITTED`, `BranchSetAdmittedEvent`, `BranchSetAdmittedEventData`, `EVALUATION_CREATED`, `EVALUATION_UPDATED`, `EvaluationChildView`, `EvaluationCreatedEvent`, `EvaluationCreatedEventData`, `EvaluationPage`, `EvaluationPhase`, `EvaluationReviewIn`, `EvaluationReviewView`, `EvaluationSort`, `EvaluationUpdatedEvent`, `EvaluationUpdatedEventData`, `EvaluationView`, `JOIN_ADMITTED`, `JoinAdmittedEvent`, `JoinAdmittedEventData`, `RecipeCatalogView`, `RecipeView`, `STOVE0_EVENT_SOURCE`, `STOVE0_EVENT_TYPES`, `STOVE0_HTTP_ERROR_AUTHORITY`, `SchedulerFailure`, `SchedulerPruning`, `SchedulerRole`, `SchedulerRun`, `SchedulerRunIn`, `SchedulerStatus`, `SchedulerWorkBatch`, `SortOrder`, `Stove0CloudEvent`, `Stove0EventData`, `Stove0EventPage`, `Stove0EventType`, `Stove0LifecycleEvent`, `WORK_CREATED`, `WORK_UPDATED`, `WorkClaimView`, `WorkCreateIn`, `WorkCreatedEvent`, `WorkCreatedEventData`, `WorkFailureView`, `WorkInapplicableView`, `WorkPage`, `WorkPhase`, `WorkSort`, `WorkUpdatedEvent`, `WorkUpdatedEventData`, `WorkView`, `WorkflowPreviewIn`, `parse_stove0_event`, `stove0_event`, `validate_evaluation_child_shape`, `validate_evaluation_review_shape`, `validate_evaluation_state_shape`, `validate_work_state_shape` |
-| `module` | "stove0_operator_contracts" |
+| <a id="s-1ffcdaaff8fa"></a>`distribution` | "stove0-operator-contracts" |
+| <a id="s-949fc2301452"></a>`exports` | additional keys=`ADMISSION_POLICY_COUNT_MAX`, `AdmissionCatalog`, `AdmissionIntent`, `AdmissionPage`, `AdmissionPhase`, `AdmissionPolicy`, `AdmissionPolicyCatalogView`, `AdmissionPolicyStatus`, `AdmissionRun`, `AdmissionSort`, `AdmissionState`, `AdmissionView`, `ArtifactSelectionPage`, `BRANCH_SET_ADMITTED`, `BranchSetAdmittedEvent`, `BranchSetAdmittedEventData`, `EVALUATION_CREATED`, `EVALUATION_UPDATED`, `EvaluationChildView`, `EvaluationCreatedEvent`, `EvaluationCreatedEventData`, `EvaluationPage`, `EvaluationPhase`, `EvaluationReviewIn`, `EvaluationReviewView`, `EvaluationSort`, `EvaluationUpdatedEvent`, `EvaluationUpdatedEventData`, `EvaluationView`, `JOIN_ADMITTED`, `JoinAdmittedEvent`, `JoinAdmittedEventData`, `RecipeCatalogView`, `RecipeView`, `STOVE0_EVENT_SOURCE`, `STOVE0_EVENT_TYPES`, `STOVE0_HTTP_ERROR_AUTHORITY`, `SchedulerFailure`, `SchedulerPruning`, `SchedulerRole`, `SchedulerRun`, `SchedulerRunIn`, `SchedulerStatus`, `SchedulerWorkBatch`, `SortOrder`, `Stove0CloudEvent`, `Stove0EventData`, `Stove0EventPage`, `Stove0EventType`, `Stove0LifecycleEvent`, `WORK_CREATED`, `WORK_UPDATED`, `WorkClaimView`, `WorkCreateIn`, `WorkCreatedEvent`, `WorkCreatedEventData`, `WorkFailureView`, `WorkInapplicableView`, `WorkPage`, `WorkPhase`, `WorkSort`, `WorkUpdatedEvent`, `WorkUpdatedEventData`, `WorkView`, `WorkflowPreviewIn`, `parse_stove0_event`, `stove0_event`, `validate_evaluation_child_shape`, `validate_evaluation_review_shape`, `validate_evaluation_state_shape`, `validate_work_state_shape` |
+| <a id="s-0d61db01d2af"></a>`module` | "stove0_operator_contracts" |
 
 ## Governing policies
 
-- `compatibility/python-api/v1`
+- <a id="pa-23165251a33b"></a>[compatibility/python-api/v1](../../../policies/index.md#p-e574772ba506)
 
 ## Evidence
 
 ### Qualification
 
-- `make dist-smoke`
-- `make build`
+- [make dist-smoke](../../../evidence/sources.md#q-0ba2578a3eb7)
+- [make build](../../../evidence/sources.md#q-d1121e35fa7a)
 
 ### Executable sources
 
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `python:stove0-operator-contracts` — `reference/stove0/packages/operator-contracts/src/stove0_operator_contracts/__init__.py::<module>`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
+- [python:stove0-operator-contracts](../../../evidence/sources.md#src-8f69eee57b84) — `reference/stove0/packages/operator-contracts/src/stove0_operator_contracts/__init__.py::<module>`
 
 ### Machine authority
 

@@ -8,38 +8,39 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Audit field | Value |
 |---|---|
-| Authority | `riverhog-storage-adapter-s3-support` |
-| Interface | `boundary` |
-| Family | `components` |
+| Authority | [riverhog-storage-adapter-s3-support](../index.md) |
+| Interface | [boundary](index.md) |
+| Family | [components](index.md#f-d33d0c1da8d1) |
 | Contract elements | 1 |
 | Extent decisions | 0 |
 
 ## External contract
 
+<a id="s-7bc32b5108bb"></a>
 | Field | Shape |
 |---|---|
-| `console_scripts` | empty object |
-| `dependencies` | ["riverhog-storage-adapter-protocol","time-formats"] |
-| `distribution` | "riverhog-storage-adapter-s3-support" |
-| `optional_dependencies` | empty object |
-| `path` | "reference/riverhog/storage/s3-support" |
-| `role` | "reference_component" |
+| <a id="s-f319d5215441"></a>`console_scripts` | empty object |
+| <a id="s-dc98f98850fe"></a>`dependencies` | ["riverhog-storage-adapter-protocol","time-formats"] |
+| <a id="s-25809c0c8b6e"></a>`distribution` | "riverhog-storage-adapter-s3-support" |
+| <a id="s-181ddfcf7f7f"></a>`optional_dependencies` | empty object |
+| <a id="s-5d6b3d52d85f"></a>`path` | "reference/riverhog/storage/s3-support" |
+| <a id="s-66bce49f01ab"></a>`role` | "reference_component" |
 
 ## Governing policies
 
-- `boundary/frozen-authority/v1`
+- <a id="pa-3779b6dbdf21"></a>[boundary/frozen-authority/v1](../../../policies/index.md#p-61994d3f0fa8)
 
 ## Evidence
 
 ### Qualification
 
-- `make release-check`
-- `make build`
+- [make release-check](../../../evidence/sources.md#q-8d8d22d6a6b1)
+- [make build](../../../evidence/sources.md#q-d1121e35fa7a)
 
 ### Executable sources
 
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `release:release.toml` — `release.toml`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
+- [release:release.toml](../../../evidence/sources.md#src-c5380dbe5fe0) — `release.toml`
 
 ### Machine authority
 

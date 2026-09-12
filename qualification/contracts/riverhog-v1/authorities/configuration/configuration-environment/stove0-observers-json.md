@@ -8,34 +8,35 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Audit field | Value |
 |---|---|
-| Authority | `configuration` |
-| Interface | `configuration-environment` |
-| Family | `variables` |
+| Authority | [configuration](../index.md) |
+| Interface | [configuration-environment](index.md) |
+| Family | [variables](families/variables/index.md) |
 | Contract elements | 1 |
 | Extent decisions | 0 |
 
 ## External contract
 
+<a id="s-b00241927889"></a>
 | Field | Shape |
 |---|---|
-| `consumers` | ["stove0-server"] |
-| `name` | "STOVE0_OBSERVERS_JSON" |
+| <a id="s-e3ac27b7d7cb"></a>`consumers` | ["stove0-server"] |
+| <a id="s-058d8b88740d"></a>`name` | "STOVE0_OBSERVERS_JSON" |
 
 ## Governing policies
 
-- `compatibility/configuration/v1`
+- <a id="pa-2a58a3c7bc44"></a>[compatibility/configuration/v1](../../../policies/index.md#p-8dc08bb46173)
 
 ## Evidence
 
 ### Qualification
 
-- `make unit`
-- `make compose-smoke`
+- [make unit](../../../evidence/sources.md#q-ce47068f504c)
+- [make compose-smoke](../../../evidence/sources.md#q-413b0b241ba8)
 
 ### Executable sources
 
-- `configuration-environment:STOVE0_OBSERVERS_JSON` — `configuration-environment:STOVE0_OBSERVERS_JSON`
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
+- [configuration-environment:STOVE0_OBSERVERS_JSON](../../../evidence/sources.md#src-25d3f3d25634) — `configuration-environment:STOVE0_OBSERVERS_JSON`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
 
 ### Machine authority
 

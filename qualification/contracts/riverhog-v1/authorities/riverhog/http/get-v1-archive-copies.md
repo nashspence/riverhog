@@ -8,45 +8,57 @@ List Archive Copy Jobs
 
 | Audit field | Value |
 |---|---|
-| Authority | `riverhog` |
-| Interface | `http` |
-| Family | `archive` |
+| Authority | [riverhog](../index.md) |
+| Interface | [http](index.md) |
+| Family | [archive](families/archive/index.md) |
 | Contract elements | 1 |
 | Extent decisions | 2 |
 
 ## External contract
 
-- `operationId`: list_archive_copy_jobs
-- `summary`: List Archive Copy Jobs
-- `security`: `[{"HTTPBearer": []}]`
+<a id="s-4e91afc7efa1"></a>
+- <a id="s-aeb3f93238db"></a>`operationId`: list_archive_copy_jobs
+- <a id="s-07eff20bd134"></a>`summary`: List Archive Copy Jobs
+- <a id="s-59ff4f683597"></a>`security`: `[{"HTTPBearer": []}]`
 
 ### Parameters
 
 | Name | In | Required | Schema |
 |---|---|---:|---|
-| `page_size` | query | no | type="integer"; minimum=1; maximum=100 |
-| `page_token` | query | no | anyOf=#/components/schemas/BrowsePageToken \| type="null" |
-| `q` | query | no | anyOf=#/components/schemas/BrowseQuery \| type="null" |
-| `state` | query | no | anyOf=#/components/schemas/ArchiveCopyState \| type="null" |
-| `sort` | query | no | $ref="#/components/schemas/ArchiveCopySort" |
-| `order` | query | no | $ref="#/components/schemas/SortOrder" |
+| <a id="s-6a836ad124a7"></a>`page_size` | query | no | type="integer"; minimum=1; maximum=100 |
+| <a id="s-c618f326fef5"></a>`page_token` | query | no | anyOf=#/components/schemas/BrowsePageToken \| type="null" |
+| <a id="s-3eb290e6908b"></a>`q` | query | no | anyOf=#/components/schemas/BrowseQuery \| type="null" |
+| <a id="s-19bdc1af5abc"></a>`state` | query | no | anyOf=#/components/schemas/ArchiveCopyState \| type="null" |
+| <a id="s-266b97f0ac0b"></a>`sort` | query | no | $ref="#/components/schemas/ArchiveCopySort" |
+| <a id="s-ce3081993013"></a>`order` | query | no | $ref="#/components/schemas/SortOrder" |
 
 ### Responses
 
 | Status | Description |
 |---|---|
-| `200` | Successful Response |
-| `400` | Bad Request |
-| `401` | Unauthorized |
-| `403` | Forbidden |
-| `500` | Internal Server Error |
+| <a id="s-74d5af4df666"></a>`200` | Successful Response |
+| <a id="s-bb7683a1a8e0"></a>`400` | Bad Request |
+| <a id="s-ae23ee0e861a"></a>`401` | Unauthorized |
+| <a id="s-8bc663d64b19"></a>`403` | Forbidden |
+| <a id="s-1361c6806e8e"></a>`500` | Internal Server Error |
 
 ### Progression, limits, and lifecycle
 
-| Dimension | Unit | Policy | Bounds or reason |
-|---|---|---|---|
-| logical-result-cardinality | items | `segmented_no_total_max` | reason=bounded-route-progression |
-| value | schema-value | `contract_max` | maximum=100, minimum=1, reason=schema-maximum |
+#### [extent-rule/route-progression/v1](../../../policies/index.md#p-6b76b527cb21)
+
+Shared facts for every subject below: progression={"default_page_size":25,"kind":"mutable-browse","maximum_page_size":100,"next_page_token_field":"next_page_token","page_size_parameter":"page_size","page_token_parameter":"page_token"}; reason="bounded-route-progression"
+
+| Applies to | Contract | Bounds or reason |
+|---|---|---|
+| [GET /v1/archive/copies](#s-4e91afc7efa1) | `logical-result-cardinality · items · segmented_no_total_max` | shared above |
+
+#### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
+
+Shared facts for every subject below: maximum=100; minimum=1; reason="schema-maximum"
+
+| Applies to | Contract | Bounds or reason |
+|---|---|---|
+| <a id="s-3476a24c725c"></a>parameter page_size | `value · schema-value · contract_max` | shared above |
 
 ## Maintained corroboration
 
@@ -66,21 +78,21 @@ List Archive Copy Jobs
 
 ## Governing policies
 
-- `compatibility/http-api/v1`
-- `extent-rule/route-progression/v1`
-- `extent-rule/schema-bound/v1`
+- <a id="pa-d2a458a74197"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0ba)
+- <a id="pa-8004b7ae0e7f"></a>[extent-rule/route-progression/v1](../../../policies/index.md#p-6b76b527cb21)
+- <a id="pa-1141371923aa"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
 
 ## Evidence
 
 ### Qualification
 
-- `make operation-qualification`
-- `make compose-smoke`
+- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459fb8)
+- [make compose-smoke](../../../evidence/sources.md#q-413b0b241ba8)
 
 ### Executable sources
 
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `openapi:riverhog` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
+- [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc960) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
 
 ### Machine authority
 

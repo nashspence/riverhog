@@ -8,60 +8,70 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Audit field | Value |
 |---|---|
-| Authority | `riverhog` |
-| Interface | `http` |
-| Family | `schemas` |
+| Authority | [riverhog](../index.md) |
+| Interface | [http](index.md) |
+| Family | [schemas](families/schemas/index.md) |
 | Contract elements | 1 |
 | Extent decisions | 13 |
 
 ## External contract
 
-- `title`: ProcessingClaimDocument
-- `type`: object
+<a id="s-fb2afd54ce5a"></a>
+- <a id="s-54f210eb0331"></a>`title`: ProcessingClaimDocument
+- <a id="s-1964ac680636"></a>`type`: object
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| `abandoned_at` | no | anyOf=type="string"; minLength=1; maxLength=64 \| type="null" |  |
-| `abandonment_reason` | no | anyOf=type="string"; minLength=1; maxLength=1000 \| type="null" |  |
-| `consumer` | yes | #/components/schemas/ProcessingClaimConsumerDocument |  |
-| `created_at` | yes | type="string"; minLength=1; maxLength=64 |  |
-| `expires_at` | yes | type="string"; minLength=1; maxLength=64 |  |
-| `fence` | yes | type="integer"; minimum=1 |  |
-| `format` | yes | type="string"; const="riverhog-processing-claim/v1" |  |
-| `id` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| `inputs` | yes | #/components/schemas/ReceivingSetDocument |  |
-| `outcome_settlement` | no | anyOf=#/components/schemas/ProcessingClaimOutcomeSettlementDocument \| type="null" |  |
-| `outcomes` | yes | #/components/schemas/OutcomeSetDocument |  |
-| `output_collection_id` | no | anyOf=#/components/schemas/CollectionId \| type="null" |  |
-| `plan` | no | anyOf=#/components/schemas/ProcessingClaimPlanDocument \| type="null" |  |
-| `purpose` | yes | type="string"; minLength=1; maxLength=160 |  |
-| `released_at` | no | anyOf=type="string"; minLength=1; maxLength=64 \| type="null" |  |
-| `settled_at` | no | anyOf=type="string"; minLength=1; maxLength=64 \| type="null" |  |
-| `state` | yes | type="string"; enum=["active","settled","retiring","abandoned","released"] |  |
-| `updated_at` | yes | type="string"; minLength=1; maxLength=64 |  |
-| `work_document` | yes | type="object"; additional keys=`additionalProperties`, `x-riverhog-encoded-bytes-max`, `x-riverhog-extent` |  |
-| `work_document_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| `work_id` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-3b26ebd228e2"></a>`abandoned_at` | no | anyOf=type="string"; minLength=1; maxLength=64 \| type="null" |  |
+| <a id="s-ff86aa1856c8"></a>`abandonment_reason` | no | anyOf=type="string"; minLength=1; maxLength=1000 \| type="null" |  |
+| <a id="s-8bfc8468754c"></a>`consumer` | yes | #/components/schemas/ProcessingClaimConsumerDocument |  |
+| <a id="s-9d922404c484"></a>`created_at` | yes | type="string"; minLength=1; maxLength=64 |  |
+| <a id="s-672a29cfd86f"></a>`expires_at` | yes | type="string"; minLength=1; maxLength=64 |  |
+| <a id="s-32f010eb3187"></a>`fence` | yes | type="integer"; minimum=1 |  |
+| <a id="s-4eff6e6056b9"></a>`format` | yes | type="string"; const="riverhog-processing-claim/v1" |  |
+| <a id="s-b60202a68b5a"></a>`id` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-dd008f3e6174"></a>`inputs` | yes | #/components/schemas/ReceivingSetDocument |  |
+| <a id="s-2a773e5157bd"></a>`outcome_settlement` | no | anyOf=#/components/schemas/ProcessingClaimOutcomeSettlementDocument \| type="null" |  |
+| <a id="s-dd1d4f73c89d"></a>`outcomes` | yes | #/components/schemas/OutcomeSetDocument |  |
+| <a id="s-637e612ce888"></a>`output_collection_id` | no | anyOf=#/components/schemas/CollectionId \| type="null" |  |
+| <a id="s-9049da54deb7"></a>`plan` | no | anyOf=#/components/schemas/ProcessingClaimPlanDocument \| type="null" |  |
+| <a id="s-38ac0d9a685b"></a>`purpose` | yes | type="string"; minLength=1; maxLength=160 |  |
+| <a id="s-7f23a9131282"></a>`released_at` | no | anyOf=type="string"; minLength=1; maxLength=64 \| type="null" |  |
+| <a id="s-ec795af7cbcd"></a>`settled_at` | no | anyOf=type="string"; minLength=1; maxLength=64 \| type="null" |  |
+| <a id="s-bb2fa0d286a0"></a>`state` | yes | type="string"; enum=["active","settled","retiring","abandoned","released"] |  |
+| <a id="s-1a8a5eaf65e6"></a>`updated_at` | yes | type="string"; minLength=1; maxLength=64 |  |
+| <a id="s-3097610fdd37"></a>`work_document` | yes | type="object"; additional keys=`additionalProperties`, `x-riverhog-encoded-bytes-max`, `x-riverhog-extent` |  |
+| <a id="s-1c037e78016d"></a>`work_document_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-8fb6149ecc76"></a>`work_id` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 
 ### Progression, limits, and lifecycle
 
-| Dimension | Unit | Policy | Bounds or reason |
-|---|---|---|---|
-| length | characters | `contract_max` | maximum=64, minimum=1, reason=schema-maximum |
-| length | characters | `contract_max` | maximum=1000, minimum=1, reason=schema-maximum |
-| length | characters | `contract_max` | maximum=64, minimum=1, reason=schema-maximum |
-| length | characters | `contract_max` | maximum=64, minimum=1, reason=schema-maximum |
-| length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
-| length | characters | `contract_max` | maximum=160, minimum=1, reason=schema-maximum |
-| length | characters | `contract_max` | maximum=64, minimum=1, reason=schema-maximum |
-| length | characters | `contract_max` | maximum=64, minimum=1, reason=schema-maximum |
-| length | characters | `contract_max` | maximum=64, minimum=1, reason=schema-maximum |
-| encoded-size | bytes | `contract_max` | maximum=4194304, reason=bounded-work-document-envelope |
-| cardinality | entries | `operational_policy` | maximum=None, reason=no-declared-semantic-maximum |
-| length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
-| length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
+#### [extent-rule/no-semantic-maximum/v1](../../../policies/index.md#p-574724b48af0)
+
+Shared facts for every subject below: capacity_authority={"declared_maximum":null,"hidden_maximum":"forbidden","owner":"riverhog"}; maximum=null; reason="no-declared-semantic-maximum"
+
+| Applies to | Contract | Bounds or reason |
+|---|---|---|
+| [field work_document](#s-3097610fdd37) | `cardinality · entries · operational_policy` | shared above |
+
+#### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
+
+| Applies to | Contract | Bounds or reason |
+|---|---|---|
+| <a id="s-e20c4978b2ca"></a>field abandoned_at · anyOf alternative 1 | `length · characters · contract_max` | maximum=64; minimum=1; reason="schema-maximum" |
+| <a id="s-335ccf771cd8"></a>field abandonment_reason · anyOf alternative 1 | `length · characters · contract_max` | maximum=1000; minimum=1; reason="schema-maximum" |
+| [field created_at](#s-9d922404c484) | `length · characters · contract_max` | maximum=64; minimum=1; reason="schema-maximum" |
+| [field expires_at](#s-672a29cfd86f) | `length · characters · contract_max` | maximum=64; minimum=1; reason="schema-maximum" |
+| [field id](#s-b60202a68b5a) | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
+| [field purpose](#s-38ac0d9a685b) | `length · characters · contract_max` | maximum=160; minimum=1; reason="schema-maximum" |
+| <a id="s-31c5a7604100"></a>field released_at · anyOf alternative 1 | `length · characters · contract_max` | maximum=64; minimum=1; reason="schema-maximum" |
+| <a id="s-3585c8133225"></a>field settled_at · anyOf alternative 1 | `length · characters · contract_max` | maximum=64; minimum=1; reason="schema-maximum" |
+| [field updated_at](#s-1a8a5eaf65e6) | `length · characters · contract_max` | maximum=64; minimum=1; reason="schema-maximum" |
+| [field work_document](#s-3097610fdd37) | `encoded-size · bytes · contract_max` | maximum=4194304; reason="bounded-work-document-envelope"; source_constraint={"field":"x-riverhog-encoded-bytes-max"} |
+| [field work_document_sha256](#s-1c037e78016d) | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
+| [field work_id](#s-8fb6149ecc76) | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
 
 ## Maintained corroboration
 
@@ -76,21 +86,21 @@ Exact externally visible contract owned by this semantic dossier.
 
 ## Governing policies
 
-- `compatibility/http-api/v1`
-- `extent-rule/no-semantic-maximum/v1`
-- `extent-rule/schema-bound/v1`
+- <a id="pa-3aee72ad461a"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0ba)
+- <a id="pa-44f2743201fe"></a>[extent-rule/no-semantic-maximum/v1](../../../policies/index.md#p-574724b48af0)
+- <a id="pa-767fa2afa6cd"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
 
 ## Evidence
 
 ### Qualification
 
-- `make operation-qualification`
-- `make compose-smoke`
+- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459fb8)
+- [make compose-smoke](../../../evidence/sources.md#q-413b0b241ba8)
 
 ### Executable sources
 
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `openapi:riverhog` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
+- [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc960) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
 
 ### Machine authority
 

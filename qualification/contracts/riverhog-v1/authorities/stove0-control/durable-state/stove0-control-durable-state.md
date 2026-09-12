@@ -8,31 +8,32 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Audit field | Value |
 |---|---|
-| Authority | `stove0-control` |
-| Interface | `durable-state` |
-| Family | `owners` |
+| Authority | [stove0-control](../index.md) |
+| Interface | [durable-state](index.md) |
+| Family | [owners](index.md#f-c8f271895d88) |
 | Contract elements | 1 |
 | Extent decisions | 0 |
 
 ## External contract
 
-- `format`: state-schema/postgresql
+<a id="s-512ffedd137b"></a>
+- <a id="s-c2ee1fed96d6"></a>`format`: state-schema/postgresql
 
 ## Governing policies
 
-- `compatibility/components/v1`
+- <a id="pa-39ae5fe76053"></a>[compatibility/components/v1](../../../policies/index.md#p-95e9a1225947)
 
 ## Evidence
 
 ### Qualification
 
-- `make release-check`
-- `make database-qualification`
+- [make release-check](../../../evidence/sources.md#q-8d8d22d6a6b1)
+- [make database-qualification](../../../evidence/sources.md#q-27f281b51ec6)
 
 ### Executable sources
 
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `state:stove0-control` — `state:stove0-control`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
+- [state:stove0-control](../../../evidence/sources.md#src-45e44b17fd52) — `state:stove0-control`
 
 ### Machine authority
 

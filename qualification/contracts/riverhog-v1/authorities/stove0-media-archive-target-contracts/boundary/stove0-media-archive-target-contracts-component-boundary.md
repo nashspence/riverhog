@@ -8,38 +8,39 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Audit field | Value |
 |---|---|
-| Authority | `stove0-media-archive-target-contracts` |
-| Interface | `boundary` |
-| Family | `components` |
+| Authority | [stove0-media-archive-target-contracts](../index.md) |
+| Interface | [boundary](index.md) |
+| Family | [components](index.md#f-14771392c8fd) |
 | Contract elements | 1 |
 | Extent decisions | 0 |
 
 ## External contract
 
+<a id="s-7b50338a38c7"></a>
 | Field | Shape |
 |---|---|
-| `console_scripts` | empty object |
-| `dependencies` | ["stove0-protocol","stove0-target-protocol"] |
-| `distribution` | "stove0-media-archive-target-contracts" |
-| `optional_dependencies` | empty object |
-| `path` | "reference/stove0/targets/media-archive/contracts" |
-| `role` | "reference_component" |
+| <a id="s-0e3293a814c6"></a>`console_scripts` | empty object |
+| <a id="s-ac9fa96dd538"></a>`dependencies` | ["stove0-protocol","stove0-target-protocol"] |
+| <a id="s-82d9a8c0e152"></a>`distribution` | "stove0-media-archive-target-contracts" |
+| <a id="s-0fc41310d6c1"></a>`optional_dependencies` | empty object |
+| <a id="s-58ca195fd832"></a>`path` | "reference/stove0/targets/media-archive/contracts" |
+| <a id="s-d73da172e26c"></a>`role` | "reference_component" |
 
 ## Governing policies
 
-- `boundary/frozen-authority/v1`
+- <a id="pa-973abb598eac"></a>[boundary/frozen-authority/v1](../../../policies/index.md#p-61994d3f0fa8)
 
 ## Evidence
 
 ### Qualification
 
-- `make release-check`
-- `make build`
+- [make release-check](../../../evidence/sources.md#q-8d8d22d6a6b1)
+- [make build](../../../evidence/sources.md#q-d1121e35fa7a)
 
 ### Executable sources
 
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `release:release.toml` — `release.toml`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
+- [release:release.toml](../../../evidence/sources.md#src-c5380dbe5fe0) — `release.toml`
 
 ### Machine authority
 

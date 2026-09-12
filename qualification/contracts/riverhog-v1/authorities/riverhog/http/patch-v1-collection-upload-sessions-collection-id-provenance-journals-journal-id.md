@@ -8,28 +8,29 @@ Append Collection Upload Session Provenance Journal
 
 | Audit field | Value |
 |---|---|
-| Authority | `riverhog` |
-| Interface | `http` |
-| Family | `collection-upload-sessions` |
+| Authority | [riverhog](../index.md) |
+| Interface | [http](index.md) |
+| Family | [collection-upload-sessions](families/collection-upload-sessions/index.md) |
 | Contract elements | 1 |
 | Extent decisions | 1 |
 
 ## External contract
 
-- `operationId`: append_collection_upload_session_provenance_journal
-- `summary`: Append Collection Upload Session Provenance Journal
-- `security`: `[{"HTTPBearer": []}]`
+<a id="s-841e59e9d92f"></a>
+- <a id="s-980f5225e382"></a>`operationId`: append_collection_upload_session_provenance_journal
+- <a id="s-8e8e0f947312"></a>`summary`: Append Collection Upload Session Provenance Journal
+- <a id="s-ae48ec2ae795"></a>`security`: `[{"HTTPBearer": []}]`
 
 ### Parameters
 
 | Name | In | Required | Schema |
 |---|---|---:|---|
-| `collection_id` | path | yes | type="integer"; minimum=1 |
-| `journal_id` | path | yes | type="string"; pattern="^urn:uuid:[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$" |
-| `Upload-Offset` | header | yes | type="integer"; minimum=0 |
-| `Content-Length` | header | yes | type="integer"; minimum=1; maximum=1048576 |
+| <a id="s-19150eead780"></a>`collection_id` | path | yes | type="integer"; minimum=1 |
+| <a id="s-c08d475e3336"></a>`journal_id` | path | yes | type="string"; pattern="^urn:uuid:[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$" |
+| <a id="s-e9674a110d7f"></a>`Upload-Offset` | header | yes | type="integer"; minimum=0 |
+| <a id="s-c3c2815fa2d4"></a>`Content-Length` | header | yes | type="integer"; minimum=1; maximum=1048576 |
 
-### Request body
+### <a id="s-7a66b60cea62"></a>Request body
 
 `{"content": {"application/json-seq": {"schema": {"format": "binary", "type": "string"}}}, "required": true}`
 
@@ -37,20 +38,24 @@ Append Collection Upload Session Provenance Journal
 
 | Status | Description |
 |---|---|
-| `200` | Successful Response |
-| `400` | Bad Request |
-| `401` | Unauthorized |
-| `403` | Forbidden |
-| `404` | Not Found |
-| `409` | Conflict |
-| `411` | Length Required |
-| `500` | Internal Server Error |
+| <a id="s-14c3eb722c04"></a>`200` | Successful Response |
+| <a id="s-de30d6047ad6"></a>`400` | Bad Request |
+| <a id="s-8245d6d66993"></a>`401` | Unauthorized |
+| <a id="s-d6d6d10f2fa6"></a>`403` | Forbidden |
+| <a id="s-8895a08cc0b5"></a>`404` | Not Found |
+| <a id="s-cbbd0cae8d35"></a>`409` | Conflict |
+| <a id="s-f09b3cb53965"></a>`411` | Length Required |
+| <a id="s-5d3d3ad6de93"></a>`500` | Internal Server Error |
 
 ### Progression, limits, and lifecycle
 
-| Dimension | Unit | Policy | Bounds or reason |
-|---|---|---|---|
-| value | schema-value | `contract_max` | maximum=1048576, minimum=1, reason=schema-maximum |
+#### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
+
+Shared facts for every subject below: maximum=1048576; minimum=1; reason="schema-maximum"
+
+| Applies to | Contract | Bounds or reason |
+|---|---|---|
+| <a id="s-1ec924e50b33"></a>parameter Content-Length | `value · schema-value · contract_max` | shared above |
 
 ## Maintained corroboration
 
@@ -65,20 +70,20 @@ Append Collection Upload Session Provenance Journal
 
 ## Governing policies
 
-- `compatibility/http-api/v1`
-- `extent-rule/schema-bound/v1`
+- <a id="pa-677a6685bd02"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0ba)
+- <a id="pa-edfc9091b0fc"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
 
 ## Evidence
 
 ### Qualification
 
-- `make operation-qualification`
-- `make compose-smoke`
+- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459fb8)
+- [make compose-smoke](../../../evidence/sources.md#q-413b0b241ba8)
 
 ### Executable sources
 
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `openapi:riverhog` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
+- [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc960) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
 
 ### Machine authority
 

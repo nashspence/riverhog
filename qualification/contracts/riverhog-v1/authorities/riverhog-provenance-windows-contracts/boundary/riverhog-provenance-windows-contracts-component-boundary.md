@@ -8,38 +8,39 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Audit field | Value |
 |---|---|
-| Authority | `riverhog-provenance-windows-contracts` |
-| Interface | `boundary` |
-| Family | `components` |
+| Authority | [riverhog-provenance-windows-contracts](../index.md) |
+| Interface | [boundary](index.md) |
+| Family | [components](index.md#f-d967ca917a22) |
 | Contract elements | 1 |
 | Extent decisions | 0 |
 
 ## External contract
 
+<a id="s-24b14260ade3"></a>
 | Field | Shape |
 |---|---|
-| `console_scripts` | empty object |
-| `dependencies` | ["riverhog-provenance-contracts"] |
-| `distribution` | "riverhog-provenance-windows-contracts" |
-| `optional_dependencies` | empty object |
-| `path` | "reference/riverhog/provenance/contracts/windows" |
-| `role` | "reference_component" |
+| <a id="s-c558b6f6c441"></a>`console_scripts` | empty object |
+| <a id="s-8acff826ea15"></a>`dependencies` | ["riverhog-provenance-contracts"] |
+| <a id="s-535c8da0887d"></a>`distribution` | "riverhog-provenance-windows-contracts" |
+| <a id="s-9947d304781a"></a>`optional_dependencies` | empty object |
+| <a id="s-8b8331b3e24d"></a>`path` | "reference/riverhog/provenance/contracts/windows" |
+| <a id="s-04d671ba7401"></a>`role` | "reference_component" |
 
 ## Governing policies
 
-- `boundary/frozen-authority/v1`
+- <a id="pa-b7c40f471c69"></a>[boundary/frozen-authority/v1](../../../policies/index.md#p-61994d3f0fa8)
 
 ## Evidence
 
 ### Qualification
 
-- `make release-check`
-- `make build`
+- [make release-check](../../../evidence/sources.md#q-8d8d22d6a6b1)
+- [make build](../../../evidence/sources.md#q-d1121e35fa7a)
 
 ### Executable sources
 
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `release:release.toml` — `release.toml`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
+- [release:release.toml](../../../evidence/sources.md#src-c5380dbe5fe0) — `release.toml`
 
 ### Machine authority
 

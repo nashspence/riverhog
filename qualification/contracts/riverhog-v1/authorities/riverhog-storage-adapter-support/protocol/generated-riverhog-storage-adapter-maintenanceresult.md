@@ -8,38 +8,39 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Audit field | Value |
 |---|---|
-| Authority | `riverhog-storage-adapter-support` |
-| Interface | `protocol` |
-| Family | `schemas` |
+| Authority | [riverhog-storage-adapter-support](../index.md) |
+| Interface | [protocol](index.md) |
+| Family | [schemas](families/schemas/index.md) |
 | Contract elements | 1 |
 | Extent decisions | 0 |
 
 ## External contract
 
-- `title`: MaintenanceResult
-- `type`: object
+<a id="s-720226b55488"></a>
+- <a id="s-9838cbaddba9"></a>`title`: MaintenanceResult
+- <a id="s-c0dba656c0c1"></a>`type`: object
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| `affected` | yes | type="integer"; minimum=0 |  |
+| <a id="s-11316610fc0f"></a>`affected` | yes | type="integer"; minimum=0 |  |
 
 ## Governing policies
 
-- `compatibility/components/v1`
+- <a id="pa-875318e10505"></a>[compatibility/components/v1](../../../policies/index.md#p-95e9a1225947)
 
 ## Evidence
 
 ### Qualification
 
-- `make dist-smoke`
-- `make build`
+- [make dist-smoke](../../../evidence/sources.md#q-0ba2578a3eb7)
+- [make build](../../../evidence/sources.md#q-d1121e35fa7a)
 
 ### Executable sources
 
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `protocol:generated:riverhog-storage-adapter` — `packages/riverhog-storage-adapter-support/src/riverhog_storage_adapter_support/schemas.py::storage_adapter_schema_bundle`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
+- [protocol:generated:riverhog-storage-adapter](../../../evidence/sources.md#src-ef281f2471a9) — `packages/riverhog-storage-adapter-support/src/riverhog_storage_adapter_support/schemas.py::storage_adapter_schema_bundle`
 
 ### Machine authority
 

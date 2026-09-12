@@ -8,34 +8,35 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Audit field | Value |
 |---|---|
-| Authority | `configuration` |
-| Interface | `configuration-environment` |
-| Family | `variables` |
+| Authority | [configuration](../index.md) |
+| Interface | [configuration-environment](index.md) |
+| Family | [variables](families/variables/index.md) |
 | Contract elements | 1 |
 | Extent decisions | 0 |
 
 ## External contract
 
+<a id="s-d42d9004a6e0"></a>
 | Field | Shape |
 |---|---|
-| `consumers` | ["stove0-api-client"] |
-| `name` | "STOVE0_ALLOW_INSECURE_HTTP" |
+| <a id="s-ef9d7442ff0b"></a>`consumers` | ["stove0-api-client"] |
+| <a id="s-c980de4ee4a2"></a>`name` | "STOVE0_ALLOW_INSECURE_HTTP" |
 
 ## Governing policies
 
-- `compatibility/configuration/v1`
+- <a id="pa-4fc9b12c8f1e"></a>[compatibility/configuration/v1](../../../policies/index.md#p-8dc08bb46173)
 
 ## Evidence
 
 ### Qualification
 
-- `make unit`
-- `make compose-smoke`
+- [make unit](../../../evidence/sources.md#q-ce47068f504c)
+- [make compose-smoke](../../../evidence/sources.md#q-413b0b241ba8)
 
 ### Executable sources
 
-- `configuration-environment:STOVE0_ALLOW_INSECURE_HTTP` — `configuration-environment:STOVE0_ALLOW_INSECURE_HTTP`
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
+- [configuration-environment:STOVE0_ALLOW_INSECURE_HTTP](../../../evidence/sources.md#src-06df4fb5c3a4) — `configuration-environment:STOVE0_ALLOW_INSECURE_HTTP`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
 
 ### Machine authority
 

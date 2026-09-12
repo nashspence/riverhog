@@ -8,48 +8,58 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Audit field | Value |
 |---|---|
-| Authority | `riverhog` |
-| Interface | `http` |
-| Family | `schemas` |
+| Authority | [riverhog](../index.md) |
+| Interface | [http](index.md) |
+| Family | [schemas](families/schemas/index.md) |
 | Contract elements | 1 |
 | Extent decisions | 6 |
 
 ## External contract
 
-- `title`: CollectionDeletionPlanOut
-- `type`: object
+<a id="s-b2d6fcbaba1f"></a>
+- <a id="s-c8bc21fc4770"></a>`title`: CollectionDeletionPlanOut
+- <a id="s-43a4b1128085"></a>`type`: object
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| `archive_copies` | yes | type="array"; items=(#/components/schemas/CollectionDeletionArchiveCopyOut) |  |
-| `archive_object_count` | yes | type="integer" |  |
-| `billing_note` | yes | type="string" |  |
-| `blockers` | yes | type="array"; maxItems=55; items=(type="string"); additional keys=`x-riverhog-extent` |  |
-| `bytes` | yes | type="integer" |  |
-| `challenge` | yes | anyOf=type="string" \| type="null" |  |
-| `collection_id` | yes | #/components/schemas/CollectionId |  |
-| `expires_at` | yes | type="string" |  |
-| `file_count` | yes | type="integer" |  |
-| `inventory_identity` | yes | type="string" |  |
-| `metadata_rows` | yes | type="object"; additional keys=`additionalProperties` |  |
-| `remote_storage_bytes` | yes | type="integer" |  |
-| `retirement_claim` | no | anyOf=#/components/schemas/RetirementClaimReferenceDocument \| type="null" |  |
-| `status` | yes | type="string"; enum=["ready","blocked","deleting"] |  |
-| `upload_file_count` | yes | type="integer" |  |
-| `warning` | yes | type="string" |  |
+| <a id="s-f4ff3def0c21"></a>`archive_copies` | yes | type="array"; items=(#/components/schemas/CollectionDeletionArchiveCopyOut) |  |
+| <a id="s-0781b71d7994"></a>`archive_object_count` | yes | type="integer" |  |
+| <a id="s-003b0a0272e1"></a>`billing_note` | yes | type="string" |  |
+| <a id="s-327ac9fe43f3"></a>`blockers` | yes | type="array"; maxItems=55; items=(type="string"); additional keys=`x-riverhog-extent` |  |
+| <a id="s-c328f9741650"></a>`bytes` | yes | type="integer" |  |
+| <a id="s-3c2ff393671a"></a>`challenge` | yes | anyOf=type="string" \| type="null" |  |
+| <a id="s-73ba2d2beef9"></a>`collection_id` | yes | #/components/schemas/CollectionId |  |
+| <a id="s-f0db1aa2f234"></a>`expires_at` | yes | type="string" |  |
+| <a id="s-4551e18b33ca"></a>`file_count` | yes | type="integer" |  |
+| <a id="s-0c27dfe4e37d"></a>`inventory_identity` | yes | type="string" |  |
+| <a id="s-ce485100095a"></a>`metadata_rows` | yes | type="object"; additional keys=`additionalProperties` |  |
+| <a id="s-137b210b7689"></a>`remote_storage_bytes` | yes | type="integer" |  |
+| <a id="s-6ac0cd51f1f4"></a>`retirement_claim` | no | anyOf=#/components/schemas/RetirementClaimReferenceDocument \| type="null" |  |
+| <a id="s-dfa08a8c5de9"></a>`status` | yes | type="string"; enum=["ready","blocked","deleting"] |  |
+| <a id="s-0d4f73bd55e9"></a>`upload_file_count` | yes | type="integer" |  |
+| <a id="s-653b88a8cb43"></a>`warning` | yes | type="string" |  |
 
 ### Progression, limits, and lifecycle
 
-| Dimension | Unit | Policy | Bounds or reason |
-|---|---|---|---|
-| cardinality | items | `operational_policy` | maximum=None, reason=no-declared-semantic-maximum |
-| cardinality | items | `contract_max` | maximum=0, reason=state-conditioned-empty-set |
-| cardinality | items | `operational_policy` | maximum=None, reason=no-declared-semantic-maximum |
-| cardinality | items | `contract_max` | maximum=55, reason=bounded-diagnostic-sample-with-explicit-overflow-markers |
-| value | schema-value | `operational_policy` | maximum=None, reason=no-declared-semantic-maximum |
-| cardinality | entries | `operational_policy` | maximum=None, reason=no-declared-semantic-maximum |
+#### [extent-rule/no-semantic-maximum/v1](../../../policies/index.md#p-574724b48af0)
+
+Shared facts for every subject below: capacity_authority={"declared_maximum":null,"hidden_maximum":"forbidden","owner":"riverhog"}; maximum=null; reason="no-declared-semantic-maximum"
+
+| Applies to | Contract | Bounds or reason |
+|---|---|---|
+| <a id="s-004e25716a71"></a>oneOf alternative 1 · field blockers | `cardinality · items · operational_policy` | shared above |
+| [field archive_copies](#s-f4ff3def0c21) | `cardinality · items · operational_policy` | shared above |
+| [field bytes](#s-c328f9741650) | `value · schema-value · operational_policy` | shared above |
+| [field metadata_rows](#s-ce485100095a) | `cardinality · entries · operational_policy` | shared above |
+
+#### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
+
+| Applies to | Contract | Bounds or reason |
+|---|---|---|
+| <a id="s-ae6d9ad02482"></a>oneOf alternative 2 · field blockers | `cardinality · items · contract_max` | maximum=0; reason="state-conditioned-empty-set" |
+| [field blockers](#s-327ac9fe43f3) | `cardinality · items · contract_max` | maximum=55; reason="bounded-diagnostic-sample-with-explicit-overflow-markers" |
 
 ## Maintained corroboration
 
@@ -61,21 +71,21 @@ Exact externally visible contract owned by this semantic dossier.
 
 ## Governing policies
 
-- `compatibility/http-api/v1`
-- `extent-rule/no-semantic-maximum/v1`
-- `extent-rule/schema-bound/v1`
+- <a id="pa-be125116c223"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0ba)
+- <a id="pa-18034768a25d"></a>[extent-rule/no-semantic-maximum/v1](../../../policies/index.md#p-574724b48af0)
+- <a id="pa-aec7605607d8"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
 
 ## Evidence
 
 ### Qualification
 
-- `make operation-qualification`
-- `make compose-smoke`
+- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459fb8)
+- [make compose-smoke](../../../evidence/sources.md#q-413b0b241ba8)
 
 ### Executable sources
 
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `openapi:riverhog` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
+- [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc960) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
 
 ### Machine authority
 

@@ -6,29 +6,29 @@ Contract elements: **109** · Extent decisions: **0**
 
 | Family | Count |
 |---|---:|
-| `app-key-access` | 1 |
-| `apps` | 9 |
-| `archive` | 8 |
-| `catalog` | 1 |
-| `catalog-sync` | 3 |
-| `collection-processing-claims` | 27 |
-| `collection-upload-sessions` | 19 |
-| `collections` | 20 |
-| `download-quota` | 1 |
-| `download-quotas` | 1 |
-| `events` | 1 |
-| `health` | 2 |
-| `retrieval-cache` | 3 |
-| `retrieval-jobs` | 7 |
-| `retrieval-plans` | 4 |
-| `search` | 1 |
-| `tags` | 1 |
+| <a id="f-f30f4c8d8687"></a>`app-key-access` | 1 |
+| <a id="f-32ca94d10bb3"></a>`apps` | 9 |
+| <a id="f-1dc023e143d1"></a>`archive` | 8 |
+| <a id="f-9167d68f6ee8"></a>`catalog` | 1 |
+| <a id="f-3be23e1a2fc7"></a>`catalog-sync` | 3 |
+| <a id="f-fa0ae5ecc0ec"></a>`collection-processing-claims` | 27 |
+| <a id="f-b991ff457d8a"></a>`collection-upload-sessions` | 19 |
+| <a id="f-282b0b504240"></a>`collections` | 20 |
+| <a id="f-180447c569af"></a>`download-quota` | 1 |
+| <a id="f-a441d3bccca0"></a>`download-quotas` | 1 |
+| <a id="f-ad2956ae3446"></a>`events` | 1 |
+| <a id="f-14dba331f70f"></a>`health` | 2 |
+| <a id="f-b48dc32bbc28"></a>`retrieval-cache` | 3 |
+| <a id="f-02179ed157c0"></a>`retrieval-jobs` | 7 |
+| <a id="f-6bf94e358f95"></a>`retrieval-plans` | 4 |
+| <a id="f-7418abe37b21"></a>`search` | 1 |
+| <a id="f-41ddf1f84889"></a>`tags` | 1 |
 
 | Policy | Count |
 |---|---:|
-| `compatibility/cli/v1` | 109 |
-| `compatibility/components/v1` | 109 |
-| `compatibility/http-api/v1` | 109 |
+| [compatibility/cli/v1](../../../policies/index.md#p-48a89776de7f) | 109 |
+| [compatibility/components/v1](../../../policies/index.md#p-95e9a1225947) | 109 |
+| [compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0ba) | 109 |
 
 ## Semantic families
 

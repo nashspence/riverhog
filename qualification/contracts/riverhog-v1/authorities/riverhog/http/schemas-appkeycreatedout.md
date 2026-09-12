@@ -8,31 +8,32 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Audit field | Value |
 |---|---|
-| Authority | `riverhog` |
-| Interface | `http` |
-| Family | `schemas` |
+| Authority | [riverhog](../index.md) |
+| Interface | [http](index.md) |
+| Family | [schemas](families/schemas/index.md) |
 | Contract elements | 1 |
 | Extent decisions | 0 |
 
 ## External contract
 
-- `title`: AppKeyCreatedOut
-- `type`: object
+<a id="s-cd113a1d8125"></a>
+- <a id="s-d5abee02565f"></a>`title`: AppKeyCreatedOut
+- <a id="s-3b25d9574e16"></a>`type`: object
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| `access` | yes | #/components/schemas/ApplicationAccessGrantSet |  |
-| `app` | yes | #/components/schemas/ApplicationName |  |
-| `created_at` | yes | type="string" |  |
-| `expires_at` | yes | anyOf=type="string" \| type="null" |  |
-| `id` | yes | #/components/schemas/ApplicationKeyId |  |
-| `last_used_at` | yes | anyOf=type="string" \| type="null" |  |
-| `monthly_download_quota_bytes` | yes | anyOf=#/components/schemas/MonthlyDownloadQuotaBytes \| type="null" |  |
-| `revoked_at` | yes | anyOf=type="string" \| type="null" |  |
-| `status` | yes | type="string"; enum=["active","expired","revoked"] |  |
-| `token` | yes | type="string" |  |
+| <a id="s-586f65365e13"></a>`access` | yes | #/components/schemas/ApplicationAccessGrantSet |  |
+| <a id="s-48bcb68302d7"></a>`app` | yes | #/components/schemas/ApplicationName |  |
+| <a id="s-7b641a4bb095"></a>`created_at` | yes | type="string" |  |
+| <a id="s-d9ca89d4cab1"></a>`expires_at` | yes | anyOf=type="string" \| type="null" |  |
+| <a id="s-5ccd64df568e"></a>`id` | yes | #/components/schemas/ApplicationKeyId |  |
+| <a id="s-9dbd92c3f85b"></a>`last_used_at` | yes | anyOf=type="string" \| type="null" |  |
+| <a id="s-54bec0ed9482"></a>`monthly_download_quota_bytes` | yes | anyOf=#/components/schemas/MonthlyDownloadQuotaBytes \| type="null" |  |
+| <a id="s-e253c7e9c18b"></a>`revoked_at` | yes | anyOf=type="string" \| type="null" |  |
+| <a id="s-41bdd094b248"></a>`status` | yes | type="string"; enum=["active","expired","revoked"] |  |
+| <a id="s-7def1d81772b"></a>`token` | yes | type="string" |  |
 
 ## Maintained corroboration
 
@@ -45,19 +46,19 @@ Exact externally visible contract owned by this semantic dossier.
 
 ## Governing policies
 
-- `compatibility/http-api/v1`
+- <a id="pa-65add221dd42"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0ba)
 
 ## Evidence
 
 ### Qualification
 
-- `make operation-qualification`
-- `make compose-smoke`
+- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459fb8)
+- [make compose-smoke](../../../evidence/sources.md#q-413b0b241ba8)
 
 ### Executable sources
 
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `openapi:riverhog` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
+- [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc960) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
 
 ### Machine authority
 

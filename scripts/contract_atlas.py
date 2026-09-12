@@ -1094,8 +1094,96 @@ def _relative_link(source: str, target: str) -> str:
     return posixpath.relpath(target, posixpath.dirname(source))
 
 
+def _anchor_id(kind: str, identity: str) -> str:
+    """Return a deterministic presentation-only anchor for an exact identity."""
+
+    prefixes = {
+        "exclusion": "x",
+        "extent": "e",
+        "family": "f",
+        "identity": "i",
+        "policy": "p",
+        "policy-application": "pa",
+        "qualification": "q",
+        "relationship-edge": "re",
+        "relationship-node": "rn",
+        "source": "src",
+        "subject": "s",
+    }
+    prefix = prefixes.get(kind, _slug(kind, limit=12))
+    return f"{prefix}-{hashlib.sha256(identity.encode()).hexdigest()[:12]}"
+
+
+def _anchor_link(source: str, target: str, anchor: str) -> str:
+    if source == target:
+        return f"#{anchor}"
+    return f"{_relative_link(source, target)}#{anchor}"
+
+
+def _anchor_marker(kind: str, identity: str) -> str:
+    return f'<a id="{_anchor_id(kind, identity)}"></a>'
+
+
+def _html_anchor(anchor: str) -> str:
+    return f'<a id="{anchor}"></a>'
+
+
+def _subject_anchor(pointer: str) -> str:
+    return _anchor_id("subject", pointer)
+
+
+def _subject_marker(pointer: str, placed: set[str]) -> str:
+    if pointer in placed:
+        return ""
+    placed.add(pointer)
+    return f'<a id="{_subject_anchor(pointer)}"></a>'
+
+
+def _policy_anchor(policy_id: str) -> str:
+    return _anchor_id("policy", policy_id)
+
+
+def _policy_application_anchor(element_id: str, policy_id: str) -> str:
+    return _anchor_id("policy-application", f"{element_id}\n{policy_id}")
+
+
+def _source_anchor(source_id: str) -> str:
+    return _anchor_id("source", source_id)
+
+
+def _qualification_anchor(route: str) -> str:
+    return _anchor_id("qualification", route)
+
+
+def _family_anchor(authority: str, interface: str, family: str) -> str:
+    return _anchor_id("family", f"{authority}\n{interface}\n{family}")
+
+
+def _relationship_node_anchor(node_id: str) -> str:
+    return _anchor_id("relationship-node", node_id)
+
+
+def _relationship_edge_anchor(edge: Mapping[str, object]) -> str:
+    return _anchor_id(
+        "relationship-edge",
+        canonical_sha256(
+            {
+                "type": edge["type"],
+                "source": edge["source"],
+                "target": edge["target"],
+                "scope": edge.get("scope"),
+                "binding": edge.get("binding"),
+            }
+        ),
+    )
+
+
 def _md(value: object) -> str:
     return str(value).replace("|", "\\|").replace("\n", " ").replace("](", "]&#40;")
+
+
+def _compact_json(value: object) -> str:
+    return json.dumps(value, ensure_ascii=False, sort_keys=True, separators=(",", ":"))
 
 
 def _shape_summary(value: object) -> str:
@@ -1166,7 +1254,9 @@ def _shape_summary(value: object) -> str:
     return json.dumps(value, ensure_ascii=False)
 
 
-def _render_schema(value: Mapping[str, object]) -> list[str]:
+def _render_schema(
+    value: Mapping[str, object], base_pointer: str, placed_subjects: set[str]
+) -> list[str]:
     lines: list[str] = []
     for key in (
         "$id",
@@ -1179,12 +1269,13 @@ def _render_schema(value: Mapping[str, object]) -> list[str]:
         "bundle_sha256",
     ):
         if key in value:
+            pointer = f"{base_pointer}/{_escape_pointer(key)}"
             rendered = (
                 json.dumps(value[key], ensure_ascii=False)
                 if isinstance(value[key], (list, Mapping))
                 else str(value[key])
             )
-            lines.append(f"- `{key}`: {_md(rendered)}")
+            lines.append(f"- {_subject_marker(pointer, placed_subjects)}`{key}`: {_md(rendered)}")
     required = set(cast(Sequence[str], value.get("required", ())))
     properties = value.get("properties")
     if isinstance(properties, Mapping):
@@ -1199,46 +1290,71 @@ def _render_schema(value: Mapping[str, object]) -> list[str]:
         )
         for name, field in properties.items():
             field_map = cast(Mapping[str, object], field) if isinstance(field, Mapping) else {}
+            pointer = f"{base_pointer}/properties/{_escape_pointer(str(name))}"
             lines.append(
-                f"| `{_md(name)}` | {'yes' if name in required else 'no'} | "
+                f"| {_subject_marker(pointer, placed_subjects)}`{_md(name)}` | "
+                f"{'yes' if name in required else 'no'} | "
                 f"{_md(_shape_summary(field))} | {_md(field_map.get('description', ''))} |"
             )
     schemas = value.get("schemas")
     if isinstance(schemas, Mapping):
         lines.extend(["", "### Schemas", "", "| Schema | Shape |", "|---|---|"])
         for name, schema in schemas.items():
-            lines.append(f"| `{_md(name)}` | {_md(_shape_summary(schema))} |")
+            pointer = f"{base_pointer}/schemas/{_escape_pointer(str(name))}"
+            lines.append(
+                f"| {_subject_marker(pointer, placed_subjects)}`{_md(name)}` | "
+                f"{_md(_shape_summary(schema))} |"
+            )
     definitions = value.get("$defs")
     if isinstance(definitions, Mapping):
         lines.extend(["", "### Definitions", "", "| Definition | Shape |", "|---|---|"])
         for name, schema in definitions.items():
-            lines.append(f"| `{_md(name)}` | {_md(_shape_summary(schema))} |")
+            pointer = f"{base_pointer}/$defs/{_escape_pointer(str(name))}"
+            lines.append(
+                f"| {_subject_marker(pointer, placed_subjects)}`{_md(name)}` | "
+                f"{_md(_shape_summary(schema))} |"
+            )
+    if lines:
+        lines.insert(0, _subject_marker(base_pointer, placed_subjects))
     return lines
 
 
-def _render_http(value: Mapping[str, object], details: Mapping[str, object]) -> list[str]:
-    lines = []
+def _render_http(
+    value: Mapping[str, object],
+    details: Mapping[str, object],
+    base_pointer: str,
+    placed_subjects: set[str],
+) -> list[str]:
+    lines = [_subject_marker(base_pointer, placed_subjects)]
     for key in ("operationId", "summary", "description", "deprecated"):
         if key in value:
-            lines.append(f"- `{key}`: {_md(value[key])}")
+            pointer = f"{base_pointer}/{_escape_pointer(key)}"
+            lines.append(f"- {_subject_marker(pointer, placed_subjects)}`{key}`: {_md(value[key])}")
     if "security" in value:
-        lines.append(f"- `security`: `{_md(json.dumps(value['security'], sort_keys=True))}`")
+        pointer = f"{base_pointer}/security"
+        lines.append(
+            f"- {_subject_marker(pointer, placed_subjects)}`security`: "
+            f"`{_md(json.dumps(value['security'], sort_keys=True))}`"
+        )
     parameters = cast(Sequence[Mapping[str, object]], value.get("parameters", ()))
     if parameters:
         lines.extend(
             ["", "### Parameters", "", "| Name | In | Required | Schema |", "|---|---|---:|---|"]
         )
-        for item in parameters:
+        for index, item in enumerate(parameters):
+            pointer = f"{base_pointer}/parameters/{index}"
             lines.append(
-                f"| `{_md(item.get('name', ''))}` | {_md(item.get('in', ''))} | "
+                f"| {_subject_marker(pointer, placed_subjects)}`{_md(item.get('name', ''))}` | "
+                f"{_md(item.get('in', ''))} | "
                 f"{'yes' if item.get('required') else 'no'} | "
                 f"{_md(_shape_summary(item.get('schema')))} |"
             )
     if "requestBody" in value:
+        pointer = f"{base_pointer}/requestBody"
         lines.extend(
             [
                 "",
-                "### Request body",
+                f"### {_subject_marker(pointer, placed_subjects)}Request body",
                 "",
                 f"`{_md(json.dumps(value['requestBody'], sort_keys=True))}`",
             ]
@@ -1247,25 +1363,39 @@ def _render_http(value: Mapping[str, object], details: Mapping[str, object]) -> 
     if isinstance(responses, Mapping):
         lines.extend(["", "### Responses", "", "| Status | Description |", "|---|---|"])
         for status, response in responses.items():
+            pointer = f"{base_pointer}/responses/{_escape_pointer(str(status))}"
             description = (
                 cast(Mapping[str, object], response).get("description", "")
                 if isinstance(response, Mapping)
                 else ""
             )
-            lines.append(f"| `{_md(status)}` | {_md(description)} |")
+            lines.append(
+                f"| {_subject_marker(pointer, placed_subjects)}`{_md(status)}` | "
+                f"{_md(description)} |"
+            )
     del details
     return lines
 
 
-def _render_cli(values: Sequence[object]) -> list[str]:
+def _render_cli(
+    pointers: Sequence[str], values: Sequence[object], placed_subjects: set[str]
+) -> list[str]:
     parameters: Sequence[Mapping[str, object]] = ()
+    parameters_pointer = ""
     name = ""
-    for value in values:
+    name_pointer = ""
+    for pointer, value in zip(pointers, values, strict=True):
         if isinstance(value, str):
             name = value
+            name_pointer = pointer
         elif isinstance(value, list):
             parameters = cast(Sequence[Mapping[str, object]], value)
-    lines = [f"- Parser name: `{_md(name)}`"] if name else []
+            parameters_pointer = pointer
+    lines = (
+        [f"- {_subject_marker(name_pointer, placed_subjects)}Parser name: `{_md(name)}`"]
+        if name
+        else []
+    )
     if parameters:
         lines.extend(
             [
@@ -1276,16 +1406,20 @@ def _render_cli(values: Sequence[object]) -> list[str]:
                 "|---|---|---:|---|---|",
             ]
         )
-        for item in parameters:
+        for index, item in enumerate(parameters):
+            pointer = f"{parameters_pointer}/{index}"
             lines.append(
-                f"| `{_md(item.get('name', ''))}` | {_md(item.get('kind', ''))} | "
+                f"| {_subject_marker(pointer, placed_subjects)}`{_md(item.get('name', ''))}` | "
+                f"{_md(item.get('kind', ''))} | "
                 f"{'yes' if item.get('required') else 'no'} | {_md(item.get('type', ''))} | "
                 f"{_md(', '.join(cast(Sequence[str], item.get('options', ()))))} |"
             )
     return lines
 
 
-def _render_operation(value: Mapping[str, object]) -> list[str]:
+def _render_operation(
+    value: Mapping[str, object], base_pointer: str, placed_subjects: set[str]
+) -> list[str]:
     def rendered(item: object) -> object:
         return (
             json.dumps(item, ensure_ascii=False, sort_keys=True)
@@ -1294,29 +1428,56 @@ def _render_operation(value: Mapping[str, object]) -> list[str]:
         )
 
     return [
+        _subject_marker(base_pointer, placed_subjects),
         "| Concern | Contract |",
         "|---|---|",
-        *(f"| `{_md(key)}` | {_md(rendered(item))} |" for key, item in value.items()),
+        *(
+            f"| {_subject_marker(f'{base_pointer}/{_escape_pointer(str(key))}', placed_subjects)}"
+            f"`{_md(key)}` | {_md(rendered(item))} |"
+            for key, item in value.items()
+        ),
     ]
 
 
-def _render_generic(values: Sequence[object]) -> list[str]:
+def _render_generic(
+    pointers: Sequence[str], values: Sequence[object], placed_subjects: set[str]
+) -> list[str]:
     if len(values) == 1 and isinstance(values[0], Mapping):
         value = cast(Mapping[str, object], values[0])
-        schema_lines = _render_schema(value)
+        schema_lines = _render_schema(value, pointers[0], placed_subjects)
         if schema_lines:
             return schema_lines
     large_value = values[0] if len(values) == 1 else list(values)
     if isinstance(large_value, Mapping):
-        return [
+        base_pointer = pointers[0]
+        lines = [
+            _subject_marker(base_pointer, placed_subjects),
             "| Field | Shape |",
             "|---|---|",
-            *(
-                f"| `{_md(key)}` | {_md(_shape_summary(item))} |"
-                for key, item in large_value.items()
-            ),
         ]
-    return [f"- Shape: {_shape_summary(large_value)}"]
+        for key, item in large_value.items():
+            pointer = f"{base_pointer}/{_escape_pointer(str(key))}"
+            lines.append(
+                f"| {_subject_marker(pointer, placed_subjects)}`{_md(key)}` | "
+                f"{_md(_shape_summary(item))} |"
+            )
+        return lines
+    if len(values) > 1:
+        lines = [
+            "| Subject | Shape |",
+            "|---|---|",
+        ]
+        for pointer, subject_value in zip(pointers, values, strict=True):
+            label = _pointer_parts(pointer)[-1]
+            lines.append(
+                f"| {_subject_marker(pointer, placed_subjects)}`{_md(label)}` | "
+                f"{_md(_shape_summary(subject_value))} |"
+            )
+        return lines
+    return [
+        _subject_marker(pointers[0], placed_subjects),
+        f"- Shape: {_shape_summary(large_value)}",
+    ]
 
 
 def _pretty_json(value: object) -> str:
@@ -1390,6 +1551,121 @@ def _local_contract_references(
     )
 
 
+def _subject_label(
+    element: Mapping[str, object], pointer: str, projection: Mapping[str, object]
+) -> str:
+    """Describe one exact pointer without inventing a second semantic identity."""
+
+    owned = [
+        candidate
+        for candidate in cast(Sequence[str], element["pointers"])
+        if pointer == candidate or pointer.startswith(f"{candidate}/")
+    ]
+    base = max(owned, key=len) if owned else ""
+    if pointer == base:
+        return str(element["title"])
+
+    relative = pointer[len(base) :].removeprefix("/") if base else pointer.removeprefix("/")
+    parts = _pointer_parts(f"/{relative}") if relative else []
+    value = pointer_value(projection, pointer)
+    if parts and parts[0].isdigit() and base.endswith("/parameters"):
+        if isinstance(value, Mapping):
+            options = cast(Sequence[str], value.get("options", ()))
+            name = str(options[0]) if options else str(value.get("name", parts[0]))
+            return f"CLI parameter {name}"
+        return f"CLI parameter {parts[0]}"
+
+    labels: list[str] = []
+    index = 0
+    while index < len(parts):
+        part = parts[index]
+        following = parts[index + 1] if index + 1 < len(parts) else None
+        if part == "$defs" and following is not None:
+            labels.append(f"definition {following}")
+            index += 2
+        elif part == "schemas" and following is not None:
+            labels.append(f"schema {following}")
+            index += 2
+        elif part == "properties" and following is not None:
+            labels.append(f"field {following}")
+            index += 2
+        elif part == "parameters" and following is not None:
+            parameter_pointer = f"{base}/parameters/{_escape_pointer(following)}"
+            parameter = pointer_value(projection, parameter_pointer)
+            parameter_name = (
+                str(parameter.get("name", following))
+                if isinstance(parameter, Mapping)
+                else following
+            )
+            labels.append(f"parameter {parameter_name}")
+            index += 2
+        elif part == "responses" and following is not None:
+            labels.append(f"response {following}")
+            index += 2
+        elif part == "requestBody":
+            labels.append("request body")
+            index += 1
+        elif part == "items":
+            labels.append("items")
+            index += 1
+        elif part == "additionalProperties":
+            labels.append("additional values")
+            index += 1
+        elif part in {"allOf", "anyOf", "oneOf"} and following is not None and following.isdigit():
+            labels.append(f"{part} alternative {int(following) + 1}")
+            index += 2
+        elif part == "schema":
+            index += 1
+        else:
+            labels.append(part)
+            index += 1
+    return " · ".join(labels) or str(element["title"])
+
+
+def _subject_reference(
+    *,
+    element: Mapping[str, object],
+    pointer: str,
+    projection: Mapping[str, object],
+    placed_subjects: set[str],
+) -> str:
+    label = _md(_subject_label(element, pointer, projection))
+    anchor = _subject_anchor(pointer)
+    if pointer in placed_subjects:
+        return f"[{label}](#{anchor})"
+    placed_subjects.add(pointer)
+    return f'<a id="{anchor}"></a>{label}'
+
+
+def _interface_index_path(authority: str, interface: str) -> str:
+    return (
+        f"{ATLAS_DIRECTORY}/authorities/{_slug(authority, limit=72)}/"
+        f"{_slug(interface, limit=48)}/index.md"
+    )
+
+
+def _family_destination(
+    element: Mapping[str, object], elements_by_id: Mapping[str, Mapping[str, object]]
+) -> tuple[str, str | None]:
+    authority = str(element["authority"])
+    interface = str(element["interface"])
+    family = str(element["family"])
+    interface_elements = [
+        item
+        for item in elements_by_id.values()
+        if item["authority"] == authority and item["interface"] == interface
+    ]
+    families = {str(item["family"]) for item in interface_elements}
+    interface_path = _interface_index_path(authority, interface)
+    if len(interface_elements) >= FAMILY_INDEX_MINIMUM_ELEMENTS and len(families) > 1:
+        return (
+            f"{ATLAS_DIRECTORY}/authorities/{_slug(authority, limit=72)}/"
+            f"{_slug(interface, limit=48)}/families/{_slug(family, limit=72)}/index.md",
+            None,
+        )
+    return interface_path, _family_anchor(authority, interface, family)
+
+
 def _render_dossier(
     element: Mapping[str, object],
     projection: Mapping[str, object],
@@ -1405,14 +1681,22 @@ def _render_dossier(
         f"{_slug(str(element['interface']), limit=48)}/index.md"
     )
     policy_path = f"{ATLAS_DIRECTORY}/policies/index.md"
+    source_evidence_path = f"{ATLAS_DIRECTORY}/evidence/sources.md"
     pointers = cast(Sequence[str], element["pointers"])
     values = [pointer_value(projection, pointer) for pointer in pointers]
+    placed_subjects: set[str] = set()
     source_index = _source_index(trace)
     details = cast(Mapping[str, object], element.get("details", {}))
     purpose = "Exact externally visible contract owned by this semantic dossier."
     if len(values) == 1 and isinstance(values[0], Mapping):
         value = cast(Mapping[str, object], values[0])
         purpose = str(value.get("summary", value.get("description", purpose))).strip() or purpose
+    family_path, family_anchor = _family_destination(element, elements_by_id)
+    family_target = (
+        _anchor_link(path, family_path, family_anchor)
+        if family_anchor is not None
+        else _relative_link(path, family_path)
+    )
     lines = [
         f"# {element['title']}",
         "",
@@ -1427,9 +1711,9 @@ def _render_dossier(
         "",
         "| Audit field | Value |",
         "|---|---|",
-        f"| Authority | `{_md(element['authority'])}` |",
-        f"| Interface | `{_md(element['interface'])}` |",
-        f"| Family | `{_md(element['family'])}` |",
+        f"| Authority | [{_md(element['authority'])}]({_relative_link(path, authority_path)}) |",
+        f"| Interface | [{_md(element['interface'])}]({_relative_link(path, interface_path)}) |",
+        f"| Family | [{_md(element['family'])}]({family_target}) |",
         "| Contract elements | 1 |",
         f"| Extent decisions | {len(cast(Sequence[object], element['extent_decision_ids']))} |",
         "",
@@ -1443,13 +1727,19 @@ def _render_dossier(
         and isinstance(values[0], Mapping)
         and "method" in details
     ):
-        lines.extend(_render_http(cast(Mapping[str, object], values[0]), details))
+        lines.extend(
+            _render_http(
+                cast(Mapping[str, object], values[0]), details, pointers[0], placed_subjects
+            )
+        )
     elif interface == "cli":
-        lines.extend(_render_cli(values))
+        lines.extend(_render_cli(pointers, values, placed_subjects))
     elif interface == "operation" and len(values) == 1 and isinstance(values[0], Mapping):
-        lines.extend(_render_operation(cast(Mapping[str, object], values[0])))
+        lines.extend(
+            _render_operation(cast(Mapping[str, object], values[0]), pointers[0], placed_subjects)
+        )
     else:
-        lines.extend(_render_generic(values))
+        lines.extend(_render_generic(pointers, values, placed_subjects))
     lines.append("")
 
     extent_ids = cast(Sequence[str], element["extent_decision_ids"])
@@ -1464,33 +1754,68 @@ def _render_dossier(
                 )["decisions"],
             )
         }
-        lines.extend(
-            [
-                "### Progression, limits, and lifecycle",
-                "",
-                "| Dimension | Unit | Policy | Bounds or reason |",
-                "|---|---|---|---|",
-            ]
-        )
+        lines.extend(["### Progression, limits, and lifecycle", ""])
+        decision_groups: dict[str, list[tuple[str, Mapping[str, object]]]] = defaultdict(list)
         for identity in extent_ids:
             decision = decisions[identity]
-            bounds = ", ".join(
-                f"{key}={value}"
-                for key, value in decision.items()
-                if key
-                in {
-                    "minimum",
-                    "maximum",
-                    "semantic_maximum",
-                    "declared_operational_maximum",
-                    "reason",
-                }
+            decision_groups[str(decision["rule"])].append((identity, decision))
+        for rule, group in sorted(decision_groups.items()):
+            rule_id = f"extent-rule/{rule}"
+            structural_keys = {
+                "id",
+                "owner",
+                "source_pointer",
+                "dimension",
+                "unit",
+                "policy",
+                "rule",
+            }
+            detail_maps = [
+                {key: value for key, value in decision.items() if key not in structural_keys}
+                for _identity, decision in group
+            ]
+            common_keys = set(detail_maps[0])
+            for details_map in detail_maps[1:]:
+                common_keys &= set(details_map)
+            common_details = {
+                key: detail_maps[0][key]
+                for key in sorted(common_keys)
+                if all(details_map[key] == detail_maps[0][key] for details_map in detail_maps[1:])
+            }
+            shared = "; ".join(
+                f"{key}={_compact_json(value)}" for key, value in common_details.items()
             )
-            lines.append(
-                f"| {_md(decision['dimension'])} | {_md(decision['unit'])} | "
-                f"`{_md(decision['policy'])}` | {_md(bounds)} |"
+            lines.extend(
+                [
+                    f"#### [{_md(rule_id)}]"
+                    f"({_anchor_link(path, policy_path, _policy_anchor(rule_id))})",
+                    "",
+                    *(
+                        [f"Shared facts for every subject below: {_md(shared)}", ""]
+                        if shared
+                        else []
+                    ),
+                    "| Applies to | Contract | Bounds or reason |",
+                    "|---|---|---|",
+                ]
             )
-        lines.append("")
+            for _identity, decision in group:
+                bounds = "; ".join(
+                    f"{key}={_compact_json(value)}"
+                    for key, value in decision.items()
+                    if key not in structural_keys and key not in common_details
+                )
+                source_pointer = str(decision["source_pointer"])
+                subject = _subject_reference(
+                    element=element,
+                    pointer=source_pointer,
+                    projection=projection,
+                    placed_subjects=placed_subjects,
+                )
+                contract = f"{decision['dimension']} · {decision['unit']} · {decision['policy']}"
+                rendered_bounds = _md(bounds) if bounds else "shared above"
+                lines.append(f"| {subject} | `{_md(contract)}` | {rendered_bounds} |")
+            lines.append("")
 
     related_ids = cast(Sequence[str], element["related_element_ids"])
     referenced = _local_contract_references(str(element["authority"]), values, elements_by_id)
@@ -1512,13 +1837,21 @@ def _render_dossier(
         [
             "## Governing policies",
             "",
-            *(f"- `{policy}`" for policy in cast(Sequence[str], element["policy_ids"])),
+            *(
+                f"- {_html_anchor(_policy_application_anchor(str(element['id']), policy))}"
+                f"[{_md(policy)}]({_anchor_link(path, policy_path, _policy_anchor(policy))})"
+                for policy in cast(Sequence[str], element["policy_ids"])
+            ),
             "",
             "## Evidence",
             "",
             "### Qualification",
             "",
-            *(f"- `{route}`" for route in cast(Sequence[str], element["qualification_routes"])),
+            *(
+                f"- [{_md(route)}]"
+                f"({_anchor_link(path, source_evidence_path, _qualification_anchor(route))})"
+                for route in cast(Sequence[str], element["qualification_routes"])
+            ),
             "",
             "### Executable sources",
             "",
@@ -1529,7 +1862,11 @@ def _render_dossier(
         location = cast(Mapping[str, object], source.get("source", {}))
         rendered = str(location.get("path", location.get("module", source_id)))
         symbol = f"::{location['symbol']}" if "symbol" in location else ""
-        lines.append(f"- `{source_id}` — `{rendered}{symbol}`")
+        lines.append(
+            f"- [{_md(source_id)}]"
+            f"({_anchor_link(path, source_evidence_path, _source_anchor(source_id))}) — "
+            f"`{rendered}{symbol}`"
+        )
     lines.extend(
         [
             "",
@@ -1543,11 +1880,24 @@ def _render_dossier(
     return ("\n".join(lines).rstrip() + "\n").encode()
 
 
-def _table_counts(values: Mapping[str, object], label: str) -> list[str]:
+def _table_counts(
+    values: Mapping[str, object],
+    label: str,
+    *,
+    links: Mapping[str, str] | None = None,
+    anchors: Mapping[str, str] | None = None,
+) -> list[str]:
+    def cell(key: str) -> str:
+        marker = _html_anchor(anchors[key]) if anchors is not None and key in anchors else ""
+        value = (
+            f"[{_md(key)}]({links[key]})" if links is not None and key in links else f"`{_md(key)}`"
+        )
+        return f"{marker}{value}"
+
     return [
         f"| {label} | Count |",
         "|---|---:|",
-        *(f"| `{_md(key)}` | {value} |" for key, value in values.items()),
+        *(f"| {cell(str(key))} | {value} |" for key, value in values.items()),
     ]
 
 
@@ -2020,7 +2370,12 @@ def _render_contract_map(
             )
         if node["id"] == "riverhog-extensions":
             for extension in riverhog_extensions:
-                result.append(f"{prefix}  - `{_md(extension['name'])}`")
+                relationship_path = f"{ATLAS_DIRECTORY}/evidence/relationships.md"
+                extension_anchor = _relationship_node_anchor(str(extension["id"]))
+                result.append(
+                    f"{prefix}  - [{_md(extension['name'])}]"
+                    f"({_anchor_link(source, relationship_path, extension_anchor)})"
+                )
         for child in children.get(str(node["id"]), []):
             result.extend(render_node(child, depth + 1))
         return result
@@ -2203,10 +2558,20 @@ def _render_contract_surfaces(
                 )
                 lines.extend(["## Extension boundaries", ""])
                 for extension in extension_nodes:
+                    relationship_path = f"{ATLAS_DIRECTORY}/evidence/relationships.md"
+                    extension_anchor = _relationship_node_anchor(str(extension["id"]))
+                    owner = str(extension.get("owner", ""))
+                    rendered_owner = (
+                        f"[{_md(owner)}]({_relative_link(path, _authority_index_path(owner))})"
+                        if any(item["authority"] == owner for item in elements)
+                        else f"`{_md(owner)}`"
+                    )
                     lines.extend(
                         [
-                            f"- `{extension['name']}`",
+                            f"- [{_md(extension['name'])}]"
+                            f"({_anchor_link(path, relationship_path, extension_anchor)})",
                             f"  - {extension['description']}",
+                            f"  - Owner: {rendered_owner}",
                         ]
                     )
                 lines.append("")
@@ -2241,6 +2606,7 @@ def _render_atlas(
 ) -> tuple[dict[str, bytes], list[dict[str, object]], dict[str, object]]:
     files: dict[str, bytes] = {}
     descriptors: list[dict[str, object]] = []
+    source_evidence_path = f"{ATLAS_DIRECTORY}/evidence/sources.md"
     by_id = {str(item["id"]): item for item in elements}
     grouped: dict[str, dict[str, list[dict[str, object]]]] = defaultdict(lambda: defaultdict(list))
     for item in elements:
@@ -2279,7 +2645,9 @@ def _render_atlas(
                 "| Policy | Applications |",
                 "|---|---:|",
                 *(
-                    f"| `{policy['id']}` | {applications.get(str(policy['id']), 0)} |"
+                    f"| [{_md(policy['id'])}]"
+                    f"(#{_policy_anchor(str(policy['id']))}) | "
+                    f"{applications.get(str(policy['id']), 0)} |"
                     for policy in category_policies
                 ),
                 "",
@@ -2331,8 +2699,15 @@ def _render_atlas(
                 if isinstance(meaning, Mapping)
                 else str(meaning)
             )
+            executable_links = []
+            for source in executable_authorities:
+                source_target = _anchor_link(
+                    policy_path, source_evidence_path, _source_anchor(source)
+                )
+                executable_links.append(f"  - [{_md(source)}]({source_target})")
             policy_lines.extend(
                 [
+                    _html_anchor(_policy_anchor(str(policy["id"]))),
                     f"#### `{policy['id']}`",
                     "",
                     rendered_meaning,
@@ -2341,7 +2716,7 @@ def _render_atlas(
                     "- Observable result or violation: "
                     f"`{_md(json.dumps(observable, ensure_ascii=False, sort_keys=True))}`",
                     "- Executable authorities:",
-                    *(f"  - `{source}`" for source in executable_authorities),
+                    *executable_links,
                     "",
                     f"Applications: **{applications.get(str(policy['id']), 0)}**",
                 ]
@@ -2401,9 +2776,19 @@ def _render_atlas(
                 *_table_counts(
                     {family: len(items) for family, items in sorted(families.items())},
                     "Family",
+                    anchors={
+                        family: _family_anchor(authority, interface, family) for family in families
+                    },
                 ),
                 "",
-                *_table_counts(cast(Mapping[str, object], interface_counts["by_policy"]), "Policy"),
+                *_table_counts(
+                    cast(Mapping[str, object], interface_counts["by_policy"]),
+                    "Policy",
+                    links={
+                        policy: _anchor_link(interface_path, policy_path, _policy_anchor(policy))
+                        for policy in cast(Mapping[str, object], interface_counts["by_policy"])
+                    },
+                ),
                 "",
             ]
             if use_family_indexes:
@@ -2438,7 +2823,14 @@ def _render_atlas(
                         f"Extent decisions: **{family_counts['extent_decisions']}**",
                         "",
                         *_table_counts(
-                            cast(Mapping[str, object], family_counts["by_policy"]), "Policy"
+                            cast(Mapping[str, object], family_counts["by_policy"]),
+                            "Policy",
+                            links={
+                                policy: _anchor_link(
+                                    family_path, policy_path, _policy_anchor(policy)
+                                )
+                                for policy in cast(Mapping[str, object], family_counts["by_policy"])
+                            },
                         ),
                         "",
                         "## Semantic dossiers",
@@ -2508,7 +2900,8 @@ def _render_atlas(
         policy = policy_by_id[policy_id]
         exclusion_lines.extend(
             [
-                f"## `{policy_id}`",
+                f"## [{policy_id}]"
+                f"({_anchor_link(exclusion_path, policy_path, _policy_anchor(policy_id))})",
                 "",
                 str(policy["meaning"]),
                 "",
@@ -2522,7 +2915,7 @@ def _render_atlas(
         ):
             exclusion_lines.extend(
                 [
-                    f"- `{exclusion['id']}`",
+                    f"- {_anchor_marker('exclusion', str(exclusion['id']))}`{exclusion['id']}`",
                     f"  - kind: `{exclusion['kind']}`",
                     f"  - installed target: `{exclusion['installed_target']}`",
                 ]
@@ -2541,11 +2934,14 @@ def _render_atlas(
             key=lambda value: str(value["id"]),
         ):
             source_links = ", ".join(
-                f"`{_md(source)}`"
+                f"[{_md(source)}]"
+                f"({_anchor_link(exclusion_path, source_evidence_path, _source_anchor(source))})"
                 for source in cast(Sequence[str], exclusion["source_authority_ids"])
             )
             exclusion_lines.append(
-                f"| `{_md(exclusion['id'])}` | `{_md(exclusion['boundary_pointer'])}` | "
+                f"| [{_md(exclusion['id'])}]"
+                f"(#{_anchor_id('exclusion', str(exclusion['id']))}) | "
+                f"`{_md(exclusion['boundary_pointer'])}` | "
                 f"`{_md(exclusion['detector'])}` | {source_links} |"
             )
     files[exclusion_path] = ("\n".join(exclusion_lines).rstrip() + "\n").encode()
@@ -2566,6 +2962,10 @@ def _render_atlas(
         *_table_counts(
             cast(Mapping[str, object], root_counts["by_qualification_route"]),
             "Qualification route",
+            anchors={
+                route: _qualification_anchor(route)
+                for route in cast(Mapping[str, object], root_counts["by_qualification_route"])
+            },
         ),
         "",
         "## Source authorities",
@@ -2576,11 +2976,14 @@ def _render_atlas(
         "|---|---:|---|",
     ]
     for source_id, count in source_counts.items():
-        source = source_index[source_id]
-        location = cast(Mapping[str, object], source.get("source", {}))
+        source_record = source_index[source_id]
+        location = cast(Mapping[str, object], source_record.get("source", {}))
         rendered = str(location.get("path", location.get("module", source_id)))
         symbol = f"::{location['symbol']}" if "symbol" in location else ""
-        source_lines.append(f"| `{_md(source_id)}` | {count} | `{_md(rendered + symbol)}` |")
+        source_lines.append(
+            f"| {_html_anchor(_source_anchor(source_id))}`{_md(source_id)}` | {count} | "
+            f"`{_md(rendered + symbol)}` |"
+        )
     files[source_evidence_path] = ("\n".join(source_lines).rstrip() + "\n").encode()
 
     authority_lines = [
@@ -2640,8 +3043,16 @@ def _render_atlas(
         "|---|---|---|---|---|",
     ]
     for node in relationship_nodes:
+        node_name = str(node["name"])
+        rendered_name = (
+            f"[{_md(node_name)}]"
+            f"({_relative_link(relationship_evidence_path, _authority_index_path(node_name))})"
+            if node_name in grouped
+            else f"`{_md(node_name)}`"
+        )
         relationship_lines.append(
-            f"| `{_md(node['id'])}` | `{_md(node['kind'])}` | `{_md(node['name'])}` | "
+            f"| {_html_anchor(_relationship_node_anchor(str(node['id'])))}`{_md(node['id'])}` | "
+            f"`{_md(node['kind'])}` | {rendered_name} | "
             f"`{_md(node.get('role', node.get('owner', '—')))}` | "
             f"{_md(node['description'])} |"
         )
@@ -2656,9 +3067,13 @@ def _render_atlas(
     )
     for edge in relationship_edges:
         detail = edge.get("scope", edge.get("binding", ""))
+        source_node = nodes_by_id[str(edge["source"])]
+        target_node = nodes_by_id[str(edge["target"])]
         relationship_lines.append(
-            f"| `{_md(nodes_by_id[str(edge['source'])]['name'])}` | "
-            f"`{_md(edge['type'])}` | `{_md(nodes_by_id[str(edge['target'])]['name'])}` | "
+            f"| {_html_anchor(_relationship_edge_anchor(edge))}"
+            f"[{_md(source_node['name'])}](#{_relationship_node_anchor(str(source_node['id']))}) | "
+            f"`{_md(edge['type'])}` | "
+            f"[{_md(target_node['name'])}](#{_relationship_node_anchor(str(target_node['id']))}) | "
             f"`{_md(detail)}` |"
         )
     files[relationship_evidence_path] = ("\n".join(relationship_lines).rstrip() + "\n").encode()
@@ -2674,8 +3089,12 @@ def _render_atlas(
         "",
         "| Identity domain | SHA-256 |",
         "|---|---|",
-        *(f"| `{_md(name)}` | `{_md(value)}` |" for name, value in identities.items()),
+        *(
+            f"| {_anchor_marker('identity', str(name))}`{_md(name)}` | `{_md(value)}` |"
+            for name, value in identities.items()
+        ),
         "",
+        f"{_anchor_marker('identity', 'atlas_representation_sha256')}"
         "The byte-exact `atlas_representation_sha256` is recorded at "
         "`/identities/atlas_representation_sha256` in the machine closure. It cannot be embedded "
         "inside the document bytes that it identifies.",
@@ -3030,18 +3449,50 @@ def _reachable_atlas_documents(root_path: str, files: Mapping[str, bytes]) -> se
     """Return documents reachable through generated local Markdown links."""
 
     link_pattern = re.compile(r"\]\(([^)\s]+)\)")
+    explicit_anchor_pattern = re.compile(r'<a id="([a-z0-9-]+)"></a>')
+
+    def document_anchors(payload: bytes) -> set[str]:
+        rendered = payload.decode()
+        explicit_anchors = explicit_anchor_pattern.findall(rendered)
+        if len(explicit_anchors) != len(set(explicit_anchors)):
+            raise ContractAtlasError("atlas document repeats a stable local anchor")
+        anchors = set(explicit_anchors)
+        heading_counts: Counter[str] = Counter()
+        for line in rendered.splitlines():
+            match = re.match(r"^#{1,6}\s+(.+?)\s*$", line)
+            if match is None:
+                continue
+            heading = re.sub(r"<[^>]+>", "", match.group(1))
+            heading = re.sub(r"\[([^]]+)\]\([^)]+\)", r"\1", heading)
+            heading = heading.replace("`", "").casefold()
+            anchor = re.sub(r"[^\w\- ]", "", heading)
+            anchor = re.sub(r"\s+", "-", anchor).strip("-")
+            if not anchor:
+                continue
+            duplicate = heading_counts[anchor]
+            heading_counts[anchor] += 1
+            anchors.add(anchor if duplicate == 0 else f"{anchor}-{duplicate}")
+        return anchors
+
+    anchors_by_path = {path: document_anchors(payload) for path, payload in files.items()}
     graph: dict[str, set[str]] = {path: set() for path in files}
     for source, payload in files.items():
         for target in link_pattern.findall(payload.decode()):
-            local_path = target.split("#", 1)[0]
-            if not local_path:
-                continue
+            local_path, separator, fragment = target.partition("#")
             if local_path.startswith("/") or re.match(r"^[a-z][a-z0-9+.-]*:", local_path):
                 continue
-            resolved = posixpath.normpath(posixpath.join(posixpath.dirname(source), local_path))
+            resolved = (
+                source
+                if not local_path
+                else posixpath.normpath(posixpath.join(posixpath.dirname(source), local_path))
+            )
             if resolved not in files:
                 raise ContractAtlasError(
                     f"atlas document has an unresolved local link: {source} -> {target}"
+                )
+            if separator and fragment not in anchors_by_path[resolved]:
+                raise ContractAtlasError(
+                    f"atlas document has an unresolved local anchor: {source} -> {target}"
                 )
             graph[source].add(resolved)
 
@@ -3092,9 +3543,23 @@ def validate_atlas(
     dossiers = [str(item["dossier"]) for item in elements]
     if len(dossiers) != len(set(dossiers)) or not set(dossiers) <= paths:
         raise ContractAtlasError("each contract element must own one unique atlas dossier")
+    projection_value = cast(Mapping[str, object], root["projection"])
+    extent_decisions = {
+        str(item["id"]): item
+        for item in cast(
+            Sequence[Mapping[str, object]],
+            cast(
+                Mapping[str, object],
+                cast(Mapping[str, object], projection_value["external_contract"])["extents"],
+            )["decisions"],
+        )
+    }
+    policy_path = f"{ATLAS_DIRECTORY}/policies/index.md"
+    source_evidence_path = f"{ATLAS_DIRECTORY}/evidence/sources.md"
     for item in elements:
         marker = f"<!-- contract-element: {item['id']} -->".encode()
         dossier = atlas.files[str(item["dossier"])]
+        dossier_text = dossier.decode()
         if marker not in dossier:
             raise ContractAtlasError(
                 f"atlas dossier does not identify its contract element: {item['id']}"
@@ -3105,6 +3570,59 @@ def validate_atlas(
             raise ContractAtlasError(
                 f"atlas dossier does not expose every effective policy: {item['id']}"
             )
+        for policy in cast(Sequence[str], item["policy_ids"]):
+            link = _anchor_link(str(item["dossier"]), policy_path, _policy_anchor(policy))
+            application_anchor = _policy_application_anchor(str(item["id"]), policy)
+            if (
+                f"]({link})" not in dossier_text
+                or dossier_text.count(f'id="{application_anchor}"') != 1
+            ):
+                raise ContractAtlasError(
+                    f"atlas dossier does not route an exact policy application: {item['id']}"
+                )
+        for route in cast(Sequence[str], item["qualification_routes"]):
+            link = _anchor_link(
+                str(item["dossier"]),
+                source_evidence_path,
+                _qualification_anchor(route),
+            )
+            if f"]({link})" not in dossier_text:
+                raise ContractAtlasError(
+                    f"atlas dossier does not route its qualification: {item['id']}"
+                )
+        for source_id in cast(Sequence[str], item["source_authority_ids"]):
+            link = _anchor_link(
+                str(item["dossier"]), source_evidence_path, _source_anchor(source_id)
+            )
+            if f"]({link})" not in dossier_text:
+                raise ContractAtlasError(
+                    f"atlas dossier does not route its executable source: {item['id']}"
+                )
+        extent_ids = cast(Sequence[str], item["extent_decision_ids"])
+        subject_pointers = {
+            str(extent_decisions[identity]["source_pointer"]) for identity in extent_ids
+        }
+        for subject_pointer in subject_pointers:
+            anchor = _subject_anchor(subject_pointer)
+            if dossier_text.count(f'id="{anchor}"') != 1:
+                raise ContractAtlasError(
+                    f"atlas dossier does not anchor an exact extent subject: {item['id']}"
+                )
+        if extent_ids:
+            extent_section = dossier_text.split("### Progression, limits, and lifecycle\n", 1)[
+                1
+            ].split("\n## Governing policies", 1)[0]
+            rendered_rows = [
+                line
+                for line in extent_section.splitlines()
+                if line.startswith("| ")
+                and not line.startswith("| Applies to ")
+                and not line.startswith("|---")
+            ]
+            if len(rendered_rows) != len(extent_ids):
+                raise ContractAtlasError(
+                    f"atlas dossier does not render every extent decision once: {item['id']}"
+                )
         for pointer in cast(Sequence[str], item["pointers"]):
             value = pointer_value(root["projection"], pointer)
             exact = (
@@ -3142,7 +3660,6 @@ def validate_atlas(
         "multiply_represented": 0,
     }:
         raise ContractAtlasError("contract discovery contains unresolved anomalies")
-    projection_value = cast(Mapping[str, object], root["projection"])
     observed_projection_coverage = _projection_coverage(elements, projection_value)
     if discovery["projection_coverage"] != observed_projection_coverage:
         raise ContractAtlasError("projection-to-atlas coverage is stale")
@@ -3175,6 +3692,10 @@ def validate_atlas(
     } | {str(item["policy_id"]) for item in exclusions}
     if not used_policy_ids <= declared_policy_ids:
         raise ContractAtlasError("contract element policy references are unresolved")
+    policy_page = atlas.files[f"{ATLAS_DIRECTORY}/policies/index.md"].decode()
+    for policy_id in declared_policy_ids:
+        if policy_page.count(f'id="{_policy_anchor(policy_id)}"') != 1:
+            raise ContractAtlasError(f"policy definition has no stable subject: {policy_id}")
     for item in [*elements, *exclusions]:
         if not set(cast(Sequence[str], item["source_authority_ids"])) <= set(source_index):
             raise ContractAtlasError(
@@ -3218,19 +3739,21 @@ def validate_atlas(
             raise ContractAtlasError(f"freeze evidence omits closure anomaly: {name}")
     identity_page = atlas.files[f"{ATLAS_DIRECTORY}/evidence/identities.md"].decode()
     for name, identity in cast(Mapping[str, object], root["identities"]).items():
+        if identity_page.count(f'id="{_anchor_id("identity", str(name))}"') != 1:
+            raise ContractAtlasError(f"identity evidence omits its stable subject: {name}")
         if name == "atlas_representation_sha256":
             if f"/identities/{name}" not in identity_page:
                 raise ContractAtlasError("identity evidence omits its representation route")
-        elif f"| `{name}` | `{identity}` |" not in identity_page:
+        elif f"`{name}` | `{identity}` |" not in identity_page:
             raise ContractAtlasError(f"identity evidence omits independent identity: {name}")
 
     exclusion_page = atlas.files[f"{ATLAS_DIRECTORY}/evidence/exclusions.md"].decode()
     for item in exclusions:
-        policy = next(
-            policy
+        policy_record = next(
+            candidate_policy
             for values in policies.values()
-            for policy in cast(Sequence[Mapping[str, object]], values)
-            if policy["id"] == item["policy_id"]
+            for candidate_policy in cast(Sequence[Mapping[str, object]], values)
+            if candidate_policy["id"] == item["policy_id"]
         )
         required_exclusion_values = [
             item["id"],
@@ -3239,17 +3762,22 @@ def validate_atlas(
             item["boundary_pointer"],
             item["detector"],
             item["policy_id"],
-            policy["meaning"],
+            policy_record["meaning"],
             *cast(Sequence[str], item["source_authority_ids"]),
         ]
         if any(_md(value) not in exclusion_page for value in required_exclusion_values):
             raise ContractAtlasError(f"human exclusion inventory is incomplete: {item['id']}")
+        if exclusion_page.count(f'id="{_anchor_id("exclusion", str(item["id"]))}"') != 1:
+            raise ContractAtlasError(f"human exclusion has no stable subject: {item['id']}")
 
     source_evidence_page = atlas.files[f"{ATLAS_DIRECTORY}/evidence/sources.md"].decode()
     for route in cast(
         Mapping[str, object], cast(Mapping[str, object], root["counts"])["by_qualification_route"]
     ):
-        if f"`{route}`" not in source_evidence_page:
+        if (
+            f"`{route}`" not in source_evidence_page
+            or source_evidence_page.count(f'id="{_qualification_anchor(str(route))}"') != 1
+        ):
             raise ContractAtlasError(f"human evidence index omits route: {route}")
     for source_id, source in source_index.items():
         location = cast(Mapping[str, object], source.get("source", {}))
@@ -3258,6 +3786,7 @@ def validate_atlas(
         if (
             f"`{source_id}`" not in source_evidence_page
             or f"`{rendered}{symbol}`" not in source_evidence_page
+            or source_evidence_page.count(f'id="{_source_anchor(source_id)}"') != 1
         ):
             raise ContractAtlasError(f"human evidence index omits source: {source_id}")
 
@@ -3337,7 +3866,10 @@ def validate_atlas(
     relationship_page = atlas.files[f"{ATLAS_DIRECTORY}/evidence/relationships.md"].decode()
     for node in relationship_nodes:
         required = (node["id"], node["kind"], node["name"], node["description"])
-        if any(_md(value) not in relationship_page for value in required):
+        if (
+            any(_md(value) not in relationship_page for value in required)
+            or relationship_page.count(f'id="{_relationship_node_anchor(str(node["id"]))}"') != 1
+        ):
             raise ContractAtlasError(f"relationship evidence omits node: {node['id']}")
     for edge in relationship_edges:
         detail = edge.get("scope", edge.get("binding", ""))
@@ -3347,7 +3879,10 @@ def validate_atlas(
             relationship_nodes_by_id[str(edge["target"])]["name"],
             detail,
         )
-        if any(_md(value) not in relationship_page for value in required):
+        if (
+            any(_md(value) not in relationship_page for value in required)
+            or relationship_page.count(f'id="{_relationship_edge_anchor(edge)}"') != 1
+        ):
             raise ContractAtlasError(f"relationship evidence omits edge: {edge}")
     if "Maintainer-selected nonnormative references" not in root_page:
         raise ContractAtlasError("atlas front door does not identify references as nonnormative")

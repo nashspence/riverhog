@@ -8,39 +8,51 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Audit field | Value |
 |---|---|
-| Authority | `riverhog` |
-| Interface | `http` |
-| Family | `schemas` |
+| Authority | [riverhog](../index.md) |
+| Interface | [http](index.md) |
+| Family | [schemas](families/schemas/index.md) |
 | Contract elements | 1 |
 | Extent decisions | 3 |
 
 ## External contract
 
-- `title`: CollectionUploadProvenanceJournalStatusDocument
-- `type`: object
+<a id="s-5a9f227dd08a"></a>
+- <a id="s-8e14aa9b6d2c"></a>`title`: CollectionUploadProvenanceJournalStatusDocument
+- <a id="s-9fa100d82d4d"></a>`type`: object
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| `accepted_bytes` | yes | type="integer"; minimum=0 |  |
-| `bytes` | yes | type="integer"; minimum=1 |  |
-| `current_bytes` | no | anyOf=type="integer"; minimum=0 \| type="null" |  |
-| `current_path` | no | anyOf=type="string" \| type="null" |  |
-| `current_sha256` | no | anyOf=type="string"; pattern="^[0-9a-f]{64}$" \| type="null" |  |
-| `current_state_id` | no | anyOf=#/components/schemas/ProvenanceStateId \| type="null" |  |
-| `failure` | no | anyOf=type="string" \| type="null" |  |
-| `journal_id` | yes | #/components/schemas/ProvenanceJournalId |  |
-| `sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| `state` | yes | type="string"; enum=["accepting","validating","sealed","failed"] |  |
+| <a id="s-982c4304dba1"></a>`accepted_bytes` | yes | type="integer"; minimum=0 |  |
+| <a id="s-9cb379acc216"></a>`bytes` | yes | type="integer"; minimum=1 |  |
+| <a id="s-a21edea4a516"></a>`current_bytes` | no | anyOf=type="integer"; minimum=0 \| type="null" |  |
+| <a id="s-ec0690f2356b"></a>`current_path` | no | anyOf=type="string" \| type="null" |  |
+| <a id="s-b72a4150cb8d"></a>`current_sha256` | no | anyOf=type="string"; pattern="^[0-9a-f]{64}$" \| type="null" |  |
+| <a id="s-60b9f44c3148"></a>`current_state_id` | no | anyOf=#/components/schemas/ProvenanceStateId \| type="null" |  |
+| <a id="s-aa10735815e7"></a>`failure` | no | anyOf=type="string" \| type="null" |  |
+| <a id="s-d2d8bb6a2c16"></a>`journal_id` | yes | #/components/schemas/ProvenanceJournalId |  |
+| <a id="s-f21af066db79"></a>`sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-ee287dd4a986"></a>`state` | yes | type="string"; enum=["accepting","validating","sealed","failed"] |  |
 
 ### Progression, limits, and lifecycle
 
-| Dimension | Unit | Policy | Bounds or reason |
-|---|---|---|---|
-| value | schema-value | `operational_policy` | maximum=None, reason=no-declared-semantic-maximum |
-| length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
-| length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
+#### [extent-rule/no-semantic-maximum/v1](../../../policies/index.md#p-574724b48af0)
+
+Shared facts for every subject below: capacity_authority={"declared_maximum":null,"hidden_maximum":"forbidden","owner":"riverhog"}; maximum=null; reason="no-declared-semantic-maximum"
+
+| Applies to | Contract | Bounds or reason |
+|---|---|---|
+| [field bytes](#s-9cb379acc216) | `value · schema-value · operational_policy` | shared above |
+
+#### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
+
+Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"}
+
+| Applies to | Contract | Bounds or reason |
+|---|---|---|
+| <a id="s-14f442827027"></a>field current_sha256 · anyOf alternative 1 | `length · characters · fixed` | shared above |
+| [field sha256](#s-f21af066db79) | `length · characters · fixed` | shared above |
 
 ## Maintained corroboration
 
@@ -51,21 +63,21 @@ Exact externally visible contract owned by this semantic dossier.
 
 ## Governing policies
 
-- `compatibility/http-api/v1`
-- `extent-rule/no-semantic-maximum/v1`
-- `extent-rule/schema-bound/v1`
+- <a id="pa-62071002eb5d"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0ba)
+- <a id="pa-8b27d81174aa"></a>[extent-rule/no-semantic-maximum/v1](../../../policies/index.md#p-574724b48af0)
+- <a id="pa-3b5ec80b5493"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
 
 ## Evidence
 
 ### Qualification
 
-- `make operation-qualification`
-- `make compose-smoke`
+- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459fb8)
+- [make compose-smoke](../../../evidence/sources.md#q-413b0b241ba8)
 
 ### Executable sources
 
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `openapi:riverhog` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
+- [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc960) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
 
 ### Machine authority
 

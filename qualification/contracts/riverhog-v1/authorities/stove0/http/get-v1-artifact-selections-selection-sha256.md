@@ -8,40 +8,45 @@ Get Artifact Selection
 
 | Audit field | Value |
 |---|---|
-| Authority | `stove0` |
-| Interface | `http` |
-| Family | `artifact-selections` |
+| Authority | [stove0](../index.md) |
+| Interface | [http](index.md) |
+| Family | [artifact-selections](families/artifact-selections/index.md) |
 | Contract elements | 1 |
 | Extent decisions | 1 |
 
 ## External contract
 
-- `operationId`: get_artifact_selection
-- `summary`: Get Artifact Selection
+<a id="s-c4ee91313e22"></a>
+- <a id="s-f26db8136821"></a>`operationId`: get_artifact_selection
+- <a id="s-19efa1c50599"></a>`summary`: Get Artifact Selection
 
 ### Parameters
 
 | Name | In | Required | Schema |
 |---|---|---:|---|
-| `selection_sha256` | path | yes | type="string" |
-| `continuation` | query | no | anyOf=type="string" \| type="null" |
+| <a id="s-bef50296e9bd"></a>`selection_sha256` | path | yes | type="string" |
+| <a id="s-aa2e76ccfaf6"></a>`continuation` | query | no | anyOf=type="string" \| type="null" |
 
 ### Responses
 
 | Status | Description |
 |---|---|
-| `200` | Successful Response |
-| `400` | Bad Request |
-| `401` | Unauthorized |
-| `403` | Forbidden |
-| `404` | Not Found |
-| `500` | Internal Server Error |
+| <a id="s-3453778107a6"></a>`200` | Successful Response |
+| <a id="s-c52052fdef1b"></a>`400` | Bad Request |
+| <a id="s-97b3183eb088"></a>`401` | Unauthorized |
+| <a id="s-d266895c748f"></a>`403` | Forbidden |
+| <a id="s-c2f146cba988"></a>`404` | Not Found |
+| <a id="s-155401875815"></a>`500` | Internal Server Error |
 
 ### Progression, limits, and lifecycle
 
-| Dimension | Unit | Policy | Bounds or reason |
-|---|---|---|---|
-| logical-result-cardinality | items | `segmented_no_total_max` | reason=bounded-route-progression |
+#### [extent-rule/route-progression/v1](../../../policies/index.md#p-6b76b527cb21)
+
+Shared facts for every subject below: progression={"authority":"artifact-selection","authority_parameter":"selection_sha256","cursor_parameter":"continuation","fixed_limit":256,"kind":"exact-authority-page"}; reason="bounded-route-progression"
+
+| Applies to | Contract | Bounds or reason |
+|---|---|---|
+| [GET /v1/artifact-selections/{selection_sha256}](#s-c4ee91313e22) | `logical-result-cardinality · items · segmented_no_total_max` | shared above |
 
 ## Maintained corroboration
 
@@ -56,20 +61,20 @@ Get Artifact Selection
 
 ## Governing policies
 
-- `compatibility/http-api/v1`
-- `extent-rule/route-progression/v1`
+- <a id="pa-c8abc0237c0f"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0ba)
+- <a id="pa-2250577ac534"></a>[extent-rule/route-progression/v1](../../../policies/index.md#p-6b76b527cb21)
 
 ## Evidence
 
 ### Qualification
 
-- `make operation-qualification`
-- `make compose-smoke`
+- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459fb8)
+- [make compose-smoke](../../../evidence/sources.md#q-413b0b241ba8)
 
 ### Executable sources
 
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `openapi:stove0` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
+- [openapi:stove0](../../../evidence/sources.md#src-52e6e3212451) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
 
 ### Machine authority
 

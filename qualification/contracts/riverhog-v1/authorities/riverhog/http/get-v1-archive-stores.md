@@ -8,44 +8,56 @@ List Archive Stores
 
 | Audit field | Value |
 |---|---|
-| Authority | `riverhog` |
-| Interface | `http` |
-| Family | `archive` |
+| Authority | [riverhog](../index.md) |
+| Interface | [http](index.md) |
+| Family | [archive](families/archive/index.md) |
 | Contract elements | 1 |
 | Extent decisions | 2 |
 
 ## External contract
 
-- `operationId`: list_archive_stores
-- `summary`: List Archive Stores
-- `security`: `[{"HTTPBearer": []}]`
+<a id="s-ee96c9ecf68a"></a>
+- <a id="s-299a86fdaec5"></a>`operationId`: list_archive_stores
+- <a id="s-d99659cbc1de"></a>`summary`: List Archive Stores
+- <a id="s-81828021c4f2"></a>`security`: `[{"HTTPBearer": []}]`
 
 ### Parameters
 
 | Name | In | Required | Schema |
 |---|---|---:|---|
-| `page_size` | query | no | type="integer"; minimum=1; maximum=100 |
-| `page_token` | query | no | anyOf=#/components/schemas/BrowsePageToken \| type="null" |
-| `q` | query | no | anyOf=#/components/schemas/BrowseQuery \| type="null" |
-| `sort` | query | no | $ref="#/components/schemas/ArchiveStoreSort" |
-| `order` | query | no | $ref="#/components/schemas/SortOrder" |
+| <a id="s-d658ce8d3669"></a>`page_size` | query | no | type="integer"; minimum=1; maximum=100 |
+| <a id="s-3e606657b217"></a>`page_token` | query | no | anyOf=#/components/schemas/BrowsePageToken \| type="null" |
+| <a id="s-9a1b243da7c1"></a>`q` | query | no | anyOf=#/components/schemas/BrowseQuery \| type="null" |
+| <a id="s-eeee1e8f4f6d"></a>`sort` | query | no | $ref="#/components/schemas/ArchiveStoreSort" |
+| <a id="s-b04643782402"></a>`order` | query | no | $ref="#/components/schemas/SortOrder" |
 
 ### Responses
 
 | Status | Description |
 |---|---|
-| `200` | Successful Response |
-| `400` | Bad Request |
-| `401` | Unauthorized |
-| `403` | Forbidden |
-| `500` | Internal Server Error |
+| <a id="s-6ed52937e5fa"></a>`200` | Successful Response |
+| <a id="s-810a17eadf4f"></a>`400` | Bad Request |
+| <a id="s-0fc0ad608f22"></a>`401` | Unauthorized |
+| <a id="s-4fb402e92304"></a>`403` | Forbidden |
+| <a id="s-be8b7f20b265"></a>`500` | Internal Server Error |
 
 ### Progression, limits, and lifecycle
 
-| Dimension | Unit | Policy | Bounds or reason |
-|---|---|---|---|
-| logical-result-cardinality | items | `segmented_no_total_max` | reason=bounded-route-progression |
-| value | schema-value | `contract_max` | maximum=100, minimum=1, reason=schema-maximum |
+#### [extent-rule/route-progression/v1](../../../policies/index.md#p-6b76b527cb21)
+
+Shared facts for every subject below: progression={"default_page_size":25,"kind":"mutable-browse","maximum_page_size":100,"next_page_token_field":"next_page_token","page_size_parameter":"page_size","page_token_parameter":"page_token"}; reason="bounded-route-progression"
+
+| Applies to | Contract | Bounds or reason |
+|---|---|---|
+| [GET /v1/archive/stores](#s-ee96c9ecf68a) | `logical-result-cardinality · items · segmented_no_total_max` | shared above |
+
+#### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
+
+Shared facts for every subject below: maximum=100; minimum=1; reason="schema-maximum"
+
+| Applies to | Contract | Bounds or reason |
+|---|---|---|
+| <a id="s-64ddc4595094"></a>parameter page_size | `value · schema-value · contract_max` | shared above |
 
 ## Maintained corroboration
 
@@ -64,21 +76,21 @@ List Archive Stores
 
 ## Governing policies
 
-- `compatibility/http-api/v1`
-- `extent-rule/route-progression/v1`
-- `extent-rule/schema-bound/v1`
+- <a id="pa-2428ba2d7517"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0ba)
+- <a id="pa-8ab60441619f"></a>[extent-rule/route-progression/v1](../../../policies/index.md#p-6b76b527cb21)
+- <a id="pa-5e98d91006bb"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
 
 ## Evidence
 
 ### Qualification
 
-- `make operation-qualification`
-- `make compose-smoke`
+- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459fb8)
+- [make compose-smoke](../../../evidence/sources.md#q-413b0b241ba8)
 
 ### Executable sources
 
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `openapi:riverhog` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
+- [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc960) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
 
 ### Machine authority
 

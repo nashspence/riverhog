@@ -8,31 +8,39 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Audit field | Value |
 |---|---|
-| Authority | `stove0-target-support` |
-| Interface | `protocol` |
-| Family | `protocol` |
+| Authority | [stove0-target-support](../index.md) |
+| Interface | [protocol](index.md) |
+| Family | [protocol](index.md#f-1707db8d07b6) |
 | Contract elements | 1 |
 | Extent decisions | 0 |
 
 ## External contract
 
-- Shape: items=additional keys=`http_operations`, `semantic_acceptance`, `structural_models` | "916d26a1630afc12fe746ce28f8ba0f2639264e14929dd60b02c6c9059444b80" | additional keys=`contract_identity`, `unknown_fields`, `unknown_protocol_revision` | "stove0-target-schema-bundle/v1" | additional keys=`operations` | ["stove0-transform-target/v1","stove0-effect-target/v1"] | additional keys=`binding`, `identity`, `kind`, `request_response_relations`
+| Subject | Shape |
+|---|---|
+| <a id="s-459baccad426"></a>`authorities` | additional keys=`http_operations`, `semantic_acceptance`, `structural_models` |
+| <a id="s-1181fd9feae6"></a>`bundle_sha256` | "916d26a1630afc12fe746ce28f8ba0f2639264e14929dd60b02c6c9059444b80" |
+| <a id="s-9269284132d6"></a>`compatibility` | additional keys=`contract_identity`, `unknown_fields`, `unknown_protocol_revision` |
+| <a id="s-e51e46fd849c"></a>`format` | "stove0-target-schema-bundle/v1" |
+| <a id="s-eb3b11163120"></a>`http_binding` | additional keys=`operations` |
+| <a id="s-aeb93f5dc602"></a>`protocols` | ["stove0-transform-target/v1","stove0-effect-target/v1"] |
+| <a id="s-19ff2c96762f"></a>`semantic_acceptance` | additional keys=`binding`, `identity`, `kind`, `request_response_relations` |
 
 ## Governing policies
 
-- `compatibility/components/v1`
+- <a id="pa-718adddb5004"></a>[compatibility/components/v1](../../../policies/index.md#p-95e9a1225947)
 
 ## Evidence
 
 ### Qualification
 
-- `make dist-smoke`
-- `make build`
+- [make dist-smoke](../../../evidence/sources.md#q-0ba2578a3eb7)
+- [make build](../../../evidence/sources.md#q-d1121e35fa7a)
 
 ### Executable sources
 
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `protocol:generated:stove0-target` — `reference/stove0/packages/target-support/src/stove0_target_support/schemas.py::target_schema_bundle`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
+- [protocol:generated:stove0-target](../../../evidence/sources.md#src-2c42f9d39a0b) — `reference/stove0/packages/target-support/src/stove0_target_support/schemas.py::target_schema_bundle`
 
 ### Machine authority
 

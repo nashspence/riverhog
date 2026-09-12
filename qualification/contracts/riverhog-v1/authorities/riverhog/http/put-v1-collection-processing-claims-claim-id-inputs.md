@@ -8,25 +8,26 @@ Append Processing Claim Inputs
 
 | Audit field | Value |
 |---|---|
-| Authority | `riverhog` |
-| Interface | `http` |
-| Family | `collection-processing-claims` |
+| Authority | [riverhog](../index.md) |
+| Interface | [http](index.md) |
+| Family | [collection-processing-claims](families/collection-processing-claims/index.md) |
 | Contract elements | 1 |
 | Extent decisions | 1 |
 
 ## External contract
 
-- `operationId`: append_processing_claim_inputs
-- `summary`: Append Processing Claim Inputs
-- `security`: `[{"HTTPBearer": []}]`
+<a id="s-b179416ab353"></a>
+- <a id="s-6b7541738f3d"></a>`operationId`: append_processing_claim_inputs
+- <a id="s-e4af6aaa15ae"></a>`summary`: Append Processing Claim Inputs
+- <a id="s-3ebc45ebf67e"></a>`security`: `[{"HTTPBearer": []}]`
 
 ### Parameters
 
 | Name | In | Required | Schema |
 |---|---|---:|---|
-| `claim_id` | path | yes | type="string"; pattern="^[0-9a-f]{64}$" |
+| <a id="s-68d5ab0608bb"></a>`claim_id` | path | yes | type="string"; pattern="^[0-9a-f]{64}$" |
 
-### Request body
+### <a id="s-024cfa07225a"></a>Request body
 
 `{"content": {"application/json": {"schema": {"$ref": "#/components/schemas/CollectionRootBatchDocument"}}}, "required": true}`
 
@@ -34,17 +35,21 @@ Append Processing Claim Inputs
 
 | Status | Description |
 |---|---|
-| `200` | Successful Response |
-| `400` | Bad Request |
-| `401` | Unauthorized |
-| `403` | Forbidden |
-| `500` | Internal Server Error |
+| <a id="s-3f0692e55be5"></a>`200` | Successful Response |
+| <a id="s-4d5f374e8978"></a>`400` | Bad Request |
+| <a id="s-76874ee6a7c4"></a>`401` | Unauthorized |
+| <a id="s-1e07842773c0"></a>`403` | Forbidden |
+| <a id="s-17a6f31091fe"></a>`500` | Internal Server Error |
 
 ### Progression, limits, and lifecycle
 
-| Dimension | Unit | Policy | Bounds or reason |
-|---|---|---|---|
-| length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
+#### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
+
+Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"}
+
+| Applies to | Contract | Bounds or reason |
+|---|---|---|
+| <a id="s-8ae6f19927d8"></a>parameter claim_id | `length · characters · fixed` | shared above |
 
 ## Maintained corroboration
 
@@ -60,20 +65,20 @@ Append Processing Claim Inputs
 
 ## Governing policies
 
-- `compatibility/http-api/v1`
-- `extent-rule/schema-bound/v1`
+- <a id="pa-5df334ea93e9"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0ba)
+- <a id="pa-b3c07df15ed3"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
 
 ## Evidence
 
 ### Qualification
 
-- `make operation-qualification`
-- `make compose-smoke`
+- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459fb8)
+- [make compose-smoke](../../../evidence/sources.md#q-413b0b241ba8)
 
 ### Executable sources
 
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `openapi:riverhog` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
+- [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc960) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
 
 ### Machine authority
 

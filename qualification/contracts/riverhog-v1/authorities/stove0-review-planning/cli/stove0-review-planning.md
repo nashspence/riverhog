@@ -8,31 +8,31 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Audit field | Value |
 |---|---|
-| Authority | `stove0-review-planning` |
-| Interface | `cli` |
-| Family | `root` |
+| Authority | [stove0-review-planning](../index.md) |
+| Interface | [cli](index.md) |
+| Family | [root](index.md#f-22342fa385ee) |
 | Contract elements | 1 |
 | Extent decisions | 0 |
 
 ## External contract
 
-- Parser name: `stove0-review-planning`
+- <a id="s-dae9ec875525"></a>Parser name: `stove0-review-planning`
 
 ## Governing policies
 
-- `compatibility/cli/v1`
+- <a id="pa-1e32efd0bd98"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de7f)
 
 ## Evidence
 
 ### Qualification
 
-- `make dist-smoke`
-- `make operation-qualification`
+- [make dist-smoke](../../../evidence/sources.md#q-0ba2578a3eb7)
+- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459fb8)
 
 ### Executable sources
 
-- `cli:stove0-review-planning` — `reference/stove0/targets/review/planning/src/stove0_review_planning/conformance.py::<module>`
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
+- [cli:stove0-review-planning](../../../evidence/sources.md#src-ae789ab8608f) — `reference/stove0/targets/review/planning/src/stove0_review_planning/conformance.py::<module>`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
 
 ### Machine authority
 

@@ -8,40 +8,41 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Audit field | Value |
 |---|---|
-| Authority | `riverhog` |
-| Interface | `http` |
-| Family | `schemas` |
+| Authority | [riverhog](../index.md) |
+| Interface | [http](index.md) |
+| Family | [schemas](families/schemas/index.md) |
 | Contract elements | 1 |
 | Extent decisions | 0 |
 
 ## External contract
 
-- `title`: ProcessingClaimOutcomesSettleDocument
-- `type`: object
+<a id="s-7ba16e930128"></a>
+- <a id="s-0275659017db"></a>`title`: ProcessingClaimOutcomesSettleDocument
+- <a id="s-be047dc0690e"></a>`type`: object
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| `fence` | yes | type="integer"; minimum=1 |  |
-| `retirement_grace_seconds` | no | type="integer"; minimum=0 |  |
-| `retirement_policy` | no | type="string"; enum=["retain","retire-after-verified-output"] |  |
+| <a id="s-f42f23efd416"></a>`fence` | yes | type="integer"; minimum=1 |  |
+| <a id="s-4816a9f24075"></a>`retirement_grace_seconds` | no | type="integer"; minimum=0 |  |
+| <a id="s-4cb34386fa58"></a>`retirement_policy` | no | type="string"; enum=["retain","retire-after-verified-output"] |  |
 
 ## Governing policies
 
-- `compatibility/http-api/v1`
+- <a id="pa-ef77ba8cb5b9"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0ba)
 
 ## Evidence
 
 ### Qualification
 
-- `make operation-qualification`
-- `make compose-smoke`
+- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459fb8)
+- [make compose-smoke](../../../evidence/sources.md#q-413b0b241ba8)
 
 ### Executable sources
 
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `openapi:riverhog` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
+- [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc960) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
 
 ### Machine authority
 

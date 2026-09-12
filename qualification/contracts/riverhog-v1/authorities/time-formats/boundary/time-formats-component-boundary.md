@@ -8,38 +8,39 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Audit field | Value |
 |---|---|
-| Authority | `time-formats` |
-| Interface | `boundary` |
-| Family | `components` |
+| Authority | [time-formats](../index.md) |
+| Interface | [boundary](index.md) |
+| Family | [components](index.md#f-ddacb3fdac2e) |
 | Contract elements | 1 |
 | Extent decisions | 0 |
 
 ## External contract
 
+<a id="s-a1902da8e92e"></a>
 | Field | Shape |
 |---|---|
-| `console_scripts` | empty object |
-| `dependencies` | [] |
-| `distribution` | "time-formats" |
-| `optional_dependencies` | empty object |
-| `path` | "packages/time-formats" |
-| `role` | "internal_build_unit" |
+| <a id="s-4f2353cfc18d"></a>`console_scripts` | empty object |
+| <a id="s-d4aaaa6669ac"></a>`dependencies` | [] |
+| <a id="s-6f89afe276f9"></a>`distribution` | "time-formats" |
+| <a id="s-46cf3ffa334c"></a>`optional_dependencies` | empty object |
+| <a id="s-45d72032b694"></a>`path` | "packages/time-formats" |
+| <a id="s-f896b8a15fd9"></a>`role` | "internal_build_unit" |
 
 ## Governing policies
 
-- `boundary/frozen-authority/v1`
+- <a id="pa-a62a66024e3c"></a>[boundary/frozen-authority/v1](../../../policies/index.md#p-61994d3f0fa8)
 
 ## Evidence
 
 ### Qualification
 
-- `make release-check`
-- `make build`
+- [make release-check](../../../evidence/sources.md#q-8d8d22d6a6b1)
+- [make build](../../../evidence/sources.md#q-d1121e35fa7a)
 
 ### Executable sources
 
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `release:release.toml` — `release.toml`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
+- [release:release.toml](../../../evidence/sources.md#src-c5380dbe5fe0) — `release.toml`
 
 ### Machine authority
 

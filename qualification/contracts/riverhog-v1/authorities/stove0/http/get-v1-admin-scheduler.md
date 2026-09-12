@@ -8,26 +8,27 @@ Scheduler Status
 
 | Audit field | Value |
 |---|---|
-| Authority | `stove0` |
-| Interface | `http` |
-| Family | `admin` |
+| Authority | [stove0](../index.md) |
+| Interface | [http](index.md) |
+| Family | [admin](families/admin/index.md) |
 | Contract elements | 1 |
 | Extent decisions | 0 |
 
 ## External contract
 
-- `operationId`: scheduler_status
-- `summary`: Scheduler Status
+<a id="s-ee6f210edd5d"></a>
+- <a id="s-e826eae1b916"></a>`operationId`: scheduler_status
+- <a id="s-04c2c6ac0406"></a>`summary`: Scheduler Status
 
 ### Responses
 
 | Status | Description |
 |---|---|
-| `200` | Successful Response |
-| `400` | Bad Request |
-| `401` | Unauthorized |
-| `403` | Forbidden |
-| `500` | Internal Server Error |
+| <a id="s-5842ab8baa0e"></a>`200` | Successful Response |
+| <a id="s-4a9ebf1767ed"></a>`400` | Bad Request |
+| <a id="s-1a0e304d1365"></a>`401` | Unauthorized |
+| <a id="s-4cf0178ea843"></a>`403` | Forbidden |
+| <a id="s-c304a4bbd812"></a>`500` | Internal Server Error |
 
 ## Maintained corroboration
 
@@ -42,19 +43,19 @@ Scheduler Status
 
 ## Governing policies
 
-- `compatibility/http-api/v1`
+- <a id="pa-fbbfe67ed78f"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0ba)
 
 ## Evidence
 
 ### Qualification
 
-- `make operation-qualification`
-- `make compose-smoke`
+- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459fb8)
+- [make compose-smoke](../../../evidence/sources.md#q-413b0b241ba8)
 
 ### Executable sources
 
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `openapi:stove0` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
+- [openapi:stove0](../../../evidence/sources.md#src-52e6e3212451) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
 
 ### Machine authority
 

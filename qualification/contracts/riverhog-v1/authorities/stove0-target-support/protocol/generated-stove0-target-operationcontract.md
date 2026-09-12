@@ -8,73 +8,85 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Audit field | Value |
 |---|---|
-| Authority | `stove0-target-support` |
-| Interface | `protocol` |
-| Family | `schemas` |
+| Authority | [stove0-target-support](../index.md) |
+| Interface | [protocol](index.md) |
+| Family | [schemas](index.md#f-3862b77c4ff3) |
 | Contract elements | 1 |
 | Extent decisions | 10 |
 
 ## External contract
 
-- `title`: OperationContract
-- `type`: object
+<a id="s-eb1390484d92"></a>
+- <a id="s-640878f7dcb5"></a>`title`: OperationContract
+- <a id="s-cc7fe3474d1e"></a>`type`: object
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| `contract_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| `effect_receipt_schema` | no | anyOf=#/$defs/JsonSchemaDocument \| type="null" |  |
-| `id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
-| `inputs` | yes | type="array"; minItems=1; items=(#/$defs/InputArtifactContract) |  |
-| `intent_schema` | yes | #/$defs/JsonSchemaDocument |  |
-| `intent_semantics` | yes | #/$defs/SemanticValidationProfile |  |
-| `outputs` | no | type="array"; items=(#/$defs/OutputArtifactContract) |  |
-| `result_kind` | no | type="string"; enum=["collection","external-effect"] |  |
-| `source_retirement_permitted` | no | type="boolean" |  |
+| <a id="s-d662de9b15e4"></a>`contract_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-772086af5f7c"></a>`effect_receipt_schema` | no | anyOf=#/$defs/JsonSchemaDocument \| type="null" |  |
+| <a id="s-702fc5907b86"></a>`id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
+| <a id="s-f5e91f55d706"></a>`inputs` | yes | type="array"; minItems=1; items=(#/$defs/InputArtifactContract) |  |
+| <a id="s-51f714581064"></a>`intent_schema` | yes | #/$defs/JsonSchemaDocument |  |
+| <a id="s-7b1634eba771"></a>`intent_semantics` | yes | #/$defs/SemanticValidationProfile |  |
+| <a id="s-b55e379a6192"></a>`outputs` | no | type="array"; items=(#/$defs/OutputArtifactContract) |  |
+| <a id="s-fc2092133606"></a>`result_kind` | no | type="string"; enum=["collection","external-effect"] |  |
+| <a id="s-09f0f21d9fa9"></a>`source_retirement_permitted` | no | type="boolean" |  |
 
 ### Definitions
 
 | Definition | Shape |
 |---|---|
-| `InputArtifactContract` | type="object"; fields=`allowed_dispositions`, `maximum`, `minimum`, `role`; additional keys=`additionalProperties`, `required` |
-| `JsonSchemaDocument` | type="object"; fields=`dialect`, `format_policy`, `id`, `schema`, `sha256`; additional keys=`additionalProperties`, `required` |
-| `JsonValue` | empty object |
-| `OutputArtifactContract` | type="object"; fields=`derived_from_roles`, `maximum`, `minimum`, `role`; additional keys=`additionalProperties`, `required` |
-| `SemanticValidationProfile` | type="object"; fields=`conformance_vectors_sha256`, `id`, `profile_sha256`, `rules`; additional keys=`additionalProperties`, `required` |
+| <a id="s-5f66949083d8"></a>`InputArtifactContract` | type="object"; fields=`allowed_dispositions`, `maximum`, `minimum`, `role`; additional keys=`additionalProperties`, `required` |
+| <a id="s-a7a5e8c1b9d7"></a>`JsonSchemaDocument` | type="object"; fields=`dialect`, `format_policy`, `id`, `schema`, `sha256`; additional keys=`additionalProperties`, `required` |
+| <a id="s-003a178d9481"></a>`JsonValue` | empty object |
+| <a id="s-63772a20043d"></a>`OutputArtifactContract` | type="object"; fields=`derived_from_roles`, `maximum`, `minimum`, `role`; additional keys=`additionalProperties`, `required` |
+| <a id="s-c4cc0dce8344"></a>`SemanticValidationProfile` | type="object"; fields=`conformance_vectors_sha256`, `id`, `profile_sha256`, `rules`; additional keys=`additionalProperties`, `required` |
 
 ### Progression, limits, and lifecycle
 
-| Dimension | Unit | Policy | Bounds or reason |
-|---|---|---|---|
-| length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
-| cardinality | items | `operational_policy` | maximum=None, reason=no-declared-semantic-maximum |
-| cardinality | items | `operational_policy` | maximum=None, reason=no-declared-semantic-maximum |
-| cardinality | items | `operational_policy` | maximum=None, reason=no-declared-semantic-maximum |
-| cardinality | entries | `operational_policy` | maximum=None, reason=no-declared-semantic-maximum |
-| length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
-| cardinality | items | `operational_policy` | maximum=None, reason=no-declared-semantic-maximum |
-| length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
-| length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
-| cardinality | items | `operational_policy` | maximum=None, reason=no-declared-semantic-maximum |
+#### [extent-rule/no-semantic-maximum/v1](../../../policies/index.md#p-574724b48af0)
+
+Shared facts for every subject below: capacity_authority={"declared_maximum":null,"hidden_maximum":"forbidden","owner":"stove0-target-protocol"}; maximum=null; reason="no-declared-semantic-maximum"
+
+| Applies to | Contract | Bounds or reason |
+|---|---|---|
+| [field inputs](#s-f5e91f55d706) | `cardinality · items · operational_policy` | shared above |
+| [field outputs](#s-b55e379a6192) | `cardinality · items · operational_policy` | shared above |
+| <a id="s-52aee3009818"></a>definition InputArtifactContract · field allowed_dispositions · anyOf alternative 1 | `cardinality · items · operational_policy` | shared above |
+| <a id="s-4683f85a56a8"></a>definition JsonSchemaDocument · field schema | `cardinality · entries · operational_policy` | shared above |
+| <a id="s-db0de128fee1"></a>definition OutputArtifactContract · field derived_from_roles | `cardinality · items · operational_policy` | shared above |
+| <a id="s-2f2dbe7f7fd8"></a>definition SemanticValidationProfile · field rules | `cardinality · items · operational_policy` | shared above |
+
+#### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
+
+Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"}
+
+| Applies to | Contract | Bounds or reason |
+|---|---|---|
+| [field contract_sha256](#s-d662de9b15e4) | `length · characters · fixed` | shared above |
+| <a id="s-3d54e4a53337"></a>definition JsonSchemaDocument · field sha256 | `length · characters · fixed` | shared above |
+| <a id="s-4052e4cd9dcb"></a>definition SemanticValidationProfile · field conformance_vectors_sha256 · anyOf alternative 1 | `length · characters · fixed` | shared above |
+| <a id="s-133a5bb76e23"></a>definition SemanticValidationProfile · field profile_sha256 | `length · characters · fixed` | shared above |
 
 ## Governing policies
 
-- `compatibility/components/v1`
-- `extent-rule/no-semantic-maximum/v1`
-- `extent-rule/schema-bound/v1`
+- <a id="pa-f5be15103549"></a>[compatibility/components/v1](../../../policies/index.md#p-95e9a1225947)
+- <a id="pa-a1a648cec178"></a>[extent-rule/no-semantic-maximum/v1](../../../policies/index.md#p-574724b48af0)
+- <a id="pa-49017f31d2e4"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
 
 ## Evidence
 
 ### Qualification
 
-- `make dist-smoke`
-- `make build`
+- [make dist-smoke](../../../evidence/sources.md#q-0ba2578a3eb7)
+- [make build](../../../evidence/sources.md#q-d1121e35fa7a)
 
 ### Executable sources
 
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `protocol:generated:stove0-target` — `reference/stove0/packages/target-support/src/stove0_target_support/schemas.py::target_schema_bundle`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
+- [protocol:generated:stove0-target](../../../evidence/sources.md#src-2c42f9d39a0b) — `reference/stove0/packages/target-support/src/stove0_target_support/schemas.py::target_schema_bundle`
 
 ### Machine authority
 

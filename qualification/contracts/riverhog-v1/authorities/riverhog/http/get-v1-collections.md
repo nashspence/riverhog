@@ -8,48 +8,60 @@ List Collections
 
 | Audit field | Value |
 |---|---|
-| Authority | `riverhog` |
-| Interface | `http` |
-| Family | `collections` |
+| Authority | [riverhog](../index.md) |
+| Interface | [http](index.md) |
+| Family | [collections](families/collections/index.md) |
 | Contract elements | 1 |
 | Extent decisions | 3 |
 
 ## External contract
 
-- `operationId`: list_collections
-- `summary`: List Collections
-- `security`: `[{"HTTPBearer": []}]`
+<a id="s-c0edb146f545"></a>
+- <a id="s-46c0cf000f28"></a>`operationId`: list_collections
+- <a id="s-f96134ae886f"></a>`summary`: List Collections
+- <a id="s-cd1307771749"></a>`security`: `[{"HTTPBearer": []}]`
 
 ### Parameters
 
 | Name | In | Required | Schema |
 |---|---|---:|---|
-| `page_size` | query | no | type="integer"; minimum=1; maximum=100 |
-| `page_token` | query | no | anyOf=#/components/schemas/BrowsePageToken \| type="null" |
-| `q` | query | no | anyOf=#/components/schemas/BrowseQuery \| type="null" |
-| `sort` | query | no | $ref="#/components/schemas/CollectionSort" |
-| `order` | query | no | $ref="#/components/schemas/SortOrder" |
-| `encryption_format` | query | no | anyOf=type="string" \| type="null" |
-| `passphrase_id` | query | no | anyOf=type="string" \| type="null" |
-| `tags` | query | no | anyOf=type="array"; maxItems=100; items=(#/components/schemas/CollectionTag); additional keys=`x-riverhog-extent` \| type="null" |
+| <a id="s-2076d85ce1cd"></a>`page_size` | query | no | type="integer"; minimum=1; maximum=100 |
+| <a id="s-9731e95241cd"></a>`page_token` | query | no | anyOf=#/components/schemas/BrowsePageToken \| type="null" |
+| <a id="s-2bab53adb827"></a>`q` | query | no | anyOf=#/components/schemas/BrowseQuery \| type="null" |
+| <a id="s-3495833d0317"></a>`sort` | query | no | $ref="#/components/schemas/CollectionSort" |
+| <a id="s-fba33675a707"></a>`order` | query | no | $ref="#/components/schemas/SortOrder" |
+| <a id="s-a62ca229bb56"></a>`encryption_format` | query | no | anyOf=type="string" \| type="null" |
+| <a id="s-6516891cb222"></a>`passphrase_id` | query | no | anyOf=type="string" \| type="null" |
+| <a id="s-c928d33a4dad"></a>`tags` | query | no | anyOf=type="array"; maxItems=100; items=(#/components/schemas/CollectionTag); additional keys=`x-riverhog-extent` \| type="null" |
 
 ### Responses
 
 | Status | Description |
 |---|---|
-| `200` | Successful Response |
-| `400` | Bad Request |
-| `401` | Unauthorized |
-| `403` | Forbidden |
-| `500` | Internal Server Error |
+| <a id="s-64bfaf8f5a72"></a>`200` | Successful Response |
+| <a id="s-1a717dd59c27"></a>`400` | Bad Request |
+| <a id="s-8d982699dd23"></a>`401` | Unauthorized |
+| <a id="s-31c81ac156e0"></a>`403` | Forbidden |
+| <a id="s-c6eb104848f4"></a>`500` | Internal Server Error |
 
 ### Progression, limits, and lifecycle
 
-| Dimension | Unit | Policy | Bounds or reason |
-|---|---|---|---|
-| logical-result-cardinality | items | `segmented_no_total_max` | reason=bounded-route-progression |
-| value | schema-value | `contract_max` | maximum=100, minimum=1, reason=schema-maximum |
-| cardinality | items | `contract_max` | maximum=100, reason=bounded-exact-tag-selector-batch |
+#### [extent-rule/route-progression/v1](../../../policies/index.md#p-6b76b527cb21)
+
+Shared facts for every subject below: progression={"default_page_size":25,"kind":"mutable-browse","maximum_page_size":100,"next_page_token_field":"next_page_token","page_size_parameter":"page_size","page_token_parameter":"page_token"}; reason="bounded-route-progression"
+
+| Applies to | Contract | Bounds or reason |
+|---|---|---|
+| [GET /v1/collections](#s-c0edb146f545) | `logical-result-cardinality · items · segmented_no_total_max` | shared above |
+
+#### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
+
+Shared facts for every subject below: maximum=100
+
+| Applies to | Contract | Bounds or reason |
+|---|---|---|
+| <a id="s-0696f31dde61"></a>parameter page_size | `value · schema-value · contract_max` | minimum=1; reason="schema-maximum" |
+| <a id="s-adcb77fe2d60"></a>parameter tags · anyOf alternative 1 | `cardinality · items · contract_max` | reason="bounded-exact-tag-selector-batch" |
 
 ## Maintained corroboration
 
@@ -69,21 +81,21 @@ List Collections
 
 ## Governing policies
 
-- `compatibility/http-api/v1`
-- `extent-rule/route-progression/v1`
-- `extent-rule/schema-bound/v1`
+- <a id="pa-162c871a6bb0"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0ba)
+- <a id="pa-a41b741a6e3f"></a>[extent-rule/route-progression/v1](../../../policies/index.md#p-6b76b527cb21)
+- <a id="pa-2e5c332df208"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
 
 ## Evidence
 
 ### Qualification
 
-- `make operation-qualification`
-- `make compose-smoke`
+- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459fb8)
+- [make compose-smoke](../../../evidence/sources.md#q-413b0b241ba8)
 
 ### Executable sources
 
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `openapi:riverhog` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
+- [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc960) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
 
 ### Machine authority
 

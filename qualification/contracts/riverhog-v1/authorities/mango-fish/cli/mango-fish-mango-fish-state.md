@@ -8,31 +8,31 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Audit field | Value |
 |---|---|
-| Authority | `mango-fish` |
-| Interface | `cli` |
-| Family | `mango-fish state` |
+| Authority | [mango-fish](../index.md) |
+| Interface | [cli](index.md) |
+| Family | [mango-fish state](index.md#f-baa3c102f725) |
 | Contract elements | 1 |
 | Extent decisions | 0 |
 
 ## External contract
 
-- Parser name: `mango-fish state`
+- <a id="s-e35963c48ce1"></a>Parser name: `mango-fish state`
 
 ## Governing policies
 
-- `compatibility/cli/v1`
+- <a id="pa-10d73636fe89"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de7f)
 
 ## Evidence
 
 ### Qualification
 
-- `make dist-smoke`
-- `make operation-qualification`
+- [make dist-smoke](../../../evidence/sources.md#q-0ba2578a3eb7)
+- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459fb8)
 
 ### Executable sources
 
-- `cli:mango-fish` — `reference/riverhog/applications/mango-fish/src/mango_fish/cli.py::<module>`
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
+- [cli:mango-fish](../../../evidence/sources.md#src-3dcd5eedf2a0) — `reference/riverhog/applications/mango-fish/src/mango_fish/cli.py::<module>`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
 
 ### Machine authority
 

@@ -8,34 +8,37 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Audit field | Value |
 |---|---|
-| Authority | `stove0` |
-| Interface | `http` |
-| Family | `schemas` |
+| Authority | [stove0](../index.md) |
+| Interface | [http](index.md) |
+| Family | [schemas](families/schemas/index.md) |
 | Contract elements | 1 |
 | Extent decisions | 2 |
 
 ## External contract
 
-- `title`: ExecutionEnvelope
-- `type`: object
+<a id="s-fc88d5a95252"></a>
+- <a id="s-d493c8c79f40"></a>`title`: ExecutionEnvelope
+- <a id="s-abdee4f349ae"></a>`type`: object
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| `claim_id` | yes | type="string"; minLength=1; maxLength=160 |  |
-| `execution_envelope_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| `fence` | yes | type="integer"; minimum=1 |  |
-| `format` | no | type="string"; const="stove0-execution-envelope/v1" |  |
-| `target_plan` | yes | #/components/schemas/TargetPlanBinding |  |
-| `workflow_plan` | yes | #/components/schemas/WorkflowPlan |  |
+| <a id="s-254db142006f"></a>`claim_id` | yes | type="string"; minLength=1; maxLength=160 |  |
+| <a id="s-7722433db7bb"></a>`execution_envelope_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-5debb009eb26"></a>`fence` | yes | type="integer"; minimum=1 |  |
+| <a id="s-7e6d8ecf9e58"></a>`format` | no | type="string"; const="stove0-execution-envelope/v1" |  |
+| <a id="s-b47a72301b45"></a>`target_plan` | yes | #/components/schemas/TargetPlanBinding |  |
+| <a id="s-3d863bfbd7b0"></a>`workflow_plan` | yes | #/components/schemas/WorkflowPlan |  |
 
 ### Progression, limits, and lifecycle
 
-| Dimension | Unit | Policy | Bounds or reason |
-|---|---|---|---|
-| length | characters | `contract_max` | maximum=160, minimum=1, reason=schema-maximum |
-| length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
+#### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
+
+| Applies to | Contract | Bounds or reason |
+|---|---|---|
+| [field claim_id](#s-254db142006f) | `length · characters · contract_max` | maximum=160; minimum=1; reason="schema-maximum" |
+| [field execution_envelope_sha256](#s-7722433db7bb) | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
 
 ## Maintained corroboration
 
@@ -46,20 +49,20 @@ Exact externally visible contract owned by this semantic dossier.
 
 ## Governing policies
 
-- `compatibility/http-api/v1`
-- `extent-rule/schema-bound/v1`
+- <a id="pa-9e2113fbc344"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0ba)
+- <a id="pa-380b6ac67352"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
 
 ## Evidence
 
 ### Qualification
 
-- `make operation-qualification`
-- `make compose-smoke`
+- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459fb8)
+- [make compose-smoke](../../../evidence/sources.md#q-413b0b241ba8)
 
 ### Executable sources
 
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `openapi:stove0` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
+- [openapi:stove0](../../../evidence/sources.md#src-52e6e3212451) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
 
 ### Machine authority
 

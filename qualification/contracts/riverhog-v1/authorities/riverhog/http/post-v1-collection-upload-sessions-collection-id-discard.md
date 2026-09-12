@@ -8,25 +8,26 @@ Discard Collection Upload
 
 | Audit field | Value |
 |---|---|
-| Authority | `riverhog` |
-| Interface | `http` |
-| Family | `collection-upload-sessions` |
+| Authority | [riverhog](../index.md) |
+| Interface | [http](index.md) |
+| Family | [collection-upload-sessions](families/collection-upload-sessions/index.md) |
 | Contract elements | 1 |
 | Extent decisions | 0 |
 
 ## External contract
 
-- `operationId`: discard_collection_upload
-- `summary`: Discard Collection Upload
-- `security`: `[{"HTTPBearer": []}]`
+<a id="s-84b0d95f8b22"></a>
+- <a id="s-28284d09380c"></a>`operationId`: discard_collection_upload
+- <a id="s-4f64c70b0238"></a>`summary`: Discard Collection Upload
+- <a id="s-ec1bc239b995"></a>`security`: `[{"HTTPBearer": []}]`
 
 ### Parameters
 
 | Name | In | Required | Schema |
 |---|---|---:|---|
-| `collection_id` | path | yes | type="integer"; minimum=1 |
+| <a id="s-704921697751"></a>`collection_id` | path | yes | type="integer"; minimum=1 |
 
-### Request body
+### <a id="s-59bf7d4e085f"></a>Request body
 
 `{"content": {"application/json": {"schema": {"$ref": "#/components/schemas/DiscardCollectionUploadRequest"}}}, "required": true}`
 
@@ -34,11 +35,11 @@ Discard Collection Upload
 
 | Status | Description |
 |---|---|
-| `200` | Successful Response |
-| `400` | Bad Request |
-| `401` | Unauthorized |
-| `403` | Forbidden |
-| `500` | Internal Server Error |
+| <a id="s-e5b9c9f0dc73"></a>`200` | Successful Response |
+| <a id="s-8ad61111b3f8"></a>`400` | Bad Request |
+| <a id="s-b7bf99369c67"></a>`401` | Unauthorized |
+| <a id="s-b3591cec3ff3"></a>`403` | Forbidden |
+| <a id="s-21abc3350536"></a>`500` | Internal Server Error |
 
 ## Maintained corroboration
 
@@ -54,19 +55,19 @@ Discard Collection Upload
 
 ## Governing policies
 
-- `compatibility/http-api/v1`
+- <a id="pa-8407b23df089"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0ba)
 
 ## Evidence
 
 ### Qualification
 
-- `make operation-qualification`
-- `make compose-smoke`
+- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459fb8)
+- [make compose-smoke](../../../evidence/sources.md#q-413b0b241ba8)
 
 ### Executable sources
 
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `openapi:riverhog` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
+- [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc960) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
 
 ### Machine authority
 

@@ -8,58 +8,61 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Audit field | Value |
 |---|---|
-| Authority | `riverhog-storage-adapter-support` |
-| Interface | `protocol` |
-| Family | `schemas` |
+| Authority | [riverhog-storage-adapter-support](../index.md) |
+| Interface | [protocol](index.md) |
+| Family | [schemas](families/schemas/index.md) |
 | Contract elements | 1 |
 | Extent decisions | 7 |
 
 ## External contract
 
-- `title`: CompletedObjectReceipt
-- `type`: object
+<a id="s-17b1471cc893"></a>
+- <a id="s-9c9e0ba05f90"></a>`title`: CompletedObjectReceipt
+- <a id="s-1ef964e06329"></a>`type`: object
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| `completed_at` | yes | type="string"; minLength=1; maxLength=100 |  |
-| `entity_token` | no | anyOf=type="string"; minLength=1; maxLength=4000 \| type="null" |  |
-| `object_path` | yes | type="string"; minLength=1; maxLength=4096 |  |
-| `revision` | no | anyOf=type="string"; minLength=1; maxLength=2000 \| type="null" |  |
-| `stored_bytes` | yes | type="integer"; minimum=1 |  |
-| `verified_content_type` | yes | type="string"; minLength=1; maxLength=255 |  |
-| `verified_identity_assertions` | yes | type="object"; additional keys=`additionalProperties`, `maxProperties`, `x-riverhog-encoded-bytes-max`, `x-riverhog-extent` | Inert caller-owned facts used only to identify and reconcile an exact stored object. Adapters canonicalize, persist, return, and compare these assertions; they must not interpret them as routing, retrieval, retention, credentials, placement, or provider-control instructions. Adapters may retain additional adapter-private assertions. |
-| `verified_placement` | yes | type="string"; enum=["archive","immediate"] |  |
+| <a id="s-e321434eb825"></a>`completed_at` | yes | type="string"; minLength=1; maxLength=100 |  |
+| <a id="s-f9fbc589a8ad"></a>`entity_token` | no | anyOf=type="string"; minLength=1; maxLength=4000 \| type="null" |  |
+| <a id="s-627e7fc47014"></a>`object_path` | yes | type="string"; minLength=1; maxLength=4096 |  |
+| <a id="s-a35df82ae3e8"></a>`revision` | no | anyOf=type="string"; minLength=1; maxLength=2000 \| type="null" |  |
+| <a id="s-4ade09495c29"></a>`stored_bytes` | yes | type="integer"; minimum=1 |  |
+| <a id="s-e975843e166c"></a>`verified_content_type` | yes | type="string"; minLength=1; maxLength=255 |  |
+| <a id="s-23cb8513173c"></a>`verified_identity_assertions` | yes | type="object"; additional keys=`additionalProperties`, `maxProperties`, `x-riverhog-encoded-bytes-max`, `x-riverhog-extent` | Inert caller-owned facts used only to identify and reconcile an exact stored object. Adapters canonicalize, persist, return, and compare these assertions; they must not interpret them as routing, retrieval, retention, credentials, placement, or provider-control instructions. Adapters may retain additional adapter-private assertions. |
+| <a id="s-786e57377f21"></a>`verified_placement` | yes | type="string"; enum=["archive","immediate"] |  |
 
 ### Progression, limits, and lifecycle
 
-| Dimension | Unit | Policy | Bounds or reason |
-|---|---|---|---|
-| length | characters | `contract_max` | maximum=100, minimum=1, reason=schema-maximum |
-| length | characters | `contract_max` | maximum=4000, minimum=1, reason=schema-maximum |
-| length | characters | `contract_max` | maximum=4096, minimum=1, reason=schema-maximum |
-| length | characters | `contract_max` | maximum=2000, minimum=1, reason=schema-maximum |
-| length | characters | `contract_max` | maximum=255, minimum=1, reason=schema-maximum |
-| encoded-size | bytes | `contract_max` | maximum=16384, reason=bounded-object-identity-assertion-envelope |
-| cardinality | entries | `contract_max` | maximum=64, reason=bounded-object-identity-assertion-envelope |
+#### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
+
+| Applies to | Contract | Bounds or reason |
+|---|---|---|
+| [field completed_at](#s-e321434eb825) | `length · characters · contract_max` | maximum=100; minimum=1; reason="schema-maximum" |
+| <a id="s-5a607855835e"></a>field entity_token · anyOf alternative 1 | `length · characters · contract_max` | maximum=4000; minimum=1; reason="schema-maximum" |
+| [field object_path](#s-627e7fc47014) | `length · characters · contract_max` | maximum=4096; minimum=1; reason="schema-maximum" |
+| <a id="s-ed019f2a3342"></a>field revision · anyOf alternative 1 | `length · characters · contract_max` | maximum=2000; minimum=1; reason="schema-maximum" |
+| [field verified_content_type](#s-e975843e166c) | `length · characters · contract_max` | maximum=255; minimum=1; reason="schema-maximum" |
+| [field verified_identity_assertions](#s-23cb8513173c) | `encoded-size · bytes · contract_max` | maximum=16384; reason="bounded-object-identity-assertion-envelope"; source_constraint={"field":"x-riverhog-encoded-bytes-max"} |
+| [field verified_identity_assertions](#s-23cb8513173c) | `cardinality · entries · contract_max` | maximum=64; reason="bounded-object-identity-assertion-envelope" |
 
 ## Governing policies
 
-- `compatibility/components/v1`
-- `extent-rule/schema-bound/v1`
+- <a id="pa-7e7f25fabf0d"></a>[compatibility/components/v1](../../../policies/index.md#p-95e9a1225947)
+- <a id="pa-b2751eccc5a6"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
 
 ## Evidence
 
 ### Qualification
 
-- `make dist-smoke`
-- `make build`
+- [make dist-smoke](../../../evidence/sources.md#q-0ba2578a3eb7)
+- [make build](../../../evidence/sources.md#q-d1121e35fa7a)
 
 ### Executable sources
 
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `protocol:generated:riverhog-storage-adapter` — `packages/riverhog-storage-adapter-support/src/riverhog_storage_adapter_support/schemas.py::storage_adapter_schema_bundle`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
+- [protocol:generated:riverhog-storage-adapter](../../../evidence/sources.md#src-ef281f2471a9) — `packages/riverhog-storage-adapter-support/src/riverhog_storage_adapter_support/schemas.py::storage_adapter_schema_bundle`
 
 ### Machine authority
 

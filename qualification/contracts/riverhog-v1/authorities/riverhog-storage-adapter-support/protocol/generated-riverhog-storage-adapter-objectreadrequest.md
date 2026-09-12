@@ -8,47 +8,48 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Audit field | Value |
 |---|---|
-| Authority | `riverhog-storage-adapter-support` |
-| Interface | `protocol` |
-| Family | `schemas` |
+| Authority | [riverhog-storage-adapter-support](../index.md) |
+| Interface | [protocol](index.md) |
+| Family | [schemas](families/schemas/index.md) |
 | Contract elements | 1 |
 | Extent decisions | 0 |
 
 ## External contract
 
-- `title`: ObjectReadRequest
-- `type`: object
+<a id="s-081aefc53c96"></a>
+- <a id="s-2ef1a56d86dc"></a>`title`: ObjectReadRequest
+- <a id="s-9ff82f8017e8"></a>`type`: object
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| `expected_bytes` | yes | type="integer"; minimum=0 |  |
-| `object` | yes | #/$defs/ObjectLocator |  |
-| `offset` | no | anyOf=type="integer"; minimum=0 \| type="null" |  |
-| `size` | no | anyOf=type="integer"; minimum=0 \| type="null" |  |
+| <a id="s-debcf1b15e62"></a>`expected_bytes` | yes | type="integer"; minimum=0 |  |
+| <a id="s-6d80e36046d0"></a>`object` | yes | #/$defs/ObjectLocator |  |
+| <a id="s-57ba00ac3d59"></a>`offset` | no | anyOf=type="integer"; minimum=0 \| type="null" |  |
+| <a id="s-56c460993669"></a>`size` | no | anyOf=type="integer"; minimum=0 \| type="null" |  |
 
 ### Definitions
 
 | Definition | Shape |
 |---|---|
-| `ObjectLocator` | type="object"; fields=`object_path`, `revision`; additional keys=`additionalProperties`, `required` |
+| <a id="s-a35c176f55af"></a>`ObjectLocator` | type="object"; fields=`object_path`, `revision`; additional keys=`additionalProperties`, `required` |
 
 ## Governing policies
 
-- `compatibility/components/v1`
+- <a id="pa-aa2c13b70a2e"></a>[compatibility/components/v1](../../../policies/index.md#p-95e9a1225947)
 
 ## Evidence
 
 ### Qualification
 
-- `make dist-smoke`
-- `make build`
+- [make dist-smoke](../../../evidence/sources.md#q-0ba2578a3eb7)
+- [make build](../../../evidence/sources.md#q-d1121e35fa7a)
 
 ### Executable sources
 
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `protocol:generated:riverhog-storage-adapter` — `packages/riverhog-storage-adapter-support/src/riverhog_storage_adapter_support/schemas.py::storage_adapter_schema_bundle`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
+- [protocol:generated:riverhog-storage-adapter](../../../evidence/sources.md#src-ef281f2471a9) — `packages/riverhog-storage-adapter-support/src/riverhog_storage_adapter_support/schemas.py::storage_adapter_schema_bundle`
 
 ### Machine authority
 

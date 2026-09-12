@@ -8,36 +8,37 @@ Get Collection Upload Session Unit
 
 | Audit field | Value |
 |---|---|
-| Authority | `riverhog` |
-| Interface | `http` |
-| Family | `collection-upload-sessions` |
+| Authority | [riverhog](../index.md) |
+| Interface | [http](index.md) |
+| Family | [collection-upload-sessions](families/collection-upload-sessions/index.md) |
 | Contract elements | 1 |
 | Extent decisions | 0 |
 
 ## External contract
 
-- `operationId`: get_collection_upload_session_unit
-- `summary`: Get Collection Upload Session Unit
-- `security`: `[{"HTTPBearer": []}]`
+<a id="s-03e958c3fadf"></a>
+- <a id="s-10a9ba1965eb"></a>`operationId`: get_collection_upload_session_unit
+- <a id="s-acf6897bf59c"></a>`summary`: Get Collection Upload Session Unit
+- <a id="s-e78eee337318"></a>`security`: `[{"HTTPBearer": []}]`
 
 ### Parameters
 
 | Name | In | Required | Schema |
 |---|---|---:|---|
-| `collection_id` | path | yes | type="integer"; minimum=1 |
-| `volume_id` | path | yes | type="string"; pattern="^(?:pack\|segment)-[0-9a-f]{64}$" |
-| `unit` | path | yes | type="integer"; minimum=0 |
+| <a id="s-352d4ba0b790"></a>`collection_id` | path | yes | type="integer"; minimum=1 |
+| <a id="s-849bd3e5fad6"></a>`volume_id` | path | yes | type="string"; pattern="^(?:pack\|segment)-[0-9a-f]{64}$" |
+| <a id="s-2dd410918cbd"></a>`unit` | path | yes | type="integer"; minimum=0 |
 
 ### Responses
 
 | Status | Description |
 |---|---|
-| `200` | Successful Response |
-| `400` | Bad Request |
-| `401` | Unauthorized |
-| `403` | Forbidden |
-| `404` | Not Found |
-| `500` | Internal Server Error |
+| <a id="s-2b136e814edf"></a>`200` | Successful Response |
+| <a id="s-55aa3a0980aa"></a>`400` | Bad Request |
+| <a id="s-eb39e3cb311a"></a>`401` | Unauthorized |
+| <a id="s-d05570bc1179"></a>`403` | Forbidden |
+| <a id="s-2adb6c1c8f75"></a>`404` | Not Found |
+| <a id="s-4f1f9d869011"></a>`500` | Internal Server Error |
 
 ## Maintained corroboration
 
@@ -52,19 +53,19 @@ Get Collection Upload Session Unit
 
 ## Governing policies
 
-- `compatibility/http-api/v1`
+- <a id="pa-4ae0330d0e45"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0ba)
 
 ## Evidence
 
 ### Qualification
 
-- `make operation-qualification`
-- `make compose-smoke`
+- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459fb8)
+- [make compose-smoke](../../../evidence/sources.md#q-413b0b241ba8)
 
 ### Executable sources
 
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `openapi:riverhog` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
+- [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc960) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
 
 ### Machine authority
 

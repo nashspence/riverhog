@@ -8,26 +8,27 @@ List Admission Policies
 
 | Audit field | Value |
 |---|---|
-| Authority | `stove0` |
-| Interface | `http` |
-| Family | `admission-policies` |
+| Authority | [stove0](../index.md) |
+| Interface | [http](index.md) |
+| Family | [admission-policies](families/admission-policies/index.md) |
 | Contract elements | 1 |
 | Extent decisions | 0 |
 
 ## External contract
 
-- `operationId`: list_admission_policies
-- `summary`: List Admission Policies
+<a id="s-9cdc3681b17f"></a>
+- <a id="s-d210f67bfc07"></a>`operationId`: list_admission_policies
+- <a id="s-0487d2dfd0ac"></a>`summary`: List Admission Policies
 
 ### Responses
 
 | Status | Description |
 |---|---|
-| `200` | Successful Response |
-| `400` | Bad Request |
-| `401` | Unauthorized |
-| `403` | Forbidden |
-| `500` | Internal Server Error |
+| <a id="s-7e95b1072855"></a>`200` | Successful Response |
+| <a id="s-4f37d64ec94b"></a>`400` | Bad Request |
+| <a id="s-313cc0359fd7"></a>`401` | Unauthorized |
+| <a id="s-5b7c3932b3e0"></a>`403` | Forbidden |
+| <a id="s-1a01fac0f07a"></a>`500` | Internal Server Error |
 
 ## Maintained corroboration
 
@@ -42,19 +43,19 @@ List Admission Policies
 
 ## Governing policies
 
-- `compatibility/http-api/v1`
+- <a id="pa-b41293d1bba2"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0ba)
 
 ## Evidence
 
 ### Qualification
 
-- `make operation-qualification`
-- `make compose-smoke`
+- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459fb8)
+- [make compose-smoke](../../../evidence/sources.md#q-413b0b241ba8)
 
 ### Executable sources
 
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `openapi:stove0` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
+- [openapi:stove0](../../../evidence/sources.md#src-52e6e3212451) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
 
 ### Machine authority
 

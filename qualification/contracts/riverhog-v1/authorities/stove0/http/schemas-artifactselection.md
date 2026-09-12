@@ -8,34 +8,46 @@ One exact, content-addressed selection of immutable artifacts.
 
 | Audit field | Value |
 |---|---|
-| Authority | `stove0` |
-| Interface | `http` |
-| Family | `schemas` |
+| Authority | [stove0](../index.md) |
+| Interface | [http](index.md) |
+| Family | [schemas](families/schemas/index.md) |
 | Contract elements | 1 |
 | Extent decisions | 2 |
 
 ## External contract
 
-- `title`: ArtifactSelection
-- `description`: One exact, content-addressed selection of immutable artifacts.
-- `type`: object
+<a id="s-b71d8b7268e3"></a>
+- <a id="s-24a1678880d9"></a>`title`: ArtifactSelection
+- <a id="s-413c8d021c14"></a>`description`: One exact, content-addressed selection of immutable artifacts.
+- <a id="s-d52f6dc4514d"></a>`type`: object
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| `artifact_count` | yes | type="integer"; minimum=1 |  |
-| `artifacts` | yes | type="array"; minItems=1; items=(#/components/schemas/ArtifactSubject) |  |
-| `format` | no | type="string"; const="stove0-artifact-selection/v1" |  |
-| `selection_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| `total_bytes` | yes | type="integer"; minimum=0 |  |
+| <a id="s-5ca1a027a8a0"></a>`artifact_count` | yes | type="integer"; minimum=1 |  |
+| <a id="s-718513cbc726"></a>`artifacts` | yes | type="array"; minItems=1; items=(#/components/schemas/ArtifactSubject) |  |
+| <a id="s-bb0cdcf29c6e"></a>`format` | no | type="string"; const="stove0-artifact-selection/v1" |  |
+| <a id="s-a95861fb3547"></a>`selection_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-c25a38133a96"></a>`total_bytes` | yes | type="integer"; minimum=0 |  |
 
 ### Progression, limits, and lifecycle
 
-| Dimension | Unit | Policy | Bounds or reason |
-|---|---|---|---|
-| cardinality | items | `operational_policy` | maximum=None, reason=no-declared-semantic-maximum |
-| length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
+#### [extent-rule/no-semantic-maximum/v1](../../../policies/index.md#p-574724b48af0)
+
+Shared facts for every subject below: capacity_authority={"declared_maximum":null,"hidden_maximum":"forbidden","owner":"stove0"}; maximum=null; reason="no-declared-semantic-maximum"
+
+| Applies to | Contract | Bounds or reason |
+|---|---|---|
+| [field artifacts](#s-718513cbc726) | `cardinality · items · operational_policy` | shared above |
+
+#### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
+
+Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"}
+
+| Applies to | Contract | Bounds or reason |
+|---|---|---|
+| [field selection_sha256](#s-a95861fb3547) | `length · characters · fixed` | shared above |
 
 ## Maintained corroboration
 
@@ -45,21 +57,21 @@ One exact, content-addressed selection of immutable artifacts.
 
 ## Governing policies
 
-- `compatibility/http-api/v1`
-- `extent-rule/no-semantic-maximum/v1`
-- `extent-rule/schema-bound/v1`
+- <a id="pa-feb361d5fdd7"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0ba)
+- <a id="pa-b9a958b2cffd"></a>[extent-rule/no-semantic-maximum/v1](../../../policies/index.md#p-574724b48af0)
+- <a id="pa-195e0fcec4c8"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
 
 ## Evidence
 
 ### Qualification
 
-- `make operation-qualification`
-- `make compose-smoke`
+- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459fb8)
+- [make compose-smoke](../../../evidence/sources.md#q-413b0b241ba8)
 
 ### Executable sources
 
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `openapi:stove0` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
+- [openapi:stove0](../../../evidence/sources.md#src-52e6e3212451) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
 
 ### Machine authority
 

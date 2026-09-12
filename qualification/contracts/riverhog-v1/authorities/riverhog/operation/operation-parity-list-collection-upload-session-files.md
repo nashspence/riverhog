@@ -8,26 +8,27 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Audit field | Value |
 |---|---|
-| Authority | `riverhog` |
-| Interface | `operation` |
-| Family | `collection-upload-sessions` |
+| Authority | [riverhog](../index.md) |
+| Interface | [operation](index.md) |
+| Family | [collection-upload-sessions](families/collection-upload-sessions/index.md) |
 | Contract elements | 1 |
 | Extent decisions | 0 |
 
 ## External contract
 
+<a id="s-adadd2ac02aa"></a>
 | Concern | Contract |
 |---|---|
-| `application` | riverhog |
-| `classification` | human-cli+json |
-| `cli_commands` | ["collection upload files"] |
-| `client` | ApiClient |
-| `method` | GET |
-| `operation_id` | list_collection_upload_session_files |
-| `path` | /v1/collection-upload-sessions/{collection_id}/files |
-| `provider_evidence` | provider-qualification:#442 |
-| `read_collection` | {"default_page_size": 25, "kind": "mutable-browse", "maximum_page_size": 100, "next_page_token_field": "next_page_token", "page_size_parameter": "page_size", "page_token_parameter": "page_token"} |
-| `response_authority` | http-json |
+| <a id="s-fca688a5846b"></a>`application` | riverhog |
+| <a id="s-e911f8bcbe8a"></a>`classification` | human-cli+json |
+| <a id="s-66adc57fc4a4"></a>`cli_commands` | ["collection upload files"] |
+| <a id="s-cf323a56c5dc"></a>`client` | ApiClient |
+| <a id="s-9510066c9bbf"></a>`method` | GET |
+| <a id="s-1011429c285c"></a>`operation_id` | list_collection_upload_session_files |
+| <a id="s-fcb832499566"></a>`path` | /v1/collection-upload-sessions/{collection_id}/files |
+| <a id="s-b380c779960b"></a>`provider_evidence` | provider-qualification:#442 |
+| <a id="s-f5e56bc38230"></a>`read_collection` | {"default_page_size": 25, "kind": "mutable-browse", "maximum_page_size": 100, "next_page_token_field": "next_page_token", "page_size_parameter": "page_size", "page_token_parameter": "page_token"} |
+| <a id="s-195c09ef9b7d"></a>`response_authority` | http-json |
 
 ## Maintained corroboration
 
@@ -38,20 +39,20 @@ Exact externally visible contract owned by this semantic dossier.
 
 ## Governing policies
 
-- `compatibility/cli/v1`
-- `compatibility/components/v1`
-- `compatibility/http-api/v1`
+- <a id="pa-81e6302591a5"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de7f)
+- <a id="pa-ce3021f0007d"></a>[compatibility/components/v1](../../../policies/index.md#p-95e9a1225947)
+- <a id="pa-7ea6022a720a"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0ba)
 
 ## Evidence
 
 ### Qualification
 
-- `make operation-qualification`
+- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459fb8)
 
 ### Executable sources
 
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `operations:operation-matrix` — `scripts/operation_qualification.py::operation_matrix`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
+- [operations:operation-matrix](../../../evidence/sources.md#src-b032bdc56b3f) — `scripts/operation_qualification.py::operation_matrix`
 
 ### Machine authority
 

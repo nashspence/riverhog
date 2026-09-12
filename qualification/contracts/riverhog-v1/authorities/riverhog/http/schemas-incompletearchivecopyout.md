@@ -8,30 +8,31 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Audit field | Value |
 |---|---|
-| Authority | `riverhog` |
-| Interface | `http` |
-| Family | `schemas` |
+| Authority | [riverhog](../index.md) |
+| Interface | [http](index.md) |
+| Family | [schemas](families/schemas/index.md) |
 | Contract elements | 1 |
 | Extent decisions | 0 |
 
 ## External contract
 
-- `title`: IncompleteArchiveCopyOut
-- `type`: object
+<a id="s-f610daf7ae13"></a>
+- <a id="s-510f8e5de4d7"></a>`title`: IncompleteArchiveCopyOut
+- <a id="s-b5c898e07109"></a>`type`: object
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| `archive_root` | yes | anyOf=#/components/schemas/PendingArchiveRootPublicationOut \| #/components/schemas/UploadedArchiveRootPublicationOut |  |
-| `failure` | yes | type="null" |  |
-| `last_uploaded_at` | yes | anyOf=type="string" \| type="null" |  |
-| `last_verified_at` | yes | anyOf=type="string" \| type="null" |  |
-| `object_count` | yes | type="integer"; minimum=0 |  |
-| `state` | yes | type="string"; enum=["pending","uploading","retrying"] |  |
-| `storage_prefix` | yes | anyOf=type="string"; minLength=1 \| type="null" |  |
-| `store` | yes | #/components/schemas/ArchiveStoreName |  |
-| `stored_bytes` | yes | type="integer"; minimum=0 |  |
+| <a id="s-465b66cfb23a"></a>`archive_root` | yes | anyOf=#/components/schemas/PendingArchiveRootPublicationOut \| #/components/schemas/UploadedArchiveRootPublicationOut |  |
+| <a id="s-461f9bfdc3a6"></a>`failure` | yes | type="null" |  |
+| <a id="s-91c7e1fec3fb"></a>`last_uploaded_at` | yes | anyOf=type="string" \| type="null" |  |
+| <a id="s-21e4a90300e3"></a>`last_verified_at` | yes | anyOf=type="string" \| type="null" |  |
+| <a id="s-c956ecabd4f2"></a>`object_count` | yes | type="integer"; minimum=0 |  |
+| <a id="s-126da85264b1"></a>`state` | yes | type="string"; enum=["pending","uploading","retrying"] |  |
+| <a id="s-2c41fde9f8d7"></a>`storage_prefix` | yes | anyOf=type="string"; minLength=1 \| type="null" |  |
+| <a id="s-624ee4c956cc"></a>`store` | yes | #/components/schemas/ArchiveStoreName |  |
+| <a id="s-2e70f184384b"></a>`stored_bytes` | yes | type="integer"; minimum=0 |  |
 
 ## Maintained corroboration
 
@@ -43,19 +44,19 @@ Exact externally visible contract owned by this semantic dossier.
 
 ## Governing policies
 
-- `compatibility/http-api/v1`
+- <a id="pa-16f5b2ed4685"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0ba)
 
 ## Evidence
 
 ### Qualification
 
-- `make operation-qualification`
-- `make compose-smoke`
+- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459fb8)
+- [make compose-smoke](../../../evidence/sources.md#q-413b0b241ba8)
 
 ### Executable sources
 
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `openapi:riverhog` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
+- [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc960) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
 
 ### Machine authority
 

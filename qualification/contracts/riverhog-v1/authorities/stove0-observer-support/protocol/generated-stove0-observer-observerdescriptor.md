@@ -8,65 +8,75 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Audit field | Value |
 |---|---|
-| Authority | `stove0-observer-support` |
-| Interface | `protocol` |
-| Family | `schemas` |
+| Authority | [stove0-observer-support](../index.md) |
+| Interface | [protocol](index.md) |
+| Family | [schemas](index.md#f-d47202b295e8) |
 | Contract elements | 1 |
 | Extent decisions | 5 |
 
 ## External contract
 
-- `title`: ObserverDescriptor
-- `type`: object
+<a id="s-f1f7699e24f7"></a>
+- <a id="s-91212768c6a0"></a>`title`: ObserverDescriptor
+- <a id="s-bb0c7ae8c953"></a>`type`: object
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| `contracts` | yes | type="array"; minItems=1; items=(#/$defs/ObserverContractSupport) |  |
-| `descriptor_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| `image_digest` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| `implementation_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
-| `implementation_version` | yes | type="string"; minLength=1; maxLength=120 |  |
-| `protocol` | no | type="string"; const="stove0-content-observer/v1" |  |
-| `source_revision` | yes | type="string"; minLength=1; maxLength=200 |  |
+| <a id="s-388af3128186"></a>`contracts` | yes | type="array"; minItems=1; items=(#/$defs/ObserverContractSupport) |  |
+| <a id="s-90ecbfd2994d"></a>`descriptor_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-68b2d9dfe261"></a>`image_digest` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-23bfd5c84f42"></a>`implementation_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
+| <a id="s-74afc1ae64d8"></a>`implementation_version` | yes | type="string"; minLength=1; maxLength=120 |  |
+| <a id="s-56caddf497b9"></a>`protocol` | no | type="string"; const="stove0-content-observer/v1" |  |
+| <a id="s-906b91f7a3c4"></a>`source_revision` | yes | type="string"; minLength=1; maxLength=200 |  |
 
 ### Definitions
 
 | Definition | Shape |
 |---|---|
-| `JsonSchemaDocument` | type="object"; fields=`dialect`, `format_policy`, `id`, `schema`, `sha256`; additional keys=`additionalProperties`, `required` |
-| `JsonValue` | empty object |
-| `ObserverContractSupport` | type="object"; fields=`contract_id`, `contract_sha256`, `facts_schema`, `facts_semantics`, `maximum_result_bytes`, `options_schema`, `preferred_subject_batch_size`; additional keys=`additionalProperties`, `required` |
-| `SemanticValidationProfile` | type="object"; fields=`conformance_vectors_sha256`, `id`, `profile_sha256`, `rules`; additional keys=`additionalProperties`, `required` |
+| <a id="s-f86b13e4de3c"></a>`JsonSchemaDocument` | type="object"; fields=`dialect`, `format_policy`, `id`, `schema`, `sha256`; additional keys=`additionalProperties`, `required` |
+| <a id="s-ebc19bb1862c"></a>`JsonValue` | empty object |
+| <a id="s-b516dd75645f"></a>`ObserverContractSupport` | type="object"; fields=`contract_id`, `contract_sha256`, `facts_schema`, `facts_semantics`, `maximum_result_bytes`, `options_schema`, `preferred_subject_batch_size`; additional keys=`additionalProperties`, `required` |
+| <a id="s-39c220e1951c"></a>`SemanticValidationProfile` | type="object"; fields=`conformance_vectors_sha256`, `id`, `profile_sha256`, `rules`; additional keys=`additionalProperties`, `required` |
 
 ### Progression, limits, and lifecycle
 
-| Dimension | Unit | Policy | Bounds or reason |
-|---|---|---|---|
-| cardinality | items | `operational_policy` | maximum=None, reason=no-declared-semantic-maximum |
-| length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
-| length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
-| length | characters | `contract_max` | maximum=120, minimum=1, reason=schema-maximum |
-| length | characters | `contract_max` | maximum=200, minimum=1, reason=schema-maximum |
+#### [extent-rule/no-semantic-maximum/v1](../../../policies/index.md#p-574724b48af0)
+
+Shared facts for every subject below: capacity_authority={"declared_maximum":null,"hidden_maximum":"forbidden","owner":"stove0-observer-protocol"}; maximum=null; reason="no-declared-semantic-maximum"
+
+| Applies to | Contract | Bounds or reason |
+|---|---|---|
+| [field contracts](#s-388af3128186) | `cardinality · items · operational_policy` | shared above |
+
+#### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
+
+| Applies to | Contract | Bounds or reason |
+|---|---|---|
+| [field descriptor_sha256](#s-90ecbfd2994d) | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
+| [field image_digest](#s-68b2d9dfe261) | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
+| [field implementation_version](#s-74afc1ae64d8) | `length · characters · contract_max` | maximum=120; minimum=1; reason="schema-maximum" |
+| [field source_revision](#s-906b91f7a3c4) | `length · characters · contract_max` | maximum=200; minimum=1; reason="schema-maximum" |
 
 ## Governing policies
 
-- `compatibility/components/v1`
-- `extent-rule/no-semantic-maximum/v1`
-- `extent-rule/schema-bound/v1`
+- <a id="pa-70d1dfb50e24"></a>[compatibility/components/v1](../../../policies/index.md#p-95e9a1225947)
+- <a id="pa-33421aed8b15"></a>[extent-rule/no-semantic-maximum/v1](../../../policies/index.md#p-574724b48af0)
+- <a id="pa-21594130b289"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
 
 ## Evidence
 
 ### Qualification
 
-- `make dist-smoke`
-- `make build`
+- [make dist-smoke](../../../evidence/sources.md#q-0ba2578a3eb7)
+- [make build](../../../evidence/sources.md#q-d1121e35fa7a)
 
 ### Executable sources
 
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `protocol:generated:stove0-observer` — `reference/stove0/packages/observer-support/src/stove0_observer_support/schemas.py::observer_schema_bundle`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
+- [protocol:generated:stove0-observer](../../../evidence/sources.md#src-dcc0b5485b73) — `reference/stove0/packages/observer-support/src/stove0_observer_support/schemas.py::observer_schema_bundle`
 
 ### Machine authority
 

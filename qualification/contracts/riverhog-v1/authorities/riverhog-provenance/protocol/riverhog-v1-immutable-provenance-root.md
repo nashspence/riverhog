@@ -8,55 +8,60 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Audit field | Value |
 |---|---|
-| Authority | `riverhog-provenance` |
-| Interface | `protocol` |
-| Family | `schemas` |
+| Authority | [riverhog-provenance](../index.md) |
+| Interface | [protocol](index.md) |
+| Family | [schemas](index.md#f-6adfbad66ec5) |
 | Contract elements | 1 |
 | Extent decisions | 1 |
 
 ## External contract
 
-- `$id`: https://nashspence.github.io/riverhog/v1/schemas/riverhog-provenance-root-v1.schema.json
-- `title`: Riverhog v1 immutable provenance root
-- `type`: object
+<a id="s-9ad4f8744f77"></a>
+- <a id="s-580bd3e8f640"></a>`$id`: https://nashspence.github.io/riverhog/v1/schemas/riverhog-provenance-root-v1.schema.json
+- <a id="s-b9218f09af37"></a>`title`: Riverhog v1 immutable provenance root
+- <a id="s-30cda8dd7593"></a>`type`: object
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| `archive_generation` | yes | #/$defs/sha256 |  |
-| `archive_tree_sha256` | yes | #/$defs/sha256 |  |
-| `schema` | yes | const="riverhog-provenance-root/v1" |  |
-| `volume_sequence` | yes | type="object"; fields=`sha256`; additional keys=`additionalProperties`, `required` |  |
+| <a id="s-7f4eddd0b4b4"></a>`archive_generation` | yes | #/$defs/sha256 |  |
+| <a id="s-d1c893d5e947"></a>`archive_tree_sha256` | yes | #/$defs/sha256 |  |
+| <a id="s-1e57c64c67f3"></a>`schema` | yes | const="riverhog-provenance-root/v1" |  |
+| <a id="s-b3f3b7c709bc"></a>`volume_sequence` | yes | type="object"; fields=`sha256`; additional keys=`additionalProperties`, `required` |  |
 
 ### Definitions
 
 | Definition | Shape |
 |---|---|
-| `sha256` | type="string"; pattern="^[0-9a-f]{64}$" |
+| <a id="s-99767cd03070"></a>`sha256` | type="string"; pattern="^[0-9a-f]{64}$" |
 
 ### Progression, limits, and lifecycle
 
-| Dimension | Unit | Policy | Bounds or reason |
-|---|---|---|---|
-| length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
+#### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
+
+Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"}
+
+| Applies to | Contract | Bounds or reason |
+|---|---|---|
+| [definition sha256](#s-99767cd03070) | `length · characters · fixed` | shared above |
 
 ## Governing policies
 
-- `compatibility/components/v1`
-- `extent-rule/schema-bound/v1`
+- <a id="pa-f7be4c72203d"></a>[compatibility/components/v1](../../../policies/index.md#p-95e9a1225947)
+- <a id="pa-fb56828b2b4e"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
 
 ## Evidence
 
 ### Qualification
 
-- `make dist-smoke`
-- `make build`
+- [make dist-smoke](../../../evidence/sources.md#q-0ba2578a3eb7)
+- [make build](../../../evidence/sources.md#q-d1121e35fa7a)
 
 ### Executable sources
 
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `protocol:https://nashspence.github.io/riverhog/v1/schemas/riverhog-provenance-root-v1.schema.json` — `packages/riverhog-provenance/src/riverhog_provenance/schemas/riverhog-provenance-root-v1.schema.json`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
+- [protocol:https://nashspence.github.io/riverhog/v1/schemas/riverhog-provenance-root-v1.schema.json](../../../evidence/sources.md#src-7c2ebe352d46) — `packages/riverhog-provenance/src/riverhog_provenance/schemas/riverhog-provenance-root-v1.schema.json`
 
 ### Machine authority
 

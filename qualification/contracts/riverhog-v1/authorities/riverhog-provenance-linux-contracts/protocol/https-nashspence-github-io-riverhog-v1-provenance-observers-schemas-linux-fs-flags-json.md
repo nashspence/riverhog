@@ -8,46 +8,51 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Audit field | Value |
 |---|---|
-| Authority | `riverhog-provenance-linux-contracts` |
-| Interface | `protocol` |
-| Family | `schemas` |
+| Authority | [riverhog-provenance-linux-contracts](../index.md) |
+| Interface | [protocol](index.md) |
+| Family | [schemas](index.md#f-496badc04bf0) |
 | Contract elements | 1 |
 | Extent decisions | 1 |
 
 ## External contract
 
-- `$id`: https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/linux-fs-flags.json
-- `type`: object
+<a id="s-484cc6c2c6ec"></a>
+- <a id="s-cc4fe08925cb"></a>`$id`: https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/linux-fs-flags.json
+- <a id="s-a877f59d9b68"></a>`type`: object
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| `raw` | yes | type="integer"; minimum=0 |  |
-| `set_names` | yes | type="array"; items=(type="string"); additional keys=`uniqueItems` |  |
+| <a id="s-2b9e4ff160e1"></a>`raw` | yes | type="integer"; minimum=0 |  |
+| <a id="s-1bb5c0f38094"></a>`set_names` | yes | type="array"; items=(type="string"); additional keys=`uniqueItems` |  |
 
 ### Progression, limits, and lifecycle
 
-| Dimension | Unit | Policy | Bounds or reason |
-|---|---|---|---|
-| cardinality | items | `extension_owned` | maximum=None, reason=independently-versioned-extension-authority |
+#### [extent-rule/extension-contract/v1](../../../policies/index.md#p-75a89f9d1c36)
+
+Shared facts for every subject below: maximum=null; reason="independently-versioned-extension-authority"
+
+| Applies to | Contract | Bounds or reason |
+|---|---|---|
+| [field set_names](#s-1bb5c0f38094) | `cardinality · items · extension_owned` | shared above |
 
 ## Governing policies
 
-- `compatibility/components/v1`
-- `extent-rule/extension-contract/v1`
+- <a id="pa-c8efcb953cbc"></a>[compatibility/components/v1](../../../policies/index.md#p-95e9a1225947)
+- <a id="pa-5c78a3feadbf"></a>[extent-rule/extension-contract/v1](../../../policies/index.md#p-75a89f9d1c36)
 
 ## Evidence
 
 ### Qualification
 
-- `make dist-smoke`
-- `make build`
+- [make dist-smoke](../../../evidence/sources.md#q-0ba2578a3eb7)
+- [make build](../../../evidence/sources.md#q-d1121e35fa7a)
 
 ### Executable sources
 
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `protocol:https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/linux-fs-flags.json` — `reference/riverhog/provenance/contracts/linux/src/riverhog_provenance_linux_contracts/schemas/linux-fs-flags.schema.json`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
+- [protocol:https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/linux-fs-flags.json](../../../evidence/sources.md#src-5f8f37c8a227) — `reference/riverhog/provenance/contracts/linux/src/riverhog_provenance_linux_contracts/schemas/linux-fs-flags.schema.json`
 
 ### Machine authority
 

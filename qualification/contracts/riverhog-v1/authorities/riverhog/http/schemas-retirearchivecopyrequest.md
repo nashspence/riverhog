@@ -8,24 +8,25 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Audit field | Value |
 |---|---|
-| Authority | `riverhog` |
-| Interface | `http` |
-| Family | `schemas` |
+| Authority | [riverhog](../index.md) |
+| Interface | [http](index.md) |
+| Family | [schemas](families/schemas/index.md) |
 | Contract elements | 1 |
 | Extent decisions | 0 |
 
 ## External contract
 
-- `title`: RetireArchiveCopyRequest
-- `type`: object
+<a id="s-dce794ca6f29"></a>
+- <a id="s-dba01374916d"></a>`title`: RetireArchiveCopyRequest
+- <a id="s-fac5e985e399"></a>`type`: object
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| `challenge` | yes | type="string" |  |
-| `collection_id` | yes | #/components/schemas/CollectionId |  |
-| `store` | yes | #/components/schemas/ArchiveStoreName |  |
+| <a id="s-297a890b9345"></a>`challenge` | yes | type="string" |  |
+| <a id="s-6f7ff50dd5ea"></a>`collection_id` | yes | #/components/schemas/CollectionId |  |
+| <a id="s-db0734895d2e"></a>`store` | yes | #/components/schemas/ArchiveStoreName |  |
 
 ## Maintained corroboration
 
@@ -36,19 +37,19 @@ Exact externally visible contract owned by this semantic dossier.
 
 ## Governing policies
 
-- `compatibility/http-api/v1`
+- <a id="pa-1a8de973a8a0"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0ba)
 
 ## Evidence
 
 ### Qualification
 
-- `make operation-qualification`
-- `make compose-smoke`
+- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459fb8)
+- [make compose-smoke](../../../evidence/sources.md#q-413b0b241ba8)
 
 ### Executable sources
 
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `openapi:riverhog` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
+- [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc960) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
 
 ### Machine authority
 

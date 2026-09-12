@@ -8,27 +8,28 @@ Retrieval Cache Status
 
 | Audit field | Value |
 |---|---|
-| Authority | `riverhog` |
-| Interface | `http` |
-| Family | `retrieval-cache` |
+| Authority | [riverhog](../index.md) |
+| Interface | [http](index.md) |
+| Family | [retrieval-cache](families/retrieval-cache/index.md) |
 | Contract elements | 1 |
 | Extent decisions | 0 |
 
 ## External contract
 
-- `operationId`: retrieval_cache_status
-- `summary`: Retrieval Cache Status
-- `security`: `[{"HTTPBearer": []}]`
+<a id="s-37955c5a9ead"></a>
+- <a id="s-90de4c1b664f"></a>`operationId`: retrieval_cache_status
+- <a id="s-93796d4f847c"></a>`summary`: Retrieval Cache Status
+- <a id="s-1f3148a04d3e"></a>`security`: `[{"HTTPBearer": []}]`
 
 ### Responses
 
 | Status | Description |
 |---|---|
-| `200` | Successful Response |
-| `400` | Bad Request |
-| `401` | Unauthorized |
-| `403` | Forbidden |
-| `500` | Internal Server Error |
+| <a id="s-27e211ffbbea"></a>`200` | Successful Response |
+| <a id="s-9233e6492803"></a>`400` | Bad Request |
+| <a id="s-bad2ef208ef5"></a>`401` | Unauthorized |
+| <a id="s-62c1707d91a1"></a>`403` | Forbidden |
+| <a id="s-7bfbb4ccc4f6"></a>`500` | Internal Server Error |
 
 ## Maintained corroboration
 
@@ -43,19 +44,19 @@ Retrieval Cache Status
 
 ## Governing policies
 
-- `compatibility/http-api/v1`
+- <a id="pa-f3b91d8809fa"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0ba)
 
 ## Evidence
 
 ### Qualification
 
-- `make operation-qualification`
-- `make compose-smoke`
+- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459fb8)
+- [make compose-smoke](../../../evidence/sources.md#q-413b0b241ba8)
 
 ### Executable sources
 
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `openapi:riverhog` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
+- [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc960) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
 
 ### Machine authority
 

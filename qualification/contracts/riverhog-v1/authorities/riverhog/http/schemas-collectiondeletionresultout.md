@@ -8,33 +8,38 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Audit field | Value |
 |---|---|
-| Authority | `riverhog` |
-| Interface | `http` |
-| Family | `schemas` |
+| Authority | [riverhog](../index.md) |
+| Interface | [http](index.md) |
+| Family | [schemas](families/schemas/index.md) |
 | Contract elements | 1 |
 | Extent decisions | 2 |
 
 ## External contract
 
-- `title`: CollectionDeletionResultOut
-- `type`: object
+<a id="s-b0cf1465ab24"></a>
+- <a id="s-8ae75e8380ce"></a>`title`: CollectionDeletionResultOut
+- <a id="s-0b0225496ec4"></a>`type`: object
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| `bytes` | yes | type="integer" |  |
-| `collection_id` | yes | #/components/schemas/CollectionId |  |
-| `files` | yes | type="integer" |  |
-| `remote_storage_bytes` | yes | type="integer" |  |
-| `status` | yes | type="string"; enum=["deleting","deleted","already_absent"] |  |
+| <a id="s-3b542ea2dbbe"></a>`bytes` | yes | type="integer" |  |
+| <a id="s-e8df16b2b330"></a>`collection_id` | yes | #/components/schemas/CollectionId |  |
+| <a id="s-348721ef1fbf"></a>`files` | yes | type="integer" |  |
+| <a id="s-f27c30182fe9"></a>`remote_storage_bytes` | yes | type="integer" |  |
+| <a id="s-534c1b5c15d9"></a>`status` | yes | type="string"; enum=["deleting","deleted","already_absent"] |  |
 
 ### Progression, limits, and lifecycle
 
-| Dimension | Unit | Policy | Bounds or reason |
-|---|---|---|---|
-| value | schema-value | `operational_policy` | maximum=None, reason=no-declared-semantic-maximum |
-| value | schema-value | `operational_policy` | maximum=None, reason=no-declared-semantic-maximum |
+#### [extent-rule/no-semantic-maximum/v1](../../../policies/index.md#p-574724b48af0)
+
+Shared facts for every subject below: capacity_authority={"declared_maximum":null,"hidden_maximum":"forbidden","owner":"riverhog"}; maximum=null; reason="no-declared-semantic-maximum"
+
+| Applies to | Contract | Bounds or reason |
+|---|---|---|
+| [field bytes](#s-3b542ea2dbbe) | `value · schema-value · operational_policy` | shared above |
+| [field files](#s-348721ef1fbf) | `value · schema-value · operational_policy` | shared above |
 
 ## Maintained corroboration
 
@@ -44,20 +49,20 @@ Exact externally visible contract owned by this semantic dossier.
 
 ## Governing policies
 
-- `compatibility/http-api/v1`
-- `extent-rule/no-semantic-maximum/v1`
+- <a id="pa-fe1b9d13f1a9"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0ba)
+- <a id="pa-44a6b449ba2d"></a>[extent-rule/no-semantic-maximum/v1](../../../policies/index.md#p-574724b48af0)
 
 ## Evidence
 
 ### Qualification
 
-- `make operation-qualification`
-- `make compose-smoke`
+- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459fb8)
+- [make compose-smoke](../../../evidence/sources.md#q-413b0b241ba8)
 
 ### Executable sources
 
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `openapi:riverhog` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
+- [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc960) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
 
 ### Machine authority
 

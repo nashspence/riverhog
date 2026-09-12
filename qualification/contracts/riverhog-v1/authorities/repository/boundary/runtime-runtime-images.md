@@ -8,45 +8,46 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Audit field | Value |
 |---|---|
-| Authority | `repository` |
-| Interface | `boundary` |
-| Family | `runtime-images` |
+| Authority | [repository](../index.md) |
+| Interface | [boundary](index.md) |
+| Family | [runtime-images](index.md#f-dfd50c0c8689) |
 | Contract elements | 1 |
 | Extent decisions | 0 |
 
 ## External contract
 
+<a id="s-17a1a46b616d"></a>
 | Field | Shape |
 |---|---|
-| `mango-fish` | additional keys=`distributions`, `repository`, `role` |
-| `riverhog` | additional keys=`distributions`, `repository`, `role` |
-| `riverhog-ftp-adapter` | additional keys=`distributions`, `repository`, `role` |
-| `riverhog-storage-adapter-aws` | additional keys=`distributions`, `repository`, `role` |
-| `riverhog-storage-adapter-backblaze` | additional keys=`distributions`, `repository`, `role` |
-| `riverhog-storage-adapter-filesystem` | additional keys=`distributions`, `repository`, `role` |
-| `stove0` | additional keys=`distributions`, `repository`, `role` |
-| `stove0-exiftool-observer` | additional keys=`distributions`, `repository`, `role` |
-| `stove0-ffprobe-sampling-observer` | additional keys=`distributions`, `repository`, `role` |
-| `stove0-nvenc-av1-opus-target` | additional keys=`distributions`, `repository`, `role` |
-| `stove0-opus-target` | additional keys=`distributions`, `repository`, `role` |
-| `stove0-review-materialize-target` | additional keys=`distributions`, `repository`, `role` |
-| `stove0-review-rclone-effect-target` | additional keys=`distributions`, `repository`, `role` |
+| <a id="s-2952bbdb126c"></a>`mango-fish` | additional keys=`distributions`, `repository`, `role` |
+| <a id="s-9315017c631a"></a>`riverhog` | additional keys=`distributions`, `repository`, `role` |
+| <a id="s-b49d3cef940f"></a>`riverhog-ftp-adapter` | additional keys=`distributions`, `repository`, `role` |
+| <a id="s-7f41767266fc"></a>`riverhog-storage-adapter-aws` | additional keys=`distributions`, `repository`, `role` |
+| <a id="s-d2d511eb9730"></a>`riverhog-storage-adapter-backblaze` | additional keys=`distributions`, `repository`, `role` |
+| <a id="s-3fab2722774a"></a>`riverhog-storage-adapter-filesystem` | additional keys=`distributions`, `repository`, `role` |
+| <a id="s-1b663a494b8d"></a>`stove0` | additional keys=`distributions`, `repository`, `role` |
+| <a id="s-726b3e0083b8"></a>`stove0-exiftool-observer` | additional keys=`distributions`, `repository`, `role` |
+| <a id="s-8ab83ad69107"></a>`stove0-ffprobe-sampling-observer` | additional keys=`distributions`, `repository`, `role` |
+| <a id="s-98935a81be0e"></a>`stove0-nvenc-av1-opus-target` | additional keys=`distributions`, `repository`, `role` |
+| <a id="s-53e94fd89ee3"></a>`stove0-opus-target` | additional keys=`distributions`, `repository`, `role` |
+| <a id="s-62e71858cb63"></a>`stove0-review-materialize-target` | additional keys=`distributions`, `repository`, `role` |
+| <a id="s-dce858de27a6"></a>`stove0-review-rclone-effect-target` | additional keys=`distributions`, `repository`, `role` |
 
 ## Governing policies
 
-- `boundary/frozen-authority/v1`
+- <a id="pa-ac266ccb8357"></a>[boundary/frozen-authority/v1](../../../policies/index.md#p-61994d3f0fa8)
 
 ## Evidence
 
 ### Qualification
 
-- `make release-check`
-- `make build`
+- [make release-check](../../../evidence/sources.md#q-8d8d22d6a6b1)
+- [make build](../../../evidence/sources.md#q-d1121e35fa7a)
 
 ### Executable sources
 
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `release:release.toml` — `release.toml`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
+- [release:release.toml](../../../evidence/sources.md#src-c5380dbe5fe0) — `release.toml`
 
 ### Machine authority
 

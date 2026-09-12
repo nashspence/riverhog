@@ -8,31 +8,32 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Audit field | Value |
 |---|---|
-| Authority | `release` |
-| Interface | `release` |
-| Family | `compatibility` |
+| Authority | [release](../index.md) |
+| Interface | [release](index.md) |
+| Family | [compatibility](index.md#f-6df58a8f932e) |
 | Contract elements | 1 |
 | Extent decisions | 0 |
 
 ## External contract
 
+<a id="s-0680f26670e3"></a>
 - Shape: "Every later v1 recovery release reads every valid earlier v1 archive and provenance set."
 
 ## Governing policies
 
-- `compatibility/recovery/v1`
+- <a id="pa-d17abbfe5e25"></a>[compatibility/recovery/v1](../../../policies/index.md#p-04aa4508f139)
 
 ## Evidence
 
 ### Qualification
 
-- `make release-check`
-- `make build`
+- [make release-check](../../../evidence/sources.md#q-8d8d22d6a6b1)
+- [make build](../../../evidence/sources.md#q-d1121e35fa7a)
 
 ### Executable sources
 
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `release:release.toml` — `release.toml`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
+- [release:release.toml](../../../evidence/sources.md#src-c5380dbe5fe0) — `release.toml`
 
 ### Machine authority
 

@@ -8,26 +8,27 @@ Create Collection Upload Session Provenance Journal
 
 | Audit field | Value |
 |---|---|
-| Authority | `riverhog` |
-| Interface | `http` |
-| Family | `collection-upload-sessions` |
+| Authority | [riverhog](../index.md) |
+| Interface | [http](index.md) |
+| Family | [collection-upload-sessions](families/collection-upload-sessions/index.md) |
 | Contract elements | 1 |
 | Extent decisions | 0 |
 
 ## External contract
 
-- `operationId`: create_collection_upload_session_provenance_journal
-- `summary`: Create Collection Upload Session Provenance Journal
-- `security`: `[{"HTTPBearer": []}]`
+<a id="s-c8bbbc9f9372"></a>
+- <a id="s-c9f85428e638"></a>`operationId`: create_collection_upload_session_provenance_journal
+- <a id="s-2a53f008ef94"></a>`summary`: Create Collection Upload Session Provenance Journal
+- <a id="s-19a2d9051f49"></a>`security`: `[{"HTTPBearer": []}]`
 
 ### Parameters
 
 | Name | In | Required | Schema |
 |---|---|---:|---|
-| `collection_id` | path | yes | type="integer"; minimum=1 |
-| `journal_id` | path | yes | type="string"; pattern="^urn:uuid:[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$" |
+| <a id="s-1a12902d96a5"></a>`collection_id` | path | yes | type="integer"; minimum=1 |
+| <a id="s-3c645a263f7b"></a>`journal_id` | path | yes | type="string"; pattern="^urn:uuid:[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$" |
 
-### Request body
+### <a id="s-a967a2600098"></a>Request body
 
 `{"content": {"application/json": {"schema": {"$ref": "#/components/schemas/CollectionUploadProvenanceJournalCreateDocument"}}}, "required": true}`
 
@@ -35,13 +36,13 @@ Create Collection Upload Session Provenance Journal
 
 | Status | Description |
 |---|---|
-| `200` | Successful Response |
-| `400` | Bad Request |
-| `401` | Unauthorized |
-| `403` | Forbidden |
-| `404` | Not Found |
-| `409` | Conflict |
-| `500` | Internal Server Error |
+| <a id="s-7309ed34c9c1"></a>`200` | Successful Response |
+| <a id="s-ff630d093aaf"></a>`400` | Bad Request |
+| <a id="s-8ce9a4e03e98"></a>`401` | Unauthorized |
+| <a id="s-35be75ae8d9c"></a>`403` | Forbidden |
+| <a id="s-6e9c0138e586"></a>`404` | Not Found |
+| <a id="s-bd5a38e59179"></a>`409` | Conflict |
+| <a id="s-13bedb9e5f0f"></a>`500` | Internal Server Error |
 
 ## Maintained corroboration
 
@@ -57,19 +58,19 @@ Create Collection Upload Session Provenance Journal
 
 ## Governing policies
 
-- `compatibility/http-api/v1`
+- <a id="pa-a45f09f2a218"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0ba)
 
 ## Evidence
 
 ### Qualification
 
-- `make operation-qualification`
-- `make compose-smoke`
+- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459fb8)
+- [make compose-smoke](../../../evidence/sources.md#q-413b0b241ba8)
 
 ### Executable sources
 
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `openapi:riverhog` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
+- [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc960) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
 
 ### Machine authority
 

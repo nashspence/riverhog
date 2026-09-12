@@ -8,35 +8,36 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Audit field | Value |
 |---|---|
-| Authority | `riverhog-age` |
-| Interface | `python` |
-| Family | `modules` |
+| Authority | [riverhog-age](../index.md) |
+| Interface | [python](index.md) |
+| Family | [modules](index.md#f-ee733d464e9e) |
 | Contract elements | 1 |
 | Extent decisions | 0 |
 
 ## External contract
 
+<a id="s-4c8ca035dd2d"></a>
 | Field | Shape |
 |---|---|
-| `distribution` | "riverhog-age" |
-| `exports` | additional keys=`AEAD_TAG_SIZE`, `AgeAlignedUnitPlan`, `AgeDecryptError`, `AgeFormatError`, `CHUNK_SIZE`, `DEFAULT_CHUNKS_PER_AGE_UNIT`, `DEFAULT_SCRYPT_LOG_N`, `PAYLOAD_NONCE_SIZE`, `ResumableAgeScryptSession`, `UploadState`, `age_chunk_count_for_plaintext_len`, `age_ciphertext_len_for_plaintext_len`, `decrypt_age_scrypt`, `encrypt_age_scrypt`, `iter_decrypt_age_scrypt`, `iter_decrypt_payload_chunks`, `make_age_aligned_unit_plans`, `parse_scrypt_header`, `parse_scrypt_header_from_age_file`, `plaintext_bytes_for_ciphertext_offset`, `split_plaintext_chunks` |
-| `module` | "riverhog_age" |
+| <a id="s-bdf9e994151a"></a>`distribution` | "riverhog-age" |
+| <a id="s-ee62223ccf05"></a>`exports` | additional keys=`AEAD_TAG_SIZE`, `AgeAlignedUnitPlan`, `AgeDecryptError`, `AgeFormatError`, `CHUNK_SIZE`, `DEFAULT_CHUNKS_PER_AGE_UNIT`, `DEFAULT_SCRYPT_LOG_N`, `PAYLOAD_NONCE_SIZE`, `ResumableAgeScryptSession`, `UploadState`, `age_chunk_count_for_plaintext_len`, `age_ciphertext_len_for_plaintext_len`, `decrypt_age_scrypt`, `encrypt_age_scrypt`, `iter_decrypt_age_scrypt`, `iter_decrypt_payload_chunks`, `make_age_aligned_unit_plans`, `parse_scrypt_header`, `parse_scrypt_header_from_age_file`, `plaintext_bytes_for_ciphertext_offset`, `split_plaintext_chunks` |
+| <a id="s-0be54f5b31c7"></a>`module` | "riverhog_age" |
 
 ## Governing policies
 
-- `compatibility/python-api/v1`
+- <a id="pa-7c047976eaa9"></a>[compatibility/python-api/v1](../../../policies/index.md#p-e574772ba506)
 
 ## Evidence
 
 ### Qualification
 
-- `make dist-smoke`
-- `make build`
+- [make dist-smoke](../../../evidence/sources.md#q-0ba2578a3eb7)
+- [make build](../../../evidence/sources.md#q-d1121e35fa7a)
 
 ### Executable sources
 
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `python:riverhog-age` — `packages/riverhog-age/src/riverhog_age/__init__.py::<module>`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
+- [python:riverhog-age](../../../evidence/sources.md#src-bd475bcd01e4) — `packages/riverhog-age/src/riverhog_age/__init__.py::<module>`
 
 ### Machine authority
 

@@ -8,26 +8,27 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Audit field | Value |
 |---|---|
-| Authority | `riverhog` |
-| Interface | `operation` |
-| Family | `collection-processing-claims` |
+| Authority | [riverhog](../index.md) |
+| Interface | [operation](index.md) |
+| Family | [collection-processing-claims](families/collection-processing-claims/index.md) |
 | Contract elements | 1 |
 | Extent decisions | 0 |
 
 ## External contract
 
+<a id="s-56d2268bdee6"></a>
 | Concern | Contract |
 |---|---|
-| `application` | riverhog |
-| `classification` | client-only-primitive |
-| `cli_commands` | [] |
-| `client` | ApiClient |
-| `method` | GET |
-| `operation_id` | list_processing_claim_disposition_outputs |
-| `path` | /v1/collection-processing-claims/{claim_id}/derivation/output-edges |
-| `provider_evidence` | None |
-| `read_collection` | {"authority": "processing-claim-disposition-outputs", "authority_parameter": "authority_sha256", "cursor_parameter": "start_ordinal", "fixed_limit": 128, "kind": "exact-authority-page"} |
-| `response_authority` | canonical-document |
+| <a id="s-3e4da804b0d9"></a>`application` | riverhog |
+| <a id="s-5537b39b693f"></a>`classification` | client-only-primitive |
+| <a id="s-54b52db65a1a"></a>`cli_commands` | [] |
+| <a id="s-e99656441bef"></a>`client` | ApiClient |
+| <a id="s-a106ca5c4ed8"></a>`method` | GET |
+| <a id="s-519930c69235"></a>`operation_id` | list_processing_claim_disposition_outputs |
+| <a id="s-8f23a97099b2"></a>`path` | /v1/collection-processing-claims/{claim_id}/derivation/output-edges |
+| <a id="s-4b2bcc820d8a"></a>`provider_evidence` | None |
+| <a id="s-74254a438e3f"></a>`read_collection` | {"authority": "processing-claim-disposition-outputs", "authority_parameter": "authority_sha256", "cursor_parameter": "start_ordinal", "fixed_limit": 128, "kind": "exact-authority-page"} |
+| <a id="s-b26e5e182cfe"></a>`response_authority` | canonical-document |
 
 ## Maintained corroboration
 
@@ -37,20 +38,20 @@ Exact externally visible contract owned by this semantic dossier.
 
 ## Governing policies
 
-- `compatibility/cli/v1`
-- `compatibility/components/v1`
-- `compatibility/http-api/v1`
+- <a id="pa-e92abaace9a6"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de7f)
+- <a id="pa-4747a3e82db2"></a>[compatibility/components/v1](../../../policies/index.md#p-95e9a1225947)
+- <a id="pa-8fced943f4d5"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0ba)
 
 ## Evidence
 
 ### Qualification
 
-- `make operation-qualification`
+- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459fb8)
 
 ### Executable sources
 
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `operations:operation-matrix` — `scripts/operation_qualification.py::operation_matrix`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
+- [operations:operation-matrix](../../../evidence/sources.md#src-b032bdc56b3f) — `scripts/operation_qualification.py::operation_matrix`
 
 ### Machine authority
 

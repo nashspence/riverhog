@@ -6,18 +6,18 @@ Contract elements: **12** · Extent decisions: **0**
 
 | Family | Count |
 |---|---:|
-| `compatibility` | 7 |
-| `release-contract` | 5 |
+| <a id="f-6df58a8f932e"></a>`compatibility` | 7 |
+| <a id="f-6cd3d52e18f6"></a>`release-contract` | 5 |
 
 | Policy | Count |
 |---|---:|
-| `compatibility/archive/v1` | 1 |
-| `compatibility/cli/v1` | 1 |
-| `compatibility/components/v1` | 6 |
-| `compatibility/configuration/v1` | 1 |
-| `compatibility/http-api/v1` | 1 |
-| `compatibility/python-api/v1` | 1 |
-| `compatibility/recovery/v1` | 1 |
+| [compatibility/archive/v1](../../../policies/index.md#p-915b8756ae46) | 1 |
+| [compatibility/cli/v1](../../../policies/index.md#p-48a89776de7f) | 1 |
+| [compatibility/components/v1](../../../policies/index.md#p-95e9a1225947) | 6 |
+| [compatibility/configuration/v1](../../../policies/index.md#p-8dc08bb46173) | 1 |
+| [compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0ba) | 1 |
+| [compatibility/python-api/v1](../../../policies/index.md#p-e574772ba506) | 1 |
+| [compatibility/recovery/v1](../../../policies/index.md#p-04aa4508f139) | 1 |
 
 ## Semantic dossiers
 

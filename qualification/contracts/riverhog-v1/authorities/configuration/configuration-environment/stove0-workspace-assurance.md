@@ -8,34 +8,35 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Audit field | Value |
 |---|---|
-| Authority | `configuration` |
-| Interface | `configuration-environment` |
-| Family | `variables` |
+| Authority | [configuration](../index.md) |
+| Interface | [configuration-environment](index.md) |
+| Family | [variables](families/variables/index.md) |
 | Contract elements | 1 |
 | Extent decisions | 0 |
 
 ## External contract
 
+<a id="s-f0ba6e17dd14"></a>
 | Field | Shape |
 |---|---|
-| `consumers` | ["stove0-server"] |
-| `name` | "STOVE0_WORKSPACE_ASSURANCE" |
+| <a id="s-9c7aa095b0b3"></a>`consumers` | ["stove0-server"] |
+| <a id="s-3e59f086de40"></a>`name` | "STOVE0_WORKSPACE_ASSURANCE" |
 
 ## Governing policies
 
-- `compatibility/configuration/v1`
+- <a id="pa-c9a996ceb32e"></a>[compatibility/configuration/v1](../../../policies/index.md#p-8dc08bb46173)
 
 ## Evidence
 
 ### Qualification
 
-- `make unit`
-- `make compose-smoke`
+- [make unit](../../../evidence/sources.md#q-ce47068f504c)
+- [make compose-smoke](../../../evidence/sources.md#q-413b0b241ba8)
 
 ### Executable sources
 
-- `configuration-environment:STOVE0_WORKSPACE_ASSURANCE` — `configuration-environment:STOVE0_WORKSPACE_ASSURANCE`
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
+- [configuration-environment:STOVE0_WORKSPACE_ASSURANCE](../../../evidence/sources.md#src-c446ab90a283) — `configuration-environment:STOVE0_WORKSPACE_ASSURANCE`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
 
 ### Machine authority
 

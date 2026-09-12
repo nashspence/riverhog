@@ -8,38 +8,48 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Audit field | Value |
 |---|---|
-| Authority | `riverhog` |
-| Interface | `http` |
-| Family | `schemas` |
+| Authority | [riverhog](../index.md) |
+| Interface | [http](index.md) |
+| Family | [schemas](families/schemas/index.md) |
 | Contract elements | 1 |
 | Extent decisions | 3 |
 
 ## External contract
 
-- `title`: ArchiveCopyCompletedData
-- `type`: object
+<a id="s-4269978bc1f7"></a>
+- <a id="s-235f689bf6b8"></a>`title`: ArchiveCopyCompletedData
+- <a id="s-47b2793eea33"></a>`type`: object
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| `actor` | yes | #/components/schemas/RiverhogActor |  |
-| `cause` | no | anyOf=#/components/schemas/RiverhogEventCause \| type="null" |  |
-| `collection_created_at` | yes | type="string"; minLength=1; maxLength=64 |  |
-| `collection_id` | yes | #/components/schemas/CollectionId |  |
-| `context` | no | anyOf=type="object"; additional keys=`additionalProperties`, `x-riverhog-encoded-bytes-max`, `x-riverhog-extent` \| type="null" |  |
-| `destination_store` | yes | #/components/schemas/ArchiveStoreName |  |
-| `initiator` | yes | #/components/schemas/RiverhogActor |  |
-| `source_store` | yes | #/components/schemas/ArchiveStoreName |  |
-| `state` | yes | type="string"; const="completed" |  |
+| <a id="s-b13aa2938a1d"></a>`actor` | yes | #/components/schemas/RiverhogActor |  |
+| <a id="s-2e399c0e6f70"></a>`cause` | no | anyOf=#/components/schemas/RiverhogEventCause \| type="null" |  |
+| <a id="s-bd516d31f0c7"></a>`collection_created_at` | yes | type="string"; minLength=1; maxLength=64 |  |
+| <a id="s-cfbbdf255529"></a>`collection_id` | yes | #/components/schemas/CollectionId |  |
+| <a id="s-2e00e9606c8b"></a>`context` | no | anyOf=type="object"; additional keys=`additionalProperties`, `x-riverhog-encoded-bytes-max`, `x-riverhog-extent` \| type="null" |  |
+| <a id="s-0d8004f20b53"></a>`destination_store` | yes | #/components/schemas/ArchiveStoreName |  |
+| <a id="s-b2223376c67e"></a>`initiator` | yes | #/components/schemas/RiverhogActor |  |
+| <a id="s-2fbb3cf7da7f"></a>`source_store` | yes | #/components/schemas/ArchiveStoreName |  |
+| <a id="s-c66fe437c5eb"></a>`state` | yes | type="string"; const="completed" |  |
 
 ### Progression, limits, and lifecycle
 
-| Dimension | Unit | Policy | Bounds or reason |
-|---|---|---|---|
-| length | characters | `contract_max` | maximum=64, minimum=1, reason=schema-maximum |
-| encoded-size | bytes | `contract_max` | maximum=4096, reason=bounded-lifecycle-event-context |
-| cardinality | entries | `operational_policy` | maximum=None, reason=no-declared-semantic-maximum |
+#### [extent-rule/no-semantic-maximum/v1](../../../policies/index.md#p-574724b48af0)
+
+Shared facts for every subject below: capacity_authority={"declared_maximum":null,"hidden_maximum":"forbidden","owner":"riverhog"}; maximum=null; reason="no-declared-semantic-maximum"
+
+| Applies to | Contract | Bounds or reason |
+|---|---|---|
+| <a id="s-afdb8b1f3124"></a>field context · anyOf alternative 1 | `cardinality · entries · operational_policy` | shared above |
+
+#### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
+
+| Applies to | Contract | Bounds or reason |
+|---|---|---|
+| [field collection_created_at](#s-bd516d31f0c7) | `length · characters · contract_max` | maximum=64; minimum=1; reason="schema-maximum" |
+| [field context · anyOf alternative 1](#s-afdb8b1f3124) | `encoded-size · bytes · contract_max` | maximum=4096; reason="bounded-lifecycle-event-context"; source_constraint={"field":"x-riverhog-encoded-bytes-max"} |
 
 ## Maintained corroboration
 
@@ -52,21 +62,21 @@ Exact externally visible contract owned by this semantic dossier.
 
 ## Governing policies
 
-- `compatibility/http-api/v1`
-- `extent-rule/no-semantic-maximum/v1`
-- `extent-rule/schema-bound/v1`
+- <a id="pa-fe8f36ae2c12"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0ba)
+- <a id="pa-f45a1b28fe31"></a>[extent-rule/no-semantic-maximum/v1](../../../policies/index.md#p-574724b48af0)
+- <a id="pa-d8ce71d28ca2"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
 
 ## Evidence
 
 ### Qualification
 
-- `make operation-qualification`
-- `make compose-smoke`
+- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459fb8)
+- [make compose-smoke](../../../evidence/sources.md#q-413b0b241ba8)
 
 ### Executable sources
 
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `openapi:riverhog` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
+- [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc960) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
 
 ### Machine authority
 

@@ -8,38 +8,39 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Audit field | Value |
 |---|---|
-| Authority | `gogurt-windows-listener-host` |
-| Interface | `boundary` |
-| Family | `components` |
+| Authority | [gogurt-windows-listener-host](../index.md) |
+| Interface | [boundary](index.md) |
+| Family | [components](index.md#f-13778a9bd767) |
 | Contract elements | 1 |
 | Extent decisions | 0 |
 
 ## External contract
 
+<a id="s-658284c2e3be"></a>
 | Field | Shape |
 |---|---|
-| `console_scripts` | empty object |
-| `dependencies` | ["gogurt-listener-runtime"] |
-| `distribution` | "gogurt-windows-listener-host" |
-| `optional_dependencies` | empty object |
-| `path` | "reference/gogurt/listener-host/windows" |
-| `role` | "reference_component" |
+| <a id="s-cede8350e5f7"></a>`console_scripts` | empty object |
+| <a id="s-d6ca8a0cd98c"></a>`dependencies` | ["gogurt-listener-runtime"] |
+| <a id="s-764f4a12df3f"></a>`distribution` | "gogurt-windows-listener-host" |
+| <a id="s-7f8ef58b4bea"></a>`optional_dependencies` | empty object |
+| <a id="s-d0fbe7a17ee1"></a>`path` | "reference/gogurt/listener-host/windows" |
+| <a id="s-066811d39c77"></a>`role` | "reference_component" |
 
 ## Governing policies
 
-- `boundary/frozen-authority/v1`
+- <a id="pa-6a7cab0a6ac7"></a>[boundary/frozen-authority/v1](../../../policies/index.md#p-61994d3f0fa8)
 
 ## Evidence
 
 ### Qualification
 
-- `make release-check`
-- `make build`
+- [make release-check](../../../evidence/sources.md#q-8d8d22d6a6b1)
+- [make build](../../../evidence/sources.md#q-d1121e35fa7a)
 
 ### Executable sources
 
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `release:release.toml` — `release.toml`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
+- [release:release.toml](../../../evidence/sources.md#src-c5380dbe5fe0) — `release.toml`
 
 ### Machine authority
 

@@ -8,44 +8,56 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Audit field | Value |
 |---|---|
-| Authority | `stove0` |
-| Interface | `http` |
-| Family | `schemas` |
+| Authority | [stove0](../index.md) |
+| Interface | [http](index.md) |
+| Family | [schemas](families/schemas/index.md) |
 | Contract elements | 1 |
 | Extent decisions | 4 |
 
 ## External contract
 
-- `title`: TargetJobStatus
-- `type`: object
+<a id="s-5b62e18de116"></a>
+- <a id="s-1b9c3b496c53"></a>`title`: TargetJobStatus
+- <a id="s-c5af2d75278f"></a>`type`: object
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| `attempt` | yes | type="integer"; minimum=1 |  |
-| `derivation` | no | anyOf=type="object"; additional keys=`additionalProperties` \| type="null" |  |
-| `effect_receipt` | no | anyOf=#/components/schemas/ExternalEffectReceipt \| type="null" |  |
-| `execution_evidence` | no | anyOf=#/components/schemas/TargetExecutionEvidence \| type="null" |  |
-| `failure` | no | anyOf=#/components/schemas/TargetFailure \| type="null" |  |
-| `inapplicable` | no | anyOf=#/components/schemas/TargetInapplicable \| type="null" |  |
-| `job_id` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| `output_collection` | no | anyOf=#/components/schemas/OutputCollectionRef \| type="null" |  |
-| `plan_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| `production` | no | anyOf=#/components/schemas/TargetProductionAuthority \| type="null" |  |
-| `progress` | yes | #/components/schemas/TargetProgress |  |
-| `protocol` | no | type="string"; enum=["stove0-transform-target/v1","stove0-effect-target/v1"] |  |
-| `request_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| `state` | yes | type="string"; enum=["queued","running","canceling","interrupted","inapplicable","succeeded","failed","canceled"] |  |
+| <a id="s-606c664aea57"></a>`attempt` | yes | type="integer"; minimum=1 |  |
+| <a id="s-b09da142f650"></a>`derivation` | no | anyOf=type="object"; additional keys=`additionalProperties` \| type="null" |  |
+| <a id="s-57ab7a6f5e59"></a>`effect_receipt` | no | anyOf=#/components/schemas/ExternalEffectReceipt \| type="null" |  |
+| <a id="s-c57da9e95607"></a>`execution_evidence` | no | anyOf=#/components/schemas/TargetExecutionEvidence \| type="null" |  |
+| <a id="s-f403678d5775"></a>`failure` | no | anyOf=#/components/schemas/TargetFailure \| type="null" |  |
+| <a id="s-c77d39f4feb9"></a>`inapplicable` | no | anyOf=#/components/schemas/TargetInapplicable \| type="null" |  |
+| <a id="s-ce6a90cdcf6f"></a>`job_id` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-34fa32b15425"></a>`output_collection` | no | anyOf=#/components/schemas/OutputCollectionRef \| type="null" |  |
+| <a id="s-4858da8e4d37"></a>`plan_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-b13de944b96b"></a>`production` | no | anyOf=#/components/schemas/TargetProductionAuthority \| type="null" |  |
+| <a id="s-a4fb3e445f4f"></a>`progress` | yes | #/components/schemas/TargetProgress |  |
+| <a id="s-9c0c396bbc21"></a>`protocol` | no | type="string"; enum=["stove0-transform-target/v1","stove0-effect-target/v1"] |  |
+| <a id="s-837321686563"></a>`request_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-b4712e4aecd7"></a>`state` | yes | type="string"; enum=["queued","running","canceling","interrupted","inapplicable","succeeded","failed","canceled"] |  |
 
 ### Progression, limits, and lifecycle
 
-| Dimension | Unit | Policy | Bounds or reason |
-|---|---|---|---|
-| cardinality | entries | `operational_policy` | maximum=None, reason=no-declared-semantic-maximum |
-| length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
-| length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
-| length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
+#### [extent-rule/no-semantic-maximum/v1](../../../policies/index.md#p-574724b48af0)
+
+Shared facts for every subject below: capacity_authority={"declared_maximum":null,"hidden_maximum":"forbidden","owner":"stove0"}; maximum=null; reason="no-declared-semantic-maximum"
+
+| Applies to | Contract | Bounds or reason |
+|---|---|---|
+| <a id="s-61d317955619"></a>field derivation · anyOf alternative 1 | `cardinality · entries · operational_policy` | shared above |
+
+#### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
+
+Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"}
+
+| Applies to | Contract | Bounds or reason |
+|---|---|---|
+| [field job_id](#s-ce6a90cdcf6f) | `length · characters · fixed` | shared above |
+| [field plan_sha256](#s-4858da8e4d37) | `length · characters · fixed` | shared above |
+| [field request_sha256](#s-837321686563) | `length · characters · fixed` | shared above |
 
 ## Maintained corroboration
 
@@ -61,21 +73,21 @@ Exact externally visible contract owned by this semantic dossier.
 
 ## Governing policies
 
-- `compatibility/http-api/v1`
-- `extent-rule/no-semantic-maximum/v1`
-- `extent-rule/schema-bound/v1`
+- <a id="pa-7056fc5dcd7e"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0ba)
+- <a id="pa-c85bbba24f74"></a>[extent-rule/no-semantic-maximum/v1](../../../policies/index.md#p-574724b48af0)
+- <a id="pa-cb032dea3760"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
 
 ## Evidence
 
 ### Qualification
 
-- `make operation-qualification`
-- `make compose-smoke`
+- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459fb8)
+- [make compose-smoke](../../../evidence/sources.md#q-413b0b241ba8)
 
 ### Executable sources
 
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `openapi:stove0` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
+- [openapi:stove0](../../../evidence/sources.md#src-52e6e3212451) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
 
 ### Machine authority
 

@@ -8,27 +8,28 @@ Create Catalog Sync Checkpoint
 
 | Audit field | Value |
 |---|---|
-| Authority | `riverhog` |
-| Interface | `http` |
-| Family | `catalog-sync` |
+| Authority | [riverhog](../index.md) |
+| Interface | [http](index.md) |
+| Family | [catalog-sync](families/catalog-sync/index.md) |
 | Contract elements | 1 |
 | Extent decisions | 0 |
 
 ## External contract
 
-- `operationId`: create_catalog_sync_checkpoint
-- `summary`: Create Catalog Sync Checkpoint
-- `security`: `[{"HTTPBearer": []}]`
+<a id="s-817ac9989fe6"></a>
+- <a id="s-acd042aeacad"></a>`operationId`: create_catalog_sync_checkpoint
+- <a id="s-78727b864e2d"></a>`summary`: Create Catalog Sync Checkpoint
+- <a id="s-2f98f2f94992"></a>`security`: `[{"HTTPBearer": []}]`
 
 ### Responses
 
 | Status | Description |
 |---|---|
-| `200` | Successful Response |
-| `400` | Bad Request |
-| `401` | Unauthorized |
-| `403` | Forbidden |
-| `500` | Internal Server Error |
+| <a id="s-d00c372b8dbb"></a>`200` | Successful Response |
+| <a id="s-ddbf280258f3"></a>`400` | Bad Request |
+| <a id="s-333d129fc5ec"></a>`401` | Unauthorized |
+| <a id="s-df041cd84773"></a>`403` | Forbidden |
+| <a id="s-40b0712f1269"></a>`500` | Internal Server Error |
 
 ## Maintained corroboration
 
@@ -43,19 +44,19 @@ Create Catalog Sync Checkpoint
 
 ## Governing policies
 
-- `compatibility/http-api/v1`
+- <a id="pa-ef095ab23dbe"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0ba)
 
 ## Evidence
 
 ### Qualification
 
-- `make operation-qualification`
-- `make compose-smoke`
+- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459fb8)
+- [make compose-smoke](../../../evidence/sources.md#q-413b0b241ba8)
 
 ### Executable sources
 
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `openapi:riverhog` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
+- [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc960) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
 
 ### Machine authority
 

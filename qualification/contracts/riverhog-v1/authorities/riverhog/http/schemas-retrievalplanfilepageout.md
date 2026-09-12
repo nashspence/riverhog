@@ -8,37 +8,47 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Audit field | Value |
 |---|---|
-| Authority | `riverhog` |
-| Interface | `http` |
-| Family | `schemas` |
+| Authority | [riverhog](../index.md) |
+| Interface | [http](index.md) |
+| Family | [schemas](families/schemas/index.md) |
 | Contract elements | 1 |
 | Extent decisions | 4 |
 
 ## External contract
 
-- `title`: RetrievalPlanFilePageOut
-- `type`: object
+<a id="s-35d2ab15203e"></a>
+- <a id="s-9d3361e816f3"></a>`title`: RetrievalPlanFilePageOut
+- <a id="s-ed412b46838b"></a>`type`: object
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| `complete` | yes | type="boolean" |  |
-| `etag` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| `files` | yes | type="array"; maxItems=100; items=(#/components/schemas/RetrievalPlanFileOut) |  |
-| `format` | yes | type="string"; const="riverhog-retrieval-plan-files/v1" |  |
-| `next_ordinal` | no | anyOf=type="integer"; minimum=1; maximum=10000 \| type="null" |  |
-| `plan_id` | yes | type="string" |  |
-| `start_ordinal` | yes | type="integer"; minimum=0; maximum=10000 |  |
+| <a id="s-328cd4968260"></a>`complete` | yes | type="boolean" |  |
+| <a id="s-02762d6e3179"></a>`etag` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-20cf25d13a11"></a>`files` | yes | type="array"; maxItems=100; items=(#/components/schemas/RetrievalPlanFileOut) |  |
+| <a id="s-3f4953179c3e"></a>`format` | yes | type="string"; const="riverhog-retrieval-plan-files/v1" |  |
+| <a id="s-b41186f25adb"></a>`next_ordinal` | no | anyOf=type="integer"; minimum=1; maximum=10000 \| type="null" |  |
+| <a id="s-a64429380891"></a>`plan_id` | yes | type="string" |  |
+| <a id="s-8dc3c38e1e4c"></a>`start_ordinal` | yes | type="integer"; minimum=0; maximum=10000 |  |
 
 ### Progression, limits, and lifecycle
 
-| Dimension | Unit | Policy | Bounds or reason |
-|---|---|---|---|
-| length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
-| cardinality | items | `segmented_no_total_max` | maximum=100, reason=bounded-route-page |
-| value | schema-value | `contract_max` | maximum=10000, minimum=1, reason=schema-maximum |
-| value | schema-value | `contract_max` | maximum=10000, minimum=0, reason=schema-maximum |
+#### [extent-rule/route-progression/v1](../../../policies/index.md#p-6b76b527cb21)
+
+Shared facts for every subject below: maximum=100; progression={"authority":"retrieval-plan-files","cursor_parameter":"start_ordinal","kind":"exact-authority-page","limit_parameter":"page_size"}; reason="bounded-route-page"
+
+| Applies to | Contract | Bounds or reason |
+|---|---|---|
+| [field files](#s-20cf25d13a11) | `cardinality · items · segmented_no_total_max` | shared above |
+
+#### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
+
+| Applies to | Contract | Bounds or reason |
+|---|---|---|
+| [field etag](#s-02762d6e3179) | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
+| <a id="s-081802f70540"></a>field next_ordinal · anyOf alternative 1 | `value · schema-value · contract_max` | maximum=10000; minimum=1; reason="schema-maximum" |
+| [field start_ordinal](#s-8dc3c38e1e4c) | `value · schema-value · contract_max` | maximum=10000; minimum=0; reason="schema-maximum" |
 
 ## Maintained corroboration
 
@@ -48,21 +58,21 @@ Exact externally visible contract owned by this semantic dossier.
 
 ## Governing policies
 
-- `compatibility/http-api/v1`
-- `extent-rule/route-progression/v1`
-- `extent-rule/schema-bound/v1`
+- <a id="pa-d2f7b2f73cda"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0ba)
+- <a id="pa-c318fe9437db"></a>[extent-rule/route-progression/v1](../../../policies/index.md#p-6b76b527cb21)
+- <a id="pa-ccc3a56c4c7e"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
 
 ## Evidence
 
 ### Qualification
 
-- `make operation-qualification`
-- `make compose-smoke`
+- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459fb8)
+- [make compose-smoke](../../../evidence/sources.md#q-413b0b241ba8)
 
 ### Executable sources
 
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `openapi:riverhog` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
+- [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc960) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
 
 ### Machine authority
 

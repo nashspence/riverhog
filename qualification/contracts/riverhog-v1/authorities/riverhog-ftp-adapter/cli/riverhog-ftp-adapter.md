@@ -8,51 +8,55 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Audit field | Value |
 |---|---|
-| Authority | `riverhog-ftp-adapter` |
-| Interface | `cli` |
-| Family | `root` |
+| Authority | [riverhog-ftp-adapter](../index.md) |
+| Interface | [cli](index.md) |
+| Family | [root](index.md#f-925a0d0b0d41) |
 | Contract elements | 1 |
 | Extent decisions | 3 |
 
 ## External contract
 
-- Parser name: `riverhog-ftp-adapter`
+- <a id="s-3b7707926084"></a>Parser name: `riverhog-ftp-adapter`
 
 ### Parameters
 
 | Name | Kind | Required | Type | Options |
 |---|---|---:|---|---|
-| `` | _VersionAction | no |  | --version |
-| `` | _StoreAction | no | Path | --config |
-| `` | _StoreAction | no |  | --base-url |
-| `` | _StoreAction | no |  | --token |
-| `` | _StoreTrueAction | no |  | --allow-insecure-http |
-| `` | _StoreTrueAction | no |  | --json |
+| <a id="s-90b07e9fd26c"></a>`` | _VersionAction | no |  | --version |
+| <a id="s-f757f099cb0f"></a>`` | _StoreAction | no | Path | --config |
+| <a id="s-4088337b6108"></a>`` | _StoreAction | no |  | --base-url |
+| <a id="s-51acb7a74a4b"></a>`` | _StoreAction | no |  | --token |
+| <a id="s-a4af6d59820d"></a>`` | _StoreTrueAction | no |  | --allow-insecure-http |
+| <a id="s-7d46672345de"></a>`` | _StoreTrueAction | no |  | --json |
 
 ### Progression, limits, and lifecycle
 
-| Dimension | Unit | Policy | Bounds or reason |
-|---|---|---|---|
-| cardinality | values-per-occurrence | `fixed` | maximum=0, minimum=0, reason=fixed-command-argument-arity |
-| cardinality | values-per-occurrence | `fixed` | maximum=0, minimum=0, reason=fixed-command-argument-arity |
-| cardinality | values-per-occurrence | `fixed` | maximum=0, minimum=0, reason=fixed-command-argument-arity |
+#### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
+
+Shared facts for every subject below: maximum=0; minimum=0; reason="fixed-command-argument-arity"; source_constraint={"field":"nargs"}
+
+| Applies to | Contract | Bounds or reason |
+|---|---|---|
+| [CLI parameter --version](#s-90b07e9fd26c) | `cardinality · values-per-occurrence · fixed` | shared above |
+| [CLI parameter --allow-insecure-http](#s-a4af6d59820d) | `cardinality · values-per-occurrence · fixed` | shared above |
+| [CLI parameter --json](#s-7d46672345de) | `cardinality · values-per-occurrence · fixed` | shared above |
 
 ## Governing policies
 
-- `compatibility/cli/v1`
-- `extent-rule/schema-bound/v1`
+- <a id="pa-8f2b79cfcc0a"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de7f)
+- <a id="pa-119ab1a159d5"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
 
 ## Evidence
 
 ### Qualification
 
-- `make dist-smoke`
-- `make operation-qualification`
+- [make dist-smoke](../../../evidence/sources.md#q-0ba2578a3eb7)
+- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459fb8)
 
 ### Executable sources
 
-- `cli:riverhog-ftp-adapter` — `reference/riverhog/ingress/ftp/src/riverhog_ftp_adapter/app.py::<module>`
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
+- [cli:riverhog-ftp-adapter](../../../evidence/sources.md#src-303f765bca1e) — `reference/riverhog/ingress/ftp/src/riverhog_ftp_adapter/app.py::<module>`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
 
 ### Machine authority
 

@@ -8,38 +8,39 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Audit field | Value |
 |---|---|
-| Authority | `gogurt-linux-mounted-volume` |
-| Interface | `boundary` |
-| Family | `components` |
+| Authority | [gogurt-linux-mounted-volume](../index.md) |
+| Interface | [boundary](index.md) |
+| Family | [components](index.md#f-570faf2338a2) |
 | Contract elements | 1 |
 | Extent decisions | 0 |
 
 ## External contract
 
+<a id="s-f6e3b7af020f"></a>
 | Field | Shape |
 |---|---|
-| `console_scripts` | empty object |
-| `dependencies` | ["gogurt-core","gogurt-path-volume-support"] |
-| `distribution` | "gogurt-linux-mounted-volume" |
-| `optional_dependencies` | empty object |
-| `path` | "reference/gogurt/mounted-volume/linux" |
-| `role` | "reference_component" |
+| <a id="s-c696e62a6610"></a>`console_scripts` | empty object |
+| <a id="s-c95b4d9e8400"></a>`dependencies` | ["gogurt-core","gogurt-path-volume-support"] |
+| <a id="s-fe2bc68f0eb7"></a>`distribution` | "gogurt-linux-mounted-volume" |
+| <a id="s-9ffc9b84f6e8"></a>`optional_dependencies` | empty object |
+| <a id="s-7f43b8a0cf7e"></a>`path` | "reference/gogurt/mounted-volume/linux" |
+| <a id="s-7a4cb9be63e3"></a>`role` | "reference_component" |
 
 ## Governing policies
 
-- `boundary/frozen-authority/v1`
+- <a id="pa-ac64d35c5ec1"></a>[boundary/frozen-authority/v1](../../../policies/index.md#p-61994d3f0fa8)
 
 ## Evidence
 
 ### Qualification
 
-- `make release-check`
-- `make build`
+- [make release-check](../../../evidence/sources.md#q-8d8d22d6a6b1)
+- [make build](../../../evidence/sources.md#q-d1121e35fa7a)
 
 ### Executable sources
 
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `release:release.toml` — `release.toml`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
+- [release:release.toml](../../../evidence/sources.md#src-c5380dbe5fe0) — `release.toml`
 
 ### Machine authority
 

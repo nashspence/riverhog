@@ -8,35 +8,36 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Audit field | Value |
 |---|---|
-| Authority | `stove0-observer-protocol` |
-| Interface | `python` |
-| Family | `modules` |
+| Authority | [stove0-observer-protocol](../index.md) |
+| Interface | [python](index.md) |
+| Family | [modules](index.md#f-a305719bf748) |
 | Contract elements | 1 |
 | Extent decisions | 0 |
 
 ## External contract
 
+<a id="s-8df1d7dafb2a"></a>
 | Field | Shape |
 |---|---|
-| `distribution` | "stove0-observer-protocol" |
-| `exports` | additional keys=`ARTIFACT_ID_PATTERN`, `ArtifactSubject`, `CollectionRootRef`, `FactsSemanticValidator`, `JSON_SCHEMA_ONLY_SEMANTIC_PROFILE`, `JsonSchemaDocument`, `OBSERVATION_REQUEST_FORMAT`, `OBSERVATION_RESULT_FORMAT`, `OBSERVER_HTTP_OPERATIONS`, `OBSERVER_PROTOCOL`, `ObservationEvidence`, `ObservationFailure`, `ObservationInapplicable`, `ObservationInvocation`, `ObservationRequest`, `ObservationRequestPayload`, `ObservationResult`, `ObservationResultPayload`, `ObservationState`, `ObserverContract`, `ObserverContractPayload`, `ObserverContractSupport`, `ObserverDescriptor`, `ObserverDescriptorPayload`, `ObserverImplementation`, `ObserverRuntimeAuthority`, `RIVERHOG_CAPABILITY_TRANSPORT`, `SHA256_PATTERN`, `SemanticFactsConformanceVector`, `SemanticFactsConformanceVectors`, `SemanticId`, `SemanticValidationProfile`, `SemanticValidationProfilePayload`, `SemanticValidatorBinding`, `SemanticValidatorProvider`, `SemanticValidatorRegistry`, `Sha256`, `accept_observation_result`, `canonical_json_bytes`, `canonical_json_sha256`, `require_semantic_validators`, `validate_observation_request`, `validate_observation_result_structure` |
-| `module` | "stove0_observer_protocol" |
+| <a id="s-4ab62c914e52"></a>`distribution` | "stove0-observer-protocol" |
+| <a id="s-98934cddec17"></a>`exports` | additional keys=`ARTIFACT_ID_PATTERN`, `ArtifactSubject`, `CollectionRootRef`, `FactsSemanticValidator`, `JSON_SCHEMA_ONLY_SEMANTIC_PROFILE`, `JsonSchemaDocument`, `OBSERVATION_REQUEST_FORMAT`, `OBSERVATION_RESULT_FORMAT`, `OBSERVER_HTTP_OPERATIONS`, `OBSERVER_PROTOCOL`, `ObservationEvidence`, `ObservationFailure`, `ObservationInapplicable`, `ObservationInvocation`, `ObservationRequest`, `ObservationRequestPayload`, `ObservationResult`, `ObservationResultPayload`, `ObservationState`, `ObserverContract`, `ObserverContractPayload`, `ObserverContractSupport`, `ObserverDescriptor`, `ObserverDescriptorPayload`, `ObserverImplementation`, `ObserverRuntimeAuthority`, `RIVERHOG_CAPABILITY_TRANSPORT`, `SHA256_PATTERN`, `SemanticFactsConformanceVector`, `SemanticFactsConformanceVectors`, `SemanticId`, `SemanticValidationProfile`, `SemanticValidationProfilePayload`, `SemanticValidatorBinding`, `SemanticValidatorProvider`, `SemanticValidatorRegistry`, `Sha256`, `accept_observation_result`, `canonical_json_bytes`, `canonical_json_sha256`, `require_semantic_validators`, `validate_observation_request`, `validate_observation_result_structure` |
+| <a id="s-6348c206b82e"></a>`module` | "stove0_observer_protocol" |
 
 ## Governing policies
 
-- `compatibility/python-api/v1`
+- <a id="pa-3397d2f5a114"></a>[compatibility/python-api/v1](../../../policies/index.md#p-e574772ba506)
 
 ## Evidence
 
 ### Qualification
 
-- `make dist-smoke`
-- `make build`
+- [make dist-smoke](../../../evidence/sources.md#q-0ba2578a3eb7)
+- [make build](../../../evidence/sources.md#q-d1121e35fa7a)
 
 ### Executable sources
 
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `python:stove0-observer-protocol` — `reference/stove0/packages/observer-protocol/src/stove0_observer_protocol/__init__.py::<module>`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
+- [python:stove0-observer-protocol](../../../evidence/sources.md#src-74fcb7b8cc2a) — `reference/stove0/packages/observer-protocol/src/stove0_observer_protocol/__init__.py::<module>`
 
 ### Machine authority
 

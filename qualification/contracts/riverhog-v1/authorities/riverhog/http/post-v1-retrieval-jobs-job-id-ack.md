@@ -8,35 +8,36 @@ Acknowledge Retrieval Job
 
 | Audit field | Value |
 |---|---|
-| Authority | `riverhog` |
-| Interface | `http` |
-| Family | `retrieval-jobs` |
+| Authority | [riverhog](../index.md) |
+| Interface | [http](index.md) |
+| Family | [retrieval-jobs](families/retrieval-jobs/index.md) |
 | Contract elements | 1 |
 | Extent decisions | 0 |
 
 ## External contract
 
-- `operationId`: acknowledge_retrieval_job
-- `summary`: Acknowledge Retrieval Job
-- `security`: `[{"HTTPBearer": []}]`
+<a id="s-822071ea62b3"></a>
+- <a id="s-7b910fd0b021"></a>`operationId`: acknowledge_retrieval_job
+- <a id="s-4281b9e81bfd"></a>`summary`: Acknowledge Retrieval Job
+- <a id="s-c5b18d23b9d8"></a>`security`: `[{"HTTPBearer": []}]`
 
 ### Parameters
 
 | Name | In | Required | Schema |
 |---|---|---:|---|
-| `job_id` | path | yes | type="string" |
+| <a id="s-51818aa4737e"></a>`job_id` | path | yes | type="string" |
 
 ### Responses
 
 | Status | Description |
 |---|---|
-| `200` | Successful Response |
-| `400` | Bad Request |
-| `401` | Unauthorized |
-| `403` | Forbidden |
-| `404` | Not Found |
-| `409` | Conflict |
-| `500` | Internal Server Error |
+| <a id="s-e784886d8b42"></a>`200` | Successful Response |
+| <a id="s-81b48c0e0a1a"></a>`400` | Bad Request |
+| <a id="s-467ba4a93393"></a>`401` | Unauthorized |
+| <a id="s-e65600e2d218"></a>`403` | Forbidden |
+| <a id="s-5cfd96c51ff0"></a>`404` | Not Found |
+| <a id="s-e64eff21ca20"></a>`409` | Conflict |
+| <a id="s-4331820c5c29"></a>`500` | Internal Server Error |
 
 ## Maintained corroboration
 
@@ -51,19 +52,19 @@ Acknowledge Retrieval Job
 
 ## Governing policies
 
-- `compatibility/http-api/v1`
+- <a id="pa-cae8340122cf"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0ba)
 
 ## Evidence
 
 ### Qualification
 
-- `make operation-qualification`
-- `make compose-smoke`
+- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459fb8)
+- [make compose-smoke](../../../evidence/sources.md#q-413b0b241ba8)
 
 ### Executable sources
 
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `openapi:riverhog` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
+- [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc960) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
 
 ### Machine authority
 

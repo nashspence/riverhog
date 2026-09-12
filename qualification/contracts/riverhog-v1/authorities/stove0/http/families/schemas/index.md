@@ -6,10 +6,10 @@ Contract elements: **136** · Extent decisions: **336**
 
 | Policy | Count |
 |---|---:|
-| `compatibility/http-api/v1` | 136 |
-| `extent-rule/no-semantic-maximum/v1` | 58 |
-| `extent-rule/route-progression/v1` | 6 |
-| `extent-rule/schema-bound/v1` | 95 |
+| [compatibility/http-api/v1](../../../../../policies/index.md#p-5bc717c2c0ba) | 136 |
+| [extent-rule/no-semantic-maximum/v1](../../../../../policies/index.md#p-574724b48af0) | 58 |
+| [extent-rule/route-progression/v1](../../../../../policies/index.md#p-6b76b527cb21) | 6 |
+| [extent-rule/schema-bound/v1](../../../../../policies/index.md#p-c0db822fc034) | 95 |
 
 ## Semantic dossiers
 

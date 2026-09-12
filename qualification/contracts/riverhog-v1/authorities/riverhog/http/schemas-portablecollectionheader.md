@@ -8,36 +8,41 @@ Bounded immutable metadata that owns one portable file inventory.
 
 | Audit field | Value |
 |---|---|
-| Authority | `riverhog` |
-| Interface | `http` |
-| Family | `schemas` |
+| Authority | [riverhog](../index.md) |
+| Interface | [http](index.md) |
+| Family | [schemas](families/schemas/index.md) |
 | Contract elements | 1 |
 | Extent decisions | 2 |
 
 ## External contract
 
-- `title`: PortableCollectionHeader
-- `description`: Bounded immutable metadata that owns one portable file inventory.
-- `type`: object
+<a id="s-b136bcb9c120"></a>
+- <a id="s-01256d424692"></a>`title`: PortableCollectionHeader
+- <a id="s-519f6be1ef41"></a>`description`: Bounded immutable metadata that owns one portable file inventory.
+- <a id="s-50d2eb156510"></a>`type`: object
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| `collection` | yes | #/components/schemas/CollectionId |  |
-| `content_identity` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| `encryption_format` | yes | type="string"; minLength=1 |  |
-| `format` | no | type="string"; const="riverhog-collection/v1" |  |
-| `passphrase_id` | yes | type="string"; pattern="^[A-Za-z0-9_-]{16,128}$" |  |
-| `provenance_identity` | no | anyOf=type="string"; pattern="^[0-9a-f]{64}$" \| type="null" |  |
-| `provenance_mode` | yes | type="string"; enum=["captured","mixed","omitted"] |  |
+| <a id="s-24956a7c4e20"></a>`collection` | yes | #/components/schemas/CollectionId |  |
+| <a id="s-08d76496f492"></a>`content_identity` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-7980aa414c28"></a>`encryption_format` | yes | type="string"; minLength=1 |  |
+| <a id="s-e67a06239f19"></a>`format` | no | type="string"; const="riverhog-collection/v1" |  |
+| <a id="s-e61a66d8d04f"></a>`passphrase_id` | yes | type="string"; pattern="^[A-Za-z0-9_-]{16,128}$" |  |
+| <a id="s-9d38e0d11452"></a>`provenance_identity` | no | anyOf=type="string"; pattern="^[0-9a-f]{64}$" \| type="null" |  |
+| <a id="s-f354b26fe8b8"></a>`provenance_mode` | yes | type="string"; enum=["captured","mixed","omitted"] |  |
 
 ### Progression, limits, and lifecycle
 
-| Dimension | Unit | Policy | Bounds or reason |
-|---|---|---|---|
-| length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
-| length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
+#### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
+
+Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"}
+
+| Applies to | Contract | Bounds or reason |
+|---|---|---|
+| [field content_identity](#s-08d76496f492) | `length · characters · fixed` | shared above |
+| <a id="s-87c463dd1e75"></a>field provenance_identity · anyOf alternative 1 | `length · characters · fixed` | shared above |
 
 ## Maintained corroboration
 
@@ -47,20 +52,20 @@ Bounded immutable metadata that owns one portable file inventory.
 
 ## Governing policies
 
-- `compatibility/http-api/v1`
-- `extent-rule/schema-bound/v1`
+- <a id="pa-e6cd81f9dd48"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0ba)
+- <a id="pa-06450f4f148d"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
 
 ## Evidence
 
 ### Qualification
 
-- `make operation-qualification`
-- `make compose-smoke`
+- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459fb8)
+- [make compose-smoke](../../../evidence/sources.md#q-413b0b241ba8)
 
 ### Executable sources
 
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `openapi:riverhog` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
+- [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc960) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
 
 ### Machine authority
 

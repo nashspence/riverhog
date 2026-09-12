@@ -8,35 +8,36 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Audit field | Value |
 |---|---|
-| Authority | `stove0-protocol` |
-| Interface | `python` |
-| Family | `modules` |
+| Authority | [stove0-protocol](../index.md) |
+| Interface | [python](index.md) |
+| Family | [modules](index.md#f-9ebec0213030) |
 | Contract elements | 1 |
 | Extent decisions | 0 |
 
 ## External contract
 
+<a id="s-4170e082cb4a"></a>
 | Field | Shape |
 |---|---|
-| `distribution` | "stove0-protocol" |
-| `exports` | additional keys=`ARTIFACT_ID_PATTERN`, `ARTIFACT_SELECTION_FORMAT`, `ARTIFACT_SELECTION_PAGE_MAX`, `ArtifactSelection`, `ArtifactSelectionPage`, `ArtifactSelectionRef`, `ArtifactSubject`, `BRANCH_EFFECT_SETTLEMENT_FORMAT`, `BRANCH_OUTCOME_FORMAT`, `BRANCH_SETTLEMENT_FORMAT`, `BRANCH_SET_FORMAT`, `BranchDeclaration`, `BranchEffectSettlement`, `BranchOutcome`, `BranchOutcomeState`, `BranchPlan`, `BranchSetDecision`, `BranchSetEvaluation`, `BranchSetPlan`, `BranchSettlement`, `BranchTargetPreview`, `BranchWorkBinding`, `CONTROLLER_EVIDENCE_FORMAT`, `COORDINATION_SETTLEMENT_FORMAT`, `CollectionRootRef`, `ControllerEvidence`, `ControllerEvidencePayload`, `CoordinationBranchPlan`, `CoordinationChildSettlementRef`, `CoordinationCollectionResult`, `CoordinationSettlement`, `EVALUATION_DEFINITION_FORMAT`, `EVALUATION_MATRIX_FORMAT`, `EXECUTION_ENVELOPE_FORMAT`, `EvaluationBinding`, `EvaluationDefinition`, `EvaluationDefinitionPayload`, `EvaluationMatrix`, `EvaluationMatrixPayload`, `EvaluationVariant`, `ExecutionEnvelope`, `ExecutionEnvelopePayload`, `ForkJoinBinding`, `JOIN_DECLARATION_FORMAT`, `JOIN_OUTCOME_FORMAT`, `JOIN_PLAN_FORMAT`, `JOIN_SETTLEMENT_FORMAT`, `JSON_SCHEMA_DIALECT`, `JSON_SCHEMA_FORMAT_POLICY`, `JSON_SCHEMA_ONLY_SEMANTIC_PROFILE`, `JSON_SCHEMA_PROFILE_FORMAT`, `JoinDeclaration`, `JoinEvaluationState`, `JoinInputPlan`, `JoinMemberDeclaration`, `JoinOutcome`, `JoinOutcomeState`, `JoinPlan`, `JoinSettlement`, `JoinWorkBinding`, `JoinWorkMemberBinding`, `JsonSchemaDocument`, `OperationRef`, `OperationResultKind`, `PreviewOutcome`, `RIVERHOG_CAPABILITY_TRANSPORT`, `RecipeRef`, `RetirementPolicy`, `RetrievalPolicy`, `SHA256_PATTERN`, `SelectionDocuments`, `SemanticId`, `SemanticValidationProfile`, `SemanticValidationProfilePayload`, `Sha256`, `Stove0ProtocolModel`, `TargetPlanBinding`, `WORKFLOW_PLAN_FORMAT`, `WORKFLOW_PREVIEW_FORMAT`, `WORKFLOW_PREVIEW_REQUEST_FORMAT`, `WORK_FORMAT`, `WorkIdentity`, `WorkPayload`, `WorkflowPlan`, `WorkflowPlanIntent`, `WorkflowPlanPayload`, `WorkflowPreview`, `WorkflowPreviewPayload`, `WorkflowPreviewRequest`, `WorkflowPreviewRequestPayload`, `branch_result_kind`, `branch_work`, `canonical_json_bytes`, `canonical_json_sha256`, `evaluate_branch_set`, `resolve_join_plan`, `resolve_selection`, `update_artifact_selection_commitment`, `validate_branch_set_plan` |
-| `module` | "stove0_protocol" |
+| <a id="s-ae0335d185d8"></a>`distribution` | "stove0-protocol" |
+| <a id="s-50bd3ec4691d"></a>`exports` | additional keys=`ARTIFACT_ID_PATTERN`, `ARTIFACT_SELECTION_FORMAT`, `ARTIFACT_SELECTION_PAGE_MAX`, `ArtifactSelection`, `ArtifactSelectionPage`, `ArtifactSelectionRef`, `ArtifactSubject`, `BRANCH_EFFECT_SETTLEMENT_FORMAT`, `BRANCH_OUTCOME_FORMAT`, `BRANCH_SETTLEMENT_FORMAT`, `BRANCH_SET_FORMAT`, `BranchDeclaration`, `BranchEffectSettlement`, `BranchOutcome`, `BranchOutcomeState`, `BranchPlan`, `BranchSetDecision`, `BranchSetEvaluation`, `BranchSetPlan`, `BranchSettlement`, `BranchTargetPreview`, `BranchWorkBinding`, `CONTROLLER_EVIDENCE_FORMAT`, `COORDINATION_SETTLEMENT_FORMAT`, `CollectionRootRef`, `ControllerEvidence`, `ControllerEvidencePayload`, `CoordinationBranchPlan`, `CoordinationChildSettlementRef`, `CoordinationCollectionResult`, `CoordinationSettlement`, `EVALUATION_DEFINITION_FORMAT`, `EVALUATION_MATRIX_FORMAT`, `EXECUTION_ENVELOPE_FORMAT`, `EvaluationBinding`, `EvaluationDefinition`, `EvaluationDefinitionPayload`, `EvaluationMatrix`, `EvaluationMatrixPayload`, `EvaluationVariant`, `ExecutionEnvelope`, `ExecutionEnvelopePayload`, `ForkJoinBinding`, `JOIN_DECLARATION_FORMAT`, `JOIN_OUTCOME_FORMAT`, `JOIN_PLAN_FORMAT`, `JOIN_SETTLEMENT_FORMAT`, `JSON_SCHEMA_DIALECT`, `JSON_SCHEMA_FORMAT_POLICY`, `JSON_SCHEMA_ONLY_SEMANTIC_PROFILE`, `JSON_SCHEMA_PROFILE_FORMAT`, `JoinDeclaration`, `JoinEvaluationState`, `JoinInputPlan`, `JoinMemberDeclaration`, `JoinOutcome`, `JoinOutcomeState`, `JoinPlan`, `JoinSettlement`, `JoinWorkBinding`, `JoinWorkMemberBinding`, `JsonSchemaDocument`, `OperationRef`, `OperationResultKind`, `PreviewOutcome`, `RIVERHOG_CAPABILITY_TRANSPORT`, `RecipeRef`, `RetirementPolicy`, `RetrievalPolicy`, `SHA256_PATTERN`, `SelectionDocuments`, `SemanticId`, `SemanticValidationProfile`, `SemanticValidationProfilePayload`, `Sha256`, `Stove0ProtocolModel`, `TargetPlanBinding`, `WORKFLOW_PLAN_FORMAT`, `WORKFLOW_PREVIEW_FORMAT`, `WORKFLOW_PREVIEW_REQUEST_FORMAT`, `WORK_FORMAT`, `WorkIdentity`, `WorkPayload`, `WorkflowPlan`, `WorkflowPlanIntent`, `WorkflowPlanPayload`, `WorkflowPreview`, `WorkflowPreviewPayload`, `WorkflowPreviewRequest`, `WorkflowPreviewRequestPayload`, `branch_result_kind`, `branch_work`, `canonical_json_bytes`, `canonical_json_sha256`, `evaluate_branch_set`, `resolve_join_plan`, `resolve_selection`, `update_artifact_selection_commitment`, `validate_branch_set_plan` |
+| <a id="s-f43a3c49e014"></a>`module` | "stove0_protocol" |
 
 ## Governing policies
 
-- `compatibility/python-api/v1`
+- <a id="pa-15caac131ad8"></a>[compatibility/python-api/v1](../../../policies/index.md#p-e574772ba506)
 
 ## Evidence
 
 ### Qualification
 
-- `make dist-smoke`
-- `make build`
+- [make dist-smoke](../../../evidence/sources.md#q-0ba2578a3eb7)
+- [make build](../../../evidence/sources.md#q-d1121e35fa7a)
 
 ### Executable sources
 
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `python:stove0-protocol` — `reference/stove0/packages/protocol/src/stove0_protocol/__init__.py::<module>`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
+- [python:stove0-protocol](../../../evidence/sources.md#src-f43134520a26) — `reference/stove0/packages/protocol/src/stove0_protocol/__init__.py::<module>`
 
 ### Machine authority
 

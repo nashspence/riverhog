@@ -8,71 +8,81 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Audit field | Value |
 |---|---|
-| Authority | `stove0-review-sampler-support` |
-| Interface | `protocol` |
-| Family | `schemas` |
+| Authority | [stove0-review-sampler-support](../index.md) |
+| Interface | [protocol](index.md) |
+| Family | [schemas](index.md#f-fba3a5663ca7) |
 | Contract elements | 1 |
 | Extent decisions | 9 |
 
 ## External contract
 
-- `title`: SamplerRequest
-- `type`: object
+<a id="s-3bd9a7033e99"></a>
+- <a id="s-8f62b2d8a75f"></a>`title`: SamplerRequest
+- <a id="s-a6e6ae76a091"></a>`type`: object
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| `cancellation_path` | yes | type="string"; minLength=1; maxLength=4096 |  |
-| `format` | no | type="string"; const="stove0-review-sampler-request/v1" |  |
-| `inputs` | yes | type="array"; minItems=1; items=(#/$defs/SamplerInput) |  |
-| `maximum_output_bytes` | yes | type="integer"; minimum=1; maximum=1099511627776 |  |
-| `portable_intent` | yes | type="object"; additional keys=`additionalProperties` |  |
-| `request_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| `sampler_descriptor_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| `timeout_seconds` | yes | type="integer"; minimum=1; maximum=86400 |  |
-| `windows` | yes | type="array"; minItems=1; items=(#/$defs/SamplerWindow) |  |
-| `workspace_id` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-a8f65c3c7691"></a>`cancellation_path` | yes | type="string"; minLength=1; maxLength=4096 |  |
+| <a id="s-43fbda1947a5"></a>`format` | no | type="string"; const="stove0-review-sampler-request/v1" |  |
+| <a id="s-a2bae7da3c44"></a>`inputs` | yes | type="array"; minItems=1; items=(#/$defs/SamplerInput) |  |
+| <a id="s-3c818a2845f2"></a>`maximum_output_bytes` | yes | type="integer"; minimum=1; maximum=1099511627776 |  |
+| <a id="s-d2dff3997ed9"></a>`portable_intent` | yes | type="object"; additional keys=`additionalProperties` |  |
+| <a id="s-8773e89c7fec"></a>`request_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-8b194292ebbb"></a>`sampler_descriptor_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-eccbfccaf91b"></a>`timeout_seconds` | yes | type="integer"; minimum=1; maximum=86400 |  |
+| <a id="s-7d6207dbacb1"></a>`windows` | yes | type="array"; minItems=1; items=(#/$defs/SamplerWindow) |  |
+| <a id="s-d68872f84a69"></a>`workspace_id` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 
 ### Definitions
 
 | Definition | Shape |
 |---|---|
-| `JsonValue` | empty object |
-| `SamplerInput` | type="object"; fields=`bytes`, `id`, `media_type`, `path`, `sha256`; additional keys=`additionalProperties`, `required` |
-| `SamplerWindow` | type="object"; fields=`duration_ms`, `id`, `input_id`, `output_path`, `start_ms`; additional keys=`additionalProperties`, `required` |
+| <a id="s-3d327bc4bbc8"></a>`JsonValue` | empty object |
+| <a id="s-95bb3b80cac3"></a>`SamplerInput` | type="object"; fields=`bytes`, `id`, `media_type`, `path`, `sha256`; additional keys=`additionalProperties`, `required` |
+| <a id="s-4b7a08db4cbc"></a>`SamplerWindow` | type="object"; fields=`duration_ms`, `id`, `input_id`, `output_path`, `start_ms`; additional keys=`additionalProperties`, `required` |
 
 ### Progression, limits, and lifecycle
 
-| Dimension | Unit | Policy | Bounds or reason |
-|---|---|---|---|
-| length | characters | `contract_max` | maximum=4096, minimum=1, reason=schema-maximum |
-| cardinality | items | `operational_policy` | maximum=None, reason=no-declared-semantic-maximum |
-| value | schema-value | `contract_max` | maximum=1099511627776, minimum=1, reason=schema-maximum |
-| cardinality | entries | `operational_policy` | maximum=None, reason=no-declared-semantic-maximum |
-| length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
-| length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
-| value | schema-value | `contract_max` | maximum=86400, minimum=1, reason=schema-maximum |
-| cardinality | items | `operational_policy` | maximum=None, reason=no-declared-semantic-maximum |
-| length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
+#### [extent-rule/no-semantic-maximum/v1](../../../policies/index.md#p-574724b48af0)
+
+Shared facts for every subject below: capacity_authority={"declared_maximum":null,"hidden_maximum":"forbidden","owner":"stove0-review-sampler-protocol"}; maximum=null; reason="no-declared-semantic-maximum"
+
+| Applies to | Contract | Bounds or reason |
+|---|---|---|
+| [field inputs](#s-a2bae7da3c44) | `cardinality · items · operational_policy` | shared above |
+| [field portable_intent](#s-d2dff3997ed9) | `cardinality · entries · operational_policy` | shared above |
+| [field windows](#s-7d6207dbacb1) | `cardinality · items · operational_policy` | shared above |
+
+#### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
+
+| Applies to | Contract | Bounds or reason |
+|---|---|---|
+| [field cancellation_path](#s-a8f65c3c7691) | `length · characters · contract_max` | maximum=4096; minimum=1; reason="schema-maximum" |
+| [field maximum_output_bytes](#s-3c818a2845f2) | `value · schema-value · contract_max` | maximum=1099511627776; minimum=1; reason="schema-maximum" |
+| [field request_sha256](#s-8773e89c7fec) | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
+| [field sampler_descriptor_sha256](#s-8b194292ebbb) | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
+| [field timeout_seconds](#s-eccbfccaf91b) | `value · schema-value · contract_max` | maximum=86400; minimum=1; reason="schema-maximum" |
+| [field workspace_id](#s-d68872f84a69) | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
 
 ## Governing policies
 
-- `compatibility/components/v1`
-- `extent-rule/no-semantic-maximum/v1`
-- `extent-rule/schema-bound/v1`
+- <a id="pa-1f2302e9d976"></a>[compatibility/components/v1](../../../policies/index.md#p-95e9a1225947)
+- <a id="pa-1512efa62591"></a>[extent-rule/no-semantic-maximum/v1](../../../policies/index.md#p-574724b48af0)
+- <a id="pa-c29ea637b5e4"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
 
 ## Evidence
 
 ### Qualification
 
-- `make dist-smoke`
-- `make build`
+- [make dist-smoke](../../../evidence/sources.md#q-0ba2578a3eb7)
+- [make build](../../../evidence/sources.md#q-d1121e35fa7a)
 
 ### Executable sources
 
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `protocol:generated:stove0-review-sampler` — `reference/stove0/targets/review/sampler/support/src/stove0_review_sampler_support/schemas.py::sampler_schema_bundle`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
+- [protocol:generated:stove0-review-sampler](../../../evidence/sources.md#src-b47f3f4d7b7f) — `reference/stove0/targets/review/sampler/support/src/stove0_review_sampler_support/schemas.py::sampler_schema_bundle`
 
 ### Machine authority
 

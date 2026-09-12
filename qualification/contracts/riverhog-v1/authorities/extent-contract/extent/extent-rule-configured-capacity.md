@@ -8,36 +8,37 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Audit field | Value |
 |---|---|
-| Authority | `extent-contract` |
-| Interface | `extent` |
-| Family | `rules` |
+| Authority | [extent-contract](../index.md) |
+| Interface | [extent](index.md) |
+| Family | [rules](index.md#f-b9df1e502970) |
 | Contract elements | 1 |
 | Extent decisions | 0 |
 
 ## External contract
 
+<a id="s-173098820a1f"></a>
 | Field | Shape |
 |---|---|
-| `authority` | "the source-linked operator configuration field" |
-| `capacity_behavior` | "explicit-reject-defer-or-throttle" |
-| `policy` | "operational_policy" |
-| `silent_truncation` | "forbidden" |
+| <a id="s-715ac4a65ca6"></a>`authority` | "the source-linked operator configuration field" |
+| <a id="s-9fbe47966c89"></a>`capacity_behavior` | "explicit-reject-defer-or-throttle" |
+| <a id="s-c550723871ad"></a>`policy` | "operational_policy" |
+| <a id="s-c0abbd1353fa"></a>`silent_truncation` | "forbidden" |
 
 ## Governing policies
 
-- `extent-rule/configured-capacity/v1`
+- <a id="pa-727b10038470"></a>[extent-rule/configured-capacity/v1](../../../policies/index.md#p-3ebc61fc9972)
 
 ## Evidence
 
 ### Qualification
 
-- `make contract-freeze`
-- `make operation-qualification`
+- [make contract-freeze](../../../evidence/sources.md#q-8c74349e71e4)
+- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459fb8)
 
 ### Executable sources
 
-- `extent:extent-contract` — `scripts/extent_contract.py::extent_projection`
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
+- [extent:extent-contract](../../../evidence/sources.md#src-5ac94d0a12e8) — `scripts/extent_contract.py::extent_projection`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
 
 ### Machine authority
 

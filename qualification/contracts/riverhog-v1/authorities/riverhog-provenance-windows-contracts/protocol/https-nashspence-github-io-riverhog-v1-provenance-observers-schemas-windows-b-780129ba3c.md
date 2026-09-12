@@ -8,51 +8,56 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Audit field | Value |
 |---|---|
-| Authority | `riverhog-provenance-windows-contracts` |
-| Interface | `protocol` |
-| Family | `schemas` |
+| Authority | [riverhog-provenance-windows-contracts](../index.md) |
+| Interface | [protocol](index.md) |
+| Family | [schemas](index.md#f-78a2bea4a4b2) |
 | Contract elements | 1 |
 | Extent decisions | 2 |
 
 ## External contract
 
-- `$id`: https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/windows-backup-stream-info.json
-- `type`: object
+<a id="s-e4a7d24cfaaa"></a>
+- <a id="s-d07a61acfb4b"></a>`$id`: https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/windows-backup-stream-info.json
+- <a id="s-2387fdeb5d50"></a>`type`: object
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| `ea_flags` | no | type="integer"; minimum=0 |  |
-| `need_ea` | no | type="boolean" |  |
-| `stream_attribute_names` | yes | type="array"; items=(type="string"; minLength=1); additional keys=`uniqueItems` |  |
-| `stream_attributes` | yes | type="integer"; minimum=0 |  |
-| `stream_id` | yes | type="integer"; minimum=0 |  |
-| `stream_size` | yes | type="integer"; minimum=0 |  |
+| <a id="s-f79f66780647"></a>`ea_flags` | no | type="integer"; minimum=0 |  |
+| <a id="s-23d758e7ec6b"></a>`need_ea` | no | type="boolean" |  |
+| <a id="s-a7cdaeb25f39"></a>`stream_attribute_names` | yes | type="array"; items=(type="string"; minLength=1); additional keys=`uniqueItems` |  |
+| <a id="s-0abf5d8030f1"></a>`stream_attributes` | yes | type="integer"; minimum=0 |  |
+| <a id="s-8bc3a2a84070"></a>`stream_id` | yes | type="integer"; minimum=0 |  |
+| <a id="s-92c1562d7287"></a>`stream_size` | yes | type="integer"; minimum=0 |  |
 
 ### Progression, limits, and lifecycle
 
-| Dimension | Unit | Policy | Bounds or reason |
-|---|---|---|---|
-| cardinality | items | `extension_owned` | maximum=None, reason=independently-versioned-extension-authority |
-| value | schema-value | `extension_owned` | maximum=None, reason=independently-versioned-extension-authority |
+#### [extent-rule/extension-contract/v1](../../../policies/index.md#p-75a89f9d1c36)
+
+Shared facts for every subject below: maximum=null; reason="independently-versioned-extension-authority"
+
+| Applies to | Contract | Bounds or reason |
+|---|---|---|
+| [field stream_attribute_names](#s-a7cdaeb25f39) | `cardinality · items · extension_owned` | shared above |
+| [field stream_size](#s-92c1562d7287) | `value · schema-value · extension_owned` | shared above |
 
 ## Governing policies
 
-- `compatibility/components/v1`
-- `extent-rule/extension-contract/v1`
+- <a id="pa-19954ff6b243"></a>[compatibility/components/v1](../../../policies/index.md#p-95e9a1225947)
+- <a id="pa-44b26a566c70"></a>[extent-rule/extension-contract/v1](../../../policies/index.md#p-75a89f9d1c36)
 
 ## Evidence
 
 ### Qualification
 
-- `make dist-smoke`
-- `make build`
+- [make dist-smoke](../../../evidence/sources.md#q-0ba2578a3eb7)
+- [make build](../../../evidence/sources.md#q-d1121e35fa7a)
 
 ### Executable sources
 
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `protocol:https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/windows-backup-stream-info.json` — `reference/riverhog/provenance/contracts/windows/src/riverhog_provenance_windows_contracts/schemas/windows-backup-stream-info.schema.json`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
+- [protocol:https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/windows-backup-stream-info.json](../../../evidence/sources.md#src-40a5d2308830) — `reference/riverhog/provenance/contracts/windows/src/riverhog_provenance_windows_contracts/schemas/windows-backup-stream-info.schema.json`
 
 ### Machine authority
 

@@ -8,49 +8,54 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Audit field | Value |
 |---|---|
-| Authority | `riverhog-provenance-linux-contracts` |
-| Interface | `protocol` |
-| Family | `schemas` |
+| Authority | [riverhog-provenance-linux-contracts](../index.md) |
+| Interface | [protocol](index.md) |
+| Family | [schemas](index.md#f-496badc04bf0) |
 | Contract elements | 1 |
 | Extent decisions | 2 |
 
 ## External contract
 
-- `$id`: https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/linux-statx-attributes.json
-- `type`: object
+<a id="s-f7d1eefa0bc5"></a>
+- <a id="s-561194c53709"></a>`$id`: https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/linux-statx-attributes.json
+- <a id="s-fa0152c20058"></a>`type`: object
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| `attributes` | yes | type="integer"; minimum=0 |  |
-| `attributes_mask` | yes | type="integer"; minimum=0 |  |
-| `set_names` | yes | type="array"; items=(type="string"); additional keys=`uniqueItems` |  |
-| `supported_names` | yes | type="array"; items=(type="string"); additional keys=`uniqueItems` |  |
+| <a id="s-906b1a32718c"></a>`attributes` | yes | type="integer"; minimum=0 |  |
+| <a id="s-1a149c51de2a"></a>`attributes_mask` | yes | type="integer"; minimum=0 |  |
+| <a id="s-d30926626919"></a>`set_names` | yes | type="array"; items=(type="string"); additional keys=`uniqueItems` |  |
+| <a id="s-d7a5a019181e"></a>`supported_names` | yes | type="array"; items=(type="string"); additional keys=`uniqueItems` |  |
 
 ### Progression, limits, and lifecycle
 
-| Dimension | Unit | Policy | Bounds or reason |
-|---|---|---|---|
-| cardinality | items | `extension_owned` | maximum=None, reason=independently-versioned-extension-authority |
-| cardinality | items | `extension_owned` | maximum=None, reason=independently-versioned-extension-authority |
+#### [extent-rule/extension-contract/v1](../../../policies/index.md#p-75a89f9d1c36)
+
+Shared facts for every subject below: maximum=null; reason="independently-versioned-extension-authority"
+
+| Applies to | Contract | Bounds or reason |
+|---|---|---|
+| [field set_names](#s-d30926626919) | `cardinality · items · extension_owned` | shared above |
+| [field supported_names](#s-d7a5a019181e) | `cardinality · items · extension_owned` | shared above |
 
 ## Governing policies
 
-- `compatibility/components/v1`
-- `extent-rule/extension-contract/v1`
+- <a id="pa-1104466d02d4"></a>[compatibility/components/v1](../../../policies/index.md#p-95e9a1225947)
+- <a id="pa-4cbe29bb68a2"></a>[extent-rule/extension-contract/v1](../../../policies/index.md#p-75a89f9d1c36)
 
 ## Evidence
 
 ### Qualification
 
-- `make dist-smoke`
-- `make build`
+- [make dist-smoke](../../../evidence/sources.md#q-0ba2578a3eb7)
+- [make build](../../../evidence/sources.md#q-d1121e35fa7a)
 
 ### Executable sources
 
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `protocol:https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/linux-statx-attributes.json` — `reference/riverhog/provenance/contracts/linux/src/riverhog_provenance_linux_contracts/schemas/linux-statx-attributes.schema.json`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
+- [protocol:https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/linux-statx-attributes.json](../../../evidence/sources.md#src-ea93e415ba1d) — `reference/riverhog/provenance/contracts/linux/src/riverhog_provenance_linux_contracts/schemas/linux-statx-attributes.schema.json`
 
 ### Machine authority
 

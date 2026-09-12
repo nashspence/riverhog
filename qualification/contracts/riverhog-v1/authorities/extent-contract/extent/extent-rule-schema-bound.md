@@ -8,36 +8,37 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Audit field | Value |
 |---|---|
-| Authority | `extent-contract` |
-| Interface | `extent` |
-| Family | `rules` |
+| Authority | [extent-contract](../index.md) |
+| Interface | [extent](index.md) |
+| Family | [rules](index.md#f-b9df1e502970) |
 | Contract elements | 1 |
 | Extent decisions | 0 |
 
 ## External contract
 
+<a id="s-6b20b7da6a50"></a>
 | Field | Shape |
 |---|---|
-| `authority` | "the projected JSON Schema constraint" |
-| `exceeded` | "schema-validation-error" |
-| `policy` | "fixed-or-contract-max" |
-| `requirement` | "a non-fixed set maximum carries an owning reason declaration" |
+| <a id="s-5a12cda572fb"></a>`authority` | "the projected JSON Schema constraint" |
+| <a id="s-87b468c17c57"></a>`exceeded` | "schema-validation-error" |
+| <a id="s-8477a707706e"></a>`policy` | "fixed-or-contract-max" |
+| <a id="s-0aa687ca3d5f"></a>`requirement` | "a non-fixed set maximum carries an owning reason declaration" |
 
 ## Governing policies
 
-- `extent-rule/schema-bound/v1`
+- <a id="pa-b74b0aafebe1"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
 
 ## Evidence
 
 ### Qualification
 
-- `make contract-freeze`
-- `make operation-qualification`
+- [make contract-freeze](../../../evidence/sources.md#q-8c74349e71e4)
+- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459fb8)
 
 ### Executable sources
 
-- `extent:extent-contract` — `scripts/extent_contract.py::extent_projection`
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
+- [extent:extent-contract](../../../evidence/sources.md#src-5ac94d0a12e8) — `scripts/extent_contract.py::extent_projection`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
 
 ### Machine authority
 

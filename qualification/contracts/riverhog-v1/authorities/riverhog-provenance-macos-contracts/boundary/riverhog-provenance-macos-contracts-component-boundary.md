@@ -8,38 +8,39 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Audit field | Value |
 |---|---|
-| Authority | `riverhog-provenance-macos-contracts` |
-| Interface | `boundary` |
-| Family | `components` |
+| Authority | [riverhog-provenance-macos-contracts](../index.md) |
+| Interface | [boundary](index.md) |
+| Family | [components](index.md#f-3716fce0c7ac) |
 | Contract elements | 1 |
 | Extent decisions | 0 |
 
 ## External contract
 
+<a id="s-718a422e1e98"></a>
 | Field | Shape |
 |---|---|
-| `console_scripts` | empty object |
-| `dependencies` | ["riverhog-provenance-contracts"] |
-| `distribution` | "riverhog-provenance-macos-contracts" |
-| `optional_dependencies` | empty object |
-| `path` | "reference/riverhog/provenance/contracts/macos" |
-| `role` | "reference_component" |
+| <a id="s-c91d42142f81"></a>`console_scripts` | empty object |
+| <a id="s-dc30c56149e2"></a>`dependencies` | ["riverhog-provenance-contracts"] |
+| <a id="s-2f510193f595"></a>`distribution` | "riverhog-provenance-macos-contracts" |
+| <a id="s-96b5db97ac36"></a>`optional_dependencies` | empty object |
+| <a id="s-c76d8ac68c62"></a>`path` | "reference/riverhog/provenance/contracts/macos" |
+| <a id="s-224ad1a53e89"></a>`role` | "reference_component" |
 
 ## Governing policies
 
-- `boundary/frozen-authority/v1`
+- <a id="pa-351a5f01702f"></a>[boundary/frozen-authority/v1](../../../policies/index.md#p-61994d3f0fa8)
 
 ## Evidence
 
 ### Qualification
 
-- `make release-check`
-- `make build`
+- [make release-check](../../../evidence/sources.md#q-8d8d22d6a6b1)
+- [make build](../../../evidence/sources.md#q-d1121e35fa7a)
 
 ### Executable sources
 
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `release:release.toml` — `release.toml`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
+- [release:release.toml](../../../evidence/sources.md#src-c5380dbe5fe0) — `release.toml`
 
 ### Machine authority
 

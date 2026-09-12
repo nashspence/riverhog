@@ -8,25 +8,26 @@ Declare Target Execution Disposition
 
 | Audit field | Value |
 |---|---|
-| Authority | `stove0` |
-| Interface | `http` |
-| Family | `target-executions` |
+| Authority | [stove0](../index.md) |
+| Interface | [http](index.md) |
+| Family | [target-executions](families/target-executions/index.md) |
 | Contract elements | 1 |
 | Extent decisions | 0 |
 
 ## External contract
 
-- `operationId`: declare_target_execution_disposition
-- `summary`: Declare Target Execution Disposition
+<a id="s-cd0c98079852"></a>
+- <a id="s-dcc45a72b8ff"></a>`operationId`: declare_target_execution_disposition
+- <a id="s-b325b56157a7"></a>`summary`: Declare Target Execution Disposition
 
 ### Parameters
 
 | Name | In | Required | Schema |
 |---|---|---:|---|
-| `job_id` | path | yes | type="string" |
-| `input_id` | path | yes | type="string" |
+| <a id="s-3770379334e4"></a>`job_id` | path | yes | type="string" |
+| <a id="s-738b7756eb2e"></a>`input_id` | path | yes | type="string" |
 
-### Request body
+### <a id="s-4af8a05da7de"></a>Request body
 
 `{"content": {"application/json": {"schema": {"$ref": "#/components/schemas/InputDispositionDeclaration"}}}, "required": true}`
 
@@ -34,11 +35,11 @@ Declare Target Execution Disposition
 
 | Status | Description |
 |---|---|
-| `200` | Successful Response |
-| `400` | Bad Request |
-| `401` | Unauthorized |
-| `403` | Forbidden |
-| `500` | Internal Server Error |
+| <a id="s-a5ce55528a5c"></a>`200` | Successful Response |
+| <a id="s-2baee2a5b506"></a>`400` | Bad Request |
+| <a id="s-5f90d24b5393"></a>`401` | Unauthorized |
+| <a id="s-7737fe88712e"></a>`403` | Forbidden |
+| <a id="s-ccb3dc68bdb1"></a>`500` | Internal Server Error |
 
 ## Maintained corroboration
 
@@ -54,19 +55,19 @@ Declare Target Execution Disposition
 
 ## Governing policies
 
-- `compatibility/http-api/v1`
+- <a id="pa-04eda1349316"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0ba)
 
 ## Evidence
 
 ### Qualification
 
-- `make operation-qualification`
-- `make compose-smoke`
+- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459fb8)
+- [make compose-smoke](../../../evidence/sources.md#q-413b0b241ba8)
 
 ### Executable sources
 
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `openapi:stove0` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
+- [openapi:stove0](../../../evidence/sources.md#src-52e6e3212451) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
 
 ### Machine authority
 

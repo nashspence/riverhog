@@ -6,11 +6,11 @@ Contract elements: **1** · Extent decisions: **0**
 
 | Family | Count |
 |---|---:|
-| `components` | 1 |
+| <a id="f-b10b8af2b3b5"></a>`components` | 1 |
 
 | Policy | Count |
 |---|---:|
-| `boundary/frozen-authority/v1` | 1 |
+| [boundary/frozen-authority/v1](../../../policies/index.md#p-61994d3f0fa8) | 1 |
 
 ## Semantic dossiers
 

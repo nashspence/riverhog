@@ -8,35 +8,36 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Audit field | Value |
 |---|---|
-| Authority | `riverhog-storage-adapter-protocol` |
-| Interface | `python` |
-| Family | `modules` |
+| Authority | [riverhog-storage-adapter-protocol](../index.md) |
+| Interface | [python](index.md) |
+| Family | [modules](index.md#f-93a633062887) |
 | Contract elements | 1 |
 | Extent decisions | 0 |
 
 ## External contract
 
+<a id="s-78d6826568d0"></a>
 | Field | Shape |
 |---|---|
-| `distribution` | "riverhog-storage-adapter-protocol" |
-| `exports` | additional keys=`ADAPTER_PRIVATE_ASSERTION_PREFIX`, `AdapterDescriptor`, `BinaryContent`, `CompletedObjectReceipt`, `CompletedWriteLookupRequest`, `DeleteObjectRequest`, `DeletePrefixRequest`, `ImmutableObjectReceipt`, `MAX_WRITE_SEGMENT_PAGE_ITEMS`, `MaintenanceResult`, `ObjectHeadRequest`, `ObjectLocator`, `ObjectMetadataReceipt`, `ObjectPlacement`, `ObjectReadReceipt`, `ObjectReadRequest`, `ObjectReadStream`, `ReadExpired`, `ReadMode`, `ReadPreparationRequest`, `ReadReadiness`, `ReadReady`, `ReadRequested`, `ReadStatus`, `RequiredIdentityAssertions`, `STORAGE_ADAPTER_PROTOCOL`, `SemanticId`, `Sha256`, `SmallObjectWriteRequest`, `StorageAdapterError`, `StorageAdapterErrorBody`, `StorageAdapterErrorCode`, `StorageAdapterModel`, `StorageAdapterPort`, `StorageAdapterRejection`, `ValidatedStorageAdapterPort`, `WriteCompleteRequest`, `WriteCompletionAuthority`, `WriteSegmentListRequest`, `WriteSegmentPage`, `WriteSegmentReceipt`, `WriteSegmentRequest`, `WriteSession`, `WriteStartRequest`, `normalize_object_path`, `validate_completed_write_response`, `validate_object_metadata_response`, `validate_object_read_response`, `validate_read_status_response`, `validate_small_object_response`, `validate_write_completion_request`, `validate_write_segment_page_response`, `validate_write_segment_request`, `validate_write_segment_response`, `validate_write_session_response`, `validate_write_start_request`, `validated_storage_adapter` |
-| `module` | "riverhog_storage_adapter_protocol" |
+| <a id="s-1df31a4f1b8d"></a>`distribution` | "riverhog-storage-adapter-protocol" |
+| <a id="s-0b8cb2b70c62"></a>`exports` | additional keys=`ADAPTER_PRIVATE_ASSERTION_PREFIX`, `AdapterDescriptor`, `BinaryContent`, `CompletedObjectReceipt`, `CompletedWriteLookupRequest`, `DeleteObjectRequest`, `DeletePrefixRequest`, `ImmutableObjectReceipt`, `MAX_WRITE_SEGMENT_PAGE_ITEMS`, `MaintenanceResult`, `ObjectHeadRequest`, `ObjectLocator`, `ObjectMetadataReceipt`, `ObjectPlacement`, `ObjectReadReceipt`, `ObjectReadRequest`, `ObjectReadStream`, `ReadExpired`, `ReadMode`, `ReadPreparationRequest`, `ReadReadiness`, `ReadReady`, `ReadRequested`, `ReadStatus`, `RequiredIdentityAssertions`, `STORAGE_ADAPTER_PROTOCOL`, `SemanticId`, `Sha256`, `SmallObjectWriteRequest`, `StorageAdapterError`, `StorageAdapterErrorBody`, `StorageAdapterErrorCode`, `StorageAdapterModel`, `StorageAdapterPort`, `StorageAdapterRejection`, `ValidatedStorageAdapterPort`, `WriteCompleteRequest`, `WriteCompletionAuthority`, `WriteSegmentListRequest`, `WriteSegmentPage`, `WriteSegmentReceipt`, `WriteSegmentRequest`, `WriteSession`, `WriteStartRequest`, `normalize_object_path`, `validate_completed_write_response`, `validate_object_metadata_response`, `validate_object_read_response`, `validate_read_status_response`, `validate_small_object_response`, `validate_write_completion_request`, `validate_write_segment_page_response`, `validate_write_segment_request`, `validate_write_segment_response`, `validate_write_session_response`, `validate_write_start_request`, `validated_storage_adapter` |
+| <a id="s-1dcebca617f4"></a>`module` | "riverhog_storage_adapter_protocol" |
 
 ## Governing policies
 
-- `compatibility/python-api/v1`
+- <a id="pa-5d6932cb90ab"></a>[compatibility/python-api/v1](../../../policies/index.md#p-e574772ba506)
 
 ## Evidence
 
 ### Qualification
 
-- `make dist-smoke`
-- `make build`
+- [make dist-smoke](../../../evidence/sources.md#q-0ba2578a3eb7)
+- [make build](../../../evidence/sources.md#q-d1121e35fa7a)
 
 ### Executable sources
 
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `python:riverhog-storage-adapter-protocol` — `packages/riverhog-storage-adapter-protocol/src/riverhog_storage_adapter_protocol/__init__.py::<module>`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
+- [python:riverhog-storage-adapter-protocol](../../../evidence/sources.md#src-4e78cc641f18) — `packages/riverhog-storage-adapter-protocol/src/riverhog_storage_adapter_protocol/__init__.py::<module>`
 
 ### Machine authority
 

@@ -8,25 +8,26 @@ Create App Key
 
 | Audit field | Value |
 |---|---|
-| Authority | `riverhog` |
-| Interface | `http` |
-| Family | `apps` |
+| Authority | [riverhog](../index.md) |
+| Interface | [http](index.md) |
+| Family | [apps](families/apps/index.md) |
 | Contract elements | 1 |
 | Extent decisions | 0 |
 
 ## External contract
 
-- `operationId`: create_app_key
-- `summary`: Create App Key
-- `security`: `[{"HTTPBearer": []}]`
+<a id="s-26f945d4a67d"></a>
+- <a id="s-e51936213d9e"></a>`operationId`: create_app_key
+- <a id="s-26529c3c517c"></a>`summary`: Create App Key
+- <a id="s-24642ac73a50"></a>`security`: `[{"HTTPBearer": []}]`
 
 ### Parameters
 
 | Name | In | Required | Schema |
 |---|---|---:|---|
-| `app` | path | yes | type="string"; pattern="^[a-z0-9]+(?:-[a-z0-9]+)*$" |
+| <a id="s-78a97764ff7c"></a>`app` | path | yes | type="string"; pattern="^[a-z0-9]+(?:-[a-z0-9]+)*$" |
 
-### Request body
+### <a id="s-a8bf91946af2"></a>Request body
 
 `{"content": {"application/json": {"schema": {"$ref": "#/components/schemas/CreateAppKeyRequest"}}}, "required": true}`
 
@@ -34,12 +35,12 @@ Create App Key
 
 | Status | Description |
 |---|---|
-| `200` | Successful Response |
-| `400` | Bad Request |
-| `401` | Unauthorized |
-| `403` | Forbidden |
-| `404` | Not Found |
-| `500` | Internal Server Error |
+| <a id="s-642e16127e82"></a>`200` | Successful Response |
+| <a id="s-655c2f197f56"></a>`400` | Bad Request |
+| <a id="s-4e322efdee1e"></a>`401` | Unauthorized |
+| <a id="s-3d6bf9afd554"></a>`403` | Forbidden |
+| <a id="s-defe02f1208e"></a>`404` | Not Found |
+| <a id="s-81f7f7d6eced"></a>`500` | Internal Server Error |
 
 ## Maintained corroboration
 
@@ -55,19 +56,19 @@ Create App Key
 
 ## Governing policies
 
-- `compatibility/http-api/v1`
+- <a id="pa-e33d0c4b3d2a"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0ba)
 
 ## Evidence
 
 ### Qualification
 
-- `make operation-qualification`
-- `make compose-smoke`
+- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459fb8)
+- [make compose-smoke](../../../evidence/sources.md#q-413b0b241ba8)
 
 ### Executable sources
 
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `openapi:riverhog` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
+- [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc960) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
 
 ### Machine authority
 

@@ -8,31 +8,38 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Audit field | Value |
 |---|---|
-| Authority | `stove0-review-sampler-support` |
-| Interface | `protocol` |
-| Family | `protocol` |
+| Authority | [stove0-review-sampler-support](../index.md) |
+| Interface | [protocol](index.md) |
+| Family | [protocol](index.md#f-1e0cecac00e6) |
 | Contract elements | 1 |
 | Extent decisions | 0 |
 
 ## External contract
 
-- Shape: items=additional keys=`http_operations`, `semantic_acceptance`, `structural_models` | "dbbc9320e223fb591a30981339ba8c7a7f8b7de2358ce3a3cc38c2c7fbf78119" | "stove0-review-sampler-schema-bundle/v1" | additional keys=`operations` | "stove0-review-sampler/v1" | additional keys=`kind`, `validator`
+| Subject | Shape |
+|---|---|
+| <a id="s-1c9b12a3fd5f"></a>`authorities` | additional keys=`http_operations`, `semantic_acceptance`, `structural_models` |
+| <a id="s-0bdd9b0af393"></a>`bundle_sha256` | "dbbc9320e223fb591a30981339ba8c7a7f8b7de2358ce3a3cc38c2c7fbf78119" |
+| <a id="s-70d47dd5f835"></a>`format` | "stove0-review-sampler-schema-bundle/v1" |
+| <a id="s-54f1345bc6dc"></a>`http_binding` | additional keys=`operations` |
+| <a id="s-835f0945459d"></a>`protocol` | "stove0-review-sampler/v1" |
+| <a id="s-aacaa6d4b2a2"></a>`semantic_acceptance` | additional keys=`kind`, `validator` |
 
 ## Governing policies
 
-- `compatibility/components/v1`
+- <a id="pa-1084bd8da65d"></a>[compatibility/components/v1](../../../policies/index.md#p-95e9a1225947)
 
 ## Evidence
 
 ### Qualification
 
-- `make dist-smoke`
-- `make build`
+- [make dist-smoke](../../../evidence/sources.md#q-0ba2578a3eb7)
+- [make build](../../../evidence/sources.md#q-d1121e35fa7a)
 
 ### Executable sources
 
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `protocol:generated:stove0-review-sampler` — `reference/stove0/targets/review/sampler/support/src/stove0_review_sampler_support/schemas.py::sampler_schema_bundle`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
+- [protocol:generated:stove0-review-sampler](../../../evidence/sources.md#src-b47f3f4d7b7f) — `reference/stove0/targets/review/sampler/support/src/stove0_review_sampler_support/schemas.py::sampler_schema_bundle`
 
 ### Machine authority
 

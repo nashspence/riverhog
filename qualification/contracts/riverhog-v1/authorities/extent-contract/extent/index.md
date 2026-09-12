@@ -6,24 +6,24 @@ Contract elements: **15** · Extent decisions: **0**
 
 | Family | Count |
 |---|---:|
-| `policy` | 3 |
-| `principles` | 5 |
-| `rules` | 7 |
+| <a id="f-259f5e46e289"></a>`policy` | 3 |
+| <a id="f-38214870c85d"></a>`principles` | 5 |
+| <a id="f-b9df1e502970"></a>`rules` | 7 |
 
 | Policy | Count |
 |---|---:|
-| `extent-principle/bounded-work/v1` | 1 |
-| `extent-principle/configuration/v1` | 1 |
-| `extent-principle/implementation-privacy/v1` | 1 |
-| `extent-principle/logical-totals/v1` | 4 |
-| `extent-principle/operational-capacity/v1` | 1 |
-| `extent-rule/bounded-segment/v1` | 1 |
-| `extent-rule/configuration-composition/v1` | 1 |
-| `extent-rule/configured-capacity/v1` | 1 |
-| `extent-rule/extension-contract/v1` | 1 |
-| `extent-rule/no-semantic-maximum/v1` | 1 |
-| `extent-rule/route-progression/v1` | 1 |
-| `extent-rule/schema-bound/v1` | 1 |
+| [extent-principle/bounded-work/v1](../../../policies/index.md#p-a16724dfa091) | 1 |
+| [extent-principle/configuration/v1](../../../policies/index.md#p-aa533611e954) | 1 |
+| [extent-principle/implementation-privacy/v1](../../../policies/index.md#p-5f9f32ebd9e1) | 1 |
+| [extent-principle/logical-totals/v1](../../../policies/index.md#p-cfe2e12ee677) | 4 |
+| [extent-principle/operational-capacity/v1](../../../policies/index.md#p-fac1e46f10c9) | 1 |
+| [extent-rule/bounded-segment/v1](../../../policies/index.md#p-2b3f3f1594af) | 1 |
+| [extent-rule/configuration-composition/v1](../../../policies/index.md#p-dcd344e8e519) | 1 |
+| [extent-rule/configured-capacity/v1](../../../policies/index.md#p-3ebc61fc9972) | 1 |
+| [extent-rule/extension-contract/v1](../../../policies/index.md#p-75a89f9d1c36) | 1 |
+| [extent-rule/no-semantic-maximum/v1](../../../policies/index.md#p-574724b48af0) | 1 |
+| [extent-rule/route-progression/v1](../../../policies/index.md#p-6b76b527cb21) | 1 |
+| [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034) | 1 |
 
 ## Semantic dossiers
 

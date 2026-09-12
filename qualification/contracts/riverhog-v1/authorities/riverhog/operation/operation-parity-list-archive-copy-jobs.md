@@ -8,26 +8,27 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Audit field | Value |
 |---|---|
-| Authority | `riverhog` |
-| Interface | `operation` |
-| Family | `archive` |
+| Authority | [riverhog](../index.md) |
+| Interface | [operation](index.md) |
+| Family | [archive](families/archive/index.md) |
 | Contract elements | 1 |
 | Extent decisions | 0 |
 
 ## External contract
 
+<a id="s-1d94de0077ea"></a>
 | Concern | Contract |
 |---|---|
-| `application` | riverhog |
-| `classification` | human-cli+json |
-| `cli_commands` | ["archive copy list"] |
-| `client` | ApiClient |
-| `method` | GET |
-| `operation_id` | list_archive_copy_jobs |
-| `path` | /v1/archive/copies |
-| `provider_evidence` | provider-qualification:#442 |
-| `read_collection` | {"default_page_size": 25, "kind": "mutable-browse", "maximum_page_size": 100, "next_page_token_field": "next_page_token", "page_size_parameter": "page_size", "page_token_parameter": "page_token"} |
-| `response_authority` | http-json |
+| <a id="s-cc69c7720818"></a>`application` | riverhog |
+| <a id="s-713762854204"></a>`classification` | human-cli+json |
+| <a id="s-ae713cb60e86"></a>`cli_commands` | ["archive copy list"] |
+| <a id="s-f0d775d6c43a"></a>`client` | ApiClient |
+| <a id="s-941045f9d29b"></a>`method` | GET |
+| <a id="s-3f8029b674ee"></a>`operation_id` | list_archive_copy_jobs |
+| <a id="s-38dd3eea9ca8"></a>`path` | /v1/archive/copies |
+| <a id="s-a4fd7546463a"></a>`provider_evidence` | provider-qualification:#442 |
+| <a id="s-2605fee670ed"></a>`read_collection` | {"default_page_size": 25, "kind": "mutable-browse", "maximum_page_size": 100, "next_page_token_field": "next_page_token", "page_size_parameter": "page_size", "page_token_parameter": "page_token"} |
+| <a id="s-c67f598e1bf3"></a>`response_authority` | http-json |
 
 ## Maintained corroboration
 
@@ -38,20 +39,20 @@ Exact externally visible contract owned by this semantic dossier.
 
 ## Governing policies
 
-- `compatibility/cli/v1`
-- `compatibility/components/v1`
-- `compatibility/http-api/v1`
+- <a id="pa-8c5ced110091"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de7f)
+- <a id="pa-dfb6a9549287"></a>[compatibility/components/v1](../../../policies/index.md#p-95e9a1225947)
+- <a id="pa-b233509c766f"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0ba)
 
 ## Evidence
 
 ### Qualification
 
-- `make operation-qualification`
+- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459fb8)
 
 ### Executable sources
 
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `operations:operation-matrix` — `scripts/operation_qualification.py::operation_matrix`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
+- [operations:operation-matrix](../../../evidence/sources.md#src-b032bdc56b3f) — `scripts/operation_qualification.py::operation_matrix`
 
 ### Machine authority
 

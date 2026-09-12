@@ -8,51 +8,56 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Audit field | Value |
 |---|---|
-| Authority | `riverhog` |
-| Interface | `http` |
-| Family | `schemas` |
+| Authority | [riverhog](../index.md) |
+| Interface | [http](index.md) |
+| Family | [schemas](families/schemas/index.md) |
 | Contract elements | 1 |
 | Extent decisions | 4 |
 
 ## External contract
 
-- `title`: RiverhogEventCause
-- `type`: object
+<a id="s-cac8d15cc378"></a>
+- <a id="s-d64723c060a9"></a>`title`: RiverhogEventCause
+- <a id="s-5c5e1a73be7a"></a>`type`: object
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| `id` | yes | type="string"; minLength=1; maxLength=300 |  |
-| `source` | yes | type="string"; minLength=1; maxLength=1000 |  |
-| `subject` | no | anyOf=type="string"; minLength=1; maxLength=1000 \| type="null" |  |
-| `type` | yes | type="string"; minLength=1; maxLength=300 |  |
+| <a id="s-a8d0df20f2bb"></a>`id` | yes | type="string"; minLength=1; maxLength=300 |  |
+| <a id="s-55e18d79c3e7"></a>`source` | yes | type="string"; minLength=1; maxLength=1000 |  |
+| <a id="s-abdf2f2efc92"></a>`subject` | no | anyOf=type="string"; minLength=1; maxLength=1000 \| type="null" |  |
+| <a id="s-a3f28fa3f098"></a>`type` | yes | type="string"; minLength=1; maxLength=300 |  |
 
 ### Progression, limits, and lifecycle
 
-| Dimension | Unit | Policy | Bounds or reason |
-|---|---|---|---|
-| length | characters | `contract_max` | maximum=300, minimum=1, reason=schema-maximum |
-| length | characters | `contract_max` | maximum=1000, minimum=1, reason=schema-maximum |
-| length | characters | `contract_max` | maximum=1000, minimum=1, reason=schema-maximum |
-| length | characters | `contract_max` | maximum=300, minimum=1, reason=schema-maximum |
+#### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
+
+Shared facts for every subject below: minimum=1; reason="schema-maximum"
+
+| Applies to | Contract | Bounds or reason |
+|---|---|---|
+| [field id](#s-a8d0df20f2bb) | `length · characters · contract_max` | maximum=300 |
+| [field source](#s-55e18d79c3e7) | `length · characters · contract_max` | maximum=1000 |
+| <a id="s-153b6d5a3dc1"></a>field subject · anyOf alternative 1 | `length · characters · contract_max` | maximum=1000 |
+| [field type](#s-a3f28fa3f098) | `length · characters · contract_max` | maximum=300 |
 
 ## Governing policies
 
-- `compatibility/http-api/v1`
-- `extent-rule/schema-bound/v1`
+- <a id="pa-11997efc0d04"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0ba)
+- <a id="pa-045d2c6c8026"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
 
 ## Evidence
 
 ### Qualification
 
-- `make operation-qualification`
-- `make compose-smoke`
+- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459fb8)
+- [make compose-smoke](../../../evidence/sources.md#q-413b0b241ba8)
 
 ### Executable sources
 
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `openapi:riverhog` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
+- [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc960) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
 
 ### Machine authority
 

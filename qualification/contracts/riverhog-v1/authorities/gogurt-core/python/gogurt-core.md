@@ -8,35 +8,36 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Audit field | Value |
 |---|---|
-| Authority | `gogurt-core` |
-| Interface | `python` |
-| Family | `modules` |
+| Authority | [gogurt-core](../index.md) |
+| Interface | [python](index.md) |
+| Family | [modules](index.md#f-c919716a2a60) |
 | Contract elements | 1 |
 | Extent decisions | 0 |
 
 ## External contract
 
+<a id="s-bf61041e8a2d"></a>
 | Field | Shape |
 |---|---|
-| `distribution` | "gogurt-core" |
-| `exports` | additional keys=`DEFAULT_GOGURT_CONFIG_FILENAME`, `GOGURT_EMOJI`, `GOGURT_MOUNTED_VOLUME_PROVIDER_BINDING_FORMAT`, `GOGURT_MOUNTED_VOLUME_PROVIDER_ENTRY_POINT_GROUP`, `GOGURT_PROVIDER_REFERENCE_FORMAT`, `GOGURT_ROUTES_SCHEMA`, `GOGURT_ROUTE_MARKER_FORMAT`, `GOGURT_ROUTE_PATTERN`, `GogurtAction`, `GogurtProviderKind`, `GogurtProviderReference`, `GogurtRouteMarker`, `MAX_GOGURT_INTERVAL_SECONDS`, `MAX_GOGURT_MARKER_IDENTITY_CHARS`, `MIN_GOGURT_INTERVAL_SECONDS`, `MountDiscovery`, `MountedMarkerObservation`, `MountedVolumeAccess`, `MountedVolumeProvider`, `MountedVolumeProviderBinding`, `PathInput`, `default_gogurt_config_file`, `execute_gogurt_action`, `iter_new_mounts`, `load_gogurt_actions`, `plan_gogurt_action`, `plan_gogurt_marker`, `revalidate_gogurt_action`, `route_for_gogurt_marker`, `validate_gogurt_action_executables`, `validate_gogurt_interval`, `write_gogurt_marker` |
-| `module` | "gogurt_core" |
+| <a id="s-9bd8773bba4d"></a>`distribution` | "gogurt-core" |
+| <a id="s-0cb1aa923289"></a>`exports` | additional keys=`DEFAULT_GOGURT_CONFIG_FILENAME`, `GOGURT_EMOJI`, `GOGURT_MOUNTED_VOLUME_PROVIDER_BINDING_FORMAT`, `GOGURT_MOUNTED_VOLUME_PROVIDER_ENTRY_POINT_GROUP`, `GOGURT_PROVIDER_REFERENCE_FORMAT`, `GOGURT_ROUTES_SCHEMA`, `GOGURT_ROUTE_MARKER_FORMAT`, `GOGURT_ROUTE_PATTERN`, `GogurtAction`, `GogurtProviderKind`, `GogurtProviderReference`, `GogurtRouteMarker`, `MAX_GOGURT_INTERVAL_SECONDS`, `MAX_GOGURT_MARKER_IDENTITY_CHARS`, `MIN_GOGURT_INTERVAL_SECONDS`, `MountDiscovery`, `MountedMarkerObservation`, `MountedVolumeAccess`, `MountedVolumeProvider`, `MountedVolumeProviderBinding`, `PathInput`, `default_gogurt_config_file`, `execute_gogurt_action`, `iter_new_mounts`, `load_gogurt_actions`, `plan_gogurt_action`, `plan_gogurt_marker`, `revalidate_gogurt_action`, `route_for_gogurt_marker`, `validate_gogurt_action_executables`, `validate_gogurt_interval`, `write_gogurt_marker` |
+| <a id="s-0cfe90ada577"></a>`module` | "gogurt_core" |
 
 ## Governing policies
 
-- `compatibility/python-api/v1`
+- <a id="pa-6ae383a932e6"></a>[compatibility/python-api/v1](../../../policies/index.md#p-e574772ba506)
 
 ## Evidence
 
 ### Qualification
 
-- `make dist-smoke`
-- `make build`
+- [make dist-smoke](../../../evidence/sources.md#q-0ba2578a3eb7)
+- [make build](../../../evidence/sources.md#q-d1121e35fa7a)
 
 ### Executable sources
 
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `python:gogurt-core` — `reference/gogurt/packages/core/src/gogurt_core/__init__.py::<module>`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
+- [python:gogurt-core](../../../evidence/sources.md#src-13281d4333a7) — `reference/gogurt/packages/core/src/gogurt_core/__init__.py::<module>`
 
 ### Machine authority
 

@@ -8,33 +8,34 @@ Heartbeat Collection Upload Session
 
 | Audit field | Value |
 |---|---|
-| Authority | `riverhog` |
-| Interface | `http` |
-| Family | `collection-upload-sessions` |
+| Authority | [riverhog](../index.md) |
+| Interface | [http](index.md) |
+| Family | [collection-upload-sessions](families/collection-upload-sessions/index.md) |
 | Contract elements | 1 |
 | Extent decisions | 0 |
 
 ## External contract
 
-- `operationId`: heartbeat_collection_upload_session
-- `summary`: Heartbeat Collection Upload Session
-- `security`: `[{"HTTPBearer": []}]`
+<a id="s-2de8c0a8da08"></a>
+- <a id="s-e5d95a2e5ce2"></a>`operationId`: heartbeat_collection_upload_session
+- <a id="s-c55ad8231f23"></a>`summary`: Heartbeat Collection Upload Session
+- <a id="s-1ca0f00f90bb"></a>`security`: `[{"HTTPBearer": []}]`
 
 ### Parameters
 
 | Name | In | Required | Schema |
 |---|---|---:|---|
-| `collection_id` | path | yes | type="integer"; minimum=1 |
+| <a id="s-499841502b84"></a>`collection_id` | path | yes | type="integer"; minimum=1 |
 
 ### Responses
 
 | Status | Description |
 |---|---|
-| `200` | Successful Response |
-| `400` | Bad Request |
-| `401` | Unauthorized |
-| `403` | Forbidden |
-| `500` | Internal Server Error |
+| <a id="s-46f1d39910a4"></a>`200` | Successful Response |
+| <a id="s-8087c1d6a989"></a>`400` | Bad Request |
+| <a id="s-24ff9a6b9d4f"></a>`401` | Unauthorized |
+| <a id="s-5ca01b8ce2d6"></a>`403` | Forbidden |
+| <a id="s-3bd98abc7367"></a>`500` | Internal Server Error |
 
 ## Maintained corroboration
 
@@ -49,19 +50,19 @@ Heartbeat Collection Upload Session
 
 ## Governing policies
 
-- `compatibility/http-api/v1`
+- <a id="pa-f062cd914a70"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0ba)
 
 ## Evidence
 
 ### Qualification
 
-- `make operation-qualification`
-- `make compose-smoke`
+- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459fb8)
+- [make compose-smoke](../../../evidence/sources.md#q-413b0b241ba8)
 
 ### Executable sources
 
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `openapi:riverhog` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
+- [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc960) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
 
 ### Machine authority
 

@@ -8,30 +8,35 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Audit field | Value |
 |---|---|
-| Authority | `riverhog` |
-| Interface | `http` |
-| Family | `schemas` |
+| Authority | [riverhog](../index.md) |
+| Interface | [http](index.md) |
+| Family | [schemas](families/schemas/index.md) |
 | Contract elements | 1 |
 | Extent decisions | 1 |
 
 ## External contract
 
-- `title`: RiverhogEventPage
-- `type`: object
+<a id="s-2637f8f359f8"></a>
+- <a id="s-03bcc2ca62cb"></a>`title`: RiverhogEventPage
+- <a id="s-f47e5da2d357"></a>`type`: object
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| `events` | yes | type="array"; items=(#/components/schemas/RiverhogLifecycleEvent) |  |
-| `has_more` | yes | type="boolean" |  |
-| `next_cursor` | yes | #/components/schemas/LifecycleEventCursor |  |
+| <a id="s-fcfd3592d122"></a>`events` | yes | type="array"; items=(#/components/schemas/RiverhogLifecycleEvent) |  |
+| <a id="s-3508bd425f52"></a>`has_more` | yes | type="boolean" |  |
+| <a id="s-c6adcba3bbc2"></a>`next_cursor` | yes | #/components/schemas/LifecycleEventCursor |  |
 
 ### Progression, limits, and lifecycle
 
-| Dimension | Unit | Policy | Bounds or reason |
-|---|---|---|---|
-| cardinality | items | `segmented_no_total_max` | reason=bounded-route-page |
+#### [extent-rule/route-progression/v1](../../../policies/index.md#p-6b76b527cb21)
+
+Shared facts for every subject below: progression={"cursor_parameter":"after","kind":"cursor-feed","limit_parameter":"limit"}; reason="bounded-route-page"
+
+| Applies to | Contract | Bounds or reason |
+|---|---|---|
+| [field events](#s-fcfd3592d122) | `cardinality · items · segmented_no_total_max` | shared above |
 
 ## Maintained corroboration
 
@@ -42,20 +47,20 @@ Exact externally visible contract owned by this semantic dossier.
 
 ## Governing policies
 
-- `compatibility/http-api/v1`
-- `extent-rule/route-progression/v1`
+- <a id="pa-49ff7071b18a"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0ba)
+- <a id="pa-06fe2b81df53"></a>[extent-rule/route-progression/v1](../../../policies/index.md#p-6b76b527cb21)
 
 ## Evidence
 
 ### Qualification
 
-- `make operation-qualification`
-- `make compose-smoke`
+- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459fb8)
+- [make compose-smoke](../../../evidence/sources.md#q-413b0b241ba8)
 
 ### Executable sources
 
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `openapi:riverhog` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
+- [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc960) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
 
 ### Machine authority
 

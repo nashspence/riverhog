@@ -8,18 +8,19 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Audit field | Value |
 |---|---|
-| Authority | `riverhog` |
-| Interface | `http` |
-| Family | `schemas` |
+| Authority | [riverhog](../index.md) |
+| Interface | [http](index.md) |
+| Family | [schemas](families/schemas/index.md) |
 | Contract elements | 1 |
 | Extent decisions | 0 |
 
 ## External contract
 
+<a id="s-0b5dc86608f1"></a>
 | Field | Shape |
 |---|---|
-| `discriminator` | additional keys=`mapping`, `propertyName` |
-| `oneOf` | items=#/components/schemas/ProvenanceTraceJournalItemOut \| #/components/schemas/ProvenanceTraceExternalStateReferenceItemOut |
+| <a id="s-46d95c469442"></a>`discriminator` | additional keys=`mapping`, `propertyName` |
+| <a id="s-a90b65adf907"></a>`oneOf` | items=#/components/schemas/ProvenanceTraceJournalItemOut \| #/components/schemas/ProvenanceTraceExternalStateReferenceItemOut |
 
 ## Maintained corroboration
 
@@ -30,19 +31,19 @@ Exact externally visible contract owned by this semantic dossier.
 
 ## Governing policies
 
-- `compatibility/http-api/v1`
+- <a id="pa-fd12fe204bdb"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0ba)
 
 ## Evidence
 
 ### Qualification
 
-- `make operation-qualification`
-- `make compose-smoke`
+- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459fb8)
+- [make compose-smoke](../../../evidence/sources.md#q-413b0b241ba8)
 
 ### Executable sources
 
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `openapi:riverhog` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
+- [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc960) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
 
 ### Machine authority
 

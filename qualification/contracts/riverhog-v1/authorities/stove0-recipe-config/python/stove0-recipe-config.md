@@ -8,35 +8,36 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Audit field | Value |
 |---|---|
-| Authority | `stove0-recipe-config` |
-| Interface | `python` |
-| Family | `modules` |
+| Authority | [stove0-recipe-config](../index.md) |
+| Interface | [python](index.md) |
+| Family | [modules](index.md#f-567c3c0c5481) |
 | Contract elements | 1 |
 | Extent decisions | 0 |
 
 ## External contract
 
+<a id="s-74ec1d44190f"></a>
 | Field | Shape |
 |---|---|
-| `distribution` | "stove0-recipe-config" |
-| `exports` | additional keys=`ArtifactAssociation`, `ArtifactFactBinding`, `ArtifactRule`, `FactPredicate`, `ObserverUse`, `OperationProjection`, `RecipeBranch`, `RecipeCatalog`, `RecipeCoordinationRoute`, `RecipeDefinition`, `RecipeJoin`, `RecipeJoinMember`, `RecipeRoute` |
-| `module` | "stove0_recipe_config" |
+| <a id="s-82a5e2713b05"></a>`distribution` | "stove0-recipe-config" |
+| <a id="s-3d809651a614"></a>`exports` | additional keys=`ArtifactAssociation`, `ArtifactFactBinding`, `ArtifactRule`, `FactPredicate`, `ObserverUse`, `OperationProjection`, `RecipeBranch`, `RecipeCatalog`, `RecipeCoordinationRoute`, `RecipeDefinition`, `RecipeJoin`, `RecipeJoinMember`, `RecipeRoute` |
+| <a id="s-d666a91c65c9"></a>`module` | "stove0_recipe_config" |
 
 ## Governing policies
 
-- `compatibility/python-api/v1`
+- <a id="pa-89d38e610beb"></a>[compatibility/python-api/v1](../../../policies/index.md#p-e574772ba506)
 
 ## Evidence
 
 ### Qualification
 
-- `make dist-smoke`
-- `make build`
+- [make dist-smoke](../../../evidence/sources.md#q-0ba2578a3eb7)
+- [make build](../../../evidence/sources.md#q-d1121e35fa7a)
 
 ### Executable sources
 
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `python:stove0-recipe-config` — `reference/stove0/packages/recipe-config/src/stove0_recipe_config/__init__.py::<module>`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
+- [python:stove0-recipe-config](../../../evidence/sources.md#src-aabd9aa97357) — `reference/stove0/packages/recipe-config/src/stove0_recipe_config/__init__.py::<module>`
 
 ### Machine authority
 

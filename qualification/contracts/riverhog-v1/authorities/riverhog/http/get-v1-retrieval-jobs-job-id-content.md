@@ -8,43 +8,44 @@ Download Retrieval File
 
 | Audit field | Value |
 |---|---|
-| Authority | `riverhog` |
-| Interface | `http` |
-| Family | `retrieval-jobs` |
+| Authority | [riverhog](../index.md) |
+| Interface | [http](index.md) |
+| Family | [retrieval-jobs](families/retrieval-jobs/index.md) |
 | Contract elements | 1 |
 | Extent decisions | 0 |
 
 ## External contract
 
-- `operationId`: download_retrieval_file
-- `summary`: Download Retrieval File
-- `security`: `[{"HTTPBearer": []}]`
+<a id="s-c5492954bdc4"></a>
+- <a id="s-5335e8d6ef8a"></a>`operationId`: download_retrieval_file
+- <a id="s-b38705bf02b9"></a>`summary`: Download Retrieval File
+- <a id="s-8748e199d3f0"></a>`security`: `[{"HTTPBearer": []}]`
 
 ### Parameters
 
 | Name | In | Required | Schema |
 |---|---|---:|---|
-| `job_id` | path | yes | type="string" |
-| `collection_id` | query | yes | #/components/schemas/CollectionIdParameter |
-| `path` | query | yes | type="string" |
-| `If-Match` | header | yes | type="string"; pattern="^\"[0-9a-f]{64}\"$" |
-| `Range` | header | no | anyOf=type="string" \| type="null" |
-| `If-None-Match` | header | no | anyOf=type="string" \| type="null" |
+| <a id="s-4ac607f90985"></a>`job_id` | path | yes | type="string" |
+| <a id="s-0f44a5997d7c"></a>`collection_id` | query | yes | #/components/schemas/CollectionIdParameter |
+| <a id="s-c2dded5d77cc"></a>`path` | query | yes | type="string" |
+| <a id="s-b26dd4f5ac63"></a>`If-Match` | header | yes | type="string"; pattern="^\"[0-9a-f]{64}\"$" |
+| <a id="s-2a974ee7d83a"></a>`Range` | header | no | anyOf=type="string" \| type="null" |
+| <a id="s-a7a12d14ae64"></a>`If-None-Match` | header | no | anyOf=type="string" \| type="null" |
 
 ### Responses
 
 | Status | Description |
 |---|---|
-| `200` | Successful Response |
-| `400` | Bad Request |
-| `401` | Unauthorized |
-| `403` | Forbidden |
-| `404` | Not Found |
-| `409` | Conflict |
-| `412` | Precondition Failed |
-| `416` | Requested Range Not Satisfiable |
-| `429` | Too Many Requests |
-| `500` | Internal Server Error |
+| <a id="s-8aae1aafceb1"></a>`200` | Successful Response |
+| <a id="s-96028b3e13ad"></a>`400` | Bad Request |
+| <a id="s-8c8a839936bd"></a>`401` | Unauthorized |
+| <a id="s-34190f6e0296"></a>`403` | Forbidden |
+| <a id="s-ef41c9f9cabf"></a>`404` | Not Found |
+| <a id="s-7fc74353a8c7"></a>`409` | Conflict |
+| <a id="s-eb7df6843012"></a>`412` | Precondition Failed |
+| <a id="s-fe427dd0123b"></a>`416` | Requested Range Not Satisfiable |
+| <a id="s-d380cee0b599"></a>`429` | Too Many Requests |
+| <a id="s-fd7dcc0ebcb6"></a>`500` | Internal Server Error |
 
 ## Maintained corroboration
 
@@ -59,19 +60,19 @@ Download Retrieval File
 
 ## Governing policies
 
-- `compatibility/http-api/v1`
+- <a id="pa-7db824b54882"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0ba)
 
 ## Evidence
 
 ### Qualification
 
-- `make operation-qualification`
-- `make compose-smoke`
+- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459fb8)
+- [make compose-smoke](../../../evidence/sources.md#q-413b0b241ba8)
 
 ### Executable sources
 
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `openapi:riverhog` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
+- [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc960) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
 
 ### Machine authority
 

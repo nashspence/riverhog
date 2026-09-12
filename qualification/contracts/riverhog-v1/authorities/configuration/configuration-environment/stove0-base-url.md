@@ -8,34 +8,35 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Audit field | Value |
 |---|---|
-| Authority | `configuration` |
-| Interface | `configuration-environment` |
-| Family | `variables` |
+| Authority | [configuration](../index.md) |
+| Interface | [configuration-environment](index.md) |
+| Family | [variables](families/variables/index.md) |
 | Contract elements | 1 |
 | Extent decisions | 0 |
 
 ## External contract
 
+<a id="s-205dff964bfa"></a>
 | Field | Shape |
 |---|---|
-| `consumers` | ["stove0-api-client"] |
-| `name` | "STOVE0_BASE_URL" |
+| <a id="s-668719968c30"></a>`consumers` | ["stove0-api-client"] |
+| <a id="s-663968b1c70a"></a>`name` | "STOVE0_BASE_URL" |
 
 ## Governing policies
 
-- `compatibility/configuration/v1`
+- <a id="pa-a44dff769167"></a>[compatibility/configuration/v1](../../../policies/index.md#p-8dc08bb46173)
 
 ## Evidence
 
 ### Qualification
 
-- `make unit`
-- `make compose-smoke`
+- [make unit](../../../evidence/sources.md#q-ce47068f504c)
+- [make compose-smoke](../../../evidence/sources.md#q-413b0b241ba8)
 
 ### Executable sources
 
-- `configuration-environment:STOVE0_BASE_URL` — `configuration-environment:STOVE0_BASE_URL`
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
+- [configuration-environment:STOVE0_BASE_URL](../../../evidence/sources.md#src-2df277ee96a3) — `configuration-environment:STOVE0_BASE_URL`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
 
 ### Machine authority
 

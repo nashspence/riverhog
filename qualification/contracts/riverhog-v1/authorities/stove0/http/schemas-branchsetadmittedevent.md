@@ -8,29 +8,30 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Audit field | Value |
 |---|---|
-| Authority | `stove0` |
-| Interface | `http` |
-| Family | `schemas` |
+| Authority | [stove0](../index.md) |
+| Interface | [http](index.md) |
+| Family | [schemas](families/schemas/index.md) |
 | Contract elements | 1 |
 | Extent decisions | 0 |
 
 ## External contract
 
-- `title`: BranchSetAdmittedEvent
-- `type`: object
+<a id="s-751c9ba6ad5c"></a>
+- <a id="s-81b45141f49b"></a>`title`: BranchSetAdmittedEvent
+- <a id="s-90f8fe86215f"></a>`type`: object
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| `data` | yes | #/components/schemas/BranchSetAdmittedEventData |  |
-| `datacontenttype` | no | type="string"; const="application/json" |  |
-| `id` | yes | type="string"; minLength=1 |  |
-| `source` | yes | type="string"; const="urn:riverhog:stove0" |  |
-| `specversion` | no | type="string"; const="1.0" |  |
-| `subject` | yes | type="string"; minLength=1 |  |
-| `time` | yes | type="string" |  |
-| `type` | yes | type="string"; const="io.riverhog.stove0.branch-set.admitted" |  |
+| <a id="s-99cbec3f8b61"></a>`data` | yes | #/components/schemas/BranchSetAdmittedEventData |  |
+| <a id="s-0c20775d0b0d"></a>`datacontenttype` | no | type="string"; const="application/json" |  |
+| <a id="s-db8b0a166a1c"></a>`id` | yes | type="string"; minLength=1 |  |
+| <a id="s-2731606c328a"></a>`source` | yes | type="string"; const="urn:riverhog:stove0" |  |
+| <a id="s-f66f2438fecc"></a>`specversion` | no | type="string"; const="1.0" |  |
+| <a id="s-5021293ee94c"></a>`subject` | yes | type="string"; minLength=1 |  |
+| <a id="s-a9160be71a4b"></a>`time` | yes | type="string" |  |
+| <a id="s-c424b8e8e303"></a>`type` | yes | type="string"; const="io.riverhog.stove0.branch-set.admitted" |  |
 
 ## Maintained corroboration
 
@@ -40,19 +41,19 @@ Exact externally visible contract owned by this semantic dossier.
 
 ## Governing policies
 
-- `compatibility/http-api/v1`
+- <a id="pa-c94579351936"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0ba)
 
 ## Evidence
 
 ### Qualification
 
-- `make operation-qualification`
-- `make compose-smoke`
+- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459fb8)
+- [make compose-smoke](../../../evidence/sources.md#q-413b0b241ba8)
 
 ### Executable sources
 
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `openapi:stove0` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
+- [openapi:stove0](../../../evidence/sources.md#src-52e6e3212451) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
 
 ### Machine authority
 

@@ -8,26 +8,27 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Audit field | Value |
 |---|---|
-| Authority | `riverhog` |
-| Interface | `operation` |
-| Family | `collections` |
+| Authority | [riverhog](../index.md) |
+| Interface | [operation](index.md) |
+| Family | [collections](families/collections/index.md) |
 | Contract elements | 1 |
 | Extent decisions | 0 |
 
 ## External contract
 
+<a id="s-d7e13b605d4a"></a>
 | Concern | Contract |
 |---|---|
-| `application` | riverhog |
-| `classification` | human-cli+json |
-| `cli_commands` | ["collection provenance agents"] |
-| `client` | ApiClient |
-| `method` | GET |
-| `operation_id` | list_collection_provenance_journal_agents |
-| `path` | /v1/collections/{collection_id}/provenance/journals/{journal_id}/agents |
-| `provider_evidence` | None |
-| `read_collection` | {"default_page_size": 25, "kind": "mutable-browse", "maximum_page_size": 100, "next_page_token_field": "next_page_token", "page_size_parameter": "page_size", "page_token_parameter": "page_token"} |
-| `response_authority` | http-json |
+| <a id="s-6d0fac0d3a72"></a>`application` | riverhog |
+| <a id="s-bbd37b014750"></a>`classification` | human-cli+json |
+| <a id="s-eb7c94622ad4"></a>`cli_commands` | ["collection provenance agents"] |
+| <a id="s-f0e60d8db00f"></a>`client` | ApiClient |
+| <a id="s-e6856599842b"></a>`method` | GET |
+| <a id="s-dffe1128dc7d"></a>`operation_id` | list_collection_provenance_journal_agents |
+| <a id="s-c95d2ae49e21"></a>`path` | /v1/collections/{collection_id}/provenance/journals/{journal_id}/agents |
+| <a id="s-9a6c017e6d9c"></a>`provider_evidence` | None |
+| <a id="s-8c3bc847e24b"></a>`read_collection` | {"default_page_size": 25, "kind": "mutable-browse", "maximum_page_size": 100, "next_page_token_field": "next_page_token", "page_size_parameter": "page_size", "page_token_parameter": "page_token"} |
+| <a id="s-153a9a8984e6"></a>`response_authority` | http-json |
 
 ## Maintained corroboration
 
@@ -38,20 +39,20 @@ Exact externally visible contract owned by this semantic dossier.
 
 ## Governing policies
 
-- `compatibility/cli/v1`
-- `compatibility/components/v1`
-- `compatibility/http-api/v1`
+- <a id="pa-aaacb1397737"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de7f)
+- <a id="pa-91e5b6ef0be6"></a>[compatibility/components/v1](../../../policies/index.md#p-95e9a1225947)
+- <a id="pa-f50d0df5fcb1"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0ba)
 
 ## Evidence
 
 ### Qualification
 
-- `make operation-qualification`
+- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459fb8)
 
 ### Executable sources
 
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `operations:operation-matrix` — `scripts/operation_qualification.py::operation_matrix`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
+- [operations:operation-matrix](../../../evidence/sources.md#src-b032bdc56b3f) — `scripts/operation_qualification.py::operation_matrix`
 
 ### Machine authority
 

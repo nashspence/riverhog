@@ -8,38 +8,39 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Audit field | Value |
 |---|---|
-| Authority | `gogurt-listener-runtime` |
-| Interface | `boundary` |
-| Family | `components` |
+| Authority | [gogurt-listener-runtime](../index.md) |
+| Interface | [boundary](index.md) |
+| Family | [components](index.md#f-42748ff5a6a6) |
 | Contract elements | 1 |
 | Extent decisions | 0 |
 
 ## External contract
 
+<a id="s-96efc60e3fdc"></a>
 | Field | Shape |
 |---|---|
-| `console_scripts` | empty object |
-| `dependencies` | ["config-validation","gogurt-core"] |
-| `distribution` | "gogurt-listener-runtime" |
-| `optional_dependencies` | empty object |
-| `path` | "reference/gogurt/packages/listener-runtime" |
-| `role` | "reusable_library" |
+| <a id="s-d0c35132f533"></a>`console_scripts` | empty object |
+| <a id="s-3957e1e5cc4b"></a>`dependencies` | ["config-validation","gogurt-core"] |
+| <a id="s-e8bac1c419d5"></a>`distribution` | "gogurt-listener-runtime" |
+| <a id="s-399b0ce340bf"></a>`optional_dependencies` | empty object |
+| <a id="s-f6917758f1d2"></a>`path` | "reference/gogurt/packages/listener-runtime" |
+| <a id="s-317054c50875"></a>`role` | "reusable_library" |
 
 ## Governing policies
 
-- `boundary/frozen-authority/v1`
+- <a id="pa-2dcdaeaf80c2"></a>[boundary/frozen-authority/v1](../../../policies/index.md#p-61994d3f0fa8)
 
 ## Evidence
 
 ### Qualification
 
-- `make release-check`
-- `make build`
+- [make release-check](../../../evidence/sources.md#q-8d8d22d6a6b1)
+- [make build](../../../evidence/sources.md#q-d1121e35fa7a)
 
 ### Executable sources
 
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `release:release.toml` — `release.toml`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
+- [release:release.toml](../../../evidence/sources.md#src-c5380dbe5fe0) — `release.toml`
 
 ### Machine authority
 

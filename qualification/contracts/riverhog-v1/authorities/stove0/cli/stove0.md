@@ -8,9 +8,9 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Audit field | Value |
 |---|---|
-| Authority | `stove0` |
-| Interface | `cli` |
-| Family | `root` |
+| Authority | [stove0](../index.md) |
+| Interface | [cli](index.md) |
+| Family | [root](families/root/index.md) |
 | Contract elements | 1 |
 | Extent decisions | 7 |
 
@@ -21,42 +21,46 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Name | Kind | Required | Type | Options |
 |---|---|---:|---|---|
-| `version` | TyperOption | no | {'class': 'typer._click.types.BoolParamType', 'name': 'boolean'} | --version |
-| `base_url` | TyperOption | no | {'class': 'typer._click.types.StringParamType', 'name': 'text'} | --base-url |
-| `token` | TyperOption | no | {'class': 'typer._click.types.StringParamType', 'name': 'text'} | --token |
-| `json_output` | TyperOption | no | {'class': 'typer._click.types.BoolParamType', 'name': 'boolean'} | --json |
-| `allow_insecure_http` | TyperOption | no | {'class': 'typer._click.types.BoolParamType', 'name': 'boolean'} | --allow-insecure-http |
-| `install_completion` | TyperOption | no | {'class': 'typer._click.types.BoolParamType', 'name': 'boolean'} | --install-completion |
-| `show_completion` | TyperOption | no | {'class': 'typer._click.types.BoolParamType', 'name': 'boolean'} | --show-completion |
+| <a id="s-791a5ac62ab7"></a>`version` | TyperOption | no | {'class': 'typer._click.types.BoolParamType', 'name': 'boolean'} | --version |
+| <a id="s-ddcd5174d2b6"></a>`base_url` | TyperOption | no | {'class': 'typer._click.types.StringParamType', 'name': 'text'} | --base-url |
+| <a id="s-7dc0e8294bca"></a>`token` | TyperOption | no | {'class': 'typer._click.types.StringParamType', 'name': 'text'} | --token |
+| <a id="s-f62c39ef757f"></a>`json_output` | TyperOption | no | {'class': 'typer._click.types.BoolParamType', 'name': 'boolean'} | --json |
+| <a id="s-aae0a62f35f5"></a>`allow_insecure_http` | TyperOption | no | {'class': 'typer._click.types.BoolParamType', 'name': 'boolean'} | --allow-insecure-http |
+| <a id="s-54084edd100e"></a>`install_completion` | TyperOption | no | {'class': 'typer._click.types.BoolParamType', 'name': 'boolean'} | --install-completion |
+| <a id="s-5216637289dc"></a>`show_completion` | TyperOption | no | {'class': 'typer._click.types.BoolParamType', 'name': 'boolean'} | --show-completion |
 
 ### Progression, limits, and lifecycle
 
-| Dimension | Unit | Policy | Bounds or reason |
-|---|---|---|---|
-| cardinality | values-per-occurrence | `fixed` | maximum=1, minimum=1, reason=fixed-command-argument-arity |
-| cardinality | values-per-occurrence | `fixed` | maximum=1, minimum=1, reason=fixed-command-argument-arity |
-| cardinality | values-per-occurrence | `fixed` | maximum=1, minimum=1, reason=fixed-command-argument-arity |
-| cardinality | values-per-occurrence | `fixed` | maximum=1, minimum=1, reason=fixed-command-argument-arity |
-| cardinality | values-per-occurrence | `fixed` | maximum=1, minimum=1, reason=fixed-command-argument-arity |
-| cardinality | values-per-occurrence | `fixed` | maximum=1, minimum=1, reason=fixed-command-argument-arity |
-| cardinality | values-per-occurrence | `fixed` | maximum=1, minimum=1, reason=fixed-command-argument-arity |
+#### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
+
+Shared facts for every subject below: maximum=1; minimum=1; reason="fixed-command-argument-arity"; source_constraint={"field":"nargs"}
+
+| Applies to | Contract | Bounds or reason |
+|---|---|---|
+| [CLI parameter --allow-insecure-http](#s-aae0a62f35f5) | `cardinality · values-per-occurrence · fixed` | shared above |
+| [CLI parameter --base-url](#s-ddcd5174d2b6) | `cardinality · values-per-occurrence · fixed` | shared above |
+| [CLI parameter --install-completion](#s-54084edd100e) | `cardinality · values-per-occurrence · fixed` | shared above |
+| [CLI parameter --json](#s-f62c39ef757f) | `cardinality · values-per-occurrence · fixed` | shared above |
+| [CLI parameter --show-completion](#s-5216637289dc) | `cardinality · values-per-occurrence · fixed` | shared above |
+| [CLI parameter --token](#s-7dc0e8294bca) | `cardinality · values-per-occurrence · fixed` | shared above |
+| [CLI parameter --version](#s-791a5ac62ab7) | `cardinality · values-per-occurrence · fixed` | shared above |
 
 ## Governing policies
 
-- `compatibility/cli/v1`
-- `extent-rule/schema-bound/v1`
+- <a id="pa-d09e0f454f11"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de7f)
+- <a id="pa-327fa397f61f"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
 
 ## Evidence
 
 ### Qualification
 
-- `make dist-smoke`
-- `make operation-qualification`
+- [make dist-smoke](../../../evidence/sources.md#q-0ba2578a3eb7)
+- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459fb8)
 
 ### Executable sources
 
-- `cli:stove0` — `reference/stove0/application/client/src/stove0_cli/main.py::<module>`
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
+- [cli:stove0](../../../evidence/sources.md#src-6203ae7d8812) — `reference/stove0/application/client/src/stove0_cli/main.py::<module>`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
 
 ### Machine authority
 

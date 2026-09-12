@@ -8,31 +8,32 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Audit field | Value |
 |---|---|
-| Authority | `extent-contract` |
-| Interface | `extent` |
-| Family | `policy` |
+| Authority | [extent-contract](../index.md) |
+| Interface | [extent](index.md) |
+| Family | [policy](index.md#f-259f5e46e289) |
 | Contract elements | 1 |
 | Extent decisions | 0 |
 
 ## External contract
 
+<a id="s-8b6c82141fe6"></a>
 - Shape: "5d4140fe5135d4f71b2d86c1153a8ad70862c74572e6723b2712cc9e8e4ee5a8"
 
 ## Governing policies
 
-- `extent-principle/logical-totals/v1`
+- <a id="pa-c31f579e0b03"></a>[extent-principle/logical-totals/v1](../../../policies/index.md#p-cfe2e12ee677)
 
 ## Evidence
 
 ### Qualification
 
-- `make contract-freeze`
-- `make operation-qualification`
+- [make contract-freeze](../../../evidence/sources.md#q-8c74349e71e4)
+- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459fb8)
 
 ### Executable sources
 
-- `extent:extent-contract` — `scripts/extent_contract.py::extent_projection`
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
+- [extent:extent-contract](../../../evidence/sources.md#src-5ac94d0a12e8) — `scripts/extent_contract.py::extent_projection`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
 
 ### Machine authority
 

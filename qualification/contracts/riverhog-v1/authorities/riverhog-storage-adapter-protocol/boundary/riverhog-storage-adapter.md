@@ -8,31 +8,32 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Audit field | Value |
 |---|---|
-| Authority | `riverhog-storage-adapter-protocol` |
-| Interface | `boundary` |
-| Family | `process-extensions` |
+| Authority | [riverhog-storage-adapter-protocol](../index.md) |
+| Interface | [boundary](index.md) |
+| Family | [process-extensions](index.md#f-b1439aa4ae50) |
 | Contract elements | 1 |
 | Extent decisions | 0 |
 
 ## External contract
 
-- `protocols`: ["riverhog-storage-adapter/v1"]
+<a id="s-6bf0ed943c52"></a>
+- <a id="s-28dac1875ac6"></a>`protocols`: ["riverhog-storage-adapter/v1"]
 
 ## Governing policies
 
-- `boundary/frozen-authority/v1`
+- <a id="pa-ff9ecb205bf7"></a>[boundary/frozen-authority/v1](../../../policies/index.md#p-61994d3f0fa8)
 
 ## Evidence
 
 ### Qualification
 
-- `make release-check`
-- `make build`
+- [make release-check](../../../evidence/sources.md#q-8d8d22d6a6b1)
+- [make build](../../../evidence/sources.md#q-d1121e35fa7a)
 
 ### Executable sources
 
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `release:release.toml` — `release.toml`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
+- [release:release.toml](../../../evidence/sources.md#src-c5380dbe5fe0) — `release.toml`
 
 ### Machine authority
 

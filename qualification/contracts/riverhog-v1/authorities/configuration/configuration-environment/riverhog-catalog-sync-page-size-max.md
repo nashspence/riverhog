@@ -8,41 +8,46 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Audit field | Value |
 |---|---|
-| Authority | `configuration` |
-| Interface | `configuration-environment` |
-| Family | `variables` |
+| Authority | [configuration](../index.md) |
+| Interface | [configuration-environment](index.md) |
+| Family | [variables](families/variables/index.md) |
 | Contract elements | 1 |
 | Extent decisions | 1 |
 
 ## External contract
 
+<a id="s-c4b672867c17"></a>
 | Field | Shape |
 |---|---|
-| `consumers` | ["riverhog-server"] |
-| `name` | "RIVERHOG_CATALOG_SYNC_PAGE_SIZE_MAX" |
+| <a id="s-396c43f46142"></a>`consumers` | ["riverhog-server"] |
+| <a id="s-019de684d771"></a>`name` | "RIVERHOG_CATALOG_SYNC_PAGE_SIZE_MAX" |
 
 ### Progression, limits, and lifecycle
 
-| Dimension | Unit | Policy | Bounds or reason |
-|---|---|---|---|
-| value | configured-value | `operational_policy` | maximum=None, reason=operator-configured-capacity |
+#### [extent-rule/configured-capacity/v1](../../../policies/index.md#p-3ebc61fc9972)
+
+Shared facts for every subject below: configuration="RIVERHOG_CATALOG_SYNC_PAGE_SIZE_MAX"; maximum=null; reason="operator-configured-capacity"
+
+| Applies to | Contract | Bounds or reason |
+|---|---|---|
+| [RIVERHOG_CATALOG_SYNC_PAGE_SIZE_MAX](#s-c4b672867c17) | `value · configured-value · operational_policy` | shared above |
 
 ## Governing policies
 
-- `compatibility/configuration/v1`
-- `extent-rule/configured-capacity/v1`
+- <a id="pa-b7d3b7a8610e"></a>[compatibility/configuration/v1](../../../policies/index.md#p-8dc08bb46173)
+- <a id="pa-3a338fcaf418"></a>[extent-rule/configured-capacity/v1](../../../policies/index.md#p-3ebc61fc9972)
 
 ## Evidence
 
 ### Qualification
 
-- `make unit`
-- `make compose-smoke`
+- [make unit](../../../evidence/sources.md#q-ce47068f504c)
+- [make compose-smoke](../../../evidence/sources.md#q-413b0b241ba8)
 
 ### Executable sources
 
-- `configuration-environment:RIVERHOG_CATALOG_SYNC_PAGE_SIZE_MAX` — `configuration-environment:RIVERHOG_CATALOG_SYNC_PAGE_SIZE_MAX`
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
+- [configuration-environment:RIVERHOG_CATALOG_SYNC_PAGE_SIZE_MAX](../../../evidence/sources.md#src-4be5bf418d0e) — `configuration-environment:RIVERHOG_CATALOG_SYNC_PAGE_SIZE_MAX`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
 
 ### Machine authority
 

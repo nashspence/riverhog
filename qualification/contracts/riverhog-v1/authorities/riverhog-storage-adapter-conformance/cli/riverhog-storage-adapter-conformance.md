@@ -8,47 +8,51 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Audit field | Value |
 |---|---|
-| Authority | `riverhog-storage-adapter-conformance` |
-| Interface | `cli` |
-| Family | `root` |
+| Authority | [riverhog-storage-adapter-conformance](../index.md) |
+| Interface | [cli](index.md) |
+| Family | [root](index.md#f-d81688a5b8f7) |
 | Contract elements | 1 |
 | Extent decisions | 1 |
 
 ## External contract
 
-- Parser name: `riverhog-storage-adapter-conformance`
+- <a id="s-0d03ef177794"></a>Parser name: `riverhog-storage-adapter-conformance`
 
 ### Parameters
 
 | Name | Kind | Required | Type | Options |
 |---|---|---:|---|---|
-| `` | _StoreAction | yes |  | --base-url |
-| `` | _StoreAction | yes | Path | --token-file |
-| `` | _StoreAction | yes |  | --object-prefix |
-| `` | _StoreTrueAction | no |  | --allow-insecure-http |
+| <a id="s-da9cd0d5da4c"></a>`` | _StoreAction | yes |  | --base-url |
+| <a id="s-4db4323e5a5b"></a>`` | _StoreAction | yes | Path | --token-file |
+| <a id="s-76ce9fec003e"></a>`` | _StoreAction | yes |  | --object-prefix |
+| <a id="s-785a5f2564ac"></a>`` | _StoreTrueAction | no |  | --allow-insecure-http |
 
 ### Progression, limits, and lifecycle
 
-| Dimension | Unit | Policy | Bounds or reason |
-|---|---|---|---|
-| cardinality | values-per-occurrence | `fixed` | maximum=0, minimum=0, reason=fixed-command-argument-arity |
+#### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
+
+Shared facts for every subject below: maximum=0; minimum=0; reason="fixed-command-argument-arity"; source_constraint={"field":"nargs"}
+
+| Applies to | Contract | Bounds or reason |
+|---|---|---|
+| [CLI parameter --allow-insecure-http](#s-785a5f2564ac) | `cardinality · values-per-occurrence · fixed` | shared above |
 
 ## Governing policies
 
-- `compatibility/cli/v1`
-- `extent-rule/schema-bound/v1`
+- <a id="pa-7f4640187144"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de7f)
+- <a id="pa-4cca82f579b6"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
 
 ## Evidence
 
 ### Qualification
 
-- `make dist-smoke`
-- `make operation-qualification`
+- [make dist-smoke](../../../evidence/sources.md#q-0ba2578a3eb7)
+- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459fb8)
 
 ### Executable sources
 
-- `cli:riverhog-storage-adapter-conformance` — `packages/riverhog-storage-adapter-support/src/riverhog_storage_adapter_support/conformance.py::<module>`
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
+- [cli:riverhog-storage-adapter-conformance](../../../evidence/sources.md#src-7ab923569bbb) — `packages/riverhog-storage-adapter-support/src/riverhog_storage_adapter_support/conformance.py::<module>`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
 
 ### Machine authority
 

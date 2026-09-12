@@ -8,41 +8,46 @@ Revoke App Key
 
 | Audit field | Value |
 |---|---|
-| Authority | `riverhog` |
-| Interface | `http` |
-| Family | `apps` |
+| Authority | [riverhog](../index.md) |
+| Interface | [http](index.md) |
+| Family | [apps](families/apps/index.md) |
 | Contract elements | 1 |
 | Extent decisions | 1 |
 
 ## External contract
 
-- `operationId`: revoke_app_key
-- `summary`: Revoke App Key
-- `security`: `[{"HTTPBearer": []}]`
+<a id="s-34033d480c45"></a>
+- <a id="s-e43d5ad244a6"></a>`operationId`: revoke_app_key
+- <a id="s-0167227e491e"></a>`summary`: Revoke App Key
+- <a id="s-a81a4de2ec04"></a>`security`: `[{"HTTPBearer": []}]`
 
 ### Parameters
 
 | Name | In | Required | Schema |
 |---|---|---:|---|
-| `app` | path | yes | type="string"; pattern="^[a-z0-9]+(?:-[a-z0-9]+)*$" |
-| `key_id` | path | yes | type="string"; pattern="^[0-9a-f]{16}$" |
+| <a id="s-8f6cfd79bdeb"></a>`app` | path | yes | type="string"; pattern="^[a-z0-9]+(?:-[a-z0-9]+)*$" |
+| <a id="s-aa96c7b4485d"></a>`key_id` | path | yes | type="string"; pattern="^[0-9a-f]{16}$" |
 
 ### Responses
 
 | Status | Description |
 |---|---|
-| `200` | Successful Response |
-| `400` | Bad Request |
-| `401` | Unauthorized |
-| `403` | Forbidden |
-| `404` | Not Found |
-| `500` | Internal Server Error |
+| <a id="s-bb1d20bb4c5b"></a>`200` | Successful Response |
+| <a id="s-3ac0fd3dfbe6"></a>`400` | Bad Request |
+| <a id="s-cd3c29583499"></a>`401` | Unauthorized |
+| <a id="s-d24fbe56d824"></a>`403` | Forbidden |
+| <a id="s-719e1866d783"></a>`404` | Not Found |
+| <a id="s-39a6b94286e2"></a>`500` | Internal Server Error |
 
 ### Progression, limits, and lifecycle
 
-| Dimension | Unit | Policy | Bounds or reason |
-|---|---|---|---|
-| length | characters | `fixed` | maximum=16, minimum=16, reason=fixed-public-representation |
+#### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
+
+Shared facts for every subject below: maximum=16; minimum=16; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{16}$"}
+
+| Applies to | Contract | Bounds or reason |
+|---|---|---|
+| <a id="s-bfbab77e7d34"></a>parameter key_id | `length · characters · fixed` | shared above |
 
 ## Maintained corroboration
 
@@ -57,20 +62,20 @@ Revoke App Key
 
 ## Governing policies
 
-- `compatibility/http-api/v1`
-- `extent-rule/schema-bound/v1`
+- <a id="pa-73d6d4444447"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0ba)
+- <a id="pa-4974399303ef"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
 
 ## Evidence
 
 ### Qualification
 
-- `make operation-qualification`
-- `make compose-smoke`
+- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459fb8)
+- [make compose-smoke](../../../evidence/sources.md#q-413b0b241ba8)
 
 ### Executable sources
 
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `openapi:riverhog` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
+- [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc960) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
 
 ### Machine authority
 

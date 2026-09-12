@@ -8,57 +8,62 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Audit field | Value |
 |---|---|
-| Authority | `riverhog-provenance-windows-contracts` |
-| Interface | `protocol` |
-| Family | `schemas` |
+| Authority | [riverhog-provenance-windows-contracts](../index.md) |
+| Interface | [protocol](index.md) |
+| Family | [schemas](index.md#f-78a2bea4a4b2) |
 | Contract elements | 1 |
 | Extent decisions | 2 |
 
 ## External contract
 
-- `$id`: https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/windows-usn-record.json
-- `type`: object
+<a id="s-740b4aabb0ad"></a>
+- <a id="s-6ad7b6679147"></a>`$id`: https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/windows-usn-record.json
+- <a id="s-e652a64a5e25"></a>`type`: object
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| `file_attributes` | no | type="integer"; minimum=0 |  |
-| `file_name` | no | type="string" |  |
-| `file_name_role` | no | enum=["exact","display"] |  |
-| `file_name_utf16le_base64` | no | type="string"; additional keys=`contentEncoding` |  |
-| `file_reference_number` | no | type="string"; pattern="^[0-9a-f]+$" |  |
-| `major_version` | yes | type="integer"; minimum=0 |  |
-| `minor_version` | yes | type="integer"; minimum=0 |  |
-| `parent_file_reference_number` | no | type="string"; pattern="^[0-9a-f]+$" |  |
-| `parse_status` | yes | enum=["parsed","unresolved","unsupported_version"] |  |
-| `record_length` | yes | type="integer"; minimum=0 |  |
-| `security_id` | no | type="integer"; minimum=0 |  |
-| `usn` | no | type="string"; pattern="^-?(?:0\|[1-9][0-9]*)$" |  |
+| <a id="s-2384c7e8e758"></a>`file_attributes` | no | type="integer"; minimum=0 |  |
+| <a id="s-d0ea6b8d9c8a"></a>`file_name` | no | type="string" |  |
+| <a id="s-231ea73abea9"></a>`file_name_role` | no | enum=["exact","display"] |  |
+| <a id="s-5f44cc2a5293"></a>`file_name_utf16le_base64` | no | type="string"; additional keys=`contentEncoding` |  |
+| <a id="s-d9be3c10e668"></a>`file_reference_number` | no | type="string"; pattern="^[0-9a-f]+$" |  |
+| <a id="s-88739230bb04"></a>`major_version` | yes | type="integer"; minimum=0 |  |
+| <a id="s-81947330b81e"></a>`minor_version` | yes | type="integer"; minimum=0 |  |
+| <a id="s-c222ed244ae6"></a>`parent_file_reference_number` | no | type="string"; pattern="^[0-9a-f]+$" |  |
+| <a id="s-50832b9c1e52"></a>`parse_status` | yes | enum=["parsed","unresolved","unsupported_version"] |  |
+| <a id="s-68b80937e0c2"></a>`record_length` | yes | type="integer"; minimum=0 |  |
+| <a id="s-def5c2bea625"></a>`security_id` | no | type="integer"; minimum=0 |  |
+| <a id="s-322c894f7c42"></a>`usn` | no | type="string"; pattern="^-?(?:0\|[1-9][0-9]*)$" |  |
 
 ### Progression, limits, and lifecycle
 
-| Dimension | Unit | Policy | Bounds or reason |
-|---|---|---|---|
-| value | schema-value | `extension_owned` | maximum=None, reason=independently-versioned-extension-authority |
-| value | schema-value | `extension_owned` | maximum=None, reason=independently-versioned-extension-authority |
+#### [extent-rule/extension-contract/v1](../../../policies/index.md#p-75a89f9d1c36)
+
+Shared facts for every subject below: maximum=null; reason="independently-versioned-extension-authority"
+
+| Applies to | Contract | Bounds or reason |
+|---|---|---|
+| [field file_attributes](#s-2384c7e8e758) | `value · schema-value · extension_owned` | shared above |
+| [field record_length](#s-68b80937e0c2) | `value · schema-value · extension_owned` | shared above |
 
 ## Governing policies
 
-- `compatibility/components/v1`
-- `extent-rule/extension-contract/v1`
+- <a id="pa-2859539811ce"></a>[compatibility/components/v1](../../../policies/index.md#p-95e9a1225947)
+- <a id="pa-937cdb16a4a1"></a>[extent-rule/extension-contract/v1](../../../policies/index.md#p-75a89f9d1c36)
 
 ## Evidence
 
 ### Qualification
 
-- `make dist-smoke`
-- `make build`
+- [make dist-smoke](../../../evidence/sources.md#q-0ba2578a3eb7)
+- [make build](../../../evidence/sources.md#q-d1121e35fa7a)
 
 ### Executable sources
 
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `protocol:https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/windows-usn-record.json` — `reference/riverhog/provenance/contracts/windows/src/riverhog_provenance_windows_contracts/schemas/windows-usn-record.schema.json`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
+- [protocol:https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/windows-usn-record.json](../../../evidence/sources.md#src-72281b7ad5bf) — `reference/riverhog/provenance/contracts/windows/src/riverhog_provenance_windows_contracts/schemas/windows-usn-record.schema.json`
 
 ### Machine authority
 

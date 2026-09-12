@@ -8,38 +8,39 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Audit field | Value |
 |---|---|
-| Authority | `stove0-opus-target` |
-| Interface | `boundary` |
-| Family | `components` |
+| Authority | [stove0-opus-target](../index.md) |
+| Interface | [boundary](index.md) |
+| Family | [components](index.md#f-e8795446bd2c) |
 | Contract elements | 1 |
 | Extent decisions | 0 |
 
 ## External contract
 
+<a id="s-c4841ca84368"></a>
 | Field | Shape |
 |---|---|
-| `console_scripts` | additional keys=`stove0-opus-target` |
-| `dependencies` | ["http-api-contracts","riverhog-client","riverhog-protocol","stove0-media-archive-target-contracts","stove0-media-archive-target-support","stove0-protocol","stove0-target-support"] |
-| `distribution` | "stove0-opus-target" |
-| `optional_dependencies` | empty object |
-| `path` | "reference/stove0/targets/opus/target" |
-| `role` | "reference_component" |
+| <a id="s-6c1acdc4177f"></a>`console_scripts` | additional keys=`stove0-opus-target` |
+| <a id="s-346db4fe1288"></a>`dependencies` | ["http-api-contracts","riverhog-client","riverhog-protocol","stove0-media-archive-target-contracts","stove0-media-archive-target-support","stove0-protocol","stove0-target-support"] |
+| <a id="s-0f45949ae66e"></a>`distribution` | "stove0-opus-target" |
+| <a id="s-87cfe497559b"></a>`optional_dependencies` | empty object |
+| <a id="s-f46ee5560f24"></a>`path` | "reference/stove0/targets/opus/target" |
+| <a id="s-8aee48be483b"></a>`role` | "reference_component" |
 
 ## Governing policies
 
-- `boundary/frozen-authority/v1`
+- <a id="pa-ff4a61cb173f"></a>[boundary/frozen-authority/v1](../../../policies/index.md#p-61994d3f0fa8)
 
 ## Evidence
 
 ### Qualification
 
-- `make release-check`
-- `make build`
+- [make release-check](../../../evidence/sources.md#q-8d8d22d6a6b1)
+- [make build](../../../evidence/sources.md#q-d1121e35fa7a)
 
 ### Executable sources
 
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `release:release.toml` — `release.toml`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
+- [release:release.toml](../../../evidence/sources.md#src-c5380dbe5fe0) — `release.toml`
 
 ### Machine authority
 

@@ -8,47 +8,59 @@ List Retrieval Plan Files
 
 | Audit field | Value |
 |---|---|
-| Authority | `riverhog` |
-| Interface | `http` |
-| Family | `retrieval-plans` |
+| Authority | [riverhog](../index.md) |
+| Interface | [http](index.md) |
+| Family | [retrieval-plans](families/retrieval-plans/index.md) |
 | Contract elements | 1 |
 | Extent decisions | 3 |
 
 ## External contract
 
-- `operationId`: list_retrieval_plan_files
-- `summary`: List Retrieval Plan Files
-- `security`: `[{"HTTPBearer": []}]`
+<a id="s-02b9ee2a20ee"></a>
+- <a id="s-f5a7d6ee6ab4"></a>`operationId`: list_retrieval_plan_files
+- <a id="s-864d6dee41b4"></a>`summary`: List Retrieval Plan Files
+- <a id="s-80e7646656a6"></a>`security`: `[{"HTTPBearer": []}]`
 
 ### Parameters
 
 | Name | In | Required | Schema |
 |---|---|---:|---|
-| `plan_id` | path | yes | type="string" |
-| `start_ordinal` | query | no | type="integer"; minimum=0; maximum=10000 |
-| `page_size` | query | no | type="integer"; minimum=1; maximum=100 |
-| `If-Match` | header | yes | type="string"; pattern="^\"[0-9a-f]{64}\"$" |
+| <a id="s-f9f5dd3ea19d"></a>`plan_id` | path | yes | type="string" |
+| <a id="s-b7b9300a2daf"></a>`start_ordinal` | query | no | type="integer"; minimum=0; maximum=10000 |
+| <a id="s-ee956f2b241d"></a>`page_size` | query | no | type="integer"; minimum=1; maximum=100 |
+| <a id="s-44a185df9ac5"></a>`If-Match` | header | yes | type="string"; pattern="^\"[0-9a-f]{64}\"$" |
 
 ### Responses
 
 | Status | Description |
 |---|---|
-| `200` | Successful Response |
-| `400` | Bad Request |
-| `401` | Unauthorized |
-| `403` | Forbidden |
-| `404` | Not Found |
-| `409` | Conflict |
-| `412` | Precondition Failed |
-| `500` | Internal Server Error |
+| <a id="s-85f358c0bca5"></a>`200` | Successful Response |
+| <a id="s-7badd60fa159"></a>`400` | Bad Request |
+| <a id="s-9015f8bd0a9d"></a>`401` | Unauthorized |
+| <a id="s-06ec61c8b69e"></a>`403` | Forbidden |
+| <a id="s-99f3ea624641"></a>`404` | Not Found |
+| <a id="s-1ef560b95413"></a>`409` | Conflict |
+| <a id="s-df924e03b95d"></a>`412` | Precondition Failed |
+| <a id="s-533383f4a4bb"></a>`500` | Internal Server Error |
 
 ### Progression, limits, and lifecycle
 
-| Dimension | Unit | Policy | Bounds or reason |
-|---|---|---|---|
-| logical-result-cardinality | items | `segmented_no_total_max` | reason=bounded-route-progression |
-| value | schema-value | `contract_max` | maximum=100, minimum=1, reason=schema-maximum |
-| value | schema-value | `contract_max` | maximum=10000, minimum=0, reason=schema-maximum |
+#### [extent-rule/route-progression/v1](../../../policies/index.md#p-6b76b527cb21)
+
+Shared facts for every subject below: progression={"authority":"retrieval-plan-files","cursor_parameter":"start_ordinal","kind":"exact-authority-page","limit_parameter":"page_size"}; reason="bounded-route-progression"
+
+| Applies to | Contract | Bounds or reason |
+|---|---|---|
+| [GET /v1/retrieval-plans/{plan_id}/files](#s-02b9ee2a20ee) | `logical-result-cardinality · items · segmented_no_total_max` | shared above |
+
+#### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
+
+Shared facts for every subject below: reason="schema-maximum"
+
+| Applies to | Contract | Bounds or reason |
+|---|---|---|
+| <a id="s-a7a670c975dd"></a>parameter page_size | `value · schema-value · contract_max` | maximum=100; minimum=1 |
+| <a id="s-3cb9b8fbc97c"></a>parameter start_ordinal | `value · schema-value · contract_max` | maximum=10000; minimum=0 |
 
 ## Maintained corroboration
 
@@ -63,21 +75,21 @@ List Retrieval Plan Files
 
 ## Governing policies
 
-- `compatibility/http-api/v1`
-- `extent-rule/route-progression/v1`
-- `extent-rule/schema-bound/v1`
+- <a id="pa-615b70a07b8b"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0ba)
+- <a id="pa-8842142a5af9"></a>[extent-rule/route-progression/v1](../../../policies/index.md#p-6b76b527cb21)
+- <a id="pa-6b155983697c"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
 
 ## Evidence
 
 ### Qualification
 
-- `make operation-qualification`
-- `make compose-smoke`
+- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459fb8)
+- [make compose-smoke](../../../evidence/sources.md#q-413b0b241ba8)
 
 ### Executable sources
 
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `openapi:riverhog` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
+- [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc960) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
 
 ### Machine authority
 

@@ -8,32 +8,44 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Audit field | Value |
 |---|---|
-| Authority | `riverhog` |
-| Interface | `http` |
-| Family | `schemas` |
+| Authority | [riverhog](../index.md) |
+| Interface | [http](index.md) |
+| Family | [schemas](families/schemas/index.md) |
 | Contract elements | 1 |
 | Extent decisions | 2 |
 
 ## External contract
 
-- `title`: CollectionArchiveCopyListOut
-- `type`: object
+<a id="s-3dcc67425a3c"></a>
+- <a id="s-73dd7cf3dcc7"></a>`title`: CollectionArchiveCopyListOut
+- <a id="s-ce2c8e495b0f"></a>`type`: object
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| `collection_id` | yes | #/components/schemas/CollectionId |  |
-| `copies` | yes | type="array"; items=(#/components/schemas/ArchiveCopyOut) |  |
-| `next_page_token` | yes | anyOf=#/components/schemas/BrowsePageToken \| type="null" |  |
-| `page_size` | yes | type="integer"; minimum=1; maximum=100 |  |
+| <a id="s-c4517a89e26b"></a>`collection_id` | yes | #/components/schemas/CollectionId |  |
+| <a id="s-677882908c40"></a>`copies` | yes | type="array"; items=(#/components/schemas/ArchiveCopyOut) |  |
+| <a id="s-679b9d7139e5"></a>`next_page_token` | yes | anyOf=#/components/schemas/BrowsePageToken \| type="null" |  |
+| <a id="s-aef023ab6ea1"></a>`page_size` | yes | type="integer"; minimum=1; maximum=100 |  |
 
 ### Progression, limits, and lifecycle
 
-| Dimension | Unit | Policy | Bounds or reason |
-|---|---|---|---|
-| cardinality | items | `segmented_no_total_max` | reason=bounded-route-page |
-| value | schema-value | `contract_max` | maximum=100, minimum=1, reason=schema-maximum |
+#### [extent-rule/route-progression/v1](../../../policies/index.md#p-6b76b527cb21)
+
+Shared facts for every subject below: progression={"default_page_size":25,"kind":"mutable-browse","maximum_page_size":100,"next_page_token_field":"next_page_token","page_size_parameter":"page_size","page_token_parameter":"page_token"}; reason="bounded-route-page"
+
+| Applies to | Contract | Bounds or reason |
+|---|---|---|
+| [field copies](#s-677882908c40) | `cardinality · items · segmented_no_total_max` | shared above |
+
+#### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
+
+Shared facts for every subject below: maximum=100; minimum=1; reason="schema-maximum"
+
+| Applies to | Contract | Bounds or reason |
+|---|---|---|
+| [field page_size](#s-aef023ab6ea1) | `value · schema-value · contract_max` | shared above |
 
 ## Maintained corroboration
 
@@ -45,21 +57,21 @@ Exact externally visible contract owned by this semantic dossier.
 
 ## Governing policies
 
-- `compatibility/http-api/v1`
-- `extent-rule/route-progression/v1`
-- `extent-rule/schema-bound/v1`
+- <a id="pa-7efdd9e97890"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0ba)
+- <a id="pa-f174d7533af2"></a>[extent-rule/route-progression/v1](../../../policies/index.md#p-6b76b527cb21)
+- <a id="pa-4a5d81cddffa"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
 
 ## Evidence
 
 ### Qualification
 
-- `make operation-qualification`
-- `make compose-smoke`
+- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459fb8)
+- [make compose-smoke](../../../evidence/sources.md#q-413b0b241ba8)
 
 ### Executable sources
 
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `openapi:riverhog` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
+- [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc960) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
 
 ### Machine authority
 

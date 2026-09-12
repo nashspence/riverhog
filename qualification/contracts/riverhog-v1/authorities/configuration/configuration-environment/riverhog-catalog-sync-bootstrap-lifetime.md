@@ -8,34 +8,35 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Audit field | Value |
 |---|---|
-| Authority | `configuration` |
-| Interface | `configuration-environment` |
-| Family | `variables` |
+| Authority | [configuration](../index.md) |
+| Interface | [configuration-environment](index.md) |
+| Family | [variables](families/variables/index.md) |
 | Contract elements | 1 |
 | Extent decisions | 0 |
 
 ## External contract
 
+<a id="s-d99f18df3bd2"></a>
 | Field | Shape |
 |---|---|
-| `consumers` | ["riverhog-server"] |
-| `name` | "RIVERHOG_CATALOG_SYNC_BOOTSTRAP_LIFETIME" |
+| <a id="s-68e07c8d4079"></a>`consumers` | ["riverhog-server"] |
+| <a id="s-7a3900970064"></a>`name` | "RIVERHOG_CATALOG_SYNC_BOOTSTRAP_LIFETIME" |
 
 ## Governing policies
 
-- `compatibility/configuration/v1`
+- <a id="pa-ab7b5e43aeb6"></a>[compatibility/configuration/v1](../../../policies/index.md#p-8dc08bb46173)
 
 ## Evidence
 
 ### Qualification
 
-- `make unit`
-- `make compose-smoke`
+- [make unit](../../../evidence/sources.md#q-ce47068f504c)
+- [make compose-smoke](../../../evidence/sources.md#q-413b0b241ba8)
 
 ### Executable sources
 
-- `configuration-environment:RIVERHOG_CATALOG_SYNC_BOOTSTRAP_LIFETIME` — `configuration-environment:RIVERHOG_CATALOG_SYNC_BOOTSTRAP_LIFETIME`
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
+- [configuration-environment:RIVERHOG_CATALOG_SYNC_BOOTSTRAP_LIFETIME](../../../evidence/sources.md#src-ec14a484889b) — `configuration-environment:RIVERHOG_CATALOG_SYNC_BOOTSTRAP_LIFETIME`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
 
 ### Machine authority
 

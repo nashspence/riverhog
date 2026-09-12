@@ -8,40 +8,40 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Audit field | Value |
 |---|---|
-| Authority | `stove0-observer-conformance` |
-| Interface | `cli` |
-| Family | `root` |
+| Authority | [stove0-observer-conformance](../index.md) |
+| Interface | [cli](index.md) |
+| Family | [root](index.md#f-943ef934d417) |
 | Contract elements | 1 |
 | Extent decisions | 0 |
 
 ## External contract
 
-- Parser name: `stove0-observer-conformance`
+- <a id="s-72fdebec4037"></a>Parser name: `stove0-observer-conformance`
 
 ### Parameters
 
 | Name | Kind | Required | Type | Options |
 |---|---|---:|---|---|
-| `` | _StoreAction | yes |  |  |
-| `` | _AppendAction | no | Path | --invocation |
-| `` | _AppendAction | no | Path | --semantic-vectors |
-| `` | _AppendAction | no |  | --semantic-validator-provider |
+| <a id="s-6504128d72fd"></a>`` | _StoreAction | yes |  |  |
+| <a id="s-3ce127cbc327"></a>`` | _AppendAction | no | Path | --invocation |
+| <a id="s-38ac0c67ea67"></a>`` | _AppendAction | no | Path | --semantic-vectors |
+| <a id="s-c322de089ca1"></a>`` | _AppendAction | no |  | --semantic-validator-provider |
 
 ## Governing policies
 
-- `compatibility/cli/v1`
+- <a id="pa-e1bf1b3690a2"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de7f)
 
 ## Evidence
 
 ### Qualification
 
-- `make dist-smoke`
-- `make operation-qualification`
+- [make dist-smoke](../../../evidence/sources.md#q-0ba2578a3eb7)
+- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459fb8)
 
 ### Executable sources
 
-- `cli:stove0-observer-conformance` — `reference/stove0/packages/observer-support/src/stove0_observer_support/conformance.py::<module>`
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
+- [cli:stove0-observer-conformance](../../../evidence/sources.md#src-5719d140a8e0) — `reference/stove0/packages/observer-support/src/stove0_observer_support/conformance.py::<module>`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
 
 ### Machine authority
 

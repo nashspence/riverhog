@@ -8,38 +8,39 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Audit field | Value |
 |---|---|
-| Authority | `riverhog-storage-adapter-backblaze` |
-| Interface | `boundary` |
-| Family | `components` |
+| Authority | [riverhog-storage-adapter-backblaze](../index.md) |
+| Interface | [boundary](index.md) |
+| Family | [components](index.md#f-0b2071998706) |
 | Contract elements | 1 |
 | Extent decisions | 0 |
 
 ## External contract
 
+<a id="s-24b34f6c5e88"></a>
 | Field | Shape |
 |---|---|
-| `console_scripts` | additional keys=`riverhog-storage-adapter-backblaze` |
-| `dependencies` | ["riverhog-storage-adapter-asgi-support","riverhog-storage-adapter-s3-support"] |
-| `distribution` | "riverhog-storage-adapter-backblaze" |
-| `optional_dependencies` | empty object |
-| `path` | "reference/riverhog/storage/backblaze" |
-| `role` | "reference_component" |
+| <a id="s-afb96324cf48"></a>`console_scripts` | additional keys=`riverhog-storage-adapter-backblaze` |
+| <a id="s-d30b03dfed4f"></a>`dependencies` | ["riverhog-storage-adapter-asgi-support","riverhog-storage-adapter-s3-support"] |
+| <a id="s-ec7a64ccc068"></a>`distribution` | "riverhog-storage-adapter-backblaze" |
+| <a id="s-1d9cf6a4a2f1"></a>`optional_dependencies` | empty object |
+| <a id="s-7922bb2f5597"></a>`path` | "reference/riverhog/storage/backblaze" |
+| <a id="s-999a71297716"></a>`role` | "reference_component" |
 
 ## Governing policies
 
-- `boundary/frozen-authority/v1`
+- <a id="pa-47273b3d10e3"></a>[boundary/frozen-authority/v1](../../../policies/index.md#p-61994d3f0fa8)
 
 ## Evidence
 
 ### Qualification
 
-- `make release-check`
-- `make build`
+- [make release-check](../../../evidence/sources.md#q-8d8d22d6a6b1)
+- [make build](../../../evidence/sources.md#q-d1121e35fa7a)
 
 ### Executable sources
 
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `release:release.toml` — `release.toml`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
+- [release:release.toml](../../../evidence/sources.md#src-c5380dbe5fe0) — `release.toml`
 
 ### Machine authority
 

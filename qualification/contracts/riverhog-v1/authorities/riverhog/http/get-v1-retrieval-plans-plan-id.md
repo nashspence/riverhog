@@ -8,34 +8,35 @@ Get Retrieval Plan
 
 | Audit field | Value |
 |---|---|
-| Authority | `riverhog` |
-| Interface | `http` |
-| Family | `retrieval-plans` |
+| Authority | [riverhog](../index.md) |
+| Interface | [http](index.md) |
+| Family | [retrieval-plans](families/retrieval-plans/index.md) |
 | Contract elements | 1 |
 | Extent decisions | 0 |
 
 ## External contract
 
-- `operationId`: get_retrieval_plan
-- `summary`: Get Retrieval Plan
-- `security`: `[{"HTTPBearer": []}]`
+<a id="s-48f06c082ef7"></a>
+- <a id="s-10dcd91d40cf"></a>`operationId`: get_retrieval_plan
+- <a id="s-986315c391f7"></a>`summary`: Get Retrieval Plan
+- <a id="s-badba5ee8f1c"></a>`security`: `[{"HTTPBearer": []}]`
 
 ### Parameters
 
 | Name | In | Required | Schema |
 |---|---|---:|---|
-| `plan_id` | path | yes | type="string" |
+| <a id="s-ede014861e1a"></a>`plan_id` | path | yes | type="string" |
 
 ### Responses
 
 | Status | Description |
 |---|---|
-| `200` | Successful Response |
-| `400` | Bad Request |
-| `401` | Unauthorized |
-| `403` | Forbidden |
-| `404` | Not Found |
-| `500` | Internal Server Error |
+| <a id="s-2a480a07a9f6"></a>`200` | Successful Response |
+| <a id="s-76523f6c14f0"></a>`400` | Bad Request |
+| <a id="s-cfd96f421992"></a>`401` | Unauthorized |
+| <a id="s-76f67e392291"></a>`403` | Forbidden |
+| <a id="s-f0eebd36e596"></a>`404` | Not Found |
+| <a id="s-83ab0ca11fd5"></a>`500` | Internal Server Error |
 
 ## Maintained corroboration
 
@@ -50,19 +51,19 @@ Get Retrieval Plan
 
 ## Governing policies
 
-- `compatibility/http-api/v1`
+- <a id="pa-496822139df0"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0ba)
 
 ## Evidence
 
 ### Qualification
 
-- `make operation-qualification`
-- `make compose-smoke`
+- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459fb8)
+- [make compose-smoke](../../../evidence/sources.md#q-413b0b241ba8)
 
 ### Executable sources
 
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `openapi:riverhog` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
+- [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc960) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
 
 ### Machine authority
 

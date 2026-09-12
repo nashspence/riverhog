@@ -8,38 +8,39 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Audit field | Value |
 |---|---|
-| Authority | `release` |
-| Interface | `release` |
-| Family | `release-contract` |
+| Authority | [release](../index.md) |
+| Interface | [release](index.md) |
+| Family | [release-contract](index.md#f-6cd3d52e18f6) |
 | Contract elements | 1 |
 | Extent decisions | 0 |
 
 ## External contract
 
+<a id="s-3a2a162a8330"></a>
 | Field | Shape |
 |---|---|
-| `contract` | "riverhog-v1-contract.tar.gz" |
-| `documentation` | "riverhog-docs-v{version}.tar.gz" |
-| `evidence` | ["riverhog-v1-contract.tar.gz","install-manifest.json","release-manifest.json","SHA256SUMS","SHA256SUMS.minisig","release.spdx.json","release.intoto.jsonl","THIRD_PARTY_NOTICES.md"] |
-| `notices` | format="tar.gz"; additional keys=`basis`, `directory`, `required_for`, `schema` |
-| `python_formats` | ["wheel","sdist"] |
-| `source` | "riverhog-source-v{version}.tar.gz" |
+| <a id="s-f93745455d55"></a>`contract` | "riverhog-v1-contract.tar.gz" |
+| <a id="s-419746c37d72"></a>`documentation` | "riverhog-docs-v{version}.tar.gz" |
+| <a id="s-a45436c45e68"></a>`evidence` | ["riverhog-v1-contract.tar.gz","install-manifest.json","release-manifest.json","SHA256SUMS","SHA256SUMS.minisig","release.spdx.json","release.intoto.jsonl","THIRD_PARTY_NOTICES.md"] |
+| <a id="s-432690295d83"></a>`notices` | format="tar.gz"; additional keys=`basis`, `directory`, `required_for`, `schema` |
+| <a id="s-8f4d041b8963"></a>`python_formats` | ["wheel","sdist"] |
+| <a id="s-27ad787f389b"></a>`source` | "riverhog-source-v{version}.tar.gz" |
 
 ## Governing policies
 
-- `compatibility/components/v1`
+- <a id="pa-a05cfdb2965e"></a>[compatibility/components/v1](../../../policies/index.md#p-95e9a1225947)
 
 ## Evidence
 
 ### Qualification
 
-- `make release-check`
-- `make build`
+- [make release-check](../../../evidence/sources.md#q-8d8d22d6a6b1)
+- [make build](../../../evidence/sources.md#q-d1121e35fa7a)
 
 ### Executable sources
 
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `release:release.toml` — `release.toml`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
+- [release:release.toml](../../../evidence/sources.md#src-c5380dbe5fe0) — `release.toml`
 
 ### Machine authority
 

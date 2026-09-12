@@ -8,40 +8,45 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Audit field | Value |
 |---|---|
-| Authority | `riverhog` |
-| Interface | `http` |
-| Family | `schemas` |
+| Authority | [riverhog](../index.md) |
+| Interface | [http](index.md) |
+| Family | [schemas](families/schemas/index.md) |
 | Contract elements | 1 |
 | Extent decisions | 1 |
 
 ## External contract
 
-- `title`: RetrievalCacheObjectOut
-- `type`: object
+<a id="s-d8de960a53b0"></a>
+- <a id="s-71b5428fd574"></a>`title`: RetrievalCacheObjectOut
+- <a id="s-023b459ad5c6"></a>`type`: object
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| `cache_store` | yes | #/components/schemas/RetrievalCacheStoreName |  |
-| `cached_at` | yes | type="string" |  |
-| `collection_id` | yes | #/components/schemas/CollectionId |  |
-| `lease_categories` | yes | type="array"; items=(type="string"; enum=["new_archive","retrieval_job"]) |  |
-| `new_archive_expires_at` | yes | anyOf=type="string" \| type="null" |  |
-| `object_id` | yes | type="string" |  |
-| `protected_until` | yes | anyOf=type="string" \| type="null" |  |
-| `retrieval_job_leases` | yes | type="integer" |  |
-| `source_store` | yes | #/components/schemas/ArchiveStoreName |  |
-| `state` | yes | #/components/schemas/RetrievalCacheState |  |
-| `stored_bytes` | yes | type="integer" |  |
-| `stored_sha256` | yes | anyOf=type="string" \| type="null" |  |
-| `verified_at` | yes | type="string" |  |
+| <a id="s-06cc3eb42716"></a>`cache_store` | yes | #/components/schemas/RetrievalCacheStoreName |  |
+| <a id="s-3b10f667fb39"></a>`cached_at` | yes | type="string" |  |
+| <a id="s-d3807612bf01"></a>`collection_id` | yes | #/components/schemas/CollectionId |  |
+| <a id="s-627408e57758"></a>`lease_categories` | yes | type="array"; items=(type="string"; enum=["new_archive","retrieval_job"]) |  |
+| <a id="s-5e4b6f164b04"></a>`new_archive_expires_at` | yes | anyOf=type="string" \| type="null" |  |
+| <a id="s-51bc3513f03e"></a>`object_id` | yes | type="string" |  |
+| <a id="s-d92ae721874b"></a>`protected_until` | yes | anyOf=type="string" \| type="null" |  |
+| <a id="s-47dbf3c6e5aa"></a>`retrieval_job_leases` | yes | type="integer" |  |
+| <a id="s-ae87dd0d797f"></a>`source_store` | yes | #/components/schemas/ArchiveStoreName |  |
+| <a id="s-cbb7f490d39a"></a>`state` | yes | #/components/schemas/RetrievalCacheState |  |
+| <a id="s-c95d53b4cfe8"></a>`stored_bytes` | yes | type="integer" |  |
+| <a id="s-a582abba727e"></a>`stored_sha256` | yes | anyOf=type="string" \| type="null" |  |
+| <a id="s-e2697d058e50"></a>`verified_at` | yes | type="string" |  |
 
 ### Progression, limits, and lifecycle
 
-| Dimension | Unit | Policy | Bounds or reason |
-|---|---|---|---|
-| cardinality | items | `operational_policy` | maximum=None, reason=no-declared-semantic-maximum |
+#### [extent-rule/no-semantic-maximum/v1](../../../policies/index.md#p-574724b48af0)
+
+Shared facts for every subject below: capacity_authority={"declared_maximum":null,"hidden_maximum":"forbidden","owner":"riverhog"}; maximum=null; reason="no-declared-semantic-maximum"
+
+| Applies to | Contract | Bounds or reason |
+|---|---|---|
+| [field lease_categories](#s-627408e57758) | `cardinality · items · operational_policy` | shared above |
 
 ## Maintained corroboration
 
@@ -54,20 +59,20 @@ Exact externally visible contract owned by this semantic dossier.
 
 ## Governing policies
 
-- `compatibility/http-api/v1`
-- `extent-rule/no-semantic-maximum/v1`
+- <a id="pa-215df9a10950"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0ba)
+- <a id="pa-9e9024e808ba"></a>[extent-rule/no-semantic-maximum/v1](../../../policies/index.md#p-574724b48af0)
 
 ## Evidence
 
 ### Qualification
 
-- `make operation-qualification`
-- `make compose-smoke`
+- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459fb8)
+- [make compose-smoke](../../../evidence/sources.md#q-413b0b241ba8)
 
 ### Executable sources
 
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `openapi:riverhog` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
+- [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc960) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
 
 ### Machine authority
 

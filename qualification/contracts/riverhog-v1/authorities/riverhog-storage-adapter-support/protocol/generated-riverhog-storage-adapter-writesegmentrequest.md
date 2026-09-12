@@ -8,46 +8,47 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Audit field | Value |
 |---|---|
-| Authority | `riverhog-storage-adapter-support` |
-| Interface | `protocol` |
-| Family | `schemas` |
+| Authority | [riverhog-storage-adapter-support](../index.md) |
+| Interface | [protocol](index.md) |
+| Family | [schemas](families/schemas/index.md) |
 | Contract elements | 1 |
 | Extent decisions | 0 |
 
 ## External contract
 
-- `title`: WriteSegmentRequest
-- `type`: object
+<a id="s-9929dcbde1f0"></a>
+- <a id="s-c3edda53c84c"></a>`title`: WriteSegmentRequest
+- <a id="s-ae1b9f48131c"></a>`type`: object
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| `number` | yes | type="integer"; minimum=1 |  |
-| `session` | yes | #/$defs/WriteSession |  |
-| `stored_bytes` | yes | type="integer"; minimum=1 |  |
+| <a id="s-ce0948c4170d"></a>`number` | yes | type="integer"; minimum=1 |  |
+| <a id="s-493606ef175d"></a>`session` | yes | #/$defs/WriteSession |  |
+| <a id="s-2bda4ac939d0"></a>`stored_bytes` | yes | type="integer"; minimum=1 |  |
 
 ### Definitions
 
 | Definition | Shape |
 |---|---|
-| `WriteSession` | type="object"; fields=`expected_bytes`, `object_path`, `write_token`; additional keys=`additionalProperties`, `required` |
+| <a id="s-dcf667e799aa"></a>`WriteSession` | type="object"; fields=`expected_bytes`, `object_path`, `write_token`; additional keys=`additionalProperties`, `required` |
 
 ## Governing policies
 
-- `compatibility/components/v1`
+- <a id="pa-b287dd055207"></a>[compatibility/components/v1](../../../policies/index.md#p-95e9a1225947)
 
 ## Evidence
 
 ### Qualification
 
-- `make dist-smoke`
-- `make build`
+- [make dist-smoke](../../../evidence/sources.md#q-0ba2578a3eb7)
+- [make build](../../../evidence/sources.md#q-d1121e35fa7a)
 
 ### Executable sources
 
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `protocol:generated:riverhog-storage-adapter` — `packages/riverhog-storage-adapter-support/src/riverhog_storage_adapter_support/schemas.py::storage_adapter_schema_bundle`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
+- [protocol:generated:riverhog-storage-adapter](../../../evidence/sources.md#src-ef281f2471a9) — `packages/riverhog-storage-adapter-support/src/riverhog_storage_adapter_support/schemas.py::storage_adapter_schema_bundle`
 
 ### Machine authority
 

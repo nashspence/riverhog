@@ -8,38 +8,39 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Audit field | Value |
 |---|---|
-| Authority | `stove0-client` |
-| Interface | `boundary` |
-| Family | `components` |
+| Authority | [stove0-client](../index.md) |
+| Interface | [boundary](index.md) |
+| Family | [components](index.md#f-c3f42d578a01) |
 | Contract elements | 1 |
 | Extent decisions | 0 |
 
 ## External contract
 
+<a id="s-1fd100e55b2c"></a>
 | Field | Shape |
 |---|---|
-| `console_scripts` | additional keys=`stove0` |
-| `dependencies` | ["stove0-api-client","stove0-protocol","stove0-recipe-config"] |
-| `distribution` | "stove0-client" |
-| `optional_dependencies` | empty object |
-| `path` | "reference/stove0/application/client" |
-| `role` | "reference_application" |
+| <a id="s-8ad421aae18f"></a>`console_scripts` | additional keys=`stove0` |
+| <a id="s-d8dfe6d9281b"></a>`dependencies` | ["stove0-api-client","stove0-protocol","stove0-recipe-config"] |
+| <a id="s-9789c1083fdf"></a>`distribution` | "stove0-client" |
+| <a id="s-fbd60e067750"></a>`optional_dependencies` | empty object |
+| <a id="s-afcea983011a"></a>`path` | "reference/stove0/application/client" |
+| <a id="s-2e0116f69fb8"></a>`role` | "reference_application" |
 
 ## Governing policies
 
-- `boundary/frozen-authority/v1`
+- <a id="pa-3f925fbfe465"></a>[boundary/frozen-authority/v1](../../../policies/index.md#p-61994d3f0fa8)
 
 ## Evidence
 
 ### Qualification
 
-- `make release-check`
-- `make build`
+- [make release-check](../../../evidence/sources.md#q-8d8d22d6a6b1)
+- [make build](../../../evidence/sources.md#q-d1121e35fa7a)
 
 ### Executable sources
 
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `release:release.toml` — `release.toml`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
+- [release:release.toml](../../../evidence/sources.md#src-c5380dbe5fe0) — `release.toml`
 
 ### Machine authority
 

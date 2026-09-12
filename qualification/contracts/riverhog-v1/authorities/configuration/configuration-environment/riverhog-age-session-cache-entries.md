@@ -8,41 +8,46 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Audit field | Value |
 |---|---|
-| Authority | `configuration` |
-| Interface | `configuration-environment` |
-| Family | `variables` |
+| Authority | [configuration](../index.md) |
+| Interface | [configuration-environment](index.md) |
+| Family | [variables](families/variables/index.md) |
 | Contract elements | 1 |
 | Extent decisions | 1 |
 
 ## External contract
 
+<a id="s-e342da9aef85"></a>
 | Field | Shape |
 |---|---|
-| `consumers` | ["riverhog-server"] |
-| `name` | "RIVERHOG_AGE_SESSION_CACHE_ENTRIES" |
+| <a id="s-1e916619c873"></a>`consumers` | ["riverhog-server"] |
+| <a id="s-89688e57e42a"></a>`name` | "RIVERHOG_AGE_SESSION_CACHE_ENTRIES" |
 
 ### Progression, limits, and lifecycle
 
-| Dimension | Unit | Policy | Bounds or reason |
-|---|---|---|---|
-| value | configured-value | `operational_policy` | maximum=None, reason=operator-configured-capacity |
+#### [extent-rule/configured-capacity/v1](../../../policies/index.md#p-3ebc61fc9972)
+
+Shared facts for every subject below: configuration="RIVERHOG_AGE_SESSION_CACHE_ENTRIES"; maximum=null; reason="operator-configured-capacity"
+
+| Applies to | Contract | Bounds or reason |
+|---|---|---|
+| [RIVERHOG_AGE_SESSION_CACHE_ENTRIES](#s-e342da9aef85) | `value · configured-value · operational_policy` | shared above |
 
 ## Governing policies
 
-- `compatibility/configuration/v1`
-- `extent-rule/configured-capacity/v1`
+- <a id="pa-0c77feb21bb5"></a>[compatibility/configuration/v1](../../../policies/index.md#p-8dc08bb46173)
+- <a id="pa-a8e962c391fd"></a>[extent-rule/configured-capacity/v1](../../../policies/index.md#p-3ebc61fc9972)
 
 ## Evidence
 
 ### Qualification
 
-- `make unit`
-- `make compose-smoke`
+- [make unit](../../../evidence/sources.md#q-ce47068f504c)
+- [make compose-smoke](../../../evidence/sources.md#q-413b0b241ba8)
 
 ### Executable sources
 
-- `configuration-environment:RIVERHOG_AGE_SESSION_CACHE_ENTRIES` — `configuration-environment:RIVERHOG_AGE_SESSION_CACHE_ENTRIES`
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
+- [configuration-environment:RIVERHOG_AGE_SESSION_CACHE_ENTRIES](../../../evidence/sources.md#src-0641b64e86a6) — `configuration-environment:RIVERHOG_AGE_SESSION_CACHE_ENTRIES`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
 
 ### Machine authority
 

@@ -8,72 +8,75 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Audit field | Value |
 |---|---|
-| Authority | `riverhog` |
-| Interface | `http` |
-| Family | `schemas` |
+| Authority | [riverhog](../index.md) |
+| Interface | [http](index.md) |
+| Family | [schemas](families/schemas/index.md) |
 | Contract elements | 1 |
 | Extent decisions | 9 |
 
 ## External contract
 
-- `title`: CreateOrResumeCollectionUploadSessionOut
-- `type`: object
+<a id="s-0f7d12515aa6"></a>
+- <a id="s-97c06b7483b6"></a>`title`: CreateOrResumeCollectionUploadSessionOut
+- <a id="s-3432f369ea38"></a>`type`: object
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| `archive_next_attempt_at` | yes | anyOf=type="string"; pattern="^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{6}Z$" \| type="null" |  |
-| `archive_phase` | yes | type="string"; enum=["planning","uploading","finalization_queued","finalizing","retry_wait","completed","canceled","orphaned","discarding"] |  |
-| `archive_phase_updated_at` | yes | type="string"; pattern="^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{6}Z$" |  |
-| `archive_root_sha256` | no | anyOf=type="string"; pattern="^[0-9a-f]{64}$" \| type="null" |  |
-| `archive_storage_prefix` | no | anyOf=type="string" \| type="null" |  |
-| `archive_store` | yes | #/components/schemas/ArchiveStoreName |  |
-| `archive_total_bytes` | no | anyOf=type="integer" \| type="null" |  |
-| `archive_total_units` | no | anyOf=type="integer" \| type="null" |  |
-| `archive_uploaded_bytes` | no | anyOf=type="integer" \| type="null" |  |
-| `archive_uploaded_units` | no | anyOf=type="integer" \| type="null" |  |
-| `bytes_total` | yes | type="integer"; minimum=0 |  |
-| `collection` | yes | anyOf=#/components/schemas/CollectionSummaryOut \| type="null" |  |
-| `collection_id` | yes | #/components/schemas/CollectionId |  |
-| `content_identity` | no | anyOf=type="string"; pattern="^[0-9a-f]{64}$" \| type="null" |  |
-| `created_at` | yes | type="string" |  |
-| `custody` | yes | oneOf=#/components/schemas/PendingCollectionUploadCustodyOut \| #/components/schemas/CompleteCollectionUploadCustodyOut; additional keys=`discriminator` |  |
-| `custody_mode` | yes | type="string"; enum=["producer-retained","custody-transfer"] |  |
-| `description` | yes | anyOf=#/components/schemas/CollectionDescription \| type="null" |  |
-| `description_identity` | yes | anyOf=type="string"; pattern="^[0-9a-f]{64}$" \| type="null" |  |
-| `description_publication` | yes | type="string"; enum=["pending","not_required","current"] |  |
-| `description_revision` | yes | anyOf=type="integer"; minimum=0; maximum=9007199254740991 \| type="null" |  |
-| `encryption_format` | yes | type="string" |  |
-| `files_total` | yes | type="integer"; minimum=0 |  |
-| `ingest_source` | yes | anyOf=type="string" \| type="null" |  |
-| `latest_failure` | yes | anyOf=type="string"; minLength=1; maxLength=1000 \| type="null" |  |
-| `orphaned_at` | yes | anyOf=type="string" \| type="null" |  |
-| `passphrase_id` | yes | type="string"; pattern="^[A-Za-z0-9_-]{16,128}$" |  |
-| `provenance_identity` | no | anyOf=type="string"; pattern="^[0-9a-f]{64}$" \| type="null" |  |
-| `provenance_mode` | yes | type="string"; enum=["captured","mixed","omitted"] |  |
-| `registration_constraints` | yes | anyOf=#/components/schemas/CollectionUploadRegistrationConstraintsOut \| type="null" |  |
-| `resumed` | yes | type="boolean" |  |
-| `state` | yes | type="string"; enum=["open","closing","uploading","finalizing","finalized","canceled","orphaned","discarding"] |  |
-| `tag_count` | yes | type="integer"; minimum=0 |  |
-| `tag_publication` | yes | type="string"; enum=["pending","current"] |  |
-| `tag_revision` | no | anyOf=type="integer"; minimum=1; maximum=9007199254740991 \| type="null" |  |
-| `tag_set_identity` | no | anyOf=type="string"; pattern="^[0-9a-f]{64}$" \| type="null" |  |
-| `upload_state_expires_at` | yes | anyOf=type="string" \| type="null" |  |
+| <a id="s-593c3aa8bbf9"></a>`archive_next_attempt_at` | yes | anyOf=type="string"; pattern="^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{6}Z$" \| type="null" |  |
+| <a id="s-364d7da06447"></a>`archive_phase` | yes | type="string"; enum=["planning","uploading","finalization_queued","finalizing","retry_wait","completed","canceled","orphaned","discarding"] |  |
+| <a id="s-1b2105115954"></a>`archive_phase_updated_at` | yes | type="string"; pattern="^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{6}Z$" |  |
+| <a id="s-75de08a13fc3"></a>`archive_root_sha256` | no | anyOf=type="string"; pattern="^[0-9a-f]{64}$" \| type="null" |  |
+| <a id="s-0a9a5c61fb00"></a>`archive_storage_prefix` | no | anyOf=type="string" \| type="null" |  |
+| <a id="s-a661ebc97945"></a>`archive_store` | yes | #/components/schemas/ArchiveStoreName |  |
+| <a id="s-7514ed7a31c2"></a>`archive_total_bytes` | no | anyOf=type="integer" \| type="null" |  |
+| <a id="s-418d1f65fe20"></a>`archive_total_units` | no | anyOf=type="integer" \| type="null" |  |
+| <a id="s-cd6f834e7de5"></a>`archive_uploaded_bytes` | no | anyOf=type="integer" \| type="null" |  |
+| <a id="s-695974297abf"></a>`archive_uploaded_units` | no | anyOf=type="integer" \| type="null" |  |
+| <a id="s-1b1fad79d579"></a>`bytes_total` | yes | type="integer"; minimum=0 |  |
+| <a id="s-e279eb3f572b"></a>`collection` | yes | anyOf=#/components/schemas/CollectionSummaryOut \| type="null" |  |
+| <a id="s-5aecbbf4c00a"></a>`collection_id` | yes | #/components/schemas/CollectionId |  |
+| <a id="s-1337f069e344"></a>`content_identity` | no | anyOf=type="string"; pattern="^[0-9a-f]{64}$" \| type="null" |  |
+| <a id="s-e03e99fa8ab2"></a>`created_at` | yes | type="string" |  |
+| <a id="s-76be39688f06"></a>`custody` | yes | oneOf=#/components/schemas/PendingCollectionUploadCustodyOut \| #/components/schemas/CompleteCollectionUploadCustodyOut; additional keys=`discriminator` |  |
+| <a id="s-a4ebd8e96495"></a>`custody_mode` | yes | type="string"; enum=["producer-retained","custody-transfer"] |  |
+| <a id="s-9dd0e9d0dc3a"></a>`description` | yes | anyOf=#/components/schemas/CollectionDescription \| type="null" |  |
+| <a id="s-87279bec9aad"></a>`description_identity` | yes | anyOf=type="string"; pattern="^[0-9a-f]{64}$" \| type="null" |  |
+| <a id="s-511120fcf895"></a>`description_publication` | yes | type="string"; enum=["pending","not_required","current"] |  |
+| <a id="s-97818911b37d"></a>`description_revision` | yes | anyOf=type="integer"; minimum=0; maximum=9007199254740991 \| type="null" |  |
+| <a id="s-a584cdc87261"></a>`encryption_format` | yes | type="string" |  |
+| <a id="s-9d1ecaccd39c"></a>`files_total` | yes | type="integer"; minimum=0 |  |
+| <a id="s-afe732efdf51"></a>`ingest_source` | yes | anyOf=type="string" \| type="null" |  |
+| <a id="s-570ad9d89c6f"></a>`latest_failure` | yes | anyOf=type="string"; minLength=1; maxLength=1000 \| type="null" |  |
+| <a id="s-4158d3e07ea8"></a>`orphaned_at` | yes | anyOf=type="string" \| type="null" |  |
+| <a id="s-0507afa7fd3f"></a>`passphrase_id` | yes | type="string"; pattern="^[A-Za-z0-9_-]{16,128}$" |  |
+| <a id="s-703cd5df4920"></a>`provenance_identity` | no | anyOf=type="string"; pattern="^[0-9a-f]{64}$" \| type="null" |  |
+| <a id="s-7328fa36e5bc"></a>`provenance_mode` | yes | type="string"; enum=["captured","mixed","omitted"] |  |
+| <a id="s-1c381e8d2b71"></a>`registration_constraints` | yes | anyOf=#/components/schemas/CollectionUploadRegistrationConstraintsOut \| type="null" |  |
+| <a id="s-9af23207b356"></a>`resumed` | yes | type="boolean" |  |
+| <a id="s-bd565bea65e2"></a>`state` | yes | type="string"; enum=["open","closing","uploading","finalizing","finalized","canceled","orphaned","discarding"] |  |
+| <a id="s-3b36552bd1c0"></a>`tag_count` | yes | type="integer"; minimum=0 |  |
+| <a id="s-107736f50c88"></a>`tag_publication` | yes | type="string"; enum=["pending","current"] |  |
+| <a id="s-77565b278a34"></a>`tag_revision` | no | anyOf=type="integer"; minimum=1; maximum=9007199254740991 \| type="null" |  |
+| <a id="s-add384510980"></a>`tag_set_identity` | no | anyOf=type="string"; pattern="^[0-9a-f]{64}$" \| type="null" |  |
+| <a id="s-c06f1bbb1e16"></a>`upload_state_expires_at` | yes | anyOf=type="string" \| type="null" |  |
 
 ### Progression, limits, and lifecycle
 
-| Dimension | Unit | Policy | Bounds or reason |
-|---|---|---|---|
-| length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
-| length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
-| length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
-| length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
-| value | schema-value | `contract_max` | maximum=9007199254740991, minimum=0, reason=schema-maximum |
-| length | characters | `contract_max` | maximum=1000, minimum=1, reason=schema-maximum |
-| length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
-| value | schema-value | `contract_max` | maximum=9007199254740991, minimum=1, reason=schema-maximum |
-| length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
+#### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
+
+| Applies to | Contract | Bounds or reason |
+|---|---|---|
+| <a id="s-aec0b595cca0"></a>allOf alternative 3 · then · oneOf alternative 1 · field provenance_identity | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
+| <a id="s-4dac66a09cdc"></a>field archive_root_sha256 · anyOf alternative 1 | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
+| <a id="s-0bff60cfb3dd"></a>field content_identity · anyOf alternative 1 | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
+| <a id="s-4f378691a3b4"></a>field description_identity · anyOf alternative 1 | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
+| <a id="s-975e5196b4bb"></a>field description_revision · anyOf alternative 1 | `value · schema-value · contract_max` | maximum=9007199254740991; minimum=0; reason="schema-maximum" |
+| <a id="s-645d2232be08"></a>field latest_failure · anyOf alternative 1 | `length · characters · contract_max` | maximum=1000; minimum=1; reason="schema-maximum" |
+| <a id="s-1e5f76f5f3a2"></a>field provenance_identity · anyOf alternative 1 | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
+| <a id="s-5349b464e2ff"></a>field tag_revision · anyOf alternative 1 | `value · schema-value · contract_max` | maximum=9007199254740991; minimum=1; reason="schema-maximum" |
+| <a id="s-959a59821a80"></a>field tag_set_identity · anyOf alternative 1 | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
 
 ## Maintained corroboration
 
@@ -89,20 +92,20 @@ Exact externally visible contract owned by this semantic dossier.
 
 ## Governing policies
 
-- `compatibility/http-api/v1`
-- `extent-rule/schema-bound/v1`
+- <a id="pa-6bc5b0771300"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0ba)
+- <a id="pa-e37b9e5e1076"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
 
 ## Evidence
 
 ### Qualification
 
-- `make operation-qualification`
-- `make compose-smoke`
+- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459fb8)
+- [make compose-smoke](../../../evidence/sources.md#q-413b0b241ba8)
 
 ### Executable sources
 
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `openapi:riverhog` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
+- [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc960) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
 
 ### Machine authority
 

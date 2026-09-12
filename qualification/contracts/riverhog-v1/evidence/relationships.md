@@ -29,362 +29,362 @@ This is the exact generated node and edge set behind the human contract map. It 
 
 | Identity | Kind | Name | Role or owner | Maintained purpose |
 |---|---|---|---|---|
-| `component:config-validation` | `component` | `config-validation` | `internal_build_unit` | Strict YAML and JSON Schema configuration validation. |
-| `component:gogurt` | `component` | `gogurt` | `reference_application` | Optional nonnormative mounted-volume ingestion reference application for Riverhog. |
-| `component:gogurt-core` | `component` | `gogurt-core` | `reusable_library` | Portable Gogurt marker, routing, action, and watch semantics. |
-| `component:gogurt-linux-listener-host` | `component` | `gogurt-linux-listener-host` | `reference_component` | Optional nonnormative Linux systemd-user listener-host reference for Gogurt. |
-| `component:gogurt-linux-mounted-volume` | `component` | `gogurt-linux-mounted-volume` | `reference_component` | Optional nonnormative Linux mounted-volume reference for Gogurt. |
-| `component:gogurt-listener-runtime` | `component` | `gogurt-listener-runtime` | `reusable_library` | Portable durable listener runtime and native-platform port for Gogurt. |
-| `component:gogurt-macos-listener-host` | `component` | `gogurt-macos-listener-host` | `reference_component` | Optional nonnormative macOS launchd listener-host reference for Gogurt. |
-| `component:gogurt-macos-mounted-volume` | `component` | `gogurt-macos-mounted-volume` | `reference_component` | Optional nonnormative macOS mounted-volume reference for Gogurt. |
-| `component:gogurt-path-volume-support` | `component` | `gogurt-path-volume-support` | `reference_component` | Optional nonnormative path-mounted-volume support for Gogurt reference providers. |
-| `component:gogurt-windows-listener-host` | `component` | `gogurt-windows-listener-host` | `reference_component` | Optional nonnormative Windows Task Scheduler listener-host reference for Gogurt. |
-| `component:gogurt-windows-mounted-volume` | `component` | `gogurt-windows-mounted-volume` | `reference_component` | Optional nonnormative Windows mounted-volume reference for Gogurt. |
-| `component:http-api-contracts` | `component` | `http-api-contracts` | `reusable_library` | Public typed HTTP error, health, client, and operation contracts. |
-| `component:lifecycle-events` | `component` | `lifecycle-events` | `reusable_library` | Durable CloudEvents lifecycle log and client primitives. |
-| `component:mango-fish` | `component` | `mango-fish` | `reference_application` | Optional nonnormative CloudEvents reference application for Riverhog. |
-| `component:piggity` | `component` | `piggity` | `reference_application` | Optional nonnormative Piggity reference client for Riverhog. |
-| `component:riverhog-age` | `component` | `riverhog-age` | `reusable_library` | Resumable age encryption used by the Riverhog protocol. |
-| `component:riverhog-application-access` | `component` | `riverhog-application-access` | `reusable_library` | Public Riverhog application-access contracts and canonical grant grammar. |
-| `component:riverhog-archive-contracts` | `component` | `riverhog-archive-contracts` | `reusable_library` | Dependency-light immutable Riverhog archive recovery contracts. |
-| `component:riverhog-client` | `component` | `riverhog-client` | `reusable_library` | Typed generic Riverhog client and capability-scoped collection-processing runtime. |
-| `component:riverhog-ftp-adapter` | `component` | `riverhog-ftp-adapter` | `reference_component` | Optional nonnormative FTP ingress reference for Riverhog. |
-| `component:riverhog-ftp-adapter-api-client` | `component` | `riverhog-ftp-adapter-api-client` | `reference_component` | Optional nonnormative client for the Riverhog FTP ingress reference. |
-| `component:riverhog-protocol` | `component` | `riverhog-protocol` | `reusable_library` | Canonical Riverhog wire and identity contracts. |
-| `component:riverhog-provenance` | `component` | `riverhog-provenance` | `reusable_library` | Portable Riverhog v1 per-file provenance journals and validation. |
-| `component:riverhog-provenance-contracts` | `component` | `riverhog-provenance-contracts` | `reusable_library` | Canonical Riverhog provenance identity and reference contracts. |
-| `component:riverhog-provenance-linux-contracts` | `component` | `riverhog-provenance-linux-contracts` | `reference_component` | Optional nonnormative Linux observation-contract reference for Riverhog provenance. |
-| `component:riverhog-provenance-linux-observer` | `component` | `riverhog-provenance-linux-observer` | `reference_component` | Optional nonnormative Linux filesystem-observer reference for Riverhog provenance. |
-| `component:riverhog-provenance-macos-contracts` | `component` | `riverhog-provenance-macos-contracts` | `reference_component` | Optional nonnormative macOS observation-contract reference for Riverhog provenance. |
-| `component:riverhog-provenance-macos-observer` | `component` | `riverhog-provenance-macos-observer` | `reference_component` | Optional nonnormative macOS filesystem-observer reference for Riverhog provenance. |
-| `component:riverhog-provenance-windows-contracts` | `component` | `riverhog-provenance-windows-contracts` | `reference_component` | Optional nonnormative Windows observation-contract reference for Riverhog provenance. |
-| `component:riverhog-provenance-windows-observer` | `component` | `riverhog-provenance-windows-observer` | `reference_component` | Optional nonnormative Windows filesystem-observer reference for Riverhog provenance. |
-| `component:riverhog-recover` | `component` | `riverhog-recover` | `reference_application` | Optional nonnormative independent recovery reference application for Riverhog archives. |
-| `component:riverhog-server` | `component` | `riverhog-server` | `deployed_implementation` | Encrypted archive management, catalog, and retrieval. |
-| `component:riverhog-storage-adapter-asgi-support` | `component` | `riverhog-storage-adapter-asgi-support` | `reusable_library` | Authenticated ASGI shell for independently scoped Riverhog storage adapters. |
-| `component:riverhog-storage-adapter-aws` | `component` | `riverhog-storage-adapter-aws` | `reference_component` | Optional nonnormative AWS storage reference for Riverhog. |
-| `component:riverhog-storage-adapter-backblaze` | `component` | `riverhog-storage-adapter-backblaze` | `reference_component` | Optional nonnormative Backblaze B2 storage reference for Riverhog. |
-| `component:riverhog-storage-adapter-filesystem` | `component` | `riverhog-storage-adapter-filesystem` | `reference_component` | Optional nonnormative Linux filesystem storage reference for Riverhog. |
-| `component:riverhog-storage-adapter-protocol` | `component` | `riverhog-storage-adapter-protocol` | `reusable_library` | Provider-neutral opaque-object capability contracts for Riverhog storage adapters. |
-| `component:riverhog-storage-adapter-s3-support` | `component` | `riverhog-storage-adapter-s3-support` | `reference_component` | Optional nonnormative S3 support for Riverhog storage references. |
-| `component:riverhog-storage-adapter-support` | `component` | `riverhog-storage-adapter-support` | `reusable_library` | HTTP binding and conformance support for Riverhog storage adapters. |
-| `component:state-schema` | `component` | `state-schema` | `internal_build_unit` | Forward-only relational state schema and migration contracts. |
-| `component:stove0-api-client` | `component` | `stove0-api-client` | `reusable_library` | Official Python client for the stove0 v1 workflow API. |
-| `component:stove0-client` | `component` | `stove0-client` | `reference_application` | Optional nonnormative command-line client for the Stove0 reference application. |
-| `component:stove0-exiftool-observer` | `component` | `stove0-exiftool-observer` | `reference_component` | Optional nonnormative ExifTool observer reference for Stove0. |
-| `component:stove0-ffprobe-sampling-observer` | `component` | `stove0-ffprobe-sampling-observer` | `reference_component` | Optional nonnormative FFprobe sampling-observer reference for Stove0. |
-| `component:stove0-media-archive-target-contracts` | `component` | `stove0-media-archive-target-contracts` | `reference_component` | Optional nonnormative media-archive contract reference for Stove0 targets. |
-| `component:stove0-media-archive-target-support` | `component` | `stove0-media-archive-target-support` | `reference_component` | Optional nonnormative projection support for Stove0 media-archive references. |
-| `component:stove0-media-metadata-observer-contracts` | `component` | `stove0-media-metadata-observer-contracts` | `reference_component` | Optional nonnormative media-metadata contract reference for Stove0 observers. |
-| `component:stove0-media-sampling-observer-contracts` | `component` | `stove0-media-sampling-observer-contracts` | `reference_component` | Optional nonnormative media-sampling contract reference for Stove0 observers. |
-| `component:stove0-nvenc-av1-opus-review-sampler` | `component` | `stove0-nvenc-av1-opus-review-sampler` | `reference_component` | Optional nonnormative NVENC AV1 and Opus review-sampler reference for Stove0. |
-| `component:stove0-nvenc-av1-opus-target` | `component` | `stove0-nvenc-av1-opus-target` | `reference_component` | Optional nonnormative NVENC AV1 and Opus target reference for Stove0. |
-| `component:stove0-observer-client` | `component` | `stove0-observer-client` | `reusable_library` | Narrow HTTP client for Stove0 content observers. |
-| `component:stove0-observer-protocol` | `component` | `stove0-observer-protocol` | `reusable_library` | Dependency-light public contracts for external stove0 content observers. |
-| `component:stove0-observer-support` | `component` | `stove0-observer-support` | `reusable_library` | External-author protocol, runtime, and conformance support for stove0 content observers. |
-| `component:stove0-operator-contracts` | `component` | `stove0-operator-contracts` | `reusable_library` | Canonical public state contracts for the Stove0 v1 operator surface. |
-| `component:stove0-opus-review-sampler` | `component` | `stove0-opus-review-sampler` | `reference_component` | Optional nonnormative Opus review-sampler reference for Stove0. |
-| `component:stove0-opus-target` | `component` | `stove0-opus-target` | `reference_component` | Optional nonnormative Opus target reference for Stove0. |
-| `component:stove0-protocol` | `component` | `stove0-protocol` | `reusable_library` | Canonical content-opaque collection orchestration contracts for stove0. |
-| `component:stove0-recipe-config` | `component` | `stove0-recipe-config` | `reusable_library` | Portable deployment-owned Stove0 recipe catalog contracts and validation. |
-| `component:stove0-review-materialize-target` | `component` | `stove0-review-materialize-target` | `reference_component` | Optional nonnormative review materialization target reference for Stove0. |
-| `component:stove0-review-planning` | `component` | `stove0-review-planning` | `reference_component` | Optional nonnormative planning bridge for maintained Stove0 review references. |
-| `component:stove0-review-rclone-effect-target` | `component` | `stove0-review-rclone-effect-target` | `reference_component` | Optional nonnormative rclone review-effect target reference for Stove0. |
-| `component:stove0-review-sampler-client` | `component` | `stove0-review-sampler-client` | `reference_component` | Optional nonnormative sampler-client reference for the Stove0 review target. |
-| `component:stove0-review-sampler-protocol` | `component` | `stove0-review-sampler-protocol` | `reference_component` | Optional nonnormative sampler-protocol reference for the Stove0 review target. |
-| `component:stove0-review-sampler-support` | `component` | `stove0-review-sampler-support` | `reference_component` | Optional nonnormative sampler support for Stove0 review references. |
-| `component:stove0-review-target-contracts` | `component` | `stove0-review-target-contracts` | `reference_component` | Optional nonnormative review contract reference for Stove0 targets. |
-| `component:stove0-review-target-support` | `component` | `stove0-review-target-support` | `reference_component` | Optional nonnormative shared review-target support reference for Stove0. |
-| `component:stove0-server` | `component` | `stove0-server` | `reference_application` | Optional nonnormative content-opaque transformation reference application for Riverhog. |
-| `component:stove0-target-client` | `component` | `stove0-target-client` | `reusable_library` | Narrow HTTP client for Stove0 transform targets. |
-| `component:stove0-target-protocol` | `component` | `stove0-target-protocol` | `reusable_library` | Dependency-light public contracts for external stove0 targets. |
-| `component:stove0-target-support` | `component` | `stove0-target-support` | `reusable_library` | Hardware-neutral target protocol, runtime, and conformance support for stove0. |
-| `component:time-formats` | `component` | `time-formats` | `internal_build_unit` | UTC timestamp and operator duration formats. |
-| `extension-point:gogurt.listener-host-providers` | `extension-point` | `gogurt.listener-host-providers` | `gogurt-listener-runtime` | Entry-point extension boundary owned by gogurt-listener-runtime. |
-| `extension-point:gogurt.mounted-volume-providers` | `extension-point` | `gogurt.mounted-volume-providers` | `gogurt-core` | Entry-point extension boundary owned by gogurt-core. |
-| `extension-point:riverhog.provenance-contracts` | `extension-point` | `riverhog.provenance-contracts` | `riverhog-provenance-contracts` | Entry-point extension boundary owned by riverhog-provenance-contracts. |
-| `extension-point:riverhog.provenance-observers` | `extension-point` | `riverhog.provenance-observers` | `riverhog-provenance` | Entry-point extension boundary owned by riverhog-provenance. |
-| `extension-point:stove0.observer-semantic-validators` | `extension-point` | `stove0.observer-semantic-validators` | `stove0-observer-client` | Entry-point extension boundary owned by stove0-observer-client. |
-| `image:runtime:mango-fish` | `runtime-image` | `mango-fish` | `reference` | Optional nonnormative CloudEvents reference application for Riverhog. |
-| `image:runtime:riverhog` | `runtime-image` | `riverhog` | `product` | Riverhog archive service. |
-| `image:runtime:riverhog-ftp-adapter` | `runtime-image` | `riverhog-ftp-adapter` | `reference` | Optional nonnormative Riverhog FTP ingress reference. |
-| `image:runtime:riverhog-storage-adapter-aws` | `runtime-image` | `riverhog-storage-adapter-aws` | `reference` | Optional nonnormative AWS storage reference for Riverhog. |
-| `image:runtime:riverhog-storage-adapter-backblaze` | `runtime-image` | `riverhog-storage-adapter-backblaze` | `reference` | Optional nonnormative Backblaze B2 storage reference for Riverhog. |
-| `image:runtime:riverhog-storage-adapter-filesystem` | `runtime-image` | `riverhog-storage-adapter-filesystem` | `reference` | Optional nonnormative Linux filesystem storage reference for Riverhog. |
-| `image:runtime:stove0` | `runtime-image` | `stove0` | `reference` | Optional nonnormative transformation reference application for Riverhog. |
-| `image:runtime:stove0-exiftool-observer` | `runtime-image` | `stove0-exiftool-observer` | `reference` | Optional nonnormative ExifTool observer reference for Stove0. |
-| `image:runtime:stove0-ffprobe-sampling-observer` | `runtime-image` | `stove0-ffprobe-sampling-observer` | `reference` | Optional nonnormative FFprobe sampling-observer reference for Stove0. |
-| `image:runtime:stove0-nvenc-av1-opus-target` | `runtime-image` | `stove0-nvenc-av1-opus-target` | `reference` | Optional nonnormative NVENC AV1 and Opus target reference for Stove0. |
-| `image:runtime:stove0-opus-target` | `runtime-image` | `stove0-opus-target` | `reference` | Optional nonnormative Opus target reference for Stove0. |
-| `image:runtime:stove0-review-materialize-target` | `runtime-image` | `stove0-review-materialize-target` | `reference` | Optional nonnormative review materialization target reference for Stove0. |
-| `image:runtime:stove0-review-rclone-effect-target` | `runtime-image` | `stove0-review-rclone-effect-target` | `reference` | Optional nonnormative rclone review-effect target reference for Stove0. |
-| `installation:uv-tool` | `installation` | `uv-tool` | `—` | Coordinated end-user installation roots declared by the release contract. |
-| `process-protocol:riverhog-storage-adapter` | `process-protocol` | `riverhog-storage-adapter` | `riverhog-storage-adapter-protocol` | Independently deployed process protocol owned by riverhog-storage-adapter-protocol. |
-| `process-protocol:stove0-observer` | `process-protocol` | `stove0-observer` | `stove0-observer-protocol` | Independently deployed process protocol owned by stove0-observer-protocol. |
-| `process-protocol:stove0-review-sampler` | `process-protocol` | `stove0-review-sampler` | `stove0-review-sampler-protocol` | Independently deployed process protocol owned by stove0-review-sampler-protocol. |
-| `process-protocol:stove0-target` | `process-protocol` | `stove0-target` | `stove0-target-protocol` | Independently deployed process protocol owned by stove0-target-protocol. |
+| <a id="rn-b37402f43fd2"></a>`component:config-validation` | `component` | [config-validation](../authorities/config-validation/index.md) | `internal_build_unit` | Strict YAML and JSON Schema configuration validation. |
+| <a id="rn-eeb2be4a7128"></a>`component:gogurt` | `component` | [gogurt](../authorities/gogurt/index.md) | `reference_application` | Optional nonnormative mounted-volume ingestion reference application for Riverhog. |
+| <a id="rn-e1d2ac7df3e3"></a>`component:gogurt-core` | `component` | [gogurt-core](../authorities/gogurt-core/index.md) | `reusable_library` | Portable Gogurt marker, routing, action, and watch semantics. |
+| <a id="rn-81398abad295"></a>`component:gogurt-linux-listener-host` | `component` | [gogurt-linux-listener-host](../authorities/gogurt-linux-listener-host/index.md) | `reference_component` | Optional nonnormative Linux systemd-user listener-host reference for Gogurt. |
+| <a id="rn-20b20b9fcd70"></a>`component:gogurt-linux-mounted-volume` | `component` | [gogurt-linux-mounted-volume](../authorities/gogurt-linux-mounted-volume/index.md) | `reference_component` | Optional nonnormative Linux mounted-volume reference for Gogurt. |
+| <a id="rn-df1cdfd17cbc"></a>`component:gogurt-listener-runtime` | `component` | [gogurt-listener-runtime](../authorities/gogurt-listener-runtime/index.md) | `reusable_library` | Portable durable listener runtime and native-platform port for Gogurt. |
+| <a id="rn-a34362604e51"></a>`component:gogurt-macos-listener-host` | `component` | [gogurt-macos-listener-host](../authorities/gogurt-macos-listener-host/index.md) | `reference_component` | Optional nonnormative macOS launchd listener-host reference for Gogurt. |
+| <a id="rn-36cc5f6cd232"></a>`component:gogurt-macos-mounted-volume` | `component` | [gogurt-macos-mounted-volume](../authorities/gogurt-macos-mounted-volume/index.md) | `reference_component` | Optional nonnormative macOS mounted-volume reference for Gogurt. |
+| <a id="rn-1b4c9bf55f37"></a>`component:gogurt-path-volume-support` | `component` | [gogurt-path-volume-support](../authorities/gogurt-path-volume-support/index.md) | `reference_component` | Optional nonnormative path-mounted-volume support for Gogurt reference providers. |
+| <a id="rn-474510715381"></a>`component:gogurt-windows-listener-host` | `component` | [gogurt-windows-listener-host](../authorities/gogurt-windows-listener-host/index.md) | `reference_component` | Optional nonnormative Windows Task Scheduler listener-host reference for Gogurt. |
+| <a id="rn-a05f27932561"></a>`component:gogurt-windows-mounted-volume` | `component` | [gogurt-windows-mounted-volume](../authorities/gogurt-windows-mounted-volume/index.md) | `reference_component` | Optional nonnormative Windows mounted-volume reference for Gogurt. |
+| <a id="rn-f59c7f41027a"></a>`component:http-api-contracts` | `component` | [http-api-contracts](../authorities/http-api-contracts/index.md) | `reusable_library` | Public typed HTTP error, health, client, and operation contracts. |
+| <a id="rn-30af2d159305"></a>`component:lifecycle-events` | `component` | [lifecycle-events](../authorities/lifecycle-events/index.md) | `reusable_library` | Durable CloudEvents lifecycle log and client primitives. |
+| <a id="rn-1c3900c99434"></a>`component:mango-fish` | `component` | [mango-fish](../authorities/mango-fish/index.md) | `reference_application` | Optional nonnormative CloudEvents reference application for Riverhog. |
+| <a id="rn-0a279524f465"></a>`component:piggity` | `component` | [piggity](../authorities/piggity/index.md) | `reference_application` | Optional nonnormative Piggity reference client for Riverhog. |
+| <a id="rn-24025966b480"></a>`component:riverhog-age` | `component` | [riverhog-age](../authorities/riverhog-age/index.md) | `reusable_library` | Resumable age encryption used by the Riverhog protocol. |
+| <a id="rn-06ef7f89cab1"></a>`component:riverhog-application-access` | `component` | [riverhog-application-access](../authorities/riverhog-application-access/index.md) | `reusable_library` | Public Riverhog application-access contracts and canonical grant grammar. |
+| <a id="rn-3f00f6925375"></a>`component:riverhog-archive-contracts` | `component` | [riverhog-archive-contracts](../authorities/riverhog-archive-contracts/index.md) | `reusable_library` | Dependency-light immutable Riverhog archive recovery contracts. |
+| <a id="rn-8e5274344f37"></a>`component:riverhog-client` | `component` | [riverhog-client](../authorities/riverhog-client/index.md) | `reusable_library` | Typed generic Riverhog client and capability-scoped collection-processing runtime. |
+| <a id="rn-d73898029431"></a>`component:riverhog-ftp-adapter` | `component` | [riverhog-ftp-adapter](../authorities/riverhog-ftp-adapter/index.md) | `reference_component` | Optional nonnormative FTP ingress reference for Riverhog. |
+| <a id="rn-5044d995ba04"></a>`component:riverhog-ftp-adapter-api-client` | `component` | [riverhog-ftp-adapter-api-client](../authorities/riverhog-ftp-adapter-api-client/index.md) | `reference_component` | Optional nonnormative client for the Riverhog FTP ingress reference. |
+| <a id="rn-20dbb0d5c0f2"></a>`component:riverhog-protocol` | `component` | [riverhog-protocol](../authorities/riverhog-protocol/index.md) | `reusable_library` | Canonical Riverhog wire and identity contracts. |
+| <a id="rn-728e08e7c454"></a>`component:riverhog-provenance` | `component` | [riverhog-provenance](../authorities/riverhog-provenance/index.md) | `reusable_library` | Portable Riverhog v1 per-file provenance journals and validation. |
+| <a id="rn-606682003821"></a>`component:riverhog-provenance-contracts` | `component` | [riverhog-provenance-contracts](../authorities/riverhog-provenance-contracts/index.md) | `reusable_library` | Canonical Riverhog provenance identity and reference contracts. |
+| <a id="rn-207aa064e3bf"></a>`component:riverhog-provenance-linux-contracts` | `component` | [riverhog-provenance-linux-contracts](../authorities/riverhog-provenance-linux-contracts/index.md) | `reference_component` | Optional nonnormative Linux observation-contract reference for Riverhog provenance. |
+| <a id="rn-f733d7aee6b6"></a>`component:riverhog-provenance-linux-observer` | `component` | [riverhog-provenance-linux-observer](../authorities/riverhog-provenance-linux-observer/index.md) | `reference_component` | Optional nonnormative Linux filesystem-observer reference for Riverhog provenance. |
+| <a id="rn-5674e1f4d9a2"></a>`component:riverhog-provenance-macos-contracts` | `component` | [riverhog-provenance-macos-contracts](../authorities/riverhog-provenance-macos-contracts/index.md) | `reference_component` | Optional nonnormative macOS observation-contract reference for Riverhog provenance. |
+| <a id="rn-8a8a3a88aaec"></a>`component:riverhog-provenance-macos-observer` | `component` | [riverhog-provenance-macos-observer](../authorities/riverhog-provenance-macos-observer/index.md) | `reference_component` | Optional nonnormative macOS filesystem-observer reference for Riverhog provenance. |
+| <a id="rn-4061c95d076d"></a>`component:riverhog-provenance-windows-contracts` | `component` | [riverhog-provenance-windows-contracts](../authorities/riverhog-provenance-windows-contracts/index.md) | `reference_component` | Optional nonnormative Windows observation-contract reference for Riverhog provenance. |
+| <a id="rn-800f0c638e4e"></a>`component:riverhog-provenance-windows-observer` | `component` | [riverhog-provenance-windows-observer](../authorities/riverhog-provenance-windows-observer/index.md) | `reference_component` | Optional nonnormative Windows filesystem-observer reference for Riverhog provenance. |
+| <a id="rn-813d97e5a415"></a>`component:riverhog-recover` | `component` | [riverhog-recover](../authorities/riverhog-recover/index.md) | `reference_application` | Optional nonnormative independent recovery reference application for Riverhog archives. |
+| <a id="rn-807c63322e05"></a>`component:riverhog-server` | `component` | [riverhog-server](../authorities/riverhog-server/index.md) | `deployed_implementation` | Encrypted archive management, catalog, and retrieval. |
+| <a id="rn-922b8ba508f9"></a>`component:riverhog-storage-adapter-asgi-support` | `component` | [riverhog-storage-adapter-asgi-support](../authorities/riverhog-storage-adapter-asgi-support/index.md) | `reusable_library` | Authenticated ASGI shell for independently scoped Riverhog storage adapters. |
+| <a id="rn-c53f4ff3ef96"></a>`component:riverhog-storage-adapter-aws` | `component` | [riverhog-storage-adapter-aws](../authorities/riverhog-storage-adapter-aws/index.md) | `reference_component` | Optional nonnormative AWS storage reference for Riverhog. |
+| <a id="rn-4178e6e967e3"></a>`component:riverhog-storage-adapter-backblaze` | `component` | [riverhog-storage-adapter-backblaze](../authorities/riverhog-storage-adapter-backblaze/index.md) | `reference_component` | Optional nonnormative Backblaze B2 storage reference for Riverhog. |
+| <a id="rn-ebe4206627bc"></a>`component:riverhog-storage-adapter-filesystem` | `component` | [riverhog-storage-adapter-filesystem](../authorities/riverhog-storage-adapter-filesystem/index.md) | `reference_component` | Optional nonnormative Linux filesystem storage reference for Riverhog. |
+| <a id="rn-e65e47e3320a"></a>`component:riverhog-storage-adapter-protocol` | `component` | [riverhog-storage-adapter-protocol](../authorities/riverhog-storage-adapter-protocol/index.md) | `reusable_library` | Provider-neutral opaque-object capability contracts for Riverhog storage adapters. |
+| <a id="rn-b934a396f489"></a>`component:riverhog-storage-adapter-s3-support` | `component` | [riverhog-storage-adapter-s3-support](../authorities/riverhog-storage-adapter-s3-support/index.md) | `reference_component` | Optional nonnormative S3 support for Riverhog storage references. |
+| <a id="rn-f0c3b34058c5"></a>`component:riverhog-storage-adapter-support` | `component` | [riverhog-storage-adapter-support](../authorities/riverhog-storage-adapter-support/index.md) | `reusable_library` | HTTP binding and conformance support for Riverhog storage adapters. |
+| <a id="rn-b37a103e5fc0"></a>`component:state-schema` | `component` | [state-schema](../authorities/state-schema/index.md) | `internal_build_unit` | Forward-only relational state schema and migration contracts. |
+| <a id="rn-0b595a9ebcba"></a>`component:stove0-api-client` | `component` | [stove0-api-client](../authorities/stove0-api-client/index.md) | `reusable_library` | Official Python client for the stove0 v1 workflow API. |
+| <a id="rn-c5aaef631874"></a>`component:stove0-client` | `component` | [stove0-client](../authorities/stove0-client/index.md) | `reference_application` | Optional nonnormative command-line client for the Stove0 reference application. |
+| <a id="rn-9da095602024"></a>`component:stove0-exiftool-observer` | `component` | [stove0-exiftool-observer](../authorities/stove0-exiftool-observer/index.md) | `reference_component` | Optional nonnormative ExifTool observer reference for Stove0. |
+| <a id="rn-219fad9b724a"></a>`component:stove0-ffprobe-sampling-observer` | `component` | [stove0-ffprobe-sampling-observer](../authorities/stove0-ffprobe-sampling-observer/index.md) | `reference_component` | Optional nonnormative FFprobe sampling-observer reference for Stove0. |
+| <a id="rn-af0472b6c0a5"></a>`component:stove0-media-archive-target-contracts` | `component` | [stove0-media-archive-target-contracts](../authorities/stove0-media-archive-target-contracts/index.md) | `reference_component` | Optional nonnormative media-archive contract reference for Stove0 targets. |
+| <a id="rn-581a2a6b70ab"></a>`component:stove0-media-archive-target-support` | `component` | [stove0-media-archive-target-support](../authorities/stove0-media-archive-target-support/index.md) | `reference_component` | Optional nonnormative projection support for Stove0 media-archive references. |
+| <a id="rn-c671a0c6fd98"></a>`component:stove0-media-metadata-observer-contracts` | `component` | [stove0-media-metadata-observer-contracts](../authorities/stove0-media-metadata-observer-contracts/index.md) | `reference_component` | Optional nonnormative media-metadata contract reference for Stove0 observers. |
+| <a id="rn-8acbd56de7b2"></a>`component:stove0-media-sampling-observer-contracts` | `component` | [stove0-media-sampling-observer-contracts](../authorities/stove0-media-sampling-observer-contracts/index.md) | `reference_component` | Optional nonnormative media-sampling contract reference for Stove0 observers. |
+| <a id="rn-3d4e1c390ad8"></a>`component:stove0-nvenc-av1-opus-review-sampler` | `component` | [stove0-nvenc-av1-opus-review-sampler](../authorities/stove0-nvenc-av1-opus-review-sampler/index.md) | `reference_component` | Optional nonnormative NVENC AV1 and Opus review-sampler reference for Stove0. |
+| <a id="rn-e9196fec57b9"></a>`component:stove0-nvenc-av1-opus-target` | `component` | [stove0-nvenc-av1-opus-target](../authorities/stove0-nvenc-av1-opus-target/index.md) | `reference_component` | Optional nonnormative NVENC AV1 and Opus target reference for Stove0. |
+| <a id="rn-21b6164c9f86"></a>`component:stove0-observer-client` | `component` | [stove0-observer-client](../authorities/stove0-observer-client/index.md) | `reusable_library` | Narrow HTTP client for Stove0 content observers. |
+| <a id="rn-bac58a079cc2"></a>`component:stove0-observer-protocol` | `component` | [stove0-observer-protocol](../authorities/stove0-observer-protocol/index.md) | `reusable_library` | Dependency-light public contracts for external stove0 content observers. |
+| <a id="rn-50ccd8c77461"></a>`component:stove0-observer-support` | `component` | [stove0-observer-support](../authorities/stove0-observer-support/index.md) | `reusable_library` | External-author protocol, runtime, and conformance support for stove0 content observers. |
+| <a id="rn-7c400ebb8398"></a>`component:stove0-operator-contracts` | `component` | [stove0-operator-contracts](../authorities/stove0-operator-contracts/index.md) | `reusable_library` | Canonical public state contracts for the Stove0 v1 operator surface. |
+| <a id="rn-36756ccd7732"></a>`component:stove0-opus-review-sampler` | `component` | [stove0-opus-review-sampler](../authorities/stove0-opus-review-sampler/index.md) | `reference_component` | Optional nonnormative Opus review-sampler reference for Stove0. |
+| <a id="rn-313a5c450fdc"></a>`component:stove0-opus-target` | `component` | [stove0-opus-target](../authorities/stove0-opus-target/index.md) | `reference_component` | Optional nonnormative Opus target reference for Stove0. |
+| <a id="rn-72232b7fcefa"></a>`component:stove0-protocol` | `component` | [stove0-protocol](../authorities/stove0-protocol/index.md) | `reusable_library` | Canonical content-opaque collection orchestration contracts for stove0. |
+| <a id="rn-1f5664e176e6"></a>`component:stove0-recipe-config` | `component` | [stove0-recipe-config](../authorities/stove0-recipe-config/index.md) | `reusable_library` | Portable deployment-owned Stove0 recipe catalog contracts and validation. |
+| <a id="rn-4086d947a343"></a>`component:stove0-review-materialize-target` | `component` | [stove0-review-materialize-target](../authorities/stove0-review-materialize-target/index.md) | `reference_component` | Optional nonnormative review materialization target reference for Stove0. |
+| <a id="rn-dbd324b3506b"></a>`component:stove0-review-planning` | `component` | [stove0-review-planning](../authorities/stove0-review-planning/index.md) | `reference_component` | Optional nonnormative planning bridge for maintained Stove0 review references. |
+| <a id="rn-87283d63df1b"></a>`component:stove0-review-rclone-effect-target` | `component` | [stove0-review-rclone-effect-target](../authorities/stove0-review-rclone-effect-target/index.md) | `reference_component` | Optional nonnormative rclone review-effect target reference for Stove0. |
+| <a id="rn-9c79fa82339b"></a>`component:stove0-review-sampler-client` | `component` | [stove0-review-sampler-client](../authorities/stove0-review-sampler-client/index.md) | `reference_component` | Optional nonnormative sampler-client reference for the Stove0 review target. |
+| <a id="rn-eedc3ab10b80"></a>`component:stove0-review-sampler-protocol` | `component` | [stove0-review-sampler-protocol](../authorities/stove0-review-sampler-protocol/index.md) | `reference_component` | Optional nonnormative sampler-protocol reference for the Stove0 review target. |
+| <a id="rn-461ec95c0572"></a>`component:stove0-review-sampler-support` | `component` | [stove0-review-sampler-support](../authorities/stove0-review-sampler-support/index.md) | `reference_component` | Optional nonnormative sampler support for Stove0 review references. |
+| <a id="rn-83d36842d17d"></a>`component:stove0-review-target-contracts` | `component` | [stove0-review-target-contracts](../authorities/stove0-review-target-contracts/index.md) | `reference_component` | Optional nonnormative review contract reference for Stove0 targets. |
+| <a id="rn-5e88db47d6b6"></a>`component:stove0-review-target-support` | `component` | [stove0-review-target-support](../authorities/stove0-review-target-support/index.md) | `reference_component` | Optional nonnormative shared review-target support reference for Stove0. |
+| <a id="rn-3540de4d4a61"></a>`component:stove0-server` | `component` | [stove0-server](../authorities/stove0-server/index.md) | `reference_application` | Optional nonnormative content-opaque transformation reference application for Riverhog. |
+| <a id="rn-2c02e8800488"></a>`component:stove0-target-client` | `component` | [stove0-target-client](../authorities/stove0-target-client/index.md) | `reusable_library` | Narrow HTTP client for Stove0 transform targets. |
+| <a id="rn-2bfbd86b0036"></a>`component:stove0-target-protocol` | `component` | [stove0-target-protocol](../authorities/stove0-target-protocol/index.md) | `reusable_library` | Dependency-light public contracts for external stove0 targets. |
+| <a id="rn-f8df68acc88c"></a>`component:stove0-target-support` | `component` | [stove0-target-support](../authorities/stove0-target-support/index.md) | `reusable_library` | Hardware-neutral target protocol, runtime, and conformance support for stove0. |
+| <a id="rn-71d11531981d"></a>`component:time-formats` | `component` | [time-formats](../authorities/time-formats/index.md) | `internal_build_unit` | UTC timestamp and operator duration formats. |
+| <a id="rn-bbe759bbb1a0"></a>`extension-point:gogurt.listener-host-providers` | `extension-point` | `gogurt.listener-host-providers` | `gogurt-listener-runtime` | Entry-point extension boundary owned by gogurt-listener-runtime. |
+| <a id="rn-6f779eb64ba6"></a>`extension-point:gogurt.mounted-volume-providers` | `extension-point` | `gogurt.mounted-volume-providers` | `gogurt-core` | Entry-point extension boundary owned by gogurt-core. |
+| <a id="rn-08557331674e"></a>`extension-point:riverhog.provenance-contracts` | `extension-point` | `riverhog.provenance-contracts` | `riverhog-provenance-contracts` | Entry-point extension boundary owned by riverhog-provenance-contracts. |
+| <a id="rn-ed2bbc0e316b"></a>`extension-point:riverhog.provenance-observers` | `extension-point` | `riverhog.provenance-observers` | `riverhog-provenance` | Entry-point extension boundary owned by riverhog-provenance. |
+| <a id="rn-dab30e400e9f"></a>`extension-point:stove0.observer-semantic-validators` | `extension-point` | `stove0.observer-semantic-validators` | `stove0-observer-client` | Entry-point extension boundary owned by stove0-observer-client. |
+| <a id="rn-d981e688ef77"></a>`image:runtime:mango-fish` | `runtime-image` | [mango-fish](../authorities/mango-fish/index.md) | `reference` | Optional nonnormative CloudEvents reference application for Riverhog. |
+| <a id="rn-566e3c6fe0f6"></a>`image:runtime:riverhog` | `runtime-image` | [riverhog](../authorities/riverhog/index.md) | `product` | Riverhog archive service. |
+| <a id="rn-ec253225ec3f"></a>`image:runtime:riverhog-ftp-adapter` | `runtime-image` | [riverhog-ftp-adapter](../authorities/riverhog-ftp-adapter/index.md) | `reference` | Optional nonnormative Riverhog FTP ingress reference. |
+| <a id="rn-bab87dc57124"></a>`image:runtime:riverhog-storage-adapter-aws` | `runtime-image` | [riverhog-storage-adapter-aws](../authorities/riverhog-storage-adapter-aws/index.md) | `reference` | Optional nonnormative AWS storage reference for Riverhog. |
+| <a id="rn-8c85e1cf4311"></a>`image:runtime:riverhog-storage-adapter-backblaze` | `runtime-image` | [riverhog-storage-adapter-backblaze](../authorities/riverhog-storage-adapter-backblaze/index.md) | `reference` | Optional nonnormative Backblaze B2 storage reference for Riverhog. |
+| <a id="rn-91a08066b776"></a>`image:runtime:riverhog-storage-adapter-filesystem` | `runtime-image` | [riverhog-storage-adapter-filesystem](../authorities/riverhog-storage-adapter-filesystem/index.md) | `reference` | Optional nonnormative Linux filesystem storage reference for Riverhog. |
+| <a id="rn-c1dbb5bdf8b1"></a>`image:runtime:stove0` | `runtime-image` | [stove0](../authorities/stove0/index.md) | `reference` | Optional nonnormative transformation reference application for Riverhog. |
+| <a id="rn-a88934db615d"></a>`image:runtime:stove0-exiftool-observer` | `runtime-image` | [stove0-exiftool-observer](../authorities/stove0-exiftool-observer/index.md) | `reference` | Optional nonnormative ExifTool observer reference for Stove0. |
+| <a id="rn-fcead071d492"></a>`image:runtime:stove0-ffprobe-sampling-observer` | `runtime-image` | [stove0-ffprobe-sampling-observer](../authorities/stove0-ffprobe-sampling-observer/index.md) | `reference` | Optional nonnormative FFprobe sampling-observer reference for Stove0. |
+| <a id="rn-49a20214bc1f"></a>`image:runtime:stove0-nvenc-av1-opus-target` | `runtime-image` | [stove0-nvenc-av1-opus-target](../authorities/stove0-nvenc-av1-opus-target/index.md) | `reference` | Optional nonnormative NVENC AV1 and Opus target reference for Stove0. |
+| <a id="rn-62cd714adb51"></a>`image:runtime:stove0-opus-target` | `runtime-image` | [stove0-opus-target](../authorities/stove0-opus-target/index.md) | `reference` | Optional nonnormative Opus target reference for Stove0. |
+| <a id="rn-0d7e506b097c"></a>`image:runtime:stove0-review-materialize-target` | `runtime-image` | [stove0-review-materialize-target](../authorities/stove0-review-materialize-target/index.md) | `reference` | Optional nonnormative review materialization target reference for Stove0. |
+| <a id="rn-9303ccd16dde"></a>`image:runtime:stove0-review-rclone-effect-target` | `runtime-image` | [stove0-review-rclone-effect-target](../authorities/stove0-review-rclone-effect-target/index.md) | `reference` | Optional nonnormative rclone review-effect target reference for Stove0. |
+| <a id="rn-672a39762bbb"></a>`installation:uv-tool` | `installation` | `uv-tool` | `—` | Coordinated end-user installation roots declared by the release contract. |
+| <a id="rn-994e13bf1e40"></a>`process-protocol:riverhog-storage-adapter` | `process-protocol` | `riverhog-storage-adapter` | `riverhog-storage-adapter-protocol` | Independently deployed process protocol owned by riverhog-storage-adapter-protocol. |
+| <a id="rn-2eb3b800f870"></a>`process-protocol:stove0-observer` | `process-protocol` | `stove0-observer` | `stove0-observer-protocol` | Independently deployed process protocol owned by stove0-observer-protocol. |
+| <a id="rn-e9ced34f0bc9"></a>`process-protocol:stove0-review-sampler` | `process-protocol` | `stove0-review-sampler` | `stove0-review-sampler-protocol` | Independently deployed process protocol owned by stove0-review-sampler-protocol. |
+| <a id="rn-9d6e708ff324"></a>`process-protocol:stove0-target` | `process-protocol` | `stove0-target` | `stove0-target-protocol` | Independently deployed process protocol owned by stove0-target-protocol. |
 
 ## Exact edges
 
 | From | Relationship | To | Scope or binding |
 |---|---|---|---|
-| `riverhog-storage-adapter-support` | `binds-protocol` | `riverhog-storage-adapter` | `http` |
-| `stove0-observer-support` | `binds-protocol` | `stove0-observer` | `http` |
-| `stove0-review-sampler-support` | `binds-protocol` | `stove0-review-sampler` | `http` |
-| `stove0-target-support` | `binds-protocol` | `stove0-target` | `http` |
-| `gogurt` | `depends-on` | `config-validation` | `required` |
-| `gogurt` | `depends-on` | `gogurt-core` | `required` |
-| `gogurt` | `depends-on` | `gogurt-listener-runtime` | `required` |
-| `gogurt-core` | `depends-on` | `config-validation` | `required` |
-| `gogurt-linux-listener-host` | `depends-on` | `gogurt-listener-runtime` | `required` |
-| `gogurt-linux-mounted-volume` | `depends-on` | `gogurt-core` | `required` |
-| `gogurt-linux-mounted-volume` | `depends-on` | `gogurt-path-volume-support` | `required` |
-| `gogurt-listener-runtime` | `depends-on` | `config-validation` | `required` |
-| `gogurt-listener-runtime` | `depends-on` | `gogurt-core` | `required` |
-| `gogurt-macos-listener-host` | `depends-on` | `gogurt-listener-runtime` | `required` |
-| `gogurt-macos-mounted-volume` | `depends-on` | `gogurt-core` | `required` |
-| `gogurt-macos-mounted-volume` | `depends-on` | `gogurt-path-volume-support` | `required` |
-| `gogurt-path-volume-support` | `depends-on` | `config-validation` | `required` |
-| `gogurt-path-volume-support` | `depends-on` | `gogurt-core` | `required` |
-| `gogurt-windows-listener-host` | `depends-on` | `gogurt-listener-runtime` | `required` |
-| `gogurt-windows-mounted-volume` | `depends-on` | `gogurt-core` | `required` |
-| `gogurt-windows-mounted-volume` | `depends-on` | `gogurt-path-volume-support` | `required` |
-| `lifecycle-events` | `depends-on` | `time-formats` | `required` |
-| `mango-fish` | `depends-on` | `lifecycle-events` | `required` |
-| `mango-fish` | `depends-on` | `state-schema` | `required` |
-| `piggity` | `depends-on` | `http-api-contracts` | `required` |
-| `piggity` | `depends-on` | `riverhog-application-access` | `required` |
-| `piggity` | `depends-on` | `riverhog-client` | `required` |
-| `piggity` | `depends-on` | `riverhog-protocol` | `required` |
-| `piggity` | `depends-on` | `riverhog-provenance` | `required` |
-| `piggity` | `depends-on` | `state-schema` | `required` |
-| `piggity` | `depends-on` | `time-formats` | `required` |
-| `riverhog-application-access` | `depends-on` | `riverhog-protocol` | `required` |
-| `riverhog-client` | `depends-on` | `http-api-contracts` | `required` |
-| `riverhog-client` | `depends-on` | `riverhog-application-access` | `required` |
-| `riverhog-client` | `depends-on` | `riverhog-protocol` | `required` |
-| `riverhog-client` | `depends-on` | `riverhog-provenance-contracts` | `required` |
-| `riverhog-ftp-adapter` | `depends-on` | `http-api-contracts` | `required` |
-| `riverhog-ftp-adapter` | `depends-on` | `riverhog-client` | `required` |
-| `riverhog-ftp-adapter` | `depends-on` | `riverhog-ftp-adapter-api-client` | `required` |
-| `riverhog-ftp-adapter` | `depends-on` | `riverhog-protocol` | `required` |
-| `riverhog-ftp-adapter` | `depends-on` | `riverhog-provenance` | `required` |
-| `riverhog-ftp-adapter-api-client` | `depends-on` | `http-api-contracts` | `required` |
-| `riverhog-protocol` | `depends-on` | `http-api-contracts` | `required` |
-| `riverhog-protocol` | `depends-on` | `lifecycle-events` | `required` |
-| `riverhog-protocol` | `depends-on` | `riverhog-provenance-contracts` | `required` |
-| `riverhog-provenance` | `depends-on` | `riverhog-provenance-contracts` | `required` |
-| `riverhog-provenance-linux-contracts` | `depends-on` | `riverhog-provenance-contracts` | `required` |
-| `riverhog-provenance-linux-observer` | `depends-on` | `riverhog-provenance` | `required` |
-| `riverhog-provenance-linux-observer` | `depends-on` | `riverhog-provenance-linux-contracts` | `required` |
-| `riverhog-provenance-macos-contracts` | `depends-on` | `riverhog-provenance-contracts` | `required` |
-| `riverhog-provenance-macos-observer` | `depends-on` | `riverhog-provenance` | `required` |
-| `riverhog-provenance-macos-observer` | `depends-on` | `riverhog-provenance-macos-contracts` | `required` |
-| `riverhog-provenance-windows-contracts` | `depends-on` | `riverhog-provenance-contracts` | `required` |
-| `riverhog-provenance-windows-observer` | `depends-on` | `riverhog-provenance` | `required` |
-| `riverhog-provenance-windows-observer` | `depends-on` | `riverhog-provenance-windows-contracts` | `required` |
-| `riverhog-recover` | `depends-on` | `riverhog-archive-contracts` | `required` |
-| `riverhog-recover` | `depends-on` | `riverhog-protocol` | `required` |
-| `riverhog-recover` | `depends-on` | `riverhog-provenance` | `required` |
-| `riverhog-server` | `depends-on` | `http-api-contracts` | `required` |
-| `riverhog-server` | `depends-on` | `lifecycle-events` | `required` |
-| `riverhog-server` | `depends-on` | `riverhog-age` | `required` |
-| `riverhog-server` | `depends-on` | `riverhog-application-access` | `required` |
-| `riverhog-server` | `depends-on` | `riverhog-archive-contracts` | `required` |
-| `riverhog-server` | `depends-on` | `riverhog-protocol` | `required` |
-| `riverhog-server` | `depends-on` | `riverhog-provenance` | `required` |
-| `riverhog-server` | `depends-on` | `riverhog-provenance-contracts` | `required` |
-| `riverhog-server` | `depends-on` | `riverhog-storage-adapter-protocol` | `required` |
-| `riverhog-server` | `depends-on` | `riverhog-storage-adapter-support` | `required` |
-| `riverhog-server` | `depends-on` | `state-schema` | `required` |
-| `riverhog-server` | `depends-on` | `time-formats` | `required` |
-| `riverhog-storage-adapter-asgi-support` | `depends-on` | `http-api-contracts` | `required` |
-| `riverhog-storage-adapter-asgi-support` | `depends-on` | `riverhog-storage-adapter-protocol` | `required` |
-| `riverhog-storage-adapter-asgi-support` | `depends-on` | `riverhog-storage-adapter-support` | `required` |
-| `riverhog-storage-adapter-aws` | `depends-on` | `riverhog-storage-adapter-asgi-support` | `required` |
-| `riverhog-storage-adapter-aws` | `depends-on` | `riverhog-storage-adapter-protocol` | `required` |
-| `riverhog-storage-adapter-aws` | `depends-on` | `riverhog-storage-adapter-s3-support` | `required` |
-| `riverhog-storage-adapter-aws` | `depends-on` | `time-formats` | `required` |
-| `riverhog-storage-adapter-backblaze` | `depends-on` | `riverhog-storage-adapter-asgi-support` | `required` |
-| `riverhog-storage-adapter-backblaze` | `depends-on` | `riverhog-storage-adapter-s3-support` | `required` |
-| `riverhog-storage-adapter-filesystem` | `depends-on` | `riverhog-storage-adapter-asgi-support` | `required` |
-| `riverhog-storage-adapter-filesystem` | `depends-on` | `riverhog-storage-adapter-protocol` | `required` |
-| `riverhog-storage-adapter-filesystem` | `depends-on` | `time-formats` | `required` |
-| `riverhog-storage-adapter-protocol` | `depends-on` | `time-formats` | `required` |
-| `riverhog-storage-adapter-s3-support` | `depends-on` | `riverhog-storage-adapter-protocol` | `required` |
-| `riverhog-storage-adapter-s3-support` | `depends-on` | `time-formats` | `required` |
-| `riverhog-storage-adapter-support` | `depends-on` | `http-api-contracts` | `required` |
-| `riverhog-storage-adapter-support` | `depends-on` | `riverhog-storage-adapter-protocol` | `required` |
-| `stove0-api-client` | `depends-on` | `http-api-contracts` | `required` |
-| `stove0-api-client` | `depends-on` | `stove0-operator-contracts` | `required` |
-| `stove0-api-client` | `depends-on` | `stove0-protocol` | `required` |
-| `stove0-client` | `depends-on` | `stove0-api-client` | `required` |
-| `stove0-client` | `depends-on` | `stove0-protocol` | `required` |
-| `stove0-client` | `depends-on` | `stove0-recipe-config` | `required` |
-| `stove0-exiftool-observer` | `depends-on` | `http-api-contracts` | `required` |
-| `stove0-exiftool-observer` | `depends-on` | `stove0-media-metadata-observer-contracts` | `required` |
-| `stove0-exiftool-observer` | `depends-on` | `stove0-observer-protocol` | `required` |
-| `stove0-exiftool-observer` | `depends-on` | `stove0-observer-support` | `required` |
-| `stove0-ffprobe-sampling-observer` | `depends-on` | `http-api-contracts` | `required` |
-| `stove0-ffprobe-sampling-observer` | `depends-on` | `stove0-media-sampling-observer-contracts` | `required` |
-| `stove0-ffprobe-sampling-observer` | `depends-on` | `stove0-observer-protocol` | `required` |
-| `stove0-ffprobe-sampling-observer` | `depends-on` | `stove0-observer-support` | `required` |
-| `stove0-media-archive-target-contracts` | `depends-on` | `stove0-protocol` | `required` |
-| `stove0-media-archive-target-contracts` | `depends-on` | `stove0-target-protocol` | `required` |
-| `stove0-media-archive-target-support` | `depends-on` | `riverhog-protocol` | `required` |
-| `stove0-media-archive-target-support` | `depends-on` | `stove0-media-archive-target-contracts` | `required` |
-| `stove0-media-archive-target-support` | `depends-on` | `stove0-media-metadata-observer-contracts` | `required` |
-| `stove0-media-archive-target-support` | `depends-on` | `stove0-observer-protocol` | `required` |
-| `stove0-media-archive-target-support` | `depends-on` | `stove0-protocol` | `required` |
-| `stove0-media-archive-target-support` | `depends-on` | `stove0-target-protocol` | `required` |
-| `stove0-media-metadata-observer-contracts` | `depends-on` | `stove0-observer-protocol` | `required` |
-| `stove0-media-sampling-observer-contracts` | `depends-on` | `stove0-observer-protocol` | `required` |
-| `stove0-nvenc-av1-opus-review-sampler` | `depends-on` | `http-api-contracts` | `required` |
-| `stove0-nvenc-av1-opus-review-sampler` | `depends-on` | `stove0-media-archive-target-contracts` | `required` |
-| `stove0-nvenc-av1-opus-review-sampler` | `depends-on` | `stove0-review-sampler-protocol` | `required` |
-| `stove0-nvenc-av1-opus-review-sampler` | `depends-on` | `stove0-review-sampler-support` | `required` |
-| `stove0-nvenc-av1-opus-review-sampler` | `depends-on` | `stove0-review-target-contracts` | `required` |
-| `stove0-nvenc-av1-opus-target` | `depends-on` | `http-api-contracts` | `required` |
-| `stove0-nvenc-av1-opus-target` | `depends-on` | `riverhog-client` | `required` |
-| `stove0-nvenc-av1-opus-target` | `depends-on` | `riverhog-protocol` | `required` |
-| `stove0-nvenc-av1-opus-target` | `depends-on` | `stove0-media-archive-target-contracts` | `required` |
-| `stove0-nvenc-av1-opus-target` | `depends-on` | `stove0-media-archive-target-support` | `required` |
-| `stove0-nvenc-av1-opus-target` | `depends-on` | `stove0-protocol` | `required` |
-| `stove0-nvenc-av1-opus-target` | `depends-on` | `stove0-target-support` | `required` |
-| `stove0-observer-client` | `depends-on` | `http-api-contracts` | `required` |
-| `stove0-observer-client` | `depends-on` | `stove0-observer-protocol` | `required` |
-| `stove0-observer-protocol` | `depends-on` | `http-api-contracts` | `required` |
-| `stove0-observer-protocol` | `depends-on` | `stove0-protocol` | `required` |
-| `stove0-observer-support` | `depends-on` | `http-api-contracts` | `required` |
-| `stove0-observer-support` | `depends-on` | `riverhog-client` | `required` |
-| `stove0-observer-support` | `depends-on` | `stove0-observer-client` | `required` |
-| `stove0-observer-support` | `depends-on` | `stove0-observer-protocol` | `required` |
-| `stove0-operator-contracts` | `depends-on` | `http-api-contracts` | `required` |
-| `stove0-operator-contracts` | `depends-on` | `lifecycle-events` | `required` |
-| `stove0-operator-contracts` | `depends-on` | `riverhog-protocol` | `required` |
-| `stove0-operator-contracts` | `depends-on` | `stove0-observer-protocol` | `required` |
-| `stove0-operator-contracts` | `depends-on` | `stove0-protocol` | `required` |
-| `stove0-operator-contracts` | `depends-on` | `stove0-recipe-config` | `required` |
-| `stove0-operator-contracts` | `depends-on` | `stove0-target-protocol` | `required` |
-| `stove0-opus-review-sampler` | `depends-on` | `http-api-contracts` | `required` |
-| `stove0-opus-review-sampler` | `depends-on` | `stove0-media-archive-target-contracts` | `required` |
-| `stove0-opus-review-sampler` | `depends-on` | `stove0-review-sampler-protocol` | `required` |
-| `stove0-opus-review-sampler` | `depends-on` | `stove0-review-sampler-support` | `required` |
-| `stove0-opus-review-sampler` | `depends-on` | `stove0-review-target-contracts` | `required` |
-| `stove0-opus-target` | `depends-on` | `http-api-contracts` | `required` |
-| `stove0-opus-target` | `depends-on` | `riverhog-client` | `required` |
-| `stove0-opus-target` | `depends-on` | `riverhog-protocol` | `required` |
-| `stove0-opus-target` | `depends-on` | `stove0-media-archive-target-contracts` | `required` |
-| `stove0-opus-target` | `depends-on` | `stove0-media-archive-target-support` | `required` |
-| `stove0-opus-target` | `depends-on` | `stove0-protocol` | `required` |
-| `stove0-opus-target` | `depends-on` | `stove0-target-support` | `required` |
-| `stove0-protocol` | `depends-on` | `riverhog-protocol` | `required` |
-| `stove0-recipe-config` | `depends-on` | `config-validation` | `required` |
-| `stove0-recipe-config` | `depends-on` | `stove0-protocol` | `required` |
-| `stove0-recipe-config` | `depends-on` | `stove0-target-protocol` | `required` |
-| `stove0-review-materialize-target` | `depends-on` | `riverhog-client` | `required` |
-| `stove0-review-materialize-target` | `depends-on` | `stove0-review-target-contracts` | `required` |
-| `stove0-review-materialize-target` | `depends-on` | `stove0-review-target-support` | `required` |
-| `stove0-review-materialize-target` | `depends-on` | `stove0-target-support` | `required` |
-| `stove0-review-planning` | `depends-on` | `stove0-media-sampling-observer-contracts` | `required` |
-| `stove0-review-planning` | `depends-on` | `stove0-protocol` | `required` |
-| `stove0-review-planning` | `depends-on` | `stove0-review-target-contracts` | `required` |
-| `stove0-review-rclone-effect-target` | `depends-on` | `riverhog-client` | `required` |
-| `stove0-review-rclone-effect-target` | `depends-on` | `riverhog-protocol` | `required` |
-| `stove0-review-rclone-effect-target` | `depends-on` | `stove0-review-target-contracts` | `required` |
-| `stove0-review-rclone-effect-target` | `depends-on` | `stove0-review-target-support` | `required` |
-| `stove0-review-rclone-effect-target` | `depends-on` | `stove0-target-support` | `required` |
-| `stove0-review-sampler-client` | `depends-on` | `http-api-contracts` | `required` |
-| `stove0-review-sampler-client` | `depends-on` | `stove0-review-sampler-protocol` | `required` |
-| `stove0-review-sampler-protocol` | `depends-on` | `http-api-contracts` | `required` |
-| `stove0-review-sampler-protocol` | `depends-on` | `riverhog-protocol` | `required` |
-| `stove0-review-sampler-protocol` | `depends-on` | `stove0-protocol` | `required` |
-| `stove0-review-sampler-support` | `depends-on` | `http-api-contracts` | `required` |
-| `stove0-review-sampler-support` | `depends-on` | `stove0-review-sampler-client` | `required` |
-| `stove0-review-sampler-support` | `depends-on` | `stove0-review-sampler-protocol` | `required` |
-| `stove0-review-target-contracts` | `depends-on` | `stove0-protocol` | `required` |
-| `stove0-review-target-contracts` | `depends-on` | `stove0-target-protocol` | `required` |
-| `stove0-review-target-support` | `depends-on` | `http-api-contracts` | `required` |
-| `stove0-review-target-support` | `depends-on` | `riverhog-client` | `required` |
-| `stove0-review-target-support` | `depends-on` | `riverhog-protocol` | `required` |
-| `stove0-review-target-support` | `depends-on` | `stove0-protocol` | `required` |
-| `stove0-review-target-support` | `depends-on` | `stove0-review-sampler-client` | `required` |
-| `stove0-review-target-support` | `depends-on` | `stove0-review-sampler-protocol` | `required` |
-| `stove0-review-target-support` | `depends-on` | `stove0-review-target-contracts` | `required` |
-| `stove0-review-target-support` | `depends-on` | `stove0-target-support` | `required` |
-| `stove0-server` | `depends-on` | `http-api-contracts` | `required` |
-| `stove0-server` | `depends-on` | `riverhog-client` | `required` |
-| `stove0-server` | `depends-on` | `riverhog-protocol` | `required` |
-| `stove0-server` | `depends-on` | `state-schema` | `required` |
-| `stove0-server` | `depends-on` | `stove0-observer-client` | `required` |
-| `stove0-server` | `depends-on` | `stove0-observer-protocol` | `required` |
-| `stove0-server` | `depends-on` | `stove0-operator-contracts` | `required` |
-| `stove0-server` | `depends-on` | `stove0-protocol` | `required` |
-| `stove0-server` | `depends-on` | `stove0-recipe-config` | `required` |
-| `stove0-server` | `depends-on` | `stove0-target-client` | `required` |
-| `stove0-server` | `depends-on` | `stove0-target-protocol` | `required` |
-| `stove0-server` | `depends-on` | `time-formats` | `required` |
-| `stove0-target-client` | `depends-on` | `http-api-contracts` | `required` |
-| `stove0-target-client` | `depends-on` | `stove0-target-protocol` | `required` |
-| `stove0-target-protocol` | `depends-on` | `http-api-contracts` | `required` |
-| `stove0-target-protocol` | `depends-on` | `riverhog-protocol` | `required` |
-| `stove0-target-protocol` | `depends-on` | `stove0-protocol` | `required` |
-| `stove0-target-support` | `depends-on` | `http-api-contracts` | `required` |
-| `stove0-target-support` | `depends-on` | `riverhog-client` | `required` |
-| `stove0-target-support` | `depends-on` | `riverhog-protocol` | `required` |
-| `stove0-target-support` | `depends-on` | `stove0-target-client` | `required` |
-| `stove0-target-support` | `depends-on` | `stove0-target-protocol` | `required` |
-| `gogurt-linux-listener-host` | `implements-extension-point` | `gogurt.listener-host-providers` | `gogurt-linux-listener-host` |
-| `gogurt-linux-mounted-volume` | `implements-extension-point` | `gogurt.mounted-volume-providers` | `gogurt-linux-mounted-volume` |
-| `gogurt-macos-listener-host` | `implements-extension-point` | `gogurt.listener-host-providers` | `gogurt-macos-listener-host` |
-| `gogurt-macos-mounted-volume` | `implements-extension-point` | `gogurt.mounted-volume-providers` | `gogurt-macos-mounted-volume` |
-| `gogurt-windows-listener-host` | `implements-extension-point` | `gogurt.listener-host-providers` | `gogurt-windows-listener-host` |
-| `gogurt-windows-mounted-volume` | `implements-extension-point` | `gogurt.mounted-volume-providers` | `gogurt-windows-mounted-volume` |
-| `riverhog-provenance-linux-contracts` | `implements-extension-point` | `riverhog.provenance-contracts` | `riverhog-linux` |
-| `riverhog-provenance-linux-observer` | `implements-extension-point` | `riverhog.provenance-observers` | `riverhog-linux` |
-| `riverhog-provenance-macos-contracts` | `implements-extension-point` | `riverhog.provenance-contracts` | `riverhog-macos` |
-| `riverhog-provenance-macos-observer` | `implements-extension-point` | `riverhog.provenance-observers` | `riverhog-macos` |
-| `riverhog-provenance-windows-contracts` | `implements-extension-point` | `riverhog.provenance-contracts` | `riverhog-windows` |
-| `riverhog-provenance-windows-observer` | `implements-extension-point` | `riverhog.provenance-observers` | `riverhog-windows` |
-| `stove0-media-metadata-observer-contracts` | `implements-extension-point` | `stove0.observer-semantic-validators` | `media-metadata` |
-| `stove0-media-sampling-observer-contracts` | `implements-extension-point` | `stove0.observer-semantic-validators` | `media-sampling` |
-| `riverhog-storage-adapter-aws` | `implements-protocol` | `riverhog-storage-adapter` | `` |
-| `riverhog-storage-adapter-backblaze` | `implements-protocol` | `riverhog-storage-adapter` | `` |
-| `riverhog-storage-adapter-filesystem` | `implements-protocol` | `riverhog-storage-adapter` | `` |
-| `stove0-exiftool-observer` | `implements-protocol` | `stove0-observer` | `` |
-| `stove0-ffprobe-sampling-observer` | `implements-protocol` | `stove0-observer` | `` |
-| `stove0-nvenc-av1-opus-review-sampler` | `implements-protocol` | `stove0-review-sampler` | `` |
-| `stove0-nvenc-av1-opus-target` | `implements-protocol` | `stove0-target` | `` |
-| `stove0-opus-review-sampler` | `implements-protocol` | `stove0-review-sampler` | `` |
-| `stove0-opus-target` | `implements-protocol` | `stove0-target` | `` |
-| `stove0-review-materialize-target` | `implements-protocol` | `stove0-target` | `` |
-| `stove0-review-rclone-effect-target` | `implements-protocol` | `stove0-target` | `` |
-| `gogurt` | `installed-as` | `uv-tool` | `` |
-| `piggity` | `installed-as` | `uv-tool` | `` |
-| `riverhog-recover` | `installed-as` | `uv-tool` | `` |
-| `stove0-client` | `installed-as` | `uv-tool` | `` |
-| `gogurt-core` | `owns-extension-point` | `gogurt.mounted-volume-providers` | `` |
-| `gogurt-listener-runtime` | `owns-extension-point` | `gogurt.listener-host-providers` | `` |
-| `riverhog-provenance` | `owns-extension-point` | `riverhog.provenance-observers` | `` |
-| `riverhog-provenance-contracts` | `owns-extension-point` | `riverhog.provenance-contracts` | `` |
-| `stove0-observer-client` | `owns-extension-point` | `stove0.observer-semantic-validators` | `` |
-| `riverhog-storage-adapter-protocol` | `owns-protocol` | `riverhog-storage-adapter` | `` |
-| `stove0-observer-protocol` | `owns-protocol` | `stove0-observer` | `` |
-| `stove0-review-sampler-protocol` | `owns-protocol` | `stove0-review-sampler` | `` |
-| `stove0-target-protocol` | `owns-protocol` | `stove0-target` | `` |
-| `mango-fish` | `packaged-in` | `mango-fish` | `` |
-| `riverhog-ftp-adapter` | `packaged-in` | `riverhog-ftp-adapter` | `` |
-| `riverhog-provenance-linux-observer` | `packaged-in` | `riverhog-ftp-adapter` | `` |
-| `riverhog-server` | `packaged-in` | `riverhog` | `` |
-| `riverhog-storage-adapter-aws` | `packaged-in` | `riverhog-storage-adapter-aws` | `` |
-| `riverhog-storage-adapter-backblaze` | `packaged-in` | `riverhog-storage-adapter-backblaze` | `` |
-| `riverhog-storage-adapter-filesystem` | `packaged-in` | `riverhog-storage-adapter-filesystem` | `` |
-| `stove0-exiftool-observer` | `packaged-in` | `stove0-exiftool-observer` | `` |
-| `stove0-ffprobe-sampling-observer` | `packaged-in` | `stove0-ffprobe-sampling-observer` | `` |
-| `stove0-nvenc-av1-opus-review-sampler` | `packaged-in` | `stove0-nvenc-av1-opus-target` | `` |
-| `stove0-nvenc-av1-opus-target` | `packaged-in` | `stove0-nvenc-av1-opus-target` | `` |
-| `stove0-opus-review-sampler` | `packaged-in` | `stove0-opus-target` | `` |
-| `stove0-opus-target` | `packaged-in` | `stove0-opus-target` | `` |
-| `stove0-review-materialize-target` | `packaged-in` | `stove0-review-materialize-target` | `` |
-| `stove0-review-rclone-effect-target` | `packaged-in` | `stove0-review-rclone-effect-target` | `` |
-| `stove0-server` | `packaged-in` | `stove0` | `` |
+| <a id="re-5b6ba26bb3e6"></a>[riverhog-storage-adapter-support](#rn-f0c3b34058c5) | `binds-protocol` | [riverhog-storage-adapter](#rn-994e13bf1e40) | `http` |
+| <a id="re-ee62dc42838a"></a>[stove0-observer-support](#rn-50ccd8c77461) | `binds-protocol` | [stove0-observer](#rn-2eb3b800f870) | `http` |
+| <a id="re-dd4c604c3ca3"></a>[stove0-review-sampler-support](#rn-461ec95c0572) | `binds-protocol` | [stove0-review-sampler](#rn-e9ced34f0bc9) | `http` |
+| <a id="re-f67fa92e93a8"></a>[stove0-target-support](#rn-f8df68acc88c) | `binds-protocol` | [stove0-target](#rn-9d6e708ff324) | `http` |
+| <a id="re-810f326d7a1c"></a>[gogurt](#rn-eeb2be4a7128) | `depends-on` | [config-validation](#rn-b37402f43fd2) | `required` |
+| <a id="re-fd63147da687"></a>[gogurt](#rn-eeb2be4a7128) | `depends-on` | [gogurt-core](#rn-e1d2ac7df3e3) | `required` |
+| <a id="re-5c3ed41d34b9"></a>[gogurt](#rn-eeb2be4a7128) | `depends-on` | [gogurt-listener-runtime](#rn-df1cdfd17cbc) | `required` |
+| <a id="re-3b8044677592"></a>[gogurt-core](#rn-e1d2ac7df3e3) | `depends-on` | [config-validation](#rn-b37402f43fd2) | `required` |
+| <a id="re-3788404a0920"></a>[gogurt-linux-listener-host](#rn-81398abad295) | `depends-on` | [gogurt-listener-runtime](#rn-df1cdfd17cbc) | `required` |
+| <a id="re-b21676eacee1"></a>[gogurt-linux-mounted-volume](#rn-20b20b9fcd70) | `depends-on` | [gogurt-core](#rn-e1d2ac7df3e3) | `required` |
+| <a id="re-087a01daeea8"></a>[gogurt-linux-mounted-volume](#rn-20b20b9fcd70) | `depends-on` | [gogurt-path-volume-support](#rn-1b4c9bf55f37) | `required` |
+| <a id="re-fab65aa6e491"></a>[gogurt-listener-runtime](#rn-df1cdfd17cbc) | `depends-on` | [config-validation](#rn-b37402f43fd2) | `required` |
+| <a id="re-bd2b4019bb89"></a>[gogurt-listener-runtime](#rn-df1cdfd17cbc) | `depends-on` | [gogurt-core](#rn-e1d2ac7df3e3) | `required` |
+| <a id="re-76762089a3cb"></a>[gogurt-macos-listener-host](#rn-a34362604e51) | `depends-on` | [gogurt-listener-runtime](#rn-df1cdfd17cbc) | `required` |
+| <a id="re-58465b56abb2"></a>[gogurt-macos-mounted-volume](#rn-36cc5f6cd232) | `depends-on` | [gogurt-core](#rn-e1d2ac7df3e3) | `required` |
+| <a id="re-c72e09d2d6e4"></a>[gogurt-macos-mounted-volume](#rn-36cc5f6cd232) | `depends-on` | [gogurt-path-volume-support](#rn-1b4c9bf55f37) | `required` |
+| <a id="re-d40d7a831348"></a>[gogurt-path-volume-support](#rn-1b4c9bf55f37) | `depends-on` | [config-validation](#rn-b37402f43fd2) | `required` |
+| <a id="re-1d5a65aa836e"></a>[gogurt-path-volume-support](#rn-1b4c9bf55f37) | `depends-on` | [gogurt-core](#rn-e1d2ac7df3e3) | `required` |
+| <a id="re-b64d55fb7ffb"></a>[gogurt-windows-listener-host](#rn-474510715381) | `depends-on` | [gogurt-listener-runtime](#rn-df1cdfd17cbc) | `required` |
+| <a id="re-41b2498de620"></a>[gogurt-windows-mounted-volume](#rn-a05f27932561) | `depends-on` | [gogurt-core](#rn-e1d2ac7df3e3) | `required` |
+| <a id="re-8cd5028b76ce"></a>[gogurt-windows-mounted-volume](#rn-a05f27932561) | `depends-on` | [gogurt-path-volume-support](#rn-1b4c9bf55f37) | `required` |
+| <a id="re-38b61cfd5d20"></a>[lifecycle-events](#rn-30af2d159305) | `depends-on` | [time-formats](#rn-71d11531981d) | `required` |
+| <a id="re-c301dd92ae9b"></a>[mango-fish](#rn-1c3900c99434) | `depends-on` | [lifecycle-events](#rn-30af2d159305) | `required` |
+| <a id="re-1ade565ccd00"></a>[mango-fish](#rn-1c3900c99434) | `depends-on` | [state-schema](#rn-b37a103e5fc0) | `required` |
+| <a id="re-58afd91f4da8"></a>[piggity](#rn-0a279524f465) | `depends-on` | [http-api-contracts](#rn-f59c7f41027a) | `required` |
+| <a id="re-d65546abf2d7"></a>[piggity](#rn-0a279524f465) | `depends-on` | [riverhog-application-access](#rn-06ef7f89cab1) | `required` |
+| <a id="re-d91d323218a1"></a>[piggity](#rn-0a279524f465) | `depends-on` | [riverhog-client](#rn-8e5274344f37) | `required` |
+| <a id="re-d846dff2d183"></a>[piggity](#rn-0a279524f465) | `depends-on` | [riverhog-protocol](#rn-20dbb0d5c0f2) | `required` |
+| <a id="re-38d596b5225b"></a>[piggity](#rn-0a279524f465) | `depends-on` | [riverhog-provenance](#rn-728e08e7c454) | `required` |
+| <a id="re-555da3f02e49"></a>[piggity](#rn-0a279524f465) | `depends-on` | [state-schema](#rn-b37a103e5fc0) | `required` |
+| <a id="re-1a926dde467a"></a>[piggity](#rn-0a279524f465) | `depends-on` | [time-formats](#rn-71d11531981d) | `required` |
+| <a id="re-b8e003d95c07"></a>[riverhog-application-access](#rn-06ef7f89cab1) | `depends-on` | [riverhog-protocol](#rn-20dbb0d5c0f2) | `required` |
+| <a id="re-5e2f8ea9ef61"></a>[riverhog-client](#rn-8e5274344f37) | `depends-on` | [http-api-contracts](#rn-f59c7f41027a) | `required` |
+| <a id="re-00d58a51b67c"></a>[riverhog-client](#rn-8e5274344f37) | `depends-on` | [riverhog-application-access](#rn-06ef7f89cab1) | `required` |
+| <a id="re-846ca99987b0"></a>[riverhog-client](#rn-8e5274344f37) | `depends-on` | [riverhog-protocol](#rn-20dbb0d5c0f2) | `required` |
+| <a id="re-a69784615036"></a>[riverhog-client](#rn-8e5274344f37) | `depends-on` | [riverhog-provenance-contracts](#rn-606682003821) | `required` |
+| <a id="re-62aa5033b70e"></a>[riverhog-ftp-adapter](#rn-d73898029431) | `depends-on` | [http-api-contracts](#rn-f59c7f41027a) | `required` |
+| <a id="re-380588554117"></a>[riverhog-ftp-adapter](#rn-d73898029431) | `depends-on` | [riverhog-client](#rn-8e5274344f37) | `required` |
+| <a id="re-6ae27c5626ac"></a>[riverhog-ftp-adapter](#rn-d73898029431) | `depends-on` | [riverhog-ftp-adapter-api-client](#rn-5044d995ba04) | `required` |
+| <a id="re-3dd1a0e20125"></a>[riverhog-ftp-adapter](#rn-d73898029431) | `depends-on` | [riverhog-protocol](#rn-20dbb0d5c0f2) | `required` |
+| <a id="re-bcb107fd19ee"></a>[riverhog-ftp-adapter](#rn-d73898029431) | `depends-on` | [riverhog-provenance](#rn-728e08e7c454) | `required` |
+| <a id="re-df00da240925"></a>[riverhog-ftp-adapter-api-client](#rn-5044d995ba04) | `depends-on` | [http-api-contracts](#rn-f59c7f41027a) | `required` |
+| <a id="re-c61491ded025"></a>[riverhog-protocol](#rn-20dbb0d5c0f2) | `depends-on` | [http-api-contracts](#rn-f59c7f41027a) | `required` |
+| <a id="re-da95b57cd6d9"></a>[riverhog-protocol](#rn-20dbb0d5c0f2) | `depends-on` | [lifecycle-events](#rn-30af2d159305) | `required` |
+| <a id="re-ce4c7df5f1fa"></a>[riverhog-protocol](#rn-20dbb0d5c0f2) | `depends-on` | [riverhog-provenance-contracts](#rn-606682003821) | `required` |
+| <a id="re-3f16a1b40607"></a>[riverhog-provenance](#rn-728e08e7c454) | `depends-on` | [riverhog-provenance-contracts](#rn-606682003821) | `required` |
+| <a id="re-da231e801c33"></a>[riverhog-provenance-linux-contracts](#rn-207aa064e3bf) | `depends-on` | [riverhog-provenance-contracts](#rn-606682003821) | `required` |
+| <a id="re-afea557c9518"></a>[riverhog-provenance-linux-observer](#rn-f733d7aee6b6) | `depends-on` | [riverhog-provenance](#rn-728e08e7c454) | `required` |
+| <a id="re-efec52e048b1"></a>[riverhog-provenance-linux-observer](#rn-f733d7aee6b6) | `depends-on` | [riverhog-provenance-linux-contracts](#rn-207aa064e3bf) | `required` |
+| <a id="re-69749ecf4606"></a>[riverhog-provenance-macos-contracts](#rn-5674e1f4d9a2) | `depends-on` | [riverhog-provenance-contracts](#rn-606682003821) | `required` |
+| <a id="re-14cd831d3c67"></a>[riverhog-provenance-macos-observer](#rn-8a8a3a88aaec) | `depends-on` | [riverhog-provenance](#rn-728e08e7c454) | `required` |
+| <a id="re-3c7d3d82ef82"></a>[riverhog-provenance-macos-observer](#rn-8a8a3a88aaec) | `depends-on` | [riverhog-provenance-macos-contracts](#rn-5674e1f4d9a2) | `required` |
+| <a id="re-a89f26f90057"></a>[riverhog-provenance-windows-contracts](#rn-4061c95d076d) | `depends-on` | [riverhog-provenance-contracts](#rn-606682003821) | `required` |
+| <a id="re-30319ae17758"></a>[riverhog-provenance-windows-observer](#rn-800f0c638e4e) | `depends-on` | [riverhog-provenance](#rn-728e08e7c454) | `required` |
+| <a id="re-52f49d3b7593"></a>[riverhog-provenance-windows-observer](#rn-800f0c638e4e) | `depends-on` | [riverhog-provenance-windows-contracts](#rn-4061c95d076d) | `required` |
+| <a id="re-40b549fa52de"></a>[riverhog-recover](#rn-813d97e5a415) | `depends-on` | [riverhog-archive-contracts](#rn-3f00f6925375) | `required` |
+| <a id="re-3280028c9e2b"></a>[riverhog-recover](#rn-813d97e5a415) | `depends-on` | [riverhog-protocol](#rn-20dbb0d5c0f2) | `required` |
+| <a id="re-ce4027cc9985"></a>[riverhog-recover](#rn-813d97e5a415) | `depends-on` | [riverhog-provenance](#rn-728e08e7c454) | `required` |
+| <a id="re-dcfead45f5f5"></a>[riverhog-server](#rn-807c63322e05) | `depends-on` | [http-api-contracts](#rn-f59c7f41027a) | `required` |
+| <a id="re-47d8d92a4111"></a>[riverhog-server](#rn-807c63322e05) | `depends-on` | [lifecycle-events](#rn-30af2d159305) | `required` |
+| <a id="re-105f8f62a581"></a>[riverhog-server](#rn-807c63322e05) | `depends-on` | [riverhog-age](#rn-24025966b480) | `required` |
+| <a id="re-85dac3fdd85c"></a>[riverhog-server](#rn-807c63322e05) | `depends-on` | [riverhog-application-access](#rn-06ef7f89cab1) | `required` |
+| <a id="re-e18ba355b93a"></a>[riverhog-server](#rn-807c63322e05) | `depends-on` | [riverhog-archive-contracts](#rn-3f00f6925375) | `required` |
+| <a id="re-b4ce2a557fea"></a>[riverhog-server](#rn-807c63322e05) | `depends-on` | [riverhog-protocol](#rn-20dbb0d5c0f2) | `required` |
+| <a id="re-d0509cb3f2da"></a>[riverhog-server](#rn-807c63322e05) | `depends-on` | [riverhog-provenance](#rn-728e08e7c454) | `required` |
+| <a id="re-3711a6276700"></a>[riverhog-server](#rn-807c63322e05) | `depends-on` | [riverhog-provenance-contracts](#rn-606682003821) | `required` |
+| <a id="re-9ac4dde0cb46"></a>[riverhog-server](#rn-807c63322e05) | `depends-on` | [riverhog-storage-adapter-protocol](#rn-e65e47e3320a) | `required` |
+| <a id="re-93563e23abcc"></a>[riverhog-server](#rn-807c63322e05) | `depends-on` | [riverhog-storage-adapter-support](#rn-f0c3b34058c5) | `required` |
+| <a id="re-423fc3c6467a"></a>[riverhog-server](#rn-807c63322e05) | `depends-on` | [state-schema](#rn-b37a103e5fc0) | `required` |
+| <a id="re-d49cb4fa2793"></a>[riverhog-server](#rn-807c63322e05) | `depends-on` | [time-formats](#rn-71d11531981d) | `required` |
+| <a id="re-e1c23e1e5646"></a>[riverhog-storage-adapter-asgi-support](#rn-922b8ba508f9) | `depends-on` | [http-api-contracts](#rn-f59c7f41027a) | `required` |
+| <a id="re-b6bf3704c252"></a>[riverhog-storage-adapter-asgi-support](#rn-922b8ba508f9) | `depends-on` | [riverhog-storage-adapter-protocol](#rn-e65e47e3320a) | `required` |
+| <a id="re-6a6eb1062be6"></a>[riverhog-storage-adapter-asgi-support](#rn-922b8ba508f9) | `depends-on` | [riverhog-storage-adapter-support](#rn-f0c3b34058c5) | `required` |
+| <a id="re-f691d2e45356"></a>[riverhog-storage-adapter-aws](#rn-c53f4ff3ef96) | `depends-on` | [riverhog-storage-adapter-asgi-support](#rn-922b8ba508f9) | `required` |
+| <a id="re-4bdefa055f6f"></a>[riverhog-storage-adapter-aws](#rn-c53f4ff3ef96) | `depends-on` | [riverhog-storage-adapter-protocol](#rn-e65e47e3320a) | `required` |
+| <a id="re-34216552deea"></a>[riverhog-storage-adapter-aws](#rn-c53f4ff3ef96) | `depends-on` | [riverhog-storage-adapter-s3-support](#rn-b934a396f489) | `required` |
+| <a id="re-949ccf63c891"></a>[riverhog-storage-adapter-aws](#rn-c53f4ff3ef96) | `depends-on` | [time-formats](#rn-71d11531981d) | `required` |
+| <a id="re-86b323308f23"></a>[riverhog-storage-adapter-backblaze](#rn-4178e6e967e3) | `depends-on` | [riverhog-storage-adapter-asgi-support](#rn-922b8ba508f9) | `required` |
+| <a id="re-bfc4bfae8b60"></a>[riverhog-storage-adapter-backblaze](#rn-4178e6e967e3) | `depends-on` | [riverhog-storage-adapter-s3-support](#rn-b934a396f489) | `required` |
+| <a id="re-76c48494ffb6"></a>[riverhog-storage-adapter-filesystem](#rn-ebe4206627bc) | `depends-on` | [riverhog-storage-adapter-asgi-support](#rn-922b8ba508f9) | `required` |
+| <a id="re-01bad22410cb"></a>[riverhog-storage-adapter-filesystem](#rn-ebe4206627bc) | `depends-on` | [riverhog-storage-adapter-protocol](#rn-e65e47e3320a) | `required` |
+| <a id="re-a6afba71da45"></a>[riverhog-storage-adapter-filesystem](#rn-ebe4206627bc) | `depends-on` | [time-formats](#rn-71d11531981d) | `required` |
+| <a id="re-1de6cae1b52f"></a>[riverhog-storage-adapter-protocol](#rn-e65e47e3320a) | `depends-on` | [time-formats](#rn-71d11531981d) | `required` |
+| <a id="re-b10b6de67698"></a>[riverhog-storage-adapter-s3-support](#rn-b934a396f489) | `depends-on` | [riverhog-storage-adapter-protocol](#rn-e65e47e3320a) | `required` |
+| <a id="re-076239bfcfaf"></a>[riverhog-storage-adapter-s3-support](#rn-b934a396f489) | `depends-on` | [time-formats](#rn-71d11531981d) | `required` |
+| <a id="re-436c565fc248"></a>[riverhog-storage-adapter-support](#rn-f0c3b34058c5) | `depends-on` | [http-api-contracts](#rn-f59c7f41027a) | `required` |
+| <a id="re-4dd3f92334d1"></a>[riverhog-storage-adapter-support](#rn-f0c3b34058c5) | `depends-on` | [riverhog-storage-adapter-protocol](#rn-e65e47e3320a) | `required` |
+| <a id="re-e93150a6a085"></a>[stove0-api-client](#rn-0b595a9ebcba) | `depends-on` | [http-api-contracts](#rn-f59c7f41027a) | `required` |
+| <a id="re-1af5d811ec74"></a>[stove0-api-client](#rn-0b595a9ebcba) | `depends-on` | [stove0-operator-contracts](#rn-7c400ebb8398) | `required` |
+| <a id="re-aedcdaf212c9"></a>[stove0-api-client](#rn-0b595a9ebcba) | `depends-on` | [stove0-protocol](#rn-72232b7fcefa) | `required` |
+| <a id="re-9d1bf30d873a"></a>[stove0-client](#rn-c5aaef631874) | `depends-on` | [stove0-api-client](#rn-0b595a9ebcba) | `required` |
+| <a id="re-3270df80cace"></a>[stove0-client](#rn-c5aaef631874) | `depends-on` | [stove0-protocol](#rn-72232b7fcefa) | `required` |
+| <a id="re-b945d119e960"></a>[stove0-client](#rn-c5aaef631874) | `depends-on` | [stove0-recipe-config](#rn-1f5664e176e6) | `required` |
+| <a id="re-eb6d28886c76"></a>[stove0-exiftool-observer](#rn-9da095602024) | `depends-on` | [http-api-contracts](#rn-f59c7f41027a) | `required` |
+| <a id="re-b1df7a6ec985"></a>[stove0-exiftool-observer](#rn-9da095602024) | `depends-on` | [stove0-media-metadata-observer-contracts](#rn-c671a0c6fd98) | `required` |
+| <a id="re-73da6ea7cf52"></a>[stove0-exiftool-observer](#rn-9da095602024) | `depends-on` | [stove0-observer-protocol](#rn-bac58a079cc2) | `required` |
+| <a id="re-91de908cda92"></a>[stove0-exiftool-observer](#rn-9da095602024) | `depends-on` | [stove0-observer-support](#rn-50ccd8c77461) | `required` |
+| <a id="re-3093945523b3"></a>[stove0-ffprobe-sampling-observer](#rn-219fad9b724a) | `depends-on` | [http-api-contracts](#rn-f59c7f41027a) | `required` |
+| <a id="re-6deeeaafc86c"></a>[stove0-ffprobe-sampling-observer](#rn-219fad9b724a) | `depends-on` | [stove0-media-sampling-observer-contracts](#rn-8acbd56de7b2) | `required` |
+| <a id="re-23ac5dd346ba"></a>[stove0-ffprobe-sampling-observer](#rn-219fad9b724a) | `depends-on` | [stove0-observer-protocol](#rn-bac58a079cc2) | `required` |
+| <a id="re-4afc1b3dacb3"></a>[stove0-ffprobe-sampling-observer](#rn-219fad9b724a) | `depends-on` | [stove0-observer-support](#rn-50ccd8c77461) | `required` |
+| <a id="re-e42dde6e9451"></a>[stove0-media-archive-target-contracts](#rn-af0472b6c0a5) | `depends-on` | [stove0-protocol](#rn-72232b7fcefa) | `required` |
+| <a id="re-b0f11fba6f77"></a>[stove0-media-archive-target-contracts](#rn-af0472b6c0a5) | `depends-on` | [stove0-target-protocol](#rn-2bfbd86b0036) | `required` |
+| <a id="re-b8d5dbb5464b"></a>[stove0-media-archive-target-support](#rn-581a2a6b70ab) | `depends-on` | [riverhog-protocol](#rn-20dbb0d5c0f2) | `required` |
+| <a id="re-a0b48990b754"></a>[stove0-media-archive-target-support](#rn-581a2a6b70ab) | `depends-on` | [stove0-media-archive-target-contracts](#rn-af0472b6c0a5) | `required` |
+| <a id="re-a09e648972fa"></a>[stove0-media-archive-target-support](#rn-581a2a6b70ab) | `depends-on` | [stove0-media-metadata-observer-contracts](#rn-c671a0c6fd98) | `required` |
+| <a id="re-7edb67989662"></a>[stove0-media-archive-target-support](#rn-581a2a6b70ab) | `depends-on` | [stove0-observer-protocol](#rn-bac58a079cc2) | `required` |
+| <a id="re-748abe0bef38"></a>[stove0-media-archive-target-support](#rn-581a2a6b70ab) | `depends-on` | [stove0-protocol](#rn-72232b7fcefa) | `required` |
+| <a id="re-913c156e8021"></a>[stove0-media-archive-target-support](#rn-581a2a6b70ab) | `depends-on` | [stove0-target-protocol](#rn-2bfbd86b0036) | `required` |
+| <a id="re-f63291ed5a82"></a>[stove0-media-metadata-observer-contracts](#rn-c671a0c6fd98) | `depends-on` | [stove0-observer-protocol](#rn-bac58a079cc2) | `required` |
+| <a id="re-a45ba89d1f5e"></a>[stove0-media-sampling-observer-contracts](#rn-8acbd56de7b2) | `depends-on` | [stove0-observer-protocol](#rn-bac58a079cc2) | `required` |
+| <a id="re-3ef5f06585c0"></a>[stove0-nvenc-av1-opus-review-sampler](#rn-3d4e1c390ad8) | `depends-on` | [http-api-contracts](#rn-f59c7f41027a) | `required` |
+| <a id="re-bd500a0784e6"></a>[stove0-nvenc-av1-opus-review-sampler](#rn-3d4e1c390ad8) | `depends-on` | [stove0-media-archive-target-contracts](#rn-af0472b6c0a5) | `required` |
+| <a id="re-7920e4b83d0b"></a>[stove0-nvenc-av1-opus-review-sampler](#rn-3d4e1c390ad8) | `depends-on` | [stove0-review-sampler-protocol](#rn-eedc3ab10b80) | `required` |
+| <a id="re-089da551229e"></a>[stove0-nvenc-av1-opus-review-sampler](#rn-3d4e1c390ad8) | `depends-on` | [stove0-review-sampler-support](#rn-461ec95c0572) | `required` |
+| <a id="re-b074c76957fa"></a>[stove0-nvenc-av1-opus-review-sampler](#rn-3d4e1c390ad8) | `depends-on` | [stove0-review-target-contracts](#rn-83d36842d17d) | `required` |
+| <a id="re-16ff08560a2c"></a>[stove0-nvenc-av1-opus-target](#rn-e9196fec57b9) | `depends-on` | [http-api-contracts](#rn-f59c7f41027a) | `required` |
+| <a id="re-1dd14355ee43"></a>[stove0-nvenc-av1-opus-target](#rn-e9196fec57b9) | `depends-on` | [riverhog-client](#rn-8e5274344f37) | `required` |
+| <a id="re-0693aefe8179"></a>[stove0-nvenc-av1-opus-target](#rn-e9196fec57b9) | `depends-on` | [riverhog-protocol](#rn-20dbb0d5c0f2) | `required` |
+| <a id="re-3eb9c57635df"></a>[stove0-nvenc-av1-opus-target](#rn-e9196fec57b9) | `depends-on` | [stove0-media-archive-target-contracts](#rn-af0472b6c0a5) | `required` |
+| <a id="re-7d1c76f6db4b"></a>[stove0-nvenc-av1-opus-target](#rn-e9196fec57b9) | `depends-on` | [stove0-media-archive-target-support](#rn-581a2a6b70ab) | `required` |
+| <a id="re-2dc6993087b8"></a>[stove0-nvenc-av1-opus-target](#rn-e9196fec57b9) | `depends-on` | [stove0-protocol](#rn-72232b7fcefa) | `required` |
+| <a id="re-af95c39b6c44"></a>[stove0-nvenc-av1-opus-target](#rn-e9196fec57b9) | `depends-on` | [stove0-target-support](#rn-f8df68acc88c) | `required` |
+| <a id="re-23f015928dae"></a>[stove0-observer-client](#rn-21b6164c9f86) | `depends-on` | [http-api-contracts](#rn-f59c7f41027a) | `required` |
+| <a id="re-4a72052c1c1a"></a>[stove0-observer-client](#rn-21b6164c9f86) | `depends-on` | [stove0-observer-protocol](#rn-bac58a079cc2) | `required` |
+| <a id="re-cd0d7c5a9242"></a>[stove0-observer-protocol](#rn-bac58a079cc2) | `depends-on` | [http-api-contracts](#rn-f59c7f41027a) | `required` |
+| <a id="re-5d7a67339d8c"></a>[stove0-observer-protocol](#rn-bac58a079cc2) | `depends-on` | [stove0-protocol](#rn-72232b7fcefa) | `required` |
+| <a id="re-35fbec38d5d8"></a>[stove0-observer-support](#rn-50ccd8c77461) | `depends-on` | [http-api-contracts](#rn-f59c7f41027a) | `required` |
+| <a id="re-e92028077f4f"></a>[stove0-observer-support](#rn-50ccd8c77461) | `depends-on` | [riverhog-client](#rn-8e5274344f37) | `required` |
+| <a id="re-52c0cc110b05"></a>[stove0-observer-support](#rn-50ccd8c77461) | `depends-on` | [stove0-observer-client](#rn-21b6164c9f86) | `required` |
+| <a id="re-e51c285aa53e"></a>[stove0-observer-support](#rn-50ccd8c77461) | `depends-on` | [stove0-observer-protocol](#rn-bac58a079cc2) | `required` |
+| <a id="re-112204aa6829"></a>[stove0-operator-contracts](#rn-7c400ebb8398) | `depends-on` | [http-api-contracts](#rn-f59c7f41027a) | `required` |
+| <a id="re-5e490dec1bf3"></a>[stove0-operator-contracts](#rn-7c400ebb8398) | `depends-on` | [lifecycle-events](#rn-30af2d159305) | `required` |
+| <a id="re-e7a6defa5074"></a>[stove0-operator-contracts](#rn-7c400ebb8398) | `depends-on` | [riverhog-protocol](#rn-20dbb0d5c0f2) | `required` |
+| <a id="re-599d67f17e7b"></a>[stove0-operator-contracts](#rn-7c400ebb8398) | `depends-on` | [stove0-observer-protocol](#rn-bac58a079cc2) | `required` |
+| <a id="re-3b03cbc2b24d"></a>[stove0-operator-contracts](#rn-7c400ebb8398) | `depends-on` | [stove0-protocol](#rn-72232b7fcefa) | `required` |
+| <a id="re-6a32ec6adcfa"></a>[stove0-operator-contracts](#rn-7c400ebb8398) | `depends-on` | [stove0-recipe-config](#rn-1f5664e176e6) | `required` |
+| <a id="re-4e36299eda57"></a>[stove0-operator-contracts](#rn-7c400ebb8398) | `depends-on` | [stove0-target-protocol](#rn-2bfbd86b0036) | `required` |
+| <a id="re-dfaeb165336b"></a>[stove0-opus-review-sampler](#rn-36756ccd7732) | `depends-on` | [http-api-contracts](#rn-f59c7f41027a) | `required` |
+| <a id="re-4819afc2eaf1"></a>[stove0-opus-review-sampler](#rn-36756ccd7732) | `depends-on` | [stove0-media-archive-target-contracts](#rn-af0472b6c0a5) | `required` |
+| <a id="re-74c732dfffa6"></a>[stove0-opus-review-sampler](#rn-36756ccd7732) | `depends-on` | [stove0-review-sampler-protocol](#rn-eedc3ab10b80) | `required` |
+| <a id="re-fd51e216424a"></a>[stove0-opus-review-sampler](#rn-36756ccd7732) | `depends-on` | [stove0-review-sampler-support](#rn-461ec95c0572) | `required` |
+| <a id="re-6c18e74efcc9"></a>[stove0-opus-review-sampler](#rn-36756ccd7732) | `depends-on` | [stove0-review-target-contracts](#rn-83d36842d17d) | `required` |
+| <a id="re-1540812829b0"></a>[stove0-opus-target](#rn-313a5c450fdc) | `depends-on` | [http-api-contracts](#rn-f59c7f41027a) | `required` |
+| <a id="re-a8ece3d9ee3c"></a>[stove0-opus-target](#rn-313a5c450fdc) | `depends-on` | [riverhog-client](#rn-8e5274344f37) | `required` |
+| <a id="re-b6ecbf5e0714"></a>[stove0-opus-target](#rn-313a5c450fdc) | `depends-on` | [riverhog-protocol](#rn-20dbb0d5c0f2) | `required` |
+| <a id="re-f1d72837eb75"></a>[stove0-opus-target](#rn-313a5c450fdc) | `depends-on` | [stove0-media-archive-target-contracts](#rn-af0472b6c0a5) | `required` |
+| <a id="re-e538db574a80"></a>[stove0-opus-target](#rn-313a5c450fdc) | `depends-on` | [stove0-media-archive-target-support](#rn-581a2a6b70ab) | `required` |
+| <a id="re-0b910ba3f208"></a>[stove0-opus-target](#rn-313a5c450fdc) | `depends-on` | [stove0-protocol](#rn-72232b7fcefa) | `required` |
+| <a id="re-335ef9e583e7"></a>[stove0-opus-target](#rn-313a5c450fdc) | `depends-on` | [stove0-target-support](#rn-f8df68acc88c) | `required` |
+| <a id="re-04733f78fd3b"></a>[stove0-protocol](#rn-72232b7fcefa) | `depends-on` | [riverhog-protocol](#rn-20dbb0d5c0f2) | `required` |
+| <a id="re-4b559d597e81"></a>[stove0-recipe-config](#rn-1f5664e176e6) | `depends-on` | [config-validation](#rn-b37402f43fd2) | `required` |
+| <a id="re-d09b7aa1b7a5"></a>[stove0-recipe-config](#rn-1f5664e176e6) | `depends-on` | [stove0-protocol](#rn-72232b7fcefa) | `required` |
+| <a id="re-e1805473b49f"></a>[stove0-recipe-config](#rn-1f5664e176e6) | `depends-on` | [stove0-target-protocol](#rn-2bfbd86b0036) | `required` |
+| <a id="re-c4c7ae77707f"></a>[stove0-review-materialize-target](#rn-4086d947a343) | `depends-on` | [riverhog-client](#rn-8e5274344f37) | `required` |
+| <a id="re-523c51338f6b"></a>[stove0-review-materialize-target](#rn-4086d947a343) | `depends-on` | [stove0-review-target-contracts](#rn-83d36842d17d) | `required` |
+| <a id="re-72c6f5cabec5"></a>[stove0-review-materialize-target](#rn-4086d947a343) | `depends-on` | [stove0-review-target-support](#rn-5e88db47d6b6) | `required` |
+| <a id="re-de86381ef336"></a>[stove0-review-materialize-target](#rn-4086d947a343) | `depends-on` | [stove0-target-support](#rn-f8df68acc88c) | `required` |
+| <a id="re-e82b02e8b73d"></a>[stove0-review-planning](#rn-dbd324b3506b) | `depends-on` | [stove0-media-sampling-observer-contracts](#rn-8acbd56de7b2) | `required` |
+| <a id="re-b0e4203fd74b"></a>[stove0-review-planning](#rn-dbd324b3506b) | `depends-on` | [stove0-protocol](#rn-72232b7fcefa) | `required` |
+| <a id="re-c12ae25e17b2"></a>[stove0-review-planning](#rn-dbd324b3506b) | `depends-on` | [stove0-review-target-contracts](#rn-83d36842d17d) | `required` |
+| <a id="re-7ed7bc0d29a4"></a>[stove0-review-rclone-effect-target](#rn-87283d63df1b) | `depends-on` | [riverhog-client](#rn-8e5274344f37) | `required` |
+| <a id="re-efc035f22f92"></a>[stove0-review-rclone-effect-target](#rn-87283d63df1b) | `depends-on` | [riverhog-protocol](#rn-20dbb0d5c0f2) | `required` |
+| <a id="re-168296f945e0"></a>[stove0-review-rclone-effect-target](#rn-87283d63df1b) | `depends-on` | [stove0-review-target-contracts](#rn-83d36842d17d) | `required` |
+| <a id="re-cbcda23b2070"></a>[stove0-review-rclone-effect-target](#rn-87283d63df1b) | `depends-on` | [stove0-review-target-support](#rn-5e88db47d6b6) | `required` |
+| <a id="re-6136dd789947"></a>[stove0-review-rclone-effect-target](#rn-87283d63df1b) | `depends-on` | [stove0-target-support](#rn-f8df68acc88c) | `required` |
+| <a id="re-053cba51d30a"></a>[stove0-review-sampler-client](#rn-9c79fa82339b) | `depends-on` | [http-api-contracts](#rn-f59c7f41027a) | `required` |
+| <a id="re-8a048298261b"></a>[stove0-review-sampler-client](#rn-9c79fa82339b) | `depends-on` | [stove0-review-sampler-protocol](#rn-eedc3ab10b80) | `required` |
+| <a id="re-8aec784bf30f"></a>[stove0-review-sampler-protocol](#rn-eedc3ab10b80) | `depends-on` | [http-api-contracts](#rn-f59c7f41027a) | `required` |
+| <a id="re-92ad5e3677ac"></a>[stove0-review-sampler-protocol](#rn-eedc3ab10b80) | `depends-on` | [riverhog-protocol](#rn-20dbb0d5c0f2) | `required` |
+| <a id="re-caea80d9f986"></a>[stove0-review-sampler-protocol](#rn-eedc3ab10b80) | `depends-on` | [stove0-protocol](#rn-72232b7fcefa) | `required` |
+| <a id="re-32386c903fdf"></a>[stove0-review-sampler-support](#rn-461ec95c0572) | `depends-on` | [http-api-contracts](#rn-f59c7f41027a) | `required` |
+| <a id="re-9878caf2879f"></a>[stove0-review-sampler-support](#rn-461ec95c0572) | `depends-on` | [stove0-review-sampler-client](#rn-9c79fa82339b) | `required` |
+| <a id="re-10fdcde3e994"></a>[stove0-review-sampler-support](#rn-461ec95c0572) | `depends-on` | [stove0-review-sampler-protocol](#rn-eedc3ab10b80) | `required` |
+| <a id="re-6b0f1efba43e"></a>[stove0-review-target-contracts](#rn-83d36842d17d) | `depends-on` | [stove0-protocol](#rn-72232b7fcefa) | `required` |
+| <a id="re-58b25d8a17b4"></a>[stove0-review-target-contracts](#rn-83d36842d17d) | `depends-on` | [stove0-target-protocol](#rn-2bfbd86b0036) | `required` |
+| <a id="re-002c5a2601d6"></a>[stove0-review-target-support](#rn-5e88db47d6b6) | `depends-on` | [http-api-contracts](#rn-f59c7f41027a) | `required` |
+| <a id="re-6fe255dd61fc"></a>[stove0-review-target-support](#rn-5e88db47d6b6) | `depends-on` | [riverhog-client](#rn-8e5274344f37) | `required` |
+| <a id="re-36725151fc56"></a>[stove0-review-target-support](#rn-5e88db47d6b6) | `depends-on` | [riverhog-protocol](#rn-20dbb0d5c0f2) | `required` |
+| <a id="re-a58fb0e31b21"></a>[stove0-review-target-support](#rn-5e88db47d6b6) | `depends-on` | [stove0-protocol](#rn-72232b7fcefa) | `required` |
+| <a id="re-13bcca6fcea4"></a>[stove0-review-target-support](#rn-5e88db47d6b6) | `depends-on` | [stove0-review-sampler-client](#rn-9c79fa82339b) | `required` |
+| <a id="re-558a60cf8314"></a>[stove0-review-target-support](#rn-5e88db47d6b6) | `depends-on` | [stove0-review-sampler-protocol](#rn-eedc3ab10b80) | `required` |
+| <a id="re-8d394b442eb8"></a>[stove0-review-target-support](#rn-5e88db47d6b6) | `depends-on` | [stove0-review-target-contracts](#rn-83d36842d17d) | `required` |
+| <a id="re-599209fcc27b"></a>[stove0-review-target-support](#rn-5e88db47d6b6) | `depends-on` | [stove0-target-support](#rn-f8df68acc88c) | `required` |
+| <a id="re-26eaf5d3f304"></a>[stove0-server](#rn-3540de4d4a61) | `depends-on` | [http-api-contracts](#rn-f59c7f41027a) | `required` |
+| <a id="re-1b0a218d7cad"></a>[stove0-server](#rn-3540de4d4a61) | `depends-on` | [riverhog-client](#rn-8e5274344f37) | `required` |
+| <a id="re-95b532d9d546"></a>[stove0-server](#rn-3540de4d4a61) | `depends-on` | [riverhog-protocol](#rn-20dbb0d5c0f2) | `required` |
+| <a id="re-6c03f69b6df8"></a>[stove0-server](#rn-3540de4d4a61) | `depends-on` | [state-schema](#rn-b37a103e5fc0) | `required` |
+| <a id="re-9fd57484949b"></a>[stove0-server](#rn-3540de4d4a61) | `depends-on` | [stove0-observer-client](#rn-21b6164c9f86) | `required` |
+| <a id="re-f1e6f3978587"></a>[stove0-server](#rn-3540de4d4a61) | `depends-on` | [stove0-observer-protocol](#rn-bac58a079cc2) | `required` |
+| <a id="re-638e42f6741d"></a>[stove0-server](#rn-3540de4d4a61) | `depends-on` | [stove0-operator-contracts](#rn-7c400ebb8398) | `required` |
+| <a id="re-38477b41f7a1"></a>[stove0-server](#rn-3540de4d4a61) | `depends-on` | [stove0-protocol](#rn-72232b7fcefa) | `required` |
+| <a id="re-1207d3f785fd"></a>[stove0-server](#rn-3540de4d4a61) | `depends-on` | [stove0-recipe-config](#rn-1f5664e176e6) | `required` |
+| <a id="re-04a2a1fd143d"></a>[stove0-server](#rn-3540de4d4a61) | `depends-on` | [stove0-target-client](#rn-2c02e8800488) | `required` |
+| <a id="re-99187365ab9b"></a>[stove0-server](#rn-3540de4d4a61) | `depends-on` | [stove0-target-protocol](#rn-2bfbd86b0036) | `required` |
+| <a id="re-79de55667c80"></a>[stove0-server](#rn-3540de4d4a61) | `depends-on` | [time-formats](#rn-71d11531981d) | `required` |
+| <a id="re-41f7a72e6ce5"></a>[stove0-target-client](#rn-2c02e8800488) | `depends-on` | [http-api-contracts](#rn-f59c7f41027a) | `required` |
+| <a id="re-17cbbd07a6ac"></a>[stove0-target-client](#rn-2c02e8800488) | `depends-on` | [stove0-target-protocol](#rn-2bfbd86b0036) | `required` |
+| <a id="re-0fbd97fa2827"></a>[stove0-target-protocol](#rn-2bfbd86b0036) | `depends-on` | [http-api-contracts](#rn-f59c7f41027a) | `required` |
+| <a id="re-efd7fa499f38"></a>[stove0-target-protocol](#rn-2bfbd86b0036) | `depends-on` | [riverhog-protocol](#rn-20dbb0d5c0f2) | `required` |
+| <a id="re-018ee5941dcb"></a>[stove0-target-protocol](#rn-2bfbd86b0036) | `depends-on` | [stove0-protocol](#rn-72232b7fcefa) | `required` |
+| <a id="re-1f95ea127d32"></a>[stove0-target-support](#rn-f8df68acc88c) | `depends-on` | [http-api-contracts](#rn-f59c7f41027a) | `required` |
+| <a id="re-80347e773a99"></a>[stove0-target-support](#rn-f8df68acc88c) | `depends-on` | [riverhog-client](#rn-8e5274344f37) | `required` |
+| <a id="re-9b5a59b52c7a"></a>[stove0-target-support](#rn-f8df68acc88c) | `depends-on` | [riverhog-protocol](#rn-20dbb0d5c0f2) | `required` |
+| <a id="re-1bfd3a172819"></a>[stove0-target-support](#rn-f8df68acc88c) | `depends-on` | [stove0-target-client](#rn-2c02e8800488) | `required` |
+| <a id="re-2700e8fe33b4"></a>[stove0-target-support](#rn-f8df68acc88c) | `depends-on` | [stove0-target-protocol](#rn-2bfbd86b0036) | `required` |
+| <a id="re-71a9ece012ce"></a>[gogurt-linux-listener-host](#rn-81398abad295) | `implements-extension-point` | [gogurt.listener-host-providers](#rn-bbe759bbb1a0) | `gogurt-linux-listener-host` |
+| <a id="re-775d931d8ba0"></a>[gogurt-linux-mounted-volume](#rn-20b20b9fcd70) | `implements-extension-point` | [gogurt.mounted-volume-providers](#rn-6f779eb64ba6) | `gogurt-linux-mounted-volume` |
+| <a id="re-c1004e9eb0f1"></a>[gogurt-macos-listener-host](#rn-a34362604e51) | `implements-extension-point` | [gogurt.listener-host-providers](#rn-bbe759bbb1a0) | `gogurt-macos-listener-host` |
+| <a id="re-765f88876643"></a>[gogurt-macos-mounted-volume](#rn-36cc5f6cd232) | `implements-extension-point` | [gogurt.mounted-volume-providers](#rn-6f779eb64ba6) | `gogurt-macos-mounted-volume` |
+| <a id="re-9ca9159b8634"></a>[gogurt-windows-listener-host](#rn-474510715381) | `implements-extension-point` | [gogurt.listener-host-providers](#rn-bbe759bbb1a0) | `gogurt-windows-listener-host` |
+| <a id="re-280a7f442589"></a>[gogurt-windows-mounted-volume](#rn-a05f27932561) | `implements-extension-point` | [gogurt.mounted-volume-providers](#rn-6f779eb64ba6) | `gogurt-windows-mounted-volume` |
+| <a id="re-93d7304e4ee7"></a>[riverhog-provenance-linux-contracts](#rn-207aa064e3bf) | `implements-extension-point` | [riverhog.provenance-contracts](#rn-08557331674e) | `riverhog-linux` |
+| <a id="re-2a91805068a5"></a>[riverhog-provenance-linux-observer](#rn-f733d7aee6b6) | `implements-extension-point` | [riverhog.provenance-observers](#rn-ed2bbc0e316b) | `riverhog-linux` |
+| <a id="re-33a1c904bb05"></a>[riverhog-provenance-macos-contracts](#rn-5674e1f4d9a2) | `implements-extension-point` | [riverhog.provenance-contracts](#rn-08557331674e) | `riverhog-macos` |
+| <a id="re-b6c6305d6ad3"></a>[riverhog-provenance-macos-observer](#rn-8a8a3a88aaec) | `implements-extension-point` | [riverhog.provenance-observers](#rn-ed2bbc0e316b) | `riverhog-macos` |
+| <a id="re-e086123a3709"></a>[riverhog-provenance-windows-contracts](#rn-4061c95d076d) | `implements-extension-point` | [riverhog.provenance-contracts](#rn-08557331674e) | `riverhog-windows` |
+| <a id="re-df8b886ff90e"></a>[riverhog-provenance-windows-observer](#rn-800f0c638e4e) | `implements-extension-point` | [riverhog.provenance-observers](#rn-ed2bbc0e316b) | `riverhog-windows` |
+| <a id="re-c903afedb976"></a>[stove0-media-metadata-observer-contracts](#rn-c671a0c6fd98) | `implements-extension-point` | [stove0.observer-semantic-validators](#rn-dab30e400e9f) | `media-metadata` |
+| <a id="re-3deafed4a9de"></a>[stove0-media-sampling-observer-contracts](#rn-8acbd56de7b2) | `implements-extension-point` | [stove0.observer-semantic-validators](#rn-dab30e400e9f) | `media-sampling` |
+| <a id="re-200e65554b40"></a>[riverhog-storage-adapter-aws](#rn-c53f4ff3ef96) | `implements-protocol` | [riverhog-storage-adapter](#rn-994e13bf1e40) | `` |
+| <a id="re-505927b13d19"></a>[riverhog-storage-adapter-backblaze](#rn-4178e6e967e3) | `implements-protocol` | [riverhog-storage-adapter](#rn-994e13bf1e40) | `` |
+| <a id="re-4ab0fd0ac4c7"></a>[riverhog-storage-adapter-filesystem](#rn-ebe4206627bc) | `implements-protocol` | [riverhog-storage-adapter](#rn-994e13bf1e40) | `` |
+| <a id="re-a63b7d628740"></a>[stove0-exiftool-observer](#rn-9da095602024) | `implements-protocol` | [stove0-observer](#rn-2eb3b800f870) | `` |
+| <a id="re-517453cd2d58"></a>[stove0-ffprobe-sampling-observer](#rn-219fad9b724a) | `implements-protocol` | [stove0-observer](#rn-2eb3b800f870) | `` |
+| <a id="re-795de4f47eb3"></a>[stove0-nvenc-av1-opus-review-sampler](#rn-3d4e1c390ad8) | `implements-protocol` | [stove0-review-sampler](#rn-e9ced34f0bc9) | `` |
+| <a id="re-6b92eeff44b6"></a>[stove0-nvenc-av1-opus-target](#rn-e9196fec57b9) | `implements-protocol` | [stove0-target](#rn-9d6e708ff324) | `` |
+| <a id="re-24f53f2d8459"></a>[stove0-opus-review-sampler](#rn-36756ccd7732) | `implements-protocol` | [stove0-review-sampler](#rn-e9ced34f0bc9) | `` |
+| <a id="re-55ca15ecf23a"></a>[stove0-opus-target](#rn-313a5c450fdc) | `implements-protocol` | [stove0-target](#rn-9d6e708ff324) | `` |
+| <a id="re-4424eb3893b4"></a>[stove0-review-materialize-target](#rn-4086d947a343) | `implements-protocol` | [stove0-target](#rn-9d6e708ff324) | `` |
+| <a id="re-6d03890ef261"></a>[stove0-review-rclone-effect-target](#rn-87283d63df1b) | `implements-protocol` | [stove0-target](#rn-9d6e708ff324) | `` |
+| <a id="re-cfb30e9083d0"></a>[gogurt](#rn-eeb2be4a7128) | `installed-as` | [uv-tool](#rn-672a39762bbb) | `` |
+| <a id="re-880a45699619"></a>[piggity](#rn-0a279524f465) | `installed-as` | [uv-tool](#rn-672a39762bbb) | `` |
+| <a id="re-5cdba7a0c89c"></a>[riverhog-recover](#rn-813d97e5a415) | `installed-as` | [uv-tool](#rn-672a39762bbb) | `` |
+| <a id="re-af600ca3b81f"></a>[stove0-client](#rn-c5aaef631874) | `installed-as` | [uv-tool](#rn-672a39762bbb) | `` |
+| <a id="re-a55892410a8e"></a>[gogurt-core](#rn-e1d2ac7df3e3) | `owns-extension-point` | [gogurt.mounted-volume-providers](#rn-6f779eb64ba6) | `` |
+| <a id="re-1ec0ff0278c5"></a>[gogurt-listener-runtime](#rn-df1cdfd17cbc) | `owns-extension-point` | [gogurt.listener-host-providers](#rn-bbe759bbb1a0) | `` |
+| <a id="re-2fa13e219dbc"></a>[riverhog-provenance](#rn-728e08e7c454) | `owns-extension-point` | [riverhog.provenance-observers](#rn-ed2bbc0e316b) | `` |
+| <a id="re-c60cd1b522b6"></a>[riverhog-provenance-contracts](#rn-606682003821) | `owns-extension-point` | [riverhog.provenance-contracts](#rn-08557331674e) | `` |
+| <a id="re-b34fbe191376"></a>[stove0-observer-client](#rn-21b6164c9f86) | `owns-extension-point` | [stove0.observer-semantic-validators](#rn-dab30e400e9f) | `` |
+| <a id="re-75d270c24b93"></a>[riverhog-storage-adapter-protocol](#rn-e65e47e3320a) | `owns-protocol` | [riverhog-storage-adapter](#rn-994e13bf1e40) | `` |
+| <a id="re-77c4b86156fe"></a>[stove0-observer-protocol](#rn-bac58a079cc2) | `owns-protocol` | [stove0-observer](#rn-2eb3b800f870) | `` |
+| <a id="re-e9bfe1bec4a0"></a>[stove0-review-sampler-protocol](#rn-eedc3ab10b80) | `owns-protocol` | [stove0-review-sampler](#rn-e9ced34f0bc9) | `` |
+| <a id="re-b6aec58de32b"></a>[stove0-target-protocol](#rn-2bfbd86b0036) | `owns-protocol` | [stove0-target](#rn-9d6e708ff324) | `` |
+| <a id="re-9dcbacb958cf"></a>[mango-fish](#rn-1c3900c99434) | `packaged-in` | [mango-fish](#rn-d981e688ef77) | `` |
+| <a id="re-752f70618f82"></a>[riverhog-ftp-adapter](#rn-d73898029431) | `packaged-in` | [riverhog-ftp-adapter](#rn-ec253225ec3f) | `` |
+| <a id="re-0f22ec4f7347"></a>[riverhog-provenance-linux-observer](#rn-f733d7aee6b6) | `packaged-in` | [riverhog-ftp-adapter](#rn-ec253225ec3f) | `` |
+| <a id="re-c7af1b156d2d"></a>[riverhog-server](#rn-807c63322e05) | `packaged-in` | [riverhog](#rn-566e3c6fe0f6) | `` |
+| <a id="re-32a995cb4ee1"></a>[riverhog-storage-adapter-aws](#rn-c53f4ff3ef96) | `packaged-in` | [riverhog-storage-adapter-aws](#rn-bab87dc57124) | `` |
+| <a id="re-c4188e0dca17"></a>[riverhog-storage-adapter-backblaze](#rn-4178e6e967e3) | `packaged-in` | [riverhog-storage-adapter-backblaze](#rn-8c85e1cf4311) | `` |
+| <a id="re-a51c3c988f87"></a>[riverhog-storage-adapter-filesystem](#rn-ebe4206627bc) | `packaged-in` | [riverhog-storage-adapter-filesystem](#rn-91a08066b776) | `` |
+| <a id="re-52d57b2b6beb"></a>[stove0-exiftool-observer](#rn-9da095602024) | `packaged-in` | [stove0-exiftool-observer](#rn-a88934db615d) | `` |
+| <a id="re-32cab33336b3"></a>[stove0-ffprobe-sampling-observer](#rn-219fad9b724a) | `packaged-in` | [stove0-ffprobe-sampling-observer](#rn-fcead071d492) | `` |
+| <a id="re-b0cd9220dbb1"></a>[stove0-nvenc-av1-opus-review-sampler](#rn-3d4e1c390ad8) | `packaged-in` | [stove0-nvenc-av1-opus-target](#rn-49a20214bc1f) | `` |
+| <a id="re-640b89bf4849"></a>[stove0-nvenc-av1-opus-target](#rn-e9196fec57b9) | `packaged-in` | [stove0-nvenc-av1-opus-target](#rn-49a20214bc1f) | `` |
+| <a id="re-b595cb2c8094"></a>[stove0-opus-review-sampler](#rn-36756ccd7732) | `packaged-in` | [stove0-opus-target](#rn-62cd714adb51) | `` |
+| <a id="re-08075ab7301d"></a>[stove0-opus-target](#rn-313a5c450fdc) | `packaged-in` | [stove0-opus-target](#rn-62cd714adb51) | `` |
+| <a id="re-217195a6b971"></a>[stove0-review-materialize-target](#rn-4086d947a343) | `packaged-in` | [stove0-review-materialize-target](#rn-0d7e506b097c) | `` |
+| <a id="re-51d8b929195b"></a>[stove0-review-rclone-effect-target](#rn-87283d63df1b) | `packaged-in` | [stove0-review-rclone-effect-target](#rn-9303ccd16dde) | `` |
+| <a id="re-a62774be17a9"></a>[stove0-server](#rn-3540de4d4a61) | `packaged-in` | [stove0](#rn-c1dbb5bdf8b1) | `` |

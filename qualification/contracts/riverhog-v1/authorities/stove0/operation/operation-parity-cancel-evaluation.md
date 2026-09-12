@@ -8,26 +8,27 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Audit field | Value |
 |---|---|
-| Authority | `stove0` |
-| Interface | `operation` |
-| Family | `evaluations` |
+| Authority | [stove0](../index.md) |
+| Interface | [operation](index.md) |
+| Family | [evaluations](families/evaluations/index.md) |
 | Contract elements | 1 |
 | Extent decisions | 0 |
 
 ## External contract
 
+<a id="s-afdcc1faa890"></a>
 | Concern | Contract |
 |---|---|
-| `application` | stove0 |
-| `classification` | human-cli+json |
-| `cli_commands` | ["evaluation cancel"] |
-| `client` | Stove0ApiClient |
-| `method` | POST |
-| `operation_id` | cancel_evaluation |
-| `path` | /v1/evaluations/{evaluation_id}/cancel |
-| `provider_evidence` | None |
-| `read_collection` | None |
-| `response_authority` | operator-projection |
+| <a id="s-f5a197a638a5"></a>`application` | stove0 |
+| <a id="s-19b15f5c5ffe"></a>`classification` | human-cli+json |
+| <a id="s-c29292045f9e"></a>`cli_commands` | ["evaluation cancel"] |
+| <a id="s-1f51c66e442c"></a>`client` | Stove0ApiClient |
+| <a id="s-3fbd053f9b6a"></a>`method` | POST |
+| <a id="s-e06fbe880875"></a>`operation_id` | cancel_evaluation |
+| <a id="s-36b802875706"></a>`path` | /v1/evaluations/{evaluation_id}/cancel |
+| <a id="s-19131c6adfbb"></a>`provider_evidence` | None |
+| <a id="s-dde4f214486a"></a>`read_collection` | None |
+| <a id="s-a110bba55d70"></a>`response_authority` | operator-projection |
 
 ## Maintained corroboration
 
@@ -38,20 +39,20 @@ Exact externally visible contract owned by this semantic dossier.
 
 ## Governing policies
 
-- `compatibility/cli/v1`
-- `compatibility/components/v1`
-- `compatibility/http-api/v1`
+- <a id="pa-dd57f819e6c7"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de7f)
+- <a id="pa-7e56a8df276f"></a>[compatibility/components/v1](../../../policies/index.md#p-95e9a1225947)
+- <a id="pa-d3fbf9f70065"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0ba)
 
 ## Evidence
 
 ### Qualification
 
-- `make operation-qualification`
+- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459fb8)
 
 ### Executable sources
 
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `operations:operation-matrix` — `scripts/operation_qualification.py::operation_matrix`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
+- [operations:operation-matrix](../../../evidence/sources.md#src-b032bdc56b3f) — `scripts/operation_qualification.py::operation_matrix`
 
 ### Machine authority
 

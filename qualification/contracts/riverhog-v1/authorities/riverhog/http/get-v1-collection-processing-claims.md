@@ -8,45 +8,57 @@ List Processing Claims
 
 | Audit field | Value |
 |---|---|
-| Authority | `riverhog` |
-| Interface | `http` |
-| Family | `collection-processing-claims` |
+| Authority | [riverhog](../index.md) |
+| Interface | [http](index.md) |
+| Family | [collection-processing-claims](families/collection-processing-claims/index.md) |
 | Contract elements | 1 |
 | Extent decisions | 2 |
 
 ## External contract
 
-- `operationId`: list_processing_claims
-- `summary`: List Processing Claims
-- `security`: `[{"HTTPBearer": []}]`
+<a id="s-c020b12657f1"></a>
+- <a id="s-7e81e1c32e06"></a>`operationId`: list_processing_claims
+- <a id="s-e2fd121d737a"></a>`summary`: List Processing Claims
+- <a id="s-b7154c2973ca"></a>`security`: `[{"HTTPBearer": []}]`
 
 ### Parameters
 
 | Name | In | Required | Schema |
 |---|---|---:|---|
-| `page_size` | query | no | type="integer"; minimum=1; maximum=100 |
-| `page_token` | query | no | anyOf=#/components/schemas/BrowsePageToken \| type="null" |
-| `state` | query | no | anyOf=type="string"; enum=["active","settled","retiring","abandoned","released"] \| type="null" |
-| `sort` | query | no | type="string"; enum=["created_at","updated_at","expires_at","state","work_id","execution_id"] |
-| `order` | query | no | type="string"; enum=["asc","desc"] |
+| <a id="s-2321207667ae"></a>`page_size` | query | no | type="integer"; minimum=1; maximum=100 |
+| <a id="s-37f200ec6c1d"></a>`page_token` | query | no | anyOf=#/components/schemas/BrowsePageToken \| type="null" |
+| <a id="s-96a5f473011e"></a>`state` | query | no | anyOf=type="string"; enum=["active","settled","retiring","abandoned","released"] \| type="null" |
+| <a id="s-6308dc537df5"></a>`sort` | query | no | type="string"; enum=["created_at","updated_at","expires_at","state","work_id","execution_id"] |
+| <a id="s-fa342e9615e3"></a>`order` | query | no | type="string"; enum=["asc","desc"] |
 
 ### Responses
 
 | Status | Description |
 |---|---|
-| `200` | Successful Response |
-| `400` | Bad Request |
-| `401` | Unauthorized |
-| `403` | Forbidden |
-| `409` | Conflict |
-| `500` | Internal Server Error |
+| <a id="s-c7dbec4dcf5a"></a>`200` | Successful Response |
+| <a id="s-2ab72efb00fc"></a>`400` | Bad Request |
+| <a id="s-69b1b770d15a"></a>`401` | Unauthorized |
+| <a id="s-ff02bb11b922"></a>`403` | Forbidden |
+| <a id="s-d4893dfda8bf"></a>`409` | Conflict |
+| <a id="s-911a4536fc14"></a>`500` | Internal Server Error |
 
 ### Progression, limits, and lifecycle
 
-| Dimension | Unit | Policy | Bounds or reason |
-|---|---|---|---|
-| logical-result-cardinality | items | `segmented_no_total_max` | reason=bounded-route-progression |
-| value | schema-value | `contract_max` | maximum=100, minimum=1, reason=schema-maximum |
+#### [extent-rule/route-progression/v1](../../../policies/index.md#p-6b76b527cb21)
+
+Shared facts for every subject below: progression={"default_page_size":25,"kind":"mutable-browse","maximum_page_size":100,"next_page_token_field":"next_page_token","page_size_parameter":"page_size","page_token_parameter":"page_token"}; reason="bounded-route-progression"
+
+| Applies to | Contract | Bounds or reason |
+|---|---|---|
+| [GET /v1/collection-processing-claims](#s-c020b12657f1) | `logical-result-cardinality · items · segmented_no_total_max` | shared above |
+
+#### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
+
+Shared facts for every subject below: maximum=100; minimum=1; reason="schema-maximum"
+
+| Applies to | Contract | Bounds or reason |
+|---|---|---|
+| <a id="s-01a11f4824f7"></a>parameter page_size | `value · schema-value · contract_max` | shared above |
 
 ## Maintained corroboration
 
@@ -62,21 +74,21 @@ List Processing Claims
 
 ## Governing policies
 
-- `compatibility/http-api/v1`
-- `extent-rule/route-progression/v1`
-- `extent-rule/schema-bound/v1`
+- <a id="pa-7de69ccc4e0e"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0ba)
+- <a id="pa-a39052c5246d"></a>[extent-rule/route-progression/v1](../../../policies/index.md#p-6b76b527cb21)
+- <a id="pa-66fd816f3310"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
 
 ## Evidence
 
 ### Qualification
 
-- `make operation-qualification`
-- `make compose-smoke`
+- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459fb8)
+- [make compose-smoke](../../../evidence/sources.md#q-413b0b241ba8)
 
 ### Executable sources
 
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `openapi:riverhog` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
+- [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc960) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
 
 ### Machine authority
 

@@ -8,35 +8,36 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Audit field | Value |
 |---|---|
-| Authority | `stove0-target-support` |
-| Interface | `python` |
-| Family | `modules` |
+| Authority | [stove0-target-support](../index.md) |
+| Interface | [python](index.md) |
+| Family | [modules](index.md#f-39f19460d3f0) |
 | Contract elements | 1 |
 | Extent decisions | 0 |
 
 ## External contract
 
+<a id="s-3a44c472328d"></a>
 | Field | Shape |
 |---|---|
-| `distribution` | "stove0-target-support" |
-| `exports` | additional keys=`ARTIFACT_ID_PATTERN`, `AcceptedTargetJob`, `DEFAULT_TERMINAL_STATE_RETENTION_SECONDS`, `EFFECT_RECEIPT_FORMAT`, `EFFECT_TARGET_PROTOCOL`, `EffectPlan`, `EffectPlanPayload`, `ExternalEffectReceipt`, `ExternalEffectReceiptPayload`, `InputArtifact`, `InputArtifactContract`, `InputDisposition`, `IntentSemanticValidator`, `JSON_SCHEMA_ONLY_SEMANTIC_PROFILE`, `JobExecutor`, `OperationContract`, `OperationContractPayload`, `OutputArtifact`, `OutputArtifactContract`, `OutputCollectionRef`, `PersistentTargetService`, `SHA256_PATTERN`, `SemanticId`, `Sha256`, `TARGET_CONFORMANCE_RESULT`, `TARGET_HTTP_OPERATIONS`, `TARGET_SCHEMA_BUNDLE_FORMAT`, `TARGET_TERMINAL_STATE_RETENTION_ENV`, `TRANSFORM_TARGET_PROTOCOL`, `TargetClient`, `TargetCollectionPublication`, `TargetConformanceCase`, `TargetConformanceResult`, `TargetContract`, `TargetContractPayload`, `TargetDeclaration`, `TargetEffectCommitUncertain`, `TargetExecutionCanceled`, `TargetExecutionEvidence`, `TargetExecutionFailure`, `TargetExecutionInapplicable`, `TargetExecutionRuntime`, `TargetExecutionSession`, `TargetFailure`, `TargetHttpBinding`, `TargetHttpResponse`, `TargetInapplicable`, `TargetJobDeclaration`, `TargetJobRequest`, `TargetJobState`, `TargetJobStatus`, `TargetOperationSupport`, `TargetPlan`, `TargetPreflightRequest`, `TargetPreflightResponse`, `TargetProgress`, `TargetProtocol`, `TargetProtocolModel`, `TargetResultKind`, `TargetRuntimeAuthority`, `TargetService`, `TargetServiceError`, `TransformPlan`, `TransformPlanPayload`, `WorkspaceAssurance`, `canonical_json_bytes`, `canonical_json_sha256`, `conformance_report`, `target_schema_bundle`, `terminal_state_retention_seconds`, `validate_declaration_against_operation`, `validate_preflight_response_against_request`, `validate_status_against_request` |
-| `module` | "stove0_target_support" |
+| <a id="s-d0a15134009e"></a>`distribution` | "stove0-target-support" |
+| <a id="s-b03316bfeb93"></a>`exports` | additional keys=`ARTIFACT_ID_PATTERN`, `AcceptedTargetJob`, `DEFAULT_TERMINAL_STATE_RETENTION_SECONDS`, `EFFECT_RECEIPT_FORMAT`, `EFFECT_TARGET_PROTOCOL`, `EffectPlan`, `EffectPlanPayload`, `ExternalEffectReceipt`, `ExternalEffectReceiptPayload`, `InputArtifact`, `InputArtifactContract`, `InputDisposition`, `IntentSemanticValidator`, `JSON_SCHEMA_ONLY_SEMANTIC_PROFILE`, `JobExecutor`, `OperationContract`, `OperationContractPayload`, `OutputArtifact`, `OutputArtifactContract`, `OutputCollectionRef`, `PersistentTargetService`, `SHA256_PATTERN`, `SemanticId`, `Sha256`, `TARGET_CONFORMANCE_RESULT`, `TARGET_HTTP_OPERATIONS`, `TARGET_SCHEMA_BUNDLE_FORMAT`, `TARGET_TERMINAL_STATE_RETENTION_ENV`, `TRANSFORM_TARGET_PROTOCOL`, `TargetClient`, `TargetCollectionPublication`, `TargetConformanceCase`, `TargetConformanceResult`, `TargetContract`, `TargetContractPayload`, `TargetDeclaration`, `TargetEffectCommitUncertain`, `TargetExecutionCanceled`, `TargetExecutionEvidence`, `TargetExecutionFailure`, `TargetExecutionInapplicable`, `TargetExecutionRuntime`, `TargetExecutionSession`, `TargetFailure`, `TargetHttpBinding`, `TargetHttpResponse`, `TargetInapplicable`, `TargetJobDeclaration`, `TargetJobRequest`, `TargetJobState`, `TargetJobStatus`, `TargetOperationSupport`, `TargetPlan`, `TargetPreflightRequest`, `TargetPreflightResponse`, `TargetProgress`, `TargetProtocol`, `TargetProtocolModel`, `TargetResultKind`, `TargetRuntimeAuthority`, `TargetService`, `TargetServiceError`, `TransformPlan`, `TransformPlanPayload`, `WorkspaceAssurance`, `canonical_json_bytes`, `canonical_json_sha256`, `conformance_report`, `target_schema_bundle`, `terminal_state_retention_seconds`, `validate_declaration_against_operation`, `validate_preflight_response_against_request`, `validate_status_against_request` |
+| <a id="s-88a7726aecf3"></a>`module` | "stove0_target_support" |
 
 ## Governing policies
 
-- `compatibility/python-api/v1`
+- <a id="pa-d62d9c85f6dd"></a>[compatibility/python-api/v1](../../../policies/index.md#p-e574772ba506)
 
 ## Evidence
 
 ### Qualification
 
-- `make dist-smoke`
-- `make build`
+- [make dist-smoke](../../../evidence/sources.md#q-0ba2578a3eb7)
+- [make build](../../../evidence/sources.md#q-d1121e35fa7a)
 
 ### Executable sources
 
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `python:stove0-target-support` — `reference/stove0/packages/target-support/src/stove0_target_support/__init__.py::<module>`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
+- [python:stove0-target-support](../../../evidence/sources.md#src-86c8847b4f27) — `reference/stove0/packages/target-support/src/stove0_target_support/__init__.py::<module>`
 
 ### Machine authority
 

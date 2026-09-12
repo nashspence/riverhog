@@ -8,44 +8,56 @@ List Catalog Sync Collections
 
 | Audit field | Value |
 |---|---|
-| Authority | `riverhog` |
-| Interface | `http` |
-| Family | `catalog-sync` |
+| Authority | [riverhog](../index.md) |
+| Interface | [http](index.md) |
+| Family | [catalog-sync](families/catalog-sync/index.md) |
 | Contract elements | 1 |
 | Extent decisions | 3 |
 
 ## External contract
 
-- `operationId`: list_catalog_sync_collections
-- `summary`: List Catalog Sync Collections
-- `security`: `[{"HTTPBearer": []}]`
+<a id="s-50e16389fb52"></a>
+- <a id="s-6c00e5f2790c"></a>`operationId`: list_catalog_sync_collections
+- <a id="s-d40fdd616927"></a>`summary`: List Catalog Sync Collections
+- <a id="s-1190c6ed4c93"></a>`security`: `[{"HTTPBearer": []}]`
 
 ### Parameters
 
 | Name | In | Required | Schema |
 |---|---|---:|---|
-| `cursor` | query | yes | type="string"; minLength=1; maxLength=4096 |
-| `limit` | query | no | type="integer"; minimum=1; maximum=100 |
+| <a id="s-fc78ce4e09f1"></a>`cursor` | query | yes | type="string"; minLength=1; maxLength=4096 |
+| <a id="s-bb10c7dc5077"></a>`limit` | query | no | type="integer"; minimum=1; maximum=100 |
 
 ### Responses
 
 | Status | Description |
 |---|---|
-| `200` | Successful Response |
-| `400` | Bad Request |
-| `401` | Unauthorized |
-| `403` | Forbidden |
-| `409` | Conflict |
-| `410` | Gone |
-| `500` | Internal Server Error |
+| <a id="s-a4ea653adcd3"></a>`200` | Successful Response |
+| <a id="s-856ce31e75b8"></a>`400` | Bad Request |
+| <a id="s-19e5d2f0ce36"></a>`401` | Unauthorized |
+| <a id="s-fe8f7a9a39d6"></a>`403` | Forbidden |
+| <a id="s-2a64b5f010ba"></a>`409` | Conflict |
+| <a id="s-cd19c82c0c51"></a>`410` | Gone |
+| <a id="s-e8f4d640c132"></a>`500` | Internal Server Error |
 
 ### Progression, limits, and lifecycle
 
-| Dimension | Unit | Policy | Bounds or reason |
-|---|---|---|---|
-| logical-result-cardinality | items | `segmented_no_total_max` | reason=bounded-route-progression |
-| length | characters | `contract_max` | maximum=4096, minimum=1, reason=schema-maximum |
-| value | schema-value | `contract_max` | maximum=100, minimum=1, reason=schema-maximum |
+#### [extent-rule/route-progression/v1](../../../policies/index.md#p-6b76b527cb21)
+
+Shared facts for every subject below: progression={"authority":"catalog-sync-bootstrap","cursor_parameter":"cursor","kind":"exact-authority-page","limit_parameter":"limit"}; reason="bounded-route-progression"
+
+| Applies to | Contract | Bounds or reason |
+|---|---|---|
+| [GET /v1/catalog-sync/collections](#s-50e16389fb52) | `logical-result-cardinality · items · segmented_no_total_max` | shared above |
+
+#### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
+
+Shared facts for every subject below: minimum=1; reason="schema-maximum"
+
+| Applies to | Contract | Bounds or reason |
+|---|---|---|
+| <a id="s-9308276e6e01"></a>parameter cursor | `length · characters · contract_max` | maximum=4096 |
+| <a id="s-49bc1f8b2f14"></a>parameter limit | `value · schema-value · contract_max` | maximum=100 |
 
 ## Maintained corroboration
 
@@ -60,21 +72,21 @@ List Catalog Sync Collections
 
 ## Governing policies
 
-- `compatibility/http-api/v1`
-- `extent-rule/route-progression/v1`
-- `extent-rule/schema-bound/v1`
+- <a id="pa-db5d86ac67b2"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0ba)
+- <a id="pa-96b305cfbb40"></a>[extent-rule/route-progression/v1](../../../policies/index.md#p-6b76b527cb21)
+- <a id="pa-c8c121074922"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
 
 ## Evidence
 
 ### Qualification
 
-- `make operation-qualification`
-- `make compose-smoke`
+- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459fb8)
+- [make compose-smoke](../../../evidence/sources.md#q-413b0b241ba8)
 
 ### Executable sources
 
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `openapi:riverhog` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
+- [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc960) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
 
 ### Machine authority
 

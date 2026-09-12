@@ -8,35 +8,36 @@ Get Archive Copy Job
 
 | Audit field | Value |
 |---|---|
-| Authority | `riverhog` |
-| Interface | `http` |
-| Family | `archive` |
+| Authority | [riverhog](../index.md) |
+| Interface | [http](index.md) |
+| Family | [archive](families/archive/index.md) |
 | Contract elements | 1 |
 | Extent decisions | 0 |
 
 ## External contract
 
-- `operationId`: get_archive_copy_job
-- `summary`: Get Archive Copy Job
-- `security`: `[{"HTTPBearer": []}]`
+<a id="s-de5ffe3a1e05"></a>
+- <a id="s-7bbf4e456fb0"></a>`operationId`: get_archive_copy_job
+- <a id="s-346551dd72bb"></a>`summary`: Get Archive Copy Job
+- <a id="s-d37af7c44328"></a>`security`: `[{"HTTPBearer": []}]`
 
 ### Parameters
 
 | Name | In | Required | Schema |
 |---|---|---:|---|
-| `collection_id` | path | yes | type="integer"; minimum=1 |
-| `destination_store` | path | yes | type="string"; pattern="^[a-z0-9]+(?:-[a-z0-9]+)*$" |
+| <a id="s-05756f1e254a"></a>`collection_id` | path | yes | type="integer"; minimum=1 |
+| <a id="s-ee083b4c14a9"></a>`destination_store` | path | yes | type="string"; pattern="^[a-z0-9]+(?:-[a-z0-9]+)*$" |
 
 ### Responses
 
 | Status | Description |
 |---|---|
-| `200` | Successful Response |
-| `400` | Bad Request |
-| `401` | Unauthorized |
-| `403` | Forbidden |
-| `404` | Not Found |
-| `500` | Internal Server Error |
+| <a id="s-7ffcd8456400"></a>`200` | Successful Response |
+| <a id="s-3ee6bf46d7e3"></a>`400` | Bad Request |
+| <a id="s-6c584e0b6806"></a>`401` | Unauthorized |
+| <a id="s-a51e7214efed"></a>`403` | Forbidden |
+| <a id="s-9fd25d8d43a7"></a>`404` | Not Found |
+| <a id="s-035dda0d4668"></a>`500` | Internal Server Error |
 
 ## Maintained corroboration
 
@@ -51,19 +52,19 @@ Get Archive Copy Job
 
 ## Governing policies
 
-- `compatibility/http-api/v1`
+- <a id="pa-4581107b4329"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0ba)
 
 ## Evidence
 
 ### Qualification
 
-- `make operation-qualification`
-- `make compose-smoke`
+- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459fb8)
+- [make compose-smoke](../../../evidence/sources.md#q-413b0b241ba8)
 
 ### Executable sources
 
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `openapi:riverhog` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
+- [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc960) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
 
 ### Machine authority
 

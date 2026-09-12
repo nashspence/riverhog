@@ -8,38 +8,39 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Audit field | Value |
 |---|---|
-| Authority | `riverhog-protocol` |
-| Interface | `boundary` |
-| Family | `components` |
+| Authority | [riverhog-protocol](../index.md) |
+| Interface | [boundary](index.md) |
+| Family | [components](index.md#f-9d2acfbffb8f) |
 | Contract elements | 1 |
 | Extent decisions | 0 |
 
 ## External contract
 
+<a id="s-3edb81aa5307"></a>
 | Field | Shape |
 |---|---|
-| `console_scripts` | empty object |
-| `dependencies` | ["http-api-contracts","lifecycle-events","riverhog-provenance-contracts"] |
-| `distribution` | "riverhog-protocol" |
-| `optional_dependencies` | empty object |
-| `path` | "packages/riverhog-protocol" |
-| `role` | "reusable_library" |
+| <a id="s-92359607042e"></a>`console_scripts` | empty object |
+| <a id="s-269932b1ea6a"></a>`dependencies` | ["http-api-contracts","lifecycle-events","riverhog-provenance-contracts"] |
+| <a id="s-0e4bd183b142"></a>`distribution` | "riverhog-protocol" |
+| <a id="s-3a00bd62a8c6"></a>`optional_dependencies` | empty object |
+| <a id="s-e611de2384f1"></a>`path` | "packages/riverhog-protocol" |
+| <a id="s-7b13b3459994"></a>`role` | "reusable_library" |
 
 ## Governing policies
 
-- `boundary/frozen-authority/v1`
+- <a id="pa-fb4df5492b29"></a>[boundary/frozen-authority/v1](../../../policies/index.md#p-61994d3f0fa8)
 
 ## Evidence
 
 ### Qualification
 
-- `make release-check`
-- `make build`
+- [make release-check](../../../evidence/sources.md#q-8d8d22d6a6b1)
+- [make build](../../../evidence/sources.md#q-d1121e35fa7a)
 
 ### Executable sources
 
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `release:release.toml` — `release.toml`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
+- [release:release.toml](../../../evidence/sources.md#src-c5380dbe5fe0) — `release.toml`
 
 ### Machine authority
 

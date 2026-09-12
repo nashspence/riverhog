@@ -8,44 +8,49 @@ Collection Contains Tag
 
 | Audit field | Value |
 |---|---|
-| Authority | `riverhog` |
-| Interface | `http` |
-| Family | `collections` |
+| Authority | [riverhog](../index.md) |
+| Interface | [http](index.md) |
+| Family | [collections](families/collections/index.md) |
 | Contract elements | 1 |
 | Extent decisions | 1 |
 
 ## External contract
 
-- `operationId`: collection_contains_tag
-- `summary`: Collection Contains Tag
-- `security`: `[{"HTTPBearer": []}]`
+<a id="s-b7b3da9ca476"></a>
+- <a id="s-f64404d5ae33"></a>`operationId`: collection_contains_tag
+- <a id="s-c1758ccadd43"></a>`summary`: Collection Contains Tag
+- <a id="s-2ba7d67bf8c9"></a>`security`: `[{"HTTPBearer": []}]`
 
 ### Parameters
 
 | Name | In | Required | Schema |
 |---|---|---:|---|
-| `collection_id` | path | yes | type="integer"; minimum=1 |
-| `tag` | query | yes | #/components/schemas/CollectionTag |
-| `revision` | query | yes | type="integer"; minimum=1 |
-| `tag_set_identity` | query | yes | type="string"; pattern="^[0-9a-f]{64}$" |
+| <a id="s-234c3b9e4af9"></a>`collection_id` | path | yes | type="integer"; minimum=1 |
+| <a id="s-a9d8b50545ea"></a>`tag` | query | yes | #/components/schemas/CollectionTag |
+| <a id="s-d314b5a7675e"></a>`revision` | query | yes | type="integer"; minimum=1 |
+| <a id="s-2807a21da289"></a>`tag_set_identity` | query | yes | type="string"; pattern="^[0-9a-f]{64}$" |
 
 ### Responses
 
 | Status | Description |
 |---|---|
-| `200` | Successful Response |
-| `400` | Bad Request |
-| `401` | Unauthorized |
-| `403` | Forbidden |
-| `404` | Not Found |
-| `409` | Conflict |
-| `500` | Internal Server Error |
+| <a id="s-02989a39c4e2"></a>`200` | Successful Response |
+| <a id="s-9c209972c10e"></a>`400` | Bad Request |
+| <a id="s-33482f9ae560"></a>`401` | Unauthorized |
+| <a id="s-3ea1e0e8fb22"></a>`403` | Forbidden |
+| <a id="s-f21bc1a6cdac"></a>`404` | Not Found |
+| <a id="s-3d9646a86afd"></a>`409` | Conflict |
+| <a id="s-2c1f136096be"></a>`500` | Internal Server Error |
 
 ### Progression, limits, and lifecycle
 
-| Dimension | Unit | Policy | Bounds or reason |
-|---|---|---|---|
-| length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
+#### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
+
+Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"}
+
+| Applies to | Contract | Bounds or reason |
+|---|---|---|
+| <a id="s-0c1779b3ecf4"></a>parameter tag_set_identity | `length · characters · fixed` | shared above |
 
 ## Maintained corroboration
 
@@ -61,20 +66,20 @@ Collection Contains Tag
 
 ## Governing policies
 
-- `compatibility/http-api/v1`
-- `extent-rule/schema-bound/v1`
+- <a id="pa-54d83639e15c"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0ba)
+- <a id="pa-e649438bdeb1"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
 
 ## Evidence
 
 ### Qualification
 
-- `make operation-qualification`
-- `make compose-smoke`
+- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459fb8)
+- [make compose-smoke](../../../evidence/sources.md#q-413b0b241ba8)
 
 ### Executable sources
 
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `openapi:riverhog` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
+- [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc960) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
 
 ### Machine authority
 

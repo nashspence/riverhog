@@ -8,26 +8,27 @@ List Recipes
 
 | Audit field | Value |
 |---|---|
-| Authority | `stove0` |
-| Interface | `http` |
-| Family | `recipes` |
+| Authority | [stove0](../index.md) |
+| Interface | [http](index.md) |
+| Family | [recipes](families/recipes/index.md) |
 | Contract elements | 1 |
 | Extent decisions | 0 |
 
 ## External contract
 
-- `operationId`: list_recipes
-- `summary`: List Recipes
+<a id="s-e085eb717d70"></a>
+- <a id="s-eff44f9288a4"></a>`operationId`: list_recipes
+- <a id="s-8568b0786d06"></a>`summary`: List Recipes
 
 ### Responses
 
 | Status | Description |
 |---|---|
-| `200` | Successful Response |
-| `400` | Bad Request |
-| `401` | Unauthorized |
-| `403` | Forbidden |
-| `500` | Internal Server Error |
+| <a id="s-a3267f057b72"></a>`200` | Successful Response |
+| <a id="s-cee290a15f37"></a>`400` | Bad Request |
+| <a id="s-553f3580e8d6"></a>`401` | Unauthorized |
+| <a id="s-4a2af01f1843"></a>`403` | Forbidden |
+| <a id="s-f1ddbd3b59a4"></a>`500` | Internal Server Error |
 
 ## Maintained corroboration
 
@@ -42,19 +43,19 @@ List Recipes
 
 ## Governing policies
 
-- `compatibility/http-api/v1`
+- <a id="pa-9cb19daec690"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0ba)
 
 ## Evidence
 
 ### Qualification
 
-- `make operation-qualification`
-- `make compose-smoke`
+- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459fb8)
+- [make compose-smoke](../../../evidence/sources.md#q-413b0b241ba8)
 
 ### Executable sources
 
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `openapi:stove0` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
+- [openapi:stove0](../../../evidence/sources.md#src-52e6e3212451) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
 
 ### Machine authority
 

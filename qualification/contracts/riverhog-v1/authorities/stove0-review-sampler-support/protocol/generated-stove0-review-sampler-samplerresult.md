@@ -8,67 +8,79 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Audit field | Value |
 |---|---|
-| Authority | `stove0-review-sampler-support` |
-| Interface | `protocol` |
-| Family | `schemas` |
+| Authority | [stove0-review-sampler-support](../index.md) |
+| Interface | [protocol](index.md) |
+| Family | [schemas](index.md#f-fba3a5663ca7) |
 | Contract elements | 1 |
 | Extent decisions | 5 |
 
 ## External contract
 
-- `title`: SamplerResult
-- `type`: object
+<a id="s-a445d3704cf6"></a>
+- <a id="s-45045117a2d4"></a>`title`: SamplerResult
+- <a id="s-85b7f4ac305f"></a>`type`: object
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| `execution_evidence` | no | type="object"; additional keys=`additionalProperties` |  |
-| `failure` | no | anyOf=#/$defs/SamplerFailure \| type="null" |  |
-| `format` | no | type="string"; const="stove0-review-sampler-result/v1" |  |
-| `inapplicable` | no | anyOf=#/$defs/SamplerInapplicable \| type="null" |  |
-| `outputs` | no | type="array"; items=(#/$defs/SamplerOutput) |  |
-| `request_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| `result_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| `sampler_descriptor_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| `state` | yes | type="string"; enum=["succeeded","inapplicable","failed","canceled"] |  |
+| <a id="s-e4192cb2947c"></a>`execution_evidence` | no | type="object"; additional keys=`additionalProperties` |  |
+| <a id="s-8f6d9f0d95a9"></a>`failure` | no | anyOf=#/$defs/SamplerFailure \| type="null" |  |
+| <a id="s-bfd2e78f6626"></a>`format` | no | type="string"; const="stove0-review-sampler-result/v1" |  |
+| <a id="s-69ddaf5c63c9"></a>`inapplicable` | no | anyOf=#/$defs/SamplerInapplicable \| type="null" |  |
+| <a id="s-d8dbe2a4a226"></a>`outputs` | no | type="array"; items=(#/$defs/SamplerOutput) |  |
+| <a id="s-536576137a97"></a>`request_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-598c04a1e236"></a>`result_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-eef522c17fad"></a>`sampler_descriptor_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-4e4d0cd28dad"></a>`state` | yes | type="string"; enum=["succeeded","inapplicable","failed","canceled"] |  |
 
 ### Definitions
 
 | Definition | Shape |
 |---|---|
-| `JsonValue` | empty object |
-| `SamplerFailure` | type="object"; fields=`code`, `message`, `retryable`; additional keys=`additionalProperties`, `required` |
-| `SamplerInapplicable` | type="object"; fields=`code`, `message`; additional keys=`additionalProperties`, `required` |
-| `SamplerOutput` | type="object"; fields=`bytes`, `derived_from`, `id`, `media_type`, `path`, `sha256`; additional keys=`additionalProperties`, `required` |
+| <a id="s-4394584684db"></a>`JsonValue` | empty object |
+| <a id="s-fc671c79af36"></a>`SamplerFailure` | type="object"; fields=`code`, `message`, `retryable`; additional keys=`additionalProperties`, `required` |
+| <a id="s-2a8e3a476918"></a>`SamplerInapplicable` | type="object"; fields=`code`, `message`; additional keys=`additionalProperties`, `required` |
+| <a id="s-55b2cc4f6bad"></a>`SamplerOutput` | type="object"; fields=`bytes`, `derived_from`, `id`, `media_type`, `path`, `sha256`; additional keys=`additionalProperties`, `required` |
 
 ### Progression, limits, and lifecycle
 
-| Dimension | Unit | Policy | Bounds or reason |
-|---|---|---|---|
-| cardinality | entries | `operational_policy` | maximum=None, reason=no-declared-semantic-maximum |
-| cardinality | items | `operational_policy` | maximum=None, reason=no-declared-semantic-maximum |
-| length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
-| length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
-| length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
+#### [extent-rule/no-semantic-maximum/v1](../../../policies/index.md#p-574724b48af0)
+
+Shared facts for every subject below: capacity_authority={"declared_maximum":null,"hidden_maximum":"forbidden","owner":"stove0-review-sampler-protocol"}; maximum=null; reason="no-declared-semantic-maximum"
+
+| Applies to | Contract | Bounds or reason |
+|---|---|---|
+| [field execution_evidence](#s-e4192cb2947c) | `cardinality · entries · operational_policy` | shared above |
+| [field outputs](#s-d8dbe2a4a226) | `cardinality · items · operational_policy` | shared above |
+
+#### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
+
+Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"}
+
+| Applies to | Contract | Bounds or reason |
+|---|---|---|
+| [field request_sha256](#s-536576137a97) | `length · characters · fixed` | shared above |
+| [field result_sha256](#s-598c04a1e236) | `length · characters · fixed` | shared above |
+| [field sampler_descriptor_sha256](#s-eef522c17fad) | `length · characters · fixed` | shared above |
 
 ## Governing policies
 
-- `compatibility/components/v1`
-- `extent-rule/no-semantic-maximum/v1`
-- `extent-rule/schema-bound/v1`
+- <a id="pa-e20671a6f3ac"></a>[compatibility/components/v1](../../../policies/index.md#p-95e9a1225947)
+- <a id="pa-f6eaea60885f"></a>[extent-rule/no-semantic-maximum/v1](../../../policies/index.md#p-574724b48af0)
+- <a id="pa-f8a6e2c97ef6"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
 
 ## Evidence
 
 ### Qualification
 
-- `make dist-smoke`
-- `make build`
+- [make dist-smoke](../../../evidence/sources.md#q-0ba2578a3eb7)
+- [make build](../../../evidence/sources.md#q-d1121e35fa7a)
 
 ### Executable sources
 
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `protocol:generated:stove0-review-sampler` — `reference/stove0/targets/review/sampler/support/src/stove0_review_sampler_support/schemas.py::sampler_schema_bundle`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
+- [protocol:generated:stove0-review-sampler](../../../evidence/sources.md#src-b47f3f4d7b7f) — `reference/stove0/targets/review/sampler/support/src/stove0_review_sampler_support/schemas.py::sampler_schema_bundle`
 
 ### Machine authority
 

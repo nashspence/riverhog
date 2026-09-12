@@ -8,38 +8,39 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Audit field | Value |
 |---|---|
-| Authority | `stove0-observer-protocol` |
-| Interface | `boundary` |
-| Family | `components` |
+| Authority | [stove0-observer-protocol](../index.md) |
+| Interface | [boundary](index.md) |
+| Family | [components](index.md#f-3385b8c53dae) |
 | Contract elements | 1 |
 | Extent decisions | 0 |
 
 ## External contract
 
+<a id="s-53267c14cb60"></a>
 | Field | Shape |
 |---|---|
-| `console_scripts` | empty object |
-| `dependencies` | ["http-api-contracts","stove0-protocol"] |
-| `distribution` | "stove0-observer-protocol" |
-| `optional_dependencies` | empty object |
-| `path` | "reference/stove0/packages/observer-protocol" |
-| `role` | "reusable_library" |
+| <a id="s-650e81fe10c7"></a>`console_scripts` | empty object |
+| <a id="s-d4dacf0c8fd9"></a>`dependencies` | ["http-api-contracts","stove0-protocol"] |
+| <a id="s-2f1ae905d669"></a>`distribution` | "stove0-observer-protocol" |
+| <a id="s-36c59827d5a6"></a>`optional_dependencies` | empty object |
+| <a id="s-2da934aff62c"></a>`path` | "reference/stove0/packages/observer-protocol" |
+| <a id="s-55a1f5ce2134"></a>`role` | "reusable_library" |
 
 ## Governing policies
 
-- `boundary/frozen-authority/v1`
+- <a id="pa-e727de5cc851"></a>[boundary/frozen-authority/v1](../../../policies/index.md#p-61994d3f0fa8)
 
 ## Evidence
 
 ### Qualification
 
-- `make release-check`
-- `make build`
+- [make release-check](../../../evidence/sources.md#q-8d8d22d6a6b1)
+- [make build](../../../evidence/sources.md#q-d1121e35fa7a)
 
 ### Executable sources
 
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `release:release.toml` — `release.toml`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
+- [release:release.toml](../../../evidence/sources.md#src-c5380dbe5fe0) — `release.toml`
 
 ### Machine authority
 

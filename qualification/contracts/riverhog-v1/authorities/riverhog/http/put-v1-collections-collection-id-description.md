@@ -8,26 +8,27 @@ Replace Collection Description
 
 | Audit field | Value |
 |---|---|
-| Authority | `riverhog` |
-| Interface | `http` |
-| Family | `collections` |
+| Authority | [riverhog](../index.md) |
+| Interface | [http](index.md) |
+| Family | [collections](families/collections/index.md) |
 | Contract elements | 1 |
 | Extent decisions | 0 |
 
 ## External contract
 
-- `operationId`: replace_collection_description
-- `summary`: Replace Collection Description
-- `security`: `[{"HTTPBearer": []}]`
+<a id="s-af8c734346df"></a>
+- <a id="s-a7f741748702"></a>`operationId`: replace_collection_description
+- <a id="s-88ac2f282100"></a>`summary`: Replace Collection Description
+- <a id="s-4d7049a72b5b"></a>`security`: `[{"HTTPBearer": []}]`
 
 ### Parameters
 
 | Name | In | Required | Schema |
 |---|---|---:|---|
-| `collection_id` | path | yes | type="integer"; minimum=1 |
-| `If-Match` | header | yes | type="string"; pattern="^\"[0-9a-f]{64}\"$" |
+| <a id="s-f298dfd6d7ca"></a>`collection_id` | path | yes | type="integer"; minimum=1 |
+| <a id="s-1894750874e0"></a>`If-Match` | header | yes | type="string"; pattern="^\"[0-9a-f]{64}\"$" |
 
-### Request body
+### <a id="s-805a79ced6f5"></a>Request body
 
 `{"content": {"application/json": {"schema": {"$ref": "#/components/schemas/ReplaceCollectionDescriptionRequest"}}}, "required": true}`
 
@@ -35,11 +36,11 @@ Replace Collection Description
 
 | Status | Description |
 |---|---|
-| `200` | Successful Response |
-| `400` | Bad Request |
-| `401` | Unauthorized |
-| `403` | Forbidden |
-| `500` | Internal Server Error |
+| <a id="s-2c0b35907893"></a>`200` | Successful Response |
+| <a id="s-29f5bd9918cd"></a>`400` | Bad Request |
+| <a id="s-9c4e75c826f2"></a>`401` | Unauthorized |
+| <a id="s-05972b7342c5"></a>`403` | Forbidden |
+| <a id="s-7be43d128b84"></a>`500` | Internal Server Error |
 
 ## Maintained corroboration
 
@@ -55,19 +56,19 @@ Replace Collection Description
 
 ## Governing policies
 
-- `compatibility/http-api/v1`
+- <a id="pa-915443cbaba4"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0ba)
 
 ## Evidence
 
 ### Qualification
 
-- `make operation-qualification`
-- `make compose-smoke`
+- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459fb8)
+- [make compose-smoke](../../../evidence/sources.md#q-413b0b241ba8)
 
 ### Executable sources
 
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `openapi:riverhog` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
+- [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc960) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
 
 ### Machine authority
 

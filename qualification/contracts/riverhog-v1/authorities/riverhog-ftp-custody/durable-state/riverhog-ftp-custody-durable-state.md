@@ -8,31 +8,32 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Audit field | Value |
 |---|---|
-| Authority | `riverhog-ftp-custody` |
-| Interface | `durable-state` |
-| Family | `owners` |
+| Authority | [riverhog-ftp-custody](../index.md) |
+| Interface | [durable-state](index.md) |
+| Family | [owners](index.md#f-5917b0b92068) |
 | Contract elements | 1 |
 | Extent decisions | 0 |
 
 ## External contract
 
-- `format`: riverhog-ftp-adapter-claim/v1
+<a id="s-a015c4ca4d2e"></a>
+- <a id="s-45f323bd6963"></a>`format`: riverhog-ftp-adapter-claim/v1
 
 ## Governing policies
 
-- `compatibility/components/v1`
+- <a id="pa-c738b31b2729"></a>[compatibility/components/v1](../../../policies/index.md#p-95e9a1225947)
 
 ## Evidence
 
 ### Qualification
 
-- `make release-check`
-- `make database-qualification`
+- [make release-check](../../../evidence/sources.md#q-8d8d22d6a6b1)
+- [make database-qualification](../../../evidence/sources.md#q-27f281b51ec6)
 
 ### Executable sources
 
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `state:riverhog-ftp-custody` — `state:riverhog-ftp-custody`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
+- [state:riverhog-ftp-custody](../../../evidence/sources.md#src-54f88a3a472f) — `state:riverhog-ftp-custody`
 
 ### Machine authority
 

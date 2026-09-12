@@ -8,34 +8,46 @@ Stable branch-set lineage for one ordinary join work identity.
 
 | Audit field | Value |
 |---|---|
-| Authority | `stove0` |
-| Interface | `http` |
-| Family | `schemas` |
+| Authority | [stove0](../index.md) |
+| Interface | [http](index.md) |
+| Family | [schemas](families/schemas/index.md) |
 | Contract elements | 1 |
 | Extent decisions | 3 |
 
 ## External contract
 
-- `title`: JoinWorkBinding
-- `description`: Stable branch-set lineage for one ordinary join work identity.
-- `type`: object
+<a id="s-57421a0aa8b7"></a>
+- <a id="s-d74b458e122a"></a>`title`: JoinWorkBinding
+- <a id="s-c94f02077949"></a>`description`: Stable branch-set lineage for one ordinary join work identity.
+- <a id="s-a60ed1074fb8"></a>`type`: object
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| `branch_set_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| `kind` | no | type="string"; const="join" |  |
-| `members` | yes | type="array"; minItems=2; items=(#/components/schemas/JoinWorkMemberBinding) |  |
-| `parent_work_id` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-4034723c2812"></a>`branch_set_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-0b3cd7bd1133"></a>`kind` | no | type="string"; const="join" |  |
+| <a id="s-469029f453a2"></a>`members` | yes | type="array"; minItems=2; items=(#/components/schemas/JoinWorkMemberBinding) |  |
+| <a id="s-fbd3cc4a8a76"></a>`parent_work_id` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 
 ### Progression, limits, and lifecycle
 
-| Dimension | Unit | Policy | Bounds or reason |
-|---|---|---|---|
-| length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
-| cardinality | items | `operational_policy` | maximum=None, reason=no-declared-semantic-maximum |
-| length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
+#### [extent-rule/no-semantic-maximum/v1](../../../policies/index.md#p-574724b48af0)
+
+Shared facts for every subject below: capacity_authority={"declared_maximum":null,"hidden_maximum":"forbidden","owner":"stove0"}; maximum=null; reason="no-declared-semantic-maximum"
+
+| Applies to | Contract | Bounds or reason |
+|---|---|---|
+| [field members](#s-469029f453a2) | `cardinality · items · operational_policy` | shared above |
+
+#### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
+
+Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"}
+
+| Applies to | Contract | Bounds or reason |
+|---|---|---|
+| [field branch_set_sha256](#s-4034723c2812) | `length · characters · fixed` | shared above |
+| [field parent_work_id](#s-fbd3cc4a8a76) | `length · characters · fixed` | shared above |
 
 ## Maintained corroboration
 
@@ -45,21 +57,21 @@ Stable branch-set lineage for one ordinary join work identity.
 
 ## Governing policies
 
-- `compatibility/http-api/v1`
-- `extent-rule/no-semantic-maximum/v1`
-- `extent-rule/schema-bound/v1`
+- <a id="pa-755da2833106"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0ba)
+- <a id="pa-fca85dc62c2e"></a>[extent-rule/no-semantic-maximum/v1](../../../policies/index.md#p-574724b48af0)
+- <a id="pa-c304213c70d4"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
 
 ## Evidence
 
 ### Qualification
 
-- `make operation-qualification`
-- `make compose-smoke`
+- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459fb8)
+- [make compose-smoke](../../../evidence/sources.md#q-413b0b241ba8)
 
 ### Executable sources
 
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `openapi:stove0` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
+- [openapi:stove0](../../../evidence/sources.md#src-52e6e3212451) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
 
 ### Machine authority
 

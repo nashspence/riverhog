@@ -6,19 +6,19 @@ Contract elements: **21** · Extent decisions: **55**
 
 | Family | Count |
 |---|---:|
-| `list` | 1 |
-| `listener` | 8 |
-| `mounts` | 1 |
-| `provider` | 7 |
-| `root` | 1 |
-| `run` | 1 |
-| `watch` | 1 |
-| `write` | 1 |
+| <a id="f-a22fba0f571a"></a>`list` | 1 |
+| <a id="f-75084d8061df"></a>`listener` | 8 |
+| <a id="f-4b28905304d1"></a>`mounts` | 1 |
+| <a id="f-35c12cf73ea8"></a>`provider` | 7 |
+| <a id="f-42e37a54044e"></a>`root` | 1 |
+| <a id="f-a44511a3b2d5"></a>`run` | 1 |
+| <a id="f-9c41482fcce5"></a>`watch` | 1 |
+| <a id="f-b46409492b1c"></a>`write` | 1 |
 
 | Policy | Count |
 |---|---:|
-| `compatibility/cli/v1` | 21 |
-| `extent-rule/schema-bound/v1` | 17 |
+| [compatibility/cli/v1](../../../policies/index.md#p-48a89776de7f) | 21 |
+| [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034) | 17 |
 
 ## Semantic dossiers
 

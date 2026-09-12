@@ -8,37 +8,49 @@ Exact claim evidence authorizing one retirement deletion plan.
 
 | Audit field | Value |
 |---|---|
-| Authority | `riverhog` |
-| Interface | `http` |
-| Family | `schemas` |
+| Authority | [riverhog](../index.md) |
+| Interface | [http](index.md) |
+| Family | [schemas](families/schemas/index.md) |
 | Contract elements | 1 |
 | Extent decisions | 4 |
 
 ## External contract
 
-- `title`: RetirementClaimReferenceDocument
-- `description`: Exact claim evidence authorizing one retirement deletion plan.
-- `type`: object
+<a id="s-41ae99dfe31a"></a>
+- <a id="s-3f0c6f431fc5"></a>`title`: RetirementClaimReferenceDocument
+- <a id="s-bf12ac752bbc"></a>`description`: Exact claim evidence authorizing one retirement deletion plan.
+- <a id="s-0618482f1376"></a>`type`: object
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| `claim_id` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| `execution_id` | no | anyOf=type="string"; pattern="^[0-9a-f]{64}$" \| type="null" |  |
-| `fence` | yes | type="integer"; minimum=1 |  |
-| `outcomes` | no | anyOf=#/components/schemas/ExactSetAuthorityDocument \| type="null" |  |
-| `output_collection_id` | no | anyOf=#/components/schemas/CollectionId \| type="null" |  |
-| `work_id` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-61665e5e9ead"></a>`claim_id` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-c71cfa0fc993"></a>`execution_id` | no | anyOf=type="string"; pattern="^[0-9a-f]{64}$" \| type="null" |  |
+| <a id="s-77cbd0e0de5a"></a>`fence` | yes | type="integer"; minimum=1 |  |
+| <a id="s-aeaffe0495d2"></a>`outcomes` | no | anyOf=#/components/schemas/ExactSetAuthorityDocument \| type="null" |  |
+| <a id="s-b4b8f4922850"></a>`output_collection_id` | no | anyOf=#/components/schemas/CollectionId \| type="null" |  |
+| <a id="s-e9e363aaf6c5"></a>`work_id` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 
 ### Progression, limits, and lifecycle
 
-| Dimension | Unit | Policy | Bounds or reason |
-|---|---|---|---|
-| value | schema-value | `operational_policy` | maximum=None, reason=no-declared-semantic-maximum |
-| length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
-| length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
-| length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
+#### [extent-rule/no-semantic-maximum/v1](../../../policies/index.md#p-574724b48af0)
+
+Shared facts for every subject below: capacity_authority={"declared_maximum":null,"hidden_maximum":"forbidden","owner":"riverhog"}; maximum=null; reason="no-declared-semantic-maximum"
+
+| Applies to | Contract | Bounds or reason |
+|---|---|---|
+| <a id="s-39f7c3bf74e0"></a>oneOf alternative 1 · field output_collection_id | `value · schema-value · operational_policy` | shared above |
+
+#### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
+
+Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"}
+
+| Applies to | Contract | Bounds or reason |
+|---|---|---|
+| [field claim_id](#s-61665e5e9ead) | `length · characters · fixed` | shared above |
+| <a id="s-5e31d6c1e5ea"></a>field execution_id · anyOf alternative 1 | `length · characters · fixed` | shared above |
+| [field work_id](#s-e9e363aaf6c5) | `length · characters · fixed` | shared above |
 
 ## Maintained corroboration
 
@@ -49,21 +61,21 @@ Exact claim evidence authorizing one retirement deletion plan.
 
 ## Governing policies
 
-- `compatibility/http-api/v1`
-- `extent-rule/no-semantic-maximum/v1`
-- `extent-rule/schema-bound/v1`
+- <a id="pa-a115916f5a16"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0ba)
+- <a id="pa-bce01adfd9a9"></a>[extent-rule/no-semantic-maximum/v1](../../../policies/index.md#p-574724b48af0)
+- <a id="pa-489affe7268c"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
 
 ## Evidence
 
 ### Qualification
 
-- `make operation-qualification`
-- `make compose-smoke`
+- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459fb8)
+- [make compose-smoke](../../../evidence/sources.md#q-413b0b241ba8)
 
 ### Executable sources
 
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `openapi:riverhog` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
+- [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc960) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
 
 ### Machine authority
 

@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import re
 import sys
 from pathlib import Path
 
@@ -141,7 +142,12 @@ def test_human_entrypoint_exposes_closure_exclusions_and_relationships() -> None
     assert "### [Cross-cutting v1 authorities]" in root_page
     assert "Guided contract map" not in root_page
     assert "SHA-256" not in root_page
-    assert exclusions_page.count("- `excluded:") == root["counts"]["excluded_candidates"]
+    exclusions = root["discovery"]["exclusions"]
+    assert len(exclusions) == root["counts"]["excluded_candidates"]
+    assert all(
+        exclusions_page.count(f'id="{atlas._anchor_id("exclusion", str(item["id"]))}"') == 1
+        for item in exclusions
+    )
     assert "# Relationship-edge inventory" in relationships_page
     assert "not a second navigation hierarchy" in relationships_page
     assert "intentionally an alphabetical reconciliation inventory" in authority_inventory
@@ -243,3 +249,79 @@ def test_policy_registry_is_contract_focused_and_application_counted() -> None:
     assert policy_page.count("- Observable result or violation:") == len(declared)
     assert policy_page.count("- Executable authorities:") == len(declared)
     assert "Implementation-correctness witnesses remain outside" in policy_page
+
+
+def test_every_extent_fact_names_and_links_its_exact_subject() -> None:
+    checked = atlas.load_atlas(ARTIFACT)
+    decisions = {
+        item["id"]: item
+        for item in checked.root["projection"]["external_contract"]["extents"]["decisions"]
+    }
+
+    for element in checked.root["elements"]:
+        decision_ids = element["extent_decision_ids"]
+        if not decision_ids:
+            continue
+        page = checked.files[element["dossier"]].decode()
+        section = page.split("### Progression, limits, and lifecycle\n", 1)[1].split(
+            "\n## Governing policies", 1
+        )[0]
+        rows = [
+            line
+            for line in section.splitlines()
+            if line.startswith("| ")
+            and not line.startswith("| Applies to ")
+            and not line.startswith("|---")
+        ]
+
+        assert "| Applies to | Contract | Bounds or reason |" in section
+        assert len(rows) == len(decision_ids)
+        for pointer in {decisions[identity]["source_pointer"] for identity in decision_ids}:
+            anchor = atlas._subject_anchor(pointer)
+            assert page.count(f'id="{anchor}"') == 1
+            assert f"](#{anchor})" in section or f'id="{anchor}"' in section
+
+        if element["interface"] == "http":
+            assert not re.search(r"\bparameter \d+\b", section)
+
+
+def test_atlas_routes_policies_sources_and_relationships_to_exact_subjects() -> None:
+    checked = atlas.load_atlas(ARTIFACT)
+    root = checked.root
+    policy_page = checked.files["riverhog-v1/policies/index.md"].decode()
+    source_page = checked.files["riverhog-v1/evidence/sources.md"].decode()
+    relationship_page = checked.files["riverhog-v1/evidence/relationships.md"].decode()
+
+    policy_ids = {item["id"] for category in root["policies"].values() for item in category}
+    assert all(
+        policy_page.count(f'id="{atlas._policy_anchor(identity)}"') == 1 for identity in policy_ids
+    )
+    assert all(
+        source_page.count(f'id="{atlas._source_anchor(item["id"])}"') == 1
+        for item in root["sources"]
+    )
+    assert all(
+        relationship_page.count(f'id="{atlas._relationship_node_anchor(item["id"])}"') == 1
+        for item in root["atlas"]["relationships"]["nodes"]
+    )
+    assert all(
+        relationship_page.count(f'id="{atlas._relationship_edge_anchor(item)}"') == 1
+        for item in root["atlas"]["relationships"]["edges"]
+    )
+
+
+def test_atlas_rejects_broken_fragments_and_duplicate_explicit_anchors() -> None:
+    with pytest.raises(atlas.ContractAtlasError, match="unresolved local anchor"):
+        atlas._reachable_atlas_documents(
+            "index.md",
+            {
+                "index.md": b"[detail](detail.md#missing)\n",
+                "detail.md": b"# Detail\n",
+            },
+        )
+
+    with pytest.raises(atlas.ContractAtlasError, match="repeats a stable local anchor"):
+        atlas._reachable_atlas_documents(
+            "index.md",
+            {"index.md": b'<a id="subject"></a>\n<a id="subject"></a>\n'},
+        )

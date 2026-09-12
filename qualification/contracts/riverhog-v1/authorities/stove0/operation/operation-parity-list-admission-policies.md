@@ -8,26 +8,27 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Audit field | Value |
 |---|---|
-| Authority | `stove0` |
-| Interface | `operation` |
-| Family | `admission-policies` |
+| Authority | [stove0](../index.md) |
+| Interface | [operation](index.md) |
+| Family | [admission-policies](families/admission-policies/index.md) |
 | Contract elements | 1 |
 | Extent decisions | 0 |
 
 ## External contract
 
+<a id="s-162e80efa6d7"></a>
 | Concern | Contract |
 |---|---|
-| `application` | stove0 |
-| `classification` | human-cli+json |
-| `cli_commands` | ["admission policy list"] |
-| `client` | Stove0ApiClient |
-| `method` | GET |
-| `operation_id` | list_admission_policies |
-| `path` | /v1/admission-policies |
-| `provider_evidence` | None |
-| `read_collection` | None |
-| `response_authority` | operator-projection |
+| <a id="s-18c98d72bebf"></a>`application` | stove0 |
+| <a id="s-596d4dcea7f3"></a>`classification` | human-cli+json |
+| <a id="s-7db3c38fa2f9"></a>`cli_commands` | ["admission policy list"] |
+| <a id="s-1ab3eb9e6380"></a>`client` | Stove0ApiClient |
+| <a id="s-34bf885c3238"></a>`method` | GET |
+| <a id="s-9dd56ad2a665"></a>`operation_id` | list_admission_policies |
+| <a id="s-d18b0eee6763"></a>`path` | /v1/admission-policies |
+| <a id="s-8d1d89da65a0"></a>`provider_evidence` | None |
+| <a id="s-d9303005b8b5"></a>`read_collection` | None |
+| <a id="s-6cf411ea1309"></a>`response_authority` | operator-projection |
 
 ## Maintained corroboration
 
@@ -38,20 +39,20 @@ Exact externally visible contract owned by this semantic dossier.
 
 ## Governing policies
 
-- `compatibility/cli/v1`
-- `compatibility/components/v1`
-- `compatibility/http-api/v1`
+- <a id="pa-ab7837053a4e"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de7f)
+- <a id="pa-024dac9ce2d4"></a>[compatibility/components/v1](../../../policies/index.md#p-95e9a1225947)
+- <a id="pa-d4494e88dde5"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0ba)
 
 ## Evidence
 
 ### Qualification
 
-- `make operation-qualification`
+- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459fb8)
 
 ### Executable sources
 
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `operations:operation-matrix` — `scripts/operation_qualification.py::operation_matrix`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
+- [operations:operation-matrix](../../../evidence/sources.md#src-b032bdc56b3f) — `scripts/operation_qualification.py::operation_matrix`
 
 ### Machine authority
 

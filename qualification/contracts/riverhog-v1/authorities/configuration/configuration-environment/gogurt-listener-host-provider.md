@@ -8,34 +8,35 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Audit field | Value |
 |---|---|
-| Authority | `configuration` |
-| Interface | `configuration-environment` |
-| Family | `variables` |
+| Authority | [configuration](../index.md) |
+| Interface | [configuration-environment](index.md) |
+| Family | [variables](families/variables/index.md) |
 | Contract elements | 1 |
 | Extent decisions | 0 |
 
 ## External contract
 
+<a id="s-7ba4daea6898"></a>
 | Field | Shape |
 |---|---|
-| `consumers` | ["gogurt"] |
-| `name` | "GOGURT_LISTENER_HOST_PROVIDER" |
+| <a id="s-1fb6988e8115"></a>`consumers` | ["gogurt"] |
+| <a id="s-0df8f11eac2e"></a>`name` | "GOGURT_LISTENER_HOST_PROVIDER" |
 
 ## Governing policies
 
-- `compatibility/configuration/v1`
+- <a id="pa-a00c1de6b541"></a>[compatibility/configuration/v1](../../../policies/index.md#p-8dc08bb46173)
 
 ## Evidence
 
 ### Qualification
 
-- `make unit`
-- `make compose-smoke`
+- [make unit](../../../evidence/sources.md#q-ce47068f504c)
+- [make compose-smoke](../../../evidence/sources.md#q-413b0b241ba8)
 
 ### Executable sources
 
-- `configuration-environment:GOGURT_LISTENER_HOST_PROVIDER` — `configuration-environment:GOGURT_LISTENER_HOST_PROVIDER`
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
+- [configuration-environment:GOGURT_LISTENER_HOST_PROVIDER](../../../evidence/sources.md#src-640a7c2dcf8c) — `configuration-environment:GOGURT_LISTENER_HOST_PROVIDER`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
 
 ### Machine authority
 

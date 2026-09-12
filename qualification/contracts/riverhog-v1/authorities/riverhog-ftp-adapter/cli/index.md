@@ -6,18 +6,18 @@ Contract elements: **7** · Extent decisions: **3**
 
 | Family | Count |
 |---|---:|
-| `riverhog-ftp-adapter check-config` | 1 |
-| `riverhog-ftp-adapter flush` | 1 |
-| `riverhog-ftp-adapter listen` | 1 |
-| `riverhog-ftp-adapter run` | 1 |
-| `riverhog-ftp-adapter serve` | 1 |
-| `riverhog-ftp-adapter status` | 1 |
-| `root` | 1 |
+| <a id="f-04f25df0082f"></a>`riverhog-ftp-adapter check-config` | 1 |
+| <a id="f-52f20f17cd01"></a>`riverhog-ftp-adapter flush` | 1 |
+| <a id="f-56671c01da68"></a>`riverhog-ftp-adapter listen` | 1 |
+| <a id="f-0521af0bcd9d"></a>`riverhog-ftp-adapter run` | 1 |
+| <a id="f-6d617fe38b91"></a>`riverhog-ftp-adapter serve` | 1 |
+| <a id="f-ca752dc011b2"></a>`riverhog-ftp-adapter status` | 1 |
+| <a id="f-925a0d0b0d41"></a>`root` | 1 |
 
 | Policy | Count |
 |---|---:|
-| `compatibility/cli/v1` | 7 |
-| `extent-rule/schema-bound/v1` | 1 |
+| [compatibility/cli/v1](../../../policies/index.md#p-48a89776de7f) | 7 |
+| [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034) | 1 |
 
 ## Semantic dossiers
 

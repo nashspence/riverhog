@@ -8,38 +8,39 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Audit field | Value |
 |---|---|
-| Authority | `stove0-protocol` |
-| Interface | `boundary` |
-| Family | `components` |
+| Authority | [stove0-protocol](../index.md) |
+| Interface | [boundary](index.md) |
+| Family | [components](index.md#f-1e2a2943db15) |
 | Contract elements | 1 |
 | Extent decisions | 0 |
 
 ## External contract
 
+<a id="s-5ccdfaab930b"></a>
 | Field | Shape |
 |---|---|
-| `console_scripts` | empty object |
-| `dependencies` | ["riverhog-protocol"] |
-| `distribution` | "stove0-protocol" |
-| `optional_dependencies` | empty object |
-| `path` | "reference/stove0/packages/protocol" |
-| `role` | "reusable_library" |
+| <a id="s-22a2ef135484"></a>`console_scripts` | empty object |
+| <a id="s-a02124744e1a"></a>`dependencies` | ["riverhog-protocol"] |
+| <a id="s-13a3ccec5338"></a>`distribution` | "stove0-protocol" |
+| <a id="s-9e87fb430357"></a>`optional_dependencies` | empty object |
+| <a id="s-3dd2444e20d2"></a>`path` | "reference/stove0/packages/protocol" |
+| <a id="s-93f3f36209c0"></a>`role` | "reusable_library" |
 
 ## Governing policies
 
-- `boundary/frozen-authority/v1`
+- <a id="pa-456b5097101d"></a>[boundary/frozen-authority/v1](../../../policies/index.md#p-61994d3f0fa8)
 
 ## Evidence
 
 ### Qualification
 
-- `make release-check`
-- `make build`
+- [make release-check](../../../evidence/sources.md#q-8d8d22d6a6b1)
+- [make build](../../../evidence/sources.md#q-d1121e35fa7a)
 
 ### Executable sources
 
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `release:release.toml` — `release.toml`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
+- [release:release.toml](../../../evidence/sources.md#src-c5380dbe5fe0) — `release.toml`
 
 ### Machine authority
 

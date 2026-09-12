@@ -8,43 +8,44 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Audit field | Value |
 |---|---|
-| Authority | `riverhog` |
-| Interface | `http` |
-| Family | `schemas` |
+| Authority | [riverhog](../index.md) |
+| Interface | [http](index.md) |
+| Family | [schemas](families/schemas/index.md) |
 | Contract elements | 1 |
 | Extent decisions | 0 |
 
 ## External contract
 
-- `title`: RetrievalCachePolicyOut
-- `type`: object
+<a id="s-5c2812ec04ce"></a>
+- <a id="s-1e99e2ed4c6b"></a>`title`: RetrievalCachePolicyOut
+- <a id="s-d6408a19a062"></a>`type`: object
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| `new_archive_lease_seconds` | yes | type="integer" |  |
-| `pending_timeout_seconds` | yes | type="integer" |  |
-| `restore_poll_interval_seconds` | yes | type="integer" |  |
-| `retrieval_default_lease_seconds` | yes | type="integer" |  |
-| `retrieval_max_lease_seconds` | yes | type="integer" |  |
-| `sweep_interval_seconds` | yes | type="integer" |  |
+| <a id="s-ae8a5ac6fab5"></a>`new_archive_lease_seconds` | yes | type="integer" |  |
+| <a id="s-6835d4cfa29c"></a>`pending_timeout_seconds` | yes | type="integer" |  |
+| <a id="s-8e1b64b618ef"></a>`restore_poll_interval_seconds` | yes | type="integer" |  |
+| <a id="s-33aaca2d4daa"></a>`retrieval_default_lease_seconds` | yes | type="integer" |  |
+| <a id="s-3712d11b36ae"></a>`retrieval_max_lease_seconds` | yes | type="integer" |  |
+| <a id="s-1ca2f61629c8"></a>`sweep_interval_seconds` | yes | type="integer" |  |
 
 ## Governing policies
 
-- `compatibility/http-api/v1`
+- <a id="pa-0c03bab3ed7d"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0ba)
 
 ## Evidence
 
 ### Qualification
 
-- `make operation-qualification`
-- `make compose-smoke`
+- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459fb8)
+- [make compose-smoke](../../../evidence/sources.md#q-413b0b241ba8)
 
 ### Executable sources
 
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `openapi:riverhog` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
+- [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc960) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
 
 ### Machine authority
 
