@@ -113,14 +113,26 @@ def test_human_entrypoint_exposes_closure_exclusions_and_relationships() -> None
     root_page = checked.files[root["atlas"]["root"]].decode()
     exclusions_page = checked.files["riverhog-v1/exclusions/index.md"].decode()
     relationships_page = checked.files["riverhog-v1/relationships/index.md"].decode()
+    authority_map = checked.files["riverhog-v1/relationships/authorities/index.md"].decode()
     relationship = root["atlas"]["relationships"]
 
-    assert root_page.index("## Closure status") < root_page.index("## Complete authority inventory")
-    assert root_page.index("## Aggregate contract shape") < root_page.index(
-        "## Complete authority inventory"
+    ordered_sections = (
+        "**Closure: complete; anomalies: 0.**",
+        "## Guided contract map",
+        "## Completeness and evidence reference",
+        "## Closure and identity accounting",
+        "## Aggregate contract shape",
+    )
+    assert [root_page.index(section) for section in ordered_sections] == sorted(
+        root_page.index(section) for section in ordered_sections
     )
     assert all(f"| `{name}` | 0 |" in root_page for name in root["discovery"]["anomalies"])
-    assert "Relationship-aware boundary map" in root_page
+    assert "### Public Riverhog service and API" in root_page
+    assert "### Archive custody and recovery" in root_page
+    assert "### Reusable contract and library authorities" in root_page
+    assert "### Independently implementable extension boundaries" in root_page
+    assert "### Installed nonnormative references" in root_page
+    assert "## Complete authority inventory" not in root_page
     assert exclusions_page.count("| `excluded:") == root["counts"]["excluded_candidates"]
     assert "## Riverhog service boundary" in relationships_page
     assert "Public service | [riverhog]" in relationships_page
@@ -128,6 +140,25 @@ def test_human_entrypoint_exposes_closure_exclusions_and_relationships() -> None
     assert relationship["schema"] == atlas.RELATIONSHIP_SCHEMA
     assert any(item["kind"] == "runtime-image" for item in relationship["nodes"])
     assert any(item["type"] == "implements-protocol" for item in relationship["edges"])
+    routed = [
+        item["authority"]
+        for route in relationship["authority_routes"]
+        for item in route["authorities"]
+    ]
+    exact = {item["authority"] for item in root["elements"]}
+    assert len(routed) == len(set(routed))
+    assert set(routed) == exact
+    assert authority_map.count("| [") >= len(exact)
+    assert "Nonnormative reference authorities" in authority_map
+    assert atlas._reachable_atlas_documents(root["atlas"]["root"], checked.files) == set(
+        checked.files
+    )
+    for node in relationship["nodes"]:
+        destination = atlas._relationship_node_path(node)
+        path, _, anchor = destination.partition("#")
+        assert path in checked.files
+        if anchor:
+            assert f'id="{anchor}"' in checked.files[path].decode()
 
 
 def test_large_interfaces_route_through_semantic_families_and_local_references() -> None:
