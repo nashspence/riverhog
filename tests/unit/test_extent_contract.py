@@ -13,8 +13,6 @@ from jsonschema import Draft202012Validator
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 SCRIPT = REPO_ROOT / "scripts/contract_freeze.py"
-ARTIFACT = REPO_ROOT / "qualification/contracts/riverhog-v1.json"
-TRACE_ARTIFACT = REPO_ROOT / "qualification/contracts/riverhog-v1-trace.json"
 
 
 def load_script() -> ModuleType:
@@ -26,6 +24,14 @@ def load_script() -> ModuleType:
     sys.modules[spec.name] = module
     spec.loader.exec_module(module)
     return module
+
+
+def _checked_projection() -> dict[str, Any]:
+    return load_script()._load_checked_projection()
+
+
+def _checked_trace() -> dict[str, Any]:
+    return load_script()._load_checked_trace()
 
 
 def _resolve_pointer(document: object, pointer: str) -> object:
@@ -48,7 +54,7 @@ def _canonical_sha256(value: object) -> str:
 
 
 def test_extent_projection_is_exhaustive_source_linked_and_self_identifying() -> None:
-    projection = json.loads(ARTIFACT.read_text(encoding="utf-8"))
+    projection = _checked_projection()
     extents = projection["external_contract"]["extents"]
     decisions: list[dict[str, Any]] = extents["decisions"]
     content = {key: value for key, value in extents.items() if key != "sha256"}
@@ -113,7 +119,7 @@ def test_extent_projection_is_exhaustive_source_linked_and_self_identifying() ->
 
 
 def test_operation_parameter_extents_are_covered_from_the_openapi_authority() -> None:
-    projection = json.loads(ARTIFACT.read_text(encoding="utf-8"))
+    projection = _checked_projection()
     decisions = {
         decision["id"]: decision
         for decision in projection["external_contract"]["extents"]["decisions"]
@@ -139,7 +145,7 @@ def test_operation_parameter_extents_are_covered_from_the_openapi_authority() ->
 
 
 def test_schema_bounds_accept_the_boundary_and_reject_the_next_value() -> None:
-    projection = json.loads(ARTIFACT.read_text(encoding="utf-8"))
+    projection = _checked_projection()
     decisions = projection["external_contract"]["extents"]["decisions"]
 
     exercised = 0
@@ -213,7 +219,7 @@ def test_schema_bounds_accept_the_boundary_and_reject_the_next_value() -> None:
 
 
 def test_every_open_schema_map_is_classified_and_hidden_maxima_are_forbidden() -> None:
-    projection = json.loads(ARTIFACT.read_text(encoding="utf-8"))
+    projection = _checked_projection()
     decisions = projection["external_contract"]["extents"]["decisions"]
     maps = [
         decision
@@ -232,7 +238,7 @@ def test_every_open_schema_map_is_classified_and_hidden_maxima_are_forbidden() -
 
 
 def test_bounded_carriers_do_not_become_domain_cardinality_maxima() -> None:
-    projection = json.loads(ARTIFACT.read_text(encoding="utf-8"))
+    projection = _checked_projection()
     decisions = {
         decision["id"]: decision
         for decision in projection["external_contract"]["extents"]["decisions"]
@@ -267,7 +273,7 @@ def test_bounded_carriers_do_not_become_domain_cardinality_maxima() -> None:
 
 
 def test_generated_protocols_remain_owned_by_the_product_contract_packages() -> None:
-    projection = json.loads(ARTIFACT.read_text(encoding="utf-8"))
+    projection = _checked_projection()
     decisions = projection["external_contract"]["extents"]["decisions"]
     expected = {
         "generated:riverhog-storage-adapter": "riverhog-storage-adapter-protocol",
@@ -285,7 +291,7 @@ def test_generated_protocols_remain_owned_by_the_product_contract_packages() -> 
 
 
 def test_extent_relevant_deployment_configuration_is_source_linked() -> None:
-    projection = json.loads(ARTIFACT.read_text(encoding="utf-8"))
+    projection = _checked_projection()
     decisions = {
         decision["id"]: decision
         for decision in projection["external_contract"]["extents"]["decisions"]
@@ -298,7 +304,7 @@ def test_extent_relevant_deployment_configuration_is_source_linked() -> None:
     assert cache_lease["configuration"] == "RIVERHOG_RETRIEVAL_CACHE_NEW_ARCHIVE_LEASE"
     source = _resolve_pointer(projection, cache_lease["source_pointer"])
     assert "riverhog-server" in source["consumers"]
-    trace = json.loads(TRACE_ARTIFACT.read_text(encoding="utf-8"))
+    trace = _checked_trace()
     trace_sources = {item["id"]: item for item in trace["sources"]}
     cache_lease_trace = trace_sources[
         "configuration-environment:RIVERHOG_RETRIEVAL_CACHE_NEW_ARCHIVE_LEASE"
@@ -326,7 +332,7 @@ def test_extent_relevant_deployment_configuration_is_source_linked() -> None:
 
 
 def test_every_route_owned_collection_extent_is_projected_with_exact_progression() -> None:
-    projection = json.loads(ARTIFACT.read_text(encoding="utf-8"))
+    projection = _checked_projection()
     decisions = {
         decision["id"]: decision
         for decision in projection["external_contract"]["extents"]["decisions"]
@@ -352,18 +358,15 @@ def test_every_route_owned_collection_extent_is_projected_with_exact_progression
 
 
 def test_trace_index_covers_every_extent_and_only_current_source_paths() -> None:
-    projection = json.loads(ARTIFACT.read_text(encoding="utf-8"))
-    trace = json.loads(TRACE_ARTIFACT.read_text(encoding="utf-8"))
+    projection = _checked_projection()
+    trace = _checked_trace()
     decisions = projection["external_contract"]["extents"]["decisions"]
     links = trace["extent_sources"]
 
-    semantic_payload = json.dumps(projection, separators=(",", ":"), sort_keys=True).encode()
     boundary_payload = json.dumps(
         projection["boundaries"], separators=(",", ":"), sort_keys=True
     ).encode()
     assert trace["boundary_canonical_sha256"] == hashlib.sha256(boundary_payload).hexdigest()
-    assert trace["contract_canonical_sha256"] == hashlib.sha256(semantic_payload).hexdigest()
-    assert trace["contract_projection_sha256"] == hashlib.sha256(ARTIFACT.read_bytes()).hexdigest()
     assert {link["id"] for link in links} == {decision["id"] for decision in decisions}
     assert len(links) == len(decisions)
     witnesses = {item["id"]: item for item in trace["segmented_extent_witnesses"]}
@@ -404,7 +407,7 @@ def test_trace_index_covers_every_extent_and_only_current_source_paths() -> None
 
 
 def test_semantic_protocol_and_state_authorities_do_not_freeze_source_layout() -> None:
-    projection = json.loads(ARTIFACT.read_text(encoding="utf-8"))
+    projection = _checked_projection()
     external = projection["external_contract"]
 
     assert all(

@@ -160,9 +160,9 @@ fixtures = ["tests/fixtures/state/v1_0001/provenance-installation-id"]
 python_formats = ["wheel", "sdist"]
 documentation = "riverhog-docs-v{version}.tar.gz"
 source = "riverhog-source-v{version}.tar.gz"
-contract = "riverhog-v1-contract.json"
+contract = "riverhog-v1-contract.tar.gz"
 evidence = [
-  "riverhog-v1-contract.json",
+  "riverhog-v1-contract.tar.gz",
   "install-manifest.json",
   "release-manifest.json",
   "SHA256SUMS",

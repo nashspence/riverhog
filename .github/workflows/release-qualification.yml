@@ -183,15 +183,16 @@ jobs:
           --output $OPERATIONS_SUMMARY"
       - name: Verify exact-SHA operation evidence
         run: |
+          CONTRACT_SUMMARY="$(mise x -- uv run --locked --all-packages --group dev python scripts/contract_freeze.py summary)"
           jq --exit-status \
             --arg sha "$SOURCE_SHA" \
             --arg contract "$(sha256sum qualification/contracts/riverhog-v1.json | cut -d ' ' -f 1)" \
-            --arg extent "$(jq -r '.external_contract.extents.sha256' qualification/contracts/riverhog-v1.json)" '
+            --arg extent "$(jq -r '.extent_contract.sha256' <<<"$CONTRACT_SUMMARY")" '
             .schema == "riverhog-operation-qualification/v1"
             and .source_sha == $sha
             and .summary.operations == (.operations | length)
             and .qualification.extent_contract.status == "passed"
-            and .qualification.extent_contract.schema == "riverhog-contract-freeze/v1"
+            and .qualification.extent_contract.schema == "riverhog-contract-audit-bundle/v1"
             and .qualification.extent_contract.extent_schema == "riverhog-extent-contract/v1"
             and .qualification.extent_contract.extent_decisions > 0
             and .qualification.extent_contract.projection_sha256 == $contract
@@ -277,13 +278,14 @@ jobs:
             "$GOVERNANCE_SUMMARY"
       - name: Record the completed qualification
         run: |
+          CONTRACT_SUMMARY="$(mise x -- uv run --locked --all-packages --group dev python scripts/contract_freeze.py summary)"
           jq --null-input \
             --arg ref "$SOURCE_REF" \
             --arg sha "$SOURCE_SHA" \
             --arg version "$RELEASE_VERSION" \
             --arg contract_projection_sha256 "$(sha256sum qualification/contracts/riverhog-v1.json | cut -d ' ' -f 1)" \
-            --arg contract_trace_sha256 "$(sha256sum qualification/contracts/riverhog-v1-trace.json | cut -d ' ' -f 1)" \
-            --arg extent_contract_sha256 "$(jq -r '.external_contract.extents.sha256' qualification/contracts/riverhog-v1.json)" \
+            --arg contract_trace_sha256 "$(jq -r '.identities.trace_sha256' <<<"$CONTRACT_SUMMARY")" \
+            --arg extent_contract_sha256 "$(jq -r '.extent_contract.sha256' <<<"$CONTRACT_SUMMARY")" \
             --arg operation_evidence_sha256 "$(sha256sum "$OPERATIONS_SUMMARY" | cut -d ' ' -f 1)" \
             --arg database_evidence_sha256 "$(sha256sum "$DATABASE_SUMMARY" | cut -d ' ' -f 1)" \
             --arg release_evidence_sha256 "$(sha256sum "$RELEASE_SUMMARY" | cut -d ' ' -f 1)" \

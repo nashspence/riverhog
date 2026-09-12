@@ -87,6 +87,7 @@ dev = [
   "psycopg[binary]>=3.3.4,<4.0",
   "pytest>=9.0.3,<10.0",
   "pytest-cov>=7.1.0,<8.0",
+  "rfc8785>=0.1.4,<0.2",
   "reuse>=6,<7",
   "ruff>=0.16.0,<1.0",
   "types-jsonschema>=4.25,<5.0",

@@ -58,13 +58,18 @@ def sampler_schema_bundle() -> dict[str, Any]:
     }
 
 
-def main(argv: Sequence[str] | None = None) -> int:
+def _parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(prog="stove0-review-sampler-schemas")
     parser.add_argument(
         "--version",
         action="version",
         version=importlib.metadata.version("stove0-review-sampler-support"),
     )
+    return parser
+
+
+def main(argv: Sequence[str] | None = None) -> int:
+    parser = _parser()
     parser.parse_args(argv)
     print(json.dumps(sampler_schema_bundle(), indent=2, sort_keys=True))
     return 0

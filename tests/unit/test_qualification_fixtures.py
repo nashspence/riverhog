@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import importlib.util
+import json
 import sys
 import tomllib
 from pathlib import Path
@@ -13,14 +14,29 @@ from stove0_operator_contracts import AdmissionCatalog
 from tests.gogurt_provider import path_mounted_volume_provider
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
+CONTRACT_ROOT = REPO_ROOT / "qualification/contracts/riverhog-v1.json"
+CONTRACT_INDEX = json.loads(CONTRACT_ROOT.read_bytes())
+CONTRACT_COLUMNS = CONTRACT_INDEX["context_columns"]
+CONTRACT_PATH_INDEXES = [
+    CONTRACT_COLUMNS.index("normative"),
+    CONTRACT_COLUMNS.index("trace"),
+]
+CONTRACT_FILES = {
+    CONTRACT_ROOT,
+    *(
+        CONTRACT_ROOT.parent / CONTRACT_INDEX["context_directory"] / row[index]["path"]
+        for row in CONTRACT_INDEX["contexts"]
+        for index in CONTRACT_PATH_INDEXES
+        if row[index] is not None
+    ),
+}
 QUALIFICATION_INPUTS = {
     REPO_ROOT / "qualification/fixtures/gogurt/gogurt-routes.yaml",
     REPO_ROOT / "qualification/fixtures/gogurt/scripts/fake_archive_device.py",
     REPO_ROOT / "qualification/fixtures/riverhog-ftp-adapter/config.json",
     REPO_ROOT / "qualification/fixtures/stove0/recipes.yaml",
     REPO_ROOT / "qualification/fixtures/stove0/admissions.json",
-    REPO_ROOT / "qualification/contracts/riverhog-v1.json",
-    REPO_ROOT / "qualification/contracts/riverhog-v1-trace.json",
+    *CONTRACT_FILES,
     REPO_ROOT / "qualification/policies/implementation-witnesses.json",
     REPO_ROOT / "qualification/provider/config.toml",
 }
@@ -135,13 +151,12 @@ def test_every_checked_qualification_input_runs_through_its_real_consumer(
     contract_module = importlib.util.module_from_spec(contract_spec)
     sys.modules[contract_spec.name] = contract_module
     contract_spec.loader.exec_module(contract_module)
-    assert (REPO_ROOT / "qualification/contracts/riverhog-v1.json").read_text(
-        encoding="utf-8"
-    ) == contract_module._render()
-    projection = contract_module.contract_projection()
-    assert (REPO_ROOT / "qualification/contracts/riverhog-v1-trace.json").read_text(
-        encoding="utf-8"
-    ) == contract_module._render_trace(projection)
+    projection, trace, generated = contract_module._generated_bundle()
+    checked = contract_module.load_bundle(CONTRACT_ROOT)
+    assert checked.root == generated.root
+    assert checked.files == generated.files
+    assert contract_module.reassemble_projection(checked) == json.loads(json.dumps(projection))
+    assert contract_module.reassemble_trace(checked) == json.loads(json.dumps(trace))
 
     policy_script = REPO_ROOT / "scripts/implementation_policy.py"
     policy_spec = importlib.util.spec_from_file_location(

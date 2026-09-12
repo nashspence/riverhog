@@ -500,7 +500,7 @@ def test_release_plan_is_exact_sha_bound_and_excludes_the_test_image() -> None:
     assert plan["supporting_artifacts"] == {
         "documentation": "riverhog-docs-v1.0.0.tar.gz",
         "source": "riverhog-source-v1.0.0.tar.gz",
-        "contract": "riverhog-v1-contract.json",
+        "contract": "riverhog-v1-contract.tar.gz",
         "installation": {
             "manifest": "install-manifest.json",
             "locks": [
@@ -520,7 +520,7 @@ def test_release_plan_is_exact_sha_bound_and_excludes_the_test_image() -> None:
             "required_for": ["wheel", "image"],
         },
         "evidence": [
-            "riverhog-v1-contract.json",
+            "riverhog-v1-contract.tar.gz",
             "install-manifest.json",
             "release-manifest.json",
             "SHA256SUMS",
@@ -817,6 +817,15 @@ def test_release_evidence_is_complete_and_minisign_verified(
     assert manifest["published"] is False
     assert manifest["subjects"] == records
     assert manifest["contract"] == {
-        "file": "riverhog-v1-contract.json",
-        "sha256": module._sha256_file(output / "riverhog-v1-contract.json"),
+        "file": "riverhog-v1-contract.tar.gz",
+        "sha256": module._sha256_file(output / "riverhog-v1-contract.tar.gz"),
+    }
+    with module.tarfile.open(output / "riverhog-v1-contract.tar.gz", mode="r:gz") as archive:
+        contract_members = {member.name for member in archive.getmembers() if member.isfile()}
+    assert contract_members == {
+        "riverhog-v1.json",
+        *(
+            path.relative_to(REPO_ROOT / "qualification/contracts").as_posix()
+            for path in (REPO_ROOT / "qualification/contracts/riverhog-v1").rglob("*.json")
+        ),
     }
