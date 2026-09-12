@@ -42,6 +42,7 @@ This generated view explains how the frozen authorities fit together. It does no
 
 ## Drill down
 
+- [Guided exact authority map](authorities/index.md)
 - [Riverhog-owned reusable contracts and libraries](riverhog-libraries/index.md)
 - [Independently implementable extension boundaries](extensions/index.md)
 - [Runtime-image composition](runtime-images/index.md)
@@ -65,4 +66,4 @@ This generated view explains how the frozen authorities fit together. It does no
 | outgoing | `depends-on` | [riverhog-storage-adapter-support](components/riverhog-storage-adapter-support.md) | `required` |
 | outgoing | `depends-on` | [state-schema](components/state-schema.md) | `required` |
 | outgoing | `depends-on` | [time-formats](components/time-formats.md) | `required` |
-| outgoing | `packaged-in` | `riverhog` | `` |
+| outgoing | `packaged-in` | [riverhog](runtime-images/index.md#node-image-runtime-riverhog) | `` |

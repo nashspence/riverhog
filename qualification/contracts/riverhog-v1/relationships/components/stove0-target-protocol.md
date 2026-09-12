@@ -20,7 +20,7 @@ Dependency-light public contracts for external stove0 targets.
 | outgoing | `depends-on` | [http-api-contracts](http-api-contracts.md) | `required` |
 | outgoing | `depends-on` | [riverhog-protocol](riverhog-protocol.md) | `required` |
 | outgoing | `depends-on` | [stove0-protocol](stove0-protocol.md) | `required` |
-| outgoing | `owns-protocol` | `stove0-target` | `` |
+| outgoing | `owns-protocol` | [stove0-target](../extensions/index.md#node-process-protocol-stove0-target) | `` |
 | incoming | `depends-on` | [stove0-media-archive-target-contracts](stove0-media-archive-target-contracts.md) | `required` |
 | incoming | `depends-on` | [stove0-media-archive-target-support](stove0-media-archive-target-support.md) | `required` |
 | incoming | `depends-on` | [stove0-operator-contracts](stove0-operator-contracts.md) | `required` |

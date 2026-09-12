@@ -29,4 +29,4 @@ Encrypted archive management, catalog, and retrieval.
 | outgoing | `depends-on` | [riverhog-storage-adapter-support](riverhog-storage-adapter-support.md) | `required` |
 | outgoing | `depends-on` | [state-schema](state-schema.md) | `required` |
 | outgoing | `depends-on` | [time-formats](time-formats.md) | `required` |
-| outgoing | `packaged-in` | `riverhog` | `` |
+| outgoing | `packaged-in` | [riverhog](../runtime-images/index.md#node-image-runtime-riverhog) | `` |

@@ -18,7 +18,7 @@ Portable Gogurt marker, routing, action, and watch semantics.
 | Direction | Relationship | Counterparty | Scope or binding |
 |---|---|---|---|
 | outgoing | `depends-on` | [config-validation](config-validation.md) | `required` |
-| outgoing | `owns-extension-point` | `gogurt.mounted-volume-providers` | `` |
+| outgoing | `owns-extension-point` | [gogurt.mounted-volume-providers](../extensions/index.md#node-extension-point-gogurt-mounted-volume-providers) | `` |
 | incoming | `depends-on` | [gogurt](gogurt.md) | `required` |
 | incoming | `depends-on` | [gogurt-linux-mounted-volume](gogurt-linux-mounted-volume.md) | `required` |
 | incoming | `depends-on` | [gogurt-listener-runtime](gogurt-listener-runtime.md) | `required` |

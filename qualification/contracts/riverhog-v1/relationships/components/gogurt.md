@@ -20,4 +20,4 @@ Optional nonnormative mounted-volume ingestion reference application for Riverho
 | outgoing | `depends-on` | [config-validation](config-validation.md) | `required` |
 | outgoing | `depends-on` | [gogurt-core](gogurt-core.md) | `required` |
 | outgoing | `depends-on` | [gogurt-listener-runtime](gogurt-listener-runtime.md) | `required` |
-| outgoing | `installed-as` | `uv-tool` | `` |
+| outgoing | `installed-as` | [uv-tool](../installation/index.md#node-installation-uv-tool) | `` |

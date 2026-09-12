@@ -19,6 +19,6 @@ Narrow HTTP client for Stove0 content observers.
 |---|---|---|---|
 | outgoing | `depends-on` | [http-api-contracts](http-api-contracts.md) | `required` |
 | outgoing | `depends-on` | [stove0-observer-protocol](stove0-observer-protocol.md) | `required` |
-| outgoing | `owns-extension-point` | `stove0.observer-semantic-validators` | `` |
+| outgoing | `owns-extension-point` | [stove0.observer-semantic-validators](../extensions/index.md#node-extension-point-stove0-observer-semantic-validators) | `` |
 | incoming | `depends-on` | [stove0-observer-support](stove0-observer-support.md) | `required` |
 | incoming | `depends-on` | [stove0-server](stove0-server.md) | `required` |

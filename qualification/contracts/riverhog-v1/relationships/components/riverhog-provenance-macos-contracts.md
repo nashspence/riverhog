@@ -18,5 +18,5 @@ Optional nonnormative macOS observation-contract reference for Riverhog provenan
 | Direction | Relationship | Counterparty | Scope or binding |
 |---|---|---|---|
 | outgoing | `depends-on` | [riverhog-provenance-contracts](riverhog-provenance-contracts.md) | `required` |
-| outgoing | `implements-extension-point` | `riverhog.provenance-contracts` | `riverhog-macos` |
+| outgoing | `implements-extension-point` | [riverhog.provenance-contracts](../extensions/index.md#node-extension-point-riverhog-provenance-contracts) | `riverhog-macos` |
 | incoming | `depends-on` | [riverhog-provenance-macos-observer](riverhog-provenance-macos-observer.md) | `required` |

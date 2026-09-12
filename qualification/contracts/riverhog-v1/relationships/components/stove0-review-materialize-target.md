@@ -21,5 +21,5 @@ Optional nonnormative review materialization target reference for Stove0.
 | outgoing | `depends-on` | [stove0-review-target-contracts](stove0-review-target-contracts.md) | `required` |
 | outgoing | `depends-on` | [stove0-review-target-support](stove0-review-target-support.md) | `required` |
 | outgoing | `depends-on` | [stove0-target-support](stove0-target-support.md) | `required` |
-| outgoing | `implements-protocol` | `stove0-target` | `` |
-| outgoing | `packaged-in` | `stove0-review-materialize-target` | `` |
+| outgoing | `implements-protocol` | [stove0-target](../extensions/index.md#node-process-protocol-stove0-target) | `` |
+| outgoing | `packaged-in` | [stove0-review-materialize-target](../runtime-images/index.md#node-image-runtime-stove0-review-materialize-target) | `` |

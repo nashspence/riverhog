@@ -20,7 +20,7 @@ Optional nonnormative sampler-protocol reference for the Stove0 review target.
 | outgoing | `depends-on` | [http-api-contracts](http-api-contracts.md) | `required` |
 | outgoing | `depends-on` | [riverhog-protocol](riverhog-protocol.md) | `required` |
 | outgoing | `depends-on` | [stove0-protocol](stove0-protocol.md) | `required` |
-| outgoing | `owns-protocol` | `stove0-review-sampler` | `` |
+| outgoing | `owns-protocol` | [stove0-review-sampler](../extensions/index.md#node-process-protocol-stove0-review-sampler) | `` |
 | incoming | `depends-on` | [stove0-nvenc-av1-opus-review-sampler](stove0-nvenc-av1-opus-review-sampler.md) | `required` |
 | incoming | `depends-on` | [stove0-opus-review-sampler](stove0-opus-review-sampler.md) | `required` |
 | incoming | `depends-on` | [stove0-review-sampler-client](stove0-review-sampler-client.md) | `required` |

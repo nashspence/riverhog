@@ -19,4 +19,4 @@ Optional nonnormative CloudEvents reference application for Riverhog.
 |---|---|---|---|
 | outgoing | `depends-on` | [lifecycle-events](lifecycle-events.md) | `required` |
 | outgoing | `depends-on` | [state-schema](state-schema.md) | `required` |
-| outgoing | `packaged-in` | `mango-fish` | `` |
+| outgoing | `packaged-in` | [mango-fish](../runtime-images/index.md#node-image-runtime-mango-fish) | `` |

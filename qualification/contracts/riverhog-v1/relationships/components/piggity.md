@@ -24,4 +24,4 @@ Optional nonnormative Piggity reference client for Riverhog.
 | outgoing | `depends-on` | [riverhog-provenance](riverhog-provenance.md) | `required` |
 | outgoing | `depends-on` | [state-schema](state-schema.md) | `required` |
 | outgoing | `depends-on` | [time-formats](time-formats.md) | `required` |
-| outgoing | `installed-as` | `uv-tool` | `` |
+| outgoing | `installed-as` | [uv-tool](../installation/index.md#node-installation-uv-tool) | `` |

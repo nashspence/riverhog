@@ -20,4 +20,4 @@ Optional nonnormative command-line client for the Stove0 reference application.
 | outgoing | `depends-on` | [stove0-api-client](stove0-api-client.md) | `required` |
 | outgoing | `depends-on` | [stove0-protocol](stove0-protocol.md) | `required` |
 | outgoing | `depends-on` | [stove0-recipe-config](stove0-recipe-config.md) | `required` |
-| outgoing | `installed-as` | `uv-tool` | `` |
+| outgoing | `installed-as` | [uv-tool](../installation/index.md#node-installation-uv-tool) | `` |

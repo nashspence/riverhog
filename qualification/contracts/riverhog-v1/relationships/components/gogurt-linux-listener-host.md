@@ -18,4 +18,4 @@ Optional nonnormative Linux systemd-user listener-host reference for Gogurt.
 | Direction | Relationship | Counterparty | Scope or binding |
 |---|---|---|---|
 | outgoing | `depends-on` | [gogurt-listener-runtime](gogurt-listener-runtime.md) | `required` |
-| outgoing | `implements-extension-point` | `gogurt.listener-host-providers` | `gogurt-linux-listener-host` |
+| outgoing | `implements-extension-point` | [gogurt.listener-host-providers](../extensions/index.md#node-extension-point-gogurt-listener-host-providers) | `gogurt-linux-listener-host` |

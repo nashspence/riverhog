@@ -19,4 +19,4 @@ Optional nonnormative macOS filesystem-observer reference for Riverhog provenanc
 |---|---|---|---|
 | outgoing | `depends-on` | [riverhog-provenance](riverhog-provenance.md) | `required` |
 | outgoing | `depends-on` | [riverhog-provenance-macos-contracts](riverhog-provenance-macos-contracts.md) | `required` |
-| outgoing | `implements-extension-point` | `riverhog.provenance-observers` | `riverhog-macos` |
+| outgoing | `implements-extension-point` | [riverhog.provenance-observers](../extensions/index.md#node-extension-point-riverhog-provenance-observers) | `riverhog-macos` |

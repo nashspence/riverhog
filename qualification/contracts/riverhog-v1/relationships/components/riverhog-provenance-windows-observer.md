@@ -19,4 +19,4 @@ Optional nonnormative Windows filesystem-observer reference for Riverhog provena
 |---|---|---|---|
 | outgoing | `depends-on` | [riverhog-provenance](riverhog-provenance.md) | `required` |
 | outgoing | `depends-on` | [riverhog-provenance-windows-contracts](riverhog-provenance-windows-contracts.md) | `required` |
-| outgoing | `implements-extension-point` | `riverhog.provenance-observers` | `riverhog-windows` |
+| outgoing | `implements-extension-point` | [riverhog.provenance-observers](../extensions/index.md#node-extension-point-riverhog-provenance-observers) | `riverhog-windows` |

@@ -18,6 +18,6 @@ Optional nonnormative media-metadata contract reference for Stove0 observers.
 | Direction | Relationship | Counterparty | Scope or binding |
 |---|---|---|---|
 | outgoing | `depends-on` | [stove0-observer-protocol](stove0-observer-protocol.md) | `required` |
-| outgoing | `implements-extension-point` | `stove0.observer-semantic-validators` | `media-metadata` |
+| outgoing | `implements-extension-point` | [stove0.observer-semantic-validators](../extensions/index.md#node-extension-point-stove0-observer-semantic-validators) | `media-metadata` |
 | incoming | `depends-on` | [stove0-exiftool-observer](stove0-exiftool-observer.md) | `required` |
 | incoming | `depends-on` | [stove0-media-archive-target-support](stove0-media-archive-target-support.md) | `required` |

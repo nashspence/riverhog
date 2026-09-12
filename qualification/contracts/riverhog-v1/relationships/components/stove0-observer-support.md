@@ -17,7 +17,7 @@ External-author protocol, runtime, and conformance support for stove0 content ob
 
 | Direction | Relationship | Counterparty | Scope or binding |
 |---|---|---|---|
-| outgoing | `binds-protocol` | `stove0-observer` | `http` |
+| outgoing | `binds-protocol` | [stove0-observer](../extensions/index.md#node-process-protocol-stove0-observer) | `http` |
 | outgoing | `depends-on` | [http-api-contracts](http-api-contracts.md) | `required` |
 | outgoing | `depends-on` | [riverhog-client](riverhog-client.md) | `required` |
 | outgoing | `depends-on` | [stove0-observer-client](stove0-observer-client.md) | `required` |

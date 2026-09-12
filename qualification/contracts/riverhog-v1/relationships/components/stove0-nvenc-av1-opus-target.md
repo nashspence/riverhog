@@ -24,5 +24,5 @@ Optional nonnormative NVENC AV1 and Opus target reference for Stove0.
 | outgoing | `depends-on` | [stove0-media-archive-target-support](stove0-media-archive-target-support.md) | `required` |
 | outgoing | `depends-on` | [stove0-protocol](stove0-protocol.md) | `required` |
 | outgoing | `depends-on` | [stove0-target-support](stove0-target-support.md) | `required` |
-| outgoing | `implements-protocol` | `stove0-target` | `` |
-| outgoing | `packaged-in` | `stove0-nvenc-av1-opus-target` | `` |
+| outgoing | `implements-protocol` | [stove0-target](../extensions/index.md#node-process-protocol-stove0-target) | `` |
+| outgoing | `packaged-in` | [stove0-nvenc-av1-opus-target](../runtime-images/index.md#node-image-runtime-stove0-nvenc-av1-opus-target) | `` |

@@ -4,6 +4,8 @@
 
 These are the exact coordinated installation roots from the release contract.
 
+<a id="node-installation-uv-tool"></a>
+
 Installation roots: **4**
 
 | Component | Purpose | Installation method |

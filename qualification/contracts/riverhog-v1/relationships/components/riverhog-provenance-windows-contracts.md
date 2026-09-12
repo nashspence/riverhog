@@ -18,5 +18,5 @@ Optional nonnormative Windows observation-contract reference for Riverhog proven
 | Direction | Relationship | Counterparty | Scope or binding |
 |---|---|---|---|
 | outgoing | `depends-on` | [riverhog-provenance-contracts](riverhog-provenance-contracts.md) | `required` |
-| outgoing | `implements-extension-point` | `riverhog.provenance-contracts` | `riverhog-windows` |
+| outgoing | `implements-extension-point` | [riverhog.provenance-contracts](../extensions/index.md#node-extension-point-riverhog-provenance-contracts) | `riverhog-windows` |
 | incoming | `depends-on` | [riverhog-provenance-windows-observer](riverhog-provenance-windows-observer.md) | `required` |

@@ -19,7 +19,7 @@ Portable durable listener runtime and native-platform port for Gogurt.
 |---|---|---|---|
 | outgoing | `depends-on` | [config-validation](config-validation.md) | `required` |
 | outgoing | `depends-on` | [gogurt-core](gogurt-core.md) | `required` |
-| outgoing | `owns-extension-point` | `gogurt.listener-host-providers` | `` |
+| outgoing | `owns-extension-point` | [gogurt.listener-host-providers](../extensions/index.md#node-extension-point-gogurt-listener-host-providers) | `` |
 | incoming | `depends-on` | [gogurt](gogurt.md) | `required` |
 | incoming | `depends-on` | [gogurt-linux-listener-host](gogurt-linux-listener-host.md) | `required` |
 | incoming | `depends-on` | [gogurt-macos-listener-host](gogurt-macos-listener-host.md) | `required` |

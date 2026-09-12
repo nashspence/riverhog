@@ -18,6 +18,6 @@ Optional nonnormative media-sampling contract reference for Stove0 observers.
 | Direction | Relationship | Counterparty | Scope or binding |
 |---|---|---|---|
 | outgoing | `depends-on` | [stove0-observer-protocol](stove0-observer-protocol.md) | `required` |
-| outgoing | `implements-extension-point` | `stove0.observer-semantic-validators` | `media-sampling` |
+| outgoing | `implements-extension-point` | [stove0.observer-semantic-validators](../extensions/index.md#node-extension-point-stove0-observer-semantic-validators) | `media-sampling` |
 | incoming | `depends-on` | [stove0-ffprobe-sampling-observer](stove0-ffprobe-sampling-observer.md) | `required` |
 | incoming | `depends-on` | [stove0-review-planning](stove0-review-planning.md) | `required` |

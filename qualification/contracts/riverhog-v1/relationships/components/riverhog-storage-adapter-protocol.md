@@ -18,7 +18,7 @@ Provider-neutral opaque-object capability contracts for Riverhog storage adapter
 | Direction | Relationship | Counterparty | Scope or binding |
 |---|---|---|---|
 | outgoing | `depends-on` | [time-formats](time-formats.md) | `required` |
-| outgoing | `owns-protocol` | `riverhog-storage-adapter` | `` |
+| outgoing | `owns-protocol` | [riverhog-storage-adapter](../extensions/index.md#node-process-protocol-riverhog-storage-adapter) | `` |
 | incoming | `depends-on` | [riverhog-server](riverhog-server.md) | `required` |
 | incoming | `depends-on` | [riverhog-storage-adapter-asgi-support](riverhog-storage-adapter-asgi-support.md) | `required` |
 | incoming | `depends-on` | [riverhog-storage-adapter-aws](riverhog-storage-adapter-aws.md) | `required` |

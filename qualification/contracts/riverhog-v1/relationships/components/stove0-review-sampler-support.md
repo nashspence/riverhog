@@ -17,7 +17,7 @@ Optional nonnormative sampler support for Stove0 review references.
 
 | Direction | Relationship | Counterparty | Scope or binding |
 |---|---|---|---|
-| outgoing | `binds-protocol` | `stove0-review-sampler` | `http` |
+| outgoing | `binds-protocol` | [stove0-review-sampler](../extensions/index.md#node-process-protocol-stove0-review-sampler) | `http` |
 | outgoing | `depends-on` | [http-api-contracts](http-api-contracts.md) | `required` |
 | outgoing | `depends-on` | [stove0-review-sampler-client](stove0-review-sampler-client.md) | `required` |
 | outgoing | `depends-on` | [stove0-review-sampler-protocol](stove0-review-sampler-protocol.md) | `required` |

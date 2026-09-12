@@ -17,7 +17,7 @@ Hardware-neutral target protocol, runtime, and conformance support for stove0.
 
 | Direction | Relationship | Counterparty | Scope or binding |
 |---|---|---|---|
-| outgoing | `binds-protocol` | `stove0-target` | `http` |
+| outgoing | `binds-protocol` | [stove0-target](../extensions/index.md#node-process-protocol-stove0-target) | `http` |
 | outgoing | `depends-on` | [http-api-contracts](http-api-contracts.md) | `required` |
 | outgoing | `depends-on` | [riverhog-client](riverhog-client.md) | `required` |
 | outgoing | `depends-on` | [riverhog-protocol](riverhog-protocol.md) | `required` |

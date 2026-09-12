@@ -17,7 +17,7 @@ Canonical Riverhog provenance identity and reference contracts.
 
 | Direction | Relationship | Counterparty | Scope or binding |
 |---|---|---|---|
-| outgoing | `owns-extension-point` | `riverhog.provenance-contracts` | `` |
+| outgoing | `owns-extension-point` | [riverhog.provenance-contracts](../extensions/index.md#node-extension-point-riverhog-provenance-contracts) | `` |
 | incoming | `depends-on` | [riverhog-client](riverhog-client.md) | `required` |
 | incoming | `depends-on` | [riverhog-protocol](riverhog-protocol.md) | `required` |
 | incoming | `depends-on` | [riverhog-provenance](riverhog-provenance.md) | `required` |

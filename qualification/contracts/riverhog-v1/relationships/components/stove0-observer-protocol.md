@@ -19,7 +19,7 @@ Dependency-light public contracts for external stove0 content observers.
 |---|---|---|---|
 | outgoing | `depends-on` | [http-api-contracts](http-api-contracts.md) | `required` |
 | outgoing | `depends-on` | [stove0-protocol](stove0-protocol.md) | `required` |
-| outgoing | `owns-protocol` | `stove0-observer` | `` |
+| outgoing | `owns-protocol` | [stove0-observer](../extensions/index.md#node-process-protocol-stove0-observer) | `` |
 | incoming | `depends-on` | [stove0-exiftool-observer](stove0-exiftool-observer.md) | `required` |
 | incoming | `depends-on` | [stove0-ffprobe-sampling-observer](stove0-ffprobe-sampling-observer.md) | `required` |
 | incoming | `depends-on` | [stove0-media-archive-target-support](stove0-media-archive-target-support.md) | `required` |

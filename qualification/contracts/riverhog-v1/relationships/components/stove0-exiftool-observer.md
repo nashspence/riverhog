@@ -21,5 +21,5 @@ Optional nonnormative ExifTool observer reference for Stove0.
 | outgoing | `depends-on` | [stove0-media-metadata-observer-contracts](stove0-media-metadata-observer-contracts.md) | `required` |
 | outgoing | `depends-on` | [stove0-observer-protocol](stove0-observer-protocol.md) | `required` |
 | outgoing | `depends-on` | [stove0-observer-support](stove0-observer-support.md) | `required` |
-| outgoing | `implements-protocol` | `stove0-observer` | `` |
-| outgoing | `packaged-in` | `stove0-exiftool-observer` | `` |
+| outgoing | `implements-protocol` | [stove0-observer](../extensions/index.md#node-process-protocol-stove0-observer) | `` |
+| outgoing | `packaged-in` | [stove0-exiftool-observer](../runtime-images/index.md#node-image-runtime-stove0-exiftool-observer) | `` |

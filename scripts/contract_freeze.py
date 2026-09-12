@@ -1194,6 +1194,13 @@ def main(argv: Sequence[str] | None = None) -> int:
                     loaded = json.loads(OUTPUT.read_bytes())
                     if loaded.get("schema") == SCHEMA:
                         previous = loaded
+                    elif isinstance(loaded.get("projection"), Mapping):
+                        # Representation migrations may intentionally make the checked human
+                        # atlas fail the new validator. The monolithic closure still carries
+                        # enough prior semantic data to report its extent delta safely.
+                        previous = reassemble_projection(
+                            ContractAtlas(root=cast(dict[str, object], loaded), files={})
+                        )
                     else:
                         previous = _load_checked_projection()
                 except (ContractAtlasError, AttributeError, KeyError, json.JSONDecodeError):

@@ -21,5 +21,5 @@ Optional nonnormative FFprobe sampling-observer reference for Stove0.
 | outgoing | `depends-on` | [stove0-media-sampling-observer-contracts](stove0-media-sampling-observer-contracts.md) | `required` |
 | outgoing | `depends-on` | [stove0-observer-protocol](stove0-observer-protocol.md) | `required` |
 | outgoing | `depends-on` | [stove0-observer-support](stove0-observer-support.md) | `required` |
-| outgoing | `implements-protocol` | `stove0-observer` | `` |
-| outgoing | `packaged-in` | `stove0-ffprobe-sampling-observer` | `` |
+| outgoing | `implements-protocol` | [stove0-observer](../extensions/index.md#node-process-protocol-stove0-observer) | `` |
+| outgoing | `packaged-in` | [stove0-ffprobe-sampling-observer](../runtime-images/index.md#node-image-runtime-stove0-ffprobe-sampling-observer) | `` |

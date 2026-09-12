@@ -18,7 +18,7 @@ Portable Riverhog v1 per-file provenance journals and validation.
 | Direction | Relationship | Counterparty | Scope or binding |
 |---|---|---|---|
 | outgoing | `depends-on` | [riverhog-provenance-contracts](riverhog-provenance-contracts.md) | `required` |
-| outgoing | `owns-extension-point` | `riverhog.provenance-observers` | `` |
+| outgoing | `owns-extension-point` | [riverhog.provenance-observers](../extensions/index.md#node-extension-point-riverhog-provenance-observers) | `` |
 | incoming | `depends-on` | [piggity](piggity.md) | `required` |
 | incoming | `depends-on` | [riverhog-ftp-adapter](riverhog-ftp-adapter.md) | `required` |
 | incoming | `depends-on` | [riverhog-provenance-linux-observer](riverhog-provenance-linux-observer.md) | `required` |

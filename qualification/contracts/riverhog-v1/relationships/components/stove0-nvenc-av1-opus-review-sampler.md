@@ -22,5 +22,5 @@ Optional nonnormative NVENC AV1 and Opus review-sampler reference for Stove0.
 | outgoing | `depends-on` | [stove0-review-sampler-protocol](stove0-review-sampler-protocol.md) | `required` |
 | outgoing | `depends-on` | [stove0-review-sampler-support](stove0-review-sampler-support.md) | `required` |
 | outgoing | `depends-on` | [stove0-review-target-contracts](stove0-review-target-contracts.md) | `required` |
-| outgoing | `implements-protocol` | `stove0-review-sampler` | `` |
-| outgoing | `packaged-in` | `stove0-nvenc-av1-opus-target` | `` |
+| outgoing | `implements-protocol` | [stove0-review-sampler](../extensions/index.md#node-process-protocol-stove0-review-sampler) | `` |
+| outgoing | `packaged-in` | [stove0-nvenc-av1-opus-target](../runtime-images/index.md#node-image-runtime-stove0-nvenc-av1-opus-target) | `` |

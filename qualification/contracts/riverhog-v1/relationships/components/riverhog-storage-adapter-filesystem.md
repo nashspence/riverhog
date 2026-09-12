@@ -20,5 +20,5 @@ Optional nonnormative Linux filesystem storage reference for Riverhog.
 | outgoing | `depends-on` | [riverhog-storage-adapter-asgi-support](riverhog-storage-adapter-asgi-support.md) | `required` |
 | outgoing | `depends-on` | [riverhog-storage-adapter-protocol](riverhog-storage-adapter-protocol.md) | `required` |
 | outgoing | `depends-on` | [time-formats](time-formats.md) | `required` |
-| outgoing | `implements-protocol` | `riverhog-storage-adapter` | `` |
-| outgoing | `packaged-in` | `riverhog-storage-adapter-filesystem` | `` |
+| outgoing | `implements-protocol` | [riverhog-storage-adapter](../extensions/index.md#node-process-protocol-riverhog-storage-adapter) | `` |
+| outgoing | `packaged-in` | [riverhog-storage-adapter-filesystem](../runtime-images/index.md#node-image-runtime-riverhog-storage-adapter-filesystem) | `` |

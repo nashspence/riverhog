@@ -18,5 +18,5 @@ Optional nonnormative Linux observation-contract reference for Riverhog provenan
 | Direction | Relationship | Counterparty | Scope or binding |
 |---|---|---|---|
 | outgoing | `depends-on` | [riverhog-provenance-contracts](riverhog-provenance-contracts.md) | `required` |
-| outgoing | `implements-extension-point` | `riverhog.provenance-contracts` | `riverhog-linux` |
+| outgoing | `implements-extension-point` | [riverhog.provenance-contracts](../extensions/index.md#node-extension-point-riverhog-provenance-contracts) | `riverhog-linux` |
 | incoming | `depends-on` | [riverhog-provenance-linux-observer](riverhog-provenance-linux-observer.md) | `required` |

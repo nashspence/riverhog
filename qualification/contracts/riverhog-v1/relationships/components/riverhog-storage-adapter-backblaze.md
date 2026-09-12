@@ -19,5 +19,5 @@ Optional nonnormative Backblaze B2 storage reference for Riverhog.
 |---|---|---|---|
 | outgoing | `depends-on` | [riverhog-storage-adapter-asgi-support](riverhog-storage-adapter-asgi-support.md) | `required` |
 | outgoing | `depends-on` | [riverhog-storage-adapter-s3-support](riverhog-storage-adapter-s3-support.md) | `required` |
-| outgoing | `implements-protocol` | `riverhog-storage-adapter` | `` |
-| outgoing | `packaged-in` | `riverhog-storage-adapter-backblaze` | `` |
+| outgoing | `implements-protocol` | [riverhog-storage-adapter](../extensions/index.md#node-process-protocol-riverhog-storage-adapter) | `` |
+| outgoing | `packaged-in` | [riverhog-storage-adapter-backblaze](../runtime-images/index.md#node-image-runtime-riverhog-storage-adapter-backblaze) | `` |

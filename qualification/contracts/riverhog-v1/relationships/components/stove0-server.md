@@ -29,4 +29,4 @@ Optional nonnormative content-opaque transformation reference application for Ri
 | outgoing | `depends-on` | [stove0-target-client](stove0-target-client.md) | `required` |
 | outgoing | `depends-on` | [stove0-target-protocol](stove0-target-protocol.md) | `required` |
 | outgoing | `depends-on` | [time-formats](time-formats.md) | `required` |
-| outgoing | `packaged-in` | `stove0` | `` |
+| outgoing | `packaged-in` | [stove0](../runtime-images/index.md#node-image-runtime-stove0) | `` |

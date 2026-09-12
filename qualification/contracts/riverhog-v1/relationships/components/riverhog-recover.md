@@ -20,4 +20,4 @@ Optional nonnormative independent recovery reference application for Riverhog ar
 | outgoing | `depends-on` | [riverhog-archive-contracts](riverhog-archive-contracts.md) | `required` |
 | outgoing | `depends-on` | [riverhog-protocol](riverhog-protocol.md) | `required` |
 | outgoing | `depends-on` | [riverhog-provenance](riverhog-provenance.md) | `required` |
-| outgoing | `installed-as` | `uv-tool` | `` |
+| outgoing | `installed-as` | [uv-tool](../installation/index.md#node-installation-uv-tool) | `` |

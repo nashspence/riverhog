@@ -19,4 +19,4 @@ Optional nonnormative Linux mounted-volume reference for Gogurt.
 |---|---|---|---|
 | outgoing | `depends-on` | [gogurt-core](gogurt-core.md) | `required` |
 | outgoing | `depends-on` | [gogurt-path-volume-support](gogurt-path-volume-support.md) | `required` |
-| outgoing | `implements-extension-point` | `gogurt.mounted-volume-providers` | `gogurt-linux-mounted-volume` |
+| outgoing | `implements-extension-point` | [gogurt.mounted-volume-providers](../extensions/index.md#node-extension-point-gogurt-mounted-volume-providers) | `gogurt-linux-mounted-volume` |

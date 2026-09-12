@@ -17,7 +17,7 @@ HTTP binding and conformance support for Riverhog storage adapters.
 
 | Direction | Relationship | Counterparty | Scope or binding |
 |---|---|---|---|
-| outgoing | `binds-protocol` | `riverhog-storage-adapter` | `http` |
+| outgoing | `binds-protocol` | [riverhog-storage-adapter](../extensions/index.md#node-process-protocol-riverhog-storage-adapter) | `http` |
 | outgoing | `depends-on` | [http-api-contracts](http-api-contracts.md) | `required` |
 | outgoing | `depends-on` | [riverhog-storage-adapter-protocol](riverhog-storage-adapter-protocol.md) | `required` |
 | incoming | `depends-on` | [riverhog-server](riverhog-server.md) | `required` |

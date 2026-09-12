@@ -22,4 +22,4 @@ Optional nonnormative FTP ingress reference for Riverhog.
 | outgoing | `depends-on` | [riverhog-ftp-adapter-api-client](riverhog-ftp-adapter-api-client.md) | `required` |
 | outgoing | `depends-on` | [riverhog-protocol](riverhog-protocol.md) | `required` |
 | outgoing | `depends-on` | [riverhog-provenance](riverhog-provenance.md) | `required` |
-| outgoing | `packaged-in` | `riverhog-ftp-adapter` | `` |
+| outgoing | `packaged-in` | [riverhog-ftp-adapter](../runtime-images/index.md#node-image-runtime-riverhog-ftp-adapter) | `` |
