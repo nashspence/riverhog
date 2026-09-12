@@ -53,8 +53,11 @@ from stove0_core import (
 )
 from stove0_target_client import TargetCallbackClient
 
-contract_audit_bundle = importlib.import_module(
-    "scripts.contract_audit_bundle" if __package__ else "contract_audit_bundle"
+_SCRIPT_DIRECTORY = Path(__file__).resolve().parent
+if str(_SCRIPT_DIRECTORY) not in sys.path:
+    sys.path.insert(0, str(_SCRIPT_DIRECTORY))
+contract_atlas = importlib.import_module(
+    "scripts.contract_atlas" if __package__ else "contract_atlas"
 )
 
 SCHEMA = "riverhog-operation-qualification/v1"
@@ -807,8 +810,8 @@ def _contract_freeze_identity(path: Path = CONTRACT_FREEZE) -> dict[str, object]
 
     try:
         content = path.read_bytes()
-        bundle = contract_audit_bundle.load_bundle(path)
-        payload = contract_audit_bundle.reassemble_projection(bundle)
+        atlas = contract_atlas.load_atlas(path)
+        payload = contract_atlas.reassemble_projection(atlas)
         external = cast(dict[str, object], payload["external_contract"])
         extents = cast(dict[str, object], external["extents"])
         coverage = cast(dict[str, object], extents["coverage"])
@@ -817,11 +820,11 @@ def _contract_freeze_identity(path: Path = CONTRACT_FREEZE) -> dict[str, object]
         OSError,
         TypeError,
         json.JSONDecodeError,
-        contract_audit_bundle.AuditBundleError,
+        contract_atlas.ContractAtlasError,
     ) as exc:
         raise QualificationError("contract-freeze extent authority is unavailable") from exc
     if (
-        bundle.root.get("schema") != contract_audit_bundle.ROOT_SCHEMA
+        atlas.root.get("schema") != contract_atlas.ROOT_SCHEMA
         or extents.get("schema") != "riverhog-extent-contract/v1"
         or any(coverage.get(key) != 0 for key in ("missing", "duplicate", "stale", "undecided"))
         or coverage.get("classified") != coverage.get("discovered")
@@ -829,7 +832,7 @@ def _contract_freeze_identity(path: Path = CONTRACT_FREEZE) -> dict[str, object]
     ):
         raise QualificationError("contract-freeze extent authority is incomplete")
     return {
-        "schema": bundle.root["schema"],
+        "schema": atlas.root["schema"],
         "projection_sha256": hashlib.sha256(content).hexdigest(),
         "extent_schema": extents["schema"],
         "extent_sha256": extents["sha256"],

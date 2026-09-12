@@ -1,1 +1,0 @@
-{"facts":[{"id":"fact:boundary:31860f5e1ba7bd3cac345ce8","kind":"value","pointer":"/reference_policy","value":"Checked-in references form a closed, tightly scoped, maintainer-selected, nonnormative conformance set."}],"id":"c-d6009f4fc18f-001","kind":"boundary-reference-policy","owner":"repository","policies":[],"schema":"riverhog-contract-audit-context/v1","scope":"boundary"}

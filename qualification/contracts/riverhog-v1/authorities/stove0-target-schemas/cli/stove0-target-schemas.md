@@ -1,0 +1,47 @@
+# stove0-target-schemas
+
+[Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
+
+<!-- contract-element: cli:stove0-target-schemas:stove0-target-schemas:f942f8f5bb -->
+
+| Audit field | Value |
+|---|---|
+| Authority | `stove0-target-schemas` |
+| Interface | `cli` |
+| Family | `root` |
+| Contract elements | 1 |
+| Extent decisions | 1 |
+
+## Machine authority
+
+- `/external_contract/cli/stove0-target-schemas/name`
+- `/external_contract/cli/stove0-target-schemas/parameters`
+
+## Effective policies
+
+- `compatibility/cli/v1`
+- `extent-rule/schema-bound/v1`
+
+## Executable sources and proof
+
+- `cli:stove0-target-schemas` — `reference/stove0/packages/target-support/src/stove0_target_support/schemas.py::<module>`
+- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
+- Proof: `make dist-smoke`
+- Proof: `make operation-qualification`
+
+## Extent decisions
+
+| Dimension | Unit | Policy | Bounds/reason |
+|---|---|---|---|
+| cardinality | values-per-occurrence | `fixed` | maximum=0, minimum=0, reason=fixed-command-argument-arity |
+
+## Contract
+
+- Parser name: `stove0-target-schemas`
+
+### Parameters
+
+| Name | Kind | Required | Type | Options |
+|---|---|---:|---|---|
+| `` | _StoreAction | no | Path | --output |
+| `` | _StoreTrueAction | no |  | --compact |

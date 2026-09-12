@@ -1,0 +1,49 @@
+# Operation parity: get_collection_file_provenance
+
+[Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
+
+<!-- contract-element: operation:riverhog:operation-parity-get-collection-file-provenance:42585e3bff -->
+
+| Audit field | Value |
+|---|---|
+| Authority | `riverhog` |
+| Interface | `operation` |
+| Family | `collections` |
+| Contract elements | 1 |
+| Extent decisions | 0 |
+
+## Machine authority
+
+- `/external_contract/operations/78`
+
+## Effective policies
+
+- `compatibility/cli/v1`
+- `compatibility/components/v1`
+- `compatibility/http-api/v1`
+
+## Executable sources and proof
+
+- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
+- `operations:operation-matrix` — `scripts/operation_qualification.py::operation_matrix`
+- Proof: `make operation-qualification`
+
+## Related interface records
+
+- [GET /v1/collections/{collection_id}/provenance/files/{path}](../http/get-v1-collections-collection-id-provenance-files-path.md)
+- [piggity collection provenance show](../../piggity/cli/piggity-collection-provenance-show.md)
+
+## Contract
+
+| Concern | Contract |
+|---|---|
+| `application` | riverhog |
+| `classification` | human-cli+json |
+| `cli_commands` | ["collection provenance show"] |
+| `client` | ApiClient |
+| `method` | GET |
+| `operation_id` | get_collection_file_provenance |
+| `path` | /v1/collections/{collection_id}/provenance/files/{path} |
+| `provider_evidence` | None |
+| `read_collection` | None |
+| `response_authority` | http-json |

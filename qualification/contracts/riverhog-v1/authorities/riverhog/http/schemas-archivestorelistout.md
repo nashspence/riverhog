@@ -1,0 +1,53 @@
+# schemas: ArchiveStoreListOut
+
+[Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
+
+<!-- contract-element: http:riverhog:schemas-archivestorelistout:2033e2cdf5 -->
+
+| Audit field | Value |
+|---|---|
+| Authority | `riverhog` |
+| Interface | `http` |
+| Family | `schemas` |
+| Contract elements | 1 |
+| Extent decisions | 2 |
+
+## Machine authority
+
+- `/external_contract/http_openapi/riverhog/components/schemas/ArchiveStoreListOut`
+
+## Effective policies
+
+- `compatibility/http-api/v1`
+- `extent-rule/route-progression/v1`
+- `extent-rule/schema-bound/v1`
+
+## Executable sources and proof
+
+- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
+- `openapi:riverhog` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+- Proof: `make operation-qualification`
+- Proof: `make compose-smoke`
+
+## Extent decisions
+
+| Dimension | Unit | Policy | Bounds/reason |
+|---|---|---|---|
+| value | schema-value | `contract_max` | maximum=100, minimum=1, reason=schema-maximum |
+| cardinality | items | `segmented_no_total_max` | reason=bounded-route-page |
+
+## Contract
+
+- `title`: ArchiveStoreListOut
+- `type`: object
+
+### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| `next_page_token` | yes | object (1 fields) |  |
+| `order` | yes | #/components/schemas/SortOrder |  |
+| `page_size` | yes | integer |  |
+| `query` | yes | object (2 fields) |  |
+| `sort` | yes | #/components/schemas/ArchiveStoreSort |  |
+| `stores` | yes | array |  |

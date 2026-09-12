@@ -1,0 +1,49 @@
+# Operation parity: cancel_collection_provenance_verification
+
+[Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
+
+<!-- contract-element: operation:riverhog:operation-parity-cancel-collection-proven-9adb6dc042:e3e154f60d -->
+
+| Audit field | Value |
+|---|---|
+| Authority | `riverhog` |
+| Interface | `operation` |
+| Family | `collections` |
+| Contract elements | 1 |
+| Extent decisions | 0 |
+
+## Machine authority
+
+- `/external_contract/operations/83`
+
+## Effective policies
+
+- `compatibility/cli/v1`
+- `compatibility/components/v1`
+- `compatibility/http-api/v1`
+
+## Executable sources and proof
+
+- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
+- `operations:operation-matrix` — `scripts/operation_qualification.py::operation_matrix`
+- Proof: `make operation-qualification`
+
+## Related interface records
+
+- [DELETE /v1/collections/{collection_id}/provenance/verification](../http/delete-v1-collections-collection-id-provenance-verification.md)
+- [piggity collection provenance verification-cancel](../../piggity/cli/piggity-collection-provenance-verification-cancel.md)
+
+## Contract
+
+| Concern | Contract |
+|---|---|
+| `application` | riverhog |
+| `classification` | human-cli+json |
+| `cli_commands` | ["collection provenance verification-cancel"] |
+| `client` | ApiClient |
+| `method` | DELETE |
+| `operation_id` | cancel_collection_provenance_verification |
+| `path` | /v1/collections/{collection_id}/provenance/verification |
+| `provider_evidence` | None |
+| `read_collection` | None |
+| `response_authority` | http-json |

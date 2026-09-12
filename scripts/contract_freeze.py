@@ -24,13 +24,13 @@ import extent_witnesses
 import gogurt_core
 import operation_qualification
 import release as release_contract
-from contract_audit_bundle import (
-    AuditBundle,
-    AuditBundleError,
-    build_bundle,
+from contract_atlas import (
+    ContractAtlas,
+    ContractAtlasError,
+    build_atlas,
     canonical_bytes,
-    context_descriptors,
-    load_bundle,
+    load_atlas,
+    pointer_value,
     reassemble_projection,
     reassemble_trace,
 )
@@ -70,7 +70,7 @@ from typer.main import get_command
 
 ROOT = Path(__file__).resolve().parents[1]
 OUTPUT = ROOT / "qualification/contracts/riverhog-v1.json"
-BUNDLE_DIRECTORY = ROOT / "qualification/contracts/riverhog-v1"
+ATLAS_DIRECTORY = ROOT / "qualification/contracts/riverhog-v1"
 LEGACY_TRACE_OUTPUT = ROOT / "qualification/contracts/riverhog-v1-trace.json"
 SCHEMA = "riverhog-contract-freeze/v1"
 TRACE_SCHEMA = "riverhog-contract-trace/v1"
@@ -955,25 +955,25 @@ def contract_projection() -> dict[str, object]:
 
 def _render() -> str:
     projection = contract_projection()
-    return canonical_bytes(build_bundle(projection, trace_projection(projection)).root).decode()
+    return canonical_bytes(build_atlas(projection, trace_projection(projection)).root).decode()
 
 
 def _render_trace(projection: Mapping[str, object]) -> str:
     return json.dumps(trace_projection(projection), indent=2, sort_keys=True) + "\n"
 
 
-def _generated_bundle() -> tuple[dict[str, object], dict[str, object], AuditBundle]:
+def _generated_atlas() -> tuple[dict[str, object], dict[str, object], ContractAtlas]:
     projection = contract_projection()
     trace = trace_projection(projection)
-    return projection, trace, build_bundle(projection, trace)
+    return projection, trace, build_atlas(projection, trace)
 
 
 def _load_checked_projection(path: Path = OUTPUT) -> dict[str, object]:
-    return reassemble_projection(load_bundle(path))
+    return reassemble_projection(load_atlas(path))
 
 
 def _load_checked_trace(path: Path = OUTPUT) -> dict[str, object]:
-    return reassemble_trace(load_bundle(path))
+    return reassemble_trace(load_atlas(path))
 
 
 def _extent_diff(
@@ -1021,24 +1021,24 @@ def _parser() -> argparse.ArgumentParser:
     subparsers = parser.add_subparsers(dest="command", required=True)
     subparsers.add_parser("check", help="Verify the checked-in v1 projection.")
     subparsers.add_parser("update", help="Replace the checked-in v1 projection.")
-    subparsers.add_parser("summary", help="Print the compact v1 audit-root summary.")
-    list_parser = subparsers.add_parser("list", help="List bounded audit contexts.")
-    list_parser.add_argument("--owner")
-    list_parser.add_argument("--kind")
+    subparsers.add_parser("summary", help="Print the v1 atlas roll-up and identities.")
+    list_parser = subparsers.add_parser("list", help="List native semantic contract elements.")
+    list_parser.add_argument("--authority", "--owner", dest="authority")
+    list_parser.add_argument("--interface", "--kind", dest="interface")
     list_parser.add_argument("--disposition", choices=("contractual", "excluded"))
     list_parser.add_argument("--policy")
-    show_parser = subparsers.add_parser("show", help="Print one complete bounded audit unit.")
-    show_parser.add_argument("context_id")
+    show_parser = subparsers.add_parser("show", help="Print one complete semantic dossier as JSON.")
+    show_parser.add_argument("element_id")
     return parser
 
 
-def _checked_bundle_matches(generated: AuditBundle) -> bool:
+def _checked_atlas_matches(generated: ContractAtlas) -> bool:
     if not OUTPUT.is_file() or OUTPUT.read_bytes() != canonical_bytes(generated.root):
         return False
     expected = {OUTPUT.parent / relative for relative in generated.files}
     actual = (
-        {path for path in BUNDLE_DIRECTORY.rglob("*") if path.is_file()}
-        if BUNDLE_DIRECTORY.is_dir()
+        {path for path in ATLAS_DIRECTORY.rglob("*") if path.is_file()}
+        if ATLAS_DIRECTORY.is_dir()
         else set()
     )
     if actual != expected:
@@ -1049,16 +1049,16 @@ def _checked_bundle_matches(generated: AuditBundle) -> bool:
     )
 
 
-def _write_bundle(bundle: AuditBundle) -> None:
+def _write_atlas(atlas: ContractAtlas) -> None:
     OUTPUT.parent.mkdir(parents=True, exist_ok=True)
-    BUNDLE_DIRECTORY.mkdir(parents=True, exist_ok=True)
-    OUTPUT.write_bytes(canonical_bytes(bundle.root))
-    expected = {OUTPUT.parent / relative for relative in bundle.files}
-    for relative, payload in bundle.files.items():
+    ATLAS_DIRECTORY.mkdir(parents=True, exist_ok=True)
+    OUTPUT.write_bytes(canonical_bytes(atlas.root))
+    expected = {OUTPUT.parent / relative for relative in atlas.files}
+    for relative, payload in atlas.files.items():
         path = OUTPUT.parent / relative
         path.parent.mkdir(parents=True, exist_ok=True)
         path.write_bytes(payload)
-    for path in sorted(BUNDLE_DIRECTORY.rglob("*"), reverse=True):
+    for path in sorted(ATLAS_DIRECTORY.rglob("*"), reverse=True):
         if path.is_file() and path not in expected:
             path.unlink()
         elif path.is_dir() and not any(path.iterdir()):
@@ -1067,63 +1067,83 @@ def _write_bundle(bundle: AuditBundle) -> None:
         LEGACY_TRACE_OUTPUT.unlink()
 
 
-def _summary(bundle: AuditBundle) -> dict[str, object]:
-    root = bundle.root
+def _summary(atlas: ContractAtlas) -> dict[str, object]:
+    root = atlas.root
     return {
         "schema": root["schema"],
         "series": root["series"],
-        "boundary": root["boundary"],
-        "policies": root["policies"],
-        "detector_meta_closure": root["detector_meta_closure"],
         "identities": root["identities"],
-        "extent_contract": root["extent_contract"],
-        "coverage": root["coverage"],
+        "counts": root["counts"],
+        "discovery_anomalies": cast(Mapping[str, object], root["discovery"])["anomalies"],
+        "atlas_root": cast(Mapping[str, object], root["atlas"])["root"],
     }
 
 
-def _listed_contexts(bundle: AuditBundle, args: argparse.Namespace) -> list[dict[str, object]]:
+def _listed_elements(atlas: ContractAtlas, args: argparse.Namespace) -> list[dict[str, object]]:
     result: list[dict[str, object]] = []
-    for context in context_descriptors(bundle.root):
-        if args.owner and context["owner"] != args.owner:
+    for element in cast(Sequence[dict[str, object]], atlas.root["elements"]):
+        if args.authority and element["authority"] != args.authority:
             continue
-        if args.kind and context["kind"] != args.kind:
+        if args.interface and element["interface"] != args.interface:
             continue
-        if args.disposition and args.disposition not in cast(
-            Sequence[str], context["dispositions"]
+        if args.disposition and element["disposition"] != args.disposition:
+            continue
+        if args.policy and args.policy not in cast(Sequence[str], element["policy_ids"]):
+            continue
+        result.append(element)
+    if not args.disposition or args.disposition == "excluded":
+        for exclusion in cast(
+            Sequence[dict[str, object]],
+            cast(Mapping[str, object], atlas.root["discovery"])["exclusions"],
         ):
-            continue
-        if args.policy and args.policy not in cast(Sequence[str], context["policies"]):
-            continue
-        result.append(context)
+            if args.authority or args.interface:
+                continue
+            if args.policy and exclusion["policy_id"] != args.policy:
+                continue
+            result.append(exclusion)
     return result
 
 
-def _shown_context(bundle: AuditBundle, context_id: str) -> dict[str, object]:
-    descriptor = next(
-        (context for context in context_descriptors(bundle.root) if context["id"] == context_id),
+def _shown_element(atlas: ContractAtlas, element_id: str) -> dict[str, object]:
+    element = next(
+        (
+            item
+            for item in cast(Sequence[Mapping[str, object]], atlas.root["elements"])
+            if item["id"] == element_id
+        ),
         None,
     )
-    if descriptor is None:
-        raise ContractFreezeError(f"unknown audit context: {context_id}")
-    normative_ref = descriptor.get("normative")
-    trace_ref = cast(Mapping[str, object], descriptor["trace"])
+    if element is None:
+        raise ContractFreezeError(f"unknown contract element: {element_id}")
+    projection = cast(Mapping[str, object], atlas.root["projection"])
+    trace = cast(Mapping[str, object], atlas.root["trace"])
+    source_index = {
+        str(source["id"]): source
+        for source in cast(Sequence[Mapping[str, object]], atlas.root["sources"])
+    }
+    decisions = {
+        str(decision["id"]): decision
+        for decision in cast(
+            Sequence[Mapping[str, object]],
+            cast(
+                Mapping[str, object],
+                cast(Mapping[str, object], projection["external_contract"])["extents"],
+            )["decisions"],
+        )
+    }
     return {
-        "context": descriptor,
-        **(
-            {
-                "normative": json.loads(
-                    bundle.files[
-                        f"{bundle.root['context_directory']}/"
-                        f"{cast(Mapping[str, object], normative_ref)['path']}"
-                    ]
-                )
-            }
-            if isinstance(normative_ref, Mapping)
-            else {}
-        ),
-        "trace": json.loads(
-            bundle.files[f"{bundle.root['context_directory']}/{trace_ref['path']}"]
-        ),
+        "element": element,
+        "values": [
+            pointer_value(projection, pointer)
+            for pointer in cast(Sequence[str], element["pointers"])
+        ],
+        "sources": [
+            source_index[source] for source in cast(Sequence[str], element["source_authority_ids"])
+        ],
+        "extent_decisions": [
+            decisions[identity] for identity in cast(Sequence[str], element["extent_decision_ids"])
+        ],
+        "trace_schema": trace["schema"],
     }
 
 
@@ -1131,17 +1151,17 @@ def main(argv: Sequence[str] | None = None) -> int:
     args = _parser().parse_args(argv)
     try:
         if args.command in {"summary", "list", "show"}:
-            checked = load_bundle(OUTPUT)
+            checked = load_atlas(OUTPUT)
             payload = (
                 _summary(checked)
                 if args.command == "summary"
-                else _listed_contexts(checked, args)
+                else _listed_elements(checked, args)
                 if args.command == "list"
-                else _shown_context(checked, str(args.context_id))
+                else _shown_element(checked, str(args.element_id))
             )
             print(json.dumps(payload, indent=2, sort_keys=True))
             return 0
-        projection, _trace, bundle = _generated_bundle()
+        projection, _trace, atlas = _generated_atlas()
         extent_diff: dict[str, dict[str, int]] | None = None
         if args.command == "update":
             previous: Mapping[str, object] | None = None
@@ -1152,23 +1172,28 @@ def main(argv: Sequence[str] | None = None) -> int:
                         previous = loaded
                     else:
                         previous = _load_checked_projection()
-                except (AuditBundleError, AttributeError, KeyError, json.JSONDecodeError):
+                except (ContractAtlasError, AttributeError, KeyError, json.JSONDecodeError):
                     previous = None
             extent_diff = _extent_diff(previous, projection)
-            _write_bundle(bundle)
-        elif not _checked_bundle_matches(bundle) or LEGACY_TRACE_OUTPUT.exists():
+            _write_atlas(atlas)
+        elif not _checked_atlas_matches(atlas) or LEGACY_TRACE_OUTPUT.exists():
             raise ContractFreezeError(
-                "the v1 contract audit bundle is stale; "
+                "the v1 contract machine closure or human atlas is stale; "
                 "run `make contract-freeze-update` and review the semantic diff"
             )
-        root_bytes = canonical_bytes(bundle.root)
+        root_bytes = canonical_bytes(atlas.root)
         print(
             json.dumps(
                 {
                     "output": OUTPUT.relative_to(ROOT).as_posix(),
                     "sha256": hashlib.sha256(root_bytes).hexdigest(),
-                    "contexts": len(cast(Sequence[object], bundle.root["contexts"])),
-                    "identities": bundle.root["identities"],
+                    "contract_elements": cast(Mapping[str, object], atlas.root["counts"])[
+                        "contract_elements"
+                    ],
+                    "atlas_documents": cast(Mapping[str, object], atlas.root["counts"])[
+                        "atlas_documents"
+                    ],
+                    "identities": atlas.root["identities"],
                     "status": "updated" if args.command == "update" else "current",
                     **({"extent_diff": extent_diff} if extent_diff is not None else {}),
                 },
@@ -1178,7 +1203,7 @@ def main(argv: Sequence[str] | None = None) -> int:
         return 0
     except (
         ContractFreezeError,
-        AuditBundleError,
+        ContractAtlasError,
         extent_witnesses.ExtentWitnessError,
         release_contract.ReleaseError,
     ) as exc:

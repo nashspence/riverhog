@@ -134,6 +134,7 @@ def test_readme_states_archive_and_adapter_authority() -> None:
         REPO / "LICENSE.md",
         REPO / "SECURITY.md",
         REPO / "docs/architecture.md",
+        REPO / "qualification/contracts/riverhog-v1/index.md",
     }
 
 

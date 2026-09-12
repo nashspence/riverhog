@@ -1,1 +1,0 @@
-{"facts":[{"id":"fact:contract:37762c5cbcfd427ae9be6f08","kind":"object","pointer":"/http_openapi"}],"id":"c-013cf9bdd3d3-001","kind":"http","owner":"http","policies":["external-contract-fact/v1"],"schema":"riverhog-contract-audit-context/v1","scope":"external-contract"}

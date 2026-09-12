@@ -1,0 +1,187 @@
+# stove0: http
+
+[Atlas](../../../index.md) · [Authority](../index.md) · [Policies](../../../policies/index.md)
+
+Contract elements: **170** · Extent decisions: **346**
+
+| Policy | Count |
+|---|---:|
+| `compatibility/http-api/v1` | 170 |
+| `extent-rule/no-semantic-maximum/v1` | 58 |
+| `extent-rule/route-progression/v1` | 12 |
+| `extent-rule/schema-bound/v1` | 99 |
+
+## Semantic dossiers
+
+| Dossier | Family | Extent decisions |
+|---|---|---:|
+| [GET /v1/admin/scheduler](get-v1-admin-scheduler.md) | `admin` | 0 |
+| [POST /v1/admin/scheduler/run](post-v1-admin-scheduler-run.md) | `admin` | 0 |
+| [GET /v1/admission-policies](get-v1-admission-policies.md) | `admission-policies` | 0 |
+| [POST /v1/admission-policies/{policy_id}:backfill](post-v1-admission-policies-policy-id-backfill.md) | `admission-policies` | 0 |
+| [POST /v1/admission-policies/{policy_id}:rebaseline](post-v1-admission-policies-policy-id-rebaseline.md) | `admission-policies` | 0 |
+| [GET /v1/admissions](get-v1-admissions.md) | `admissions` | 2 |
+| [GET /v1/admissions/{admission_id}](get-v1-admissions-admission-id.md) | `admissions` | 0 |
+| [GET /v1/artifact-selections/{selection_sha256}](get-v1-artifact-selections-selection-sha256.md) | `artifact-selections` | 1 |
+| [GET /v1/evaluations](get-v1-evaluations.md) | `evaluations` | 2 |
+| [GET /v1/evaluations/{evaluation_id}](get-v1-evaluations-evaluation-id.md) | `evaluations` | 0 |
+| [POST /v1/evaluations](post-v1-evaluations.md) | `evaluations` | 0 |
+| [POST /v1/evaluations/{evaluation_id}/cancel](post-v1-evaluations-evaluation-id-cancel.md) | `evaluations` | 0 |
+| [POST /v1/evaluations/{evaluation_id}/step](post-v1-evaluations-evaluation-id-step.md) | `evaluations` | 0 |
+| [POST /v1/evaluations/{evaluation_id}/variants/{variant_id}/retry](post-v1-evaluations-evaluation-id-variants-variant-id-retry.md) | `evaluations` | 0 |
+| [PUT /v1/evaluations/{evaluation_id}/variants/{variant_id}/review](put-v1-evaluations-evaluation-id-variants-variant-id-review.md) | `evaluations` | 0 |
+| [GET /v1/events](get-v1-events.md) | `events` | 2 |
+| [GET /health/live](get-health-live.md) | `health` | 0 |
+| [GET /health/ready](get-health-ready.md) | `health` | 0 |
+| [GET /v1/recipes](get-v1-recipes.md) | `recipes` | 0 |
+| [GET /v1/recipes/{recipe_id}](get-v1-recipes-recipe-id.md) | `recipes` | 0 |
+| [schemas: AcceptedTargetJob](schemas-acceptedtargetjob.md) | `schemas` | 1 |
+| [schemas: AdmissionIntent](schemas-admissionintent.md) | `schemas` | 7 |
+| [schemas: AdmissionPage](schemas-admissionpage.md) | `schemas` | 3 |
+| [schemas: AdmissionPolicy](schemas-admissionpolicy.md) | `schemas` | 4 |
+| [schemas: AdmissionPolicyCatalogView](schemas-admissionpolicycatalogview.md) | `schemas` | 2 |
+| [schemas: AdmissionPolicyStatus](schemas-admissionpolicystatus.md) | `schemas` | 4 |
+| [schemas: AdmissionRun](schemas-admissionrun.md) | `schemas` | 2 |
+| [schemas: AdmissionView](schemas-admissionview.md) | `schemas` | 6 |
+| [schemas: ArtifactAssociation](schemas-artifactassociation.md) | `schemas` | 1 |
+| [schemas: ArtifactDispositionSetIdentity](schemas-artifactdispositionsetidentity.md) | `schemas` | 0 |
+| [schemas: ArtifactFactBinding](schemas-artifactfactbinding.md) | `schemas` | 0 |
+| [schemas: ArtifactRule](schemas-artifactrule.md) | `schemas` | 0 |
+| [schemas: ArtifactSelection](schemas-artifactselection.md) | `schemas` | 2 |
+| [schemas: ArtifactSelectionPage](schemas-artifactselectionpage.md) | `schemas` | 3 |
+| [schemas: ArtifactSelectionRef](schemas-artifactselectionref.md) | `schemas` | 1 |
+| [schemas: ArtifactSubject](schemas-artifactsubject.md) | `schemas` | 4 |
+| [schemas: BranchEffectSettlement](schemas-brancheffectsettlement.md) | `schemas` | 4 |
+| [schemas: BranchPlan](schemas-branchplan.md) | `schemas` | 0 |
+| [schemas: BranchSetAdmittedEvent](schemas-branchsetadmittedevent.md) | `schemas` | 0 |
+| [schemas: BranchSetAdmittedEventData](schemas-branchsetadmittedeventdata.md) | `schemas` | 2 |
+| [schemas: BranchSetEvaluation](schemas-branchsetevaluation.md) | `schemas` | 11 |
+| [schemas: BranchSetPlan](schemas-branchsetplan.md) | `schemas` | 5 |
+| [schemas: BranchSettlement](schemas-branchsettlement.md) | `schemas` | 5 |
+| [schemas: BranchTargetPreview](schemas-branchtargetpreview.md) | `schemas` | 2 |
+| [schemas: BranchWorkBinding](schemas-branchworkbinding.md) | `schemas` | 3 |
+| [schemas: BrowsePageToken](schemas-browsepagetoken.md) | `schemas` | 1 |
+| [schemas: BrowseQuery](schemas-browsequery.md) | `schemas` | 1 |
+| [schemas: CatalogSyncDescriptor](schemas-catalogsyncdescriptor.md) | `schemas` | 7 |
+| [schemas: CollectionDescription](schemas-collectiondescription.md) | `schemas` | 2 |
+| [schemas: CollectionId](schemas-collectionid.md) | `schemas` | 0 |
+| [schemas: CollectionRootRef](schemas-collectionrootref.md) | `schemas` | 2 |
+| [schemas: CollectionTag](schemas-collectiontag.md) | `schemas` | 2 |
+| [schemas: ControllerEvidence](schemas-controllerevidence.md) | `schemas` | 1 |
+| [schemas: CoordinationBranchPlan](schemas-coordinationbranchplan.md) | `schemas` | 1 |
+| [schemas: CoordinationChildSettlementRef](schemas-coordinationchildsettlementref.md) | `schemas` | 1 |
+| [schemas: CoordinationCollectionResult](schemas-coordinationcollectionresult.md) | `schemas` | 3 |
+| [schemas: CoordinationSettlement](schemas-coordinationsettlement.md) | `schemas` | 4 |
+| [schemas: EffectPlan](schemas-effectplan.md) | `schemas` | 7 |
+| [schemas: ErrorBody](schemas-errorbody.md) | `schemas` | 1 |
+| [schemas: ErrorResponse](schemas-errorresponse.md) | `schemas` | 0 |
+| [schemas: EvaluationBinding](schemas-evaluationbinding.md) | `schemas` | 3 |
+| [schemas: EvaluationChildView](schemas-evaluationchildview.md) | `schemas` | 2 |
+| [schemas: EvaluationCreatedEvent](schemas-evaluationcreatedevent.md) | `schemas` | 0 |
+| [schemas: EvaluationCreatedEventData](schemas-evaluationcreatedeventdata.md) | `schemas` | 1 |
+| [schemas: EvaluationDefinition](schemas-evaluationdefinition.md) | `schemas` | 3 |
+| [schemas: EvaluationMatrix](schemas-evaluationmatrix.md) | `schemas` | 2 |
+| [schemas: EvaluationPage](schemas-evaluationpage.md) | `schemas` | 3 |
+| [schemas: EvaluationReviewIn](schemas-evaluationreviewin.md) | `schemas` | 2 |
+| [schemas: EvaluationReviewView](schemas-evaluationreviewview.md) | `schemas` | 5 |
+| [schemas: EvaluationUpdatedEvent](schemas-evaluationupdatedevent.md) | `schemas` | 0 |
+| [schemas: EvaluationUpdatedEventData](schemas-evaluationupdatedeventdata.md) | `schemas` | 1 |
+| [schemas: EvaluationVariant](schemas-evaluationvariant.md) | `schemas` | 1 |
+| [schemas: EvaluationView](schemas-evaluationview.md) | `schemas` | 3 |
+| [schemas: ExecutionEnvelope](schemas-executionenvelope.md) | `schemas` | 2 |
+| [schemas: ExternalEffectReceipt](schemas-externaleffectreceipt.md) | `schemas` | 9 |
+| [schemas: FactPredicate](schemas-factpredicate.md) | `schemas` | 1 |
+| [schemas: HTTPValidationError](schemas-httpvalidationerror.md) | `schemas` | 1 |
+| [schemas: HealthResponse](schemas-healthresponse.md) | `schemas` | 0 |
+| [schemas: InputArtifact](schemas-inputartifact.md) | `schemas` | 4 |
+| [schemas: InputDispositionDeclaration](schemas-inputdispositiondeclaration.md) | `schemas` | 0 |
+| [schemas: JoinAdmittedEvent](schemas-joinadmittedevent.md) | `schemas` | 0 |
+| [schemas: JoinAdmittedEventData](schemas-joinadmittedeventdata.md) | `schemas` | 4 |
+| [schemas: JoinDeclaration](schemas-joindeclaration.md) | `schemas` | 3 |
+| [schemas: JoinInputPlan](schemas-joininputplan.md) | `schemas` | 3 |
+| [schemas: JoinMemberDeclaration](schemas-joinmemberdeclaration.md) | `schemas` | 1 |
+| [schemas: JoinPlan](schemas-joinplan.md) | `schemas` | 4 |
+| [schemas: JoinSettlement](schemas-joinsettlement.md) | `schemas` | 6 |
+| [schemas: JoinWorkBinding](schemas-joinworkbinding.md) | `schemas` | 3 |
+| [schemas: JoinWorkMemberBinding](schemas-joinworkmemberbinding.md) | `schemas` | 3 |
+| [schemas: JsonSchemaDocument](schemas-jsonschemadocument.md) | `schemas` | 2 |
+| [schemas: JsonValue](schemas-jsonvalue.md) | `schemas` | 0 |
+| [schemas: ObservationEvidence](schemas-observationevidence.md) | `schemas` | 0 |
+| [schemas: ObservationFailure](schemas-observationfailure.md) | `schemas` | 1 |
+| [schemas: ObservationInapplicable](schemas-observationinapplicable.md) | `schemas` | 1 |
+| [schemas: ObservationRequest](schemas-observationrequest.md) | `schemas` | 8 |
+| [schemas: ObservationResult](schemas-observationresult.md) | `schemas` | 7 |
+| [schemas: ObserverImplementation](schemas-observerimplementation.md) | `schemas` | 3 |
+| [schemas: ObserverUse](schemas-observeruse.md) | `schemas` | 5 |
+| [schemas: OperationProjection](schemas-operationprojection.md) | `schemas` | 0 |
+| [schemas: OperationRef](schemas-operationref.md) | `schemas` | 1 |
+| [schemas: OutputArtifact](schemas-outputartifact.md) | `schemas` | 4 |
+| [schemas: OutputArtifactRoleCount](schemas-outputartifactrolecount.md) | `schemas` | 1 |
+| [schemas: OutputArtifactSetIdentity](schemas-outputartifactsetidentity.md) | `schemas` | 2 |
+| [schemas: OutputCollectionRef](schemas-outputcollectionref.md) | `schemas` | 3 |
+| [schemas: OutputSourceEdge](schemas-outputsourceedge.md) | `schemas` | 0 |
+| [schemas: PreviewAcceptanceView](schemas-previewacceptanceview.md) | `schemas` | 3 |
+| [schemas: PreviewOutcome](schemas-previewoutcome.md) | `schemas` | 1 |
+| [schemas: PreviewTargetExpectationView](schemas-previewtargetexpectationview.md) | `schemas` | 3 |
+| [schemas: RecipeCatalogView](schemas-recipecatalogview.md) | `schemas` | 2 |
+| [schemas: RecipeCoordinationRoute](schemas-recipecoordinationroute.md) | `schemas` | 5 |
+| [schemas: RecipeDefinition](schemas-recipedefinition.md) | `schemas` | 3 |
+| [schemas: RecipeJoin](schemas-recipejoin.md) | `schemas` | 4 |
+| [schemas: RecipeJoinMember](schemas-recipejoinmember.md) | `schemas` | 1 |
+| [schemas: RecipeRef](schemas-reciperef.md) | `schemas` | 1 |
+| [schemas: RecipeRoute](schemas-reciperoute.md) | `schemas` | 6 |
+| [schemas: RecipeView](schemas-recipeview.md) | `schemas` | 1 |
+| [schemas: SchedulerFailure](schemas-schedulerfailure.md) | `schemas` | 2 |
+| [schemas: SchedulerPruning](schemas-schedulerpruning.md) | `schemas` | 0 |
+| [schemas: SchedulerRun](schemas-schedulerrun.md) | `schemas` | 0 |
+| [schemas: SchedulerRunIn](schemas-schedulerrunin.md) | `schemas` | 1 |
+| [schemas: SchedulerStatus](schemas-schedulerstatus.md) | `schemas` | 1 |
+| [schemas: SchedulerWorkBatch](schemas-schedulerworkbatch.md) | `schemas` | 3 |
+| [schemas: Stove0EventPage](schemas-stove0eventpage.md) | `schemas` | 1 |
+| [schemas: Stove0LifecycleEvent](schemas-stove0lifecycleevent.md) | `schemas` | 0 |
+| [schemas: TargetCallbackAcknowledgement](schemas-targetcallbackacknowledgement.md) | `schemas` | 0 |
+| [schemas: TargetExecutionEvidence](schemas-targetexecutionevidence.md) | `schemas` | 5 |
+| [schemas: TargetFailure](schemas-targetfailure.md) | `schemas` | 1 |
+| [schemas: TargetInapplicable](schemas-targetinapplicable.md) | `schemas` | 1 |
+| [schemas: TargetInputAuthority](schemas-targetinputauthority.md) | `schemas` | 1 |
+| [schemas: TargetInputPage](schemas-targetinputpage.md) | `schemas` | 3 |
+| [schemas: TargetInputRoleCount](schemas-targetinputrolecount.md) | `schemas` | 1 |
+| [schemas: TargetJobDeclaration](schemas-targetjobdeclaration.md) | `schemas` | 2 |
+| [schemas: TargetJobStatus](schemas-targetjobstatus.md) | `schemas` | 4 |
+| [schemas: TargetOutputBindingSetIdentity](schemas-targetoutputbindingsetidentity.md) | `schemas` | 1 |
+| [schemas: TargetPlanBinding](schemas-targetplanbinding.md) | `schemas` | 4 |
+| [schemas: TargetProductionAuthority](schemas-targetproductionauthority.md) | `schemas` | 5 |
+| [schemas: TargetProductionSealResponse](schemas-targetproductionsealresponse.md) | `schemas` | 0 |
+| [schemas: TargetProgress](schemas-targetprogress.md) | `schemas` | 2 |
+| [schemas: TargetSettlementAuthority](schemas-targetsettlementauthority.md) | `schemas` | 3 |
+| [schemas: TransformPlan](schemas-transformplan.md) | `schemas` | 7 |
+| [schemas: ValidationError](schemas-validationerror.md) | `schemas` | 1 |
+| [schemas: WorkClaimView](schemas-workclaimview.md) | `schemas` | 1 |
+| [schemas: WorkCreateIn](schemas-workcreatein.md) | `schemas` | 4 |
+| [schemas: WorkCreatedEvent](schemas-workcreatedevent.md) | `schemas` | 0 |
+| [schemas: WorkCreatedEventData](schemas-workcreatedeventdata.md) | `schemas` | 4 |
+| [schemas: WorkFailureView](schemas-workfailureview.md) | `schemas` | 2 |
+| [schemas: WorkIdentity](schemas-workidentity.md) | `schemas` | 3 |
+| [schemas: WorkInapplicableView](schemas-workinapplicableview.md) | `schemas` | 2 |
+| [schemas: WorkPage](schemas-workpage.md) | `schemas` | 3 |
+| [schemas: WorkUpdatedEvent](schemas-workupdatedevent.md) | `schemas` | 0 |
+| [schemas: WorkUpdatedEventData](schemas-workupdatedeventdata.md) | `schemas` | 1 |
+| [schemas: WorkView](schemas-workview.md) | `schemas` | 6 |
+| [schemas: WorkflowPlan](schemas-workflowplan.md) | `schemas` | 5 |
+| [schemas: WorkflowPlanIntent](schemas-workflowplanintent.md) | `schemas` | 3 |
+| [schemas: WorkflowPreview](schemas-workflowpreview.md) | `schemas` | 7 |
+| [schemas: WorkflowPreviewIn](schemas-workflowpreviewin.md) | `schemas` | 3 |
+| [stove0 HTTP service](stove0-http-service.md) | `service` | 0 |
+| [GET /v1/target-executions/{job_id}/inputs](get-v1-target-executions-job-id-inputs.md) | `target-executions` | 1 |
+| [POST /v1/target-executions/{job_id}/production/seal](post-v1-target-executions-job-id-production-seal.md) | `target-executions` | 0 |
+| [PUT /v1/target-executions/{job_id}/dispositions/{input_id}](put-v1-target-executions-job-id-dispositions-input-id.md) | `target-executions` | 0 |
+| [PUT /v1/target-executions/{job_id}/outputs/{artifact_id}](put-v1-target-executions-job-id-outputs-artifact-id.md) | `target-executions` | 0 |
+| [PUT /v1/target-executions/{job_id}/source-edges/{output_id}/{input_id}](put-v1-target-executions-job-id-source-edges-output-id-input-id.md) | `target-executions` | 0 |
+| [GET /v1/work](get-v1-work.md) | `work` | 2 |
+| [GET /v1/work/{work_id}](get-v1-work-work-id.md) | `work` | 0 |
+| [GET /v1/work/{work_id}/coordination](get-v1-work-work-id-coordination.md) | `work` | 0 |
+| [POST /v1/work](post-v1-work.md) | `work` | 0 |
+| [POST /v1/work/{work_id}/cancel](post-v1-work-work-id-cancel.md) | `work` | 0 |
+| [POST /v1/work/{work_id}/retry](post-v1-work-work-id-retry.md) | `work` | 0 |
+| [POST /v1/work/{work_id}/step](post-v1-work-work-id-step.md) | `work` | 0 |
+| [POST /v1/workflow-previews](post-v1-workflow-previews.md) | `workflow-previews` | 0 |
