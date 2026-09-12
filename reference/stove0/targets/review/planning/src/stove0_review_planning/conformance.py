@@ -20,11 +20,15 @@ def contract_report() -> dict[str, object]:
     }
 
 
-def main(argv: Sequence[str] | None = None) -> int:
-    parser = argparse.ArgumentParser(
+def _parser() -> argparse.ArgumentParser:
+    return argparse.ArgumentParser(
         prog="stove0-review-planning",
         description="Print the maintained Stove0 review planning contract identities.",
     )
+
+
+def main(argv: Sequence[str] | None = None) -> int:
+    parser = _parser()
     parser.parse_args(argv)
     print(json.dumps(contract_report(), sort_keys=True, separators=(",", ":")))
     return 0

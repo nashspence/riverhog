@@ -1,0 +1,1 @@
+{"facts":[{"id":"fact:contract:1b97b6aa3de52de1e7d7334c","kind":"array","pointer":"/operations"}],"id":"c-67d02f0ff9b5-001","kind":"operation","owner":"operations","policies":["external-contract-fact/v1"],"schema":"riverhog-contract-audit-context/v1","scope":"external-contract"}

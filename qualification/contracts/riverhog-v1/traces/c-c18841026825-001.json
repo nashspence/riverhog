@@ -1,0 +1,1 @@
+{"candidate_sources":[],"candidates":[],"context_id":"c-c18841026825-001","projection_trace_facts":[],"qualification_routes":["make release-check","make build"],"schema":"riverhog-contract-audit-context-trace/v1","source_authorities":[{"id":"release:release.toml","source":{"path":"release.toml"}}]}

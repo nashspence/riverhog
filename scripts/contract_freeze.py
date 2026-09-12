@@ -24,8 +24,19 @@ import extent_witnesses
 import gogurt_core
 import operation_qualification
 import release as release_contract
+from contract_audit_bundle import (
+    AuditBundle,
+    AuditBundleError,
+    build_bundle,
+    canonical_bytes,
+    context_descriptors,
+    load_bundle,
+    reassemble_projection,
+    reassemble_trace,
+)
 from gogurt.cli import app as gogurt_app
 from gogurt_core import GOGURT_ROUTES_SCHEMA
+from mango_fish.cli import parser as mango_fish_parser
 from mango_fish.relay import MangoFishConfig
 from piggity.main import app as piggity_app
 from pydantic import BaseModel
@@ -40,17 +51,27 @@ from riverhog_storage_adapter_filesystem.materialize_cli import (
     build_parser as filesystem_materialize_parser,
 )
 from riverhog_storage_adapter_support import storage_adapter_schema_bundle
+from riverhog_storage_adapter_support.conformance import _parser as storage_conformance_parser
+from riverhog_storage_adapter_support.schemas import _parser as storage_schemas_parser
 from stove0_cli.main import app as stove0_app
 from stove0_observer_support import observer_schema_bundle
+from stove0_observer_support.conformance import _parser as observer_conformance_parser
+from stove0_observer_support.schemas import _parser as observer_schemas_parser
 from stove0_recipe_config import RecipeCatalog
+from stove0_review_planning.conformance import _parser as review_planning_parser
 from stove0_review_sampler_support import sampler_schema_bundle
+from stove0_review_sampler_support.conformance import _parser as sampler_conformance_parser
+from stove0_review_sampler_support.schemas import _parser as sampler_schemas_parser
 from stove0_review_target_support.app import ReviewTargetConfig, SamplerConfig
 from stove0_target_support import target_schema_bundle
+from stove0_target_support.conformance import _parser as target_conformance_parser
+from stove0_target_support.schemas import _parser as target_schemas_parser
 from typer.main import get_command
 
 ROOT = Path(__file__).resolve().parents[1]
 OUTPUT = ROOT / "qualification/contracts/riverhog-v1.json"
-TRACE_OUTPUT = ROOT / "qualification/contracts/riverhog-v1-trace.json"
+BUNDLE_DIRECTORY = ROOT / "qualification/contracts/riverhog-v1"
+LEGACY_TRACE_OUTPUT = ROOT / "qualification/contracts/riverhog-v1-trace.json"
 SCHEMA = "riverhog-contract-freeze/v1"
 TRACE_SCHEMA = "riverhog-contract-trace/v1"
 ENVIRONMENT_NAME = re.compile(r"^[A-Z][A-Z0-9_]+$")
@@ -497,13 +518,23 @@ def _argparse_command(parser: argparse.ArgumentParser) -> dict[str, object]:
 def _cli_surfaces() -> dict[str, object]:
     return {
         "gogurt": _click_command(get_command(gogurt_app)),
+        "mango-fish": _argparse_command(mango_fish_parser()),
         "piggity": _click_command(get_command(piggity_app)),
         "riverhog-ftp-adapter": _argparse_command(ftp_adapter_parser()),
         "riverhog-recover": _argparse_command(recovery_parser()),
+        "riverhog-storage-adapter-conformance": _argparse_command(storage_conformance_parser()),
         "riverhog-storage-adapter-filesystem-materialize": _argparse_command(
             filesystem_materialize_parser()
         ),
+        "riverhog-storage-adapter-schemas": _argparse_command(storage_schemas_parser()),
         "stove0": _click_command(get_command(stove0_app)),
+        "stove0-observer-conformance": _argparse_command(observer_conformance_parser()),
+        "stove0-observer-schemas": _argparse_command(observer_schemas_parser()),
+        "stove0-review-planning": _argparse_command(review_planning_parser()),
+        "stove0-review-sampler-conformance": _argparse_command(sampler_conformance_parser()),
+        "stove0-review-sampler-schemas": _argparse_command(sampler_schemas_parser()),
+        "stove0-target-conformance": _argparse_command(target_conformance_parser()),
+        "stove0-target-schemas": _argparse_command(target_schemas_parser()),
     }
 
 
@@ -739,13 +770,23 @@ def _protocol_trace() -> list[dict[str, object]]:
 def _cli_trace() -> list[dict[str, object]]:
     modules = {
         "gogurt": "gogurt.cli",
+        "mango-fish": "mango_fish.cli",
         "piggity": "piggity.main",
         "riverhog-ftp-adapter": "riverhog_ftp_adapter.app",
         "riverhog-recover": "riverhog_recover.cli",
+        "riverhog-storage-adapter-conformance": "riverhog_storage_adapter_support.conformance",
         "riverhog-storage-adapter-filesystem-materialize": (
             "riverhog_storage_adapter_filesystem.materialize_cli"
         ),
+        "riverhog-storage-adapter-schemas": "riverhog_storage_adapter_support.schemas",
         "stove0": "stove0_cli.main",
+        "stove0-observer-conformance": "stove0_observer_support.conformance",
+        "stove0-observer-schemas": "stove0_observer_support.schemas",
+        "stove0-review-planning": "stove0_review_planning.conformance",
+        "stove0-review-sampler-conformance": "stove0_review_sampler_support.conformance",
+        "stove0-review-sampler-schemas": "stove0_review_sampler_support.schemas",
+        "stove0-target-conformance": "stove0_target_support.conformance",
+        "stove0-target-schemas": "stove0_target_support.schemas",
     }
     return [
         {
@@ -913,11 +954,26 @@ def contract_projection() -> dict[str, object]:
 
 
 def _render() -> str:
-    return json.dumps(contract_projection(), indent=2, sort_keys=True) + "\n"
+    projection = contract_projection()
+    return canonical_bytes(build_bundle(projection, trace_projection(projection)).root).decode()
 
 
 def _render_trace(projection: Mapping[str, object]) -> str:
     return json.dumps(trace_projection(projection), indent=2, sort_keys=True) + "\n"
+
+
+def _generated_bundle() -> tuple[dict[str, object], dict[str, object], AuditBundle]:
+    projection = contract_projection()
+    trace = trace_projection(projection)
+    return projection, trace, build_bundle(projection, trace)
+
+
+def _load_checked_projection(path: Path = OUTPUT) -> dict[str, object]:
+    return reassemble_projection(load_bundle(path))
+
+
+def _load_checked_trace(path: Path = OUTPUT) -> dict[str, object]:
+    return reassemble_trace(load_bundle(path))
 
 
 def _extent_diff(
@@ -965,45 +1021,154 @@ def _parser() -> argparse.ArgumentParser:
     subparsers = parser.add_subparsers(dest="command", required=True)
     subparsers.add_parser("check", help="Verify the checked-in v1 projection.")
     subparsers.add_parser("update", help="Replace the checked-in v1 projection.")
+    subparsers.add_parser("summary", help="Print the compact v1 audit-root summary.")
+    list_parser = subparsers.add_parser("list", help="List bounded audit contexts.")
+    list_parser.add_argument("--owner")
+    list_parser.add_argument("--kind")
+    list_parser.add_argument("--disposition", choices=("contractual", "excluded"))
+    list_parser.add_argument("--policy")
+    show_parser = subparsers.add_parser("show", help="Print one complete bounded audit unit.")
+    show_parser.add_argument("context_id")
     return parser
+
+
+def _checked_bundle_matches(generated: AuditBundle) -> bool:
+    if not OUTPUT.is_file() or OUTPUT.read_bytes() != canonical_bytes(generated.root):
+        return False
+    expected = {OUTPUT.parent / relative for relative in generated.files}
+    actual = (
+        {path for path in BUNDLE_DIRECTORY.rglob("*") if path.is_file()}
+        if BUNDLE_DIRECTORY.is_dir()
+        else set()
+    )
+    if actual != expected:
+        return False
+    return all(
+        path.read_bytes() == generated.files[path.relative_to(OUTPUT.parent).as_posix()]
+        for path in expected
+    )
+
+
+def _write_bundle(bundle: AuditBundle) -> None:
+    OUTPUT.parent.mkdir(parents=True, exist_ok=True)
+    BUNDLE_DIRECTORY.mkdir(parents=True, exist_ok=True)
+    OUTPUT.write_bytes(canonical_bytes(bundle.root))
+    expected = {OUTPUT.parent / relative for relative in bundle.files}
+    for relative, payload in bundle.files.items():
+        path = OUTPUT.parent / relative
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_bytes(payload)
+    for path in sorted(BUNDLE_DIRECTORY.rglob("*"), reverse=True):
+        if path.is_file() and path not in expected:
+            path.unlink()
+        elif path.is_dir() and not any(path.iterdir()):
+            path.rmdir()
+    if LEGACY_TRACE_OUTPUT.exists():
+        LEGACY_TRACE_OUTPUT.unlink()
+
+
+def _summary(bundle: AuditBundle) -> dict[str, object]:
+    root = bundle.root
+    return {
+        "schema": root["schema"],
+        "series": root["series"],
+        "boundary": root["boundary"],
+        "policies": root["policies"],
+        "detector_meta_closure": root["detector_meta_closure"],
+        "identities": root["identities"],
+        "extent_contract": root["extent_contract"],
+        "coverage": root["coverage"],
+    }
+
+
+def _listed_contexts(bundle: AuditBundle, args: argparse.Namespace) -> list[dict[str, object]]:
+    result: list[dict[str, object]] = []
+    for context in context_descriptors(bundle.root):
+        if args.owner and context["owner"] != args.owner:
+            continue
+        if args.kind and context["kind"] != args.kind:
+            continue
+        if args.disposition and args.disposition not in cast(
+            Sequence[str], context["dispositions"]
+        ):
+            continue
+        if args.policy and args.policy not in cast(Sequence[str], context["policies"]):
+            continue
+        result.append(context)
+    return result
+
+
+def _shown_context(bundle: AuditBundle, context_id: str) -> dict[str, object]:
+    descriptor = next(
+        (context for context in context_descriptors(bundle.root) if context["id"] == context_id),
+        None,
+    )
+    if descriptor is None:
+        raise ContractFreezeError(f"unknown audit context: {context_id}")
+    normative_ref = descriptor.get("normative")
+    trace_ref = cast(Mapping[str, object], descriptor["trace"])
+    return {
+        "context": descriptor,
+        **(
+            {
+                "normative": json.loads(
+                    bundle.files[
+                        f"{bundle.root['context_directory']}/"
+                        f"{cast(Mapping[str, object], normative_ref)['path']}"
+                    ]
+                )
+            }
+            if isinstance(normative_ref, Mapping)
+            else {}
+        ),
+        "trace": json.loads(
+            bundle.files[f"{bundle.root['context_directory']}/{trace_ref['path']}"]
+        ),
+    }
 
 
 def main(argv: Sequence[str] | None = None) -> int:
     args = _parser().parse_args(argv)
     try:
-        projection = contract_projection()
-        rendered = json.dumps(projection, indent=2, sort_keys=True) + "\n"
-        trace_rendered = _render_trace(projection)
+        if args.command in {"summary", "list", "show"}:
+            checked = load_bundle(OUTPUT)
+            payload = (
+                _summary(checked)
+                if args.command == "summary"
+                else _listed_contexts(checked, args)
+                if args.command == "list"
+                else _shown_context(checked, str(args.context_id))
+            )
+            print(json.dumps(payload, indent=2, sort_keys=True))
+            return 0
+        projection, _trace, bundle = _generated_bundle()
         extent_diff: dict[str, dict[str, int]] | None = None
         if args.command == "update":
             previous: Mapping[str, object] | None = None
             if OUTPUT.is_file():
                 try:
-                    loaded = json.loads(OUTPUT.read_text(encoding="utf-8"))
-                    previous = loaded if isinstance(loaded, Mapping) else None
-                except json.JSONDecodeError:
+                    loaded = json.loads(OUTPUT.read_bytes())
+                    if loaded.get("schema") == SCHEMA:
+                        previous = loaded
+                    else:
+                        previous = _load_checked_projection()
+                except (AuditBundleError, AttributeError, KeyError, json.JSONDecodeError):
                     previous = None
             extent_diff = _extent_diff(previous, projection)
-            OUTPUT.parent.mkdir(parents=True, exist_ok=True)
-            OUTPUT.write_text(rendered, encoding="utf-8")
-            TRACE_OUTPUT.write_text(trace_rendered, encoding="utf-8")
-        elif (
-            not OUTPUT.is_file()
-            or OUTPUT.read_text(encoding="utf-8") != rendered
-            or not TRACE_OUTPUT.is_file()
-            or TRACE_OUTPUT.read_text(encoding="utf-8") != trace_rendered
-        ):
+            _write_bundle(bundle)
+        elif not _checked_bundle_matches(bundle) or LEGACY_TRACE_OUTPUT.exists():
             raise ContractFreezeError(
-                "the v1 contract or trace projection is stale; "
+                "the v1 contract audit bundle is stale; "
                 "run `make contract-freeze-update` and review the semantic diff"
             )
+        root_bytes = canonical_bytes(bundle.root)
         print(
             json.dumps(
                 {
                     "output": OUTPUT.relative_to(ROOT).as_posix(),
-                    "sha256": hashlib.sha256(rendered.encode()).hexdigest(),
-                    "trace_output": TRACE_OUTPUT.relative_to(ROOT).as_posix(),
-                    "trace_sha256": hashlib.sha256(trace_rendered.encode()).hexdigest(),
+                    "sha256": hashlib.sha256(root_bytes).hexdigest(),
+                    "contexts": len(cast(Sequence[object], bundle.root["contexts"])),
+                    "identities": bundle.root["identities"],
                     "status": "updated" if args.command == "update" else "current",
                     **({"extent_diff": extent_diff} if extent_diff is not None else {}),
                 },
@@ -1013,6 +1178,7 @@ def main(argv: Sequence[str] | None = None) -> int:
         return 0
     except (
         ContractFreezeError,
+        AuditBundleError,
         extent_witnesses.ExtentWitnessError,
         release_contract.ReleaseError,
     ) as exc:

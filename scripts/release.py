@@ -602,8 +602,8 @@ def validate_release_contract(root: Path, *, expected_version: str | None = None
         raise ReleaseError("release.toml lacks the complete artifact contract")
     if artifacts["python_formats"] != ["wheel", "sdist"]:
         raise ReleaseError("release.toml requires wheel and sdist Python artifacts")
-    if artifacts["contract"] != "riverhog-v1-contract.json":
-        raise ReleaseError("release.toml requires the canonical v1 contract projection")
+    if artifacts["contract"] != "riverhog-v1-contract.tar.gz":
+        raise ReleaseError("release.toml requires the canonical v1 contract audit bundle")
     if artifacts["contract"] not in artifacts["evidence"]:
         raise ReleaseError("release evidence omits the canonical v1 contract projection")
     if artifacts["notices"] != NOTICE_POLICY:
@@ -2580,10 +2580,20 @@ def _generate_release_evidence(
 ) -> dict[str, Any]:
     shutil.copy2(root / "THIRD_PARTY_NOTICES.md", output / "THIRD_PARTY_NOTICES.md")
     contract_name = str(_load_config(root)["artifacts"]["contract"])
-    shutil.copy2(
+    contract_files = [
         root / "qualification/contracts/riverhog-v1.json",
-        output / contract_name,
-    )
+        *sorted((root / "qualification/contracts/riverhog-v1").rglob("*.json")),
+    ]
+    with (output / contract_name).open("wb") as raw:
+        with gzip.GzipFile(filename="", mode="wb", fileobj=raw, mtime=source_epoch) as compressed:
+            with tarfile.open(fileobj=compressed, mode="w", format=tarfile.PAX_FORMAT) as archive:
+                for path in contract_files:
+                    relative = path.relative_to(root / "qualification/contracts").as_posix()
+                    content = path.read_bytes()
+                    archive.addfile(
+                        _notice_tar_info(relative, content, source_epoch=source_epoch),
+                        io.BytesIO(content),
+                    )
     written_install_manifest = cast(
         dict[str, Any],
         json.loads((output / "install-manifest.json").read_text(encoding="utf-8")),

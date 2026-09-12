@@ -92,6 +92,7 @@ dev = [
     { name = "pytest", specifier = ">=9.0.3,<10.0" },
     { name = "pytest-cov", specifier = ">=7.1.0,<8.0" },
     { name = "reuse", specifier = ">=6,<7" },
+    { name = "rfc8785", specifier = ">=0.1.4,<0.2" },
     { name = "ruff", specifier = ">=0.16.0,<1.0" },
     { name = "types-jsonschema", specifier = ">=4.25,<5.0" },
     { name = "types-pyyaml", specifier = ">=6.0,<7.0" },

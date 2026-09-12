@@ -23,6 +23,7 @@ from statistics import median
 from typing import Any, TypeGuard, cast, get_origin, get_type_hints
 from unittest.mock import patch
 
+import contract_audit_bundle
 from fastapi import FastAPI
 from fastapi.routing import APIRoute
 from piggity import main as piggity
@@ -802,13 +803,21 @@ def _contract_freeze_identity(path: Path = CONTRACT_FREEZE) -> dict[str, object]
 
     try:
         content = path.read_bytes()
-        payload = json.loads(content)
-        extents = payload["external_contract"]["extents"]
-        coverage = extents["coverage"]
-    except (KeyError, OSError, TypeError, json.JSONDecodeError) as exc:
+        bundle = contract_audit_bundle.load_bundle(path)
+        payload = contract_audit_bundle.reassemble_projection(bundle)
+        external = cast(dict[str, object], payload["external_contract"])
+        extents = cast(dict[str, object], external["extents"])
+        coverage = cast(dict[str, object], extents["coverage"])
+    except (
+        KeyError,
+        OSError,
+        TypeError,
+        json.JSONDecodeError,
+        contract_audit_bundle.AuditBundleError,
+    ) as exc:
         raise QualificationError("contract-freeze extent authority is unavailable") from exc
     if (
-        payload.get("schema") != "riverhog-contract-freeze/v1"
+        bundle.root.get("schema") != contract_audit_bundle.ROOT_SCHEMA
         or extents.get("schema") != "riverhog-extent-contract/v1"
         or any(coverage.get(key) != 0 for key in ("missing", "duplicate", "stale", "undecided"))
         or coverage.get("classified") != coverage.get("discovered")
@@ -816,7 +825,7 @@ def _contract_freeze_identity(path: Path = CONTRACT_FREEZE) -> dict[str, object]
     ):
         raise QualificationError("contract-freeze extent authority is incomplete")
     return {
-        "schema": payload["schema"],
+        "schema": bundle.root["schema"],
         "projection_sha256": hashlib.sha256(content).hexdigest(),
         "extent_schema": extents["schema"],
         "extent_sha256": extents["sha256"],

@@ -155,7 +155,7 @@ def test_exact_sha_evidence_contains_only_generated_current_rows(
     assert payload["qualification"]["positive_local_lifecycles"]["status"] == "passed"
     extent = payload["qualification"]["extent_contract"]
     assert extent["status"] == "passed"
-    assert extent["schema"] == "riverhog-contract-freeze/v1"
+    assert extent["schema"] == "riverhog-contract-audit-bundle/v1"
     assert extent["extent_schema"] == "riverhog-extent-contract/v1"
     assert extent["extent_decisions"] > 0
     assert len(extent["projection_sha256"]) == 64
@@ -187,21 +187,10 @@ def test_operation_evidence_rejects_an_incomplete_extent_authority(tmp_path: Pat
     authority.write_text(
         json.dumps(
             {
-                "schema": "riverhog-contract-freeze/v1",
-                "external_contract": {
-                    "extents": {
-                        "schema": "riverhog-extent-contract/v1",
-                        "sha256": "a" * 64,
-                        "coverage": {
-                            "classified": 1,
-                            "discovered": 2,
-                            "missing": 1,
-                            "duplicate": 0,
-                            "stale": 0,
-                            "undecided": 0,
-                        },
-                    }
-                },
+                "schema": "riverhog-contract-audit-bundle/v1",
+                "context_directory": "riverhog-v1",
+                "context_columns": [],
+                "contexts": [],
             }
         )
     )
@@ -209,7 +198,7 @@ def test_operation_evidence_rejects_an_incomplete_extent_authority(tmp_path: Pat
     try:
         module._contract_freeze_identity(authority)
     except module.QualificationError as exc:
-        assert "extent authority is incomplete" in str(exc)
+        assert "extent authority is unavailable" in str(exc)
     else:
         raise AssertionError("incomplete extent authority must fail runtime qualification")
 
