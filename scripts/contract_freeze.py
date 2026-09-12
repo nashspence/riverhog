@@ -955,7 +955,13 @@ def contract_projection() -> dict[str, object]:
 
 def _render() -> str:
     projection = contract_projection()
-    return canonical_bytes(build_atlas(projection, trace_projection(projection)).root).decode()
+    return canonical_bytes(
+        build_atlas(
+            projection,
+            trace_projection(projection),
+            component_descriptions=_component_descriptions(),
+        ).root
+    ).decode()
 
 
 def _render_trace(projection: Mapping[str, object]) -> str:
@@ -965,7 +971,25 @@ def _render_trace(projection: Mapping[str, object]) -> str:
 def _generated_atlas() -> tuple[dict[str, object], dict[str, object], ContractAtlas]:
     projection = contract_projection()
     trace = trace_projection(projection)
-    return projection, trace, build_atlas(projection, trace)
+    return (
+        projection,
+        trace,
+        build_atlas(
+            projection,
+            trace,
+            component_descriptions=_component_descriptions(),
+        ),
+    )
+
+
+def _component_descriptions() -> dict[str, str]:
+    """Return the release-owned descriptions used by human boundary navigation."""
+
+    projects = release_contract.validate_release_contract(ROOT)
+    descriptions = {project.name: project.description for project in projects}
+    if any(not description.strip() for description in descriptions.values()):
+        raise ContractFreezeError("every release component requires a maintained description")
+    return descriptions
 
 
 def _load_checked_projection(path: Path = OUTPUT) -> dict[str, object]:

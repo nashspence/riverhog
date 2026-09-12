@@ -23,6 +23,9 @@ TRACE_IDENTITY_SCHEMA = "riverhog-v1-source-proof-trace/v1"
 REPRESENTATION_IDENTITY_SCHEMA = "riverhog-v1-human-atlas-representation/v1"
 DETECTOR_CLOSURE_SCHEMA = "riverhog-contract-detector-closure/v1"
 ATLAS_DIRECTORY = "riverhog-v1"
+MAX_HUMAN_DOCUMENT_BYTES = 128 * 1024
+FAMILY_INDEX_MINIMUM_ELEMENTS = 24
+RELATIONSHIP_SCHEMA = "riverhog-contract-human-relationships/v1"
 
 EXCLUSION_POLICIES: tuple[dict[str, str], ...] = (
     {
@@ -993,6 +996,24 @@ def _counts(
             )
         ),
         "by_detector": dict(sorted(Counter(str(item["detector"]) for item in elements).items())),
+        "by_source_authority": dict(
+            sorted(
+                Counter(
+                    source
+                    for item in [*elements, *exclusions]
+                    for source in cast(Sequence[str], item["source_authority_ids"])
+                ).items()
+            )
+        ),
+        "by_qualification_route": dict(
+            sorted(
+                Counter(
+                    route
+                    for item in elements
+                    for route in cast(Sequence[str], item["qualification_routes"])
+                ).items()
+            )
+        ),
     }
 
 
@@ -1227,14 +1248,6 @@ def _render_generic(values: Sequence[object]) -> list[str]:
         schema_lines = _render_schema(value)
         if schema_lines:
             return schema_lines
-    encoded = json.dumps(
-        values[0] if len(values) == 1 else list(values),
-        indent=2,
-        ensure_ascii=False,
-        sort_keys=True,
-    ).replace("](", "]\\u0028")
-    if len(encoded.encode()) <= 12 * 1024:
-        return ["```json", encoded, "```"]
     large_value = values[0] if len(values) == 1 else list(values)
     if isinstance(large_value, Mapping):
         return [
@@ -1245,10 +1258,78 @@ def _render_generic(values: Sequence[object]) -> list[str]:
                 for key, item in large_value.items()
             ),
         ]
-    return [
-        f"This semantic unit contains {_shape_summary(large_value)}. Its exact value is in the "
-        "machine closure at the pointers above."
+    return [f"- Shape: {_shape_summary(large_value)}"]
+
+
+def _pretty_json(value: object) -> str:
+    """Return exact, readable JSON without accidentally creating Markdown links."""
+
+    return json.dumps(value, indent=2, ensure_ascii=False, sort_keys=True).replace("](", "]\\u0028")
+
+
+def _exact_contract_lines(pointers: Sequence[str], values: Sequence[object]) -> list[str]:
+    lines = [
+        "## Complete owned contract",
+        "",
+        "The following JSON is the complete value owned at each machine-authority pointer. "
+        "No contractual fields are summarized away.",
+        "",
     ]
+    for pointer, value in zip(pointers, values, strict=True):
+        if len(pointers) > 1:
+            lines.extend([f"### `{pointer}`", ""])
+        lines.extend(
+            [
+                f"<!-- exact-contract-value: {canonical_sha256(value)} -->",
+                "",
+                "```json",
+                _pretty_json(value),
+                "```",
+                "",
+            ]
+        )
+    return lines
+
+
+def _local_contract_references(
+    authority: str,
+    values: Sequence[object],
+    elements_by_id: Mapping[str, Mapping[str, object]],
+) -> list[Mapping[str, object]]:
+    """Resolve local OpenAPI references to their exact atlas owners."""
+
+    prefix = f"/external_contract/http_openapi/{authority}"
+    owners: dict[str, Mapping[str, object]] = {}
+    for element in elements_by_id.values():
+        if element["authority"] != authority or element["interface"] != "http":
+            continue
+        for pointer in cast(Sequence[str], element["pointers"]):
+            if pointer.startswith(f"{prefix}/components/"):
+                owners[f"#{pointer.removeprefix(prefix)}"] = element
+
+    references: set[str] = set()
+
+    def visit(value: object) -> None:
+        if isinstance(value, Mapping):
+            reference = value.get("$ref")
+            if isinstance(reference, str):
+                references.add(reference)
+            for child in value.values():
+                visit(child)
+        elif isinstance(value, Sequence) and not isinstance(value, (str, bytes, bytearray)):
+            for child in value:
+                visit(child)
+
+    for value in values:
+        visit(value)
+    return sorted(
+        {
+            str(owners[reference]["id"]): owners[reference]
+            for reference in references
+            if reference in owners
+        }.values(),
+        key=lambda item: str(item["title"]),
+    )
 
 
 def _render_dossier(
@@ -1320,6 +1401,12 @@ def _render_dossier(
             related = elements_by_id[related_id]
             lines.append(f"- [{related['title']}]({_relative_link(path, str(related['dossier']))})")
         lines.append("")
+    referenced = _local_contract_references(str(element["authority"]), values, elements_by_id)
+    if referenced:
+        lines.extend(["## Referenced contract dossiers", ""])
+        for owner in referenced:
+            lines.append(f"- [{owner['title']}]({_relative_link(path, str(owner['dossier']))})")
+        lines.append("")
     extent_ids = cast(Sequence[str], element["extent_decision_ids"])
     if extent_ids:
         decisions = {
@@ -1359,7 +1446,7 @@ def _render_dossier(
                 f"`{_md(decision['policy'])}` | {_md(bounds)} |"
             )
         lines.append("")
-    lines.extend(["## Contract", ""])
+    lines.extend(["## Contract summary", ""])
     interface = str(element["interface"])
     details = cast(Mapping[str, object], element.get("details", {}))
     if (
@@ -1375,6 +1462,7 @@ def _render_dossier(
         lines.extend(_render_operation(cast(Mapping[str, object], values[0])))
     else:
         lines.extend(_render_generic(values))
+    lines.extend(["", *_exact_contract_lines(pointers, values)])
     return ("\n".join(lines).rstrip() + "\n").encode()
 
 
@@ -1386,6 +1474,636 @@ def _table_counts(values: Mapping[str, object], label: str) -> list[str]:
     ]
 
 
+def _relationship_model(
+    projection: Mapping[str, object],
+    elements: Sequence[Mapping[str, object]],
+    component_descriptions: Mapping[str, str],
+) -> dict[str, object]:
+    """Derive human navigation from frozen boundary and release metadata."""
+
+    boundaries = cast(Mapping[str, object], projection["boundaries"])
+    components = cast(Sequence[Mapping[str, object]], boundaries["components"])
+    component_names = {str(item["distribution"]) for item in components}
+    if set(component_descriptions) != component_names or any(
+        not value.strip() for value in component_descriptions.values()
+    ):
+        raise ContractAtlasError(
+            "relationship navigation requires one maintained description per release component"
+        )
+    authority_counts = Counter(str(item["authority"]) for item in elements)
+    nodes: list[dict[str, object]] = []
+    edges: list[dict[str, object]] = []
+    for component in components:
+        name = str(component["distribution"])
+        nodes.append(
+            {
+                "id": f"component:{name}",
+                "kind": "component",
+                "name": name,
+                "path": component["path"],
+                "role": component["role"],
+                "description": component_descriptions[name],
+                "description_source": f"{component['path']}/pyproject.toml#/project/description",
+                "contract_elements": authority_counts.get(name, 0),
+            }
+        )
+        for dependency in cast(Sequence[str], component["dependencies"]):
+            edges.append(
+                {
+                    "type": "depends-on",
+                    "source": f"component:{name}",
+                    "target": f"component:{dependency}",
+                    "scope": "required",
+                }
+            )
+        for extra, dependencies in cast(
+            Mapping[str, Sequence[str]], component["optional_dependencies"]
+        ).items():
+            for dependency in dependencies:
+                edges.append(
+                    {
+                        "type": "depends-on",
+                        "source": f"component:{name}",
+                        "target": f"component:{dependency}",
+                        "scope": f"optional:{extra}",
+                    }
+                )
+
+    for item in cast(Sequence[Mapping[str, object]], boundaries["entry_point_extensions"]):
+        group = str(item["group"])
+        node_id = f"extension-point:{group}"
+        nodes.append(
+            {
+                "id": node_id,
+                "kind": "extension-point",
+                "name": group,
+                "description": f"Entry-point extension boundary owned by {item['owner']}.",
+                "owner": item["owner"],
+                "contract_elements": 0,
+            }
+        )
+        edges.append(
+            {
+                "type": "owns-extension-point",
+                "source": f"component:{item['owner']}",
+                "target": node_id,
+            }
+        )
+        for provider in cast(Sequence[Mapping[str, object]], item["providers"]):
+            edges.append(
+                {
+                    "type": "implements-extension-point",
+                    "source": f"component:{provider['distribution']}",
+                    "target": node_id,
+                    "binding": provider["name"],
+                }
+            )
+
+    for item in cast(Sequence[Mapping[str, object]], boundaries["process_extensions"]):
+        name = str(item["name"])
+        node_id = f"process-protocol:{name}"
+        nodes.append(
+            {
+                "id": node_id,
+                "kind": "process-protocol",
+                "name": name,
+                "description": (
+                    f"Independently deployed process protocol owned by {item['contract_owner']}."
+                ),
+                "owner": item["contract_owner"],
+                "protocols": item["protocols"],
+                "contract_elements": authority_counts.get(str(item["contract_owner"]), 0),
+            }
+        )
+        edges.extend(
+            [
+                {
+                    "type": "owns-protocol",
+                    "source": f"component:{item['contract_owner']}",
+                    "target": node_id,
+                },
+                {
+                    "type": "binds-protocol",
+                    "source": f"component:{item['binding_support']}",
+                    "target": node_id,
+                    "binding": item["binding"],
+                },
+            ]
+        )
+        for provider in cast(Sequence[Mapping[str, object]], item["providers"]):
+            edges.append(
+                {
+                    "type": "implements-protocol",
+                    "source": f"component:{provider['distribution']}",
+                    "target": node_id,
+                }
+            )
+
+    runtime_images = cast(
+        Mapping[str, Mapping[str, object]],
+        cast(Mapping[str, object], boundaries["runtime_images"])["runtime"],
+    )
+    for image, config in runtime_images.items():
+        distributions = cast(Sequence[str], config.get("distributions", ()))
+        node_id = f"image:runtime:{image}"
+        nodes.append(
+            {
+                "id": node_id,
+                "kind": "runtime-image",
+                "name": image,
+                "image_kind": "runtime",
+                "role": config.get("role"),
+                "description": config["description"],
+                "description_source": f"release.toml#/images/runtime/{image}/description",
+                "contract_elements": authority_counts.get(image, 0),
+            }
+        )
+        for distribution in distributions:
+            edges.append(
+                {
+                    "type": "packaged-in",
+                    "source": f"component:{distribution}",
+                    "target": node_id,
+                }
+            )
+
+    release = cast(
+        Mapping[str, object], cast(Mapping[str, object], projection["external_contract"])["release"]
+    )
+    installation = cast(Mapping[str, object], release["installation"])
+    installation_id = f"installation:{installation['method']}"
+    nodes.append(
+        {
+            "id": installation_id,
+            "kind": "installation",
+            "name": installation["method"],
+            "description": (
+                "Coordinated end-user installation roots declared by the release contract."
+            ),
+            "contract_elements": 0,
+        }
+    )
+    for root in cast(Sequence[str], installation["roots"]):
+        edges.append(
+            {
+                "type": "installed-as",
+                "source": f"component:{root}",
+                "target": installation_id,
+            }
+        )
+
+    node_ids = [str(item["id"]) for item in nodes]
+    if len(node_ids) != len(set(node_ids)):
+        raise ContractAtlasError("relationship navigation repeats a node")
+    if any(
+        str(edge["source"]) not in node_ids or str(edge["target"]) not in node_ids for edge in edges
+    ):
+        raise ContractAtlasError("relationship navigation contains an unresolved edge")
+    product_nodes = [
+        str(item["id"])
+        for item in nodes
+        if item.get("kind") == "component" and item.get("role") == "deployed_implementation"
+    ]
+    if len(product_nodes) != 1:
+        raise ContractAtlasError("relationship navigation requires one product implementation")
+    product_images = [
+        str(item["id"])
+        for item in nodes
+        if item.get("kind") == "runtime-image" and item.get("role") == "product"
+    ]
+    if len(product_images) != 1:
+        raise ContractAtlasError("relationship navigation requires one product runtime image")
+    if not any(
+        edge["type"] == "packaged-in"
+        and edge["source"] == product_nodes[0]
+        and edge["target"] == product_images[0]
+        for edge in edges
+    ):
+        raise ContractAtlasError("product runtime image does not contain its implementation")
+    return {
+        "schema": RELATIONSHIP_SCHEMA,
+        "center": product_nodes[0],
+        "product": product_images[0],
+        "reference_policy": boundaries["reference_policy"],
+        "nodes": sorted(nodes, key=lambda value: str(value["id"])),
+        "edges": sorted(
+            edges,
+            key=lambda value: (
+                str(value["type"]),
+                str(value["source"]),
+                str(value["target"]),
+                str(value.get("scope", "")),
+                str(value.get("binding", "")),
+            ),
+        ),
+    }
+
+
+def _render_relationships(
+    relationship: Mapping[str, object],
+    elements: Sequence[Mapping[str, object]],
+) -> tuple[dict[str, bytes], dict[str, dict[str, object]]]:
+    """Render the frozen graph as an unfamiliar auditor's orientation layer."""
+
+    root_path = f"{ATLAS_DIRECTORY}/index.md"
+    base = f"{ATLAS_DIRECTORY}/relationships"
+    relationship_path = f"{base}/index.md"
+    component_index_path = f"{base}/components/index.md"
+    library_path = f"{base}/riverhog-libraries/index.md"
+    extension_path = f"{base}/extensions/index.md"
+    runtime_path = f"{base}/runtime-images/index.md"
+    installation_path = f"{base}/installation/index.md"
+    reference_path = f"{base}/references/index.md"
+    nodes = cast(Sequence[Mapping[str, object]], relationship["nodes"])
+    edges = cast(Sequence[Mapping[str, object]], relationship["edges"])
+    by_id = {str(item["id"]): item for item in nodes}
+    component_nodes = [item for item in nodes if item["kind"] == "component"]
+    authority_names = {str(item["authority"]) for item in elements}
+
+    def component_page(node: Mapping[str, object]) -> str:
+        return f"{base}/components/{_slug(str(node['name']), limit=72)}.md"
+
+    def node_link(source: str, node: Mapping[str, object]) -> str:
+        if node["kind"] == "component":
+            return f"[{_md(node['name'])}]({_relative_link(source, component_page(node))})"
+        return f"`{_md(node['name'])}`"
+
+    files: dict[str, bytes] = {}
+    metadata: dict[str, dict[str, object]] = {}
+    role_counts = dict(sorted(Counter(str(item["role"]) for item in component_nodes).items()))
+    kind_counts = dict(sorted(Counter(str(item["kind"]) for item in nodes).items()))
+    edge_counts = dict(sorted(Counter(str(item["type"]) for item in edges).items()))
+    center = by_id[str(relationship["center"])]
+    product = by_id[str(relationship["product"])]
+    product_authority_path = (
+        f"{ATLAS_DIRECTORY}/authorities/{_slug(str(product['name']), limit=72)}/index.md"
+    )
+    center_edges = [edge for edge in edges if center["id"] in {edge["source"], edge["target"]}]
+    lines = [
+        "# Riverhog-centered authority relationships",
+        "",
+        f"[Atlas]({_relative_link(relationship_path, root_path)})",
+        "",
+        "This generated view explains how the frozen authorities fit together. It does not "
+        "transfer ownership: every edge comes from release roles, dependency metadata, extension "
+        "ownership, protocol ownership, image composition, or installation roots already present "
+        "in executable authorities.",
+        "",
+        "## Riverhog service boundary",
+        "",
+        "| Layer | Authority | Purpose | Contract elements |",
+        "|---|---|---|---:|",
+        f"| Public service | [{_md(product['name'])}]"
+        f"({_relative_link(relationship_path, product_authority_path)}) | "
+        f"{_md(product['description'])} | {product['contract_elements']} |",
+        f"| Packaged implementation | {node_link(relationship_path, center)} | "
+        f"{_md(center['description'])} | {center['contract_elements']} |",
+        "",
+        "## Relationship shape",
+        "",
+        *_table_counts(role_counts, "Component role"),
+        "",
+        *_table_counts(kind_counts, "Node kind"),
+        "",
+        *_table_counts(edge_counts, "Relationship"),
+        "",
+        "## Drill down",
+        "",
+        "- [Riverhog-owned reusable contracts and libraries]"
+        f"({_relative_link(relationship_path, library_path)})",
+        "- [Independently implementable extension boundaries]"
+        f"({_relative_link(relationship_path, extension_path)})",
+        f"- [Runtime-image composition]({_relative_link(relationship_path, runtime_path)})",
+        "- [Installed end-user and recovery surfaces]"
+        f"({_relative_link(relationship_path, installation_path)})",
+        "- [Nonnormative reference ecosystem]"
+        f"({_relative_link(relationship_path, reference_path)})",
+        "- [Complete component relationship inventory]"
+        f"({_relative_link(relationship_path, component_index_path)})",
+        "",
+        "## Direct Riverhog product relationships",
+        "",
+        "| Direction | Relationship | Counterparty | Scope or binding |",
+        "|---|---|---|---|",
+    ]
+    for edge in center_edges:
+        center_outgoing = edge["source"] == center["id"]
+        other = by_id[str(edge["target"] if center_outgoing else edge["source"])]
+        detail = edge.get("scope", edge.get("binding", ""))
+        lines.append(
+            f"| {'outgoing' if center_outgoing else 'incoming'} | `{_md(edge['type'])}` | "
+            f"{node_link(relationship_path, other)} | `{_md(detail)}` |"
+        )
+    files[relationship_path] = ("\n".join(lines).rstrip() + "\n").encode()
+    metadata[relationship_path] = {
+        "kind": "relationship-index",
+        "counts": {"nodes": len(nodes), "edges": len(edges)},
+    }
+
+    component_lines = [
+        "# Complete component relationship inventory",
+        "",
+        f"[Atlas]({_relative_link(component_index_path, root_path)}) · "
+        f"[Relationships]({_relative_link(component_index_path, relationship_path)})",
+        "",
+        "Every release component appears exactly once below. Purpose text is the maintained "
+        "project description; role, path, and relationships are executable release metadata.",
+    ]
+    for role in sorted(role_counts):
+        role_nodes = sorted(
+            (item for item in component_nodes if item["role"] == role),
+            key=lambda value: str(value["name"]),
+        )
+        component_lines.extend(
+            [
+                "",
+                f"## {role.replace('_', ' ').title()}",
+                "",
+                f"Components: **{len(role_nodes)}**",
+                "",
+                "| Component | Purpose | Owned contract elements |",
+                "|---|---|---:|",
+            ]
+        )
+        for node in role_nodes:
+            component_lines.append(
+                f"| {node_link(component_index_path, node)} | {_md(node['description'])} | "
+                f"{node['contract_elements']} |"
+            )
+    files[component_index_path] = ("\n".join(component_lines).rstrip() + "\n").encode()
+    metadata[component_index_path] = {
+        "kind": "relationship-component-index",
+        "counts": {"components": len(component_nodes), "roles": len(role_counts)},
+    }
+
+    for node in component_nodes:
+        path = component_page(node)
+        outgoing = [edge for edge in edges if edge["source"] == node["id"]]
+        incoming = [edge for edge in edges if edge["target"] == node["id"]]
+        node_lines = [
+            f"# {node['name']}",
+            "",
+            f"[Atlas]({_relative_link(path, root_path)}) · "
+            f"[Relationships]({_relative_link(path, relationship_path)}) · "
+            f"[Components]({_relative_link(path, component_index_path)})",
+            "",
+            str(node["description"]),
+            "",
+            "| Boundary field | Value |",
+            "|---|---|",
+            f"| Release role | `{_md(node['role'])}` |",
+            f"| Source path | `{_md(node['path'])}` |",
+            f"| Description source | `{_md(node['description_source'])}` |",
+            f"| Owned contract elements | {node['contract_elements']} |",
+        ]
+        if node["name"] in authority_names:
+            authority_path = (
+                f"{ATLAS_DIRECTORY}/authorities/{_slug(str(node['name']), limit=72)}/index.md"
+            )
+            node_lines.extend(
+                [
+                    "",
+                    f"[Open exact owned authority]({_relative_link(path, authority_path)})",
+                ]
+            )
+        node_lines.extend(
+            [
+                "",
+                "## Typed relationships",
+                "",
+                "| Direction | Relationship | Counterparty | Scope or binding |",
+                "|---|---|---|---|",
+            ]
+        )
+        for edge, direction in [
+            *((edge, "outgoing") for edge in outgoing),
+            *((edge, "incoming") for edge in incoming),
+        ]:
+            other = by_id[str(edge["target"] if direction == "outgoing" else edge["source"])]
+            detail = edge.get("scope", edge.get("binding", ""))
+            node_lines.append(
+                f"| {direction} | `{_md(edge['type'])}` | {node_link(path, other)} | "
+                f"`{_md(detail)}` |"
+            )
+        if not outgoing and not incoming:
+            node_lines.append("| — | — | No declared cross-component relationship | — |")
+        files[path] = ("\n".join(node_lines).rstrip() + "\n").encode()
+        metadata[path] = {
+            "kind": "relationship-component",
+            "counts": {
+                "contract_elements": node["contract_elements"],
+                "incoming_edges": len(incoming),
+                "outgoing_edges": len(outgoing),
+            },
+            "relationship_node_id": node["id"],
+        }
+
+    libraries = sorted(
+        (
+            item
+            for item in component_nodes
+            if item["role"] == "reusable_library" and str(item["path"]).startswith("packages/")
+        ),
+        key=lambda value: str(value["name"]),
+    )
+    library_lines = [
+        "# Riverhog-owned reusable contracts and libraries",
+        "",
+        f"[Atlas]({_relative_link(library_path, root_path)}) · "
+        f"[Relationships]({_relative_link(library_path, relationship_path)})",
+        "",
+        "These reusable release units live under the Riverhog package boundary. Their individual "
+        "pages show exact dependency and extension relationships.",
+        "",
+        f"Components: **{len(libraries)}**",
+        "",
+        "| Component | Purpose | Owned contract elements |",
+        "|---|---|---:|",
+    ]
+    for node in libraries:
+        library_lines.append(
+            f"| {node_link(library_path, node)} | {_md(node['description'])} | "
+            f"{node['contract_elements']} |"
+        )
+    files[library_path] = ("\n".join(library_lines).rstrip() + "\n").encode()
+    metadata[library_path] = {
+        "kind": "relationship-library-index",
+        "counts": {"components": len(libraries)},
+    }
+
+    extension_nodes = [
+        item for item in nodes if item["kind"] in {"extension-point", "process-protocol"}
+    ]
+    extension_lines = [
+        "# Independently implementable extension boundaries",
+        "",
+        f"[Atlas]({_relative_link(extension_path, root_path)}) · "
+        f"[Relationships]({_relative_link(extension_path, relationship_path)})",
+        "",
+        "The owner defines the boundary. Checked-in providers are optional, nonnormative "
+        "references and do not define an exhaustive implementation set.",
+        "",
+        f"Extension boundaries: **{len(extension_nodes)}**",
+        "",
+        "| Boundary | Kind | Owner | Binding support | Reference implementations |",
+        "|---|---|---|---|---|",
+    ]
+    for node in sorted(extension_nodes, key=lambda value: str(value["name"])):
+        node_edges = [edge for edge in edges if edge["target"] == node["id"]]
+        owners = [
+            by_id[str(edge["source"])]
+            for edge in node_edges
+            if str(edge["type"]).startswith("owns-")
+        ]
+        bindings = [
+            by_id[str(edge["source"])] for edge in node_edges if edge["type"] == "binds-protocol"
+        ]
+        providers = [
+            by_id[str(edge["source"])]
+            for edge in node_edges
+            if str(edge["type"]).startswith("implements-")
+        ]
+        provider_links = (
+            ", ".join(node_link(extension_path, item) for item in providers) or "none checked in"
+        )
+        extension_lines.append(
+            f"| `{_md(node['name'])}` | `{_md(node['kind'])}` | "
+            f"{', '.join(node_link(extension_path, item) for item in owners)} | "
+            f"{', '.join(node_link(extension_path, item) for item in bindings) or '—'} | "
+            f"{provider_links} |"
+        )
+    files[extension_path] = ("\n".join(extension_lines).rstrip() + "\n").encode()
+    metadata[extension_path] = {
+        "kind": "relationship-extension-index",
+        "counts": {"extension_boundaries": len(extension_nodes)},
+    }
+
+    runtime_nodes = sorted(
+        (item for item in nodes if item["kind"] == "runtime-image"),
+        key=lambda value: str(value["name"]),
+    )
+    runtime_lines = [
+        "# Runtime-image composition",
+        "",
+        f"[Atlas]({_relative_link(runtime_path, root_path)}) · "
+        f"[Relationships]({_relative_link(runtime_path, relationship_path)})",
+        "",
+        "Image purpose and composition are the exact release metadata; reference images remain "
+        "optional and nonnormative.",
+        "",
+        f"Runtime images: **{len(runtime_nodes)}**",
+        "",
+        "| Image | Role | Purpose | Description source | Packaged components |",
+        "|---|---|---|---|---|",
+    ]
+    for node in runtime_nodes:
+        distributions = [
+            by_id[str(edge["source"])]
+            for edge in edges
+            if edge["type"] == "packaged-in" and edge["target"] == node["id"]
+        ]
+        runtime_lines.append(
+            f"| `{_md(node['name'])}` | `{_md(node['role'])}` | "
+            f"{_md(node['description'])} | `{_md(node['description_source'])}` | "
+            f"{', '.join(node_link(runtime_path, item) for item in distributions)} |"
+        )
+    files[runtime_path] = ("\n".join(runtime_lines).rstrip() + "\n").encode()
+    metadata[runtime_path] = {
+        "kind": "relationship-runtime-index",
+        "counts": {"runtime_images": len(runtime_nodes)},
+    }
+
+    installed_edges = [edge for edge in edges if edge["type"] == "installed-as"]
+    installation_lines = [
+        "# Installed end-user and recovery surfaces",
+        "",
+        f"[Atlas]({_relative_link(installation_path, root_path)}) · "
+        f"[Relationships]({_relative_link(installation_path, relationship_path)})",
+        "",
+        "These are the exact coordinated installation roots from the release contract.",
+        "",
+        f"Installation roots: **{len(installed_edges)}**",
+        "",
+        "| Component | Purpose | Installation method |",
+        "|---|---|---|",
+    ]
+    for edge in installed_edges:
+        node = by_id[str(edge["source"])]
+        installation = by_id[str(edge["target"])]
+        installation_lines.append(
+            f"| {node_link(installation_path, node)} | {_md(node['description'])} | "
+            f"`{_md(installation['name'])}` |"
+        )
+    files[installation_path] = ("\n".join(installation_lines).rstrip() + "\n").encode()
+    metadata[installation_path] = {
+        "kind": "relationship-installation-index",
+        "counts": {"installation_roots": len(installed_edges)},
+    }
+
+    references = sorted(
+        (
+            item
+            for item in component_nodes
+            if item["role"] in {"reference_application", "reference_component"}
+            or (item["role"] == "reusable_library" and str(item["path"]).startswith("reference/"))
+        ),
+        key=lambda value: (str(value["role"]), str(value["name"])),
+    )
+    reference_lines = [
+        "# Nonnormative reference ecosystem",
+        "",
+        f"[Atlas]({_relative_link(reference_path, root_path)}) · "
+        f"[Relationships]({_relative_link(reference_path, relationship_path)})",
+        "",
+        str(relationship["reference_policy"]),
+        "",
+        "These components exercise maintained boundaries; they do not make their implementation "
+        "choices authoritative or promise an expanding implementation corpus.",
+        "",
+        f"Reference components and libraries: **{len(references)}**",
+    ]
+    for role in sorted({str(item["role"]) for item in references}):
+        role_nodes = [item for item in references if item["role"] == role]
+        reference_lines.extend(
+            [
+                "",
+                f"## {role.replace('_', ' ').title()}",
+                "",
+                "| Component | Purpose |",
+                "|---|---|",
+            ]
+        )
+        for node in role_nodes:
+            reference_lines.append(
+                f"| {node_link(reference_path, node)} | {_md(node['description'])} |"
+            )
+    reference_images = [item for item in runtime_nodes if item["role"] == "reference"]
+    reference_lines.extend(
+        [
+            "",
+            "## Reference runtime images",
+            "",
+            f"Images: **{len(reference_images)}**",
+            "",
+            "| Image | Purpose |",
+            "|---|---|",
+            *(
+                f"| `{_md(node['name'])}` | {_md(node['description'])} |"
+                for node in reference_images
+            ),
+        ]
+    )
+    files[reference_path] = ("\n".join(reference_lines).rstrip() + "\n").encode()
+    metadata[reference_path] = {
+        "kind": "relationship-reference-index",
+        "counts": {
+            "reference_components": len(references),
+            "reference_images": len(reference_images),
+        },
+    }
+    return files, metadata
+
+
 def _render_atlas(
     elements: list[dict[str, object]],
     policies: Mapping[str, object],
@@ -1393,7 +2111,9 @@ def _render_atlas(
     trace: Mapping[str, object],
     identities: Mapping[str, object],
     exclusions: Sequence[Mapping[str, object]],
-) -> tuple[dict[str, bytes], list[dict[str, object]]]:
+    discovery: Mapping[str, object],
+    component_descriptions: Mapping[str, str],
+) -> tuple[dict[str, bytes], list[dict[str, object]], dict[str, object]]:
     files: dict[str, bytes] = {}
     descriptors: list[dict[str, object]] = []
     by_id = {str(item["id"]): item for item in elements}
@@ -1483,6 +2203,10 @@ def _render_atlas(
                 f"{_slug(interface, limit=48)}/index.md"
             )
             interface_counts = _counts(values)
+            families: dict[str, list[dict[str, object]]] = defaultdict(list)
+            for item in values:
+                families[str(item["family"])].append(item)
+            use_family_indexes = len(values) >= FAMILY_INDEX_MINIMUM_ELEMENTS and len(families) > 1
             lines = [
                 f"# {authority}: {interface}",
                 "",
@@ -1493,26 +2217,160 @@ def _render_atlas(
                 f"Contract elements: **{interface_counts['contract_elements']}** · "
                 f"Extent decisions: **{interface_counts['extent_decisions']}**",
                 "",
+                *_table_counts(
+                    {family: len(items) for family, items in sorted(families.items())},
+                    "Family",
+                ),
+                "",
                 *_table_counts(cast(Mapping[str, object], interface_counts["by_policy"]), "Policy"),
                 "",
-                "## Semantic dossiers",
-                "",
-                "| Dossier | Family | Extent decisions |",
-                "|---|---|---:|",
             ]
-            for item in sorted(
-                values, key=lambda value: (str(value["family"]), str(value["title"]))
-            ):
-                extent_count = len(cast(Sequence[object], item["extent_decision_ids"]))
-                lines.append(
-                    f"| [{_md(item['title'])}]"
-                    f"({_relative_link(interface_path, str(item['dossier']))}) | "
-                    f"`{_md(item['family'])}` | {extent_count} |"
+            if use_family_indexes:
+                lines.extend(
+                    [
+                        "## Semantic families",
+                        "",
+                        "| Family | Contract elements | Extent decisions |",
+                        "|---|---:|---:|",
+                    ]
                 )
+                for family, family_values in sorted(families.items()):
+                    family_path = (
+                        f"{ATLAS_DIRECTORY}/authorities/{authority_slug}/"
+                        f"{_slug(interface, limit=48)}/families/{_slug(family, limit=72)}/index.md"
+                    )
+                    family_counts = _counts(family_values)
+                    lines.append(
+                        f"| [{_md(family)}]({_relative_link(interface_path, family_path)}) | "
+                        f"{family_counts['contract_elements']} | "
+                        f"{family_counts['extent_decisions']} |"
+                    )
+                    family_lines = [
+                        f"# {authority}: {interface}: {family}",
+                        "",
+                        f"[Atlas]({_relative_link(family_path, f'{ATLAS_DIRECTORY}/index.md')}) · "
+                        f"[Authority]({_relative_link(family_path, authority_path)}) · "
+                        f"[Interface]({_relative_link(family_path, interface_path)}) · "
+                        f"[Policies]({_relative_link(family_path, policy_path)})",
+                        "",
+                        f"Contract elements: **{family_counts['contract_elements']}** · "
+                        f"Extent decisions: **{family_counts['extent_decisions']}**",
+                        "",
+                        *_table_counts(
+                            cast(Mapping[str, object], family_counts["by_policy"]), "Policy"
+                        ),
+                        "",
+                        "## Semantic dossiers",
+                        "",
+                        "| Dossier | Extent decisions |",
+                        "|---|---:|",
+                    ]
+                    for item in sorted(family_values, key=lambda value: str(value["title"])):
+                        extent_count = len(cast(Sequence[object], item["extent_decision_ids"]))
+                        family_lines.append(
+                            f"| [{_md(item['title'])}]"
+                            f"({_relative_link(family_path, str(item['dossier']))}) | "
+                            f"{extent_count} |"
+                        )
+                    files[family_path] = ("\n".join(family_lines).rstrip() + "\n").encode()
+            else:
+                lines.extend(
+                    [
+                        "## Semantic dossiers",
+                        "",
+                        "| Dossier | Family | Extent decisions |",
+                        "|---|---|---:|",
+                    ]
+                )
+                for item in sorted(
+                    values, key=lambda value: (str(value["family"]), str(value["title"]))
+                ):
+                    extent_count = len(cast(Sequence[object], item["extent_decision_ids"]))
+                    lines.append(
+                        f"| [{_md(item['title'])}]"
+                        f"({_relative_link(interface_path, str(item['dossier']))}) | "
+                        f"`{_md(item['family'])}` | {extent_count} |"
+                    )
             files[interface_path] = ("\n".join(lines).rstrip() + "\n").encode()
+
+    relationship = _relationship_model(projection, elements, component_descriptions)
+    relationship_files, relationship_metadata = _render_relationships(relationship, elements)
+    files.update(relationship_files)
 
     root_counts = _counts(elements, exclusions)
     root_path = f"{ATLAS_DIRECTORY}/index.md"
+    exclusion_path = f"{ATLAS_DIRECTORY}/exclusions/index.md"
+    evidence_path = f"{ATLAS_DIRECTORY}/evidence/index.md"
+    policy_by_id = {
+        str(policy["id"]): policy
+        for values in policies.values()
+        for policy in cast(Sequence[Mapping[str, object]], values)
+    }
+    exclusion_lines = [
+        "# Explicitly excluded candidates",
+        "",
+        f"[Atlas]({_relative_link(exclusion_path, root_path)}) · "
+        f"[Policies]({_relative_link(exclusion_path, policy_path)})",
+        "",
+        "These are every discovered delivery candidate intentionally excluded from the external "
+        "CLI surface. The complete list is part of the discovery/disposition closure.",
+        "",
+        f"Excluded candidates: **{len(exclusions)}**",
+        "",
+        "| Candidate | Kind | Installed target | Boundary source | Detector | Policy and reason | "
+        "Source authority |",
+        "|---|---|---|---|---|---|---|",
+    ]
+    for exclusion in sorted(exclusions, key=lambda value: str(value["id"])):
+        policy_id = str(exclusion["policy_id"])
+        policy = policy_by_id[policy_id]
+        source_links = ", ".join(
+            f"`{_md(source)}`" for source in cast(Sequence[str], exclusion["source_authority_ids"])
+        )
+        exclusion_lines.append(
+            f"| `{_md(exclusion['id'])}` | `{_md(exclusion['kind'])}` | "
+            f"`{_md(exclusion['installed_target'])}` | "
+            f"`{_md(exclusion['boundary_pointer'])}` | "
+            f"`{_md(exclusion['detector'])}` | "
+            f"`{_md(policy_id)}` — {_md(policy['meaning'])} | "
+            f"{source_links} |"
+        )
+    files[exclusion_path] = ("\n".join(exclusion_lines).rstrip() + "\n").encode()
+
+    source_index = _source_index(trace)
+    source_counts = cast(Mapping[str, object], root_counts["by_source_authority"])
+    evidence_lines = [
+        "# Executable sources and qualification routes",
+        "",
+        f"[Atlas]({_relative_link(evidence_path, root_path)})",
+        "",
+        "Every dossier names its executable source authorities and applicable qualification "
+        "routes. This index summarizes that exact proof routing without making implementation "
+        "witnesses part of the semantic contract.",
+        "",
+        "## Qualification-route applications",
+        "",
+        *_table_counts(
+            cast(Mapping[str, object], root_counts["by_qualification_route"]),
+            "Qualification route",
+        ),
+        "",
+        "## Source-authority applications",
+        "",
+        f"Source authorities: **{len(source_index)}**",
+        "",
+        "| Source authority | Applications | Executable location |",
+        "|---|---:|---|",
+    ]
+    for source_id, count in source_counts.items():
+        source = source_index[source_id]
+        location = cast(Mapping[str, object], source.get("source", {}))
+        rendered = str(location.get("path", location.get("module", source_id)))
+        symbol = f"::{location['symbol']}" if "symbol" in location else ""
+        evidence_lines.append(f"| `{_md(source_id)}` | {count} | `{_md(rendered + symbol)}` |")
+    files[evidence_path] = ("\n".join(evidence_lines).rstrip() + "\n").encode()
+
+    anomalies = cast(Mapping[str, object], discovery["anomalies"])
     root_lines = [
         "# Riverhog v1 contract atlas",
         "",
@@ -1521,15 +2379,54 @@ def _render_atlas(
         "dossier; "
         "no page boundary changes contract identity.",
         "",
-        f"Semantic contract: `{identities['semantic_contract_sha256']}`",
+        "## Closure status",
+        "",
+        "Status: **complete** — every discovered candidate has exactly one disposition and every "
+        "contractual fact has exactly one human owner.",
         "",
         f"Contract elements: **{root_counts['contract_elements']}** · "
         f"Extent decisions: **{root_counts['extent_decisions']}** · "
-        f"Excluded candidates: **{root_counts['excluded_candidates']}**",
+        f"Excluded candidates: **{root_counts['excluded_candidates']}** · "
+        f"Source authorities: **{len(source_index)}** · "
+        f"Atlas documents: **{len(files) + 1}**",
         "",
-        f"[Policy registry]({_relative_link(root_path, policy_path)})",
+        "### Closure anomalies",
         "",
-        "## Authorities",
+        *_table_counts(anomalies, "Anomaly"),
+        "",
+        "### Independent evidence identities",
+        "",
+        "| Identity domain | SHA-256 |",
+        "|---|---|",
+        *(f"| `{_md(name)}` | `{_md(value)}` |" for name, value in identities.items()),
+        "",
+        "The byte-exact `atlas_representation_sha256` is recorded at "
+        "`/identities/atlas_representation_sha256` in the machine closure. It cannot be embedded "
+        "inside the document bytes that it identifies.",
+        "",
+        "## Audit navigation",
+        "",
+        "- [Relationship-aware boundary map](relationships/index.md)",
+        f"- [Contract-policy registry]({_relative_link(root_path, policy_path)})",
+        f"- [Explicit exclusions]({_relative_link(root_path, exclusion_path)})",
+        "- [Executable sources and qualification routes]"
+        f"({_relative_link(root_path, evidence_path)})",
+        "",
+        "## Aggregate contract shape",
+        "",
+        *_table_counts(cast(Mapping[str, object], root_counts["by_interface"]), "Interface"),
+        "",
+        *_table_counts(cast(Mapping[str, object], root_counts["by_detector"]), "Detector"),
+        "",
+        *_table_counts(
+            cast(Mapping[str, object], root_counts["by_qualification_route"]),
+            "Qualification route",
+        ),
+        "",
+        "## Complete authority inventory",
+        "",
+        "The relationship map explains how these authorities interact. This flat inventory remains "
+        "the exact completeness view.",
         "",
         "| Authority | Contract elements | Interfaces |",
         "|---|---:|---|",
@@ -1541,14 +2438,6 @@ def _render_atlas(
             f"| [{_md(authority)}]({_relative_link(root_path, authority_path)}) | {count} | "
             f"{', '.join(f'`{name}`' for name in sorted(interfaces))} |"
         )
-    root_lines.extend(
-        [
-            "",
-            "## Aggregate interface counts",
-            "",
-            *_table_counts(cast(Mapping[str, object], root_counts["by_interface"]), "Interface"),
-        ]
-    )
     files[root_path] = ("\n".join(root_lines).rstrip() + "\n").encode()
 
     dossier_by_path = {str(item["dossier"]): item for item in elements}
@@ -1565,6 +2454,21 @@ def _render_atlas(
                 "policies": sum(len(cast(Sequence[object], value)) for value in policies.values())
             }
             kind = "policy-index"
+        elif path == exclusion_path:
+            document_counts = {"excluded_candidates": len(exclusions)}
+            kind = "exclusion-index"
+        elif path == evidence_path:
+            document_counts = {
+                "source_authorities": len(source_index),
+                "qualification_routes": len(
+                    cast(Mapping[str, object], root_counts["by_qualification_route"])
+                ),
+            }
+            kind = "evidence-index"
+        elif path in relationship_metadata:
+            relationship_descriptor = relationship_metadata[path]
+            document_counts = cast(dict[str, object], relationship_descriptor["counts"])
+            kind = str(relationship_descriptor["kind"])
         elif path.endswith("/index.md") and path.count("/") == 3:
             authority_slug = path.split("/")[2]
             subset = [
@@ -1574,6 +2478,18 @@ def _render_atlas(
             ]
             document_counts = _counts(subset)
             kind = "authority-index"
+        elif "/families/" in path:
+            parts = path.split("/")
+            authority_slug, interface_slug, family_slug = parts[2], parts[3], parts[5]
+            subset = [
+                item
+                for item in elements
+                if _slug(str(item["authority"]), limit=72) == authority_slug
+                and _slug(str(item["interface"]), limit=48) == interface_slug
+                and _slug(str(item["family"]), limit=72) == family_slug
+            ]
+            document_counts = _counts(subset)
+            kind = "family-index"
         else:
             parts = path.split("/")
             authority_slug, interface_slug = parts[2], parts[3]
@@ -1593,12 +2509,26 @@ def _render_atlas(
                 "sha256": hashlib.sha256(payload).hexdigest(),
                 "counts": document_counts,
                 **({"element_id": dossier_element["id"]} if dossier_element is not None else {}),
+                **(
+                    {
+                        key: value
+                        for key, value in relationship_metadata[path].items()
+                        if key not in {"kind", "counts"}
+                    }
+                    if path in relationship_metadata
+                    else {}
+                ),
             }
         )
-    return files, descriptors
+    return files, descriptors, relationship
 
 
-def build_atlas(projection: Mapping[str, object], trace: Mapping[str, object]) -> ContractAtlas:
+def build_atlas(
+    projection: Mapping[str, object],
+    trace: Mapping[str, object],
+    *,
+    component_descriptions: Mapping[str, str],
+) -> ContractAtlas:
     """Build one exact machine closure and its generated human navigation."""
 
     encoded_projection, projection_integer_paths = _encoded_json(projection)
@@ -1698,17 +2628,20 @@ def build_atlas(projection: Mapping[str, object], trace: Mapping[str, object]) -
         "coverage_sha256": canonical_sha256(coverage_identity),
         "trace_sha256": canonical_sha256(trace_identity),
     }
-    files, documents = _render_atlas(
+    files, documents, relationship = _render_atlas(
         elements,
         policies,
         normalized_projection,
         normalized_trace,
         identities,
         exclusions,
+        discovery,
+        component_descriptions,
     )
     representation_identity = {
         "schema": REPRESENTATION_IDENTITY_SCHEMA,
         "documents": documents,
+        "relationships": relationship,
     }
     identities["atlas_representation_sha256"] = canonical_sha256(representation_identity)
     counts = _counts(elements, exclusions)
@@ -1733,10 +2666,16 @@ def build_atlas(projection: Mapping[str, object], trace: Mapping[str, object]) -
             "directory": ATLAS_DIRECTORY,
             "root": f"{ATLAS_DIRECTORY}/index.md",
             "documents": documents,
+            "relationships": relationship,
         },
     }
     atlas = ContractAtlas(root=root, files=files)
-    validate_atlas(atlas, projection=projection, trace=trace)
+    validate_atlas(
+        atlas,
+        projection=projection,
+        trace=trace,
+        component_descriptions=component_descriptions,
+    )
     return atlas
 
 
@@ -1768,6 +2707,7 @@ def validate_atlas(
     *,
     projection: Mapping[str, object] | None = None,
     trace: Mapping[str, object] | None = None,
+    component_descriptions: Mapping[str, str] | None = None,
 ) -> None:
     """Recompute closure, ownership, roll-up, source, policy, and identity proofs."""
 
@@ -1790,8 +2730,11 @@ def validate_atlas(
             or descriptor["sha256"] != hashlib.sha256(payload).hexdigest()
         ):
             raise ContractAtlasError(f"atlas document identity mismatch: {path}")
+        if len(payload) > MAX_HUMAN_DOCUMENT_BYTES:
+            raise ContractAtlasError(f"atlas document exceeds the human context budget: {path}")
     elements = cast(Sequence[Mapping[str, object]], root["elements"])
     ids = [str(item["id"]) for item in elements]
+    elements_by_id = {str(item["id"]): item for item in elements}
     if len(ids) != len(set(ids)):
         raise ContractAtlasError("contract element identities are not unique")
     dossiers = [str(item["dossier"]) for item in elements]
@@ -1811,7 +2754,31 @@ def validate_atlas(
                 f"atlas dossier does not expose every effective policy: {item['id']}"
             )
         for pointer in cast(Sequence[str], item["pointers"]):
-            pointer_value(root["projection"], pointer)
+            value = pointer_value(root["projection"], pointer)
+            exact = (
+                f"<!-- exact-contract-value: {canonical_sha256(value)} -->\n\n"
+                f"```json\n{_pretty_json(value)}\n```"
+            ).encode()
+            if exact not in dossier:
+                raise ContractAtlasError(
+                    f"atlas dossier does not render its complete contract value: {item['id']}"
+                )
+        for referenced in _local_contract_references(
+            str(item["authority"]),
+            [
+                pointer_value(root["projection"], pointer)
+                for pointer in cast(Sequence[str], item["pointers"])
+            ],
+            elements_by_id,
+        ):
+            reference_link = (
+                f"[{referenced['title']}]"
+                f"({_relative_link(str(item['dossier']), str(referenced['dossier']))})"
+            ).encode()
+            if reference_link not in dossier:
+                raise ContractAtlasError(
+                    f"atlas dossier does not route its referenced contract: {item['id']}"
+                )
 
     discovery = cast(Mapping[str, object], root["discovery"])
     if discovery["anomalies"] != {
@@ -1862,6 +2829,56 @@ def validate_atlas(
                 f"contract element source references are unresolved: {item['id']}"
             )
 
+    root_path = str(cast(Mapping[str, object], root["atlas"])["root"])
+    root_page = atlas.files[root_path].decode()
+    if root_page.index("## Aggregate contract shape") > root_page.index(
+        "## Complete authority inventory"
+    ):
+        raise ContractAtlasError("atlas root must summarize before enumerating")
+    for name, count in cast(Mapping[str, object], discovery["anomalies"]).items():
+        if f"| `{name}` | {count} |" not in root_page:
+            raise ContractAtlasError(f"atlas root omits closure anomaly: {name}")
+    for name, identity in cast(Mapping[str, object], root["identities"]).items():
+        if name == "atlas_representation_sha256":
+            if f"/identities/{name}" not in root_page:
+                raise ContractAtlasError("atlas root omits its representation-identity route")
+        elif f"| `{name}` | `{identity}` |" not in root_page:
+            raise ContractAtlasError(f"atlas root omits independent identity: {name}")
+
+    exclusion_page = atlas.files[f"{ATLAS_DIRECTORY}/exclusions/index.md"].decode()
+    for item in exclusions:
+        policy = next(
+            policy
+            for values in policies.values()
+            for policy in cast(Sequence[Mapping[str, object]], values)
+            if policy["id"] == item["policy_id"]
+        )
+        required_exclusion_values = [
+            item["id"],
+            item["kind"],
+            item["installed_target"],
+            item["boundary_pointer"],
+            item["detector"],
+            item["policy_id"],
+            policy["meaning"],
+            *cast(Sequence[str], item["source_authority_ids"]),
+        ]
+        if any(_md(value) not in exclusion_page for value in required_exclusion_values):
+            raise ContractAtlasError(f"human exclusion inventory is incomplete: {item['id']}")
+
+    evidence_page = atlas.files[f"{ATLAS_DIRECTORY}/evidence/index.md"].decode()
+    for route in cast(
+        Mapping[str, object], cast(Mapping[str, object], root["counts"])["by_qualification_route"]
+    ):
+        if f"`{route}`" not in evidence_page:
+            raise ContractAtlasError(f"human evidence index omits route: {route}")
+    for source_id, source in source_index.items():
+        location = cast(Mapping[str, object], source.get("source", {}))
+        rendered = str(location.get("path", location.get("module", source_id)))
+        symbol = f"::{location['symbol']}" if "symbol" in location else ""
+        if f"`{source_id}`" not in evidence_page or f"`{rendered}{symbol}`" not in evidence_page:
+            raise ContractAtlasError(f"human evidence index omits source: {source_id}")
+
     observed_counts = _counts(
         elements,
         exclusions,
@@ -1875,7 +2892,71 @@ def validate_atlas(
     if checked_counts.get("atlas_documents") != len(descriptors):
         raise ContractAtlasError("root atlas-document count is stale")
 
-    elements_by_id = {str(item["id"]): item for item in elements}
+    atlas_metadata = cast(Mapping[str, object], root["atlas"])
+    relationship = cast(Mapping[str, object], atlas_metadata["relationships"])
+    if relationship.get("schema") != RELATIONSHIP_SCHEMA:
+        raise ContractAtlasError("atlas relationship navigation has an unexpected schema")
+    if component_descriptions is not None:
+        expected_relationship = _relationship_model(
+            projection_value, elements, component_descriptions
+        )
+        if relationship != expected_relationship:
+            raise ContractAtlasError("atlas relationship navigation is stale")
+    relationship_nodes = cast(Sequence[Mapping[str, object]], relationship["nodes"])
+    relationship_edges = cast(Sequence[Mapping[str, object]], relationship["edges"])
+    relationship_nodes_by_id = {str(item["id"]): item for item in relationship_nodes}
+    relationship_files = {
+        path: payload.decode()
+        for path, payload in atlas.files.items()
+        if path.startswith(f"{ATLAS_DIRECTORY}/relationships/")
+    }
+    relationship_text = "\n".join(relationship_files.values())
+    for node in relationship_nodes:
+        if _md(node["name"]) not in relationship_text:
+            raise ContractAtlasError(f"human relationship navigation omits node: {node['id']}")
+        if node["kind"] == "component":
+            component_path = (
+                f"{ATLAS_DIRECTORY}/relationships/components/"
+                f"{_slug(str(node['name']), limit=72)}.md"
+            )
+            component_page = relationship_files.get(component_path, "")
+            if any(
+                value not in component_page
+                for value in (
+                    str(node["description"]),
+                    f"`{_md(node['role'])}`",
+                    f"`{_md(node['path'])}`",
+                    f"{node['contract_elements']}",
+                )
+            ):
+                raise ContractAtlasError(
+                    f"human relationship component is incomplete: {node['id']}"
+                )
+            for edge in (item for item in relationship_edges if item["source"] == node["id"]):
+                target = relationship_nodes_by_id[str(edge["target"])]
+                detail = edge.get("scope", edge.get("binding", ""))
+                if any(
+                    value not in component_page
+                    for value in (
+                        f"`{_md(edge['type'])}`",
+                        _md(target["name"]),
+                        f"`{_md(detail)}`",
+                    )
+                ):
+                    raise ContractAtlasError(
+                        f"human relationship component omits edge: {node['id']}"
+                    )
+        elif node["kind"] == "runtime-image":
+            runtime_page = relationship_files.get(
+                f"{ATLAS_DIRECTORY}/relationships/runtime-images/index.md", ""
+            )
+            if any(
+                _md(node[field]) not in runtime_page
+                for field in ("name", "role", "description", "description_source")
+            ):
+                raise ContractAtlasError(
+                    f"human relationship runtime inventory is incomplete: {node['id']}"
+                )
     for path, descriptor in descriptors.items():
         kind = descriptor["kind"]
         if kind == "root-index":
@@ -1883,6 +2964,79 @@ def validate_atlas(
         elif kind == "policy-index":
             expected_counts = {
                 "policies": sum(len(cast(Sequence[object], value)) for value in policies.values())
+            }
+        elif kind == "exclusion-index":
+            expected_counts = {"excluded_candidates": len(exclusions)}
+        elif kind == "evidence-index":
+            expected_counts = {
+                "source_authorities": len(source_index),
+                "qualification_routes": len(
+                    cast(Mapping[str, object], checked_counts["by_qualification_route"])
+                ),
+            }
+        elif kind == "relationship-index":
+            expected_counts = {
+                "nodes": len(relationship_nodes),
+                "edges": len(relationship_edges),
+            }
+        elif kind == "relationship-component-index":
+            component_nodes = [item for item in relationship_nodes if item["kind"] == "component"]
+            expected_counts = {
+                "components": len(component_nodes),
+                "roles": len({str(item["role"]) for item in component_nodes}),
+            }
+        elif kind == "relationship-component":
+            node = relationship_nodes_by_id[str(descriptor["relationship_node_id"])]
+            expected_counts = {
+                "contract_elements": node["contract_elements"],
+                "incoming_edges": sum(edge["target"] == node["id"] for edge in relationship_edges),
+                "outgoing_edges": sum(edge["source"] == node["id"] for edge in relationship_edges),
+            }
+        elif kind == "relationship-library-index":
+            expected_counts = {
+                "components": sum(
+                    item["kind"] == "component"
+                    and item.get("role") == "reusable_library"
+                    and str(item.get("path", "")).startswith("packages/")
+                    for item in relationship_nodes
+                )
+            }
+        elif kind == "relationship-extension-index":
+            expected_counts = {
+                "extension_boundaries": sum(
+                    item["kind"] in {"extension-point", "process-protocol"}
+                    for item in relationship_nodes
+                )
+            }
+        elif kind == "relationship-runtime-index":
+            expected_counts = {
+                "runtime_images": sum(
+                    item["kind"] == "runtime-image" for item in relationship_nodes
+                )
+            }
+        elif kind == "relationship-installation-index":
+            expected_counts = {
+                "installation_roots": sum(
+                    item["type"] == "installed-as" for item in relationship_edges
+                )
+            }
+        elif kind == "relationship-reference-index":
+            expected_counts = {
+                "reference_components": sum(
+                    item["kind"] == "component"
+                    and (
+                        item.get("role") in {"reference_application", "reference_component"}
+                        or (
+                            item.get("role") == "reusable_library"
+                            and str(item.get("path", "")).startswith("reference/")
+                        )
+                    )
+                    for item in relationship_nodes
+                ),
+                "reference_images": sum(
+                    item["kind"] == "runtime-image" and item.get("role") == "reference"
+                    for item in relationship_nodes
+                ),
             }
         elif kind == "dossier":
             expected_counts = _counts([elements_by_id[str(descriptor["element_id"])]])
@@ -1901,9 +3055,23 @@ def validate_atlas(
                     for item in subset
                     if _slug(str(item["interface"]), limit=48) == interface_slug
                 ]
+            elif kind == "family-index":
+                interface_slug, family_slug = parts[3], parts[5]
+                subset = [
+                    item
+                    for item in subset
+                    if _slug(str(item["interface"]), limit=48) == interface_slug
+                    and _slug(str(item["family"]), limit=72) == family_slug
+                ]
             expected_counts = _counts(subset)
         if descriptor["counts"] != expected_counts:
             raise ContractAtlasError(f"atlas roll-up count is stale: {path}")
+        if kind == "family-index":
+            page = atlas.files[path].decode()
+            for item in subset:
+                link = _relative_link(path, str(item["dossier"]))
+                if f"]({link})" not in page:
+                    raise ContractAtlasError(f"semantic-family index omits dossier: {item['id']}")
 
     semantic_identity = {
         "schema": CONTRACT_IDENTITY_SCHEMA,
@@ -1929,7 +3097,8 @@ def validate_atlas(
     }
     representation_identity = {
         "schema": REPRESENTATION_IDENTITY_SCHEMA,
-        "documents": cast(Mapping[str, object], root["atlas"])["documents"],
+        "documents": atlas_metadata["documents"],
+        "relationships": relationship,
     }
     boundaries = cast(Mapping[str, object], projection_value["boundaries"])
     observed_identities = {
