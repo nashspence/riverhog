@@ -6,6 +6,7 @@ from __future__ import annotations
 import argparse
 import ast
 import hashlib
+import importlib
 import inspect
 import json
 import os
@@ -23,7 +24,6 @@ from statistics import median
 from typing import Any, TypeGuard, cast, get_origin, get_type_hints
 from unittest.mock import patch
 
-import contract_audit_bundle
 from fastapi import FastAPI
 from fastapi.routing import APIRoute
 from piggity import main as piggity
@@ -52,6 +52,10 @@ from stove0_core import (
     WorkflowPreviewService,
 )
 from stove0_target_client import TargetCallbackClient
+
+contract_audit_bundle = importlib.import_module(
+    "scripts.contract_audit_bundle" if __package__ else "contract_audit_bundle"
+)
 
 SCHEMA = "riverhog-operation-qualification/v1"
 TIMING_SCHEMA = "riverhog-operation-timings/v1"
