@@ -2221,7 +2221,11 @@ def _render_contract_surfaces(
             ),
         }
         files[path] = ("\n".join(lines).rstrip() + "\n").encode()
-        metadata[path] = {"kind": "semantic-surface", "counts": counts, "map_node_ids": node_ids}
+        metadata[path] = {
+            "kind": "semantic-surface",
+            "counts": counts,
+            "map_node_ids": list(node_ids),
+        }
     return files, metadata
 
 
