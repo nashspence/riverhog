@@ -16,29 +16,29 @@ Exact externally visible contract owned by this semantic dossier.
 
 ## External contract
 
-<a id="s-760a5c530658"></a>
-- <a id="s-bc26bbec89be"></a>`title`: TargetJobDeclaration
-- <a id="s-bf09248a140a"></a>`type`: object
+<a id="s-760a5c5306"></a>
+- <a id="s-bc26bbec89"></a>`title`: TargetJobDeclaration
+- <a id="s-bf09248a14"></a>`type`: object
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-6237b2a272be"></a>`claim_id` | yes | type="string"; minLength=1; maxLength=160 |  |
-| <a id="s-06c9d16d2795"></a>`controller_evidence` | yes | #/components/schemas/ControllerEvidence |  |
-| <a id="s-8d3f7e4ac251"></a>`fence` | yes | type="integer"; minimum=1 |  |
-| <a id="s-6d4cfafa9869"></a>`job_id` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-4db92bdd2334"></a>`plan` | yes | oneOf=#/components/schemas/TransformPlan \| #/components/schemas/EffectPlan; additional keys=`discriminator` |  |
-| <a id="s-c03dc9589ff2"></a>`workspace_assurance` | yes | type="string"; enum=["encrypted","ephemeral"] |  |
+| <a id="s-6237b2a272"></a>`claim_id` | yes | type="string"; minLength=1; maxLength=160 |  |
+| <a id="s-06c9d16d27"></a>`controller_evidence` | yes | #/components/schemas/ControllerEvidence |  |
+| <a id="s-8d3f7e4ac2"></a>`fence` | yes | type="integer"; minimum=1 |  |
+| <a id="s-6d4cfafa98"></a>`job_id` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-4db92bdd23"></a>`plan` | yes | oneOf=#/components/schemas/TransformPlan \| #/components/schemas/EffectPlan; additional keys=`discriminator` |  |
+| <a id="s-c03dc9589f"></a>`workspace_assurance` | yes | type="string"; enum=["encrypted","ephemeral"] |  |
 
 ### Progression, limits, and lifecycle
 
-#### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
+#### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
 
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
-| [field claim_id](#s-6237b2a272be) | `length · characters · contract_max` | maximum=160; minimum=1; reason="schema-maximum" |
-| [field job_id](#s-6d4cfafa9869) | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
+| [field claim_id](#s-6237b2a272) | `length · characters · contract_max` | maximum=160; minimum=1; reason="schema-maximum" |
+| [field job_id](#s-6d4cfafa98) | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
 
 ## Maintained corroboration
 
@@ -50,20 +50,20 @@ Exact externally visible contract owned by this semantic dossier.
 
 ## Governing policies
 
-- <a id="pa-7de4420d21d7"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0ba)
-- <a id="pa-d89e724cd072"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
+- <a id="pa-7de4420d21"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0)
+- <a id="pa-d89e724cd0"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
 
 ## Evidence
 
 ### Qualification
 
-- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459fb8)
-- [make compose-smoke](../../../evidence/sources.md#q-413b0b241ba8)
+- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459f)
+- [make compose-smoke](../../../evidence/sources.md#q-413b0b241b)
 
 ### Executable sources
 
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
-- [openapi:stove0](../../../evidence/sources.md#src-52e6e3212451) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [openapi:stove0](../../../evidence/sources.md#src-52e6e32124) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
 
 ### Machine authority
 

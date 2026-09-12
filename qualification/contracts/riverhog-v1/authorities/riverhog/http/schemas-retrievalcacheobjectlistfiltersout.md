@@ -16,21 +16,21 @@ Exact externally visible contract owned by this semantic dossier.
 
 ## External contract
 
-<a id="s-8d691b6be52e"></a>
-- <a id="s-0c47a50a3764"></a>`title`: RetrievalCacheObjectListFiltersOut
-- <a id="s-ad2805047f93"></a>`type`: object
+<a id="s-8d691b6be5"></a>
+- <a id="s-0c47a50a37"></a>`title`: RetrievalCacheObjectListFiltersOut
+- <a id="s-ad2805047f"></a>`type`: object
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-dd585de03206"></a>`cache_store` | yes | anyOf=#/components/schemas/RetrievalCacheStoreName \| type="null" |  |
-| <a id="s-ff7436da972c"></a>`collection_id` | yes | anyOf=#/components/schemas/CollectionId \| type="null" |  |
-| <a id="s-1f1860910ad9"></a>`expires_after` | yes | anyOf=type="string" \| type="null" |  |
-| <a id="s-3207f9d87d2e"></a>`expires_before` | yes | anyOf=type="string" \| type="null" |  |
-| <a id="s-092fcd3fb7d2"></a>`protection` | yes | anyOf=#/components/schemas/RetrievalCacheProtection \| type="null" |  |
-| <a id="s-b1c9c2dae1f4"></a>`source_store` | yes | anyOf=#/components/schemas/ArchiveStoreName \| type="null" |  |
-| <a id="s-31829d68f2e6"></a>`state` | yes | anyOf=#/components/schemas/RetrievalCacheState \| type="null" |  |
+| <a id="s-dd585de032"></a>`cache_store` | yes | anyOf=#/components/schemas/RetrievalCacheStoreName \| type="null" |  |
+| <a id="s-ff7436da97"></a>`collection_id` | yes | anyOf=#/components/schemas/CollectionId \| type="null" |  |
+| <a id="s-1f1860910a"></a>`expires_after` | yes | anyOf=type="string" \| type="null" |  |
+| <a id="s-3207f9d87d"></a>`expires_before` | yes | anyOf=type="string" \| type="null" |  |
+| <a id="s-092fcd3fb7"></a>`protection` | yes | anyOf=#/components/schemas/RetrievalCacheProtection \| type="null" |  |
+| <a id="s-b1c9c2dae1"></a>`source_store` | yes | anyOf=#/components/schemas/ArchiveStoreName \| type="null" |  |
+| <a id="s-31829d68f2"></a>`state` | yes | anyOf=#/components/schemas/RetrievalCacheState \| type="null" |  |
 
 ## Maintained corroboration
 
@@ -44,19 +44,19 @@ Exact externally visible contract owned by this semantic dossier.
 
 ## Governing policies
 
-- <a id="pa-4982ac25d8e0"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0ba)
+- <a id="pa-4982ac25d8"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0)
 
 ## Evidence
 
 ### Qualification
 
-- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459fb8)
-- [make compose-smoke](../../../evidence/sources.md#q-413b0b241ba8)
+- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459f)
+- [make compose-smoke](../../../evidence/sources.md#q-413b0b241b)
 
 ### Executable sources
 
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
-- [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc960) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc9) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
 
 ### Machine authority
 

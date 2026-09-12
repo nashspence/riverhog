@@ -10,30 +10,30 @@ Exact externally visible contract owned by this semantic dossier.
 |---|---|
 | Authority | [extent-contract](../index.md) |
 | Interface | [extent](index.md) |
-| Family | [principles](index.md#f-38214870c85d) |
+| Family | [principles](index.md#f-38214870c8) |
 | Contract elements | 1 |
 | Extent decisions | 0 |
 
 ## External contract
 
-<a id="s-a7b7a6a3310b"></a>
+<a id="s-a7b7a6a331"></a>
 - Shape: "A finite logical total has no product-level semantic maximum unless its owning contract declares one."
 
 ## Governing policies
 
-- <a id="pa-e4127200862f"></a>[extent-principle/logical-totals/v1](../../../policies/index.md#p-cfe2e12ee677)
+- <a id="pa-e412720086"></a>[extent-principle/logical-totals/v1](../../../policies/index.md#p-cfe2e12ee6)
 
 ## Evidence
 
 ### Qualification
 
-- [make contract-freeze](../../../evidence/sources.md#q-8c74349e71e4)
-- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459fb8)
+- [make contract-freeze](../../../evidence/sources.md#q-8c74349e71)
+- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459f)
 
 ### Executable sources
 
-- [extent:extent-contract](../../../evidence/sources.md#src-5ac94d0a12e8) — `scripts/extent_contract.py::extent_projection`
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
+- [extent:extent-contract](../../../evidence/sources.md#src-5ac94d0a12) — `scripts/extent_contract.py::extent_projection`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
 
 ### Machine authority
 

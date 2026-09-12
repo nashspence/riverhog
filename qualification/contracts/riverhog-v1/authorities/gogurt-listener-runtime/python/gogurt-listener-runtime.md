@@ -10,34 +10,34 @@ Exact externally visible contract owned by this semantic dossier.
 |---|---|
 | Authority | [gogurt-listener-runtime](../index.md) |
 | Interface | [python](index.md) |
-| Family | [modules](index.md#f-ea7e9f9933c0) |
+| Family | [modules](index.md#f-ea7e9f9933) |
 | Contract elements | 1 |
 | Extent decisions | 0 |
 
 ## External contract
 
-<a id="s-81cd0a2d8d56"></a>
+<a id="s-81cd0a2d8d"></a>
 | Field | Shape |
 |---|---|
-| <a id="s-c6e580bb0053"></a>`distribution` | "gogurt-listener-runtime" |
-| <a id="s-1c45d58c2b11"></a>`exports` | additional keys=`GOGURT_LISTENER_HOST_PROVIDER_BINDING_FORMAT`, `GOGURT_LISTENER_HOST_PROVIDER_ENTRY_POINT_GROUP`, `LISTENER_CONFIG_SCHEMA`, `LISTENER_HEARTBEAT_SCHEMA`, `LISTENER_OPERATIONS`, `LISTENER_STATE_SCHEMA`, `LISTENER_STATUS_SCHEMA`, `ListenerAdapter`, `ListenerConfig`, `ListenerError`, `ListenerHostProviderBinding`, `ListenerLock`, `ListenerPlatformError`, `ListenerRuntime`, `ListenerRuntimePaths`, `ListenerStore`, `NativeListenerStatus`, `PRIVATE_DIRECTORY_MODE`, `PRIVATE_FILE_MODE`, `atomic_write`, `ensure_private_directory`, `ensure_private_file`, `ensure_private_files`, `install_listener`, `listener_status`, `open_private_text_append`, `promote_staged`, `restart_listener`, `run_listener`, `stage_bytes`, `start_listener`, `stop_listener`, `uninstall_listener` |
-| <a id="s-b9f847f59f44"></a>`module` | "gogurt_listener_runtime" |
+| <a id="s-c6e580bb00"></a>`distribution` | "gogurt-listener-runtime" |
+| <a id="s-1c45d58c2b"></a>`exports` | additional keys=`GOGURT_LISTENER_HOST_PROVIDER_BINDING_FORMAT`, `GOGURT_LISTENER_HOST_PROVIDER_ENTRY_POINT_GROUP`, `LISTENER_CONFIG_SCHEMA`, `LISTENER_HEARTBEAT_SCHEMA`, `LISTENER_OPERATIONS`, `LISTENER_STATE_SCHEMA`, `LISTENER_STATUS_SCHEMA`, `ListenerAdapter`, `ListenerConfig`, `ListenerError`, `ListenerHostProviderBinding`, `ListenerLock`, `ListenerPlatformError`, `ListenerRuntime`, `ListenerRuntimePaths`, `ListenerStore`, `NativeListenerStatus`, `PRIVATE_DIRECTORY_MODE`, `PRIVATE_FILE_MODE`, `atomic_write`, `ensure_private_directory`, `ensure_private_file`, `ensure_private_files`, `install_listener`, `listener_status`, `open_private_text_append`, `promote_staged`, `restart_listener`, `run_listener`, `stage_bytes`, `start_listener`, `stop_listener`, `uninstall_listener` |
+| <a id="s-b9f847f59f"></a>`module` | "gogurt_listener_runtime" |
 
 ## Governing policies
 
-- <a id="pa-9712d193c50b"></a>[compatibility/python-api/v1](../../../policies/index.md#p-e574772ba506)
+- <a id="pa-9712d193c5"></a>[compatibility/python-api/v1](../../../policies/index.md#p-e574772ba5)
 
 ## Evidence
 
 ### Qualification
 
-- [make dist-smoke](../../../evidence/sources.md#q-0ba2578a3eb7)
-- [make build](../../../evidence/sources.md#q-d1121e35fa7a)
+- [make dist-smoke](../../../evidence/sources.md#q-0ba2578a3e)
+- [make build](../../../evidence/sources.md#q-d1121e35fa)
 
 ### Executable sources
 
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
-- [python:gogurt-listener-runtime](../../../evidence/sources.md#src-d3bf6489d6c7) — `reference/gogurt/packages/listener-runtime/src/gogurt_listener_runtime/__init__.py::<module>`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [python:gogurt-listener-runtime](../../../evidence/sources.md#src-d3bf6489d6) — `reference/gogurt/packages/listener-runtime/src/gogurt_listener_runtime/__init__.py::<module>`
 
 ### Machine authority
 

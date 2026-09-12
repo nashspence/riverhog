@@ -16,44 +16,44 @@ Exact externally visible contract owned by this semantic dossier.
 
 ## External contract
 
-<a id="s-c27099525ca9"></a>
-- <a id="s-a0e332b63fb7"></a>`title`: FailedArchiveRootPublicationOut
-- <a id="s-80d3054b1668"></a>`type`: object
+<a id="s-c27099525c"></a>
+- <a id="s-a0e332b63f"></a>`title`: FailedArchiveRootPublicationOut
+- <a id="s-80d3054b16"></a>`type`: object
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-46b1e12b224d"></a>`object_path` | no | anyOf=type="string"; minLength=1 \| type="null" |  |
-| <a id="s-f70b18df4c34"></a>`sha256` | no | anyOf=type="string"; pattern="^[0-9a-f]{64}$" \| type="null" |  |
-| <a id="s-b9cfcea2e872"></a>`state` | yes | type="string"; const="failed" |  |
+| <a id="s-46b1e12b22"></a>`object_path` | no | anyOf=type="string"; minLength=1 \| type="null" |  |
+| <a id="s-f70b18df4c"></a>`sha256` | no | anyOf=type="string"; pattern="^[0-9a-f]{64}$" \| type="null" |  |
+| <a id="s-b9cfcea2e8"></a>`state` | yes | type="string"; const="failed" |  |
 
 ### Progression, limits, and lifecycle
 
-#### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
+#### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
 
 Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"}
 
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
-| <a id="s-b1efcf232b5a"></a>field sha256 · anyOf alternative 1 | `length · characters · fixed` | shared above |
+| <a id="s-b1efcf232b"></a>[field sha256 · string value](#s-f70b18df4c) | `length · characters · fixed` | shared above |
 
 ## Governing policies
 
-- <a id="pa-c502980b7491"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0ba)
-- <a id="pa-00a56671407d"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
+- <a id="pa-c502980b74"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0)
+- <a id="pa-00a5667140"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
 
 ## Evidence
 
 ### Qualification
 
-- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459fb8)
-- [make compose-smoke](../../../evidence/sources.md#q-413b0b241ba8)
+- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459f)
+- [make compose-smoke](../../../evidence/sources.md#q-413b0b241b)
 
 ### Executable sources
 
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
-- [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc960) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc9) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
 
 ### Machine authority
 

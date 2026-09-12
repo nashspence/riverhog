@@ -10,37 +10,37 @@ Exact externally visible contract owned by this semantic dossier.
 |---|---|
 | Authority | [riverhog-provenance-windows-contracts](../index.md) |
 | Interface | [boundary](index.md) |
-| Family | [components](index.md#f-d967ca917a22) |
+| Family | [components](index.md#f-d967ca917a) |
 | Contract elements | 1 |
 | Extent decisions | 0 |
 
 ## External contract
 
-<a id="s-24b14260ade3"></a>
+<a id="s-24b14260ad"></a>
 | Field | Shape |
 |---|---|
-| <a id="s-c558b6f6c441"></a>`console_scripts` | empty object |
-| <a id="s-8acff826ea15"></a>`dependencies` | ["riverhog-provenance-contracts"] |
-| <a id="s-535c8da0887d"></a>`distribution` | "riverhog-provenance-windows-contracts" |
-| <a id="s-9947d304781a"></a>`optional_dependencies` | empty object |
-| <a id="s-8b8331b3e24d"></a>`path` | "reference/riverhog/provenance/contracts/windows" |
-| <a id="s-04d671ba7401"></a>`role` | "reference_component" |
+| <a id="s-c558b6f6c4"></a>`console_scripts` | empty object |
+| <a id="s-8acff826ea"></a>`dependencies` | ["riverhog-provenance-contracts"] |
+| <a id="s-535c8da088"></a>`distribution` | "riverhog-provenance-windows-contracts" |
+| <a id="s-9947d30478"></a>`optional_dependencies` | empty object |
+| <a id="s-8b8331b3e2"></a>`path` | "reference/riverhog/provenance/contracts/windows" |
+| <a id="s-04d671ba74"></a>`role` | "reference_component" |
 
 ## Governing policies
 
-- <a id="pa-b7c40f471c69"></a>[boundary/frozen-authority/v1](../../../policies/index.md#p-61994d3f0fa8)
+- <a id="pa-b7c40f471c"></a>[boundary/frozen-authority/v1](../../../policies/index.md#p-61994d3f0f)
 
 ## Evidence
 
 ### Qualification
 
-- [make release-check](../../../evidence/sources.md#q-8d8d22d6a6b1)
-- [make build](../../../evidence/sources.md#q-d1121e35fa7a)
+- [make release-check](../../../evidence/sources.md#q-8d8d22d6a6)
+- [make build](../../../evidence/sources.md#q-d1121e35fa)
 
 ### Executable sources
 
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
-- [release:release.toml](../../../evidence/sources.md#src-c5380dbe5fe0) — `release.toml`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [release:release.toml](../../../evidence/sources.md#src-c5380dbe5f) — `release.toml`
 
 ### Machine authority
 

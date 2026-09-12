@@ -16,24 +16,24 @@ Exact externally visible contract owned by this semantic dossier.
 
 ## External contract
 
-<a id="s-46f521de7969"></a>
-- <a id="s-4519ce4635c0"></a>`title`: ArchiveDownloadAllowanceOut
-- <a id="s-7270dcd7afb4"></a>`type`: object
+<a id="s-46f521de79"></a>
+- <a id="s-4519ce4635"></a>`title`: ArchiveDownloadAllowanceOut
+- <a id="s-7270dcd7af"></a>`type`: object
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-8ef21559a15a"></a>`accounted_bytes` | yes | type="integer" |  |
-| <a id="s-e79165f0f276"></a>`allowance_bytes` | yes | type="integer" |  |
-| <a id="s-9ff4a596cd16"></a>`effective_limit_bytes` | yes | type="integer" |  |
-| <a id="s-099dbcfcba66"></a>`month_started_at` | yes | type="string" |  |
-| <a id="s-3c3696723310"></a>`remaining_bytes` | yes | type="integer" |  |
-| <a id="s-2b5c28bc1444"></a>`reserved_bytes` | yes | type="integer" |  |
-| <a id="s-138f1ddbccc3"></a>`resets_at` | yes | type="string" |  |
-| <a id="s-3b2f6d1df241"></a>`safety_buffer_bytes` | yes | type="integer" |  |
-| <a id="s-38ef97275a1e"></a>`state` | yes | type="string"; enum=["open","closed"] |  |
-| <a id="s-51a26ac5cc56"></a>`store` | yes | #/components/schemas/ArchiveStoreName |  |
+| <a id="s-8ef21559a1"></a>`accounted_bytes` | yes | type="integer" |  |
+| <a id="s-e79165f0f2"></a>`allowance_bytes` | yes | type="integer" |  |
+| <a id="s-9ff4a596cd"></a>`effective_limit_bytes` | yes | type="integer" |  |
+| <a id="s-099dbcfcba"></a>`month_started_at` | yes | type="string" |  |
+| <a id="s-3c36967233"></a>`remaining_bytes` | yes | type="integer" |  |
+| <a id="s-2b5c28bc14"></a>`reserved_bytes` | yes | type="integer" |  |
+| <a id="s-138f1ddbcc"></a>`resets_at` | yes | type="string" |  |
+| <a id="s-3b2f6d1df2"></a>`safety_buffer_bytes` | yes | type="integer" |  |
+| <a id="s-38ef97275a"></a>`state` | yes | type="string"; enum=["open","closed"] |  |
+| <a id="s-51a26ac5cc"></a>`store` | yes | #/components/schemas/ArchiveStoreName |  |
 
 ## Maintained corroboration
 
@@ -43,19 +43,19 @@ Exact externally visible contract owned by this semantic dossier.
 
 ## Governing policies
 
-- <a id="pa-0c428bb06200"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0ba)
+- <a id="pa-0c428bb062"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0)
 
 ## Evidence
 
 ### Qualification
 
-- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459fb8)
-- [make compose-smoke](../../../evidence/sources.md#q-413b0b241ba8)
+- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459f)
+- [make compose-smoke](../../../evidence/sources.md#q-413b0b241b)
 
 ### Executable sources
 
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
-- [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc960) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc9) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
 
 ### Machine authority
 

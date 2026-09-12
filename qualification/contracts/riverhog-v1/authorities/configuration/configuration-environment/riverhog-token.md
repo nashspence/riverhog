@@ -16,27 +16,27 @@ Exact externally visible contract owned by this semantic dossier.
 
 ## External contract
 
-<a id="s-e17f28d8d86b"></a>
+<a id="s-e17f28d8d8"></a>
 | Field | Shape |
 |---|---|
-| <a id="s-a8f98984dcec"></a>`consumers` | ["riverhog-client","stove0-server"] |
-| <a id="s-72292b572547"></a>`name` | "RIVERHOG_TOKEN" |
+| <a id="s-a8f98984dc"></a>`consumers` | ["riverhog-client","stove0-server"] |
+| <a id="s-72292b5725"></a>`name` | "RIVERHOG_TOKEN" |
 
 ## Governing policies
 
-- <a id="pa-562da040e525"></a>[compatibility/configuration/v1](../../../policies/index.md#p-8dc08bb46173)
+- <a id="pa-562da040e5"></a>[compatibility/configuration/v1](../../../policies/index.md#p-8dc08bb461)
 
 ## Evidence
 
 ### Qualification
 
-- [make unit](../../../evidence/sources.md#q-ce47068f504c)
-- [make compose-smoke](../../../evidence/sources.md#q-413b0b241ba8)
+- [make unit](../../../evidence/sources.md#q-ce47068f50)
+- [make compose-smoke](../../../evidence/sources.md#q-413b0b241b)
 
 ### Executable sources
 
-- [configuration-environment:RIVERHOG_TOKEN](../../../evidence/sources.md#src-30337f36d13d) — `configuration-environment:RIVERHOG_TOKEN`
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
+- [configuration-environment:RIVERHOG_TOKEN](../../../evidence/sources.md#src-30337f36d1) — `configuration-environment:RIVERHOG_TOKEN`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
 
 ### Machine authority
 

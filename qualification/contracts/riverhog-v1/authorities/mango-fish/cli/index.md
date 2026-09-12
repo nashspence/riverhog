@@ -6,13 +6,13 @@ Contract elements: **5** · Extent decisions: **6**
 
 | Family | Count |
 |---|---:|
-| <a id="f-baa3c102f725"></a>`mango-fish state` | 4 |
-| <a id="f-e95e81e4dd95"></a>`root` | 1 |
+| <a id="f-baa3c102f7"></a>`mango-fish state` | 4 |
+| <a id="f-e95e81e4dd"></a>`root` | 1 |
 
 | Policy | Count |
 |---|---:|
-| [compatibility/cli/v1](../../../policies/index.md#p-48a89776de7f) | 5 |
-| [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034) | 4 |
+| [compatibility/cli/v1](../../../policies/index.md#p-48a89776de) | 5 |
+| [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0) | 4 |
 
 ## Semantic dossiers
 

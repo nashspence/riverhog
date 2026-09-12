@@ -16,36 +16,36 @@ Exact externally visible contract owned by this semantic dossier.
 
 ## External contract
 
-<a id="s-61dc891bb37d"></a>
-- <a id="s-7c571f014d57"></a>`title`: TagListOut
-- <a id="s-c9efef49ec30"></a>`type`: object
+<a id="s-61dc891bb3"></a>
+- <a id="s-7c571f014d"></a>`title`: TagListOut
+- <a id="s-c9efef49ec"></a>`type`: object
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-a9ccb39ceda7"></a>`next_page_token` | yes | anyOf=#/components/schemas/BrowsePageToken \| type="null" |  |
-| <a id="s-c4cd924e40c2"></a>`page_size` | yes | type="integer"; minimum=1; maximum=100 |  |
-| <a id="s-25d39cd861b3"></a>`query` | yes | anyOf=type="string" \| type="null" |  |
-| <a id="s-6c97d02861a7"></a>`tags` | yes | type="array"; items=(#/components/schemas/TagSummaryOut) |  |
+| <a id="s-a9ccb39ced"></a>`next_page_token` | yes | anyOf=#/components/schemas/BrowsePageToken \| type="null" |  |
+| <a id="s-c4cd924e40"></a>`page_size` | yes | type="integer"; minimum=1; maximum=100 |  |
+| <a id="s-25d39cd861"></a>`query` | yes | anyOf=type="string" \| type="null" |  |
+| <a id="s-6c97d02861"></a>`tags` | yes | type="array"; items=(#/components/schemas/TagSummaryOut) |  |
 
 ### Progression, limits, and lifecycle
 
-#### [extent-rule/route-progression/v1](../../../policies/index.md#p-6b76b527cb21)
+#### [extent-rule/route-progression/v1](../../../policies/index.md#p-6b76b527cb)
 
 Shared facts for every subject below: progression={"default_page_size":25,"kind":"mutable-browse","maximum_page_size":100,"next_page_token_field":"next_page_token","page_size_parameter":"page_size","page_token_parameter":"page_token"}; reason="bounded-route-page"
 
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
-| [field tags](#s-6c97d02861a7) | `cardinality · items · segmented_no_total_max` | shared above |
+| [field tags](#s-6c97d02861) | `cardinality · items · segmented_no_total_max` | shared above |
 
-#### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
+#### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
 
 Shared facts for every subject below: maximum=100; minimum=1; reason="schema-maximum"
 
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
-| [field page_size](#s-c4cd924e40c2) | `value · schema-value · contract_max` | shared above |
+| [field page_size](#s-c4cd924e40) | `value · schema-value · contract_max` | shared above |
 
 ## Maintained corroboration
 
@@ -56,21 +56,21 @@ Shared facts for every subject below: maximum=100; minimum=1; reason="schema-max
 
 ## Governing policies
 
-- <a id="pa-120c74e39854"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0ba)
-- <a id="pa-3711fc902dcf"></a>[extent-rule/route-progression/v1](../../../policies/index.md#p-6b76b527cb21)
-- <a id="pa-65b3bd86d4de"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
+- <a id="pa-120c74e398"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0)
+- <a id="pa-3711fc902d"></a>[extent-rule/route-progression/v1](../../../policies/index.md#p-6b76b527cb)
+- <a id="pa-65b3bd86d4"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
 
 ## Evidence
 
 ### Qualification
 
-- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459fb8)
-- [make compose-smoke](../../../evidence/sources.md#q-413b0b241ba8)
+- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459f)
+- [make compose-smoke](../../../evidence/sources.md#q-413b0b241b)
 
 ### Executable sources
 
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
-- [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc960) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc9) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
 
 ### Machine authority
 

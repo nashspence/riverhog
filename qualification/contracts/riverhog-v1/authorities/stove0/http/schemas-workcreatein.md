@@ -16,37 +16,37 @@ Exact externally visible contract owned by this semantic dossier.
 
 ## External contract
 
-<a id="s-4c057c95307f"></a>
-- <a id="s-558de7a97d38"></a>`title`: WorkCreateIn
-- <a id="s-4d3821068e6e"></a>`type`: object
+<a id="s-4c057c9530"></a>
+- <a id="s-558de7a97d"></a>`title`: WorkCreateIn
+- <a id="s-4d3821068e"></a>`type`: object
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-ad0ebd2307fb"></a>`effective_intent` | no | type="object"; additional keys=`additionalProperties` |  |
-| <a id="s-73fa49c400ee"></a>`inputs` | yes | type="array"; minItems=1; items=(#/components/schemas/CollectionRootRef) |  |
-| <a id="s-6883763dc1d8"></a>`preview_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-1e56ede54723"></a>`recipe_id` | yes | type="string"; minLength=1; maxLength=160 |  |
-| <a id="s-cc2aeb54a67f"></a>`recipe_revision` | no | anyOf=type="integer"; minimum=1 \| type="null" |  |
+| <a id="s-ad0ebd2307"></a>`effective_intent` | no | type="object"; additional keys=`additionalProperties` |  |
+| <a id="s-73fa49c400"></a>`inputs` | yes | type="array"; minItems=1; items=(#/components/schemas/CollectionRootRef) |  |
+| <a id="s-6883763dc1"></a>`preview_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-1e56ede547"></a>`recipe_id` | yes | type="string"; minLength=1; maxLength=160 |  |
+| <a id="s-cc2aeb54a6"></a>`recipe_revision` | no | anyOf=type="integer"; minimum=1 \| type="null" |  |
 
 ### Progression, limits, and lifecycle
 
-#### [extent-rule/no-semantic-maximum/v1](../../../policies/index.md#p-574724b48af0)
+#### [extent-rule/no-semantic-maximum/v1](../../../policies/index.md#p-574724b48a)
 
 Shared facts for every subject below: capacity_authority={"declared_maximum":null,"hidden_maximum":"forbidden","owner":"stove0"}; maximum=null; reason="no-declared-semantic-maximum"
 
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
-| [field effective_intent](#s-ad0ebd2307fb) | `cardinality · entries · operational_policy` | shared above |
-| [field inputs](#s-73fa49c400ee) | `cardinality · items · operational_policy` | shared above |
+| [field effective_intent](#s-ad0ebd2307) | `cardinality · entries · operational_policy` | shared above |
+| [field inputs](#s-73fa49c400) | `cardinality · items · operational_policy` | shared above |
 
-#### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
+#### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
 
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
-| [field preview_sha256](#s-6883763dc1d8) | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
-| [field recipe_id](#s-1e56ede54723) | `length · characters · contract_max` | maximum=160; minimum=1; reason="schema-maximum" |
+| [field preview_sha256](#s-6883763dc1) | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
+| [field recipe_id](#s-1e56ede547) | `length · characters · contract_max` | maximum=160; minimum=1; reason="schema-maximum" |
 
 ## Maintained corroboration
 
@@ -57,21 +57,21 @@ Shared facts for every subject below: capacity_authority={"declared_maximum":nul
 
 ## Governing policies
 
-- <a id="pa-b0aff7b14160"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0ba)
-- <a id="pa-467bd8276b09"></a>[extent-rule/no-semantic-maximum/v1](../../../policies/index.md#p-574724b48af0)
-- <a id="pa-4c7a20ce7d16"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
+- <a id="pa-b0aff7b141"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0)
+- <a id="pa-467bd8276b"></a>[extent-rule/no-semantic-maximum/v1](../../../policies/index.md#p-574724b48a)
+- <a id="pa-4c7a20ce7d"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
 
 ## Evidence
 
 ### Qualification
 
-- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459fb8)
-- [make compose-smoke](../../../evidence/sources.md#q-413b0b241ba8)
+- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459f)
+- [make compose-smoke](../../../evidence/sources.md#q-413b0b241b)
 
 ### Executable sources
 
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
-- [openapi:stove0](../../../evidence/sources.md#src-52e6e3212451) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [openapi:stove0](../../../evidence/sources.md#src-52e6e32124) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
 
 ### Machine authority
 

@@ -16,49 +16,49 @@ Search
 
 ## External contract
 
-<a id="s-779c836913b2"></a>
-- <a id="s-137c644476b7"></a>`operationId`: search
-- <a id="s-6855d9b8067b"></a>`summary`: Search
-- <a id="s-7c440c79b737"></a>`security`: `[{"HTTPBearer": []}]`
+<a id="s-779c836913"></a>
+- <a id="s-137c644476"></a>`operationId`: search
+- <a id="s-6855d9b806"></a>`summary`: Search
+- <a id="s-7c440c79b7"></a>`security`: `[{"HTTPBearer": []}]`
 
 ### Parameters
 
 | Name | In | Required | Schema |
 |---|---|---:|---|
-| <a id="s-fa52230b6199"></a>`q` | query | no | anyOf=#/components/schemas/BrowseQuery \| type="null" |
-| <a id="s-0897c641b39a"></a>`page_size` | query | no | type="integer"; minimum=1; maximum=100 |
-| <a id="s-ff9d1780de7d"></a>`page_token` | query | no | anyOf=#/components/schemas/BrowsePageToken \| type="null" |
-| <a id="s-a72f8fa8f64b"></a>`sort` | query | no | $ref="#/components/schemas/SearchSort" |
-| <a id="s-4fd93c17d076"></a>`order` | query | no | $ref="#/components/schemas/SortOrder" |
-| <a id="s-fc2236a28f0b"></a>`collection` | query | no | anyOf=#/components/schemas/CollectionIdParameter \| type="null" |
+| <a id="s-fa52230b61"></a>`q` | query | no | anyOf=#/components/schemas/BrowseQuery \| type="null" |
+| <a id="s-0897c641b3"></a>`page_size` | query | no | type="integer"; minimum=1; maximum=100 |
+| <a id="s-ff9d1780de"></a>`page_token` | query | no | anyOf=#/components/schemas/BrowsePageToken \| type="null" |
+| <a id="s-a72f8fa8f6"></a>`sort` | query | no | $ref="#/components/schemas/SearchSort" |
+| <a id="s-4fd93c17d0"></a>`order` | query | no | $ref="#/components/schemas/SortOrder" |
+| <a id="s-fc2236a28f"></a>`collection` | query | no | anyOf=#/components/schemas/CollectionIdParameter \| type="null" |
 
 ### Responses
 
 | Status | Description |
 |---|---|
-| <a id="s-776e2cba8a29"></a>`200` | Successful Response |
-| <a id="s-592a32831f79"></a>`400` | Bad Request |
-| <a id="s-ae02137c842f"></a>`401` | Unauthorized |
-| <a id="s-f8b436515b97"></a>`403` | Forbidden |
-| <a id="s-85566fe71ff6"></a>`500` | Internal Server Error |
+| <a id="s-776e2cba8a"></a>`200` | Successful Response |
+| <a id="s-592a32831f"></a>`400` | Bad Request |
+| <a id="s-ae02137c84"></a>`401` | Unauthorized |
+| <a id="s-f8b436515b"></a>`403` | Forbidden |
+| <a id="s-85566fe71f"></a>`500` | Internal Server Error |
 
 ### Progression, limits, and lifecycle
 
-#### [extent-rule/route-progression/v1](../../../policies/index.md#p-6b76b527cb21)
+#### [extent-rule/route-progression/v1](../../../policies/index.md#p-6b76b527cb)
 
 Shared facts for every subject below: progression={"default_page_size":25,"kind":"mutable-browse","maximum_page_size":100,"next_page_token_field":"next_page_token","page_size_parameter":"page_size","page_token_parameter":"page_token"}; reason="bounded-route-progression"
 
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
-| [GET /v1/search](#s-779c836913b2) | `logical-result-cardinality · items · segmented_no_total_max` | shared above |
+| [GET /v1/search](#s-779c836913) | `logical-result-cardinality · items · segmented_no_total_max` | shared above |
 
-#### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
+#### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
 
 Shared facts for every subject below: maximum=100; minimum=1; reason="schema-maximum"
 
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
-| <a id="s-a42cbe57aeab"></a>parameter page_size | `value · schema-value · contract_max` | shared above |
+| <a id="s-a42cbe57ae"></a>[parameter page_size](#s-0897c641b3) | `value · schema-value · contract_max` | shared above |
 
 ## Maintained corroboration
 
@@ -78,21 +78,21 @@ Shared facts for every subject below: maximum=100; minimum=1; reason="schema-max
 
 ## Governing policies
 
-- <a id="pa-f7b4a247e90a"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0ba)
-- <a id="pa-886f31325c78"></a>[extent-rule/route-progression/v1](../../../policies/index.md#p-6b76b527cb21)
-- <a id="pa-60f2fe1cbaf0"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
+- <a id="pa-f7b4a247e9"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0)
+- <a id="pa-886f31325c"></a>[extent-rule/route-progression/v1](../../../policies/index.md#p-6b76b527cb)
+- <a id="pa-60f2fe1cba"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
 
 ## Evidence
 
 ### Qualification
 
-- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459fb8)
-- [make compose-smoke](../../../evidence/sources.md#q-413b0b241ba8)
+- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459f)
+- [make compose-smoke](../../../evidence/sources.md#q-413b0b241b)
 
 ### Executable sources
 
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
-- [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc960) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc9) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
 
 ### Machine authority
 

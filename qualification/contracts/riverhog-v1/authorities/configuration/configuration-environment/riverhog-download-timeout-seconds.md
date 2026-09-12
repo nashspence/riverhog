@@ -16,38 +16,38 @@ Exact externally visible contract owned by this semantic dossier.
 
 ## External contract
 
-<a id="s-1c3c820c2ca6"></a>
+<a id="s-1c3c820c2c"></a>
 | Field | Shape |
 |---|---|
-| <a id="s-aca3251563e7"></a>`consumers` | ["riverhog-client"] |
-| <a id="s-5945522bb9d8"></a>`name` | "RIVERHOG_DOWNLOAD_TIMEOUT_SECONDS" |
+| <a id="s-aca3251563"></a>`consumers` | ["riverhog-client"] |
+| <a id="s-5945522bb9"></a>`name` | "RIVERHOG_DOWNLOAD_TIMEOUT_SECONDS" |
 
 ### Progression, limits, and lifecycle
 
-#### [extent-rule/configured-capacity/v1](../../../policies/index.md#p-3ebc61fc9972)
+#### [extent-rule/configured-capacity/v1](../../../policies/index.md#p-3ebc61fc99)
 
 Shared facts for every subject below: configuration="RIVERHOG_DOWNLOAD_TIMEOUT_SECONDS"; maximum=null; reason="operator-configured-capacity"
 
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
-| [RIVERHOG_DOWNLOAD_TIMEOUT_SECONDS](#s-1c3c820c2ca6) | `value · configured-value · operational_policy` | shared above |
+| [RIVERHOG_DOWNLOAD_TIMEOUT_SECONDS](#s-1c3c820c2c) | `value · configured-value · operational_policy` | shared above |
 
 ## Governing policies
 
-- <a id="pa-6ce73cb047fa"></a>[compatibility/configuration/v1](../../../policies/index.md#p-8dc08bb46173)
-- <a id="pa-a875e90bcd78"></a>[extent-rule/configured-capacity/v1](../../../policies/index.md#p-3ebc61fc9972)
+- <a id="pa-6ce73cb047"></a>[compatibility/configuration/v1](../../../policies/index.md#p-8dc08bb461)
+- <a id="pa-a875e90bcd"></a>[extent-rule/configured-capacity/v1](../../../policies/index.md#p-3ebc61fc99)
 
 ## Evidence
 
 ### Qualification
 
-- [make unit](../../../evidence/sources.md#q-ce47068f504c)
-- [make compose-smoke](../../../evidence/sources.md#q-413b0b241ba8)
+- [make unit](../../../evidence/sources.md#q-ce47068f50)
+- [make compose-smoke](../../../evidence/sources.md#q-413b0b241b)
 
 ### Executable sources
 
-- [configuration-environment:RIVERHOG_DOWNLOAD_TIMEOUT_SECONDS](../../../evidence/sources.md#src-ef9582fda499) — `configuration-environment:RIVERHOG_DOWNLOAD_TIMEOUT_SECONDS`
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
+- [configuration-environment:RIVERHOG_DOWNLOAD_TIMEOUT_SECONDS](../../../evidence/sources.md#src-ef9582fda4) — `configuration-environment:RIVERHOG_DOWNLOAD_TIMEOUT_SECONDS`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
 
 ### Machine authority
 

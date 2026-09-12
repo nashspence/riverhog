@@ -16,27 +16,27 @@ Advance Retrieval Plan
 
 ## External contract
 
-<a id="s-eee1d15d4d38"></a>
-- <a id="s-3905b4ab13f7"></a>`operationId`: advance_retrieval_plan
-- <a id="s-81ae26728e16"></a>`summary`: Advance Retrieval Plan
-- <a id="s-945eb7424f69"></a>`security`: `[{"HTTPBearer": []}]`
+<a id="s-eee1d15d4d"></a>
+- <a id="s-3905b4ab13"></a>`operationId`: advance_retrieval_plan
+- <a id="s-81ae26728e"></a>`summary`: Advance Retrieval Plan
+- <a id="s-945eb7424f"></a>`security`: `[{"HTTPBearer": []}]`
 
 ### Parameters
 
 | Name | In | Required | Schema |
 |---|---|---:|---|
-| <a id="s-99944139c088"></a>`plan_id` | path | yes | type="string" |
+| <a id="s-99944139c0"></a>`plan_id` | path | yes | type="string" |
 
 ### Responses
 
 | Status | Description |
 |---|---|
-| <a id="s-3fb020b34eef"></a>`200` | Successful Response |
-| <a id="s-a150a2ac0eb5"></a>`400` | Bad Request |
-| <a id="s-95748db20a23"></a>`401` | Unauthorized |
-| <a id="s-960c5860110d"></a>`403` | Forbidden |
-| <a id="s-0ed376610dcb"></a>`404` | Not Found |
-| <a id="s-673acbfb182e"></a>`500` | Internal Server Error |
+| <a id="s-3fb020b34e"></a>`200` | Successful Response |
+| <a id="s-a150a2ac0e"></a>`400` | Bad Request |
+| <a id="s-95748db20a"></a>`401` | Unauthorized |
+| <a id="s-960c586011"></a>`403` | Forbidden |
+| <a id="s-0ed376610d"></a>`404` | Not Found |
+| <a id="s-673acbfb18"></a>`500` | Internal Server Error |
 
 ## Maintained corroboration
 
@@ -51,19 +51,19 @@ Advance Retrieval Plan
 
 ## Governing policies
 
-- <a id="pa-2030a180b621"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0ba)
+- <a id="pa-2030a180b6"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0)
 
 ## Evidence
 
 ### Qualification
 
-- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459fb8)
-- [make compose-smoke](../../../evidence/sources.md#q-413b0b241ba8)
+- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459f)
+- [make compose-smoke](../../../evidence/sources.md#q-413b0b241b)
 
 ### Executable sources
 
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
-- [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc960) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc9) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
 
 ### Machine authority
 

@@ -16,55 +16,55 @@ Exact externally visible contract owned by this semantic dossier.
 
 ## External contract
 
-<a id="s-1a1faf116715"></a>
-- <a id="s-d83976a5827a"></a>`title`: CollectionUploadListItemOut
-- <a id="s-843a25a51adc"></a>`type`: object
+<a id="s-1a1faf1167"></a>
+- <a id="s-d83976a582"></a>`title`: CollectionUploadListItemOut
+- <a id="s-843a25a51a"></a>`type`: object
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-78f25613b2b7"></a>`archive_store` | yes | #/components/schemas/ArchiveStoreName |  |
-| <a id="s-9113192326f5"></a>`bytes` | yes | type="integer"; minimum=0 |  |
-| <a id="s-e11197cec60d"></a>`collection_id` | yes | #/components/schemas/CollectionId |  |
-| <a id="s-79db77eddc17"></a>`created_at` | yes | anyOf=type="string" \| type="null" |  |
-| <a id="s-75d2cbd26ad4"></a>`custody` | yes | oneOf=#/components/schemas/PendingCollectionUploadCustodyOut \| #/components/schemas/CompleteCollectionUploadCustodyOut; additional keys=`discriminator` |  |
-| <a id="s-59666b97a065"></a>`custody_mode` | yes | type="string"; enum=["producer-retained","custody-transfer"] |  |
-| <a id="s-6e8cc7d8e384"></a>`description` | yes | anyOf=#/components/schemas/CollectionDescription \| type="null" |  |
-| <a id="s-7e4747dfb664"></a>`description_identity` | yes | anyOf=type="string"; pattern="^[0-9a-f]{64}$" \| type="null" |  |
-| <a id="s-0ad8095d2042"></a>`description_publication` | yes | type="string"; enum=["pending","not_required","current"] |  |
-| <a id="s-63ebea617bb0"></a>`description_revision` | yes | anyOf=type="integer"; minimum=0; maximum=9007199254740991 \| type="null" |  |
-| <a id="s-3a8ce2a4f51c"></a>`encryption_format` | yes | type="string" |  |
-| <a id="s-378db6216633"></a>`files` | yes | type="integer"; minimum=0 |  |
-| <a id="s-74cdc2090616"></a>`ingest_source` | yes | anyOf=type="string" \| type="null" |  |
-| <a id="s-e51c2fae2efe"></a>`orphaned_at` | yes | anyOf=type="string" \| type="null" |  |
-| <a id="s-335b427411a9"></a>`passphrase_id` | yes | type="string"; pattern="^[A-Za-z0-9_-]{16,128}$" |  |
-| <a id="s-d2a06ec8ff95"></a>`state` | yes | type="string"; enum=["open","closing","uploading","finalizing","orphaned","discarding"] |  |
-| <a id="s-96988dc3ef68"></a>`tag_count` | yes | type="integer"; minimum=0 |  |
-| <a id="s-54f0ed2b7c00"></a>`tag_publication` | yes | type="string"; enum=["pending","current"] |  |
-| <a id="s-399497244115"></a>`tag_revision` | no | anyOf=type="integer"; minimum=1; maximum=9007199254740991 \| type="null" |  |
-| <a id="s-6acc2915155d"></a>`tag_set_identity` | no | anyOf=type="string"; pattern="^[0-9a-f]{64}$" \| type="null" |  |
-| <a id="s-9142e695954f"></a>`upload_state_expires_at` | yes | anyOf=type="string" \| type="null" |  |
+| <a id="s-78f25613b2"></a>`archive_store` | yes | #/components/schemas/ArchiveStoreName |  |
+| <a id="s-9113192326"></a>`bytes` | yes | type="integer"; minimum=0 |  |
+| <a id="s-e11197cec6"></a>`collection_id` | yes | #/components/schemas/CollectionId |  |
+| <a id="s-79db77eddc"></a>`created_at` | yes | anyOf=type="string" \| type="null" |  |
+| <a id="s-75d2cbd26a"></a>`custody` | yes | oneOf=#/components/schemas/PendingCollectionUploadCustodyOut \| #/components/schemas/CompleteCollectionUploadCustodyOut; additional keys=`discriminator` |  |
+| <a id="s-59666b97a0"></a>`custody_mode` | yes | type="string"; enum=["producer-retained","custody-transfer"] |  |
+| <a id="s-6e8cc7d8e3"></a>`description` | yes | anyOf=#/components/schemas/CollectionDescription \| type="null" |  |
+| <a id="s-7e4747dfb6"></a>`description_identity` | yes | anyOf=type="string"; pattern="^[0-9a-f]{64}$" \| type="null" |  |
+| <a id="s-0ad8095d20"></a>`description_publication` | yes | type="string"; enum=["pending","not_required","current"] |  |
+| <a id="s-63ebea617b"></a>`description_revision` | yes | anyOf=type="integer"; minimum=0; maximum=9007199254740991 \| type="null" |  |
+| <a id="s-3a8ce2a4f5"></a>`encryption_format` | yes | type="string" |  |
+| <a id="s-378db62166"></a>`files` | yes | type="integer"; minimum=0 |  |
+| <a id="s-74cdc20906"></a>`ingest_source` | yes | anyOf=type="string" \| type="null" |  |
+| <a id="s-e51c2fae2e"></a>`orphaned_at` | yes | anyOf=type="string" \| type="null" |  |
+| <a id="s-335b427411"></a>`passphrase_id` | yes | type="string"; pattern="^[A-Za-z0-9_-]{16,128}$" |  |
+| <a id="s-d2a06ec8ff"></a>`state` | yes | type="string"; enum=["open","closing","uploading","finalizing","orphaned","discarding"] |  |
+| <a id="s-96988dc3ef"></a>`tag_count` | yes | type="integer"; minimum=0 |  |
+| <a id="s-54f0ed2b7c"></a>`tag_publication` | yes | type="string"; enum=["pending","current"] |  |
+| <a id="s-3994972441"></a>`tag_revision` | no | anyOf=type="integer"; minimum=1; maximum=9007199254740991 \| type="null" |  |
+| <a id="s-6acc291515"></a>`tag_set_identity` | no | anyOf=type="string"; pattern="^[0-9a-f]{64}$" \| type="null" |  |
+| <a id="s-9142e69595"></a>`upload_state_expires_at` | yes | anyOf=type="string" \| type="null" |  |
 
 ### Progression, limits, and lifecycle
 
-#### [extent-rule/no-semantic-maximum/v1](../../../policies/index.md#p-574724b48af0)
+#### [extent-rule/no-semantic-maximum/v1](../../../policies/index.md#p-574724b48a)
 
 Shared facts for every subject below: capacity_authority={"declared_maximum":null,"hidden_maximum":"forbidden","owner":"riverhog"}; maximum=null; reason="no-declared-semantic-maximum"
 
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
-| [field bytes](#s-9113192326f5) | `value · schema-value · operational_policy` | shared above |
-| [field files](#s-378db6216633) | `value · schema-value · operational_policy` | shared above |
+| [field bytes](#s-9113192326) | `value · schema-value · operational_policy` | shared above |
+| [field files](#s-378db62166) | `value · schema-value · operational_policy` | shared above |
 
-#### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
+#### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
 
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
-| <a id="s-aa83ed105ffa"></a>field description_identity · anyOf alternative 1 | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
-| <a id="s-2f1d68ce1988"></a>field description_revision · anyOf alternative 1 | `value · schema-value · contract_max` | maximum=9007199254740991; minimum=0; reason="schema-maximum" |
-| <a id="s-c36282bf9d01"></a>field tag_revision · anyOf alternative 1 | `value · schema-value · contract_max` | maximum=9007199254740991; minimum=1; reason="schema-maximum" |
-| <a id="s-81cb5997db5a"></a>field tag_set_identity · anyOf alternative 1 | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
+| <a id="s-aa83ed105f"></a>[field description_identity · string value](#s-7e4747dfb6) | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
+| <a id="s-2f1d68ce19"></a>[field description_revision · integer value](#s-63ebea617b) | `value · schema-value · contract_max` | maximum=9007199254740991; minimum=0; reason="schema-maximum" |
+| <a id="s-c36282bf9d"></a>[field tag_revision · integer value](#s-3994972441) | `value · schema-value · contract_max` | maximum=9007199254740991; minimum=1; reason="schema-maximum" |
+| <a id="s-81cb5997db"></a>[field tag_set_identity · string value](#s-6acc291515) | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
 
 ## Maintained corroboration
 
@@ -78,21 +78,21 @@ Shared facts for every subject below: capacity_authority={"declared_maximum":nul
 
 ## Governing policies
 
-- <a id="pa-758b53841649"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0ba)
-- <a id="pa-f4ff05db2e4e"></a>[extent-rule/no-semantic-maximum/v1](../../../policies/index.md#p-574724b48af0)
-- <a id="pa-a864548903a1"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
+- <a id="pa-758b538416"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0)
+- <a id="pa-f4ff05db2e"></a>[extent-rule/no-semantic-maximum/v1](../../../policies/index.md#p-574724b48a)
+- <a id="pa-a864548903"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
 
 ## Evidence
 
 ### Qualification
 
-- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459fb8)
-- [make compose-smoke](../../../evidence/sources.md#q-413b0b241ba8)
+- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459f)
+- [make compose-smoke](../../../evidence/sources.md#q-413b0b241b)
 
 ### Executable sources
 
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
-- [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc960) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc9) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
 
 ### Machine authority
 

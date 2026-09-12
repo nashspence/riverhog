@@ -10,30 +10,30 @@ Exact externally visible contract owned by this semantic dossier.
 |---|---|
 | Authority | [mango-fish-cursor](../index.md) |
 | Interface | [durable-state](index.md) |
-| Family | [owners](index.md#f-ffc7e6b5c38b) |
+| Family | [owners](index.md#f-ffc7e6b5c3) |
 | Contract elements | 1 |
 | Extent decisions | 0 |
 
 ## External contract
 
-<a id="s-cb3dcc8c5c09"></a>
-- <a id="s-077378586908"></a>`format`: state-schema/sqlite
+<a id="s-cb3dcc8c5c"></a>
+- <a id="s-0773785869"></a>`format`: state-schema/sqlite
 
 ## Governing policies
 
-- <a id="pa-2f33697d31f3"></a>[compatibility/components/v1](../../../policies/index.md#p-95e9a1225947)
+- <a id="pa-2f33697d31"></a>[compatibility/components/v1](../../../policies/index.md#p-95e9a12259)
 
 ## Evidence
 
 ### Qualification
 
-- [make release-check](../../../evidence/sources.md#q-8d8d22d6a6b1)
-- [make database-qualification](../../../evidence/sources.md#q-27f281b51ec6)
+- [make release-check](../../../evidence/sources.md#q-8d8d22d6a6)
+- [make database-qualification](../../../evidence/sources.md#q-27f281b51e)
 
 ### Executable sources
 
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
-- [state:mango-fish-cursor](../../../evidence/sources.md#src-b1cc215b8d66) — `state:mango-fish-cursor`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [state:mango-fish-cursor](../../../evidence/sources.md#src-b1cc215b8d) — `state:mango-fish-cursor`
 
 ### Machine authority
 

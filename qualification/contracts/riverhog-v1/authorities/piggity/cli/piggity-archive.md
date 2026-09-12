@@ -16,23 +16,23 @@ Exact externally visible contract owned by this semantic dossier.
 
 ## External contract
 
-- <a id="s-292da0e6c57a"></a>Parser name: `archive`
+- <a id="s-292da0e6c5"></a>Parser name: `archive`
 
 ## Governing policies
 
-- <a id="pa-e0f2ba3d7ad0"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de7f)
+- <a id="pa-e0f2ba3d7a"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de)
 
 ## Evidence
 
 ### Qualification
 
-- [make dist-smoke](../../../evidence/sources.md#q-0ba2578a3eb7)
-- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459fb8)
+- [make dist-smoke](../../../evidence/sources.md#q-0ba2578a3e)
+- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459f)
 
 ### Executable sources
 
-- [cli:piggity](../../../evidence/sources.md#src-094022231f2c) — `reference/riverhog/applications/piggity/src/piggity/main.py::<module>`
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
+- [cli:piggity](../../../evidence/sources.md#src-094022231f) — `reference/riverhog/applications/piggity/src/piggity/main.py::<module>`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
 
 ### Machine authority
 

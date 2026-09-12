@@ -10,30 +10,30 @@ Exact externally visible contract owned by this semantic dossier.
 |---|---|
 | Authority | [repository](../index.md) |
 | Interface | [boundary](index.md) |
-| Family | [references](index.md#f-5ae6ed7185f1) |
+| Family | [references](index.md#f-5ae6ed7185) |
 | Contract elements | 1 |
 | Extent decisions | 0 |
 
 ## External contract
 
-<a id="s-d3a6f4ff42aa"></a>
+<a id="s-d3a6f4ff42"></a>
 - Shape: "Checked-in references form a closed, tightly scoped, maintainer-selected, nonnormative conformance set."
 
 ## Governing policies
 
-- <a id="pa-01f649fe680c"></a>[boundary/frozen-authority/v1](../../../policies/index.md#p-61994d3f0fa8)
+- <a id="pa-01f649fe68"></a>[boundary/frozen-authority/v1](../../../policies/index.md#p-61994d3f0f)
 
 ## Evidence
 
 ### Qualification
 
-- [make release-check](../../../evidence/sources.md#q-8d8d22d6a6b1)
-- [make build](../../../evidence/sources.md#q-d1121e35fa7a)
+- [make release-check](../../../evidence/sources.md#q-8d8d22d6a6)
+- [make build](../../../evidence/sources.md#q-d1121e35fa)
 
 ### Executable sources
 
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
-- [release:release.toml](../../../evidence/sources.md#src-c5380dbe5fe0) — `release.toml`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [release:release.toml](../../../evidence/sources.md#src-c5380dbe5f) — `release.toml`
 
 ### Machine authority
 

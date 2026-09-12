@@ -16,36 +16,36 @@ Exact externally visible contract owned by this semantic dossier.
 
 ## External contract
 
-<a id="s-bb7532ef6775"></a>
-- <a id="s-2b167517c973"></a>`title`: ListCollectionUploadSessionFilesResponse
-- <a id="s-266f4242ee5e"></a>`type`: object
+<a id="s-bb7532ef67"></a>
+- <a id="s-2b167517c9"></a>`title`: ListCollectionUploadSessionFilesResponse
+- <a id="s-266f4242ee"></a>`type`: object
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-92b5d4df839e"></a>`collection_id` | yes | #/components/schemas/CollectionId |  |
-| <a id="s-b0788847ab4f"></a>`files` | yes | type="array"; items=(#/components/schemas/CollectionUploadFileOut) |  |
-| <a id="s-13e8266f55ff"></a>`next_page_token` | yes | anyOf=#/components/schemas/BrowsePageToken \| type="null" |  |
-| <a id="s-5d2c3734cd74"></a>`page_size` | yes | type="integer"; minimum=1; maximum=100 |  |
+| <a id="s-92b5d4df83"></a>`collection_id` | yes | #/components/schemas/CollectionId |  |
+| <a id="s-b0788847ab"></a>`files` | yes | type="array"; items=(#/components/schemas/CollectionUploadFileOut) |  |
+| <a id="s-13e8266f55"></a>`next_page_token` | yes | anyOf=#/components/schemas/BrowsePageToken \| type="null" |  |
+| <a id="s-5d2c3734cd"></a>`page_size` | yes | type="integer"; minimum=1; maximum=100 |  |
 
 ### Progression, limits, and lifecycle
 
-#### [extent-rule/route-progression/v1](../../../policies/index.md#p-6b76b527cb21)
+#### [extent-rule/route-progression/v1](../../../policies/index.md#p-6b76b527cb)
 
 Shared facts for every subject below: progression={"default_page_size":25,"kind":"mutable-browse","maximum_page_size":100,"next_page_token_field":"next_page_token","page_size_parameter":"page_size","page_token_parameter":"page_token"}; reason="bounded-route-page"
 
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
-| [field files](#s-b0788847ab4f) | `cardinality · items · segmented_no_total_max` | shared above |
+| [field files](#s-b0788847ab) | `cardinality · items · segmented_no_total_max` | shared above |
 
-#### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
+#### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
 
 Shared facts for every subject below: maximum=100; minimum=1; reason="schema-maximum"
 
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
-| [field page_size](#s-5d2c3734cd74) | `value · schema-value · contract_max` | shared above |
+| [field page_size](#s-5d2c3734cd) | `value · schema-value · contract_max` | shared above |
 
 ## Maintained corroboration
 
@@ -57,21 +57,21 @@ Shared facts for every subject below: maximum=100; minimum=1; reason="schema-max
 
 ## Governing policies
 
-- <a id="pa-2813fcf69bcd"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0ba)
-- <a id="pa-6abd15e7b933"></a>[extent-rule/route-progression/v1](../../../policies/index.md#p-6b76b527cb21)
-- <a id="pa-fa80386e476c"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
+- <a id="pa-2813fcf69b"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0)
+- <a id="pa-6abd15e7b9"></a>[extent-rule/route-progression/v1](../../../policies/index.md#p-6b76b527cb)
+- <a id="pa-fa80386e47"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
 
 ## Evidence
 
 ### Qualification
 
-- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459fb8)
-- [make compose-smoke](../../../evidence/sources.md#q-413b0b241ba8)
+- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459f)
+- [make compose-smoke](../../../evidence/sources.md#q-413b0b241b)
 
 ### Executable sources
 
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
-- [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc960) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc9) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
 
 ### Machine authority
 

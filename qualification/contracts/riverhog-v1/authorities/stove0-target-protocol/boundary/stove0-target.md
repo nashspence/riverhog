@@ -10,30 +10,30 @@ Exact externally visible contract owned by this semantic dossier.
 |---|---|
 | Authority | [stove0-target-protocol](../index.md) |
 | Interface | [boundary](index.md) |
-| Family | [process-extensions](index.md#f-d0c55a2f6c6f) |
+| Family | [process-extensions](index.md#f-d0c55a2f6c) |
 | Contract elements | 1 |
 | Extent decisions | 0 |
 
 ## External contract
 
-<a id="s-8145eb9dad75"></a>
-- <a id="s-4afa013647e2"></a>`protocols`: ["stove0-transform-target/v1", "stove0-effect-target/v1"]
+<a id="s-8145eb9dad"></a>
+- <a id="s-4afa013647"></a>`protocols`: ["stove0-transform-target/v1", "stove0-effect-target/v1"]
 
 ## Governing policies
 
-- <a id="pa-3e763e50ffed"></a>[boundary/frozen-authority/v1](../../../policies/index.md#p-61994d3f0fa8)
+- <a id="pa-3e763e50ff"></a>[boundary/frozen-authority/v1](../../../policies/index.md#p-61994d3f0f)
 
 ## Evidence
 
 ### Qualification
 
-- [make release-check](../../../evidence/sources.md#q-8d8d22d6a6b1)
-- [make build](../../../evidence/sources.md#q-d1121e35fa7a)
+- [make release-check](../../../evidence/sources.md#q-8d8d22d6a6)
+- [make build](../../../evidence/sources.md#q-d1121e35fa)
 
 ### Executable sources
 
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
-- [release:release.toml](../../../evidence/sources.md#src-c5380dbe5fe0) — `release.toml`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [release:release.toml](../../../evidence/sources.md#src-c5380dbe5f) — `release.toml`
 
 ### Machine authority
 

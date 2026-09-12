@@ -10,73 +10,73 @@ Exact externally visible contract owned by this semantic dossier.
 |---|---|
 | Authority | [stove0-target-support](../index.md) |
 | Interface | [protocol](index.md) |
-| Family | [schemas](index.md#f-3862b77c4ff3) |
+| Family | [schemas](index.md#f-3862b77c4f) |
 | Contract elements | 1 |
 | Extent decisions | 5 |
 
 ## External contract
 
-<a id="s-f55c3c2305bb"></a>
-- <a id="s-a9f5e1dd7166"></a>`title`: TargetContract
-- <a id="s-7cc62d6bafb0"></a>`type`: object
+<a id="s-f55c3c2305"></a>
+- <a id="s-a9f5e1dd71"></a>`title`: TargetContract
+- <a id="s-7cc62d6baf"></a>`type`: object
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-ce89526554ca"></a>`contract_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-3d5d4b0d0589"></a>`image_digest` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-7cea71058d19"></a>`implementation_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
-| <a id="s-701a84b78a04"></a>`implementation_version` | yes | type="string"; minLength=1; maxLength=120 |  |
-| <a id="s-2211625ddb6c"></a>`operations` | yes | type="array"; minItems=1; items=(#/$defs/TargetOperationSupport) |  |
-| <a id="s-cbff81d92c29"></a>`protocol` | no | type="string"; enum=["stove0-transform-target/v1","stove0-effect-target/v1"] |  |
-| <a id="s-a7e1a14aeb30"></a>`source_revision` | yes | type="string"; minLength=1; maxLength=200 |  |
-| <a id="s-6431073394ec"></a>`transport` | no | type="string"; const="riverhog-capability/v1" |  |
+| <a id="s-ce89526554"></a>`contract_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-3d5d4b0d05"></a>`image_digest` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-7cea71058d"></a>`implementation_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
+| <a id="s-701a84b78a"></a>`implementation_version` | yes | type="string"; minLength=1; maxLength=120 |  |
+| <a id="s-2211625ddb"></a>`operations` | yes | type="array"; minItems=1; items=(#/$defs/TargetOperationSupport) |  |
+| <a id="s-cbff81d92c"></a>`protocol` | no | type="string"; enum=["stove0-transform-target/v1","stove0-effect-target/v1"] |  |
+| <a id="s-a7e1a14aeb"></a>`source_revision` | yes | type="string"; minLength=1; maxLength=200 |  |
+| <a id="s-6431073394"></a>`transport` | no | type="string"; const="riverhog-capability/v1" |  |
 
 ### Definitions
 
 | Definition | Shape |
 |---|---|
-| <a id="s-aeffe3dc52fa"></a>`JsonSchemaDocument` | type="object"; fields=`dialect`, `format_policy`, `id`, `schema`, `sha256`; additional keys=`additionalProperties`, `required` |
-| <a id="s-b290de24fa6e"></a>`JsonValue` | empty object |
-| <a id="s-daec20e2d64e"></a>`TargetOperationSupport` | type="object"; fields=`operation_contract_sha256`, `operation_id`, `options_schema`, `result_kind`; additional keys=`additionalProperties`, `required` |
+| <a id="s-aeffe3dc52"></a>`JsonSchemaDocument` | type="object"; fields=`dialect`, `format_policy`, `id`, `schema`, `sha256`; additional keys=`additionalProperties`, `required` |
+| <a id="s-b290de24fa"></a>`JsonValue` | empty object |
+| <a id="s-daec20e2d6"></a>`TargetOperationSupport` | type="object"; fields=`operation_contract_sha256`, `operation_id`, `options_schema`, `result_kind`; additional keys=`additionalProperties`, `required` |
 
 ### Progression, limits, and lifecycle
 
-#### [extent-rule/no-semantic-maximum/v1](../../../policies/index.md#p-574724b48af0)
+#### [extent-rule/no-semantic-maximum/v1](../../../policies/index.md#p-574724b48a)
 
 Shared facts for every subject below: capacity_authority={"declared_maximum":null,"hidden_maximum":"forbidden","owner":"stove0-target-protocol"}; maximum=null; reason="no-declared-semantic-maximum"
 
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
-| [field operations](#s-2211625ddb6c) | `cardinality · items · operational_policy` | shared above |
+| [field operations](#s-2211625ddb) | `cardinality · items · operational_policy` | shared above |
 
-#### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
+#### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
 
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
-| [field contract_sha256](#s-ce89526554ca) | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
-| [field image_digest](#s-3d5d4b0d0589) | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
-| [field implementation_version](#s-701a84b78a04) | `length · characters · contract_max` | maximum=120; minimum=1; reason="schema-maximum" |
-| [field source_revision](#s-a7e1a14aeb30) | `length · characters · contract_max` | maximum=200; minimum=1; reason="schema-maximum" |
+| [field contract_sha256](#s-ce89526554) | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
+| [field image_digest](#s-3d5d4b0d05) | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
+| [field implementation_version](#s-701a84b78a) | `length · characters · contract_max` | maximum=120; minimum=1; reason="schema-maximum" |
+| [field source_revision](#s-a7e1a14aeb) | `length · characters · contract_max` | maximum=200; minimum=1; reason="schema-maximum" |
 
 ## Governing policies
 
-- <a id="pa-ca7ee5f2d16f"></a>[compatibility/components/v1](../../../policies/index.md#p-95e9a1225947)
-- <a id="pa-e1c50527a2f7"></a>[extent-rule/no-semantic-maximum/v1](../../../policies/index.md#p-574724b48af0)
-- <a id="pa-52379ffd6776"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
+- <a id="pa-ca7ee5f2d1"></a>[compatibility/components/v1](../../../policies/index.md#p-95e9a12259)
+- <a id="pa-e1c50527a2"></a>[extent-rule/no-semantic-maximum/v1](../../../policies/index.md#p-574724b48a)
+- <a id="pa-52379ffd67"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
 
 ## Evidence
 
 ### Qualification
 
-- [make dist-smoke](../../../evidence/sources.md#q-0ba2578a3eb7)
-- [make build](../../../evidence/sources.md#q-d1121e35fa7a)
+- [make dist-smoke](../../../evidence/sources.md#q-0ba2578a3e)
+- [make build](../../../evidence/sources.md#q-d1121e35fa)
 
 ### Executable sources
 
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
-- [protocol:generated:stove0-target](../../../evidence/sources.md#src-2c42f9d39a0b) — `reference/stove0/packages/target-support/src/stove0_target_support/schemas.py::target_schema_bundle`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [protocol:generated:stove0-target](../../../evidence/sources.md#src-2c42f9d39a) — `reference/stove0/packages/target-support/src/stove0_target_support/schemas.py::target_schema_bundle`
 
 ### Machine authority
 

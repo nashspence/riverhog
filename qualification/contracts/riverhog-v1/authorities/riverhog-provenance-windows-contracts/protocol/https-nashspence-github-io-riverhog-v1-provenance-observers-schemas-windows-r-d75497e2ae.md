@@ -10,40 +10,40 @@ Exact externally visible contract owned by this semantic dossier.
 |---|---|
 | Authority | [riverhog-provenance-windows-contracts](../index.md) |
 | Interface | [protocol](index.md) |
-| Family | [schemas](index.md#f-78a2bea4a4b2) |
+| Family | [schemas](index.md#f-78a2bea4a4) |
 | Contract elements | 1 |
 | Extent decisions | 0 |
 
 ## External contract
 
-<a id="s-401d4b1864f7"></a>
-- <a id="s-3f410425c237"></a>`$id`: https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/windows-reparse-point.json
-- <a id="s-4873d9739c41"></a>`type`: object
+<a id="s-401d4b1864"></a>
+- <a id="s-3f410425c2"></a>`$id`: https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/windows-reparse-point.json
+- <a id="s-4873d9739c"></a>`type`: object
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-8ca03a7e2081"></a>`followed_for_primary_content` | yes | type="boolean" |  |
-| <a id="s-b61d838937ec"></a>`name_surrogate` | yes | type="boolean" |  |
-| <a id="s-187e4d4d8f96"></a>`reparse_tag` | yes | type="integer"; minimum=0 |  |
-| <a id="s-928d94da05bd"></a>`reparse_tag_hex` | yes | type="string"; pattern="^0x[0-9a-f]{8}$" |  |
+| <a id="s-8ca03a7e20"></a>`followed_for_primary_content` | yes | type="boolean" |  |
+| <a id="s-b61d838937"></a>`name_surrogate` | yes | type="boolean" |  |
+| <a id="s-187e4d4d8f"></a>`reparse_tag` | yes | type="integer"; minimum=0 |  |
+| <a id="s-928d94da05"></a>`reparse_tag_hex` | yes | type="string"; pattern="^0x[0-9a-f]{8}$" |  |
 
 ## Governing policies
 
-- <a id="pa-3fbd0f8eb9fa"></a>[compatibility/components/v1](../../../policies/index.md#p-95e9a1225947)
+- <a id="pa-3fbd0f8eb9"></a>[compatibility/components/v1](../../../policies/index.md#p-95e9a12259)
 
 ## Evidence
 
 ### Qualification
 
-- [make dist-smoke](../../../evidence/sources.md#q-0ba2578a3eb7)
-- [make build](../../../evidence/sources.md#q-d1121e35fa7a)
+- [make dist-smoke](../../../evidence/sources.md#q-0ba2578a3e)
+- [make build](../../../evidence/sources.md#q-d1121e35fa)
 
 ### Executable sources
 
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
-- [protocol:https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/windows-reparse-point.json](../../../evidence/sources.md#src-7b71865af2c5) — `reference/riverhog/provenance/contracts/windows/src/riverhog_provenance_windows_contracts/schemas/windows-reparse-point.schema.json`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [protocol:https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/windows-reparse-point.json](../../../evidence/sources.md#src-7b71865af2) — `reference/riverhog/provenance/contracts/windows/src/riverhog_provenance_windows_contracts/schemas/windows-reparse-point.schema.json`
 
 ### Machine authority
 

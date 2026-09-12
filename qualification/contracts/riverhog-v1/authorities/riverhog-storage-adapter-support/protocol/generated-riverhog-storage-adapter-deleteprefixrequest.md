@@ -16,43 +16,43 @@ Exact externally visible contract owned by this semantic dossier.
 
 ## External contract
 
-<a id="s-87eda5641d49"></a>
-- <a id="s-744fd8791069"></a>`title`: DeletePrefixRequest
-- <a id="s-c11f7cf1bfaf"></a>`type`: object
+<a id="s-87eda5641d"></a>
+- <a id="s-744fd87910"></a>`title`: DeletePrefixRequest
+- <a id="s-c11f7cf1bf"></a>`type`: object
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-fd2bba55106b"></a>`mode` | no | type="string"; const="all_versions" |  |
-| <a id="s-96398ee65730"></a>`object_prefix` | yes | type="string"; minLength=1; maxLength=4096 |  |
+| <a id="s-fd2bba5510"></a>`mode` | no | type="string"; const="all_versions" |  |
+| <a id="s-96398ee657"></a>`object_prefix` | yes | type="string"; minLength=1; maxLength=4096 |  |
 
 ### Progression, limits, and lifecycle
 
-#### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
+#### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
 
 Shared facts for every subject below: maximum=4096; minimum=1; reason="schema-maximum"
 
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
-| [field object_prefix](#s-96398ee65730) | `length · characters · contract_max` | shared above |
+| [field object_prefix](#s-96398ee657) | `length · characters · contract_max` | shared above |
 
 ## Governing policies
 
-- <a id="pa-b159837c1d22"></a>[compatibility/components/v1](../../../policies/index.md#p-95e9a1225947)
-- <a id="pa-2fb9c0790cd7"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
+- <a id="pa-b159837c1d"></a>[compatibility/components/v1](../../../policies/index.md#p-95e9a12259)
+- <a id="pa-2fb9c0790c"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
 
 ## Evidence
 
 ### Qualification
 
-- [make dist-smoke](../../../evidence/sources.md#q-0ba2578a3eb7)
-- [make build](../../../evidence/sources.md#q-d1121e35fa7a)
+- [make dist-smoke](../../../evidence/sources.md#q-0ba2578a3e)
+- [make build](../../../evidence/sources.md#q-d1121e35fa)
 
 ### Executable sources
 
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
-- [protocol:generated:riverhog-storage-adapter](../../../evidence/sources.md#src-ef281f2471a9) — `packages/riverhog-storage-adapter-support/src/riverhog_storage_adapter_support/schemas.py::storage_adapter_schema_bundle`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [protocol:generated:riverhog-storage-adapter](../../../evidence/sources.md#src-ef281f2471) — `packages/riverhog-storage-adapter-support/src/riverhog_storage_adapter_support/schemas.py::storage_adapter_schema_bundle`
 
 ### Machine authority
 

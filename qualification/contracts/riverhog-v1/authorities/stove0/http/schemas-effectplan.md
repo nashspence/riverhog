@@ -16,47 +16,47 @@ Exact externally visible contract owned by this semantic dossier.
 
 ## External contract
 
-<a id="s-8485814f8e4e"></a>
-- <a id="s-47fb8e647e0e"></a>`title`: EffectPlan
-- <a id="s-ee7da793c30f"></a>`type`: object
+<a id="s-8485814f8e"></a>
+- <a id="s-47fb8e647e"></a>`title`: EffectPlan
+- <a id="s-ee7da793c3"></a>`type`: object
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-db34175e9215"></a>`inputs` | yes | #/components/schemas/TargetInputAuthority |  |
-| <a id="s-a50283aacb74"></a>`intent` | yes | type="object"; additional keys=`additionalProperties` |  |
-| <a id="s-73e7c4241f7d"></a>`observation_result_sha256s` | no | type="array"; items=(type="string"; pattern="^[0-9a-f]{64}$") |  |
-| <a id="s-32963f2a0f6a"></a>`operation_contract_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-e510f4e7d651"></a>`operation_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
-| <a id="s-1a7e01efe5c7"></a>`plan_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-4b9d7961042f"></a>`protocol` | no | type="string"; const="stove0-effect-target/v1" |  |
-| <a id="s-3801ab0d31d4"></a>`target_contract_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-5265da247b26"></a>`target_implementation_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
-| <a id="s-b4e9848bc526"></a>`target_options` | no | type="object"; additional keys=`additionalProperties` |  |
+| <a id="s-db34175e92"></a>`inputs` | yes | #/components/schemas/TargetInputAuthority |  |
+| <a id="s-a50283aacb"></a>`intent` | yes | type="object"; additional keys=`additionalProperties` |  |
+| <a id="s-73e7c4241f"></a>`observation_result_sha256s` | no | type="array"; items=(type="string"; pattern="^[0-9a-f]{64}$") |  |
+| <a id="s-32963f2a0f"></a>`operation_contract_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-e510f4e7d6"></a>`operation_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
+| <a id="s-1a7e01efe5"></a>`plan_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-4b9d796104"></a>`protocol` | no | type="string"; const="stove0-effect-target/v1" |  |
+| <a id="s-3801ab0d31"></a>`target_contract_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-5265da247b"></a>`target_implementation_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
+| <a id="s-b4e9848bc5"></a>`target_options` | no | type="object"; additional keys=`additionalProperties` |  |
 
 ### Progression, limits, and lifecycle
 
-#### [extent-rule/no-semantic-maximum/v1](../../../policies/index.md#p-574724b48af0)
+#### [extent-rule/no-semantic-maximum/v1](../../../policies/index.md#p-574724b48a)
 
 Shared facts for every subject below: capacity_authority={"declared_maximum":null,"hidden_maximum":"forbidden","owner":"stove0"}; maximum=null; reason="no-declared-semantic-maximum"
 
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
-| [field intent](#s-a50283aacb74) | `cardinality · entries · operational_policy` | shared above |
-| [field observation_result_sha256s](#s-73e7c4241f7d) | `cardinality · items · operational_policy` | shared above |
-| [field target_options](#s-b4e9848bc526) | `cardinality · entries · operational_policy` | shared above |
+| [field intent](#s-a50283aacb) | `cardinality · entries · operational_policy` | shared above |
+| [field observation_result_sha256s](#s-73e7c4241f) | `cardinality · items · operational_policy` | shared above |
+| [field target_options](#s-b4e9848bc5) | `cardinality · entries · operational_policy` | shared above |
 
-#### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
+#### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
 
 Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"}
 
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
-| <a id="s-e3020cc44226"></a>field observation_result_sha256s · items | `length · characters · fixed` | shared above |
-| [field operation_contract_sha256](#s-32963f2a0f6a) | `length · characters · fixed` | shared above |
-| [field plan_sha256](#s-1a7e01efe5c7) | `length · characters · fixed` | shared above |
-| [field target_contract_sha256](#s-3801ab0d31d4) | `length · characters · fixed` | shared above |
+| <a id="s-e3020cc442"></a>[field observation_result_sha256s · items](#s-73e7c4241f) | `length · characters · fixed` | shared above |
+| [field operation_contract_sha256](#s-32963f2a0f) | `length · characters · fixed` | shared above |
+| [field plan_sha256](#s-1a7e01efe5) | `length · characters · fixed` | shared above |
+| [field target_contract_sha256](#s-3801ab0d31) | `length · characters · fixed` | shared above |
 
 ## Maintained corroboration
 
@@ -67,21 +67,21 @@ Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-publ
 
 ## Governing policies
 
-- <a id="pa-177fb9622e90"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0ba)
-- <a id="pa-1d3d60fb9cbc"></a>[extent-rule/no-semantic-maximum/v1](../../../policies/index.md#p-574724b48af0)
-- <a id="pa-3971beedc914"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
+- <a id="pa-177fb9622e"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0)
+- <a id="pa-1d3d60fb9c"></a>[extent-rule/no-semantic-maximum/v1](../../../policies/index.md#p-574724b48a)
+- <a id="pa-3971beedc9"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
 
 ## Evidence
 
 ### Qualification
 
-- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459fb8)
-- [make compose-smoke](../../../evidence/sources.md#q-413b0b241ba8)
+- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459f)
+- [make compose-smoke](../../../evidence/sources.md#q-413b0b241b)
 
 ### Executable sources
 
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
-- [openapi:stove0](../../../evidence/sources.md#src-52e6e3212451) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [openapi:stove0](../../../evidence/sources.md#src-52e6e32124) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
 
 ### Machine authority
 

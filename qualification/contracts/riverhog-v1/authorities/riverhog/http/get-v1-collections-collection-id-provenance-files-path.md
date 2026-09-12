@@ -16,39 +16,39 @@ Get Collection File Provenance
 
 ## External contract
 
-<a id="s-a206995255f0"></a>
-- <a id="s-33fc368c8187"></a>`operationId`: get_collection_file_provenance
-- <a id="s-df90f8ba28ea"></a>`summary`: Get Collection File Provenance
-- <a id="s-a7e603dbb4ec"></a>`security`: `[{"HTTPBearer": []}]`
+<a id="s-a206995255"></a>
+- <a id="s-33fc368c81"></a>`operationId`: get_collection_file_provenance
+- <a id="s-df90f8ba28"></a>`summary`: Get Collection File Provenance
+- <a id="s-a7e603dbb4"></a>`security`: `[{"HTTPBearer": []}]`
 
 ### Parameters
 
 | Name | In | Required | Schema |
 |---|---|---:|---|
-| <a id="s-163dce28766c"></a>`collection_id` | path | yes | type="integer"; minimum=1 |
-| <a id="s-24db11cead5f"></a>`path` | path | yes | type="string"; format="riverhog-canonical-relpath-v1"; minLength=1; maxLength=4096; pattern="^[^/\\\\]+(?:/[^/\\\\]+)*$"; allOf=additional keys=`not` \| additional keys=`not`; additional keys=`x-unicode-normalization` |
+| <a id="s-163dce2876"></a>`collection_id` | path | yes | type="integer"; minimum=1 |
+| <a id="s-24db11cead"></a>`path` | path | yes | type="string"; format="riverhog-canonical-relpath-v1"; minLength=1; maxLength=4096; pattern="^[^/\\\\]+(?:/[^/\\\\]+)*$"; allOf=additional keys=`not` \| additional keys=`not`; additional keys=`x-unicode-normalization` |
 
 ### Responses
 
 | Status | Description |
 |---|---|
-| <a id="s-15bacadd6fb9"></a>`200` | Successful Response |
-| <a id="s-83bd1fa2e200"></a>`400` | Bad Request |
-| <a id="s-c6c3dc38eac8"></a>`401` | Unauthorized |
-| <a id="s-f09456aff173"></a>`403` | Forbidden |
-| <a id="s-86dbd7d5b750"></a>`404` | Not Found |
-| <a id="s-61e0e42d67a6"></a>`409` | Conflict |
-| <a id="s-161bb063af75"></a>`500` | Internal Server Error |
+| <a id="s-15bacadd6f"></a>`200` | Successful Response |
+| <a id="s-83bd1fa2e2"></a>`400` | Bad Request |
+| <a id="s-c6c3dc38ea"></a>`401` | Unauthorized |
+| <a id="s-f09456aff1"></a>`403` | Forbidden |
+| <a id="s-86dbd7d5b7"></a>`404` | Not Found |
+| <a id="s-61e0e42d67"></a>`409` | Conflict |
+| <a id="s-161bb063af"></a>`500` | Internal Server Error |
 
 ### Progression, limits, and lifecycle
 
-#### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
+#### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
 
 Shared facts for every subject below: maximum=4096; minimum=1; reason="schema-maximum"
 
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
-| <a id="s-6aa8c138d120"></a>parameter path | `length · characters · contract_max` | shared above |
+| <a id="s-6aa8c138d1"></a>[parameter path](#s-24db11cead) | `length · characters · contract_max` | shared above |
 
 ## Maintained corroboration
 
@@ -63,20 +63,20 @@ Shared facts for every subject below: maximum=4096; minimum=1; reason="schema-ma
 
 ## Governing policies
 
-- <a id="pa-da6b48545fdd"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0ba)
-- <a id="pa-212f836f668b"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
+- <a id="pa-da6b48545f"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0)
+- <a id="pa-212f836f66"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
 
 ## Evidence
 
 ### Qualification
 
-- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459fb8)
-- [make compose-smoke](../../../evidence/sources.md#q-413b0b241ba8)
+- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459f)
+- [make compose-smoke](../../../evidence/sources.md#q-413b0b241b)
 
 ### Executable sources
 
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
-- [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc960) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc9) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
 
 ### Machine authority
 

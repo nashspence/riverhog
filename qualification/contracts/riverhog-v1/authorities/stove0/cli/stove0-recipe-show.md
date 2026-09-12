@@ -16,25 +16,25 @@ Exact externally visible contract owned by this semantic dossier.
 
 ## External contract
 
-- <a id="s-116f2b9e63db"></a>Parser name: `show`
+- <a id="s-116f2b9e63"></a>Parser name: `show`
 
 ### Parameters
 
 | Name | Kind | Required | Type | Options |
 |---|---|---:|---|---|
-| <a id="s-66aae1f8d73f"></a>`recipe_id` | TyperArgument | yes | {'class': 'typer._click.types.StringParamType', 'name': 'text'} | recipe_id |
-| <a id="s-cda51628b9bf"></a>`revision` | TyperOption | no | {'class': 'typer._click.types.IntParamType', 'name': 'integer'} | --revision |
+| <a id="s-66aae1f8d7"></a>`recipe_id` | TyperArgument | yes | {'class': 'typer._click.types.StringParamType', 'name': 'text'} | recipe_id |
+| <a id="s-cda51628b9"></a>`revision` | TyperOption | no | {'class': 'typer._click.types.IntParamType', 'name': 'integer'} | --revision |
 
 ### Progression, limits, and lifecycle
 
-#### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
+#### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
 
 Shared facts for every subject below: maximum=1; minimum=1; reason="fixed-command-argument-arity"; source_constraint={"field":"nargs"}
 
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
-| [CLI parameter recipe_id](#s-66aae1f8d73f) | `cardinality · values-per-occurrence · fixed` | shared above |
-| [CLI parameter --revision](#s-cda51628b9bf) | `cardinality · values-per-occurrence · fixed` | shared above |
+| [CLI parameter recipe_id](#s-66aae1f8d7) | `cardinality · values-per-occurrence · fixed` | shared above |
+| [CLI parameter --revision](#s-cda51628b9) | `cardinality · values-per-occurrence · fixed` | shared above |
 
 ## Maintained corroboration
 
@@ -44,20 +44,20 @@ Shared facts for every subject below: maximum=1; minimum=1; reason="fixed-comman
 
 ## Governing policies
 
-- <a id="pa-f3274c197967"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de7f)
-- <a id="pa-53c7ad3d31f2"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
+- <a id="pa-f3274c1979"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de)
+- <a id="pa-53c7ad3d31"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
 
 ## Evidence
 
 ### Qualification
 
-- [make dist-smoke](../../../evidence/sources.md#q-0ba2578a3eb7)
-- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459fb8)
+- [make dist-smoke](../../../evidence/sources.md#q-0ba2578a3e)
+- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459f)
 
 ### Executable sources
 
-- [cli:stove0](../../../evidence/sources.md#src-6203ae7d8812) — `reference/stove0/application/client/src/stove0_cli/main.py::<module>`
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
+- [cli:stove0](../../../evidence/sources.md#src-6203ae7d88) — `reference/stove0/application/client/src/stove0_cli/main.py::<module>`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
 
 ### Machine authority
 

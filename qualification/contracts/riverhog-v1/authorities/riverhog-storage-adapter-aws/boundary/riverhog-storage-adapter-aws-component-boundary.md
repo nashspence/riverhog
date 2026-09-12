@@ -10,37 +10,37 @@ Exact externally visible contract owned by this semantic dossier.
 |---|---|
 | Authority | [riverhog-storage-adapter-aws](../index.md) |
 | Interface | [boundary](index.md) |
-| Family | [components](index.md#f-8e72b87d38d6) |
+| Family | [components](index.md#f-8e72b87d38) |
 | Contract elements | 1 |
 | Extent decisions | 0 |
 
 ## External contract
 
-<a id="s-a04fc61b1af9"></a>
+<a id="s-a04fc61b1a"></a>
 | Field | Shape |
 |---|---|
-| <a id="s-4d92a92098d8"></a>`console_scripts` | additional keys=`riverhog-storage-adapter-aws` |
-| <a id="s-dbdc57bec45c"></a>`dependencies` | ["riverhog-storage-adapter-asgi-support","riverhog-storage-adapter-protocol","riverhog-storage-adapter-s3-support","time-formats"] |
-| <a id="s-ff6684cce6a8"></a>`distribution` | "riverhog-storage-adapter-aws" |
-| <a id="s-57766247befb"></a>`optional_dependencies` | empty object |
-| <a id="s-3b85247de86f"></a>`path` | "reference/riverhog/storage/aws" |
-| <a id="s-991e6fb7a50d"></a>`role` | "reference_component" |
+| <a id="s-4d92a92098"></a>`console_scripts` | additional keys=`riverhog-storage-adapter-aws` |
+| <a id="s-dbdc57bec4"></a>`dependencies` | ["riverhog-storage-adapter-asgi-support","riverhog-storage-adapter-protocol","riverhog-storage-adapter-s3-support","time-formats"] |
+| <a id="s-ff6684cce6"></a>`distribution` | "riverhog-storage-adapter-aws" |
+| <a id="s-57766247be"></a>`optional_dependencies` | empty object |
+| <a id="s-3b85247de8"></a>`path` | "reference/riverhog/storage/aws" |
+| <a id="s-991e6fb7a5"></a>`role` | "reference_component" |
 
 ## Governing policies
 
-- <a id="pa-1becb11fcfb3"></a>[boundary/frozen-authority/v1](../../../policies/index.md#p-61994d3f0fa8)
+- <a id="pa-1becb11fcf"></a>[boundary/frozen-authority/v1](../../../policies/index.md#p-61994d3f0f)
 
 ## Evidence
 
 ### Qualification
 
-- [make release-check](../../../evidence/sources.md#q-8d8d22d6a6b1)
-- [make build](../../../evidence/sources.md#q-d1121e35fa7a)
+- [make release-check](../../../evidence/sources.md#q-8d8d22d6a6)
+- [make build](../../../evidence/sources.md#q-d1121e35fa)
 
 ### Executable sources
 
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
-- [release:release.toml](../../../evidence/sources.md#src-c5380dbe5fe0) — `release.toml`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [release:release.toml](../../../evidence/sources.md#src-c5380dbe5f) — `release.toml`
 
 ### Machine authority
 

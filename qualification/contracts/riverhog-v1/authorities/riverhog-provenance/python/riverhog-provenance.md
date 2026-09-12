@@ -10,34 +10,34 @@ Exact externally visible contract owned by this semantic dossier.
 |---|---|
 | Authority | [riverhog-provenance](../index.md) |
 | Interface | [python](index.md) |
-| Family | [modules](index.md#f-8759176af6f9) |
+| Family | [modules](index.md#f-8759176af6) |
 | Contract elements | 1 |
 | Extent decisions | 0 |
 
 ## External contract
 
-<a id="s-514dc2fee874"></a>
+<a id="s-514dc2fee8"></a>
 | Field | Shape |
 |---|---|
-| <a id="s-6c09fc8a982d"></a>`distribution` | "riverhog-provenance" |
-| <a id="s-b0493cef0273"></a>`exports` | additional keys=`DEFAULT_OBSERVER_AGENT_ID`, `DerivativeJournalSeed`, `ExternalStateReference`, `FileProvenanceBinding`, `FileStateObserver`, `FileStateObserverFactory`, `INSTALLATION_ID_FILENAME`, `IncrementalJournalEntry`, `JournalFrame`, `JournalSummary`, `LargeValueDisposition`, `NativeObservationError`, `ObservationPolicy`, `ObservationRequest`, `ObservationResult`, `PROVENANCE_BINDING_SEGMENT_BYTES_MAX`, `PROVENANCE_BINDING_SEGMENT_FILES_MAX`, `PROVENANCE_BINDING_SEGMENT_SCHEMA`, `PROVENANCE_ENTRY_SCHEMA`, `PROVENANCE_JOURNAL_ENTRY_BYTES_MAX`, `PROVENANCE_JOURNAL_SEGMENT_BYTES_MAX`, `PROVENANCE_OBSERVER_BINDING_FORMAT`, `PROVENANCE_OBSERVER_ENTRY_POINT_GROUP`, `PROVENANCE_OBSERVER_REFERENCE_FORMAT`, `PROVENANCE_PROFILE`, `PROVENANCE_ROOT_DOCUMENT_BYTES_MAX`, `PROVENANCE_ROOT_SCHEMA`, `PROVENANCE_SEQUENCE_BITS`, `PROVENANCE_SEQUENCE_HEX_WIDTH`, `PROVENANCE_TERMINAL_SCHEMA`, `PROVENANCE_VOLUME_DOCUMENT_BYTES_MAX`, `PROVENANCE_VOLUME_SCHEMA`, `PayloadBindingRequest`, `PreparedFileProvenance`, `ProvenanceObserverBinding`, `ProvenanceObserverError`, `ProvenancePayloadIdentity`, `ProvenanceProviderMetadata`, `ProvenanceRootDocument`, `ProvenanceTerminalDocument`, `ProvenanceValidationError`, `ProvenanceVolumeDocument`, `ResolvedProvenanceObserver`, `SIDECAR_SUFFIX`, `SchemaValidationUnavailable`, `SymlinkRefusedError`, `UnstableFileError`, `UnsupportedFileTypeError`, `UnsupportedPlatformError`, `append_observation`, `append_replacement_transformation`, `binding_segment_bytes`, `bounded_binding_segment_bytes`, `canonical_sidecar_path`, `create_derivative_journal`, `create_derivative_journal_from_identity`, `create_derivative_journal_seed`, `create_derivative_source_entry`, `create_observation_journal`, `current_state_reference`, `format_provenance_sequence`, `list_provenance_observers`, `load_or_create_installation_id`, `parse_binding_segment`, `parse_journal`, `parse_provenance_sequence`, `prepare_file_provenance`, `provenance_journal_filename`, `resolve_incremental_journal_current_state`, `resolve_provenance_observer`, `software_agent_id`, `update_ordered_volume_commitment`, `user_installation_id`, `validate_entry_document`, `validate_graph_fragment`, `validate_incremental_journal_entry`, `validate_journal`, `validate_journal_chunks`, `validate_journal_set`, `verify_payload_binding` |
-| <a id="s-624dd57f6b05"></a>`module` | "riverhog_provenance" |
+| <a id="s-6c09fc8a98"></a>`distribution` | "riverhog-provenance" |
+| <a id="s-b0493cef02"></a>`exports` | additional keys=`DEFAULT_OBSERVER_AGENT_ID`, `DerivativeJournalSeed`, `ExternalStateReference`, `FileProvenanceBinding`, `FileStateObserver`, `FileStateObserverFactory`, `INSTALLATION_ID_FILENAME`, `IncrementalJournalEntry`, `JournalFrame`, `JournalSummary`, `LargeValueDisposition`, `NativeObservationError`, `ObservationPolicy`, `ObservationRequest`, `ObservationResult`, `PROVENANCE_BINDING_SEGMENT_BYTES_MAX`, `PROVENANCE_BINDING_SEGMENT_FILES_MAX`, `PROVENANCE_BINDING_SEGMENT_SCHEMA`, `PROVENANCE_ENTRY_SCHEMA`, `PROVENANCE_JOURNAL_ENTRY_BYTES_MAX`, `PROVENANCE_JOURNAL_SEGMENT_BYTES_MAX`, `PROVENANCE_OBSERVER_BINDING_FORMAT`, `PROVENANCE_OBSERVER_ENTRY_POINT_GROUP`, `PROVENANCE_OBSERVER_REFERENCE_FORMAT`, `PROVENANCE_PROFILE`, `PROVENANCE_ROOT_DOCUMENT_BYTES_MAX`, `PROVENANCE_ROOT_SCHEMA`, `PROVENANCE_SEQUENCE_BITS`, `PROVENANCE_SEQUENCE_HEX_WIDTH`, `PROVENANCE_TERMINAL_SCHEMA`, `PROVENANCE_VOLUME_DOCUMENT_BYTES_MAX`, `PROVENANCE_VOLUME_SCHEMA`, `PayloadBindingRequest`, `PreparedFileProvenance`, `ProvenanceObserverBinding`, `ProvenanceObserverError`, `ProvenancePayloadIdentity`, `ProvenanceProviderMetadata`, `ProvenanceRootDocument`, `ProvenanceTerminalDocument`, `ProvenanceValidationError`, `ProvenanceVolumeDocument`, `ResolvedProvenanceObserver`, `SIDECAR_SUFFIX`, `SchemaValidationUnavailable`, `SymlinkRefusedError`, `UnstableFileError`, `UnsupportedFileTypeError`, `UnsupportedPlatformError`, `append_observation`, `append_replacement_transformation`, `binding_segment_bytes`, `bounded_binding_segment_bytes`, `canonical_sidecar_path`, `create_derivative_journal`, `create_derivative_journal_from_identity`, `create_derivative_journal_seed`, `create_derivative_source_entry`, `create_observation_journal`, `current_state_reference`, `format_provenance_sequence`, `list_provenance_observers`, `load_or_create_installation_id`, `parse_binding_segment`, `parse_journal`, `parse_provenance_sequence`, `prepare_file_provenance`, `provenance_journal_filename`, `resolve_incremental_journal_current_state`, `resolve_provenance_observer`, `software_agent_id`, `update_ordered_volume_commitment`, `user_installation_id`, `validate_entry_document`, `validate_graph_fragment`, `validate_incremental_journal_entry`, `validate_journal`, `validate_journal_chunks`, `validate_journal_set`, `verify_payload_binding` |
+| <a id="s-624dd57f6b"></a>`module` | "riverhog_provenance" |
 
 ## Governing policies
 
-- <a id="pa-6c1c865788de"></a>[compatibility/python-api/v1](../../../policies/index.md#p-e574772ba506)
+- <a id="pa-6c1c865788"></a>[compatibility/python-api/v1](../../../policies/index.md#p-e574772ba5)
 
 ## Evidence
 
 ### Qualification
 
-- [make dist-smoke](../../../evidence/sources.md#q-0ba2578a3eb7)
-- [make build](../../../evidence/sources.md#q-d1121e35fa7a)
+- [make dist-smoke](../../../evidence/sources.md#q-0ba2578a3e)
+- [make build](../../../evidence/sources.md#q-d1121e35fa)
 
 ### Executable sources
 
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
-- [python:riverhog-provenance](../../../evidence/sources.md#src-6473d62ee263) — `packages/riverhog-provenance/src/riverhog_provenance/__init__.py::<module>`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [python:riverhog-provenance](../../../evidence/sources.md#src-6473d62ee2) — `packages/riverhog-provenance/src/riverhog_provenance/__init__.py::<module>`
 
 ### Machine authority
 

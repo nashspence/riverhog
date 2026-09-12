@@ -16,26 +16,26 @@ Plan Collection Upload Discard
 
 ## External contract
 
-<a id="s-f9960d330500"></a>
-- <a id="s-267825dd1129"></a>`operationId`: plan_collection_upload_discard
-- <a id="s-1db267fc9fe8"></a>`summary`: Plan Collection Upload Discard
-- <a id="s-bbbfb609cd4c"></a>`security`: `[{"HTTPBearer": []}]`
+<a id="s-f9960d3305"></a>
+- <a id="s-267825dd11"></a>`operationId`: plan_collection_upload_discard
+- <a id="s-1db267fc9f"></a>`summary`: Plan Collection Upload Discard
+- <a id="s-bbbfb609cd"></a>`security`: `[{"HTTPBearer": []}]`
 
 ### Parameters
 
 | Name | In | Required | Schema |
 |---|---|---:|---|
-| <a id="s-d31d70c952e5"></a>`collection_id` | path | yes | type="integer"; minimum=1 |
+| <a id="s-d31d70c952"></a>`collection_id` | path | yes | type="integer"; minimum=1 |
 
 ### Responses
 
 | Status | Description |
 |---|---|
-| <a id="s-ee09029c451d"></a>`200` | Successful Response |
-| <a id="s-fad7a886d003"></a>`400` | Bad Request |
-| <a id="s-7ef61a079d60"></a>`401` | Unauthorized |
-| <a id="s-268bf9024a0c"></a>`403` | Forbidden |
-| <a id="s-d784170a16ef"></a>`500` | Internal Server Error |
+| <a id="s-ee09029c45"></a>`200` | Successful Response |
+| <a id="s-fad7a886d0"></a>`400` | Bad Request |
+| <a id="s-7ef61a079d"></a>`401` | Unauthorized |
+| <a id="s-268bf9024a"></a>`403` | Forbidden |
+| <a id="s-d784170a16"></a>`500` | Internal Server Error |
 
 ## Maintained corroboration
 
@@ -50,19 +50,19 @@ Plan Collection Upload Discard
 
 ## Governing policies
 
-- <a id="pa-5510c9879fa7"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0ba)
+- <a id="pa-5510c9879f"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0)
 
 ## Evidence
 
 ### Qualification
 
-- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459fb8)
-- [make compose-smoke](../../../evidence/sources.md#q-413b0b241ba8)
+- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459f)
+- [make compose-smoke](../../../evidence/sources.md#q-413b0b241b)
 
 ### Executable sources
 
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
-- [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc960) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc9) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
 
 ### Machine authority
 

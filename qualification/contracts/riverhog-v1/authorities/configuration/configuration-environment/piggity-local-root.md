@@ -16,27 +16,27 @@ Exact externally visible contract owned by this semantic dossier.
 
 ## External contract
 
-<a id="s-bf86dd537bbe"></a>
+<a id="s-bf86dd537b"></a>
 | Field | Shape |
 |---|---|
-| <a id="s-98d6331adc55"></a>`consumers` | ["piggity"] |
-| <a id="s-ffbf567bef15"></a>`name` | "PIGGITY_LOCAL_ROOT" |
+| <a id="s-98d6331adc"></a>`consumers` | ["piggity"] |
+| <a id="s-ffbf567bef"></a>`name` | "PIGGITY_LOCAL_ROOT" |
 
 ## Governing policies
 
-- <a id="pa-06a5e4a047de"></a>[compatibility/configuration/v1](../../../policies/index.md#p-8dc08bb46173)
+- <a id="pa-06a5e4a047"></a>[compatibility/configuration/v1](../../../policies/index.md#p-8dc08bb461)
 
 ## Evidence
 
 ### Qualification
 
-- [make unit](../../../evidence/sources.md#q-ce47068f504c)
-- [make compose-smoke](../../../evidence/sources.md#q-413b0b241ba8)
+- [make unit](../../../evidence/sources.md#q-ce47068f50)
+- [make compose-smoke](../../../evidence/sources.md#q-413b0b241b)
 
 ### Executable sources
 
-- [configuration-environment:PIGGITY_LOCAL_ROOT](../../../evidence/sources.md#src-a3bab32771f4) — `configuration-environment:PIGGITY_LOCAL_ROOT`
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
+- [configuration-environment:PIGGITY_LOCAL_ROOT](../../../evidence/sources.md#src-a3bab32771) — `configuration-environment:PIGGITY_LOCAL_ROOT`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
 
 ### Machine authority
 

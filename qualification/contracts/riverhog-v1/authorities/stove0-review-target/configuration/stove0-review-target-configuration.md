@@ -10,63 +10,63 @@ Exact externally visible contract owned by this semantic dossier.
 |---|---|
 | Authority | [stove0-review-target](../index.md) |
 | Interface | [configuration](index.md) |
-| Family | [documents](index.md#f-2fd1f123533e) |
+| Family | [documents](index.md#f-2fd1f12353) |
 | Contract elements | 1 |
 | Extent decisions | 4 |
 
 ## External contract
 
-<a id="s-861ef5dbc3b1"></a>
-- <a id="s-6b3d5a83f13a"></a>`title`: ReviewTargetConfig
-- <a id="s-3dc70567240c"></a>`type`: object
+<a id="s-861ef5dbc3"></a>
+- <a id="s-6b3d5a83f1"></a>`title`: ReviewTargetConfig
+- <a id="s-3dc7056724"></a>`type`: object
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-e4b0b396895b"></a>`samplers` | yes | type="array"; minItems=1; items=(#/$defs/SamplerConfig) |  |
+| <a id="s-e4b0b39689"></a>`samplers` | yes | type="array"; minItems=1; items=(#/$defs/SamplerConfig) |  |
 
 ### Definitions
 
 | Definition | Shape |
 |---|---|
-| <a id="s-3c4d0d9bc811"></a>`SamplerConfig` | type="object"; fields=`allow_insecure_http`, `base_url`, `descriptor_sha256`, `id`, `image_digest`, `token_file`; additional keys=`additionalProperties`, `required` |
+| <a id="s-3c4d0d9bc8"></a>`SamplerConfig` | type="object"; fields=`allow_insecure_http`, `base_url`, `descriptor_sha256`, `id`, `image_digest`, `token_file`; additional keys=`additionalProperties`, `required` |
 
 ### Progression, limits, and lifecycle
 
-#### [extent-rule/configuration-composition/v1](../../../policies/index.md#p-dcd344e8e519)
+#### [extent-rule/configuration-composition/v1](../../../policies/index.md#p-dcd344e8e5)
 
 Shared facts for every subject below: capacity_authority={"declared_maximum":null,"hidden_maximum":"forbidden","owner":"stove0-review-target"}; maximum=null; reason="validated-deployment-composition"
 
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
-| [field samplers](#s-e4b0b396895b) | `cardinality · items · operational_policy` | shared above |
+| [field samplers](#s-e4b0b39689) | `cardinality · items · operational_policy` | shared above |
 
-#### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
+#### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
 
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
-| <a id="s-6a8e1c233d28"></a>definition SamplerConfig · field base_url | `length · characters · contract_max` | maximum=2048; minimum=1; reason="schema-maximum" |
-| <a id="s-bbbbf5eca6fc"></a>definition SamplerConfig · field descriptor_sha256 | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
-| <a id="s-610bd7e5996e"></a>definition SamplerConfig · field image_digest | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
+| <a id="s-6a8e1c233d"></a>[definition SamplerConfig · field base_url](#s-3c4d0d9bc8) | `length · characters · contract_max` | maximum=2048; minimum=1; reason="schema-maximum" |
+| <a id="s-bbbbf5eca6"></a>[definition SamplerConfig · field descriptor_sha256](#s-3c4d0d9bc8) | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
+| <a id="s-610bd7e599"></a>[definition SamplerConfig · field image_digest](#s-3c4d0d9bc8) | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
 
 ## Governing policies
 
-- <a id="pa-3d8815864402"></a>[compatibility/configuration/v1](../../../policies/index.md#p-8dc08bb46173)
-- <a id="pa-334797e407b6"></a>[extent-rule/configuration-composition/v1](../../../policies/index.md#p-dcd344e8e519)
-- <a id="pa-e91bf9f07d3f"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
+- <a id="pa-3d88158644"></a>[compatibility/configuration/v1](../../../policies/index.md#p-8dc08bb461)
+- <a id="pa-334797e407"></a>[extent-rule/configuration-composition/v1](../../../policies/index.md#p-dcd344e8e5)
+- <a id="pa-e91bf9f07d"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
 
 ## Evidence
 
 ### Qualification
 
-- [make unit](../../../evidence/sources.md#q-ce47068f504c)
-- [make compose-smoke](../../../evidence/sources.md#q-413b0b241ba8)
+- [make unit](../../../evidence/sources.md#q-ce47068f50)
+- [make compose-smoke](../../../evidence/sources.md#q-413b0b241b)
 
 ### Executable sources
 
-- [configuration:stove0-review-target](../../../evidence/sources.md#src-d3261b60a10f) — `reference/stove0/targets/review/support/src/stove0_review_target_support/app.py::ReviewTargetConfig`
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
+- [configuration:stove0-review-target](../../../evidence/sources.md#src-d3261b60a1) — `reference/stove0/targets/review/support/src/stove0_review_target_support/app.py::ReviewTargetConfig`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
 
 ### Machine authority
 

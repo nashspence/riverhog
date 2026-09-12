@@ -16,57 +16,57 @@ Exact externally visible contract owned by this semantic dossier.
 
 ## External contract
 
-<a id="s-ae1ba7367824"></a>
-- <a id="s-c628be94cfeb"></a>`title`: WriteCompleteRequest
-- <a id="s-9b8bcb25749d"></a>`type`: object
+<a id="s-ae1ba73678"></a>
+- <a id="s-c628be94cf"></a>`title`: WriteCompleteRequest
+- <a id="s-9b8bcb2574"></a>`type`: object
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-6c1d725696fd"></a>`completion` | yes | #/$defs/WriteCompletionAuthority |  |
-| <a id="s-3dd31e39155d"></a>`expected_bytes` | yes | type="integer"; minimum=1 |  |
-| <a id="s-918194abd082"></a>`expected_content_type` | yes | type="string"; minLength=1; maxLength=255 |  |
-| <a id="s-41c9c882c51b"></a>`expected_placement` | yes | type="string"; enum=["archive","immediate"] |  |
-| <a id="s-3fe7699e11ff"></a>`required_identity_assertions` | yes | type="object"; additional keys=`additionalProperties`, `maxProperties`, `x-riverhog-encoded-bytes-max`, `x-riverhog-extent` | Inert caller-owned facts used only to identify and reconcile an exact stored object. Adapters canonicalize, persist, return, and compare these assertions; they must not interpret them as routing, retrieval, retention, credentials, placement, or provider-control instructions. Adapters may retain additional adapter-private assertions. |
-| <a id="s-b80752731fdf"></a>`session` | yes | #/$defs/WriteSession |  |
+| <a id="s-6c1d725696"></a>`completion` | yes | #/$defs/WriteCompletionAuthority |  |
+| <a id="s-3dd31e3915"></a>`expected_bytes` | yes | type="integer"; minimum=1 |  |
+| <a id="s-918194abd0"></a>`expected_content_type` | yes | type="string"; minLength=1; maxLength=255 |  |
+| <a id="s-41c9c882c5"></a>`expected_placement` | yes | type="string"; enum=["archive","immediate"] |  |
+| <a id="s-3fe7699e11"></a>`required_identity_assertions` | yes | type="object"; additional keys=`additionalProperties`, `maxProperties`, `x-riverhog-encoded-bytes-max`, `x-riverhog-extent` | Inert caller-owned facts used only to identify and reconcile an exact stored object. Adapters canonicalize, persist, return, and compare these assertions; they must not interpret them as routing, retrieval, retention, credentials, placement, or provider-control instructions. Adapters may retain additional adapter-private assertions. |
+| <a id="s-b80752731f"></a>`session` | yes | #/$defs/WriteSession |  |
 
 ### Definitions
 
 | Definition | Shape |
 |---|---|
-| <a id="s-2aa29473edee"></a>`WriteCompletionAuthority` | type="object"; fields=`authority_token`, `segment_count`, `stored_bytes`; additional keys=`additionalProperties`, `required` |
-| <a id="s-43526cbe1319"></a>`WriteSession` | type="object"; fields=`expected_bytes`, `object_path`, `write_token`; additional keys=`additionalProperties`, `required` |
+| <a id="s-2aa29473ed"></a>`WriteCompletionAuthority` | type="object"; fields=`authority_token`, `segment_count`, `stored_bytes`; additional keys=`additionalProperties`, `required` |
+| <a id="s-43526cbe13"></a>`WriteSession` | type="object"; fields=`expected_bytes`, `object_path`, `write_token`; additional keys=`additionalProperties`, `required` |
 
 ### Progression, limits, and lifecycle
 
-#### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
+#### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
 
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
-| [field expected_content_type](#s-918194abd082) | `length · characters · contract_max` | maximum=255; minimum=1; reason="schema-maximum" |
-| [field required_identity_assertions](#s-3fe7699e11ff) | `encoded-size · bytes · contract_max` | maximum=16384; reason="bounded-object-identity-assertion-envelope"; source_constraint={"field":"x-riverhog-encoded-bytes-max"} |
-| [field required_identity_assertions](#s-3fe7699e11ff) | `cardinality · entries · contract_max` | maximum=64; reason="bounded-object-identity-assertion-envelope" |
-| <a id="s-924d57268f94"></a>definition WriteCompletionAuthority · field authority_token | `length · characters · contract_max` | maximum=4000; minimum=1; reason="schema-maximum" |
-| <a id="s-ff6e987a7729"></a>definition WriteSession · field object_path | `length · characters · contract_max` | maximum=4096; minimum=1; reason="schema-maximum" |
-| <a id="s-751c151e2960"></a>definition WriteSession · field write_token | `length · characters · contract_max` | maximum=4000; minimum=1; reason="schema-maximum" |
+| [field expected_content_type](#s-918194abd0) | `length · characters · contract_max` | maximum=255; minimum=1; reason="schema-maximum" |
+| [field required_identity_assertions](#s-3fe7699e11) | `encoded-size · bytes · contract_max` | maximum=16384; reason="bounded-object-identity-assertion-envelope"; source_constraint={"field":"x-riverhog-encoded-bytes-max"} |
+| [field required_identity_assertions](#s-3fe7699e11) | `cardinality · entries · contract_max` | maximum=64; reason="bounded-object-identity-assertion-envelope" |
+| <a id="s-924d57268f"></a>[definition WriteCompletionAuthority · field authority_token](#s-2aa29473ed) | `length · characters · contract_max` | maximum=4000; minimum=1; reason="schema-maximum" |
+| <a id="s-ff6e987a77"></a>[definition WriteSession · field object_path](#s-43526cbe13) | `length · characters · contract_max` | maximum=4096; minimum=1; reason="schema-maximum" |
+| <a id="s-751c151e29"></a>[definition WriteSession · field write_token](#s-43526cbe13) | `length · characters · contract_max` | maximum=4000; minimum=1; reason="schema-maximum" |
 
 ## Governing policies
 
-- <a id="pa-52689606404c"></a>[compatibility/components/v1](../../../policies/index.md#p-95e9a1225947)
-- <a id="pa-3e9438276bdd"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
+- <a id="pa-5268960640"></a>[compatibility/components/v1](../../../policies/index.md#p-95e9a12259)
+- <a id="pa-3e9438276b"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
 
 ## Evidence
 
 ### Qualification
 
-- [make dist-smoke](../../../evidence/sources.md#q-0ba2578a3eb7)
-- [make build](../../../evidence/sources.md#q-d1121e35fa7a)
+- [make dist-smoke](../../../evidence/sources.md#q-0ba2578a3e)
+- [make build](../../../evidence/sources.md#q-d1121e35fa)
 
 ### Executable sources
 
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
-- [protocol:generated:riverhog-storage-adapter](../../../evidence/sources.md#src-ef281f2471a9) — `packages/riverhog-storage-adapter-support/src/riverhog_storage_adapter_support/schemas.py::storage_adapter_schema_bundle`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [protocol:generated:riverhog-storage-adapter](../../../evidence/sources.md#src-ef281f2471) — `packages/riverhog-storage-adapter-support/src/riverhog_storage_adapter_support/schemas.py::storage_adapter_schema_bundle`
 
 ### Machine authority
 

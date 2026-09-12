@@ -16,17 +16,17 @@ Health Ready
 
 ## External contract
 
-<a id="s-439e645d0c77"></a>
-- <a id="s-3ced2f885222"></a>`operationId`: health_ready
-- <a id="s-f34803701628"></a>`summary`: Health Ready
+<a id="s-439e645d0c"></a>
+- <a id="s-3ced2f8852"></a>`operationId`: health_ready
+- <a id="s-f348037016"></a>`summary`: Health Ready
 
 ### Responses
 
 | Status | Description |
 |---|---|
-| <a id="s-0d14b360c741"></a>`200` | Successful Response |
-| <a id="s-238595f36dcc"></a>`500` | Internal Server Error |
-| <a id="s-79e0d02a2658"></a>`503` | Service Unavailable |
+| <a id="s-0d14b360c7"></a>`200` | Successful Response |
+| <a id="s-238595f36d"></a>`500` | Internal Server Error |
+| <a id="s-79e0d02a26"></a>`503` | Service Unavailable |
 
 ## Maintained corroboration
 
@@ -41,19 +41,19 @@ Health Ready
 
 ## Governing policies
 
-- <a id="pa-c83642c03f53"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0ba)
+- <a id="pa-c83642c03f"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0)
 
 ## Evidence
 
 ### Qualification
 
-- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459fb8)
-- [make compose-smoke](../../../evidence/sources.md#q-413b0b241ba8)
+- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459f)
+- [make compose-smoke](../../../evidence/sources.md#q-413b0b241b)
 
 ### Executable sources
 
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
-- [openapi:stove0](../../../evidence/sources.md#src-52e6e3212451) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [openapi:stove0](../../../evidence/sources.md#src-52e6e32124) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
 
 ### Machine authority
 

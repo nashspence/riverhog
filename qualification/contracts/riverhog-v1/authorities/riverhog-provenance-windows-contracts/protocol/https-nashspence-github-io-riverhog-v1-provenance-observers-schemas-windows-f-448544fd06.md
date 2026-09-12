@@ -10,73 +10,73 @@ Exact externally visible contract owned by this semantic dossier.
 |---|---|
 | Authority | [riverhog-provenance-windows-contracts](../index.md) |
 | Interface | [protocol](index.md) |
-| Family | [schemas](index.md#f-78a2bea4a4b2) |
+| Family | [schemas](index.md#f-78a2bea4a4) |
 | Contract elements | 1 |
 | Extent decisions | 11 |
 
 ## External contract
 
-<a id="s-fb6062ee715c"></a>
-- <a id="s-e625ee524c1c"></a>`$id`: https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/windows-file-stat.json
-- <a id="s-704cd8c542b7"></a>`type`: object
+<a id="s-fb6062ee71"></a>
+- <a id="s-e625ee524c"></a>`$id`: https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/windows-file-stat.json
+- <a id="s-704cd8c542"></a>`type`: object
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-7fec217a4b54"></a>`allocation_size` | yes | type="integer"; minimum=0 |  |
-| <a id="s-21e7cfe7a508"></a>`change_time_ticks` | yes | type="integer" |  |
-| <a id="s-e763f8847b3d"></a>`creation_time_ticks` | yes | type="integer" |  |
-| <a id="s-e8e9d915da75"></a>`delete_pending` | yes | type="boolean" |  |
-| <a id="s-78fae0556433"></a>`end_of_file` | yes | type="integer"; minimum=0 |  |
-| <a id="s-e912033c6ccf"></a>`file_attributes` | yes | type="integer"; minimum=0 |  |
-| <a id="s-d765965d601d"></a>`file_id_bits` | yes | type="integer"; enum=[64,128] |  |
-| <a id="s-f3b6363d9bb3"></a>`file_id_hex` | yes | type="string"; pattern="^[0-9a-f]+$" |  |
-| <a id="s-2a7ab9fe85b0"></a>`file_id_scheme` | yes | enum=["windows-file-id-128","windows-file-index-64"] |  |
-| <a id="s-f85d98af5605"></a>`file_index_64` | yes | type="integer"; minimum=0 |  |
-| <a id="s-1f160fef61ba"></a>`last_access_time_ticks` | yes | type="integer" |  |
-| <a id="s-1f4002e73ca7"></a>`last_write_time_ticks` | yes | type="integer" |  |
-| <a id="s-3c314f81c80c"></a>`number_of_links` | yes | type="integer"; minimum=0 |  |
-| <a id="s-f2a08f03004b"></a>`reparse_tag` | yes | type="integer"; minimum=0 |  |
-| <a id="s-59bba6e3483b"></a>`storage` | yes | type="object"; fields=`byte_offset_for_partition_alignment`, `byte_offset_for_sector_alignment`, `filesystem_effective_physical_bytes_per_sector_for_atomicity`, `flags`, `logical_bytes_per_sector`, `physical_bytes_per_sector_for_atomicity`, `physical_bytes_per_sector_for_performance`; additional keys=`additionalProperties` |  |
-| <a id="s-27bddf3c4889"></a>`volume_serial_number` | yes | type="integer"; minimum=0 |  |
+| <a id="s-7fec217a4b"></a>`allocation_size` | yes | type="integer"; minimum=0 |  |
+| <a id="s-21e7cfe7a5"></a>`change_time_ticks` | yes | type="integer" |  |
+| <a id="s-e763f8847b"></a>`creation_time_ticks` | yes | type="integer" |  |
+| <a id="s-e8e9d915da"></a>`delete_pending` | yes | type="boolean" |  |
+| <a id="s-78fae05564"></a>`end_of_file` | yes | type="integer"; minimum=0 |  |
+| <a id="s-e912033c6c"></a>`file_attributes` | yes | type="integer"; minimum=0 |  |
+| <a id="s-d765965d60"></a>`file_id_bits` | yes | type="integer"; enum=[64,128] |  |
+| <a id="s-f3b6363d9b"></a>`file_id_hex` | yes | type="string"; pattern="^[0-9a-f]+$" |  |
+| <a id="s-2a7ab9fe85"></a>`file_id_scheme` | yes | enum=["windows-file-id-128","windows-file-index-64"] |  |
+| <a id="s-f85d98af56"></a>`file_index_64` | yes | type="integer"; minimum=0 |  |
+| <a id="s-1f160fef61"></a>`last_access_time_ticks` | yes | type="integer" |  |
+| <a id="s-1f4002e73c"></a>`last_write_time_ticks` | yes | type="integer" |  |
+| <a id="s-3c314f81c8"></a>`number_of_links` | yes | type="integer"; minimum=0 |  |
+| <a id="s-f2a08f0300"></a>`reparse_tag` | yes | type="integer"; minimum=0 |  |
+| <a id="s-59bba6e348"></a>`storage` | yes | type="object"; fields=`byte_offset_for_partition_alignment`, `byte_offset_for_sector_alignment`, `filesystem_effective_physical_bytes_per_sector_for_atomicity`, `flags`, `logical_bytes_per_sector`, `physical_bytes_per_sector_for_atomicity`, `physical_bytes_per_sector_for_performance`; additional keys=`additionalProperties` |  |
+| <a id="s-27bddf3c48"></a>`volume_serial_number` | yes | type="integer"; minimum=0 |  |
 
 ### Progression, limits, and lifecycle
 
-#### [extent-rule/extension-contract/v1](../../../policies/index.md#p-75a89f9d1c36)
+#### [extent-rule/extension-contract/v1](../../../policies/index.md#p-75a89f9d1c)
 
 Shared facts for every subject below: maximum=null; reason="independently-versioned-extension-authority"
 
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
-| [field allocation_size](#s-7fec217a4b54) | `value · schema-value · extension_owned` | shared above |
-| [field end_of_file](#s-78fae0556433) | `value · schema-value · extension_owned` | shared above |
-| [field file_attributes](#s-e912033c6ccf) | `value · schema-value · extension_owned` | shared above |
-| [field file_id_bits](#s-d765965d601d) | `value · schema-value · extension_owned` | shared above |
-| [field file_index_64](#s-f85d98af5605) | `value · schema-value · extension_owned` | shared above |
-| <a id="s-e3f23ed14951"></a>field storage · field byte_offset_for_partition_alignment | `value · schema-value · extension_owned` | shared above |
-| <a id="s-5d167ac7297e"></a>field storage · field byte_offset_for_sector_alignment | `value · schema-value · extension_owned` | shared above |
-| <a id="s-e93e4f749ab7"></a>field storage · field filesystem_effective_physical_bytes_per_sector_for_atomicity | `value · schema-value · extension_owned` | shared above |
-| <a id="s-bee06254adee"></a>field storage · field logical_bytes_per_sector | `value · schema-value · extension_owned` | shared above |
-| <a id="s-5c09c76c7841"></a>field storage · field physical_bytes_per_sector_for_atomicity | `value · schema-value · extension_owned` | shared above |
-| <a id="s-0ddc6654119b"></a>field storage · field physical_bytes_per_sector_for_performance | `value · schema-value · extension_owned` | shared above |
+| [field allocation_size](#s-7fec217a4b) | `value · schema-value · extension_owned` | shared above |
+| [field end_of_file](#s-78fae05564) | `value · schema-value · extension_owned` | shared above |
+| [field file_attributes](#s-e912033c6c) | `value · schema-value · extension_owned` | shared above |
+| [field file_id_bits](#s-d765965d60) | `value · schema-value · extension_owned` | shared above |
+| [field file_index_64](#s-f85d98af56) | `value · schema-value · extension_owned` | shared above |
+| <a id="s-e3f23ed149"></a>[field storage · field byte_offset_for_partition_alignment](#s-59bba6e348) | `value · schema-value · extension_owned` | shared above |
+| <a id="s-5d167ac729"></a>[field storage · field byte_offset_for_sector_alignment](#s-59bba6e348) | `value · schema-value · extension_owned` | shared above |
+| <a id="s-e93e4f749a"></a>[field storage · field filesystem_effective_physical_bytes_per_sector_for_atomicity](#s-59bba6e348) | `value · schema-value · extension_owned` | shared above |
+| <a id="s-bee06254ad"></a>[field storage · field logical_bytes_per_sector](#s-59bba6e348) | `value · schema-value · extension_owned` | shared above |
+| <a id="s-5c09c76c78"></a>[field storage · field physical_bytes_per_sector_for_atomicity](#s-59bba6e348) | `value · schema-value · extension_owned` | shared above |
+| <a id="s-0ddc665411"></a>[field storage · field physical_bytes_per_sector_for_performance](#s-59bba6e348) | `value · schema-value · extension_owned` | shared above |
 
 ## Governing policies
 
-- <a id="pa-2015b5646012"></a>[compatibility/components/v1](../../../policies/index.md#p-95e9a1225947)
-- <a id="pa-f205fb377067"></a>[extent-rule/extension-contract/v1](../../../policies/index.md#p-75a89f9d1c36)
+- <a id="pa-2015b56460"></a>[compatibility/components/v1](../../../policies/index.md#p-95e9a12259)
+- <a id="pa-f205fb3770"></a>[extent-rule/extension-contract/v1](../../../policies/index.md#p-75a89f9d1c)
 
 ## Evidence
 
 ### Qualification
 
-- [make dist-smoke](../../../evidence/sources.md#q-0ba2578a3eb7)
-- [make build](../../../evidence/sources.md#q-d1121e35fa7a)
+- [make dist-smoke](../../../evidence/sources.md#q-0ba2578a3e)
+- [make build](../../../evidence/sources.md#q-d1121e35fa)
 
 ### Executable sources
 
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
-- [protocol:https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/windows-file-stat.json](../../../evidence/sources.md#src-232ad4e8328f) — `reference/riverhog/provenance/contracts/windows/src/riverhog_provenance_windows_contracts/schemas/windows-file-stat.schema.json`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [protocol:https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/windows-file-stat.json](../../../evidence/sources.md#src-232ad4e832) — `reference/riverhog/provenance/contracts/windows/src/riverhog_provenance_windows_contracts/schemas/windows-file-stat.schema.json`
 
 ### Machine authority
 

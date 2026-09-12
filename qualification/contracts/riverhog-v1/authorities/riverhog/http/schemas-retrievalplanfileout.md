@@ -16,37 +16,37 @@ Exact externally visible contract owned by this semantic dossier.
 
 ## External contract
 
-<a id="s-3204df2fc37e"></a>
-- <a id="s-cbd43d9a6873"></a>`title`: RetrievalPlanFileOut
-- <a id="s-8e3814d88dfc"></a>`type`: object
+<a id="s-3204df2fc3"></a>
+- <a id="s-cbd43d9a68"></a>`title`: RetrievalPlanFileOut
+- <a id="s-8e3814d88d"></a>`type`: object
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-38bb68239d8a"></a>`bytes` | yes | type="integer"; minimum=0 |  |
-| <a id="s-02b7fe1b76ac"></a>`collection_id` | yes | #/components/schemas/CollectionId |  |
-| <a id="s-2b5bab20c8d4"></a>`path` | yes | #/components/schemas/CanonicalRelPath |  |
-| <a id="s-a5ea03a2ad5d"></a>`requires_restore` | yes | type="boolean" |  |
-| <a id="s-fc277b5d87c9"></a>`sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-38bb68239d"></a>`bytes` | yes | type="integer"; minimum=0 |  |
+| <a id="s-02b7fe1b76"></a>`collection_id` | yes | #/components/schemas/CollectionId |  |
+| <a id="s-2b5bab20c8"></a>`path` | yes | #/components/schemas/CanonicalRelPath |  |
+| <a id="s-a5ea03a2ad"></a>`requires_restore` | yes | type="boolean" |  |
+| <a id="s-fc277b5d87"></a>`sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 
 ### Progression, limits, and lifecycle
 
-#### [extent-rule/no-semantic-maximum/v1](../../../policies/index.md#p-574724b48af0)
+#### [extent-rule/no-semantic-maximum/v1](../../../policies/index.md#p-574724b48a)
 
 Shared facts for every subject below: capacity_authority={"declared_maximum":null,"hidden_maximum":"forbidden","owner":"riverhog"}; maximum=null; reason="no-declared-semantic-maximum"
 
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
-| [field bytes](#s-38bb68239d8a) | `value · schema-value · operational_policy` | shared above |
+| [field bytes](#s-38bb68239d) | `value · schema-value · operational_policy` | shared above |
 
-#### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
+#### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
 
 Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"}
 
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
-| [field sha256](#s-fc277b5d87c9) | `length · characters · fixed` | shared above |
+| [field sha256](#s-fc277b5d87) | `length · characters · fixed` | shared above |
 
 ## Maintained corroboration
 
@@ -57,21 +57,21 @@ Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-publ
 
 ## Governing policies
 
-- <a id="pa-e1838b3f8d93"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0ba)
-- <a id="pa-c3c2705624c5"></a>[extent-rule/no-semantic-maximum/v1](../../../policies/index.md#p-574724b48af0)
-- <a id="pa-36da8e78c732"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
+- <a id="pa-e1838b3f8d"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0)
+- <a id="pa-c3c2705624"></a>[extent-rule/no-semantic-maximum/v1](../../../policies/index.md#p-574724b48a)
+- <a id="pa-36da8e78c7"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
 
 ## Evidence
 
 ### Qualification
 
-- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459fb8)
-- [make compose-smoke](../../../evidence/sources.md#q-413b0b241ba8)
+- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459f)
+- [make compose-smoke](../../../evidence/sources.md#q-413b0b241b)
 
 ### Executable sources
 
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
-- [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc960) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc9) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
 
 ### Machine authority
 

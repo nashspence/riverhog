@@ -16,27 +16,27 @@ Step Work
 
 ## External contract
 
-<a id="s-916d6fd99cbd"></a>
-- <a id="s-1c5add23e0f0"></a>`operationId`: step_work
-- <a id="s-7dbcf2058213"></a>`summary`: Step Work
+<a id="s-916d6fd99c"></a>
+- <a id="s-1c5add23e0"></a>`operationId`: step_work
+- <a id="s-7dbcf20582"></a>`summary`: Step Work
 
 ### Parameters
 
 | Name | In | Required | Schema |
 |---|---|---:|---|
-| <a id="s-e4d2d64ba283"></a>`work_id` | path | yes | type="string" |
+| <a id="s-e4d2d64ba2"></a>`work_id` | path | yes | type="string" |
 
 ### Responses
 
 | Status | Description |
 |---|---|
-| <a id="s-feaab7b4c6cb"></a>`200` | Successful Response |
-| <a id="s-dba7bca4f9d4"></a>`400` | Bad Request |
-| <a id="s-dfe490977301"></a>`401` | Unauthorized |
-| <a id="s-568f6fab1156"></a>`403` | Forbidden |
-| <a id="s-9559591607bd"></a>`404` | Not Found |
-| <a id="s-ea13fec2bd52"></a>`409` | Conflict |
-| <a id="s-00b91c86913b"></a>`500` | Internal Server Error |
+| <a id="s-feaab7b4c6"></a>`200` | Successful Response |
+| <a id="s-dba7bca4f9"></a>`400` | Bad Request |
+| <a id="s-dfe4909773"></a>`401` | Unauthorized |
+| <a id="s-568f6fab11"></a>`403` | Forbidden |
+| <a id="s-9559591607"></a>`404` | Not Found |
+| <a id="s-ea13fec2bd"></a>`409` | Conflict |
+| <a id="s-00b91c8691"></a>`500` | Internal Server Error |
 
 ## Maintained corroboration
 
@@ -51,19 +51,19 @@ Step Work
 
 ## Governing policies
 
-- <a id="pa-22f289ce413a"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0ba)
+- <a id="pa-22f289ce41"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0)
 
 ## Evidence
 
 ### Qualification
 
-- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459fb8)
-- [make compose-smoke](../../../evidence/sources.md#q-413b0b241ba8)
+- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459f)
+- [make compose-smoke](../../../evidence/sources.md#q-413b0b241b)
 
 ### Executable sources
 
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
-- [openapi:stove0](../../../evidence/sources.md#src-52e6e3212451) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [openapi:stove0](../../../evidence/sources.md#src-52e6e32124) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
 
 ### Machine authority
 

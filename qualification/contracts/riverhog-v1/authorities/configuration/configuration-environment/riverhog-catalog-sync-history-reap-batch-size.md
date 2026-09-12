@@ -16,38 +16,38 @@ Exact externally visible contract owned by this semantic dossier.
 
 ## External contract
 
-<a id="s-eb2021dc6655"></a>
+<a id="s-eb2021dc66"></a>
 | Field | Shape |
 |---|---|
-| <a id="s-f72318c871dd"></a>`consumers` | ["riverhog-server"] |
-| <a id="s-b4738a40ad12"></a>`name` | "RIVERHOG_CATALOG_SYNC_HISTORY_REAP_BATCH_SIZE" |
+| <a id="s-f72318c871"></a>`consumers` | ["riverhog-server"] |
+| <a id="s-b4738a40ad"></a>`name` | "RIVERHOG_CATALOG_SYNC_HISTORY_REAP_BATCH_SIZE" |
 
 ### Progression, limits, and lifecycle
 
-#### [extent-rule/configured-capacity/v1](../../../policies/index.md#p-3ebc61fc9972)
+#### [extent-rule/configured-capacity/v1](../../../policies/index.md#p-3ebc61fc99)
 
 Shared facts for every subject below: configuration="RIVERHOG_CATALOG_SYNC_HISTORY_REAP_BATCH_SIZE"; maximum=null; reason="operator-configured-capacity"
 
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
-| [RIVERHOG_CATALOG_SYNC_HISTORY_REAP_BATCH_SIZE](#s-eb2021dc6655) | `value · configured-value · operational_policy` | shared above |
+| [RIVERHOG_CATALOG_SYNC_HISTORY_REAP_BATCH_SIZE](#s-eb2021dc66) | `value · configured-value · operational_policy` | shared above |
 
 ## Governing policies
 
-- <a id="pa-c1c00cff5ac7"></a>[compatibility/configuration/v1](../../../policies/index.md#p-8dc08bb46173)
-- <a id="pa-f90909a553c5"></a>[extent-rule/configured-capacity/v1](../../../policies/index.md#p-3ebc61fc9972)
+- <a id="pa-c1c00cff5a"></a>[compatibility/configuration/v1](../../../policies/index.md#p-8dc08bb461)
+- <a id="pa-f90909a553"></a>[extent-rule/configured-capacity/v1](../../../policies/index.md#p-3ebc61fc99)
 
 ## Evidence
 
 ### Qualification
 
-- [make unit](../../../evidence/sources.md#q-ce47068f504c)
-- [make compose-smoke](../../../evidence/sources.md#q-413b0b241ba8)
+- [make unit](../../../evidence/sources.md#q-ce47068f50)
+- [make compose-smoke](../../../evidence/sources.md#q-413b0b241b)
 
 ### Executable sources
 
-- [configuration-environment:RIVERHOG_CATALOG_SYNC_HISTORY_REAP_BATCH_SIZE](../../../evidence/sources.md#src-8c377756e4ca) — `configuration-environment:RIVERHOG_CATALOG_SYNC_HISTORY_REAP_BATCH_SIZE`
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
+- [configuration-environment:RIVERHOG_CATALOG_SYNC_HISTORY_REAP_BATCH_SIZE](../../../evidence/sources.md#src-8c377756e4) — `configuration-environment:RIVERHOG_CATALOG_SYNC_HISTORY_REAP_BATCH_SIZE`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
 
 ### Machine authority
 

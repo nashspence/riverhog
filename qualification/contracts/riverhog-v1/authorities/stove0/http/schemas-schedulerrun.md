@@ -16,17 +16,17 @@ Exact externally visible contract owned by this semantic dossier.
 
 ## External contract
 
-<a id="s-6407a73b9125"></a>
-- <a id="s-7b437e479dc4"></a>`title`: SchedulerRun
-- <a id="s-76621ef99a4e"></a>`type`: object
+<a id="s-6407a73b91"></a>
+- <a id="s-7b437e479d"></a>`title`: SchedulerRun
+- <a id="s-76621ef99a"></a>`type`: object
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-42061fffc266"></a>`admission` | no | anyOf=#/components/schemas/AdmissionRun \| type="null" |  |
-| <a id="s-e949e7bfc61a"></a>`pruning` | yes | anyOf=#/components/schemas/SchedulerPruning \| type="null" |  |
-| <a id="s-3b50dd5ead53"></a>`work` | yes | #/components/schemas/SchedulerWorkBatch |  |
+| <a id="s-42061fffc2"></a>`admission` | no | anyOf=#/components/schemas/AdmissionRun \| type="null" |  |
+| <a id="s-e949e7bfc6"></a>`pruning` | yes | anyOf=#/components/schemas/SchedulerPruning \| type="null" |  |
+| <a id="s-3b50dd5ead"></a>`work` | yes | #/components/schemas/SchedulerWorkBatch |  |
 
 ## Maintained corroboration
 
@@ -38,19 +38,19 @@ Exact externally visible contract owned by this semantic dossier.
 
 ## Governing policies
 
-- <a id="pa-27416b0531d5"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0ba)
+- <a id="pa-27416b0531"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0)
 
 ## Evidence
 
 ### Qualification
 
-- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459fb8)
-- [make compose-smoke](../../../evidence/sources.md#q-413b0b241ba8)
+- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459f)
+- [make compose-smoke](../../../evidence/sources.md#q-413b0b241b)
 
 ### Executable sources
 
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
-- [openapi:stove0](../../../evidence/sources.md#src-52e6e3212451) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [openapi:stove0](../../../evidence/sources.md#src-52e6e32124) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
 
 ### Machine authority
 

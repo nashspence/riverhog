@@ -16,27 +16,27 @@ Exact externally visible contract owned by this semantic dossier.
 
 ## External contract
 
-<a id="s-d7a4e6e0e880"></a>
+<a id="s-d7a4e6e0e8"></a>
 | Field | Shape |
 |---|---|
-| <a id="s-a5e7a20adbee"></a>`consumers` | ["riverhog-server"] |
-| <a id="s-495c4fd74d13"></a>`name` | "RIVERHOG_CATALOG_SYNC_CURSOR_LIFETIME" |
+| <a id="s-a5e7a20adb"></a>`consumers` | ["riverhog-server"] |
+| <a id="s-495c4fd74d"></a>`name` | "RIVERHOG_CATALOG_SYNC_CURSOR_LIFETIME" |
 
 ## Governing policies
 
-- <a id="pa-7809adc88b12"></a>[compatibility/configuration/v1](../../../policies/index.md#p-8dc08bb46173)
+- <a id="pa-7809adc88b"></a>[compatibility/configuration/v1](../../../policies/index.md#p-8dc08bb461)
 
 ## Evidence
 
 ### Qualification
 
-- [make unit](../../../evidence/sources.md#q-ce47068f504c)
-- [make compose-smoke](../../../evidence/sources.md#q-413b0b241ba8)
+- [make unit](../../../evidence/sources.md#q-ce47068f50)
+- [make compose-smoke](../../../evidence/sources.md#q-413b0b241b)
 
 ### Executable sources
 
-- [configuration-environment:RIVERHOG_CATALOG_SYNC_CURSOR_LIFETIME](../../../evidence/sources.md#src-00e8bb321ec5) — `configuration-environment:RIVERHOG_CATALOG_SYNC_CURSOR_LIFETIME`
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
+- [configuration-environment:RIVERHOG_CATALOG_SYNC_CURSOR_LIFETIME](../../../evidence/sources.md#src-00e8bb321e) — `configuration-environment:RIVERHOG_CATALOG_SYNC_CURSOR_LIFETIME`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
 
 ### Machine authority
 

@@ -10,49 +10,49 @@ Exact externally visible contract owned by this semantic dossier.
 |---|---|
 | Authority | [riverhog-provenance-windows-contracts](../index.md) |
 | Interface | [protocol](index.md) |
-| Family | [schemas](index.md#f-78a2bea4a4b2) |
+| Family | [schemas](index.md#f-78a2bea4a4) |
 | Contract elements | 1 |
 | Extent decisions | 1 |
 
 ## External contract
 
-<a id="s-bf0784e7cb19"></a>
-- <a id="s-bc6e6a1ac77f"></a>`$id`: https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/windows-object-id.json
-- <a id="s-e53f3faedf41"></a>`type`: object
+<a id="s-bf0784e7cb"></a>
+- <a id="s-bc6e6a1ac7"></a>`$id`: https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/windows-object-id.json
+- <a id="s-e53f3faedf"></a>`type`: object
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-0f71aad8612e"></a>`extended_info` | yes | type="string"; pattern="^[0-9a-f]{0,96}$" |  |
-| <a id="s-660bc1b26b5d"></a>`object_id` | yes | type="string"; pattern="^[0-9a-f]{32}$" |  |
+| <a id="s-0f71aad861"></a>`extended_info` | yes | type="string"; pattern="^[0-9a-f]{0,96}$" |  |
+| <a id="s-660bc1b26b"></a>`object_id` | yes | type="string"; pattern="^[0-9a-f]{32}$" |  |
 
 ### Progression, limits, and lifecycle
 
-#### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
+#### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
 
 Shared facts for every subject below: maximum=32; minimum=32; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{32}$"}
 
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
-| [field object_id](#s-660bc1b26b5d) | `length · characters · fixed` | shared above |
+| [field object_id](#s-660bc1b26b) | `length · characters · fixed` | shared above |
 
 ## Governing policies
 
-- <a id="pa-33d31c892df8"></a>[compatibility/components/v1](../../../policies/index.md#p-95e9a1225947)
-- <a id="pa-c1dff382b4ba"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
+- <a id="pa-33d31c892d"></a>[compatibility/components/v1](../../../policies/index.md#p-95e9a12259)
+- <a id="pa-c1dff382b4"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
 
 ## Evidence
 
 ### Qualification
 
-- [make dist-smoke](../../../evidence/sources.md#q-0ba2578a3eb7)
-- [make build](../../../evidence/sources.md#q-d1121e35fa7a)
+- [make dist-smoke](../../../evidence/sources.md#q-0ba2578a3e)
+- [make build](../../../evidence/sources.md#q-d1121e35fa)
 
 ### Executable sources
 
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
-- [protocol:https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/windows-object-id.json](../../../evidence/sources.md#src-76f06f0f43dc) — `reference/riverhog/provenance/contracts/windows/src/riverhog_provenance_windows_contracts/schemas/windows-object-id.schema.json`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [protocol:https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/windows-object-id.json](../../../evidence/sources.md#src-76f06f0f43) — `reference/riverhog/provenance/contracts/windows/src/riverhog_provenance_windows_contracts/schemas/windows-object-id.schema.json`
 
 ### Machine authority
 

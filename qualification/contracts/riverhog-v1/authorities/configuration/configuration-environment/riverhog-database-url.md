@@ -16,27 +16,27 @@ Exact externally visible contract owned by this semantic dossier.
 
 ## External contract
 
-<a id="s-f77147b1c356"></a>
+<a id="s-f77147b1c3"></a>
 | Field | Shape |
 |---|---|
-| <a id="s-4504ac9a2419"></a>`consumers` | ["riverhog-server"] |
-| <a id="s-8af67c498bf6"></a>`name` | "RIVERHOG_DATABASE_URL" |
+| <a id="s-4504ac9a24"></a>`consumers` | ["riverhog-server"] |
+| <a id="s-8af67c498b"></a>`name` | "RIVERHOG_DATABASE_URL" |
 
 ## Governing policies
 
-- <a id="pa-b61027f2e4a3"></a>[compatibility/configuration/v1](../../../policies/index.md#p-8dc08bb46173)
+- <a id="pa-b61027f2e4"></a>[compatibility/configuration/v1](../../../policies/index.md#p-8dc08bb461)
 
 ## Evidence
 
 ### Qualification
 
-- [make unit](../../../evidence/sources.md#q-ce47068f504c)
-- [make compose-smoke](../../../evidence/sources.md#q-413b0b241ba8)
+- [make unit](../../../evidence/sources.md#q-ce47068f50)
+- [make compose-smoke](../../../evidence/sources.md#q-413b0b241b)
 
 ### Executable sources
 
-- [configuration-environment:RIVERHOG_DATABASE_URL](../../../evidence/sources.md#src-e557a24df858) — `configuration-environment:RIVERHOG_DATABASE_URL`
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
+- [configuration-environment:RIVERHOG_DATABASE_URL](../../../evidence/sources.md#src-e557a24df8) — `configuration-environment:RIVERHOG_DATABASE_URL`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
 
 ### Machine authority
 

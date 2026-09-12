@@ -16,38 +16,38 @@ Revoke App Key
 
 ## External contract
 
-<a id="s-34033d480c45"></a>
-- <a id="s-e43d5ad244a6"></a>`operationId`: revoke_app_key
-- <a id="s-0167227e491e"></a>`summary`: Revoke App Key
-- <a id="s-a81a4de2ec04"></a>`security`: `[{"HTTPBearer": []}]`
+<a id="s-34033d480c"></a>
+- <a id="s-e43d5ad244"></a>`operationId`: revoke_app_key
+- <a id="s-0167227e49"></a>`summary`: Revoke App Key
+- <a id="s-a81a4de2ec"></a>`security`: `[{"HTTPBearer": []}]`
 
 ### Parameters
 
 | Name | In | Required | Schema |
 |---|---|---:|---|
-| <a id="s-8f6cfd79bdeb"></a>`app` | path | yes | type="string"; pattern="^[a-z0-9]+(?:-[a-z0-9]+)*$" |
-| <a id="s-aa96c7b4485d"></a>`key_id` | path | yes | type="string"; pattern="^[0-9a-f]{16}$" |
+| <a id="s-8f6cfd79bd"></a>`app` | path | yes | type="string"; pattern="^[a-z0-9]+(?:-[a-z0-9]+)*$" |
+| <a id="s-aa96c7b448"></a>`key_id` | path | yes | type="string"; pattern="^[0-9a-f]{16}$" |
 
 ### Responses
 
 | Status | Description |
 |---|---|
-| <a id="s-bb1d20bb4c5b"></a>`200` | Successful Response |
-| <a id="s-3ac0fd3dfbe6"></a>`400` | Bad Request |
-| <a id="s-cd3c29583499"></a>`401` | Unauthorized |
-| <a id="s-d24fbe56d824"></a>`403` | Forbidden |
-| <a id="s-719e1866d783"></a>`404` | Not Found |
-| <a id="s-39a6b94286e2"></a>`500` | Internal Server Error |
+| <a id="s-bb1d20bb4c"></a>`200` | Successful Response |
+| <a id="s-3ac0fd3dfb"></a>`400` | Bad Request |
+| <a id="s-cd3c295834"></a>`401` | Unauthorized |
+| <a id="s-d24fbe56d8"></a>`403` | Forbidden |
+| <a id="s-719e1866d7"></a>`404` | Not Found |
+| <a id="s-39a6b94286"></a>`500` | Internal Server Error |
 
 ### Progression, limits, and lifecycle
 
-#### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
+#### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
 
 Shared facts for every subject below: maximum=16; minimum=16; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{16}$"}
 
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
-| <a id="s-bfbab77e7d34"></a>parameter key_id | `length · characters · fixed` | shared above |
+| <a id="s-bfbab77e7d"></a>[parameter key_id](#s-aa96c7b448) | `length · characters · fixed` | shared above |
 
 ## Maintained corroboration
 
@@ -62,20 +62,20 @@ Shared facts for every subject below: maximum=16; minimum=16; reason="fixed-publ
 
 ## Governing policies
 
-- <a id="pa-73d6d4444447"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0ba)
-- <a id="pa-4974399303ef"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
+- <a id="pa-73d6d44444"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0)
+- <a id="pa-4974399303"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
 
 ## Evidence
 
 ### Qualification
 
-- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459fb8)
-- [make compose-smoke](../../../evidence/sources.md#q-413b0b241ba8)
+- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459f)
+- [make compose-smoke](../../../evidence/sources.md#q-413b0b241b)
 
 ### Executable sources
 
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
-- [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc960) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc9) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
 
 ### Machine authority
 

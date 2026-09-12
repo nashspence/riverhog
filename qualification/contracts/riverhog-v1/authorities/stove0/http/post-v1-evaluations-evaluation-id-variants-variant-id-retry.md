@@ -16,28 +16,28 @@ Retry Evaluation Variant
 
 ## External contract
 
-<a id="s-26a95a8b3730"></a>
-- <a id="s-e7112292618c"></a>`operationId`: retry_evaluation_variant
-- <a id="s-5b6ee480cb82"></a>`summary`: Retry Evaluation Variant
+<a id="s-26a95a8b37"></a>
+- <a id="s-e711229261"></a>`operationId`: retry_evaluation_variant
+- <a id="s-5b6ee480cb"></a>`summary`: Retry Evaluation Variant
 
 ### Parameters
 
 | Name | In | Required | Schema |
 |---|---|---:|---|
-| <a id="s-acc7d22fee26"></a>`evaluation_id` | path | yes | type="string" |
-| <a id="s-b1ce1f868009"></a>`variant_id` | path | yes | type="string" |
+| <a id="s-acc7d22fee"></a>`evaluation_id` | path | yes | type="string" |
+| <a id="s-b1ce1f8680"></a>`variant_id` | path | yes | type="string" |
 
 ### Responses
 
 | Status | Description |
 |---|---|
-| <a id="s-2718e2f1cefa"></a>`200` | Successful Response |
-| <a id="s-10349a25fdf7"></a>`400` | Bad Request |
-| <a id="s-fcd2740ddf78"></a>`401` | Unauthorized |
-| <a id="s-e58243d5ed4f"></a>`403` | Forbidden |
-| <a id="s-74f64068dae7"></a>`404` | Not Found |
-| <a id="s-7899d0aac7ad"></a>`409` | Conflict |
-| <a id="s-bba4f8f59eaf"></a>`500` | Internal Server Error |
+| <a id="s-2718e2f1ce"></a>`200` | Successful Response |
+| <a id="s-10349a25fd"></a>`400` | Bad Request |
+| <a id="s-fcd2740ddf"></a>`401` | Unauthorized |
+| <a id="s-e58243d5ed"></a>`403` | Forbidden |
+| <a id="s-74f64068da"></a>`404` | Not Found |
+| <a id="s-7899d0aac7"></a>`409` | Conflict |
+| <a id="s-bba4f8f59e"></a>`500` | Internal Server Error |
 
 ## Maintained corroboration
 
@@ -52,19 +52,19 @@ Retry Evaluation Variant
 
 ## Governing policies
 
-- <a id="pa-65dc9de010ee"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0ba)
+- <a id="pa-65dc9de010"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0)
 
 ## Evidence
 
 ### Qualification
 
-- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459fb8)
-- [make compose-smoke](../../../evidence/sources.md#q-413b0b241ba8)
+- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459f)
+- [make compose-smoke](../../../evidence/sources.md#q-413b0b241b)
 
 ### Executable sources
 
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
-- [openapi:stove0](../../../evidence/sources.md#src-52e6e3212451) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [openapi:stove0](../../../evidence/sources.md#src-52e6e32124) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
 
 ### Machine authority
 

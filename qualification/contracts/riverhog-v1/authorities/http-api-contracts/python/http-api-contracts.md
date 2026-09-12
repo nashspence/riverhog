@@ -10,34 +10,34 @@ Exact externally visible contract owned by this semantic dossier.
 |---|---|
 | Authority | [http-api-contracts](../index.md) |
 | Interface | [python](index.md) |
-| Family | [modules](index.md#f-f18ce1367ca4) |
+| Family | [modules](index.md#f-f18ce1367c) |
 | Contract elements | 1 |
 | Extent decisions | 0 |
 
 ## External contract
 
-<a id="s-06ea1743bfa2"></a>
+<a id="s-06ea1743bf"></a>
 | Field | Shape |
 |---|---|
-| <a id="s-eb2aec503d16"></a>`distribution` | "http-api-contracts" |
-| <a id="s-e5bb74c62cbf"></a>`exports` | additional keys=`BrowsePageToken`, `BrowseQuery`, `BrowseScalar`, `BrowseTokenCodec`, `BrowseTokenError`, `CANONICAL_VISIBLE_TEXT_PATTERN`, `CanonicalVisibleText`, `DEFAULT_HTTP_ERROR_AUTHORITY`, `ERROR_STATUS_BY_CODE`, `ErrorBody`, `ErrorResponse`, `FRAMED_BODY_DECLARATION_LENGTH_BYTES`, `FRAMED_BODY_FORMAT`, `FRAMED_BODY_MAXIMUM_DECLARATION_BYTES`, `FRAMED_BODY_MEDIA_TYPE`, `HealthResponse`, `HttpBodyKind`, `HttpErrorContract`, `HttpOperationContract`, `HttpOperationErrorAuthority`, `HttpPathParameterContract`, `HttpResponseHeaderContract`, `JSON_SEQUENCE_MEDIA_TYPE`, `MAX_BROWSE_QUERY_CHARACTERS`, `MAX_BROWSE_TOKEN_BYTES`, `OperationInterface`, `PUBLIC_ERROR_CODES`, `QuotedSha256Identity`, `Sha256Identity`, `apply_openapi_error_contract`, `canonical_json_bytes`, `cursor_feed_operation`, `error_code_for_status`, `error_payload`, `error_responses`, `exact_authority_page_operation`, `exact_set_page_operation`, `http_operation_for_request`, `http_operation_inventory`, `inline_type_schema`, `iter_json_sequence_records`, `mutable_browse_operation`, `operation_interface`, `operation_openapi`, `parse_declared_error_payload`, `parse_error_payload`, `parse_operation_error_payload`, `parse_quoted_sha256_identity`, `quote_sha256_identity`, `safe_http_base_url`, `status_for_error_code`, `structural_model_catalog`, `validate_browse_query`, `validate_sha256_identity` |
-| <a id="s-dfedde9b77bd"></a>`module` | "http_api_contracts" |
+| <a id="s-eb2aec503d"></a>`distribution` | "http-api-contracts" |
+| <a id="s-e5bb74c62c"></a>`exports` | additional keys=`BrowsePageToken`, `BrowseQuery`, `BrowseScalar`, `BrowseTokenCodec`, `BrowseTokenError`, `CANONICAL_VISIBLE_TEXT_PATTERN`, `CanonicalVisibleText`, `DEFAULT_HTTP_ERROR_AUTHORITY`, `ERROR_STATUS_BY_CODE`, `ErrorBody`, `ErrorResponse`, `FRAMED_BODY_DECLARATION_LENGTH_BYTES`, `FRAMED_BODY_FORMAT`, `FRAMED_BODY_MAXIMUM_DECLARATION_BYTES`, `FRAMED_BODY_MEDIA_TYPE`, `HealthResponse`, `HttpBodyKind`, `HttpErrorContract`, `HttpOperationContract`, `HttpOperationErrorAuthority`, `HttpPathParameterContract`, `HttpResponseHeaderContract`, `JSON_SEQUENCE_MEDIA_TYPE`, `MAX_BROWSE_QUERY_CHARACTERS`, `MAX_BROWSE_TOKEN_BYTES`, `OperationInterface`, `PUBLIC_ERROR_CODES`, `QuotedSha256Identity`, `Sha256Identity`, `apply_openapi_error_contract`, `canonical_json_bytes`, `cursor_feed_operation`, `error_code_for_status`, `error_payload`, `error_responses`, `exact_authority_page_operation`, `exact_set_page_operation`, `http_operation_for_request`, `http_operation_inventory`, `inline_type_schema`, `iter_json_sequence_records`, `mutable_browse_operation`, `operation_interface`, `operation_openapi`, `parse_declared_error_payload`, `parse_error_payload`, `parse_operation_error_payload`, `parse_quoted_sha256_identity`, `quote_sha256_identity`, `safe_http_base_url`, `status_for_error_code`, `structural_model_catalog`, `validate_browse_query`, `validate_sha256_identity` |
+| <a id="s-dfedde9b77"></a>`module` | "http_api_contracts" |
 
 ## Governing policies
 
-- <a id="pa-2e3c6791b197"></a>[compatibility/python-api/v1](../../../policies/index.md#p-e574772ba506)
+- <a id="pa-2e3c6791b1"></a>[compatibility/python-api/v1](../../../policies/index.md#p-e574772ba5)
 
 ## Evidence
 
 ### Qualification
 
-- [make dist-smoke](../../../evidence/sources.md#q-0ba2578a3eb7)
-- [make build](../../../evidence/sources.md#q-d1121e35fa7a)
+- [make dist-smoke](../../../evidence/sources.md#q-0ba2578a3e)
+- [make build](../../../evidence/sources.md#q-d1121e35fa)
 
 ### Executable sources
 
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
-- [python:http-api-contracts](../../../evidence/sources.md#src-721cfe4d9d0d) — `packages/http-api-contracts/src/http_api_contracts/__init__.py::<module>`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [python:http-api-contracts](../../../evidence/sources.md#src-721cfe4d9d) — `packages/http-api-contracts/src/http_api_contracts/__init__.py::<module>`
 
 ### Machine authority
 

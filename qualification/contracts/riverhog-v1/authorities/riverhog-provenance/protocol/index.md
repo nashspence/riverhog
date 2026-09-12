@@ -6,14 +6,14 @@ Contract elements: **7** · Extent decisions: **101**
 
 | Family | Count |
 |---|---:|
-| <a id="f-6adfbad66ec5"></a>`schemas` | 7 |
+| <a id="f-6adfbad66e"></a>`schemas` | 7 |
 
 | Policy | Count |
 |---|---:|
-| [compatibility/components/v1](../../../policies/index.md#p-95e9a1225947) | 7 |
-| [extent-rule/bounded-segment/v1](../../../policies/index.md#p-2b3f3f1594af) | 1 |
-| [extent-rule/no-semantic-maximum/v1](../../../policies/index.md#p-574724b48af0) | 5 |
-| [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034) | 5 |
+| [compatibility/components/v1](../../../policies/index.md#p-95e9a12259) | 7 |
+| [extent-rule/bounded-segment/v1](../../../policies/index.md#p-2b3f3f1594) | 1 |
+| [extent-rule/no-semantic-maximum/v1](../../../policies/index.md#p-574724b48a) | 5 |
+| [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0) | 5 |
 
 ## Semantic dossiers
 

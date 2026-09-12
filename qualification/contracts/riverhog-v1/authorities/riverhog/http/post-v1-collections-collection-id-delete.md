@@ -16,18 +16,18 @@ Delete Collection
 
 ## External contract
 
-<a id="s-db3f91804bc7"></a>
-- <a id="s-ec99f69fb94d"></a>`operationId`: delete_collection
-- <a id="s-04d2b1a61684"></a>`summary`: Delete Collection
-- <a id="s-31daac02430a"></a>`security`: `[{"HTTPBearer": []}]`
+<a id="s-db3f91804b"></a>
+- <a id="s-ec99f69fb9"></a>`operationId`: delete_collection
+- <a id="s-04d2b1a616"></a>`summary`: Delete Collection
+- <a id="s-31daac0243"></a>`security`: `[{"HTTPBearer": []}]`
 
 ### Parameters
 
 | Name | In | Required | Schema |
 |---|---|---:|---|
-| <a id="s-97e74929ce6f"></a>`collection_id` | path | yes | type="integer"; minimum=1 |
+| <a id="s-97e74929ce"></a>`collection_id` | path | yes | type="integer"; minimum=1 |
 
-### <a id="s-205df74924fa"></a>Request body
+### <a id="s-205df74924"></a>Request body
 
 `{"content": {"application/json": {"schema": {"$ref": "#/components/schemas/DeleteCollectionRequest"}}}, "required": true}`
 
@@ -35,13 +35,13 @@ Delete Collection
 
 | Status | Description |
 |---|---|
-| <a id="s-257294134c56"></a>`200` | Successful Response |
-| <a id="s-3674f1890c06"></a>`400` | Bad Request |
-| <a id="s-8a999f83c500"></a>`401` | Unauthorized |
-| <a id="s-bc93bd0c7776"></a>`403` | Forbidden |
-| <a id="s-4132017a457c"></a>`404` | Not Found |
-| <a id="s-fa85a7993149"></a>`409` | Conflict |
-| <a id="s-fc82a9014598"></a>`500` | Internal Server Error |
+| <a id="s-257294134c"></a>`200` | Successful Response |
+| <a id="s-3674f1890c"></a>`400` | Bad Request |
+| <a id="s-8a999f83c5"></a>`401` | Unauthorized |
+| <a id="s-bc93bd0c77"></a>`403` | Forbidden |
+| <a id="s-4132017a45"></a>`404` | Not Found |
+| <a id="s-fa85a79931"></a>`409` | Conflict |
+| <a id="s-fc82a90145"></a>`500` | Internal Server Error |
 
 ## Maintained corroboration
 
@@ -57,19 +57,19 @@ Delete Collection
 
 ## Governing policies
 
-- <a id="pa-070b195f430c"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0ba)
+- <a id="pa-070b195f43"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0)
 
 ## Evidence
 
 ### Qualification
 
-- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459fb8)
-- [make compose-smoke](../../../evidence/sources.md#q-413b0b241ba8)
+- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459f)
+- [make compose-smoke](../../../evidence/sources.md#q-413b0b241b)
 
 ### Executable sources
 
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
-- [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc960) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc9) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
 
 ### Machine authority
 

@@ -10,52 +10,52 @@ Exact externally visible contract owned by this semantic dossier.
 |---|---|
 | Authority | [riverhog-provenance-linux-contracts](../index.md) |
 | Interface | [protocol](index.md) |
-| Family | [schemas](index.md#f-496badc04bf0) |
+| Family | [schemas](index.md#f-496badc04b) |
 | Contract elements | 1 |
 | Extent decisions | 2 |
 
 ## External contract
 
-<a id="s-f7d1eefa0bc5"></a>
-- <a id="s-561194c53709"></a>`$id`: https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/linux-statx-attributes.json
-- <a id="s-fa0152c20058"></a>`type`: object
+<a id="s-f7d1eefa0b"></a>
+- <a id="s-561194c537"></a>`$id`: https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/linux-statx-attributes.json
+- <a id="s-fa0152c200"></a>`type`: object
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-906b1a32718c"></a>`attributes` | yes | type="integer"; minimum=0 |  |
-| <a id="s-1a149c51de2a"></a>`attributes_mask` | yes | type="integer"; minimum=0 |  |
-| <a id="s-d30926626919"></a>`set_names` | yes | type="array"; items=(type="string"); additional keys=`uniqueItems` |  |
-| <a id="s-d7a5a019181e"></a>`supported_names` | yes | type="array"; items=(type="string"); additional keys=`uniqueItems` |  |
+| <a id="s-906b1a3271"></a>`attributes` | yes | type="integer"; minimum=0 |  |
+| <a id="s-1a149c51de"></a>`attributes_mask` | yes | type="integer"; minimum=0 |  |
+| <a id="s-d309266269"></a>`set_names` | yes | type="array"; items=(type="string"); additional keys=`uniqueItems` |  |
+| <a id="s-d7a5a01918"></a>`supported_names` | yes | type="array"; items=(type="string"); additional keys=`uniqueItems` |  |
 
 ### Progression, limits, and lifecycle
 
-#### [extent-rule/extension-contract/v1](../../../policies/index.md#p-75a89f9d1c36)
+#### [extent-rule/extension-contract/v1](../../../policies/index.md#p-75a89f9d1c)
 
 Shared facts for every subject below: maximum=null; reason="independently-versioned-extension-authority"
 
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
-| [field set_names](#s-d30926626919) | `cardinality · items · extension_owned` | shared above |
-| [field supported_names](#s-d7a5a019181e) | `cardinality · items · extension_owned` | shared above |
+| [field set_names](#s-d309266269) | `cardinality · items · extension_owned` | shared above |
+| [field supported_names](#s-d7a5a01918) | `cardinality · items · extension_owned` | shared above |
 
 ## Governing policies
 
-- <a id="pa-1104466d02d4"></a>[compatibility/components/v1](../../../policies/index.md#p-95e9a1225947)
-- <a id="pa-4cbe29bb68a2"></a>[extent-rule/extension-contract/v1](../../../policies/index.md#p-75a89f9d1c36)
+- <a id="pa-1104466d02"></a>[compatibility/components/v1](../../../policies/index.md#p-95e9a12259)
+- <a id="pa-4cbe29bb68"></a>[extent-rule/extension-contract/v1](../../../policies/index.md#p-75a89f9d1c)
 
 ## Evidence
 
 ### Qualification
 
-- [make dist-smoke](../../../evidence/sources.md#q-0ba2578a3eb7)
-- [make build](../../../evidence/sources.md#q-d1121e35fa7a)
+- [make dist-smoke](../../../evidence/sources.md#q-0ba2578a3e)
+- [make build](../../../evidence/sources.md#q-d1121e35fa)
 
 ### Executable sources
 
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
-- [protocol:https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/linux-statx-attributes.json](../../../evidence/sources.md#src-ea93e415ba1d) — `reference/riverhog/provenance/contracts/linux/src/riverhog_provenance_linux_contracts/schemas/linux-statx-attributes.schema.json`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [protocol:https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/linux-statx-attributes.json](../../../evidence/sources.md#src-ea93e415ba) — `reference/riverhog/provenance/contracts/linux/src/riverhog_provenance_linux_contracts/schemas/linux-statx-attributes.schema.json`
 
 ### Machine authority
 

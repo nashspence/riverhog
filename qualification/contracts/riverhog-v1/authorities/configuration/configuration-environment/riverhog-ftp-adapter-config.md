@@ -16,27 +16,27 @@ Exact externally visible contract owned by this semantic dossier.
 
 ## External contract
 
-<a id="s-ba8bf00da01d"></a>
+<a id="s-ba8bf00da0"></a>
 | Field | Shape |
 |---|---|
-| <a id="s-fefed5a14e6a"></a>`consumers` | ["riverhog-ftp-adapter"] |
-| <a id="s-5c224fe46039"></a>`name` | "RIVERHOG_FTP_ADAPTER_CONFIG" |
+| <a id="s-fefed5a14e"></a>`consumers` | ["riverhog-ftp-adapter"] |
+| <a id="s-5c224fe460"></a>`name` | "RIVERHOG_FTP_ADAPTER_CONFIG" |
 
 ## Governing policies
 
-- <a id="pa-42c2f6b15d62"></a>[compatibility/configuration/v1](../../../policies/index.md#p-8dc08bb46173)
+- <a id="pa-42c2f6b15d"></a>[compatibility/configuration/v1](../../../policies/index.md#p-8dc08bb461)
 
 ## Evidence
 
 ### Qualification
 
-- [make unit](../../../evidence/sources.md#q-ce47068f504c)
-- [make compose-smoke](../../../evidence/sources.md#q-413b0b241ba8)
+- [make unit](../../../evidence/sources.md#q-ce47068f50)
+- [make compose-smoke](../../../evidence/sources.md#q-413b0b241b)
 
 ### Executable sources
 
-- [configuration-environment:RIVERHOG_FTP_ADAPTER_CONFIG](../../../evidence/sources.md#src-b14eb675d528) — `configuration-environment:RIVERHOG_FTP_ADAPTER_CONFIG`
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
+- [configuration-environment:RIVERHOG_FTP_ADAPTER_CONFIG](../../../evidence/sources.md#src-b14eb675d5) — `configuration-environment:RIVERHOG_FTP_ADAPTER_CONFIG`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
 
 ### Machine authority
 

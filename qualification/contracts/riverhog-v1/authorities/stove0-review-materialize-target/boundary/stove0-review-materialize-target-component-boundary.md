@@ -10,37 +10,37 @@ Exact externally visible contract owned by this semantic dossier.
 |---|---|
 | Authority | [stove0-review-materialize-target](../index.md) |
 | Interface | [boundary](index.md) |
-| Family | [components](index.md#f-f006806d9808) |
+| Family | [components](index.md#f-f006806d98) |
 | Contract elements | 1 |
 | Extent decisions | 0 |
 
 ## External contract
 
-<a id="s-0a57b09105d2"></a>
+<a id="s-0a57b09105"></a>
 | Field | Shape |
 |---|---|
-| <a id="s-ae16c0646ea7"></a>`console_scripts` | additional keys=`stove0-review-materialize-target` |
-| <a id="s-03430a3ea6fb"></a>`dependencies` | ["riverhog-client","stove0-review-target-contracts","stove0-review-target-support","stove0-target-support"] |
-| <a id="s-4b4e5887ac56"></a>`distribution` | "stove0-review-materialize-target" |
-| <a id="s-a5b42ea7c423"></a>`optional_dependencies` | empty object |
-| <a id="s-b87e8fbf15ac"></a>`path` | "reference/stove0/targets/review/materialize-target" |
-| <a id="s-e2e2825c1151"></a>`role` | "reference_component" |
+| <a id="s-ae16c0646e"></a>`console_scripts` | additional keys=`stove0-review-materialize-target` |
+| <a id="s-03430a3ea6"></a>`dependencies` | ["riverhog-client","stove0-review-target-contracts","stove0-review-target-support","stove0-target-support"] |
+| <a id="s-4b4e5887ac"></a>`distribution` | "stove0-review-materialize-target" |
+| <a id="s-a5b42ea7c4"></a>`optional_dependencies` | empty object |
+| <a id="s-b87e8fbf15"></a>`path` | "reference/stove0/targets/review/materialize-target" |
+| <a id="s-e2e2825c11"></a>`role` | "reference_component" |
 
 ## Governing policies
 
-- <a id="pa-de491088696b"></a>[boundary/frozen-authority/v1](../../../policies/index.md#p-61994d3f0fa8)
+- <a id="pa-de49108869"></a>[boundary/frozen-authority/v1](../../../policies/index.md#p-61994d3f0f)
 
 ## Evidence
 
 ### Qualification
 
-- [make release-check](../../../evidence/sources.md#q-8d8d22d6a6b1)
-- [make build](../../../evidence/sources.md#q-d1121e35fa7a)
+- [make release-check](../../../evidence/sources.md#q-8d8d22d6a6)
+- [make build](../../../evidence/sources.md#q-d1121e35fa)
 
 ### Executable sources
 
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
-- [release:release.toml](../../../evidence/sources.md#src-c5380dbe5fe0) — `release.toml`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [release:release.toml](../../../evidence/sources.md#src-c5380dbe5f) — `release.toml`
 
 ### Machine authority
 

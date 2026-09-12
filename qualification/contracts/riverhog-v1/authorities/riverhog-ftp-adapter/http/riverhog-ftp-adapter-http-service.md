@@ -10,7 +10,7 @@ Exact externally visible contract owned by this semantic dossier.
 |---|---|
 | Authority | [riverhog-ftp-adapter](../index.md) |
 | Interface | [http](index.md) |
-| Family | [service](index.md#f-55a18408bd6f) |
+| Family | [service](index.md#f-55a18408bd) |
 | Contract elements | 1 |
 | Extent decisions | 0 |
 
@@ -18,24 +18,24 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Subject | Shape |
 |---|---|
-| <a id="s-ca90b0c459e2"></a>`info` | additional keys=`version` |
-| <a id="s-e4c15d92722f"></a>`openapi` | "3.1.0" |
+| <a id="s-ca90b0c459"></a>`info` | additional keys=`version` |
+| <a id="s-e4c15d9272"></a>`openapi` | "3.1.0" |
 
 ## Governing policies
 
-- <a id="pa-6b164a3897a9"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0ba)
+- <a id="pa-6b164a3897"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0)
 
 ## Evidence
 
 ### Qualification
 
-- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459fb8)
-- [make compose-smoke](../../../evidence/sources.md#q-413b0b241ba8)
+- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459f)
+- [make compose-smoke](../../../evidence/sources.md#q-413b0b241b)
 
 ### Executable sources
 
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
-- [openapi:riverhog-ftp-adapter](../../../evidence/sources.md#src-c3a51ac29ac7) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [openapi:riverhog-ftp-adapter](../../../evidence/sources.md#src-c3a51ac29a) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
 
 ### Machine authority
 

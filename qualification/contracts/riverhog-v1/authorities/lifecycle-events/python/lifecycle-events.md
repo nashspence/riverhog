@@ -10,34 +10,34 @@ Exact externally visible contract owned by this semantic dossier.
 |---|---|
 | Authority | [lifecycle-events](../index.md) |
 | Interface | [python](index.md) |
-| Family | [modules](index.md#f-b6f5a432e078) |
+| Family | [modules](index.md#f-b6f5a432e0) |
 | Contract elements | 1 |
 | Extent decisions | 0 |
 
 ## External contract
 
-<a id="s-79ad8bdd322d"></a>
+<a id="s-79ad8bdd32"></a>
 | Field | Shape |
 |---|---|
-| <a id="s-2bab04a37341"></a>`distribution` | "lifecycle-events" |
-| <a id="s-4c9c1968650e"></a>`exports` | additional keys=`CLOUDEVENTS_JSON_CONTENT_TYPE`, `CloudEvent`, `EventContext`, `EventPage`, `LifecycleEventClient`, `MAX_EVENT_CONTEXT_BYTES`, `SQLiteEventCursorStore`, `SQLiteLifecycleEventLog`, `caused_event`, `cloud_event`, `create_lifecycle_event_schema`, `normalize_event_context` |
-| <a id="s-2a0e3d06dea2"></a>`module` | "lifecycle_events" |
+| <a id="s-2bab04a373"></a>`distribution` | "lifecycle-events" |
+| <a id="s-4c9c196865"></a>`exports` | additional keys=`CLOUDEVENTS_JSON_CONTENT_TYPE`, `CloudEvent`, `EventContext`, `EventPage`, `LifecycleEventClient`, `MAX_EVENT_CONTEXT_BYTES`, `SQLiteEventCursorStore`, `SQLiteLifecycleEventLog`, `caused_event`, `cloud_event`, `create_lifecycle_event_schema`, `normalize_event_context` |
+| <a id="s-2a0e3d06de"></a>`module` | "lifecycle_events" |
 
 ## Governing policies
 
-- <a id="pa-ab76c84034ed"></a>[compatibility/python-api/v1](../../../policies/index.md#p-e574772ba506)
+- <a id="pa-ab76c84034"></a>[compatibility/python-api/v1](../../../policies/index.md#p-e574772ba5)
 
 ## Evidence
 
 ### Qualification
 
-- [make dist-smoke](../../../evidence/sources.md#q-0ba2578a3eb7)
-- [make build](../../../evidence/sources.md#q-d1121e35fa7a)
+- [make dist-smoke](../../../evidence/sources.md#q-0ba2578a3e)
+- [make build](../../../evidence/sources.md#q-d1121e35fa)
 
 ### Executable sources
 
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
-- [python:lifecycle-events](../../../evidence/sources.md#src-feb6b7ae7098) — `packages/lifecycle-events/src/lifecycle_events/__init__.py::<module>`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [python:lifecycle-events](../../../evidence/sources.md#src-feb6b7ae70) — `packages/lifecycle-events/src/lifecycle_events/__init__.py::<module>`
 
 ### Machine authority
 

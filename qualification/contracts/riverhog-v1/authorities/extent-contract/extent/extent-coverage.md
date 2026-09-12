@@ -10,39 +10,39 @@ Exact externally visible contract owned by this semantic dossier.
 |---|---|
 | Authority | [extent-contract](../index.md) |
 | Interface | [extent](index.md) |
-| Family | [policy](index.md#f-259f5e46e289) |
+| Family | [policy](index.md#f-259f5e46e2) |
 | Contract elements | 1 |
 | Extent decisions | 0 |
 
 ## External contract
 
-<a id="s-a7220c3cd242"></a>
+<a id="s-a7220c3cd2"></a>
 | Field | Shape |
 |---|---|
-| <a id="s-a0370b88c63e"></a>`classified` | 1962 |
-| <a id="s-6d5fa36b7d5e"></a>`discovered` | 1962 |
-| <a id="s-078b61598a03"></a>`duplicate` | 0 |
-| <a id="s-27244da2e708"></a>`missing` | 0 |
-| <a id="s-10c503a053ef"></a>`owners` | additional keys=`gogurt`, `gogurt-routes`, `https://nashspence.github.io/riverhog/v1/provenance/journal-entry.schema.json`, `https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/darwin-file-attributes.json`, `https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/darwin-file-flags.json`, `https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/darwin-file-stat.json`, `https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/linux-file-stat.json`, `https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/linux-fs-flags.json`, `https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/linux-fsxattr.json`, `https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/linux-mount-context.json`, `https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/linux-statx-attributes.json`, `https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/macos-volume-context.json`, `https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/observation-policy.json`, `https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/sparse-map.json`, `https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/windows-backup-stream-info.json`, `https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/windows-compression-state.json`, `https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/windows-file-attributes.json`, `https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/windows-file-stat.json`, `https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/windows-integrity-info.json`, `https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/windows-object-id.json`, `https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/windows-usn-record.json`, `https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/windows-volume-context.json`, `https://nashspence.github.io/riverhog/v1/schemas/collection-archive-manifest-v1.schema.json`, `https://nashspence.github.io/riverhog/v1/schemas/collection-archive-terminal-v1.schema.json`, `https://nashspence.github.io/riverhog/v1/schemas/collection-archive-volume-v1.schema.json`, `https://nashspence.github.io/riverhog/v1/schemas/riverhog-collection-description-v1.schema.json`, `https://nashspence.github.io/riverhog/v1/schemas/riverhog-provenance-bindings-v1.schema.json`, `https://nashspence.github.io/riverhog/v1/schemas/riverhog-provenance-root-v1.schema.json`, `https://nashspence.github.io/riverhog/v1/schemas/riverhog-provenance-terminal-v1.schema.json`, `https://nashspence.github.io/riverhog/v1/schemas/riverhog-provenance-volume-v1.schema.json`, `https://nashspence.github.io/riverhog/v1/schemas/riverhog-recovery-descriptor-v1.schema.json`, `mango-fish`, `piggity`, `riverhog`, `riverhog-client`, `riverhog-ftp-adapter`, `riverhog-ftp-adapter-api-client`, `riverhog-recover`, `riverhog-server`, `riverhog-storage-adapter-conformance`, `riverhog-storage-adapter-filesystem-materialize`, `riverhog-storage-adapter-protocol`, `riverhog-storage-adapter-schemas`, `stove0`, `stove0-api-client`, `stove0-observer-protocol`, `stove0-observer-schemas`, `stove0-recipes`, `stove0-review-sampler-conformance`, `stove0-review-sampler-protocol`, `stove0-review-sampler-schemas`, `stove0-review-target`, `stove0-review-target-sampler`, `stove0-server`, `stove0-target-protocol`, `stove0-target-schemas`, `stove0-target-support` |
-| <a id="s-559c1a152d8c"></a>`policies` | additional keys=`contract_max`, `extension_owned`, `fixed`, `operational_policy`, `segmented_no_total_max` |
-| <a id="s-2aec5ade67e5"></a>`stale` | 0 |
-| <a id="s-f3bcaf805476"></a>`undecided` | 0 |
+| <a id="s-a0370b88c6"></a>`classified` | 1962 |
+| <a id="s-6d5fa36b7d"></a>`discovered` | 1962 |
+| <a id="s-078b61598a"></a>`duplicate` | 0 |
+| <a id="s-27244da2e7"></a>`missing` | 0 |
+| <a id="s-10c503a053"></a>`owners` | additional keys=`gogurt`, `gogurt-routes`, `https://nashspence.github.io/riverhog/v1/provenance/journal-entry.schema.json`, `https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/darwin-file-attributes.json`, `https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/darwin-file-flags.json`, `https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/darwin-file-stat.json`, `https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/linux-file-stat.json`, `https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/linux-fs-flags.json`, `https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/linux-fsxattr.json`, `https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/linux-mount-context.json`, `https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/linux-statx-attributes.json`, `https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/macos-volume-context.json`, `https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/observation-policy.json`, `https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/sparse-map.json`, `https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/windows-backup-stream-info.json`, `https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/windows-compression-state.json`, `https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/windows-file-attributes.json`, `https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/windows-file-stat.json`, `https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/windows-integrity-info.json`, `https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/windows-object-id.json`, `https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/windows-usn-record.json`, `https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/windows-volume-context.json`, `https://nashspence.github.io/riverhog/v1/schemas/collection-archive-manifest-v1.schema.json`, `https://nashspence.github.io/riverhog/v1/schemas/collection-archive-terminal-v1.schema.json`, `https://nashspence.github.io/riverhog/v1/schemas/collection-archive-volume-v1.schema.json`, `https://nashspence.github.io/riverhog/v1/schemas/riverhog-collection-description-v1.schema.json`, `https://nashspence.github.io/riverhog/v1/schemas/riverhog-provenance-bindings-v1.schema.json`, `https://nashspence.github.io/riverhog/v1/schemas/riverhog-provenance-root-v1.schema.json`, `https://nashspence.github.io/riverhog/v1/schemas/riverhog-provenance-terminal-v1.schema.json`, `https://nashspence.github.io/riverhog/v1/schemas/riverhog-provenance-volume-v1.schema.json`, `https://nashspence.github.io/riverhog/v1/schemas/riverhog-recovery-descriptor-v1.schema.json`, `mango-fish`, `piggity`, `riverhog`, `riverhog-client`, `riverhog-ftp-adapter`, `riverhog-ftp-adapter-api-client`, `riverhog-recover`, `riverhog-server`, `riverhog-storage-adapter-conformance`, `riverhog-storage-adapter-filesystem-materialize`, `riverhog-storage-adapter-protocol`, `riverhog-storage-adapter-schemas`, `stove0`, `stove0-api-client`, `stove0-observer-protocol`, `stove0-observer-schemas`, `stove0-recipes`, `stove0-review-sampler-conformance`, `stove0-review-sampler-protocol`, `stove0-review-sampler-schemas`, `stove0-review-target`, `stove0-review-target-sampler`, `stove0-server`, `stove0-target-protocol`, `stove0-target-schemas`, `stove0-target-support` |
+| <a id="s-559c1a152d"></a>`policies` | additional keys=`contract_max`, `extension_owned`, `fixed`, `operational_policy`, `segmented_no_total_max` |
+| <a id="s-2aec5ade67"></a>`stale` | 0 |
+| <a id="s-f3bcaf8054"></a>`undecided` | 0 |
 
 ## Governing policies
 
-- <a id="pa-b04060e0da2e"></a>[extent-principle/logical-totals/v1](../../../policies/index.md#p-cfe2e12ee677)
+- <a id="pa-b04060e0da"></a>[extent-principle/logical-totals/v1](../../../policies/index.md#p-cfe2e12ee6)
 
 ## Evidence
 
 ### Qualification
 
-- [make contract-freeze](../../../evidence/sources.md#q-8c74349e71e4)
-- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459fb8)
+- [make contract-freeze](../../../evidence/sources.md#q-8c74349e71)
+- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459f)
 
 ### Executable sources
 
-- [extent:extent-contract](../../../evidence/sources.md#src-5ac94d0a12e8) — `scripts/extent_contract.py::extent_projection`
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
+- [extent:extent-contract](../../../evidence/sources.md#src-5ac94d0a12) — `scripts/extent_contract.py::extent_projection`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
 
 ### Machine authority
 

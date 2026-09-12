@@ -10,34 +10,34 @@ Exact externally visible contract owned by this semantic dossier.
 |---|---|
 | Authority | [extent-contract](../index.md) |
 | Interface | [extent](index.md) |
-| Family | [rules](index.md#f-b9df1e502970) |
+| Family | [rules](index.md#f-b9df1e5029) |
 | Contract elements | 1 |
 | Extent decisions | 0 |
 
 ## External contract
 
-<a id="s-880614cb87cc"></a>
+<a id="s-880614cb87"></a>
 | Field | Shape |
 |---|---|
-| <a id="s-303840ad3054"></a>`authority` | "the independently versioned extension contract" |
-| <a id="s-d368ac3e44e1"></a>`core_semantic_maximum` | null |
-| <a id="s-01a1566171a1"></a>`policy` | "extension_owned" |
+| <a id="s-303840ad30"></a>`authority` | "the independently versioned extension contract" |
+| <a id="s-d368ac3e44"></a>`core_semantic_maximum` | null |
+| <a id="s-01a1566171"></a>`policy` | "extension_owned" |
 
 ## Governing policies
 
-- <a id="pa-2eda1688d1b9"></a>[extent-rule/extension-contract/v1](../../../policies/index.md#p-75a89f9d1c36)
+- <a id="pa-2eda1688d1"></a>[extent-rule/extension-contract/v1](../../../policies/index.md#p-75a89f9d1c)
 
 ## Evidence
 
 ### Qualification
 
-- [make contract-freeze](../../../evidence/sources.md#q-8c74349e71e4)
-- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459fb8)
+- [make contract-freeze](../../../evidence/sources.md#q-8c74349e71)
+- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459f)
 
 ### Executable sources
 
-- [extent:extent-contract](../../../evidence/sources.md#src-5ac94d0a12e8) — `scripts/extent_contract.py::extent_projection`
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
+- [extent:extent-contract](../../../evidence/sources.md#src-5ac94d0a12) — `scripts/extent_contract.py::extent_projection`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
 
 ### Machine authority
 

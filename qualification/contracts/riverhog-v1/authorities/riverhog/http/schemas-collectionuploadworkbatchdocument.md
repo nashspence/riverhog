@@ -16,30 +16,30 @@ A bounded acquisition step over currently actionable upload units.
 
 ## External contract
 
-<a id="s-7ff4df50566a"></a>
-- <a id="s-846950f272d7"></a>`title`: CollectionUploadWorkBatchDocument
-- <a id="s-e3b8f0d45d04"></a>`description`: A bounded acquisition step over currently actionable upload units.
-- <a id="s-cd8632738e2d"></a>`type`: object
+<a id="s-7ff4df5056"></a>
+- <a id="s-846950f272"></a>`title`: CollectionUploadWorkBatchDocument
+- <a id="s-e3b8f0d45d"></a>`description`: A bounded acquisition step over currently actionable upload units.
+- <a id="s-cd8632738e"></a>`type`: object
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-0f1e40b93bd3"></a>`collection_id` | yes | #/components/schemas/CollectionId |  |
-| <a id="s-86f4d750af84"></a>`committed_payload_bytes` | yes | type="integer"; minimum=0 |  |
-| <a id="s-9c4aca2092ed"></a>`complete` | yes | type="boolean" |  |
-| <a id="s-b5d308340306"></a>`planning_complete` | yes | type="boolean" |  |
-| <a id="s-4617d6f48d3e"></a>`work` | yes | type="array"; maxItems=64; items=(#/components/schemas/CollectionUploadUnitAssignmentDocument); additional keys=`x-riverhog-extent` |  |
+| <a id="s-0f1e40b93b"></a>`collection_id` | yes | #/components/schemas/CollectionId |  |
+| <a id="s-86f4d750af"></a>`committed_payload_bytes` | yes | type="integer"; minimum=0 |  |
+| <a id="s-9c4aca2092"></a>`complete` | yes | type="boolean" |  |
+| <a id="s-b5d3083403"></a>`planning_complete` | yes | type="boolean" |  |
+| <a id="s-4617d6f48d"></a>`work` | yes | type="array"; maxItems=64; items=(#/components/schemas/CollectionUploadUnitAssignmentDocument); additional keys=`x-riverhog-extent` |  |
 
 ### Progression, limits, and lifecycle
 
-#### [extent-rule/bounded-segment/v1](../../../policies/index.md#p-2b3f3f1594af)
+#### [extent-rule/bounded-segment/v1](../../../policies/index.md#p-2b3f3f1594)
 
 Shared facts for every subject below: maximum=64; minimum=null; progression={"progression":"repeated-acquisition-until-complete"}; reason="bounded-actionable-work-acquisition"
 
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
-| [field work](#s-4617d6f48d3e) | `cardinality · items · segmented_no_total_max` | shared above |
+| [field work](#s-4617d6f48d) | `cardinality · items · segmented_no_total_max` | shared above |
 
 ## Maintained corroboration
 
@@ -50,20 +50,20 @@ Shared facts for every subject below: maximum=64; minimum=null; progression={"pr
 
 ## Governing policies
 
-- <a id="pa-3265c3e570b3"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0ba)
-- <a id="pa-2f266e77ef30"></a>[extent-rule/bounded-segment/v1](../../../policies/index.md#p-2b3f3f1594af)
+- <a id="pa-3265c3e570"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0)
+- <a id="pa-2f266e77ef"></a>[extent-rule/bounded-segment/v1](../../../policies/index.md#p-2b3f3f1594)
 
 ## Evidence
 
 ### Qualification
 
-- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459fb8)
-- [make compose-smoke](../../../evidence/sources.md#q-413b0b241ba8)
+- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459f)
+- [make compose-smoke](../../../evidence/sources.md#q-413b0b241b)
 
 ### Executable sources
 
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
-- [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc960) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc9) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
 
 ### Machine authority
 

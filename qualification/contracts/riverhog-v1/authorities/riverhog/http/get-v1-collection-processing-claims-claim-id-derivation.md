@@ -16,37 +16,37 @@ Get Processing Claim Dispositions
 
 ## External contract
 
-<a id="s-015895d0cadb"></a>
-- <a id="s-771794464eb4"></a>`operationId`: get_processing_claim_dispositions
-- <a id="s-5c87329d719c"></a>`summary`: Get Processing Claim Dispositions
-- <a id="s-966bdb58a58c"></a>`security`: `[{"HTTPBearer": []}]`
+<a id="s-015895d0ca"></a>
+- <a id="s-771794464e"></a>`operationId`: get_processing_claim_dispositions
+- <a id="s-5c87329d71"></a>`summary`: Get Processing Claim Dispositions
+- <a id="s-966bdb58a5"></a>`security`: `[{"HTTPBearer": []}]`
 
 ### Parameters
 
 | Name | In | Required | Schema |
 |---|---|---:|---|
-| <a id="s-d150ab5a5cf0"></a>`claim_id` | path | yes | type="string"; pattern="^[0-9a-f]{64}$" |
+| <a id="s-d150ab5a5c"></a>`claim_id` | path | yes | type="string"; pattern="^[0-9a-f]{64}$" |
 
 ### Responses
 
 | Status | Description |
 |---|---|
-| <a id="s-6003de24714b"></a>`200` | Successful Response |
-| <a id="s-261185dedf6e"></a>`400` | Bad Request |
-| <a id="s-8da7c7acd48b"></a>`401` | Unauthorized |
-| <a id="s-de18ddafeddc"></a>`403` | Forbidden |
-| <a id="s-1e1d061301b7"></a>`404` | Not Found |
-| <a id="s-2a35017c68da"></a>`500` | Internal Server Error |
+| <a id="s-6003de2471"></a>`200` | Successful Response |
+| <a id="s-261185dedf"></a>`400` | Bad Request |
+| <a id="s-8da7c7acd4"></a>`401` | Unauthorized |
+| <a id="s-de18ddafed"></a>`403` | Forbidden |
+| <a id="s-1e1d061301"></a>`404` | Not Found |
+| <a id="s-2a35017c68"></a>`500` | Internal Server Error |
 
 ### Progression, limits, and lifecycle
 
-#### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
+#### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
 
 Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"}
 
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
-| <a id="s-0a8eb010a994"></a>parameter claim_id | `length · characters · fixed` | shared above |
+| <a id="s-0a8eb010a9"></a>[parameter claim_id](#s-d150ab5a5c) | `length · characters · fixed` | shared above |
 
 ## Maintained corroboration
 
@@ -61,20 +61,20 @@ Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-publ
 
 ## Governing policies
 
-- <a id="pa-cda8ba94714b"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0ba)
-- <a id="pa-2981a2fd0df8"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
+- <a id="pa-cda8ba9471"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0)
+- <a id="pa-2981a2fd0d"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
 
 ## Evidence
 
 ### Qualification
 
-- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459fb8)
-- [make compose-smoke](../../../evidence/sources.md#q-413b0b241ba8)
+- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459f)
+- [make compose-smoke](../../../evidence/sources.md#q-413b0b241b)
 
 ### Executable sources
 
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
-- [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc960) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc9) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
 
 ### Machine authority
 

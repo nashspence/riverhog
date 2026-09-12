@@ -16,51 +16,51 @@ Get Portable Collection Inventory
 
 ## External contract
 
-<a id="s-cbec0de73773"></a>
-- <a id="s-209130ba65ba"></a>`operationId`: get_portable_collection_inventory
-- <a id="s-b2ccb379bb70"></a>`summary`: Get Portable Collection Inventory
-- <a id="s-dd5b3ff2f4ea"></a>`security`: `[{"HTTPBearer": []}]`
+<a id="s-cbec0de737"></a>
+- <a id="s-209130ba65"></a>`operationId`: get_portable_collection_inventory
+- <a id="s-b2ccb379bb"></a>`summary`: Get Portable Collection Inventory
+- <a id="s-dd5b3ff2f4"></a>`security`: `[{"HTTPBearer": []}]`
 
 ### Parameters
 
 | Name | In | Required | Schema |
 |---|---|---:|---|
-| <a id="s-d4fa758caeba"></a>`collection_id` | path | yes | type="integer"; minimum=1 |
-| <a id="s-d8cb38ecac0b"></a>`cursor` | query | no | anyOf=type="string"; minLength=1; maxLength=8192 \| type="null" |
-| <a id="s-86388b9ad150"></a>`limit` | query | no | type="integer"; minimum=1; maximum=1000 |
-| <a id="s-7620688610ae"></a>`If-Match` | header | no | anyOf=type="string"; pattern="^\"[0-9a-f]{64}\"$" \| type="null" |
+| <a id="s-d4fa758cae"></a>`collection_id` | path | yes | type="integer"; minimum=1 |
+| <a id="s-d8cb38ecac"></a>`cursor` | query | no | anyOf=type="string"; minLength=1; maxLength=8192 \| type="null" |
+| <a id="s-86388b9ad1"></a>`limit` | query | no | type="integer"; minimum=1; maximum=1000 |
+| <a id="s-7620688610"></a>`If-Match` | header | no | anyOf=type="string"; pattern="^\"[0-9a-f]{64}\"$" \| type="null" |
 
 ### Responses
 
 | Status | Description |
 |---|---|
-| <a id="s-4c657abee948"></a>`200` | Successful Response |
-| <a id="s-0acee23acffc"></a>`400` | Bad Request |
-| <a id="s-693d94ba8fc0"></a>`401` | Unauthorized |
-| <a id="s-f1be810f8120"></a>`403` | Forbidden |
-| <a id="s-68d71c6c1568"></a>`404` | Not Found |
-| <a id="s-b8b057a58d66"></a>`412` | Precondition Failed |
-| <a id="s-3158a7f0725d"></a>`428` | Precondition Required |
-| <a id="s-7940c1013019"></a>`500` | Internal Server Error |
+| <a id="s-4c657abee9"></a>`200` | Successful Response |
+| <a id="s-0acee23acf"></a>`400` | Bad Request |
+| <a id="s-693d94ba8f"></a>`401` | Unauthorized |
+| <a id="s-f1be810f81"></a>`403` | Forbidden |
+| <a id="s-68d71c6c15"></a>`404` | Not Found |
+| <a id="s-b8b057a58d"></a>`412` | Precondition Failed |
+| <a id="s-3158a7f072"></a>`428` | Precondition Required |
+| <a id="s-7940c10130"></a>`500` | Internal Server Error |
 
 ### Progression, limits, and lifecycle
 
-#### [extent-rule/route-progression/v1](../../../policies/index.md#p-6b76b527cb21)
+#### [extent-rule/route-progression/v1](../../../policies/index.md#p-6b76b527cb)
 
 Shared facts for every subject below: progression={"authority":"portable-collection-inventory","cursor_parameter":"cursor","kind":"exact-set-page","limit_parameter":"limit","validator_header":"If-Match"}; reason="bounded-route-progression"
 
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
-| [GET /v1/catalog/collections/{collection_id}/inventory](#s-cbec0de73773) | `logical-result-cardinality · items · segmented_no_total_max` | shared above |
+| [GET /v1/catalog/collections/{collection_id}/inventory](#s-cbec0de737) | `logical-result-cardinality · items · segmented_no_total_max` | shared above |
 
-#### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
+#### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
 
 Shared facts for every subject below: minimum=1; reason="schema-maximum"
 
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
-| <a id="s-e0db9ba9c7e0"></a>parameter cursor · anyOf alternative 1 | `length · characters · contract_max` | maximum=8192 |
-| <a id="s-b623c0150e60"></a>parameter limit | `value · schema-value · contract_max` | maximum=1000 |
+| <a id="s-e0db9ba9c7"></a>[parameter cursor · string value](#s-d8cb38ecac) | `length · characters · contract_max` | maximum=8192 |
+| <a id="s-b623c0150e"></a>[parameter limit](#s-86388b9ad1) | `value · schema-value · contract_max` | maximum=1000 |
 
 ## Maintained corroboration
 
@@ -75,21 +75,21 @@ Shared facts for every subject below: minimum=1; reason="schema-maximum"
 
 ## Governing policies
 
-- <a id="pa-db22d23c5b31"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0ba)
-- <a id="pa-4df18b471405"></a>[extent-rule/route-progression/v1](../../../policies/index.md#p-6b76b527cb21)
-- <a id="pa-84d499ea19d5"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
+- <a id="pa-db22d23c5b"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0)
+- <a id="pa-4df18b4714"></a>[extent-rule/route-progression/v1](../../../policies/index.md#p-6b76b527cb)
+- <a id="pa-84d499ea19"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
 
 ## Evidence
 
 ### Qualification
 
-- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459fb8)
-- [make compose-smoke](../../../evidence/sources.md#q-413b0b241ba8)
+- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459f)
+- [make compose-smoke](../../../evidence/sources.md#q-413b0b241b)
 
 ### Executable sources
 
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
-- [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc960) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc9) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
 
 ### Machine authority
 

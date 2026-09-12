@@ -16,44 +16,44 @@ Exact externally visible contract owned by this semantic dossier.
 
 ## External contract
 
-<a id="s-0c17cb10d155"></a>
-- <a id="s-2af1dca3ae24"></a>`title`: ErrorBody
-- <a id="s-1b334148793b"></a>`type`: object
+<a id="s-0c17cb10d1"></a>
+- <a id="s-2af1dca3ae"></a>`title`: ErrorBody
+- <a id="s-1b33414879"></a>`type`: object
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-a1368a492a3a"></a>`code` | yes | type="string"; minLength=1 |  |
-| <a id="s-4eb6777adfef"></a>`details` | no | anyOf=type="object"; additional keys=`additionalProperties` \| type="null" |  |
-| <a id="s-71507939c2bd"></a>`message` | yes | type="string"; minLength=1 |  |
+| <a id="s-a1368a492a"></a>`code` | yes | type="string"; minLength=1 |  |
+| <a id="s-4eb6777adf"></a>`details` | no | anyOf=type="object"; additional keys=`additionalProperties` \| type="null" |  |
+| <a id="s-71507939c2"></a>`message` | yes | type="string"; minLength=1 |  |
 
 ### Progression, limits, and lifecycle
 
-#### [extent-rule/no-semantic-maximum/v1](../../../policies/index.md#p-574724b48af0)
+#### [extent-rule/no-semantic-maximum/v1](../../../policies/index.md#p-574724b48a)
 
 Shared facts for every subject below: capacity_authority={"declared_maximum":null,"hidden_maximum":"forbidden","owner":"stove0"}; maximum=null; reason="no-declared-semantic-maximum"
 
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
-| <a id="s-66abbd505c62"></a>field details · anyOf alternative 1 | `cardinality · entries · operational_policy` | shared above |
+| <a id="s-66abbd505c"></a>[field details · object value](#s-4eb6777adf) | `cardinality · entries · operational_policy` | shared above |
 
 ## Governing policies
 
-- <a id="pa-c8095ce1e39a"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0ba)
-- <a id="pa-129d71c256a1"></a>[extent-rule/no-semantic-maximum/v1](../../../policies/index.md#p-574724b48af0)
+- <a id="pa-c8095ce1e3"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0)
+- <a id="pa-129d71c256"></a>[extent-rule/no-semantic-maximum/v1](../../../policies/index.md#p-574724b48a)
 
 ## Evidence
 
 ### Qualification
 
-- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459fb8)
-- [make compose-smoke](../../../evidence/sources.md#q-413b0b241ba8)
+- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459f)
+- [make compose-smoke](../../../evidence/sources.md#q-413b0b241b)
 
 ### Executable sources
 
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
-- [openapi:stove0](../../../evidence/sources.md#src-52e6e3212451) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [openapi:stove0](../../../evidence/sources.md#src-52e6e32124) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
 
 ### Machine authority
 

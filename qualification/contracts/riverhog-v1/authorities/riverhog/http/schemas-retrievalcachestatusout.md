@@ -16,32 +16,32 @@ Exact externally visible contract owned by this semantic dossier.
 
 ## External contract
 
-<a id="s-d4cd078234e7"></a>
-- <a id="s-a8b54722f89e"></a>`title`: RetrievalCacheStatusOut
-- <a id="s-4b18d0211db9"></a>`type`: object
+<a id="s-d4cd078234"></a>
+- <a id="s-a8b54722f8"></a>`title`: RetrievalCacheStatusOut
+- <a id="s-4b18d0211d"></a>`type`: object
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-465ff42a9eb2"></a>`configured` | yes | type="boolean" |  |
-| <a id="s-c6e56b6d72c1"></a>`new_archive_enabled` | yes | type="boolean" |  |
-| <a id="s-c9532554b898"></a>`objects` | yes | type="integer" |  |
-| <a id="s-02c055a6230b"></a>`policy` | yes | #/components/schemas/RetrievalCachePolicyOut |  |
-| <a id="s-e00db8b2312c"></a>`protected_objects` | yes | type="integer" |  |
-| <a id="s-579f91048cc9"></a>`stored_bytes` | yes | type="integer" |  |
-| <a id="s-5f68891811f2"></a>`stores` | yes | type="array"; items=(#/components/schemas/RetrievalCacheStoreStatusOut) |  |
-| <a id="s-04f46513ac0b"></a>`unleased_objects` | yes | type="integer" |  |
+| <a id="s-465ff42a9e"></a>`configured` | yes | type="boolean" |  |
+| <a id="s-c6e56b6d72"></a>`new_archive_enabled` | yes | type="boolean" |  |
+| <a id="s-c9532554b8"></a>`objects` | yes | type="integer" |  |
+| <a id="s-02c055a623"></a>`policy` | yes | #/components/schemas/RetrievalCachePolicyOut |  |
+| <a id="s-e00db8b231"></a>`protected_objects` | yes | type="integer" |  |
+| <a id="s-579f91048c"></a>`stored_bytes` | yes | type="integer" |  |
+| <a id="s-5f68891811"></a>`stores` | yes | type="array"; items=(#/components/schemas/RetrievalCacheStoreStatusOut) |  |
+| <a id="s-04f46513ac"></a>`unleased_objects` | yes | type="integer" |  |
 
 ### Progression, limits, and lifecycle
 
-#### [extent-rule/no-semantic-maximum/v1](../../../policies/index.md#p-574724b48af0)
+#### [extent-rule/no-semantic-maximum/v1](../../../policies/index.md#p-574724b48a)
 
 Shared facts for every subject below: capacity_authority={"declared_maximum":null,"hidden_maximum":"forbidden","owner":"riverhog"}; maximum=null; reason="no-declared-semantic-maximum"
 
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
-| [field stores](#s-5f68891811f2) | `cardinality · items · operational_policy` | shared above |
+| [field stores](#s-5f68891811) | `cardinality · items · operational_policy` | shared above |
 
 ## Maintained corroboration
 
@@ -52,20 +52,20 @@ Shared facts for every subject below: capacity_authority={"declared_maximum":nul
 
 ## Governing policies
 
-- <a id="pa-aea1cc96ef04"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0ba)
-- <a id="pa-7f8f86b8a8a8"></a>[extent-rule/no-semantic-maximum/v1](../../../policies/index.md#p-574724b48af0)
+- <a id="pa-aea1cc96ef"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0)
+- <a id="pa-7f8f86b8a8"></a>[extent-rule/no-semantic-maximum/v1](../../../policies/index.md#p-574724b48a)
 
 ## Evidence
 
 ### Qualification
 
-- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459fb8)
-- [make compose-smoke](../../../evidence/sources.md#q-413b0b241ba8)
+- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459f)
+- [make compose-smoke](../../../evidence/sources.md#q-413b0b241b)
 
 ### Executable sources
 
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
-- [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc960) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc9) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
 
 ### Machine authority
 

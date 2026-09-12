@@ -6,12 +6,12 @@ Contract elements: **2** · Extent decisions: **0**
 
 | Family | Count |
 |---|---:|
-| <a id="f-c6e39a6cda09"></a>`components` | 1 |
-| <a id="f-d0c55a2f6c6f"></a>`process-extensions` | 1 |
+| <a id="f-c6e39a6cda"></a>`components` | 1 |
+| <a id="f-d0c55a2f6c"></a>`process-extensions` | 1 |
 
 | Policy | Count |
 |---|---:|
-| [boundary/frozen-authority/v1](../../../policies/index.md#p-61994d3f0fa8) | 2 |
+| [boundary/frozen-authority/v1](../../../policies/index.md#p-61994d3f0f) | 2 |
 
 ## Semantic dossiers
 

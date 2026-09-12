@@ -16,34 +16,34 @@ Protocol-owned identity of one immutable collection archive volume.
 
 ## External contract
 
-<a id="s-3e0a34057da3"></a>
-- <a id="s-956f2b8a2492"></a>`title`: CollectionUploadVolumeSummaryDocument
-- <a id="s-d366f075da47"></a>`description`: Protocol-owned identity of one immutable collection archive volume.
-- <a id="s-c189994b3b40"></a>`type`: object
+<a id="s-3e0a34057d"></a>
+- <a id="s-956f2b8a24"></a>`title`: CollectionUploadVolumeSummaryDocument
+- <a id="s-d366f075da"></a>`description`: Protocol-owned identity of one immutable collection archive volume.
+- <a id="s-c189994b3b"></a>`type`: object
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-7130580c64de"></a>`kind` | yes | type="string"; enum=["pack","segment"] |  |
-| <a id="s-34ae7e2e0057"></a>`sequence` | yes | type="integer"; minimum=0 |  |
-| <a id="s-1329a434a507"></a>`volume_id` | yes | type="string"; pattern="^(?:pack\|segment)-[0-9a-f]{64}$" |  |
+| <a id="s-7130580c64"></a>`kind` | yes | type="string"; enum=["pack","segment"] |  |
+| <a id="s-34ae7e2e00"></a>`sequence` | yes | type="integer"; minimum=0 |  |
+| <a id="s-1329a434a5"></a>`volume_id` | yes | type="string"; pattern="^(?:pack\|segment)-[0-9a-f]{64}$" |  |
 
 ## Governing policies
 
-- <a id="pa-7e2c0bf38865"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0ba)
+- <a id="pa-7e2c0bf388"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0)
 
 ## Evidence
 
 ### Qualification
 
-- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459fb8)
-- [make compose-smoke](../../../evidence/sources.md#q-413b0b241ba8)
+- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459f)
+- [make compose-smoke](../../../evidence/sources.md#q-413b0b241b)
 
 ### Executable sources
 
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
-- [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc960) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc9) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
 
 ### Machine authority
 

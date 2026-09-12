@@ -16,19 +16,19 @@ One named required child work using the ordinary WorkflowPlan contract.
 
 ## External contract
 
-<a id="s-5396b7fe222e"></a>
-- <a id="s-22c75a0a689e"></a>`title`: BranchPlan
-- <a id="s-bd87915606fb"></a>`description`: One named required child work using the ordinary WorkflowPlan contract.
-- <a id="s-2ce2e459f5b9"></a>`type`: object
+<a id="s-5396b7fe22"></a>
+- <a id="s-22c75a0a68"></a>`title`: BranchPlan
+- <a id="s-bd87915606"></a>`description`: One named required child work using the ordinary WorkflowPlan contract.
+- <a id="s-2ce2e459f5"></a>`type`: object
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-2cdbafca5471"></a>`artifact_selection` | yes | #/components/schemas/ArtifactSelectionRef |  |
-| <a id="s-160b934f9b8d"></a>`branch_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
-| <a id="s-2a843b5db392"></a>`kind` | no | type="string"; const="leaf" |  |
-| <a id="s-2dd1c5765778"></a>`workflow_plan` | yes | #/components/schemas/WorkflowPlan |  |
+| <a id="s-2cdbafca54"></a>`artifact_selection` | yes | #/components/schemas/ArtifactSelectionRef |  |
+| <a id="s-160b934f9b"></a>`branch_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
+| <a id="s-2a843b5db3"></a>`kind` | no | type="string"; const="leaf" |  |
+| <a id="s-2dd1c57657"></a>`workflow_plan` | yes | #/components/schemas/WorkflowPlan |  |
 
 ## Maintained corroboration
 
@@ -39,19 +39,19 @@ One named required child work using the ordinary WorkflowPlan contract.
 
 ## Governing policies
 
-- <a id="pa-7f24619e4e9e"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0ba)
+- <a id="pa-7f24619e4e"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0)
 
 ## Evidence
 
 ### Qualification
 
-- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459fb8)
-- [make compose-smoke](../../../evidence/sources.md#q-413b0b241ba8)
+- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459f)
+- [make compose-smoke](../../../evidence/sources.md#q-413b0b241b)
 
 ### Executable sources
 
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
-- [openapi:stove0](../../../evidence/sources.md#src-52e6e3212451) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [openapi:stove0](../../../evidence/sources.md#src-52e6e32124) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
 
 ### Machine authority
 

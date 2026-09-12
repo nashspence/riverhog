@@ -10,29 +10,29 @@ Exact externally visible contract owned by this semantic dossier.
 |---|---|
 | Authority | [durable-state](../index.md) |
 | Interface | [durable-state](index.md) |
-| Family | [format](index.md#f-af9ab6749d8f) |
+| Family | [format](index.md#f-af9ab6749d) |
 | Contract elements | 1 |
 | Extent decisions | 0 |
 
 ## External contract
 
-<a id="s-694033283984"></a>
+<a id="s-6940332839"></a>
 - Shape: "riverhog-durable-state-inventory/v1"
 
 ## Governing policies
 
-- <a id="pa-8f6215e58983"></a>[compatibility/components/v1](../../../policies/index.md#p-95e9a1225947)
+- <a id="pa-8f6215e589"></a>[compatibility/components/v1](../../../policies/index.md#p-95e9a12259)
 
 ## Evidence
 
 ### Qualification
 
-- [make release-check](../../../evidence/sources.md#q-8d8d22d6a6b1)
-- [make database-qualification](../../../evidence/sources.md#q-27f281b51ec6)
+- [make release-check](../../../evidence/sources.md#q-8d8d22d6a6)
+- [make database-qualification](../../../evidence/sources.md#q-27f281b51e)
 
 ### Executable sources
 
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
 
 ### Machine authority
 

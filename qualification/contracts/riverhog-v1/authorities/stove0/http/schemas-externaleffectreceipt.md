@@ -16,46 +16,46 @@ Exact externally visible contract owned by this semantic dossier.
 
 ## External contract
 
-<a id="s-16593928e737"></a>
-- <a id="s-740cf6e4bf8d"></a>`title`: ExternalEffectReceipt
-- <a id="s-fc576a4debfc"></a>`type`: object
+<a id="s-16593928e7"></a>
+- <a id="s-740cf6e4bf"></a>`title`: ExternalEffectReceipt
+- <a id="s-fc576a4deb"></a>`type`: object
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-d2aaff7b0489"></a>`execution_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-aae5192c57a5"></a>`format` | no | type="string"; const="stove0-external-effect-receipt/v1" |  |
-| <a id="s-e9bbf6f1ac09"></a>`job_id` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-7b9d012ea6fa"></a>`operation_contract_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-de82bc172b1f"></a>`plan_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-25cc4872ef33"></a>`receipt_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-b860ac21ac5a"></a>`request_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-fdcf8150cf24"></a>`result` | yes | type="object"; additional keys=`additionalProperties`, `x-riverhog-encoded-bytes-max`, `x-riverhog-extent` |  |
-| <a id="s-9fa3a05b4e36"></a>`target_contract_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-d2aaff7b04"></a>`execution_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-aae5192c57"></a>`format` | no | type="string"; const="stove0-external-effect-receipt/v1" |  |
+| <a id="s-e9bbf6f1ac"></a>`job_id` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-7b9d012ea6"></a>`operation_contract_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-de82bc172b"></a>`plan_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-25cc4872ef"></a>`receipt_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-b860ac21ac"></a>`request_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-fdcf8150cf"></a>`result` | yes | type="object"; additional keys=`additionalProperties`, `x-riverhog-encoded-bytes-max`, `x-riverhog-extent` |  |
+| <a id="s-9fa3a05b4e"></a>`target_contract_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 
 ### Progression, limits, and lifecycle
 
-#### [extent-rule/no-semantic-maximum/v1](../../../policies/index.md#p-574724b48af0)
+#### [extent-rule/no-semantic-maximum/v1](../../../policies/index.md#p-574724b48a)
 
 Shared facts for every subject below: capacity_authority={"declared_maximum":null,"hidden_maximum":"forbidden","owner":"stove0"}; maximum=null; reason="no-declared-semantic-maximum"
 
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
-| [field result](#s-fdcf8150cf24) | `cardinality · entries · operational_policy` | shared above |
+| [field result](#s-fdcf8150cf) | `cardinality · entries · operational_policy` | shared above |
 
-#### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
+#### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
 
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
-| [field execution_sha256](#s-d2aaff7b0489) | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
-| [field job_id](#s-e9bbf6f1ac09) | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
-| [field operation_contract_sha256](#s-7b9d012ea6fa) | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
-| [field plan_sha256](#s-de82bc172b1f) | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
-| [field receipt_sha256](#s-25cc4872ef33) | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
-| [field request_sha256](#s-b860ac21ac5a) | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
-| [field result](#s-fdcf8150cf24) | `encoded-size · bytes · contract_max` | maximum=65536; reason="bounded-external-effect-receipt"; source_constraint={"field":"x-riverhog-encoded-bytes-max"} |
-| [field target_contract_sha256](#s-9fa3a05b4e36) | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
+| [field execution_sha256](#s-d2aaff7b04) | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
+| [field job_id](#s-e9bbf6f1ac) | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
+| [field operation_contract_sha256](#s-7b9d012ea6) | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
+| [field plan_sha256](#s-de82bc172b) | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
+| [field receipt_sha256](#s-25cc4872ef) | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
+| [field request_sha256](#s-b860ac21ac) | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
+| [field result](#s-fdcf8150cf) | `encoded-size · bytes · contract_max` | maximum=65536; reason="bounded-external-effect-receipt"; source_constraint={"field":"x-riverhog-encoded-bytes-max"} |
+| [field target_contract_sha256](#s-9fa3a05b4e) | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
 
 ## Maintained corroboration
 
@@ -65,21 +65,21 @@ Shared facts for every subject below: capacity_authority={"declared_maximum":nul
 
 ## Governing policies
 
-- <a id="pa-e464a75b9d4e"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0ba)
-- <a id="pa-41eaa419bd92"></a>[extent-rule/no-semantic-maximum/v1](../../../policies/index.md#p-574724b48af0)
-- <a id="pa-a175d26d10b3"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
+- <a id="pa-e464a75b9d"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0)
+- <a id="pa-41eaa419bd"></a>[extent-rule/no-semantic-maximum/v1](../../../policies/index.md#p-574724b48a)
+- <a id="pa-a175d26d10"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
 
 ## Evidence
 
 ### Qualification
 
-- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459fb8)
-- [make compose-smoke](../../../evidence/sources.md#q-413b0b241ba8)
+- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459f)
+- [make compose-smoke](../../../evidence/sources.md#q-413b0b241b)
 
 ### Executable sources
 
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
-- [openapi:stove0](../../../evidence/sources.md#src-52e6e3212451) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [openapi:stove0](../../../evidence/sources.md#src-52e6e32124) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
 
 ### Machine authority
 

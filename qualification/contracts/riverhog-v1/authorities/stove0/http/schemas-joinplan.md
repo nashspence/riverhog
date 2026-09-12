@@ -16,43 +16,43 @@ Resolved ordinary join work over exact successful branch outputs.
 
 ## External contract
 
-<a id="s-e8e5828f9d08"></a>
-- <a id="s-670a142fd6d6"></a>`title`: JoinPlan
-- <a id="s-d819568938b6"></a>`description`: Resolved ordinary join work over exact successful branch outputs.
-- <a id="s-80474eb93b00"></a>`type`: object
+<a id="s-e8e5828f9d"></a>
+- <a id="s-670a142fd6"></a>`title`: JoinPlan
+- <a id="s-d819568938"></a>`description`: Resolved ordinary join work over exact successful branch outputs.
+- <a id="s-80474eb93b"></a>`type`: object
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-a5ba769baf18"></a>`branch_set_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-1330e552ba8a"></a>`declaration` | yes | #/components/schemas/JoinDeclaration |  |
-| <a id="s-66b0e810863d"></a>`format` | no | type="string"; const="stove0-join-plan/v1" |  |
-| <a id="s-d23379808366"></a>`inputs` | yes | type="array"; minItems=2; items=(#/components/schemas/JoinInputPlan) |  |
-| <a id="s-280eacdfc47f"></a>`join_plan_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-157328a94cf7"></a>`parent_work_id` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-bc2d25649df5"></a>`work` | yes | #/components/schemas/WorkIdentity |  |
-| <a id="s-2552103e5293"></a>`workflow_plan` | yes | #/components/schemas/WorkflowPlan |  |
+| <a id="s-a5ba769baf"></a>`branch_set_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-1330e552ba"></a>`declaration` | yes | #/components/schemas/JoinDeclaration |  |
+| <a id="s-66b0e81086"></a>`format` | no | type="string"; const="stove0-join-plan/v1" |  |
+| <a id="s-d233798083"></a>`inputs` | yes | type="array"; minItems=2; items=(#/components/schemas/JoinInputPlan) |  |
+| <a id="s-280eacdfc4"></a>`join_plan_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-157328a94c"></a>`parent_work_id` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-bc2d25649d"></a>`work` | yes | #/components/schemas/WorkIdentity |  |
+| <a id="s-2552103e52"></a>`workflow_plan` | yes | #/components/schemas/WorkflowPlan |  |
 
 ### Progression, limits, and lifecycle
 
-#### [extent-rule/no-semantic-maximum/v1](../../../policies/index.md#p-574724b48af0)
+#### [extent-rule/no-semantic-maximum/v1](../../../policies/index.md#p-574724b48a)
 
 Shared facts for every subject below: capacity_authority={"declared_maximum":null,"hidden_maximum":"forbidden","owner":"stove0"}; maximum=null; reason="no-declared-semantic-maximum"
 
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
-| [field inputs](#s-d23379808366) | `cardinality · items · operational_policy` | shared above |
+| [field inputs](#s-d233798083) | `cardinality · items · operational_policy` | shared above |
 
-#### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
+#### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
 
 Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"}
 
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
-| [field branch_set_sha256](#s-a5ba769baf18) | `length · characters · fixed` | shared above |
-| [field join_plan_sha256](#s-280eacdfc47f) | `length · characters · fixed` | shared above |
-| [field parent_work_id](#s-157328a94cf7) | `length · characters · fixed` | shared above |
+| [field branch_set_sha256](#s-a5ba769baf) | `length · characters · fixed` | shared above |
+| [field join_plan_sha256](#s-280eacdfc4) | `length · characters · fixed` | shared above |
+| [field parent_work_id](#s-157328a94c) | `length · characters · fixed` | shared above |
 
 ## Maintained corroboration
 
@@ -65,21 +65,21 @@ Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-publ
 
 ## Governing policies
 
-- <a id="pa-de3170c29115"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0ba)
-- <a id="pa-ed475282c9a3"></a>[extent-rule/no-semantic-maximum/v1](../../../policies/index.md#p-574724b48af0)
-- <a id="pa-2cccb19be330"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
+- <a id="pa-de3170c291"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0)
+- <a id="pa-ed475282c9"></a>[extent-rule/no-semantic-maximum/v1](../../../policies/index.md#p-574724b48a)
+- <a id="pa-2cccb19be3"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
 
 ## Evidence
 
 ### Qualification
 
-- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459fb8)
-- [make compose-smoke](../../../evidence/sources.md#q-413b0b241ba8)
+- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459f)
+- [make compose-smoke](../../../evidence/sources.md#q-413b0b241b)
 
 ### Executable sources
 
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
-- [openapi:stove0](../../../evidence/sources.md#src-52e6e3212451) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [openapi:stove0](../../../evidence/sources.md#src-52e6e32124) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
 
 ### Machine authority
 

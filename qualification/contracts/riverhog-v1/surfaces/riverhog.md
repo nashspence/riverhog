@@ -69,13 +69,13 @@ Authorities: **15** · Contract elements: **67**
 
 ## Extension boundaries
 
-- [riverhog-storage-adapter](../evidence/relationships.md#rn-994e13bf1e40)
+- [riverhog-storage-adapter](../evidence/relationships.md#rn-994e13bf1e)
   - Independently deployed process protocol owned by riverhog-storage-adapter-protocol.
   - Owner: [riverhog-storage-adapter-protocol](../authorities/riverhog-storage-adapter-protocol/index.md)
-- [riverhog.provenance-contracts](../evidence/relationships.md#rn-08557331674e)
+- [riverhog.provenance-contracts](../evidence/relationships.md#rn-0855733167)
   - Entry-point extension boundary owned by riverhog-provenance-contracts.
   - Owner: [riverhog-provenance-contracts](../authorities/riverhog-provenance-contracts/index.md)
-- [riverhog.provenance-observers](../evidence/relationships.md#rn-ed2bbc0e316b)
+- [riverhog.provenance-observers](../evidence/relationships.md#rn-ed2bbc0e31)
   - Entry-point extension boundary owned by riverhog-provenance.
   - Owner: [riverhog-provenance](../authorities/riverhog-provenance/index.md)
 

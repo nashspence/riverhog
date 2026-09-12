@@ -10,51 +10,51 @@ Exact externally visible contract owned by this semantic dossier.
 |---|---|
 | Authority | [mango-fish](../index.md) |
 | Interface | [cli](index.md) |
-| Family | [root](index.md#f-e95e81e4dd95) |
+| Family | [root](index.md#f-e95e81e4dd) |
 | Contract elements | 1 |
 | Extent decisions | 3 |
 
 ## External contract
 
-- <a id="s-8e837eac2f2f"></a>Parser name: `mango-fish`
+- <a id="s-8e837eac2f"></a>Parser name: `mango-fish`
 
 ### Parameters
 
 | Name | Kind | Required | Type | Options |
 |---|---|---:|---|---|
-| <a id="s-1368f192cf16"></a>`` | _VersionAction | no |  | --version |
-| <a id="s-b3bbac485dbf"></a>`` | _StoreAction | yes | Path | --config |
-| <a id="s-55e6dc25a495"></a>`` | _StoreTrueAction | no |  | --check |
-| <a id="s-04b810bfdff9"></a>`` | _StoreTrueAction | no |  | --once |
+| <a id="s-1368f192cf"></a>`` | _VersionAction | no |  | --version |
+| <a id="s-b3bbac485d"></a>`` | _StoreAction | yes | Path | --config |
+| <a id="s-55e6dc25a4"></a>`` | _StoreTrueAction | no |  | --check |
+| <a id="s-04b810bfdf"></a>`` | _StoreTrueAction | no |  | --once |
 
 ### Progression, limits, and lifecycle
 
-#### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
+#### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
 
 Shared facts for every subject below: maximum=0; minimum=0; reason="fixed-command-argument-arity"; source_constraint={"field":"nargs"}
 
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
-| [CLI parameter --version](#s-1368f192cf16) | `cardinality · values-per-occurrence · fixed` | shared above |
-| [CLI parameter --check](#s-55e6dc25a495) | `cardinality · values-per-occurrence · fixed` | shared above |
-| [CLI parameter --once](#s-04b810bfdff9) | `cardinality · values-per-occurrence · fixed` | shared above |
+| [CLI parameter --version](#s-1368f192cf) | `cardinality · values-per-occurrence · fixed` | shared above |
+| [CLI parameter --check](#s-55e6dc25a4) | `cardinality · values-per-occurrence · fixed` | shared above |
+| [CLI parameter --once](#s-04b810bfdf) | `cardinality · values-per-occurrence · fixed` | shared above |
 
 ## Governing policies
 
-- <a id="pa-6b1303b6ff11"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de7f)
-- <a id="pa-03e056b27932"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
+- <a id="pa-6b1303b6ff"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de)
+- <a id="pa-03e056b279"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
 
 ## Evidence
 
 ### Qualification
 
-- [make dist-smoke](../../../evidence/sources.md#q-0ba2578a3eb7)
-- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459fb8)
+- [make dist-smoke](../../../evidence/sources.md#q-0ba2578a3e)
+- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459f)
 
 ### Executable sources
 
-- [cli:mango-fish](../../../evidence/sources.md#src-3dcd5eedf2a0) — `reference/riverhog/applications/mango-fish/src/mango_fish/cli.py::<module>`
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
+- [cli:mango-fish](../../../evidence/sources.md#src-3dcd5eedf2) — `reference/riverhog/applications/mango-fish/src/mango_fish/cli.py::<module>`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
 
 ### Machine authority
 

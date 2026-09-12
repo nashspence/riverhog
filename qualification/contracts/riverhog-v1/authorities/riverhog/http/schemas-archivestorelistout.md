@@ -16,38 +16,38 @@ Exact externally visible contract owned by this semantic dossier.
 
 ## External contract
 
-<a id="s-8f8465c766f4"></a>
-- <a id="s-32226824e203"></a>`title`: ArchiveStoreListOut
-- <a id="s-7963ba868e73"></a>`type`: object
+<a id="s-8f8465c766"></a>
+- <a id="s-32226824e2"></a>`title`: ArchiveStoreListOut
+- <a id="s-7963ba868e"></a>`type`: object
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-d9819f2441c6"></a>`next_page_token` | yes | anyOf=#/components/schemas/BrowsePageToken \| type="null" |  |
-| <a id="s-976955532020"></a>`order` | yes | #/components/schemas/SortOrder |  |
-| <a id="s-5ff41a14f1c8"></a>`page_size` | yes | type="integer"; minimum=1; maximum=100 |  |
-| <a id="s-3f9aa6ec704d"></a>`query` | yes | anyOf=type="string" \| type="null" |  |
-| <a id="s-a6a74ff3304e"></a>`sort` | yes | #/components/schemas/ArchiveStoreSort |  |
-| <a id="s-cfd4a736fcee"></a>`stores` | yes | type="array"; items=(#/components/schemas/ArchiveStoreOut) |  |
+| <a id="s-d9819f2441"></a>`next_page_token` | yes | anyOf=#/components/schemas/BrowsePageToken \| type="null" |  |
+| <a id="s-9769555320"></a>`order` | yes | #/components/schemas/SortOrder |  |
+| <a id="s-5ff41a14f1"></a>`page_size` | yes | type="integer"; minimum=1; maximum=100 |  |
+| <a id="s-3f9aa6ec70"></a>`query` | yes | anyOf=type="string" \| type="null" |  |
+| <a id="s-a6a74ff330"></a>`sort` | yes | #/components/schemas/ArchiveStoreSort |  |
+| <a id="s-cfd4a736fc"></a>`stores` | yes | type="array"; items=(#/components/schemas/ArchiveStoreOut) |  |
 
 ### Progression, limits, and lifecycle
 
-#### [extent-rule/route-progression/v1](../../../policies/index.md#p-6b76b527cb21)
+#### [extent-rule/route-progression/v1](../../../policies/index.md#p-6b76b527cb)
 
 Shared facts for every subject below: progression={"default_page_size":25,"kind":"mutable-browse","maximum_page_size":100,"next_page_token_field":"next_page_token","page_size_parameter":"page_size","page_token_parameter":"page_token"}; reason="bounded-route-page"
 
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
-| [field stores](#s-cfd4a736fcee) | `cardinality · items · segmented_no_total_max` | shared above |
+| [field stores](#s-cfd4a736fc) | `cardinality · items · segmented_no_total_max` | shared above |
 
-#### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
+#### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
 
 Shared facts for every subject below: maximum=100; minimum=1; reason="schema-maximum"
 
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
-| [field page_size](#s-5ff41a14f1c8) | `value · schema-value · contract_max` | shared above |
+| [field page_size](#s-5ff41a14f1) | `value · schema-value · contract_max` | shared above |
 
 ## Maintained corroboration
 
@@ -60,21 +60,21 @@ Shared facts for every subject below: maximum=100; minimum=1; reason="schema-max
 
 ## Governing policies
 
-- <a id="pa-171800fe2e5c"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0ba)
-- <a id="pa-b3232dcdb542"></a>[extent-rule/route-progression/v1](../../../policies/index.md#p-6b76b527cb21)
-- <a id="pa-15c3350278b4"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
+- <a id="pa-171800fe2e"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0)
+- <a id="pa-b3232dcdb5"></a>[extent-rule/route-progression/v1](../../../policies/index.md#p-6b76b527cb)
+- <a id="pa-15c3350278"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
 
 ## Evidence
 
 ### Qualification
 
-- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459fb8)
-- [make compose-smoke](../../../evidence/sources.md#q-413b0b241ba8)
+- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459f)
+- [make compose-smoke](../../../evidence/sources.md#q-413b0b241b)
 
 ### Executable sources
 
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
-- [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc960) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc9) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
 
 ### Machine authority
 

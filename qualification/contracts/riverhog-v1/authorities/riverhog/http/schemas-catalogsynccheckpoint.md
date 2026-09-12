@@ -16,45 +16,45 @@ Exact externally visible contract owned by this semantic dossier.
 
 ## External contract
 
-<a id="s-9ddd462b8c9f"></a>
-- <a id="s-20a428ce84b7"></a>`title`: CatalogSyncCheckpoint
-- <a id="s-b913c0e64ef1"></a>`type`: object
+<a id="s-9ddd462b8c"></a>
+- <a id="s-20a428ce84"></a>`title`: CatalogSyncCheckpoint
+- <a id="s-b913c0e64e"></a>`type`: object
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-83cd2c8930d1"></a>`authorization_view_identity` | yes | type="string"; minLength=64; maxLength=64; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-dc231f2428b8"></a>`catalog_cursor` | yes | type="string"; minLength=1; maxLength=4096 |  |
-| <a id="s-cc40445d9053"></a>`format` | no | type="string"; const="riverhog-catalog-sync/v1" |  |
-| <a id="s-e8505dafc926"></a>`source_identity` | yes | type="string"; minLength=64; maxLength=64; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-83cd2c8930"></a>`authorization_view_identity` | yes | type="string"; minLength=64; maxLength=64; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-dc231f2428"></a>`catalog_cursor` | yes | type="string"; minLength=1; maxLength=4096 |  |
+| <a id="s-cc40445d90"></a>`format` | no | type="string"; const="riverhog-catalog-sync/v1" |  |
+| <a id="s-e8505dafc9"></a>`source_identity` | yes | type="string"; minLength=64; maxLength=64; pattern="^[0-9a-f]{64}$" |  |
 
 ### Progression, limits, and lifecycle
 
-#### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
+#### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
 
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
-| [field authorization_view_identity](#s-83cd2c8930d1) | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation" |
-| [field catalog_cursor](#s-dc231f2428b8) | `length · characters · contract_max` | maximum=4096; minimum=1; reason="schema-maximum" |
-| [field source_identity](#s-e8505dafc926) | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation" |
+| [field authorization_view_identity](#s-83cd2c8930) | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation" |
+| [field catalog_cursor](#s-dc231f2428) | `length · characters · contract_max` | maximum=4096; minimum=1; reason="schema-maximum" |
+| [field source_identity](#s-e8505dafc9) | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation" |
 
 ## Governing policies
 
-- <a id="pa-4a3fdb65bd8d"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0ba)
-- <a id="pa-795f15039852"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
+- <a id="pa-4a3fdb65bd"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0)
+- <a id="pa-795f150398"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
 
 ## Evidence
 
 ### Qualification
 
-- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459fb8)
-- [make compose-smoke](../../../evidence/sources.md#q-413b0b241ba8)
+- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459f)
+- [make compose-smoke](../../../evidence/sources.md#q-413b0b241b)
 
 ### Executable sources
 
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
-- [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc960) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc9) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
 
 ### Machine authority
 

@@ -16,18 +16,18 @@ Append Processing Claim Artifacts
 
 ## External contract
 
-<a id="s-218a5f4c9a75"></a>
-- <a id="s-6142c858b017"></a>`operationId`: append_processing_claim_artifacts
-- <a id="s-04c5c03d4940"></a>`summary`: Append Processing Claim Artifacts
-- <a id="s-e09f492d0f13"></a>`security`: `[{"HTTPBearer": []}]`
+<a id="s-218a5f4c9a"></a>
+- <a id="s-6142c858b0"></a>`operationId`: append_processing_claim_artifacts
+- <a id="s-04c5c03d49"></a>`summary`: Append Processing Claim Artifacts
+- <a id="s-e09f492d0f"></a>`security`: `[{"HTTPBearer": []}]`
 
 ### Parameters
 
 | Name | In | Required | Schema |
 |---|---|---:|---|
-| <a id="s-fd484d6634c3"></a>`claim_id` | path | yes | type="string"; pattern="^[0-9a-f]{64}$" |
+| <a id="s-fd484d6634"></a>`claim_id` | path | yes | type="string"; pattern="^[0-9a-f]{64}$" |
 
-### <a id="s-1922875fb773"></a>Request body
+### <a id="s-1922875fb7"></a>Request body
 
 `{"content": {"application/json": {"schema": {"$ref": "#/components/schemas/CollectionArtifactBatchDocument"}}}, "required": true}`
 
@@ -35,21 +35,21 @@ Append Processing Claim Artifacts
 
 | Status | Description |
 |---|---|
-| <a id="s-ab1651bad897"></a>`200` | Successful Response |
-| <a id="s-e9dacd7f7f99"></a>`400` | Bad Request |
-| <a id="s-a995f7e56523"></a>`401` | Unauthorized |
-| <a id="s-e1e71e4ec34b"></a>`403` | Forbidden |
-| <a id="s-1cee784ef489"></a>`500` | Internal Server Error |
+| <a id="s-ab1651bad8"></a>`200` | Successful Response |
+| <a id="s-e9dacd7f7f"></a>`400` | Bad Request |
+| <a id="s-a995f7e565"></a>`401` | Unauthorized |
+| <a id="s-e1e71e4ec3"></a>`403` | Forbidden |
+| <a id="s-1cee784ef4"></a>`500` | Internal Server Error |
 
 ### Progression, limits, and lifecycle
 
-#### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
+#### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
 
 Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"}
 
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
-| <a id="s-9271f16f71d1"></a>parameter claim_id | `length · characters · fixed` | shared above |
+| <a id="s-9271f16f71"></a>[parameter claim_id](#s-fd484d6634) | `length · characters · fixed` | shared above |
 
 ## Maintained corroboration
 
@@ -65,20 +65,20 @@ Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-publ
 
 ## Governing policies
 
-- <a id="pa-d8c42800c5d0"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0ba)
-- <a id="pa-1766c1a4e993"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
+- <a id="pa-d8c42800c5"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0)
+- <a id="pa-1766c1a4e9"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
 
 ## Evidence
 
 ### Qualification
 
-- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459fb8)
-- [make compose-smoke](../../../evidence/sources.md#q-413b0b241ba8)
+- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459f)
+- [make compose-smoke](../../../evidence/sources.md#q-413b0b241b)
 
 ### Executable sources
 
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
-- [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc960) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc9) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
 
 ### Machine authority
 

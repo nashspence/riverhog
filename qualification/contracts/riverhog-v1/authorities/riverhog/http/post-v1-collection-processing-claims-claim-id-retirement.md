@@ -16,18 +16,18 @@ Begin Processing Claim Retirement
 
 ## External contract
 
-<a id="s-38eb20c89869"></a>
-- <a id="s-1ee21b1db89f"></a>`operationId`: begin_processing_claim_retirement
-- <a id="s-7c8b16b5b38e"></a>`summary`: Begin Processing Claim Retirement
-- <a id="s-884b1fddd932"></a>`security`: `[{"HTTPBearer": []}]`
+<a id="s-38eb20c898"></a>
+- <a id="s-1ee21b1db8"></a>`operationId`: begin_processing_claim_retirement
+- <a id="s-7c8b16b5b3"></a>`summary`: Begin Processing Claim Retirement
+- <a id="s-884b1fddd9"></a>`security`: `[{"HTTPBearer": []}]`
 
 ### Parameters
 
 | Name | In | Required | Schema |
 |---|---|---:|---|
-| <a id="s-ef4c169c5f99"></a>`claim_id` | path | yes | type="string"; pattern="^[0-9a-f]{64}$" |
+| <a id="s-ef4c169c5f"></a>`claim_id` | path | yes | type="string"; pattern="^[0-9a-f]{64}$" |
 
-### <a id="s-5d8bb4cff006"></a>Request body
+### <a id="s-5d8bb4cff0"></a>Request body
 
 `{"content": {"application/json": {"schema": {"$ref": "#/components/schemas/ProcessingClaimFenceDocument"}}}, "required": true}`
 
@@ -35,23 +35,23 @@ Begin Processing Claim Retirement
 
 | Status | Description |
 |---|---|
-| <a id="s-c05c61f68299"></a>`200` | Successful Response |
-| <a id="s-2e21eefbce32"></a>`400` | Bad Request |
-| <a id="s-a2e0920bb886"></a>`401` | Unauthorized |
-| <a id="s-3346460b155a"></a>`403` | Forbidden |
-| <a id="s-52a612febfc1"></a>`404` | Not Found |
-| <a id="s-167493d3cff7"></a>`409` | Conflict |
-| <a id="s-46047cafba94"></a>`500` | Internal Server Error |
+| <a id="s-c05c61f682"></a>`200` | Successful Response |
+| <a id="s-2e21eefbce"></a>`400` | Bad Request |
+| <a id="s-a2e0920bb8"></a>`401` | Unauthorized |
+| <a id="s-3346460b15"></a>`403` | Forbidden |
+| <a id="s-52a612febf"></a>`404` | Not Found |
+| <a id="s-167493d3cf"></a>`409` | Conflict |
+| <a id="s-46047cafba"></a>`500` | Internal Server Error |
 
 ### Progression, limits, and lifecycle
 
-#### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
+#### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
 
 Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"}
 
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
-| <a id="s-417989147906"></a>parameter claim_id | `length · characters · fixed` | shared above |
+| <a id="s-4179891479"></a>[parameter claim_id](#s-ef4c169c5f) | `length · characters · fixed` | shared above |
 
 ## Maintained corroboration
 
@@ -67,20 +67,20 @@ Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-publ
 
 ## Governing policies
 
-- <a id="pa-db04da30f5b4"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0ba)
-- <a id="pa-36ad91a86ae8"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
+- <a id="pa-db04da30f5"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0)
+- <a id="pa-36ad91a86a"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
 
 ## Evidence
 
 ### Qualification
 
-- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459fb8)
-- [make compose-smoke](../../../evidence/sources.md#q-413b0b241ba8)
+- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459f)
+- [make compose-smoke](../../../evidence/sources.md#q-413b0b241b)
 
 ### Executable sources
 
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
-- [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc960) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc9) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
 
 ### Machine authority
 

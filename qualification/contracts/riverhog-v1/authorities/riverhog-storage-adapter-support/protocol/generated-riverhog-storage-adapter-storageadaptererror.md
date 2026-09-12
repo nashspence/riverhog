@@ -16,48 +16,48 @@ Exact externally visible contract owned by this semantic dossier.
 
 ## External contract
 
-<a id="s-81e027948167"></a>
-- <a id="s-15a4c3c3d3fd"></a>`title`: StorageAdapterError
-- <a id="s-d54a2fa63d93"></a>`type`: object
+<a id="s-81e0279481"></a>
+- <a id="s-15a4c3c3d3"></a>`title`: StorageAdapterError
+- <a id="s-d54a2fa63d"></a>`type`: object
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-896bc9421959"></a>`error` | yes | #/$defs/StorageAdapterErrorBody |  |
+| <a id="s-896bc94219"></a>`error` | yes | #/$defs/StorageAdapterErrorBody |  |
 
 ### Definitions
 
 | Definition | Shape |
 |---|---|
-| <a id="s-16d9d4653ca0"></a>`StorageAdapterErrorBody` | type="object"; fields=`code`, `message`; additional keys=`additionalProperties`, `required` |
+| <a id="s-16d9d4653c"></a>`StorageAdapterErrorBody` | type="object"; fields=`code`, `message`; additional keys=`additionalProperties`, `required` |
 
 ### Progression, limits, and lifecycle
 
-#### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
+#### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
 
 Shared facts for every subject below: maximum=2000; minimum=1; reason="schema-maximum"
 
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
-| <a id="s-396a1bf2d8e0"></a>definition StorageAdapterErrorBody · field message | `length · characters · contract_max` | shared above |
+| <a id="s-396a1bf2d8"></a>[definition StorageAdapterErrorBody · field message](#s-16d9d4653c) | `length · characters · contract_max` | shared above |
 
 ## Governing policies
 
-- <a id="pa-8508a4053999"></a>[compatibility/components/v1](../../../policies/index.md#p-95e9a1225947)
-- <a id="pa-455964c65f45"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
+- <a id="pa-8508a40539"></a>[compatibility/components/v1](../../../policies/index.md#p-95e9a12259)
+- <a id="pa-455964c65f"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
 
 ## Evidence
 
 ### Qualification
 
-- [make dist-smoke](../../../evidence/sources.md#q-0ba2578a3eb7)
-- [make build](../../../evidence/sources.md#q-d1121e35fa7a)
+- [make dist-smoke](../../../evidence/sources.md#q-0ba2578a3e)
+- [make build](../../../evidence/sources.md#q-d1121e35fa)
 
 ### Executable sources
 
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
-- [protocol:generated:riverhog-storage-adapter](../../../evidence/sources.md#src-ef281f2471a9) — `packages/riverhog-storage-adapter-support/src/riverhog_storage_adapter_support/schemas.py::storage_adapter_schema_bundle`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [protocol:generated:riverhog-storage-adapter](../../../evidence/sources.md#src-ef281f2471) — `packages/riverhog-storage-adapter-support/src/riverhog_storage_adapter_support/schemas.py::storage_adapter_schema_bundle`
 
 ### Machine authority
 

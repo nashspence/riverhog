@@ -16,38 +16,38 @@ Exact externally visible contract owned by this semantic dossier.
 
 ## External contract
 
-<a id="s-a44ff15aa702"></a>
+<a id="s-a44ff15aa7"></a>
 | Field | Shape |
 |---|---|
-| <a id="s-cbfaedd8f7b0"></a>`consumers` | ["riverhog-server"] |
-| <a id="s-394d41cd98d1"></a>`name` | "RIVERHOG_RETRIEVAL_MAX_RANGE_BYTES" |
+| <a id="s-cbfaedd8f7"></a>`consumers` | ["riverhog-server"] |
+| <a id="s-394d41cd98"></a>`name` | "RIVERHOG_RETRIEVAL_MAX_RANGE_BYTES" |
 
 ### Progression, limits, and lifecycle
 
-#### [extent-rule/configured-capacity/v1](../../../policies/index.md#p-3ebc61fc9972)
+#### [extent-rule/configured-capacity/v1](../../../policies/index.md#p-3ebc61fc99)
 
 Shared facts for every subject below: configuration="RIVERHOG_RETRIEVAL_MAX_RANGE_BYTES"; maximum=null; reason="operator-configured-capacity"
 
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
-| [RIVERHOG_RETRIEVAL_MAX_RANGE_BYTES](#s-a44ff15aa702) | `value · configured-value · operational_policy` | shared above |
+| [RIVERHOG_RETRIEVAL_MAX_RANGE_BYTES](#s-a44ff15aa7) | `value · configured-value · operational_policy` | shared above |
 
 ## Governing policies
 
-- <a id="pa-2aabcf6f7050"></a>[compatibility/configuration/v1](../../../policies/index.md#p-8dc08bb46173)
-- <a id="pa-51ae05a63bd3"></a>[extent-rule/configured-capacity/v1](../../../policies/index.md#p-3ebc61fc9972)
+- <a id="pa-2aabcf6f70"></a>[compatibility/configuration/v1](../../../policies/index.md#p-8dc08bb461)
+- <a id="pa-51ae05a63b"></a>[extent-rule/configured-capacity/v1](../../../policies/index.md#p-3ebc61fc99)
 
 ## Evidence
 
 ### Qualification
 
-- [make unit](../../../evidence/sources.md#q-ce47068f504c)
-- [make compose-smoke](../../../evidence/sources.md#q-413b0b241ba8)
+- [make unit](../../../evidence/sources.md#q-ce47068f50)
+- [make compose-smoke](../../../evidence/sources.md#q-413b0b241b)
 
 ### Executable sources
 
-- [configuration-environment:RIVERHOG_RETRIEVAL_MAX_RANGE_BYTES](../../../evidence/sources.md#src-a99d583099d6) — `configuration-environment:RIVERHOG_RETRIEVAL_MAX_RANGE_BYTES`
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
+- [configuration-environment:RIVERHOG_RETRIEVAL_MAX_RANGE_BYTES](../../../evidence/sources.md#src-a99d583099) — `configuration-environment:RIVERHOG_RETRIEVAL_MAX_RANGE_BYTES`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
 
 ### Machine authority
 

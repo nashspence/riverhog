@@ -16,39 +16,39 @@ Exact externally visible contract owned by this semantic dossier.
 
 ## External contract
 
-<a id="s-76ac33c45c7e"></a>
-- <a id="s-34c5aa63aad1"></a>`title`: ArtifactSubject
-- <a id="s-ef1b7e3fd1ff"></a>`type`: object
+<a id="s-76ac33c45c"></a>
+- <a id="s-34c5aa63aa"></a>`title`: ArtifactSubject
+- <a id="s-ef1b7e3fd1"></a>`type`: object
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-d66284da8324"></a>`bytes` | yes | type="integer"; minimum=0 |  |
-| <a id="s-ef263322d232"></a>`collection` | yes | #/components/schemas/CollectionRootRef |  |
-| <a id="s-c93b16de848c"></a>`id` | yes | type="string"; pattern="^[A-Za-z0-9]&#40;?:[A-Za-z0-9._-]{0,158}[A-Za-z0-9])?$" |  |
-| <a id="s-90d6f2e0556d"></a>`media_type` | no | anyOf=type="string"; minLength=1; maxLength=255 \| type="null" |  |
-| <a id="s-05f2ba23fe56"></a>`path` | yes | type="string"; minLength=1; maxLength=4096 |  |
-| <a id="s-4b0dbbe13adc"></a>`role` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
-| <a id="s-b37980beb8d7"></a>`sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-d66284da83"></a>`bytes` | yes | type="integer"; minimum=0 |  |
+| <a id="s-ef263322d2"></a>`collection` | yes | #/components/schemas/CollectionRootRef |  |
+| <a id="s-c93b16de84"></a>`id` | yes | type="string"; pattern="^[A-Za-z0-9]&#40;?:[A-Za-z0-9._-]{0,158}[A-Za-z0-9])?$" |  |
+| <a id="s-90d6f2e055"></a>`media_type` | no | anyOf=type="string"; minLength=1; maxLength=255 \| type="null" |  |
+| <a id="s-05f2ba23fe"></a>`path` | yes | type="string"; minLength=1; maxLength=4096 |  |
+| <a id="s-4b0dbbe13a"></a>`role` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
+| <a id="s-b37980beb8"></a>`sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 
 ### Progression, limits, and lifecycle
 
-#### [extent-rule/no-semantic-maximum/v1](../../../policies/index.md#p-574724b48af0)
+#### [extent-rule/no-semantic-maximum/v1](../../../policies/index.md#p-574724b48a)
 
 Shared facts for every subject below: capacity_authority={"declared_maximum":null,"hidden_maximum":"forbidden","owner":"stove0"}; maximum=null; reason="no-declared-semantic-maximum"
 
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
-| [field bytes](#s-d66284da8324) | `value · schema-value · operational_policy` | shared above |
+| [field bytes](#s-d66284da83) | `value · schema-value · operational_policy` | shared above |
 
-#### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
+#### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
 
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
-| <a id="s-3acf778414e7"></a>field media_type · anyOf alternative 1 | `length · characters · contract_max` | maximum=255; minimum=1; reason="schema-maximum" |
-| [field path](#s-05f2ba23fe56) | `length · characters · contract_max` | maximum=4096; minimum=1; reason="schema-maximum" |
-| [field sha256](#s-b37980beb8d7) | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
+| <a id="s-3acf778414"></a>[field media_type · string value](#s-90d6f2e055) | `length · characters · contract_max` | maximum=255; minimum=1; reason="schema-maximum" |
+| [field path](#s-05f2ba23fe) | `length · characters · contract_max` | maximum=4096; minimum=1; reason="schema-maximum" |
+| [field sha256](#s-b37980beb8) | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
 
 ## Maintained corroboration
 
@@ -58,21 +58,21 @@ Shared facts for every subject below: capacity_authority={"declared_maximum":nul
 
 ## Governing policies
 
-- <a id="pa-f4e9c85b43f0"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0ba)
-- <a id="pa-57bd6131c7ec"></a>[extent-rule/no-semantic-maximum/v1](../../../policies/index.md#p-574724b48af0)
-- <a id="pa-118d8f292f6c"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
+- <a id="pa-f4e9c85b43"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0)
+- <a id="pa-57bd6131c7"></a>[extent-rule/no-semantic-maximum/v1](../../../policies/index.md#p-574724b48a)
+- <a id="pa-118d8f292f"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
 
 ## Evidence
 
 ### Qualification
 
-- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459fb8)
-- [make compose-smoke](../../../evidence/sources.md#q-413b0b241ba8)
+- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459f)
+- [make compose-smoke](../../../evidence/sources.md#q-413b0b241b)
 
 ### Executable sources
 
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
-- [openapi:stove0](../../../evidence/sources.md#src-52e6e3212451) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [openapi:stove0](../../../evidence/sources.md#src-52e6e32124) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
 
 ### Machine authority
 

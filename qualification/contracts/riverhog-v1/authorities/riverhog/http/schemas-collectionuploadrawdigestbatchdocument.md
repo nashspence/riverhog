@@ -16,54 +16,54 @@ One append-only bounded slice of a registered raw source digest sequence.
 
 ## External contract
 
-<a id="s-8c2dbc8625ef"></a>
-- <a id="s-383d2b173ef2"></a>`title`: CollectionUploadRawDigestBatchDocument
-- <a id="s-04494a12222e"></a>`description`: One append-only bounded slice of a registered raw source digest sequence.
-- <a id="s-eb89fa257f17"></a>`type`: object
+<a id="s-8c2dbc8625"></a>
+- <a id="s-383d2b173e"></a>`title`: CollectionUploadRawDigestBatchDocument
+- <a id="s-04494a1222"></a>`description`: One append-only bounded slice of a registered raw source digest sequence.
+- <a id="s-eb89fa257f"></a>`type`: object
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-65e7a28bb357"></a>`first_part` | yes | type="integer"; minimum=0 |  |
-| <a id="s-a0efbe2329d3"></a>`path` | yes | type="string" |  |
-| <a id="s-2c064419380c"></a>`sha256s` | yes | type="array"; minItems=1; maxItems=1024; items=(type="string"; pattern="^[0-9a-f]{64}$"); additional keys=`x-riverhog-extent` |  |
+| <a id="s-65e7a28bb3"></a>`first_part` | yes | type="integer"; minimum=0 |  |
+| <a id="s-a0efbe2329"></a>`path` | yes | type="string" |  |
+| <a id="s-2c06441938"></a>`sha256s` | yes | type="array"; minItems=1; maxItems=1024; items=(type="string"; pattern="^[0-9a-f]{64}$"); additional keys=`x-riverhog-extent` |  |
 
 ### Progression, limits, and lifecycle
 
-#### [extent-rule/bounded-segment/v1](../../../policies/index.md#p-2b3f3f1594af)
+#### [extent-rule/bounded-segment/v1](../../../policies/index.md#p-2b3f3f1594)
 
 Shared facts for every subject below: maximum=1024; minimum=1; progression={"progression":"first_part"}; reason="bounded-raw-digest-append"
 
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
-| [field sha256s](#s-2c064419380c) | `cardinality · items · segmented_no_total_max` | shared above |
+| [field sha256s](#s-2c06441938) | `cardinality · items · segmented_no_total_max` | shared above |
 
-#### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
+#### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
 
 Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"}
 
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
-| <a id="s-ef3601ab556b"></a>field sha256s · items | `length · characters · fixed` | shared above |
+| <a id="s-ef3601ab55"></a>[field sha256s · items](#s-2c06441938) | `length · characters · fixed` | shared above |
 
 ## Governing policies
 
-- <a id="pa-1d7256555804"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0ba)
-- <a id="pa-4729aa64964a"></a>[extent-rule/bounded-segment/v1](../../../policies/index.md#p-2b3f3f1594af)
-- <a id="pa-3142094a425b"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
+- <a id="pa-1d72565558"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0)
+- <a id="pa-4729aa6496"></a>[extent-rule/bounded-segment/v1](../../../policies/index.md#p-2b3f3f1594)
+- <a id="pa-3142094a42"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
 
 ## Evidence
 
 ### Qualification
 
-- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459fb8)
-- [make compose-smoke](../../../evidence/sources.md#q-413b0b241ba8)
+- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459f)
+- [make compose-smoke](../../../evidence/sources.md#q-413b0b241b)
 
 ### Executable sources
 
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
-- [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc960) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc9) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
 
 ### Machine authority
 

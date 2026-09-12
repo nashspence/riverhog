@@ -10,7 +10,7 @@ Exact externally visible contract owned by this semantic dossier.
 |---|---|
 | Authority | [repository](../index.md) |
 | Interface | [boundary](index.md) |
-| Family | [identity](index.md#f-56f902211482) |
+| Family | [identity](index.md#f-56f9022114) |
 | Contract elements | 1 |
 | Extent decisions | 0 |
 
@@ -18,24 +18,24 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Subject | Shape |
 |---|---|
-| <a id="s-52b1b78e7a10"></a>`schema` | "riverhog-contract-freeze/v1" |
-| <a id="s-05211146c0f2"></a>`series` | "v1" |
+| <a id="s-52b1b78e7a"></a>`schema` | "riverhog-contract-freeze/v1" |
+| <a id="s-05211146c0"></a>`series` | "v1" |
 
 ## Governing policies
 
-- <a id="pa-9848bcf89989"></a>[boundary/frozen-authority/v1](../../../policies/index.md#p-61994d3f0fa8)
+- <a id="pa-9848bcf899"></a>[boundary/frozen-authority/v1](../../../policies/index.md#p-61994d3f0f)
 
 ## Evidence
 
 ### Qualification
 
-- [make release-check](../../../evidence/sources.md#q-8d8d22d6a6b1)
-- [make build](../../../evidence/sources.md#q-d1121e35fa7a)
+- [make release-check](../../../evidence/sources.md#q-8d8d22d6a6)
+- [make build](../../../evidence/sources.md#q-d1121e35fa)
 
 ### Executable sources
 
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
-- [release:release.toml](../../../evidence/sources.md#src-c5380dbe5fe0) — `release.toml`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [release:release.toml](../../../evidence/sources.md#src-c5380dbe5f) — `release.toml`
 
 ### Machine authority
 

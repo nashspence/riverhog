@@ -16,16 +16,16 @@ Exact externally visible contract owned by this semantic dossier.
 
 ## External contract
 
-<a id="s-b861cf0a7eb8"></a>
-- <a id="s-4e48ede7707f"></a>`title`: RetrievalFileReferenceDocument
-- <a id="s-f848a70ebe52"></a>`type`: object
+<a id="s-b861cf0a7e"></a>
+- <a id="s-4e48ede770"></a>`title`: RetrievalFileReferenceDocument
+- <a id="s-f848a70ebe"></a>`type`: object
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-6ebb92d5d46f"></a>`collection_id` | yes | #/components/schemas/CollectionId |  |
-| <a id="s-7f1d0c3d3d19"></a>`path` | yes | #/components/schemas/CanonicalRelPath |  |
+| <a id="s-6ebb92d5d4"></a>`collection_id` | yes | #/components/schemas/CollectionId |  |
+| <a id="s-7f1d0c3d3d"></a>`path` | yes | #/components/schemas/CanonicalRelPath |  |
 
 ## Maintained corroboration
 
@@ -36,19 +36,19 @@ Exact externally visible contract owned by this semantic dossier.
 
 ## Governing policies
 
-- <a id="pa-c4adb9b169f5"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0ba)
+- <a id="pa-c4adb9b169"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0)
 
 ## Evidence
 
 ### Qualification
 
-- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459fb8)
-- [make compose-smoke](../../../evidence/sources.md#q-413b0b241ba8)
+- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459f)
+- [make compose-smoke](../../../evidence/sources.md#q-413b0b241b)
 
 ### Executable sources
 
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
-- [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc960) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc9) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
 
 ### Machine authority
 

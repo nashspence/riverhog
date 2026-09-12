@@ -16,38 +16,38 @@ Exact externally visible contract owned by this semantic dossier.
 
 ## External contract
 
-<a id="s-1966a8d0ecec"></a>
+<a id="s-1966a8d0ec"></a>
 | Field | Shape |
 |---|---|
-| <a id="s-9a2311e6cd0d"></a>`consumers` | ["piggity"] |
-| <a id="s-434131520900"></a>`name` | "PIGGITY_UPLOAD_FINALIZE_TIMEOUT_SECONDS" |
+| <a id="s-9a2311e6cd"></a>`consumers` | ["piggity"] |
+| <a id="s-4341315209"></a>`name` | "PIGGITY_UPLOAD_FINALIZE_TIMEOUT_SECONDS" |
 
 ### Progression, limits, and lifecycle
 
-#### [extent-rule/configured-capacity/v1](../../../policies/index.md#p-3ebc61fc9972)
+#### [extent-rule/configured-capacity/v1](../../../policies/index.md#p-3ebc61fc99)
 
 Shared facts for every subject below: configuration="PIGGITY_UPLOAD_FINALIZE_TIMEOUT_SECONDS"; maximum=null; reason="operator-configured-capacity"
 
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
-| [PIGGITY_UPLOAD_FINALIZE_TIMEOUT_SECONDS](#s-1966a8d0ecec) | `value · configured-value · operational_policy` | shared above |
+| [PIGGITY_UPLOAD_FINALIZE_TIMEOUT_SECONDS](#s-1966a8d0ec) | `value · configured-value · operational_policy` | shared above |
 
 ## Governing policies
 
-- <a id="pa-7142c96a5558"></a>[compatibility/configuration/v1](../../../policies/index.md#p-8dc08bb46173)
-- <a id="pa-38e1c0d6a657"></a>[extent-rule/configured-capacity/v1](../../../policies/index.md#p-3ebc61fc9972)
+- <a id="pa-7142c96a55"></a>[compatibility/configuration/v1](../../../policies/index.md#p-8dc08bb461)
+- <a id="pa-38e1c0d6a6"></a>[extent-rule/configured-capacity/v1](../../../policies/index.md#p-3ebc61fc99)
 
 ## Evidence
 
 ### Qualification
 
-- [make unit](../../../evidence/sources.md#q-ce47068f504c)
-- [make compose-smoke](../../../evidence/sources.md#q-413b0b241ba8)
+- [make unit](../../../evidence/sources.md#q-ce47068f50)
+- [make compose-smoke](../../../evidence/sources.md#q-413b0b241b)
 
 ### Executable sources
 
-- [configuration-environment:PIGGITY_UPLOAD_FINALIZE_TIMEOUT_SECONDS](../../../evidence/sources.md#src-f1be4bc4acee) — `configuration-environment:PIGGITY_UPLOAD_FINALIZE_TIMEOUT_SECONDS`
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
+- [configuration-environment:PIGGITY_UPLOAD_FINALIZE_TIMEOUT_SECONDS](../../../evidence/sources.md#src-f1be4bc4ac) — `configuration-environment:PIGGITY_UPLOAD_FINALIZE_TIMEOUT_SECONDS`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
 
 ### Machine authority
 

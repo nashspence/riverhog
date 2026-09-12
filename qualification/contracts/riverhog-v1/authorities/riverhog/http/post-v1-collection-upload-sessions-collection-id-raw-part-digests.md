@@ -16,18 +16,18 @@ Register Collection Upload Session Raw Part Digests
 
 ## External contract
 
-<a id="s-aee096c8acf4"></a>
-- <a id="s-c5e60abce4d1"></a>`operationId`: register_collection_upload_session_raw_part_digests
-- <a id="s-93c8c73dd721"></a>`summary`: Register Collection Upload Session Raw Part Digests
-- <a id="s-2fbf3a332798"></a>`security`: `[{"HTTPBearer": []}]`
+<a id="s-aee096c8ac"></a>
+- <a id="s-c5e60abce4"></a>`operationId`: register_collection_upload_session_raw_part_digests
+- <a id="s-93c8c73dd7"></a>`summary`: Register Collection Upload Session Raw Part Digests
+- <a id="s-2fbf3a3327"></a>`security`: `[{"HTTPBearer": []}]`
 
 ### Parameters
 
 | Name | In | Required | Schema |
 |---|---|---:|---|
-| <a id="s-30fea773afa4"></a>`collection_id` | path | yes | type="integer"; minimum=1 |
+| <a id="s-30fea773af"></a>`collection_id` | path | yes | type="integer"; minimum=1 |
 
-### <a id="s-a616ac0e21e5"></a>Request body
+### <a id="s-a616ac0e21"></a>Request body
 
 `{"content": {"application/json": {"schema": {"$ref": "#/components/schemas/CollectionUploadRawDigestBatchDocument"}}}, "required": true}`
 
@@ -35,11 +35,11 @@ Register Collection Upload Session Raw Part Digests
 
 | Status | Description |
 |---|---|
-| <a id="s-17836e8b2c1c"></a>`200` | Successful Response |
-| <a id="s-3459ae1e9e47"></a>`400` | Bad Request |
-| <a id="s-d9bb97b0c32e"></a>`401` | Unauthorized |
-| <a id="s-9db3fc314483"></a>`403` | Forbidden |
-| <a id="s-b91b13003087"></a>`500` | Internal Server Error |
+| <a id="s-17836e8b2c"></a>`200` | Successful Response |
+| <a id="s-3459ae1e9e"></a>`400` | Bad Request |
+| <a id="s-d9bb97b0c3"></a>`401` | Unauthorized |
+| <a id="s-9db3fc3144"></a>`403` | Forbidden |
+| <a id="s-b91b130030"></a>`500` | Internal Server Error |
 
 ## Maintained corroboration
 
@@ -55,19 +55,19 @@ Register Collection Upload Session Raw Part Digests
 
 ## Governing policies
 
-- <a id="pa-b7fab490cf44"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0ba)
+- <a id="pa-b7fab490cf"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0)
 
 ## Evidence
 
 ### Qualification
 
-- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459fb8)
-- [make compose-smoke](../../../evidence/sources.md#q-413b0b241ba8)
+- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459f)
+- [make compose-smoke](../../../evidence/sources.md#q-413b0b241b)
 
 ### Executable sources
 
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
-- [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc960) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc9) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
 
 ### Machine authority
 

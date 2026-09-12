@@ -16,36 +16,36 @@ The exact path, length, and plaintext digest shared by file projections.
 
 ## External contract
 
-<a id="s-62880c732dd8"></a>
-- <a id="s-b6ebf3dc41e5"></a>`title`: ImmutableFileIdentityDocument
-- <a id="s-b9386adb4cbe"></a>`description`: The exact path, length, and plaintext digest shared by file projections.
-- <a id="s-0fbaa2401b72"></a>`type`: object
+<a id="s-62880c732d"></a>
+- <a id="s-b6ebf3dc41"></a>`title`: ImmutableFileIdentityDocument
+- <a id="s-b9386adb4c"></a>`description`: The exact path, length, and plaintext digest shared by file projections.
+- <a id="s-0fbaa2401b"></a>`type`: object
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-61eaa756b805"></a>`bytes` | yes | type="integer"; minimum=0 |  |
-| <a id="s-a970aa6e5372"></a>`path` | yes | #/components/schemas/CanonicalRelPath |  |
-| <a id="s-7a011aa8fc62"></a>`sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-61eaa756b8"></a>`bytes` | yes | type="integer"; minimum=0 |  |
+| <a id="s-a970aa6e53"></a>`path` | yes | #/components/schemas/CanonicalRelPath |  |
+| <a id="s-7a011aa8fc"></a>`sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 
 ### Progression, limits, and lifecycle
 
-#### [extent-rule/no-semantic-maximum/v1](../../../policies/index.md#p-574724b48af0)
+#### [extent-rule/no-semantic-maximum/v1](../../../policies/index.md#p-574724b48a)
 
 Shared facts for every subject below: capacity_authority={"declared_maximum":null,"hidden_maximum":"forbidden","owner":"riverhog"}; maximum=null; reason="no-declared-semantic-maximum"
 
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
-| [field bytes](#s-61eaa756b805) | `value · schema-value · operational_policy` | shared above |
+| [field bytes](#s-61eaa756b8) | `value · schema-value · operational_policy` | shared above |
 
-#### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
+#### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
 
 Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"}
 
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
-| [field sha256](#s-7a011aa8fc62) | `length · characters · fixed` | shared above |
+| [field sha256](#s-7a011aa8fc) | `length · characters · fixed` | shared above |
 
 ## Maintained corroboration
 
@@ -55,21 +55,21 @@ Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-publ
 
 ## Governing policies
 
-- <a id="pa-c6808d0ec8de"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0ba)
-- <a id="pa-1d46aa31a159"></a>[extent-rule/no-semantic-maximum/v1](../../../policies/index.md#p-574724b48af0)
-- <a id="pa-7d9b9603c847"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
+- <a id="pa-c6808d0ec8"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0)
+- <a id="pa-1d46aa31a1"></a>[extent-rule/no-semantic-maximum/v1](../../../policies/index.md#p-574724b48a)
+- <a id="pa-7d9b9603c8"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
 
 ## Evidence
 
 ### Qualification
 
-- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459fb8)
-- [make compose-smoke](../../../evidence/sources.md#q-413b0b241ba8)
+- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459f)
+- [make compose-smoke](../../../evidence/sources.md#q-413b0b241b)
 
 ### Executable sources
 
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
-- [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc960) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc9) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
 
 ### Machine authority
 

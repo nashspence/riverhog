@@ -16,48 +16,48 @@ Exact externally visible contract owned by this semantic dossier.
 
 ## External contract
 
-<a id="s-cac8d15cc378"></a>
-- <a id="s-d64723c060a9"></a>`title`: RiverhogEventCause
-- <a id="s-5c5e1a73be7a"></a>`type`: object
+<a id="s-cac8d15cc3"></a>
+- <a id="s-d64723c060"></a>`title`: RiverhogEventCause
+- <a id="s-5c5e1a73be"></a>`type`: object
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-a8d0df20f2bb"></a>`id` | yes | type="string"; minLength=1; maxLength=300 |  |
-| <a id="s-55e18d79c3e7"></a>`source` | yes | type="string"; minLength=1; maxLength=1000 |  |
-| <a id="s-abdf2f2efc92"></a>`subject` | no | anyOf=type="string"; minLength=1; maxLength=1000 \| type="null" |  |
-| <a id="s-a3f28fa3f098"></a>`type` | yes | type="string"; minLength=1; maxLength=300 |  |
+| <a id="s-a8d0df20f2"></a>`id` | yes | type="string"; minLength=1; maxLength=300 |  |
+| <a id="s-55e18d79c3"></a>`source` | yes | type="string"; minLength=1; maxLength=1000 |  |
+| <a id="s-abdf2f2efc"></a>`subject` | no | anyOf=type="string"; minLength=1; maxLength=1000 \| type="null" |  |
+| <a id="s-a3f28fa3f0"></a>`type` | yes | type="string"; minLength=1; maxLength=300 |  |
 
 ### Progression, limits, and lifecycle
 
-#### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
+#### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
 
 Shared facts for every subject below: minimum=1; reason="schema-maximum"
 
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
-| [field id](#s-a8d0df20f2bb) | `length · characters · contract_max` | maximum=300 |
-| [field source](#s-55e18d79c3e7) | `length · characters · contract_max` | maximum=1000 |
-| <a id="s-153b6d5a3dc1"></a>field subject · anyOf alternative 1 | `length · characters · contract_max` | maximum=1000 |
-| [field type](#s-a3f28fa3f098) | `length · characters · contract_max` | maximum=300 |
+| [field id](#s-a8d0df20f2) | `length · characters · contract_max` | maximum=300 |
+| [field source](#s-55e18d79c3) | `length · characters · contract_max` | maximum=1000 |
+| <a id="s-153b6d5a3d"></a>[field subject · string value](#s-abdf2f2efc) | `length · characters · contract_max` | maximum=1000 |
+| [field type](#s-a3f28fa3f0) | `length · characters · contract_max` | maximum=300 |
 
 ## Governing policies
 
-- <a id="pa-11997efc0d04"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0ba)
-- <a id="pa-045d2c6c8026"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
+- <a id="pa-11997efc0d"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0)
+- <a id="pa-045d2c6c80"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
 
 ## Evidence
 
 ### Qualification
 
-- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459fb8)
-- [make compose-smoke](../../../evidence/sources.md#q-413b0b241ba8)
+- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459f)
+- [make compose-smoke](../../../evidence/sources.md#q-413b0b241b)
 
 ### Executable sources
 
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
-- [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc960) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc9) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
 
 ### Machine authority
 

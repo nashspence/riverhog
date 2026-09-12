@@ -10,74 +10,74 @@ Exact externally visible contract owned by this semantic dossier.
 |---|---|
 | Authority | [riverhog-provenance](../index.md) |
 | Interface | [protocol](index.md) |
-| Family | [schemas](index.md#f-6adfbad66ec5) |
+| Family | [schemas](index.md#f-6adfbad66e) |
 | Contract elements | 1 |
 | Extent decisions | 7 |
 
 ## External contract
 
-<a id="s-533d48e7e1fb"></a>
-- <a id="s-2e49c00f44d3"></a>`$id`: https://nashspence.github.io/riverhog/v1/schemas/riverhog-provenance-volume-v1.schema.json
-- <a id="s-10939df91d7d"></a>`title`: Riverhog v1 bounded provenance volume
-- <a id="s-a77370bb6d27"></a>`type`: object
+<a id="s-533d48e7e1"></a>
+- <a id="s-2e49c00f44"></a>`$id`: https://nashspence.github.io/riverhog/v1/schemas/riverhog-provenance-volume-v1.schema.json
+- <a id="s-10939df91d"></a>`title`: Riverhog v1 bounded provenance volume
+- <a id="s-a77370bb6d"></a>`type`: object
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-95119c30602e"></a>`archive_generation` | yes | #/$defs/sha256 |  |
-| <a id="s-56edc337cb77"></a>`archive_tree_sha256` | yes | #/$defs/sha256 |  |
-| <a id="s-9e51e1002411"></a>`binding_range` | no | type="object"; fields=`file_count`, `first_file_order`; additional keys=`additionalProperties`, `required` |  |
-| <a id="s-5520638242c0"></a>`journal_range` | no | type="object"; fields=`bytes`, `journal_id`, `offset`, `sha256`; additional keys=`additionalProperties`, `required` |  |
-| <a id="s-037496be7811"></a>`payload` | yes | type="object"; fields=`bytes`, `kind`, `path`, `sha256`; additional keys=`additionalProperties`, `required` |  |
-| <a id="s-88ab8801ba84"></a>`schema` | yes | const="riverhog-provenance-volume/v1" |  |
-| <a id="s-777a2a87771e"></a>`sequence` | yes | #/$defs/sequence |  |
+| <a id="s-95119c3060"></a>`archive_generation` | yes | #/$defs/sha256 |  |
+| <a id="s-56edc337cb"></a>`archive_tree_sha256` | yes | #/$defs/sha256 |  |
+| <a id="s-9e51e10024"></a>`binding_range` | no | type="object"; fields=`file_count`, `first_file_order`; additional keys=`additionalProperties`, `required` |  |
+| <a id="s-5520638242"></a>`journal_range` | no | type="object"; fields=`bytes`, `journal_id`, `offset`, `sha256`; additional keys=`additionalProperties`, `required` |  |
+| <a id="s-037496be78"></a>`payload` | yes | type="object"; fields=`bytes`, `kind`, `path`, `sha256`; additional keys=`additionalProperties`, `required` |  |
+| <a id="s-88ab8801ba"></a>`schema` | yes | const="riverhog-provenance-volume/v1" |  |
+| <a id="s-777a2a8777"></a>`sequence` | yes | #/$defs/sequence |  |
 
 ### Definitions
 
 | Definition | Shape |
 |---|---|
-| <a id="s-897f94e1be25"></a>`sequence` | type="string"; pattern="^[0-9a-f]{64}$" |
-| <a id="s-4908acae0456"></a>`sha256` | type="string"; pattern="^[0-9a-f]{64}$" |
+| <a id="s-897f94e1be"></a>`sequence` | type="string"; pattern="^[0-9a-f]{64}$" |
+| <a id="s-4908acae04"></a>`sha256` | type="string"; pattern="^[0-9a-f]{64}$" |
 
 ### Progression, limits, and lifecycle
 
-#### [extent-rule/no-semantic-maximum/v1](../../../policies/index.md#p-574724b48af0)
+#### [extent-rule/no-semantic-maximum/v1](../../../policies/index.md#p-574724b48a)
 
 Shared facts for every subject below: capacity_authority={"declared_maximum":null,"hidden_maximum":"forbidden","owner":"https://nashspence.github.io/riverhog/v1/schemas/riverhog-provenance-volume-v1.schema.json"}; maximum=null; reason="no-declared-semantic-maximum"
 
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
-| <a id="s-6db1e32d0191"></a>field binding_range · field first_file_order | `value · schema-value · operational_policy` | shared above |
-| <a id="s-e496fce13035"></a>field journal_range · field bytes | `value · schema-value · operational_policy` | shared above |
-| <a id="s-6557662501f8"></a>field journal_range · field offset | `value · schema-value · operational_policy` | shared above |
-| <a id="s-3052600ce712"></a>field payload · field bytes | `value · schema-value · operational_policy` | shared above |
+| <a id="s-6db1e32d01"></a>[field binding_range · field first_file_order](#s-9e51e10024) | `value · schema-value · operational_policy` | shared above |
+| <a id="s-e496fce130"></a>[field journal_range · field bytes](#s-5520638242) | `value · schema-value · operational_policy` | shared above |
+| <a id="s-6557662501"></a>[field journal_range · field offset](#s-5520638242) | `value · schema-value · operational_policy` | shared above |
+| <a id="s-3052600ce7"></a>[field payload · field bytes](#s-037496be78) | `value · schema-value · operational_policy` | shared above |
 
-#### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
+#### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
 
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
-| [definition sequence](#s-897f94e1be25) | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
-| [definition sha256](#s-4908acae0456) | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
-| <a id="s-0917e1580c4c"></a>field binding_range · field file_count | `value · schema-value · contract_max` | maximum=512; minimum=1; reason="schema-maximum" |
+| [definition sequence](#s-897f94e1be) | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
+| [definition sha256](#s-4908acae04) | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
+| <a id="s-0917e1580c"></a>[field binding_range · field file_count](#s-9e51e10024) | `value · schema-value · contract_max` | maximum=512; minimum=1; reason="schema-maximum" |
 
 ## Governing policies
 
-- <a id="pa-1a6a9490f894"></a>[compatibility/components/v1](../../../policies/index.md#p-95e9a1225947)
-- <a id="pa-8bcb14911363"></a>[extent-rule/no-semantic-maximum/v1](../../../policies/index.md#p-574724b48af0)
-- <a id="pa-f9fb66644a5a"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
+- <a id="pa-1a6a9490f8"></a>[compatibility/components/v1](../../../policies/index.md#p-95e9a12259)
+- <a id="pa-8bcb149113"></a>[extent-rule/no-semantic-maximum/v1](../../../policies/index.md#p-574724b48a)
+- <a id="pa-f9fb66644a"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
 
 ## Evidence
 
 ### Qualification
 
-- [make dist-smoke](../../../evidence/sources.md#q-0ba2578a3eb7)
-- [make build](../../../evidence/sources.md#q-d1121e35fa7a)
+- [make dist-smoke](../../../evidence/sources.md#q-0ba2578a3e)
+- [make build](../../../evidence/sources.md#q-d1121e35fa)
 
 ### Executable sources
 
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
-- [protocol:https://nashspence.github.io/riverhog/v1/schemas/riverhog-provenance-volume-v1.schema.json](../../../evidence/sources.md#src-a3bfff3737b0) — `packages/riverhog-provenance/src/riverhog_provenance/schemas/riverhog-provenance-volume-v1.schema.json`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [protocol:https://nashspence.github.io/riverhog/v1/schemas/riverhog-provenance-volume-v1.schema.json](../../../evidence/sources.md#src-a3bfff3737) — `packages/riverhog-provenance/src/riverhog_provenance/schemas/riverhog-provenance-volume-v1.schema.json`
 
 ### Machine authority
 

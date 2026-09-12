@@ -16,27 +16,27 @@ Exact externally visible contract owned by this semantic dossier.
 
 ## External contract
 
-<a id="s-f3c5c446af06"></a>
+<a id="s-f3c5c446af"></a>
 | Field | Shape |
 |---|---|
-| <a id="s-e5f41d64e9e5"></a>`consumers` | ["riverhog-server"] |
-| <a id="s-034b439c450d"></a>`name` | "RIVERHOG_ARCHIVE_WRITE_STORE" |
+| <a id="s-e5f41d64e9"></a>`consumers` | ["riverhog-server"] |
+| <a id="s-034b439c45"></a>`name` | "RIVERHOG_ARCHIVE_WRITE_STORE" |
 
 ## Governing policies
 
-- <a id="pa-e465ce1cd1af"></a>[compatibility/configuration/v1](../../../policies/index.md#p-8dc08bb46173)
+- <a id="pa-e465ce1cd1"></a>[compatibility/configuration/v1](../../../policies/index.md#p-8dc08bb461)
 
 ## Evidence
 
 ### Qualification
 
-- [make unit](../../../evidence/sources.md#q-ce47068f504c)
-- [make compose-smoke](../../../evidence/sources.md#q-413b0b241ba8)
+- [make unit](../../../evidence/sources.md#q-ce47068f50)
+- [make compose-smoke](../../../evidence/sources.md#q-413b0b241b)
 
 ### Executable sources
 
-- [configuration-environment:RIVERHOG_ARCHIVE_WRITE_STORE](../../../evidence/sources.md#src-755098156c20) — `configuration-environment:RIVERHOG_ARCHIVE_WRITE_STORE`
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
+- [configuration-environment:RIVERHOG_ARCHIVE_WRITE_STORE](../../../evidence/sources.md#src-755098156c) — `configuration-environment:RIVERHOG_ARCHIVE_WRITE_STORE`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
 
 ### Machine authority
 

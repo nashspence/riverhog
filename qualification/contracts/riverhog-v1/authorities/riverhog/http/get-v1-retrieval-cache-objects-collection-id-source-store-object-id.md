@@ -16,29 +16,29 @@ Get Retrieval Cache Object
 
 ## External contract
 
-<a id="s-9a8ec3392d94"></a>
-- <a id="s-ef02a9d664dc"></a>`operationId`: get_retrieval_cache_object
-- <a id="s-3da411fdfb18"></a>`summary`: Get Retrieval Cache Object
-- <a id="s-1a2535641bb6"></a>`security`: `[{"HTTPBearer": []}]`
+<a id="s-9a8ec3392d"></a>
+- <a id="s-ef02a9d664"></a>`operationId`: get_retrieval_cache_object
+- <a id="s-3da411fdfb"></a>`summary`: Get Retrieval Cache Object
+- <a id="s-1a2535641b"></a>`security`: `[{"HTTPBearer": []}]`
 
 ### Parameters
 
 | Name | In | Required | Schema |
 |---|---|---:|---|
-| <a id="s-3f640503ffb9"></a>`collection_id` | path | yes | type="integer"; minimum=1 |
-| <a id="s-b5fc534559e9"></a>`source_store` | path | yes | type="string"; pattern="^[a-z0-9]+(?:-[a-z0-9]+)*$" |
-| <a id="s-847eae74a706"></a>`object_id` | path | yes | type="string" |
+| <a id="s-3f640503ff"></a>`collection_id` | path | yes | type="integer"; minimum=1 |
+| <a id="s-b5fc534559"></a>`source_store` | path | yes | type="string"; pattern="^[a-z0-9]+(?:-[a-z0-9]+)*$" |
+| <a id="s-847eae74a7"></a>`object_id` | path | yes | type="string" |
 
 ### Responses
 
 | Status | Description |
 |---|---|
-| <a id="s-ffc0a1dc71f8"></a>`200` | Successful Response |
-| <a id="s-dff249924ed1"></a>`400` | Bad Request |
-| <a id="s-8a8490528c10"></a>`401` | Unauthorized |
-| <a id="s-c757eebef1f9"></a>`403` | Forbidden |
-| <a id="s-610fc23789e1"></a>`404` | Not Found |
-| <a id="s-948f582d708f"></a>`500` | Internal Server Error |
+| <a id="s-ffc0a1dc71"></a>`200` | Successful Response |
+| <a id="s-dff249924e"></a>`400` | Bad Request |
+| <a id="s-8a8490528c"></a>`401` | Unauthorized |
+| <a id="s-c757eebef1"></a>`403` | Forbidden |
+| <a id="s-610fc23789"></a>`404` | Not Found |
+| <a id="s-948f582d70"></a>`500` | Internal Server Error |
 
 ## Maintained corroboration
 
@@ -53,19 +53,19 @@ Get Retrieval Cache Object
 
 ## Governing policies
 
-- <a id="pa-2d3d7cb50aa3"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0ba)
+- <a id="pa-2d3d7cb50a"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0)
 
 ## Evidence
 
 ### Qualification
 
-- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459fb8)
-- [make compose-smoke](../../../evidence/sources.md#q-413b0b241ba8)
+- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459f)
+- [make compose-smoke](../../../evidence/sources.md#q-413b0b241b)
 
 ### Executable sources
 
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
-- [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc960) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc9) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
 
 ### Machine authority
 

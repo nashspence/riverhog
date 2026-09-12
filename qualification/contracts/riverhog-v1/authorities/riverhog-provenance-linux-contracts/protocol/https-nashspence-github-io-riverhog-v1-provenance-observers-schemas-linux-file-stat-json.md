@@ -10,76 +10,76 @@ Exact externally visible contract owned by this semantic dossier.
 |---|---|
 | Authority | [riverhog-provenance-linux-contracts](../index.md) |
 | Interface | [protocol](index.md) |
-| Family | [schemas](index.md#f-496badc04bf0) |
+| Family | [schemas](index.md#f-496badc04b) |
 | Contract elements | 1 |
 | Extent decisions | 6 |
 
 ## External contract
 
-<a id="s-d2b028624029"></a>
-- <a id="s-247fcf499798"></a>`$id`: https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/linux-file-stat.json
-- <a id="s-b41079f681fe"></a>`type`: object
+<a id="s-d2b0286240"></a>
+- <a id="s-247fcf4997"></a>`$id`: https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/linux-file-stat.json
+- <a id="s-b41079f681"></a>`type`: object
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-78297df480bc"></a>`atomic_write_segments_max` | no | type="integer"; minimum=0 |  |
-| <a id="s-29361b2b542d"></a>`atomic_write_unit_max` | no | type="integer"; minimum=0 |  |
-| <a id="s-31aff68a7450"></a>`atomic_write_unit_max_opt` | no | type="integer"; minimum=0 |  |
-| <a id="s-4cf686ce4fa6"></a>`atomic_write_unit_min` | no | type="integer"; minimum=0 |  |
-| <a id="s-d52f2b56b4b0"></a>`blocks_512_bytes` | no | type="integer"; minimum=0 |  |
-| <a id="s-eed2d9c1a04f"></a>`dev_major` | no | type="integer"; minimum=0 |  |
-| <a id="s-cc5a062688c6"></a>`dev_minor` | no | type="integer"; minimum=0 |  |
-| <a id="s-1b513c4ebed3"></a>`device` | yes | type="integer"; minimum=0 |  |
-| <a id="s-d92cc4ff1424"></a>`dio_mem_align` | no | type="integer"; minimum=0 |  |
-| <a id="s-c0fcc7c14308"></a>`dio_offset_align` | no | type="integer"; minimum=0 |  |
-| <a id="s-3a5c8444d181"></a>`dio_read_offset_align` | no | type="integer"; minimum=0 |  |
-| <a id="s-6a0982215f8e"></a>`gid` | yes | type="integer"; minimum=0 |  |
-| <a id="s-c4b1d3826f28"></a>`inode` | yes | type="integer"; minimum=0 |  |
-| <a id="s-4a57f3ac85d9"></a>`mode` | yes | type="string"; pattern="^[0-7]+$" |  |
-| <a id="s-26e68e050c01"></a>`nlink` | yes | type="integer"; minimum=0 |  |
-| <a id="s-3016979842bb"></a>`preferred_io_block_size` | no | type="integer"; minimum=0 |  |
-| <a id="s-4c2c65d51cb2"></a>`rdev` | no | type="integer"; minimum=0 |  |
-| <a id="s-c93707909af5"></a>`size` | yes | type="integer"; minimum=0 |  |
-| <a id="s-6e268bb0034e"></a>`statx_attributes` | no | type="integer"; minimum=0 |  |
-| <a id="s-903d41c177b6"></a>`statx_attributes_mask` | no | type="integer"; minimum=0 |  |
-| <a id="s-2529fd3871b0"></a>`statx_available` | no | type="boolean" |  |
-| <a id="s-717888436d9c"></a>`statx_mask` | no | type="integer"; minimum=0 |  |
-| <a id="s-a00e2fee210d"></a>`subvolume_id` | no | type="integer"; minimum=0 |  |
-| <a id="s-5ee0502fdfd3"></a>`uid` | yes | type="integer"; minimum=0 |  |
+| <a id="s-78297df480"></a>`atomic_write_segments_max` | no | type="integer"; minimum=0 |  |
+| <a id="s-29361b2b54"></a>`atomic_write_unit_max` | no | type="integer"; minimum=0 |  |
+| <a id="s-31aff68a74"></a>`atomic_write_unit_max_opt` | no | type="integer"; minimum=0 |  |
+| <a id="s-4cf686ce4f"></a>`atomic_write_unit_min` | no | type="integer"; minimum=0 |  |
+| <a id="s-d52f2b56b4"></a>`blocks_512_bytes` | no | type="integer"; minimum=0 |  |
+| <a id="s-eed2d9c1a0"></a>`dev_major` | no | type="integer"; minimum=0 |  |
+| <a id="s-cc5a062688"></a>`dev_minor` | no | type="integer"; minimum=0 |  |
+| <a id="s-1b513c4ebe"></a>`device` | yes | type="integer"; minimum=0 |  |
+| <a id="s-d92cc4ff14"></a>`dio_mem_align` | no | type="integer"; minimum=0 |  |
+| <a id="s-c0fcc7c143"></a>`dio_offset_align` | no | type="integer"; minimum=0 |  |
+| <a id="s-3a5c8444d1"></a>`dio_read_offset_align` | no | type="integer"; minimum=0 |  |
+| <a id="s-6a0982215f"></a>`gid` | yes | type="integer"; minimum=0 |  |
+| <a id="s-c4b1d3826f"></a>`inode` | yes | type="integer"; minimum=0 |  |
+| <a id="s-4a57f3ac85"></a>`mode` | yes | type="string"; pattern="^[0-7]+$" |  |
+| <a id="s-26e68e050c"></a>`nlink` | yes | type="integer"; minimum=0 |  |
+| <a id="s-3016979842"></a>`preferred_io_block_size` | no | type="integer"; minimum=0 |  |
+| <a id="s-4c2c65d51c"></a>`rdev` | no | type="integer"; minimum=0 |  |
+| <a id="s-c93707909a"></a>`size` | yes | type="integer"; minimum=0 |  |
+| <a id="s-6e268bb003"></a>`statx_attributes` | no | type="integer"; minimum=0 |  |
+| <a id="s-903d41c177"></a>`statx_attributes_mask` | no | type="integer"; minimum=0 |  |
+| <a id="s-2529fd3871"></a>`statx_available` | no | type="boolean" |  |
+| <a id="s-717888436d"></a>`statx_mask` | no | type="integer"; minimum=0 |  |
+| <a id="s-a00e2fee21"></a>`subvolume_id` | no | type="integer"; minimum=0 |  |
+| <a id="s-5ee0502fdf"></a>`uid` | yes | type="integer"; minimum=0 |  |
 
 ### Progression, limits, and lifecycle
 
-#### [extent-rule/extension-contract/v1](../../../policies/index.md#p-75a89f9d1c36)
+#### [extent-rule/extension-contract/v1](../../../policies/index.md#p-75a89f9d1c)
 
 Shared facts for every subject below: maximum=null; reason="independently-versioned-extension-authority"
 
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
-| [field atomic_write_segments_max](#s-78297df480bc) | `value · schema-value · extension_owned` | shared above |
-| [field blocks_512_bytes](#s-d52f2b56b4b0) | `value · schema-value · extension_owned` | shared above |
-| [field dio_offset_align](#s-c0fcc7c14308) | `value · schema-value · extension_owned` | shared above |
-| [field dio_read_offset_align](#s-3a5c8444d181) | `value · schema-value · extension_owned` | shared above |
-| [field preferred_io_block_size](#s-3016979842bb) | `value · schema-value · extension_owned` | shared above |
-| [field size](#s-c93707909af5) | `value · schema-value · extension_owned` | shared above |
+| [field atomic_write_segments_max](#s-78297df480) | `value · schema-value · extension_owned` | shared above |
+| [field blocks_512_bytes](#s-d52f2b56b4) | `value · schema-value · extension_owned` | shared above |
+| [field dio_offset_align](#s-c0fcc7c143) | `value · schema-value · extension_owned` | shared above |
+| [field dio_read_offset_align](#s-3a5c8444d1) | `value · schema-value · extension_owned` | shared above |
+| [field preferred_io_block_size](#s-3016979842) | `value · schema-value · extension_owned` | shared above |
+| [field size](#s-c93707909a) | `value · schema-value · extension_owned` | shared above |
 
 ## Governing policies
 
-- <a id="pa-fef0f4cbec6f"></a>[compatibility/components/v1](../../../policies/index.md#p-95e9a1225947)
-- <a id="pa-70e060ff95df"></a>[extent-rule/extension-contract/v1](../../../policies/index.md#p-75a89f9d1c36)
+- <a id="pa-fef0f4cbec"></a>[compatibility/components/v1](../../../policies/index.md#p-95e9a12259)
+- <a id="pa-70e060ff95"></a>[extent-rule/extension-contract/v1](../../../policies/index.md#p-75a89f9d1c)
 
 ## Evidence
 
 ### Qualification
 
-- [make dist-smoke](../../../evidence/sources.md#q-0ba2578a3eb7)
-- [make build](../../../evidence/sources.md#q-d1121e35fa7a)
+- [make dist-smoke](../../../evidence/sources.md#q-0ba2578a3e)
+- [make build](../../../evidence/sources.md#q-d1121e35fa)
 
 ### Executable sources
 
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
-- [protocol:https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/linux-file-stat.json](../../../evidence/sources.md#src-79a949b157c8) — `reference/riverhog/provenance/contracts/linux/src/riverhog_provenance_linux_contracts/schemas/linux-file-stat.schema.json`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [protocol:https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/linux-file-stat.json](../../../evidence/sources.md#src-79a949b157) — `reference/riverhog/provenance/contracts/linux/src/riverhog_provenance_linux_contracts/schemas/linux-file-stat.schema.json`
 
 ### Machine authority
 

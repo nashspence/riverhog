@@ -6,34 +6,34 @@ Contract elements: **362** · Extent decisions: **493**
 
 | Family | Count |
 |---|---:|
-| <a id="f-606e8c3e0067"></a>`app-key-access` | 1 |
-| <a id="f-1bc9cc8615b1"></a>`apps` | 9 |
-| <a id="f-927666524fa7"></a>`archive` | 8 |
-| <a id="f-12a1a4528a7e"></a>`catalog` | 1 |
-| <a id="f-5c2c2cb71745"></a>`catalog-sync` | 3 |
-| <a id="f-bb3935a4d1b9"></a>`collection-processing-claims` | 27 |
-| <a id="f-179d00d740be"></a>`collection-upload-sessions` | 19 |
-| <a id="f-4d11c2d50aad"></a>`collections` | 19 |
-| <a id="f-7e90145328ea"></a>`download-quota` | 1 |
-| <a id="f-d5666200051c"></a>`download-quotas` | 1 |
-| <a id="f-adb367b5e47d"></a>`events` | 1 |
-| <a id="f-ee1ec4759826"></a>`health` | 2 |
-| <a id="f-b705db59242f"></a>`retrieval-cache` | 3 |
-| <a id="f-ef79840f0be0"></a>`retrieval-jobs` | 6 |
-| <a id="f-2abe392ef171"></a>`retrieval-plans` | 4 |
-| <a id="f-5a22d521974a"></a>`schemas` | 253 |
-| <a id="f-81863914a914"></a>`search` | 1 |
-| <a id="f-0df3b39ad8f4"></a>`securitySchemes` | 1 |
-| <a id="f-242542452710"></a>`service` | 1 |
-| <a id="f-9223adc3098d"></a>`tags` | 1 |
+| <a id="f-606e8c3e00"></a>`app-key-access` | 1 |
+| <a id="f-1bc9cc8615"></a>`apps` | 9 |
+| <a id="f-927666524f"></a>`archive` | 8 |
+| <a id="f-12a1a4528a"></a>`catalog` | 1 |
+| <a id="f-5c2c2cb717"></a>`catalog-sync` | 3 |
+| <a id="f-bb3935a4d1"></a>`collection-processing-claims` | 27 |
+| <a id="f-179d00d740"></a>`collection-upload-sessions` | 19 |
+| <a id="f-4d11c2d50a"></a>`collections` | 19 |
+| <a id="f-7e90145328"></a>`download-quota` | 1 |
+| <a id="f-d566620005"></a>`download-quotas` | 1 |
+| <a id="f-adb367b5e4"></a>`events` | 1 |
+| <a id="f-ee1ec47598"></a>`health` | 2 |
+| <a id="f-b705db5924"></a>`retrieval-cache` | 3 |
+| <a id="f-ef79840f0b"></a>`retrieval-jobs` | 6 |
+| <a id="f-2abe392ef1"></a>`retrieval-plans` | 4 |
+| <a id="f-5a22d52197"></a>`schemas` | 253 |
+| <a id="f-81863914a9"></a>`search` | 1 |
+| <a id="f-0df3b39ad8"></a>`securitySchemes` | 1 |
+| <a id="f-2425424527"></a>`service` | 1 |
+| <a id="f-9223adc309"></a>`tags` | 1 |
 
 | Policy | Count |
 |---|---:|
-| [compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0ba) | 362 |
-| [extent-rule/bounded-segment/v1](../../../policies/index.md#p-2b3f3f1594af) | 11 |
-| [extent-rule/no-semantic-maximum/v1](../../../policies/index.md#p-574724b48af0) | 69 |
-| [extent-rule/route-progression/v1](../../../policies/index.md#p-6b76b527cb21) | 53 |
-| [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034) | 180 |
+| [compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0) | 362 |
+| [extent-rule/bounded-segment/v1](../../../policies/index.md#p-2b3f3f1594) | 11 |
+| [extent-rule/no-semantic-maximum/v1](../../../policies/index.md#p-574724b48a) | 69 |
+| [extent-rule/route-progression/v1](../../../policies/index.md#p-6b76b527cb) | 53 |
+| [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0) | 180 |
 
 ## Semantic families
 

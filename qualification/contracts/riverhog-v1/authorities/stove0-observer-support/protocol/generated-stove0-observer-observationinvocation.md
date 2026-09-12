@@ -10,85 +10,85 @@ Fence-bound invocation authority excluded from semantic request identity.
 |---|---|
 | Authority | [stove0-observer-support](../index.md) |
 | Interface | [protocol](index.md) |
-| Family | [schemas](index.md#f-d47202b295e8) |
+| Family | [schemas](index.md#f-d47202b295) |
 | Contract elements | 1 |
 | Extent decisions | 17 |
 
 ## External contract
 
-<a id="s-5cc4b3adc3c5"></a>
-- <a id="s-d5a41e9392b0"></a>`title`: ObservationInvocation
-- <a id="s-10ba72f37a2d"></a>`description`: Fence-bound invocation authority excluded from semantic request identity.
-- <a id="s-3a530566b132"></a>`type`: object
+<a id="s-5cc4b3adc3"></a>
+- <a id="s-d5a41e9392"></a>`title`: ObservationInvocation
+- <a id="s-10ba72f37a"></a>`description`: Fence-bound invocation authority excluded from semantic request identity.
+- <a id="s-3a530566b1"></a>`type`: object
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-072f4b544ce3"></a>`claim_id` | yes | type="string"; minLength=1; maxLength=160 |  |
-| <a id="s-d483a59ad8df"></a>`fence` | yes | type="integer"; minimum=1 |  |
-| <a id="s-5aa86a43710f"></a>`request` | yes | #/$defs/ObservationRequest |  |
-| <a id="s-0109a56940ce"></a>`runtime` | yes | #/$defs/ObserverRuntimeAuthority |  |
+| <a id="s-072f4b544c"></a>`claim_id` | yes | type="string"; minLength=1; maxLength=160 |  |
+| <a id="s-d483a59ad8"></a>`fence` | yes | type="integer"; minimum=1 |  |
+| <a id="s-5aa86a4371"></a>`request` | yes | #/$defs/ObservationRequest |  |
+| <a id="s-0109a56940"></a>`runtime` | yes | #/$defs/ObserverRuntimeAuthority |  |
 
 ### Definitions
 
 | Definition | Shape |
 |---|---|
-| <a id="s-6ecabdecfafc"></a>`ArtifactSubject` | type="object"; fields=`bytes`, `collection`, `id`, `media_type`, `path`, `role`, `sha256`; additional keys=`additionalProperties`, `required` |
-| <a id="s-90dcdf64ae87"></a>`CollectionId` | type="integer"; minimum=1 |
-| <a id="s-ad3843b90a34"></a>`CollectionRootRef` | type="object"; fields=`archive_root_sha256`, `collection_id`, `content_identity`; additional keys=`additionalProperties`, `required` |
-| <a id="s-95de9a9e67d7"></a>`JsonValue` | empty object |
-| <a id="s-47065fc11b21"></a>`ObservationRequest` | type="object"; fields=`format`, `maximum_result_bytes`, `observer_contract_id`, `observer_contract_sha256`, `observer_descriptor_sha256`, `observer_registration_id`, `options`, `request_id`, `retrieval_policy`, `subjects`, `timeout_seconds`, `work_id`; additional keys=`additionalProperties`, `required` |
-| <a id="s-f89907f0ff61"></a>`ObserverRuntimeAuthority` | type="object"; fields=`allow_insecure_http`, `capability_token`, `riverhog_base_url`, `transport`, `workspace_assurance`; additional keys=`additionalProperties`, `required` |
+| <a id="s-6ecabdecfa"></a>`ArtifactSubject` | type="object"; fields=`bytes`, `collection`, `id`, `media_type`, `path`, `role`, `sha256`; additional keys=`additionalProperties`, `required` |
+| <a id="s-90dcdf64ae"></a>`CollectionId` | type="integer"; minimum=1 |
+| <a id="s-ad3843b90a"></a>`CollectionRootRef` | type="object"; fields=`archive_root_sha256`, `collection_id`, `content_identity`; additional keys=`additionalProperties`, `required` |
+| <a id="s-95de9a9e67"></a>`JsonValue` | empty object |
+| <a id="s-47065fc11b"></a>`ObservationRequest` | type="object"; fields=`format`, `maximum_result_bytes`, `observer_contract_id`, `observer_contract_sha256`, `observer_descriptor_sha256`, `observer_registration_id`, `options`, `request_id`, `retrieval_policy`, `subjects`, `timeout_seconds`, `work_id`; additional keys=`additionalProperties`, `required` |
+| <a id="s-f89907f0ff"></a>`ObserverRuntimeAuthority` | type="object"; fields=`allow_insecure_http`, `capability_token`, `riverhog_base_url`, `transport`, `workspace_assurance`; additional keys=`additionalProperties`, `required` |
 
 ### Progression, limits, and lifecycle
 
-#### [extent-rule/no-semantic-maximum/v1](../../../policies/index.md#p-574724b48af0)
+#### [extent-rule/no-semantic-maximum/v1](../../../policies/index.md#p-574724b48a)
 
 Shared facts for every subject below: capacity_authority={"declared_maximum":null,"hidden_maximum":"forbidden","owner":"stove0-observer-protocol"}; maximum=null; reason="no-declared-semantic-maximum"
 
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
-| <a id="s-2a086b4455c5"></a>definition ArtifactSubject · field bytes | `value · schema-value · operational_policy` | shared above |
-| <a id="s-df3b33cb9900"></a>definition ObservationRequest · field options | `cardinality · entries · operational_policy` | shared above |
-| <a id="s-433a28763211"></a>definition ObservationRequest · field subjects | `cardinality · items · operational_policy` | shared above |
+| <a id="s-2a086b4455"></a>[definition ArtifactSubject · field bytes](#s-6ecabdecfa) | `value · schema-value · operational_policy` | shared above |
+| <a id="s-df3b33cb99"></a>[definition ObservationRequest · field options](#s-47065fc11b) | `cardinality · entries · operational_policy` | shared above |
+| <a id="s-433a287632"></a>[definition ObservationRequest · field subjects](#s-47065fc11b) | `cardinality · items · operational_policy` | shared above |
 
-#### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
+#### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
 
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
-| [field claim_id](#s-072f4b544ce3) | `length · characters · contract_max` | maximum=160; minimum=1; reason="schema-maximum" |
-| <a id="s-775d0ab05901"></a>definition ArtifactSubject · field media_type · anyOf alternative 1 | `length · characters · contract_max` | maximum=255; minimum=1; reason="schema-maximum" |
-| <a id="s-19b80a571465"></a>definition ArtifactSubject · field path | `length · characters · contract_max` | maximum=4096; minimum=1; reason="schema-maximum" |
-| <a id="s-bc561903c6b8"></a>definition ArtifactSubject · field sha256 | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
-| <a id="s-7de457ad21c1"></a>definition CollectionRootRef · field archive_root_sha256 | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
-| <a id="s-13ae4d5efc14"></a>definition CollectionRootRef · field content_identity | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
-| <a id="s-938eb9b92cd7"></a>definition ObservationRequest · field maximum_result_bytes | `value · schema-value · contract_max` | maximum=67108864; minimum=1; reason="schema-maximum" |
-| <a id="s-01059693d64a"></a>definition ObservationRequest · field observer_contract_sha256 | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
-| <a id="s-df85f4c9be83"></a>definition ObservationRequest · field observer_descriptor_sha256 | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
-| <a id="s-25438bc744cc"></a>definition ObservationRequest · field request_id | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
-| <a id="s-a884a49972d8"></a>definition ObservationRequest · field timeout_seconds | `value · schema-value · contract_max` | maximum=86400; minimum=1; reason="schema-maximum" |
-| <a id="s-e81ed70f43ac"></a>definition ObservationRequest · field work_id | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
-| <a id="s-a17c050adbd2"></a>definition ObserverRuntimeAuthority · field capability_token | `length · characters · contract_max` | maximum=4096; minimum=1; reason="schema-maximum" |
-| <a id="s-aea2c68d3e06"></a>definition ObserverRuntimeAuthority · field riverhog_base_url | `length · characters · contract_max` | maximum=2048; minimum=1; reason="schema-maximum" |
+| [field claim_id](#s-072f4b544c) | `length · characters · contract_max` | maximum=160; minimum=1; reason="schema-maximum" |
+| <a id="s-775d0ab059"></a>[definition ArtifactSubject · field media_type · string value](#s-6ecabdecfa) | `length · characters · contract_max` | maximum=255; minimum=1; reason="schema-maximum" |
+| <a id="s-19b80a5714"></a>[definition ArtifactSubject · field path](#s-6ecabdecfa) | `length · characters · contract_max` | maximum=4096; minimum=1; reason="schema-maximum" |
+| <a id="s-bc561903c6"></a>[definition ArtifactSubject · field sha256](#s-6ecabdecfa) | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
+| <a id="s-7de457ad21"></a>[definition CollectionRootRef · field archive_root_sha256](#s-ad3843b90a) | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
+| <a id="s-13ae4d5efc"></a>[definition CollectionRootRef · field content_identity](#s-ad3843b90a) | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
+| <a id="s-938eb9b92c"></a>[definition ObservationRequest · field maximum_result_bytes](#s-47065fc11b) | `value · schema-value · contract_max` | maximum=67108864; minimum=1; reason="schema-maximum" |
+| <a id="s-01059693d6"></a>[definition ObservationRequest · field observer_contract_sha256](#s-47065fc11b) | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
+| <a id="s-df85f4c9be"></a>[definition ObservationRequest · field observer_descriptor_sha256](#s-47065fc11b) | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
+| <a id="s-25438bc744"></a>[definition ObservationRequest · field request_id](#s-47065fc11b) | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
+| <a id="s-a884a49972"></a>[definition ObservationRequest · field timeout_seconds](#s-47065fc11b) | `value · schema-value · contract_max` | maximum=86400; minimum=1; reason="schema-maximum" |
+| <a id="s-e81ed70f43"></a>[definition ObservationRequest · field work_id](#s-47065fc11b) | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
+| <a id="s-a17c050adb"></a>[definition ObserverRuntimeAuthority · field capability_token](#s-f89907f0ff) | `length · characters · contract_max` | maximum=4096; minimum=1; reason="schema-maximum" |
+| <a id="s-aea2c68d3e"></a>[definition ObserverRuntimeAuthority · field riverhog_base_url](#s-f89907f0ff) | `length · characters · contract_max` | maximum=2048; minimum=1; reason="schema-maximum" |
 
 ## Governing policies
 
-- <a id="pa-80dec768f415"></a>[compatibility/components/v1](../../../policies/index.md#p-95e9a1225947)
-- <a id="pa-e7e02346fbd4"></a>[extent-rule/no-semantic-maximum/v1](../../../policies/index.md#p-574724b48af0)
-- <a id="pa-a45b27dea275"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
+- <a id="pa-80dec768f4"></a>[compatibility/components/v1](../../../policies/index.md#p-95e9a12259)
+- <a id="pa-e7e02346fb"></a>[extent-rule/no-semantic-maximum/v1](../../../policies/index.md#p-574724b48a)
+- <a id="pa-a45b27dea2"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
 
 ## Evidence
 
 ### Qualification
 
-- [make dist-smoke](../../../evidence/sources.md#q-0ba2578a3eb7)
-- [make build](../../../evidence/sources.md#q-d1121e35fa7a)
+- [make dist-smoke](../../../evidence/sources.md#q-0ba2578a3e)
+- [make build](../../../evidence/sources.md#q-d1121e35fa)
 
 ### Executable sources
 
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
-- [protocol:generated:stove0-observer](../../../evidence/sources.md#src-dcc0b5485b73) — `reference/stove0/packages/observer-support/src/stove0_observer_support/schemas.py::observer_schema_bundle`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [protocol:generated:stove0-observer](../../../evidence/sources.md#src-dcc0b5485b) — `reference/stove0/packages/observer-support/src/stove0_observer_support/schemas.py::observer_schema_bundle`
 
 ### Machine authority
 

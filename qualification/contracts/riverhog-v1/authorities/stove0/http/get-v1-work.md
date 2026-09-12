@@ -16,48 +16,48 @@ List Work
 
 ## External contract
 
-<a id="s-e3469ba5ea56"></a>
-- <a id="s-bcf1ddc96874"></a>`operationId`: list_work
-- <a id="s-6a02feaa4144"></a>`summary`: List Work
+<a id="s-e3469ba5ea"></a>
+- <a id="s-bcf1ddc968"></a>`operationId`: list_work
+- <a id="s-6a02feaa41"></a>`summary`: List Work
 
 ### Parameters
 
 | Name | In | Required | Schema |
 |---|---|---:|---|
-| <a id="s-f757afb8e19e"></a>`page_size` | query | no | type="integer"; minimum=1; maximum=100 |
-| <a id="s-eb23c506e0a0"></a>`page_token` | query | no | anyOf=#/components/schemas/BrowsePageToken \| type="null" |
-| <a id="s-3c013fe01997"></a>`phase` | query | no | anyOf=type="string"; enum=["eligible","claimed","observing","planning","target_preflight","queued","executing","output_finalizing","verifying","settled","retirement_pending","coordinating","abandon_pending","complete","inapplicable","failed","canceled"] \| type="null" |
-| <a id="s-5f521e9cb35c"></a>`q` | query | no | anyOf=#/components/schemas/BrowseQuery \| type="null" |
-| <a id="s-24e7c1f77e1c"></a>`sort` | query | no | type="string"; enum=["updated_at","phase","work_id"] |
-| <a id="s-781a235d3586"></a>`order` | query | no | type="string"; enum=["asc","desc"] |
+| <a id="s-f757afb8e1"></a>`page_size` | query | no | type="integer"; minimum=1; maximum=100 |
+| <a id="s-eb23c506e0"></a>`page_token` | query | no | anyOf=#/components/schemas/BrowsePageToken \| type="null" |
+| <a id="s-3c013fe019"></a>`phase` | query | no | anyOf=type="string"; enum=["eligible","claimed","observing","planning","target_preflight","queued","executing","output_finalizing","verifying","settled","retirement_pending","coordinating","abandon_pending","complete","inapplicable","failed","canceled"] \| type="null" |
+| <a id="s-5f521e9cb3"></a>`q` | query | no | anyOf=#/components/schemas/BrowseQuery \| type="null" |
+| <a id="s-24e7c1f77e"></a>`sort` | query | no | type="string"; enum=["updated_at","phase","work_id"] |
+| <a id="s-781a235d35"></a>`order` | query | no | type="string"; enum=["asc","desc"] |
 
 ### Responses
 
 | Status | Description |
 |---|---|
-| <a id="s-ce11aed2b249"></a>`200` | Successful Response |
-| <a id="s-f866888f93c7"></a>`400` | Bad Request |
-| <a id="s-b20246c2a8dd"></a>`401` | Unauthorized |
-| <a id="s-2d228313df3e"></a>`403` | Forbidden |
-| <a id="s-cd90dda77d57"></a>`500` | Internal Server Error |
+| <a id="s-ce11aed2b2"></a>`200` | Successful Response |
+| <a id="s-f866888f93"></a>`400` | Bad Request |
+| <a id="s-b20246c2a8"></a>`401` | Unauthorized |
+| <a id="s-2d228313df"></a>`403` | Forbidden |
+| <a id="s-cd90dda77d"></a>`500` | Internal Server Error |
 
 ### Progression, limits, and lifecycle
 
-#### [extent-rule/route-progression/v1](../../../policies/index.md#p-6b76b527cb21)
+#### [extent-rule/route-progression/v1](../../../policies/index.md#p-6b76b527cb)
 
 Shared facts for every subject below: progression={"default_page_size":25,"kind":"mutable-browse","maximum_page_size":100,"next_page_token_field":"next_page_token","page_size_parameter":"page_size","page_token_parameter":"page_token"}; reason="bounded-route-progression"
 
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
-| [GET /v1/work](#s-e3469ba5ea56) | `logical-result-cardinality · items · segmented_no_total_max` | shared above |
+| [GET /v1/work](#s-e3469ba5ea) | `logical-result-cardinality · items · segmented_no_total_max` | shared above |
 
-#### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
+#### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
 
 Shared facts for every subject below: maximum=100; minimum=1; reason="schema-maximum"
 
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
-| <a id="s-847cd29f11bf"></a>parameter page_size | `value · schema-value · contract_max` | shared above |
+| <a id="s-847cd29f11"></a>[parameter page_size](#s-f757afb8e1) | `value · schema-value · contract_max` | shared above |
 
 ## Maintained corroboration
 
@@ -74,21 +74,21 @@ Shared facts for every subject below: maximum=100; minimum=1; reason="schema-max
 
 ## Governing policies
 
-- <a id="pa-327b7734b58d"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0ba)
-- <a id="pa-ea6a455b774a"></a>[extent-rule/route-progression/v1](../../../policies/index.md#p-6b76b527cb21)
-- <a id="pa-6da841db25c9"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
+- <a id="pa-327b7734b5"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0)
+- <a id="pa-ea6a455b77"></a>[extent-rule/route-progression/v1](../../../policies/index.md#p-6b76b527cb)
+- <a id="pa-6da841db25"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
 
 ## Evidence
 
 ### Qualification
 
-- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459fb8)
-- [make compose-smoke](../../../evidence/sources.md#q-413b0b241ba8)
+- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459f)
+- [make compose-smoke](../../../evidence/sources.md#q-413b0b241b)
 
 ### Executable sources
 
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
-- [openapi:stove0](../../../evidence/sources.md#src-52e6e3212451) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [openapi:stove0](../../../evidence/sources.md#src-52e6e32124) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
 
 ### Machine authority
 

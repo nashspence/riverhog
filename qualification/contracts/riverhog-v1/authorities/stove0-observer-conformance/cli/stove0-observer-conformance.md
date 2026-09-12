@@ -10,38 +10,38 @@ Exact externally visible contract owned by this semantic dossier.
 |---|---|
 | Authority | [stove0-observer-conformance](../index.md) |
 | Interface | [cli](index.md) |
-| Family | [root](index.md#f-943ef934d417) |
+| Family | [root](index.md#f-943ef934d4) |
 | Contract elements | 1 |
 | Extent decisions | 0 |
 
 ## External contract
 
-- <a id="s-72fdebec4037"></a>Parser name: `stove0-observer-conformance`
+- <a id="s-72fdebec40"></a>Parser name: `stove0-observer-conformance`
 
 ### Parameters
 
 | Name | Kind | Required | Type | Options |
 |---|---|---:|---|---|
-| <a id="s-6504128d72fd"></a>`` | _StoreAction | yes |  |  |
-| <a id="s-3ce127cbc327"></a>`` | _AppendAction | no | Path | --invocation |
-| <a id="s-38ac0c67ea67"></a>`` | _AppendAction | no | Path | --semantic-vectors |
-| <a id="s-c322de089ca1"></a>`` | _AppendAction | no |  | --semantic-validator-provider |
+| <a id="s-6504128d72"></a>`` | _StoreAction | yes |  |  |
+| <a id="s-3ce127cbc3"></a>`` | _AppendAction | no | Path | --invocation |
+| <a id="s-38ac0c67ea"></a>`` | _AppendAction | no | Path | --semantic-vectors |
+| <a id="s-c322de089c"></a>`` | _AppendAction | no |  | --semantic-validator-provider |
 
 ## Governing policies
 
-- <a id="pa-e1bf1b3690a2"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de7f)
+- <a id="pa-e1bf1b3690"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de)
 
 ## Evidence
 
 ### Qualification
 
-- [make dist-smoke](../../../evidence/sources.md#q-0ba2578a3eb7)
-- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459fb8)
+- [make dist-smoke](../../../evidence/sources.md#q-0ba2578a3e)
+- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459f)
 
 ### Executable sources
 
-- [cli:stove0-observer-conformance](../../../evidence/sources.md#src-5719d140a8e0) — `reference/stove0/packages/observer-support/src/stove0_observer_support/conformance.py::<module>`
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
+- [cli:stove0-observer-conformance](../../../evidence/sources.md#src-5719d140a8) — `reference/stove0/packages/observer-support/src/stove0_observer_support/conformance.py::<module>`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
 
 ### Machine authority
 

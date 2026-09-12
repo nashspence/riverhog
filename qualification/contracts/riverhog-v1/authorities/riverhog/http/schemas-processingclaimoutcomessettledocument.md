@@ -16,33 +16,33 @@ Exact externally visible contract owned by this semantic dossier.
 
 ## External contract
 
-<a id="s-7ba16e930128"></a>
-- <a id="s-0275659017db"></a>`title`: ProcessingClaimOutcomesSettleDocument
-- <a id="s-be047dc0690e"></a>`type`: object
+<a id="s-7ba16e9301"></a>
+- <a id="s-0275659017"></a>`title`: ProcessingClaimOutcomesSettleDocument
+- <a id="s-be047dc069"></a>`type`: object
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-f42f23efd416"></a>`fence` | yes | type="integer"; minimum=1 |  |
-| <a id="s-4816a9f24075"></a>`retirement_grace_seconds` | no | type="integer"; minimum=0 |  |
-| <a id="s-4cb34386fa58"></a>`retirement_policy` | no | type="string"; enum=["retain","retire-after-verified-output"] |  |
+| <a id="s-f42f23efd4"></a>`fence` | yes | type="integer"; minimum=1 |  |
+| <a id="s-4816a9f240"></a>`retirement_grace_seconds` | no | type="integer"; minimum=0 |  |
+| <a id="s-4cb34386fa"></a>`retirement_policy` | no | type="string"; enum=["retain","retire-after-verified-output"] |  |
 
 ## Governing policies
 
-- <a id="pa-ef77ba8cb5b9"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0ba)
+- <a id="pa-ef77ba8cb5"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0)
 
 ## Evidence
 
 ### Qualification
 
-- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459fb8)
-- [make compose-smoke](../../../evidence/sources.md#q-413b0b241ba8)
+- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459f)
+- [make compose-smoke](../../../evidence/sources.md#q-413b0b241b)
 
 ### Executable sources
 
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
-- [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc960) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc9) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
 
 ### Machine authority
 

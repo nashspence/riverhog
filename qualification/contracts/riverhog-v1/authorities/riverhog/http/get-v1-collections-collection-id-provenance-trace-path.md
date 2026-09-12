@@ -16,50 +16,50 @@ Trace Collection File Provenance
 
 ## External contract
 
-<a id="s-d6182d57cbc1"></a>
-- <a id="s-15ede435cb5b"></a>`operationId`: trace_collection_file_provenance
-- <a id="s-4e88d5beeb45"></a>`summary`: Trace Collection File Provenance
-- <a id="s-d57e9c2f7265"></a>`security`: `[{"HTTPBearer": []}]`
+<a id="s-d6182d57cb"></a>
+- <a id="s-15ede435cb"></a>`operationId`: trace_collection_file_provenance
+- <a id="s-4e88d5beeb"></a>`summary`: Trace Collection File Provenance
+- <a id="s-d57e9c2f72"></a>`security`: `[{"HTTPBearer": []}]`
 
 ### Parameters
 
 | Name | In | Required | Schema |
 |---|---|---:|---|
-| <a id="s-a8767581199d"></a>`collection_id` | path | yes | type="integer"; minimum=1 |
-| <a id="s-908b33e7a9ea"></a>`path` | path | yes | type="string"; format="riverhog-canonical-relpath-v1"; minLength=1; maxLength=4096; pattern="^[^/\\\\]+(?:/[^/\\\\]+)*$"; allOf=additional keys=`not` \| additional keys=`not`; additional keys=`x-unicode-normalization` |
-| <a id="s-11242a91f304"></a>`page_size` | query | no | type="integer"; minimum=1; maximum=100 |
-| <a id="s-23428b14d3d7"></a>`page_token` | query | no | anyOf=#/components/schemas/BrowsePageToken \| type="null" |
+| <a id="s-a876758119"></a>`collection_id` | path | yes | type="integer"; minimum=1 |
+| <a id="s-908b33e7a9"></a>`path` | path | yes | type="string"; format="riverhog-canonical-relpath-v1"; minLength=1; maxLength=4096; pattern="^[^/\\\\]+(?:/[^/\\\\]+)*$"; allOf=additional keys=`not` \| additional keys=`not`; additional keys=`x-unicode-normalization` |
+| <a id="s-11242a91f3"></a>`page_size` | query | no | type="integer"; minimum=1; maximum=100 |
+| <a id="s-23428b14d3"></a>`page_token` | query | no | anyOf=#/components/schemas/BrowsePageToken \| type="null" |
 
 ### Responses
 
 | Status | Description |
 |---|---|
-| <a id="s-88d1d82fa695"></a>`200` | Successful Response |
-| <a id="s-842198879d7a"></a>`400` | Bad Request |
-| <a id="s-a55cf0c15e21"></a>`401` | Unauthorized |
-| <a id="s-735c2a55c2c8"></a>`403` | Forbidden |
-| <a id="s-16f9f7c008d4"></a>`404` | Not Found |
-| <a id="s-7a969e01c895"></a>`409` | Conflict |
-| <a id="s-d6e7e00c310a"></a>`500` | Internal Server Error |
+| <a id="s-88d1d82fa6"></a>`200` | Successful Response |
+| <a id="s-842198879d"></a>`400` | Bad Request |
+| <a id="s-a55cf0c15e"></a>`401` | Unauthorized |
+| <a id="s-735c2a55c2"></a>`403` | Forbidden |
+| <a id="s-16f9f7c008"></a>`404` | Not Found |
+| <a id="s-7a969e01c8"></a>`409` | Conflict |
+| <a id="s-d6e7e00c31"></a>`500` | Internal Server Error |
 
 ### Progression, limits, and lifecycle
 
-#### [extent-rule/route-progression/v1](../../../policies/index.md#p-6b76b527cb21)
+#### [extent-rule/route-progression/v1](../../../policies/index.md#p-6b76b527cb)
 
 Shared facts for every subject below: progression={"default_page_size":25,"kind":"mutable-browse","maximum_page_size":100,"next_page_token_field":"next_page_token","page_size_parameter":"page_size","page_token_parameter":"page_token"}; reason="bounded-route-progression"
 
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
-| [GET /v1/collections/{collection_id}/provenance/trace/{path}](#s-d6182d57cbc1) | `logical-result-cardinality · items · segmented_no_total_max` | shared above |
+| [GET /v1/collections/{collection_id}/provenance/trace/{path}](#s-d6182d57cb) | `logical-result-cardinality · items · segmented_no_total_max` | shared above |
 
-#### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
+#### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
 
 Shared facts for every subject below: minimum=1; reason="schema-maximum"
 
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
-| <a id="s-807d5c095de4"></a>parameter path | `length · characters · contract_max` | maximum=4096 |
-| <a id="s-d74c9f1dc1ef"></a>parameter page_size | `value · schema-value · contract_max` | maximum=100 |
+| <a id="s-807d5c095d"></a>[parameter path](#s-908b33e7a9) | `length · characters · contract_max` | maximum=4096 |
+| <a id="s-d74c9f1dc1"></a>[parameter page_size](#s-11242a91f3) | `value · schema-value · contract_max` | maximum=100 |
 
 ## Maintained corroboration
 
@@ -75,21 +75,21 @@ Shared facts for every subject below: minimum=1; reason="schema-maximum"
 
 ## Governing policies
 
-- <a id="pa-3f558005495c"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0ba)
-- <a id="pa-960eb9870cf7"></a>[extent-rule/route-progression/v1](../../../policies/index.md#p-6b76b527cb21)
-- <a id="pa-44f36db4017c"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
+- <a id="pa-3f55800549"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0)
+- <a id="pa-960eb9870c"></a>[extent-rule/route-progression/v1](../../../policies/index.md#p-6b76b527cb)
+- <a id="pa-44f36db401"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
 
 ## Evidence
 
 ### Qualification
 
-- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459fb8)
-- [make compose-smoke](../../../evidence/sources.md#q-413b0b241ba8)
+- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459f)
+- [make compose-smoke](../../../evidence/sources.md#q-413b0b241b)
 
 ### Executable sources
 
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
-- [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc960) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc9) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
 
 ### Machine authority
 

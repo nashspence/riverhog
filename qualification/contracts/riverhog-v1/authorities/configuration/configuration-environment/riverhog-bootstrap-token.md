@@ -16,27 +16,27 @@ Exact externally visible contract owned by this semantic dossier.
 
 ## External contract
 
-<a id="s-da42edbdaef9"></a>
+<a id="s-da42edbdae"></a>
 | Field | Shape |
 |---|---|
-| <a id="s-cb8b3d3b8e7b"></a>`consumers` | ["riverhog-server"] |
-| <a id="s-c08568c77afa"></a>`name` | "RIVERHOG_BOOTSTRAP_TOKEN" |
+| <a id="s-cb8b3d3b8e"></a>`consumers` | ["riverhog-server"] |
+| <a id="s-c08568c77a"></a>`name` | "RIVERHOG_BOOTSTRAP_TOKEN" |
 
 ## Governing policies
 
-- <a id="pa-a14cb2ce64cb"></a>[compatibility/configuration/v1](../../../policies/index.md#p-8dc08bb46173)
+- <a id="pa-a14cb2ce64"></a>[compatibility/configuration/v1](../../../policies/index.md#p-8dc08bb461)
 
 ## Evidence
 
 ### Qualification
 
-- [make unit](../../../evidence/sources.md#q-ce47068f504c)
-- [make compose-smoke](../../../evidence/sources.md#q-413b0b241ba8)
+- [make unit](../../../evidence/sources.md#q-ce47068f50)
+- [make compose-smoke](../../../evidence/sources.md#q-413b0b241b)
 
 ### Executable sources
 
-- [configuration-environment:RIVERHOG_BOOTSTRAP_TOKEN](../../../evidence/sources.md#src-914d97b76beb) — `configuration-environment:RIVERHOG_BOOTSTRAP_TOKEN`
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
+- [configuration-environment:RIVERHOG_BOOTSTRAP_TOKEN](../../../evidence/sources.md#src-914d97b76b) — `configuration-environment:RIVERHOG_BOOTSTRAP_TOKEN`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
 
 ### Machine authority
 

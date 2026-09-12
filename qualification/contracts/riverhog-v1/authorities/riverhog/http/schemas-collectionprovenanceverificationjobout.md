@@ -16,22 +16,22 @@ Exact externally visible contract owned by this semantic dossier.
 
 ## External contract
 
-<a id="s-968608cbbffb"></a>
-- <a id="s-c514fe5c30d6"></a>`title`: CollectionProvenanceVerificationJobOut
-- <a id="s-0e00b9ee8721"></a>`type`: object
+<a id="s-968608cbbf"></a>
+- <a id="s-c514fe5c30"></a>`title`: CollectionProvenanceVerificationJobOut
+- <a id="s-0e00b9ee87"></a>`type`: object
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-47daac55a0eb"></a>`attempts` | yes | type="integer"; minimum=0 |  |
-| <a id="s-6ca57b3926a1"></a>`collection_id` | yes | #/components/schemas/CollectionId |  |
-| <a id="s-b6bb0512f639"></a>`failure` | yes | anyOf=type="string" \| type="null" |  |
-| <a id="s-c7a8ebe49159"></a>`finished_at` | yes | anyOf=type="string" \| type="null" |  |
-| <a id="s-f484534cb7b2"></a>`requested_at` | yes | type="string" |  |
-| <a id="s-de3dc86efef2"></a>`result` | yes | anyOf=#/components/schemas/CollectionProvenanceVerificationOut \| type="null" |  |
-| <a id="s-e54a5477bb34"></a>`started_at` | yes | anyOf=type="string" \| type="null" |  |
-| <a id="s-32e51516fecb"></a>`state` | yes | type="string"; enum=["queued","running","canceling","succeeded","failed","canceled"] |  |
+| <a id="s-47daac55a0"></a>`attempts` | yes | type="integer"; minimum=0 |  |
+| <a id="s-6ca57b3926"></a>`collection_id` | yes | #/components/schemas/CollectionId |  |
+| <a id="s-b6bb0512f6"></a>`failure` | yes | anyOf=type="string" \| type="null" |  |
+| <a id="s-c7a8ebe491"></a>`finished_at` | yes | anyOf=type="string" \| type="null" |  |
+| <a id="s-f484534cb7"></a>`requested_at` | yes | type="string" |  |
+| <a id="s-de3dc86efe"></a>`result` | yes | anyOf=#/components/schemas/CollectionProvenanceVerificationOut \| type="null" |  |
+| <a id="s-e54a5477bb"></a>`started_at` | yes | anyOf=type="string" \| type="null" |  |
+| <a id="s-32e51516fe"></a>`state` | yes | type="string"; enum=["queued","running","canceling","succeeded","failed","canceled"] |  |
 
 ## Maintained corroboration
 
@@ -42,19 +42,19 @@ Exact externally visible contract owned by this semantic dossier.
 
 ## Governing policies
 
-- <a id="pa-cf38510bad14"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0ba)
+- <a id="pa-cf38510bad"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0)
 
 ## Evidence
 
 ### Qualification
 
-- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459fb8)
-- [make compose-smoke](../../../evidence/sources.md#q-413b0b241ba8)
+- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459f)
+- [make compose-smoke](../../../evidence/sources.md#q-413b0b241b)
 
 ### Executable sources
 
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
-- [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc960) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc9) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
 
 ### Machine authority
 

@@ -16,45 +16,45 @@ Exact externally visible contract owned by this semantic dossier.
 
 ## External contract
 
-<a id="s-5d276c77f516"></a>
-- <a id="s-9a6acf1beedf"></a>`title`: WriteSession
-- <a id="s-514d7def0ee5"></a>`type`: object
+<a id="s-5d276c77f5"></a>
+- <a id="s-9a6acf1bee"></a>`title`: WriteSession
+- <a id="s-514d7def0e"></a>`type`: object
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-b573b398f337"></a>`expected_bytes` | yes | type="integer"; minimum=1 | Exact immutable-object byte length admitted by this write session. The value remains fixed until the write becomes terminal. |
-| <a id="s-f382e9402683"></a>`object_path` | yes | type="string"; minLength=1; maxLength=4096 |  |
-| <a id="s-bb12b9b0065d"></a>`write_token` | yes | type="string"; minLength=1; maxLength=4000 | Opaque adapter-owned persistable continuation handle. For the same configured adapter it remains replayable across client, transport, Riverhog, and adapter process restarts until completion, explicit abort, or caller-authorized incomplete-write reclamation makes the write terminal. |
+| <a id="s-b573b398f3"></a>`expected_bytes` | yes | type="integer"; minimum=1 | Exact immutable-object byte length admitted by this write session. The value remains fixed until the write becomes terminal. |
+| <a id="s-f382e94026"></a>`object_path` | yes | type="string"; minLength=1; maxLength=4096 |  |
+| <a id="s-bb12b9b006"></a>`write_token` | yes | type="string"; minLength=1; maxLength=4000 | Opaque adapter-owned persistable continuation handle. For the same configured adapter it remains replayable across client, transport, Riverhog, and adapter process restarts until completion, explicit abort, or caller-authorized incomplete-write reclamation makes the write terminal. |
 
 ### Progression, limits, and lifecycle
 
-#### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
+#### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
 
 Shared facts for every subject below: minimum=1; reason="schema-maximum"
 
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
-| [field object_path](#s-f382e9402683) | `length · characters · contract_max` | maximum=4096 |
-| [field write_token](#s-bb12b9b0065d) | `length · characters · contract_max` | maximum=4000 |
+| [field object_path](#s-f382e94026) | `length · characters · contract_max` | maximum=4096 |
+| [field write_token](#s-bb12b9b006) | `length · characters · contract_max` | maximum=4000 |
 
 ## Governing policies
 
-- <a id="pa-340c44203621"></a>[compatibility/components/v1](../../../policies/index.md#p-95e9a1225947)
-- <a id="pa-b81bf26f697c"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
+- <a id="pa-340c442036"></a>[compatibility/components/v1](../../../policies/index.md#p-95e9a12259)
+- <a id="pa-b81bf26f69"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
 
 ## Evidence
 
 ### Qualification
 
-- [make dist-smoke](../../../evidence/sources.md#q-0ba2578a3eb7)
-- [make build](../../../evidence/sources.md#q-d1121e35fa7a)
+- [make dist-smoke](../../../evidence/sources.md#q-0ba2578a3e)
+- [make build](../../../evidence/sources.md#q-d1121e35fa)
 
 ### Executable sources
 
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
-- [protocol:generated:riverhog-storage-adapter](../../../evidence/sources.md#src-ef281f2471a9) — `packages/riverhog-storage-adapter-support/src/riverhog_storage_adapter_support/schemas.py::storage_adapter_schema_bundle`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [protocol:generated:riverhog-storage-adapter](../../../evidence/sources.md#src-ef281f2471) — `packages/riverhog-storage-adapter-support/src/riverhog_storage_adapter_support/schemas.py::storage_adapter_schema_bundle`
 
 ### Machine authority
 

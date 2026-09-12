@@ -10,36 +10,36 @@ Exact externally visible contract owned by this semantic dossier.
 |---|---|
 | Authority | [riverhog-ftp-adapter](../index.md) |
 | Interface | [cli](index.md) |
-| Family | [riverhog-ftp-adapter serve](index.md#f-6d617fe38b91) |
+| Family | [riverhog-ftp-adapter serve](index.md#f-6d617fe38b) |
 | Contract elements | 1 |
 | Extent decisions | 0 |
 
 ## External contract
 
-- <a id="s-cf31bb6074ec"></a>Parser name: `riverhog-ftp-adapter serve`
+- <a id="s-cf31bb6074"></a>Parser name: `riverhog-ftp-adapter serve`
 
 ### Parameters
 
 | Name | Kind | Required | Type | Options |
 |---|---|---:|---|---|
-| <a id="s-8ae0b92557a6"></a>`` | _StoreAction | no |  | --host |
-| <a id="s-cb5e793bc3a3"></a>`` | _StoreAction | no | int | --port |
+| <a id="s-8ae0b92557"></a>`` | _StoreAction | no |  | --host |
+| <a id="s-cb5e793bc3"></a>`` | _StoreAction | no | int | --port |
 
 ## Governing policies
 
-- <a id="pa-0dc4d7b1e5f5"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de7f)
+- <a id="pa-0dc4d7b1e5"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de)
 
 ## Evidence
 
 ### Qualification
 
-- [make dist-smoke](../../../evidence/sources.md#q-0ba2578a3eb7)
-- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459fb8)
+- [make dist-smoke](../../../evidence/sources.md#q-0ba2578a3e)
+- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459f)
 
 ### Executable sources
 
-- [cli:riverhog-ftp-adapter](../../../evidence/sources.md#src-303f765bca1e) — `reference/riverhog/ingress/ftp/src/riverhog_ftp_adapter/app.py::<module>`
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
+- [cli:riverhog-ftp-adapter](../../../evidence/sources.md#src-303f765bca) — `reference/riverhog/ingress/ftp/src/riverhog_ftp_adapter/app.py::<module>`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
 
 ### Machine authority
 

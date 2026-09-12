@@ -16,12 +16,12 @@ Retire Archive Copy
 
 ## External contract
 
-<a id="s-d742ef1582c6"></a>
-- <a id="s-ace6734f775c"></a>`operationId`: retire_archive_copy
-- <a id="s-f1554f94a51d"></a>`summary`: Retire Archive Copy
-- <a id="s-7d4d4809de8a"></a>`security`: `[{"HTTPBearer": []}]`
+<a id="s-d742ef1582"></a>
+- <a id="s-ace6734f77"></a>`operationId`: retire_archive_copy
+- <a id="s-f1554f94a5"></a>`summary`: Retire Archive Copy
+- <a id="s-7d4d4809de"></a>`security`: `[{"HTTPBearer": []}]`
 
-### <a id="s-c3063a6228fd"></a>Request body
+### <a id="s-c3063a6228"></a>Request body
 
 `{"content": {"application/json": {"schema": {"$ref": "#/components/schemas/RetireArchiveCopyRequest"}}}, "required": true}`
 
@@ -29,14 +29,14 @@ Retire Archive Copy
 
 | Status | Description |
 |---|---|
-| <a id="s-727ed61cf8ad"></a>`200` | Successful Response |
-| <a id="s-1b8a617542b8"></a>`400` | Bad Request |
-| <a id="s-2b4e80c9ee24"></a>`401` | Unauthorized |
-| <a id="s-4f887813da0a"></a>`403` | Forbidden |
-| <a id="s-b4c84e0df82c"></a>`404` | Not Found |
-| <a id="s-13d5ed3af748"></a>`409` | Conflict |
-| <a id="s-f26af1b3d1bb"></a>`500` | Internal Server Error |
-| <a id="s-fc07f61e9d61"></a>`503` | Service Unavailable |
+| <a id="s-727ed61cf8"></a>`200` | Successful Response |
+| <a id="s-1b8a617542"></a>`400` | Bad Request |
+| <a id="s-2b4e80c9ee"></a>`401` | Unauthorized |
+| <a id="s-4f887813da"></a>`403` | Forbidden |
+| <a id="s-b4c84e0df8"></a>`404` | Not Found |
+| <a id="s-13d5ed3af7"></a>`409` | Conflict |
+| <a id="s-f26af1b3d1"></a>`500` | Internal Server Error |
+| <a id="s-fc07f61e9d"></a>`503` | Service Unavailable |
 
 ## Maintained corroboration
 
@@ -52,19 +52,19 @@ Retire Archive Copy
 
 ## Governing policies
 
-- <a id="pa-ce019d4bc8c6"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0ba)
+- <a id="pa-ce019d4bc8"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0)
 
 ## Evidence
 
 ### Qualification
 
-- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459fb8)
-- [make compose-smoke](../../../evidence/sources.md#q-413b0b241ba8)
+- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459f)
+- [make compose-smoke](../../../evidence/sources.md#q-413b0b241b)
 
 ### Executable sources
 
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
-- [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc960) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc9) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
 
 ### Machine authority
 

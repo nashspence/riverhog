@@ -16,28 +16,28 @@ Get Collection Upload Session Provenance Journal
 
 ## External contract
 
-<a id="s-345127ff5037"></a>
-- <a id="s-e76fd54bf22f"></a>`operationId`: get_collection_upload_session_provenance_journal
-- <a id="s-255445db1453"></a>`summary`: Get Collection Upload Session Provenance Journal
-- <a id="s-c7c3d42df762"></a>`security`: `[{"HTTPBearer": []}]`
+<a id="s-345127ff50"></a>
+- <a id="s-e76fd54bf2"></a>`operationId`: get_collection_upload_session_provenance_journal
+- <a id="s-255445db14"></a>`summary`: Get Collection Upload Session Provenance Journal
+- <a id="s-c7c3d42df7"></a>`security`: `[{"HTTPBearer": []}]`
 
 ### Parameters
 
 | Name | In | Required | Schema |
 |---|---|---:|---|
-| <a id="s-bfc2ce9b61e6"></a>`collection_id` | path | yes | type="integer"; minimum=1 |
-| <a id="s-0336b573c618"></a>`journal_id` | path | yes | type="string"; pattern="^urn:uuid:[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$" |
+| <a id="s-bfc2ce9b61"></a>`collection_id` | path | yes | type="integer"; minimum=1 |
+| <a id="s-0336b573c6"></a>`journal_id` | path | yes | type="string"; pattern="^urn:uuid:[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$" |
 
 ### Responses
 
 | Status | Description |
 |---|---|
-| <a id="s-4bb332ca27ff"></a>`200` | Successful Response |
-| <a id="s-e4c0cb73412d"></a>`400` | Bad Request |
-| <a id="s-7c3ad6739d35"></a>`401` | Unauthorized |
-| <a id="s-8d979139601e"></a>`403` | Forbidden |
-| <a id="s-20e7db56e73f"></a>`404` | Not Found |
-| <a id="s-b9579b39442e"></a>`500` | Internal Server Error |
+| <a id="s-4bb332ca27"></a>`200` | Successful Response |
+| <a id="s-e4c0cb7341"></a>`400` | Bad Request |
+| <a id="s-7c3ad6739d"></a>`401` | Unauthorized |
+| <a id="s-8d97913960"></a>`403` | Forbidden |
+| <a id="s-20e7db56e7"></a>`404` | Not Found |
+| <a id="s-b9579b3944"></a>`500` | Internal Server Error |
 
 ## Maintained corroboration
 
@@ -52,19 +52,19 @@ Get Collection Upload Session Provenance Journal
 
 ## Governing policies
 
-- <a id="pa-30dc79c59d9c"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0ba)
+- <a id="pa-30dc79c59d"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0)
 
 ## Evidence
 
 ### Qualification
 
-- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459fb8)
-- [make compose-smoke](../../../evidence/sources.md#q-413b0b241ba8)
+- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459f)
+- [make compose-smoke](../../../evidence/sources.md#q-413b0b241b)
 
 ### Executable sources
 
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
-- [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc960) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc9) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
 
 ### Machine authority
 

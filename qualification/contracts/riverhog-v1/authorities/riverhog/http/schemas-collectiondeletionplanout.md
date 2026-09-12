@@ -16,50 +16,50 @@ Exact externally visible contract owned by this semantic dossier.
 
 ## External contract
 
-<a id="s-b2d6fcbaba1f"></a>
-- <a id="s-c8bc21fc4770"></a>`title`: CollectionDeletionPlanOut
-- <a id="s-43a4b1128085"></a>`type`: object
+<a id="s-b2d6fcbaba"></a>
+- <a id="s-c8bc21fc47"></a>`title`: CollectionDeletionPlanOut
+- <a id="s-43a4b11280"></a>`type`: object
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-f4ff3def0c21"></a>`archive_copies` | yes | type="array"; items=(#/components/schemas/CollectionDeletionArchiveCopyOut) |  |
-| <a id="s-0781b71d7994"></a>`archive_object_count` | yes | type="integer" |  |
-| <a id="s-003b0a0272e1"></a>`billing_note` | yes | type="string" |  |
-| <a id="s-327ac9fe43f3"></a>`blockers` | yes | type="array"; maxItems=55; items=(type="string"); additional keys=`x-riverhog-extent` |  |
-| <a id="s-c328f9741650"></a>`bytes` | yes | type="integer" |  |
-| <a id="s-3c2ff393671a"></a>`challenge` | yes | anyOf=type="string" \| type="null" |  |
-| <a id="s-73ba2d2beef9"></a>`collection_id` | yes | #/components/schemas/CollectionId |  |
-| <a id="s-f0db1aa2f234"></a>`expires_at` | yes | type="string" |  |
-| <a id="s-4551e18b33ca"></a>`file_count` | yes | type="integer" |  |
-| <a id="s-0c27dfe4e37d"></a>`inventory_identity` | yes | type="string" |  |
-| <a id="s-ce485100095a"></a>`metadata_rows` | yes | type="object"; additional keys=`additionalProperties` |  |
-| <a id="s-137b210b7689"></a>`remote_storage_bytes` | yes | type="integer" |  |
-| <a id="s-6ac0cd51f1f4"></a>`retirement_claim` | no | anyOf=#/components/schemas/RetirementClaimReferenceDocument \| type="null" |  |
-| <a id="s-dfa08a8c5de9"></a>`status` | yes | type="string"; enum=["ready","blocked","deleting"] |  |
-| <a id="s-0d4f73bd55e9"></a>`upload_file_count` | yes | type="integer" |  |
-| <a id="s-653b88a8cb43"></a>`warning` | yes | type="string" |  |
+| <a id="s-f4ff3def0c"></a>`archive_copies` | yes | type="array"; items=(#/components/schemas/CollectionDeletionArchiveCopyOut) |  |
+| <a id="s-0781b71d79"></a>`archive_object_count` | yes | type="integer" |  |
+| <a id="s-003b0a0272"></a>`billing_note` | yes | type="string" |  |
+| <a id="s-327ac9fe43"></a>`blockers` | yes | type="array"; maxItems=55; items=(type="string"); additional keys=`x-riverhog-extent` |  |
+| <a id="s-c328f97416"></a>`bytes` | yes | type="integer" |  |
+| <a id="s-3c2ff39367"></a>`challenge` | yes | anyOf=type="string" \| type="null" |  |
+| <a id="s-73ba2d2bee"></a>`collection_id` | yes | #/components/schemas/CollectionId |  |
+| <a id="s-f0db1aa2f2"></a>`expires_at` | yes | type="string" |  |
+| <a id="s-4551e18b33"></a>`file_count` | yes | type="integer" |  |
+| <a id="s-0c27dfe4e3"></a>`inventory_identity` | yes | type="string" |  |
+| <a id="s-ce48510009"></a>`metadata_rows` | yes | type="object"; additional keys=`additionalProperties` |  |
+| <a id="s-137b210b76"></a>`remote_storage_bytes` | yes | type="integer" |  |
+| <a id="s-6ac0cd51f1"></a>`retirement_claim` | no | anyOf=#/components/schemas/RetirementClaimReferenceDocument \| type="null" |  |
+| <a id="s-dfa08a8c5d"></a>`status` | yes | type="string"; enum=["ready","blocked","deleting"] |  |
+| <a id="s-0d4f73bd55"></a>`upload_file_count` | yes | type="integer" |  |
+| <a id="s-653b88a8cb"></a>`warning` | yes | type="string" |  |
 
 ### Progression, limits, and lifecycle
 
-#### [extent-rule/no-semantic-maximum/v1](../../../policies/index.md#p-574724b48af0)
+#### [extent-rule/no-semantic-maximum/v1](../../../policies/index.md#p-574724b48a)
 
 Shared facts for every subject below: capacity_authority={"declared_maximum":null,"hidden_maximum":"forbidden","owner":"riverhog"}; maximum=null; reason="no-declared-semantic-maximum"
 
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
-| <a id="s-004e25716a71"></a>oneOf alternative 1 · field blockers | `cardinality · items · operational_policy` | shared above |
-| [field archive_copies](#s-f4ff3def0c21) | `cardinality · items · operational_policy` | shared above |
-| [field bytes](#s-c328f9741650) | `value · schema-value · operational_policy` | shared above |
-| [field metadata_rows](#s-ce485100095a) | `cardinality · entries · operational_policy` | shared above |
+| <a id="s-004e25716a"></a>[oneOf alternative 1 · field blockers](#s-b2d6fcbaba) | `cardinality · items · operational_policy` | shared above |
+| [field archive_copies](#s-f4ff3def0c) | `cardinality · items · operational_policy` | shared above |
+| [field bytes](#s-c328f97416) | `value · schema-value · operational_policy` | shared above |
+| [field metadata_rows](#s-ce48510009) | `cardinality · entries · operational_policy` | shared above |
 
-#### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
+#### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
 
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
-| <a id="s-ae6d9ad02482"></a>oneOf alternative 2 · field blockers | `cardinality · items · contract_max` | maximum=0; reason="state-conditioned-empty-set" |
-| [field blockers](#s-327ac9fe43f3) | `cardinality · items · contract_max` | maximum=55; reason="bounded-diagnostic-sample-with-explicit-overflow-markers" |
+| <a id="s-ae6d9ad024"></a>[oneOf alternative 2 · field blockers](#s-b2d6fcbaba) | `cardinality · items · contract_max` | maximum=0; reason="state-conditioned-empty-set" |
+| [field blockers](#s-327ac9fe43) | `cardinality · items · contract_max` | maximum=55; reason="bounded-diagnostic-sample-with-explicit-overflow-markers" |
 
 ## Maintained corroboration
 
@@ -71,21 +71,21 @@ Shared facts for every subject below: capacity_authority={"declared_maximum":nul
 
 ## Governing policies
 
-- <a id="pa-be125116c223"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0ba)
-- <a id="pa-18034768a25d"></a>[extent-rule/no-semantic-maximum/v1](../../../policies/index.md#p-574724b48af0)
-- <a id="pa-aec7605607d8"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
+- <a id="pa-be125116c2"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0)
+- <a id="pa-18034768a2"></a>[extent-rule/no-semantic-maximum/v1](../../../policies/index.md#p-574724b48a)
+- <a id="pa-aec7605607"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
 
 ## Evidence
 
 ### Qualification
 
-- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459fb8)
-- [make compose-smoke](../../../evidence/sources.md#q-413b0b241ba8)
+- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459f)
+- [make compose-smoke](../../../evidence/sources.md#q-413b0b241b)
 
 ### Executable sources
 
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
-- [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc960) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc9) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
 
 ### Machine authority
 

@@ -10,36 +10,36 @@ Exact externally visible contract owned by this semantic dossier.
 |---|---|
 | Authority | [stove0-target-conformance](../index.md) |
 | Interface | [cli](index.md) |
-| Family | [root](index.md#f-3bfd2afbe469) |
+| Family | [root](index.md#f-3bfd2afbe4) |
 | Contract elements | 1 |
 | Extent decisions | 0 |
 
 ## External contract
 
-- <a id="s-fde6abe43b6d"></a>Parser name: `stove0-target-conformance`
+- <a id="s-fde6abe43b"></a>Parser name: `stove0-target-conformance`
 
 ### Parameters
 
 | Name | Kind | Required | Type | Options |
 |---|---|---:|---|---|
-| <a id="s-e562e2016c4b"></a>`` | _StoreAction | yes |  |  |
-| <a id="s-e11b46d79464"></a>`` | _AppendAction | no | Path | --case |
+| <a id="s-e562e2016c"></a>`` | _StoreAction | yes |  |  |
+| <a id="s-e11b46d794"></a>`` | _AppendAction | no | Path | --case |
 
 ## Governing policies
 
-- <a id="pa-696512aa3a2d"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de7f)
+- <a id="pa-696512aa3a"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de)
 
 ## Evidence
 
 ### Qualification
 
-- [make dist-smoke](../../../evidence/sources.md#q-0ba2578a3eb7)
-- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459fb8)
+- [make dist-smoke](../../../evidence/sources.md#q-0ba2578a3e)
+- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459f)
 
 ### Executable sources
 
-- [cli:stove0-target-conformance](../../../evidence/sources.md#src-7a44eec01bb9) — `reference/stove0/packages/target-support/src/stove0_target_support/conformance.py::<module>`
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
+- [cli:stove0-target-conformance](../../../evidence/sources.md#src-7a44eec01b) — `reference/stove0/packages/target-support/src/stove0_target_support/conformance.py::<module>`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
 
 ### Machine authority
 

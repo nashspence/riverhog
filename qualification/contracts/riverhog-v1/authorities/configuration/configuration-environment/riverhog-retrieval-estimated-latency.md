@@ -16,27 +16,27 @@ Exact externally visible contract owned by this semantic dossier.
 
 ## External contract
 
-<a id="s-1c368e3bbb6d"></a>
+<a id="s-1c368e3bbb"></a>
 | Field | Shape |
 |---|---|
-| <a id="s-0e717d7f5cbf"></a>`consumers` | ["riverhog-server"] |
-| <a id="s-561f90128ca9"></a>`name` | "RIVERHOG_RETRIEVAL_ESTIMATED_LATENCY" |
+| <a id="s-0e717d7f5c"></a>`consumers` | ["riverhog-server"] |
+| <a id="s-561f90128c"></a>`name` | "RIVERHOG_RETRIEVAL_ESTIMATED_LATENCY" |
 
 ## Governing policies
 
-- <a id="pa-2d12f81d8a9f"></a>[compatibility/configuration/v1](../../../policies/index.md#p-8dc08bb46173)
+- <a id="pa-2d12f81d8a"></a>[compatibility/configuration/v1](../../../policies/index.md#p-8dc08bb461)
 
 ## Evidence
 
 ### Qualification
 
-- [make unit](../../../evidence/sources.md#q-ce47068f504c)
-- [make compose-smoke](../../../evidence/sources.md#q-413b0b241ba8)
+- [make unit](../../../evidence/sources.md#q-ce47068f50)
+- [make compose-smoke](../../../evidence/sources.md#q-413b0b241b)
 
 ### Executable sources
 
-- [configuration-environment:RIVERHOG_RETRIEVAL_ESTIMATED_LATENCY](../../../evidence/sources.md#src-cc14c4b603da) — `configuration-environment:RIVERHOG_RETRIEVAL_ESTIMATED_LATENCY`
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
+- [configuration-environment:RIVERHOG_RETRIEVAL_ESTIMATED_LATENCY](../../../evidence/sources.md#src-cc14c4b603) — `configuration-environment:RIVERHOG_RETRIEVAL_ESTIMATED_LATENCY`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
 
 ### Machine authority
 

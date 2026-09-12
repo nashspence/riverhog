@@ -10,7 +10,7 @@ Exact externally visible contract owned by this semantic dossier.
 |---|---|
 | Authority | [stove0-observer-support](../index.md) |
 | Interface | [protocol](index.md) |
-| Family | [protocol](index.md#f-bd84973d64ae) |
+| Family | [protocol](index.md#f-bd84973d64) |
 | Contract elements | 1 |
 | Extent decisions | 0 |
 
@@ -18,29 +18,29 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Subject | Shape |
 |---|---|
-| <a id="s-c7c5590254f5"></a>`authorities` | additional keys=`http_operations`, `semantic_acceptance`, `structural_models` |
-| <a id="s-d5ea9dbedaa5"></a>`bundle_sha256` | "d7ee01cb66cac26b457031d54882a95ce2b1ae0e163df53590fee00ae1a8f0ce" |
-| <a id="s-2413957c85ad"></a>`compatibility` | additional keys=`contract_identity`, `unknown_fields`, `unknown_protocol_revision` |
-| <a id="s-7ec445dc3358"></a>`format` | "stove0-observer-schema-bundle/v1" |
-| <a id="s-99cb44a99f51"></a>`http_binding` | additional keys=`operations` |
-| <a id="s-afb71a9619ad"></a>`protocol` | "stove0-content-observer/v1" |
-| <a id="s-1eafdfd27d8e"></a>`semantic_acceptance` | additional keys=`binding`, `identity`, `kind`, `unavailable_profile` |
+| <a id="s-c7c5590254"></a>`authorities` | additional keys=`http_operations`, `semantic_acceptance`, `structural_models` |
+| <a id="s-d5ea9dbeda"></a>`bundle_sha256` | "d7ee01cb66cac26b457031d54882a95ce2b1ae0e163df53590fee00ae1a8f0ce" |
+| <a id="s-2413957c85"></a>`compatibility` | additional keys=`contract_identity`, `unknown_fields`, `unknown_protocol_revision` |
+| <a id="s-7ec445dc33"></a>`format` | "stove0-observer-schema-bundle/v1" |
+| <a id="s-99cb44a99f"></a>`http_binding` | additional keys=`operations` |
+| <a id="s-afb71a9619"></a>`protocol` | "stove0-content-observer/v1" |
+| <a id="s-1eafdfd27d"></a>`semantic_acceptance` | additional keys=`binding`, `identity`, `kind`, `unavailable_profile` |
 
 ## Governing policies
 
-- <a id="pa-7ea383fd4865"></a>[compatibility/components/v1](../../../policies/index.md#p-95e9a1225947)
+- <a id="pa-7ea383fd48"></a>[compatibility/components/v1](../../../policies/index.md#p-95e9a12259)
 
 ## Evidence
 
 ### Qualification
 
-- [make dist-smoke](../../../evidence/sources.md#q-0ba2578a3eb7)
-- [make build](../../../evidence/sources.md#q-d1121e35fa7a)
+- [make dist-smoke](../../../evidence/sources.md#q-0ba2578a3e)
+- [make build](../../../evidence/sources.md#q-d1121e35fa)
 
 ### Executable sources
 
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
-- [protocol:generated:stove0-observer](../../../evidence/sources.md#src-dcc0b5485b73) — `reference/stove0/packages/observer-support/src/stove0_observer_support/schemas.py::observer_schema_bundle`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [protocol:generated:stove0-observer](../../../evidence/sources.md#src-dcc0b5485b) — `reference/stove0/packages/observer-support/src/stove0_observer_support/schemas.py::observer_schema_bundle`
 
 ### Machine authority
 

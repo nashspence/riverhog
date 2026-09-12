@@ -6,20 +6,20 @@ Contract elements: **12** · Extent decisions: **9**
 
 | Family | Count |
 |---|---:|
-| <a id="f-290093cc876a"></a>`health` | 2 |
-| <a id="f-7869babba685"></a>`run` | 1 |
-| <a id="f-2f7960c10650"></a>`schemas` | 5 |
-| <a id="f-fe9c00922a58"></a>`securitySchemes` | 1 |
-| <a id="f-55a18408bd6f"></a>`service` | 1 |
-| <a id="f-65703362c3cd"></a>`sources` | 1 |
-| <a id="f-8f6a8fe72d42"></a>`status` | 1 |
+| <a id="f-290093cc87"></a>`health` | 2 |
+| <a id="f-7869babba6"></a>`run` | 1 |
+| <a id="f-2f7960c106"></a>`schemas` | 5 |
+| <a id="f-fe9c00922a"></a>`securitySchemes` | 1 |
+| <a id="f-55a18408bd"></a>`service` | 1 |
+| <a id="f-65703362c3"></a>`sources` | 1 |
+| <a id="f-8f6a8fe72d"></a>`status` | 1 |
 
 | Policy | Count |
 |---|---:|
-| [compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0ba) | 12 |
-| [extent-rule/no-semantic-maximum/v1](../../../policies/index.md#p-574724b48af0) | 6 |
-| [extent-rule/route-progression/v1](../../../policies/index.md#p-6b76b527cb21) | 1 |
-| [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034) | 1 |
+| [compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0) | 12 |
+| [extent-rule/no-semantic-maximum/v1](../../../policies/index.md#p-574724b48a) | 6 |
+| [extent-rule/route-progression/v1](../../../policies/index.md#p-6b76b527cb) | 1 |
+| [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0) | 1 |
 
 ## Semantic dossiers
 

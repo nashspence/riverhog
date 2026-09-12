@@ -16,19 +16,19 @@ Exact externally visible contract owned by this semantic dossier.
 
 ## External contract
 
-<a id="s-c18ac0714e4e"></a>
-- <a id="s-2a0e135c2895"></a>`title`: AppAccessListFiltersOut
-- <a id="s-095198a99258"></a>`type`: object
+<a id="s-c18ac0714e"></a>
+- <a id="s-2a0e135c28"></a>`title`: AppAccessListFiltersOut
+- <a id="s-095198a992"></a>`type`: object
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-00a576f7d9f9"></a>`active` | yes | anyOf=type="boolean" \| type="null" |  |
-| <a id="s-f9c07ac7d402"></a>`app` | yes | anyOf=#/components/schemas/ApplicationName \| type="null" |  |
-| <a id="s-58bc6e1be894"></a>`key_id` | yes | anyOf=#/components/schemas/ApplicationKeyId \| type="null" |  |
-| <a id="s-9a0a41b672b2"></a>`permission` | yes | anyOf=#/components/schemas/ApplicationPermission \| type="null" |  |
-| <a id="s-546a9b227fec"></a>`resource` | yes | anyOf=#/components/schemas/ApplicationResource \| type="null" |  |
+| <a id="s-00a576f7d9"></a>`active` | yes | anyOf=type="boolean" \| type="null" |  |
+| <a id="s-f9c07ac7d4"></a>`app` | yes | anyOf=#/components/schemas/ApplicationName \| type="null" |  |
+| <a id="s-58bc6e1be8"></a>`key_id` | yes | anyOf=#/components/schemas/ApplicationKeyId \| type="null" |  |
+| <a id="s-9a0a41b672"></a>`permission` | yes | anyOf=#/components/schemas/ApplicationPermission \| type="null" |  |
+| <a id="s-546a9b227f"></a>`resource` | yes | anyOf=#/components/schemas/ApplicationResource \| type="null" |  |
 
 ## Maintained corroboration
 
@@ -41,19 +41,19 @@ Exact externally visible contract owned by this semantic dossier.
 
 ## Governing policies
 
-- <a id="pa-d56979450c7c"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0ba)
+- <a id="pa-d56979450c"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0)
 
 ## Evidence
 
 ### Qualification
 
-- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459fb8)
-- [make compose-smoke](../../../evidence/sources.md#q-413b0b241ba8)
+- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459f)
+- [make compose-smoke](../../../evidence/sources.md#q-413b0b241b)
 
 ### Executable sources
 
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
-- [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc960) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc9) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
 
 ### Machine authority
 

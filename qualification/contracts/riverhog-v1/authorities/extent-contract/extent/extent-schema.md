@@ -10,30 +10,30 @@ Exact externally visible contract owned by this semantic dossier.
 |---|---|
 | Authority | [extent-contract](../index.md) |
 | Interface | [extent](index.md) |
-| Family | [policy](index.md#f-259f5e46e289) |
+| Family | [policy](index.md#f-259f5e46e2) |
 | Contract elements | 1 |
 | Extent decisions | 0 |
 
 ## External contract
 
-<a id="s-b0c8668cdb34"></a>
+<a id="s-b0c8668cdb"></a>
 - Shape: "riverhog-extent-contract/v1"
 
 ## Governing policies
 
-- <a id="pa-0fb5e8d03f77"></a>[extent-principle/logical-totals/v1](../../../policies/index.md#p-cfe2e12ee677)
+- <a id="pa-0fb5e8d03f"></a>[extent-principle/logical-totals/v1](../../../policies/index.md#p-cfe2e12ee6)
 
 ## Evidence
 
 ### Qualification
 
-- [make contract-freeze](../../../evidence/sources.md#q-8c74349e71e4)
-- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459fb8)
+- [make contract-freeze](../../../evidence/sources.md#q-8c74349e71)
+- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459f)
 
 ### Executable sources
 
-- [extent:extent-contract](../../../evidence/sources.md#src-5ac94d0a12e8) — `scripts/extent_contract.py::extent_projection`
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
+- [extent:extent-contract](../../../evidence/sources.md#src-5ac94d0a12) — `scripts/extent_contract.py::extent_projection`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
 
 ### Machine authority
 

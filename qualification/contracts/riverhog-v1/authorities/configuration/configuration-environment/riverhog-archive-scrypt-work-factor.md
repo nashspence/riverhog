@@ -16,27 +16,27 @@ Exact externally visible contract owned by this semantic dossier.
 
 ## External contract
 
-<a id="s-9de9805f4473"></a>
+<a id="s-9de9805f44"></a>
 | Field | Shape |
 |---|---|
-| <a id="s-f0e22869ab3c"></a>`consumers` | ["riverhog-server"] |
-| <a id="s-81fae89078fe"></a>`name` | "RIVERHOG_ARCHIVE_SCRYPT_WORK_FACTOR" |
+| <a id="s-f0e22869ab"></a>`consumers` | ["riverhog-server"] |
+| <a id="s-81fae89078"></a>`name` | "RIVERHOG_ARCHIVE_SCRYPT_WORK_FACTOR" |
 
 ## Governing policies
 
-- <a id="pa-3023c33d5bcd"></a>[compatibility/configuration/v1](../../../policies/index.md#p-8dc08bb46173)
+- <a id="pa-3023c33d5b"></a>[compatibility/configuration/v1](../../../policies/index.md#p-8dc08bb461)
 
 ## Evidence
 
 ### Qualification
 
-- [make unit](../../../evidence/sources.md#q-ce47068f504c)
-- [make compose-smoke](../../../evidence/sources.md#q-413b0b241ba8)
+- [make unit](../../../evidence/sources.md#q-ce47068f50)
+- [make compose-smoke](../../../evidence/sources.md#q-413b0b241b)
 
 ### Executable sources
 
-- [configuration-environment:RIVERHOG_ARCHIVE_SCRYPT_WORK_FACTOR](../../../evidence/sources.md#src-8e32132922fb) — `configuration-environment:RIVERHOG_ARCHIVE_SCRYPT_WORK_FACTOR`
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
+- [configuration-environment:RIVERHOG_ARCHIVE_SCRYPT_WORK_FACTOR](../../../evidence/sources.md#src-8e32132922) — `configuration-environment:RIVERHOG_ARCHIVE_SCRYPT_WORK_FACTOR`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
 
 ### Machine authority
 

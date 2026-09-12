@@ -16,27 +16,27 @@ Exact externally visible contract owned by this semantic dossier.
 
 ## External contract
 
-<a id="s-bd9bd4c4284d"></a>
+<a id="s-bd9bd4c428"></a>
 | Field | Shape |
 |---|---|
-| <a id="s-46dd00a5c800"></a>`consumers` | ["stove0-server"] |
-| <a id="s-2f10d7712341"></a>`name` | "STOVE0_TARGET_CALLBACK_ALLOW_INSECURE_HTTP" |
+| <a id="s-46dd00a5c8"></a>`consumers` | ["stove0-server"] |
+| <a id="s-2f10d77123"></a>`name` | "STOVE0_TARGET_CALLBACK_ALLOW_INSECURE_HTTP" |
 
 ## Governing policies
 
-- <a id="pa-903b301abdd8"></a>[compatibility/configuration/v1](../../../policies/index.md#p-8dc08bb46173)
+- <a id="pa-903b301abd"></a>[compatibility/configuration/v1](../../../policies/index.md#p-8dc08bb461)
 
 ## Evidence
 
 ### Qualification
 
-- [make unit](../../../evidence/sources.md#q-ce47068f504c)
-- [make compose-smoke](../../../evidence/sources.md#q-413b0b241ba8)
+- [make unit](../../../evidence/sources.md#q-ce47068f50)
+- [make compose-smoke](../../../evidence/sources.md#q-413b0b241b)
 
 ### Executable sources
 
-- [configuration-environment:STOVE0_TARGET_CALLBACK_ALLOW_INSECURE_HTTP](../../../evidence/sources.md#src-ef417bf18193) — `configuration-environment:STOVE0_TARGET_CALLBACK_ALLOW_INSECURE_HTTP`
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
+- [configuration-environment:STOVE0_TARGET_CALLBACK_ALLOW_INSECURE_HTTP](../../../evidence/sources.md#src-ef417bf181) — `configuration-environment:STOVE0_TARGET_CALLBACK_ALLOW_INSECURE_HTTP`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
 
 ### Machine authority
 

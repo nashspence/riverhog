@@ -16,27 +16,27 @@ Exact externally visible contract owned by this semantic dossier.
 
 ## External contract
 
-<a id="s-74f1ce0aa1f4"></a>
+<a id="s-74f1ce0aa1"></a>
 | Field | Shape |
 |---|---|
-| <a id="s-14c637bf7da1"></a>`consumers` | ["stove0-exiftool-observer"] |
-| <a id="s-991133926368"></a>`name` | "STOVE0_EXIFTOOL_OBSERVER_SOURCE_REVISION" |
+| <a id="s-14c637bf7d"></a>`consumers` | ["stove0-exiftool-observer"] |
+| <a id="s-9911339263"></a>`name` | "STOVE0_EXIFTOOL_OBSERVER_SOURCE_REVISION" |
 
 ## Governing policies
 
-- <a id="pa-8e90363a902d"></a>[compatibility/configuration/v1](../../../policies/index.md#p-8dc08bb46173)
+- <a id="pa-8e90363a90"></a>[compatibility/configuration/v1](../../../policies/index.md#p-8dc08bb461)
 
 ## Evidence
 
 ### Qualification
 
-- [make unit](../../../evidence/sources.md#q-ce47068f504c)
-- [make compose-smoke](../../../evidence/sources.md#q-413b0b241ba8)
+- [make unit](../../../evidence/sources.md#q-ce47068f50)
+- [make compose-smoke](../../../evidence/sources.md#q-413b0b241b)
 
 ### Executable sources
 
-- [configuration-environment:STOVE0_EXIFTOOL_OBSERVER_SOURCE_REVISION](../../../evidence/sources.md#src-eb5066e04186) — `configuration-environment:STOVE0_EXIFTOOL_OBSERVER_SOURCE_REVISION`
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
+- [configuration-environment:STOVE0_EXIFTOOL_OBSERVER_SOURCE_REVISION](../../../evidence/sources.md#src-eb5066e041) — `configuration-environment:STOVE0_EXIFTOOL_OBSERVER_SOURCE_REVISION`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
 
 ### Machine authority
 

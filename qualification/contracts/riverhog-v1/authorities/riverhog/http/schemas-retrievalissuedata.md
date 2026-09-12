@@ -16,44 +16,44 @@ Exact externally visible contract owned by this semantic dossier.
 
 ## External contract
 
-<a id="s-0684cc4629a5"></a>
-- <a id="s-805afcc7b3fb"></a>`title`: RetrievalIssueData
-- <a id="s-2b50be487f25"></a>`type`: object
+<a id="s-0684cc4629"></a>
+- <a id="s-805afcc7b3"></a>`title`: RetrievalIssueData
+- <a id="s-2b50be487f"></a>`type`: object
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-e41e5e822ec7"></a>`actor` | yes | #/components/schemas/RiverhogActor |  |
-| <a id="s-cacf608ce33f"></a>`cause` | no | anyOf=#/components/schemas/RiverhogEventCause \| type="null" |  |
-| <a id="s-4c4268ef6a54"></a>`collection_created_at` | no | anyOf=type="string"; minLength=1; maxLength=64 \| type="null" |  |
-| <a id="s-dc91964e2cae"></a>`collection_id` | no | anyOf=#/components/schemas/CollectionId \| type="null" |  |
-| <a id="s-1ea7f257886c"></a>`collection_ids` | yes | type="array"; minItems=1; items=(#/components/schemas/CollectionId) |  |
-| <a id="s-dd874d728728"></a>`context` | no | anyOf=type="object"; additional keys=`additionalProperties`, `x-riverhog-encoded-bytes-max`, `x-riverhog-extent` \| type="null" |  |
-| <a id="s-99f1d4d657c1"></a>`error` | yes | type="string"; minLength=1; maxLength=16384 |  |
-| <a id="s-61cd3658eb82"></a>`initiator` | yes | #/components/schemas/RiverhogActor |  |
-| <a id="s-642cd7a6f78d"></a>`retrieval_id` | yes | type="string"; minLength=1; maxLength=300 |  |
-| <a id="s-f79b5c54a82d"></a>`state` | yes | type="string"; const="requested" |  |
+| <a id="s-e41e5e822e"></a>`actor` | yes | #/components/schemas/RiverhogActor |  |
+| <a id="s-cacf608ce3"></a>`cause` | no | anyOf=#/components/schemas/RiverhogEventCause \| type="null" |  |
+| <a id="s-4c4268ef6a"></a>`collection_created_at` | no | anyOf=type="string"; minLength=1; maxLength=64 \| type="null" |  |
+| <a id="s-dc91964e2c"></a>`collection_id` | no | anyOf=#/components/schemas/CollectionId \| type="null" |  |
+| <a id="s-1ea7f25788"></a>`collection_ids` | yes | type="array"; minItems=1; items=(#/components/schemas/CollectionId) |  |
+| <a id="s-dd874d7287"></a>`context` | no | anyOf=type="object"; additional keys=`additionalProperties`, `x-riverhog-encoded-bytes-max`, `x-riverhog-extent` \| type="null" |  |
+| <a id="s-99f1d4d657"></a>`error` | yes | type="string"; minLength=1; maxLength=16384 |  |
+| <a id="s-61cd3658eb"></a>`initiator` | yes | #/components/schemas/RiverhogActor |  |
+| <a id="s-642cd7a6f7"></a>`retrieval_id` | yes | type="string"; minLength=1; maxLength=300 |  |
+| <a id="s-f79b5c54a8"></a>`state` | yes | type="string"; const="requested" |  |
 
 ### Progression, limits, and lifecycle
 
-#### [extent-rule/no-semantic-maximum/v1](../../../policies/index.md#p-574724b48af0)
+#### [extent-rule/no-semantic-maximum/v1](../../../policies/index.md#p-574724b48a)
 
 Shared facts for every subject below: capacity_authority={"declared_maximum":null,"hidden_maximum":"forbidden","owner":"riverhog"}; maximum=null; reason="no-declared-semantic-maximum"
 
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
-| [field collection_ids](#s-1ea7f257886c) | `cardinality · items · operational_policy` | shared above |
-| <a id="s-68023b2f7727"></a>field context · anyOf alternative 1 | `cardinality · entries · operational_policy` | shared above |
+| [field collection_ids](#s-1ea7f25788) | `cardinality · items · operational_policy` | shared above |
+| <a id="s-68023b2f77"></a>[field context · object value](#s-dd874d7287) | `cardinality · entries · operational_policy` | shared above |
 
-#### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
+#### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
 
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
-| <a id="s-774797311293"></a>field collection_created_at · anyOf alternative 1 | `length · characters · contract_max` | maximum=64; minimum=1; reason="schema-maximum" |
-| [field context · anyOf alternative 1](#s-68023b2f7727) | `encoded-size · bytes · contract_max` | maximum=4096; reason="bounded-lifecycle-event-context"; source_constraint={"field":"x-riverhog-encoded-bytes-max"} |
-| [field error](#s-99f1d4d657c1) | `length · characters · contract_max` | maximum=16384; minimum=1; reason="schema-maximum" |
-| [field retrieval_id](#s-642cd7a6f78d) | `length · characters · contract_max` | maximum=300; minimum=1; reason="schema-maximum" |
+| <a id="s-7747973112"></a>[field collection_created_at · string value](#s-4c4268ef6a) | `length · characters · contract_max` | maximum=64; minimum=1; reason="schema-maximum" |
+| [field context · object value](#s-68023b2f77) | `encoded-size · bytes · contract_max` | maximum=4096; reason="bounded-lifecycle-event-context"; source_constraint={"field":"x-riverhog-encoded-bytes-max"} |
+| [field error](#s-99f1d4d657) | `length · characters · contract_max` | maximum=16384; minimum=1; reason="schema-maximum" |
+| [field retrieval_id](#s-642cd7a6f7) | `length · characters · contract_max` | maximum=300; minimum=1; reason="schema-maximum" |
 
 ## Maintained corroboration
 
@@ -65,21 +65,21 @@ Shared facts for every subject below: capacity_authority={"declared_maximum":nul
 
 ## Governing policies
 
-- <a id="pa-819b95c55bde"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0ba)
-- <a id="pa-06e98472c48f"></a>[extent-rule/no-semantic-maximum/v1](../../../policies/index.md#p-574724b48af0)
-- <a id="pa-ea6526e9da47"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
+- <a id="pa-819b95c55b"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0)
+- <a id="pa-06e98472c4"></a>[extent-rule/no-semantic-maximum/v1](../../../policies/index.md#p-574724b48a)
+- <a id="pa-ea6526e9da"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
 
 ## Evidence
 
 ### Qualification
 
-- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459fb8)
-- [make compose-smoke](../../../evidence/sources.md#q-413b0b241ba8)
+- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459f)
+- [make compose-smoke](../../../evidence/sources.md#q-413b0b241b)
 
 ### Executable sources
 
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
-- [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc960) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc9) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
 
 ### Machine authority
 

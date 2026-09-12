@@ -16,27 +16,27 @@ Exact externally visible contract owned by this semantic dossier.
 
 ## External contract
 
-<a id="s-0d1f6f2eed04"></a>
+<a id="s-0d1f6f2eed"></a>
 | Field | Shape |
 |---|---|
-| <a id="s-1351b3e99ac6"></a>`consumers` | ["gogurt"] |
-| <a id="s-4e078e6d983c"></a>`name` | "GOGURT_MOUNTED_VOLUME_PROVIDER" |
+| <a id="s-1351b3e99a"></a>`consumers` | ["gogurt"] |
+| <a id="s-4e078e6d98"></a>`name` | "GOGURT_MOUNTED_VOLUME_PROVIDER" |
 
 ## Governing policies
 
-- <a id="pa-d21c59e1ecbc"></a>[compatibility/configuration/v1](../../../policies/index.md#p-8dc08bb46173)
+- <a id="pa-d21c59e1ec"></a>[compatibility/configuration/v1](../../../policies/index.md#p-8dc08bb461)
 
 ## Evidence
 
 ### Qualification
 
-- [make unit](../../../evidence/sources.md#q-ce47068f504c)
-- [make compose-smoke](../../../evidence/sources.md#q-413b0b241ba8)
+- [make unit](../../../evidence/sources.md#q-ce47068f50)
+- [make compose-smoke](../../../evidence/sources.md#q-413b0b241b)
 
 ### Executable sources
 
-- [configuration-environment:GOGURT_MOUNTED_VOLUME_PROVIDER](../../../evidence/sources.md#src-3ca721321c24) — `configuration-environment:GOGURT_MOUNTED_VOLUME_PROVIDER`
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
+- [configuration-environment:GOGURT_MOUNTED_VOLUME_PROVIDER](../../../evidence/sources.md#src-3ca721321c) — `configuration-environment:GOGURT_MOUNTED_VOLUME_PROVIDER`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
 
 ### Machine authority
 

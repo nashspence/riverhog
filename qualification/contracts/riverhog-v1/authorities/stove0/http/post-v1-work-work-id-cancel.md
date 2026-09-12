@@ -16,27 +16,27 @@ Cancel Work
 
 ## External contract
 
-<a id="s-9fddf026dd8f"></a>
-- <a id="s-99c239dfce41"></a>`operationId`: cancel_work
-- <a id="s-1d4623f18c1e"></a>`summary`: Cancel Work
+<a id="s-9fddf026dd"></a>
+- <a id="s-99c239dfce"></a>`operationId`: cancel_work
+- <a id="s-1d4623f18c"></a>`summary`: Cancel Work
 
 ### Parameters
 
 | Name | In | Required | Schema |
 |---|---|---:|---|
-| <a id="s-e0d0a92d4884"></a>`work_id` | path | yes | type="string" |
+| <a id="s-e0d0a92d48"></a>`work_id` | path | yes | type="string" |
 
 ### Responses
 
 | Status | Description |
 |---|---|
-| <a id="s-efcda5be1da1"></a>`200` | Successful Response |
-| <a id="s-def26bf1343b"></a>`400` | Bad Request |
-| <a id="s-d95f5dbeee19"></a>`401` | Unauthorized |
-| <a id="s-f0bb7113fc33"></a>`403` | Forbidden |
-| <a id="s-f6f1cf0f5058"></a>`404` | Not Found |
-| <a id="s-58d8b67d6dfe"></a>`409` | Conflict |
-| <a id="s-34eddfe3bb64"></a>`500` | Internal Server Error |
+| <a id="s-efcda5be1d"></a>`200` | Successful Response |
+| <a id="s-def26bf134"></a>`400` | Bad Request |
+| <a id="s-d95f5dbeee"></a>`401` | Unauthorized |
+| <a id="s-f0bb7113fc"></a>`403` | Forbidden |
+| <a id="s-f6f1cf0f50"></a>`404` | Not Found |
+| <a id="s-58d8b67d6d"></a>`409` | Conflict |
+| <a id="s-34eddfe3bb"></a>`500` | Internal Server Error |
 
 ## Maintained corroboration
 
@@ -51,19 +51,19 @@ Cancel Work
 
 ## Governing policies
 
-- <a id="pa-97f01cbb98ea"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0ba)
+- <a id="pa-97f01cbb98"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0)
 
 ## Evidence
 
 ### Qualification
 
-- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459fb8)
-- [make compose-smoke](../../../evidence/sources.md#q-413b0b241ba8)
+- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459f)
+- [make compose-smoke](../../../evidence/sources.md#q-413b0b241b)
 
 ### Executable sources
 
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
-- [openapi:stove0](../../../evidence/sources.md#src-52e6e3212451) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [openapi:stove0](../../../evidence/sources.md#src-52e6e32124) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
 
 ### Machine authority
 

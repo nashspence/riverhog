@@ -16,43 +16,43 @@ Exact safe-release evidence for one artifact in construction state.
 
 ## External contract
 
-<a id="s-de01edc6c7f6"></a>
-- <a id="s-991238a92bf9"></a>`title`: CollectionUploadArtifactCustodyReceiptDocument
-- <a id="s-881a8cdfbb91"></a>`description`: Exact safe-release evidence for one artifact in construction state.
-- <a id="s-7ba375dfb50b"></a>`type`: object
+<a id="s-de01edc6c7"></a>
+- <a id="s-991238a92b"></a>`title`: CollectionUploadArtifactCustodyReceiptDocument
+- <a id="s-881a8cdfbb"></a>`description`: Exact safe-release evidence for one artifact in construction state.
+- <a id="s-7ba375dfb5"></a>`type`: object
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-a0567d04d685"></a>`archive_object_count` | yes | type="integer"; minimum=1 |  |
-| <a id="s-652d1bb86ced"></a>`archive_object_set_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-5ff22aaac293"></a>`bytes` | yes | type="integer"; minimum=0 |  |
-| <a id="s-48eeb34d300e"></a>`collection_id` | yes | #/components/schemas/CollectionId |  |
-| <a id="s-db6cbedc39b3"></a>`format` | no | type="string"; const="riverhog-artifact-custody-receipt/v1" |  |
-| <a id="s-478a27e2aa82"></a>`path` | yes | type="string" |  |
-| <a id="s-0ee690ffb923"></a>`receipt_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-c54e529e154e"></a>`sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-a0567d04d6"></a>`archive_object_count` | yes | type="integer"; minimum=1 |  |
+| <a id="s-652d1bb86c"></a>`archive_object_set_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-5ff22aaac2"></a>`bytes` | yes | type="integer"; minimum=0 |  |
+| <a id="s-48eeb34d30"></a>`collection_id` | yes | #/components/schemas/CollectionId |  |
+| <a id="s-db6cbedc39"></a>`format` | no | type="string"; const="riverhog-artifact-custody-receipt/v1" |  |
+| <a id="s-478a27e2aa"></a>`path` | yes | type="string" |  |
+| <a id="s-0ee690ffb9"></a>`receipt_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-c54e529e15"></a>`sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 
 ### Progression, limits, and lifecycle
 
-#### [extent-rule/no-semantic-maximum/v1](../../../policies/index.md#p-574724b48af0)
+#### [extent-rule/no-semantic-maximum/v1](../../../policies/index.md#p-574724b48a)
 
 Shared facts for every subject below: capacity_authority={"declared_maximum":null,"hidden_maximum":"forbidden","owner":"riverhog"}; maximum=null; reason="no-declared-semantic-maximum"
 
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
-| [field bytes](#s-5ff22aaac293) | `value · schema-value · operational_policy` | shared above |
+| [field bytes](#s-5ff22aaac2) | `value · schema-value · operational_policy` | shared above |
 
-#### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
+#### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
 
 Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"}
 
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
-| [field archive_object_set_sha256](#s-652d1bb86ced) | `length · characters · fixed` | shared above |
-| [field receipt_sha256](#s-0ee690ffb923) | `length · characters · fixed` | shared above |
-| [field sha256](#s-c54e529e154e) | `length · characters · fixed` | shared above |
+| [field archive_object_set_sha256](#s-652d1bb86c) | `length · characters · fixed` | shared above |
+| [field receipt_sha256](#s-0ee690ffb9) | `length · characters · fixed` | shared above |
+| [field sha256](#s-c54e529e15) | `length · characters · fixed` | shared above |
 
 ## Maintained corroboration
 
@@ -62,21 +62,21 @@ Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-publ
 
 ## Governing policies
 
-- <a id="pa-08f09f974507"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0ba)
-- <a id="pa-d3744d68e369"></a>[extent-rule/no-semantic-maximum/v1](../../../policies/index.md#p-574724b48af0)
-- <a id="pa-3285537fd680"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
+- <a id="pa-08f09f9745"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0)
+- <a id="pa-d3744d68e3"></a>[extent-rule/no-semantic-maximum/v1](../../../policies/index.md#p-574724b48a)
+- <a id="pa-3285537fd6"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
 
 ## Evidence
 
 ### Qualification
 
-- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459fb8)
-- [make compose-smoke](../../../evidence/sources.md#q-413b0b241ba8)
+- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459f)
+- [make compose-smoke](../../../evidence/sources.md#q-413b0b241b)
 
 ### Executable sources
 
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
-- [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc960) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc9) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
 
 ### Machine authority
 

@@ -16,43 +16,43 @@ Exact externally visible contract owned by this semantic dossier.
 
 ## External contract
 
-<a id="s-904e7d48d1ef"></a>
-- <a id="s-89a904fd6338"></a>`title`: SchedulerRunIn
-- <a id="s-93c50c3642e8"></a>`type`: object
+<a id="s-904e7d48d1"></a>
+- <a id="s-89a904fd63"></a>`title`: SchedulerRunIn
+- <a id="s-93c50c3642"></a>`type`: object
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-010d64016011"></a>`role` | no | type="string"; enum=["controller","worker","combined"] |  |
-| <a id="s-083bb6e401b9"></a>`work_limit` | no | type="integer"; minimum=1; maximum=100 |  |
+| <a id="s-010d640160"></a>`role` | no | type="string"; enum=["controller","worker","combined"] |  |
+| <a id="s-083bb6e401"></a>`work_limit` | no | type="integer"; minimum=1; maximum=100 |  |
 
 ### Progression, limits, and lifecycle
 
-#### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
+#### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
 
 Shared facts for every subject below: maximum=100; minimum=1; reason="schema-maximum"
 
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
-| [field work_limit](#s-083bb6e401b9) | `value · schema-value · contract_max` | shared above |
+| [field work_limit](#s-083bb6e401) | `value · schema-value · contract_max` | shared above |
 
 ## Governing policies
 
-- <a id="pa-646942b44113"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0ba)
-- <a id="pa-b1f2e74ea862"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
+- <a id="pa-646942b441"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0)
+- <a id="pa-b1f2e74ea8"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
 
 ## Evidence
 
 ### Qualification
 
-- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459fb8)
-- [make compose-smoke](../../../evidence/sources.md#q-413b0b241ba8)
+- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459f)
+- [make compose-smoke](../../../evidence/sources.md#q-413b0b241b)
 
 ### Executable sources
 
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
-- [openapi:stove0](../../../evidence/sources.md#src-52e6e3212451) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [openapi:stove0](../../../evidence/sources.md#src-52e6e32124) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
 
 ### Machine authority
 

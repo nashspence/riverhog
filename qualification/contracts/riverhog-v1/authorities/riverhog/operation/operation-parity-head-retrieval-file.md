@@ -16,36 +16,36 @@ Exact externally visible contract owned by this semantic dossier.
 
 ## External contract
 
-<a id="s-e932b9b08033"></a>
+<a id="s-e932b9b080"></a>
 | Concern | Contract |
 |---|---|
-| <a id="s-bb898e8b5df2"></a>`application` | riverhog |
-| <a id="s-a5276efad2b4"></a>`classification` | standard-tool/protocol |
-| <a id="s-f080a0b5c8a6"></a>`cli_commands` | [] |
-| <a id="s-f873e04e35b5"></a>`client` | None |
-| <a id="s-df2703cb8c23"></a>`method` | HEAD |
-| <a id="s-4dd708cdbae9"></a>`operation_id` | head_retrieval_file |
-| <a id="s-e8cdbc61384d"></a>`path` | /v1/retrieval-jobs/{job_id}/content |
-| <a id="s-bd90197338fb"></a>`provider_evidence` | None |
-| <a id="s-108cc7663a3b"></a>`read_collection` | None |
-| <a id="s-9ebdc237ecb3"></a>`response_authority` | stream-or-empty |
+| <a id="s-bb898e8b5d"></a>`application` | riverhog |
+| <a id="s-a5276efad2"></a>`classification` | standard-tool/protocol |
+| <a id="s-f080a0b5c8"></a>`cli_commands` | [] |
+| <a id="s-f873e04e35"></a>`client` | None |
+| <a id="s-df2703cb8c"></a>`method` | HEAD |
+| <a id="s-4dd708cdba"></a>`operation_id` | head_retrieval_file |
+| <a id="s-e8cdbc6138"></a>`path` | /v1/retrieval-jobs/{job_id}/content |
+| <a id="s-bd90197338"></a>`provider_evidence` | None |
+| <a id="s-108cc7663a"></a>`read_collection` | None |
+| <a id="s-9ebdc237ec"></a>`response_authority` | stream-or-empty |
 
 ## Governing policies
 
-- <a id="pa-1d9509185576"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de7f)
-- <a id="pa-8b94b22ac502"></a>[compatibility/components/v1](../../../policies/index.md#p-95e9a1225947)
-- <a id="pa-8cf038003010"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0ba)
+- <a id="pa-1d95091855"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de)
+- <a id="pa-8b94b22ac5"></a>[compatibility/components/v1](../../../policies/index.md#p-95e9a12259)
+- <a id="pa-8cf0380030"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0)
 
 ## Evidence
 
 ### Qualification
 
-- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459fb8)
+- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459f)
 
 ### Executable sources
 
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
-- [operations:operation-matrix](../../../evidence/sources.md#src-b032bdc56b3f) — `scripts/operation_qualification.py::operation_matrix`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [operations:operation-matrix](../../../evidence/sources.md#src-b032bdc56b) — `scripts/operation_qualification.py::operation_matrix`
 
 ### Machine authority
 

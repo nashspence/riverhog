@@ -16,27 +16,27 @@ Exact externally visible contract owned by this semantic dossier.
 
 ## External contract
 
-<a id="s-d42d9004a6e0"></a>
+<a id="s-d42d9004a6"></a>
 | Field | Shape |
 |---|---|
-| <a id="s-ef9d7442ff0b"></a>`consumers` | ["stove0-api-client"] |
-| <a id="s-c980de4ee4a2"></a>`name` | "STOVE0_ALLOW_INSECURE_HTTP" |
+| <a id="s-ef9d7442ff"></a>`consumers` | ["stove0-api-client"] |
+| <a id="s-c980de4ee4"></a>`name` | "STOVE0_ALLOW_INSECURE_HTTP" |
 
 ## Governing policies
 
-- <a id="pa-4fc9b12c8f1e"></a>[compatibility/configuration/v1](../../../policies/index.md#p-8dc08bb46173)
+- <a id="pa-4fc9b12c8f"></a>[compatibility/configuration/v1](../../../policies/index.md#p-8dc08bb461)
 
 ## Evidence
 
 ### Qualification
 
-- [make unit](../../../evidence/sources.md#q-ce47068f504c)
-- [make compose-smoke](../../../evidence/sources.md#q-413b0b241ba8)
+- [make unit](../../../evidence/sources.md#q-ce47068f50)
+- [make compose-smoke](../../../evidence/sources.md#q-413b0b241b)
 
 ### Executable sources
 
-- [configuration-environment:STOVE0_ALLOW_INSECURE_HTTP](../../../evidence/sources.md#src-06df4fb5c3a4) — `configuration-environment:STOVE0_ALLOW_INSECURE_HTTP`
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
+- [configuration-environment:STOVE0_ALLOW_INSECURE_HTTP](../../../evidence/sources.md#src-06df4fb5c3) — `configuration-environment:STOVE0_ALLOW_INSECURE_HTTP`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
 
 ### Machine authority
 

@@ -10,30 +10,30 @@ Exact externally visible contract owned by this semantic dossier.
 |---|---|
 | Authority | [riverhog-catalog](../index.md) |
 | Interface | [durable-state](index.md) |
-| Family | [owners](index.md#f-d362e5b150d1) |
+| Family | [owners](index.md#f-d362e5b150) |
 | Contract elements | 1 |
 | Extent decisions | 0 |
 
 ## External contract
 
-<a id="s-0f3e6e400804"></a>
-- <a id="s-5781e0d37665"></a>`format`: state-schema/postgresql
+<a id="s-0f3e6e4008"></a>
+- <a id="s-5781e0d376"></a>`format`: state-schema/postgresql
 
 ## Governing policies
 
-- <a id="pa-22f80ed6bf02"></a>[compatibility/components/v1](../../../policies/index.md#p-95e9a1225947)
+- <a id="pa-22f80ed6bf"></a>[compatibility/components/v1](../../../policies/index.md#p-95e9a12259)
 
 ## Evidence
 
 ### Qualification
 
-- [make release-check](../../../evidence/sources.md#q-8d8d22d6a6b1)
-- [make database-qualification](../../../evidence/sources.md#q-27f281b51ec6)
+- [make release-check](../../../evidence/sources.md#q-8d8d22d6a6)
+- [make database-qualification](../../../evidence/sources.md#q-27f281b51e)
 
 ### Executable sources
 
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
-- [state:riverhog-catalog](../../../evidence/sources.md#src-d8b4a1467008) — `state:riverhog-catalog`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [state:riverhog-catalog](../../../evidence/sources.md#src-d8b4a14670) — `state:riverhog-catalog`
 
 ### Machine authority
 

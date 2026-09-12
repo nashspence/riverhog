@@ -16,44 +16,44 @@ Exact externally visible contract owned by this semantic dossier.
 
 ## External contract
 
-<a id="s-d1a5ea0009ee"></a>
-- <a id="s-2526acc1994a"></a>`title`: EvaluationReviewIn
-- <a id="s-68c174083dce"></a>`type`: object
+<a id="s-d1a5ea0009"></a>
+- <a id="s-2526acc199"></a>`title`: EvaluationReviewIn
+- <a id="s-68c174083d"></a>`type`: object
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-521cc519ce03"></a>`note` | no | anyOf=type="string"; minLength=1; maxLength=4000; pattern="^\\S(?:[\\s\\S]*\\S)?$" \| type="null" |  |
-| <a id="s-ea089efab5ad"></a>`rating` | no | anyOf=type="integer"; minimum=1; maximum=5 \| type="null" |  |
+| <a id="s-521cc519ce"></a>`note` | no | anyOf=type="string"; minLength=1; maxLength=4000; pattern="^\\S(?:[\\s\\S]*\\S)?$" \| type="null" |  |
+| <a id="s-ea089efab5"></a>`rating` | no | anyOf=type="integer"; minimum=1; maximum=5 \| type="null" |  |
 
 ### Progression, limits, and lifecycle
 
-#### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
+#### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
 
 Shared facts for every subject below: minimum=1; reason="schema-maximum"
 
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
-| <a id="s-b314ade7635f"></a>field note · anyOf alternative 1 | `length · characters · contract_max` | maximum=4000 |
-| <a id="s-9f0160af012d"></a>field rating · anyOf alternative 1 | `value · schema-value · contract_max` | maximum=5 |
+| <a id="s-b314ade763"></a>[field note · string value](#s-521cc519ce) | `length · characters · contract_max` | maximum=4000 |
+| <a id="s-9f0160af01"></a>[field rating · integer value](#s-ea089efab5) | `value · schema-value · contract_max` | maximum=5 |
 
 ## Governing policies
 
-- <a id="pa-310d2ea59ace"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0ba)
-- <a id="pa-9bb264747b28"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
+- <a id="pa-310d2ea59a"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0)
+- <a id="pa-9bb264747b"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
 
 ## Evidence
 
 ### Qualification
 
-- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459fb8)
-- [make compose-smoke](../../../evidence/sources.md#q-413b0b241ba8)
+- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459f)
+- [make compose-smoke](../../../evidence/sources.md#q-413b0b241b)
 
 ### Executable sources
 
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
-- [openapi:stove0](../../../evidence/sources.md#src-52e6e3212451) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [openapi:stove0](../../../evidence/sources.md#src-52e6e32124) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
 
 ### Machine authority
 

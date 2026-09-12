@@ -16,18 +16,18 @@ Declare Target Execution Output
 
 ## External contract
 
-<a id="s-825ce221c498"></a>
-- <a id="s-bc53930cb6bd"></a>`operationId`: declare_target_execution_output
-- <a id="s-cd8891b23503"></a>`summary`: Declare Target Execution Output
+<a id="s-825ce221c4"></a>
+- <a id="s-bc53930cb6"></a>`operationId`: declare_target_execution_output
+- <a id="s-cd8891b235"></a>`summary`: Declare Target Execution Output
 
 ### Parameters
 
 | Name | In | Required | Schema |
 |---|---|---:|---|
-| <a id="s-1dde977b0b27"></a>`job_id` | path | yes | type="string" |
-| <a id="s-f4d1dab401be"></a>`artifact_id` | path | yes | type="string" |
+| <a id="s-1dde977b0b"></a>`job_id` | path | yes | type="string" |
+| <a id="s-f4d1dab401"></a>`artifact_id` | path | yes | type="string" |
 
-### <a id="s-a90f31241598"></a>Request body
+### <a id="s-a90f312415"></a>Request body
 
 `{"content": {"application/json": {"schema": {"$ref": "#/components/schemas/OutputArtifact"}}}, "required": true}`
 
@@ -35,11 +35,11 @@ Declare Target Execution Output
 
 | Status | Description |
 |---|---|
-| <a id="s-dd246f406cd9"></a>`200` | Successful Response |
-| <a id="s-32354f6c91b0"></a>`400` | Bad Request |
-| <a id="s-086336745e92"></a>`401` | Unauthorized |
-| <a id="s-b5701ceee76e"></a>`403` | Forbidden |
-| <a id="s-4f4a60a49019"></a>`500` | Internal Server Error |
+| <a id="s-dd246f406c"></a>`200` | Successful Response |
+| <a id="s-32354f6c91"></a>`400` | Bad Request |
+| <a id="s-086336745e"></a>`401` | Unauthorized |
+| <a id="s-b5701ceee7"></a>`403` | Forbidden |
+| <a id="s-4f4a60a490"></a>`500` | Internal Server Error |
 
 ## Maintained corroboration
 
@@ -55,19 +55,19 @@ Declare Target Execution Output
 
 ## Governing policies
 
-- <a id="pa-e11fa4397ba9"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0ba)
+- <a id="pa-e11fa4397b"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0)
 
 ## Evidence
 
 ### Qualification
 
-- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459fb8)
-- [make compose-smoke](../../../evidence/sources.md#q-413b0b241ba8)
+- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459f)
+- [make compose-smoke](../../../evidence/sources.md#q-413b0b241b)
 
 ### Executable sources
 
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
-- [openapi:stove0](../../../evidence/sources.md#src-52e6e3212451) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [openapi:stove0](../../../evidence/sources.md#src-52e6e32124) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
 
 ### Machine authority
 

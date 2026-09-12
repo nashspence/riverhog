@@ -16,38 +16,38 @@ Exact externally visible contract owned by this semantic dossier.
 
 ## External contract
 
-<a id="s-2d908ff8df4d"></a>
+<a id="s-2d908ff8df"></a>
 | Field | Shape |
 |---|---|
-| <a id="s-c799298a709a"></a>`consumers` | ["riverhog-server"] |
-| <a id="s-c530fa2f45f7"></a>`name` | "RIVERHOG_CATALOG_SYNC_HISTORY_RETENTION" |
+| <a id="s-c799298a70"></a>`consumers` | ["riverhog-server"] |
+| <a id="s-c530fa2f45"></a>`name` | "RIVERHOG_CATALOG_SYNC_HISTORY_RETENTION" |
 
 ### Progression, limits, and lifecycle
 
-#### [extent-rule/configured-capacity/v1](../../../policies/index.md#p-3ebc61fc9972)
+#### [extent-rule/configured-capacity/v1](../../../policies/index.md#p-3ebc61fc99)
 
 Shared facts for every subject below: configuration="RIVERHOG_CATALOG_SYNC_HISTORY_RETENTION"; maximum=null; reason="operator-configured-capacity"
 
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
-| [RIVERHOG_CATALOG_SYNC_HISTORY_RETENTION](#s-2d908ff8df4d) | `value · configured-value · operational_policy` | shared above |
+| [RIVERHOG_CATALOG_SYNC_HISTORY_RETENTION](#s-2d908ff8df) | `value · configured-value · operational_policy` | shared above |
 
 ## Governing policies
 
-- <a id="pa-bbcee626350b"></a>[compatibility/configuration/v1](../../../policies/index.md#p-8dc08bb46173)
-- <a id="pa-9a25ce0311d5"></a>[extent-rule/configured-capacity/v1](../../../policies/index.md#p-3ebc61fc9972)
+- <a id="pa-bbcee62635"></a>[compatibility/configuration/v1](../../../policies/index.md#p-8dc08bb461)
+- <a id="pa-9a25ce0311"></a>[extent-rule/configured-capacity/v1](../../../policies/index.md#p-3ebc61fc99)
 
 ## Evidence
 
 ### Qualification
 
-- [make unit](../../../evidence/sources.md#q-ce47068f504c)
-- [make compose-smoke](../../../evidence/sources.md#q-413b0b241ba8)
+- [make unit](../../../evidence/sources.md#q-ce47068f50)
+- [make compose-smoke](../../../evidence/sources.md#q-413b0b241b)
 
 ### Executable sources
 
-- [configuration-environment:RIVERHOG_CATALOG_SYNC_HISTORY_RETENTION](../../../evidence/sources.md#src-ac7f42ab580b) — `configuration-environment:RIVERHOG_CATALOG_SYNC_HISTORY_RETENTION`
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
+- [configuration-environment:RIVERHOG_CATALOG_SYNC_HISTORY_RETENTION](../../../evidence/sources.md#src-ac7f42ab58) — `configuration-environment:RIVERHOG_CATALOG_SYNC_HISTORY_RETENTION`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
 
 ### Machine authority
 

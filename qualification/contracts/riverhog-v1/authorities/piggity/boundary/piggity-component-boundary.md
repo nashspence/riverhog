@@ -10,37 +10,37 @@ Exact externally visible contract owned by this semantic dossier.
 |---|---|
 | Authority | [piggity](../index.md) |
 | Interface | [boundary](index.md) |
-| Family | [components](index.md#f-de94abd7d42e) |
+| Family | [components](index.md#f-de94abd7d4) |
 | Contract elements | 1 |
 | Extent decisions | 0 |
 
 ## External contract
 
-<a id="s-97f233cab01e"></a>
+<a id="s-97f233cab0"></a>
 | Field | Shape |
 |---|---|
-| <a id="s-56090f65fb87"></a>`console_scripts` | additional keys=`piggity` |
-| <a id="s-1a6c7b1bcdd4"></a>`dependencies` | ["http-api-contracts","riverhog-application-access","riverhog-client","riverhog-protocol","riverhog-provenance","state-schema","time-formats"] |
-| <a id="s-af8a4f6869ef"></a>`distribution` | "piggity" |
-| <a id="s-b031a35a23df"></a>`optional_dependencies` | empty object |
-| <a id="s-742b19c00031"></a>`path` | "reference/riverhog/applications/piggity" |
-| <a id="s-361b39358bb3"></a>`role` | "reference_application" |
+| <a id="s-56090f65fb"></a>`console_scripts` | additional keys=`piggity` |
+| <a id="s-1a6c7b1bcd"></a>`dependencies` | ["http-api-contracts","riverhog-application-access","riverhog-client","riverhog-protocol","riverhog-provenance","state-schema","time-formats"] |
+| <a id="s-af8a4f6869"></a>`distribution` | "piggity" |
+| <a id="s-b031a35a23"></a>`optional_dependencies` | empty object |
+| <a id="s-742b19c000"></a>`path` | "reference/riverhog/applications/piggity" |
+| <a id="s-361b39358b"></a>`role` | "reference_application" |
 
 ## Governing policies
 
-- <a id="pa-6edfc52ce906"></a>[boundary/frozen-authority/v1](../../../policies/index.md#p-61994d3f0fa8)
+- <a id="pa-6edfc52ce9"></a>[boundary/frozen-authority/v1](../../../policies/index.md#p-61994d3f0f)
 
 ## Evidence
 
 ### Qualification
 
-- [make release-check](../../../evidence/sources.md#q-8d8d22d6a6b1)
-- [make build](../../../evidence/sources.md#q-d1121e35fa7a)
+- [make release-check](../../../evidence/sources.md#q-8d8d22d6a6)
+- [make build](../../../evidence/sources.md#q-d1121e35fa)
 
 ### Executable sources
 
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
-- [release:release.toml](../../../evidence/sources.md#src-c5380dbe5fe0) — `release.toml`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [release:release.toml](../../../evidence/sources.md#src-c5380dbe5f) — `release.toml`
 
 ### Machine authority
 

@@ -10,34 +10,34 @@ Exact externally visible contract owned by this semantic dossier.
 |---|---|
 | Authority | [riverhog-storage-adapter-asgi-support](../index.md) |
 | Interface | [python](index.md) |
-| Family | [modules](index.md#f-e58ca8b8b8b0) |
+| Family | [modules](index.md#f-e58ca8b8b8) |
 | Contract elements | 1 |
 | Extent decisions | 0 |
 
 ## External contract
 
-<a id="s-ffe8aa2870bf"></a>
+<a id="s-ffe8aa2870"></a>
 | Field | Shape |
 |---|---|
-| <a id="s-4fc3a70bdd34"></a>`distribution` | "riverhog-storage-adapter-asgi-support" |
-| <a id="s-f8aa066280c1"></a>`exports` | additional keys=`create_storage_adapter_app` |
-| <a id="s-a7a31a9565cc"></a>`module` | "riverhog_storage_adapter_asgi_support" |
+| <a id="s-4fc3a70bdd"></a>`distribution` | "riverhog-storage-adapter-asgi-support" |
+| <a id="s-f8aa066280"></a>`exports` | additional keys=`create_storage_adapter_app` |
+| <a id="s-a7a31a9565"></a>`module` | "riverhog_storage_adapter_asgi_support" |
 
 ## Governing policies
 
-- <a id="pa-aad1bc1d85f0"></a>[compatibility/python-api/v1](../../../policies/index.md#p-e574772ba506)
+- <a id="pa-aad1bc1d85"></a>[compatibility/python-api/v1](../../../policies/index.md#p-e574772ba5)
 
 ## Evidence
 
 ### Qualification
 
-- [make dist-smoke](../../../evidence/sources.md#q-0ba2578a3eb7)
-- [make build](../../../evidence/sources.md#q-d1121e35fa7a)
+- [make dist-smoke](../../../evidence/sources.md#q-0ba2578a3e)
+- [make build](../../../evidence/sources.md#q-d1121e35fa)
 
 ### Executable sources
 
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
-- [python:riverhog-storage-adapter-asgi-support](../../../evidence/sources.md#src-de39c18ba5e0) — `packages/riverhog-storage-adapter-asgi-support/src/riverhog_storage_adapter_asgi_support/__init__.py::<module>`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [python:riverhog-storage-adapter-asgi-support](../../../evidence/sources.md#src-de39c18ba5) — `packages/riverhog-storage-adapter-asgi-support/src/riverhog_storage_adapter_asgi_support/__init__.py::<module>`
 
 ### Machine authority
 

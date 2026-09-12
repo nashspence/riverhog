@@ -16,19 +16,19 @@ Exact externally visible contract owned by this semantic dossier.
 
 ## External contract
 
-<a id="s-776bf7c73426"></a>
+<a id="s-776bf7c734"></a>
 | Concern | Contract |
 |---|---|
-| <a id="s-c839122694e9"></a>`application` | riverhog |
-| <a id="s-a42cb6e9e396"></a>`classification` | client-only-primitive |
-| <a id="s-98357994229c"></a>`cli_commands` | [] |
-| <a id="s-a72c705d9350"></a>`client` | ApiClient |
-| <a id="s-812fb8038a1d"></a>`method` | GET |
-| <a id="s-bb4da007d5a9"></a>`operation_id` | list_processing_claim_dispositions |
-| <a id="s-6b61c8221980"></a>`path` | /v1/collection-processing-claims/{claim_id}/derivation/dispositions |
-| <a id="s-2a17ce8cffa8"></a>`provider_evidence` | None |
-| <a id="s-da8da5528e17"></a>`read_collection` | {"authority": "processing-claim-dispositions", "authority_parameter": "authority_sha256", "cursor_parameter": "start_ordinal", "fixed_limit": 128, "kind": "exact-authority-page"} |
-| <a id="s-abff2ac10923"></a>`response_authority` | canonical-document |
+| <a id="s-c839122694"></a>`application` | riverhog |
+| <a id="s-a42cb6e9e3"></a>`classification` | client-only-primitive |
+| <a id="s-9835799422"></a>`cli_commands` | [] |
+| <a id="s-a72c705d93"></a>`client` | ApiClient |
+| <a id="s-812fb8038a"></a>`method` | GET |
+| <a id="s-bb4da007d5"></a>`operation_id` | list_processing_claim_dispositions |
+| <a id="s-6b61c82219"></a>`path` | /v1/collection-processing-claims/{claim_id}/derivation/dispositions |
+| <a id="s-2a17ce8cff"></a>`provider_evidence` | None |
+| <a id="s-da8da5528e"></a>`read_collection` | {"authority": "processing-claim-dispositions", "authority_parameter": "authority_sha256", "cursor_parameter": "start_ordinal", "fixed_limit": 128, "kind": "exact-authority-page"} |
+| <a id="s-abff2ac109"></a>`response_authority` | canonical-document |
 
 ## Maintained corroboration
 
@@ -38,20 +38,20 @@ Exact externally visible contract owned by this semantic dossier.
 
 ## Governing policies
 
-- <a id="pa-9da00e91c720"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de7f)
-- <a id="pa-6f3f8aca0e16"></a>[compatibility/components/v1](../../../policies/index.md#p-95e9a1225947)
-- <a id="pa-409903080edb"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0ba)
+- <a id="pa-9da00e91c7"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de)
+- <a id="pa-6f3f8aca0e"></a>[compatibility/components/v1](../../../policies/index.md#p-95e9a12259)
+- <a id="pa-409903080e"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0)
 
 ## Evidence
 
 ### Qualification
 
-- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459fb8)
+- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459f)
 
 ### Executable sources
 
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
-- [operations:operation-matrix](../../../evidence/sources.md#src-b032bdc56b3f) — `scripts/operation_qualification.py::operation_matrix`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [operations:operation-matrix](../../../evidence/sources.md#src-b032bdc56b) — `scripts/operation_qualification.py::operation_matrix`
 
 ### Machine authority
 

@@ -16,28 +16,28 @@ Exact externally visible contract owned by this semantic dossier.
 
 ## External contract
 
-<a id="s-2d2b977e07ff"></a>
-- <a id="s-8991498bb94e"></a>`title`: ArtifactReceivingSetDocument
-- <a id="s-fd8f3baad656"></a>`type`: object
+<a id="s-2d2b977e07"></a>
+- <a id="s-8991498bb9"></a>`title`: ArtifactReceivingSetDocument
+- <a id="s-fd8f3baad6"></a>`type`: object
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-b4c4f8d76ce4"></a>`authority` | no | anyOf=#/components/schemas/ArtifactSetAuthorityDocument \| type="null" |  |
-| <a id="s-9eed34922fb0"></a>`count` | yes | type="integer"; minimum=0 |  |
-| <a id="s-69a169072e8c"></a>`state` | yes | type="string"; enum=["receiving","sealed"] |  |
-| <a id="s-97ef4d673d8b"></a>`total_bytes` | yes | type="integer"; minimum=0 |  |
+| <a id="s-b4c4f8d76c"></a>`authority` | no | anyOf=#/components/schemas/ArtifactSetAuthorityDocument \| type="null" |  |
+| <a id="s-9eed34922f"></a>`count` | yes | type="integer"; minimum=0 |  |
+| <a id="s-69a169072e"></a>`state` | yes | type="string"; enum=["receiving","sealed"] |  |
+| <a id="s-97ef4d673d"></a>`total_bytes` | yes | type="integer"; minimum=0 |  |
 
 ### Progression, limits, and lifecycle
 
-#### [extent-rule/no-semantic-maximum/v1](../../../policies/index.md#p-574724b48af0)
+#### [extent-rule/no-semantic-maximum/v1](../../../policies/index.md#p-574724b48a)
 
 Shared facts for every subject below: capacity_authority={"declared_maximum":null,"hidden_maximum":"forbidden","owner":"riverhog"}; maximum=null; reason="no-declared-semantic-maximum"
 
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
-| [field count](#s-9eed34922fb0) | `value · schema-value · operational_policy` | shared above |
+| [field count](#s-9eed34922f) | `value · schema-value · operational_policy` | shared above |
 
 ## Maintained corroboration
 
@@ -47,20 +47,20 @@ Shared facts for every subject below: capacity_authority={"declared_maximum":nul
 
 ## Governing policies
 
-- <a id="pa-ff1e99237c7e"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0ba)
-- <a id="pa-f43ddac87ade"></a>[extent-rule/no-semantic-maximum/v1](../../../policies/index.md#p-574724b48af0)
+- <a id="pa-ff1e99237c"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0)
+- <a id="pa-f43ddac87a"></a>[extent-rule/no-semantic-maximum/v1](../../../policies/index.md#p-574724b48a)
 
 ## Evidence
 
 ### Qualification
 
-- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459fb8)
-- [make compose-smoke](../../../evidence/sources.md#q-413b0b241ba8)
+- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459f)
+- [make compose-smoke](../../../evidence/sources.md#q-413b0b241b)
 
 ### Executable sources
 
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
-- [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc960) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc9) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
 
 ### Machine authority
 

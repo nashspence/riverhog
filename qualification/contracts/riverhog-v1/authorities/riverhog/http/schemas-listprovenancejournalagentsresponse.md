@@ -16,37 +16,37 @@ Exact externally visible contract owned by this semantic dossier.
 
 ## External contract
 
-<a id="s-21a8cfb0d8b5"></a>
-- <a id="s-e57dbe70da0a"></a>`title`: ListProvenanceJournalAgentsResponse
-- <a id="s-d79bbc264a06"></a>`type`: object
+<a id="s-21a8cfb0d8"></a>
+- <a id="s-e57dbe70da"></a>`title`: ListProvenanceJournalAgentsResponse
+- <a id="s-d79bbc264a"></a>`type`: object
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-e9ed861c1837"></a>`agents` | yes | type="array"; items=(#/components/schemas/ProvenanceJournalAgentOut) |  |
-| <a id="s-5355e5f6b007"></a>`collection_id` | yes | #/components/schemas/CollectionId |  |
-| <a id="s-1f61ad15dc37"></a>`journal_id` | yes | #/components/schemas/ProvenanceJournalId |  |
-| <a id="s-cb4d194207c6"></a>`next_page_token` | yes | anyOf=#/components/schemas/BrowsePageToken \| type="null" |  |
-| <a id="s-7b808efc5398"></a>`page_size` | yes | type="integer"; minimum=1; maximum=100 |  |
+| <a id="s-e9ed861c18"></a>`agents` | yes | type="array"; items=(#/components/schemas/ProvenanceJournalAgentOut) |  |
+| <a id="s-5355e5f6b0"></a>`collection_id` | yes | #/components/schemas/CollectionId |  |
+| <a id="s-1f61ad15dc"></a>`journal_id` | yes | #/components/schemas/ProvenanceJournalId |  |
+| <a id="s-cb4d194207"></a>`next_page_token` | yes | anyOf=#/components/schemas/BrowsePageToken \| type="null" |  |
+| <a id="s-7b808efc53"></a>`page_size` | yes | type="integer"; minimum=1; maximum=100 |  |
 
 ### Progression, limits, and lifecycle
 
-#### [extent-rule/route-progression/v1](../../../policies/index.md#p-6b76b527cb21)
+#### [extent-rule/route-progression/v1](../../../policies/index.md#p-6b76b527cb)
 
 Shared facts for every subject below: progression={"default_page_size":25,"kind":"mutable-browse","maximum_page_size":100,"next_page_token_field":"next_page_token","page_size_parameter":"page_size","page_token_parameter":"page_token"}; reason="bounded-route-page"
 
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
-| [field agents](#s-e9ed861c1837) | `cardinality · items · segmented_no_total_max` | shared above |
+| [field agents](#s-e9ed861c18) | `cardinality · items · segmented_no_total_max` | shared above |
 
-#### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
+#### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
 
 Shared facts for every subject below: maximum=100; minimum=1; reason="schema-maximum"
 
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
-| [field page_size](#s-7b808efc5398) | `value · schema-value · contract_max` | shared above |
+| [field page_size](#s-7b808efc53) | `value · schema-value · contract_max` | shared above |
 
 ## Maintained corroboration
 
@@ -59,21 +59,21 @@ Shared facts for every subject below: maximum=100; minimum=1; reason="schema-max
 
 ## Governing policies
 
-- <a id="pa-e44f9b0ee4aa"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0ba)
-- <a id="pa-43b326ebdabd"></a>[extent-rule/route-progression/v1](../../../policies/index.md#p-6b76b527cb21)
-- <a id="pa-6839fda22cc1"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
+- <a id="pa-e44f9b0ee4"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0)
+- <a id="pa-43b326ebda"></a>[extent-rule/route-progression/v1](../../../policies/index.md#p-6b76b527cb)
+- <a id="pa-6839fda22c"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
 
 ## Evidence
 
 ### Qualification
 
-- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459fb8)
-- [make compose-smoke](../../../evidence/sources.md#q-413b0b241ba8)
+- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459f)
+- [make compose-smoke](../../../evidence/sources.md#q-413b0b241b)
 
 ### Executable sources
 
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
-- [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc960) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc9) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
 
 ### Machine authority
 

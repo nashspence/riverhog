@@ -16,19 +16,19 @@ Exact externally visible contract owned by this semantic dossier.
 
 ## External contract
 
-<a id="s-22cfc89a311f"></a>
+<a id="s-22cfc89a31"></a>
 | Concern | Contract |
 |---|---|
-| <a id="s-a89c3891d71a"></a>`application` | stove0 |
-| <a id="s-21604b36f4d3"></a>`classification` | standard-tool/protocol |
-| <a id="s-9d7b477afabc"></a>`cli_commands` | ["health"] |
-| <a id="s-54db73dc2abd"></a>`client` | Stove0ApiClient |
-| <a id="s-12bc989b9255"></a>`method` | GET |
-| <a id="s-db3026f4dfff"></a>`operation_id` | health_live |
-| <a id="s-cd1b385a13d2"></a>`path` | /health/live |
-| <a id="s-8bfd7c67c69e"></a>`provider_evidence` | None |
-| <a id="s-725113876804"></a>`read_collection` | None |
-| <a id="s-c19ec9b3d4b4"></a>`response_authority` | http-json |
+| <a id="s-a89c3891d7"></a>`application` | stove0 |
+| <a id="s-21604b36f4"></a>`classification` | standard-tool/protocol |
+| <a id="s-9d7b477afa"></a>`cli_commands` | ["health"] |
+| <a id="s-54db73dc2a"></a>`client` | Stove0ApiClient |
+| <a id="s-12bc989b92"></a>`method` | GET |
+| <a id="s-db3026f4df"></a>`operation_id` | health_live |
+| <a id="s-cd1b385a13"></a>`path` | /health/live |
+| <a id="s-8bfd7c67c6"></a>`provider_evidence` | None |
+| <a id="s-7251138768"></a>`read_collection` | None |
+| <a id="s-c19ec9b3d4"></a>`response_authority` | http-json |
 
 ## Maintained corroboration
 
@@ -39,20 +39,20 @@ Exact externally visible contract owned by this semantic dossier.
 
 ## Governing policies
 
-- <a id="pa-e53b730a31b2"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de7f)
-- <a id="pa-dff2d8ae936c"></a>[compatibility/components/v1](../../../policies/index.md#p-95e9a1225947)
-- <a id="pa-39953c16d0b2"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0ba)
+- <a id="pa-e53b730a31"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de)
+- <a id="pa-dff2d8ae93"></a>[compatibility/components/v1](../../../policies/index.md#p-95e9a12259)
+- <a id="pa-39953c16d0"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0)
 
 ## Evidence
 
 ### Qualification
 
-- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459fb8)
+- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459f)
 
 ### Executable sources
 
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
-- [operations:operation-matrix](../../../evidence/sources.md#src-b032bdc56b3f) — `scripts/operation_qualification.py::operation_matrix`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [operations:operation-matrix](../../../evidence/sources.md#src-b032bdc56b) — `scripts/operation_qualification.py::operation_matrix`
 
 ### Machine authority
 

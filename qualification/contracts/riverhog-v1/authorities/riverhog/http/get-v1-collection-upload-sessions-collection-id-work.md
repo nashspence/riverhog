@@ -16,38 +16,38 @@ Acquire Collection Upload Session Work
 
 ## External contract
 
-<a id="s-c49fcc285b0e"></a>
-- <a id="s-c6a878ced1b1"></a>`operationId`: acquire_collection_upload_session_work
-- <a id="s-e31071e1379b"></a>`summary`: Acquire Collection Upload Session Work
-- <a id="s-5830733425bd"></a>`security`: `[{"HTTPBearer": []}]`
+<a id="s-c49fcc285b"></a>
+- <a id="s-c6a878ced1"></a>`operationId`: acquire_collection_upload_session_work
+- <a id="s-e31071e137"></a>`summary`: Acquire Collection Upload Session Work
+- <a id="s-5830733425"></a>`security`: `[{"HTTPBearer": []}]`
 
 ### Parameters
 
 | Name | In | Required | Schema |
 |---|---|---:|---|
-| <a id="s-481727222047"></a>`collection_id` | path | yes | type="integer"; minimum=1 |
-| <a id="s-3ac16348cf4f"></a>`limit` | query | no | type="integer"; minimum=1; maximum=64 |
+| <a id="s-4817272220"></a>`collection_id` | path | yes | type="integer"; minimum=1 |
+| <a id="s-3ac16348cf"></a>`limit` | query | no | type="integer"; minimum=1; maximum=64 |
 
 ### Responses
 
 | Status | Description |
 |---|---|
-| <a id="s-f83a0a80712b"></a>`200` | Successful Response |
-| <a id="s-13fd040651a6"></a>`400` | Bad Request |
-| <a id="s-a3a786ddf91f"></a>`401` | Unauthorized |
-| <a id="s-9b1524bd4e86"></a>`403` | Forbidden |
-| <a id="s-9dd14f9f96e8"></a>`404` | Not Found |
-| <a id="s-9d7cfc09e966"></a>`500` | Internal Server Error |
+| <a id="s-f83a0a8071"></a>`200` | Successful Response |
+| <a id="s-13fd040651"></a>`400` | Bad Request |
+| <a id="s-a3a786ddf9"></a>`401` | Unauthorized |
+| <a id="s-9b1524bd4e"></a>`403` | Forbidden |
+| <a id="s-9dd14f9f96"></a>`404` | Not Found |
+| <a id="s-9d7cfc09e9"></a>`500` | Internal Server Error |
 
 ### Progression, limits, and lifecycle
 
-#### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
+#### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
 
 Shared facts for every subject below: maximum=64; minimum=1; reason="schema-maximum"
 
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
-| <a id="s-577bda457dad"></a>parameter limit | `value · schema-value · contract_max` | shared above |
+| <a id="s-577bda457d"></a>[parameter limit](#s-3ac16348cf) | `value · schema-value · contract_max` | shared above |
 
 ## Maintained corroboration
 
@@ -62,20 +62,20 @@ Shared facts for every subject below: maximum=64; minimum=1; reason="schema-maxi
 
 ## Governing policies
 
-- <a id="pa-84cef3c60582"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0ba)
-- <a id="pa-becfaa9bc93d"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
+- <a id="pa-84cef3c605"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0)
+- <a id="pa-becfaa9bc9"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
 
 ## Evidence
 
 ### Qualification
 
-- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459fb8)
-- [make compose-smoke](../../../evidence/sources.md#q-413b0b241ba8)
+- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459f)
+- [make compose-smoke](../../../evidence/sources.md#q-413b0b241b)
 
 ### Executable sources
 
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
-- [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc960) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc9) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
 
 ### Machine authority
 

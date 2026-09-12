@@ -16,19 +16,19 @@ Exact externally visible contract owned by this semantic dossier.
 
 ## External contract
 
-<a id="s-284d4e505f01"></a>
+<a id="s-284d4e505f"></a>
 | Concern | Contract |
 |---|---|
-| <a id="s-04ca11646efa"></a>`application` | stove0 |
-| <a id="s-799de24f4ffb"></a>`classification` | human-cli+json |
-| <a id="s-32768f0e750e"></a>`cli_commands` | ["admission policy rebaseline"] |
-| <a id="s-234f155ba465"></a>`client` | Stove0ApiClient |
-| <a id="s-4bd8921ed1b6"></a>`method` | POST |
-| <a id="s-91c79778675d"></a>`operation_id` | rebaseline_admission_policy |
-| <a id="s-5399bcaf79f7"></a>`path` | /v1/admission-policies/{policy_id}:rebaseline |
-| <a id="s-15a86a95cdb4"></a>`provider_evidence` | None |
-| <a id="s-d3cdada67b71"></a>`read_collection` | None |
-| <a id="s-411f929b678f"></a>`response_authority` | operator-projection |
+| <a id="s-04ca11646e"></a>`application` | stove0 |
+| <a id="s-799de24f4f"></a>`classification` | human-cli+json |
+| <a id="s-32768f0e75"></a>`cli_commands` | ["admission policy rebaseline"] |
+| <a id="s-234f155ba4"></a>`client` | Stove0ApiClient |
+| <a id="s-4bd8921ed1"></a>`method` | POST |
+| <a id="s-91c7977867"></a>`operation_id` | rebaseline_admission_policy |
+| <a id="s-5399bcaf79"></a>`path` | /v1/admission-policies/{policy_id}:rebaseline |
+| <a id="s-15a86a95cd"></a>`provider_evidence` | None |
+| <a id="s-d3cdada67b"></a>`read_collection` | None |
+| <a id="s-411f929b67"></a>`response_authority` | operator-projection |
 
 ## Maintained corroboration
 
@@ -39,20 +39,20 @@ Exact externally visible contract owned by this semantic dossier.
 
 ## Governing policies
 
-- <a id="pa-739261b1b04c"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de7f)
-- <a id="pa-12967209df33"></a>[compatibility/components/v1](../../../policies/index.md#p-95e9a1225947)
-- <a id="pa-81849b9f1188"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0ba)
+- <a id="pa-739261b1b0"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de)
+- <a id="pa-12967209df"></a>[compatibility/components/v1](../../../policies/index.md#p-95e9a12259)
+- <a id="pa-81849b9f11"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0)
 
 ## Evidence
 
 ### Qualification
 
-- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459fb8)
+- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459f)
 
 ### Executable sources
 
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
-- [operations:operation-matrix](../../../evidence/sources.md#src-b032bdc56b3f) — `scripts/operation_qualification.py::operation_matrix`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [operations:operation-matrix](../../../evidence/sources.md#src-b032bdc56b) — `scripts/operation_qualification.py::operation_matrix`
 
 ### Machine authority
 

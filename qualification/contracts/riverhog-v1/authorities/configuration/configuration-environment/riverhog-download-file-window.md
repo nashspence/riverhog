@@ -16,38 +16,38 @@ Exact externally visible contract owned by this semantic dossier.
 
 ## External contract
 
-<a id="s-6710649fb3a7"></a>
+<a id="s-6710649fb3"></a>
 | Field | Shape |
 |---|---|
-| <a id="s-fe5e4264762a"></a>`consumers` | ["riverhog-client"] |
-| <a id="s-3a8258723ca6"></a>`name` | "RIVERHOG_DOWNLOAD_FILE_WINDOW" |
+| <a id="s-fe5e426476"></a>`consumers` | ["riverhog-client"] |
+| <a id="s-3a8258723c"></a>`name` | "RIVERHOG_DOWNLOAD_FILE_WINDOW" |
 
 ### Progression, limits, and lifecycle
 
-#### [extent-rule/configured-capacity/v1](../../../policies/index.md#p-3ebc61fc9972)
+#### [extent-rule/configured-capacity/v1](../../../policies/index.md#p-3ebc61fc99)
 
 Shared facts for every subject below: configuration="RIVERHOG_DOWNLOAD_FILE_WINDOW"; maximum=null; reason="operator-configured-capacity"
 
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
-| [RIVERHOG_DOWNLOAD_FILE_WINDOW](#s-6710649fb3a7) | `value · configured-value · operational_policy` | shared above |
+| [RIVERHOG_DOWNLOAD_FILE_WINDOW](#s-6710649fb3) | `value · configured-value · operational_policy` | shared above |
 
 ## Governing policies
 
-- <a id="pa-f507487f40c7"></a>[compatibility/configuration/v1](../../../policies/index.md#p-8dc08bb46173)
-- <a id="pa-65cd2e349e3d"></a>[extent-rule/configured-capacity/v1](../../../policies/index.md#p-3ebc61fc9972)
+- <a id="pa-f507487f40"></a>[compatibility/configuration/v1](../../../policies/index.md#p-8dc08bb461)
+- <a id="pa-65cd2e349e"></a>[extent-rule/configured-capacity/v1](../../../policies/index.md#p-3ebc61fc99)
 
 ## Evidence
 
 ### Qualification
 
-- [make unit](../../../evidence/sources.md#q-ce47068f504c)
-- [make compose-smoke](../../../evidence/sources.md#q-413b0b241ba8)
+- [make unit](../../../evidence/sources.md#q-ce47068f50)
+- [make compose-smoke](../../../evidence/sources.md#q-413b0b241b)
 
 ### Executable sources
 
-- [configuration-environment:RIVERHOG_DOWNLOAD_FILE_WINDOW](../../../evidence/sources.md#src-a5ca05826c27) — `configuration-environment:RIVERHOG_DOWNLOAD_FILE_WINDOW`
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
+- [configuration-environment:RIVERHOG_DOWNLOAD_FILE_WINDOW](../../../evidence/sources.md#src-a5ca05826c) — `configuration-environment:RIVERHOG_DOWNLOAD_FILE_WINDOW`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
 
 ### Machine authority
 

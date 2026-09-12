@@ -10,60 +10,60 @@ Exact externally visible contract owned by this semantic dossier.
 |---|---|
 | Authority | [riverhog-archive-contracts](../index.md) |
 | Interface | [protocol](index.md) |
-| Family | [schemas](index.md#f-66d562e63c42) |
+| Family | [schemas](index.md#f-66d562e63c) |
 | Contract elements | 1 |
 | Extent decisions | 2 |
 
 ## External contract
 
-<a id="s-d0e22522fc26"></a>
-- <a id="s-73491a856252"></a>`$id`: https://nashspence.github.io/riverhog/v1/schemas/riverhog-recovery-descriptor-v1.schema.json
-- <a id="s-9788b6bdfd19"></a>`title`: Riverhog v1 recovery descriptor
-- <a id="s-a1f5264f4aff"></a>`type`: object
+<a id="s-d0e22522fc"></a>
+- <a id="s-73491a8562"></a>`$id`: https://nashspence.github.io/riverhog/v1/schemas/riverhog-recovery-descriptor-v1.schema.json
+- <a id="s-9788b6bdfd"></a>`title`: Riverhog v1 recovery descriptor
+- <a id="s-a1f5264f4a"></a>`type`: object
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-d907c3144a34"></a>`encryption` | yes | type="object"; fields=`format`, `passphrase_id`; additional keys=`additionalProperties`, `required` |  |
-| <a id="s-2b019864cddf"></a>`root` | yes | type="object"; fields=`path`, `stored_bytes`, `stored_sha256`; additional keys=`additionalProperties`, `required` |  |
-| <a id="s-d0b998e46c30"></a>`schema` | yes | const="riverhog-recovery-descriptor/v1" |  |
+| <a id="s-d907c3144a"></a>`encryption` | yes | type="object"; fields=`format`, `passphrase_id`; additional keys=`additionalProperties`, `required` |  |
+| <a id="s-2b019864cd"></a>`root` | yes | type="object"; fields=`path`, `stored_bytes`, `stored_sha256`; additional keys=`additionalProperties`, `required` |  |
+| <a id="s-d0b998e46c"></a>`schema` | yes | const="riverhog-recovery-descriptor/v1" |  |
 
 ### Progression, limits, and lifecycle
 
-#### [extent-rule/no-semantic-maximum/v1](../../../policies/index.md#p-574724b48af0)
+#### [extent-rule/no-semantic-maximum/v1](../../../policies/index.md#p-574724b48a)
 
 Shared facts for every subject below: capacity_authority={"declared_maximum":null,"hidden_maximum":"forbidden","owner":"https://nashspence.github.io/riverhog/v1/schemas/riverhog-recovery-descriptor-v1.schema.json"}; maximum=null; reason="no-declared-semantic-maximum"
 
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
-| <a id="s-abd13e34a1fb"></a>field root · field stored_bytes | `value · schema-value · operational_policy` | shared above |
+| <a id="s-abd13e34a1"></a>[field root · field stored_bytes](#s-2b019864cd) | `value · schema-value · operational_policy` | shared above |
 
-#### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
+#### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
 
 Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"}
 
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
-| <a id="s-b3eb015b6da6"></a>field root · field stored_sha256 | `length · characters · fixed` | shared above |
+| <a id="s-b3eb015b6d"></a>[field root · field stored_sha256](#s-2b019864cd) | `length · characters · fixed` | shared above |
 
 ## Governing policies
 
-- <a id="pa-0d8237df701f"></a>[compatibility/components/v1](../../../policies/index.md#p-95e9a1225947)
-- <a id="pa-840c4304598f"></a>[extent-rule/no-semantic-maximum/v1](../../../policies/index.md#p-574724b48af0)
-- <a id="pa-bce6ec5613f3"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
+- <a id="pa-0d8237df70"></a>[compatibility/components/v1](../../../policies/index.md#p-95e9a12259)
+- <a id="pa-840c430459"></a>[extent-rule/no-semantic-maximum/v1](../../../policies/index.md#p-574724b48a)
+- <a id="pa-bce6ec5613"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
 
 ## Evidence
 
 ### Qualification
 
-- [make dist-smoke](../../../evidence/sources.md#q-0ba2578a3eb7)
-- [make build](../../../evidence/sources.md#q-d1121e35fa7a)
+- [make dist-smoke](../../../evidence/sources.md#q-0ba2578a3e)
+- [make build](../../../evidence/sources.md#q-d1121e35fa)
 
 ### Executable sources
 
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
-- [protocol:https://nashspence.github.io/riverhog/v1/schemas/riverhog-recovery-descriptor-v1.schema.json](../../../evidence/sources.md#src-bd3602393c5d) — `packages/riverhog-archive-contracts/schemas/riverhog-recovery-descriptor-v1.schema.json`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [protocol:https://nashspence.github.io/riverhog/v1/schemas/riverhog-recovery-descriptor-v1.schema.json](../../../evidence/sources.md#src-bd3602393c) — `packages/riverhog-archive-contracts/schemas/riverhog-recovery-descriptor-v1.schema.json`
 
 ### Machine authority
 

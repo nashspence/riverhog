@@ -10,51 +10,51 @@ Exact externally visible contract owned by this semantic dossier.
 |---|---|
 | Authority | [riverhog-provenance-windows-contracts](../index.md) |
 | Interface | [protocol](index.md) |
-| Family | [schemas](index.md#f-78a2bea4a4b2) |
+| Family | [schemas](index.md#f-78a2bea4a4) |
 | Contract elements | 1 |
 | Extent decisions | 1 |
 
 ## External contract
 
-<a id="s-7513fa2e7ccd"></a>
-- <a id="s-6994147f35ff"></a>`$id`: https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/windows-file-attributes.json
-- <a id="s-f2bbe7939f95"></a>`type`: object
+<a id="s-7513fa2e7c"></a>
+- <a id="s-6994147f35"></a>`$id`: https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/windows-file-attributes.json
+- <a id="s-f2bbe7939f"></a>`type`: object
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-50e5a2587166"></a>`bitmask` | yes | type="integer"; minimum=0 |  |
-| <a id="s-92b94d461fc2"></a>`hex` | yes | type="string"; pattern="^0x[0-9a-f]{8}$" |  |
-| <a id="s-1bf4b3809aca"></a>`names` | yes | type="array"; items=(type="string"; minLength=1); additional keys=`uniqueItems` |  |
-| <a id="s-65fcdf5afeba"></a>`reparse_tag` | yes | type="integer"; minimum=0 |  |
+| <a id="s-50e5a25871"></a>`bitmask` | yes | type="integer"; minimum=0 |  |
+| <a id="s-92b94d461f"></a>`hex` | yes | type="string"; pattern="^0x[0-9a-f]{8}$" |  |
+| <a id="s-1bf4b3809a"></a>`names` | yes | type="array"; items=(type="string"; minLength=1); additional keys=`uniqueItems` |  |
+| <a id="s-65fcdf5afe"></a>`reparse_tag` | yes | type="integer"; minimum=0 |  |
 
 ### Progression, limits, and lifecycle
 
-#### [extent-rule/extension-contract/v1](../../../policies/index.md#p-75a89f9d1c36)
+#### [extent-rule/extension-contract/v1](../../../policies/index.md#p-75a89f9d1c)
 
 Shared facts for every subject below: maximum=null; reason="independently-versioned-extension-authority"
 
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
-| [field names](#s-1bf4b3809aca) | `cardinality · items · extension_owned` | shared above |
+| [field names](#s-1bf4b3809a) | `cardinality · items · extension_owned` | shared above |
 
 ## Governing policies
 
-- <a id="pa-0693419db446"></a>[compatibility/components/v1](../../../policies/index.md#p-95e9a1225947)
-- <a id="pa-f0a25ff04e53"></a>[extent-rule/extension-contract/v1](../../../policies/index.md#p-75a89f9d1c36)
+- <a id="pa-0693419db4"></a>[compatibility/components/v1](../../../policies/index.md#p-95e9a12259)
+- <a id="pa-f0a25ff04e"></a>[extent-rule/extension-contract/v1](../../../policies/index.md#p-75a89f9d1c)
 
 ## Evidence
 
 ### Qualification
 
-- [make dist-smoke](../../../evidence/sources.md#q-0ba2578a3eb7)
-- [make build](../../../evidence/sources.md#q-d1121e35fa7a)
+- [make dist-smoke](../../../evidence/sources.md#q-0ba2578a3e)
+- [make build](../../../evidence/sources.md#q-d1121e35fa)
 
 ### Executable sources
 
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
-- [protocol:https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/windows-file-attributes.json](../../../evidence/sources.md#src-01ce873e8527) — `reference/riverhog/provenance/contracts/windows/src/riverhog_provenance_windows_contracts/schemas/windows-file-attributes.schema.json`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [protocol:https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/windows-file-attributes.json](../../../evidence/sources.md#src-01ce873e85) — `reference/riverhog/provenance/contracts/windows/src/riverhog_provenance_windows_contracts/schemas/windows-file-attributes.schema.json`
 
 ### Machine authority
 

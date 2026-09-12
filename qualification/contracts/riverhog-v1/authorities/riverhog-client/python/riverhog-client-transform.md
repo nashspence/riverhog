@@ -10,34 +10,34 @@ Exact externally visible contract owned by this semantic dossier.
 |---|---|
 | Authority | [riverhog-client](../index.md) |
 | Interface | [python](index.md) |
-| Family | [modules](index.md#f-b8f1c0c242de) |
+| Family | [modules](index.md#f-b8f1c0c242) |
 | Contract elements | 1 |
 | Extent decisions | 0 |
 
 ## External contract
 
-<a id="s-7729f34ab6f7"></a>
+<a id="s-7729f34ab6"></a>
 | Field | Shape |
 |---|---|
-| <a id="s-6476982873e2"></a>`distribution` | "riverhog-client" |
-| <a id="s-14fc046b9032"></a>`exports` | additional keys=`CancellationCheck`, `CapabilityApiClient`, `ClaimedArtifact`, `ClaimedCollectionApi`, `ClaimedCollectionReader`, `ClaimedCollectionRuntime`, `ClaimedCollectionRuntimeRegistry`, `ClaimedRetrieval`, `CollectionTransformRuntime`, `DerivedCollectionReceipt`, `DerivedCollectionSpec`, `DerivedCollectionWriter`, `Heartbeat`, `IncrementalDerivedCollectionWriter`, `TransformWorkspace`, `WorkspaceAssurance` |
-| <a id="s-36e849b4eb36"></a>`module` | "riverhog_client.transform" |
+| <a id="s-6476982873"></a>`distribution` | "riverhog-client" |
+| <a id="s-14fc046b90"></a>`exports` | additional keys=`CancellationCheck`, `CapabilityApiClient`, `ClaimedArtifact`, `ClaimedCollectionApi`, `ClaimedCollectionReader`, `ClaimedCollectionRuntime`, `ClaimedCollectionRuntimeRegistry`, `ClaimedRetrieval`, `CollectionTransformRuntime`, `DerivedCollectionReceipt`, `DerivedCollectionSpec`, `DerivedCollectionWriter`, `Heartbeat`, `IncrementalDerivedCollectionWriter`, `TransformWorkspace`, `WorkspaceAssurance` |
+| <a id="s-36e849b4eb"></a>`module` | "riverhog_client.transform" |
 
 ## Governing policies
 
-- <a id="pa-2f559adb0d3e"></a>[compatibility/python-api/v1](../../../policies/index.md#p-e574772ba506)
+- <a id="pa-2f559adb0d"></a>[compatibility/python-api/v1](../../../policies/index.md#p-e574772ba5)
 
 ## Evidence
 
 ### Qualification
 
-- [make dist-smoke](../../../evidence/sources.md#q-0ba2578a3eb7)
-- [make build](../../../evidence/sources.md#q-d1121e35fa7a)
+- [make dist-smoke](../../../evidence/sources.md#q-0ba2578a3e)
+- [make build](../../../evidence/sources.md#q-d1121e35fa)
 
 ### Executable sources
 
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
-- [python:riverhog-client:riverhog_client.transform](../../../evidence/sources.md#src-7a247bb534f6) — `packages/riverhog-client/src/riverhog_client/transform/__init__.py::<module>`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [python:riverhog-client:riverhog_client.transform](../../../evidence/sources.md#src-7a247bb534) — `packages/riverhog-client/src/riverhog_client/transform/__init__.py::<module>`
 
 ### Machine authority
 

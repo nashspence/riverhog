@@ -16,27 +16,27 @@ Exact externally visible contract owned by this semantic dossier.
 
 ## External contract
 
-<a id="s-51bdf3ea7314"></a>
+<a id="s-51bdf3ea73"></a>
 | Field | Shape |
 |---|---|
-| <a id="s-46d639723248"></a>`consumers` | ["riverhog-server"] |
-| <a id="s-cb037aed18f4"></a>`name` | "RIVERHOG_RETRIEVAL_CACHE_STORES" |
+| <a id="s-46d6397232"></a>`consumers` | ["riverhog-server"] |
+| <a id="s-cb037aed18"></a>`name` | "RIVERHOG_RETRIEVAL_CACHE_STORES" |
 
 ## Governing policies
 
-- <a id="pa-4a7239ecd745"></a>[compatibility/configuration/v1](../../../policies/index.md#p-8dc08bb46173)
+- <a id="pa-4a7239ecd7"></a>[compatibility/configuration/v1](../../../policies/index.md#p-8dc08bb461)
 
 ## Evidence
 
 ### Qualification
 
-- [make unit](../../../evidence/sources.md#q-ce47068f504c)
-- [make compose-smoke](../../../evidence/sources.md#q-413b0b241ba8)
+- [make unit](../../../evidence/sources.md#q-ce47068f50)
+- [make compose-smoke](../../../evidence/sources.md#q-413b0b241b)
 
 ### Executable sources
 
-- [configuration-environment:RIVERHOG_RETRIEVAL_CACHE_STORES](../../../evidence/sources.md#src-0b55d52d12ac) — `configuration-environment:RIVERHOG_RETRIEVAL_CACHE_STORES`
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
+- [configuration-environment:RIVERHOG_RETRIEVAL_CACHE_STORES](../../../evidence/sources.md#src-0b55d52d12) — `configuration-environment:RIVERHOG_RETRIEVAL_CACHE_STORES`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
 
 ### Machine authority
 

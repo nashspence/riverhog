@@ -10,34 +10,34 @@ Exact externally visible contract owned by this semantic dossier.
 |---|---|
 | Authority | [riverhog-application-access](../index.md) |
 | Interface | [python](index.md) |
-| Family | [modules](index.md#f-33ca04915b8c) |
+| Family | [modules](index.md#f-33ca04915b) |
 | Contract elements | 1 |
 | Extent decisions | 0 |
 
 ## External contract
 
-<a id="s-495fe6be8d03"></a>
+<a id="s-495fe6be8d"></a>
 | Field | Shape |
 |---|---|
-| <a id="s-757b63970b1d"></a>`distribution` | "riverhog-application-access" |
-| <a id="s-0ba0db78855b"></a>`exports` | additional keys=`ALL_PERMISSIONS`, `ALL_RESOURCES`, `APPLICATION_KEY_ID_PATTERN`, `APPLICATION_NAME_PATTERN`, `APPLICATION_PERMISSIONS`, `ARCHIVES_MANAGE`, `ARCHIVES_READ`, `ApplicationAccess`, `ApplicationAccessError`, `ApplicationAccessGrant`, `ApplicationAccessGrantSet`, `ApplicationKeyId`, `ApplicationName`, `ApplicationPermission`, `ApplicationResource`, `CATALOG_READ`, `COLLECTIONS_CREATE`, `COLLECTIONS_DELETE`, `COLLECTION_DESCRIPTIONS_MANAGE`, `COLLECTION_PREFIX`, `COLLECTION_SCOPED_PERMISSIONS`, `COLLECTION_TAGS_MANAGE`, `COLLECTION_TRANSFORMS_CONTROL`, `COLLECTION_TRANSFORMS_EXECUTE`, `EVENTS_READ`, `EVENTS_READ_ALL`, `KEYS_MANAGE`, `MonthlyDownloadQuotaBytes`, `PROVENANCE_EXPORT`, `PROVENANCE_READ`, `QUOTAS_MANAGE`, `RETRIEVAL_MANAGE`, `TAG_PREFIX`, `access_covers`, `collection_resource`, `normalize_access`, `permission_covers`, `permission_resources`, `resource_covers`, `tag_resource`, `validate_application_key_id`, `validate_application_name`, `validate_application_resource`, `validate_monthly_download_quota_bytes` |
-| <a id="s-bbebd6deb089"></a>`module` | "riverhog_application_access" |
+| <a id="s-757b63970b"></a>`distribution` | "riverhog-application-access" |
+| <a id="s-0ba0db7885"></a>`exports` | additional keys=`ALL_PERMISSIONS`, `ALL_RESOURCES`, `APPLICATION_KEY_ID_PATTERN`, `APPLICATION_NAME_PATTERN`, `APPLICATION_PERMISSIONS`, `ARCHIVES_MANAGE`, `ARCHIVES_READ`, `ApplicationAccess`, `ApplicationAccessError`, `ApplicationAccessGrant`, `ApplicationAccessGrantSet`, `ApplicationKeyId`, `ApplicationName`, `ApplicationPermission`, `ApplicationResource`, `CATALOG_READ`, `COLLECTIONS_CREATE`, `COLLECTIONS_DELETE`, `COLLECTION_DESCRIPTIONS_MANAGE`, `COLLECTION_PREFIX`, `COLLECTION_SCOPED_PERMISSIONS`, `COLLECTION_TAGS_MANAGE`, `COLLECTION_TRANSFORMS_CONTROL`, `COLLECTION_TRANSFORMS_EXECUTE`, `EVENTS_READ`, `EVENTS_READ_ALL`, `KEYS_MANAGE`, `MonthlyDownloadQuotaBytes`, `PROVENANCE_EXPORT`, `PROVENANCE_READ`, `QUOTAS_MANAGE`, `RETRIEVAL_MANAGE`, `TAG_PREFIX`, `access_covers`, `collection_resource`, `normalize_access`, `permission_covers`, `permission_resources`, `resource_covers`, `tag_resource`, `validate_application_key_id`, `validate_application_name`, `validate_application_resource`, `validate_monthly_download_quota_bytes` |
+| <a id="s-bbebd6deb0"></a>`module` | "riverhog_application_access" |
 
 ## Governing policies
 
-- <a id="pa-78d7bf453460"></a>[compatibility/python-api/v1](../../../policies/index.md#p-e574772ba506)
+- <a id="pa-78d7bf4534"></a>[compatibility/python-api/v1](../../../policies/index.md#p-e574772ba5)
 
 ## Evidence
 
 ### Qualification
 
-- [make dist-smoke](../../../evidence/sources.md#q-0ba2578a3eb7)
-- [make build](../../../evidence/sources.md#q-d1121e35fa7a)
+- [make dist-smoke](../../../evidence/sources.md#q-0ba2578a3e)
+- [make build](../../../evidence/sources.md#q-d1121e35fa)
 
 ### Executable sources
 
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
-- [python:riverhog-application-access](../../../evidence/sources.md#src-8a8a1adad73e) — `packages/riverhog-application-access/src/riverhog_application_access/__init__.py::<module>`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [python:riverhog-application-access](../../../evidence/sources.md#src-8a8a1adad7) — `packages/riverhog-application-access/src/riverhog_application_access/__init__.py::<module>`
 
 ### Machine authority
 

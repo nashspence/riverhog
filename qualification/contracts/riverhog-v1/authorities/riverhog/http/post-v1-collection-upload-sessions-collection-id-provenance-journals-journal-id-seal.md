@@ -16,29 +16,29 @@ Seal Collection Upload Session Provenance Journal
 
 ## External contract
 
-<a id="s-a8d45a56c17c"></a>
-- <a id="s-9ab2ffa9fab0"></a>`operationId`: seal_collection_upload_session_provenance_journal
-- <a id="s-7849ea6570fc"></a>`summary`: Seal Collection Upload Session Provenance Journal
-- <a id="s-313755fa63f6"></a>`security`: `[{"HTTPBearer": []}]`
+<a id="s-a8d45a56c1"></a>
+- <a id="s-9ab2ffa9fa"></a>`operationId`: seal_collection_upload_session_provenance_journal
+- <a id="s-7849ea6570"></a>`summary`: Seal Collection Upload Session Provenance Journal
+- <a id="s-313755fa63"></a>`security`: `[{"HTTPBearer": []}]`
 
 ### Parameters
 
 | Name | In | Required | Schema |
 |---|---|---:|---|
-| <a id="s-ae79c83f698e"></a>`collection_id` | path | yes | type="integer"; minimum=1 |
-| <a id="s-1fabf5b977c2"></a>`journal_id` | path | yes | type="string"; pattern="^urn:uuid:[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$" |
+| <a id="s-ae79c83f69"></a>`collection_id` | path | yes | type="integer"; minimum=1 |
+| <a id="s-1fabf5b977"></a>`journal_id` | path | yes | type="string"; pattern="^urn:uuid:[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$" |
 
 ### Responses
 
 | Status | Description |
 |---|---|
-| <a id="s-b95ea8203c70"></a>`200` | Successful Response |
-| <a id="s-364195187847"></a>`400` | Bad Request |
-| <a id="s-a827cde3fb04"></a>`401` | Unauthorized |
-| <a id="s-1c9d8855bf6a"></a>`403` | Forbidden |
-| <a id="s-3fec9c4194ee"></a>`404` | Not Found |
-| <a id="s-f3ffa3dd77d2"></a>`409` | Conflict |
-| <a id="s-e40181c7bd0b"></a>`500` | Internal Server Error |
+| <a id="s-b95ea8203c"></a>`200` | Successful Response |
+| <a id="s-3641951878"></a>`400` | Bad Request |
+| <a id="s-a827cde3fb"></a>`401` | Unauthorized |
+| <a id="s-1c9d8855bf"></a>`403` | Forbidden |
+| <a id="s-3fec9c4194"></a>`404` | Not Found |
+| <a id="s-f3ffa3dd77"></a>`409` | Conflict |
+| <a id="s-e40181c7bd"></a>`500` | Internal Server Error |
 
 ## Maintained corroboration
 
@@ -53,19 +53,19 @@ Seal Collection Upload Session Provenance Journal
 
 ## Governing policies
 
-- <a id="pa-e483078425d6"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0ba)
+- <a id="pa-e483078425"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0)
 
 ## Evidence
 
 ### Qualification
 
-- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459fb8)
-- [make compose-smoke](../../../evidence/sources.md#q-413b0b241ba8)
+- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459f)
+- [make compose-smoke](../../../evidence/sources.md#q-413b0b241b)
 
 ### Executable sources
 
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
-- [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc960) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc9) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
 
 ### Machine authority
 

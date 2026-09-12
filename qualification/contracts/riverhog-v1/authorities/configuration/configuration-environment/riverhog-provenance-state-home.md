@@ -16,27 +16,27 @@ Exact externally visible contract owned by this semantic dossier.
 
 ## External contract
 
-<a id="s-021597da78d8"></a>
+<a id="s-021597da78"></a>
 | Field | Shape |
 |---|---|
-| <a id="s-de450a94081d"></a>`consumers` | ["riverhog-provenance"] |
-| <a id="s-9d016ce2fadc"></a>`name` | "RIVERHOG_PROVENANCE_STATE_HOME" |
+| <a id="s-de450a9408"></a>`consumers` | ["riverhog-provenance"] |
+| <a id="s-9d016ce2fa"></a>`name` | "RIVERHOG_PROVENANCE_STATE_HOME" |
 
 ## Governing policies
 
-- <a id="pa-80de0c8308c8"></a>[compatibility/configuration/v1](../../../policies/index.md#p-8dc08bb46173)
+- <a id="pa-80de0c8308"></a>[compatibility/configuration/v1](../../../policies/index.md#p-8dc08bb461)
 
 ## Evidence
 
 ### Qualification
 
-- [make unit](../../../evidence/sources.md#q-ce47068f504c)
-- [make compose-smoke](../../../evidence/sources.md#q-413b0b241ba8)
+- [make unit](../../../evidence/sources.md#q-ce47068f50)
+- [make compose-smoke](../../../evidence/sources.md#q-413b0b241b)
 
 ### Executable sources
 
-- [configuration-environment:RIVERHOG_PROVENANCE_STATE_HOME](../../../evidence/sources.md#src-6026192e04a4) — `configuration-environment:RIVERHOG_PROVENANCE_STATE_HOME`
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
+- [configuration-environment:RIVERHOG_PROVENANCE_STATE_HOME](../../../evidence/sources.md#src-6026192e04) — `configuration-environment:RIVERHOG_PROVENANCE_STATE_HOME`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
 
 ### Machine authority
 

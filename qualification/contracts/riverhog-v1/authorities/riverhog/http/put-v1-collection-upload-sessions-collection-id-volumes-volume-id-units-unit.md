@@ -16,22 +16,22 @@ Put Collection Upload Session Unit
 
 ## External contract
 
-<a id="s-56fb5451d4f6"></a>
-- <a id="s-59edab6dfe3c"></a>`operationId`: put_collection_upload_session_unit
-- <a id="s-ebcc0b06a215"></a>`summary`: Put Collection Upload Session Unit
-- <a id="s-18fe034da008"></a>`security`: `[{"HTTPBearer": []}]`
+<a id="s-56fb5451d4"></a>
+- <a id="s-59edab6dfe"></a>`operationId`: put_collection_upload_session_unit
+- <a id="s-ebcc0b06a2"></a>`summary`: Put Collection Upload Session Unit
+- <a id="s-18fe034da0"></a>`security`: `[{"HTTPBearer": []}]`
 
 ### Parameters
 
 | Name | In | Required | Schema |
 |---|---|---:|---|
-| <a id="s-b098192ee167"></a>`collection_id` | path | yes | type="integer"; minimum=1 |
-| <a id="s-b77d4eaf7350"></a>`volume_id` | path | yes | type="string"; pattern="^(?:pack\|segment)-[0-9a-f]{64}$" |
-| <a id="s-606a5c1e128a"></a>`unit` | path | yes | type="integer"; minimum=0 |
-| <a id="s-8408816c84d3"></a>`If-Match` | header | yes | type="string"; pattern="^\"[0-9a-f]{64}\"$" |
-| <a id="s-4b9aa015e556"></a>`Content-Length` | header | yes | type="integer"; minimum=0 |
+| <a id="s-b098192ee1"></a>`collection_id` | path | yes | type="integer"; minimum=1 |
+| <a id="s-b77d4eaf73"></a>`volume_id` | path | yes | type="string"; pattern="^(?:pack\|segment)-[0-9a-f]{64}$" |
+| <a id="s-606a5c1e12"></a>`unit` | path | yes | type="integer"; minimum=0 |
+| <a id="s-8408816c84"></a>`If-Match` | header | yes | type="string"; pattern="^\"[0-9a-f]{64}\"$" |
+| <a id="s-4b9aa015e5"></a>`Content-Length` | header | yes | type="integer"; minimum=0 |
 
-### <a id="s-2c66ce80f50d"></a>Request body
+### <a id="s-2c66ce80f5"></a>Request body
 
 `{"content": {"application/octet-stream": {"schema": {"contentMediaType": "application/octet-stream", "format": "binary", "title": "Content", "type": "string"}}}, "required": true}`
 
@@ -39,14 +39,14 @@ Put Collection Upload Session Unit
 
 | Status | Description |
 |---|---|
-| <a id="s-6d38f9f84ed3"></a>`200` | Successful Response |
-| <a id="s-2ccb8b683f1b"></a>`400` | Bad Request |
-| <a id="s-cc97e447ebc6"></a>`401` | Unauthorized |
-| <a id="s-f79b60e8a2cd"></a>`403` | Forbidden |
-| <a id="s-0780afcadfdc"></a>`404` | Not Found |
-| <a id="s-ba5f43472734"></a>`409` | Conflict |
-| <a id="s-2e46e1490bae"></a>`411` | Length Required |
-| <a id="s-1216d6dc2740"></a>`500` | Internal Server Error |
+| <a id="s-6d38f9f84e"></a>`200` | Successful Response |
+| <a id="s-2ccb8b683f"></a>`400` | Bad Request |
+| <a id="s-cc97e447eb"></a>`401` | Unauthorized |
+| <a id="s-f79b60e8a2"></a>`403` | Forbidden |
+| <a id="s-0780afcadf"></a>`404` | Not Found |
+| <a id="s-ba5f434727"></a>`409` | Conflict |
+| <a id="s-2e46e1490b"></a>`411` | Length Required |
+| <a id="s-1216d6dc27"></a>`500` | Internal Server Error |
 
 ## Maintained corroboration
 
@@ -61,19 +61,19 @@ Put Collection Upload Session Unit
 
 ## Governing policies
 
-- <a id="pa-601c2924435c"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0ba)
+- <a id="pa-601c292443"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0)
 
 ## Evidence
 
 ### Qualification
 
-- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459fb8)
-- [make compose-smoke](../../../evidence/sources.md#q-413b0b241ba8)
+- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459f)
+- [make compose-smoke](../../../evidence/sources.md#q-413b0b241b)
 
 ### Executable sources
 
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
-- [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc960) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc9) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
 
 ### Machine authority
 

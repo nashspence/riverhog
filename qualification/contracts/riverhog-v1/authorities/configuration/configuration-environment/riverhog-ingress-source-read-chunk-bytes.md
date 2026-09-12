@@ -16,38 +16,38 @@ Exact externally visible contract owned by this semantic dossier.
 
 ## External contract
 
-<a id="s-71aef6f25d5d"></a>
+<a id="s-71aef6f25d"></a>
 | Field | Shape |
 |---|---|
-| <a id="s-a3df3866fb66"></a>`consumers` | ["riverhog-server"] |
-| <a id="s-8019296a335b"></a>`name` | "RIVERHOG_INGRESS_SOURCE_READ_CHUNK_BYTES" |
+| <a id="s-a3df3866fb"></a>`consumers` | ["riverhog-server"] |
+| <a id="s-8019296a33"></a>`name` | "RIVERHOG_INGRESS_SOURCE_READ_CHUNK_BYTES" |
 
 ### Progression, limits, and lifecycle
 
-#### [extent-rule/configured-capacity/v1](../../../policies/index.md#p-3ebc61fc9972)
+#### [extent-rule/configured-capacity/v1](../../../policies/index.md#p-3ebc61fc99)
 
 Shared facts for every subject below: configuration="RIVERHOG_INGRESS_SOURCE_READ_CHUNK_BYTES"; maximum=null; reason="operator-configured-capacity"
 
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
-| [RIVERHOG_INGRESS_SOURCE_READ_CHUNK_BYTES](#s-71aef6f25d5d) | `value · configured-value · operational_policy` | shared above |
+| [RIVERHOG_INGRESS_SOURCE_READ_CHUNK_BYTES](#s-71aef6f25d) | `value · configured-value · operational_policy` | shared above |
 
 ## Governing policies
 
-- <a id="pa-e7fcba652cdc"></a>[compatibility/configuration/v1](../../../policies/index.md#p-8dc08bb46173)
-- <a id="pa-0c3429630c64"></a>[extent-rule/configured-capacity/v1](../../../policies/index.md#p-3ebc61fc9972)
+- <a id="pa-e7fcba652c"></a>[compatibility/configuration/v1](../../../policies/index.md#p-8dc08bb461)
+- <a id="pa-0c3429630c"></a>[extent-rule/configured-capacity/v1](../../../policies/index.md#p-3ebc61fc99)
 
 ## Evidence
 
 ### Qualification
 
-- [make unit](../../../evidence/sources.md#q-ce47068f504c)
-- [make compose-smoke](../../../evidence/sources.md#q-413b0b241ba8)
+- [make unit](../../../evidence/sources.md#q-ce47068f50)
+- [make compose-smoke](../../../evidence/sources.md#q-413b0b241b)
 
 ### Executable sources
 
-- [configuration-environment:RIVERHOG_INGRESS_SOURCE_READ_CHUNK_BYTES](../../../evidence/sources.md#src-2e9902b11ab1) — `configuration-environment:RIVERHOG_INGRESS_SOURCE_READ_CHUNK_BYTES`
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
+- [configuration-environment:RIVERHOG_INGRESS_SOURCE_READ_CHUNK_BYTES](../../../evidence/sources.md#src-2e9902b11a) — `configuration-environment:RIVERHOG_INGRESS_SOURCE_READ_CHUNK_BYTES`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
 
 ### Machine authority
 

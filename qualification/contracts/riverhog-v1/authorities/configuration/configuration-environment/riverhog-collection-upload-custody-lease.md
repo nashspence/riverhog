@@ -16,38 +16,38 @@ Exact externally visible contract owned by this semantic dossier.
 
 ## External contract
 
-<a id="s-a9fb2eff346d"></a>
+<a id="s-a9fb2eff34"></a>
 | Field | Shape |
 |---|---|
-| <a id="s-c00038c38f0f"></a>`consumers` | ["riverhog-server"] |
-| <a id="s-caff9576d7b3"></a>`name` | "RIVERHOG_COLLECTION_UPLOAD_CUSTODY_LEASE" |
+| <a id="s-c00038c38f"></a>`consumers` | ["riverhog-server"] |
+| <a id="s-caff9576d7"></a>`name` | "RIVERHOG_COLLECTION_UPLOAD_CUSTODY_LEASE" |
 
 ### Progression, limits, and lifecycle
 
-#### [extent-rule/configured-capacity/v1](../../../policies/index.md#p-3ebc61fc9972)
+#### [extent-rule/configured-capacity/v1](../../../policies/index.md#p-3ebc61fc99)
 
 Shared facts for every subject below: configuration="RIVERHOG_COLLECTION_UPLOAD_CUSTODY_LEASE"; maximum=null; reason="operator-configured-capacity"
 
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
-| [RIVERHOG_COLLECTION_UPLOAD_CUSTODY_LEASE](#s-a9fb2eff346d) | `value · configured-value · operational_policy` | shared above |
+| [RIVERHOG_COLLECTION_UPLOAD_CUSTODY_LEASE](#s-a9fb2eff34) | `value · configured-value · operational_policy` | shared above |
 
 ## Governing policies
 
-- <a id="pa-60daf999745c"></a>[compatibility/configuration/v1](../../../policies/index.md#p-8dc08bb46173)
-- <a id="pa-f16c971941cb"></a>[extent-rule/configured-capacity/v1](../../../policies/index.md#p-3ebc61fc9972)
+- <a id="pa-60daf99974"></a>[compatibility/configuration/v1](../../../policies/index.md#p-8dc08bb461)
+- <a id="pa-f16c971941"></a>[extent-rule/configured-capacity/v1](../../../policies/index.md#p-3ebc61fc99)
 
 ## Evidence
 
 ### Qualification
 
-- [make unit](../../../evidence/sources.md#q-ce47068f504c)
-- [make compose-smoke](../../../evidence/sources.md#q-413b0b241ba8)
+- [make unit](../../../evidence/sources.md#q-ce47068f50)
+- [make compose-smoke](../../../evidence/sources.md#q-413b0b241b)
 
 ### Executable sources
 
-- [configuration-environment:RIVERHOG_COLLECTION_UPLOAD_CUSTODY_LEASE](../../../evidence/sources.md#src-993ad537df67) — `configuration-environment:RIVERHOG_COLLECTION_UPLOAD_CUSTODY_LEASE`
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
+- [configuration-environment:RIVERHOG_COLLECTION_UPLOAD_CUSTODY_LEASE](../../../evidence/sources.md#src-993ad537df) — `configuration-environment:RIVERHOG_COLLECTION_UPLOAD_CUSTODY_LEASE`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
 
 ### Machine authority
 

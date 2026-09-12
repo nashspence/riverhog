@@ -10,59 +10,59 @@ Exact externally visible contract owned by this semantic dossier.
 |---|---|
 | Authority | [riverhog-provenance-windows-contracts](../index.md) |
 | Interface | [protocol](index.md) |
-| Family | [schemas](index.md#f-78a2bea4a4b2) |
+| Family | [schemas](index.md#f-78a2bea4a4) |
 | Contract elements | 1 |
 | Extent decisions | 2 |
 
 ## External contract
 
-<a id="s-865162e45c23"></a>
-- <a id="s-445c37d54bf2"></a>`$id`: https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/windows-volume-context.json
-- <a id="s-d419668e4014"></a>`type`: object
+<a id="s-865162e45c"></a>
+- <a id="s-445c37d54b"></a>`$id`: https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/windows-volume-context.json
+- <a id="s-d419668e40"></a>`type`: object
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-f8a6a9cc1582"></a>`bytes_per_sector` | yes | type="integer"; minimum=0 |  |
-| <a id="s-f4aa4baa11a9"></a>`drive_type` | yes | type="integer"; minimum=0 |  |
-| <a id="s-c3f5ef01b7a4"></a>`filesystem_flags` | yes | type="integer"; minimum=0 |  |
-| <a id="s-82189c6be46e"></a>`filesystem_name` | yes | type="string"; minLength=1 |  |
-| <a id="s-d2a74a95e41b"></a>`final_path` | yes | type="string" |  |
-| <a id="s-1c69c5fbb36f"></a>`maximum_component_length` | yes | type="integer"; minimum=0 |  |
-| <a id="s-3fb9be6dfe52"></a>`mount_path` | yes | type="string" |  |
-| <a id="s-a766697b2b84"></a>`sectors_per_cluster` | yes | type="integer"; minimum=0 |  |
-| <a id="s-dd857771a2ea"></a>`volume_guid_path` | yes | type="string" |  |
-| <a id="s-a2f9ecad73b7"></a>`volume_label` | yes | type="string" |  |
-| <a id="s-48e6f48c844a"></a>`volume_serial_number` | yes | type="integer"; minimum=0 |  |
+| <a id="s-f8a6a9cc15"></a>`bytes_per_sector` | yes | type="integer"; minimum=0 |  |
+| <a id="s-f4aa4baa11"></a>`drive_type` | yes | type="integer"; minimum=0 |  |
+| <a id="s-c3f5ef01b7"></a>`filesystem_flags` | yes | type="integer"; minimum=0 |  |
+| <a id="s-82189c6be4"></a>`filesystem_name` | yes | type="string"; minLength=1 |  |
+| <a id="s-d2a74a95e4"></a>`final_path` | yes | type="string" |  |
+| <a id="s-1c69c5fbb3"></a>`maximum_component_length` | yes | type="integer"; minimum=0 |  |
+| <a id="s-3fb9be6dfe"></a>`mount_path` | yes | type="string" |  |
+| <a id="s-a766697b2b"></a>`sectors_per_cluster` | yes | type="integer"; minimum=0 |  |
+| <a id="s-dd857771a2"></a>`volume_guid_path` | yes | type="string" |  |
+| <a id="s-a2f9ecad73"></a>`volume_label` | yes | type="string" |  |
+| <a id="s-48e6f48c84"></a>`volume_serial_number` | yes | type="integer"; minimum=0 |  |
 
 ### Progression, limits, and lifecycle
 
-#### [extent-rule/extension-contract/v1](../../../policies/index.md#p-75a89f9d1c36)
+#### [extent-rule/extension-contract/v1](../../../policies/index.md#p-75a89f9d1c)
 
 Shared facts for every subject below: maximum=null; reason="independently-versioned-extension-authority"
 
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
-| [field bytes_per_sector](#s-f8a6a9cc1582) | `value · schema-value · extension_owned` | shared above |
-| [field maximum_component_length](#s-1c69c5fbb36f) | `value · schema-value · extension_owned` | shared above |
+| [field bytes_per_sector](#s-f8a6a9cc15) | `value · schema-value · extension_owned` | shared above |
+| [field maximum_component_length](#s-1c69c5fbb3) | `value · schema-value · extension_owned` | shared above |
 
 ## Governing policies
 
-- <a id="pa-07d7e7d6f394"></a>[compatibility/components/v1](../../../policies/index.md#p-95e9a1225947)
-- <a id="pa-e74e6e53512e"></a>[extent-rule/extension-contract/v1](../../../policies/index.md#p-75a89f9d1c36)
+- <a id="pa-07d7e7d6f3"></a>[compatibility/components/v1](../../../policies/index.md#p-95e9a12259)
+- <a id="pa-e74e6e5351"></a>[extent-rule/extension-contract/v1](../../../policies/index.md#p-75a89f9d1c)
 
 ## Evidence
 
 ### Qualification
 
-- [make dist-smoke](../../../evidence/sources.md#q-0ba2578a3eb7)
-- [make build](../../../evidence/sources.md#q-d1121e35fa7a)
+- [make dist-smoke](../../../evidence/sources.md#q-0ba2578a3e)
+- [make build](../../../evidence/sources.md#q-d1121e35fa)
 
 ### Executable sources
 
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
-- [protocol:https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/windows-volume-context.json](../../../evidence/sources.md#src-025e48b0abb0) — `reference/riverhog/provenance/contracts/windows/src/riverhog_provenance_windows_contracts/schemas/windows-volume-context.schema.json`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [protocol:https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/windows-volume-context.json](../../../evidence/sources.md#src-025e48b0ab) — `reference/riverhog/provenance/contracts/windows/src/riverhog_provenance_windows_contracts/schemas/windows-volume-context.schema.json`
 
 ### Machine authority
 

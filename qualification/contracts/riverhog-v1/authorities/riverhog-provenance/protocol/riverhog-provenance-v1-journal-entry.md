@@ -10,233 +10,233 @@ One immutable entry in a hash-chained RFC 7464 per-file provenance journal.
 |---|---|
 | Authority | [riverhog-provenance](../index.md) |
 | Interface | [protocol](index.md) |
-| Family | [schemas](index.md#f-6adfbad66ec5) |
+| Family | [schemas](index.md#f-6adfbad66e) |
 | Contract elements | 1 |
 | Extent decisions | 79 |
 
 ## External contract
 
-<a id="s-4efcfc32f77a"></a>
-- <a id="s-d5bbb6637a9f"></a>`$id`: https://nashspence.github.io/riverhog/v1/provenance/journal-entry.schema.json
-- <a id="s-532513231bdd"></a>`title`: Riverhog provenance v1 journal entry
-- <a id="s-3befa3a00a23"></a>`description`: One immutable entry in a hash-chained RFC 7464 per-file provenance journal.
-- <a id="s-102bcf843f12"></a>`type`: object
+<a id="s-4efcfc32f7"></a>
+- <a id="s-d5bbb6637a"></a>`$id`: https://nashspence.github.io/riverhog/v1/provenance/journal-entry.schema.json
+- <a id="s-532513231b"></a>`title`: Riverhog provenance v1 journal entry
+- <a id="s-3befa3a00a"></a>`description`: One immutable entry in a hash-chained RFC 7464 per-file provenance journal.
+- <a id="s-102bcf843f"></a>`type`: object
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-63c9dee775cc"></a>`$schema` | yes | const="https://nashspence.github.io/riverhog/v1/provenance/journal-entry.schema.json" |  |
-| <a id="s-601285dd1617"></a>`body` | yes | type="object" |  |
-| <a id="s-b4bb88b15aa9"></a>`entry_kind` | yes | type="string"; enum=["journal_init","assertion","correction","checkpoint"] |  |
-| <a id="s-ffd569e30a8d"></a>`id` | yes | #/$defs/urnUuid |  |
-| <a id="s-61ddb08d617a"></a>`journal_id` | yes | #/$defs/urnUuid |  |
-| <a id="s-0bcb488ebad8"></a>`notes` | no | type="array"; minItems=1; items=(#/$defs/nonEmptyString); additional keys=`uniqueItems` |  |
-| <a id="s-e2b6e7a7c7ab"></a>`previous_entry` | no | #/$defs/entryReference |  |
-| <a id="s-b17b7abdd877"></a>`profile` | yes | const="https://nashspence.github.io/riverhog/v1/provenance" |  |
-| <a id="s-dc9eae8f1352"></a>`recorded_at` | yes | #/$defs/utcDateTime |  |
-| <a id="s-6bd89aa5b272"></a>`recorded_by_agent_id` | yes | #/$defs/urnUuid |  |
-| <a id="s-b6dfb2d33164"></a>`recording_environment_id` | no | #/$defs/urnUuid |  |
-| <a id="s-93c9c7970e1a"></a>`schema_version` | yes | const="1.0.0" |  |
-| <a id="s-a755e6074ed8"></a>`sequence` | yes | type="integer"; minimum=0; maximum="9223372036854775807" |  |
-| <a id="s-788bc03acebb"></a>`type` | yes | const="riverhog_provenance_journal_entry" |  |
+| <a id="s-63c9dee775"></a>`$schema` | yes | const="https://nashspence.github.io/riverhog/v1/provenance/journal-entry.schema.json" |  |
+| <a id="s-601285dd16"></a>`body` | yes | type="object" |  |
+| <a id="s-b4bb88b15a"></a>`entry_kind` | yes | type="string"; enum=["journal_init","assertion","correction","checkpoint"] |  |
+| <a id="s-ffd569e30a"></a>`id` | yes | #/$defs/urnUuid |  |
+| <a id="s-61ddb08d61"></a>`journal_id` | yes | #/$defs/urnUuid |  |
+| <a id="s-0bcb488eba"></a>`notes` | no | type="array"; minItems=1; items=(#/$defs/nonEmptyString); additional keys=`uniqueItems` |  |
+| <a id="s-e2b6e7a7c7"></a>`previous_entry` | no | #/$defs/entryReference |  |
+| <a id="s-b17b7abdd8"></a>`profile` | yes | const="https://nashspence.github.io/riverhog/v1/provenance" |  |
+| <a id="s-dc9eae8f13"></a>`recorded_at` | yes | #/$defs/utcDateTime |  |
+| <a id="s-6bd89aa5b2"></a>`recorded_by_agent_id` | yes | #/$defs/urnUuid |  |
+| <a id="s-b6dfb2d331"></a>`recording_environment_id` | no | #/$defs/urnUuid |  |
+| <a id="s-93c9c7970e"></a>`schema_version` | yes | const="1.0.0" |  |
+| <a id="s-a755e6074e"></a>`sequence` | yes | type="integer"; minimum=0; maximum="9223372036854775807" |  |
+| <a id="s-788bc03ace"></a>`type` | yes | const="riverhog_provenance_journal_entry" |  |
 
 ### Definitions
 
 | Definition | Shape |
 |---|---|
-| <a id="s-088a6da7a641"></a>`absoluteUri` | type="string"; format="uri"; pattern="^[^\\u0000\\uD800-\\uDFFF]+$" |
-| <a id="s-f7179075a7eb"></a>`accessMetadata` | type="object"; fields=`group`, `owner`, `posix_mode`; additional keys=`additionalProperties`, `minProperties` |
-| <a id="s-afa0679572f6"></a>`activityTime` | type="object"; fields=`ended_at`, `note`, `started_at`, `status`; allOf=additional keys=`if`, `then` \| additional keys=`if`, `then` \| additional keys=`if`, `then` \| additional keys=`if`, `then`; additional keys=`additionalProperties`, `required` |
-| <a id="s-73d177dbf5d4"></a>`agent` | oneOf=#/$defs/softwareAgent \| #/$defs/personAgent \| #/$defs/organizationAgent \| #/$defs/hardwareAgent |
-| <a id="s-d348c1e87160"></a>`assertionBody` | type="object"; fields=`assertions`; additional keys=`additionalProperties`, `required` |
-| <a id="s-bdc57712843b"></a>`association` | type="object"; fields=`agent_id`, `plan_id`, `role`, `role_uri`; allOf=additional keys=`if`, `then` \| additional keys=`if`, `then`; additional keys=`additionalProperties`, `required` |
-| <a id="s-72c05fe31a47"></a>`booleanValue` | type="object"; fields=`data`, `type`; additional keys=`additionalProperties`, `required` |
-| <a id="s-f8865efa4de3"></a>`byteString` | type="object"; fields=`byte_length`, `data`, `digests`, `encoding`, `media_type`; additional keys=`additionalProperties`, `required` |
-| <a id="s-57e550bbaff9"></a>`bytesValue` | type="object"; fields=`byte_length`, `data`, `digests`, `encoding`, `media_type`, `type`; additional keys=`additionalProperties`, `required` |
-| <a id="s-f1bbe8d25ccf"></a>`captureDetail` | type="object"; fields=`command_line`, `configuration_digest`, `profile_id`, `provenance_observer`, `working_directory`; additional keys=`additionalProperties`, `minProperties` |
-| <a id="s-67bdd25fe2bb"></a>`captureEvent` | type="object"; fields=`associations`, `consistency`, `coverage`, `detail`, `diagnostics`, `ended_at`, `environment_id`, `id`, `notes`, `operations`, `outcome`, `started_at`, `state_id`, `type`; allOf=additional keys=`if`, `then`; additional keys=`additionalProperties`, `required` |
-| <a id="s-14ff4aeeaf46"></a>`capturedValue` | oneOf=#/$defs/bytesValue \| #/$defs/textValue \| #/$defs/integerValue \| #/$defs/decimalValue \| #/$defs/booleanValue \| #/$defs/timestampValue \| #/$defs/uriValue \| #/$defs/entityReferenceValue \| #/$defs/jsonValue |
-| <a id="s-edbb3f12655f"></a>`checkpointBody` | type="object"; fields=`checkpoint_kind`, `checkpoint_kind_uri`, `counts`, `covered_through`, `note`, `stream_prefix_sha256`; allOf=additional keys=`if`, `then`; additional keys=`additionalProperties`, `required` |
-| <a id="s-62a0a91aaeb6"></a>`checkpointCounts` | type="object"; fields=`activities`, `captures`, `entries`, `lineages`, `relations`, `states`; additional keys=`additionalProperties`, `required` |
-| <a id="s-956f3fc8b87a"></a>`comparisonDimension` | type="object"; fields=`basis`, `dimension`, `note`, `result`; additional keys=`additionalProperties`, `required` |
-| <a id="s-b92aeb48b455"></a>`comparisonRelation` | type="object"; fields=`asserted_by_agent_id`, `compared_at`, `confidence`, `dimensions`, `from_capture_id`, `from_state`, `id`, `notes`, `to_capture_id`, `to_state`, `type`; additional keys=`additionalProperties`, `required` |
-| <a id="s-e5941ad1802c"></a>`contentDescription` | type="object"; fields=`digests`, `size_bytes`; additional keys=`additionalProperties`, `required` |
-| <a id="s-7cf5239b36f2"></a>`continuityBasis` | type="object"; fields=`type`, `uri`; allOf=additional keys=`if`, `then`; additional keys=`additionalProperties`, `required` |
-| <a id="s-37e4bccab249"></a>`continuityRelation` | type="object"; fields=`asserted_by_agent_id`, `basis`, `confidence`, `continuity_kind`, `from_state`, `id`, `note`, `to_state`, `type`; additional keys=`additionalProperties`, `required` |
-| <a id="s-9293f3fd5ea4"></a>`correctionBody` | type="object"; fields=`action`, `reason`, `replacement`, `supersedes`; allOf=additional keys=`if`, `then` \| additional keys=`if`, `then`; additional keys=`additionalProperties`, `required` |
-| <a id="s-ec3204909691"></a>`coverage` | type="object"; fields=`access_control`, `alternate_streams`, `basic_filesystem`, `content_fixity`, `extended_attributes`, `file_flags`, `locator`, `native_identifiers`, `native_metadata_other`, `ownership`, `permissions`, `resource_forks`, `security_metadata`, `special_file_features`, `storage_layout`, `timestamps`; additional keys=`additionalProperties`, `required` |
-| <a id="s-e778f73563fc"></a>`coverageStatus` | type="string"; enum=["complete","partial","not_supported","not_applicable","not_requested","failed"] |
-| <a id="s-24acd86cbadb"></a>`decimalValue` | type="object"; fields=`data`, `type`; additional keys=`additionalProperties`, `required` |
-| <a id="s-1d0efc506db2"></a>`derivationRelation` | type="object"; fields=`activity_id`, `derivation_kind`, `derivation_kind_uri`, `generated_state`, `id`, `type`, `used_state`; allOf=additional keys=`if`, `then`; additional keys=`additionalProperties`, `required` |
-| <a id="s-5eb1052892cf"></a>`diagnostic` | type="object"; fields=`category`, `code`, `message`, `native_code`, `severity`, `source`; additional keys=`additionalProperties`, `required` |
-| <a id="s-1e1e5e54b01a"></a>`digest` | type="object"; fields=`algorithm`, `algorithm_uri`, `encoding`, `originator_agent_id`, `purpose`, `purpose_uri`, `value`; allOf=additional keys=`if`, `then` \| additional keys=`if`, `then` \| additional keys=`if`, `then` \| additional keys=`if`, `then`; additional keys=`additionalProperties`, `required` |
-| <a id="s-b87a395047c1"></a>`digestOnlyValue` | type="object"; fields=`byte_length`, `digests`, `type`; additional keys=`additionalProperties`, `required` |
-| <a id="s-47030d684de7"></a>`entityReferenceValue` | type="object"; fields=`data`, `type`; additional keys=`additionalProperties`, `required` |
-| <a id="s-4a73d347fd5a"></a>`entryReference` | type="object"; fields=`entry_id`, `json_sha256`, `sequence`; additional keys=`additionalProperties`, `required` |
-| <a id="s-20b7cca542e4"></a>`environment` | type="object"; fields=`filesystem`, `host`, `id`, `operating_system`, `runtime`, `type`; additional keys=`additionalProperties`, `required` |
-| <a id="s-dd3ca68abf82"></a>`fieldSourceDescriptor` | allOf=#/$defs/sourceDescriptor \| additional keys=`required` |
-| <a id="s-42ed3b06f06c"></a>`fileLineage` | type="object"; fields=`asserted_by_agent_id`, `continuity_basis`, `continuity_basis_uri`, `id`, `identifiers`, `label`, `notes`, `type`; allOf=additional keys=`if`, `then`; additional keys=`additionalProperties`, `required` |
-| <a id="s-72ed1caeab6e"></a>`fileState` | type="object"; fields=`content`, `filesystem_metadata`, `id`, `lineage_id`, `locator`, `notes`, `type`; additional keys=`additionalProperties`, `required` |
-| <a id="s-92f8e87e3352"></a>`filesystem` | type="object"; fields=`case_preserving`, `case_sensitive`, `mount_locator`, `name_normalization`, `networked`, `snapshot_identifiers`, `type`, `type_uri`, `version`, `volume_identifiers`; additional keys=`additionalProperties`, `required` |
-| <a id="s-2c6dad9ae676"></a>`filesystemMetadata` | type="object"; fields=`access`, `native_identifiers`, `native_metadata`, `timestamps`; additional keys=`additionalProperties`, `required` |
-| <a id="s-fd99a1f0e8d4"></a>`generationRelation` | type="object"; fields=`activity_id`, `id`, `role`, `role_uri`, `state`, `type`; allOf=additional keys=`if`, `then`; additional keys=`additionalProperties`, `required` |
-| <a id="s-b3f23dc21942"></a>`graphFragment` | type="object"; fields=`activities`, `agents`, `captures`, `environments`, `extensions`, `lineages`, `payload_bindings`, `relations`, `states`; additional keys=`additionalProperties`, `minProperties` |
-| <a id="s-2d4ca24d8e9b"></a>`hardwareAgent` | type="object"; fields=`id`, `identifiers`, `model`, `name`, `type`, `vendor`, `version`; additional keys=`additionalProperties`, `required` |
-| <a id="s-03a9361935ba"></a>`host` | type="object"; fields=`hardware_architecture`, `hardware_model`, `id`, `identifiers`, `name`; additional keys=`additionalProperties`, `required` |
-| <a id="s-e6d4c3ce9412"></a>`identifier` | type="object"; fields=`authority_id`, `representation`, `scheme`, `scope`, `value`; allOf=additional keys=`if`, `then` \| additional keys=`if`, `then` \| additional keys=`if`, `then`; additional keys=`additionalProperties`, `required` |
-| <a id="s-e7a29598b58e"></a>`integerValue` | type="object"; fields=`data`, `type`; additional keys=`additionalProperties`, `required` |
-| <a id="s-f201133ac44c"></a>`interpretation` | type="object"; fields=`agent_id`, `confidence`, `kind`, `note`, `schema`, `value`; allOf=additional keys=`if`, `then` \| additional keys=`if`, `then`; additional keys=`additionalProperties`, `required` |
-| <a id="s-7be03ea94265"></a>`invalidationRelation` | type="object"; fields=`activity_id`, `id`, `reason`, `state`, `type`; additional keys=`additionalProperties`, `required` |
-| <a id="s-8b0ea6895864"></a>`journalInitBody` | type="object"; fields=`assertions`, `journal`; additional keys=`additionalProperties`, `required` |
-| <a id="s-31e80eaaa268"></a>`journalPolicy` | type="object"; fields=`correction_model`, `entry_digest_algorithm`, `entry_digest_coverage`, `label`, `payload_semantics`, `primary_lineage_id`, `retention_intent`, `retention_intent_uri`, `scope`, `serialization`, `state_representation`; allOf=additional keys=`if`, `then`; additional keys=`additionalProperties`, `required` |
-| <a id="s-461d5ccad63d"></a>`jsonValue` | type="object"; fields=`data`, `schema`, `type`; additional keys=`additionalProperties`, `required` |
-| <a id="s-2920056f4cc4"></a>`kernel` | type="object"; fields=`name`, `release`, `version`; additional keys=`additionalProperties`, `minProperties` |
-| <a id="s-334ec6328c79"></a>`locator` | type="object"; fields=`authority_id`, `bytes`, `kind`, `source_encoding`, `syntax`, `text`, `text_role`; anyOf=additional keys=`required` \| additional keys=`required`; allOf=additional keys=`if`, `then` \| additional keys=`if`, `then` \| additional keys=`if`, `then` \| additional keys=`if`, `then` \| additional keys=`if`, `then` \| additional keys=`if`, `then`; additional keys=`additionalProperties`, `required` |
-| <a id="s-cc468e7930dd"></a>`nativeCoverageCategory` | type="string"; enum=["extended_attributes","access_control","alternate_streams","resource_forks","file_flags","security_metadata","storage_layout","special_file_features","native_metadata_other"] |
-| <a id="s-29df5b2baf7c"></a>`nativeMetadata` | type="object"; fields=`capture_status`, `coverage_category`, `interpretations`, `kind`, `kind_uri`, `name`, `name_bytes`, `name_role`, `name_source_encoding`, `namespace`, `note`, `observed_byte_length`, `sensitivity`, `source`, `value`; allOf=additional keys=`if`, `then` \| additional keys=`if`, `then` \| additional keys=`if`, `then` \| additional keys=`if`, `then` \| additional keys=`if`, `then` \| additional keys=`if`, `then` \| additional keys=`if`, `then` \| additional keys=`if`, `then`; additional keys=`additionalProperties`, `required` |
-| <a id="s-ddcf450d4de8"></a>`nonEmptyString` | type="string"; minLength=1; pattern="^[^\\u0000\\uD800-\\uDFFF]+$" |
-| <a id="s-899e81240515"></a>`nonNullJson` | anyOf=#/$defs/portableString \| type="number" \| type="boolean" \| type="array"; items=(#/$defs/nonNullJson) \| type="object"; additional keys=`additionalProperties`, `propertyNames` |
-| <a id="s-325bfde37a61"></a>`observedIdentifier` | type="object"; fields=`authority_id`, `representation`, `scheme`, `scope`, `source`, `value`; allOf=additional keys=`if`, `then` \| additional keys=`if`, `then` \| additional keys=`if`, `then`; additional keys=`additionalProperties`, `required` |
-| <a id="s-e585eafb762b"></a>`operatingSystem` | type="object"; fields=`build`, `family`, `family_name`, `identifiers`, `kernel`, `name`, `version`; allOf=additional keys=`if`, `then`; additional keys=`additionalProperties`, `required` |
-| <a id="s-a050110c08e2"></a>`organizationAgent` | type="object"; fields=`id`, `identifiers`, `name`, `type`; additional keys=`additionalProperties`, `required` |
-| <a id="s-86c27faf36a2"></a>`payloadBinding` | type="object"; fields=`asserted_by_agent_id`, `basis`, `basis_uri`, `established_by_activity_id`, `established_by_capture_id`, `id`, `note`, `operation`, `relative_payload_locator`, `replaces_binding_id`, `role`, `role_uri`, `state`, `type`; allOf=additional keys=`if`, `then` \| additional keys=`if`, `then` \| additional keys=`if`, `then` \| additional keys=`if`, `then`; additional keys=`additionalProperties`, `required` |
-| <a id="s-5d421881fe42"></a>`personAgent` | type="object"; fields=`id`, `identifiers`, `name`, `type`; additional keys=`additionalProperties`, `required` |
-| <a id="s-94d0b65f8181"></a>`portableString` | type="string"; pattern="^[^\\u0000\\uD800-\\uDFFF]*$" |
-| <a id="s-dfb4db485fc8"></a>`principal` | type="object"; fields=`identifiers`, `kind`, `name`, `resolution`; anyOf=additional keys=`required` \| additional keys=`required`; additional keys=`additionalProperties`, `required` |
-| <a id="s-05bd4b5b3355"></a>`processDetail` | type="object"; fields=`command_line`, `configuration_digest`, `external_event_identifier`, `plan_id`, `working_directory`; additional keys=`additionalProperties`, `minProperties` |
-| <a id="s-9ccea05d102c"></a>`processEvidence` | type="object"; fields=`asserted_by_agent_id`, `basis`, `basis_uri`, `comparison_relation_id`, `confidence`, `description`, `id`, `reference`; allOf=additional keys=`if`, `then` \| additional keys=`if`, `then`; additional keys=`additionalProperties`, `required` |
-| <a id="s-e81f29b9b5bd"></a>`provenanceContractReference` | type="object"; fields=`contract_id`, `contract_sha256`, `format`, `provider`; additional keys=`additionalProperties`, `required` |
-| <a id="s-307ea8eb104a"></a>`provenanceObserverReference` | type="object"; fields=`contract`, `distribution`, `format`, `observer_id`, `provider`, `version`; additional keys=`additionalProperties`, `dependentRequired`, `required` |
-| <a id="s-a65a100c0b5b"></a>`relation` | oneOf=#/$defs/usageRelation \| #/$defs/generationRelation \| #/$defs/derivationRelation \| #/$defs/invalidationRelation \| #/$defs/continuityRelation \| #/$defs/comparisonRelation |
-| <a id="s-e8775f45df69"></a>`relationRole` | type="string"; enum=["source","input","reference","component","metadata_source","result","output","derivative","replacement","copy","other"] |
-| <a id="s-a011de07f609"></a>`runtime` | type="object"; fields=`character_encoding`, `container`, `effective_principal`, `identifiers`, `locale`, `privilege`, `process_architecture`, `time_zone`, `utc_offset`; additional keys=`additionalProperties`, `required` |
-| <a id="s-2d2165b5a6d7"></a>`semanticAssertion` | type="object"; fields=`asserted_by_agent_id`, `confidence`, `id`, `note`, `property`, `subject_id`, `type`, `value`; additional keys=`additionalProperties`, `required` |
-| <a id="s-1ceccb1b6145"></a>`sha256Hex` | type="string"; pattern="^[0-9a-f]{64}$" |
-| <a id="s-e4f49d875899"></a>`softwareAgent` | type="object"; fields=`build`, `executable_digests`, `id`, `identifiers`, `name`, `type`, `vendor`, `version`; anyOf=additional keys=`required` \| additional keys=`required` \| additional keys=`required`; additional keys=`additionalProperties`, `required` |
-| <a id="s-6bcbe0dfe1db"></a>`sourceDescriptor` | type="object"; fields=`api`, `api_uri`, `field`, `field_uri`, `platform`, `platform_name`, `version`; allOf=additional keys=`if`, `then`; additional keys=`additionalProperties`, `required` |
-| <a id="s-e5152341be9f"></a>`sourcePlatform` | type="string"; enum=["linux","windows","macos","freebsd","openbsd","netbsd","illumos","aix","posix","android","ios","solaris","other"] |
-| <a id="s-6bc47c0dba64"></a>`stateReference` | type="object"; fields=`entry_id`, `entry_json_sha256`, `id`, `journal_id`, `scope`, `sidecar_uri`; allOf=additional keys=`if`, `then` \| additional keys=`if`, `then`; additional keys=`additionalProperties`, `dependentRequired`, `required` |
-| <a id="s-ce6e164ba201"></a>`textValue` | type="object"; fields=`byte_length`, `data`, `language`, `media_type`, `source_encoding`, `type`; additional keys=`additionalProperties`, `dependentRequired`, `required` |
-| <a id="s-f1f3653cef5b"></a>`timestampObservation` | type="object"; fields=`assumption`, `kind`, `kind_uri`, `raw_epoch`, `raw_unit`, `raw_unit_name`, `raw_value`, `resolution_ns`, `source`, `value`, `value_status`; allOf=additional keys=`if`, `then` \| additional keys=`if`, `then` \| additional keys=`if`, `then` \| additional keys=`if`, `then` \| additional keys=`if`, `then`; additional keys=`additionalProperties`, `dependentRequired`, `required` |
-| <a id="s-9d92b09f3e8b"></a>`timestampValue` | type="object"; fields=`data`, `resolution_ns`, `type`; additional keys=`additionalProperties`, `required` |
-| <a id="s-95e37398dee1"></a>`transitionActivity` | type="object"; fields=`associations`, `detail`, `environment_id`, `event_label`, `event_type`, `event_type_uri`, `evidence`, `id`, `notes`, `outcome`, `time`, `type`; allOf=additional keys=`if`, `then`; additional keys=`additionalProperties`, `required` |
-| <a id="s-de01b50b5cc9"></a>`typedValue` | oneOf=#/$defs/capturedValue \| #/$defs/digestOnlyValue |
-| <a id="s-6dc893854935"></a>`uriValue` | type="object"; fields=`data`, `type`; additional keys=`additionalProperties`, `required` |
-| <a id="s-b9f9301bba02"></a>`urnUuid` | type="string"; pattern="^urn:uuid:[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$" |
-| <a id="s-2a66a85deba0"></a>`usageRelation` | type="object"; fields=`activity_id`, `id`, `role`, `role_uri`, `state`, `type`; allOf=additional keys=`if`, `then`; additional keys=`additionalProperties`, `required` |
-| <a id="s-57f05b370e1d"></a>`utcDateTime` | type="string"; format="date-time"; pattern="^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(?:\\.[0-9]{1,9})?Z$" |
+| <a id="s-088a6da7a6"></a>`absoluteUri` | type="string"; format="uri"; pattern="^[^\\u0000\\uD800-\\uDFFF]+$" |
+| <a id="s-f7179075a7"></a>`accessMetadata` | type="object"; fields=`group`, `owner`, `posix_mode`; additional keys=`additionalProperties`, `minProperties` |
+| <a id="s-afa0679572"></a>`activityTime` | type="object"; fields=`ended_at`, `note`, `started_at`, `status`; allOf=additional keys=`if`, `then` \| additional keys=`if`, `then` \| additional keys=`if`, `then` \| additional keys=`if`, `then`; additional keys=`additionalProperties`, `required` |
+| <a id="s-73d177dbf5"></a>`agent` | oneOf=#/$defs/softwareAgent \| #/$defs/personAgent \| #/$defs/organizationAgent \| #/$defs/hardwareAgent |
+| <a id="s-d348c1e871"></a>`assertionBody` | type="object"; fields=`assertions`; additional keys=`additionalProperties`, `required` |
+| <a id="s-bdc5771284"></a>`association` | type="object"; fields=`agent_id`, `plan_id`, `role`, `role_uri`; allOf=additional keys=`if`, `then` \| additional keys=`if`, `then`; additional keys=`additionalProperties`, `required` |
+| <a id="s-72c05fe31a"></a>`booleanValue` | type="object"; fields=`data`, `type`; additional keys=`additionalProperties`, `required` |
+| <a id="s-f8865efa4d"></a>`byteString` | type="object"; fields=`byte_length`, `data`, `digests`, `encoding`, `media_type`; additional keys=`additionalProperties`, `required` |
+| <a id="s-57e550bbaf"></a>`bytesValue` | type="object"; fields=`byte_length`, `data`, `digests`, `encoding`, `media_type`, `type`; additional keys=`additionalProperties`, `required` |
+| <a id="s-f1bbe8d25c"></a>`captureDetail` | type="object"; fields=`command_line`, `configuration_digest`, `profile_id`, `provenance_observer`, `working_directory`; additional keys=`additionalProperties`, `minProperties` |
+| <a id="s-67bdd25fe2"></a>`captureEvent` | type="object"; fields=`associations`, `consistency`, `coverage`, `detail`, `diagnostics`, `ended_at`, `environment_id`, `id`, `notes`, `operations`, `outcome`, `started_at`, `state_id`, `type`; allOf=additional keys=`if`, `then`; additional keys=`additionalProperties`, `required` |
+| <a id="s-14ff4aeeaf"></a>`capturedValue` | oneOf=#/$defs/bytesValue \| #/$defs/textValue \| #/$defs/integerValue \| #/$defs/decimalValue \| #/$defs/booleanValue \| #/$defs/timestampValue \| #/$defs/uriValue \| #/$defs/entityReferenceValue \| #/$defs/jsonValue |
+| <a id="s-edbb3f1265"></a>`checkpointBody` | type="object"; fields=`checkpoint_kind`, `checkpoint_kind_uri`, `counts`, `covered_through`, `note`, `stream_prefix_sha256`; allOf=additional keys=`if`, `then`; additional keys=`additionalProperties`, `required` |
+| <a id="s-62a0a91aae"></a>`checkpointCounts` | type="object"; fields=`activities`, `captures`, `entries`, `lineages`, `relations`, `states`; additional keys=`additionalProperties`, `required` |
+| <a id="s-956f3fc8b8"></a>`comparisonDimension` | type="object"; fields=`basis`, `dimension`, `note`, `result`; additional keys=`additionalProperties`, `required` |
+| <a id="s-b92aeb48b4"></a>`comparisonRelation` | type="object"; fields=`asserted_by_agent_id`, `compared_at`, `confidence`, `dimensions`, `from_capture_id`, `from_state`, `id`, `notes`, `to_capture_id`, `to_state`, `type`; additional keys=`additionalProperties`, `required` |
+| <a id="s-e5941ad180"></a>`contentDescription` | type="object"; fields=`digests`, `size_bytes`; additional keys=`additionalProperties`, `required` |
+| <a id="s-7cf5239b36"></a>`continuityBasis` | type="object"; fields=`type`, `uri`; allOf=additional keys=`if`, `then`; additional keys=`additionalProperties`, `required` |
+| <a id="s-37e4bccab2"></a>`continuityRelation` | type="object"; fields=`asserted_by_agent_id`, `basis`, `confidence`, `continuity_kind`, `from_state`, `id`, `note`, `to_state`, `type`; additional keys=`additionalProperties`, `required` |
+| <a id="s-9293f3fd5e"></a>`correctionBody` | type="object"; fields=`action`, `reason`, `replacement`, `supersedes`; allOf=additional keys=`if`, `then` \| additional keys=`if`, `then`; additional keys=`additionalProperties`, `required` |
+| <a id="s-ec32049096"></a>`coverage` | type="object"; fields=`access_control`, `alternate_streams`, `basic_filesystem`, `content_fixity`, `extended_attributes`, `file_flags`, `locator`, `native_identifiers`, `native_metadata_other`, `ownership`, `permissions`, `resource_forks`, `security_metadata`, `special_file_features`, `storage_layout`, `timestamps`; additional keys=`additionalProperties`, `required` |
+| <a id="s-e778f73563"></a>`coverageStatus` | type="string"; enum=["complete","partial","not_supported","not_applicable","not_requested","failed"] |
+| <a id="s-24acd86cba"></a>`decimalValue` | type="object"; fields=`data`, `type`; additional keys=`additionalProperties`, `required` |
+| <a id="s-1d0efc506d"></a>`derivationRelation` | type="object"; fields=`activity_id`, `derivation_kind`, `derivation_kind_uri`, `generated_state`, `id`, `type`, `used_state`; allOf=additional keys=`if`, `then`; additional keys=`additionalProperties`, `required` |
+| <a id="s-5eb1052892"></a>`diagnostic` | type="object"; fields=`category`, `code`, `message`, `native_code`, `severity`, `source`; additional keys=`additionalProperties`, `required` |
+| <a id="s-1e1e5e54b0"></a>`digest` | type="object"; fields=`algorithm`, `algorithm_uri`, `encoding`, `originator_agent_id`, `purpose`, `purpose_uri`, `value`; allOf=additional keys=`if`, `then` \| additional keys=`if`, `then` \| additional keys=`if`, `then` \| additional keys=`if`, `then`; additional keys=`additionalProperties`, `required` |
+| <a id="s-b87a395047"></a>`digestOnlyValue` | type="object"; fields=`byte_length`, `digests`, `type`; additional keys=`additionalProperties`, `required` |
+| <a id="s-47030d684d"></a>`entityReferenceValue` | type="object"; fields=`data`, `type`; additional keys=`additionalProperties`, `required` |
+| <a id="s-4a73d347fd"></a>`entryReference` | type="object"; fields=`entry_id`, `json_sha256`, `sequence`; additional keys=`additionalProperties`, `required` |
+| <a id="s-20b7cca542"></a>`environment` | type="object"; fields=`filesystem`, `host`, `id`, `operating_system`, `runtime`, `type`; additional keys=`additionalProperties`, `required` |
+| <a id="s-dd3ca68abf"></a>`fieldSourceDescriptor` | allOf=#/$defs/sourceDescriptor \| additional keys=`required` |
+| <a id="s-42ed3b06f0"></a>`fileLineage` | type="object"; fields=`asserted_by_agent_id`, `continuity_basis`, `continuity_basis_uri`, `id`, `identifiers`, `label`, `notes`, `type`; allOf=additional keys=`if`, `then`; additional keys=`additionalProperties`, `required` |
+| <a id="s-72ed1caeab"></a>`fileState` | type="object"; fields=`content`, `filesystem_metadata`, `id`, `lineage_id`, `locator`, `notes`, `type`; additional keys=`additionalProperties`, `required` |
+| <a id="s-92f8e87e33"></a>`filesystem` | type="object"; fields=`case_preserving`, `case_sensitive`, `mount_locator`, `name_normalization`, `networked`, `snapshot_identifiers`, `type`, `type_uri`, `version`, `volume_identifiers`; additional keys=`additionalProperties`, `required` |
+| <a id="s-2c6dad9ae6"></a>`filesystemMetadata` | type="object"; fields=`access`, `native_identifiers`, `native_metadata`, `timestamps`; additional keys=`additionalProperties`, `required` |
+| <a id="s-fd99a1f0e8"></a>`generationRelation` | type="object"; fields=`activity_id`, `id`, `role`, `role_uri`, `state`, `type`; allOf=additional keys=`if`, `then`; additional keys=`additionalProperties`, `required` |
+| <a id="s-b3f23dc219"></a>`graphFragment` | type="object"; fields=`activities`, `agents`, `captures`, `environments`, `extensions`, `lineages`, `payload_bindings`, `relations`, `states`; additional keys=`additionalProperties`, `minProperties` |
+| <a id="s-2d4ca24d8e"></a>`hardwareAgent` | type="object"; fields=`id`, `identifiers`, `model`, `name`, `type`, `vendor`, `version`; additional keys=`additionalProperties`, `required` |
+| <a id="s-03a9361935"></a>`host` | type="object"; fields=`hardware_architecture`, `hardware_model`, `id`, `identifiers`, `name`; additional keys=`additionalProperties`, `required` |
+| <a id="s-e6d4c3ce94"></a>`identifier` | type="object"; fields=`authority_id`, `representation`, `scheme`, `scope`, `value`; allOf=additional keys=`if`, `then` \| additional keys=`if`, `then` \| additional keys=`if`, `then`; additional keys=`additionalProperties`, `required` |
+| <a id="s-e7a29598b5"></a>`integerValue` | type="object"; fields=`data`, `type`; additional keys=`additionalProperties`, `required` |
+| <a id="s-f201133ac4"></a>`interpretation` | type="object"; fields=`agent_id`, `confidence`, `kind`, `note`, `schema`, `value`; allOf=additional keys=`if`, `then` \| additional keys=`if`, `then`; additional keys=`additionalProperties`, `required` |
+| <a id="s-7be03ea942"></a>`invalidationRelation` | type="object"; fields=`activity_id`, `id`, `reason`, `state`, `type`; additional keys=`additionalProperties`, `required` |
+| <a id="s-8b0ea68958"></a>`journalInitBody` | type="object"; fields=`assertions`, `journal`; additional keys=`additionalProperties`, `required` |
+| <a id="s-31e80eaaa2"></a>`journalPolicy` | type="object"; fields=`correction_model`, `entry_digest_algorithm`, `entry_digest_coverage`, `label`, `payload_semantics`, `primary_lineage_id`, `retention_intent`, `retention_intent_uri`, `scope`, `serialization`, `state_representation`; allOf=additional keys=`if`, `then`; additional keys=`additionalProperties`, `required` |
+| <a id="s-461d5ccad6"></a>`jsonValue` | type="object"; fields=`data`, `schema`, `type`; additional keys=`additionalProperties`, `required` |
+| <a id="s-2920056f4c"></a>`kernel` | type="object"; fields=`name`, `release`, `version`; additional keys=`additionalProperties`, `minProperties` |
+| <a id="s-334ec6328c"></a>`locator` | type="object"; fields=`authority_id`, `bytes`, `kind`, `source_encoding`, `syntax`, `text`, `text_role`; anyOf=additional keys=`required` \| additional keys=`required`; allOf=additional keys=`if`, `then` \| additional keys=`if`, `then` \| additional keys=`if`, `then` \| additional keys=`if`, `then` \| additional keys=`if`, `then` \| additional keys=`if`, `then`; additional keys=`additionalProperties`, `required` |
+| <a id="s-cc468e7930"></a>`nativeCoverageCategory` | type="string"; enum=["extended_attributes","access_control","alternate_streams","resource_forks","file_flags","security_metadata","storage_layout","special_file_features","native_metadata_other"] |
+| <a id="s-29df5b2baf"></a>`nativeMetadata` | type="object"; fields=`capture_status`, `coverage_category`, `interpretations`, `kind`, `kind_uri`, `name`, `name_bytes`, `name_role`, `name_source_encoding`, `namespace`, `note`, `observed_byte_length`, `sensitivity`, `source`, `value`; allOf=additional keys=`if`, `then` \| additional keys=`if`, `then` \| additional keys=`if`, `then` \| additional keys=`if`, `then` \| additional keys=`if`, `then` \| additional keys=`if`, `then` \| additional keys=`if`, `then` \| additional keys=`if`, `then`; additional keys=`additionalProperties`, `required` |
+| <a id="s-ddcf450d4d"></a>`nonEmptyString` | type="string"; minLength=1; pattern="^[^\\u0000\\uD800-\\uDFFF]+$" |
+| <a id="s-899e812405"></a>`nonNullJson` | anyOf=#/$defs/portableString \| type="number" \| type="boolean" \| type="array"; items=(#/$defs/nonNullJson) \| type="object"; additional keys=`additionalProperties`, `propertyNames` |
+| <a id="s-325bfde37a"></a>`observedIdentifier` | type="object"; fields=`authority_id`, `representation`, `scheme`, `scope`, `source`, `value`; allOf=additional keys=`if`, `then` \| additional keys=`if`, `then` \| additional keys=`if`, `then`; additional keys=`additionalProperties`, `required` |
+| <a id="s-e585eafb76"></a>`operatingSystem` | type="object"; fields=`build`, `family`, `family_name`, `identifiers`, `kernel`, `name`, `version`; allOf=additional keys=`if`, `then`; additional keys=`additionalProperties`, `required` |
+| <a id="s-a050110c08"></a>`organizationAgent` | type="object"; fields=`id`, `identifiers`, `name`, `type`; additional keys=`additionalProperties`, `required` |
+| <a id="s-86c27faf36"></a>`payloadBinding` | type="object"; fields=`asserted_by_agent_id`, `basis`, `basis_uri`, `established_by_activity_id`, `established_by_capture_id`, `id`, `note`, `operation`, `relative_payload_locator`, `replaces_binding_id`, `role`, `role_uri`, `state`, `type`; allOf=additional keys=`if`, `then` \| additional keys=`if`, `then` \| additional keys=`if`, `then` \| additional keys=`if`, `then`; additional keys=`additionalProperties`, `required` |
+| <a id="s-5d421881fe"></a>`personAgent` | type="object"; fields=`id`, `identifiers`, `name`, `type`; additional keys=`additionalProperties`, `required` |
+| <a id="s-94d0b65f81"></a>`portableString` | type="string"; pattern="^[^\\u0000\\uD800-\\uDFFF]*$" |
+| <a id="s-dfb4db485f"></a>`principal` | type="object"; fields=`identifiers`, `kind`, `name`, `resolution`; anyOf=additional keys=`required` \| additional keys=`required`; additional keys=`additionalProperties`, `required` |
+| <a id="s-05bd4b5b33"></a>`processDetail` | type="object"; fields=`command_line`, `configuration_digest`, `external_event_identifier`, `plan_id`, `working_directory`; additional keys=`additionalProperties`, `minProperties` |
+| <a id="s-9ccea05d10"></a>`processEvidence` | type="object"; fields=`asserted_by_agent_id`, `basis`, `basis_uri`, `comparison_relation_id`, `confidence`, `description`, `id`, `reference`; allOf=additional keys=`if`, `then` \| additional keys=`if`, `then`; additional keys=`additionalProperties`, `required` |
+| <a id="s-e81f29b9b5"></a>`provenanceContractReference` | type="object"; fields=`contract_id`, `contract_sha256`, `format`, `provider`; additional keys=`additionalProperties`, `required` |
+| <a id="s-307ea8eb10"></a>`provenanceObserverReference` | type="object"; fields=`contract`, `distribution`, `format`, `observer_id`, `provider`, `version`; additional keys=`additionalProperties`, `dependentRequired`, `required` |
+| <a id="s-a65a100c0b"></a>`relation` | oneOf=#/$defs/usageRelation \| #/$defs/generationRelation \| #/$defs/derivationRelation \| #/$defs/invalidationRelation \| #/$defs/continuityRelation \| #/$defs/comparisonRelation |
+| <a id="s-e8775f45df"></a>`relationRole` | type="string"; enum=["source","input","reference","component","metadata_source","result","output","derivative","replacement","copy","other"] |
+| <a id="s-a011de07f6"></a>`runtime` | type="object"; fields=`character_encoding`, `container`, `effective_principal`, `identifiers`, `locale`, `privilege`, `process_architecture`, `time_zone`, `utc_offset`; additional keys=`additionalProperties`, `required` |
+| <a id="s-2d2165b5a6"></a>`semanticAssertion` | type="object"; fields=`asserted_by_agent_id`, `confidence`, `id`, `note`, `property`, `subject_id`, `type`, `value`; additional keys=`additionalProperties`, `required` |
+| <a id="s-1ceccb1b61"></a>`sha256Hex` | type="string"; pattern="^[0-9a-f]{64}$" |
+| <a id="s-e4f49d8758"></a>`softwareAgent` | type="object"; fields=`build`, `executable_digests`, `id`, `identifiers`, `name`, `type`, `vendor`, `version`; anyOf=additional keys=`required` \| additional keys=`required` \| additional keys=`required`; additional keys=`additionalProperties`, `required` |
+| <a id="s-6bcbe0dfe1"></a>`sourceDescriptor` | type="object"; fields=`api`, `api_uri`, `field`, `field_uri`, `platform`, `platform_name`, `version`; allOf=additional keys=`if`, `then`; additional keys=`additionalProperties`, `required` |
+| <a id="s-e5152341be"></a>`sourcePlatform` | type="string"; enum=["linux","windows","macos","freebsd","openbsd","netbsd","illumos","aix","posix","android","ios","solaris","other"] |
+| <a id="s-6bc47c0dba"></a>`stateReference` | type="object"; fields=`entry_id`, `entry_json_sha256`, `id`, `journal_id`, `scope`, `sidecar_uri`; allOf=additional keys=`if`, `then` \| additional keys=`if`, `then`; additional keys=`additionalProperties`, `dependentRequired`, `required` |
+| <a id="s-ce6e164ba2"></a>`textValue` | type="object"; fields=`byte_length`, `data`, `language`, `media_type`, `source_encoding`, `type`; additional keys=`additionalProperties`, `dependentRequired`, `required` |
+| <a id="s-f1f3653cef"></a>`timestampObservation` | type="object"; fields=`assumption`, `kind`, `kind_uri`, `raw_epoch`, `raw_unit`, `raw_unit_name`, `raw_value`, `resolution_ns`, `source`, `value`, `value_status`; allOf=additional keys=`if`, `then` \| additional keys=`if`, `then` \| additional keys=`if`, `then` \| additional keys=`if`, `then` \| additional keys=`if`, `then`; additional keys=`additionalProperties`, `dependentRequired`, `required` |
+| <a id="s-9d92b09f3e"></a>`timestampValue` | type="object"; fields=`data`, `resolution_ns`, `type`; additional keys=`additionalProperties`, `required` |
+| <a id="s-95e37398de"></a>`transitionActivity` | type="object"; fields=`associations`, `detail`, `environment_id`, `event_label`, `event_type`, `event_type_uri`, `evidence`, `id`, `notes`, `outcome`, `time`, `type`; allOf=additional keys=`if`, `then`; additional keys=`additionalProperties`, `required` |
+| <a id="s-de01b50b5c"></a>`typedValue` | oneOf=#/$defs/capturedValue \| #/$defs/digestOnlyValue |
+| <a id="s-6dc8938549"></a>`uriValue` | type="object"; fields=`data`, `type`; additional keys=`additionalProperties`, `required` |
+| <a id="s-b9f9301bba"></a>`urnUuid` | type="string"; pattern="^urn:uuid:[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$" |
+| <a id="s-2a66a85deb"></a>`usageRelation` | type="object"; fields=`activity_id`, `id`, `role`, `role_uri`, `state`, `type`; allOf=additional keys=`if`, `then`; additional keys=`additionalProperties`, `required` |
+| <a id="s-57f05b370e"></a>`utcDateTime` | type="string"; format="date-time"; pattern="^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(?:\\.[0-9]{1,9})?Z$" |
 
 ### Progression, limits, and lifecycle
 
-#### [extent-rule/no-semantic-maximum/v1](../../../policies/index.md#p-574724b48af0)
+#### [extent-rule/no-semantic-maximum/v1](../../../policies/index.md#p-574724b48a)
 
 Shared facts for every subject below: capacity_authority={"declared_maximum":null,"hidden_maximum":"forbidden","owner":"https://nashspence.github.io/riverhog/v1/provenance/journal-entry.schema.json"}; maximum=null; reason="no-declared-semantic-maximum"
 
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
-| [definition accessMetadata](#s-f7179075a7eb) | `cardinality · entries · operational_policy` | shared above |
-| <a id="s-ebc2a4d88d44"></a>definition byteString · field digests | `cardinality · items · operational_policy` | shared above |
-| <a id="s-4426948ec38a"></a>definition bytesValue · field digests | `cardinality · items · operational_policy` | shared above |
-| <a id="s-635207689024"></a>definition captureDetail · field command_line | `cardinality · items · operational_policy` | shared above |
-| [definition captureDetail](#s-f1bbe8d25ccf) | `cardinality · entries · operational_policy` | shared above |
-| <a id="s-42651f0d7d9b"></a>definition captureEvent · field associations | `cardinality · items · operational_policy` | shared above |
-| <a id="s-e1676a2787bd"></a>definition captureEvent · field diagnostics | `cardinality · items · operational_policy` | shared above |
-| <a id="s-9026ae9f306f"></a>definition captureEvent · field notes | `cardinality · items · operational_policy` | shared above |
-| <a id="s-e61e291f8a18"></a>definition captureEvent · field operations | `cardinality · items · operational_policy` | shared above |
-| <a id="s-f7e5cae39af7"></a>definition comparisonDimension · field basis | `cardinality · items · operational_policy` | shared above |
-| <a id="s-089c1457eef9"></a>definition comparisonRelation · field dimensions | `cardinality · items · operational_policy` | shared above |
-| <a id="s-7af1f6b6a557"></a>definition comparisonRelation · field notes | `cardinality · items · operational_policy` | shared above |
-| <a id="s-d8a3c25d9d28"></a>definition contentDescription · field digests | `cardinality · items · operational_policy` | shared above |
-| <a id="s-1396b618b32e"></a>definition continuityRelation · field basis | `cardinality · items · operational_policy` | shared above |
-| <a id="s-49a4432a2c10"></a>definition correctionBody · field supersedes | `cardinality · items · operational_policy` | shared above |
-| <a id="s-bf0abcdad053"></a>definition digestOnlyValue · field digests | `cardinality · items · operational_policy` | shared above |
-| <a id="s-0d3b23ad9d42"></a>definition fileLineage · field identifiers | `cardinality · items · operational_policy` | shared above |
-| <a id="s-7ea2d17ae93d"></a>definition fileLineage · field notes | `cardinality · items · operational_policy` | shared above |
-| <a id="s-8a8b9a8e5089"></a>definition fileState · field notes | `cardinality · items · operational_policy` | shared above |
-| <a id="s-3fa7d05459c9"></a>definition filesystem · field snapshot_identifiers | `cardinality · items · operational_policy` | shared above |
-| <a id="s-93f4226725dc"></a>definition filesystem · field volume_identifiers | `cardinality · items · operational_policy` | shared above |
-| <a id="s-85b269c7a3d0"></a>definition filesystemMetadata · field native_identifiers | `cardinality · items · operational_policy` | shared above |
-| <a id="s-6957b5d6cbd6"></a>definition filesystemMetadata · field native_metadata | `cardinality · items · operational_policy` | shared above |
-| <a id="s-10ce445ffba0"></a>definition filesystemMetadata · field timestamps | `cardinality · items · operational_policy` | shared above |
-| <a id="s-4bc7c3210b3c"></a>definition graphFragment · field activities | `cardinality · items · operational_policy` | shared above |
-| <a id="s-f8492f18ad1b"></a>definition graphFragment · field agents | `cardinality · items · operational_policy` | shared above |
-| <a id="s-08b1a0dcefbc"></a>definition graphFragment · field captures | `cardinality · items · operational_policy` | shared above |
-| <a id="s-3fdd6cd86d61"></a>definition graphFragment · field environments | `cardinality · items · operational_policy` | shared above |
-| <a id="s-c242ca70cf52"></a>definition graphFragment · field extensions | `cardinality · items · operational_policy` | shared above |
-| <a id="s-951061ad066d"></a>definition graphFragment · field lineages | `cardinality · items · operational_policy` | shared above |
-| <a id="s-f7fd60d74593"></a>definition graphFragment · field payload_bindings | `cardinality · items · operational_policy` | shared above |
-| <a id="s-02ccd37f7774"></a>definition graphFragment · field relations | `cardinality · items · operational_policy` | shared above |
-| <a id="s-dc1fadd69b1a"></a>definition graphFragment · field states | `cardinality · items · operational_policy` | shared above |
-| [definition graphFragment](#s-b3f23dc21942) | `cardinality · entries · operational_policy` | shared above |
-| <a id="s-08e920634ab2"></a>definition hardwareAgent · field identifiers | `cardinality · items · operational_policy` | shared above |
-| <a id="s-f69daf11021d"></a>definition host · field identifiers | `cardinality · items · operational_policy` | shared above |
-| [definition kernel](#s-2920056f4cc4) | `cardinality · entries · operational_policy` | shared above |
-| <a id="s-e99672219a3f"></a>definition nativeMetadata · field interpretations | `cardinality · items · operational_policy` | shared above |
-| <a id="s-4bfccb267e78"></a>definition nonNullJson · anyOf alternative 4 | `cardinality · items · operational_policy` | shared above |
-| <a id="s-b8d3cf55bde4"></a>definition nonNullJson · anyOf alternative 5 | `cardinality · entries · operational_policy` | shared above |
-| <a id="s-9b913d3cb168"></a>definition operatingSystem · field identifiers | `cardinality · items · operational_policy` | shared above |
-| <a id="s-992df3c10223"></a>definition organizationAgent · field identifiers | `cardinality · items · operational_policy` | shared above |
-| <a id="s-2183d6d8e764"></a>definition personAgent · field identifiers | `cardinality · items · operational_policy` | shared above |
-| <a id="s-64fe3643d1e5"></a>definition principal · field identifiers | `cardinality · items · operational_policy` | shared above |
-| <a id="s-0469ac8a0a50"></a>definition processDetail · field command_line | `cardinality · items · operational_policy` | shared above |
-| [definition processDetail](#s-05bd4b5b3355) | `cardinality · entries · operational_policy` | shared above |
-| <a id="s-c71255992291"></a>definition runtime · field identifiers | `cardinality · items · operational_policy` | shared above |
-| <a id="s-a13bbfca5520"></a>definition softwareAgent · field executable_digests | `cardinality · items · operational_policy` | shared above |
-| <a id="s-0524e1fcb70e"></a>definition softwareAgent · field identifiers | `cardinality · items · operational_policy` | shared above |
-| <a id="s-982d0bba3901"></a>definition transitionActivity · field associations | `cardinality · items · operational_policy` | shared above |
-| <a id="s-e93307925ccd"></a>definition transitionActivity · field evidence | `cardinality · items · operational_policy` | shared above |
-| <a id="s-3606543f5e2a"></a>definition transitionActivity · field notes | `cardinality · items · operational_policy` | shared above |
-| [field notes](#s-0bcb488ebad8) | `cardinality · items · operational_policy` | shared above |
+| [definition accessMetadata](#s-f7179075a7) | `cardinality · entries · operational_policy` | shared above |
+| <a id="s-ebc2a4d88d"></a>[definition byteString · field digests](#s-f8865efa4d) | `cardinality · items · operational_policy` | shared above |
+| <a id="s-4426948ec3"></a>[definition bytesValue · field digests](#s-57e550bbaf) | `cardinality · items · operational_policy` | shared above |
+| <a id="s-6352076890"></a>[definition captureDetail · field command_line](#s-f1bbe8d25c) | `cardinality · items · operational_policy` | shared above |
+| [definition captureDetail](#s-f1bbe8d25c) | `cardinality · entries · operational_policy` | shared above |
+| <a id="s-42651f0d7d"></a>[definition captureEvent · field associations](#s-67bdd25fe2) | `cardinality · items · operational_policy` | shared above |
+| <a id="s-e1676a2787"></a>[definition captureEvent · field diagnostics](#s-67bdd25fe2) | `cardinality · items · operational_policy` | shared above |
+| <a id="s-9026ae9f30"></a>[definition captureEvent · field notes](#s-67bdd25fe2) | `cardinality · items · operational_policy` | shared above |
+| <a id="s-e61e291f8a"></a>[definition captureEvent · field operations](#s-67bdd25fe2) | `cardinality · items · operational_policy` | shared above |
+| <a id="s-f7e5cae39a"></a>[definition comparisonDimension · field basis](#s-956f3fc8b8) | `cardinality · items · operational_policy` | shared above |
+| <a id="s-089c1457ee"></a>[definition comparisonRelation · field dimensions](#s-b92aeb48b4) | `cardinality · items · operational_policy` | shared above |
+| <a id="s-7af1f6b6a5"></a>[definition comparisonRelation · field notes](#s-b92aeb48b4) | `cardinality · items · operational_policy` | shared above |
+| <a id="s-d8a3c25d9d"></a>[definition contentDescription · field digests](#s-e5941ad180) | `cardinality · items · operational_policy` | shared above |
+| <a id="s-1396b618b3"></a>[definition continuityRelation · field basis](#s-37e4bccab2) | `cardinality · items · operational_policy` | shared above |
+| <a id="s-49a4432a2c"></a>[definition correctionBody · field supersedes](#s-9293f3fd5e) | `cardinality · items · operational_policy` | shared above |
+| <a id="s-bf0abcdad0"></a>[definition digestOnlyValue · field digests](#s-b87a395047) | `cardinality · items · operational_policy` | shared above |
+| <a id="s-0d3b23ad9d"></a>[definition fileLineage · field identifiers](#s-42ed3b06f0) | `cardinality · items · operational_policy` | shared above |
+| <a id="s-7ea2d17ae9"></a>[definition fileLineage · field notes](#s-42ed3b06f0) | `cardinality · items · operational_policy` | shared above |
+| <a id="s-8a8b9a8e50"></a>[definition fileState · field notes](#s-72ed1caeab) | `cardinality · items · operational_policy` | shared above |
+| <a id="s-3fa7d05459"></a>[definition filesystem · field snapshot_identifiers](#s-92f8e87e33) | `cardinality · items · operational_policy` | shared above |
+| <a id="s-93f4226725"></a>[definition filesystem · field volume_identifiers](#s-92f8e87e33) | `cardinality · items · operational_policy` | shared above |
+| <a id="s-85b269c7a3"></a>[definition filesystemMetadata · field native_identifiers](#s-2c6dad9ae6) | `cardinality · items · operational_policy` | shared above |
+| <a id="s-6957b5d6cb"></a>[definition filesystemMetadata · field native_metadata](#s-2c6dad9ae6) | `cardinality · items · operational_policy` | shared above |
+| <a id="s-10ce445ffb"></a>[definition filesystemMetadata · field timestamps](#s-2c6dad9ae6) | `cardinality · items · operational_policy` | shared above |
+| <a id="s-4bc7c3210b"></a>[definition graphFragment · field activities](#s-b3f23dc219) | `cardinality · items · operational_policy` | shared above |
+| <a id="s-f8492f18ad"></a>[definition graphFragment · field agents](#s-b3f23dc219) | `cardinality · items · operational_policy` | shared above |
+| <a id="s-08b1a0dcef"></a>[definition graphFragment · field captures](#s-b3f23dc219) | `cardinality · items · operational_policy` | shared above |
+| <a id="s-3fdd6cd86d"></a>[definition graphFragment · field environments](#s-b3f23dc219) | `cardinality · items · operational_policy` | shared above |
+| <a id="s-c242ca70cf"></a>[definition graphFragment · field extensions](#s-b3f23dc219) | `cardinality · items · operational_policy` | shared above |
+| <a id="s-951061ad06"></a>[definition graphFragment · field lineages](#s-b3f23dc219) | `cardinality · items · operational_policy` | shared above |
+| <a id="s-f7fd60d745"></a>[definition graphFragment · field payload_bindings](#s-b3f23dc219) | `cardinality · items · operational_policy` | shared above |
+| <a id="s-02ccd37f77"></a>[definition graphFragment · field relations](#s-b3f23dc219) | `cardinality · items · operational_policy` | shared above |
+| <a id="s-dc1fadd69b"></a>[definition graphFragment · field states](#s-b3f23dc219) | `cardinality · items · operational_policy` | shared above |
+| [definition graphFragment](#s-b3f23dc219) | `cardinality · entries · operational_policy` | shared above |
+| <a id="s-08e920634a"></a>[definition hardwareAgent · field identifiers](#s-2d4ca24d8e) | `cardinality · items · operational_policy` | shared above |
+| <a id="s-f69daf1102"></a>[definition host · field identifiers](#s-03a9361935) | `cardinality · items · operational_policy` | shared above |
+| [definition kernel](#s-2920056f4c) | `cardinality · entries · operational_policy` | shared above |
+| <a id="s-e99672219a"></a>[definition nativeMetadata · field interpretations](#s-29df5b2baf) | `cardinality · items · operational_policy` | shared above |
+| <a id="s-4bfccb267e"></a>[definition nonNullJson · array value](#s-899e812405) | `cardinality · items · operational_policy` | shared above |
+| <a id="s-b8d3cf55bd"></a>[definition nonNullJson · object value](#s-899e812405) | `cardinality · entries · operational_policy` | shared above |
+| <a id="s-9b913d3cb1"></a>[definition operatingSystem · field identifiers](#s-e585eafb76) | `cardinality · items · operational_policy` | shared above |
+| <a id="s-992df3c102"></a>[definition organizationAgent · field identifiers](#s-a050110c08) | `cardinality · items · operational_policy` | shared above |
+| <a id="s-2183d6d8e7"></a>[definition personAgent · field identifiers](#s-5d421881fe) | `cardinality · items · operational_policy` | shared above |
+| <a id="s-64fe3643d1"></a>[definition principal · field identifiers](#s-dfb4db485f) | `cardinality · items · operational_policy` | shared above |
+| <a id="s-0469ac8a0a"></a>[definition processDetail · field command_line](#s-05bd4b5b33) | `cardinality · items · operational_policy` | shared above |
+| [definition processDetail](#s-05bd4b5b33) | `cardinality · entries · operational_policy` | shared above |
+| <a id="s-c712559922"></a>[definition runtime · field identifiers](#s-a011de07f6) | `cardinality · items · operational_policy` | shared above |
+| <a id="s-a13bbfca55"></a>[definition softwareAgent · field executable_digests](#s-e4f49d8758) | `cardinality · items · operational_policy` | shared above |
+| <a id="s-0524e1fcb7"></a>[definition softwareAgent · field identifiers](#s-e4f49d8758) | `cardinality · items · operational_policy` | shared above |
+| <a id="s-982d0bba39"></a>[definition transitionActivity · field associations](#s-95e37398de) | `cardinality · items · operational_policy` | shared above |
+| <a id="s-e93307925c"></a>[definition transitionActivity · field evidence](#s-95e37398de) | `cardinality · items · operational_policy` | shared above |
+| <a id="s-3606543f5e"></a>[definition transitionActivity · field notes](#s-95e37398de) | `cardinality · items · operational_policy` | shared above |
+| [field notes](#s-0bcb488eba) | `cardinality · items · operational_policy` | shared above |
 
-#### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
+#### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
 
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
-| <a id="s-3d49292458a1"></a>definition accessMetadata · field posix_mode | `length · characters · fixed` | maximum=4; minimum=4; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-7]{4}$"} |
-| <a id="s-20d5f4d688fe"></a>definition byteString · field byte_length | `value · schema-value · contract_max` | maximum="9223372036854775807"; minimum=0; reason="schema-maximum" |
-| <a id="s-d7fe9175c0ac"></a>definition bytesValue · field byte_length | `value · schema-value · contract_max` | maximum="9223372036854775807"; minimum=0; reason="schema-maximum" |
-| <a id="s-92b955b86b9c"></a>definition checkpointCounts · field activities | `value · schema-value · contract_max` | maximum="9223372036854775807"; minimum=0; reason="schema-maximum" |
-| <a id="s-fd70682b5957"></a>definition checkpointCounts · field captures | `value · schema-value · contract_max` | maximum="9223372036854775807"; minimum=0; reason="schema-maximum" |
-| <a id="s-c6970314634b"></a>definition checkpointCounts · field entries | `value · schema-value · contract_max` | maximum="9223372036854775807"; minimum=1; reason="schema-maximum" |
-| <a id="s-c3f33d3b7280"></a>definition checkpointCounts · field lineages | `value · schema-value · contract_max` | maximum="9223372036854775807"; minimum=0; reason="schema-maximum" |
-| <a id="s-e41cbc72e40b"></a>definition checkpointCounts · field relations | `value · schema-value · contract_max` | maximum="9223372036854775807"; minimum=0; reason="schema-maximum" |
-| <a id="s-917de38a38d4"></a>definition checkpointCounts · field states | `value · schema-value · contract_max` | maximum="9223372036854775807"; minimum=0; reason="schema-maximum" |
-| <a id="s-26c2b67719f5"></a>definition contentDescription · field size_bytes | `value · schema-value · contract_max` | maximum="9223372036854775807"; minimum=0; reason="schema-maximum" |
-| <a id="s-aca6a83557c1"></a>definition diagnostic · field code | `length · characters · contract_max` | maximum=255; minimum=1; reason="schema-maximum" |
-| <a id="s-1ab9b3b9fb11"></a>definition digest · allOf alternative 1 · then · field value | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
-| <a id="s-0cc851c7ddcc"></a>definition digest · allOf alternative 2 · then · field value | `length · characters · fixed` | maximum=128; minimum=128; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{128}$"} |
-| <a id="s-c7446adbb4c4"></a>definition digestOnlyValue · field byte_length | `value · schema-value · contract_max` | maximum="9223372036854775807"; minimum=0; reason="schema-maximum" |
-| <a id="s-f4eef917766d"></a>definition entryReference · field sequence | `value · schema-value · contract_max` | maximum="9223372036854775807"; minimum=0; reason="schema-maximum" |
-| <a id="s-9f1b98348320"></a>definition filesystem · field type | `length · characters · contract_max` | maximum=128; minimum=1; reason="schema-maximum" |
-| <a id="s-59c007d25a81"></a>definition identifier · allOf alternative 1 · then · field value | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
-| <a id="s-7b8bf71694be"></a>definition identifier · field scheme | `length · characters · contract_max` | maximum=255; minimum=1; reason="schema-maximum" |
-| <a id="s-b98cbebd2edc"></a>definition nativeMetadata · field observed_byte_length | `value · schema-value · contract_max` | maximum="9223372036854775807"; minimum=0; reason="schema-maximum" |
-| <a id="s-11be07c3333d"></a>definition observedIdentifier · allOf alternative 1 · then · field value | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
-| <a id="s-7ffa2e848ba7"></a>definition observedIdentifier · field scheme | `length · characters · contract_max` | maximum=255; minimum=1; reason="schema-maximum" |
-| [definition sha256Hex](#s-1ceccb1b6145) | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
-| <a id="s-8748aa219f80"></a>definition textValue · field byte_length | `value · schema-value · contract_max` | maximum="9223372036854775807"; minimum=0; reason="schema-maximum" |
-| <a id="s-f82ef2c6152e"></a>definition timestampObservation · field resolution_ns | `value · schema-value · contract_max` | maximum="9223372036854775807"; minimum=1; reason="schema-maximum" |
-| <a id="s-d37b49c3942e"></a>definition timestampValue · field resolution_ns | `value · schema-value · contract_max` | maximum="9223372036854775807"; minimum=1; reason="schema-maximum" |
-| [field sequence](#s-a755e6074ed8) | `value · schema-value · contract_max` | maximum="9223372036854775807"; minimum=0; reason="schema-maximum" |
+| <a id="s-3d49292458"></a>[definition accessMetadata · field posix_mode](#s-f7179075a7) | `length · characters · fixed` | maximum=4; minimum=4; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-7]{4}$"} |
+| <a id="s-20d5f4d688"></a>[definition byteString · field byte_length](#s-f8865efa4d) | `value · schema-value · contract_max` | maximum="9223372036854775807"; minimum=0; reason="schema-maximum" |
+| <a id="s-d7fe9175c0"></a>[definition bytesValue · field byte_length](#s-57e550bbaf) | `value · schema-value · contract_max` | maximum="9223372036854775807"; minimum=0; reason="schema-maximum" |
+| <a id="s-92b955b86b"></a>[definition checkpointCounts · field activities](#s-62a0a91aae) | `value · schema-value · contract_max` | maximum="9223372036854775807"; minimum=0; reason="schema-maximum" |
+| <a id="s-fd70682b59"></a>[definition checkpointCounts · field captures](#s-62a0a91aae) | `value · schema-value · contract_max` | maximum="9223372036854775807"; minimum=0; reason="schema-maximum" |
+| <a id="s-c697031463"></a>[definition checkpointCounts · field entries](#s-62a0a91aae) | `value · schema-value · contract_max` | maximum="9223372036854775807"; minimum=1; reason="schema-maximum" |
+| <a id="s-c3f33d3b72"></a>[definition checkpointCounts · field lineages](#s-62a0a91aae) | `value · schema-value · contract_max` | maximum="9223372036854775807"; minimum=0; reason="schema-maximum" |
+| <a id="s-e41cbc72e4"></a>[definition checkpointCounts · field relations](#s-62a0a91aae) | `value · schema-value · contract_max` | maximum="9223372036854775807"; minimum=0; reason="schema-maximum" |
+| <a id="s-917de38a38"></a>[definition checkpointCounts · field states](#s-62a0a91aae) | `value · schema-value · contract_max` | maximum="9223372036854775807"; minimum=0; reason="schema-maximum" |
+| <a id="s-26c2b67719"></a>[definition contentDescription · field size_bytes](#s-e5941ad180) | `value · schema-value · contract_max` | maximum="9223372036854775807"; minimum=0; reason="schema-maximum" |
+| <a id="s-aca6a83557"></a>[definition diagnostic · field code](#s-5eb1052892) | `length · characters · contract_max` | maximum=255; minimum=1; reason="schema-maximum" |
+| <a id="s-1ab9b3b9fb"></a>[definition digest · allOf alternative 1 · then · field value](#s-1e1e5e54b0) | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
+| <a id="s-0cc851c7dd"></a>[definition digest · allOf alternative 2 · then · field value](#s-1e1e5e54b0) | `length · characters · fixed` | maximum=128; minimum=128; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{128}$"} |
+| <a id="s-c7446adbb4"></a>[definition digestOnlyValue · field byte_length](#s-b87a395047) | `value · schema-value · contract_max` | maximum="9223372036854775807"; minimum=0; reason="schema-maximum" |
+| <a id="s-f4eef91776"></a>[definition entryReference · field sequence](#s-4a73d347fd) | `value · schema-value · contract_max` | maximum="9223372036854775807"; minimum=0; reason="schema-maximum" |
+| <a id="s-9f1b983483"></a>[definition filesystem · field type](#s-92f8e87e33) | `length · characters · contract_max` | maximum=128; minimum=1; reason="schema-maximum" |
+| <a id="s-59c007d25a"></a>[definition identifier · allOf alternative 1 · then · field value](#s-e6d4c3ce94) | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
+| <a id="s-7b8bf71694"></a>[definition identifier · field scheme](#s-e6d4c3ce94) | `length · characters · contract_max` | maximum=255; minimum=1; reason="schema-maximum" |
+| <a id="s-b98cbebd2e"></a>[definition nativeMetadata · field observed_byte_length](#s-29df5b2baf) | `value · schema-value · contract_max` | maximum="9223372036854775807"; minimum=0; reason="schema-maximum" |
+| <a id="s-11be07c333"></a>[definition observedIdentifier · allOf alternative 1 · then · field value](#s-325bfde37a) | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
+| <a id="s-7ffa2e848b"></a>[definition observedIdentifier · field scheme](#s-325bfde37a) | `length · characters · contract_max` | maximum=255; minimum=1; reason="schema-maximum" |
+| [definition sha256Hex](#s-1ceccb1b61) | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
+| <a id="s-8748aa219f"></a>[definition textValue · field byte_length](#s-ce6e164ba2) | `value · schema-value · contract_max` | maximum="9223372036854775807"; minimum=0; reason="schema-maximum" |
+| <a id="s-f82ef2c615"></a>[definition timestampObservation · field resolution_ns](#s-f1f3653cef) | `value · schema-value · contract_max` | maximum="9223372036854775807"; minimum=1; reason="schema-maximum" |
+| <a id="s-d37b49c394"></a>[definition timestampValue · field resolution_ns](#s-9d92b09f3e) | `value · schema-value · contract_max` | maximum="9223372036854775807"; minimum=1; reason="schema-maximum" |
+| [field sequence](#s-a755e6074e) | `value · schema-value · contract_max` | maximum="9223372036854775807"; minimum=0; reason="schema-maximum" |
 
 ## Governing policies
 
-- <a id="pa-df1fb8cfb68d"></a>[compatibility/components/v1](../../../policies/index.md#p-95e9a1225947)
-- <a id="pa-926502819139"></a>[extent-rule/no-semantic-maximum/v1](../../../policies/index.md#p-574724b48af0)
-- <a id="pa-a43d3e5f5f87"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
+- <a id="pa-df1fb8cfb6"></a>[compatibility/components/v1](../../../policies/index.md#p-95e9a12259)
+- <a id="pa-9265028191"></a>[extent-rule/no-semantic-maximum/v1](../../../policies/index.md#p-574724b48a)
+- <a id="pa-a43d3e5f5f"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
 
 ## Evidence
 
 ### Qualification
 
-- [make dist-smoke](../../../evidence/sources.md#q-0ba2578a3eb7)
-- [make build](../../../evidence/sources.md#q-d1121e35fa7a)
+- [make dist-smoke](../../../evidence/sources.md#q-0ba2578a3e)
+- [make build](../../../evidence/sources.md#q-d1121e35fa)
 
 ### Executable sources
 
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
-- [protocol:https://nashspence.github.io/riverhog/v1/provenance/journal-entry.schema.json](../../../evidence/sources.md#src-819610ba95e0) — `packages/riverhog-provenance/src/riverhog_provenance/schemas/riverhog-provenance-v1-journal-entry.schema.json`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [protocol:https://nashspence.github.io/riverhog/v1/provenance/journal-entry.schema.json](../../../evidence/sources.md#src-819610ba95) — `packages/riverhog-provenance/src/riverhog_provenance/schemas/riverhog-provenance-v1-journal-entry.schema.json`
 
 ### Machine authority
 

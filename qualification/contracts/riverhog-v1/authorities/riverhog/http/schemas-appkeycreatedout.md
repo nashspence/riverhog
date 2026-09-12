@@ -16,24 +16,24 @@ Exact externally visible contract owned by this semantic dossier.
 
 ## External contract
 
-<a id="s-cd113a1d8125"></a>
-- <a id="s-d5abee02565f"></a>`title`: AppKeyCreatedOut
-- <a id="s-3b25d9574e16"></a>`type`: object
+<a id="s-cd113a1d81"></a>
+- <a id="s-d5abee0256"></a>`title`: AppKeyCreatedOut
+- <a id="s-3b25d9574e"></a>`type`: object
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-586f65365e13"></a>`access` | yes | #/components/schemas/ApplicationAccessGrantSet |  |
-| <a id="s-48bcb68302d7"></a>`app` | yes | #/components/schemas/ApplicationName |  |
-| <a id="s-7b641a4bb095"></a>`created_at` | yes | type="string" |  |
-| <a id="s-d9ca89d4cab1"></a>`expires_at` | yes | anyOf=type="string" \| type="null" |  |
-| <a id="s-5ccd64df568e"></a>`id` | yes | #/components/schemas/ApplicationKeyId |  |
-| <a id="s-9dbd92c3f85b"></a>`last_used_at` | yes | anyOf=type="string" \| type="null" |  |
-| <a id="s-54bec0ed9482"></a>`monthly_download_quota_bytes` | yes | anyOf=#/components/schemas/MonthlyDownloadQuotaBytes \| type="null" |  |
-| <a id="s-e253c7e9c18b"></a>`revoked_at` | yes | anyOf=type="string" \| type="null" |  |
-| <a id="s-41bdd094b248"></a>`status` | yes | type="string"; enum=["active","expired","revoked"] |  |
-| <a id="s-7def1d81772b"></a>`token` | yes | type="string" |  |
+| <a id="s-586f65365e"></a>`access` | yes | #/components/schemas/ApplicationAccessGrantSet |  |
+| <a id="s-48bcb68302"></a>`app` | yes | #/components/schemas/ApplicationName |  |
+| <a id="s-7b641a4bb0"></a>`created_at` | yes | type="string" |  |
+| <a id="s-d9ca89d4ca"></a>`expires_at` | yes | anyOf=type="string" \| type="null" |  |
+| <a id="s-5ccd64df56"></a>`id` | yes | #/components/schemas/ApplicationKeyId |  |
+| <a id="s-9dbd92c3f8"></a>`last_used_at` | yes | anyOf=type="string" \| type="null" |  |
+| <a id="s-54bec0ed94"></a>`monthly_download_quota_bytes` | yes | anyOf=#/components/schemas/MonthlyDownloadQuotaBytes \| type="null" |  |
+| <a id="s-e253c7e9c1"></a>`revoked_at` | yes | anyOf=type="string" \| type="null" |  |
+| <a id="s-41bdd094b2"></a>`status` | yes | type="string"; enum=["active","expired","revoked"] |  |
+| <a id="s-7def1d8177"></a>`token` | yes | type="string" |  |
 
 ## Maintained corroboration
 
@@ -46,19 +46,19 @@ Exact externally visible contract owned by this semantic dossier.
 
 ## Governing policies
 
-- <a id="pa-65add221dd42"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0ba)
+- <a id="pa-65add221dd"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0)
 
 ## Evidence
 
 ### Qualification
 
-- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459fb8)
-- [make compose-smoke](../../../evidence/sources.md#q-413b0b241ba8)
+- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459f)
+- [make compose-smoke](../../../evidence/sources.md#q-413b0b241b)
 
 ### Executable sources
 
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
-- [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc960) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc9) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
 
 ### Machine authority
 

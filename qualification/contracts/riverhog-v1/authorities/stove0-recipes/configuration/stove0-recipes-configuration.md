@@ -10,117 +10,117 @@ Exact externally visible contract owned by this semantic dossier.
 |---|---|
 | Authority | [stove0-recipes](../index.md) |
 | Interface | [configuration](index.md) |
-| Family | [documents](index.md#f-ea5c21230f46) |
+| Family | [documents](index.md#f-ea5c21230f) |
 | Contract elements | 1 |
 | Extent decisions | 39 |
 
 ## External contract
 
-<a id="s-221fa0a965e3"></a>
-- <a id="s-8f6f89291583"></a>`title`: RecipeCatalog
-- <a id="s-768a70141fba"></a>`type`: object
+<a id="s-221fa0a965"></a>
+- <a id="s-8f6f892915"></a>`title`: RecipeCatalog
+- <a id="s-768a70141f"></a>`type`: object
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-2fd0ccd0e9af"></a>`format` | no | type="string"; const="stove0-recipes/v1" |  |
-| <a id="s-68008b09dbdf"></a>`operations` | yes | type="array"; items=(#/$defs/OperationContract) |  |
-| <a id="s-4171241e9d83"></a>`recipes` | yes | type="array"; items=(#/$defs/RecipeDefinition) |  |
+| <a id="s-2fd0ccd0e9"></a>`format` | no | type="string"; const="stove0-recipes/v1" |  |
+| <a id="s-68008b09db"></a>`operations` | yes | type="array"; items=(#/$defs/OperationContract) |  |
+| <a id="s-4171241e9d"></a>`recipes` | yes | type="array"; items=(#/$defs/RecipeDefinition) |  |
 
 ### Definitions
 
 | Definition | Shape |
 |---|---|
-| <a id="s-f8993709b36d"></a>`ArtifactAssociation` | type="object"; fields=`associated_roles`, `path_identity`, `primary_role`; additional keys=`additionalProperties`, `required` |
-| <a id="s-1ac2e2eec0c4"></a>`ArtifactFactBinding` | type="object"; fields=`artifact_id_pointer`, `records_pointer`; additional keys=`additionalProperties`, `required` |
-| <a id="s-74fb3a895769"></a>`ArtifactRule` | type="object"; fields=`glob`, `media_type`, `role`; additional keys=`additionalProperties` |
-| <a id="s-6722cc772aa8"></a>`FactPredicate` | type="object"; fields=`artifact_facts`, `artifact_roles`, `observation_contract_id`, `operator`, `pointer`, `value`; additional keys=`additionalProperties`, `required` |
-| <a id="s-e7c2f1bec346"></a>`InputArtifactContract` | type="object"; fields=`allowed_dispositions`, `maximum`, `minimum`, `role`; additional keys=`additionalProperties`, `required` |
-| <a id="s-19363cecd141"></a>`JsonSchemaDocument` | type="object"; fields=`dialect`, `format_policy`, `id`, `schema`, `sha256`; additional keys=`additionalProperties`, `required` |
-| <a id="s-48ccd9a7b034"></a>`JsonValue` | empty object |
-| <a id="s-f0c1398faa84"></a>`ObserverUse` | type="object"; fields=`artifact_rules`, `contract_id`, `contract_sha256`, `maximum_result_bytes`, `options`, `registration_id`, `retrieval_policy`, `timeout_seconds`; additional keys=`additionalProperties`, `required` |
-| <a id="s-abf24f7610dc"></a>`OperationContract` | type="object"; fields=`contract_sha256`, `effect_receipt_schema`, `id`, `inputs`, `intent_schema`, `intent_semantics`, `outputs`, `result_kind`, `source_retirement_permitted`; additional keys=`additionalProperties`, `required` |
-| <a id="s-90f40eb31e94"></a>`OperationProjection` | type="object"; fields=`destination`, `destination_pointer`, `source`, `source_pointer`; additional keys=`additionalProperties`, `required` |
-| <a id="s-66f8e50fb531"></a>`OutputArtifactContract` | type="object"; fields=`derived_from_roles`, `maximum`, `minimum`, `role`; additional keys=`additionalProperties`, `required` |
-| <a id="s-95a727a4692b"></a>`RecipeCoordinationRoute` | type="object"; fields=`artifact_rules`, `associated_roles`, `id`, `intent`, `kind`, `primary_role`, `projections`, `recipe`, `when`; additional keys=`additionalProperties`, `required` |
-| <a id="s-a74ca7000015"></a>`RecipeDefinition` | type="object"; fields=`allow_derived_inputs`, `artifact_associations`, `event_input_closure`, `id`, `join`, `observers`, `retirement_grace_seconds`, `revision`, `routes`, `source_retirement_policy`, `unmatched_artifact_disposition`; additional keys=`additionalProperties`, `required` |
-| <a id="s-a82890c5d16b"></a>`RecipeJoin` | type="object"; fields=`id`, `input_retrieval_policy`, `intent`, `members`, `operation_id`, `projections`, `target_options`, `target_registration_id`; additional keys=`additionalProperties`, `required` |
-| <a id="s-e8351b399f0a"></a>`RecipeJoinMember` | type="object"; fields=`branch_id`, `output_roles`; additional keys=`additionalProperties`, `required` |
-| <a id="s-855a5a5840c2"></a>`RecipeRef` | type="object"; fields=`id`, `revision`, `sha256`; additional keys=`additionalProperties`, `required` |
-| <a id="s-6e85f80f5e39"></a>`RecipeRoute` | type="object"; fields=`artifact_rules`, `associated_roles`, `id`, `input_retrieval_policy`, `intent`, `kind`, `operation_id`, `primary_role`, `projections`, `target_options`, `target_registration_id`, `when`; additional keys=`additionalProperties`, `required` |
-| <a id="s-8f0d0431c98b"></a>`SemanticValidationProfile` | type="object"; fields=`conformance_vectors_sha256`, `id`, `profile_sha256`, `rules`; additional keys=`additionalProperties`, `required` |
+| <a id="s-f8993709b3"></a>`ArtifactAssociation` | type="object"; fields=`associated_roles`, `path_identity`, `primary_role`; additional keys=`additionalProperties`, `required` |
+| <a id="s-1ac2e2eec0"></a>`ArtifactFactBinding` | type="object"; fields=`artifact_id_pointer`, `records_pointer`; additional keys=`additionalProperties`, `required` |
+| <a id="s-74fb3a8957"></a>`ArtifactRule` | type="object"; fields=`glob`, `media_type`, `role`; additional keys=`additionalProperties` |
+| <a id="s-6722cc772a"></a>`FactPredicate` | type="object"; fields=`artifact_facts`, `artifact_roles`, `observation_contract_id`, `operator`, `pointer`, `value`; additional keys=`additionalProperties`, `required` |
+| <a id="s-e7c2f1bec3"></a>`InputArtifactContract` | type="object"; fields=`allowed_dispositions`, `maximum`, `minimum`, `role`; additional keys=`additionalProperties`, `required` |
+| <a id="s-19363cecd1"></a>`JsonSchemaDocument` | type="object"; fields=`dialect`, `format_policy`, `id`, `schema`, `sha256`; additional keys=`additionalProperties`, `required` |
+| <a id="s-48ccd9a7b0"></a>`JsonValue` | empty object |
+| <a id="s-f0c1398faa"></a>`ObserverUse` | type="object"; fields=`artifact_rules`, `contract_id`, `contract_sha256`, `maximum_result_bytes`, `options`, `registration_id`, `retrieval_policy`, `timeout_seconds`; additional keys=`additionalProperties`, `required` |
+| <a id="s-abf24f7610"></a>`OperationContract` | type="object"; fields=`contract_sha256`, `effect_receipt_schema`, `id`, `inputs`, `intent_schema`, `intent_semantics`, `outputs`, `result_kind`, `source_retirement_permitted`; additional keys=`additionalProperties`, `required` |
+| <a id="s-90f40eb31e"></a>`OperationProjection` | type="object"; fields=`destination`, `destination_pointer`, `source`, `source_pointer`; additional keys=`additionalProperties`, `required` |
+| <a id="s-66f8e50fb5"></a>`OutputArtifactContract` | type="object"; fields=`derived_from_roles`, `maximum`, `minimum`, `role`; additional keys=`additionalProperties`, `required` |
+| <a id="s-95a727a469"></a>`RecipeCoordinationRoute` | type="object"; fields=`artifact_rules`, `associated_roles`, `id`, `intent`, `kind`, `primary_role`, `projections`, `recipe`, `when`; additional keys=`additionalProperties`, `required` |
+| <a id="s-a74ca70000"></a>`RecipeDefinition` | type="object"; fields=`allow_derived_inputs`, `artifact_associations`, `event_input_closure`, `id`, `join`, `observers`, `retirement_grace_seconds`, `revision`, `routes`, `source_retirement_policy`, `unmatched_artifact_disposition`; additional keys=`additionalProperties`, `required` |
+| <a id="s-a82890c5d1"></a>`RecipeJoin` | type="object"; fields=`id`, `input_retrieval_policy`, `intent`, `members`, `operation_id`, `projections`, `target_options`, `target_registration_id`; additional keys=`additionalProperties`, `required` |
+| <a id="s-e8351b399f"></a>`RecipeJoinMember` | type="object"; fields=`branch_id`, `output_roles`; additional keys=`additionalProperties`, `required` |
+| <a id="s-855a5a5840"></a>`RecipeRef` | type="object"; fields=`id`, `revision`, `sha256`; additional keys=`additionalProperties`, `required` |
+| <a id="s-6e85f80f5e"></a>`RecipeRoute` | type="object"; fields=`artifact_rules`, `associated_roles`, `id`, `input_retrieval_policy`, `intent`, `kind`, `operation_id`, `primary_role`, `projections`, `target_options`, `target_registration_id`, `when`; additional keys=`additionalProperties`, `required` |
+| <a id="s-8f0d0431c9"></a>`SemanticValidationProfile` | type="object"; fields=`conformance_vectors_sha256`, `id`, `profile_sha256`, `rules`; additional keys=`additionalProperties`, `required` |
 
 ### Progression, limits, and lifecycle
 
-#### [extent-rule/configuration-composition/v1](../../../policies/index.md#p-dcd344e8e519)
+#### [extent-rule/configuration-composition/v1](../../../policies/index.md#p-dcd344e8e5)
 
 Shared facts for every subject below: capacity_authority={"declared_maximum":null,"hidden_maximum":"forbidden","owner":"stove0-recipes"}; maximum=null; reason="validated-deployment-composition"
 
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
-| <a id="s-79e347b06f5a"></a>definition ArtifactAssociation · field associated_roles | `cardinality · items · operational_policy` | shared above |
-| <a id="s-24352bad9269"></a>definition FactPredicate · field artifact_roles | `cardinality · items · operational_policy` | shared above |
-| <a id="s-6e692f90709f"></a>definition InputArtifactContract · field allowed_dispositions · anyOf alternative 1 | `cardinality · items · operational_policy` | shared above |
-| <a id="s-32722a8a2155"></a>definition JsonSchemaDocument · field schema | `cardinality · entries · operational_policy` | shared above |
-| <a id="s-fbf5087c91d3"></a>definition ObserverUse · field artifact_rules | `cardinality · items · operational_policy` | shared above |
-| <a id="s-563d8c2f2a59"></a>definition ObserverUse · field options | `cardinality · entries · operational_policy` | shared above |
-| <a id="s-759b3075225d"></a>definition OperationContract · field inputs | `cardinality · items · operational_policy` | shared above |
-| <a id="s-a38244c72434"></a>definition OperationContract · field outputs | `cardinality · items · operational_policy` | shared above |
-| <a id="s-ebd07c4756a2"></a>definition OutputArtifactContract · field derived_from_roles | `cardinality · items · operational_policy` | shared above |
-| <a id="s-095d82b98870"></a>definition RecipeCoordinationRoute · field artifact_rules | `cardinality · items · operational_policy` | shared above |
-| <a id="s-5d2c43b0ec9b"></a>definition RecipeCoordinationRoute · field associated_roles | `cardinality · items · operational_policy` | shared above |
-| <a id="s-f796207661d5"></a>definition RecipeCoordinationRoute · field intent | `cardinality · entries · operational_policy` | shared above |
-| <a id="s-53d552cb6f1c"></a>definition RecipeCoordinationRoute · field projections | `cardinality · items · operational_policy` | shared above |
-| <a id="s-e0d4bd8d8640"></a>definition RecipeCoordinationRoute · field when | `cardinality · items · operational_policy` | shared above |
-| <a id="s-b2bd9cd4558a"></a>definition RecipeDefinition · field artifact_associations | `cardinality · items · operational_policy` | shared above |
-| <a id="s-6d97c935465e"></a>definition RecipeDefinition · field observers | `cardinality · items · operational_policy` | shared above |
-| <a id="s-ee9fba6a6fdb"></a>definition RecipeDefinition · field routes | `cardinality · items · operational_policy` | shared above |
-| <a id="s-e92c72713cac"></a>definition RecipeJoin · field intent | `cardinality · entries · operational_policy` | shared above |
-| <a id="s-2f9b4bff1ccd"></a>definition RecipeJoin · field members | `cardinality · items · operational_policy` | shared above |
-| <a id="s-db7a24389a7a"></a>definition RecipeJoin · field projections | `cardinality · items · operational_policy` | shared above |
-| <a id="s-c14fc5d54a89"></a>definition RecipeJoin · field target_options | `cardinality · entries · operational_policy` | shared above |
-| <a id="s-7fd9a1fd26c1"></a>definition RecipeJoinMember · field output_roles | `cardinality · items · operational_policy` | shared above |
-| <a id="s-05cdf6590ea9"></a>definition RecipeRoute · field artifact_rules | `cardinality · items · operational_policy` | shared above |
-| <a id="s-1a01f403d843"></a>definition RecipeRoute · field associated_roles | `cardinality · items · operational_policy` | shared above |
-| <a id="s-0fe6517726f1"></a>definition RecipeRoute · field intent | `cardinality · entries · operational_policy` | shared above |
-| <a id="s-da3367be40a2"></a>definition RecipeRoute · field projections | `cardinality · items · operational_policy` | shared above |
-| <a id="s-ea9b1b09f461"></a>definition RecipeRoute · field target_options | `cardinality · entries · operational_policy` | shared above |
-| <a id="s-18674239aa70"></a>definition RecipeRoute · field when | `cardinality · items · operational_policy` | shared above |
-| <a id="s-3ee14bf8eeaf"></a>definition SemanticValidationProfile · field rules | `cardinality · items · operational_policy` | shared above |
-| [field operations](#s-68008b09dbdf) | `cardinality · items · operational_policy` | shared above |
-| [field recipes](#s-4171241e9d83) | `cardinality · items · operational_policy` | shared above |
+| <a id="s-79e347b06f"></a>[definition ArtifactAssociation · field associated_roles](#s-f8993709b3) | `cardinality · items · operational_policy` | shared above |
+| <a id="s-24352bad92"></a>[definition FactPredicate · field artifact_roles](#s-6722cc772a) | `cardinality · items · operational_policy` | shared above |
+| <a id="s-6e692f9070"></a>[definition InputArtifactContract · field allowed_dispositions · array value](#s-e7c2f1bec3) | `cardinality · items · operational_policy` | shared above |
+| <a id="s-32722a8a21"></a>[definition JsonSchemaDocument · field schema](#s-19363cecd1) | `cardinality · entries · operational_policy` | shared above |
+| <a id="s-fbf5087c91"></a>[definition ObserverUse · field artifact_rules](#s-f0c1398faa) | `cardinality · items · operational_policy` | shared above |
+| <a id="s-563d8c2f2a"></a>[definition ObserverUse · field options](#s-f0c1398faa) | `cardinality · entries · operational_policy` | shared above |
+| <a id="s-759b307522"></a>[definition OperationContract · field inputs](#s-abf24f7610) | `cardinality · items · operational_policy` | shared above |
+| <a id="s-a38244c724"></a>[definition OperationContract · field outputs](#s-abf24f7610) | `cardinality · items · operational_policy` | shared above |
+| <a id="s-ebd07c4756"></a>[definition OutputArtifactContract · field derived_from_roles](#s-66f8e50fb5) | `cardinality · items · operational_policy` | shared above |
+| <a id="s-095d82b988"></a>[definition RecipeCoordinationRoute · field artifact_rules](#s-95a727a469) | `cardinality · items · operational_policy` | shared above |
+| <a id="s-5d2c43b0ec"></a>[definition RecipeCoordinationRoute · field associated_roles](#s-95a727a469) | `cardinality · items · operational_policy` | shared above |
+| <a id="s-f796207661"></a>[definition RecipeCoordinationRoute · field intent](#s-95a727a469) | `cardinality · entries · operational_policy` | shared above |
+| <a id="s-53d552cb6f"></a>[definition RecipeCoordinationRoute · field projections](#s-95a727a469) | `cardinality · items · operational_policy` | shared above |
+| <a id="s-e0d4bd8d86"></a>[definition RecipeCoordinationRoute · field when](#s-95a727a469) | `cardinality · items · operational_policy` | shared above |
+| <a id="s-b2bd9cd455"></a>[definition RecipeDefinition · field artifact_associations](#s-a74ca70000) | `cardinality · items · operational_policy` | shared above |
+| <a id="s-6d97c93546"></a>[definition RecipeDefinition · field observers](#s-a74ca70000) | `cardinality · items · operational_policy` | shared above |
+| <a id="s-ee9fba6a6f"></a>[definition RecipeDefinition · field routes](#s-a74ca70000) | `cardinality · items · operational_policy` | shared above |
+| <a id="s-e92c72713c"></a>[definition RecipeJoin · field intent](#s-a82890c5d1) | `cardinality · entries · operational_policy` | shared above |
+| <a id="s-2f9b4bff1c"></a>[definition RecipeJoin · field members](#s-a82890c5d1) | `cardinality · items · operational_policy` | shared above |
+| <a id="s-db7a24389a"></a>[definition RecipeJoin · field projections](#s-a82890c5d1) | `cardinality · items · operational_policy` | shared above |
+| <a id="s-c14fc5d54a"></a>[definition RecipeJoin · field target_options](#s-a82890c5d1) | `cardinality · entries · operational_policy` | shared above |
+| <a id="s-7fd9a1fd26"></a>[definition RecipeJoinMember · field output_roles](#s-e8351b399f) | `cardinality · items · operational_policy` | shared above |
+| <a id="s-05cdf6590e"></a>[definition RecipeRoute · field artifact_rules](#s-6e85f80f5e) | `cardinality · items · operational_policy` | shared above |
+| <a id="s-1a01f403d8"></a>[definition RecipeRoute · field associated_roles](#s-6e85f80f5e) | `cardinality · items · operational_policy` | shared above |
+| <a id="s-0fe6517726"></a>[definition RecipeRoute · field intent](#s-6e85f80f5e) | `cardinality · entries · operational_policy` | shared above |
+| <a id="s-da3367be40"></a>[definition RecipeRoute · field projections](#s-6e85f80f5e) | `cardinality · items · operational_policy` | shared above |
+| <a id="s-ea9b1b09f4"></a>[definition RecipeRoute · field target_options](#s-6e85f80f5e) | `cardinality · entries · operational_policy` | shared above |
+| <a id="s-18674239aa"></a>[definition RecipeRoute · field when](#s-6e85f80f5e) | `cardinality · items · operational_policy` | shared above |
+| <a id="s-3ee14bf8ee"></a>[definition SemanticValidationProfile · field rules](#s-8f0d0431c9) | `cardinality · items · operational_policy` | shared above |
+| [field operations](#s-68008b09db) | `cardinality · items · operational_policy` | shared above |
+| [field recipes](#s-4171241e9d) | `cardinality · items · operational_policy` | shared above |
 
-#### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
+#### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
 
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
-| <a id="s-dee5d7dc5176"></a>definition JsonSchemaDocument · field sha256 | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
-| <a id="s-81de8e14629e"></a>definition ObserverUse · field contract_sha256 | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
-| <a id="s-ac56d8259110"></a>definition ObserverUse · field maximum_result_bytes | `value · schema-value · contract_max` | maximum=67108864; minimum=1; reason="schema-maximum" |
-| <a id="s-f63b38f1ec2f"></a>definition ObserverUse · field timeout_seconds | `value · schema-value · contract_max` | maximum=86400; minimum=1; reason="schema-maximum" |
-| <a id="s-e335a2a2d641"></a>definition OperationContract · field contract_sha256 | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
-| <a id="s-36094cbef7a9"></a>definition RecipeRef · field sha256 | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
-| <a id="s-440a691bce77"></a>definition SemanticValidationProfile · field conformance_vectors_sha256 · anyOf alternative 1 | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
-| <a id="s-7e99ada17aca"></a>definition SemanticValidationProfile · field profile_sha256 | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
+| <a id="s-dee5d7dc51"></a>[definition JsonSchemaDocument · field sha256](#s-19363cecd1) | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
+| <a id="s-81de8e1462"></a>[definition ObserverUse · field contract_sha256](#s-f0c1398faa) | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
+| <a id="s-ac56d82591"></a>[definition ObserverUse · field maximum_result_bytes](#s-f0c1398faa) | `value · schema-value · contract_max` | maximum=67108864; minimum=1; reason="schema-maximum" |
+| <a id="s-f63b38f1ec"></a>[definition ObserverUse · field timeout_seconds](#s-f0c1398faa) | `value · schema-value · contract_max` | maximum=86400; minimum=1; reason="schema-maximum" |
+| <a id="s-e335a2a2d6"></a>[definition OperationContract · field contract_sha256](#s-abf24f7610) | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
+| <a id="s-36094cbef7"></a>[definition RecipeRef · field sha256](#s-855a5a5840) | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
+| <a id="s-440a691bce"></a>[definition SemanticValidationProfile · field conformance_vectors_sha256 · string value](#s-8f0d0431c9) | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
+| <a id="s-7e99ada17a"></a>[definition SemanticValidationProfile · field profile_sha256](#s-8f0d0431c9) | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
 
 ## Governing policies
 
-- <a id="pa-b39452c0b7d4"></a>[compatibility/configuration/v1](../../../policies/index.md#p-8dc08bb46173)
-- <a id="pa-331c72872104"></a>[extent-rule/configuration-composition/v1](../../../policies/index.md#p-dcd344e8e519)
-- <a id="pa-9ef170f56de0"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
+- <a id="pa-b39452c0b7"></a>[compatibility/configuration/v1](../../../policies/index.md#p-8dc08bb461)
+- <a id="pa-331c728721"></a>[extent-rule/configuration-composition/v1](../../../policies/index.md#p-dcd344e8e5)
+- <a id="pa-9ef170f56d"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
 
 ## Evidence
 
 ### Qualification
 
-- [make unit](../../../evidence/sources.md#q-ce47068f504c)
-- [make compose-smoke](../../../evidence/sources.md#q-413b0b241ba8)
+- [make unit](../../../evidence/sources.md#q-ce47068f50)
+- [make compose-smoke](../../../evidence/sources.md#q-413b0b241b)
 
 ### Executable sources
 
-- [configuration:stove0-recipes](../../../evidence/sources.md#src-49c5fe0ba636) — `reference/stove0/packages/recipe-config/src/stove0_recipe_config/models.py::RecipeCatalog`
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
+- [configuration:stove0-recipes](../../../evidence/sources.md#src-49c5fe0ba6) — `reference/stove0/packages/recipe-config/src/stove0_recipe_config/models.py::RecipeCatalog`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
 
 ### Machine authority
 

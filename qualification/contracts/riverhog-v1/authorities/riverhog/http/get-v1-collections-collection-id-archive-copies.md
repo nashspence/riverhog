@@ -16,46 +16,46 @@ List Collection Archive Copies
 
 ## External contract
 
-<a id="s-1bb9a248a2ea"></a>
-- <a id="s-7d155223a128"></a>`operationId`: list_collection_archive_copies
-- <a id="s-c68349e31651"></a>`summary`: List Collection Archive Copies
-- <a id="s-0950d4f28576"></a>`security`: `[{"HTTPBearer": []}]`
+<a id="s-1bb9a248a2"></a>
+- <a id="s-7d155223a1"></a>`operationId`: list_collection_archive_copies
+- <a id="s-c68349e316"></a>`summary`: List Collection Archive Copies
+- <a id="s-0950d4f285"></a>`security`: `[{"HTTPBearer": []}]`
 
 ### Parameters
 
 | Name | In | Required | Schema |
 |---|---|---:|---|
-| <a id="s-048e4c0841b3"></a>`collection_id` | path | yes | type="integer"; minimum=1 |
-| <a id="s-ad146b6b7862"></a>`page_size` | query | no | type="integer"; minimum=1; maximum=100 |
-| <a id="s-8c902e89d23f"></a>`page_token` | query | no | anyOf=#/components/schemas/BrowsePageToken \| type="null" |
+| <a id="s-048e4c0841"></a>`collection_id` | path | yes | type="integer"; minimum=1 |
+| <a id="s-ad146b6b78"></a>`page_size` | query | no | type="integer"; minimum=1; maximum=100 |
+| <a id="s-8c902e89d2"></a>`page_token` | query | no | anyOf=#/components/schemas/BrowsePageToken \| type="null" |
 
 ### Responses
 
 | Status | Description |
 |---|---|
-| <a id="s-f1aebea4ae5b"></a>`200` | Successful Response |
-| <a id="s-8af4eca19971"></a>`400` | Bad Request |
-| <a id="s-e9c6c3fbb1f7"></a>`401` | Unauthorized |
-| <a id="s-45930e224848"></a>`403` | Forbidden |
-| <a id="s-ac2bfe956162"></a>`500` | Internal Server Error |
+| <a id="s-f1aebea4ae"></a>`200` | Successful Response |
+| <a id="s-8af4eca199"></a>`400` | Bad Request |
+| <a id="s-e9c6c3fbb1"></a>`401` | Unauthorized |
+| <a id="s-45930e2248"></a>`403` | Forbidden |
+| <a id="s-ac2bfe9561"></a>`500` | Internal Server Error |
 
 ### Progression, limits, and lifecycle
 
-#### [extent-rule/route-progression/v1](../../../policies/index.md#p-6b76b527cb21)
+#### [extent-rule/route-progression/v1](../../../policies/index.md#p-6b76b527cb)
 
 Shared facts for every subject below: progression={"default_page_size":25,"kind":"mutable-browse","maximum_page_size":100,"next_page_token_field":"next_page_token","page_size_parameter":"page_size","page_token_parameter":"page_token"}; reason="bounded-route-progression"
 
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
-| [GET /v1/collections/{collection_id}/archive-copies](#s-1bb9a248a2ea) | `logical-result-cardinality · items · segmented_no_total_max` | shared above |
+| [GET /v1/collections/{collection_id}/archive-copies](#s-1bb9a248a2) | `logical-result-cardinality · items · segmented_no_total_max` | shared above |
 
-#### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
+#### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
 
 Shared facts for every subject below: maximum=100; minimum=1; reason="schema-maximum"
 
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
-| <a id="s-acad68759a2a"></a>parameter page_size | `value · schema-value · contract_max` | shared above |
+| <a id="s-acad68759a"></a>[parameter page_size](#s-ad146b6b78) | `value · schema-value · contract_max` | shared above |
 
 ## Maintained corroboration
 
@@ -71,21 +71,21 @@ Shared facts for every subject below: maximum=100; minimum=1; reason="schema-max
 
 ## Governing policies
 
-- <a id="pa-f7f906aba424"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0ba)
-- <a id="pa-c81e88ca5d66"></a>[extent-rule/route-progression/v1](../../../policies/index.md#p-6b76b527cb21)
-- <a id="pa-61eae75acd50"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
+- <a id="pa-f7f906aba4"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0)
+- <a id="pa-c81e88ca5d"></a>[extent-rule/route-progression/v1](../../../policies/index.md#p-6b76b527cb)
+- <a id="pa-61eae75acd"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
 
 ## Evidence
 
 ### Qualification
 
-- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459fb8)
-- [make compose-smoke](../../../evidence/sources.md#q-413b0b241ba8)
+- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459f)
+- [make compose-smoke](../../../evidence/sources.md#q-413b0b241b)
 
 ### Executable sources
 
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
-- [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc960) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc9) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
 
 ### Machine authority
 

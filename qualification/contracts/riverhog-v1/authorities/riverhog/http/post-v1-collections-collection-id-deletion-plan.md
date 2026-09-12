@@ -16,39 +16,39 @@ Plan Collection Deletion
 
 ## External contract
 
-<a id="s-ae55d77e811e"></a>
-- <a id="s-cf27326a99db"></a>`operationId`: plan_collection_deletion
-- <a id="s-260cd1d51350"></a>`summary`: Plan Collection Deletion
-- <a id="s-bd856c5c0a32"></a>`security`: `[{"HTTPBearer": []}]`
+<a id="s-ae55d77e81"></a>
+- <a id="s-cf27326a99"></a>`operationId`: plan_collection_deletion
+- <a id="s-260cd1d513"></a>`summary`: Plan Collection Deletion
+- <a id="s-bd856c5c0a"></a>`security`: `[{"HTTPBearer": []}]`
 
 ### Parameters
 
 | Name | In | Required | Schema |
 |---|---|---:|---|
-| <a id="s-a9b5a1b3dcc1"></a>`collection_id` | path | yes | type="integer"; minimum=1 |
-| <a id="s-8f51f3021dc7"></a>`retirement_claim_id` | query | no | anyOf=type="string"; pattern="^[0-9a-f]{64}$" \| type="null" |
+| <a id="s-a9b5a1b3dc"></a>`collection_id` | path | yes | type="integer"; minimum=1 |
+| <a id="s-8f51f3021d"></a>`retirement_claim_id` | query | no | anyOf=type="string"; pattern="^[0-9a-f]{64}$" \| type="null" |
 
 ### Responses
 
 | Status | Description |
 |---|---|
-| <a id="s-c1c98162984f"></a>`200` | Successful Response |
-| <a id="s-040b0acf60d5"></a>`400` | Bad Request |
-| <a id="s-7549c95d68ba"></a>`401` | Unauthorized |
-| <a id="s-4c443cfcc397"></a>`403` | Forbidden |
-| <a id="s-14a76630f81e"></a>`404` | Not Found |
-| <a id="s-4c92eda0a1e6"></a>`409` | Conflict |
-| <a id="s-f8a0d9d6a9b4"></a>`500` | Internal Server Error |
+| <a id="s-c1c9816298"></a>`200` | Successful Response |
+| <a id="s-040b0acf60"></a>`400` | Bad Request |
+| <a id="s-7549c95d68"></a>`401` | Unauthorized |
+| <a id="s-4c443cfcc3"></a>`403` | Forbidden |
+| <a id="s-14a76630f8"></a>`404` | Not Found |
+| <a id="s-4c92eda0a1"></a>`409` | Conflict |
+| <a id="s-f8a0d9d6a9"></a>`500` | Internal Server Error |
 
 ### Progression, limits, and lifecycle
 
-#### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
+#### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
 
 Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"}
 
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
-| <a id="s-d8279c8c1465"></a>parameter retirement_claim_id · anyOf alternative 1 | `length · characters · fixed` | shared above |
+| <a id="s-d8279c8c14"></a>[parameter retirement_claim_id · string value](#s-8f51f3021d) | `length · characters · fixed` | shared above |
 
 ## Maintained corroboration
 
@@ -63,20 +63,20 @@ Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-publ
 
 ## Governing policies
 
-- <a id="pa-1c5751fe1e8d"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0ba)
-- <a id="pa-c89393a927f9"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
+- <a id="pa-1c5751fe1e"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0)
+- <a id="pa-c89393a927"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
 
 ## Evidence
 
 ### Qualification
 
-- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459fb8)
-- [make compose-smoke](../../../evidence/sources.md#q-413b0b241ba8)
+- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459f)
+- [make compose-smoke](../../../evidence/sources.md#q-413b0b241b)
 
 ### Executable sources
 
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
-- [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc960) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc9) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
 
 ### Machine authority
 

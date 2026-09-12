@@ -16,38 +16,38 @@ Exact externally visible contract owned by this semantic dossier.
 
 ## External contract
 
-<a id="s-6d67d56ce0b1"></a>
+<a id="s-6d67d56ce0"></a>
 | Field | Shape |
 |---|---|
-| <a id="s-1a3e8ba5014a"></a>`consumers` | ["riverhog-client"] |
-| <a id="s-639a4bef7fee"></a>`name` | "RIVERHOG_HTTP_TIMEOUT_SECONDS" |
+| <a id="s-1a3e8ba501"></a>`consumers` | ["riverhog-client"] |
+| <a id="s-639a4bef7f"></a>`name` | "RIVERHOG_HTTP_TIMEOUT_SECONDS" |
 
 ### Progression, limits, and lifecycle
 
-#### [extent-rule/configured-capacity/v1](../../../policies/index.md#p-3ebc61fc9972)
+#### [extent-rule/configured-capacity/v1](../../../policies/index.md#p-3ebc61fc99)
 
 Shared facts for every subject below: configuration="RIVERHOG_HTTP_TIMEOUT_SECONDS"; maximum=null; reason="operator-configured-capacity"
 
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
-| [RIVERHOG_HTTP_TIMEOUT_SECONDS](#s-6d67d56ce0b1) | `value · configured-value · operational_policy` | shared above |
+| [RIVERHOG_HTTP_TIMEOUT_SECONDS](#s-6d67d56ce0) | `value · configured-value · operational_policy` | shared above |
 
 ## Governing policies
 
-- <a id="pa-d995269b75e6"></a>[compatibility/configuration/v1](../../../policies/index.md#p-8dc08bb46173)
-- <a id="pa-950c310b1503"></a>[extent-rule/configured-capacity/v1](../../../policies/index.md#p-3ebc61fc9972)
+- <a id="pa-d995269b75"></a>[compatibility/configuration/v1](../../../policies/index.md#p-8dc08bb461)
+- <a id="pa-950c310b15"></a>[extent-rule/configured-capacity/v1](../../../policies/index.md#p-3ebc61fc99)
 
 ## Evidence
 
 ### Qualification
 
-- [make unit](../../../evidence/sources.md#q-ce47068f504c)
-- [make compose-smoke](../../../evidence/sources.md#q-413b0b241ba8)
+- [make unit](../../../evidence/sources.md#q-ce47068f50)
+- [make compose-smoke](../../../evidence/sources.md#q-413b0b241b)
 
 ### Executable sources
 
-- [configuration-environment:RIVERHOG_HTTP_TIMEOUT_SECONDS](../../../evidence/sources.md#src-52020dc34588) — `configuration-environment:RIVERHOG_HTTP_TIMEOUT_SECONDS`
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
+- [configuration-environment:RIVERHOG_HTTP_TIMEOUT_SECONDS](../../../evidence/sources.md#src-52020dc345) — `configuration-environment:RIVERHOG_HTTP_TIMEOUT_SECONDS`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
 
 ### Machine authority
 

@@ -10,41 +10,41 @@ Exact externally visible contract owned by this semantic dossier.
 |---|---|
 | Authority | [riverhog-provenance-windows-contracts](../index.md) |
 | Interface | [protocol](index.md) |
-| Family | [schemas](index.md#f-78a2bea4a4b2) |
+| Family | [schemas](index.md#f-78a2bea4a4) |
 | Contract elements | 1 |
 | Extent decisions | 0 |
 
 ## External contract
 
-<a id="s-6e9034e67827"></a>
-- <a id="s-8c3c39f31fd6"></a>`$id`: https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/windows-security-descriptor.json
-- <a id="s-7b4c20b04837"></a>`type`: object
+<a id="s-6e9034e678"></a>
+- <a id="s-8c3c39f31f"></a>`$id`: https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/windows-security-descriptor.json
+- <a id="s-7b4c20b048"></a>`type`: object
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-7a0231ddf733"></a>`control` | yes | type="integer"; minimum=0 |  |
-| <a id="s-bce011dd2b1e"></a>`group_sid` | yes | type="string"; pattern="^(?:\|S-[0-9-]+)$" |  |
-| <a id="s-5a605b631484"></a>`owner_sid` | yes | type="string"; pattern="^(?:\|S-[0-9-]+)$" |  |
-| <a id="s-f6a3600101d9"></a>`sacl_included` | yes | type="boolean" |  |
-| <a id="s-a2cb87b1635d"></a>`security_information` | yes | type="integer"; minimum=0 |  |
+| <a id="s-7a0231ddf7"></a>`control` | yes | type="integer"; minimum=0 |  |
+| <a id="s-bce011dd2b"></a>`group_sid` | yes | type="string"; pattern="^(?:\|S-[0-9-]+)$" |  |
+| <a id="s-5a605b6314"></a>`owner_sid` | yes | type="string"; pattern="^(?:\|S-[0-9-]+)$" |  |
+| <a id="s-f6a3600101"></a>`sacl_included` | yes | type="boolean" |  |
+| <a id="s-a2cb87b163"></a>`security_information` | yes | type="integer"; minimum=0 |  |
 
 ## Governing policies
 
-- <a id="pa-e701d5cba2de"></a>[compatibility/components/v1](../../../policies/index.md#p-95e9a1225947)
+- <a id="pa-e701d5cba2"></a>[compatibility/components/v1](../../../policies/index.md#p-95e9a12259)
 
 ## Evidence
 
 ### Qualification
 
-- [make dist-smoke](../../../evidence/sources.md#q-0ba2578a3eb7)
-- [make build](../../../evidence/sources.md#q-d1121e35fa7a)
+- [make dist-smoke](../../../evidence/sources.md#q-0ba2578a3e)
+- [make build](../../../evidence/sources.md#q-d1121e35fa)
 
 ### Executable sources
 
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
-- [protocol:https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/windows-security-descriptor.json](../../../evidence/sources.md#src-1bd0c5feb8ca) — `reference/riverhog/provenance/contracts/windows/src/riverhog_provenance_windows_contracts/schemas/windows-security-descriptor.schema.json`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [protocol:https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/windows-security-descriptor.json](../../../evidence/sources.md#src-1bd0c5feb8) — `reference/riverhog/provenance/contracts/windows/src/riverhog_provenance_windows_contracts/schemas/windows-security-descriptor.schema.json`
 
 ### Machine authority
 

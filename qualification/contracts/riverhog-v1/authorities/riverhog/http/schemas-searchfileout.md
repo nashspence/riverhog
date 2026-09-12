@@ -16,37 +16,37 @@ Exact externally visible contract owned by this semantic dossier.
 
 ## External contract
 
-<a id="s-31df2cc3b870"></a>
-- <a id="s-2bfc429da3f3"></a>`title`: SearchFileOut
-- <a id="s-4850f1dd2876"></a>`type`: object
+<a id="s-31df2cc3b8"></a>
+- <a id="s-2bfc429da3"></a>`title`: SearchFileOut
+- <a id="s-4850f1dd28"></a>`type`: object
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-cb79bb77a7ce"></a>`bytes` | yes | type="integer"; minimum=0 |  |
-| <a id="s-71e9d43dbaac"></a>`collection_id` | yes | #/components/schemas/CollectionId |  |
-| <a id="s-64e1b4cfdb58"></a>`file_ref` | yes | type="string" |  |
-| <a id="s-f85fe6502021"></a>`path` | yes | #/components/schemas/CanonicalRelPath |  |
-| <a id="s-19884818f4fd"></a>`sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-cb79bb77a7"></a>`bytes` | yes | type="integer"; minimum=0 |  |
+| <a id="s-71e9d43dba"></a>`collection_id` | yes | #/components/schemas/CollectionId |  |
+| <a id="s-64e1b4cfdb"></a>`file_ref` | yes | type="string" |  |
+| <a id="s-f85fe65020"></a>`path` | yes | #/components/schemas/CanonicalRelPath |  |
+| <a id="s-19884818f4"></a>`sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 
 ### Progression, limits, and lifecycle
 
-#### [extent-rule/no-semantic-maximum/v1](../../../policies/index.md#p-574724b48af0)
+#### [extent-rule/no-semantic-maximum/v1](../../../policies/index.md#p-574724b48a)
 
 Shared facts for every subject below: capacity_authority={"declared_maximum":null,"hidden_maximum":"forbidden","owner":"riverhog"}; maximum=null; reason="no-declared-semantic-maximum"
 
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
-| [field bytes](#s-cb79bb77a7ce) | `value · schema-value · operational_policy` | shared above |
+| [field bytes](#s-cb79bb77a7) | `value · schema-value · operational_policy` | shared above |
 
-#### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
+#### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
 
 Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"}
 
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
-| [field sha256](#s-19884818f4fd) | `length · characters · fixed` | shared above |
+| [field sha256](#s-19884818f4) | `length · characters · fixed` | shared above |
 
 ## Maintained corroboration
 
@@ -57,21 +57,21 @@ Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-publ
 
 ## Governing policies
 
-- <a id="pa-2a9f28364898"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0ba)
-- <a id="pa-6eb0cbdf367d"></a>[extent-rule/no-semantic-maximum/v1](../../../policies/index.md#p-574724b48af0)
-- <a id="pa-8dc52720887b"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
+- <a id="pa-2a9f283648"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0)
+- <a id="pa-6eb0cbdf36"></a>[extent-rule/no-semantic-maximum/v1](../../../policies/index.md#p-574724b48a)
+- <a id="pa-8dc5272088"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
 
 ## Evidence
 
 ### Qualification
 
-- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459fb8)
-- [make compose-smoke](../../../evidence/sources.md#q-413b0b241ba8)
+- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459f)
+- [make compose-smoke](../../../evidence/sources.md#q-413b0b241b)
 
 ### Executable sources
 
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
-- [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc960) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc9) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
 
 ### Machine authority
 

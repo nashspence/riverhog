@@ -16,11 +16,11 @@ Exact externally visible contract owned by this semantic dossier.
 
 ## External contract
 
-<a id="s-0b5dc86608f1"></a>
+<a id="s-0b5dc86608"></a>
 | Field | Shape |
 |---|---|
-| <a id="s-46d95c469442"></a>`discriminator` | additional keys=`mapping`, `propertyName` |
-| <a id="s-a90b65adf907"></a>`oneOf` | items=#/components/schemas/ProvenanceTraceJournalItemOut \| #/components/schemas/ProvenanceTraceExternalStateReferenceItemOut |
+| <a id="s-46d95c4694"></a>`discriminator` | additional keys=`mapping`, `propertyName` |
+| <a id="s-a90b65adf9"></a>`oneOf` | items=#/components/schemas/ProvenanceTraceJournalItemOut \| #/components/schemas/ProvenanceTraceExternalStateReferenceItemOut |
 
 ## Maintained corroboration
 
@@ -31,19 +31,19 @@ Exact externally visible contract owned by this semantic dossier.
 
 ## Governing policies
 
-- <a id="pa-fd12fe204bdb"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0ba)
+- <a id="pa-fd12fe204b"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0)
 
 ## Evidence
 
 ### Qualification
 
-- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459fb8)
-- [make compose-smoke](../../../evidence/sources.md#q-413b0b241ba8)
+- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459f)
+- [make compose-smoke](../../../evidence/sources.md#q-413b0b241b)
 
 ### Executable sources
 
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
-- [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc960) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc9) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
 
 ### Machine authority
 

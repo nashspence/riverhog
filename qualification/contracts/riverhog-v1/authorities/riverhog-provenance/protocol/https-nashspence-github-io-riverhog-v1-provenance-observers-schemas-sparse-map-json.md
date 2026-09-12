@@ -10,51 +10,51 @@ Exact externally visible contract owned by this semantic dossier.
 |---|---|
 | Authority | [riverhog-provenance](../index.md) |
 | Interface | [protocol](index.md) |
-| Family | [schemas](index.md#f-6adfbad66ec5) |
+| Family | [schemas](index.md#f-6adfbad66e) |
 | Contract elements | 1 |
 | Extent decisions | 3 |
 
 ## External contract
 
-<a id="s-355a3bb2b9b1"></a>
-- <a id="s-22f558f449f8"></a>`$id`: https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/sparse-map.json
-- <a id="s-099f69e6ee30"></a>`type`: object
+<a id="s-355a3bb2b9"></a>
+- <a id="s-22f558f449"></a>`$id`: https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/sparse-map.json
+- <a id="s-099f69e6ee"></a>`type`: object
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-54706e967d48"></a>`complete` | yes | type="boolean" |  |
-| <a id="s-47d52016f860"></a>`extents` | yes | type="array"; items=(type="object"; fields=`kind`, `length`, `offset`; additional keys=`additionalProperties`, `required`) |  |
+| <a id="s-54706e967d"></a>`complete` | yes | type="boolean" |  |
+| <a id="s-47d52016f8"></a>`extents` | yes | type="array"; items=(type="object"; fields=`kind`, `length`, `offset`; additional keys=`additionalProperties`, `required`) |  |
 
 ### Progression, limits, and lifecycle
 
-#### [extent-rule/no-semantic-maximum/v1](../../../policies/index.md#p-574724b48af0)
+#### [extent-rule/no-semantic-maximum/v1](../../../policies/index.md#p-574724b48a)
 
 Shared facts for every subject below: capacity_authority={"declared_maximum":null,"hidden_maximum":"forbidden","owner":"https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/sparse-map.json"}; maximum=null; reason="no-declared-semantic-maximum"
 
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
-| <a id="s-efe1d55da1d0"></a>field extents · items · field length | `value · schema-value · operational_policy` | shared above |
-| <a id="s-6d97c28b9993"></a>field extents · items · field offset | `value · schema-value · operational_policy` | shared above |
-| [field extents](#s-47d52016f860) | `cardinality · items · operational_policy` | shared above |
+| <a id="s-efe1d55da1"></a>[field extents · items · field length](#s-47d52016f8) | `value · schema-value · operational_policy` | shared above |
+| <a id="s-6d97c28b99"></a>[field extents · items · field offset](#s-47d52016f8) | `value · schema-value · operational_policy` | shared above |
+| [field extents](#s-47d52016f8) | `cardinality · items · operational_policy` | shared above |
 
 ## Governing policies
 
-- <a id="pa-788c4313b7c6"></a>[compatibility/components/v1](../../../policies/index.md#p-95e9a1225947)
-- <a id="pa-689f8a66f28a"></a>[extent-rule/no-semantic-maximum/v1](../../../policies/index.md#p-574724b48af0)
+- <a id="pa-788c4313b7"></a>[compatibility/components/v1](../../../policies/index.md#p-95e9a12259)
+- <a id="pa-689f8a66f2"></a>[extent-rule/no-semantic-maximum/v1](../../../policies/index.md#p-574724b48a)
 
 ## Evidence
 
 ### Qualification
 
-- [make dist-smoke](../../../evidence/sources.md#q-0ba2578a3eb7)
-- [make build](../../../evidence/sources.md#q-d1121e35fa7a)
+- [make dist-smoke](../../../evidence/sources.md#q-0ba2578a3e)
+- [make build](../../../evidence/sources.md#q-d1121e35fa)
 
 ### Executable sources
 
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
-- [protocol:https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/sparse-map.json](../../../evidence/sources.md#src-5ae7bcd86c0a) — `packages/riverhog-provenance/src/riverhog_provenance/schemas/sparse-map.schema.json`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [protocol:https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/sparse-map.json](../../../evidence/sources.md#src-5ae7bcd86c) — `packages/riverhog-provenance/src/riverhog_provenance/schemas/sparse-map.schema.json`
 
 ### Machine authority
 

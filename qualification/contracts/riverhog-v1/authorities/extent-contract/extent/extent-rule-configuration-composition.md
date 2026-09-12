@@ -10,37 +10,37 @@ Exact externally visible contract owned by this semantic dossier.
 |---|---|
 | Authority | [extent-contract](../index.md) |
 | Interface | [extent](index.md) |
-| Family | [rules](index.md#f-b9df1e502970) |
+| Family | [rules](index.md#f-b9df1e5029) |
 | Contract elements | 1 |
 | Extent decisions | 0 |
 
 ## External contract
 
-<a id="s-21ec1b261ea5"></a>
+<a id="s-21ec1b261e"></a>
 | Field | Shape |
 |---|---|
-| <a id="s-46a0052dda08"></a>`authority` | "the owning validated deployment configuration document" |
-| <a id="s-1c5407e79533"></a>`declared_operational_maximum` | null |
-| <a id="s-2136bd61009f"></a>`hidden_maximum` | "forbidden" |
-| <a id="s-2cc9c2e451a5"></a>`policy` | "operational_policy" |
-| <a id="s-0b439cb781bb"></a>`semantic_maximum` | null |
-| <a id="s-450d61181bb3"></a>`silent_truncation` | "forbidden" |
+| <a id="s-46a0052dda"></a>`authority` | "the owning validated deployment configuration document" |
+| <a id="s-1c5407e795"></a>`declared_operational_maximum` | null |
+| <a id="s-2136bd6100"></a>`hidden_maximum` | "forbidden" |
+| <a id="s-2cc9c2e451"></a>`policy` | "operational_policy" |
+| <a id="s-0b439cb781"></a>`semantic_maximum` | null |
+| <a id="s-450d61181b"></a>`silent_truncation` | "forbidden" |
 
 ## Governing policies
 
-- <a id="pa-9c6ff8cf4f06"></a>[extent-rule/configuration-composition/v1](../../../policies/index.md#p-dcd344e8e519)
+- <a id="pa-9c6ff8cf4f"></a>[extent-rule/configuration-composition/v1](../../../policies/index.md#p-dcd344e8e5)
 
 ## Evidence
 
 ### Qualification
 
-- [make contract-freeze](../../../evidence/sources.md#q-8c74349e71e4)
-- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459fb8)
+- [make contract-freeze](../../../evidence/sources.md#q-8c74349e71)
+- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459f)
 
 ### Executable sources
 
-- [extent:extent-contract](../../../evidence/sources.md#src-5ac94d0a12e8) — `scripts/extent_contract.py::extent_projection`
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
+- [extent:extent-contract](../../../evidence/sources.md#src-5ac94d0a12) — `scripts/extent_contract.py::extent_projection`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
 
 ### Machine authority
 

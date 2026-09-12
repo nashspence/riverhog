@@ -16,18 +16,18 @@ Add Collection Tag
 
 ## External contract
 
-<a id="s-0f0729946765"></a>
-- <a id="s-0293a9e51d9a"></a>`operationId`: add_collection_tag
-- <a id="s-67fda963fd8f"></a>`summary`: Add Collection Tag
-- <a id="s-0a22a69f3556"></a>`security`: `[{"HTTPBearer": []}]`
+<a id="s-0f07299467"></a>
+- <a id="s-0293a9e51d"></a>`operationId`: add_collection_tag
+- <a id="s-67fda963fd"></a>`summary`: Add Collection Tag
+- <a id="s-0a22a69f35"></a>`security`: `[{"HTTPBearer": []}]`
 
 ### Parameters
 
 | Name | In | Required | Schema |
 |---|---|---:|---|
-| <a id="s-8ea57df8d07a"></a>`collection_id` | path | yes | type="integer"; minimum=1 |
+| <a id="s-8ea57df8d0"></a>`collection_id` | path | yes | type="integer"; minimum=1 |
 
-### <a id="s-4543d27edd5d"></a>Request body
+### <a id="s-4543d27edd"></a>Request body
 
 `{"content": {"application/json": {"schema": {"$ref": "#/components/schemas/CollectionTagMutationRequest"}}}, "required": true}`
 
@@ -35,14 +35,14 @@ Add Collection Tag
 
 | Status | Description |
 |---|---|
-| <a id="s-293ae74875a7"></a>`200` | Successful Response |
-| <a id="s-bd782dd9ae75"></a>`400` | Bad Request |
-| <a id="s-34df85956688"></a>`401` | Unauthorized |
-| <a id="s-d1c114371cf4"></a>`403` | Forbidden |
-| <a id="s-7bf0f4f631ef"></a>`404` | Not Found |
-| <a id="s-e6a89593222f"></a>`409` | Conflict |
-| <a id="s-d2053e05da0f"></a>`412` | Precondition Failed |
-| <a id="s-6e8ee18cc771"></a>`500` | Internal Server Error |
+| <a id="s-293ae74875"></a>`200` | Successful Response |
+| <a id="s-bd782dd9ae"></a>`400` | Bad Request |
+| <a id="s-34df859566"></a>`401` | Unauthorized |
+| <a id="s-d1c114371c"></a>`403` | Forbidden |
+| <a id="s-7bf0f4f631"></a>`404` | Not Found |
+| <a id="s-e6a8959322"></a>`409` | Conflict |
+| <a id="s-d2053e05da"></a>`412` | Precondition Failed |
+| <a id="s-6e8ee18cc7"></a>`500` | Internal Server Error |
 
 ## Maintained corroboration
 
@@ -58,19 +58,19 @@ Add Collection Tag
 
 ## Governing policies
 
-- <a id="pa-781bf17050ea"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0ba)
+- <a id="pa-781bf17050"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0)
 
 ## Evidence
 
 ### Qualification
 
-- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459fb8)
-- [make compose-smoke](../../../evidence/sources.md#q-413b0b241ba8)
+- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459f)
+- [make compose-smoke](../../../evidence/sources.md#q-413b0b241b)
 
 ### Executable sources
 
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
-- [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc960) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc9) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
 
 ### Machine authority
 

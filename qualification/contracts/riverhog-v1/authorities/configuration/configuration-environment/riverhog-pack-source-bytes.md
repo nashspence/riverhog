@@ -16,38 +16,38 @@ Exact externally visible contract owned by this semantic dossier.
 
 ## External contract
 
-<a id="s-add94be4914f"></a>
+<a id="s-add94be491"></a>
 | Field | Shape |
 |---|---|
-| <a id="s-d2bd3c7959a4"></a>`consumers` | ["riverhog-server"] |
-| <a id="s-66e20787368c"></a>`name` | "RIVERHOG_PACK_SOURCE_BYTES" |
+| <a id="s-d2bd3c7959"></a>`consumers` | ["riverhog-server"] |
+| <a id="s-66e2078736"></a>`name` | "RIVERHOG_PACK_SOURCE_BYTES" |
 
 ### Progression, limits, and lifecycle
 
-#### [extent-rule/configured-capacity/v1](../../../policies/index.md#p-3ebc61fc9972)
+#### [extent-rule/configured-capacity/v1](../../../policies/index.md#p-3ebc61fc99)
 
 Shared facts for every subject below: configuration="RIVERHOG_PACK_SOURCE_BYTES"; maximum=null; reason="operator-configured-capacity"
 
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
-| [RIVERHOG_PACK_SOURCE_BYTES](#s-add94be4914f) | `value · configured-value · operational_policy` | shared above |
+| [RIVERHOG_PACK_SOURCE_BYTES](#s-add94be491) | `value · configured-value · operational_policy` | shared above |
 
 ## Governing policies
 
-- <a id="pa-96035b5644f1"></a>[compatibility/configuration/v1](../../../policies/index.md#p-8dc08bb46173)
-- <a id="pa-36ee9967289b"></a>[extent-rule/configured-capacity/v1](../../../policies/index.md#p-3ebc61fc9972)
+- <a id="pa-96035b5644"></a>[compatibility/configuration/v1](../../../policies/index.md#p-8dc08bb461)
+- <a id="pa-36ee996728"></a>[extent-rule/configured-capacity/v1](../../../policies/index.md#p-3ebc61fc99)
 
 ## Evidence
 
 ### Qualification
 
-- [make unit](../../../evidence/sources.md#q-ce47068f504c)
-- [make compose-smoke](../../../evidence/sources.md#q-413b0b241ba8)
+- [make unit](../../../evidence/sources.md#q-ce47068f50)
+- [make compose-smoke](../../../evidence/sources.md#q-413b0b241b)
 
 ### Executable sources
 
-- [configuration-environment:RIVERHOG_PACK_SOURCE_BYTES](../../../evidence/sources.md#src-a27d02099131) — `configuration-environment:RIVERHOG_PACK_SOURCE_BYTES`
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
+- [configuration-environment:RIVERHOG_PACK_SOURCE_BYTES](../../../evidence/sources.md#src-a27d020991) — `configuration-environment:RIVERHOG_PACK_SOURCE_BYTES`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
 
 ### Machine authority
 

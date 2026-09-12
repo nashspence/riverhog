@@ -16,38 +16,38 @@ Exact externally visible contract owned by this semantic dossier.
 
 ## External contract
 
-<a id="s-52addf4ec488"></a>
+<a id="s-52addf4ec4"></a>
 | Field | Shape |
 |---|---|
-| <a id="s-d18a045679f6"></a>`consumers` | ["riverhog-server"] |
-| <a id="s-a5c464e9162b"></a>`name` | "RIVERHOG_RETRIEVAL_DEFAULT_LEASE" |
+| <a id="s-d18a045679"></a>`consumers` | ["riverhog-server"] |
+| <a id="s-a5c464e916"></a>`name` | "RIVERHOG_RETRIEVAL_DEFAULT_LEASE" |
 
 ### Progression, limits, and lifecycle
 
-#### [extent-rule/configured-capacity/v1](../../../policies/index.md#p-3ebc61fc9972)
+#### [extent-rule/configured-capacity/v1](../../../policies/index.md#p-3ebc61fc99)
 
 Shared facts for every subject below: configuration="RIVERHOG_RETRIEVAL_DEFAULT_LEASE"; maximum=null; reason="operator-configured-capacity"
 
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
-| [RIVERHOG_RETRIEVAL_DEFAULT_LEASE](#s-52addf4ec488) | `value · configured-value · operational_policy` | shared above |
+| [RIVERHOG_RETRIEVAL_DEFAULT_LEASE](#s-52addf4ec4) | `value · configured-value · operational_policy` | shared above |
 
 ## Governing policies
 
-- <a id="pa-8b4ae743a383"></a>[compatibility/configuration/v1](../../../policies/index.md#p-8dc08bb46173)
-- <a id="pa-3cb3a463cabc"></a>[extent-rule/configured-capacity/v1](../../../policies/index.md#p-3ebc61fc9972)
+- <a id="pa-8b4ae743a3"></a>[compatibility/configuration/v1](../../../policies/index.md#p-8dc08bb461)
+- <a id="pa-3cb3a463ca"></a>[extent-rule/configured-capacity/v1](../../../policies/index.md#p-3ebc61fc99)
 
 ## Evidence
 
 ### Qualification
 
-- [make unit](../../../evidence/sources.md#q-ce47068f504c)
-- [make compose-smoke](../../../evidence/sources.md#q-413b0b241ba8)
+- [make unit](../../../evidence/sources.md#q-ce47068f50)
+- [make compose-smoke](../../../evidence/sources.md#q-413b0b241b)
 
 ### Executable sources
 
-- [configuration-environment:RIVERHOG_RETRIEVAL_DEFAULT_LEASE](../../../evidence/sources.md#src-aae2e4657a0b) — `configuration-environment:RIVERHOG_RETRIEVAL_DEFAULT_LEASE`
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
+- [configuration-environment:RIVERHOG_RETRIEVAL_DEFAULT_LEASE](../../../evidence/sources.md#src-aae2e4657a) — `configuration-environment:RIVERHOG_RETRIEVAL_DEFAULT_LEASE`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
 
 ### Machine authority
 

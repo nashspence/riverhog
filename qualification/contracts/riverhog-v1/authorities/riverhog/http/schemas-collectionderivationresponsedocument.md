@@ -16,27 +16,27 @@ Exact externally visible contract owned by this semantic dossier.
 
 ## External contract
 
-<a id="s-5c1e8ccd2b8f"></a>
-- <a id="s-785d799a4c72"></a>`title`: CollectionDerivationResponseDocument
-- <a id="s-9794cccef5e9"></a>`type`: object
+<a id="s-5c1e8ccd2b"></a>
+- <a id="s-785d799a4c"></a>`title`: CollectionDerivationResponseDocument
+- <a id="s-9794cccef5"></a>`type`: object
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-6aeb171cd6b5"></a>`collection_id` | yes | #/components/schemas/CollectionId |  |
-| <a id="s-55e28adc4815"></a>`derivation` | yes | #/components/schemas/CollectionDerivationDocument |  |
-| <a id="s-fae979dcc859"></a>`document_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-6aeb171cd6"></a>`collection_id` | yes | #/components/schemas/CollectionId |  |
+| <a id="s-55e28adc48"></a>`derivation` | yes | #/components/schemas/CollectionDerivationDocument |  |
+| <a id="s-fae979dcc8"></a>`document_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 
 ### Progression, limits, and lifecycle
 
-#### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
+#### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
 
 Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"}
 
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
-| [field document_sha256](#s-fae979dcc859) | `length · characters · fixed` | shared above |
+| [field document_sha256](#s-fae979dcc8) | `length · characters · fixed` | shared above |
 
 ## Maintained corroboration
 
@@ -47,20 +47,20 @@ Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-publ
 
 ## Governing policies
 
-- <a id="pa-b81c1fc7d170"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0ba)
-- <a id="pa-10074f806608"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
+- <a id="pa-b81c1fc7d1"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0)
+- <a id="pa-10074f8066"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
 
 ## Evidence
 
 ### Qualification
 
-- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459fb8)
-- [make compose-smoke](../../../evidence/sources.md#q-413b0b241ba8)
+- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459f)
+- [make compose-smoke](../../../evidence/sources.md#q-413b0b241b)
 
 ### Executable sources
 
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
-- [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc960) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc9) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
 
 ### Machine authority
 

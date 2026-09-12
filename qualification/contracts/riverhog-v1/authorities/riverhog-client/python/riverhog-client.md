@@ -10,34 +10,34 @@ Exact externally visible contract owned by this semantic dossier.
 |---|---|
 | Authority | [riverhog-client](../index.md) |
 | Interface | [python](index.md) |
-| Family | [modules](index.md#f-b8f1c0c242de) |
+| Family | [modules](index.md#f-b8f1c0c242) |
 | Contract elements | 1 |
 | Extent decisions | 0 |
 
 ## External contract
 
-<a id="s-4a5160e00f84"></a>
+<a id="s-4a5160e00f"></a>
 | Field | Shape |
 |---|---|
-| <a id="s-e6371e386358"></a>`distribution` | "riverhog-client" |
-| <a id="s-c8f3f6e535e0"></a>`exports` | additional keys=`ApiClient`, `ApplicationPermission`, `ApplicationResource`, `BadRequest`, `COLLECTION_UPLOAD_REGISTRATION_BATCH_FILES`, `CatalogReplica`, `CatalogSyncApi`, `CatalogSyncCursorExpired`, `CatalogSyncHistoryExpired`, `CatalogSyncSourceChanged`, `CatalogSyncViewChanged`, `CollectionProducer`, `CollectionUploadIdempotencyKey`, `Conflict`, `DownloadAllowanceExceeded`, `Forbidden`, `HashMismatch`, `IncrementalCollectionProducer`, `InvalidPath`, `InvalidRange`, `InvalidState`, `NotFound`, `ProducedCollection`, `ProducerArtifactCustody`, `ProducerArtifactIdentity`, `ProducerFile`, `ProducerInput`, `ProducerStream`, `ProvenanceMode`, `RangeReader`, `RawSourceHash`, `RestorePolicy`, `RetrievalDownload`, `RetrievalPlanIdempotencyKey`, `RiverhogError`, `ServiceUnavailable`, `Unauthorized`, `configured_download_concurrency`, `configured_download_window`, `configured_upload_concurrency`, `configured_upload_window`, `create_or_resume_with_initial_collection_tags`, `download_retrieval_files`, `hash_raw_source_chunks`, `put_collection_upload_unit`, `upload_collection_units` |
-| <a id="s-33f00431444c"></a>`module` | "riverhog_client" |
+| <a id="s-e6371e3863"></a>`distribution` | "riverhog-client" |
+| <a id="s-c8f3f6e535"></a>`exports` | additional keys=`ApiClient`, `ApplicationPermission`, `ApplicationResource`, `BadRequest`, `COLLECTION_UPLOAD_REGISTRATION_BATCH_FILES`, `CatalogReplica`, `CatalogSyncApi`, `CatalogSyncCursorExpired`, `CatalogSyncHistoryExpired`, `CatalogSyncSourceChanged`, `CatalogSyncViewChanged`, `CollectionProducer`, `CollectionUploadIdempotencyKey`, `Conflict`, `DownloadAllowanceExceeded`, `Forbidden`, `HashMismatch`, `IncrementalCollectionProducer`, `InvalidPath`, `InvalidRange`, `InvalidState`, `NotFound`, `ProducedCollection`, `ProducerArtifactCustody`, `ProducerArtifactIdentity`, `ProducerFile`, `ProducerInput`, `ProducerStream`, `ProvenanceMode`, `RangeReader`, `RawSourceHash`, `RestorePolicy`, `RetrievalDownload`, `RetrievalPlanIdempotencyKey`, `RiverhogError`, `ServiceUnavailable`, `Unauthorized`, `configured_download_concurrency`, `configured_download_window`, `configured_upload_concurrency`, `configured_upload_window`, `create_or_resume_with_initial_collection_tags`, `download_retrieval_files`, `hash_raw_source_chunks`, `put_collection_upload_unit`, `upload_collection_units` |
+| <a id="s-33f0043144"></a>`module` | "riverhog_client" |
 
 ## Governing policies
 
-- <a id="pa-b7a8de4ef576"></a>[compatibility/python-api/v1](../../../policies/index.md#p-e574772ba506)
+- <a id="pa-b7a8de4ef5"></a>[compatibility/python-api/v1](../../../policies/index.md#p-e574772ba5)
 
 ## Evidence
 
 ### Qualification
 
-- [make dist-smoke](../../../evidence/sources.md#q-0ba2578a3eb7)
-- [make build](../../../evidence/sources.md#q-d1121e35fa7a)
+- [make dist-smoke](../../../evidence/sources.md#q-0ba2578a3e)
+- [make build](../../../evidence/sources.md#q-d1121e35fa)
 
 ### Executable sources
 
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
-- [python:riverhog-client:riverhog_client](../../../evidence/sources.md#src-c149020c7102) — `packages/riverhog-client/src/riverhog_client/__init__.py::<module>`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [python:riverhog-client:riverhog_client](../../../evidence/sources.md#src-c149020c71) — `packages/riverhog-client/src/riverhog_client/__init__.py::<module>`
 
 ### Machine authority
 

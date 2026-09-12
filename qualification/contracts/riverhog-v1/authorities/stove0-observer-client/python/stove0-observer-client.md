@@ -10,34 +10,34 @@ Exact externally visible contract owned by this semantic dossier.
 |---|---|
 | Authority | [stove0-observer-client](../index.md) |
 | Interface | [python](index.md) |
-| Family | [modules](index.md#f-862b3dda9b77) |
+| Family | [modules](index.md#f-862b3dda9b) |
 | Contract elements | 1 |
 | Extent decisions | 0 |
 
 ## External contract
 
-<a id="s-d78d1a03651f"></a>
+<a id="s-d78d1a0365"></a>
 | Field | Shape |
 |---|---|
-| <a id="s-2679979a1ace"></a>`distribution` | "stove0-observer-client" |
-| <a id="s-55ec31989125"></a>`exports` | additional keys=`ContentObserverClient`, `ObserverProtocolError`, `SEMANTIC_VALIDATOR_ENTRY_POINT_GROUP`, `load_semantic_validator_registry` |
-| <a id="s-23239c93e3cf"></a>`module` | "stove0_observer_client" |
+| <a id="s-2679979a1a"></a>`distribution` | "stove0-observer-client" |
+| <a id="s-55ec319891"></a>`exports` | additional keys=`ContentObserverClient`, `ObserverProtocolError`, `SEMANTIC_VALIDATOR_ENTRY_POINT_GROUP`, `load_semantic_validator_registry` |
+| <a id="s-23239c93e3"></a>`module` | "stove0_observer_client" |
 
 ## Governing policies
 
-- <a id="pa-ed228d0b3fb7"></a>[compatibility/python-api/v1](../../../policies/index.md#p-e574772ba506)
+- <a id="pa-ed228d0b3f"></a>[compatibility/python-api/v1](../../../policies/index.md#p-e574772ba5)
 
 ## Evidence
 
 ### Qualification
 
-- [make dist-smoke](../../../evidence/sources.md#q-0ba2578a3eb7)
-- [make build](../../../evidence/sources.md#q-d1121e35fa7a)
+- [make dist-smoke](../../../evidence/sources.md#q-0ba2578a3e)
+- [make build](../../../evidence/sources.md#q-d1121e35fa)
 
 ### Executable sources
 
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
-- [python:stove0-observer-client](../../../evidence/sources.md#src-657eb556bb16) — `reference/stove0/packages/observer-client/src/stove0_observer_client/__init__.py::<module>`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [python:stove0-observer-client](../../../evidence/sources.md#src-657eb556bb) — `reference/stove0/packages/observer-client/src/stove0_observer_client/__init__.py::<module>`
 
 ### Machine authority
 

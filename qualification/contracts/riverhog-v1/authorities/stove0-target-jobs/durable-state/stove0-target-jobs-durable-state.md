@@ -10,30 +10,30 @@ Exact externally visible contract owned by this semantic dossier.
 |---|---|
 | Authority | [stove0-target-jobs](../index.md) |
 | Interface | [durable-state](index.md) |
-| Family | [owners](index.md#f-b33bb60076a2) |
+| Family | [owners](index.md#f-b33bb60076) |
 | Contract elements | 1 |
 | Extent decisions | 0 |
 
 ## External contract
 
-<a id="s-b292d9d734e1"></a>
-- <a id="s-b41f5a471012"></a>`format`: stove0-target-job-state/v1
+<a id="s-b292d9d734"></a>
+- <a id="s-b41f5a4710"></a>`format`: stove0-target-job-state/v1
 
 ## Governing policies
 
-- <a id="pa-4a2231dc3d5e"></a>[compatibility/components/v1](../../../policies/index.md#p-95e9a1225947)
+- <a id="pa-4a2231dc3d"></a>[compatibility/components/v1](../../../policies/index.md#p-95e9a12259)
 
 ## Evidence
 
 ### Qualification
 
-- [make release-check](../../../evidence/sources.md#q-8d8d22d6a6b1)
-- [make database-qualification](../../../evidence/sources.md#q-27f281b51ec6)
+- [make release-check](../../../evidence/sources.md#q-8d8d22d6a6)
+- [make database-qualification](../../../evidence/sources.md#q-27f281b51e)
 
 ### Executable sources
 
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
-- [state:stove0-target-jobs](../../../evidence/sources.md#src-7b4138829a38) — `state:stove0-target-jobs`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [state:stove0-target-jobs](../../../evidence/sources.md#src-7b4138829a) — `state:stove0-target-jobs`
 
 ### Machine authority
 

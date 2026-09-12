@@ -10,37 +10,37 @@ Exact externally visible contract owned by this semantic dossier.
 |---|---|
 | Authority | [stove0-review-rclone-effect-target](../index.md) |
 | Interface | [boundary](index.md) |
-| Family | [components](index.md#f-63fb220dd5ac) |
+| Family | [components](index.md#f-63fb220dd5) |
 | Contract elements | 1 |
 | Extent decisions | 0 |
 
 ## External contract
 
-<a id="s-34b7b408f9b3"></a>
+<a id="s-34b7b408f9"></a>
 | Field | Shape |
 |---|---|
-| <a id="s-52161c7a4bda"></a>`console_scripts` | additional keys=`stove0-review-rclone-effect-target` |
-| <a id="s-b6605a43d517"></a>`dependencies` | ["riverhog-client","riverhog-protocol","stove0-review-target-contracts","stove0-review-target-support","stove0-target-support"] |
-| <a id="s-f9ce12e51209"></a>`distribution` | "stove0-review-rclone-effect-target" |
-| <a id="s-a840a54e4e2b"></a>`optional_dependencies` | empty object |
-| <a id="s-490915dd7711"></a>`path` | "reference/stove0/targets/review/rclone-effect-target" |
-| <a id="s-a8d4b28a0ea0"></a>`role` | "reference_component" |
+| <a id="s-52161c7a4b"></a>`console_scripts` | additional keys=`stove0-review-rclone-effect-target` |
+| <a id="s-b6605a43d5"></a>`dependencies` | ["riverhog-client","riverhog-protocol","stove0-review-target-contracts","stove0-review-target-support","stove0-target-support"] |
+| <a id="s-f9ce12e512"></a>`distribution` | "stove0-review-rclone-effect-target" |
+| <a id="s-a840a54e4e"></a>`optional_dependencies` | empty object |
+| <a id="s-490915dd77"></a>`path` | "reference/stove0/targets/review/rclone-effect-target" |
+| <a id="s-a8d4b28a0e"></a>`role` | "reference_component" |
 
 ## Governing policies
 
-- <a id="pa-7390687c5540"></a>[boundary/frozen-authority/v1](../../../policies/index.md#p-61994d3f0fa8)
+- <a id="pa-7390687c55"></a>[boundary/frozen-authority/v1](../../../policies/index.md#p-61994d3f0f)
 
 ## Evidence
 
 ### Qualification
 
-- [make release-check](../../../evidence/sources.md#q-8d8d22d6a6b1)
-- [make build](../../../evidence/sources.md#q-d1121e35fa7a)
+- [make release-check](../../../evidence/sources.md#q-8d8d22d6a6)
+- [make build](../../../evidence/sources.md#q-d1121e35fa)
 
 ### Executable sources
 
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
-- [release:release.toml](../../../evidence/sources.md#src-c5380dbe5fe0) — `release.toml`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [release:release.toml](../../../evidence/sources.md#src-c5380dbe5f) — `release.toml`
 
 ### Machine authority
 

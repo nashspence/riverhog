@@ -16,17 +16,17 @@ Exact externally visible contract owned by this semantic dossier.
 
 ## External contract
 
-<a id="s-3af3d570ebe3"></a>
-- <a id="s-954c713a3839"></a>`title`: CollectionDeletionArchiveCopyOut
-- <a id="s-18e3bfc95cbc"></a>`type`: object
+<a id="s-3af3d570eb"></a>
+- <a id="s-954c713a38"></a>`title`: CollectionDeletionArchiveCopyOut
+- <a id="s-18e3bfc95c"></a>`type`: object
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-3bfeff201672"></a>`objects` | yes | type="integer" |  |
-| <a id="s-096c6e325d32"></a>`store` | yes | #/components/schemas/ArchiveStoreName |  |
-| <a id="s-b0b6a85548c5"></a>`stored_bytes` | yes | type="integer" |  |
+| <a id="s-3bfeff2016"></a>`objects` | yes | type="integer" |  |
+| <a id="s-096c6e325d"></a>`store` | yes | #/components/schemas/ArchiveStoreName |  |
+| <a id="s-b0b6a85548"></a>`stored_bytes` | yes | type="integer" |  |
 
 ## Maintained corroboration
 
@@ -36,19 +36,19 @@ Exact externally visible contract owned by this semantic dossier.
 
 ## Governing policies
 
-- <a id="pa-4bdb8105a6bd"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0ba)
+- <a id="pa-4bdb8105a6"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0)
 
 ## Evidence
 
 ### Qualification
 
-- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459fb8)
-- [make compose-smoke](../../../evidence/sources.md#q-413b0b241ba8)
+- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459f)
+- [make compose-smoke](../../../evidence/sources.md#q-413b0b241b)
 
 ### Executable sources
 
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
-- [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc960) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc9) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
 
 ### Machine authority
 

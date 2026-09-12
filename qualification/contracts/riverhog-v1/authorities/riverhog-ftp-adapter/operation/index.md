@@ -6,16 +6,16 @@ Contract elements: **5** · Extent decisions: **0**
 
 | Family | Count |
 |---|---:|
-| <a id="f-fdb2955f62e7"></a>`health` | 2 |
-| <a id="f-8abb6fb27d42"></a>`run` | 1 |
-| <a id="f-c980634fc3d2"></a>`sources` | 1 |
-| <a id="f-5cf20b4299c4"></a>`status` | 1 |
+| <a id="f-fdb2955f62"></a>`health` | 2 |
+| <a id="f-8abb6fb27d"></a>`run` | 1 |
+| <a id="f-c980634fc3"></a>`sources` | 1 |
+| <a id="f-5cf20b4299"></a>`status` | 1 |
 
 | Policy | Count |
 |---|---:|
-| [compatibility/cli/v1](../../../policies/index.md#p-48a89776de7f) | 5 |
-| [compatibility/components/v1](../../../policies/index.md#p-95e9a1225947) | 5 |
-| [compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0ba) | 5 |
+| [compatibility/cli/v1](../../../policies/index.md#p-48a89776de) | 5 |
+| [compatibility/components/v1](../../../policies/index.md#p-95e9a12259) | 5 |
+| [compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0) | 5 |
 
 ## Semantic dossiers
 

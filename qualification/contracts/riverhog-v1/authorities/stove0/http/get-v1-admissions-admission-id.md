@@ -16,25 +16,25 @@ Get Admission
 
 ## External contract
 
-<a id="s-1006ba465b0e"></a>
-- <a id="s-6d67122943f5"></a>`operationId`: get_admission
-- <a id="s-ec5d6eccd886"></a>`summary`: Get Admission
+<a id="s-1006ba465b"></a>
+- <a id="s-6d67122943"></a>`operationId`: get_admission
+- <a id="s-ec5d6eccd8"></a>`summary`: Get Admission
 
 ### Parameters
 
 | Name | In | Required | Schema |
 |---|---|---:|---|
-| <a id="s-7c12b87afbf1"></a>`admission_id` | path | yes | type="string" |
+| <a id="s-7c12b87afb"></a>`admission_id` | path | yes | type="string" |
 
 ### Responses
 
 | Status | Description |
 |---|---|
-| <a id="s-b0cd202f5e1c"></a>`200` | Successful Response |
-| <a id="s-01f2cf0d10b2"></a>`400` | Bad Request |
-| <a id="s-a3aac7f8d3bf"></a>`401` | Unauthorized |
-| <a id="s-ba083c67b515"></a>`403` | Forbidden |
-| <a id="s-0775eed8e2d5"></a>`500` | Internal Server Error |
+| <a id="s-b0cd202f5e"></a>`200` | Successful Response |
+| <a id="s-01f2cf0d10"></a>`400` | Bad Request |
+| <a id="s-a3aac7f8d3"></a>`401` | Unauthorized |
+| <a id="s-ba083c67b5"></a>`403` | Forbidden |
+| <a id="s-0775eed8e2"></a>`500` | Internal Server Error |
 
 ## Maintained corroboration
 
@@ -49,19 +49,19 @@ Get Admission
 
 ## Governing policies
 
-- <a id="pa-0bb57f206c65"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0ba)
+- <a id="pa-0bb57f206c"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0)
 
 ## Evidence
 
 ### Qualification
 
-- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459fb8)
-- [make compose-smoke](../../../evidence/sources.md#q-413b0b241ba8)
+- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459f)
+- [make compose-smoke](../../../evidence/sources.md#q-413b0b241b)
 
 ### Executable sources
 
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
-- [openapi:stove0](../../../evidence/sources.md#src-52e6e3212451) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [openapi:stove0](../../../evidence/sources.md#src-52e6e32124) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
 
 ### Machine authority
 

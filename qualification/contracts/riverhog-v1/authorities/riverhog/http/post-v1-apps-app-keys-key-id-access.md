@@ -16,19 +16,19 @@ Add App Key Access
 
 ## External contract
 
-<a id="s-4f11ed88025b"></a>
-- <a id="s-d9bdbbb68520"></a>`operationId`: add_app_key_access
-- <a id="s-8b65ebef16ea"></a>`summary`: Add App Key Access
-- <a id="s-9583721fc7f6"></a>`security`: `[{"HTTPBearer": []}]`
+<a id="s-4f11ed8802"></a>
+- <a id="s-d9bdbbb685"></a>`operationId`: add_app_key_access
+- <a id="s-8b65ebef16"></a>`summary`: Add App Key Access
+- <a id="s-9583721fc7"></a>`security`: `[{"HTTPBearer": []}]`
 
 ### Parameters
 
 | Name | In | Required | Schema |
 |---|---|---:|---|
-| <a id="s-63893cdb9353"></a>`app` | path | yes | type="string"; pattern="^[a-z0-9]+(?:-[a-z0-9]+)*$" |
-| <a id="s-08375718d65c"></a>`key_id` | path | yes | type="string"; pattern="^[0-9a-f]{16}$" |
+| <a id="s-63893cdb93"></a>`app` | path | yes | type="string"; pattern="^[a-z0-9]+(?:-[a-z0-9]+)*$" |
+| <a id="s-08375718d6"></a>`key_id` | path | yes | type="string"; pattern="^[0-9a-f]{16}$" |
 
-### <a id="s-e7ba4e90d6e6"></a>Request body
+### <a id="s-e7ba4e90d6"></a>Request body
 
 `{"content": {"application/json": {"schema": {"$ref": "#/components/schemas/MutateAppAccessRequest"}}}, "required": true}`
 
@@ -36,23 +36,23 @@ Add App Key Access
 
 | Status | Description |
 |---|---|
-| <a id="s-f1906aba47af"></a>`200` | Successful Response |
-| <a id="s-d51e8deadd43"></a>`400` | Bad Request |
-| <a id="s-70b76793167e"></a>`401` | Unauthorized |
-| <a id="s-23814ad55bd1"></a>`403` | Forbidden |
-| <a id="s-564a26372fb7"></a>`404` | Not Found |
-| <a id="s-ab82137c69b1"></a>`409` | Conflict |
-| <a id="s-4b5155e96b53"></a>`500` | Internal Server Error |
+| <a id="s-f1906aba47"></a>`200` | Successful Response |
+| <a id="s-d51e8deadd"></a>`400` | Bad Request |
+| <a id="s-70b7679316"></a>`401` | Unauthorized |
+| <a id="s-23814ad55b"></a>`403` | Forbidden |
+| <a id="s-564a26372f"></a>`404` | Not Found |
+| <a id="s-ab82137c69"></a>`409` | Conflict |
+| <a id="s-4b5155e96b"></a>`500` | Internal Server Error |
 
 ### Progression, limits, and lifecycle
 
-#### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
+#### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
 
 Shared facts for every subject below: maximum=16; minimum=16; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{16}$"}
 
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
-| <a id="s-96e23c6645f4"></a>parameter key_id | `length · characters · fixed` | shared above |
+| <a id="s-96e23c6645"></a>[parameter key_id](#s-08375718d6) | `length · characters · fixed` | shared above |
 
 ## Maintained corroboration
 
@@ -68,20 +68,20 @@ Shared facts for every subject below: maximum=16; minimum=16; reason="fixed-publ
 
 ## Governing policies
 
-- <a id="pa-082ee65debb3"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0ba)
-- <a id="pa-3868338b6a62"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
+- <a id="pa-082ee65deb"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0)
+- <a id="pa-3868338b6a"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
 
 ## Evidence
 
 ### Qualification
 
-- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459fb8)
-- [make compose-smoke](../../../evidence/sources.md#q-413b0b241ba8)
+- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459f)
+- [make compose-smoke](../../../evidence/sources.md#q-413b0b241b)
 
 ### Executable sources
 
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
-- [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc960) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc9) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
 
 ### Machine authority
 

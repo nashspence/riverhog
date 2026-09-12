@@ -16,39 +16,39 @@ Exact externally visible contract owned by this semantic dossier.
 
 ## External contract
 
-<a id="s-1e640239fe57"></a>
-- <a id="s-ddc136013cee"></a>`title`: ArchiveCopyJobListOut
-- <a id="s-05c1c9f22397"></a>`type`: object
+<a id="s-1e640239fe"></a>
+- <a id="s-ddc136013c"></a>`title`: ArchiveCopyJobListOut
+- <a id="s-05c1c9f223"></a>`type`: object
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-4db973405efd"></a>`copies` | yes | type="array"; items=(#/components/schemas/ArchiveCopyJobOut) |  |
-| <a id="s-5f552953c998"></a>`filters` | yes | #/components/schemas/ArchiveCopyJobListFiltersOut |  |
-| <a id="s-35da4724d81c"></a>`next_page_token` | yes | anyOf=#/components/schemas/BrowsePageToken \| type="null" |  |
-| <a id="s-55b6ab5d2088"></a>`order` | yes | #/components/schemas/SortOrder |  |
-| <a id="s-f77467ada2b5"></a>`page_size` | yes | type="integer"; minimum=1; maximum=100 |  |
-| <a id="s-5571409571ac"></a>`query` | yes | anyOf=type="string" \| type="null" |  |
-| <a id="s-2815c28bbe0d"></a>`sort` | yes | #/components/schemas/ArchiveCopySort |  |
+| <a id="s-4db973405e"></a>`copies` | yes | type="array"; items=(#/components/schemas/ArchiveCopyJobOut) |  |
+| <a id="s-5f552953c9"></a>`filters` | yes | #/components/schemas/ArchiveCopyJobListFiltersOut |  |
+| <a id="s-35da4724d8"></a>`next_page_token` | yes | anyOf=#/components/schemas/BrowsePageToken \| type="null" |  |
+| <a id="s-55b6ab5d20"></a>`order` | yes | #/components/schemas/SortOrder |  |
+| <a id="s-f77467ada2"></a>`page_size` | yes | type="integer"; minimum=1; maximum=100 |  |
+| <a id="s-5571409571"></a>`query` | yes | anyOf=type="string" \| type="null" |  |
+| <a id="s-2815c28bbe"></a>`sort` | yes | #/components/schemas/ArchiveCopySort |  |
 
 ### Progression, limits, and lifecycle
 
-#### [extent-rule/route-progression/v1](../../../policies/index.md#p-6b76b527cb21)
+#### [extent-rule/route-progression/v1](../../../policies/index.md#p-6b76b527cb)
 
 Shared facts for every subject below: progression={"default_page_size":25,"kind":"mutable-browse","maximum_page_size":100,"next_page_token_field":"next_page_token","page_size_parameter":"page_size","page_token_parameter":"page_token"}; reason="bounded-route-page"
 
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
-| [field copies](#s-4db973405efd) | `cardinality · items · segmented_no_total_max` | shared above |
+| [field copies](#s-4db973405e) | `cardinality · items · segmented_no_total_max` | shared above |
 
-#### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
+#### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
 
 Shared facts for every subject below: maximum=100; minimum=1; reason="schema-maximum"
 
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
-| [field page_size](#s-f77467ada2b5) | `value · schema-value · contract_max` | shared above |
+| [field page_size](#s-f77467ada2) | `value · schema-value · contract_max` | shared above |
 
 ## Maintained corroboration
 
@@ -62,21 +62,21 @@ Shared facts for every subject below: maximum=100; minimum=1; reason="schema-max
 
 ## Governing policies
 
-- <a id="pa-1258b7c30b0a"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0ba)
-- <a id="pa-54cb61fddac0"></a>[extent-rule/route-progression/v1](../../../policies/index.md#p-6b76b527cb21)
-- <a id="pa-3e075798d51f"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
+- <a id="pa-1258b7c30b"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0)
+- <a id="pa-54cb61fdda"></a>[extent-rule/route-progression/v1](../../../policies/index.md#p-6b76b527cb)
+- <a id="pa-3e075798d5"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
 
 ## Evidence
 
 ### Qualification
 
-- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459fb8)
-- [make compose-smoke](../../../evidence/sources.md#q-413b0b241ba8)
+- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459f)
+- [make compose-smoke](../../../evidence/sources.md#q-413b0b241b)
 
 ### Executable sources
 
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
-- [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc960) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc9) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
 
 ### Machine authority
 

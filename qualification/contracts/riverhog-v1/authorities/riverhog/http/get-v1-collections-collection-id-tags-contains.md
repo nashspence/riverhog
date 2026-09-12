@@ -16,41 +16,41 @@ Collection Contains Tag
 
 ## External contract
 
-<a id="s-b7b3da9ca476"></a>
-- <a id="s-f64404d5ae33"></a>`operationId`: collection_contains_tag
-- <a id="s-c1758ccadd43"></a>`summary`: Collection Contains Tag
-- <a id="s-2ba7d67bf8c9"></a>`security`: `[{"HTTPBearer": []}]`
+<a id="s-b7b3da9ca4"></a>
+- <a id="s-f64404d5ae"></a>`operationId`: collection_contains_tag
+- <a id="s-c1758ccadd"></a>`summary`: Collection Contains Tag
+- <a id="s-2ba7d67bf8"></a>`security`: `[{"HTTPBearer": []}]`
 
 ### Parameters
 
 | Name | In | Required | Schema |
 |---|---|---:|---|
-| <a id="s-234c3b9e4af9"></a>`collection_id` | path | yes | type="integer"; minimum=1 |
-| <a id="s-a9d8b50545ea"></a>`tag` | query | yes | #/components/schemas/CollectionTag |
-| <a id="s-d314b5a7675e"></a>`revision` | query | yes | type="integer"; minimum=1 |
-| <a id="s-2807a21da289"></a>`tag_set_identity` | query | yes | type="string"; pattern="^[0-9a-f]{64}$" |
+| <a id="s-234c3b9e4a"></a>`collection_id` | path | yes | type="integer"; minimum=1 |
+| <a id="s-a9d8b50545"></a>`tag` | query | yes | #/components/schemas/CollectionTag |
+| <a id="s-d314b5a767"></a>`revision` | query | yes | type="integer"; minimum=1 |
+| <a id="s-2807a21da2"></a>`tag_set_identity` | query | yes | type="string"; pattern="^[0-9a-f]{64}$" |
 
 ### Responses
 
 | Status | Description |
 |---|---|
-| <a id="s-02989a39c4e2"></a>`200` | Successful Response |
-| <a id="s-9c209972c10e"></a>`400` | Bad Request |
-| <a id="s-33482f9ae560"></a>`401` | Unauthorized |
-| <a id="s-3ea1e0e8fb22"></a>`403` | Forbidden |
-| <a id="s-f21bc1a6cdac"></a>`404` | Not Found |
-| <a id="s-3d9646a86afd"></a>`409` | Conflict |
-| <a id="s-2c1f136096be"></a>`500` | Internal Server Error |
+| <a id="s-02989a39c4"></a>`200` | Successful Response |
+| <a id="s-9c209972c1"></a>`400` | Bad Request |
+| <a id="s-33482f9ae5"></a>`401` | Unauthorized |
+| <a id="s-3ea1e0e8fb"></a>`403` | Forbidden |
+| <a id="s-f21bc1a6cd"></a>`404` | Not Found |
+| <a id="s-3d9646a86a"></a>`409` | Conflict |
+| <a id="s-2c1f136096"></a>`500` | Internal Server Error |
 
 ### Progression, limits, and lifecycle
 
-#### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
+#### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
 
 Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"}
 
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
-| <a id="s-0c1779b3ecf4"></a>parameter tag_set_identity | `length · characters · fixed` | shared above |
+| <a id="s-0c1779b3ec"></a>[parameter tag_set_identity](#s-2807a21da2) | `length · characters · fixed` | shared above |
 
 ## Maintained corroboration
 
@@ -66,20 +66,20 @@ Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-publ
 
 ## Governing policies
 
-- <a id="pa-54d83639e15c"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0ba)
-- <a id="pa-e649438bdeb1"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
+- <a id="pa-54d83639e1"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0)
+- <a id="pa-e649438bde"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
 
 ## Evidence
 
 ### Qualification
 
-- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459fb8)
-- [make compose-smoke](../../../evidence/sources.md#q-413b0b241ba8)
+- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459f)
+- [make compose-smoke](../../../evidence/sources.md#q-413b0b241b)
 
 ### Executable sources
 
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
-- [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc960) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc9) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
 
 ### Machine authority
 

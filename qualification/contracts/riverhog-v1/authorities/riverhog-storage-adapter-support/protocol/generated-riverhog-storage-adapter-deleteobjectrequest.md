@@ -16,50 +16,50 @@ Exact externally visible contract owned by this semantic dossier.
 
 ## External contract
 
-<a id="s-4244e1c1b19b"></a>
-- <a id="s-1e3aee157aab"></a>`title`: DeleteObjectRequest
-- <a id="s-f7bf1217a98a"></a>`type`: object
+<a id="s-4244e1c1b1"></a>
+- <a id="s-1e3aee157a"></a>`title`: DeleteObjectRequest
+- <a id="s-f7bf1217a9"></a>`type`: object
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-25cdfe561638"></a>`expected_current_stored_sha256` | no | anyOf=type="string"; pattern="^[0-9a-f]{64}$" \| type="null" |  |
-| <a id="s-e096d561464a"></a>`mode` | yes | type="string"; enum=["current","exact_revision","all_versions"] |  |
-| <a id="s-957812383970"></a>`object` | yes | #/$defs/ObjectLocator |  |
+| <a id="s-25cdfe5616"></a>`expected_current_stored_sha256` | no | anyOf=type="string"; pattern="^[0-9a-f]{64}$" \| type="null" |  |
+| <a id="s-e096d56146"></a>`mode` | yes | type="string"; enum=["current","exact_revision","all_versions"] |  |
+| <a id="s-9578123839"></a>`object` | yes | #/$defs/ObjectLocator |  |
 
 ### Definitions
 
 | Definition | Shape |
 |---|---|
-| <a id="s-1c064e0ef6c4"></a>`ObjectLocator` | type="object"; fields=`object_path`, `revision`; additional keys=`additionalProperties`, `required` |
+| <a id="s-1c064e0ef6"></a>`ObjectLocator` | type="object"; fields=`object_path`, `revision`; additional keys=`additionalProperties`, `required` |
 
 ### Progression, limits, and lifecycle
 
-#### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
+#### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
 
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
-| <a id="s-6a0a486f3173"></a>field expected_current_stored_sha256 · anyOf alternative 1 | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
-| <a id="s-e96704bca9b4"></a>definition ObjectLocator · field object_path | `length · characters · contract_max` | maximum=4096; minimum=1; reason="schema-maximum" |
-| <a id="s-f5db287c9981"></a>definition ObjectLocator · field revision · anyOf alternative 1 | `length · characters · contract_max` | maximum=2000; minimum=1; reason="schema-maximum" |
+| <a id="s-6a0a486f31"></a>[field expected_current_stored_sha256 · string value](#s-25cdfe5616) | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
+| <a id="s-e96704bca9"></a>[definition ObjectLocator · field object_path](#s-1c064e0ef6) | `length · characters · contract_max` | maximum=4096; minimum=1; reason="schema-maximum" |
+| <a id="s-f5db287c99"></a>[definition ObjectLocator · field revision · string value](#s-1c064e0ef6) | `length · characters · contract_max` | maximum=2000; minimum=1; reason="schema-maximum" |
 
 ## Governing policies
 
-- <a id="pa-f55d9d580850"></a>[compatibility/components/v1](../../../policies/index.md#p-95e9a1225947)
-- <a id="pa-48d6c4f8208a"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
+- <a id="pa-f55d9d5808"></a>[compatibility/components/v1](../../../policies/index.md#p-95e9a12259)
+- <a id="pa-48d6c4f820"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
 
 ## Evidence
 
 ### Qualification
 
-- [make dist-smoke](../../../evidence/sources.md#q-0ba2578a3eb7)
-- [make build](../../../evidence/sources.md#q-d1121e35fa7a)
+- [make dist-smoke](../../../evidence/sources.md#q-0ba2578a3e)
+- [make build](../../../evidence/sources.md#q-d1121e35fa)
 
 ### Executable sources
 
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
-- [protocol:generated:riverhog-storage-adapter](../../../evidence/sources.md#src-ef281f2471a9) — `packages/riverhog-storage-adapter-support/src/riverhog_storage_adapter_support/schemas.py::storage_adapter_schema_bundle`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [protocol:generated:riverhog-storage-adapter](../../../evidence/sources.md#src-ef281f2471) — `packages/riverhog-storage-adapter-support/src/riverhog_storage_adapter_support/schemas.py::storage_adapter_schema_bundle`
 
 ### Machine authority
 

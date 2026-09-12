@@ -16,29 +16,29 @@ Exact externally visible contract owned by this semantic dossier.
 
 ## External contract
 
-- <a id="s-4b01da3732b2"></a>Parser name: `discard`
+- <a id="s-4b01da3732"></a>Parser name: `discard`
 
 ### Parameters
 
 | Name | Kind | Required | Type | Options |
 |---|---|---:|---|---|
-| <a id="s-63bbf5885e0f"></a>`collection_id` | TyperArgument | yes | {'class': 'typer._click.types.IntParamType', 'name': 'integer'} | collection_id |
-| <a id="s-f375035e7e37"></a>`dry_run` | TyperOption | no | {'class': 'typer._click.types.BoolParamType', 'name': 'boolean'} | --dry-run, --plan |
-| <a id="s-9a049cc7bb7e"></a>`confirm` | TyperOption | no | {'class': 'typer._click.types.StringParamType', 'name': 'text'} | --confirm |
-| <a id="s-38abeb20f186"></a>`json_mode` | TyperOption | no | {'class': 'typer._click.types.BoolParamType', 'name': 'boolean'} | --json |
+| <a id="s-63bbf5885e"></a>`collection_id` | TyperArgument | yes | {'class': 'typer._click.types.IntParamType', 'name': 'integer'} | collection_id |
+| <a id="s-f375035e7e"></a>`dry_run` | TyperOption | no | {'class': 'typer._click.types.BoolParamType', 'name': 'boolean'} | --dry-run, --plan |
+| <a id="s-9a049cc7bb"></a>`confirm` | TyperOption | no | {'class': 'typer._click.types.StringParamType', 'name': 'text'} | --confirm |
+| <a id="s-38abeb20f1"></a>`json_mode` | TyperOption | no | {'class': 'typer._click.types.BoolParamType', 'name': 'boolean'} | --json |
 
 ### Progression, limits, and lifecycle
 
-#### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
+#### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
 
 Shared facts for every subject below: maximum=1; minimum=1; reason="fixed-command-argument-arity"; source_constraint={"field":"nargs"}
 
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
-| [CLI parameter collection_id](#s-63bbf5885e0f) | `cardinality · values-per-occurrence · fixed` | shared above |
-| [CLI parameter --confirm](#s-9a049cc7bb7e) | `cardinality · values-per-occurrence · fixed` | shared above |
-| [CLI parameter --dry-run](#s-f375035e7e37) | `cardinality · values-per-occurrence · fixed` | shared above |
-| [CLI parameter --json](#s-38abeb20f186) | `cardinality · values-per-occurrence · fixed` | shared above |
+| [CLI parameter collection_id](#s-63bbf5885e) | `cardinality · values-per-occurrence · fixed` | shared above |
+| [CLI parameter --confirm](#s-9a049cc7bb) | `cardinality · values-per-occurrence · fixed` | shared above |
+| [CLI parameter --dry-run](#s-f375035e7e) | `cardinality · values-per-occurrence · fixed` | shared above |
+| [CLI parameter --json](#s-38abeb20f1) | `cardinality · values-per-occurrence · fixed` | shared above |
 
 ## Maintained corroboration
 
@@ -49,20 +49,20 @@ Shared facts for every subject below: maximum=1; minimum=1; reason="fixed-comman
 
 ## Governing policies
 
-- <a id="pa-7d5a6815a08a"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de7f)
-- <a id="pa-eb9e2f83ffb1"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
+- <a id="pa-7d5a6815a0"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de)
+- <a id="pa-eb9e2f83ff"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
 
 ## Evidence
 
 ### Qualification
 
-- [make dist-smoke](../../../evidence/sources.md#q-0ba2578a3eb7)
-- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459fb8)
+- [make dist-smoke](../../../evidence/sources.md#q-0ba2578a3e)
+- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459f)
 
 ### Executable sources
 
-- [cli:piggity](../../../evidence/sources.md#src-094022231f2c) — `reference/riverhog/applications/piggity/src/piggity/main.py::<module>`
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
+- [cli:piggity](../../../evidence/sources.md#src-094022231f) — `reference/riverhog/applications/piggity/src/piggity/main.py::<module>`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
 
 ### Machine authority
 

@@ -16,37 +16,37 @@ Exact externally visible contract owned by this semantic dossier.
 
 ## External contract
 
-<a id="s-d8de960a53b0"></a>
-- <a id="s-71b5428fd574"></a>`title`: RetrievalCacheObjectOut
-- <a id="s-023b459ad5c6"></a>`type`: object
+<a id="s-d8de960a53"></a>
+- <a id="s-71b5428fd5"></a>`title`: RetrievalCacheObjectOut
+- <a id="s-023b459ad5"></a>`type`: object
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-06cc3eb42716"></a>`cache_store` | yes | #/components/schemas/RetrievalCacheStoreName |  |
-| <a id="s-3b10f667fb39"></a>`cached_at` | yes | type="string" |  |
-| <a id="s-d3807612bf01"></a>`collection_id` | yes | #/components/schemas/CollectionId |  |
-| <a id="s-627408e57758"></a>`lease_categories` | yes | type="array"; items=(type="string"; enum=["new_archive","retrieval_job"]) |  |
-| <a id="s-5e4b6f164b04"></a>`new_archive_expires_at` | yes | anyOf=type="string" \| type="null" |  |
-| <a id="s-51bc3513f03e"></a>`object_id` | yes | type="string" |  |
-| <a id="s-d92ae721874b"></a>`protected_until` | yes | anyOf=type="string" \| type="null" |  |
-| <a id="s-47dbf3c6e5aa"></a>`retrieval_job_leases` | yes | type="integer" |  |
-| <a id="s-ae87dd0d797f"></a>`source_store` | yes | #/components/schemas/ArchiveStoreName |  |
-| <a id="s-cbb7f490d39a"></a>`state` | yes | #/components/schemas/RetrievalCacheState |  |
-| <a id="s-c95d53b4cfe8"></a>`stored_bytes` | yes | type="integer" |  |
-| <a id="s-a582abba727e"></a>`stored_sha256` | yes | anyOf=type="string" \| type="null" |  |
-| <a id="s-e2697d058e50"></a>`verified_at` | yes | type="string" |  |
+| <a id="s-06cc3eb427"></a>`cache_store` | yes | #/components/schemas/RetrievalCacheStoreName |  |
+| <a id="s-3b10f667fb"></a>`cached_at` | yes | type="string" |  |
+| <a id="s-d3807612bf"></a>`collection_id` | yes | #/components/schemas/CollectionId |  |
+| <a id="s-627408e577"></a>`lease_categories` | yes | type="array"; items=(type="string"; enum=["new_archive","retrieval_job"]) |  |
+| <a id="s-5e4b6f164b"></a>`new_archive_expires_at` | yes | anyOf=type="string" \| type="null" |  |
+| <a id="s-51bc3513f0"></a>`object_id` | yes | type="string" |  |
+| <a id="s-d92ae72187"></a>`protected_until` | yes | anyOf=type="string" \| type="null" |  |
+| <a id="s-47dbf3c6e5"></a>`retrieval_job_leases` | yes | type="integer" |  |
+| <a id="s-ae87dd0d79"></a>`source_store` | yes | #/components/schemas/ArchiveStoreName |  |
+| <a id="s-cbb7f490d3"></a>`state` | yes | #/components/schemas/RetrievalCacheState |  |
+| <a id="s-c95d53b4cf"></a>`stored_bytes` | yes | type="integer" |  |
+| <a id="s-a582abba72"></a>`stored_sha256` | yes | anyOf=type="string" \| type="null" |  |
+| <a id="s-e2697d058e"></a>`verified_at` | yes | type="string" |  |
 
 ### Progression, limits, and lifecycle
 
-#### [extent-rule/no-semantic-maximum/v1](../../../policies/index.md#p-574724b48af0)
+#### [extent-rule/no-semantic-maximum/v1](../../../policies/index.md#p-574724b48a)
 
 Shared facts for every subject below: capacity_authority={"declared_maximum":null,"hidden_maximum":"forbidden","owner":"riverhog"}; maximum=null; reason="no-declared-semantic-maximum"
 
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
-| [field lease_categories](#s-627408e57758) | `cardinality · items · operational_policy` | shared above |
+| [field lease_categories](#s-627408e577) | `cardinality · items · operational_policy` | shared above |
 
 ## Maintained corroboration
 
@@ -59,20 +59,20 @@ Shared facts for every subject below: capacity_authority={"declared_maximum":nul
 
 ## Governing policies
 
-- <a id="pa-215df9a10950"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0ba)
-- <a id="pa-9e9024e808ba"></a>[extent-rule/no-semantic-maximum/v1](../../../policies/index.md#p-574724b48af0)
+- <a id="pa-215df9a109"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0)
+- <a id="pa-9e9024e808"></a>[extent-rule/no-semantic-maximum/v1](../../../policies/index.md#p-574724b48a)
 
 ## Evidence
 
 ### Qualification
 
-- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459fb8)
-- [make compose-smoke](../../../evidence/sources.md#q-413b0b241ba8)
+- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459f)
+- [make compose-smoke](../../../evidence/sources.md#q-413b0b241b)
 
 ### Executable sources
 
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
-- [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc960) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc9) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
 
 ### Machine authority
 

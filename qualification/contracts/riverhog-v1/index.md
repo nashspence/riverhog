@@ -27,9 +27,9 @@
   - [riverhog-storage-adapter-schemas](authorities/riverhog-storage-adapter-schemas/index.md) — 1 contract element
   - [riverhog-storage-adapter-support](authorities/riverhog-storage-adapter-support/index.md) — 26 contract elements
 - [Riverhog extension boundaries](surfaces/riverhog.md#extension-boundaries) — 0 authorities, 0 contract elements
-  - [riverhog-storage-adapter](evidence/relationships.md#rn-994e13bf1e40)
-  - [riverhog.provenance-contracts](evidence/relationships.md#rn-08557331674e)
-  - [riverhog.provenance-observers](evidence/relationships.md#rn-ed2bbc0e316b)
+  - [riverhog-storage-adapter](evidence/relationships.md#rn-994e13bf1e)
+  - [riverhog.provenance-contracts](evidence/relationships.md#rn-0855733167)
+  - [riverhog.provenance-observers](evidence/relationships.md#rn-ed2bbc0e31)
 - [Implementation and build](surfaces/riverhog.md#implementation-and-build) — 5 authorities, 5 contract elements
   - [config-validation](authorities/config-validation/index.md) — 1 contract element
   - [riverhog-catalog](authorities/riverhog-catalog/index.md) — 1 contract element

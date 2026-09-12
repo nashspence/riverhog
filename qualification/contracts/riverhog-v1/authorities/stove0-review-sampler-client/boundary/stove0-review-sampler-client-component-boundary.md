@@ -10,37 +10,37 @@ Exact externally visible contract owned by this semantic dossier.
 |---|---|
 | Authority | [stove0-review-sampler-client](../index.md) |
 | Interface | [boundary](index.md) |
-| Family | [components](index.md#f-5e7fbd66841b) |
+| Family | [components](index.md#f-5e7fbd6684) |
 | Contract elements | 1 |
 | Extent decisions | 0 |
 
 ## External contract
 
-<a id="s-344a1f9cb35e"></a>
+<a id="s-344a1f9cb3"></a>
 | Field | Shape |
 |---|---|
-| <a id="s-1adff313556b"></a>`console_scripts` | empty object |
-| <a id="s-5fd720f4b7c1"></a>`dependencies` | ["http-api-contracts","stove0-review-sampler-protocol"] |
-| <a id="s-348bb905b45f"></a>`distribution` | "stove0-review-sampler-client" |
-| <a id="s-1969571ba3b4"></a>`optional_dependencies` | empty object |
-| <a id="s-79dc54795635"></a>`path` | "reference/stove0/targets/review/sampler/client" |
-| <a id="s-e7e7da0ba945"></a>`role` | "reference_component" |
+| <a id="s-1adff31355"></a>`console_scripts` | empty object |
+| <a id="s-5fd720f4b7"></a>`dependencies` | ["http-api-contracts","stove0-review-sampler-protocol"] |
+| <a id="s-348bb905b4"></a>`distribution` | "stove0-review-sampler-client" |
+| <a id="s-1969571ba3"></a>`optional_dependencies` | empty object |
+| <a id="s-79dc547956"></a>`path` | "reference/stove0/targets/review/sampler/client" |
+| <a id="s-e7e7da0ba9"></a>`role` | "reference_component" |
 
 ## Governing policies
 
-- <a id="pa-5289ac70490c"></a>[boundary/frozen-authority/v1](../../../policies/index.md#p-61994d3f0fa8)
+- <a id="pa-5289ac7049"></a>[boundary/frozen-authority/v1](../../../policies/index.md#p-61994d3f0f)
 
 ## Evidence
 
 ### Qualification
 
-- [make release-check](../../../evidence/sources.md#q-8d8d22d6a6b1)
-- [make build](../../../evidence/sources.md#q-d1121e35fa7a)
+- [make release-check](../../../evidence/sources.md#q-8d8d22d6a6)
+- [make build](../../../evidence/sources.md#q-d1121e35fa)
 
 ### Executable sources
 
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
-- [release:release.toml](../../../evidence/sources.md#src-c5380dbe5fe0) — `release.toml`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [release:release.toml](../../../evidence/sources.md#src-c5380dbe5f) — `release.toml`
 
 ### Machine authority
 

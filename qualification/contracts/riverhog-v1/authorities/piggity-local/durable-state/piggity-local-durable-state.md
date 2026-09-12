@@ -10,30 +10,30 @@ Exact externally visible contract owned by this semantic dossier.
 |---|---|
 | Authority | [piggity-local](../index.md) |
 | Interface | [durable-state](index.md) |
-| Family | [owners](index.md#f-1b3ca97aea1e) |
+| Family | [owners](index.md#f-1b3ca97aea) |
 | Contract elements | 1 |
 | Extent decisions | 0 |
 
 ## External contract
 
-<a id="s-5e20eea672e2"></a>
-- <a id="s-48380901bc61"></a>`format`: state-schema/sqlite
+<a id="s-5e20eea672"></a>
+- <a id="s-48380901bc"></a>`format`: state-schema/sqlite
 
 ## Governing policies
 
-- <a id="pa-e09cc0fa63e0"></a>[compatibility/components/v1](../../../policies/index.md#p-95e9a1225947)
+- <a id="pa-e09cc0fa63"></a>[compatibility/components/v1](../../../policies/index.md#p-95e9a12259)
 
 ## Evidence
 
 ### Qualification
 
-- [make release-check](../../../evidence/sources.md#q-8d8d22d6a6b1)
-- [make database-qualification](../../../evidence/sources.md#q-27f281b51ec6)
+- [make release-check](../../../evidence/sources.md#q-8d8d22d6a6)
+- [make database-qualification](../../../evidence/sources.md#q-27f281b51e)
 
 ### Executable sources
 
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
-- [state:piggity-local](../../../evidence/sources.md#src-f6a1289f6703) — `state:piggity-local`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [state:piggity-local](../../../evidence/sources.md#src-f6a1289f67) — `state:piggity-local`
 
 ### Machine authority
 

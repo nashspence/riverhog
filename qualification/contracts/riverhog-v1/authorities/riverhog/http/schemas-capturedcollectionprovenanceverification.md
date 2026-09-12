@@ -16,39 +16,39 @@ Exact externally visible contract owned by this semantic dossier.
 
 ## External contract
 
-<a id="s-74e5c2af8169"></a>
-- <a id="s-4be1783134dd"></a>`title`: CapturedCollectionProvenanceVerification
-- <a id="s-ce742574d3e1"></a>`type`: object
+<a id="s-74e5c2af81"></a>
+- <a id="s-4be1783134"></a>`title`: CapturedCollectionProvenanceVerification
+- <a id="s-ce742574d3"></a>`type`: object
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-87ba9aa6578c"></a>`collection_id` | yes | #/components/schemas/CollectionId |  |
-| <a id="s-43af0c7bb16c"></a>`entities` | yes | type="integer"; minimum=0 |  |
-| <a id="s-bb1cbb5ae80d"></a>`files` | yes | type="integer"; minimum=0 |  |
-| <a id="s-bbffa50bf8ed"></a>`journals` | yes | type="integer"; minimum=1 |  |
-| <a id="s-4e4fa3e79b7b"></a>`provenance_identity` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-f9e255b72eff"></a>`provenance_mode` | yes | type="string"; enum=["captured","mixed"] |  |
-| <a id="s-2e4362d4dc82"></a>`valid` | yes | type="boolean"; const=true |  |
+| <a id="s-87ba9aa657"></a>`collection_id` | yes | #/components/schemas/CollectionId |  |
+| <a id="s-43af0c7bb1"></a>`entities` | yes | type="integer"; minimum=0 |  |
+| <a id="s-bb1cbb5ae8"></a>`files` | yes | type="integer"; minimum=0 |  |
+| <a id="s-bbffa50bf8"></a>`journals` | yes | type="integer"; minimum=1 |  |
+| <a id="s-4e4fa3e79b"></a>`provenance_identity` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-f9e255b72e"></a>`provenance_mode` | yes | type="string"; enum=["captured","mixed"] |  |
+| <a id="s-2e4362d4dc"></a>`valid` | yes | type="boolean"; const=true |  |
 
 ### Progression, limits, and lifecycle
 
-#### [extent-rule/no-semantic-maximum/v1](../../../policies/index.md#p-574724b48af0)
+#### [extent-rule/no-semantic-maximum/v1](../../../policies/index.md#p-574724b48a)
 
 Shared facts for every subject below: capacity_authority={"declared_maximum":null,"hidden_maximum":"forbidden","owner":"riverhog"}; maximum=null; reason="no-declared-semantic-maximum"
 
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
-| [field files](#s-bb1cbb5ae80d) | `value · schema-value · operational_policy` | shared above |
+| [field files](#s-bb1cbb5ae8) | `value · schema-value · operational_policy` | shared above |
 
-#### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
+#### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
 
 Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"}
 
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
-| [field provenance_identity](#s-4e4fa3e79b7b) | `length · characters · fixed` | shared above |
+| [field provenance_identity](#s-4e4fa3e79b) | `length · characters · fixed` | shared above |
 
 ## Maintained corroboration
 
@@ -58,21 +58,21 @@ Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-publ
 
 ## Governing policies
 
-- <a id="pa-fb0e31eb57ef"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0ba)
-- <a id="pa-0166e2d19f4e"></a>[extent-rule/no-semantic-maximum/v1](../../../policies/index.md#p-574724b48af0)
-- <a id="pa-7eaffa80c63f"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
+- <a id="pa-fb0e31eb57"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0)
+- <a id="pa-0166e2d19f"></a>[extent-rule/no-semantic-maximum/v1](../../../policies/index.md#p-574724b48a)
+- <a id="pa-7eaffa80c6"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
 
 ## Evidence
 
 ### Qualification
 
-- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459fb8)
-- [make compose-smoke](../../../evidence/sources.md#q-413b0b241ba8)
+- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459f)
+- [make compose-smoke](../../../evidence/sources.md#q-413b0b241b)
 
 ### Executable sources
 
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
-- [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc960) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc9) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
 
 ### Machine authority
 

@@ -10,34 +10,34 @@ Exact externally visible contract owned by this semantic dossier.
 |---|---|
 | Authority | [riverhog-storage-adapter-support](../index.md) |
 | Interface | [python](index.md) |
-| Family | [modules](index.md#f-8798be8e4c3f) |
+| Family | [modules](index.md#f-8798be8e4c) |
 | Contract elements | 1 |
 | Extent decisions | 0 |
 
 ## External contract
 
-<a id="s-7b1d96f90df2"></a>
+<a id="s-7b1d96f90d"></a>
 | Field | Shape |
 |---|---|
-| <a id="s-816d959f749a"></a>`distribution` | "riverhog-storage-adapter-support" |
-| <a id="s-7b0c60bf1399"></a>`exports` | additional keys=`DEFAULT_MAXIMUM_HEADER_BYTES`, `FRAMED_BODY_FORMAT`, `FRAMED_BODY_MEDIA_TYPE`, `FRAMED_STORAGE_ADAPTER_HTTP_PATHS`, `FramedBodyError`, `FramedContent`, `STORAGE_ADAPTER_CONFORMANCE_RESULT`, `STORAGE_ADAPTER_HTTP_OPERATIONS`, `STORAGE_ADAPTER_SCHEMA_BUNDLE_FORMAT`, `StorageAdapterClient`, `StorageAdapterConformanceResult`, `StorageAdapterHttpBinding`, `StorageAdapterHttpResponse`, `StorageAdapterProtocolError`, `StorageAdapterServiceError`, `framed_body`, `framed_body_length`, `framed_declaration_bytes`, `parse_framed_stream`, `run_storage_adapter_conformance`, `storage_adapter_schema_bundle` |
-| <a id="s-c8c4afa75418"></a>`module` | "riverhog_storage_adapter_support" |
+| <a id="s-816d959f74"></a>`distribution` | "riverhog-storage-adapter-support" |
+| <a id="s-7b0c60bf13"></a>`exports` | additional keys=`DEFAULT_MAXIMUM_HEADER_BYTES`, `FRAMED_BODY_FORMAT`, `FRAMED_BODY_MEDIA_TYPE`, `FRAMED_STORAGE_ADAPTER_HTTP_PATHS`, `FramedBodyError`, `FramedContent`, `STORAGE_ADAPTER_CONFORMANCE_RESULT`, `STORAGE_ADAPTER_HTTP_OPERATIONS`, `STORAGE_ADAPTER_SCHEMA_BUNDLE_FORMAT`, `StorageAdapterClient`, `StorageAdapterConformanceResult`, `StorageAdapterHttpBinding`, `StorageAdapterHttpResponse`, `StorageAdapterProtocolError`, `StorageAdapterServiceError`, `framed_body`, `framed_body_length`, `framed_declaration_bytes`, `parse_framed_stream`, `run_storage_adapter_conformance`, `storage_adapter_schema_bundle` |
+| <a id="s-c8c4afa754"></a>`module` | "riverhog_storage_adapter_support" |
 
 ## Governing policies
 
-- <a id="pa-f2201148c0a7"></a>[compatibility/python-api/v1](../../../policies/index.md#p-e574772ba506)
+- <a id="pa-f2201148c0"></a>[compatibility/python-api/v1](../../../policies/index.md#p-e574772ba5)
 
 ## Evidence
 
 ### Qualification
 
-- [make dist-smoke](../../../evidence/sources.md#q-0ba2578a3eb7)
-- [make build](../../../evidence/sources.md#q-d1121e35fa7a)
+- [make dist-smoke](../../../evidence/sources.md#q-0ba2578a3e)
+- [make build](../../../evidence/sources.md#q-d1121e35fa)
 
 ### Executable sources
 
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
-- [python:riverhog-storage-adapter-support](../../../evidence/sources.md#src-ce06974b7fef) — `packages/riverhog-storage-adapter-support/src/riverhog_storage_adapter_support/__init__.py::<module>`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [python:riverhog-storage-adapter-support](../../../evidence/sources.md#src-ce06974b7f) — `packages/riverhog-storage-adapter-support/src/riverhog_storage_adapter_support/__init__.py::<module>`
 
 ### Machine authority
 

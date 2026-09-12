@@ -10,53 +10,53 @@ Exact externally visible contract owned by this semantic dossier.
 |---|---|
 | Authority | [stove0-review-target-sampler](../index.md) |
 | Interface | [configuration](index.md) |
-| Family | [documents](index.md#f-42862cb1aaff) |
+| Family | [documents](index.md#f-42862cb1aa) |
 | Contract elements | 1 |
 | Extent decisions | 3 |
 
 ## External contract
 
-<a id="s-450a4297658d"></a>
-- <a id="s-caa3b9f29d23"></a>`title`: SamplerConfig
-- <a id="s-7f5dcbeaa636"></a>`type`: object
+<a id="s-450a429765"></a>
+- <a id="s-caa3b9f29d"></a>`title`: SamplerConfig
+- <a id="s-7f5dcbeaa6"></a>`type`: object
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-1c5ea150e1f9"></a>`allow_insecure_http` | no | type="boolean" |  |
-| <a id="s-72f030d71cd1"></a>`base_url` | yes | type="string"; minLength=1; maxLength=2048 |  |
-| <a id="s-8577e2ed5351"></a>`descriptor_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-dab02286338f"></a>`id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._-]{0,118}[a-z0-9])?$" |  |
-| <a id="s-2f182b21f911"></a>`image_digest` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-40399ebb2afa"></a>`token_file` | yes | type="string"; format="path" |  |
+| <a id="s-1c5ea150e1"></a>`allow_insecure_http` | no | type="boolean" |  |
+| <a id="s-72f030d71c"></a>`base_url` | yes | type="string"; minLength=1; maxLength=2048 |  |
+| <a id="s-8577e2ed53"></a>`descriptor_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-dab0228633"></a>`id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._-]{0,118}[a-z0-9])?$" |  |
+| <a id="s-2f182b21f9"></a>`image_digest` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-40399ebb2a"></a>`token_file` | yes | type="string"; format="path" |  |
 
 ### Progression, limits, and lifecycle
 
-#### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
+#### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
 
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
-| [field base_url](#s-72f030d71cd1) | `length · characters · contract_max` | maximum=2048; minimum=1; reason="schema-maximum" |
-| [field descriptor_sha256](#s-8577e2ed5351) | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
-| [field image_digest](#s-2f182b21f911) | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
+| [field base_url](#s-72f030d71c) | `length · characters · contract_max` | maximum=2048; minimum=1; reason="schema-maximum" |
+| [field descriptor_sha256](#s-8577e2ed53) | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
+| [field image_digest](#s-2f182b21f9) | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
 
 ## Governing policies
 
-- <a id="pa-eb5606efedac"></a>[compatibility/configuration/v1](../../../policies/index.md#p-8dc08bb46173)
-- <a id="pa-a35e458a173c"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
+- <a id="pa-eb5606efed"></a>[compatibility/configuration/v1](../../../policies/index.md#p-8dc08bb461)
+- <a id="pa-a35e458a17"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
 
 ## Evidence
 
 ### Qualification
 
-- [make unit](../../../evidence/sources.md#q-ce47068f504c)
-- [make compose-smoke](../../../evidence/sources.md#q-413b0b241ba8)
+- [make unit](../../../evidence/sources.md#q-ce47068f50)
+- [make compose-smoke](../../../evidence/sources.md#q-413b0b241b)
 
 ### Executable sources
 
-- [configuration:stove0-review-target-sampler](../../../evidence/sources.md#src-2ef831d42179) — `reference/stove0/targets/review/support/src/stove0_review_target_support/app.py::SamplerConfig`
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
+- [configuration:stove0-review-target-sampler](../../../evidence/sources.md#src-2ef831d421) — `reference/stove0/targets/review/support/src/stove0_review_target_support/app.py::SamplerConfig`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
 
 ### Machine authority
 

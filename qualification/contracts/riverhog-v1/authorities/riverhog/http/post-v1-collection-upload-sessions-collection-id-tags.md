@@ -16,18 +16,18 @@ Add Collection Upload Session Tags
 
 ## External contract
 
-<a id="s-72abdd6c2976"></a>
-- <a id="s-8b54116eea11"></a>`operationId`: add_collection_upload_session_tags
-- <a id="s-d69ae4f891c2"></a>`summary`: Add Collection Upload Session Tags
-- <a id="s-6d1a39c28cfa"></a>`security`: `[{"HTTPBearer": []}]`
+<a id="s-72abdd6c29"></a>
+- <a id="s-8b54116eea"></a>`operationId`: add_collection_upload_session_tags
+- <a id="s-d69ae4f891"></a>`summary`: Add Collection Upload Session Tags
+- <a id="s-6d1a39c28c"></a>`security`: `[{"HTTPBearer": []}]`
 
 ### Parameters
 
 | Name | In | Required | Schema |
 |---|---|---:|---|
-| <a id="s-a931da540f4d"></a>`collection_id` | path | yes | type="integer"; minimum=1 |
+| <a id="s-a931da540f"></a>`collection_id` | path | yes | type="integer"; minimum=1 |
 
-### <a id="s-a15e6893144e"></a>Request body
+### <a id="s-a15e689314"></a>Request body
 
 `{"content": {"application/json": {"schema": {"$ref": "#/components/schemas/AddCollectionUploadTagsRequest"}}}, "required": true}`
 
@@ -35,11 +35,11 @@ Add Collection Upload Session Tags
 
 | Status | Description |
 |---|---|
-| <a id="s-8f2986ef4179"></a>`200` | Successful Response |
-| <a id="s-e7b1d0023152"></a>`400` | Bad Request |
-| <a id="s-d64597e3abc2"></a>`401` | Unauthorized |
-| <a id="s-e9de0a8c68d7"></a>`403` | Forbidden |
-| <a id="s-477bc9677c81"></a>`500` | Internal Server Error |
+| <a id="s-8f2986ef41"></a>`200` | Successful Response |
+| <a id="s-e7b1d00231"></a>`400` | Bad Request |
+| <a id="s-d64597e3ab"></a>`401` | Unauthorized |
+| <a id="s-e9de0a8c68"></a>`403` | Forbidden |
+| <a id="s-477bc9677c"></a>`500` | Internal Server Error |
 
 ## Maintained corroboration
 
@@ -55,19 +55,19 @@ Add Collection Upload Session Tags
 
 ## Governing policies
 
-- <a id="pa-b569d48927c0"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0ba)
+- <a id="pa-b569d48927"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0)
 
 ## Evidence
 
 ### Qualification
 
-- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459fb8)
-- [make compose-smoke](../../../evidence/sources.md#q-413b0b241ba8)
+- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459f)
+- [make compose-smoke](../../../evidence/sources.md#q-413b0b241b)
 
 ### Executable sources
 
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
-- [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc960) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc9) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
 
 ### Machine authority
 

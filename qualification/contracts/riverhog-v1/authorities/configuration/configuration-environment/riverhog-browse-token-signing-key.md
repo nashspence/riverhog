@@ -16,27 +16,27 @@ Exact externally visible contract owned by this semantic dossier.
 
 ## External contract
 
-<a id="s-0ef9db253439"></a>
+<a id="s-0ef9db2534"></a>
 | Field | Shape |
 |---|---|
-| <a id="s-3d50fc447d90"></a>`consumers` | ["riverhog-server"] |
-| <a id="s-8eed53d4d34c"></a>`name` | "RIVERHOG_BROWSE_TOKEN_SIGNING_KEY" |
+| <a id="s-3d50fc447d"></a>`consumers` | ["riverhog-server"] |
+| <a id="s-8eed53d4d3"></a>`name` | "RIVERHOG_BROWSE_TOKEN_SIGNING_KEY" |
 
 ## Governing policies
 
-- <a id="pa-1b93bd5f0dc5"></a>[compatibility/configuration/v1](../../../policies/index.md#p-8dc08bb46173)
+- <a id="pa-1b93bd5f0d"></a>[compatibility/configuration/v1](../../../policies/index.md#p-8dc08bb461)
 
 ## Evidence
 
 ### Qualification
 
-- [make unit](../../../evidence/sources.md#q-ce47068f504c)
-- [make compose-smoke](../../../evidence/sources.md#q-413b0b241ba8)
+- [make unit](../../../evidence/sources.md#q-ce47068f50)
+- [make compose-smoke](../../../evidence/sources.md#q-413b0b241b)
 
 ### Executable sources
 
-- [configuration-environment:RIVERHOG_BROWSE_TOKEN_SIGNING_KEY](../../../evidence/sources.md#src-4e8fa6daa7ce) — `configuration-environment:RIVERHOG_BROWSE_TOKEN_SIGNING_KEY`
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
+- [configuration-environment:RIVERHOG_BROWSE_TOKEN_SIGNING_KEY](../../../evidence/sources.md#src-4e8fa6daa7) — `configuration-environment:RIVERHOG_BROWSE_TOKEN_SIGNING_KEY`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
 
 ### Machine authority
 

@@ -16,38 +16,38 @@ Exact externally visible contract owned by this semantic dossier.
 
 ## External contract
 
-<a id="s-b7a4f6f14840"></a>
+<a id="s-b7a4f6f148"></a>
 | Field | Shape |
 |---|---|
-| <a id="s-75907347883c"></a>`consumers` | ["riverhog-server"] |
-| <a id="s-727a81b3ac6e"></a>`name` | "RIVERHOG_AGE_SESSION_DERIVATION_CONCURRENCY" |
+| <a id="s-7590734788"></a>`consumers` | ["riverhog-server"] |
+| <a id="s-727a81b3ac"></a>`name` | "RIVERHOG_AGE_SESSION_DERIVATION_CONCURRENCY" |
 
 ### Progression, limits, and lifecycle
 
-#### [extent-rule/configured-capacity/v1](../../../policies/index.md#p-3ebc61fc9972)
+#### [extent-rule/configured-capacity/v1](../../../policies/index.md#p-3ebc61fc99)
 
 Shared facts for every subject below: configuration="RIVERHOG_AGE_SESSION_DERIVATION_CONCURRENCY"; maximum=null; reason="operator-configured-capacity"
 
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
-| [RIVERHOG_AGE_SESSION_DERIVATION_CONCURRENCY](#s-b7a4f6f14840) | `value · configured-value · operational_policy` | shared above |
+| [RIVERHOG_AGE_SESSION_DERIVATION_CONCURRENCY](#s-b7a4f6f148) | `value · configured-value · operational_policy` | shared above |
 
 ## Governing policies
 
-- <a id="pa-aa9661151586"></a>[compatibility/configuration/v1](../../../policies/index.md#p-8dc08bb46173)
-- <a id="pa-1a75457c059f"></a>[extent-rule/configured-capacity/v1](../../../policies/index.md#p-3ebc61fc9972)
+- <a id="pa-aa96611515"></a>[compatibility/configuration/v1](../../../policies/index.md#p-8dc08bb461)
+- <a id="pa-1a75457c05"></a>[extent-rule/configured-capacity/v1](../../../policies/index.md#p-3ebc61fc99)
 
 ## Evidence
 
 ### Qualification
 
-- [make unit](../../../evidence/sources.md#q-ce47068f504c)
-- [make compose-smoke](../../../evidence/sources.md#q-413b0b241ba8)
+- [make unit](../../../evidence/sources.md#q-ce47068f50)
+- [make compose-smoke](../../../evidence/sources.md#q-413b0b241b)
 
 ### Executable sources
 
-- [configuration-environment:RIVERHOG_AGE_SESSION_DERIVATION_CONCURRENCY](../../../evidence/sources.md#src-099e7315076a) — `configuration-environment:RIVERHOG_AGE_SESSION_DERIVATION_CONCURRENCY`
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
+- [configuration-environment:RIVERHOG_AGE_SESSION_DERIVATION_CONCURRENCY](../../../evidence/sources.md#src-099e731507) — `configuration-environment:RIVERHOG_AGE_SESSION_DERIVATION_CONCURRENCY`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
 
 ### Machine authority
 

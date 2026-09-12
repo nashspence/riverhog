@@ -10,91 +10,91 @@ Exact externally visible contract owned by this semantic dossier.
 |---|---|
 | Authority | [riverhog-archive-contracts](../index.md) |
 | Interface | [protocol](index.md) |
-| Family | [schemas](index.md#f-66d562e63c42) |
+| Family | [schemas](index.md#f-66d562e63c) |
 | Contract elements | 1 |
 | Extent decisions | 14 |
 
 ## External contract
 
-<a id="s-ce2cf87e5742"></a>
-- <a id="s-bc2f6d661f59"></a>`$id`: https://nashspence.github.io/riverhog/v1/schemas/collection-archive-volume-v1.schema.json
-- <a id="s-2f76d289d3b6"></a>`title`: Riverhog v1 bounded immutable archive-volume metadata
-- <a id="s-60d42bdc3cfb"></a>`type`: object
+<a id="s-ce2cf87e57"></a>
+- <a id="s-bc2f6d661f"></a>`$id`: https://nashspence.github.io/riverhog/v1/schemas/collection-archive-volume-v1.schema.json
+- <a id="s-2f76d289d3"></a>`title`: Riverhog v1 bounded immutable archive-volume metadata
+- <a id="s-60d42bdc3c"></a>`type`: object
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-de6b8071efc3"></a>`archive_generation` | yes | #/$defs/sha256 |  |
-| <a id="s-2b2ac2242507"></a>`archive_tree_sha256` | yes | #/$defs/sha256 |  |
-| <a id="s-d994a7bad514"></a>`schema` | yes | const="collection-archive-volume/v1" |  |
-| <a id="s-80ca73252867"></a>`volume` | yes | oneOf=#/$defs/pack \| #/$defs/segment |  |
+| <a id="s-de6b8071ef"></a>`archive_generation` | yes | #/$defs/sha256 |  |
+| <a id="s-2b2ac22425"></a>`archive_tree_sha256` | yes | #/$defs/sha256 |  |
+| <a id="s-d994a7bad5"></a>`schema` | yes | const="collection-archive-volume/v1" |  |
+| <a id="s-80ca732528"></a>`volume` | yes | oneOf=#/$defs/pack \| #/$defs/segment |  |
 
 ### Definitions
 
 | Definition | Shape |
 |---|---|
-| <a id="s-a24d2b35e2dd"></a>`age_state` | type="object"; fields=`format`, `header_b64`, `payload_nonce_b64`, `plaintext_size`; additional keys=`additionalProperties`, `required` |
-| <a id="s-c6222c661b2c"></a>`pack` | type="object"; fields=`age_state`, `files`, `id`, `index_sha256`, `kind`, `parts`, `path`, `plaintext_bytes`, `plan_sha256`, `sequence`, `source_bytes`; additional keys=`additionalProperties`, `required` |
-| <a id="s-014f1ca7cda4"></a>`part` | type="object"; fields=`number`, `plaintext_bytes`, `plaintext_sha256`, `plaintext_start`, `stored_bytes`, `stored_sha256`; additional keys=`additionalProperties`, `required` |
-| <a id="s-ebbbf2c54616"></a>`segment` | type="object"; fields=`age_state`, `file`, `id`, `kind`, `parts`, `path`, `plaintext_bytes`, `sequence`; additional keys=`additionalProperties`, `required` |
-| <a id="s-e6e7129d1bb5"></a>`segment_file` | type="object"; fields=`bytes`, `file_bytes`, `offset`, `path`, `sha256`; additional keys=`additionalProperties`, `required` |
-| <a id="s-b18c6e158b8b"></a>`sequence` | type="string"; pattern="^[0-9a-f]{64}$" |
-| <a id="s-ddfc70e9874d"></a>`sha256` | type="string"; pattern="^[0-9a-f]{64}$" |
+| <a id="s-a24d2b35e2"></a>`age_state` | type="object"; fields=`format`, `header_b64`, `payload_nonce_b64`, `plaintext_size`; additional keys=`additionalProperties`, `required` |
+| <a id="s-c6222c661b"></a>`pack` | type="object"; fields=`age_state`, `files`, `id`, `index_sha256`, `kind`, `parts`, `path`, `plaintext_bytes`, `plan_sha256`, `sequence`, `source_bytes`; additional keys=`additionalProperties`, `required` |
+| <a id="s-014f1ca7cd"></a>`part` | type="object"; fields=`number`, `plaintext_bytes`, `plaintext_sha256`, `plaintext_start`, `stored_bytes`, `stored_sha256`; additional keys=`additionalProperties`, `required` |
+| <a id="s-ebbbf2c546"></a>`segment` | type="object"; fields=`age_state`, `file`, `id`, `kind`, `parts`, `path`, `plaintext_bytes`, `sequence`; additional keys=`additionalProperties`, `required` |
+| <a id="s-e6e7129d1b"></a>`segment_file` | type="object"; fields=`bytes`, `file_bytes`, `offset`, `path`, `sha256`; additional keys=`additionalProperties`, `required` |
+| <a id="s-b18c6e158b"></a>`sequence` | type="string"; pattern="^[0-9a-f]{64}$" |
+| <a id="s-ddfc70e987"></a>`sha256` | type="string"; pattern="^[0-9a-f]{64}$" |
 
 ### Progression, limits, and lifecycle
 
-#### [extent-rule/bounded-segment/v1](../../../policies/index.md#p-2b3f3f1594af)
+#### [extent-rule/bounded-segment/v1](../../../policies/index.md#p-2b3f3f1594)
 
 Shared facts for every subject below: maximum=1024; minimum=1; progression={"progression":"ordered-archive-volume-sequence"}; reason="bounded-archive-volume-parts"
 
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
-| <a id="s-441b6efdf737"></a>definition pack · field parts | `cardinality · items · segmented_no_total_max` | shared above |
-| <a id="s-a600910b2040"></a>definition segment · field parts | `cardinality · items · segmented_no_total_max` | shared above |
+| <a id="s-441b6efdf7"></a>[definition pack · field parts](#s-c6222c661b) | `cardinality · items · segmented_no_total_max` | shared above |
+| <a id="s-a600910b20"></a>[definition segment · field parts](#s-ebbbf2c546) | `cardinality · items · segmented_no_total_max` | shared above |
 
-#### [extent-rule/no-semantic-maximum/v1](../../../policies/index.md#p-574724b48af0)
+#### [extent-rule/no-semantic-maximum/v1](../../../policies/index.md#p-574724b48a)
 
 Shared facts for every subject below: capacity_authority={"declared_maximum":null,"hidden_maximum":"forbidden","owner":"https://nashspence.github.io/riverhog/v1/schemas/collection-archive-volume-v1.schema.json"}; maximum=null; reason="no-declared-semantic-maximum"
 
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
-| <a id="s-b2649969b16e"></a>definition age_state · field plaintext_size | `value · schema-value · operational_policy` | shared above |
-| <a id="s-8ea23828264f"></a>definition pack · field plaintext_bytes | `value · schema-value · operational_policy` | shared above |
-| <a id="s-b77a5632ca22"></a>definition pack · field source_bytes | `value · schema-value · operational_policy` | shared above |
-| <a id="s-42f53b0221a0"></a>definition part · field plaintext_bytes | `value · schema-value · operational_policy` | shared above |
-| <a id="s-b2f19d26568a"></a>definition part · field stored_bytes | `value · schema-value · operational_policy` | shared above |
-| <a id="s-bc57786779e4"></a>definition segment · field plaintext_bytes | `value · schema-value · operational_policy` | shared above |
-| <a id="s-bffb1edd6d65"></a>definition segment_file · field bytes | `value · schema-value · operational_policy` | shared above |
-| <a id="s-dd97b15ddc2d"></a>definition segment_file · field file_bytes | `value · schema-value · operational_policy` | shared above |
-| <a id="s-bccb340a336e"></a>definition segment_file · field offset | `value · schema-value · operational_policy` | shared above |
+| <a id="s-b2649969b1"></a>[definition age_state · field plaintext_size](#s-a24d2b35e2) | `value · schema-value · operational_policy` | shared above |
+| <a id="s-8ea2382826"></a>[definition pack · field plaintext_bytes](#s-c6222c661b) | `value · schema-value · operational_policy` | shared above |
+| <a id="s-b77a5632ca"></a>[definition pack · field source_bytes](#s-c6222c661b) | `value · schema-value · operational_policy` | shared above |
+| <a id="s-42f53b0221"></a>[definition part · field plaintext_bytes](#s-014f1ca7cd) | `value · schema-value · operational_policy` | shared above |
+| <a id="s-b2f19d2656"></a>[definition part · field stored_bytes](#s-014f1ca7cd) | `value · schema-value · operational_policy` | shared above |
+| <a id="s-bc57786779"></a>[definition segment · field plaintext_bytes](#s-ebbbf2c546) | `value · schema-value · operational_policy` | shared above |
+| <a id="s-bffb1edd6d"></a>[definition segment_file · field bytes](#s-e6e7129d1b) | `value · schema-value · operational_policy` | shared above |
+| <a id="s-dd97b15ddc"></a>[definition segment_file · field file_bytes](#s-e6e7129d1b) | `value · schema-value · operational_policy` | shared above |
+| <a id="s-bccb340a33"></a>[definition segment_file · field offset](#s-e6e7129d1b) | `value · schema-value · operational_policy` | shared above |
 
-#### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
+#### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
 
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
-| <a id="s-a00b69b25682"></a>definition pack · field files | `value · schema-value · contract_max` | maximum=50000; minimum=1; reason="schema-maximum" |
-| [definition sequence](#s-b18c6e158b8b) | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
-| [definition sha256](#s-ddfc70e9874d) | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
+| <a id="s-a00b69b256"></a>[definition pack · field files](#s-c6222c661b) | `value · schema-value · contract_max` | maximum=50000; minimum=1; reason="schema-maximum" |
+| [definition sequence](#s-b18c6e158b) | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
+| [definition sha256](#s-ddfc70e987) | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
 
 ## Governing policies
 
-- <a id="pa-59747a26401f"></a>[compatibility/components/v1](../../../policies/index.md#p-95e9a1225947)
-- <a id="pa-42a267ada0c4"></a>[extent-rule/bounded-segment/v1](../../../policies/index.md#p-2b3f3f1594af)
-- <a id="pa-e6986a89100c"></a>[extent-rule/no-semantic-maximum/v1](../../../policies/index.md#p-574724b48af0)
-- <a id="pa-4f8f223fdbc4"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
+- <a id="pa-59747a2640"></a>[compatibility/components/v1](../../../policies/index.md#p-95e9a12259)
+- <a id="pa-42a267ada0"></a>[extent-rule/bounded-segment/v1](../../../policies/index.md#p-2b3f3f1594)
+- <a id="pa-e6986a8910"></a>[extent-rule/no-semantic-maximum/v1](../../../policies/index.md#p-574724b48a)
+- <a id="pa-4f8f223fdb"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
 
 ## Evidence
 
 ### Qualification
 
-- [make dist-smoke](../../../evidence/sources.md#q-0ba2578a3eb7)
-- [make build](../../../evidence/sources.md#q-d1121e35fa7a)
+- [make dist-smoke](../../../evidence/sources.md#q-0ba2578a3e)
+- [make build](../../../evidence/sources.md#q-d1121e35fa)
 
 ### Executable sources
 
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
-- [protocol:https://nashspence.github.io/riverhog/v1/schemas/collection-archive-volume-v1.schema.json](../../../evidence/sources.md#src-c83e346f0656) — `packages/riverhog-archive-contracts/schemas/collection-archive-volume-v1.schema.json`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [protocol:https://nashspence.github.io/riverhog/v1/schemas/collection-archive-volume-v1.schema.json](../../../evidence/sources.md#src-c83e346f06) — `packages/riverhog-archive-contracts/schemas/collection-archive-volume-v1.schema.json`
 
 ### Machine authority
 

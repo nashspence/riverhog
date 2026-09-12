@@ -16,44 +16,44 @@ List Events
 
 ## External contract
 
-<a id="s-c121822cc79d"></a>
-- <a id="s-8ba22d76027d"></a>`operationId`: list_events
-- <a id="s-b0960e7d1859"></a>`summary`: List Events
+<a id="s-c121822cc7"></a>
+- <a id="s-8ba22d7602"></a>`operationId`: list_events
+- <a id="s-b0960e7d18"></a>`summary`: List Events
 
 ### Parameters
 
 | Name | In | Required | Schema |
 |---|---|---:|---|
-| <a id="s-31c522de73c4"></a>`after` | query | no | anyOf=type="string" \| type="null" |
-| <a id="s-f72718955180"></a>`limit` | query | no | type="integer"; minimum=1; maximum=100 |
+| <a id="s-31c522de73"></a>`after` | query | no | anyOf=type="string" \| type="null" |
+| <a id="s-f727189551"></a>`limit` | query | no | type="integer"; minimum=1; maximum=100 |
 
 ### Responses
 
 | Status | Description |
 |---|---|
-| <a id="s-793e76f5b25f"></a>`200` | Successful Response |
-| <a id="s-a0acc3189374"></a>`400` | Bad Request |
-| <a id="s-42e7dd3e998d"></a>`401` | Unauthorized |
-| <a id="s-91acc22835a3"></a>`403` | Forbidden |
-| <a id="s-cf40e533f07a"></a>`500` | Internal Server Error |
+| <a id="s-793e76f5b2"></a>`200` | Successful Response |
+| <a id="s-a0acc31893"></a>`400` | Bad Request |
+| <a id="s-42e7dd3e99"></a>`401` | Unauthorized |
+| <a id="s-91acc22835"></a>`403` | Forbidden |
+| <a id="s-cf40e533f0"></a>`500` | Internal Server Error |
 
 ### Progression, limits, and lifecycle
 
-#### [extent-rule/route-progression/v1](../../../policies/index.md#p-6b76b527cb21)
+#### [extent-rule/route-progression/v1](../../../policies/index.md#p-6b76b527cb)
 
 Shared facts for every subject below: progression={"cursor_parameter":"after","kind":"cursor-feed","limit_parameter":"limit"}; reason="bounded-route-progression"
 
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
-| [GET /v1/events](#s-c121822cc79d) | `logical-result-cardinality · items · segmented_no_total_max` | shared above |
+| [GET /v1/events](#s-c121822cc7) | `logical-result-cardinality · items · segmented_no_total_max` | shared above |
 
-#### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
+#### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
 
 Shared facts for every subject below: maximum=100; minimum=1; reason="schema-maximum"
 
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
-| <a id="s-76bcd66c7f43"></a>parameter limit | `value · schema-value · contract_max` | shared above |
+| <a id="s-76bcd66c7f"></a>[parameter limit](#s-f727189551) | `value · schema-value · contract_max` | shared above |
 
 ## Maintained corroboration
 
@@ -68,21 +68,21 @@ Shared facts for every subject below: maximum=100; minimum=1; reason="schema-max
 
 ## Governing policies
 
-- <a id="pa-bab01652ae7a"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0ba)
-- <a id="pa-686c896d6d08"></a>[extent-rule/route-progression/v1](../../../policies/index.md#p-6b76b527cb21)
-- <a id="pa-4ed248359f7c"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
+- <a id="pa-bab01652ae"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0)
+- <a id="pa-686c896d6d"></a>[extent-rule/route-progression/v1](../../../policies/index.md#p-6b76b527cb)
+- <a id="pa-4ed248359f"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
 
 ## Evidence
 
 ### Qualification
 
-- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459fb8)
-- [make compose-smoke](../../../evidence/sources.md#q-413b0b241ba8)
+- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459f)
+- [make compose-smoke](../../../evidence/sources.md#q-413b0b241b)
 
 ### Executable sources
 
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
-- [openapi:stove0](../../../evidence/sources.md#src-52e6e3212451) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [openapi:stove0](../../../evidence/sources.md#src-52e6e32124) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
 
 ### Machine authority
 

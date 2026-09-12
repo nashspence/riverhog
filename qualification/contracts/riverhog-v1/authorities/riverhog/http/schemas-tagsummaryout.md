@@ -16,16 +16,16 @@ Exact externally visible contract owned by this semantic dossier.
 
 ## External contract
 
-<a id="s-7fbf7db9d076"></a>
-- <a id="s-5b709f4f1628"></a>`title`: TagSummaryOut
-- <a id="s-e5e2b841dbd4"></a>`type`: object
+<a id="s-7fbf7db9d0"></a>
+- <a id="s-5b709f4f16"></a>`title`: TagSummaryOut
+- <a id="s-e5e2b841db"></a>`type`: object
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-f58a1f322e26"></a>`collection_count` | yes | type="integer"; minimum=1 |  |
-| <a id="s-06c71a59c89e"></a>`tag` | yes | #/components/schemas/CollectionTag |  |
+| <a id="s-f58a1f322e"></a>`collection_count` | yes | type="integer"; minimum=1 |  |
+| <a id="s-06c71a59c8"></a>`tag` | yes | #/components/schemas/CollectionTag |  |
 
 ## Maintained corroboration
 
@@ -35,19 +35,19 @@ Exact externally visible contract owned by this semantic dossier.
 
 ## Governing policies
 
-- <a id="pa-0166d2d0ca7f"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0ba)
+- <a id="pa-0166d2d0ca"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0)
 
 ## Evidence
 
 ### Qualification
 
-- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459fb8)
-- [make compose-smoke](../../../evidence/sources.md#q-413b0b241ba8)
+- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459f)
+- [make compose-smoke](../../../evidence/sources.md#q-413b0b241b)
 
 ### Executable sources
 
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
-- [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc960) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc9) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
 
 ### Machine authority
 

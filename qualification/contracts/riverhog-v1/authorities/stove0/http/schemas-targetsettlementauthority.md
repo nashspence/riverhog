@@ -16,32 +16,32 @@ Exact externally visible contract owned by this semantic dossier.
 
 ## External contract
 
-<a id="s-428567adad46"></a>
-- <a id="s-6bb82eba89a8"></a>`title`: TargetSettlementAuthority
-- <a id="s-49261af54d67"></a>`type`: object
+<a id="s-428567adad"></a>
+- <a id="s-6bb82eba89"></a>`title`: TargetSettlementAuthority
+- <a id="s-49261af54d"></a>`type`: object
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-ea9a996c0a77"></a>`format` | no | type="string"; const="stove0-target-settlement/v1" |  |
-| <a id="s-cde8f4457302"></a>`job_id` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-55ad886411d8"></a>`output_bindings` | yes | #/components/schemas/TargetOutputBindingSetIdentity |  |
-| <a id="s-4b257ebb6b1b"></a>`output_collection` | yes | #/components/schemas/OutputCollectionRef |  |
-| <a id="s-525e441ceb72"></a>`production_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-3bfcddaed76b"></a>`settlement_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-ea9a996c0a"></a>`format` | no | type="string"; const="stove0-target-settlement/v1" |  |
+| <a id="s-cde8f44573"></a>`job_id` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-55ad886411"></a>`output_bindings` | yes | #/components/schemas/TargetOutputBindingSetIdentity |  |
+| <a id="s-4b257ebb6b"></a>`output_collection` | yes | #/components/schemas/OutputCollectionRef |  |
+| <a id="s-525e441ceb"></a>`production_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-3bfcddaed7"></a>`settlement_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 
 ### Progression, limits, and lifecycle
 
-#### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
+#### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
 
 Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"}
 
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
-| [field job_id](#s-cde8f4457302) | `length · characters · fixed` | shared above |
-| [field production_sha256](#s-525e441ceb72) | `length · characters · fixed` | shared above |
-| [field settlement_sha256](#s-3bfcddaed76b) | `length · characters · fixed` | shared above |
+| [field job_id](#s-cde8f44573) | `length · characters · fixed` | shared above |
+| [field production_sha256](#s-525e441ceb) | `length · characters · fixed` | shared above |
+| [field settlement_sha256](#s-3bfcddaed7) | `length · characters · fixed` | shared above |
 
 ## Maintained corroboration
 
@@ -52,20 +52,20 @@ Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-publ
 
 ## Governing policies
 
-- <a id="pa-f868984d3354"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0ba)
-- <a id="pa-e031b012bf18"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
+- <a id="pa-f868984d33"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0)
+- <a id="pa-e031b012bf"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
 
 ## Evidence
 
 ### Qualification
 
-- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459fb8)
-- [make compose-smoke](../../../evidence/sources.md#q-413b0b241ba8)
+- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459f)
+- [make compose-smoke](../../../evidence/sources.md#q-413b0b241b)
 
 ### Executable sources
 
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
-- [openapi:stove0](../../../evidence/sources.md#src-52e6e3212451) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [openapi:stove0](../../../evidence/sources.md#src-52e6e32124) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
 
 ### Machine authority
 

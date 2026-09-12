@@ -16,22 +16,22 @@ Exact externally visible contract owned by this semantic dossier.
 
 ## External contract
 
-<a id="s-2b0f90cba915"></a>
-- <a id="s-8e41c43a50c4"></a>`title`: ArchiveCopyRequestedEvent
-- <a id="s-0e3b466f37ba"></a>`type`: object
+<a id="s-2b0f90cba9"></a>
+- <a id="s-8e41c43a50"></a>`title`: ArchiveCopyRequestedEvent
+- <a id="s-0e3b466f37"></a>`type`: object
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-4674a079ac88"></a>`data` | yes | #/components/schemas/ArchiveCopyRequestedData |  |
-| <a id="s-e10c913fa44e"></a>`datacontenttype` | no | type="string"; const="application/json" |  |
-| <a id="s-7e159edc1c0f"></a>`id` | yes | type="string"; minLength=1 |  |
-| <a id="s-c850d026451b"></a>`source` | yes | type="string"; minLength=1 |  |
-| <a id="s-fe6c9930dcf6"></a>`specversion` | no | type="string"; const="1.0" |  |
-| <a id="s-b4821a8c2367"></a>`subject` | no | anyOf=type="string"; minLength=1 \| type="null" |  |
-| <a id="s-66af1c91e793"></a>`time` | yes | type="string" |  |
-| <a id="s-47849cd8a7f0"></a>`type` | yes | type="string"; const="io.riverhog.riverhog.archive_copy.requested" |  |
+| <a id="s-4674a079ac"></a>`data` | yes | #/components/schemas/ArchiveCopyRequestedData |  |
+| <a id="s-e10c913fa4"></a>`datacontenttype` | no | type="string"; const="application/json" |  |
+| <a id="s-7e159edc1c"></a>`id` | yes | type="string"; minLength=1 |  |
+| <a id="s-c850d02645"></a>`source` | yes | type="string"; minLength=1 |  |
+| <a id="s-fe6c9930dc"></a>`specversion` | no | type="string"; const="1.0" |  |
+| <a id="s-b4821a8c23"></a>`subject` | no | anyOf=type="string"; minLength=1 \| type="null" |  |
+| <a id="s-66af1c91e7"></a>`time` | yes | type="string" |  |
+| <a id="s-47849cd8a7"></a>`type` | yes | type="string"; const="io.riverhog.riverhog.archive_copy.requested" |  |
 
 ## Maintained corroboration
 
@@ -41,19 +41,19 @@ Exact externally visible contract owned by this semantic dossier.
 
 ## Governing policies
 
-- <a id="pa-6c0ffcc01d6f"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0ba)
+- <a id="pa-6c0ffcc01d"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0)
 
 ## Evidence
 
 ### Qualification
 
-- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459fb8)
-- [make compose-smoke](../../../evidence/sources.md#q-413b0b241ba8)
+- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459f)
+- [make compose-smoke](../../../evidence/sources.md#q-413b0b241b)
 
 ### Executable sources
 
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
-- [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc960) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc9) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
 
 ### Machine authority
 

@@ -16,60 +16,60 @@ Entirely derived view over a plan and ordinary child/join results.
 
 ## External contract
 
-<a id="s-dfc1e70c60d6"></a>
-- <a id="s-759586f9473f"></a>`title`: BranchSetEvaluation
-- <a id="s-8108b9338260"></a>`description`: Entirely derived view over a plan and ordinary child/join results.
-- <a id="s-b749aa723f55"></a>`type`: object
+<a id="s-dfc1e70c60"></a>
+- <a id="s-759586f947"></a>`title`: BranchSetEvaluation
+- <a id="s-8108b93382"></a>`description`: Entirely derived view over a plan and ordinary child/join results.
+- <a id="s-b749aa723f"></a>`type`: object
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-94c259f034ea"></a>`branch_set_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-0b8012e8f113"></a>`branch_set_succeeded` | yes | type="boolean" |  |
-| <a id="s-28bd0e47e6fd"></a>`canceled_branch_ids` | yes | type="array"; items=(type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$") |  |
-| <a id="s-63dff433e7f7"></a>`coordination_complete_for_retirement` | yes | type="boolean" |  |
-| <a id="s-f616c02dd4c0"></a>`coordination_settlement` | yes | anyOf=#/components/schemas/CoordinationSettlement \| type="null" |  |
-| <a id="s-7a8d5bbcfea6"></a>`failed_branch_ids` | yes | type="array"; items=(type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$") |  |
-| <a id="s-5784e98faa2c"></a>`inapplicable_branch_ids` | yes | type="array"; items=(type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$") |  |
-| <a id="s-5e39f032913b"></a>`interrupted_branch_ids` | yes | type="array"; items=(type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$") |  |
-| <a id="s-88cf89f94445"></a>`join_ready` | yes | type="boolean" |  |
-| <a id="s-451ecf2f608e"></a>`join_settlement` | yes | anyOf=#/components/schemas/JoinSettlement \| type="null" |  |
-| <a id="s-61ce3991525b"></a>`join_state` | yes | type="string"; enum=["not-declared","waiting","ready","succeeded","failed","inapplicable","interrupted","canceled"] |  |
-| <a id="s-580c35fecd21"></a>`resolved_join_plan` | yes | anyOf=#/components/schemas/JoinPlan \| type="null" |  |
-| <a id="s-66b65c7b2127"></a>`retirement_requested` | yes | type="boolean" |  |
-| <a id="s-532021a47d87"></a>`succeeded_branches` | yes | type="array"; items=(#/components/schemas/BranchSettlement) |  |
-| <a id="s-454b7a1beedb"></a>`succeeded_coordinations` | yes | type="array"; items=(#/components/schemas/CoordinationSettlement) |  |
-| <a id="s-e849acf14624"></a>`succeeded_effects` | yes | type="array"; items=(#/components/schemas/BranchEffectSettlement) |  |
-| <a id="s-4cf1935a3b85"></a>`unsettled_branch_ids` | yes | type="array"; items=(type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$") |  |
-| <a id="s-c9d8f273f547"></a>`unsettled_work_ids` | yes | type="array"; items=(type="string"; pattern="^[0-9a-f]{64}$") |  |
+| <a id="s-94c259f034"></a>`branch_set_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-0b8012e8f1"></a>`branch_set_succeeded` | yes | type="boolean" |  |
+| <a id="s-28bd0e47e6"></a>`canceled_branch_ids` | yes | type="array"; items=(type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$") |  |
+| <a id="s-63dff433e7"></a>`coordination_complete_for_retirement` | yes | type="boolean" |  |
+| <a id="s-f616c02dd4"></a>`coordination_settlement` | yes | anyOf=#/components/schemas/CoordinationSettlement \| type="null" |  |
+| <a id="s-7a8d5bbcfe"></a>`failed_branch_ids` | yes | type="array"; items=(type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$") |  |
+| <a id="s-5784e98faa"></a>`inapplicable_branch_ids` | yes | type="array"; items=(type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$") |  |
+| <a id="s-5e39f03291"></a>`interrupted_branch_ids` | yes | type="array"; items=(type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$") |  |
+| <a id="s-88cf89f944"></a>`join_ready` | yes | type="boolean" |  |
+| <a id="s-451ecf2f60"></a>`join_settlement` | yes | anyOf=#/components/schemas/JoinSettlement \| type="null" |  |
+| <a id="s-61ce399152"></a>`join_state` | yes | type="string"; enum=["not-declared","waiting","ready","succeeded","failed","inapplicable","interrupted","canceled"] |  |
+| <a id="s-580c35fecd"></a>`resolved_join_plan` | yes | anyOf=#/components/schemas/JoinPlan \| type="null" |  |
+| <a id="s-66b65c7b21"></a>`retirement_requested` | yes | type="boolean" |  |
+| <a id="s-532021a47d"></a>`succeeded_branches` | yes | type="array"; items=(#/components/schemas/BranchSettlement) |  |
+| <a id="s-454b7a1bee"></a>`succeeded_coordinations` | yes | type="array"; items=(#/components/schemas/CoordinationSettlement) |  |
+| <a id="s-e849acf146"></a>`succeeded_effects` | yes | type="array"; items=(#/components/schemas/BranchEffectSettlement) |  |
+| <a id="s-4cf1935a3b"></a>`unsettled_branch_ids` | yes | type="array"; items=(type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$") |  |
+| <a id="s-c9d8f273f5"></a>`unsettled_work_ids` | yes | type="array"; items=(type="string"; pattern="^[0-9a-f]{64}$") |  |
 
 ### Progression, limits, and lifecycle
 
-#### [extent-rule/no-semantic-maximum/v1](../../../policies/index.md#p-574724b48af0)
+#### [extent-rule/no-semantic-maximum/v1](../../../policies/index.md#p-574724b48a)
 
 Shared facts for every subject below: capacity_authority={"declared_maximum":null,"hidden_maximum":"forbidden","owner":"stove0"}; maximum=null; reason="no-declared-semantic-maximum"
 
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
-| [field canceled_branch_ids](#s-28bd0e47e6fd) | `cardinality · items · operational_policy` | shared above |
-| [field failed_branch_ids](#s-7a8d5bbcfea6) | `cardinality · items · operational_policy` | shared above |
-| [field inapplicable_branch_ids](#s-5784e98faa2c) | `cardinality · items · operational_policy` | shared above |
-| [field interrupted_branch_ids](#s-5e39f032913b) | `cardinality · items · operational_policy` | shared above |
-| [field succeeded_branches](#s-532021a47d87) | `cardinality · items · operational_policy` | shared above |
-| [field succeeded_coordinations](#s-454b7a1beedb) | `cardinality · items · operational_policy` | shared above |
-| [field succeeded_effects](#s-e849acf14624) | `cardinality · items · operational_policy` | shared above |
-| [field unsettled_branch_ids](#s-4cf1935a3b85) | `cardinality · items · operational_policy` | shared above |
-| [field unsettled_work_ids](#s-c9d8f273f547) | `cardinality · items · operational_policy` | shared above |
+| [field canceled_branch_ids](#s-28bd0e47e6) | `cardinality · items · operational_policy` | shared above |
+| [field failed_branch_ids](#s-7a8d5bbcfe) | `cardinality · items · operational_policy` | shared above |
+| [field inapplicable_branch_ids](#s-5784e98faa) | `cardinality · items · operational_policy` | shared above |
+| [field interrupted_branch_ids](#s-5e39f03291) | `cardinality · items · operational_policy` | shared above |
+| [field succeeded_branches](#s-532021a47d) | `cardinality · items · operational_policy` | shared above |
+| [field succeeded_coordinations](#s-454b7a1bee) | `cardinality · items · operational_policy` | shared above |
+| [field succeeded_effects](#s-e849acf146) | `cardinality · items · operational_policy` | shared above |
+| [field unsettled_branch_ids](#s-4cf1935a3b) | `cardinality · items · operational_policy` | shared above |
+| [field unsettled_work_ids](#s-c9d8f273f5) | `cardinality · items · operational_policy` | shared above |
 
-#### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
+#### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
 
 Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"}
 
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
-| [field branch_set_sha256](#s-94c259f034ea) | `length · characters · fixed` | shared above |
-| <a id="s-d47cb1590ab6"></a>field unsettled_work_ids · items | `length · characters · fixed` | shared above |
+| [field branch_set_sha256](#s-94c259f034) | `length · characters · fixed` | shared above |
+| <a id="s-d47cb1590a"></a>[field unsettled_work_ids · items](#s-c9d8f273f5) | `length · characters · fixed` | shared above |
 
 ## Maintained corroboration
 
@@ -83,21 +83,21 @@ Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-publ
 
 ## Governing policies
 
-- <a id="pa-6d8f805015d1"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0ba)
-- <a id="pa-00e9a9f9f852"></a>[extent-rule/no-semantic-maximum/v1](../../../policies/index.md#p-574724b48af0)
-- <a id="pa-25f761a1d950"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
+- <a id="pa-6d8f805015"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0)
+- <a id="pa-00e9a9f9f8"></a>[extent-rule/no-semantic-maximum/v1](../../../policies/index.md#p-574724b48a)
+- <a id="pa-25f761a1d9"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
 
 ## Evidence
 
 ### Qualification
 
-- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459fb8)
-- [make compose-smoke](../../../evidence/sources.md#q-413b0b241ba8)
+- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459f)
+- [make compose-smoke](../../../evidence/sources.md#q-413b0b241b)
 
 ### Executable sources
 
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
-- [openapi:stove0](../../../evidence/sources.md#src-52e6e3212451) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [openapi:stove0](../../../evidence/sources.md#src-52e6e32124) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
 
 ### Machine authority
 

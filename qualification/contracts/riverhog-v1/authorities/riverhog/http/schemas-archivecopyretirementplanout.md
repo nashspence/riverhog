@@ -16,46 +16,46 @@ Exact externally visible contract owned by this semantic dossier.
 
 ## External contract
 
-<a id="s-05bde79c4b16"></a>
-- <a id="s-77e7f36434c7"></a>`title`: ArchiveCopyRetirementPlanOut
-- <a id="s-86305dce22f7"></a>`type`: object
+<a id="s-05bde79c4b"></a>
+- <a id="s-77e7f36434"></a>`title`: ArchiveCopyRetirementPlanOut
+- <a id="s-86305dce22"></a>`type`: object
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-662b46ed5ade"></a>`billing_note` | yes | type="string" |  |
-| <a id="s-3bb1c53f6164"></a>`blockers` | yes | type="array"; items=(type="string") |  |
-| <a id="s-a8bf1cfd6cbb"></a>`challenge` | yes | anyOf=type="string" \| type="null" |  |
-| <a id="s-b3e346a57eca"></a>`collection_id` | yes | #/components/schemas/CollectionId |  |
-| <a id="s-22bb7f18753e"></a>`expires_at` | yes | type="string" |  |
-| <a id="s-3b329cb5f913"></a>`retained_copies` | yes | type="array"; items=(#/components/schemas/ArchiveCopyRetirementRetainedOut) |  |
-| <a id="s-91c234b2f55a"></a>`retired_retrieval_job_count` | yes | type="integer" |  |
-| <a id="s-bc86b383bfc5"></a>`status` | yes | type="string"; enum=["ready","blocked","retiring"] |  |
-| <a id="s-ccd5b75997f4"></a>`store` | yes | #/components/schemas/ArchiveStoreName |  |
-| <a id="s-1bc1feaa6127"></a>`target_copy` | yes | #/components/schemas/ArchiveCopyRetirementTargetOut |  |
-| <a id="s-0e9fe4a51590"></a>`verification_note` | yes | type="string" |  |
-| <a id="s-3902eea4d7b9"></a>`warning` | yes | type="string" |  |
+| <a id="s-662b46ed5a"></a>`billing_note` | yes | type="string" |  |
+| <a id="s-3bb1c53f61"></a>`blockers` | yes | type="array"; items=(type="string") |  |
+| <a id="s-a8bf1cfd6c"></a>`challenge` | yes | anyOf=type="string" \| type="null" |  |
+| <a id="s-b3e346a57e"></a>`collection_id` | yes | #/components/schemas/CollectionId |  |
+| <a id="s-22bb7f1875"></a>`expires_at` | yes | type="string" |  |
+| <a id="s-3b329cb5f9"></a>`retained_copies` | yes | type="array"; items=(#/components/schemas/ArchiveCopyRetirementRetainedOut) |  |
+| <a id="s-91c234b2f5"></a>`retired_retrieval_job_count` | yes | type="integer" |  |
+| <a id="s-bc86b383bf"></a>`status` | yes | type="string"; enum=["ready","blocked","retiring"] |  |
+| <a id="s-ccd5b75997"></a>`store` | yes | #/components/schemas/ArchiveStoreName |  |
+| <a id="s-1bc1feaa61"></a>`target_copy` | yes | #/components/schemas/ArchiveCopyRetirementTargetOut |  |
+| <a id="s-0e9fe4a515"></a>`verification_note` | yes | type="string" |  |
+| <a id="s-3902eea4d7"></a>`warning` | yes | type="string" |  |
 
 ### Progression, limits, and lifecycle
 
-#### [extent-rule/no-semantic-maximum/v1](../../../policies/index.md#p-574724b48af0)
+#### [extent-rule/no-semantic-maximum/v1](../../../policies/index.md#p-574724b48a)
 
 Shared facts for every subject below: capacity_authority={"declared_maximum":null,"hidden_maximum":"forbidden","owner":"riverhog"}; maximum=null; reason="no-declared-semantic-maximum"
 
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
-| <a id="s-191e6ff8d3b2"></a>oneOf alternative 1 · field blockers | `cardinality · items · operational_policy` | shared above |
-| [field blockers](#s-3bb1c53f6164) | `cardinality · items · operational_policy` | shared above |
-| [field retained_copies](#s-3b329cb5f913) | `cardinality · items · operational_policy` | shared above |
+| <a id="s-191e6ff8d3"></a>[oneOf alternative 1 · field blockers](#s-05bde79c4b) | `cardinality · items · operational_policy` | shared above |
+| [field blockers](#s-3bb1c53f61) | `cardinality · items · operational_policy` | shared above |
+| [field retained_copies](#s-3b329cb5f9) | `cardinality · items · operational_policy` | shared above |
 
-#### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
+#### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
 
 Shared facts for every subject below: maximum=0; reason="state-conditioned-empty-set"
 
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
-| <a id="s-82a7ddf46a96"></a>oneOf alternative 2 · field blockers | `cardinality · items · contract_max` | shared above |
+| <a id="s-82a7ddf46a"></a>[oneOf alternative 2 · field blockers](#s-05bde79c4b) | `cardinality · items · contract_max` | shared above |
 
 ## Maintained corroboration
 
@@ -68,21 +68,21 @@ Shared facts for every subject below: maximum=0; reason="state-conditioned-empty
 
 ## Governing policies
 
-- <a id="pa-164587cdabdc"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0ba)
-- <a id="pa-5ece69d65b8c"></a>[extent-rule/no-semantic-maximum/v1](../../../policies/index.md#p-574724b48af0)
-- <a id="pa-6571e683dca4"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
+- <a id="pa-164587cdab"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0)
+- <a id="pa-5ece69d65b"></a>[extent-rule/no-semantic-maximum/v1](../../../policies/index.md#p-574724b48a)
+- <a id="pa-6571e683dc"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
 
 ## Evidence
 
 ### Qualification
 
-- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459fb8)
-- [make compose-smoke](../../../evidence/sources.md#q-413b0b241ba8)
+- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459f)
+- [make compose-smoke](../../../evidence/sources.md#q-413b0b241b)
 
 ### Executable sources
 
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
-- [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc960) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc9) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
 
 ### Machine authority
 

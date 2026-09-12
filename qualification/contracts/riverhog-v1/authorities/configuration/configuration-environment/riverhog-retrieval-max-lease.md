@@ -16,38 +16,38 @@ Exact externally visible contract owned by this semantic dossier.
 
 ## External contract
 
-<a id="s-90cd77baf72d"></a>
+<a id="s-90cd77baf7"></a>
 | Field | Shape |
 |---|---|
-| <a id="s-bc48d55b1e06"></a>`consumers` | ["riverhog-server"] |
-| <a id="s-35c021851e63"></a>`name` | "RIVERHOG_RETRIEVAL_MAX_LEASE" |
+| <a id="s-bc48d55b1e"></a>`consumers` | ["riverhog-server"] |
+| <a id="s-35c021851e"></a>`name` | "RIVERHOG_RETRIEVAL_MAX_LEASE" |
 
 ### Progression, limits, and lifecycle
 
-#### [extent-rule/configured-capacity/v1](../../../policies/index.md#p-3ebc61fc9972)
+#### [extent-rule/configured-capacity/v1](../../../policies/index.md#p-3ebc61fc99)
 
 Shared facts for every subject below: configuration="RIVERHOG_RETRIEVAL_MAX_LEASE"; maximum=null; reason="operator-configured-capacity"
 
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
-| [RIVERHOG_RETRIEVAL_MAX_LEASE](#s-90cd77baf72d) | `value · configured-value · operational_policy` | shared above |
+| [RIVERHOG_RETRIEVAL_MAX_LEASE](#s-90cd77baf7) | `value · configured-value · operational_policy` | shared above |
 
 ## Governing policies
 
-- <a id="pa-4be724f93e29"></a>[compatibility/configuration/v1](../../../policies/index.md#p-8dc08bb46173)
-- <a id="pa-7769c853a614"></a>[extent-rule/configured-capacity/v1](../../../policies/index.md#p-3ebc61fc9972)
+- <a id="pa-4be724f93e"></a>[compatibility/configuration/v1](../../../policies/index.md#p-8dc08bb461)
+- <a id="pa-7769c853a6"></a>[extent-rule/configured-capacity/v1](../../../policies/index.md#p-3ebc61fc99)
 
 ## Evidence
 
 ### Qualification
 
-- [make unit](../../../evidence/sources.md#q-ce47068f504c)
-- [make compose-smoke](../../../evidence/sources.md#q-413b0b241ba8)
+- [make unit](../../../evidence/sources.md#q-ce47068f50)
+- [make compose-smoke](../../../evidence/sources.md#q-413b0b241b)
 
 ### Executable sources
 
-- [configuration-environment:RIVERHOG_RETRIEVAL_MAX_LEASE](../../../evidence/sources.md#src-c8d096f38ce8) — `configuration-environment:RIVERHOG_RETRIEVAL_MAX_LEASE`
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
+- [configuration-environment:RIVERHOG_RETRIEVAL_MAX_LEASE](../../../evidence/sources.md#src-c8d096f38c) — `configuration-environment:RIVERHOG_RETRIEVAL_MAX_LEASE`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
 
 ### Machine authority
 

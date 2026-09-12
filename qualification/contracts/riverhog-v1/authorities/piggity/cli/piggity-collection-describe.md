@@ -16,31 +16,31 @@ Exact externally visible contract owned by this semantic dossier.
 
 ## External contract
 
-- <a id="s-2dd51f2dda5b"></a>Parser name: `describe`
+- <a id="s-2dd51f2dda"></a>Parser name: `describe`
 
 ### Parameters
 
 | Name | Kind | Required | Type | Options |
 |---|---|---:|---|---|
-| <a id="s-a79c8f4d1c1b"></a>`collection` | TyperArgument | yes | {'class': 'typer._click.types.IntParamType', 'name': 'integer'} | collection |
-| <a id="s-c6fc67bf050a"></a>`description` | TyperOption | no | {'class': 'typer._click.types.StringParamType', 'name': 'text'} | --description |
-| <a id="s-6146b8bc010e"></a>`clear` | TyperOption | no | {'class': 'typer._click.types.BoolParamType', 'name': 'boolean'} | --clear |
-| <a id="s-fe5337d00fa1"></a>`if_match` | TyperOption | no | {'class': 'typer._click.types.StringParamType', 'name': 'text'} | --if-match |
-| <a id="s-92d36de323d3"></a>`json_mode` | TyperOption | no | {'class': 'typer._click.types.BoolParamType', 'name': 'boolean'} | --json |
+| <a id="s-a79c8f4d1c"></a>`collection` | TyperArgument | yes | {'class': 'typer._click.types.IntParamType', 'name': 'integer'} | collection |
+| <a id="s-c6fc67bf05"></a>`description` | TyperOption | no | {'class': 'typer._click.types.StringParamType', 'name': 'text'} | --description |
+| <a id="s-6146b8bc01"></a>`clear` | TyperOption | no | {'class': 'typer._click.types.BoolParamType', 'name': 'boolean'} | --clear |
+| <a id="s-fe5337d00f"></a>`if_match` | TyperOption | no | {'class': 'typer._click.types.StringParamType', 'name': 'text'} | --if-match |
+| <a id="s-92d36de323"></a>`json_mode` | TyperOption | no | {'class': 'typer._click.types.BoolParamType', 'name': 'boolean'} | --json |
 
 ### Progression, limits, and lifecycle
 
-#### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
+#### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
 
 Shared facts for every subject below: maximum=1; minimum=1; reason="fixed-command-argument-arity"; source_constraint={"field":"nargs"}
 
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
-| [CLI parameter --clear](#s-6146b8bc010e) | `cardinality · values-per-occurrence · fixed` | shared above |
-| [CLI parameter collection](#s-a79c8f4d1c1b) | `cardinality · values-per-occurrence · fixed` | shared above |
-| [CLI parameter --description](#s-c6fc67bf050a) | `cardinality · values-per-occurrence · fixed` | shared above |
-| [CLI parameter --if-match](#s-fe5337d00fa1) | `cardinality · values-per-occurrence · fixed` | shared above |
-| [CLI parameter --json](#s-92d36de323d3) | `cardinality · values-per-occurrence · fixed` | shared above |
+| [CLI parameter --clear](#s-6146b8bc01) | `cardinality · values-per-occurrence · fixed` | shared above |
+| [CLI parameter collection](#s-a79c8f4d1c) | `cardinality · values-per-occurrence · fixed` | shared above |
+| [CLI parameter --description](#s-c6fc67bf05) | `cardinality · values-per-occurrence · fixed` | shared above |
+| [CLI parameter --if-match](#s-fe5337d00f) | `cardinality · values-per-occurrence · fixed` | shared above |
+| [CLI parameter --json](#s-92d36de323) | `cardinality · values-per-occurrence · fixed` | shared above |
 
 ## Maintained corroboration
 
@@ -51,20 +51,20 @@ Shared facts for every subject below: maximum=1; minimum=1; reason="fixed-comman
 
 ## Governing policies
 
-- <a id="pa-117c0eba81c2"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de7f)
-- <a id="pa-319463811ea9"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
+- <a id="pa-117c0eba81"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de)
+- <a id="pa-319463811e"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
 
 ## Evidence
 
 ### Qualification
 
-- [make dist-smoke](../../../evidence/sources.md#q-0ba2578a3eb7)
-- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459fb8)
+- [make dist-smoke](../../../evidence/sources.md#q-0ba2578a3e)
+- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459f)
 
 ### Executable sources
 
-- [cli:piggity](../../../evidence/sources.md#src-094022231f2c) — `reference/riverhog/applications/piggity/src/piggity/main.py::<module>`
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
+- [cli:piggity](../../../evidence/sources.md#src-094022231f) — `reference/riverhog/applications/piggity/src/piggity/main.py::<module>`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
 
 ### Machine authority
 

@@ -10,37 +10,37 @@ Exact externally visible contract owned by this semantic dossier.
 |---|---|
 | Authority | [riverhog-storage-adapter-protocol](../index.md) |
 | Interface | [boundary](index.md) |
-| Family | [components](index.md#f-7cae95a19acb) |
+| Family | [components](index.md#f-7cae95a19a) |
 | Contract elements | 1 |
 | Extent decisions | 0 |
 
 ## External contract
 
-<a id="s-7af40162436d"></a>
+<a id="s-7af4016243"></a>
 | Field | Shape |
 |---|---|
-| <a id="s-bc459187aac2"></a>`console_scripts` | empty object |
-| <a id="s-64f17cc16166"></a>`dependencies` | ["time-formats"] |
-| <a id="s-34e07144414e"></a>`distribution` | "riverhog-storage-adapter-protocol" |
-| <a id="s-45ad5bf7fc0a"></a>`optional_dependencies` | empty object |
-| <a id="s-6b5eccc6a47c"></a>`path` | "packages/riverhog-storage-adapter-protocol" |
-| <a id="s-363c0d2c273d"></a>`role` | "reusable_library" |
+| <a id="s-bc459187aa"></a>`console_scripts` | empty object |
+| <a id="s-64f17cc161"></a>`dependencies` | ["time-formats"] |
+| <a id="s-34e0714441"></a>`distribution` | "riverhog-storage-adapter-protocol" |
+| <a id="s-45ad5bf7fc"></a>`optional_dependencies` | empty object |
+| <a id="s-6b5eccc6a4"></a>`path` | "packages/riverhog-storage-adapter-protocol" |
+| <a id="s-363c0d2c27"></a>`role` | "reusable_library" |
 
 ## Governing policies
 
-- <a id="pa-8e6c6864ec06"></a>[boundary/frozen-authority/v1](../../../policies/index.md#p-61994d3f0fa8)
+- <a id="pa-8e6c6864ec"></a>[boundary/frozen-authority/v1](../../../policies/index.md#p-61994d3f0f)
 
 ## Evidence
 
 ### Qualification
 
-- [make release-check](../../../evidence/sources.md#q-8d8d22d6a6b1)
-- [make build](../../../evidence/sources.md#q-d1121e35fa7a)
+- [make release-check](../../../evidence/sources.md#q-8d8d22d6a6)
+- [make build](../../../evidence/sources.md#q-d1121e35fa)
 
 ### Executable sources
 
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
-- [release:release.toml](../../../evidence/sources.md#src-c5380dbe5fe0) — `release.toml`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [release:release.toml](../../../evidence/sources.md#src-c5380dbe5f) — `release.toml`
 
 ### Machine authority
 

@@ -10,47 +10,47 @@ Exact externally visible contract owned by this semantic dossier.
 |---|---|
 | Authority | [riverhog-storage-adapter-schemas](../index.md) |
 | Interface | [cli](index.md) |
-| Family | [root](index.md#f-45e97b65b76e) |
+| Family | [root](index.md#f-45e97b65b7) |
 | Contract elements | 1 |
 | Extent decisions | 1 |
 
 ## External contract
 
-- <a id="s-1ea2979964fe"></a>Parser name: `riverhog-storage-adapter-schemas`
+- <a id="s-1ea2979964"></a>Parser name: `riverhog-storage-adapter-schemas`
 
 ### Parameters
 
 | Name | Kind | Required | Type | Options |
 |---|---|---:|---|---|
-| <a id="s-c7cd964cecce"></a>`` | _StoreAction | no | Path | --output |
-| <a id="s-38128e604600"></a>`` | _StoreTrueAction | no |  | --compact |
+| <a id="s-c7cd964cec"></a>`` | _StoreAction | no | Path | --output |
+| <a id="s-38128e6046"></a>`` | _StoreTrueAction | no |  | --compact |
 
 ### Progression, limits, and lifecycle
 
-#### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
+#### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
 
 Shared facts for every subject below: maximum=0; minimum=0; reason="fixed-command-argument-arity"; source_constraint={"field":"nargs"}
 
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
-| [CLI parameter --compact](#s-38128e604600) | `cardinality · values-per-occurrence · fixed` | shared above |
+| [CLI parameter --compact](#s-38128e6046) | `cardinality · values-per-occurrence · fixed` | shared above |
 
 ## Governing policies
 
-- <a id="pa-6032d4ad7b80"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de7f)
-- <a id="pa-ab654c018556"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
+- <a id="pa-6032d4ad7b"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de)
+- <a id="pa-ab654c0185"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
 
 ## Evidence
 
 ### Qualification
 
-- [make dist-smoke](../../../evidence/sources.md#q-0ba2578a3eb7)
-- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459fb8)
+- [make dist-smoke](../../../evidence/sources.md#q-0ba2578a3e)
+- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459f)
 
 ### Executable sources
 
-- [cli:riverhog-storage-adapter-schemas](../../../evidence/sources.md#src-b90a9d08ff5b) — `packages/riverhog-storage-adapter-support/src/riverhog_storage_adapter_support/schemas.py::<module>`
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
+- [cli:riverhog-storage-adapter-schemas](../../../evidence/sources.md#src-b90a9d08ff) — `packages/riverhog-storage-adapter-support/src/riverhog_storage_adapter_support/schemas.py::<module>`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
 
 ### Machine authority
 

@@ -16,17 +16,17 @@ Exact externally visible contract owned by this semantic dossier.
 
 ## External contract
 
-<a id="s-d8fb08e288aa"></a>
-- <a id="s-c5d98f2579aa"></a>`title`: ArchiveCopyRetirementRetainedOut
-- <a id="s-3913756386a7"></a>`type`: object
+<a id="s-d8fb08e288"></a>
+- <a id="s-c5d98f2579"></a>`title`: ArchiveCopyRetirementRetainedOut
+- <a id="s-3913756386"></a>`type`: object
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-6548249a8770"></a>`last_verified_at` | yes | type="string" |  |
-| <a id="s-ae86cb6aca33"></a>`remote_storage_bytes` | yes | type="integer" |  |
-| <a id="s-a38cb1ae874c"></a>`store` | yes | #/components/schemas/ArchiveStoreName |  |
+| <a id="s-6548249a87"></a>`last_verified_at` | yes | type="string" |  |
+| <a id="s-ae86cb6aca"></a>`remote_storage_bytes` | yes | type="integer" |  |
+| <a id="s-a38cb1ae87"></a>`store` | yes | #/components/schemas/ArchiveStoreName |  |
 
 ## Maintained corroboration
 
@@ -36,19 +36,19 @@ Exact externally visible contract owned by this semantic dossier.
 
 ## Governing policies
 
-- <a id="pa-a0060b83aa44"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0ba)
+- <a id="pa-a0060b83aa"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0)
 
 ## Evidence
 
 ### Qualification
 
-- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459fb8)
-- [make compose-smoke](../../../evidence/sources.md#q-413b0b241ba8)
+- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459f)
+- [make compose-smoke](../../../evidence/sources.md#q-413b0b241b)
 
 ### Executable sources
 
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
-- [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc960) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc9) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
 
 ### Machine authority
 

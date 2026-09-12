@@ -16,25 +16,25 @@ Exact externally visible contract owned by this semantic dossier.
 
 ## External contract
 
-<a id="s-7eb40bb862c8"></a>
-- <a id="s-06125bc5d91a"></a>`title`: ArchiveCopyJobOut
-- <a id="s-e85e3e0f34a0"></a>`type`: object
+<a id="s-7eb40bb862"></a>
+- <a id="s-06125bc5d9"></a>`title`: ArchiveCopyJobOut
+- <a id="s-e85e3e0f34"></a>`type`: object
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-f94ca186052c"></a>`collection_id` | yes | #/components/schemas/CollectionId |  |
-| <a id="s-c99eec83e080"></a>`completed_at` | yes | anyOf=type="string" \| type="null" |  |
-| <a id="s-ee02c17aaccf"></a>`destination_store` | yes | #/components/schemas/ArchiveStoreName |  |
-| <a id="s-17ef5e59ff2a"></a>`expires_at` | yes | anyOf=type="string" \| type="null" |  |
-| <a id="s-79dd5dafe368"></a>`failure` | yes | anyOf=type="string"; minLength=1 \| type="null" |  |
-| <a id="s-c07f6332bc97"></a>`initiated_by_app` | yes | anyOf=#/components/schemas/ApplicationName \| type="null" |  |
-| <a id="s-0bcb097c2c44"></a>`initiated_by_key_id` | yes | anyOf=#/components/schemas/ApplicationKeyId \| type="null" |  |
-| <a id="s-88e645a59b66"></a>`ready_at` | yes | anyOf=type="string" \| type="null" |  |
-| <a id="s-69542ab9df1b"></a>`requested_at` | yes | anyOf=type="string" \| type="null" |  |
-| <a id="s-7dd0ee0992f3"></a>`source_store` | yes | anyOf=#/components/schemas/ArchiveStoreName \| type="null" |  |
-| <a id="s-9877b843510c"></a>`state` | yes | #/components/schemas/ArchiveCopyState |  |
+| <a id="s-f94ca18605"></a>`collection_id` | yes | #/components/schemas/CollectionId |  |
+| <a id="s-c99eec83e0"></a>`completed_at` | yes | anyOf=type="string" \| type="null" |  |
+| <a id="s-ee02c17aac"></a>`destination_store` | yes | #/components/schemas/ArchiveStoreName |  |
+| <a id="s-17ef5e59ff"></a>`expires_at` | yes | anyOf=type="string" \| type="null" |  |
+| <a id="s-79dd5dafe3"></a>`failure` | yes | anyOf=type="string"; minLength=1 \| type="null" |  |
+| <a id="s-c07f6332bc"></a>`initiated_by_app` | yes | anyOf=#/components/schemas/ApplicationName \| type="null" |  |
+| <a id="s-0bcb097c2c"></a>`initiated_by_key_id` | yes | anyOf=#/components/schemas/ApplicationKeyId \| type="null" |  |
+| <a id="s-88e645a59b"></a>`ready_at` | yes | anyOf=type="string" \| type="null" |  |
+| <a id="s-69542ab9df"></a>`requested_at` | yes | anyOf=type="string" \| type="null" |  |
+| <a id="s-7dd0ee0992"></a>`source_store` | yes | anyOf=#/components/schemas/ArchiveStoreName \| type="null" |  |
+| <a id="s-9877b84351"></a>`state` | yes | #/components/schemas/ArchiveCopyState |  |
 
 ## Maintained corroboration
 
@@ -48,19 +48,19 @@ Exact externally visible contract owned by this semantic dossier.
 
 ## Governing policies
 
-- <a id="pa-de244aee67d2"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0ba)
+- <a id="pa-de244aee67"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0)
 
 ## Evidence
 
 ### Qualification
 
-- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459fb8)
-- [make compose-smoke](../../../evidence/sources.md#q-413b0b241ba8)
+- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459f)
+- [make compose-smoke](../../../evidence/sources.md#q-413b0b241b)
 
 ### Executable sources
 
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
-- [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc960) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc9) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
 
 ### Machine authority
 

@@ -16,27 +16,27 @@ Get Recipe
 
 ## External contract
 
-<a id="s-2ed760441cd1"></a>
-- <a id="s-721e8eec1f22"></a>`operationId`: get_recipe
-- <a id="s-0aba5a30b1d2"></a>`summary`: Get Recipe
+<a id="s-2ed760441c"></a>
+- <a id="s-721e8eec1f"></a>`operationId`: get_recipe
+- <a id="s-0aba5a30b1"></a>`summary`: Get Recipe
 
 ### Parameters
 
 | Name | In | Required | Schema |
 |---|---|---:|---|
-| <a id="s-6eecb65b87cb"></a>`recipe_id` | path | yes | type="string" |
-| <a id="s-220fc4fec424"></a>`revision` | query | no | anyOf=type="integer" \| type="null" |
+| <a id="s-6eecb65b87"></a>`recipe_id` | path | yes | type="string" |
+| <a id="s-220fc4fec4"></a>`revision` | query | no | anyOf=type="integer" \| type="null" |
 
 ### Responses
 
 | Status | Description |
 |---|---|
-| <a id="s-ffae93a9f94c"></a>`200` | Successful Response |
-| <a id="s-65ca6825cae7"></a>`400` | Bad Request |
-| <a id="s-c9702de05ea6"></a>`401` | Unauthorized |
-| <a id="s-67220f466668"></a>`403` | Forbidden |
-| <a id="s-b3e1dbfa691d"></a>`404` | Not Found |
-| <a id="s-82071bf9f710"></a>`500` | Internal Server Error |
+| <a id="s-ffae93a9f9"></a>`200` | Successful Response |
+| <a id="s-65ca6825ca"></a>`400` | Bad Request |
+| <a id="s-c9702de05e"></a>`401` | Unauthorized |
+| <a id="s-67220f4666"></a>`403` | Forbidden |
+| <a id="s-b3e1dbfa69"></a>`404` | Not Found |
+| <a id="s-82071bf9f7"></a>`500` | Internal Server Error |
 
 ## Maintained corroboration
 
@@ -51,19 +51,19 @@ Get Recipe
 
 ## Governing policies
 
-- <a id="pa-7ee2e1223902"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0ba)
+- <a id="pa-7ee2e12239"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0)
 
 ## Evidence
 
 ### Qualification
 
-- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459fb8)
-- [make compose-smoke](../../../evidence/sources.md#q-413b0b241ba8)
+- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459f)
+- [make compose-smoke](../../../evidence/sources.md#q-413b0b241b)
 
 ### Executable sources
 
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
-- [openapi:stove0](../../../evidence/sources.md#src-52e6e3212451) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [openapi:stove0](../../../evidence/sources.md#src-52e6e32124) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
 
 ### Machine authority
 

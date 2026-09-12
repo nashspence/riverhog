@@ -10,80 +10,80 @@ Exact externally visible contract owned by this semantic dossier.
 |---|---|
 | Authority | [riverhog-provenance](../index.md) |
 | Interface | [protocol](index.md) |
-| Family | [schemas](index.md#f-6adfbad66ec5) |
+| Family | [schemas](index.md#f-6adfbad66e) |
 | Contract elements | 1 |
 | Extent decisions | 5 |
 
 ## External contract
 
-<a id="s-73d5738dc108"></a>
-- <a id="s-8d35beac790f"></a>`$id`: https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/observation-policy.json
-- <a id="s-bc53812e0c21"></a>`title`: Riverhog provenance observer capture policy
-- <a id="s-e6dc5b028523"></a>`type`: object
+<a id="s-73d5738dc1"></a>
+- <a id="s-8d35beac79"></a>`$id`: https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/observation-policy.json
+- <a id="s-bc53812e0c"></a>`title`: Riverhog provenance observer capture policy
+- <a id="s-e6dc5b0285"></a>`type`: object
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-d0f0d33145b3"></a>`attempt_noatime` | yes | type="boolean" |  |
-| <a id="s-560507324aa8"></a>`capture_acl` | yes | type="boolean" |  |
-| <a id="s-9dec0d0a4f40"></a>`capture_file_flags` | yes | type="boolean" |  |
-| <a id="s-9ac327bdd731"></a>`capture_native_stat` | yes | type="boolean" |  |
-| <a id="s-ef91e4c95f48"></a>`capture_sparse_map` | yes | type="boolean" |  |
-| <a id="s-552dc49dbf9d"></a>`capture_special_features` | yes | type="boolean" |  |
-| <a id="s-b4f4c413b2cf"></a>`capture_system_acl` | yes | type="boolean" |  |
-| <a id="s-9a9b5576d52c"></a>`capture_xattrs` | yes | type="boolean" |  |
-| <a id="s-b3b9a4c8406a"></a>`hash_chunk_bytes` | yes | type="integer"; minimum=1 |  |
-| <a id="s-fec7a8f8c0a9"></a>`include_access_time` | yes | type="boolean" |  |
-| <a id="s-806e32274e14"></a>`include_effective_principal` | yes | type="boolean" |  |
-| <a id="s-760158ca9655"></a>`include_hostname` | yes | type="boolean" |  |
-| <a id="s-619fa640276c"></a>`inline_native_value_bytes` | yes | type="integer"; minimum=1 |  |
-| <a id="s-a33fca4fba8f"></a>`large_value_disposition` | yes | enum=["digest_only","not_retained","fail"] |  |
-| <a id="s-374b14223fd5"></a>`maximum_native_streams` | yes | type="integer"; minimum=1 |  |
-| <a id="s-cd52cd1e8780"></a>`maximum_native_value_bytes` | yes | type="integer"; minimum=1 |  |
-| <a id="s-6e8c99c8c82d"></a>`maximum_sparse_extents` | yes | type="integer"; minimum=1 |  |
-| <a id="s-29e17fa094e8"></a>`native_stream_chunk_bytes` | yes | type="integer"; minimum=1 |  |
-| <a id="s-0f7319aa8421"></a>`resolve_principals` | yes | type="boolean" |  |
-| <a id="s-c2f9cc12d6bc"></a>`resource_fork_chunk_bytes` | yes | type="integer"; minimum=1 |  |
-| <a id="s-bbe2c25e435f"></a>`second_content_hash` | yes | type="boolean" |  |
-| <a id="s-7aa27f8526a5"></a>`strict_consistency` | yes | type="boolean" |  |
-| <a id="s-4377328b9bb9"></a>`verify_path_binding` | yes | type="boolean" |  |
-| <a id="s-b60bf9ce828c"></a>`windows_allow_shared_delete` | yes | type="boolean" |  |
-| <a id="s-b263f599674d"></a>`windows_allow_shared_write` | yes | type="boolean" |  |
-| <a id="s-d27c4cae2349"></a>`windows_capture_object_id` | yes | type="boolean" |  |
-| <a id="s-40e4c81b3934"></a>`windows_capture_usn` | yes | type="boolean" |  |
-| <a id="s-161f61466299"></a>`windows_follow_non_name_surrogate_reparse_points` | yes | type="boolean" |  |
+| <a id="s-d0f0d33145"></a>`attempt_noatime` | yes | type="boolean" |  |
+| <a id="s-560507324a"></a>`capture_acl` | yes | type="boolean" |  |
+| <a id="s-9dec0d0a4f"></a>`capture_file_flags` | yes | type="boolean" |  |
+| <a id="s-9ac327bdd7"></a>`capture_native_stat` | yes | type="boolean" |  |
+| <a id="s-ef91e4c95f"></a>`capture_sparse_map` | yes | type="boolean" |  |
+| <a id="s-552dc49dbf"></a>`capture_special_features` | yes | type="boolean" |  |
+| <a id="s-b4f4c413b2"></a>`capture_system_acl` | yes | type="boolean" |  |
+| <a id="s-9a9b5576d5"></a>`capture_xattrs` | yes | type="boolean" |  |
+| <a id="s-b3b9a4c840"></a>`hash_chunk_bytes` | yes | type="integer"; minimum=1 |  |
+| <a id="s-fec7a8f8c0"></a>`include_access_time` | yes | type="boolean" |  |
+| <a id="s-806e32274e"></a>`include_effective_principal` | yes | type="boolean" |  |
+| <a id="s-760158ca96"></a>`include_hostname` | yes | type="boolean" |  |
+| <a id="s-619fa64027"></a>`inline_native_value_bytes` | yes | type="integer"; minimum=1 |  |
+| <a id="s-a33fca4fba"></a>`large_value_disposition` | yes | enum=["digest_only","not_retained","fail"] |  |
+| <a id="s-374b14223f"></a>`maximum_native_streams` | yes | type="integer"; minimum=1 |  |
+| <a id="s-cd52cd1e87"></a>`maximum_native_value_bytes` | yes | type="integer"; minimum=1 |  |
+| <a id="s-6e8c99c8c8"></a>`maximum_sparse_extents` | yes | type="integer"; minimum=1 |  |
+| <a id="s-29e17fa094"></a>`native_stream_chunk_bytes` | yes | type="integer"; minimum=1 |  |
+| <a id="s-0f7319aa84"></a>`resolve_principals` | yes | type="boolean" |  |
+| <a id="s-c2f9cc12d6"></a>`resource_fork_chunk_bytes` | yes | type="integer"; minimum=1 |  |
+| <a id="s-bbe2c25e43"></a>`second_content_hash` | yes | type="boolean" |  |
+| <a id="s-7aa27f8526"></a>`strict_consistency` | yes | type="boolean" |  |
+| <a id="s-4377328b9b"></a>`verify_path_binding` | yes | type="boolean" |  |
+| <a id="s-b60bf9ce82"></a>`windows_allow_shared_delete` | yes | type="boolean" |  |
+| <a id="s-b263f59967"></a>`windows_allow_shared_write` | yes | type="boolean" |  |
+| <a id="s-d27c4cae23"></a>`windows_capture_object_id` | yes | type="boolean" |  |
+| <a id="s-40e4c81b39"></a>`windows_capture_usn` | yes | type="boolean" |  |
+| <a id="s-161f614662"></a>`windows_follow_non_name_surrogate_reparse_points` | yes | type="boolean" |  |
 
 ### Progression, limits, and lifecycle
 
-#### [extent-rule/no-semantic-maximum/v1](../../../policies/index.md#p-574724b48af0)
+#### [extent-rule/no-semantic-maximum/v1](../../../policies/index.md#p-574724b48a)
 
 Shared facts for every subject below: capacity_authority={"declared_maximum":null,"hidden_maximum":"forbidden","owner":"https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/observation-policy.json"}; maximum=null; reason="no-declared-semantic-maximum"
 
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
-| [field hash_chunk_bytes](#s-b3b9a4c8406a) | `value · schema-value · operational_policy` | shared above |
-| [field inline_native_value_bytes](#s-619fa640276c) | `value · schema-value · operational_policy` | shared above |
-| [field maximum_native_value_bytes](#s-cd52cd1e8780) | `value · schema-value · operational_policy` | shared above |
-| [field native_stream_chunk_bytes](#s-29e17fa094e8) | `value · schema-value · operational_policy` | shared above |
-| [field resource_fork_chunk_bytes](#s-c2f9cc12d6bc) | `value · schema-value · operational_policy` | shared above |
+| [field hash_chunk_bytes](#s-b3b9a4c840) | `value · schema-value · operational_policy` | shared above |
+| [field inline_native_value_bytes](#s-619fa64027) | `value · schema-value · operational_policy` | shared above |
+| [field maximum_native_value_bytes](#s-cd52cd1e87) | `value · schema-value · operational_policy` | shared above |
+| [field native_stream_chunk_bytes](#s-29e17fa094) | `value · schema-value · operational_policy` | shared above |
+| [field resource_fork_chunk_bytes](#s-c2f9cc12d6) | `value · schema-value · operational_policy` | shared above |
 
 ## Governing policies
 
-- <a id="pa-d7b99aae75b1"></a>[compatibility/components/v1](../../../policies/index.md#p-95e9a1225947)
-- <a id="pa-a933b6ea3432"></a>[extent-rule/no-semantic-maximum/v1](../../../policies/index.md#p-574724b48af0)
+- <a id="pa-d7b99aae75"></a>[compatibility/components/v1](../../../policies/index.md#p-95e9a12259)
+- <a id="pa-a933b6ea34"></a>[extent-rule/no-semantic-maximum/v1](../../../policies/index.md#p-574724b48a)
 
 ## Evidence
 
 ### Qualification
 
-- [make dist-smoke](../../../evidence/sources.md#q-0ba2578a3eb7)
-- [make build](../../../evidence/sources.md#q-d1121e35fa7a)
+- [make dist-smoke](../../../evidence/sources.md#q-0ba2578a3e)
+- [make build](../../../evidence/sources.md#q-d1121e35fa)
 
 ### Executable sources
 
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
-- [protocol:https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/observation-policy.json](../../../evidence/sources.md#src-9581f745b7a5) — `packages/riverhog-provenance/src/riverhog_provenance/schemas/observation-policy.schema.json`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [protocol:https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/observation-policy.json](../../../evidence/sources.md#src-9581f745b7) — `packages/riverhog-provenance/src/riverhog_provenance/schemas/observation-policy.schema.json`
 
 ### Machine authority
 

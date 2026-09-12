@@ -16,27 +16,27 @@ Exact externally visible contract owned by this semantic dossier.
 
 ## External contract
 
-<a id="s-d9dcf35facd6"></a>
+<a id="s-d9dcf35fac"></a>
 | Field | Shape |
 |---|---|
-| <a id="s-10a1d823b264"></a>`consumers` | ["riverhog-server"] |
-| <a id="s-632be535e22c"></a>`name` | "RIVERHOG_ARCHIVE_READ_ORDER" |
+| <a id="s-10a1d823b2"></a>`consumers` | ["riverhog-server"] |
+| <a id="s-632be535e2"></a>`name` | "RIVERHOG_ARCHIVE_READ_ORDER" |
 
 ## Governing policies
 
-- <a id="pa-c46c7392f06d"></a>[compatibility/configuration/v1](../../../policies/index.md#p-8dc08bb46173)
+- <a id="pa-c46c7392f0"></a>[compatibility/configuration/v1](../../../policies/index.md#p-8dc08bb461)
 
 ## Evidence
 
 ### Qualification
 
-- [make unit](../../../evidence/sources.md#q-ce47068f504c)
-- [make compose-smoke](../../../evidence/sources.md#q-413b0b241ba8)
+- [make unit](../../../evidence/sources.md#q-ce47068f50)
+- [make compose-smoke](../../../evidence/sources.md#q-413b0b241b)
 
 ### Executable sources
 
-- [configuration-environment:RIVERHOG_ARCHIVE_READ_ORDER](../../../evidence/sources.md#src-7716b4ded259) — `configuration-environment:RIVERHOG_ARCHIVE_READ_ORDER`
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
+- [configuration-environment:RIVERHOG_ARCHIVE_READ_ORDER](../../../evidence/sources.md#src-7716b4ded2) — `configuration-environment:RIVERHOG_ARCHIVE_READ_ORDER`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
 
 ### Machine authority
 

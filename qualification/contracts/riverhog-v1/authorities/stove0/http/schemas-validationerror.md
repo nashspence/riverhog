@@ -16,46 +16,46 @@ Exact externally visible contract owned by this semantic dossier.
 
 ## External contract
 
-<a id="s-f4abc188b94d"></a>
-- <a id="s-b891141e94c0"></a>`title`: ValidationError
-- <a id="s-5bc4f6f27f66"></a>`type`: object
+<a id="s-f4abc188b9"></a>
+- <a id="s-b891141e94"></a>`title`: ValidationError
+- <a id="s-5bc4f6f27f"></a>`type`: object
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-8ddceef6c74e"></a>`ctx` | no | type="object" |  |
-| <a id="s-87967f692794"></a>`input` | no | empty object |  |
-| <a id="s-080abab5065b"></a>`loc` | yes | type="array"; items=(anyOf=type="string" \| type="integer") |  |
-| <a id="s-b38aa6075e51"></a>`msg` | yes | type="string" |  |
-| <a id="s-ba7a2c626e0c"></a>`type` | yes | type="string" |  |
+| <a id="s-8ddceef6c7"></a>`ctx` | no | type="object" |  |
+| <a id="s-87967f6927"></a>`input` | no | empty object |  |
+| <a id="s-080abab506"></a>`loc` | yes | type="array"; items=(anyOf=type="string" \| type="integer") |  |
+| <a id="s-b38aa6075e"></a>`msg` | yes | type="string" |  |
+| <a id="s-ba7a2c626e"></a>`type` | yes | type="string" |  |
 
 ### Progression, limits, and lifecycle
 
-#### [extent-rule/no-semantic-maximum/v1](../../../policies/index.md#p-574724b48af0)
+#### [extent-rule/no-semantic-maximum/v1](../../../policies/index.md#p-574724b48a)
 
 Shared facts for every subject below: capacity_authority={"declared_maximum":null,"hidden_maximum":"forbidden","owner":"stove0"}; maximum=null; reason="no-declared-semantic-maximum"
 
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
-| [field loc](#s-080abab5065b) | `cardinality · items · operational_policy` | shared above |
+| [field loc](#s-080abab506) | `cardinality · items · operational_policy` | shared above |
 
 ## Governing policies
 
-- <a id="pa-3e3ef279a58a"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0ba)
-- <a id="pa-dec42af3333c"></a>[extent-rule/no-semantic-maximum/v1](../../../policies/index.md#p-574724b48af0)
+- <a id="pa-3e3ef279a5"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0)
+- <a id="pa-dec42af333"></a>[extent-rule/no-semantic-maximum/v1](../../../policies/index.md#p-574724b48a)
 
 ## Evidence
 
 ### Qualification
 
-- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459fb8)
-- [make compose-smoke](../../../evidence/sources.md#q-413b0b241ba8)
+- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459f)
+- [make compose-smoke](../../../evidence/sources.md#q-413b0b241b)
 
 ### Executable sources
 
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
-- [openapi:stove0](../../../evidence/sources.md#src-52e6e3212451) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [openapi:stove0](../../../evidence/sources.md#src-52e6e32124) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
 
 ### Machine authority
 

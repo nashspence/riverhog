@@ -16,38 +16,38 @@ Exact externally visible contract owned by this semantic dossier.
 
 ## External contract
 
-<a id="s-1ebfad79c39f"></a>
+<a id="s-1ebfad79c3"></a>
 | Field | Shape |
 |---|---|
-| <a id="s-42ed9823cba4"></a>`consumers` | ["riverhog-server"] |
-| <a id="s-def2479a70be"></a>`name` | "RIVERHOG_ARCHIVE_PREPARE_CONCURRENCY" |
+| <a id="s-42ed9823cb"></a>`consumers` | ["riverhog-server"] |
+| <a id="s-def2479a70"></a>`name` | "RIVERHOG_ARCHIVE_PREPARE_CONCURRENCY" |
 
 ### Progression, limits, and lifecycle
 
-#### [extent-rule/configured-capacity/v1](../../../policies/index.md#p-3ebc61fc9972)
+#### [extent-rule/configured-capacity/v1](../../../policies/index.md#p-3ebc61fc99)
 
 Shared facts for every subject below: configuration="RIVERHOG_ARCHIVE_PREPARE_CONCURRENCY"; maximum=null; reason="operator-configured-capacity"
 
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
-| [RIVERHOG_ARCHIVE_PREPARE_CONCURRENCY](#s-1ebfad79c39f) | `value · configured-value · operational_policy` | shared above |
+| [RIVERHOG_ARCHIVE_PREPARE_CONCURRENCY](#s-1ebfad79c3) | `value · configured-value · operational_policy` | shared above |
 
 ## Governing policies
 
-- <a id="pa-f331af924a4a"></a>[compatibility/configuration/v1](../../../policies/index.md#p-8dc08bb46173)
-- <a id="pa-fe2a818a2692"></a>[extent-rule/configured-capacity/v1](../../../policies/index.md#p-3ebc61fc9972)
+- <a id="pa-f331af924a"></a>[compatibility/configuration/v1](../../../policies/index.md#p-8dc08bb461)
+- <a id="pa-fe2a818a26"></a>[extent-rule/configured-capacity/v1](../../../policies/index.md#p-3ebc61fc99)
 
 ## Evidence
 
 ### Qualification
 
-- [make unit](../../../evidence/sources.md#q-ce47068f504c)
-- [make compose-smoke](../../../evidence/sources.md#q-413b0b241ba8)
+- [make unit](../../../evidence/sources.md#q-ce47068f50)
+- [make compose-smoke](../../../evidence/sources.md#q-413b0b241b)
 
 ### Executable sources
 
-- [configuration-environment:RIVERHOG_ARCHIVE_PREPARE_CONCURRENCY](../../../evidence/sources.md#src-1510b0ce213d) — `configuration-environment:RIVERHOG_ARCHIVE_PREPARE_CONCURRENCY`
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
+- [configuration-environment:RIVERHOG_ARCHIVE_PREPARE_CONCURRENCY](../../../evidence/sources.md#src-1510b0ce21) — `configuration-environment:RIVERHOG_ARCHIVE_PREPARE_CONCURRENCY`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
 
 ### Machine authority
 

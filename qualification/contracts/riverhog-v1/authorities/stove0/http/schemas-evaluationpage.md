@@ -16,46 +16,46 @@ Exact externally visible contract owned by this semantic dossier.
 
 ## External contract
 
-<a id="s-f8832b794559"></a>
-- <a id="s-affd60995e6d"></a>`title`: EvaluationPage
-- <a id="s-bf521c0f24ed"></a>`type`: object
+<a id="s-f8832b7945"></a>
+- <a id="s-affd60995e"></a>`title`: EvaluationPage
+- <a id="s-bf521c0f24"></a>`type`: object
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-d5faabd944bc"></a>`evaluations` | yes | type="array"; items=(#/components/schemas/EvaluationView) |  |
-| <a id="s-de5213702993"></a>`filters` | yes | type="object"; additional keys=`additionalProperties` |  |
-| <a id="s-cc896697a890"></a>`next_page_token` | yes | anyOf=#/components/schemas/BrowsePageToken \| type="null" |  |
-| <a id="s-30a4e0c81197"></a>`order` | yes | type="string"; enum=["asc","desc"] |  |
-| <a id="s-195de0401431"></a>`page_size` | yes | type="integer"; minimum=1; maximum=100 |  |
-| <a id="s-3950ed2d140b"></a>`sort` | yes | type="string"; enum=["updated_at","phase","evaluation_id"] |  |
+| <a id="s-d5faabd944"></a>`evaluations` | yes | type="array"; items=(#/components/schemas/EvaluationView) |  |
+| <a id="s-de52137029"></a>`filters` | yes | type="object"; additional keys=`additionalProperties` |  |
+| <a id="s-cc896697a8"></a>`next_page_token` | yes | anyOf=#/components/schemas/BrowsePageToken \| type="null" |  |
+| <a id="s-30a4e0c811"></a>`order` | yes | type="string"; enum=["asc","desc"] |  |
+| <a id="s-195de04014"></a>`page_size` | yes | type="integer"; minimum=1; maximum=100 |  |
+| <a id="s-3950ed2d14"></a>`sort` | yes | type="string"; enum=["updated_at","phase","evaluation_id"] |  |
 
 ### Progression, limits, and lifecycle
 
-#### [extent-rule/no-semantic-maximum/v1](../../../policies/index.md#p-574724b48af0)
+#### [extent-rule/no-semantic-maximum/v1](../../../policies/index.md#p-574724b48a)
 
 Shared facts for every subject below: capacity_authority={"declared_maximum":null,"hidden_maximum":"forbidden","owner":"stove0"}; maximum=null; reason="no-declared-semantic-maximum"
 
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
-| [field filters](#s-de5213702993) | `cardinality · entries · operational_policy` | shared above |
+| [field filters](#s-de52137029) | `cardinality · entries · operational_policy` | shared above |
 
-#### [extent-rule/route-progression/v1](../../../policies/index.md#p-6b76b527cb21)
+#### [extent-rule/route-progression/v1](../../../policies/index.md#p-6b76b527cb)
 
 Shared facts for every subject below: progression={"default_page_size":25,"kind":"mutable-browse","maximum_page_size":100,"next_page_token_field":"next_page_token","page_size_parameter":"page_size","page_token_parameter":"page_token"}; reason="bounded-route-page"
 
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
-| [field evaluations](#s-d5faabd944bc) | `cardinality · items · segmented_no_total_max` | shared above |
+| [field evaluations](#s-d5faabd944) | `cardinality · items · segmented_no_total_max` | shared above |
 
-#### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
+#### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
 
 Shared facts for every subject below: maximum=100; minimum=1; reason="schema-maximum"
 
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
-| [field page_size](#s-195de0401431) | `value · schema-value · contract_max` | shared above |
+| [field page_size](#s-195de04014) | `value · schema-value · contract_max` | shared above |
 
 ## Maintained corroboration
 
@@ -67,22 +67,22 @@ Shared facts for every subject below: maximum=100; minimum=1; reason="schema-max
 
 ## Governing policies
 
-- <a id="pa-e82f4c892c4b"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0ba)
-- <a id="pa-4f8403e7824e"></a>[extent-rule/no-semantic-maximum/v1](../../../policies/index.md#p-574724b48af0)
-- <a id="pa-7705fee73cfa"></a>[extent-rule/route-progression/v1](../../../policies/index.md#p-6b76b527cb21)
-- <a id="pa-d7815bc9a9f7"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
+- <a id="pa-e82f4c892c"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0)
+- <a id="pa-4f8403e782"></a>[extent-rule/no-semantic-maximum/v1](../../../policies/index.md#p-574724b48a)
+- <a id="pa-7705fee73c"></a>[extent-rule/route-progression/v1](../../../policies/index.md#p-6b76b527cb)
+- <a id="pa-d7815bc9a9"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
 
 ## Evidence
 
 ### Qualification
 
-- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459fb8)
-- [make compose-smoke](../../../evidence/sources.md#q-413b0b241ba8)
+- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459f)
+- [make compose-smoke](../../../evidence/sources.md#q-413b0b241b)
 
 ### Executable sources
 
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
-- [openapi:stove0](../../../evidence/sources.md#src-52e6e3212451) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [openapi:stove0](../../../evidence/sources.md#src-52e6e32124) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
 
 ### Machine authority
 

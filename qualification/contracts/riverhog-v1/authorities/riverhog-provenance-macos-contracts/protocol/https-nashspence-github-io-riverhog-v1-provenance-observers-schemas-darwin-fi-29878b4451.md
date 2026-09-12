@@ -10,61 +10,61 @@ Exact externally visible contract owned by this semantic dossier.
 |---|---|
 | Authority | [riverhog-provenance-macos-contracts](../index.md) |
 | Interface | [protocol](index.md) |
-| Family | [schemas](index.md#f-24cb3a408132) |
+| Family | [schemas](index.md#f-24cb3a4081) |
 | Contract elements | 1 |
 | Extent decisions | 3 |
 
 ## External contract
 
-<a id="s-d0bea0340fd3"></a>
-- <a id="s-60cfd18f0198"></a>`$id`: https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/darwin-file-stat.json
-- <a id="s-efd0fa22d60c"></a>`type`: object
+<a id="s-d0bea0340f"></a>
+- <a id="s-60cfd18f01"></a>`$id`: https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/darwin-file-stat.json
+- <a id="s-efd0fa22d6"></a>`type`: object
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-b619b5f7ca63"></a>`blocks_512_bytes` | no | type="integer"; minimum=0 |  |
-| <a id="s-abf2fedaa3a1"></a>`device` | yes | type="integer"; minimum=0 |  |
-| <a id="s-3010a7cb6241"></a>`flags` | no | type="integer"; minimum=0 |  |
-| <a id="s-3ce78dfebe86"></a>`generation` | no | type="integer"; minimum=0 |  |
-| <a id="s-46187dc3351a"></a>`gid` | yes | type="integer"; minimum=0 |  |
-| <a id="s-d460520d9540"></a>`inode` | yes | type="integer"; minimum=0 |  |
-| <a id="s-90072bb79159"></a>`mode` | yes | type="string"; pattern="^[0-7]+$" |  |
-| <a id="s-5aec627e8790"></a>`nlink` | yes | type="integer"; minimum=0 |  |
-| <a id="s-dbb8144c35cf"></a>`preferred_io_block_size` | no | type="integer"; minimum=0 |  |
-| <a id="s-ab23803f6c4c"></a>`rdev` | no | type="integer"; minimum=0 |  |
-| <a id="s-997352bd006e"></a>`size` | yes | type="integer"; minimum=0 |  |
-| <a id="s-3adabad44a3d"></a>`uid` | yes | type="integer"; minimum=0 |  |
+| <a id="s-b619b5f7ca"></a>`blocks_512_bytes` | no | type="integer"; minimum=0 |  |
+| <a id="s-abf2fedaa3"></a>`device` | yes | type="integer"; minimum=0 |  |
+| <a id="s-3010a7cb62"></a>`flags` | no | type="integer"; minimum=0 |  |
+| <a id="s-3ce78dfebe"></a>`generation` | no | type="integer"; minimum=0 |  |
+| <a id="s-46187dc335"></a>`gid` | yes | type="integer"; minimum=0 |  |
+| <a id="s-d460520d95"></a>`inode` | yes | type="integer"; minimum=0 |  |
+| <a id="s-90072bb791"></a>`mode` | yes | type="string"; pattern="^[0-7]+$" |  |
+| <a id="s-5aec627e87"></a>`nlink` | yes | type="integer"; minimum=0 |  |
+| <a id="s-dbb8144c35"></a>`preferred_io_block_size` | no | type="integer"; minimum=0 |  |
+| <a id="s-ab23803f6c"></a>`rdev` | no | type="integer"; minimum=0 |  |
+| <a id="s-997352bd00"></a>`size` | yes | type="integer"; minimum=0 |  |
+| <a id="s-3adabad44a"></a>`uid` | yes | type="integer"; minimum=0 |  |
 
 ### Progression, limits, and lifecycle
 
-#### [extent-rule/extension-contract/v1](../../../policies/index.md#p-75a89f9d1c36)
+#### [extent-rule/extension-contract/v1](../../../policies/index.md#p-75a89f9d1c)
 
 Shared facts for every subject below: maximum=null; reason="independently-versioned-extension-authority"
 
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
-| [field blocks_512_bytes](#s-b619b5f7ca63) | `value · schema-value · extension_owned` | shared above |
-| [field preferred_io_block_size](#s-dbb8144c35cf) | `value · schema-value · extension_owned` | shared above |
-| [field size](#s-997352bd006e) | `value · schema-value · extension_owned` | shared above |
+| [field blocks_512_bytes](#s-b619b5f7ca) | `value · schema-value · extension_owned` | shared above |
+| [field preferred_io_block_size](#s-dbb8144c35) | `value · schema-value · extension_owned` | shared above |
+| [field size](#s-997352bd00) | `value · schema-value · extension_owned` | shared above |
 
 ## Governing policies
 
-- <a id="pa-a345821e6723"></a>[compatibility/components/v1](../../../policies/index.md#p-95e9a1225947)
-- <a id="pa-4fda5b36db9b"></a>[extent-rule/extension-contract/v1](../../../policies/index.md#p-75a89f9d1c36)
+- <a id="pa-a345821e67"></a>[compatibility/components/v1](../../../policies/index.md#p-95e9a12259)
+- <a id="pa-4fda5b36db"></a>[extent-rule/extension-contract/v1](../../../policies/index.md#p-75a89f9d1c)
 
 ## Evidence
 
 ### Qualification
 
-- [make dist-smoke](../../../evidence/sources.md#q-0ba2578a3eb7)
-- [make build](../../../evidence/sources.md#q-d1121e35fa7a)
+- [make dist-smoke](../../../evidence/sources.md#q-0ba2578a3e)
+- [make build](../../../evidence/sources.md#q-d1121e35fa)
 
 ### Executable sources
 
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
-- [protocol:https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/darwin-file-stat.json](../../../evidence/sources.md#src-7295b2b671f0) — `reference/riverhog/provenance/contracts/macos/src/riverhog_provenance_macos_contracts/schemas/darwin-file-stat.schema.json`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [protocol:https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/darwin-file-stat.json](../../../evidence/sources.md#src-7295b2b671) — `reference/riverhog/provenance/contracts/macos/src/riverhog_provenance_macos_contracts/schemas/darwin-file-stat.schema.json`
 
 ### Machine authority
 

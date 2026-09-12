@@ -16,18 +16,18 @@ Renew Retrieval Job
 
 ## External contract
 
-<a id="s-6c2e444e5f40"></a>
-- <a id="s-b6692350700e"></a>`operationId`: renew_retrieval_job
-- <a id="s-379eabb5c2a5"></a>`summary`: Renew Retrieval Job
-- <a id="s-78681d061d33"></a>`security`: `[{"HTTPBearer": []}]`
+<a id="s-6c2e444e5f"></a>
+- <a id="s-b669235070"></a>`operationId`: renew_retrieval_job
+- <a id="s-379eabb5c2"></a>`summary`: Renew Retrieval Job
+- <a id="s-78681d061d"></a>`security`: `[{"HTTPBearer": []}]`
 
 ### Parameters
 
 | Name | In | Required | Schema |
 |---|---|---:|---|
-| <a id="s-74e7089c4375"></a>`job_id` | path | yes | type="string" |
+| <a id="s-74e7089c43"></a>`job_id` | path | yes | type="string" |
 
-### <a id="s-2acb4c40f409"></a>Request body
+### <a id="s-2acb4c40f4"></a>Request body
 
 `{"content": {"application/json": {"schema": {"$ref": "#/components/schemas/RenewRetrievalJobRequest"}}}, "required": true}`
 
@@ -35,13 +35,13 @@ Renew Retrieval Job
 
 | Status | Description |
 |---|---|
-| <a id="s-c8bd4449c433"></a>`200` | Successful Response |
-| <a id="s-250aa5dba8a5"></a>`400` | Bad Request |
-| <a id="s-73b476ee43fe"></a>`401` | Unauthorized |
-| <a id="s-6a633813c5ef"></a>`403` | Forbidden |
-| <a id="s-7ea33057ee7b"></a>`404` | Not Found |
-| <a id="s-9e23fed389e5"></a>`409` | Conflict |
-| <a id="s-dcc971c3cd0b"></a>`500` | Internal Server Error |
+| <a id="s-c8bd4449c4"></a>`200` | Successful Response |
+| <a id="s-250aa5dba8"></a>`400` | Bad Request |
+| <a id="s-73b476ee43"></a>`401` | Unauthorized |
+| <a id="s-6a633813c5"></a>`403` | Forbidden |
+| <a id="s-7ea33057ee"></a>`404` | Not Found |
+| <a id="s-9e23fed389"></a>`409` | Conflict |
+| <a id="s-dcc971c3cd"></a>`500` | Internal Server Error |
 
 ## Maintained corroboration
 
@@ -57,19 +57,19 @@ Renew Retrieval Job
 
 ## Governing policies
 
-- <a id="pa-8bb168d1d641"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0ba)
+- <a id="pa-8bb168d1d6"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0)
 
 ## Evidence
 
 ### Qualification
 
-- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459fb8)
-- [make compose-smoke](../../../evidence/sources.md#q-413b0b241ba8)
+- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459f)
+- [make compose-smoke](../../../evidence/sources.md#q-413b0b241b)
 
 ### Executable sources
 
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
-- [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc960) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc9) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
 
 ### Machine authority
 

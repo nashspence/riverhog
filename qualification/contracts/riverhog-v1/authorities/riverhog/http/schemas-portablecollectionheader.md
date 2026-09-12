@@ -16,33 +16,33 @@ Bounded immutable metadata that owns one portable file inventory.
 
 ## External contract
 
-<a id="s-b136bcb9c120"></a>
-- <a id="s-01256d424692"></a>`title`: PortableCollectionHeader
-- <a id="s-519f6be1ef41"></a>`description`: Bounded immutable metadata that owns one portable file inventory.
-- <a id="s-50d2eb156510"></a>`type`: object
+<a id="s-b136bcb9c1"></a>
+- <a id="s-01256d4246"></a>`title`: PortableCollectionHeader
+- <a id="s-519f6be1ef"></a>`description`: Bounded immutable metadata that owns one portable file inventory.
+- <a id="s-50d2eb1565"></a>`type`: object
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-24956a7c4e20"></a>`collection` | yes | #/components/schemas/CollectionId |  |
-| <a id="s-08d76496f492"></a>`content_identity` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-7980aa414c28"></a>`encryption_format` | yes | type="string"; minLength=1 |  |
-| <a id="s-e67a06239f19"></a>`format` | no | type="string"; const="riverhog-collection/v1" |  |
-| <a id="s-e61a66d8d04f"></a>`passphrase_id` | yes | type="string"; pattern="^[A-Za-z0-9_-]{16,128}$" |  |
-| <a id="s-9d38e0d11452"></a>`provenance_identity` | no | anyOf=type="string"; pattern="^[0-9a-f]{64}$" \| type="null" |  |
-| <a id="s-f354b26fe8b8"></a>`provenance_mode` | yes | type="string"; enum=["captured","mixed","omitted"] |  |
+| <a id="s-24956a7c4e"></a>`collection` | yes | #/components/schemas/CollectionId |  |
+| <a id="s-08d76496f4"></a>`content_identity` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-7980aa414c"></a>`encryption_format` | yes | type="string"; minLength=1 |  |
+| <a id="s-e67a06239f"></a>`format` | no | type="string"; const="riverhog-collection/v1" |  |
+| <a id="s-e61a66d8d0"></a>`passphrase_id` | yes | type="string"; pattern="^[A-Za-z0-9_-]{16,128}$" |  |
+| <a id="s-9d38e0d114"></a>`provenance_identity` | no | anyOf=type="string"; pattern="^[0-9a-f]{64}$" \| type="null" |  |
+| <a id="s-f354b26fe8"></a>`provenance_mode` | yes | type="string"; enum=["captured","mixed","omitted"] |  |
 
 ### Progression, limits, and lifecycle
 
-#### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
+#### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
 
 Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"}
 
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
-| [field content_identity](#s-08d76496f492) | `length · characters · fixed` | shared above |
-| <a id="s-87c463dd1e75"></a>field provenance_identity · anyOf alternative 1 | `length · characters · fixed` | shared above |
+| [field content_identity](#s-08d76496f4) | `length · characters · fixed` | shared above |
+| <a id="s-87c463dd1e"></a>[field provenance_identity · string value](#s-9d38e0d114) | `length · characters · fixed` | shared above |
 
 ## Maintained corroboration
 
@@ -52,20 +52,20 @@ Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-publ
 
 ## Governing policies
 
-- <a id="pa-e6cd81f9dd48"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0ba)
-- <a id="pa-06450f4f148d"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
+- <a id="pa-e6cd81f9dd"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0)
+- <a id="pa-06450f4f14"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
 
 ## Evidence
 
 ### Qualification
 
-- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459fb8)
-- [make compose-smoke](../../../evidence/sources.md#q-413b0b241ba8)
+- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459f)
+- [make compose-smoke](../../../evidence/sources.md#q-413b0b241b)
 
 ### Executable sources
 
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
-- [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc960) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc9) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
 
 ### Machine authority
 

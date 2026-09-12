@@ -16,35 +16,35 @@ Exact externally visible contract owned by this semantic dossier.
 
 ## External contract
 
-<a id="s-42674da55ccc"></a>
-- <a id="s-4bc22de259af"></a>`title`: EvaluationMatrix
-- <a id="s-b2fcf12d3e34"></a>`type`: object
+<a id="s-42674da55c"></a>
+- <a id="s-4bc22de259"></a>`title`: EvaluationMatrix
+- <a id="s-b2fcf12d3e"></a>`type`: object
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-36c2f17f341b"></a>`format` | no | type="string"; const="stove0-evaluation-matrix/v1" |  |
-| <a id="s-184e486a2ec7"></a>`matrix_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-4177bbefab0b"></a>`variants` | yes | type="array"; minItems=1; items=(#/components/schemas/EvaluationVariant) |  |
+| <a id="s-36c2f17f34"></a>`format` | no | type="string"; const="stove0-evaluation-matrix/v1" |  |
+| <a id="s-184e486a2e"></a>`matrix_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-4177bbefab"></a>`variants` | yes | type="array"; minItems=1; items=(#/components/schemas/EvaluationVariant) |  |
 
 ### Progression, limits, and lifecycle
 
-#### [extent-rule/no-semantic-maximum/v1](../../../policies/index.md#p-574724b48af0)
+#### [extent-rule/no-semantic-maximum/v1](../../../policies/index.md#p-574724b48a)
 
 Shared facts for every subject below: capacity_authority={"declared_maximum":null,"hidden_maximum":"forbidden","owner":"stove0"}; maximum=null; reason="no-declared-semantic-maximum"
 
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
-| [field variants](#s-4177bbefab0b) | `cardinality · items · operational_policy` | shared above |
+| [field variants](#s-4177bbefab) | `cardinality · items · operational_policy` | shared above |
 
-#### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
+#### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
 
 Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"}
 
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
-| [field matrix_sha256](#s-184e486a2ec7) | `length · characters · fixed` | shared above |
+| [field matrix_sha256](#s-184e486a2e) | `length · characters · fixed` | shared above |
 
 ## Maintained corroboration
 
@@ -54,21 +54,21 @@ Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-publ
 
 ## Governing policies
 
-- <a id="pa-ead8b39ec823"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0ba)
-- <a id="pa-7facfed9dfd0"></a>[extent-rule/no-semantic-maximum/v1](../../../policies/index.md#p-574724b48af0)
-- <a id="pa-d2abf9af60f4"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
+- <a id="pa-ead8b39ec8"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0)
+- <a id="pa-7facfed9df"></a>[extent-rule/no-semantic-maximum/v1](../../../policies/index.md#p-574724b48a)
+- <a id="pa-d2abf9af60"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
 
 ## Evidence
 
 ### Qualification
 
-- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459fb8)
-- [make compose-smoke](../../../evidence/sources.md#q-413b0b241ba8)
+- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459f)
+- [make compose-smoke](../../../evidence/sources.md#q-413b0b241b)
 
 ### Executable sources
 
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
-- [openapi:stove0](../../../evidence/sources.md#src-52e6e3212451) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [openapi:stove0](../../../evidence/sources.md#src-52e6e32124) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
 
 ### Machine authority
 

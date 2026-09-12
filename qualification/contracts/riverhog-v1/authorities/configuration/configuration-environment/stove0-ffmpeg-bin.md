@@ -16,27 +16,27 @@ Exact externally visible contract owned by this semantic dossier.
 
 ## External contract
 
-<a id="s-d15fb4b92875"></a>
+<a id="s-d15fb4b928"></a>
 | Field | Shape |
 |---|---|
-| <a id="s-98b9d4f5c372"></a>`consumers` | ["stove0-nvenc-av1-opus-review-sampler","stove0-nvenc-av1-opus-target","stove0-opus-review-sampler","stove0-opus-target"] |
-| <a id="s-a54012d8c09d"></a>`name` | "STOVE0_FFMPEG_BIN" |
+| <a id="s-98b9d4f5c3"></a>`consumers` | ["stove0-nvenc-av1-opus-review-sampler","stove0-nvenc-av1-opus-target","stove0-opus-review-sampler","stove0-opus-target"] |
+| <a id="s-a54012d8c0"></a>`name` | "STOVE0_FFMPEG_BIN" |
 
 ## Governing policies
 
-- <a id="pa-c1678f2d09dd"></a>[compatibility/configuration/v1](../../../policies/index.md#p-8dc08bb46173)
+- <a id="pa-c1678f2d09"></a>[compatibility/configuration/v1](../../../policies/index.md#p-8dc08bb461)
 
 ## Evidence
 
 ### Qualification
 
-- [make unit](../../../evidence/sources.md#q-ce47068f504c)
-- [make compose-smoke](../../../evidence/sources.md#q-413b0b241ba8)
+- [make unit](../../../evidence/sources.md#q-ce47068f50)
+- [make compose-smoke](../../../evidence/sources.md#q-413b0b241b)
 
 ### Executable sources
 
-- [configuration-environment:STOVE0_FFMPEG_BIN](../../../evidence/sources.md#src-a352d58c1520) — `configuration-environment:STOVE0_FFMPEG_BIN`
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
+- [configuration-environment:STOVE0_FFMPEG_BIN](../../../evidence/sources.md#src-a352d58c15) — `configuration-environment:STOVE0_FFMPEG_BIN`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
 
 ### Machine authority
 

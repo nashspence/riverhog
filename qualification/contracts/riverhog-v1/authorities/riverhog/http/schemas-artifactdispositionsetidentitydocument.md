@@ -16,45 +16,45 @@ Exact externally visible contract owned by this semantic dossier.
 
 ## External contract
 
-<a id="s-be7215dafa09"></a>
-- <a id="s-6e86dffb5679"></a>`title`: ArtifactDispositionSetIdentityDocument
-- <a id="s-133ef058a45e"></a>`type`: object
+<a id="s-be7215dafa"></a>
+- <a id="s-6e86dffb56"></a>`title`: ArtifactDispositionSetIdentityDocument
+- <a id="s-133ef058a4"></a>`type`: object
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-1b9abf9f7033"></a>`disposition_count` | yes | type="integer"; minimum=1 |  |
-| <a id="s-35aa7633aef4"></a>`output_artifact_count` | yes | type="integer"; minimum=1 |  |
-| <a id="s-82bf7da7d817"></a>`output_edge_count` | yes | type="integer"; minimum=1 |  |
-| <a id="s-56209a946089"></a>`sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-1b9abf9f70"></a>`disposition_count` | yes | type="integer"; minimum=1 |  |
+| <a id="s-35aa7633ae"></a>`output_artifact_count` | yes | type="integer"; minimum=1 |  |
+| <a id="s-82bf7da7d8"></a>`output_edge_count` | yes | type="integer"; minimum=1 |  |
+| <a id="s-56209a9460"></a>`sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 
 ### Progression, limits, and lifecycle
 
-#### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
+#### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
 
 Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"}
 
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
-| [field sha256](#s-56209a946089) | `length · characters · fixed` | shared above |
+| [field sha256](#s-56209a9460) | `length · characters · fixed` | shared above |
 
 ## Governing policies
 
-- <a id="pa-b6463fa8f291"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0ba)
-- <a id="pa-889cd8b6e7b3"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
+- <a id="pa-b6463fa8f2"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0)
+- <a id="pa-889cd8b6e7"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
 
 ## Evidence
 
 ### Qualification
 
-- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459fb8)
-- [make compose-smoke](../../../evidence/sources.md#q-413b0b241ba8)
+- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459f)
+- [make compose-smoke](../../../evidence/sources.md#q-413b0b241b)
 
 ### Executable sources
 
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
-- [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc960) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc9) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
 
 ### Machine authority
 

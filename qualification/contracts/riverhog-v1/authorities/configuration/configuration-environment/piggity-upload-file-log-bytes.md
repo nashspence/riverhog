@@ -16,38 +16,38 @@ Exact externally visible contract owned by this semantic dossier.
 
 ## External contract
 
-<a id="s-70ab20d6025b"></a>
+<a id="s-70ab20d602"></a>
 | Field | Shape |
 |---|---|
-| <a id="s-cf5ca173ed33"></a>`consumers` | ["piggity"] |
-| <a id="s-e26009ba6100"></a>`name` | "PIGGITY_UPLOAD_FILE_LOG_BYTES" |
+| <a id="s-cf5ca173ed"></a>`consumers` | ["piggity"] |
+| <a id="s-e26009ba61"></a>`name` | "PIGGITY_UPLOAD_FILE_LOG_BYTES" |
 
 ### Progression, limits, and lifecycle
 
-#### [extent-rule/configured-capacity/v1](../../../policies/index.md#p-3ebc61fc9972)
+#### [extent-rule/configured-capacity/v1](../../../policies/index.md#p-3ebc61fc99)
 
 Shared facts for every subject below: configuration="PIGGITY_UPLOAD_FILE_LOG_BYTES"; maximum=null; reason="operator-configured-capacity"
 
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
-| [PIGGITY_UPLOAD_FILE_LOG_BYTES](#s-70ab20d6025b) | `value · configured-value · operational_policy` | shared above |
+| [PIGGITY_UPLOAD_FILE_LOG_BYTES](#s-70ab20d602) | `value · configured-value · operational_policy` | shared above |
 
 ## Governing policies
 
-- <a id="pa-b59ecd5d4bed"></a>[compatibility/configuration/v1](../../../policies/index.md#p-8dc08bb46173)
-- <a id="pa-8f39df02bb3e"></a>[extent-rule/configured-capacity/v1](../../../policies/index.md#p-3ebc61fc9972)
+- <a id="pa-b59ecd5d4b"></a>[compatibility/configuration/v1](../../../policies/index.md#p-8dc08bb461)
+- <a id="pa-8f39df02bb"></a>[extent-rule/configured-capacity/v1](../../../policies/index.md#p-3ebc61fc99)
 
 ## Evidence
 
 ### Qualification
 
-- [make unit](../../../evidence/sources.md#q-ce47068f504c)
-- [make compose-smoke](../../../evidence/sources.md#q-413b0b241ba8)
+- [make unit](../../../evidence/sources.md#q-ce47068f50)
+- [make compose-smoke](../../../evidence/sources.md#q-413b0b241b)
 
 ### Executable sources
 
-- [configuration-environment:PIGGITY_UPLOAD_FILE_LOG_BYTES](../../../evidence/sources.md#src-31ede303d6f7) — `configuration-environment:PIGGITY_UPLOAD_FILE_LOG_BYTES`
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
+- [configuration-environment:PIGGITY_UPLOAD_FILE_LOG_BYTES](../../../evidence/sources.md#src-31ede303d6) — `configuration-environment:PIGGITY_UPLOAD_FILE_LOG_BYTES`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
 
 ### Machine authority
 

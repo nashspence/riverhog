@@ -16,27 +16,27 @@ Exact externally visible contract owned by this semantic dossier.
 
 ## External contract
 
-<a id="s-c5d59cd44bcd"></a>
+<a id="s-c5d59cd44b"></a>
 | Field | Shape |
 |---|---|
-| <a id="s-4676feab29aa"></a>`consumers` | ["riverhog-client"] |
-| <a id="s-0774de54c088"></a>`name` | "RIVERHOG_HOST_HEADER" |
+| <a id="s-4676feab29"></a>`consumers` | ["riverhog-client"] |
+| <a id="s-0774de54c0"></a>`name` | "RIVERHOG_HOST_HEADER" |
 
 ## Governing policies
 
-- <a id="pa-633b63c3ae20"></a>[compatibility/configuration/v1](../../../policies/index.md#p-8dc08bb46173)
+- <a id="pa-633b63c3ae"></a>[compatibility/configuration/v1](../../../policies/index.md#p-8dc08bb461)
 
 ## Evidence
 
 ### Qualification
 
-- [make unit](../../../evidence/sources.md#q-ce47068f504c)
-- [make compose-smoke](../../../evidence/sources.md#q-413b0b241ba8)
+- [make unit](../../../evidence/sources.md#q-ce47068f50)
+- [make compose-smoke](../../../evidence/sources.md#q-413b0b241b)
 
 ### Executable sources
 
-- [configuration-environment:RIVERHOG_HOST_HEADER](../../../evidence/sources.md#src-d40a0dd07986) — `configuration-environment:RIVERHOG_HOST_HEADER`
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
+- [configuration-environment:RIVERHOG_HOST_HEADER](../../../evidence/sources.md#src-d40a0dd079) — `configuration-environment:RIVERHOG_HOST_HEADER`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
 
 ### Machine authority
 

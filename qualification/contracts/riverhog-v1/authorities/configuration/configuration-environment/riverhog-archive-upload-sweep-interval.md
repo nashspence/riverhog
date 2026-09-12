@@ -16,38 +16,38 @@ Exact externally visible contract owned by this semantic dossier.
 
 ## External contract
 
-<a id="s-c9bbf6ae4d5e"></a>
+<a id="s-c9bbf6ae4d"></a>
 | Field | Shape |
 |---|---|
-| <a id="s-f8e920157603"></a>`consumers` | ["riverhog-server"] |
-| <a id="s-3ea82a14dd9d"></a>`name` | "RIVERHOG_ARCHIVE_UPLOAD_SWEEP_INTERVAL" |
+| <a id="s-f8e9201576"></a>`consumers` | ["riverhog-server"] |
+| <a id="s-3ea82a14dd"></a>`name` | "RIVERHOG_ARCHIVE_UPLOAD_SWEEP_INTERVAL" |
 
 ### Progression, limits, and lifecycle
 
-#### [extent-rule/configured-capacity/v1](../../../policies/index.md#p-3ebc61fc9972)
+#### [extent-rule/configured-capacity/v1](../../../policies/index.md#p-3ebc61fc99)
 
 Shared facts for every subject below: configuration="RIVERHOG_ARCHIVE_UPLOAD_SWEEP_INTERVAL"; maximum=null; reason="operator-configured-capacity"
 
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
-| [RIVERHOG_ARCHIVE_UPLOAD_SWEEP_INTERVAL](#s-c9bbf6ae4d5e) | `value · configured-value · operational_policy` | shared above |
+| [RIVERHOG_ARCHIVE_UPLOAD_SWEEP_INTERVAL](#s-c9bbf6ae4d) | `value · configured-value · operational_policy` | shared above |
 
 ## Governing policies
 
-- <a id="pa-8ea3325c1dc2"></a>[compatibility/configuration/v1](../../../policies/index.md#p-8dc08bb46173)
-- <a id="pa-94a11cdd1fc1"></a>[extent-rule/configured-capacity/v1](../../../policies/index.md#p-3ebc61fc9972)
+- <a id="pa-8ea3325c1d"></a>[compatibility/configuration/v1](../../../policies/index.md#p-8dc08bb461)
+- <a id="pa-94a11cdd1f"></a>[extent-rule/configured-capacity/v1](../../../policies/index.md#p-3ebc61fc99)
 
 ## Evidence
 
 ### Qualification
 
-- [make unit](../../../evidence/sources.md#q-ce47068f504c)
-- [make compose-smoke](../../../evidence/sources.md#q-413b0b241ba8)
+- [make unit](../../../evidence/sources.md#q-ce47068f50)
+- [make compose-smoke](../../../evidence/sources.md#q-413b0b241b)
 
 ### Executable sources
 
-- [configuration-environment:RIVERHOG_ARCHIVE_UPLOAD_SWEEP_INTERVAL](../../../evidence/sources.md#src-c0a58107091d) — `configuration-environment:RIVERHOG_ARCHIVE_UPLOAD_SWEEP_INTERVAL`
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
+- [configuration-environment:RIVERHOG_ARCHIVE_UPLOAD_SWEEP_INTERVAL](../../../evidence/sources.md#src-c0a5810709) — `configuration-environment:RIVERHOG_ARCHIVE_UPLOAD_SWEEP_INTERVAL`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
 
 ### Machine authority
 

@@ -16,52 +16,52 @@ Exact externally visible contract owned by this semantic dossier.
 
 ## External contract
 
-<a id="s-25fab1a1b0a7"></a>
-- <a id="s-2040f986757b"></a>`title`: SmallObjectWriteRequest
-- <a id="s-376ce5c3c76d"></a>`type`: object
+<a id="s-25fab1a1b0"></a>
+- <a id="s-2040f98675"></a>`title`: SmallObjectWriteRequest
+- <a id="s-376ce5c3c7"></a>`type`: object
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-245dd83a6008"></a>`content_type` | yes | type="string"; minLength=1; maxLength=255 |  |
-| <a id="s-694f5617c364"></a>`expected_current_stored_sha256` | no | anyOf=type="string"; pattern="^[0-9a-f]{64}$" \| type="null" |  |
-| <a id="s-cddc05ccf579"></a>`mode` | yes | type="string"; enum=["create_only","replace_current"] |  |
-| <a id="s-95552735651e"></a>`object_path` | yes | type="string"; minLength=1; maxLength=4096 |  |
-| <a id="s-60cd7fe6489b"></a>`placement` | yes | type="string"; enum=["archive","immediate"] |  |
-| <a id="s-a8fdc8c0a10d"></a>`required_identity_assertions` | yes | type="object"; additional keys=`additionalProperties`, `maxProperties`, `x-riverhog-encoded-bytes-max`, `x-riverhog-extent` | Inert caller-owned facts used only to identify and reconcile an exact stored object. Adapters canonicalize, persist, return, and compare these assertions; they must not interpret them as routing, retrieval, retention, credentials, placement, or provider-control instructions. Adapters may retain additional adapter-private assertions. |
-| <a id="s-831f49620de6"></a>`stored_bytes` | yes | type="integer"; minimum=0 |  |
-| <a id="s-d8fcaa470d8b"></a>`stored_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-245dd83a60"></a>`content_type` | yes | type="string"; minLength=1; maxLength=255 |  |
+| <a id="s-694f5617c3"></a>`expected_current_stored_sha256` | no | anyOf=type="string"; pattern="^[0-9a-f]{64}$" \| type="null" |  |
+| <a id="s-cddc05ccf5"></a>`mode` | yes | type="string"; enum=["create_only","replace_current"] |  |
+| <a id="s-9555273565"></a>`object_path` | yes | type="string"; minLength=1; maxLength=4096 |  |
+| <a id="s-60cd7fe648"></a>`placement` | yes | type="string"; enum=["archive","immediate"] |  |
+| <a id="s-a8fdc8c0a1"></a>`required_identity_assertions` | yes | type="object"; additional keys=`additionalProperties`, `maxProperties`, `x-riverhog-encoded-bytes-max`, `x-riverhog-extent` | Inert caller-owned facts used only to identify and reconcile an exact stored object. Adapters canonicalize, persist, return, and compare these assertions; they must not interpret them as routing, retrieval, retention, credentials, placement, or provider-control instructions. Adapters may retain additional adapter-private assertions. |
+| <a id="s-831f49620d"></a>`stored_bytes` | yes | type="integer"; minimum=0 |  |
+| <a id="s-d8fcaa470d"></a>`stored_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 
 ### Progression, limits, and lifecycle
 
-#### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
+#### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
 
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
-| [field content_type](#s-245dd83a6008) | `length · characters · contract_max` | maximum=255; minimum=1; reason="schema-maximum" |
-| <a id="s-889c05b3f3e5"></a>field expected_current_stored_sha256 · anyOf alternative 1 | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
-| [field object_path](#s-95552735651e) | `length · characters · contract_max` | maximum=4096; minimum=1; reason="schema-maximum" |
-| [field required_identity_assertions](#s-a8fdc8c0a10d) | `encoded-size · bytes · contract_max` | maximum=16384; reason="bounded-object-identity-assertion-envelope"; source_constraint={"field":"x-riverhog-encoded-bytes-max"} |
-| [field required_identity_assertions](#s-a8fdc8c0a10d) | `cardinality · entries · contract_max` | maximum=64; reason="bounded-object-identity-assertion-envelope" |
-| [field stored_sha256](#s-d8fcaa470d8b) | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
+| [field content_type](#s-245dd83a60) | `length · characters · contract_max` | maximum=255; minimum=1; reason="schema-maximum" |
+| <a id="s-889c05b3f3"></a>[field expected_current_stored_sha256 · string value](#s-694f5617c3) | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
+| [field object_path](#s-9555273565) | `length · characters · contract_max` | maximum=4096; minimum=1; reason="schema-maximum" |
+| [field required_identity_assertions](#s-a8fdc8c0a1) | `encoded-size · bytes · contract_max` | maximum=16384; reason="bounded-object-identity-assertion-envelope"; source_constraint={"field":"x-riverhog-encoded-bytes-max"} |
+| [field required_identity_assertions](#s-a8fdc8c0a1) | `cardinality · entries · contract_max` | maximum=64; reason="bounded-object-identity-assertion-envelope" |
+| [field stored_sha256](#s-d8fcaa470d) | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
 
 ## Governing policies
 
-- <a id="pa-e5d95f2d577b"></a>[compatibility/components/v1](../../../policies/index.md#p-95e9a1225947)
-- <a id="pa-0586d5dbf7ba"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
+- <a id="pa-e5d95f2d57"></a>[compatibility/components/v1](../../../policies/index.md#p-95e9a12259)
+- <a id="pa-0586d5dbf7"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
 
 ## Evidence
 
 ### Qualification
 
-- [make dist-smoke](../../../evidence/sources.md#q-0ba2578a3eb7)
-- [make build](../../../evidence/sources.md#q-d1121e35fa7a)
+- [make dist-smoke](../../../evidence/sources.md#q-0ba2578a3e)
+- [make build](../../../evidence/sources.md#q-d1121e35fa)
 
 ### Executable sources
 
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
-- [protocol:generated:riverhog-storage-adapter](../../../evidence/sources.md#src-ef281f2471a9) — `packages/riverhog-storage-adapter-support/src/riverhog_storage_adapter_support/schemas.py::storage_adapter_schema_bundle`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [protocol:generated:riverhog-storage-adapter](../../../evidence/sources.md#src-ef281f2471) — `packages/riverhog-storage-adapter-support/src/riverhog_storage_adapter_support/schemas.py::storage_adapter_schema_bundle`
 
 ### Machine authority
 

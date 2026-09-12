@@ -10,54 +10,54 @@ Exact externally visible contract owned by this semantic dossier.
 |---|---|
 | Authority | [stove0-review-sampler-support](../index.md) |
 | Interface | [protocol](index.md) |
-| Family | [schemas](index.md#f-fba3a5663ca7) |
+| Family | [schemas](index.md#f-fba3a5663c) |
 | Contract elements | 1 |
 | Extent decisions | 1 |
 
 ## External contract
 
-<a id="s-76159d095356"></a>
-- <a id="s-cd9e354db7e0"></a>`title`: ErrorResponse
-- <a id="s-6004480872b4"></a>`type`: object
+<a id="s-76159d0953"></a>
+- <a id="s-cd9e354db7"></a>`title`: ErrorResponse
+- <a id="s-6004480872"></a>`type`: object
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-701af705dd06"></a>`error` | yes | #/$defs/ErrorBody |  |
+| <a id="s-701af705dd"></a>`error` | yes | #/$defs/ErrorBody |  |
 
 ### Definitions
 
 | Definition | Shape |
 |---|---|
-| <a id="s-377a40281637"></a>`ErrorBody` | type="object"; fields=`code`, `details`, `message`; additional keys=`additionalProperties`, `required` |
+| <a id="s-377a402816"></a>`ErrorBody` | type="object"; fields=`code`, `details`, `message`; additional keys=`additionalProperties`, `required` |
 
 ### Progression, limits, and lifecycle
 
-#### [extent-rule/no-semantic-maximum/v1](../../../policies/index.md#p-574724b48af0)
+#### [extent-rule/no-semantic-maximum/v1](../../../policies/index.md#p-574724b48a)
 
 Shared facts for every subject below: capacity_authority={"declared_maximum":null,"hidden_maximum":"forbidden","owner":"stove0-review-sampler-protocol"}; maximum=null; reason="no-declared-semantic-maximum"
 
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
-| <a id="s-b96c4de4f594"></a>definition ErrorBody · field details · anyOf alternative 1 | `cardinality · entries · operational_policy` | shared above |
+| <a id="s-b96c4de4f5"></a>[definition ErrorBody · field details · object value](#s-377a402816) | `cardinality · entries · operational_policy` | shared above |
 
 ## Governing policies
 
-- <a id="pa-d82541d46936"></a>[compatibility/components/v1](../../../policies/index.md#p-95e9a1225947)
-- <a id="pa-84504a4cf876"></a>[extent-rule/no-semantic-maximum/v1](../../../policies/index.md#p-574724b48af0)
+- <a id="pa-d82541d469"></a>[compatibility/components/v1](../../../policies/index.md#p-95e9a12259)
+- <a id="pa-84504a4cf8"></a>[extent-rule/no-semantic-maximum/v1](../../../policies/index.md#p-574724b48a)
 
 ## Evidence
 
 ### Qualification
 
-- [make dist-smoke](../../../evidence/sources.md#q-0ba2578a3eb7)
-- [make build](../../../evidence/sources.md#q-d1121e35fa7a)
+- [make dist-smoke](../../../evidence/sources.md#q-0ba2578a3e)
+- [make build](../../../evidence/sources.md#q-d1121e35fa)
 
 ### Executable sources
 
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
-- [protocol:generated:stove0-review-sampler](../../../evidence/sources.md#src-b47f3f4d7b7f) — `reference/stove0/targets/review/sampler/support/src/stove0_review_sampler_support/schemas.py::sampler_schema_bundle`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [protocol:generated:stove0-review-sampler](../../../evidence/sources.md#src-b47f3f4d7b) — `reference/stove0/targets/review/sampler/support/src/stove0_review_sampler_support/schemas.py::sampler_schema_bundle`
 
 ### Machine authority
 

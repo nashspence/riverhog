@@ -16,27 +16,27 @@ Exact externally visible contract owned by this semantic dossier.
 
 ## External contract
 
-<a id="s-b6148dfd814d"></a>
+<a id="s-b6148dfd81"></a>
 | Field | Shape |
 |---|---|
-| <a id="s-b49faf4a7f3b"></a>`consumers` | ["riverhog-server"] |
-| <a id="s-a2dcbb91e667"></a>`name` | "RIVERHOG_ARCHIVE_ACTIVE_PASSPHRASE_ID" |
+| <a id="s-b49faf4a7f"></a>`consumers` | ["riverhog-server"] |
+| <a id="s-a2dcbb91e6"></a>`name` | "RIVERHOG_ARCHIVE_ACTIVE_PASSPHRASE_ID" |
 
 ## Governing policies
 
-- <a id="pa-52402111100c"></a>[compatibility/configuration/v1](../../../policies/index.md#p-8dc08bb46173)
+- <a id="pa-5240211110"></a>[compatibility/configuration/v1](../../../policies/index.md#p-8dc08bb461)
 
 ## Evidence
 
 ### Qualification
 
-- [make unit](../../../evidence/sources.md#q-ce47068f504c)
-- [make compose-smoke](../../../evidence/sources.md#q-413b0b241ba8)
+- [make unit](../../../evidence/sources.md#q-ce47068f50)
+- [make compose-smoke](../../../evidence/sources.md#q-413b0b241b)
 
 ### Executable sources
 
-- [configuration-environment:RIVERHOG_ARCHIVE_ACTIVE_PASSPHRASE_ID](../../../evidence/sources.md#src-103aaaade7fe) — `configuration-environment:RIVERHOG_ARCHIVE_ACTIVE_PASSPHRASE_ID`
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
+- [configuration-environment:RIVERHOG_ARCHIVE_ACTIVE_PASSPHRASE_ID](../../../evidence/sources.md#src-103aaaade7) — `configuration-environment:RIVERHOG_ARCHIVE_ACTIVE_PASSPHRASE_ID`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
 
 ### Machine authority
 

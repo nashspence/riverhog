@@ -10,34 +10,34 @@ Exact externally visible contract owned by this semantic dossier.
 |---|---|
 | Authority | [stove0-target-protocol](../index.md) |
 | Interface | [python](index.md) |
-| Family | [modules](index.md#f-84b26012f92e) |
+| Family | [modules](index.md#f-84b26012f9) |
 | Contract elements | 1 |
 | Extent decisions | 0 |
 
 ## External contract
 
-<a id="s-83547c757370"></a>
+<a id="s-83547c7573"></a>
 | Field | Shape |
 |---|---|
-| <a id="s-46e391690508"></a>`distribution` | "stove0-target-protocol" |
-| <a id="s-7bb91323f0dd"></a>`exports` | additional keys=`ARTIFACT_ID_PATTERN`, `AcceptedTargetJob`, `EFFECT_RECEIPT_FORMAT`, `EFFECT_TARGET_PROTOCOL`, `EffectPlan`, `EffectPlanPayload`, `ExternalEffectReceipt`, `ExternalEffectReceiptPayload`, `InputArtifact`, `InputArtifactContract`, `InputDisposition`, `InputDispositionDeclaration`, `JSON_SCHEMA_ONLY_SEMANTIC_PROFILE`, `OperationContract`, `OperationContractPayload`, `OutputArtifact`, `OutputArtifactContract`, `OutputArtifactRoleCount`, `OutputArtifactSetIdentity`, `OutputCollectionRef`, `OutputSourceEdge`, `SHA256_PATTERN`, `SemanticId`, `SemanticIntentConformanceVector`, `SemanticIntentConformanceVectors`, `SemanticValidationProfile`, `SemanticValidationProfilePayload`, `Sha256`, `TARGET_CALLBACK_HTTP_OPERATIONS`, `TARGET_HTTP_OPERATIONS`, `TARGET_INPUT_PAGE_MAX`, `TRANSFORM_TARGET_PROTOCOL`, `TargetCallbackAccess`, `TargetCallbackAcknowledgement`, `TargetContract`, `TargetContractPayload`, `TargetDeclaration`, `TargetExecutionEvidence`, `TargetFailure`, `TargetInapplicable`, `TargetInputAuthority`, `TargetInputPage`, `TargetInputRoleCount`, `TargetJobDeclaration`, `TargetJobRequest`, `TargetJobState`, `TargetJobStatus`, `TargetOperationSupport`, `TargetOutputBinding`, `TargetOutputBindingSetIdentity`, `TargetPlan`, `TargetPreflightRequest`, `TargetPreflightResponse`, `TargetProductionAuthority`, `TargetProductionAuthorityPayload`, `TargetProductionSealResponse`, `TargetProgress`, `TargetProtocol`, `TargetProtocolModel`, `TargetResultKind`, `TargetRuntimeAuthority`, `TargetSettlementAuthority`, `TargetSettlementAuthorityPayload`, `TransformPlan`, `TransformPlanPayload`, `WorkspaceAssurance`, `canonical_json_bytes`, `canonical_json_sha256`, `update_input_disposition_commitment`, `update_output_artifact_commitment`, `update_output_source_edge_commitment`, `update_target_output_binding_commitment`, `validate_declaration_against_operation`, `validate_preflight_response_against_request`, `validate_status_against_request` |
-| <a id="s-aaca4682c2ea"></a>`module` | "stove0_target_protocol" |
+| <a id="s-46e3916905"></a>`distribution` | "stove0-target-protocol" |
+| <a id="s-7bb91323f0"></a>`exports` | additional keys=`ARTIFACT_ID_PATTERN`, `AcceptedTargetJob`, `EFFECT_RECEIPT_FORMAT`, `EFFECT_TARGET_PROTOCOL`, `EffectPlan`, `EffectPlanPayload`, `ExternalEffectReceipt`, `ExternalEffectReceiptPayload`, `InputArtifact`, `InputArtifactContract`, `InputDisposition`, `InputDispositionDeclaration`, `JSON_SCHEMA_ONLY_SEMANTIC_PROFILE`, `OperationContract`, `OperationContractPayload`, `OutputArtifact`, `OutputArtifactContract`, `OutputArtifactRoleCount`, `OutputArtifactSetIdentity`, `OutputCollectionRef`, `OutputSourceEdge`, `SHA256_PATTERN`, `SemanticId`, `SemanticIntentConformanceVector`, `SemanticIntentConformanceVectors`, `SemanticValidationProfile`, `SemanticValidationProfilePayload`, `Sha256`, `TARGET_CALLBACK_HTTP_OPERATIONS`, `TARGET_HTTP_OPERATIONS`, `TARGET_INPUT_PAGE_MAX`, `TRANSFORM_TARGET_PROTOCOL`, `TargetCallbackAccess`, `TargetCallbackAcknowledgement`, `TargetContract`, `TargetContractPayload`, `TargetDeclaration`, `TargetExecutionEvidence`, `TargetFailure`, `TargetInapplicable`, `TargetInputAuthority`, `TargetInputPage`, `TargetInputRoleCount`, `TargetJobDeclaration`, `TargetJobRequest`, `TargetJobState`, `TargetJobStatus`, `TargetOperationSupport`, `TargetOutputBinding`, `TargetOutputBindingSetIdentity`, `TargetPlan`, `TargetPreflightRequest`, `TargetPreflightResponse`, `TargetProductionAuthority`, `TargetProductionAuthorityPayload`, `TargetProductionSealResponse`, `TargetProgress`, `TargetProtocol`, `TargetProtocolModel`, `TargetResultKind`, `TargetRuntimeAuthority`, `TargetSettlementAuthority`, `TargetSettlementAuthorityPayload`, `TransformPlan`, `TransformPlanPayload`, `WorkspaceAssurance`, `canonical_json_bytes`, `canonical_json_sha256`, `update_input_disposition_commitment`, `update_output_artifact_commitment`, `update_output_source_edge_commitment`, `update_target_output_binding_commitment`, `validate_declaration_against_operation`, `validate_preflight_response_against_request`, `validate_status_against_request` |
+| <a id="s-aaca4682c2"></a>`module` | "stove0_target_protocol" |
 
 ## Governing policies
 
-- <a id="pa-675f2d26734e"></a>[compatibility/python-api/v1](../../../policies/index.md#p-e574772ba506)
+- <a id="pa-675f2d2673"></a>[compatibility/python-api/v1](../../../policies/index.md#p-e574772ba5)
 
 ## Evidence
 
 ### Qualification
 
-- [make dist-smoke](../../../evidence/sources.md#q-0ba2578a3eb7)
-- [make build](../../../evidence/sources.md#q-d1121e35fa7a)
+- [make dist-smoke](../../../evidence/sources.md#q-0ba2578a3e)
+- [make build](../../../evidence/sources.md#q-d1121e35fa)
 
 ### Executable sources
 
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
-- [python:stove0-target-protocol](../../../evidence/sources.md#src-d1ead8f0abf7) — `reference/stove0/packages/target-protocol/src/stove0_target_protocol/__init__.py::<module>`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [python:stove0-target-protocol](../../../evidence/sources.md#src-d1ead8f0ab) — `reference/stove0/packages/target-protocol/src/stove0_target_protocol/__init__.py::<module>`
 
 ### Machine authority
 

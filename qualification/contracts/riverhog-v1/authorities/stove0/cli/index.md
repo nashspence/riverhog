@@ -6,21 +6,21 @@ Contract elements: **37** · Extent decisions: **67**
 
 | Family | Count |
 |---|---:|
-| <a id="f-4d55d4b53fc5"></a>`admission` | 7 |
-| <a id="f-acdd7a51c8f9"></a>`evaluation` | 8 |
-| <a id="f-e5d3facd56a9"></a>`event` | 2 |
-| <a id="f-dde8b4640d30"></a>`health` | 1 |
-| <a id="f-6bc047c97793"></a>`preview` | 1 |
-| <a id="f-3c67946e146f"></a>`recipe` | 4 |
-| <a id="f-84748835f65b"></a>`root` | 1 |
-| <a id="f-03a104d47408"></a>`scheduler` | 3 |
-| <a id="f-d1a21420abd8"></a>`selection` | 2 |
-| <a id="f-7aec33b44728"></a>`work` | 8 |
+| <a id="f-4d55d4b53f"></a>`admission` | 7 |
+| <a id="f-acdd7a51c8"></a>`evaluation` | 8 |
+| <a id="f-e5d3facd56"></a>`event` | 2 |
+| <a id="f-dde8b4640d"></a>`health` | 1 |
+| <a id="f-6bc047c977"></a>`preview` | 1 |
+| <a id="f-3c67946e14"></a>`recipe` | 4 |
+| <a id="f-84748835f6"></a>`root` | 1 |
+| <a id="f-03a104d474"></a>`scheduler` | 3 |
+| <a id="f-d1a21420ab"></a>`selection` | 2 |
+| <a id="f-7aec33b447"></a>`work` | 8 |
 
 | Policy | Count |
 |---|---:|
-| [compatibility/cli/v1](../../../policies/index.md#p-48a89776de7f) | 37 |
-| [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034) | 26 |
+| [compatibility/cli/v1](../../../policies/index.md#p-48a89776de) | 37 |
+| [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0) | 26 |
 
 ## Semantic families
 

@@ -16,40 +16,40 @@ Exact externally visible contract owned by this semantic dossier.
 
 ## External contract
 
-<a id="s-f599d8e707f6"></a>
-- <a id="s-db307cfd05d9"></a>`title`: AppKeyListOut
-- <a id="s-af7fa155ca73"></a>`type`: object
+<a id="s-f599d8e707"></a>
+- <a id="s-db307cfd05"></a>`title`: AppKeyListOut
+- <a id="s-af7fa155ca"></a>`type`: object
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-0abf40b30c16"></a>`active` | yes | anyOf=type="boolean" \| type="null" |  |
-| <a id="s-7c7507b66252"></a>`app` | yes | #/components/schemas/ApplicationName |  |
-| <a id="s-5f3fe1ebafb4"></a>`keys` | yes | type="array"; items=(#/components/schemas/AppKeyOut) |  |
-| <a id="s-9101fa3350c5"></a>`next_page_token` | yes | anyOf=#/components/schemas/BrowsePageToken \| type="null" |  |
-| <a id="s-98ec6db1895e"></a>`order` | yes | #/components/schemas/SortOrder |  |
-| <a id="s-7f4f8c329b71"></a>`page_size` | yes | type="integer"; minimum=1; maximum=100 |  |
-| <a id="s-9a1536a3915e"></a>`query` | yes | anyOf=type="string" \| type="null" |  |
-| <a id="s-d0d9fa0407c6"></a>`sort` | yes | #/components/schemas/ApplicationKeySort |  |
+| <a id="s-0abf40b30c"></a>`active` | yes | anyOf=type="boolean" \| type="null" |  |
+| <a id="s-7c7507b662"></a>`app` | yes | #/components/schemas/ApplicationName |  |
+| <a id="s-5f3fe1ebaf"></a>`keys` | yes | type="array"; items=(#/components/schemas/AppKeyOut) |  |
+| <a id="s-9101fa3350"></a>`next_page_token` | yes | anyOf=#/components/schemas/BrowsePageToken \| type="null" |  |
+| <a id="s-98ec6db189"></a>`order` | yes | #/components/schemas/SortOrder |  |
+| <a id="s-7f4f8c329b"></a>`page_size` | yes | type="integer"; minimum=1; maximum=100 |  |
+| <a id="s-9a1536a391"></a>`query` | yes | anyOf=type="string" \| type="null" |  |
+| <a id="s-d0d9fa0407"></a>`sort` | yes | #/components/schemas/ApplicationKeySort |  |
 
 ### Progression, limits, and lifecycle
 
-#### [extent-rule/route-progression/v1](../../../policies/index.md#p-6b76b527cb21)
+#### [extent-rule/route-progression/v1](../../../policies/index.md#p-6b76b527cb)
 
 Shared facts for every subject below: progression={"default_page_size":25,"kind":"mutable-browse","maximum_page_size":100,"next_page_token_field":"next_page_token","page_size_parameter":"page_size","page_token_parameter":"page_token"}; reason="bounded-route-page"
 
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
-| [field keys](#s-5f3fe1ebafb4) | `cardinality · items · segmented_no_total_max` | shared above |
+| [field keys](#s-5f3fe1ebaf) | `cardinality · items · segmented_no_total_max` | shared above |
 
-#### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
+#### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
 
 Shared facts for every subject below: maximum=100; minimum=1; reason="schema-maximum"
 
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
-| [field page_size](#s-7f4f8c329b71) | `value · schema-value · contract_max` | shared above |
+| [field page_size](#s-7f4f8c329b) | `value · schema-value · contract_max` | shared above |
 
 ## Maintained corroboration
 
@@ -63,21 +63,21 @@ Shared facts for every subject below: maximum=100; minimum=1; reason="schema-max
 
 ## Governing policies
 
-- <a id="pa-138abfc21ae6"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0ba)
-- <a id="pa-2af97b3ce45d"></a>[extent-rule/route-progression/v1](../../../policies/index.md#p-6b76b527cb21)
-- <a id="pa-c8ac712b746b"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
+- <a id="pa-138abfc21a"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0)
+- <a id="pa-2af97b3ce4"></a>[extent-rule/route-progression/v1](../../../policies/index.md#p-6b76b527cb)
+- <a id="pa-c8ac712b74"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
 
 ## Evidence
 
 ### Qualification
 
-- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459fb8)
-- [make compose-smoke](../../../evidence/sources.md#q-413b0b241ba8)
+- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459f)
+- [make compose-smoke](../../../evidence/sources.md#q-413b0b241b)
 
 ### Executable sources
 
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
-- [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc960) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc9) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
 
 ### Machine authority
 

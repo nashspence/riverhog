@@ -16,27 +16,27 @@ Get Retrieval Job
 
 ## External contract
 
-<a id="s-71ccd446bbd7"></a>
-- <a id="s-9e1401aa96fe"></a>`operationId`: get_retrieval_job
-- <a id="s-60875a2877be"></a>`summary`: Get Retrieval Job
-- <a id="s-fe0300e289b5"></a>`security`: `[{"HTTPBearer": []}]`
+<a id="s-71ccd446bb"></a>
+- <a id="s-9e1401aa96"></a>`operationId`: get_retrieval_job
+- <a id="s-60875a2877"></a>`summary`: Get Retrieval Job
+- <a id="s-fe0300e289"></a>`security`: `[{"HTTPBearer": []}]`
 
 ### Parameters
 
 | Name | In | Required | Schema |
 |---|---|---:|---|
-| <a id="s-194d1e849049"></a>`job_id` | path | yes | type="string" |
+| <a id="s-194d1e8490"></a>`job_id` | path | yes | type="string" |
 
 ### Responses
 
 | Status | Description |
 |---|---|
-| <a id="s-cf9c7c61fe46"></a>`200` | Successful Response |
-| <a id="s-72e083b27425"></a>`400` | Bad Request |
-| <a id="s-8d797264150f"></a>`401` | Unauthorized |
-| <a id="s-93fcccb1fc13"></a>`403` | Forbidden |
-| <a id="s-475488a6c135"></a>`404` | Not Found |
-| <a id="s-7d0603b4c1b7"></a>`500` | Internal Server Error |
+| <a id="s-cf9c7c61fe"></a>`200` | Successful Response |
+| <a id="s-72e083b274"></a>`400` | Bad Request |
+| <a id="s-8d79726415"></a>`401` | Unauthorized |
+| <a id="s-93fcccb1fc"></a>`403` | Forbidden |
+| <a id="s-475488a6c1"></a>`404` | Not Found |
+| <a id="s-7d0603b4c1"></a>`500` | Internal Server Error |
 
 ## Maintained corroboration
 
@@ -51,19 +51,19 @@ Get Retrieval Job
 
 ## Governing policies
 
-- <a id="pa-cf370903fa21"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0ba)
+- <a id="pa-cf370903fa"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0)
 
 ## Evidence
 
 ### Qualification
 
-- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459fb8)
-- [make compose-smoke](../../../evidence/sources.md#q-413b0b241ba8)
+- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459f)
+- [make compose-smoke](../../../evidence/sources.md#q-413b0b241b)
 
 ### Executable sources
 
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
-- [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc960) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc9) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
 
 ### Machine authority
 

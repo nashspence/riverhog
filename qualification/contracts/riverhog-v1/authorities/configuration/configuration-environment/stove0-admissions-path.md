@@ -16,27 +16,27 @@ Exact externally visible contract owned by this semantic dossier.
 
 ## External contract
 
-<a id="s-3efbdd0d504b"></a>
+<a id="s-3efbdd0d50"></a>
 | Field | Shape |
 |---|---|
-| <a id="s-e5a845680150"></a>`consumers` | ["stove0-server"] |
-| <a id="s-8bf9d9fca274"></a>`name` | "STOVE0_ADMISSIONS_PATH" |
+| <a id="s-e5a8456801"></a>`consumers` | ["stove0-server"] |
+| <a id="s-8bf9d9fca2"></a>`name` | "STOVE0_ADMISSIONS_PATH" |
 
 ## Governing policies
 
-- <a id="pa-0e985d274fb3"></a>[compatibility/configuration/v1](../../../policies/index.md#p-8dc08bb46173)
+- <a id="pa-0e985d274f"></a>[compatibility/configuration/v1](../../../policies/index.md#p-8dc08bb461)
 
 ## Evidence
 
 ### Qualification
 
-- [make unit](../../../evidence/sources.md#q-ce47068f504c)
-- [make compose-smoke](../../../evidence/sources.md#q-413b0b241ba8)
+- [make unit](../../../evidence/sources.md#q-ce47068f50)
+- [make compose-smoke](../../../evidence/sources.md#q-413b0b241b)
 
 ### Executable sources
 
-- [configuration-environment:STOVE0_ADMISSIONS_PATH](../../../evidence/sources.md#src-6962872e1dcd) — `configuration-environment:STOVE0_ADMISSIONS_PATH`
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
+- [configuration-environment:STOVE0_ADMISSIONS_PATH](../../../evidence/sources.md#src-6962872e1d) — `configuration-environment:STOVE0_ADMISSIONS_PATH`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
 
 ### Machine authority
 

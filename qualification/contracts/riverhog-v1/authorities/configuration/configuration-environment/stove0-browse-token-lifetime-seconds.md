@@ -16,38 +16,38 @@ Exact externally visible contract owned by this semantic dossier.
 
 ## External contract
 
-<a id="s-cbedc559e6f7"></a>
+<a id="s-cbedc559e6"></a>
 | Field | Shape |
 |---|---|
-| <a id="s-339b989f89de"></a>`consumers` | ["stove0-server"] |
-| <a id="s-7dead87c9e73"></a>`name` | "STOVE0_BROWSE_TOKEN_LIFETIME_SECONDS" |
+| <a id="s-339b989f89"></a>`consumers` | ["stove0-server"] |
+| <a id="s-7dead87c9e"></a>`name` | "STOVE0_BROWSE_TOKEN_LIFETIME_SECONDS" |
 
 ### Progression, limits, and lifecycle
 
-#### [extent-rule/configured-capacity/v1](../../../policies/index.md#p-3ebc61fc9972)
+#### [extent-rule/configured-capacity/v1](../../../policies/index.md#p-3ebc61fc99)
 
 Shared facts for every subject below: configuration="STOVE0_BROWSE_TOKEN_LIFETIME_SECONDS"; maximum=null; reason="operator-configured-capacity"
 
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
-| [STOVE0_BROWSE_TOKEN_LIFETIME_SECONDS](#s-cbedc559e6f7) | `value · configured-value · operational_policy` | shared above |
+| [STOVE0_BROWSE_TOKEN_LIFETIME_SECONDS](#s-cbedc559e6) | `value · configured-value · operational_policy` | shared above |
 
 ## Governing policies
 
-- <a id="pa-53f6bb4014b5"></a>[compatibility/configuration/v1](../../../policies/index.md#p-8dc08bb46173)
-- <a id="pa-ec48cef35b4d"></a>[extent-rule/configured-capacity/v1](../../../policies/index.md#p-3ebc61fc9972)
+- <a id="pa-53f6bb4014"></a>[compatibility/configuration/v1](../../../policies/index.md#p-8dc08bb461)
+- <a id="pa-ec48cef35b"></a>[extent-rule/configured-capacity/v1](../../../policies/index.md#p-3ebc61fc99)
 
 ## Evidence
 
 ### Qualification
 
-- [make unit](../../../evidence/sources.md#q-ce47068f504c)
-- [make compose-smoke](../../../evidence/sources.md#q-413b0b241ba8)
+- [make unit](../../../evidence/sources.md#q-ce47068f50)
+- [make compose-smoke](../../../evidence/sources.md#q-413b0b241b)
 
 ### Executable sources
 
-- [configuration-environment:STOVE0_BROWSE_TOKEN_LIFETIME_SECONDS](../../../evidence/sources.md#src-6490df2f5a1e) — `configuration-environment:STOVE0_BROWSE_TOKEN_LIFETIME_SECONDS`
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
+- [configuration-environment:STOVE0_BROWSE_TOKEN_LIFETIME_SECONDS](../../../evidence/sources.md#src-6490df2f5a) — `configuration-environment:STOVE0_BROWSE_TOKEN_LIFETIME_SECONDS`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
 
 ### Machine authority
 

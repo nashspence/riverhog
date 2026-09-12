@@ -16,27 +16,27 @@ Exact externally visible contract owned by this semantic dossier.
 
 ## External contract
 
-<a id="s-c87794d1610a"></a>
-- <a id="s-c75964838f3d"></a>`title`: EvaluationChildView
-- <a id="s-d07150de4f9c"></a>`type`: object
+<a id="s-c87794d161"></a>
+- <a id="s-c75964838f"></a>`title`: EvaluationChildView
+- <a id="s-d07150de4f"></a>`type`: object
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-f4f4f554f190"></a>`output` | no | anyOf=#/components/schemas/OutputCollectionRef \| type="null" |  |
-| <a id="s-baf274864a76"></a>`state` | yes | type="string"; enum=["pending","active","complete","inapplicable","failed","canceled"] |  |
-| <a id="s-28b6d889825e"></a>`variant_id` | yes | type="string"; minLength=1; maxLength=160 |  |
-| <a id="s-794161c85855"></a>`work_id` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-f4f4f554f1"></a>`output` | no | anyOf=#/components/schemas/OutputCollectionRef \| type="null" |  |
+| <a id="s-baf274864a"></a>`state` | yes | type="string"; enum=["pending","active","complete","inapplicable","failed","canceled"] |  |
+| <a id="s-28b6d88982"></a>`variant_id` | yes | type="string"; minLength=1; maxLength=160 |  |
+| <a id="s-794161c858"></a>`work_id` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 
 ### Progression, limits, and lifecycle
 
-#### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
+#### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
 
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
-| [field variant_id](#s-28b6d889825e) | `length · characters · contract_max` | maximum=160; minimum=1; reason="schema-maximum" |
-| [field work_id](#s-794161c85855) | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
+| [field variant_id](#s-28b6d88982) | `length · characters · contract_max` | maximum=160; minimum=1; reason="schema-maximum" |
+| [field work_id](#s-794161c858) | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
 
 ## Maintained corroboration
 
@@ -46,20 +46,20 @@ Exact externally visible contract owned by this semantic dossier.
 
 ## Governing policies
 
-- <a id="pa-e19f6b7128d9"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0ba)
-- <a id="pa-8ecc8e11ae63"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
+- <a id="pa-e19f6b7128"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0)
+- <a id="pa-8ecc8e11ae"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
 
 ## Evidence
 
 ### Qualification
 
-- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459fb8)
-- [make compose-smoke](../../../evidence/sources.md#q-413b0b241ba8)
+- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459f)
+- [make compose-smoke](../../../evidence/sources.md#q-413b0b241b)
 
 ### Executable sources
 
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
-- [openapi:stove0](../../../evidence/sources.md#src-52e6e3212451) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [openapi:stove0](../../../evidence/sources.md#src-52e6e32124) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
 
 ### Machine authority
 

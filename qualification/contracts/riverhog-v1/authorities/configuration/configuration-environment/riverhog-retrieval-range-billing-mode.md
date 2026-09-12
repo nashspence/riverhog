@@ -16,27 +16,27 @@ Exact externally visible contract owned by this semantic dossier.
 
 ## External contract
 
-<a id="s-63134bf13910"></a>
+<a id="s-63134bf139"></a>
 | Field | Shape |
 |---|---|
-| <a id="s-7a2481d8f88c"></a>`consumers` | ["riverhog-server"] |
-| <a id="s-822be7b82941"></a>`name` | "RIVERHOG_RETRIEVAL_RANGE_BILLING_MODE" |
+| <a id="s-7a2481d8f8"></a>`consumers` | ["riverhog-server"] |
+| <a id="s-822be7b829"></a>`name` | "RIVERHOG_RETRIEVAL_RANGE_BILLING_MODE" |
 
 ## Governing policies
 
-- <a id="pa-b62340c0e010"></a>[compatibility/configuration/v1](../../../policies/index.md#p-8dc08bb46173)
+- <a id="pa-b62340c0e0"></a>[compatibility/configuration/v1](../../../policies/index.md#p-8dc08bb461)
 
 ## Evidence
 
 ### Qualification
 
-- [make unit](../../../evidence/sources.md#q-ce47068f504c)
-- [make compose-smoke](../../../evidence/sources.md#q-413b0b241ba8)
+- [make unit](../../../evidence/sources.md#q-ce47068f50)
+- [make compose-smoke](../../../evidence/sources.md#q-413b0b241b)
 
 ### Executable sources
 
-- [configuration-environment:RIVERHOG_RETRIEVAL_RANGE_BILLING_MODE](../../../evidence/sources.md#src-dcbfe988b4a9) — `configuration-environment:RIVERHOG_RETRIEVAL_RANGE_BILLING_MODE`
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
+- [configuration-environment:RIVERHOG_RETRIEVAL_RANGE_BILLING_MODE](../../../evidence/sources.md#src-dcbfe988b4) — `configuration-environment:RIVERHOG_RETRIEVAL_RANGE_BILLING_MODE`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
 
 ### Machine authority
 

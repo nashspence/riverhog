@@ -10,84 +10,84 @@ Exact externally visible contract owned by this semantic dossier.
 |---|---|
 | Authority | [stove0-target-support](../index.md) |
 | Interface | [protocol](index.md) |
-| Family | [schemas](index.md#f-3862b77c4ff3) |
+| Family | [schemas](index.md#f-3862b77c4f) |
 | Contract elements | 1 |
 | Extent decisions | 4 |
 
 ## External contract
 
-<a id="s-d5b96e238f68"></a>
-- <a id="s-dd26b16f8acf"></a>`title`: TargetPreflightRequest
-- <a id="s-6b81c388f5d1"></a>`type`: object
+<a id="s-d5b96e238f"></a>
+- <a id="s-dd26b16f8a"></a>`title`: TargetPreflightRequest
+- <a id="s-6b81c388f5"></a>`type`: object
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-1f7d55f0711b"></a>`inputs` | yes | #/$defs/TargetInputAuthority |  |
-| <a id="s-c1ea16c2da28"></a>`intent` | yes | type="object"; additional keys=`additionalProperties` |  |
-| <a id="s-60c5a3483421"></a>`observations` | no | type="array"; items=(#/$defs/ObservationEvidence) |  |
-| <a id="s-07a5946a90b4"></a>`operation_contract_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-142277f62c7e"></a>`operation_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
-| <a id="s-6069a512bd7b"></a>`protocol` | no | type="string"; enum=["stove0-transform-target/v1","stove0-effect-target/v1"] |  |
-| <a id="s-342fd382c1dc"></a>`target_options` | no | type="object"; additional keys=`additionalProperties` |  |
+| <a id="s-1f7d55f071"></a>`inputs` | yes | #/$defs/TargetInputAuthority |  |
+| <a id="s-c1ea16c2da"></a>`intent` | yes | type="object"; additional keys=`additionalProperties` |  |
+| <a id="s-60c5a34834"></a>`observations` | no | type="array"; items=(#/$defs/ObservationEvidence) |  |
+| <a id="s-07a5946a90"></a>`operation_contract_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-142277f62c"></a>`operation_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
+| <a id="s-6069a512bd"></a>`protocol` | no | type="string"; enum=["stove0-transform-target/v1","stove0-effect-target/v1"] |  |
+| <a id="s-342fd382c1"></a>`target_options` | no | type="object"; additional keys=`additionalProperties` |  |
 
 ### Definitions
 
 | Definition | Shape |
 |---|---|
-| <a id="s-3c4967cccf23"></a>`ArtifactSelectionRef` | type="object"; fields=`artifact_count`, `selection_sha256`, `total_bytes`; additional keys=`additionalProperties`, `required` |
-| <a id="s-56a22d7fcba7"></a>`ArtifactSubject` | type="object"; fields=`bytes`, `collection`, `id`, `media_type`, `path`, `role`, `sha256`; additional keys=`additionalProperties`, `required` |
-| <a id="s-a5154ea9fede"></a>`CollectionId` | type="integer"; minimum=1 |
-| <a id="s-fc381411d000"></a>`CollectionRootRef` | type="object"; fields=`archive_root_sha256`, `collection_id`, `content_identity`; additional keys=`additionalProperties`, `required` |
-| <a id="s-b3fc7ee29495"></a>`JsonSchemaDocument` | type="object"; fields=`dialect`, `format_policy`, `id`, `schema`, `sha256`; additional keys=`additionalProperties`, `required` |
-| <a id="s-b0637b7a983b"></a>`JsonValue` | empty object |
-| <a id="s-2dc2fc885a0a"></a>`ObservationEvidence` | type="object"; fields=`request`, `result`; additional keys=`additionalProperties`, `required` |
-| <a id="s-75fd5a78a30f"></a>`ObservationFailure` | type="object"; fields=`code`, `message`, `retryable`; additional keys=`additionalProperties`, `required` |
-| <a id="s-03dc31d0d42c"></a>`ObservationInapplicable` | type="object"; fields=`code`, `message`; additional keys=`additionalProperties`, `required` |
-| <a id="s-0774706ca11c"></a>`ObservationRequest` | type="object"; fields=`format`, `maximum_result_bytes`, `observer_contract_id`, `observer_contract_sha256`, `observer_descriptor_sha256`, `observer_registration_id`, `options`, `request_id`, `retrieval_policy`, `subjects`, `timeout_seconds`, `work_id`; additional keys=`additionalProperties`, `required` |
-| <a id="s-62d1c54be325"></a>`ObservationResult` | type="object"; fields=`execution_evidence`, `facts`, `facts_schema`, `facts_sha256`, `failure`, `format`, `inapplicable`, `observer`, `observer_contract_id`, `observer_contract_sha256`, `request_id`, `result_sha256`, `state`, `subjects`; additional keys=`additionalProperties`, `required` |
-| <a id="s-b3d0b4be58a5"></a>`ObserverImplementation` | type="object"; fields=`descriptor_sha256`, `id`, `protocol`, `source_revision`, `version`; additional keys=`additionalProperties`, `required` |
-| <a id="s-0bf40c6b84c2"></a>`TargetInputAuthority` | type="object"; fields=`roles`, `selection`; additional keys=`additionalProperties`, `required` |
-| <a id="s-a0d64f4573d0"></a>`TargetInputRoleCount` | type="object"; fields=`count`, `role`; additional keys=`additionalProperties`, `required` |
+| <a id="s-3c4967cccf"></a>`ArtifactSelectionRef` | type="object"; fields=`artifact_count`, `selection_sha256`, `total_bytes`; additional keys=`additionalProperties`, `required` |
+| <a id="s-56a22d7fcb"></a>`ArtifactSubject` | type="object"; fields=`bytes`, `collection`, `id`, `media_type`, `path`, `role`, `sha256`; additional keys=`additionalProperties`, `required` |
+| <a id="s-a5154ea9fe"></a>`CollectionId` | type="integer"; minimum=1 |
+| <a id="s-fc381411d0"></a>`CollectionRootRef` | type="object"; fields=`archive_root_sha256`, `collection_id`, `content_identity`; additional keys=`additionalProperties`, `required` |
+| <a id="s-b3fc7ee294"></a>`JsonSchemaDocument` | type="object"; fields=`dialect`, `format_policy`, `id`, `schema`, `sha256`; additional keys=`additionalProperties`, `required` |
+| <a id="s-b0637b7a98"></a>`JsonValue` | empty object |
+| <a id="s-2dc2fc885a"></a>`ObservationEvidence` | type="object"; fields=`request`, `result`; additional keys=`additionalProperties`, `required` |
+| <a id="s-75fd5a78a3"></a>`ObservationFailure` | type="object"; fields=`code`, `message`, `retryable`; additional keys=`additionalProperties`, `required` |
+| <a id="s-03dc31d0d4"></a>`ObservationInapplicable` | type="object"; fields=`code`, `message`; additional keys=`additionalProperties`, `required` |
+| <a id="s-0774706ca1"></a>`ObservationRequest` | type="object"; fields=`format`, `maximum_result_bytes`, `observer_contract_id`, `observer_contract_sha256`, `observer_descriptor_sha256`, `observer_registration_id`, `options`, `request_id`, `retrieval_policy`, `subjects`, `timeout_seconds`, `work_id`; additional keys=`additionalProperties`, `required` |
+| <a id="s-62d1c54be3"></a>`ObservationResult` | type="object"; fields=`execution_evidence`, `facts`, `facts_schema`, `facts_sha256`, `failure`, `format`, `inapplicable`, `observer`, `observer_contract_id`, `observer_contract_sha256`, `request_id`, `result_sha256`, `state`, `subjects`; additional keys=`additionalProperties`, `required` |
+| <a id="s-b3d0b4be58"></a>`ObserverImplementation` | type="object"; fields=`descriptor_sha256`, `id`, `protocol`, `source_revision`, `version`; additional keys=`additionalProperties`, `required` |
+| <a id="s-0bf40c6b84"></a>`TargetInputAuthority` | type="object"; fields=`roles`, `selection`; additional keys=`additionalProperties`, `required` |
+| <a id="s-a0d64f4573"></a>`TargetInputRoleCount` | type="object"; fields=`count`, `role`; additional keys=`additionalProperties`, `required` |
 
 ### Progression, limits, and lifecycle
 
-#### [extent-rule/no-semantic-maximum/v1](../../../policies/index.md#p-574724b48af0)
+#### [extent-rule/no-semantic-maximum/v1](../../../policies/index.md#p-574724b48a)
 
 Shared facts for every subject below: capacity_authority={"declared_maximum":null,"hidden_maximum":"forbidden","owner":"stove0-target-protocol"}; maximum=null; reason="no-declared-semantic-maximum"
 
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
-| [field intent](#s-c1ea16c2da28) | `cardinality · entries · operational_policy` | shared above |
-| [field observations](#s-60c5a3483421) | `cardinality · items · operational_policy` | shared above |
-| [field target_options](#s-342fd382c1dc) | `cardinality · entries · operational_policy` | shared above |
+| [field intent](#s-c1ea16c2da) | `cardinality · entries · operational_policy` | shared above |
+| [field observations](#s-60c5a34834) | `cardinality · items · operational_policy` | shared above |
+| [field target_options](#s-342fd382c1) | `cardinality · entries · operational_policy` | shared above |
 
-#### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
+#### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
 
 Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"}
 
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
-| [field operation_contract_sha256](#s-07a5946a90b4) | `length · characters · fixed` | shared above |
+| [field operation_contract_sha256](#s-07a5946a90) | `length · characters · fixed` | shared above |
 
 ## Governing policies
 
-- <a id="pa-2075f2ba751c"></a>[compatibility/components/v1](../../../policies/index.md#p-95e9a1225947)
-- <a id="pa-b32ba7ebae9d"></a>[extent-rule/no-semantic-maximum/v1](../../../policies/index.md#p-574724b48af0)
-- <a id="pa-e8707d940cd8"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
+- <a id="pa-2075f2ba75"></a>[compatibility/components/v1](../../../policies/index.md#p-95e9a12259)
+- <a id="pa-b32ba7ebae"></a>[extent-rule/no-semantic-maximum/v1](../../../policies/index.md#p-574724b48a)
+- <a id="pa-e8707d940c"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
 
 ## Evidence
 
 ### Qualification
 
-- [make dist-smoke](../../../evidence/sources.md#q-0ba2578a3eb7)
-- [make build](../../../evidence/sources.md#q-d1121e35fa7a)
+- [make dist-smoke](../../../evidence/sources.md#q-0ba2578a3e)
+- [make build](../../../evidence/sources.md#q-d1121e35fa)
 
 ### Executable sources
 
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
-- [protocol:generated:stove0-target](../../../evidence/sources.md#src-2c42f9d39a0b) — `reference/stove0/packages/target-support/src/stove0_target_support/schemas.py::target_schema_bundle`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [protocol:generated:stove0-target](../../../evidence/sources.md#src-2c42f9d39a) — `reference/stove0/packages/target-support/src/stove0_target_support/schemas.py::target_schema_bundle`
 
 ### Machine authority
 

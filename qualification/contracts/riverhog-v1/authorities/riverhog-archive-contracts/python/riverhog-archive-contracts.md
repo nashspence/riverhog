@@ -10,34 +10,34 @@ Exact externally visible contract owned by this semantic dossier.
 |---|---|
 | Authority | [riverhog-archive-contracts](../index.md) |
 | Interface | [python](index.md) |
-| Family | [modules](index.md#f-156699e2ff96) |
+| Family | [modules](index.md#f-156699e2ff) |
 | Contract elements | 1 |
 | Extent decisions | 0 |
 
 ## External contract
 
-<a id="s-00b716397de0"></a>
+<a id="s-00b716397d"></a>
 | Field | Shape |
 |---|---|
-| <a id="s-3cbc140dc487"></a>`distribution` | "riverhog-archive-contracts" |
-| <a id="s-56161af44ef3"></a>`exports` | additional keys=`AGE_UPLOAD_STATE_FORMAT`, `ARCHIVE_ENCRYPTION_FORMAT`, `ARCHIVE_PACK_FILES_MAX`, `ARCHIVE_ROOT_DOCUMENT_BYTES_MAX`, `ARCHIVE_SEQUENCE_BITS`, `ARCHIVE_SEQUENCE_HEX_WIDTH`, `ARCHIVE_VOLUME_DOCUMENT_BYTES_MAX`, `ARCHIVE_VOLUME_PARTS_MAX`, `AgeUploadState`, `ArchiveFileIdentity`, `ArchiveManifestError`, `ArchiveProvenanceIdentity`, `ArchiveRootCiphertextIdentity`, `ArchiveVolume`, `COLLECTION_ARCHIVE_MANIFEST_SCHEMA`, `COLLECTION_ARCHIVE_TERMINAL_SCHEMA`, `COLLECTION_ARCHIVE_VOLUME_SCHEMA`, `CollectionArchiveManifest`, `CollectionArchiveTerminalDocument`, `CollectionArchiveVolumeDocument`, `CollectionEncryptionBinding`, `CollectionTreeIdentity`, `PACK_INDEX_SCHEMA`, `PART_DIGEST_FORMAT`, `PackArchiveVolume`, `ProvenanceRootIdentity`, `RECOVERY_DESCRIPTOR_PATH`, `RECOVERY_DESCRIPTOR_SCHEMA`, `RecoveryDescriptor`, `RecoveryDescriptorError`, `SELECTIVE_READ_FORMAT`, `SegmentArchiveVolume`, `SegmentFilePlacement`, `StoredPartIdentity`, `format_archive_sequence`, `normalize_passphrase_id`, `ordered_archive_volume_commitment`, `parse_archive_sequence`, `update_archive_sequence_commitment` |
-| <a id="s-bd1d09073a05"></a>`module` | "riverhog_archive_contracts" |
+| <a id="s-3cbc140dc4"></a>`distribution` | "riverhog-archive-contracts" |
+| <a id="s-56161af44e"></a>`exports` | additional keys=`AGE_UPLOAD_STATE_FORMAT`, `ARCHIVE_ENCRYPTION_FORMAT`, `ARCHIVE_PACK_FILES_MAX`, `ARCHIVE_ROOT_DOCUMENT_BYTES_MAX`, `ARCHIVE_SEQUENCE_BITS`, `ARCHIVE_SEQUENCE_HEX_WIDTH`, `ARCHIVE_VOLUME_DOCUMENT_BYTES_MAX`, `ARCHIVE_VOLUME_PARTS_MAX`, `AgeUploadState`, `ArchiveFileIdentity`, `ArchiveManifestError`, `ArchiveProvenanceIdentity`, `ArchiveRootCiphertextIdentity`, `ArchiveVolume`, `COLLECTION_ARCHIVE_MANIFEST_SCHEMA`, `COLLECTION_ARCHIVE_TERMINAL_SCHEMA`, `COLLECTION_ARCHIVE_VOLUME_SCHEMA`, `CollectionArchiveManifest`, `CollectionArchiveTerminalDocument`, `CollectionArchiveVolumeDocument`, `CollectionEncryptionBinding`, `CollectionTreeIdentity`, `PACK_INDEX_SCHEMA`, `PART_DIGEST_FORMAT`, `PackArchiveVolume`, `ProvenanceRootIdentity`, `RECOVERY_DESCRIPTOR_PATH`, `RECOVERY_DESCRIPTOR_SCHEMA`, `RecoveryDescriptor`, `RecoveryDescriptorError`, `SELECTIVE_READ_FORMAT`, `SegmentArchiveVolume`, `SegmentFilePlacement`, `StoredPartIdentity`, `format_archive_sequence`, `normalize_passphrase_id`, `ordered_archive_volume_commitment`, `parse_archive_sequence`, `update_archive_sequence_commitment` |
+| <a id="s-bd1d09073a"></a>`module` | "riverhog_archive_contracts" |
 
 ## Governing policies
 
-- <a id="pa-b890446d4cf0"></a>[compatibility/python-api/v1](../../../policies/index.md#p-e574772ba506)
+- <a id="pa-b890446d4c"></a>[compatibility/python-api/v1](../../../policies/index.md#p-e574772ba5)
 
 ## Evidence
 
 ### Qualification
 
-- [make dist-smoke](../../../evidence/sources.md#q-0ba2578a3eb7)
-- [make build](../../../evidence/sources.md#q-d1121e35fa7a)
+- [make dist-smoke](../../../evidence/sources.md#q-0ba2578a3e)
+- [make build](../../../evidence/sources.md#q-d1121e35fa)
 
 ### Executable sources
 
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
-- [python:riverhog-archive-contracts](../../../evidence/sources.md#src-f696df2e9014) — `packages/riverhog-archive-contracts/src/riverhog_archive_contracts/__init__.py::<module>`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [python:riverhog-archive-contracts](../../../evidence/sources.md#src-f696df2e90) — `packages/riverhog-archive-contracts/src/riverhog_archive_contracts/__init__.py::<module>`
 
 ### Machine authority
 

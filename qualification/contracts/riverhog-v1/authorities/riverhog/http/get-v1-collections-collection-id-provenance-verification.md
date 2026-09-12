@@ -16,27 +16,27 @@ Get Collection Provenance Verification
 
 ## External contract
 
-<a id="s-04bd0939afdb"></a>
-- <a id="s-21b70cfd2368"></a>`operationId`: get_collection_provenance_verification
-- <a id="s-d23b62a63801"></a>`summary`: Get Collection Provenance Verification
-- <a id="s-b0bf2060dfc0"></a>`security`: `[{"HTTPBearer": []}]`
+<a id="s-04bd0939af"></a>
+- <a id="s-21b70cfd23"></a>`operationId`: get_collection_provenance_verification
+- <a id="s-d23b62a638"></a>`summary`: Get Collection Provenance Verification
+- <a id="s-b0bf2060df"></a>`security`: `[{"HTTPBearer": []}]`
 
 ### Parameters
 
 | Name | In | Required | Schema |
 |---|---|---:|---|
-| <a id="s-fe54297ab21d"></a>`collection_id` | path | yes | type="integer"; minimum=1 |
+| <a id="s-fe54297ab2"></a>`collection_id` | path | yes | type="integer"; minimum=1 |
 
 ### Responses
 
 | Status | Description |
 |---|---|
-| <a id="s-d1f90bc6b1dd"></a>`200` | Successful Response |
-| <a id="s-4d7e0340dcc1"></a>`400` | Bad Request |
-| <a id="s-dd22622f6287"></a>`401` | Unauthorized |
-| <a id="s-06f1a4742b00"></a>`403` | Forbidden |
-| <a id="s-eec8024348ef"></a>`404` | Not Found |
-| <a id="s-de46d6f4a987"></a>`500` | Internal Server Error |
+| <a id="s-d1f90bc6b1"></a>`200` | Successful Response |
+| <a id="s-4d7e0340dc"></a>`400` | Bad Request |
+| <a id="s-dd22622f62"></a>`401` | Unauthorized |
+| <a id="s-06f1a4742b"></a>`403` | Forbidden |
+| <a id="s-eec8024348"></a>`404` | Not Found |
+| <a id="s-de46d6f4a9"></a>`500` | Internal Server Error |
 
 ## Maintained corroboration
 
@@ -51,19 +51,19 @@ Get Collection Provenance Verification
 
 ## Governing policies
 
-- <a id="pa-1141b3acde50"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0ba)
+- <a id="pa-1141b3acde"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0)
 
 ## Evidence
 
 ### Qualification
 
-- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459fb8)
-- [make compose-smoke](../../../evidence/sources.md#q-413b0b241ba8)
+- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459f)
+- [make compose-smoke](../../../evidence/sources.md#q-413b0b241b)
 
 ### Executable sources
 
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
-- [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc960) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc9) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
 
 ### Machine authority
 

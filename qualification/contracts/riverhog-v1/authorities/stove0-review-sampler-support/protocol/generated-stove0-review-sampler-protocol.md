@@ -10,7 +10,7 @@ Exact externally visible contract owned by this semantic dossier.
 |---|---|
 | Authority | [stove0-review-sampler-support](../index.md) |
 | Interface | [protocol](index.md) |
-| Family | [protocol](index.md#f-1e0cecac00e6) |
+| Family | [protocol](index.md#f-1e0cecac00) |
 | Contract elements | 1 |
 | Extent decisions | 0 |
 
@@ -18,28 +18,28 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Subject | Shape |
 |---|---|
-| <a id="s-1c9b12a3fd5f"></a>`authorities` | additional keys=`http_operations`, `semantic_acceptance`, `structural_models` |
-| <a id="s-0bdd9b0af393"></a>`bundle_sha256` | "dbbc9320e223fb591a30981339ba8c7a7f8b7de2358ce3a3cc38c2c7fbf78119" |
-| <a id="s-70d47dd5f835"></a>`format` | "stove0-review-sampler-schema-bundle/v1" |
-| <a id="s-54f1345bc6dc"></a>`http_binding` | additional keys=`operations` |
-| <a id="s-835f0945459d"></a>`protocol` | "stove0-review-sampler/v1" |
-| <a id="s-aacaa6d4b2a2"></a>`semantic_acceptance` | additional keys=`kind`, `validator` |
+| <a id="s-1c9b12a3fd"></a>`authorities` | additional keys=`http_operations`, `semantic_acceptance`, `structural_models` |
+| <a id="s-0bdd9b0af3"></a>`bundle_sha256` | "dbbc9320e223fb591a30981339ba8c7a7f8b7de2358ce3a3cc38c2c7fbf78119" |
+| <a id="s-70d47dd5f8"></a>`format` | "stove0-review-sampler-schema-bundle/v1" |
+| <a id="s-54f1345bc6"></a>`http_binding` | additional keys=`operations` |
+| <a id="s-835f094545"></a>`protocol` | "stove0-review-sampler/v1" |
+| <a id="s-aacaa6d4b2"></a>`semantic_acceptance` | additional keys=`kind`, `validator` |
 
 ## Governing policies
 
-- <a id="pa-1084bd8da65d"></a>[compatibility/components/v1](../../../policies/index.md#p-95e9a1225947)
+- <a id="pa-1084bd8da6"></a>[compatibility/components/v1](../../../policies/index.md#p-95e9a12259)
 
 ## Evidence
 
 ### Qualification
 
-- [make dist-smoke](../../../evidence/sources.md#q-0ba2578a3eb7)
-- [make build](../../../evidence/sources.md#q-d1121e35fa7a)
+- [make dist-smoke](../../../evidence/sources.md#q-0ba2578a3e)
+- [make build](../../../evidence/sources.md#q-d1121e35fa)
 
 ### Executable sources
 
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
-- [protocol:generated:stove0-review-sampler](../../../evidence/sources.md#src-b47f3f4d7b7f) — `reference/stove0/targets/review/sampler/support/src/stove0_review_sampler_support/schemas.py::sampler_schema_bundle`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [protocol:generated:stove0-review-sampler](../../../evidence/sources.md#src-b47f3f4d7b) — `reference/stove0/targets/review/sampler/support/src/stove0_review_sampler_support/schemas.py::sampler_schema_bundle`
 
 ### Machine authority
 

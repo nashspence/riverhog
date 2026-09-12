@@ -16,27 +16,27 @@ Exact externally visible contract owned by this semantic dossier.
 
 ## External contract
 
-<a id="s-80bb6959f9d4"></a>
-- <a id="s-01cef67a308e"></a>`title`: Stove0EventPage
-- <a id="s-c171ef66813d"></a>`type`: object
+<a id="s-80bb6959f9"></a>
+- <a id="s-01cef67a30"></a>`title`: Stove0EventPage
+- <a id="s-c171ef6681"></a>`type`: object
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-339a218ffa75"></a>`events` | yes | type="array"; items=(#/components/schemas/Stove0LifecycleEvent) |  |
-| <a id="s-560f97dd630c"></a>`has_more` | yes | type="boolean" |  |
-| <a id="s-88570f3326be"></a>`next_cursor` | yes | type="string" |  |
+| <a id="s-339a218ffa"></a>`events` | yes | type="array"; items=(#/components/schemas/Stove0LifecycleEvent) |  |
+| <a id="s-560f97dd63"></a>`has_more` | yes | type="boolean" |  |
+| <a id="s-88570f3326"></a>`next_cursor` | yes | type="string" |  |
 
 ### Progression, limits, and lifecycle
 
-#### [extent-rule/route-progression/v1](../../../policies/index.md#p-6b76b527cb21)
+#### [extent-rule/route-progression/v1](../../../policies/index.md#p-6b76b527cb)
 
 Shared facts for every subject below: progression={"cursor_parameter":"after","kind":"cursor-feed","limit_parameter":"limit"}; reason="bounded-route-page"
 
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
-| [field events](#s-339a218ffa75) | `cardinality · items · segmented_no_total_max` | shared above |
+| [field events](#s-339a218ffa) | `cardinality · items · segmented_no_total_max` | shared above |
 
 ## Maintained corroboration
 
@@ -46,20 +46,20 @@ Shared facts for every subject below: progression={"cursor_parameter":"after","k
 
 ## Governing policies
 
-- <a id="pa-974d092c1bf8"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0ba)
-- <a id="pa-87fcfe109f26"></a>[extent-rule/route-progression/v1](../../../policies/index.md#p-6b76b527cb21)
+- <a id="pa-974d092c1b"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0)
+- <a id="pa-87fcfe109f"></a>[extent-rule/route-progression/v1](../../../policies/index.md#p-6b76b527cb)
 
 ## Evidence
 
 ### Qualification
 
-- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459fb8)
-- [make compose-smoke](../../../evidence/sources.md#q-413b0b241ba8)
+- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459f)
+- [make compose-smoke](../../../evidence/sources.md#q-413b0b241b)
 
 ### Executable sources
 
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
-- [openapi:stove0](../../../evidence/sources.md#src-52e6e3212451) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [openapi:stove0](../../../evidence/sources.md#src-52e6e32124) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
 
 ### Machine authority
 

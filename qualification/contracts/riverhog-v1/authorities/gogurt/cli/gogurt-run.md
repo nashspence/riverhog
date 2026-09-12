@@ -10,56 +10,56 @@ Exact externally visible contract owned by this semantic dossier.
 |---|---|
 | Authority | [gogurt](../index.md) |
 | Interface | [cli](index.md) |
-| Family | [run](index.md#f-a44511a3b2d5) |
+| Family | [run](index.md#f-a44511a3b2) |
 | Contract elements | 1 |
 | Extent decisions | 6 |
 
 ## External contract
 
-- <a id="s-aba9c0e5e067"></a>Parser name: `run`
+- <a id="s-aba9c0e5e0"></a>Parser name: `run`
 
 ### Parameters
 
 | Name | Kind | Required | Type | Options |
 |---|---|---:|---|---|
-| <a id="s-8087dcff61f6"></a>`mount_point` | TyperArgument | yes | {'class': 'typer.models.TyperPath', 'name': 'path'} | mount_point |
-| <a id="s-6f8a90a5e263"></a>`config` | TyperOption | no | {'class': 'typer.models.TyperPath', 'name': 'path'} | --config |
-| <a id="s-dad97bb92b43"></a>`actions_dir` | TyperOption | no | {'class': 'typer.models.TyperPath', 'name': 'path'} | --actions-dir |
-| <a id="s-8cb427b8d52e"></a>`autorun` | TyperOption | no | {'class': 'typer._click.types.BoolParamType', 'name': 'boolean'} | --autorun |
-| <a id="s-1e601a6dd29b"></a>`dry_run` | TyperOption | no | {'class': 'typer._click.types.BoolParamType', 'name': 'boolean'} | --dry-run |
-| <a id="s-2c39914b8b00"></a>`mounted_volume_provider` | TyperOption | no | {'class': 'typer._click.types.StringParamType', 'name': 'text'} | --mounted-volume-provider |
+| <a id="s-8087dcff61"></a>`mount_point` | TyperArgument | yes | {'class': 'typer.models.TyperPath', 'name': 'path'} | mount_point |
+| <a id="s-6f8a90a5e2"></a>`config` | TyperOption | no | {'class': 'typer.models.TyperPath', 'name': 'path'} | --config |
+| <a id="s-dad97bb92b"></a>`actions_dir` | TyperOption | no | {'class': 'typer.models.TyperPath', 'name': 'path'} | --actions-dir |
+| <a id="s-8cb427b8d5"></a>`autorun` | TyperOption | no | {'class': 'typer._click.types.BoolParamType', 'name': 'boolean'} | --autorun |
+| <a id="s-1e601a6dd2"></a>`dry_run` | TyperOption | no | {'class': 'typer._click.types.BoolParamType', 'name': 'boolean'} | --dry-run |
+| <a id="s-2c39914b8b"></a>`mounted_volume_provider` | TyperOption | no | {'class': 'typer._click.types.StringParamType', 'name': 'text'} | --mounted-volume-provider |
 
 ### Progression, limits, and lifecycle
 
-#### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
+#### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
 
 Shared facts for every subject below: maximum=1; minimum=1; reason="fixed-command-argument-arity"; source_constraint={"field":"nargs"}
 
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
-| [CLI parameter --actions-dir](#s-dad97bb92b43) | `cardinality · values-per-occurrence · fixed` | shared above |
-| [CLI parameter --autorun](#s-8cb427b8d52e) | `cardinality · values-per-occurrence · fixed` | shared above |
-| [CLI parameter --config](#s-6f8a90a5e263) | `cardinality · values-per-occurrence · fixed` | shared above |
-| [CLI parameter --dry-run](#s-1e601a6dd29b) | `cardinality · values-per-occurrence · fixed` | shared above |
-| [CLI parameter mount_point](#s-8087dcff61f6) | `cardinality · values-per-occurrence · fixed` | shared above |
-| [CLI parameter --mounted-volume-provider](#s-2c39914b8b00) | `cardinality · values-per-occurrence · fixed` | shared above |
+| [CLI parameter --actions-dir](#s-dad97bb92b) | `cardinality · values-per-occurrence · fixed` | shared above |
+| [CLI parameter --autorun](#s-8cb427b8d5) | `cardinality · values-per-occurrence · fixed` | shared above |
+| [CLI parameter --config](#s-6f8a90a5e2) | `cardinality · values-per-occurrence · fixed` | shared above |
+| [CLI parameter --dry-run](#s-1e601a6dd2) | `cardinality · values-per-occurrence · fixed` | shared above |
+| [CLI parameter mount_point](#s-8087dcff61) | `cardinality · values-per-occurrence · fixed` | shared above |
+| [CLI parameter --mounted-volume-provider](#s-2c39914b8b) | `cardinality · values-per-occurrence · fixed` | shared above |
 
 ## Governing policies
 
-- <a id="pa-4850e84b0e5d"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de7f)
-- <a id="pa-b2ab1202e983"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
+- <a id="pa-4850e84b0e"></a>[compatibility/cli/v1](../../../policies/index.md#p-48a89776de)
+- <a id="pa-b2ab1202e9"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
 
 ## Evidence
 
 ### Qualification
 
-- [make dist-smoke](../../../evidence/sources.md#q-0ba2578a3eb7)
-- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459fb8)
+- [make dist-smoke](../../../evidence/sources.md#q-0ba2578a3e)
+- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459f)
 
 ### Executable sources
 
-- [cli:gogurt](../../../evidence/sources.md#src-3b2297c37dfe) — `reference/gogurt/application/src/gogurt/cli.py::<module>`
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
+- [cli:gogurt](../../../evidence/sources.md#src-3b2297c37d) — `reference/gogurt/application/src/gogurt/cli.py::<module>`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
 
 ### Machine authority
 

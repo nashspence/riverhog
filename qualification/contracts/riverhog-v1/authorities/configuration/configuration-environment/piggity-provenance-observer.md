@@ -16,27 +16,27 @@ Exact externally visible contract owned by this semantic dossier.
 
 ## External contract
 
-<a id="s-38bec3b92921"></a>
+<a id="s-38bec3b929"></a>
 | Field | Shape |
 |---|---|
-| <a id="s-9924516b14f9"></a>`consumers` | ["piggity"] |
-| <a id="s-a68f31707517"></a>`name` | "PIGGITY_PROVENANCE_OBSERVER" |
+| <a id="s-9924516b14"></a>`consumers` | ["piggity"] |
+| <a id="s-a68f317075"></a>`name` | "PIGGITY_PROVENANCE_OBSERVER" |
 
 ## Governing policies
 
-- <a id="pa-88bf61981645"></a>[compatibility/configuration/v1](../../../policies/index.md#p-8dc08bb46173)
+- <a id="pa-88bf619816"></a>[compatibility/configuration/v1](../../../policies/index.md#p-8dc08bb461)
 
 ## Evidence
 
 ### Qualification
 
-- [make unit](../../../evidence/sources.md#q-ce47068f504c)
-- [make compose-smoke](../../../evidence/sources.md#q-413b0b241ba8)
+- [make unit](../../../evidence/sources.md#q-ce47068f50)
+- [make compose-smoke](../../../evidence/sources.md#q-413b0b241b)
 
 ### Executable sources
 
-- [configuration-environment:PIGGITY_PROVENANCE_OBSERVER](../../../evidence/sources.md#src-8d51cac50a25) — `configuration-environment:PIGGITY_PROVENANCE_OBSERVER`
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
+- [configuration-environment:PIGGITY_PROVENANCE_OBSERVER](../../../evidence/sources.md#src-8d51cac50a) — `configuration-environment:PIGGITY_PROVENANCE_OBSERVER`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
 
 ### Machine authority
 

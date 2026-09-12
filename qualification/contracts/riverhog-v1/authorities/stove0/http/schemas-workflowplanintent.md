@@ -16,43 +16,43 @@ Work-independent fields that deterministically materialize a workflow plan.
 
 ## External contract
 
-<a id="s-7e51d1430dea"></a>
-- <a id="s-23c8e189de8a"></a>`title`: WorkflowPlanIntent
-- <a id="s-d32c77c5685f"></a>`description`: Work-independent fields that deterministically materialize a workflow plan.
-- <a id="s-642b2b27631f"></a>`type`: object
+<a id="s-7e51d1430d"></a>
+- <a id="s-23c8e189de"></a>`title`: WorkflowPlanIntent
+- <a id="s-d32c77c568"></a>`description`: Work-independent fields that deterministically materialize a workflow plan.
+- <a id="s-642b2b2763"></a>`type`: object
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-fc12db4ac7b2"></a>`input_retrieval_policy` | no | type="string"; enum=["available-only","allow"] |  |
-| <a id="s-dec7652768d7"></a>`operation` | yes | #/components/schemas/OperationRef |  |
-| <a id="s-99bb65af4851"></a>`output_policy` | no | type="object"; additional keys=`additionalProperties` |  |
-| <a id="s-0bb17d7fffeb"></a>`requested_target_options` | no | type="object"; additional keys=`additionalProperties` |  |
-| <a id="s-37b4b891758d"></a>`result_kind` | no | type="string"; enum=["collection","external-effect"] |  |
-| <a id="s-e519a846125f"></a>`retirement_grace_seconds` | no | type="integer"; minimum=0 |  |
-| <a id="s-70ece6e07d43"></a>`retirement_policy` | no | type="string"; enum=["retain","retire-after-verified-output"] |  |
-| <a id="s-299b5608b2bb"></a>`target_contract_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-cabd6d9c4eae"></a>`target_registration_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9.-]{0,118}[a-z0-9])?$" |  |
+| <a id="s-fc12db4ac7"></a>`input_retrieval_policy` | no | type="string"; enum=["available-only","allow"] |  |
+| <a id="s-dec7652768"></a>`operation` | yes | #/components/schemas/OperationRef |  |
+| <a id="s-99bb65af48"></a>`output_policy` | no | type="object"; additional keys=`additionalProperties` |  |
+| <a id="s-0bb17d7fff"></a>`requested_target_options` | no | type="object"; additional keys=`additionalProperties` |  |
+| <a id="s-37b4b89175"></a>`result_kind` | no | type="string"; enum=["collection","external-effect"] |  |
+| <a id="s-e519a84612"></a>`retirement_grace_seconds` | no | type="integer"; minimum=0 |  |
+| <a id="s-70ece6e07d"></a>`retirement_policy` | no | type="string"; enum=["retain","retire-after-verified-output"] |  |
+| <a id="s-299b5608b2"></a>`target_contract_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-cabd6d9c4e"></a>`target_registration_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9.-]{0,118}[a-z0-9])?$" |  |
 
 ### Progression, limits, and lifecycle
 
-#### [extent-rule/no-semantic-maximum/v1](../../../policies/index.md#p-574724b48af0)
+#### [extent-rule/no-semantic-maximum/v1](../../../policies/index.md#p-574724b48a)
 
 Shared facts for every subject below: capacity_authority={"declared_maximum":null,"hidden_maximum":"forbidden","owner":"stove0"}; maximum=null; reason="no-declared-semantic-maximum"
 
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
-| [field output_policy](#s-99bb65af4851) | `cardinality · entries · operational_policy` | shared above |
-| [field requested_target_options](#s-0bb17d7fffeb) | `cardinality · entries · operational_policy` | shared above |
+| [field output_policy](#s-99bb65af48) | `cardinality · entries · operational_policy` | shared above |
+| [field requested_target_options](#s-0bb17d7fff) | `cardinality · entries · operational_policy` | shared above |
 
-#### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
+#### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
 
 Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"}
 
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
-| [field target_contract_sha256](#s-299b5608b2bb) | `length · characters · fixed` | shared above |
+| [field target_contract_sha256](#s-299b5608b2) | `length · characters · fixed` | shared above |
 
 ## Maintained corroboration
 
@@ -63,21 +63,21 @@ Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-publ
 
 ## Governing policies
 
-- <a id="pa-e4b5c057355f"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0ba)
-- <a id="pa-263a4dcdcde1"></a>[extent-rule/no-semantic-maximum/v1](../../../policies/index.md#p-574724b48af0)
-- <a id="pa-1316c7b324c9"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
+- <a id="pa-e4b5c05735"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0)
+- <a id="pa-263a4dcdcd"></a>[extent-rule/no-semantic-maximum/v1](../../../policies/index.md#p-574724b48a)
+- <a id="pa-1316c7b324"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
 
 ## Evidence
 
 ### Qualification
 
-- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459fb8)
-- [make compose-smoke](../../../evidence/sources.md#q-413b0b241ba8)
+- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459f)
+- [make compose-smoke](../../../evidence/sources.md#q-413b0b241b)
 
 ### Executable sources
 
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
-- [openapi:stove0](../../../evidence/sources.md#src-52e6e3212451) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [openapi:stove0](../../../evidence/sources.md#src-52e6e32124) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
 
 ### Machine authority
 

@@ -16,38 +16,38 @@ Success-only, Riverhog-verified result of one branch workflow plan.
 
 ## External contract
 
-<a id="s-408a56022c8d"></a>
-- <a id="s-d7c8b30fe840"></a>`title`: BranchSettlement
-- <a id="s-9b0d642fa213"></a>`description`: Success-only, Riverhog-verified result of one branch workflow plan.
-- <a id="s-320b6230bf9d"></a>`type`: object
+<a id="s-408a56022c"></a>
+- <a id="s-d7c8b30fe8"></a>`title`: BranchSettlement
+- <a id="s-9b0d642fa2"></a>`description`: Success-only, Riverhog-verified result of one branch workflow plan.
+- <a id="s-320b6230bf"></a>`type`: object
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-d14fc4aaa112"></a>`branch_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
-| <a id="s-b122415c3eee"></a>`derivation_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-8cc42659eb3b"></a>`format` | no | type="string"; const="stove0-branch-settlement/v1" |  |
-| <a id="s-9a2f0035d40a"></a>`output_collection` | yes | #/components/schemas/CollectionRootRef |  |
-| <a id="s-3523e6371088"></a>`output_selection` | yes | #/components/schemas/ArtifactSelectionRef |  |
-| <a id="s-3aa87a4f91d8"></a>`producer_settlement_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-786e03f38862"></a>`settlement_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-047c17c06f58"></a>`work_id` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-0e747befdd3a"></a>`workflow_plan_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-d14fc4aaa1"></a>`branch_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
+| <a id="s-b122415c3e"></a>`derivation_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-8cc42659eb"></a>`format` | no | type="string"; const="stove0-branch-settlement/v1" |  |
+| <a id="s-9a2f0035d4"></a>`output_collection` | yes | #/components/schemas/CollectionRootRef |  |
+| <a id="s-3523e63710"></a>`output_selection` | yes | #/components/schemas/ArtifactSelectionRef |  |
+| <a id="s-3aa87a4f91"></a>`producer_settlement_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-786e03f388"></a>`settlement_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-047c17c06f"></a>`work_id` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-0e747befdd"></a>`workflow_plan_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 
 ### Progression, limits, and lifecycle
 
-#### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
+#### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
 
 Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"}
 
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
-| [field derivation_sha256](#s-b122415c3eee) | `length · characters · fixed` | shared above |
-| [field producer_settlement_sha256](#s-3aa87a4f91d8) | `length · characters · fixed` | shared above |
-| [field settlement_sha256](#s-786e03f38862) | `length · characters · fixed` | shared above |
-| [field work_id](#s-047c17c06f58) | `length · characters · fixed` | shared above |
-| [field workflow_plan_sha256](#s-0e747befdd3a) | `length · characters · fixed` | shared above |
+| [field derivation_sha256](#s-b122415c3e) | `length · characters · fixed` | shared above |
+| [field producer_settlement_sha256](#s-3aa87a4f91) | `length · characters · fixed` | shared above |
+| [field settlement_sha256](#s-786e03f388) | `length · characters · fixed` | shared above |
+| [field work_id](#s-047c17c06f) | `length · characters · fixed` | shared above |
+| [field workflow_plan_sha256](#s-0e747befdd) | `length · characters · fixed` | shared above |
 
 ## Maintained corroboration
 
@@ -58,20 +58,20 @@ Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-publ
 
 ## Governing policies
 
-- <a id="pa-ef82f5c89fe3"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0ba)
-- <a id="pa-561a3703f550"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
+- <a id="pa-ef82f5c89f"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0)
+- <a id="pa-561a3703f5"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
 
 ## Evidence
 
 ### Qualification
 
-- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459fb8)
-- [make compose-smoke](../../../evidence/sources.md#q-413b0b241ba8)
+- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459f)
+- [make compose-smoke](../../../evidence/sources.md#q-413b0b241b)
 
 ### Executable sources
 
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
-- [openapi:stove0](../../../evidence/sources.md#src-52e6e3212451) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [openapi:stove0](../../../evidence/sources.md#src-52e6e32124) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
 
 ### Machine authority
 

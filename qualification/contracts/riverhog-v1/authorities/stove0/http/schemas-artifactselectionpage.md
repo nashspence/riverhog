@@ -16,39 +16,39 @@ One bounded continuation step through an immutable artifact selection.
 
 ## External contract
 
-<a id="s-1f953a503d56"></a>
-- <a id="s-6e688cb964e7"></a>`title`: ArtifactSelectionPage
-- <a id="s-e4d5c0e6760b"></a>`description`: One bounded continuation step through an immutable artifact selection.
-- <a id="s-09d033a67384"></a>`type`: object
+<a id="s-1f953a503d"></a>
+- <a id="s-6e688cb964"></a>`title`: ArtifactSelectionPage
+- <a id="s-e4d5c0e676"></a>`description`: One bounded continuation step through an immutable artifact selection.
+- <a id="s-09d033a673"></a>`type`: object
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-4fcf66d85f70"></a>`artifacts` | yes | type="array"; maxItems=256; items=(#/components/schemas/ArtifactSubject); additional keys=`x-riverhog-extent` |  |
-| <a id="s-bb912bc81c6a"></a>`authority` | yes | #/components/schemas/ArtifactSelectionRef |  |
-| <a id="s-53df9f7d4c80"></a>`complete` | yes | type="boolean" |  |
-| <a id="s-dbf38f6d33f3"></a>`continuation` | no | anyOf=type="string"; pattern="^[0-9a-f]{64}$" \| type="null" |  |
-| <a id="s-b2798753b177"></a>`next_continuation` | no | anyOf=type="string"; pattern="^[0-9a-f]{64}$" \| type="null" |  |
+| <a id="s-4fcf66d85f"></a>`artifacts` | yes | type="array"; maxItems=256; items=(#/components/schemas/ArtifactSubject); additional keys=`x-riverhog-extent` |  |
+| <a id="s-bb912bc81c"></a>`authority` | yes | #/components/schemas/ArtifactSelectionRef |  |
+| <a id="s-53df9f7d4c"></a>`complete` | yes | type="boolean" |  |
+| <a id="s-dbf38f6d33"></a>`continuation` | no | anyOf=type="string"; pattern="^[0-9a-f]{64}$" \| type="null" |  |
+| <a id="s-b2798753b1"></a>`next_continuation` | no | anyOf=type="string"; pattern="^[0-9a-f]{64}$" \| type="null" |  |
 
 ### Progression, limits, and lifecycle
 
-#### [extent-rule/route-progression/v1](../../../policies/index.md#p-6b76b527cb21)
+#### [extent-rule/route-progression/v1](../../../policies/index.md#p-6b76b527cb)
 
 Shared facts for every subject below: maximum=256; progression={"authority":"artifact-selection","authority_parameter":"selection_sha256","cursor_parameter":"continuation","fixed_limit":256,"kind":"exact-authority-page"}; reason="bounded-route-page"
 
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
-| [field artifacts](#s-4fcf66d85f70) | `cardinality · items · segmented_no_total_max` | shared above |
+| [field artifacts](#s-4fcf66d85f) | `cardinality · items · segmented_no_total_max` | shared above |
 
-#### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
+#### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
 
 Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"}
 
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
-| <a id="s-96cb858d39f9"></a>field continuation · anyOf alternative 1 | `length · characters · fixed` | shared above |
-| <a id="s-cd4fa13c3b1b"></a>field next_continuation · anyOf alternative 1 | `length · characters · fixed` | shared above |
+| <a id="s-96cb858d39"></a>[field continuation · string value](#s-dbf38f6d33) | `length · characters · fixed` | shared above |
+| <a id="s-cd4fa13c3b"></a>[field next_continuation · string value](#s-b2798753b1) | `length · characters · fixed` | shared above |
 
 ## Maintained corroboration
 
@@ -59,21 +59,21 @@ Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-publ
 
 ## Governing policies
 
-- <a id="pa-a187378eb1c0"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0ba)
-- <a id="pa-a7e1d75c19f3"></a>[extent-rule/route-progression/v1](../../../policies/index.md#p-6b76b527cb21)
-- <a id="pa-7f04d9b3de31"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
+- <a id="pa-a187378eb1"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0)
+- <a id="pa-a7e1d75c19"></a>[extent-rule/route-progression/v1](../../../policies/index.md#p-6b76b527cb)
+- <a id="pa-7f04d9b3de"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
 
 ## Evidence
 
 ### Qualification
 
-- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459fb8)
-- [make compose-smoke](../../../evidence/sources.md#q-413b0b241ba8)
+- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459f)
+- [make compose-smoke](../../../evidence/sources.md#q-413b0b241b)
 
 ### Executable sources
 
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
-- [openapi:stove0](../../../evidence/sources.md#src-52e6e3212451) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [openapi:stove0](../../../evidence/sources.md#src-52e6e32124) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
 
 ### Machine authority
 

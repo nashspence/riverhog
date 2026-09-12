@@ -16,29 +16,29 @@ Exact externally visible contract owned by this semantic dossier.
 
 ## External contract
 
-<a id="s-b3d032596341"></a>
-- <a id="s-8002a33e98c2"></a>`title`: ProcessingOutcomeIdentityDocument
-- <a id="s-e47eff50e336"></a>`type`: object
+<a id="s-b3d0325963"></a>
+- <a id="s-8002a33e98"></a>`title`: ProcessingOutcomeIdentityDocument
+- <a id="s-e47eff50e3"></a>`type`: object
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-d5ecccb026e6"></a>`derivation_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-407976f811aa"></a>`outcome_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
-| <a id="s-839f8b81bf7c"></a>`output_collection` | yes | #/components/schemas/CollectionRootIdentityDocument |  |
-| <a id="s-593ebdabb52f"></a>`source_claim_id` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-d5ecccb026"></a>`derivation_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-407976f811"></a>`outcome_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
+| <a id="s-839f8b81bf"></a>`output_collection` | yes | #/components/schemas/CollectionRootIdentityDocument |  |
+| <a id="s-593ebdabb5"></a>`source_claim_id` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 
 ### Progression, limits, and lifecycle
 
-#### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
+#### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
 
 Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"}
 
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
-| [field derivation_sha256](#s-d5ecccb026e6) | `length · characters · fixed` | shared above |
-| [field source_claim_id](#s-593ebdabb52f) | `length · characters · fixed` | shared above |
+| [field derivation_sha256](#s-d5ecccb026) | `length · characters · fixed` | shared above |
+| [field source_claim_id](#s-593ebdabb5) | `length · characters · fixed` | shared above |
 
 ## Maintained corroboration
 
@@ -48,20 +48,20 @@ Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-publ
 
 ## Governing policies
 
-- <a id="pa-852cc2dc367a"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0ba)
-- <a id="pa-b9214fb0dccc"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
+- <a id="pa-852cc2dc36"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0)
+- <a id="pa-b9214fb0dc"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
 
 ## Evidence
 
 ### Qualification
 
-- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459fb8)
-- [make compose-smoke](../../../evidence/sources.md#q-413b0b241ba8)
+- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459f)
+- [make compose-smoke](../../../evidence/sources.md#q-413b0b241b)
 
 ### Executable sources
 
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
-- [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc960) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc9) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
 
 ### Machine authority
 

@@ -16,19 +16,19 @@ List Admission Policies
 
 ## External contract
 
-<a id="s-9cdc3681b17f"></a>
-- <a id="s-d210f67bfc07"></a>`operationId`: list_admission_policies
-- <a id="s-0487d2dfd0ac"></a>`summary`: List Admission Policies
+<a id="s-9cdc3681b1"></a>
+- <a id="s-d210f67bfc"></a>`operationId`: list_admission_policies
+- <a id="s-0487d2dfd0"></a>`summary`: List Admission Policies
 
 ### Responses
 
 | Status | Description |
 |---|---|
-| <a id="s-7e95b1072855"></a>`200` | Successful Response |
-| <a id="s-4f37d64ec94b"></a>`400` | Bad Request |
-| <a id="s-313cc0359fd7"></a>`401` | Unauthorized |
-| <a id="s-5b7c3932b3e0"></a>`403` | Forbidden |
-| <a id="s-1a01fac0f07a"></a>`500` | Internal Server Error |
+| <a id="s-7e95b10728"></a>`200` | Successful Response |
+| <a id="s-4f37d64ec9"></a>`400` | Bad Request |
+| <a id="s-313cc0359f"></a>`401` | Unauthorized |
+| <a id="s-5b7c3932b3"></a>`403` | Forbidden |
+| <a id="s-1a01fac0f0"></a>`500` | Internal Server Error |
 
 ## Maintained corroboration
 
@@ -43,19 +43,19 @@ List Admission Policies
 
 ## Governing policies
 
-- <a id="pa-b41293d1bba2"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0ba)
+- <a id="pa-b41293d1bb"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0)
 
 ## Evidence
 
 ### Qualification
 
-- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459fb8)
-- [make compose-smoke](../../../evidence/sources.md#q-413b0b241ba8)
+- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459f)
+- [make compose-smoke](../../../evidence/sources.md#q-413b0b241b)
 
 ### Executable sources
 
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
-- [openapi:stove0](../../../evidence/sources.md#src-52e6e3212451) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [openapi:stove0](../../../evidence/sources.md#src-52e6e32124) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
 
 ### Machine authority
 

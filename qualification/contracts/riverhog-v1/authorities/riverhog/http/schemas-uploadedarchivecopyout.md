@@ -16,23 +16,23 @@ Exact externally visible contract owned by this semantic dossier.
 
 ## External contract
 
-<a id="s-1ee1a5065635"></a>
-- <a id="s-e0c41366e6d9"></a>`title`: UploadedArchiveCopyOut
-- <a id="s-f58244b2fc5e"></a>`type`: object
+<a id="s-1ee1a50656"></a>
+- <a id="s-e0c41366e6"></a>`title`: UploadedArchiveCopyOut
+- <a id="s-f58244b2fc"></a>`type`: object
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-b74b77804b78"></a>`archive_root` | yes | #/components/schemas/UploadedArchiveRootPublicationOut |  |
-| <a id="s-b5bad9ada57b"></a>`failure` | yes | type="null" |  |
-| <a id="s-13dd7ad5e1e9"></a>`last_uploaded_at` | yes | type="string" |  |
-| <a id="s-f8bff805afe5"></a>`last_verified_at` | yes | type="string" |  |
-| <a id="s-371b6489099e"></a>`object_count` | yes | type="integer"; minimum=1 |  |
-| <a id="s-f991e3fee3da"></a>`state` | yes | type="string"; const="uploaded" |  |
-| <a id="s-646f4c3a71a4"></a>`storage_prefix` | yes | type="string"; minLength=1 |  |
-| <a id="s-b2892d99d774"></a>`store` | yes | #/components/schemas/ArchiveStoreName |  |
-| <a id="s-dac2d5a2672b"></a>`stored_bytes` | yes | type="integer"; minimum=1 |  |
+| <a id="s-b74b77804b"></a>`archive_root` | yes | #/components/schemas/UploadedArchiveRootPublicationOut |  |
+| <a id="s-b5bad9ada5"></a>`failure` | yes | type="null" |  |
+| <a id="s-13dd7ad5e1"></a>`last_uploaded_at` | yes | type="string" |  |
+| <a id="s-f8bff805af"></a>`last_verified_at` | yes | type="string" |  |
+| <a id="s-371b648909"></a>`object_count` | yes | type="integer"; minimum=1 |  |
+| <a id="s-f991e3fee3"></a>`state` | yes | type="string"; const="uploaded" |  |
+| <a id="s-646f4c3a71"></a>`storage_prefix` | yes | type="string"; minLength=1 |  |
+| <a id="s-b2892d99d7"></a>`store` | yes | #/components/schemas/ArchiveStoreName |  |
+| <a id="s-dac2d5a267"></a>`stored_bytes` | yes | type="integer"; minimum=1 |  |
 
 ## Maintained corroboration
 
@@ -43,19 +43,19 @@ Exact externally visible contract owned by this semantic dossier.
 
 ## Governing policies
 
-- <a id="pa-35cf683914b6"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0ba)
+- <a id="pa-35cf683914"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0)
 
 ## Evidence
 
 ### Qualification
 
-- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459fb8)
-- [make compose-smoke](../../../evidence/sources.md#q-413b0b241ba8)
+- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459f)
+- [make compose-smoke](../../../evidence/sources.md#q-413b0b241b)
 
 ### Executable sources
 
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
-- [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc960) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc9) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
 
 ### Machine authority
 

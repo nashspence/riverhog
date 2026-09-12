@@ -10,34 +10,34 @@ Exact externally visible contract owned by this semantic dossier.
 |---|---|
 | Authority | [stove0-observer-support](../index.md) |
 | Interface | [python](index.md) |
-| Family | [modules](index.md#f-2a75f5a0da8f) |
+| Family | [modules](index.md#f-2a75f5a0da) |
 | Contract elements | 1 |
 | Extent decisions | 0 |
 
 ## External contract
 
-<a id="s-923283d7cd67"></a>
+<a id="s-923283d7cd"></a>
 | Field | Shape |
 |---|---|
-| <a id="s-d73bfcc25ef0"></a>`distribution` | "stove0-observer-support" |
-| <a id="s-d34602df0039"></a>`exports` | additional keys=`CancellationCheck`, `ContentObserver`, `FactsSemanticValidator`, `Heartbeat`, `OBSERVER_CONFORMANCE_RESULT`, `OBSERVER_HTTP_OPERATIONS`, `OBSERVER_SCHEMA_BUNDLE_FORMAT`, `ObservationResultBuilder`, `ObservationRuntime`, `ObserverClient`, `ObserverConformanceResult`, `ObserverHttpBinding`, `ObserverHttpResponse`, `conformance_report`, `observer_schema_bundle` |
-| <a id="s-872525d7fdfc"></a>`module` | "stove0_observer_support" |
+| <a id="s-d73bfcc25e"></a>`distribution` | "stove0-observer-support" |
+| <a id="s-d34602df00"></a>`exports` | additional keys=`CancellationCheck`, `ContentObserver`, `FactsSemanticValidator`, `Heartbeat`, `OBSERVER_CONFORMANCE_RESULT`, `OBSERVER_HTTP_OPERATIONS`, `OBSERVER_SCHEMA_BUNDLE_FORMAT`, `ObservationResultBuilder`, `ObservationRuntime`, `ObserverClient`, `ObserverConformanceResult`, `ObserverHttpBinding`, `ObserverHttpResponse`, `conformance_report`, `observer_schema_bundle` |
+| <a id="s-872525d7fd"></a>`module` | "stove0_observer_support" |
 
 ## Governing policies
 
-- <a id="pa-0aac798efe06"></a>[compatibility/python-api/v1](../../../policies/index.md#p-e574772ba506)
+- <a id="pa-0aac798efe"></a>[compatibility/python-api/v1](../../../policies/index.md#p-e574772ba5)
 
 ## Evidence
 
 ### Qualification
 
-- [make dist-smoke](../../../evidence/sources.md#q-0ba2578a3eb7)
-- [make build](../../../evidence/sources.md#q-d1121e35fa7a)
+- [make dist-smoke](../../../evidence/sources.md#q-0ba2578a3e)
+- [make build](../../../evidence/sources.md#q-d1121e35fa)
 
 ### Executable sources
 
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
-- [python:stove0-observer-support](../../../evidence/sources.md#src-56a43288ef52) — `reference/stove0/packages/observer-support/src/stove0_observer_support/__init__.py::<module>`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [python:stove0-observer-support](../../../evidence/sources.md#src-56a43288ef) — `reference/stove0/packages/observer-support/src/stove0_observer_support/__init__.py::<module>`
 
 ### Machine authority
 

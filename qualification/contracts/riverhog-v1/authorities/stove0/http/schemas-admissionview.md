@@ -16,36 +16,36 @@ Exact externally visible contract owned by this semantic dossier.
 
 ## External contract
 
-<a id="s-4c588910d987"></a>
-- <a id="s-7315e158ba38"></a>`title`: AdmissionView
-- <a id="s-64172b366fe1"></a>`type`: object
+<a id="s-4c588910d9"></a>
+- <a id="s-7315e158ba"></a>`title`: AdmissionView
+- <a id="s-64172b366f"></a>`type`: object
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-2876199d7870"></a>`attempt_count` | yes | type="integer"; minimum=0 |  |
-| <a id="s-6df2d3fad6d2"></a>`created_at` | yes | type="string"; minLength=1; maxLength=40 |  |
-| <a id="s-c08d71353e10"></a>`failure` | no | anyOf=type="string"; minLength=1; maxLength=1000 \| type="null" |  |
-| <a id="s-22ad3d0ba160"></a>`intent` | yes | #/components/schemas/AdmissionIntent |  |
-| <a id="s-95bb151c013a"></a>`next_attempt_at` | no | anyOf=type="string"; minLength=1; maxLength=40 \| type="null" |  |
-| <a id="s-c05701d9fd74"></a>`preview_sha256` | no | anyOf=type="string"; pattern="^[0-9a-f]{64}$" \| type="null" |  |
-| <a id="s-21f919bc647c"></a>`state` | yes | type="string"; enum=["intent","previewed","work_bound"] |  |
-| <a id="s-500fd6699179"></a>`updated_at` | yes | type="string"; minLength=1; maxLength=40 |  |
-| <a id="s-93af888f26ac"></a>`work_id` | no | anyOf=type="string"; pattern="^[0-9a-f]{64}$" \| type="null" |  |
+| <a id="s-2876199d78"></a>`attempt_count` | yes | type="integer"; minimum=0 |  |
+| <a id="s-6df2d3fad6"></a>`created_at` | yes | type="string"; minLength=1; maxLength=40 |  |
+| <a id="s-c08d71353e"></a>`failure` | no | anyOf=type="string"; minLength=1; maxLength=1000 \| type="null" |  |
+| <a id="s-22ad3d0ba1"></a>`intent` | yes | #/components/schemas/AdmissionIntent |  |
+| <a id="s-95bb151c01"></a>`next_attempt_at` | no | anyOf=type="string"; minLength=1; maxLength=40 \| type="null" |  |
+| <a id="s-c05701d9fd"></a>`preview_sha256` | no | anyOf=type="string"; pattern="^[0-9a-f]{64}$" \| type="null" |  |
+| <a id="s-21f919bc64"></a>`state` | yes | type="string"; enum=["intent","previewed","work_bound"] |  |
+| <a id="s-500fd66991"></a>`updated_at` | yes | type="string"; minLength=1; maxLength=40 |  |
+| <a id="s-93af888f26"></a>`work_id` | no | anyOf=type="string"; pattern="^[0-9a-f]{64}$" \| type="null" |  |
 
 ### Progression, limits, and lifecycle
 
-#### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
+#### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
 
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
-| [field created_at](#s-6df2d3fad6d2) | `length · characters · contract_max` | maximum=40; minimum=1; reason="schema-maximum" |
-| <a id="s-e65943eec064"></a>field failure · anyOf alternative 1 | `length · characters · contract_max` | maximum=1000; minimum=1; reason="schema-maximum" |
-| <a id="s-975669e5c368"></a>field next_attempt_at · anyOf alternative 1 | `length · characters · contract_max` | maximum=40; minimum=1; reason="schema-maximum" |
-| <a id="s-b15f87ebd99e"></a>field preview_sha256 · anyOf alternative 1 | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
-| [field updated_at](#s-500fd6699179) | `length · characters · contract_max` | maximum=40; minimum=1; reason="schema-maximum" |
-| <a id="s-6df4164e7682"></a>field work_id · anyOf alternative 1 | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
+| [field created_at](#s-6df2d3fad6) | `length · characters · contract_max` | maximum=40; minimum=1; reason="schema-maximum" |
+| <a id="s-e65943eec0"></a>[field failure · string value](#s-c08d71353e) | `length · characters · contract_max` | maximum=1000; minimum=1; reason="schema-maximum" |
+| <a id="s-975669e5c3"></a>[field next_attempt_at · string value](#s-95bb151c01) | `length · characters · contract_max` | maximum=40; minimum=1; reason="schema-maximum" |
+| <a id="s-b15f87ebd9"></a>[field preview_sha256 · string value](#s-c05701d9fd) | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
+| [field updated_at](#s-500fd66991) | `length · characters · contract_max` | maximum=40; minimum=1; reason="schema-maximum" |
+| <a id="s-6df4164e76"></a>[field work_id · string value](#s-93af888f26) | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
 
 ## Maintained corroboration
 
@@ -55,20 +55,20 @@ Exact externally visible contract owned by this semantic dossier.
 
 ## Governing policies
 
-- <a id="pa-f4ea538aeb36"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0ba)
-- <a id="pa-0e4e24baef19"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
+- <a id="pa-f4ea538aeb"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0)
+- <a id="pa-0e4e24baef"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
 
 ## Evidence
 
 ### Qualification
 
-- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459fb8)
-- [make compose-smoke](../../../evidence/sources.md#q-413b0b241ba8)
+- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459f)
+- [make compose-smoke](../../../evidence/sources.md#q-413b0b241b)
 
 ### Executable sources
 
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
-- [openapi:stove0](../../../evidence/sources.md#src-52e6e3212451) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [openapi:stove0](../../../evidence/sources.md#src-52e6e32124) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
 
 ### Machine authority
 

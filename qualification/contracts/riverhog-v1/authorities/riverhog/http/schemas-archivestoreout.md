@@ -16,22 +16,22 @@ Exact externally visible contract owned by this semantic dossier.
 
 ## External contract
 
-<a id="s-9491946c6667"></a>
-- <a id="s-f6da33e2230b"></a>`title`: ArchiveStoreOut
-- <a id="s-b4d948d07798"></a>`type`: object
+<a id="s-9491946c66"></a>
+- <a id="s-f6da33e223"></a>`title`: ArchiveStoreOut
+- <a id="s-b4d948d077"></a>`type`: object
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-ed8363ddd46d"></a>`collections` | yes | type="integer" |  |
-| <a id="s-6d9173b8e570"></a>`download_allowance` | yes | anyOf=#/components/schemas/ArchiveDownloadAllowanceOut \| type="null" |  |
-| <a id="s-e4bb5e060b5c"></a>`objects` | yes | type="integer" |  |
-| <a id="s-831daffcba1b"></a>`read_mode` | yes | type="string"; enum=["immediate","restore_required"] |  |
-| <a id="s-97417b240e93"></a>`read_priority` | yes | type="integer" |  |
-| <a id="s-889112d32d27"></a>`store` | yes | #/components/schemas/ArchiveStoreName |  |
-| <a id="s-61213aadde1d"></a>`stored_bytes` | yes | type="integer" |  |
-| <a id="s-94e63b11f865"></a>`write_target` | yes | type="boolean" |  |
+| <a id="s-ed8363ddd4"></a>`collections` | yes | type="integer" |  |
+| <a id="s-6d9173b8e5"></a>`download_allowance` | yes | anyOf=#/components/schemas/ArchiveDownloadAllowanceOut \| type="null" |  |
+| <a id="s-e4bb5e060b"></a>`objects` | yes | type="integer" |  |
+| <a id="s-831daffcba"></a>`read_mode` | yes | type="string"; enum=["immediate","restore_required"] |  |
+| <a id="s-97417b240e"></a>`read_priority` | yes | type="integer" |  |
+| <a id="s-889112d32d"></a>`store` | yes | #/components/schemas/ArchiveStoreName |  |
+| <a id="s-61213aadde"></a>`stored_bytes` | yes | type="integer" |  |
+| <a id="s-94e63b11f8"></a>`write_target` | yes | type="boolean" |  |
 
 ## Maintained corroboration
 
@@ -42,19 +42,19 @@ Exact externally visible contract owned by this semantic dossier.
 
 ## Governing policies
 
-- <a id="pa-1afb360faefe"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0ba)
+- <a id="pa-1afb360fae"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0)
 
 ## Evidence
 
 ### Qualification
 
-- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459fb8)
-- [make compose-smoke](../../../evidence/sources.md#q-413b0b241ba8)
+- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459f)
+- [make compose-smoke](../../../evidence/sources.md#q-413b0b241b)
 
 ### Executable sources
 
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
-- [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc960) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc9) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
 
 ### Machine authority
 

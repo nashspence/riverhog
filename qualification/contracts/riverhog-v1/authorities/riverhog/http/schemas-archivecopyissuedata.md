@@ -16,42 +16,42 @@ Exact externally visible contract owned by this semantic dossier.
 
 ## External contract
 
-<a id="s-e00f0b806101"></a>
-- <a id="s-7552c1f7c837"></a>`title`: ArchiveCopyIssueData
-- <a id="s-02233c626ff4"></a>`type`: object
+<a id="s-e00f0b8061"></a>
+- <a id="s-7552c1f7c8"></a>`title`: ArchiveCopyIssueData
+- <a id="s-02233c626f"></a>`type`: object
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-80e24aea6c97"></a>`actor` | yes | #/components/schemas/RiverhogActor |  |
-| <a id="s-b1d777e884e8"></a>`cause` | no | anyOf=#/components/schemas/RiverhogEventCause \| type="null" |  |
-| <a id="s-7338b132ba45"></a>`collection_created_at` | yes | type="string"; minLength=1; maxLength=64 |  |
-| <a id="s-78259ef48aea"></a>`collection_id` | yes | #/components/schemas/CollectionId |  |
-| <a id="s-3c8c6d69f1bb"></a>`context` | no | anyOf=type="object"; additional keys=`additionalProperties`, `x-riverhog-encoded-bytes-max`, `x-riverhog-extent` \| type="null" |  |
-| <a id="s-ccd81c213761"></a>`destination_store` | yes | #/components/schemas/ArchiveStoreName |  |
-| <a id="s-cef168bba0dd"></a>`error` | yes | type="string"; minLength=1; maxLength=16384 |  |
-| <a id="s-2528ad92b8b0"></a>`initiator` | yes | #/components/schemas/RiverhogActor |  |
-| <a id="s-a9bafa55f307"></a>`source_store` | yes | #/components/schemas/ArchiveStoreName |  |
-| <a id="s-ea536eae285c"></a>`state` | yes | type="string"; const="failed" |  |
+| <a id="s-80e24aea6c"></a>`actor` | yes | #/components/schemas/RiverhogActor |  |
+| <a id="s-b1d777e884"></a>`cause` | no | anyOf=#/components/schemas/RiverhogEventCause \| type="null" |  |
+| <a id="s-7338b132ba"></a>`collection_created_at` | yes | type="string"; minLength=1; maxLength=64 |  |
+| <a id="s-78259ef48a"></a>`collection_id` | yes | #/components/schemas/CollectionId |  |
+| <a id="s-3c8c6d69f1"></a>`context` | no | anyOf=type="object"; additional keys=`additionalProperties`, `x-riverhog-encoded-bytes-max`, `x-riverhog-extent` \| type="null" |  |
+| <a id="s-ccd81c2137"></a>`destination_store` | yes | #/components/schemas/ArchiveStoreName |  |
+| <a id="s-cef168bba0"></a>`error` | yes | type="string"; minLength=1; maxLength=16384 |  |
+| <a id="s-2528ad92b8"></a>`initiator` | yes | #/components/schemas/RiverhogActor |  |
+| <a id="s-a9bafa55f3"></a>`source_store` | yes | #/components/schemas/ArchiveStoreName |  |
+| <a id="s-ea536eae28"></a>`state` | yes | type="string"; const="failed" |  |
 
 ### Progression, limits, and lifecycle
 
-#### [extent-rule/no-semantic-maximum/v1](../../../policies/index.md#p-574724b48af0)
+#### [extent-rule/no-semantic-maximum/v1](../../../policies/index.md#p-574724b48a)
 
 Shared facts for every subject below: capacity_authority={"declared_maximum":null,"hidden_maximum":"forbidden","owner":"riverhog"}; maximum=null; reason="no-declared-semantic-maximum"
 
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
-| <a id="s-541352f862da"></a>field context · anyOf alternative 1 | `cardinality · entries · operational_policy` | shared above |
+| <a id="s-541352f862"></a>[field context · object value](#s-3c8c6d69f1) | `cardinality · entries · operational_policy` | shared above |
 
-#### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
+#### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
 
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
-| [field collection_created_at](#s-7338b132ba45) | `length · characters · contract_max` | maximum=64; minimum=1; reason="schema-maximum" |
-| [field context · anyOf alternative 1](#s-541352f862da) | `encoded-size · bytes · contract_max` | maximum=4096; reason="bounded-lifecycle-event-context"; source_constraint={"field":"x-riverhog-encoded-bytes-max"} |
-| [field error](#s-cef168bba0dd) | `length · characters · contract_max` | maximum=16384; minimum=1; reason="schema-maximum" |
+| [field collection_created_at](#s-7338b132ba) | `length · characters · contract_max` | maximum=64; minimum=1; reason="schema-maximum" |
+| [field context · object value](#s-541352f862) | `encoded-size · bytes · contract_max` | maximum=4096; reason="bounded-lifecycle-event-context"; source_constraint={"field":"x-riverhog-encoded-bytes-max"} |
+| [field error](#s-cef168bba0) | `length · characters · contract_max` | maximum=16384; minimum=1; reason="schema-maximum" |
 
 ## Maintained corroboration
 
@@ -64,21 +64,21 @@ Shared facts for every subject below: capacity_authority={"declared_maximum":nul
 
 ## Governing policies
 
-- <a id="pa-ea3f89d5cfc9"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0ba)
-- <a id="pa-6b1ed0f91f0a"></a>[extent-rule/no-semantic-maximum/v1](../../../policies/index.md#p-574724b48af0)
-- <a id="pa-49577ade5fba"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
+- <a id="pa-ea3f89d5cf"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0)
+- <a id="pa-6b1ed0f91f"></a>[extent-rule/no-semantic-maximum/v1](../../../policies/index.md#p-574724b48a)
+- <a id="pa-49577ade5f"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
 
 ## Evidence
 
 ### Qualification
 
-- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459fb8)
-- [make compose-smoke](../../../evidence/sources.md#q-413b0b241ba8)
+- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459f)
+- [make compose-smoke](../../../evidence/sources.md#q-413b0b241b)
 
 ### Executable sources
 
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
-- [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc960) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc9) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
 
 ### Machine authority
 

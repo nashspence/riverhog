@@ -16,29 +16,29 @@ The immutable authority shared by every bounded inventory page.
 
 ## External contract
 
-<a id="s-da66940f25c6"></a>
-- <a id="s-820c2dd4c674"></a>`title`: PortableCollectionInventoryAuthority
-- <a id="s-3b186695d181"></a>`description`: The immutable authority shared by every bounded inventory page.
-- <a id="s-77dcd58f84cb"></a>`type`: object
+<a id="s-da66940f25"></a>
+- <a id="s-820c2dd4c6"></a>`title`: PortableCollectionInventoryAuthority
+- <a id="s-3b186695d1"></a>`description`: The immutable authority shared by every bounded inventory page.
+- <a id="s-77dcd58f84"></a>`type`: object
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-92807b378eac"></a>`file_bytes` | yes | type="integer"; minimum=0 |  |
-| <a id="s-b11180e3ba18"></a>`file_count` | yes | type="integer"; minimum=1 |  |
-| <a id="s-871d5bb9aeab"></a>`header` | yes | #/components/schemas/PortableCollectionHeader |  |
-| <a id="s-fb53d903c1eb"></a>`inventory_identity` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-92807b378e"></a>`file_bytes` | yes | type="integer"; minimum=0 |  |
+| <a id="s-b11180e3ba"></a>`file_count` | yes | type="integer"; minimum=1 |  |
+| <a id="s-871d5bb9ae"></a>`header` | yes | #/components/schemas/PortableCollectionHeader |  |
+| <a id="s-fb53d903c1"></a>`inventory_identity` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 
 ### Progression, limits, and lifecycle
 
-#### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
+#### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
 
 Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"}
 
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
-| [field inventory_identity](#s-fb53d903c1eb) | `length · characters · fixed` | shared above |
+| [field inventory_identity](#s-fb53d903c1) | `length · characters · fixed` | shared above |
 
 ## Maintained corroboration
 
@@ -48,20 +48,20 @@ Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-publ
 
 ## Governing policies
 
-- <a id="pa-3e96a980ba25"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0ba)
-- <a id="pa-1c5f85274b01"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
+- <a id="pa-3e96a980ba"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0)
+- <a id="pa-1c5f85274b"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
 
 ## Evidence
 
 ### Qualification
 
-- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459fb8)
-- [make compose-smoke](../../../evidence/sources.md#q-413b0b241ba8)
+- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459f)
+- [make compose-smoke](../../../evidence/sources.md#q-413b0b241b)
 
 ### Executable sources
 
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
-- [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc960) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc9) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
 
 ### Machine authority
 

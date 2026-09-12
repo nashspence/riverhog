@@ -10,54 +10,54 @@ Exact externally visible contract owned by this semantic dossier.
 |---|---|
 | Authority | [riverhog-provenance-windows-contracts](../index.md) |
 | Interface | [protocol](index.md) |
-| Family | [schemas](index.md#f-78a2bea4a4b2) |
+| Family | [schemas](index.md#f-78a2bea4a4) |
 | Contract elements | 1 |
 | Extent decisions | 1 |
 
 ## External contract
 
-<a id="s-13769e3cebf5"></a>
-- <a id="s-a06b3f827bb1"></a>`$id`: https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/windows-compression-state.json
-- <a id="s-3d137e91b3e1"></a>`type`: object
+<a id="s-13769e3ceb"></a>
+- <a id="s-a06b3f827b"></a>`$id`: https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/windows-compression-state.json
+- <a id="s-3d137e91b3"></a>`type`: object
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-06ce68c79536"></a>`chunk_shift` | yes | type="integer"; minimum=0 |  |
-| <a id="s-f191a3a820a8"></a>`cluster_shift` | yes | type="integer"; minimum=0 |  |
-| <a id="s-41996ac6224b"></a>`compressed_size` | yes | type="integer"; minimum=0 |  |
-| <a id="s-08de6a3103a5"></a>`compression_format` | yes | type="integer"; minimum=0 |  |
-| <a id="s-4bd5e7b2fd23"></a>`compression_format_name` | yes | type="string"; minLength=1 |  |
-| <a id="s-1e32f82e2f6f"></a>`compression_unit_shift` | yes | type="integer"; minimum=0 |  |
-| <a id="s-878f1ca9bfb6"></a>`file_attribute_compressed` | yes | type="boolean" |  |
+| <a id="s-06ce68c795"></a>`chunk_shift` | yes | type="integer"; minimum=0 |  |
+| <a id="s-f191a3a820"></a>`cluster_shift` | yes | type="integer"; minimum=0 |  |
+| <a id="s-41996ac622"></a>`compressed_size` | yes | type="integer"; minimum=0 |  |
+| <a id="s-08de6a3103"></a>`compression_format` | yes | type="integer"; minimum=0 |  |
+| <a id="s-4bd5e7b2fd"></a>`compression_format_name` | yes | type="string"; minLength=1 |  |
+| <a id="s-1e32f82e2f"></a>`compression_unit_shift` | yes | type="integer"; minimum=0 |  |
+| <a id="s-878f1ca9bf"></a>`file_attribute_compressed` | yes | type="boolean" |  |
 
 ### Progression, limits, and lifecycle
 
-#### [extent-rule/extension-contract/v1](../../../policies/index.md#p-75a89f9d1c36)
+#### [extent-rule/extension-contract/v1](../../../policies/index.md#p-75a89f9d1c)
 
 Shared facts for every subject below: maximum=null; reason="independently-versioned-extension-authority"
 
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
-| [field compressed_size](#s-41996ac6224b) | `value · schema-value · extension_owned` | shared above |
+| [field compressed_size](#s-41996ac622) | `value · schema-value · extension_owned` | shared above |
 
 ## Governing policies
 
-- <a id="pa-aa1b810e5ebf"></a>[compatibility/components/v1](../../../policies/index.md#p-95e9a1225947)
-- <a id="pa-b04eabd3d04c"></a>[extent-rule/extension-contract/v1](../../../policies/index.md#p-75a89f9d1c36)
+- <a id="pa-aa1b810e5e"></a>[compatibility/components/v1](../../../policies/index.md#p-95e9a12259)
+- <a id="pa-b04eabd3d0"></a>[extent-rule/extension-contract/v1](../../../policies/index.md#p-75a89f9d1c)
 
 ## Evidence
 
 ### Qualification
 
-- [make dist-smoke](../../../evidence/sources.md#q-0ba2578a3eb7)
-- [make build](../../../evidence/sources.md#q-d1121e35fa7a)
+- [make dist-smoke](../../../evidence/sources.md#q-0ba2578a3e)
+- [make build](../../../evidence/sources.md#q-d1121e35fa)
 
 ### Executable sources
 
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
-- [protocol:https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/windows-compression-state.json](../../../evidence/sources.md#src-40e754972038) — `reference/riverhog/provenance/contracts/windows/src/riverhog_provenance_windows_contracts/schemas/windows-compression-state.schema.json`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [protocol:https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/windows-compression-state.json](../../../evidence/sources.md#src-40e7549720) — `reference/riverhog/provenance/contracts/windows/src/riverhog_provenance_windows_contracts/schemas/windows-compression-state.schema.json`
 
 ### Machine authority
 

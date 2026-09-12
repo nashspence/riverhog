@@ -16,44 +16,44 @@ Exact externally visible contract owned by this semantic dossier.
 
 ## External contract
 
-<a id="s-2da953d5735c"></a>
-- <a id="s-aa75a865b188"></a>`title`: WriteSegmentReceipt
-- <a id="s-85cd4b164c36"></a>`type`: object
+<a id="s-2da953d573"></a>
+- <a id="s-aa75a865b1"></a>`title`: WriteSegmentReceipt
+- <a id="s-85cd4b164c"></a>`type`: object
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-88035ebc6ea5"></a>`number` | yes | type="integer"; minimum=1 |  |
-| <a id="s-0f6d9c2a1502"></a>`segment_token` | yes | type="string"; minLength=1; maxLength=4000 |  |
-| <a id="s-4186773e61ba"></a>`stored_bytes` | yes | type="integer"; minimum=1 |  |
-| <a id="s-48aa9108749a"></a>`stored_sha256` | no | anyOf=type="string"; pattern="^[0-9a-f]{64}$" \| type="null" |  |
+| <a id="s-88035ebc6e"></a>`number` | yes | type="integer"; minimum=1 |  |
+| <a id="s-0f6d9c2a15"></a>`segment_token` | yes | type="string"; minLength=1; maxLength=4000 |  |
+| <a id="s-4186773e61"></a>`stored_bytes` | yes | type="integer"; minimum=1 |  |
+| <a id="s-48aa910874"></a>`stored_sha256` | no | anyOf=type="string"; pattern="^[0-9a-f]{64}$" \| type="null" |  |
 
 ### Progression, limits, and lifecycle
 
-#### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
+#### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
 
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
-| [field segment_token](#s-0f6d9c2a1502) | `length · characters · contract_max` | maximum=4000; minimum=1; reason="schema-maximum" |
-| <a id="s-dae312493cf0"></a>field stored_sha256 · anyOf alternative 1 | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
+| [field segment_token](#s-0f6d9c2a15) | `length · characters · contract_max` | maximum=4000; minimum=1; reason="schema-maximum" |
+| <a id="s-dae312493c"></a>[field stored_sha256 · string value](#s-48aa910874) | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
 
 ## Governing policies
 
-- <a id="pa-301c8b84759d"></a>[compatibility/components/v1](../../../policies/index.md#p-95e9a1225947)
-- <a id="pa-a457a51b3050"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
+- <a id="pa-301c8b8475"></a>[compatibility/components/v1](../../../policies/index.md#p-95e9a12259)
+- <a id="pa-a457a51b30"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
 
 ## Evidence
 
 ### Qualification
 
-- [make dist-smoke](../../../evidence/sources.md#q-0ba2578a3eb7)
-- [make build](../../../evidence/sources.md#q-d1121e35fa7a)
+- [make dist-smoke](../../../evidence/sources.md#q-0ba2578a3e)
+- [make build](../../../evidence/sources.md#q-d1121e35fa)
 
 ### Executable sources
 
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
-- [protocol:generated:riverhog-storage-adapter](../../../evidence/sources.md#src-ef281f2471a9) — `packages/riverhog-storage-adapter-support/src/riverhog_storage_adapter_support/schemas.py::storage_adapter_schema_bundle`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [protocol:generated:riverhog-storage-adapter](../../../evidence/sources.md#src-ef281f2471) — `packages/riverhog-storage-adapter-support/src/riverhog_storage_adapter_support/schemas.py::storage_adapter_schema_bundle`
 
 ### Machine authority
 

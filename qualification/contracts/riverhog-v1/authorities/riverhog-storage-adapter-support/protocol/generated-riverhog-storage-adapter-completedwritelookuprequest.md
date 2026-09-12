@@ -16,47 +16,47 @@ Exact externally visible contract owned by this semantic dossier.
 
 ## External contract
 
-<a id="s-95c307eef1aa"></a>
-- <a id="s-03703c29e8e5"></a>`title`: CompletedWriteLookupRequest
-- <a id="s-37f9a223b987"></a>`type`: object
+<a id="s-95c307eef1"></a>
+- <a id="s-03703c29e8"></a>`title`: CompletedWriteLookupRequest
+- <a id="s-37f9a223b9"></a>`type`: object
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-d6b613d62580"></a>`expected_bytes` | yes | type="integer"; minimum=1 |  |
-| <a id="s-558690d0bf39"></a>`expected_content_type` | yes | type="string"; minLength=1; maxLength=255 |  |
-| <a id="s-8c0b60131f43"></a>`expected_placement` | yes | type="string"; enum=["archive","immediate"] |  |
-| <a id="s-ceec1bb3a766"></a>`object_path` | yes | type="string"; minLength=1; maxLength=4096 |  |
-| <a id="s-dc8a372d2af1"></a>`required_identity_assertions` | yes | type="object"; additional keys=`additionalProperties`, `maxProperties`, `x-riverhog-encoded-bytes-max`, `x-riverhog-extent` | Inert caller-owned facts used only to identify and reconcile an exact stored object. Adapters canonicalize, persist, return, and compare these assertions; they must not interpret them as routing, retrieval, retention, credentials, placement, or provider-control instructions. Adapters may retain additional adapter-private assertions. |
+| <a id="s-d6b613d625"></a>`expected_bytes` | yes | type="integer"; minimum=1 |  |
+| <a id="s-558690d0bf"></a>`expected_content_type` | yes | type="string"; minLength=1; maxLength=255 |  |
+| <a id="s-8c0b60131f"></a>`expected_placement` | yes | type="string"; enum=["archive","immediate"] |  |
+| <a id="s-ceec1bb3a7"></a>`object_path` | yes | type="string"; minLength=1; maxLength=4096 |  |
+| <a id="s-dc8a372d2a"></a>`required_identity_assertions` | yes | type="object"; additional keys=`additionalProperties`, `maxProperties`, `x-riverhog-encoded-bytes-max`, `x-riverhog-extent` | Inert caller-owned facts used only to identify and reconcile an exact stored object. Adapters canonicalize, persist, return, and compare these assertions; they must not interpret them as routing, retrieval, retention, credentials, placement, or provider-control instructions. Adapters may retain additional adapter-private assertions. |
 
 ### Progression, limits, and lifecycle
 
-#### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
+#### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
 
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
-| [field expected_content_type](#s-558690d0bf39) | `length · characters · contract_max` | maximum=255; minimum=1; reason="schema-maximum" |
-| [field object_path](#s-ceec1bb3a766) | `length · characters · contract_max` | maximum=4096; minimum=1; reason="schema-maximum" |
-| [field required_identity_assertions](#s-dc8a372d2af1) | `encoded-size · bytes · contract_max` | maximum=16384; reason="bounded-object-identity-assertion-envelope"; source_constraint={"field":"x-riverhog-encoded-bytes-max"} |
-| [field required_identity_assertions](#s-dc8a372d2af1) | `cardinality · entries · contract_max` | maximum=64; reason="bounded-object-identity-assertion-envelope" |
+| [field expected_content_type](#s-558690d0bf) | `length · characters · contract_max` | maximum=255; minimum=1; reason="schema-maximum" |
+| [field object_path](#s-ceec1bb3a7) | `length · characters · contract_max` | maximum=4096; minimum=1; reason="schema-maximum" |
+| [field required_identity_assertions](#s-dc8a372d2a) | `encoded-size · bytes · contract_max` | maximum=16384; reason="bounded-object-identity-assertion-envelope"; source_constraint={"field":"x-riverhog-encoded-bytes-max"} |
+| [field required_identity_assertions](#s-dc8a372d2a) | `cardinality · entries · contract_max` | maximum=64; reason="bounded-object-identity-assertion-envelope" |
 
 ## Governing policies
 
-- <a id="pa-a98d09e4923d"></a>[compatibility/components/v1](../../../policies/index.md#p-95e9a1225947)
-- <a id="pa-2abce7befb42"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
+- <a id="pa-a98d09e492"></a>[compatibility/components/v1](../../../policies/index.md#p-95e9a12259)
+- <a id="pa-2abce7befb"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
 
 ## Evidence
 
 ### Qualification
 
-- [make dist-smoke](../../../evidence/sources.md#q-0ba2578a3eb7)
-- [make build](../../../evidence/sources.md#q-d1121e35fa7a)
+- [make dist-smoke](../../../evidence/sources.md#q-0ba2578a3e)
+- [make build](../../../evidence/sources.md#q-d1121e35fa)
 
 ### Executable sources
 
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
-- [protocol:generated:riverhog-storage-adapter](../../../evidence/sources.md#src-ef281f2471a9) — `packages/riverhog-storage-adapter-support/src/riverhog_storage_adapter_support/schemas.py::storage_adapter_schema_bundle`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [protocol:generated:riverhog-storage-adapter](../../../evidence/sources.md#src-ef281f2471) — `packages/riverhog-storage-adapter-support/src/riverhog_storage_adapter_support/schemas.py::storage_adapter_schema_bundle`
 
 ### Machine authority
 

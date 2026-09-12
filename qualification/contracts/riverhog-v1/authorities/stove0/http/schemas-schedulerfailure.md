@@ -16,43 +16,43 @@ Exact externally visible contract owned by this semantic dossier.
 
 ## External contract
 
-<a id="s-b7d5d741d5c0"></a>
-- <a id="s-04be4a51f2da"></a>`title`: SchedulerFailure
-- <a id="s-6e8c04af5b7f"></a>`type`: object
+<a id="s-b7d5d741d5"></a>
+- <a id="s-04be4a51f2"></a>`title`: SchedulerFailure
+- <a id="s-6e8c04af5b"></a>`type`: object
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-e5c1cf746f0f"></a>`error` | yes | type="string"; minLength=1; maxLength=1000 |  |
-| <a id="s-4d3a6ac85527"></a>`event_id` | no | anyOf=type="string" \| type="null" |  |
-| <a id="s-6d2bcc8b250f"></a>`work_id` | no | anyOf=type="string"; pattern="^[0-9a-f]{64}$" \| type="null" |  |
+| <a id="s-e5c1cf746f"></a>`error` | yes | type="string"; minLength=1; maxLength=1000 |  |
+| <a id="s-4d3a6ac855"></a>`event_id` | no | anyOf=type="string" \| type="null" |  |
+| <a id="s-6d2bcc8b25"></a>`work_id` | no | anyOf=type="string"; pattern="^[0-9a-f]{64}$" \| type="null" |  |
 
 ### Progression, limits, and lifecycle
 
-#### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
+#### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
 
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
-| [field error](#s-e5c1cf746f0f) | `length · characters · contract_max` | maximum=1000; minimum=1; reason="schema-maximum" |
-| <a id="s-dbd8e80e1167"></a>field work_id · anyOf alternative 1 | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
+| [field error](#s-e5c1cf746f) | `length · characters · contract_max` | maximum=1000; minimum=1; reason="schema-maximum" |
+| <a id="s-dbd8e80e11"></a>[field work_id · string value](#s-6d2bcc8b25) | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
 
 ## Governing policies
 
-- <a id="pa-430725c8a00e"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0ba)
-- <a id="pa-c758ee97f70b"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc034)
+- <a id="pa-430725c8a0"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0)
+- <a id="pa-c758ee97f7"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
 
 ## Evidence
 
 ### Qualification
 
-- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459fb8)
-- [make compose-smoke](../../../evidence/sources.md#q-413b0b241ba8)
+- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459f)
+- [make compose-smoke](../../../evidence/sources.md#q-413b0b241b)
 
 ### Executable sources
 
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
-- [openapi:stove0](../../../evidence/sources.md#src-52e6e3212451) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [openapi:stove0](../../../evidence/sources.md#src-52e6e32124) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
 
 ### Machine authority
 

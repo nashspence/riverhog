@@ -10,37 +10,37 @@ Exact externally visible contract owned by this semantic dossier.
 |---|---|
 | Authority | [riverhog-ftp-adapter](../index.md) |
 | Interface | [boundary](index.md) |
-| Family | [components](index.md#f-391701f840fd) |
+| Family | [components](index.md#f-391701f840) |
 | Contract elements | 1 |
 | Extent decisions | 0 |
 
 ## External contract
 
-<a id="s-6f624af91273"></a>
+<a id="s-6f624af912"></a>
 | Field | Shape |
 |---|---|
-| <a id="s-41ee0b2f8ce0"></a>`console_scripts` | additional keys=`riverhog-ftp-adapter` |
-| <a id="s-2e85a6526126"></a>`dependencies` | ["http-api-contracts","riverhog-client","riverhog-ftp-adapter-api-client","riverhog-protocol","riverhog-provenance"] |
-| <a id="s-f3a66f6d63e4"></a>`distribution` | "riverhog-ftp-adapter" |
-| <a id="s-e2ec39398dd8"></a>`optional_dependencies` | empty object |
-| <a id="s-91d6b15ef116"></a>`path` | "reference/riverhog/ingress/ftp" |
-| <a id="s-fd2ac2b9d947"></a>`role` | "reference_component" |
+| <a id="s-41ee0b2f8c"></a>`console_scripts` | additional keys=`riverhog-ftp-adapter` |
+| <a id="s-2e85a65261"></a>`dependencies` | ["http-api-contracts","riverhog-client","riverhog-ftp-adapter-api-client","riverhog-protocol","riverhog-provenance"] |
+| <a id="s-f3a66f6d63"></a>`distribution` | "riverhog-ftp-adapter" |
+| <a id="s-e2ec39398d"></a>`optional_dependencies` | empty object |
+| <a id="s-91d6b15ef1"></a>`path` | "reference/riverhog/ingress/ftp" |
+| <a id="s-fd2ac2b9d9"></a>`role` | "reference_component" |
 
 ## Governing policies
 
-- <a id="pa-45fc25abdbe6"></a>[boundary/frozen-authority/v1](../../../policies/index.md#p-61994d3f0fa8)
+- <a id="pa-45fc25abdb"></a>[boundary/frozen-authority/v1](../../../policies/index.md#p-61994d3f0f)
 
 ## Evidence
 
 ### Qualification
 
-- [make release-check](../../../evidence/sources.md#q-8d8d22d6a6b1)
-- [make build](../../../evidence/sources.md#q-d1121e35fa7a)
+- [make release-check](../../../evidence/sources.md#q-8d8d22d6a6)
+- [make build](../../../evidence/sources.md#q-d1121e35fa)
 
 ### Executable sources
 
-- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4ffa) — `scripts/contract_freeze.py::contract_projection`
-- [release:release.toml](../../../evidence/sources.md#src-c5380dbe5fe0) — `release.toml`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [release:release.toml](../../../evidence/sources.md#src-c5380dbe5f) — `release.toml`
 
 ### Machine authority
 
