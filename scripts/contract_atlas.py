@@ -1111,7 +1111,7 @@ def _anchor_id(kind: str, identity: str) -> str:
         "subject": "s",
     }
     prefix = prefixes.get(kind, _slug(kind, limit=12))
-    return f"{prefix}-{hashlib.sha256(identity.encode()).hexdigest()[:12]}"
+    return f"{prefix}-{hashlib.sha256(identity.encode()).hexdigest()[:10]}"
 
 
 def _anchor_link(source: str, target: str, anchor: str) -> str:
@@ -1612,7 +1612,21 @@ def _subject_label(
             labels.append("additional values")
             index += 1
         elif part in {"allOf", "anyOf", "oneOf"} and following is not None and following.isdigit():
-            labels.append(f"{part} alternative {int(following) + 1}")
+            alternative_pointer = f"{base}/" + "/".join(
+                _escape_pointer(value) for value in parts[: index + 2]
+            )
+            alternative = pointer_value(projection, alternative_pointer)
+            alternative_kind = ""
+            if isinstance(alternative, Mapping):
+                if isinstance(alternative.get("type"), str):
+                    alternative_kind = str(alternative["type"])
+                elif isinstance(alternative.get("$ref"), str):
+                    alternative_kind = str(alternative["$ref"]).rsplit("/", 1)[-1]
+            labels.append(
+                f"{alternative_kind} value"
+                if alternative_kind
+                else f"{part} alternative {int(following) + 1}"
+            )
             index += 2
         elif part == "schema":
             index += 1
@@ -1633,6 +1647,11 @@ def _subject_reference(
     anchor = _subject_anchor(pointer)
     if pointer in placed_subjects:
         return f"[{label}](#{anchor})"
+    ancestors = [candidate for candidate in placed_subjects if pointer.startswith(f"{candidate}/")]
+    if ancestors:
+        parent = max(ancestors, key=len)
+        placed_subjects.add(pointer)
+        return f"{_html_anchor(anchor)}[{label}](#{_subject_anchor(parent)})"
     placed_subjects.add(pointer)
     return f'<a id="{anchor}"></a>{label}'
 

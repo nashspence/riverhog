@@ -276,10 +276,11 @@ def test_every_extent_fact_names_and_links_its_exact_subject() -> None:
 
         assert "| Applies to | Contract | Bounds or reason |" in section
         assert len(rows) == len(decision_ids)
+        assert all("](#" in row for row in rows)
         for pointer in {decisions[identity]["source_pointer"] for identity in decision_ids}:
             anchor = atlas._subject_anchor(pointer)
             assert page.count(f'id="{anchor}"') == 1
-            assert f"](#{anchor})" in section or f'id="{anchor}"' in section
+            assert f"](#{anchor})" in section or (f'id="{anchor}"' in section and "](#" in section)
 
         if element["interface"] == "http":
             assert not re.search(r"\bparameter \d+\b", section)
