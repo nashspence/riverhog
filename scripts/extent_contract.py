@@ -136,7 +136,16 @@ def _pointer(*parts: str) -> str:
 
 
 def _canonical_sha256(value: object) -> str:
-    payload = json.dumps(value, separators=(",", ":"), sort_keys=True).encode()
+    def normalize_numbers(current: object) -> object:
+        if isinstance(current, float) and current.is_integer():
+            return int(current)
+        if isinstance(current, Mapping):
+            return {key: normalize_numbers(child) for key, child in current.items()}
+        if isinstance(current, list):
+            return [normalize_numbers(child) for child in current]
+        return current
+
+    payload = json.dumps(normalize_numbers(value), separators=(",", ":"), sort_keys=True).encode()
     return hashlib.sha256(payload).hexdigest()
 
 

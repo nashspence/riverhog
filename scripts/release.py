@@ -2582,7 +2582,11 @@ def _generate_release_evidence(
     contract_name = str(_load_config(root)["artifacts"]["contract"])
     contract_files = [
         root / "qualification/contracts/riverhog-v1.json",
-        *sorted((root / "qualification/contracts/riverhog-v1").rglob("*.json")),
+        *sorted(
+            path
+            for path in (root / "qualification/contracts/riverhog-v1").rglob("*")
+            if path.is_file()
+        ),
     ]
     with (output / contract_name).open("wb") as raw:
         with gzip.GzipFile(filename="", mode="wb", fileobj=raw, mtime=source_epoch) as compressed:

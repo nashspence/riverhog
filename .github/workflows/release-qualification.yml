@@ -192,7 +192,7 @@ jobs:
             and .source_sha == $sha
             and .summary.operations == (.operations | length)
             and .qualification.extent_contract.status == "passed"
-            and .qualification.extent_contract.schema == "riverhog-contract-audit-bundle/v1"
+            and .qualification.extent_contract.schema == "riverhog-contract-machine-closure/v1"
             and .qualification.extent_contract.extent_schema == "riverhog-extent-contract/v1"
             and .qualification.extent_contract.extent_decisions > 0
             and .qualification.extent_contract.projection_sha256 == $contract

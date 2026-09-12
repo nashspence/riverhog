@@ -86,7 +86,7 @@ MYPY_SOURCES = \
 	reference/riverhog/storage/filesystem/src \
 	scripts/implementation_policy.py \
 	scripts/operation_qualification.py \
-	scripts/contract_audit_bundle.py \
+	scripts/contract_atlas.py \
 	scripts/contract_freeze.py \
 	scripts/provider_qualification.py \
 	scripts/release.py \

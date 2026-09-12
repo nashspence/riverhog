@@ -54,11 +54,6 @@ def test_checked_implementation_policy_is_scoped_and_executable() -> None:
     assert all(policy["gates"] for policy in policies)
 
     contract_root = REPO_ROOT / "qualification/contracts/riverhog-v1.json"
-    contract_documents = [
-        json.loads(contract_root.read_bytes()),
-        *(
-            json.loads(path.read_bytes())
-            for path in sorted((contract_root.parent / "riverhog-v1").rglob("*.json"))
-        ),
-    ]
-    assert all("authority_policies" not in document for document in contract_documents)
+    contract_document = json.loads(contract_root.read_bytes())
+    assert "authority_policies" not in contract_document
+    assert "implementation-witnesses" not in json.dumps(contract_document["policies"])

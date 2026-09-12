@@ -15,21 +15,7 @@ from tests.gogurt_provider import path_mounted_volume_provider
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 CONTRACT_ROOT = REPO_ROOT / "qualification/contracts/riverhog-v1.json"
-CONTRACT_INDEX = json.loads(CONTRACT_ROOT.read_bytes())
-CONTRACT_COLUMNS = CONTRACT_INDEX["context_columns"]
-CONTRACT_PATH_INDEXES = [
-    CONTRACT_COLUMNS.index("normative"),
-    CONTRACT_COLUMNS.index("trace"),
-]
-CONTRACT_FILES = {
-    CONTRACT_ROOT,
-    *(
-        CONTRACT_ROOT.parent / CONTRACT_INDEX["context_directory"] / row[index]["path"]
-        for row in CONTRACT_INDEX["contexts"]
-        for index in CONTRACT_PATH_INDEXES
-        if row[index] is not None
-    ),
-}
+CONTRACT_FILES = {CONTRACT_ROOT}
 QUALIFICATION_INPUTS = {
     REPO_ROOT / "qualification/fixtures/gogurt/gogurt-routes.yaml",
     REPO_ROOT / "qualification/fixtures/gogurt/scripts/fake_archive_device.py",
@@ -151,8 +137,8 @@ def test_every_checked_qualification_input_runs_through_its_real_consumer(
     contract_module = importlib.util.module_from_spec(contract_spec)
     sys.modules[contract_spec.name] = contract_module
     contract_spec.loader.exec_module(contract_module)
-    projection, trace, generated = contract_module._generated_bundle()
-    checked = contract_module.load_bundle(CONTRACT_ROOT)
+    projection, trace, generated = contract_module._generated_atlas()
+    checked = contract_module.load_atlas(CONTRACT_ROOT)
     assert checked.root == generated.root
     assert checked.files == generated.files
     assert contract_module.reassemble_projection(checked) == json.loads(json.dumps(projection))
