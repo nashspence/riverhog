@@ -4,6 +4,8 @@
 
 <!-- contract-element: protocol:stove0-target-support:generated-stove0-target-targetjobstatus:b1d1aa5cfc -->
 
+Exact externally visible contract owned by this semantic dossier.
+
 | Audit field | Value |
 |---|---|
 | Authority | `stove0-target-support` |
@@ -12,33 +14,7 @@
 | Contract elements | 1 |
 | Extent decisions | 4 |
 
-## Machine authority
-
-- `/external_contract/protocol_schemas/generated:stove0-target/schemas/TargetJobStatus`
-
-## Effective policies
-
-- `compatibility/components/v1`
-- `extent-rule/no-semantic-maximum/v1`
-- `extent-rule/schema-bound/v1`
-
-## Executable sources and proof
-
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `protocol:generated:stove0-target` — `reference/stove0/packages/target-support/src/stove0_target_support/schemas.py::target_schema_bundle`
-- Proof: `make dist-smoke`
-- Proof: `make build`
-
-## Extent decisions
-
-| Dimension | Unit | Policy | Bounds/reason |
-|---|---|---|---|
-| cardinality | entries | `operational_policy` | maximum=None, reason=no-declared-semantic-maximum |
-| length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
-| length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
-| length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
-
-## Contract summary
+## External contract
 
 - `title`: TargetJobStatus
 - `type`: object
@@ -47,39 +23,70 @@
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| `attempt` | yes | integer |  |
-| `derivation` | no | object (3 fields) |  |
-| `effect_receipt` | no | object (2 fields) |  |
-| `execution_evidence` | no | object (2 fields) |  |
-| `failure` | no | object (2 fields) |  |
-| `inapplicable` | no | object (2 fields) |  |
-| `job_id` | yes | string |  |
-| `output_collection` | no | object (2 fields) |  |
-| `plan_sha256` | yes | string |  |
-| `production` | no | object (2 fields) |  |
+| `attempt` | yes | type="integer"; minimum=1 |  |
+| `derivation` | no | anyOf=type="object"; additional keys=`additionalProperties` \| type="null" |  |
+| `effect_receipt` | no | anyOf=#/$defs/ExternalEffectReceipt \| type="null" |  |
+| `execution_evidence` | no | anyOf=#/$defs/TargetExecutionEvidence \| type="null" |  |
+| `failure` | no | anyOf=#/$defs/TargetFailure \| type="null" |  |
+| `inapplicable` | no | anyOf=#/$defs/TargetInapplicable \| type="null" |  |
+| `job_id` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| `output_collection` | no | anyOf=#/$defs/OutputCollectionRef \| type="null" |  |
+| `plan_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| `production` | no | anyOf=#/$defs/TargetProductionAuthority \| type="null" |  |
 | `progress` | yes | #/$defs/TargetProgress |  |
-| `protocol` | no | string |  |
-| `request_sha256` | yes | string |  |
-| `state` | yes | string |  |
+| `protocol` | no | type="string"; enum=["stove0-transform-target/v1","stove0-effect-target/v1"] |  |
+| `request_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| `state` | yes | type="string"; enum=["queued","running","canceling","interrupted","inapplicable","succeeded","failed","canceled"] |  |
 
 ### Definitions
 
 | Definition | Shape |
 |---|---|
-| `ArtifactDispositionSetIdentity` | object |
-| `CollectionId` | integer |
-| `ExternalEffectReceipt` | object |
-| `JsonValue` | object (0 fields) |
-| `OutputArtifactRoleCount` | object |
-| `OutputArtifactSetIdentity` | object |
-| `OutputCollectionRef` | object |
-| `TargetExecutionEvidence` | object |
-| `TargetFailure` | object |
-| `TargetInapplicable` | object |
-| `TargetProductionAuthority` | object |
-| `TargetProgress` | object |
+| `ArtifactDispositionSetIdentity` | type="object"; fields=`disposition_count`, `output_artifact_count`, `output_edge_count`, `sha256`; additional keys=`required` |
+| `CollectionId` | type="integer"; minimum=1 |
+| `ExternalEffectReceipt` | type="object"; fields=`execution_sha256`, `format`, `job_id`, `operation_contract_sha256`, `plan_sha256`, `receipt_sha256`, `request_sha256`, `result`, `target_contract_sha256`; additional keys=`additionalProperties`, `required` |
+| `JsonValue` | empty object |
+| `OutputArtifactRoleCount` | type="object"; fields=`count`, `role`; additional keys=`additionalProperties`, `required` |
+| `OutputArtifactSetIdentity` | type="object"; fields=`artifact_count`, `roles`, `sha256`, `total_bytes`; additional keys=`additionalProperties`, `required` |
+| `OutputCollectionRef` | type="object"; fields=`archive_root_sha256`, `collection_id`, `content_identity`, `derivation_sha256`; additional keys=`additionalProperties`, `required` |
+| `TargetExecutionEvidence` | type="object"; fields=`execution_sha256`, `operation_contract_sha256`, `plan_sha256`, `runtime`, `target_contract_sha256`; additional keys=`additionalProperties`, `required` |
+| `TargetFailure` | type="object"; fields=`code`, `message`, `retryable`; additional keys=`additionalProperties`, `required` |
+| `TargetInapplicable` | type="object"; fields=`code`, `message`; additional keys=`additionalProperties`, `required` |
+| `TargetProductionAuthority` | type="object"; fields=`disposition_count`, `disposition_sha256`, `format`, `job_id`, `outputs`, `plan_sha256`, `production_sha256`, `riverhog_disposition_set`, `source_edge_count`, `source_edge_sha256`; additional keys=`additionalProperties`, `required` |
+| `TargetProgress` | type="object"; fields=`completed`, `phase`, `total`, `unit`; additional keys=`additionalProperties`, `required` |
 
-## Complete owned contract
+### Progression, limits, and lifecycle
+
+| Dimension | Unit | Policy | Bounds or reason |
+|---|---|---|---|
+| cardinality | entries | `operational_policy` | maximum=None, reason=no-declared-semantic-maximum |
+| length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
+| length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
+| length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
+
+## Governing policies
+
+- `compatibility/components/v1`
+- `extent-rule/no-semantic-maximum/v1`
+- `extent-rule/schema-bound/v1`
+
+## Evidence
+
+### Qualification
+
+- `make dist-smoke`
+- `make build`
+
+### Executable sources
+
+- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
+- `protocol:generated:stove0-target` — `reference/stove0/packages/target-support/src/stove0_target_support/schemas.py::target_schema_bundle`
+
+### Machine authority
+
+- `/external_contract/protocol_schemas/generated:stove0-target/schemas/TargetJobStatus`
+
+### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 

@@ -4,6 +4,8 @@
 
 <!-- contract-element: http:riverhog:put-v1-collection-upload-sessions-collect-859266a156:ea12ca858c -->
 
+Put Collection Upload Session Unit
+
 | Audit field | Value |
 |---|---|
 | Authority | `riverhog` |
@@ -12,31 +14,7 @@
 | Contract elements | 1 |
 | Extent decisions | 0 |
 
-## Machine authority
-
-- `/external_contract/http_openapi/riverhog/paths/~1v1~1collection-upload-sessions~1{collection_id}~1volumes~1{volume_id}~1units~1{unit}/put`
-
-## Effective policies
-
-- `compatibility/http-api/v1`
-
-## Executable sources and proof
-
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `openapi:riverhog` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
-- Proof: `make operation-qualification`
-- Proof: `make compose-smoke`
-
-## Related interface records
-
-- [Operation parity: put_collection_upload_session_unit](../operation/operation-parity-put-collection-upload-session-unit.md)
-
-## Referenced contract dossiers
-
-- [schemas: CollectionUploadUnitWorkDocument](schemas-collectionuploadunitworkdocument.md)
-- [schemas: ErrorResponse](schemas-errorresponse.md)
-
-## Contract summary
+## External contract
 
 - `operationId`: put_collection_upload_session_unit
 - `summary`: Put Collection Upload Session Unit
@@ -46,11 +24,11 @@
 
 | Name | In | Required | Schema |
 |---|---|---:|---|
-| `collection_id` | path | yes | integer |
-| `volume_id` | path | yes | string |
-| `unit` | path | yes | integer |
-| `If-Match` | header | yes | string |
-| `Content-Length` | header | yes | integer |
+| `collection_id` | path | yes | type="integer"; minimum=1 |
+| `volume_id` | path | yes | type="string"; pattern="^(?:pack\|segment)-[0-9a-f]{64}$" |
+| `unit` | path | yes | type="integer"; minimum=0 |
+| `If-Match` | header | yes | type="string"; pattern="^\"[0-9a-f]{64}\"$" |
+| `Content-Length` | header | yes | type="integer"; minimum=0 |
 
 ### Request body
 
@@ -69,7 +47,38 @@
 | `411` | Length Required |
 | `500` | Internal Server Error |
 
-## Complete owned contract
+## Maintained corroboration
+
+### Related interface records
+
+- [Operation parity: put_collection_upload_session_unit](../operation/operation-parity-put-collection-upload-session-unit.md)
+
+### Referenced contract dossiers
+
+- [schemas: CollectionUploadUnitWorkDocument](schemas-collectionuploadunitworkdocument.md)
+- [schemas: ErrorResponse](schemas-errorresponse.md)
+
+## Governing policies
+
+- `compatibility/http-api/v1`
+
+## Evidence
+
+### Qualification
+
+- `make operation-qualification`
+- `make compose-smoke`
+
+### Executable sources
+
+- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
+- `openapi:riverhog` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+
+### Machine authority
+
+- `/external_contract/http_openapi/riverhog/paths/~1v1~1collection-upload-sessions~1{collection_id}~1volumes~1{volume_id}~1units~1{unit}/put`
+
+### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 

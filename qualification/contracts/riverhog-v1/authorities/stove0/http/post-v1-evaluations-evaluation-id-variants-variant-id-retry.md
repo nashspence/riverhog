@@ -4,6 +4,8 @@
 
 <!-- contract-element: http:stove0:post-v1-evaluations-evaluation-id-variant-ae6ffd6789:1f7e34dab4 -->
 
+Retry Evaluation Variant
+
 | Audit field | Value |
 |---|---|
 | Authority | `stove0` |
@@ -12,31 +14,7 @@
 | Contract elements | 1 |
 | Extent decisions | 0 |
 
-## Machine authority
-
-- `/external_contract/http_openapi/stove0/paths/~1v1~1evaluations~1{evaluation_id}~1variants~1{variant_id}~1retry/post`
-
-## Effective policies
-
-- `compatibility/http-api/v1`
-
-## Executable sources and proof
-
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `openapi:stove0` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
-- Proof: `make operation-qualification`
-- Proof: `make compose-smoke`
-
-## Related interface records
-
-- [Operation parity: retry_evaluation_variant](../operation/operation-parity-retry-evaluation-variant.md)
-
-## Referenced contract dossiers
-
-- [schemas: ErrorResponse](schemas-errorresponse.md)
-- [schemas: EvaluationView](schemas-evaluationview.md)
-
-## Contract summary
+## External contract
 
 - `operationId`: retry_evaluation_variant
 - `summary`: Retry Evaluation Variant
@@ -45,8 +23,8 @@
 
 | Name | In | Required | Schema |
 |---|---|---:|---|
-| `evaluation_id` | path | yes | string |
-| `variant_id` | path | yes | string |
+| `evaluation_id` | path | yes | type="string" |
+| `variant_id` | path | yes | type="string" |
 
 ### Responses
 
@@ -60,7 +38,38 @@
 | `409` | Conflict |
 | `500` | Internal Server Error |
 
-## Complete owned contract
+## Maintained corroboration
+
+### Related interface records
+
+- [Operation parity: retry_evaluation_variant](../operation/operation-parity-retry-evaluation-variant.md)
+
+### Referenced contract dossiers
+
+- [schemas: ErrorResponse](schemas-errorresponse.md)
+- [schemas: EvaluationView](schemas-evaluationview.md)
+
+## Governing policies
+
+- `compatibility/http-api/v1`
+
+## Evidence
+
+### Qualification
+
+- `make operation-qualification`
+- `make compose-smoke`
+
+### Executable sources
+
+- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
+- `openapi:stove0` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+
+### Machine authority
+
+- `/external_contract/http_openapi/stove0/paths/~1v1~1evaluations~1{evaluation_id}~1variants~1{variant_id}~1retry/post`
+
+### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 

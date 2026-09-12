@@ -4,6 +4,8 @@
 
 <!-- contract-element: protocol:riverhog-storage-adapter-support:generated-riverhog-storage-adapter-adapterdescriptor:fd5ddc3b83 -->
 
+Exact externally visible contract owned by this semantic dossier.
+
 | Audit field | Value |
 |---|---|
 | Authority | `riverhog-storage-adapter-support` |
@@ -12,29 +14,7 @@
 | Contract elements | 1 |
 | Extent decisions | 1 |
 
-## Machine authority
-
-- `/external_contract/protocol_schemas/generated:riverhog-storage-adapter/schemas/AdapterDescriptor`
-
-## Effective policies
-
-- `compatibility/components/v1`
-- `extent-rule/schema-bound/v1`
-
-## Executable sources and proof
-
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `protocol:generated:riverhog-storage-adapter` — `packages/riverhog-storage-adapter-support/src/riverhog_storage_adapter_support/schemas.py::storage_adapter_schema_bundle`
-- Proof: `make dist-smoke`
-- Proof: `make build`
-
-## Extent decisions
-
-| Dimension | Unit | Policy | Bounds/reason |
-|---|---|---|---|
-| length | characters | `contract_max` | maximum=120, minimum=1, reason=schema-maximum |
-
-## Contract summary
+## External contract
 
 - `title`: AdapterDescriptor
 - `type`: object
@@ -43,15 +23,42 @@
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| `implementation_id` | yes | string |  |
-| `implementation_version` | yes | string |  |
-| `maximum_segment_bytes` | no | object (3 fields) |  |
-| `maximum_segment_count` | no | object (3 fields) |  |
-| `minimum_nonfinal_segment_bytes` | yes | integer |  |
-| `protocol` | no | string |  |
-| `read_mode` | yes | string |  |
+| `implementation_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
+| `implementation_version` | yes | type="string"; minLength=1; maxLength=120 |  |
+| `maximum_segment_bytes` | no | anyOf=type="integer"; minimum=1 \| type="null" |  |
+| `maximum_segment_count` | no | anyOf=type="integer"; minimum=1 \| type="null" |  |
+| `minimum_nonfinal_segment_bytes` | yes | type="integer"; minimum=1 |  |
+| `protocol` | no | type="string"; const="riverhog-storage-adapter/v1" |  |
+| `read_mode` | yes | type="string"; enum=["immediate","restore_required"] |  |
 
-## Complete owned contract
+### Progression, limits, and lifecycle
+
+| Dimension | Unit | Policy | Bounds or reason |
+|---|---|---|---|
+| length | characters | `contract_max` | maximum=120, minimum=1, reason=schema-maximum |
+
+## Governing policies
+
+- `compatibility/components/v1`
+- `extent-rule/schema-bound/v1`
+
+## Evidence
+
+### Qualification
+
+- `make dist-smoke`
+- `make build`
+
+### Executable sources
+
+- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
+- `protocol:generated:riverhog-storage-adapter` — `packages/riverhog-storage-adapter-support/src/riverhog_storage_adapter_support/schemas.py::storage_adapter_schema_bundle`
+
+### Machine authority
+
+- `/external_contract/protocol_schemas/generated:riverhog-storage-adapter/schemas/AdapterDescriptor`
+
+### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 

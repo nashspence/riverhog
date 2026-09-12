@@ -4,6 +4,8 @@
 
 <!-- contract-element: http:stove0:schemas-brancheffectsettlement:4e4fc591ca -->
 
+Success-only receipt identity for one required external-effect branch.
+
 | Audit field | Value |
 |---|---|
 | Authority | `stove0` |
@@ -12,32 +14,7 @@
 | Contract elements | 1 |
 | Extent decisions | 4 |
 
-## Machine authority
-
-- `/external_contract/http_openapi/stove0/components/schemas/BranchEffectSettlement`
-
-## Effective policies
-
-- `compatibility/http-api/v1`
-- `extent-rule/schema-bound/v1`
-
-## Executable sources and proof
-
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `openapi:stove0` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
-- Proof: `make operation-qualification`
-- Proof: `make compose-smoke`
-
-## Extent decisions
-
-| Dimension | Unit | Policy | Bounds/reason |
-|---|---|---|---|
-| length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
-| length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
-| length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
-| length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
-
-## Contract summary
+## External contract
 
 - `title`: BranchEffectSettlement
 - `description`: Success-only receipt identity for one required external-effect branch.
@@ -47,14 +24,44 @@
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| `branch_id` | yes | string |  |
-| `effect_receipt_sha256` | yes | string |  |
-| `format` | no | string |  |
-| `settlement_sha256` | yes | string |  |
-| `work_id` | yes | string |  |
-| `workflow_plan_sha256` | yes | string |  |
+| `branch_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
+| `effect_receipt_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| `format` | no | type="string"; const="stove0-branch-effect-settlement/v1" |  |
+| `settlement_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| `work_id` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| `workflow_plan_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 
-## Complete owned contract
+### Progression, limits, and lifecycle
+
+| Dimension | Unit | Policy | Bounds or reason |
+|---|---|---|---|
+| length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
+| length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
+| length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
+| length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
+
+## Governing policies
+
+- `compatibility/http-api/v1`
+- `extent-rule/schema-bound/v1`
+
+## Evidence
+
+### Qualification
+
+- `make operation-qualification`
+- `make compose-smoke`
+
+### Executable sources
+
+- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
+- `openapi:stove0` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+
+### Machine authority
+
+- `/external_contract/http_openapi/stove0/components/schemas/BranchEffectSettlement`
+
+### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 

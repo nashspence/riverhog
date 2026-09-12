@@ -4,6 +4,8 @@
 
 <!-- contract-element: extent:extent-contract:extent-principle-logical-totals:5865d74355 -->
 
+Exact externally visible contract owned by this semantic dossier.
+
 | Audit field | Value |
 |---|---|
 | Authority | `extent-contract` |
@@ -12,26 +14,31 @@
 | Contract elements | 1 |
 | Extent decisions | 0 |
 
-## Machine authority
-
-- `/external_contract/extents/principles/logical_totals`
-
-## Effective policies
-
-- `extent-principle/logical-totals/v1`
-
-## Executable sources and proof
-
-- `extent:extent-contract` — `scripts/extent_contract.py::extent_projection`
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- Proof: `make contract-freeze`
-- Proof: `make operation-qualification`
-
-## Contract summary
+## External contract
 
 - Shape: "A finite logical total has no product-level semantic maximum unless its owning contract declares one."
 
-## Complete owned contract
+## Governing policies
+
+- `extent-principle/logical-totals/v1`
+
+## Evidence
+
+### Qualification
+
+- `make contract-freeze`
+- `make operation-qualification`
+
+### Executable sources
+
+- `extent:extent-contract` — `scripts/extent_contract.py::extent_projection`
+- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
+
+### Machine authority
+
+- `/external_contract/extents/principles/logical_totals`
+
+### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 

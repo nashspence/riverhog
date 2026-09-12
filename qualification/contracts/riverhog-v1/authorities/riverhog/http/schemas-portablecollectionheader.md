@@ -4,6 +4,8 @@
 
 <!-- contract-element: http:riverhog:schemas-portablecollectionheader:c3da8f056c -->
 
+Bounded immutable metadata that owns one portable file inventory.
+
 | Audit field | Value |
 |---|---|
 | Authority | `riverhog` |
@@ -12,34 +14,7 @@
 | Contract elements | 1 |
 | Extent decisions | 2 |
 
-## Machine authority
-
-- `/external_contract/http_openapi/riverhog/components/schemas/PortableCollectionHeader`
-
-## Effective policies
-
-- `compatibility/http-api/v1`
-- `extent-rule/schema-bound/v1`
-
-## Executable sources and proof
-
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `openapi:riverhog` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
-- Proof: `make operation-qualification`
-- Proof: `make compose-smoke`
-
-## Referenced contract dossiers
-
-- [schemas: CollectionId](schemas-collectionid.md)
-
-## Extent decisions
-
-| Dimension | Unit | Policy | Bounds/reason |
-|---|---|---|---|
-| length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
-| length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
-
-## Contract summary
+## External contract
 
 - `title`: PortableCollectionHeader
 - `description`: Bounded immutable metadata that owns one portable file inventory.
@@ -50,14 +25,48 @@
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | `collection` | yes | #/components/schemas/CollectionId |  |
-| `content_identity` | yes | string |  |
-| `encryption_format` | yes | string |  |
-| `format` | no | string |  |
-| `passphrase_id` | yes | string |  |
-| `provenance_identity` | no | object (2 fields) |  |
-| `provenance_mode` | yes | string |  |
+| `content_identity` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| `encryption_format` | yes | type="string"; minLength=1 |  |
+| `format` | no | type="string"; const="riverhog-collection/v1" |  |
+| `passphrase_id` | yes | type="string"; pattern="^[A-Za-z0-9_-]{16,128}$" |  |
+| `provenance_identity` | no | anyOf=type="string"; pattern="^[0-9a-f]{64}$" \| type="null" |  |
+| `provenance_mode` | yes | type="string"; enum=["captured","mixed","omitted"] |  |
 
-## Complete owned contract
+### Progression, limits, and lifecycle
+
+| Dimension | Unit | Policy | Bounds or reason |
+|---|---|---|---|
+| length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
+| length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
+
+## Maintained corroboration
+
+### Referenced contract dossiers
+
+- [schemas: CollectionId](schemas-collectionid.md)
+
+## Governing policies
+
+- `compatibility/http-api/v1`
+- `extent-rule/schema-bound/v1`
+
+## Evidence
+
+### Qualification
+
+- `make operation-qualification`
+- `make compose-smoke`
+
+### Executable sources
+
+- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
+- `openapi:riverhog` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+
+### Machine authority
+
+- `/external_contract/http_openapi/riverhog/components/schemas/PortableCollectionHeader`
+
+### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 

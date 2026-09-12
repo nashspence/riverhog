@@ -4,6 +4,8 @@
 
 <!-- contract-element: http:stove0:schemas-controllerevidence:dd1235b71f -->
 
+Exact externally visible contract owned by this semantic dossier.
+
 | Audit field | Value |
 |---|---|
 | Authority | `stove0` |
@@ -12,33 +14,7 @@
 | Contract elements | 1 |
 | Extent decisions | 1 |
 
-## Machine authority
-
-- `/external_contract/http_openapi/stove0/components/schemas/ControllerEvidence`
-
-## Effective policies
-
-- `compatibility/http-api/v1`
-- `extent-rule/schema-bound/v1`
-
-## Executable sources and proof
-
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `openapi:stove0` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
-- Proof: `make operation-qualification`
-- Proof: `make compose-smoke`
-
-## Referenced contract dossiers
-
-- [schemas: ExecutionEnvelope](schemas-executionenvelope.md)
-
-## Extent decisions
-
-| Dimension | Unit | Policy | Bounds/reason |
-|---|---|---|---|
-| length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
-
-## Contract summary
+## External contract
 
 - `title`: ControllerEvidence
 - `type`: object
@@ -47,11 +23,44 @@
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| `controller_evidence_sha256` | yes | string |  |
+| `controller_evidence_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 | `execution_envelope` | yes | #/components/schemas/ExecutionEnvelope |  |
-| `format` | no | string |  |
+| `format` | no | type="string"; const="stove0-controller-evidence/v1" |  |
 
-## Complete owned contract
+### Progression, limits, and lifecycle
+
+| Dimension | Unit | Policy | Bounds or reason |
+|---|---|---|---|
+| length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
+
+## Maintained corroboration
+
+### Referenced contract dossiers
+
+- [schemas: ExecutionEnvelope](schemas-executionenvelope.md)
+
+## Governing policies
+
+- `compatibility/http-api/v1`
+- `extent-rule/schema-bound/v1`
+
+## Evidence
+
+### Qualification
+
+- `make operation-qualification`
+- `make compose-smoke`
+
+### Executable sources
+
+- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
+- `openapi:stove0` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+
+### Machine authority
+
+- `/external_contract/http_openapi/stove0/components/schemas/ControllerEvidence`
+
+### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 

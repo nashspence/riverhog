@@ -4,6 +4,8 @@
 
 <!-- contract-element: http:riverhog:schemas-riverhoglifecycleevent:ced69167d5 -->
 
+Exact externally visible contract owned by this semantic dossier.
+
 | Audit field | Value |
 |---|---|
 | Authority | `riverhog` |
@@ -12,22 +14,16 @@
 | Contract elements | 1 |
 | Extent decisions | 0 |
 
-## Machine authority
+## External contract
 
-- `/external_contract/http_openapi/riverhog/components/schemas/RiverhogLifecycleEvent`
+| Field | Shape |
+|---|---|
+| `discriminator` | additional keys=`mapping`, `propertyName` |
+| `oneOf` | items=#/components/schemas/CollectionFinalizedEvent \| #/components/schemas/CollectionDeletedEvent \| #/components/schemas/ArchiveCopyRequestedEvent \| #/components/schemas/ArchiveCopyCompletedEvent \| #/components/schemas/ArchiveCopyIssueEvent \| #/components/schemas/ArchiveCopyCanceledEvent \| #/components/schemas/RetrievalRequestedEvent \| #/components/schemas/RetrievalReadyEvent \| #/components/schemas/RetrievalRenewedEvent \| #/components/schemas/RetrievalCompletedEvent \| #/components/schemas/RetrievalCanceledEvent \| #/components/schemas/RetrievalExpiredEvent \| #/components/schemas/RetrievalIssueEvent \| #/components/schemas/RetrievalFailedEvent |
 
-## Effective policies
+## Maintained corroboration
 
-- `compatibility/http-api/v1`
-
-## Executable sources and proof
-
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `openapi:riverhog` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
-- Proof: `make operation-qualification`
-- Proof: `make compose-smoke`
-
-## Referenced contract dossiers
+### Referenced contract dossiers
 
 - [schemas: ArchiveCopyCanceledEvent](schemas-archivecopycanceledevent.md)
 - [schemas: ArchiveCopyCompletedEvent](schemas-archivecopycompletedevent.md)
@@ -44,14 +40,27 @@
 - [schemas: RetrievalRenewedEvent](schemas-retrievalrenewedevent.md)
 - [schemas: RetrievalRequestedEvent](schemas-retrievalrequestedevent.md)
 
-## Contract summary
+## Governing policies
 
-| Field | Shape |
-|---|---|
-| `discriminator` | object (2 fields) |
-| `oneOf` | array (14 items) |
+- `compatibility/http-api/v1`
 
-## Complete owned contract
+## Evidence
+
+### Qualification
+
+- `make operation-qualification`
+- `make compose-smoke`
+
+### Executable sources
+
+- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
+- `openapi:riverhog` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+
+### Machine authority
+
+- `/external_contract/http_openapi/riverhog/components/schemas/RiverhogLifecycleEvent`
+
+### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 

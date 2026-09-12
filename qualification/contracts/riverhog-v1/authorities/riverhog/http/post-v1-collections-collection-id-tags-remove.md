@@ -4,6 +4,8 @@
 
 <!-- contract-element: http:riverhog:post-v1-collections-collection-id-tags-remove:f6a36f4a79 -->
 
+Remove Collection Tag
+
 | Audit field | Value |
 |---|---|
 | Authority | `riverhog` |
@@ -12,32 +14,7 @@
 | Contract elements | 1 |
 | Extent decisions | 0 |
 
-## Machine authority
-
-- `/external_contract/http_openapi/riverhog/paths/~1v1~1collections~1{collection_id}~1tags:remove/post`
-
-## Effective policies
-
-- `compatibility/http-api/v1`
-
-## Executable sources and proof
-
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `openapi:riverhog` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
-- Proof: `make operation-qualification`
-- Proof: `make compose-smoke`
-
-## Related interface records
-
-- [Operation parity: remove_collection_tag](../operation/operation-parity-remove-collection-tag.md)
-
-## Referenced contract dossiers
-
-- [schemas: CollectionTagMutationOut](schemas-collectiontagmutationout.md)
-- [schemas: CollectionTagMutationRequest](schemas-collectiontagmutationrequest.md)
-- [schemas: ErrorResponse](schemas-errorresponse.md)
-
-## Contract summary
+## External contract
 
 - `operationId`: remove_collection_tag
 - `summary`: Remove Collection Tag
@@ -47,7 +24,7 @@
 
 | Name | In | Required | Schema |
 |---|---|---:|---|
-| `collection_id` | path | yes | integer |
+| `collection_id` | path | yes | type="integer"; minimum=1 |
 
 ### Request body
 
@@ -66,7 +43,39 @@
 | `412` | Precondition Failed |
 | `500` | Internal Server Error |
 
-## Complete owned contract
+## Maintained corroboration
+
+### Related interface records
+
+- [Operation parity: remove_collection_tag](../operation/operation-parity-remove-collection-tag.md)
+
+### Referenced contract dossiers
+
+- [schemas: CollectionTagMutationOut](schemas-collectiontagmutationout.md)
+- [schemas: CollectionTagMutationRequest](schemas-collectiontagmutationrequest.md)
+- [schemas: ErrorResponse](schemas-errorresponse.md)
+
+## Governing policies
+
+- `compatibility/http-api/v1`
+
+## Evidence
+
+### Qualification
+
+- `make operation-qualification`
+- `make compose-smoke`
+
+### Executable sources
+
+- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
+- `openapi:riverhog` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+
+### Machine authority
+
+- `/external_contract/http_openapi/riverhog/paths/~1v1~1collections~1{collection_id}~1tags:remove/post`
+
+### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 

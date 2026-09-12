@@ -4,6 +4,8 @@
 
 <!-- contract-element: http:stove0:schemas-targetjobstatus:5145d7a958 -->
 
+Exact externally visible contract owned by this semantic dossier.
+
 | Audit field | Value |
 |---|---|
 | Authority | `stove0` |
@@ -12,24 +14,42 @@
 | Contract elements | 1 |
 | Extent decisions | 4 |
 
-## Machine authority
+## External contract
 
-- `/external_contract/http_openapi/stove0/components/schemas/TargetJobStatus`
+- `title`: TargetJobStatus
+- `type`: object
 
-## Effective policies
+### Fields
 
-- `compatibility/http-api/v1`
-- `extent-rule/no-semantic-maximum/v1`
-- `extent-rule/schema-bound/v1`
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| `attempt` | yes | type="integer"; minimum=1 |  |
+| `derivation` | no | anyOf=type="object"; additional keys=`additionalProperties` \| type="null" |  |
+| `effect_receipt` | no | anyOf=#/components/schemas/ExternalEffectReceipt \| type="null" |  |
+| `execution_evidence` | no | anyOf=#/components/schemas/TargetExecutionEvidence \| type="null" |  |
+| `failure` | no | anyOf=#/components/schemas/TargetFailure \| type="null" |  |
+| `inapplicable` | no | anyOf=#/components/schemas/TargetInapplicable \| type="null" |  |
+| `job_id` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| `output_collection` | no | anyOf=#/components/schemas/OutputCollectionRef \| type="null" |  |
+| `plan_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| `production` | no | anyOf=#/components/schemas/TargetProductionAuthority \| type="null" |  |
+| `progress` | yes | #/components/schemas/TargetProgress |  |
+| `protocol` | no | type="string"; enum=["stove0-transform-target/v1","stove0-effect-target/v1"] |  |
+| `request_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| `state` | yes | type="string"; enum=["queued","running","canceling","interrupted","inapplicable","succeeded","failed","canceled"] |  |
 
-## Executable sources and proof
+### Progression, limits, and lifecycle
 
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `openapi:stove0` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
-- Proof: `make operation-qualification`
-- Proof: `make compose-smoke`
+| Dimension | Unit | Policy | Bounds or reason |
+|---|---|---|---|
+| cardinality | entries | `operational_policy` | maximum=None, reason=no-declared-semantic-maximum |
+| length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
+| length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
+| length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
 
-## Referenced contract dossiers
+## Maintained corroboration
+
+### Referenced contract dossiers
 
 - [schemas: ExternalEffectReceipt](schemas-externaleffectreceipt.md)
 - [schemas: OutputCollectionRef](schemas-outputcollectionref.md)
@@ -39,40 +59,29 @@
 - [schemas: TargetProductionAuthority](schemas-targetproductionauthority.md)
 - [schemas: TargetProgress](schemas-targetprogress.md)
 
-## Extent decisions
+## Governing policies
 
-| Dimension | Unit | Policy | Bounds/reason |
-|---|---|---|---|
-| cardinality | entries | `operational_policy` | maximum=None, reason=no-declared-semantic-maximum |
-| length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
-| length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
-| length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
+- `compatibility/http-api/v1`
+- `extent-rule/no-semantic-maximum/v1`
+- `extent-rule/schema-bound/v1`
 
-## Contract summary
+## Evidence
 
-- `title`: TargetJobStatus
-- `type`: object
+### Qualification
 
-### Fields
+- `make operation-qualification`
+- `make compose-smoke`
 
-| Field | Required | Shape | Description |
-|---|---:|---|---|
-| `attempt` | yes | integer |  |
-| `derivation` | no | object (2 fields) |  |
-| `effect_receipt` | no | object (1 fields) |  |
-| `execution_evidence` | no | object (1 fields) |  |
-| `failure` | no | object (1 fields) |  |
-| `inapplicable` | no | object (1 fields) |  |
-| `job_id` | yes | string |  |
-| `output_collection` | no | object (1 fields) |  |
-| `plan_sha256` | yes | string |  |
-| `production` | no | object (1 fields) |  |
-| `progress` | yes | #/components/schemas/TargetProgress |  |
-| `protocol` | no | string |  |
-| `request_sha256` | yes | string |  |
-| `state` | yes | string |  |
+### Executable sources
 
-## Complete owned contract
+- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
+- `openapi:stove0` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+
+### Machine authority
+
+- `/external_contract/http_openapi/stove0/components/schemas/TargetJobStatus`
+
+### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 

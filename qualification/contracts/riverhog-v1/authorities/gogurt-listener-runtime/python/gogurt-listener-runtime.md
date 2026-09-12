@@ -4,6 +4,8 @@
 
 <!-- contract-element: python:gogurt-listener-runtime:gogurt-listener-runtime:5c2769595e -->
 
+Exact externally visible contract owned by this semantic dossier.
+
 | Audit field | Value |
 |---|---|
 | Authority | `gogurt-listener-runtime` |
@@ -12,30 +14,35 @@
 | Contract elements | 1 |
 | Extent decisions | 0 |
 
-## Machine authority
-
-- `/external_contract/python/14`
-
-## Effective policies
-
-- `compatibility/python-api/v1`
-
-## Executable sources and proof
-
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `python:gogurt-listener-runtime` — `reference/gogurt/packages/listener-runtime/src/gogurt_listener_runtime/__init__.py::<module>`
-- Proof: `make dist-smoke`
-- Proof: `make build`
-
-## Contract summary
+## External contract
 
 | Field | Shape |
 |---|---|
 | `distribution` | "gogurt-listener-runtime" |
-| `exports` | object (33 fields) |
+| `exports` | additional keys=`GOGURT_LISTENER_HOST_PROVIDER_BINDING_FORMAT`, `GOGURT_LISTENER_HOST_PROVIDER_ENTRY_POINT_GROUP`, `LISTENER_CONFIG_SCHEMA`, `LISTENER_HEARTBEAT_SCHEMA`, `LISTENER_OPERATIONS`, `LISTENER_STATE_SCHEMA`, `LISTENER_STATUS_SCHEMA`, `ListenerAdapter`, `ListenerConfig`, `ListenerError`, `ListenerHostProviderBinding`, `ListenerLock`, `ListenerPlatformError`, `ListenerRuntime`, `ListenerRuntimePaths`, `ListenerStore`, `NativeListenerStatus`, `PRIVATE_DIRECTORY_MODE`, `PRIVATE_FILE_MODE`, `atomic_write`, `ensure_private_directory`, `ensure_private_file`, `ensure_private_files`, `install_listener`, `listener_status`, `open_private_text_append`, `promote_staged`, `restart_listener`, `run_listener`, `stage_bytes`, `start_listener`, `stop_listener`, `uninstall_listener` |
 | `module` | "gogurt_listener_runtime" |
 
-## Complete owned contract
+## Governing policies
+
+- `compatibility/python-api/v1`
+
+## Evidence
+
+### Qualification
+
+- `make dist-smoke`
+- `make build`
+
+### Executable sources
+
+- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
+- `python:gogurt-listener-runtime` — `reference/gogurt/packages/listener-runtime/src/gogurt_listener_runtime/__init__.py::<module>`
+
+### Machine authority
+
+- `/external_contract/python/14`
+
+### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 

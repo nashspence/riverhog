@@ -4,6 +4,8 @@
 
 <!-- contract-element: http:riverhog:schemas-mutateappaccessrequest:2b8902f3c6 -->
 
+Exact externally visible contract owned by this semantic dossier.
+
 | Audit field | Value |
 |---|---|
 | Authority | `riverhog` |
@@ -12,27 +14,7 @@
 | Contract elements | 1 |
 | Extent decisions | 0 |
 
-## Machine authority
-
-- `/external_contract/http_openapi/riverhog/components/schemas/MutateAppAccessRequest`
-
-## Effective policies
-
-- `compatibility/http-api/v1`
-
-## Executable sources and proof
-
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `openapi:riverhog` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
-- Proof: `make operation-qualification`
-- Proof: `make compose-smoke`
-
-## Referenced contract dossiers
-
-- [schemas: ApplicationPermission](schemas-applicationpermission.md)
-- [schemas: ApplicationResource](schemas-applicationresource.md)
-
-## Contract summary
+## External contract
 
 - `title`: MutateAppAccessRequest
 - `type`: object
@@ -42,9 +24,36 @@
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | `permission` | yes | #/components/schemas/ApplicationPermission |  |
-| `resource` | no | #/components/schemas/ApplicationResource |  |
+| `resource` | no | $ref="#/components/schemas/ApplicationResource" |  |
 
-## Complete owned contract
+## Maintained corroboration
+
+### Referenced contract dossiers
+
+- [schemas: ApplicationPermission](schemas-applicationpermission.md)
+- [schemas: ApplicationResource](schemas-applicationresource.md)
+
+## Governing policies
+
+- `compatibility/http-api/v1`
+
+## Evidence
+
+### Qualification
+
+- `make operation-qualification`
+- `make compose-smoke`
+
+### Executable sources
+
+- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
+- `openapi:riverhog` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+
+### Machine authority
+
+- `/external_contract/http_openapi/riverhog/components/schemas/MutateAppAccessRequest`
+
+### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 

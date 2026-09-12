@@ -4,6 +4,8 @@
 
 <!-- contract-element: http:riverhog:schemas-collectiontagmutationout:6300d19241 -->
 
+Exact externally visible contract owned by this semantic dossier.
+
 | Audit field | Value |
 |---|---|
 | Authority | `riverhog` |
@@ -12,37 +14,7 @@
 | Contract elements | 1 |
 | Extent decisions | 4 |
 
-## Machine authority
-
-- `/external_contract/http_openapi/riverhog/components/schemas/CollectionTagMutationOut`
-
-## Effective policies
-
-- `compatibility/http-api/v1`
-- `extent-rule/schema-bound/v1`
-
-## Executable sources and proof
-
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `openapi:riverhog` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
-- Proof: `make operation-qualification`
-- Proof: `make compose-smoke`
-
-## Referenced contract dossiers
-
-- [schemas: CollectionId](schemas-collectionid.md)
-- [schemas: CollectionTag](schemas-collectiontag.md)
-
-## Extent decisions
-
-| Dimension | Unit | Policy | Bounds/reason |
-|---|---|---|---|
-| length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
-| value | schema-value | `contract_max` | maximum=9007199254740991, minimum=1, reason=schema-maximum |
-| length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
-| length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
-
-## Contract summary
+## External contract
 
 - `title`: CollectionTagMutationOut
 - `type`: object
@@ -51,18 +23,55 @@
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| `action` | yes | string |  |
-| `changed` | yes | boolean |  |
+| `action` | yes | type="string"; enum=["add","remove"] |  |
+| `changed` | yes | type="boolean" |  |
 | `collection_id` | yes | #/components/schemas/CollectionId |  |
-| `head_identity` | yes | string |  |
-| `operation_id` | yes | string |  |
-| `revision` | yes | integer |  |
-| `root_sha256` | yes | object (2 fields) |  |
-| `state` | yes | string |  |
+| `head_identity` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| `operation_id` | yes | type="string"; minLength=1; pattern="^\\S(?:[\\s\\S]*\\S)?$" |  |
+| `revision` | yes | type="integer"; minimum=1; maximum=9007199254740991 |  |
+| `root_sha256` | yes | anyOf=type="string"; pattern="^[0-9a-f]{64}$" \| type="null" |  |
+| `state` | yes | type="string"; enum=["pending","retry_wait","succeeded"] |  |
 | `tag` | yes | #/components/schemas/CollectionTag |  |
-| `tag_set_identity` | yes | string |  |
+| `tag_set_identity` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 
-## Complete owned contract
+### Progression, limits, and lifecycle
+
+| Dimension | Unit | Policy | Bounds or reason |
+|---|---|---|---|
+| length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
+| value | schema-value | `contract_max` | maximum=9007199254740991, minimum=1, reason=schema-maximum |
+| length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
+| length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
+
+## Maintained corroboration
+
+### Referenced contract dossiers
+
+- [schemas: CollectionId](schemas-collectionid.md)
+- [schemas: CollectionTag](schemas-collectiontag.md)
+
+## Governing policies
+
+- `compatibility/http-api/v1`
+- `extent-rule/schema-bound/v1`
+
+## Evidence
+
+### Qualification
+
+- `make operation-qualification`
+- `make compose-smoke`
+
+### Executable sources
+
+- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
+- `openapi:riverhog` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+
+### Machine authority
+
+- `/external_contract/http_openapi/riverhog/components/schemas/CollectionTagMutationOut`
+
+### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 

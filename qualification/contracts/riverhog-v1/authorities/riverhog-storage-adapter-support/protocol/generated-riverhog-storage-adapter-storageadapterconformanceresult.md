@@ -4,6 +4,8 @@
 
 <!-- contract-element: protocol:riverhog-storage-adapter-support:generated-riverhog-storage-adapter-storag-b0b8ffd825:e78895edd0 -->
 
+Stable positive evidence returned after the complete check set passes.
+
 | Audit field | Value |
 |---|---|
 | Authority | `riverhog-storage-adapter-support` |
@@ -12,31 +14,7 @@
 | Contract elements | 1 |
 | Extent decisions | 2 |
 
-## Machine authority
-
-- `/external_contract/protocol_schemas/generated:riverhog-storage-adapter/schemas/StorageAdapterConformanceResult`
-
-## Effective policies
-
-- `compatibility/components/v1`
-- `extent-rule/no-semantic-maximum/v1`
-- `extent-rule/schema-bound/v1`
-
-## Executable sources and proof
-
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `protocol:generated:riverhog-storage-adapter` — `packages/riverhog-storage-adapter-support/src/riverhog_storage_adapter_support/schemas.py::storage_adapter_schema_bundle`
-- Proof: `make dist-smoke`
-- Proof: `make build`
-
-## Extent decisions
-
-| Dimension | Unit | Policy | Bounds/reason |
-|---|---|---|---|
-| cardinality | items | `operational_policy` | maximum=None, reason=no-declared-semantic-maximum |
-| length | characters | `contract_max` | maximum=120, minimum=1, reason=schema-maximum |
-
-## Contract summary
+## External contract
 
 - `title`: StorageAdapterConformanceResult
 - `description`: Stable positive evidence returned after the complete check set passes.
@@ -46,20 +24,49 @@
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| `checks` | yes | array |  |
-| `coverage` | no | string |  |
+| `checks` | yes | type="array"; items=(type="string") |  |
+| `coverage` | no | type="string"; const="complete" |  |
 | `descriptor` | yes | #/$defs/AdapterDescriptor |  |
-| `format` | no | string |  |
-| `protocol` | no | string |  |
-| `status` | no | string |  |
+| `format` | no | type="string"; const="riverhog-storage-adapter-conformance-result/v1" |  |
+| `protocol` | no | type="string"; const="riverhog-storage-adapter/v1" |  |
+| `status` | no | type="string"; const="conformant" |  |
 
 ### Definitions
 
 | Definition | Shape |
 |---|---|
-| `AdapterDescriptor` | object |
+| `AdapterDescriptor` | type="object"; fields=`implementation_id`, `implementation_version`, `maximum_segment_bytes`, `maximum_segment_count`, `minimum_nonfinal_segment_bytes`, `protocol`, `read_mode`; additional keys=`additionalProperties`, `required` |
 
-## Complete owned contract
+### Progression, limits, and lifecycle
+
+| Dimension | Unit | Policy | Bounds or reason |
+|---|---|---|---|
+| cardinality | items | `operational_policy` | maximum=None, reason=no-declared-semantic-maximum |
+| length | characters | `contract_max` | maximum=120, minimum=1, reason=schema-maximum |
+
+## Governing policies
+
+- `compatibility/components/v1`
+- `extent-rule/no-semantic-maximum/v1`
+- `extent-rule/schema-bound/v1`
+
+## Evidence
+
+### Qualification
+
+- `make dist-smoke`
+- `make build`
+
+### Executable sources
+
+- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
+- `protocol:generated:riverhog-storage-adapter` — `packages/riverhog-storage-adapter-support/src/riverhog_storage_adapter_support/schemas.py::storage_adapter_schema_bundle`
+
+### Machine authority
+
+- `/external_contract/protocol_schemas/generated:riverhog-storage-adapter/schemas/StorageAdapterConformanceResult`
+
+### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 

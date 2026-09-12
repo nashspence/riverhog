@@ -4,6 +4,8 @@
 
 <!-- contract-element: python:riverhog-archive-contracts:riverhog-archive-contracts:9bd83ff525 -->
 
+Exact externally visible contract owned by this semantic dossier.
+
 | Audit field | Value |
 |---|---|
 | Authority | `riverhog-archive-contracts` |
@@ -12,30 +14,35 @@
 | Contract elements | 1 |
 | Extent decisions | 0 |
 
-## Machine authority
-
-- `/external_contract/python/4`
-
-## Effective policies
-
-- `compatibility/python-api/v1`
-
-## Executable sources and proof
-
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `python:riverhog-archive-contracts` — `packages/riverhog-archive-contracts/src/riverhog_archive_contracts/__init__.py::<module>`
-- Proof: `make dist-smoke`
-- Proof: `make build`
-
-## Contract summary
+## External contract
 
 | Field | Shape |
 |---|---|
 | `distribution` | "riverhog-archive-contracts" |
-| `exports` | object (39 fields) |
+| `exports` | additional keys=`AGE_UPLOAD_STATE_FORMAT`, `ARCHIVE_ENCRYPTION_FORMAT`, `ARCHIVE_PACK_FILES_MAX`, `ARCHIVE_ROOT_DOCUMENT_BYTES_MAX`, `ARCHIVE_SEQUENCE_BITS`, `ARCHIVE_SEQUENCE_HEX_WIDTH`, `ARCHIVE_VOLUME_DOCUMENT_BYTES_MAX`, `ARCHIVE_VOLUME_PARTS_MAX`, `AgeUploadState`, `ArchiveFileIdentity`, `ArchiveManifestError`, `ArchiveProvenanceIdentity`, `ArchiveRootCiphertextIdentity`, `ArchiveVolume`, `COLLECTION_ARCHIVE_MANIFEST_SCHEMA`, `COLLECTION_ARCHIVE_TERMINAL_SCHEMA`, `COLLECTION_ARCHIVE_VOLUME_SCHEMA`, `CollectionArchiveManifest`, `CollectionArchiveTerminalDocument`, `CollectionArchiveVolumeDocument`, `CollectionEncryptionBinding`, `CollectionTreeIdentity`, `PACK_INDEX_SCHEMA`, `PART_DIGEST_FORMAT`, `PackArchiveVolume`, `ProvenanceRootIdentity`, `RECOVERY_DESCRIPTOR_PATH`, `RECOVERY_DESCRIPTOR_SCHEMA`, `RecoveryDescriptor`, `RecoveryDescriptorError`, `SELECTIVE_READ_FORMAT`, `SegmentArchiveVolume`, `SegmentFilePlacement`, `StoredPartIdentity`, `format_archive_sequence`, `normalize_passphrase_id`, `ordered_archive_volume_commitment`, `parse_archive_sequence`, `update_archive_sequence_commitment` |
 | `module` | "riverhog_archive_contracts" |
 
-## Complete owned contract
+## Governing policies
+
+- `compatibility/python-api/v1`
+
+## Evidence
+
+### Qualification
+
+- `make dist-smoke`
+- `make build`
+
+### Executable sources
+
+- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
+- `python:riverhog-archive-contracts` — `packages/riverhog-archive-contracts/src/riverhog_archive_contracts/__init__.py::<module>`
+
+### Machine authority
+
+- `/external_contract/python/4`
+
+### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 

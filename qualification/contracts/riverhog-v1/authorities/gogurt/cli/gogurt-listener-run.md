@@ -4,6 +4,8 @@
 
 <!-- contract-element: cli:gogurt:gogurt-listener-run:fc612b6a35 -->
 
+Exact externally visible contract owned by this semantic dossier.
+
 | Audit field | Value |
 |---|---|
 | Authority | `gogurt` |
@@ -12,30 +14,7 @@
 | Contract elements | 1 |
 | Extent decisions | 1 |
 
-## Machine authority
-
-- `/external_contract/cli/gogurt/commands/listener/commands/_run/name`
-- `/external_contract/cli/gogurt/commands/listener/commands/_run/parameters`
-
-## Effective policies
-
-- `compatibility/cli/v1`
-- `extent-rule/schema-bound/v1`
-
-## Executable sources and proof
-
-- `cli:gogurt` — `reference/gogurt/application/src/gogurt/cli.py::<module>`
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- Proof: `make dist-smoke`
-- Proof: `make operation-qualification`
-
-## Extent decisions
-
-| Dimension | Unit | Policy | Bounds/reason |
-|---|---|---|---|
-| cardinality | values-per-occurrence | `fixed` | maximum=1, minimum=1, reason=fixed-command-argument-arity |
-
-## Contract summary
+## External contract
 
 - Parser name: `_run`
 
@@ -45,7 +24,35 @@
 |---|---|---:|---|---|
 | `runtime_config` | TyperOption | yes | {'class': 'typer.models.TyperPath', 'name': 'path'} | --runtime-config |
 
-## Complete owned contract
+### Progression, limits, and lifecycle
+
+| Dimension | Unit | Policy | Bounds or reason |
+|---|---|---|---|
+| cardinality | values-per-occurrence | `fixed` | maximum=1, minimum=1, reason=fixed-command-argument-arity |
+
+## Governing policies
+
+- `compatibility/cli/v1`
+- `extent-rule/schema-bound/v1`
+
+## Evidence
+
+### Qualification
+
+- `make dist-smoke`
+- `make operation-qualification`
+
+### Executable sources
+
+- `cli:gogurt` — `reference/gogurt/application/src/gogurt/cli.py::<module>`
+- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
+
+### Machine authority
+
+- `/external_contract/cli/gogurt/commands/listener/commands/_run/name`
+- `/external_contract/cli/gogurt/commands/listener/commands/_run/parameters`
+
+### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 

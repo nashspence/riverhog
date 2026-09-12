@@ -4,6 +4,8 @@
 
 <!-- contract-element: configuration-environment:configuration:riverhog-browse-token-lifetime:dfe5cfe8fc -->
 
+Exact externally visible contract owned by this semantic dossier.
+
 | Audit field | Value |
 |---|---|
 | Authority | `configuration` |
@@ -12,29 +14,34 @@
 | Contract elements | 1 |
 | Extent decisions | 0 |
 
-## Machine authority
-
-- `/external_contract/configuration_environment/25`
-
-## Effective policies
-
-- `compatibility/configuration/v1`
-
-## Executable sources and proof
-
-- `configuration-environment:RIVERHOG_BROWSE_TOKEN_LIFETIME` — `configuration-environment:RIVERHOG_BROWSE_TOKEN_LIFETIME`
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- Proof: `make unit`
-- Proof: `make compose-smoke`
-
-## Contract summary
+## External contract
 
 | Field | Shape |
 |---|---|
-| `consumers` | array (1 items) |
+| `consumers` | ["riverhog-server"] |
 | `name` | "RIVERHOG_BROWSE_TOKEN_LIFETIME" |
 
-## Complete owned contract
+## Governing policies
+
+- `compatibility/configuration/v1`
+
+## Evidence
+
+### Qualification
+
+- `make unit`
+- `make compose-smoke`
+
+### Executable sources
+
+- `configuration-environment:RIVERHOG_BROWSE_TOKEN_LIFETIME` — `configuration-environment:RIVERHOG_BROWSE_TOKEN_LIFETIME`
+- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
+
+### Machine authority
+
+- `/external_contract/configuration_environment/25`
+
+### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 

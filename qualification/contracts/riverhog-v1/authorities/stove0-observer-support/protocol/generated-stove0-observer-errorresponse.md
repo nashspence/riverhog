@@ -4,6 +4,8 @@
 
 <!-- contract-element: protocol:stove0-observer-support:generated-stove0-observer-errorresponse:73f4e38e10 -->
 
+Exact externally visible contract owned by this semantic dossier.
+
 | Audit field | Value |
 |---|---|
 | Authority | `stove0-observer-support` |
@@ -12,29 +14,7 @@
 | Contract elements | 1 |
 | Extent decisions | 1 |
 
-## Machine authority
-
-- `/external_contract/protocol_schemas/generated:stove0-observer/schemas/ErrorResponse`
-
-## Effective policies
-
-- `compatibility/components/v1`
-- `extent-rule/no-semantic-maximum/v1`
-
-## Executable sources and proof
-
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `protocol:generated:stove0-observer` — `reference/stove0/packages/observer-support/src/stove0_observer_support/schemas.py::observer_schema_bundle`
-- Proof: `make dist-smoke`
-- Proof: `make build`
-
-## Extent decisions
-
-| Dimension | Unit | Policy | Bounds/reason |
-|---|---|---|---|
-| cardinality | entries | `operational_policy` | maximum=None, reason=no-declared-semantic-maximum |
-
-## Contract summary
+## External contract
 
 - `title`: ErrorResponse
 - `type`: object
@@ -49,9 +29,36 @@
 
 | Definition | Shape |
 |---|---|
-| `ErrorBody` | object |
+| `ErrorBody` | type="object"; fields=`code`, `details`, `message`; additional keys=`additionalProperties`, `required` |
 
-## Complete owned contract
+### Progression, limits, and lifecycle
+
+| Dimension | Unit | Policy | Bounds or reason |
+|---|---|---|---|
+| cardinality | entries | `operational_policy` | maximum=None, reason=no-declared-semantic-maximum |
+
+## Governing policies
+
+- `compatibility/components/v1`
+- `extent-rule/no-semantic-maximum/v1`
+
+## Evidence
+
+### Qualification
+
+- `make dist-smoke`
+- `make build`
+
+### Executable sources
+
+- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
+- `protocol:generated:stove0-observer` — `reference/stove0/packages/observer-support/src/stove0_observer_support/schemas.py::observer_schema_bundle`
+
+### Machine authority
+
+- `/external_contract/protocol_schemas/generated:stove0-observer/schemas/ErrorResponse`
+
+### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 

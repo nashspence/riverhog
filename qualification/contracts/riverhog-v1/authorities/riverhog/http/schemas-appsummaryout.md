@@ -4,6 +4,8 @@
 
 <!-- contract-element: http:riverhog:schemas-appsummaryout:d221fc0283 -->
 
+Exact externally visible contract owned by this semantic dossier.
+
 | Audit field | Value |
 |---|---|
 | Authority | `riverhog` |
@@ -12,26 +14,7 @@
 | Contract elements | 1 |
 | Extent decisions | 0 |
 
-## Machine authority
-
-- `/external_contract/http_openapi/riverhog/components/schemas/AppSummaryOut`
-
-## Effective policies
-
-- `compatibility/http-api/v1`
-
-## Executable sources and proof
-
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `openapi:riverhog` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
-- Proof: `make operation-qualification`
-- Proof: `make compose-smoke`
-
-## Referenced contract dossiers
-
-- [schemas: ApplicationName](schemas-applicationname.md)
-
-## Contract summary
+## External contract
 
 - `title`: AppSummaryOut
 - `type`: object
@@ -40,12 +23,38 @@
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| `active_keys` | yes | integer |  |
-| `keys` | yes | integer |  |
-| `last_used_at` | yes | object (2 fields) |  |
+| `active_keys` | yes | type="integer" |  |
+| `keys` | yes | type="integer" |  |
+| `last_used_at` | yes | anyOf=type="string" \| type="null" |  |
 | `name` | yes | #/components/schemas/ApplicationName |  |
 
-## Complete owned contract
+## Maintained corroboration
+
+### Referenced contract dossiers
+
+- [schemas: ApplicationName](schemas-applicationname.md)
+
+## Governing policies
+
+- `compatibility/http-api/v1`
+
+## Evidence
+
+### Qualification
+
+- `make operation-qualification`
+- `make compose-smoke`
+
+### Executable sources
+
+- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
+- `openapi:riverhog` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+
+### Machine authority
+
+- `/external_contract/http_openapi/riverhog/components/schemas/AppSummaryOut`
+
+### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 

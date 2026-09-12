@@ -4,6 +4,8 @@
 
 <!-- contract-element: boundary:riverhog-protocol:riverhog-protocol-component-boundary:3737face3c -->
 
+Exact externally visible contract owned by this semantic dossier.
+
 | Audit field | Value |
 |---|---|
 | Authority | `riverhog-protocol` |
@@ -12,33 +14,38 @@
 | Contract elements | 1 |
 | Extent decisions | 0 |
 
-## Machine authority
-
-- `/boundaries/components/7`
-
-## Effective policies
-
-- `boundary/frozen-authority/v1`
-
-## Executable sources and proof
-
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `release:release.toml` — `release.toml`
-- Proof: `make release-check`
-- Proof: `make build`
-
-## Contract summary
+## External contract
 
 | Field | Shape |
 |---|---|
-| `console_scripts` | object (0 fields) |
-| `dependencies` | array (3 items) |
+| `console_scripts` | empty object |
+| `dependencies` | ["http-api-contracts","lifecycle-events","riverhog-provenance-contracts"] |
 | `distribution` | "riverhog-protocol" |
-| `optional_dependencies` | object (0 fields) |
+| `optional_dependencies` | empty object |
 | `path` | "packages/riverhog-protocol" |
 | `role` | "reusable_library" |
 
-## Complete owned contract
+## Governing policies
+
+- `boundary/frozen-authority/v1`
+
+## Evidence
+
+### Qualification
+
+- `make release-check`
+- `make build`
+
+### Executable sources
+
+- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
+- `release:release.toml` — `release.toml`
+
+### Machine authority
+
+- `/boundaries/components/7`
+
+### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 

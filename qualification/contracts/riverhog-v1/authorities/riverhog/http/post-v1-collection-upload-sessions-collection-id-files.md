@@ -4,6 +4,8 @@
 
 <!-- contract-element: http:riverhog:post-v1-collection-upload-sessions-collec-4a0f562819:c85fc58c50 -->
 
+Register Collection Upload Session Files
+
 | Audit field | Value |
 |---|---|
 | Authority | `riverhog` |
@@ -12,32 +14,7 @@
 | Contract elements | 1 |
 | Extent decisions | 0 |
 
-## Machine authority
-
-- `/external_contract/http_openapi/riverhog/paths/~1v1~1collection-upload-sessions~1{collection_id}~1files/post`
-
-## Effective policies
-
-- `compatibility/http-api/v1`
-
-## Executable sources and proof
-
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `openapi:riverhog` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
-- Proof: `make operation-qualification`
-- Proof: `make compose-smoke`
-
-## Related interface records
-
-- [Operation parity: register_collection_upload_session_files](../operation/operation-parity-register-collection-upload-session-files.md)
-
-## Referenced contract dossiers
-
-- [schemas: CollectionUploadSessionFilesRegistrationOut](schemas-collectionuploadsessionfilesregistrationout.md)
-- [schemas: ErrorResponse](schemas-errorresponse.md)
-- [schemas: RegisterCollectionUploadSessionFilesRequest](schemas-registercollectionuploadsessionfilesrequest.md)
-
-## Contract summary
+## External contract
 
 - `operationId`: register_collection_upload_session_files
 - `summary`: Register Collection Upload Session Files
@@ -47,7 +24,7 @@
 
 | Name | In | Required | Schema |
 |---|---|---:|---|
-| `collection_id` | path | yes | integer |
+| `collection_id` | path | yes | type="integer"; minimum=1 |
 
 ### Request body
 
@@ -65,7 +42,39 @@
 | `409` | Conflict |
 | `500` | Internal Server Error |
 
-## Complete owned contract
+## Maintained corroboration
+
+### Related interface records
+
+- [Operation parity: register_collection_upload_session_files](../operation/operation-parity-register-collection-upload-session-files.md)
+
+### Referenced contract dossiers
+
+- [schemas: CollectionUploadSessionFilesRegistrationOut](schemas-collectionuploadsessionfilesregistrationout.md)
+- [schemas: ErrorResponse](schemas-errorresponse.md)
+- [schemas: RegisterCollectionUploadSessionFilesRequest](schemas-registercollectionuploadsessionfilesrequest.md)
+
+## Governing policies
+
+- `compatibility/http-api/v1`
+
+## Evidence
+
+### Qualification
+
+- `make operation-qualification`
+- `make compose-smoke`
+
+### Executable sources
+
+- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
+- `openapi:riverhog` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+
+### Machine authority
+
+- `/external_contract/http_openapi/riverhog/paths/~1v1~1collection-upload-sessions~1{collection_id}~1files/post`
+
+### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 

@@ -4,6 +4,8 @@
 
 <!-- contract-element: http:riverhog:schemas-collectiondescriptionout:46831cf4ef -->
 
+Exact externally visible contract owned by this semantic dossier.
+
 | Audit field | Value |
 |---|---|
 | Authority | `riverhog` |
@@ -12,35 +14,7 @@
 | Contract elements | 1 |
 | Extent decisions | 2 |
 
-## Machine authority
-
-- `/external_contract/http_openapi/riverhog/components/schemas/CollectionDescriptionOut`
-
-## Effective policies
-
-- `compatibility/http-api/v1`
-- `extent-rule/schema-bound/v1`
-
-## Executable sources and proof
-
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `openapi:riverhog` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
-- Proof: `make operation-qualification`
-- Proof: `make compose-smoke`
-
-## Referenced contract dossiers
-
-- [schemas: CollectionDescription](schemas-collectiondescription.md)
-- [schemas: CollectionId](schemas-collectionid.md)
-
-## Extent decisions
-
-| Dimension | Unit | Policy | Bounds/reason |
-|---|---|---|---|
-| length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
-| value | schema-value | `contract_max` | maximum=9007199254740991, minimum=0, reason=schema-maximum |
-
-## Contract summary
+## External contract
 
 - `title`: CollectionDescriptionOut
 - `type`: object
@@ -50,12 +24,47 @@
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | `collection_id` | yes | #/components/schemas/CollectionId |  |
-| `description` | yes | object (1 fields) |  |
-| `description_identity` | yes | string |  |
-| `description_publication` | yes | string |  |
-| `description_revision` | yes | integer |  |
+| `description` | yes | anyOf=#/components/schemas/CollectionDescription \| type="null" |  |
+| `description_identity` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| `description_publication` | yes | type="string"; enum=["not_required","current","reconciling"] |  |
+| `description_revision` | yes | type="integer"; minimum=0; maximum=9007199254740991 |  |
 
-## Complete owned contract
+### Progression, limits, and lifecycle
+
+| Dimension | Unit | Policy | Bounds or reason |
+|---|---|---|---|
+| length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
+| value | schema-value | `contract_max` | maximum=9007199254740991, minimum=0, reason=schema-maximum |
+
+## Maintained corroboration
+
+### Referenced contract dossiers
+
+- [schemas: CollectionDescription](schemas-collectiondescription.md)
+- [schemas: CollectionId](schemas-collectionid.md)
+
+## Governing policies
+
+- `compatibility/http-api/v1`
+- `extent-rule/schema-bound/v1`
+
+## Evidence
+
+### Qualification
+
+- `make operation-qualification`
+- `make compose-smoke`
+
+### Executable sources
+
+- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
+- `openapi:riverhog` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+
+### Machine authority
+
+- `/external_contract/http_openapi/riverhog/components/schemas/CollectionDescriptionOut`
+
+### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 

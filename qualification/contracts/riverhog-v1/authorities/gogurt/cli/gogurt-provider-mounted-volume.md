@@ -4,6 +4,8 @@
 
 <!-- contract-element: cli:gogurt:gogurt-provider-mounted-volume:462757a9f8 -->
 
+Exact externally visible contract owned by this semantic dossier.
+
 | Audit field | Value |
 |---|---|
 | Authority | `gogurt` |
@@ -12,27 +14,32 @@
 | Contract elements | 1 |
 | Extent decisions | 0 |
 
-## Machine authority
+## External contract
+
+- Parser name: `mounted-volume`
+
+## Governing policies
+
+- `compatibility/cli/v1`
+
+## Evidence
+
+### Qualification
+
+- `make dist-smoke`
+- `make operation-qualification`
+
+### Executable sources
+
+- `cli:gogurt` — `reference/gogurt/application/src/gogurt/cli.py::<module>`
+- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
+
+### Machine authority
 
 - `/external_contract/cli/gogurt/commands/provider/commands/mounted-volume/name`
 - `/external_contract/cli/gogurt/commands/provider/commands/mounted-volume/parameters`
 
-## Effective policies
-
-- `compatibility/cli/v1`
-
-## Executable sources and proof
-
-- `cli:gogurt` — `reference/gogurt/application/src/gogurt/cli.py::<module>`
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- Proof: `make dist-smoke`
-- Proof: `make operation-qualification`
-
-## Contract summary
-
-- Parser name: `mounted-volume`
-
-## Complete owned contract
+### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 

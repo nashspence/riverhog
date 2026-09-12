@@ -4,6 +4,8 @@
 
 <!-- contract-element: http:riverhog:schemas-createorresumecollectionuploadsessionout:7e70bea877 -->
 
+Exact externally visible contract owned by this semantic dossier.
+
 | Audit field | Value |
 |---|---|
 | Authority | `riverhog` |
@@ -12,35 +14,56 @@
 | Contract elements | 1 |
 | Extent decisions | 9 |
 
-## Machine authority
+## External contract
 
-- `/external_contract/http_openapi/riverhog/components/schemas/CreateOrResumeCollectionUploadSessionOut`
+- `title`: CreateOrResumeCollectionUploadSessionOut
+- `type`: object
 
-## Effective policies
+### Fields
 
-- `compatibility/http-api/v1`
-- `extent-rule/schema-bound/v1`
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| `archive_next_attempt_at` | yes | anyOf=type="string"; pattern="^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{6}Z$" \| type="null" |  |
+| `archive_phase` | yes | type="string"; enum=["planning","uploading","finalization_queued","finalizing","retry_wait","completed","canceled","orphaned","discarding"] |  |
+| `archive_phase_updated_at` | yes | type="string"; pattern="^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{6}Z$" |  |
+| `archive_root_sha256` | no | anyOf=type="string"; pattern="^[0-9a-f]{64}$" \| type="null" |  |
+| `archive_storage_prefix` | no | anyOf=type="string" \| type="null" |  |
+| `archive_store` | yes | #/components/schemas/ArchiveStoreName |  |
+| `archive_total_bytes` | no | anyOf=type="integer" \| type="null" |  |
+| `archive_total_units` | no | anyOf=type="integer" \| type="null" |  |
+| `archive_uploaded_bytes` | no | anyOf=type="integer" \| type="null" |  |
+| `archive_uploaded_units` | no | anyOf=type="integer" \| type="null" |  |
+| `bytes_total` | yes | type="integer"; minimum=0 |  |
+| `collection` | yes | anyOf=#/components/schemas/CollectionSummaryOut \| type="null" |  |
+| `collection_id` | yes | #/components/schemas/CollectionId |  |
+| `content_identity` | no | anyOf=type="string"; pattern="^[0-9a-f]{64}$" \| type="null" |  |
+| `created_at` | yes | type="string" |  |
+| `custody` | yes | oneOf=#/components/schemas/PendingCollectionUploadCustodyOut \| #/components/schemas/CompleteCollectionUploadCustodyOut; additional keys=`discriminator` |  |
+| `custody_mode` | yes | type="string"; enum=["producer-retained","custody-transfer"] |  |
+| `description` | yes | anyOf=#/components/schemas/CollectionDescription \| type="null" |  |
+| `description_identity` | yes | anyOf=type="string"; pattern="^[0-9a-f]{64}$" \| type="null" |  |
+| `description_publication` | yes | type="string"; enum=["pending","not_required","current"] |  |
+| `description_revision` | yes | anyOf=type="integer"; minimum=0; maximum=9007199254740991 \| type="null" |  |
+| `encryption_format` | yes | type="string" |  |
+| `files_total` | yes | type="integer"; minimum=0 |  |
+| `ingest_source` | yes | anyOf=type="string" \| type="null" |  |
+| `latest_failure` | yes | anyOf=type="string"; minLength=1; maxLength=1000 \| type="null" |  |
+| `orphaned_at` | yes | anyOf=type="string" \| type="null" |  |
+| `passphrase_id` | yes | type="string"; pattern="^[A-Za-z0-9_-]{16,128}$" |  |
+| `provenance_identity` | no | anyOf=type="string"; pattern="^[0-9a-f]{64}$" \| type="null" |  |
+| `provenance_mode` | yes | type="string"; enum=["captured","mixed","omitted"] |  |
+| `registration_constraints` | yes | anyOf=#/components/schemas/CollectionUploadRegistrationConstraintsOut \| type="null" |  |
+| `resumed` | yes | type="boolean" |  |
+| `state` | yes | type="string"; enum=["open","closing","uploading","finalizing","finalized","canceled","orphaned","discarding"] |  |
+| `tag_count` | yes | type="integer"; minimum=0 |  |
+| `tag_publication` | yes | type="string"; enum=["pending","current"] |  |
+| `tag_revision` | no | anyOf=type="integer"; minimum=1; maximum=9007199254740991 \| type="null" |  |
+| `tag_set_identity` | no | anyOf=type="string"; pattern="^[0-9a-f]{64}$" \| type="null" |  |
+| `upload_state_expires_at` | yes | anyOf=type="string" \| type="null" |  |
 
-## Executable sources and proof
+### Progression, limits, and lifecycle
 
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `openapi:riverhog` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
-- Proof: `make operation-qualification`
-- Proof: `make compose-smoke`
-
-## Referenced contract dossiers
-
-- [schemas: ArchiveStoreName](schemas-archivestorename.md)
-- [schemas: CollectionDescription](schemas-collectiondescription.md)
-- [schemas: CollectionId](schemas-collectionid.md)
-- [schemas: CollectionSummaryOut](schemas-collectionsummaryout.md)
-- [schemas: CollectionUploadRegistrationConstraintsOut](schemas-collectionuploadregistrationconstraintsout.md)
-- [schemas: CompleteCollectionUploadCustodyOut](schemas-completecollectionuploadcustodyout.md)
-- [schemas: PendingCollectionUploadCustodyOut](schemas-pendingcollectionuploadcustodyout.md)
-
-## Extent decisions
-
-| Dimension | Unit | Policy | Bounds/reason |
+| Dimension | Unit | Policy | Bounds or reason |
 |---|---|---|---|
 | length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
 | length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
@@ -52,54 +75,40 @@
 | value | schema-value | `contract_max` | maximum=9007199254740991, minimum=1, reason=schema-maximum |
 | length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
 
-## Contract summary
+## Maintained corroboration
 
-- `title`: CreateOrResumeCollectionUploadSessionOut
-- `type`: object
+### Referenced contract dossiers
 
-### Fields
+- [schemas: ArchiveStoreName](schemas-archivestorename.md)
+- [schemas: CollectionDescription](schemas-collectiondescription.md)
+- [schemas: CollectionId](schemas-collectionid.md)
+- [schemas: CollectionSummaryOut](schemas-collectionsummaryout.md)
+- [schemas: CollectionUploadRegistrationConstraintsOut](schemas-collectionuploadregistrationconstraintsout.md)
+- [schemas: CompleteCollectionUploadCustodyOut](schemas-completecollectionuploadcustodyout.md)
+- [schemas: PendingCollectionUploadCustodyOut](schemas-pendingcollectionuploadcustodyout.md)
 
-| Field | Required | Shape | Description |
-|---|---:|---|---|
-| `archive_next_attempt_at` | yes | object (2 fields) |  |
-| `archive_phase` | yes | string |  |
-| `archive_phase_updated_at` | yes | string |  |
-| `archive_root_sha256` | no | object (2 fields) |  |
-| `archive_storage_prefix` | no | object (2 fields) |  |
-| `archive_store` | yes | #/components/schemas/ArchiveStoreName |  |
-| `archive_total_bytes` | no | object (2 fields) |  |
-| `archive_total_units` | no | object (2 fields) |  |
-| `archive_uploaded_bytes` | no | object (2 fields) |  |
-| `archive_uploaded_units` | no | object (2 fields) |  |
-| `bytes_total` | yes | integer |  |
-| `collection` | yes | object (1 fields) |  |
-| `collection_id` | yes | #/components/schemas/CollectionId |  |
-| `content_identity` | no | object (2 fields) |  |
-| `created_at` | yes | string |  |
-| `custody` | yes | object (3 fields) |  |
-| `custody_mode` | yes | string |  |
-| `description` | yes | object (1 fields) |  |
-| `description_identity` | yes | object (2 fields) |  |
-| `description_publication` | yes | string |  |
-| `description_revision` | yes | object (2 fields) |  |
-| `encryption_format` | yes | string |  |
-| `files_total` | yes | integer |  |
-| `ingest_source` | yes | object (2 fields) |  |
-| `latest_failure` | yes | object (2 fields) |  |
-| `orphaned_at` | yes | object (2 fields) |  |
-| `passphrase_id` | yes | string |  |
-| `provenance_identity` | no | object (2 fields) |  |
-| `provenance_mode` | yes | string |  |
-| `registration_constraints` | yes | object (1 fields) |  |
-| `resumed` | yes | boolean |  |
-| `state` | yes | string |  |
-| `tag_count` | yes | integer |  |
-| `tag_publication` | yes | string |  |
-| `tag_revision` | no | object (2 fields) |  |
-| `tag_set_identity` | no | object (2 fields) |  |
-| `upload_state_expires_at` | yes | object (2 fields) |  |
+## Governing policies
 
-## Complete owned contract
+- `compatibility/http-api/v1`
+- `extent-rule/schema-bound/v1`
+
+## Evidence
+
+### Qualification
+
+- `make operation-qualification`
+- `make compose-smoke`
+
+### Executable sources
+
+- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
+- `openapi:riverhog` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+
+### Machine authority
+
+- `/external_contract/http_openapi/riverhog/components/schemas/CreateOrResumeCollectionUploadSessionOut`
+
+### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 

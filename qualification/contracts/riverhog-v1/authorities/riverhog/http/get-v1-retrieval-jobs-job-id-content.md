@@ -4,6 +4,8 @@
 
 <!-- contract-element: http:riverhog:get-v1-retrieval-jobs-job-id-content:2b8e9d02d1 -->
 
+Download Retrieval File
+
 | Audit field | Value |
 |---|---|
 | Authority | `riverhog` |
@@ -12,31 +14,7 @@
 | Contract elements | 1 |
 | Extent decisions | 0 |
 
-## Machine authority
-
-- `/external_contract/http_openapi/riverhog/paths/~1v1~1retrieval-jobs~1{job_id}~1content/get`
-
-## Effective policies
-
-- `compatibility/http-api/v1`
-
-## Executable sources and proof
-
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `openapi:riverhog` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
-- Proof: `make operation-qualification`
-- Proof: `make compose-smoke`
-
-## Related interface records
-
-- [Operation parity: download_retrieval_file](../operation/operation-parity-download-retrieval-file.md)
-
-## Referenced contract dossiers
-
-- [schemas: CollectionIdParameter](schemas-collectionidparameter.md)
-- [schemas: ErrorResponse](schemas-errorresponse.md)
-
-## Contract summary
+## External contract
 
 - `operationId`: download_retrieval_file
 - `summary`: Download Retrieval File
@@ -46,12 +24,12 @@
 
 | Name | In | Required | Schema |
 |---|---|---:|---|
-| `job_id` | path | yes | string |
+| `job_id` | path | yes | type="string" |
 | `collection_id` | query | yes | #/components/schemas/CollectionIdParameter |
-| `path` | query | yes | string |
-| `If-Match` | header | yes | string |
-| `Range` | header | no | object (2 fields) |
-| `If-None-Match` | header | no | object (2 fields) |
+| `path` | query | yes | type="string" |
+| `If-Match` | header | yes | type="string"; pattern="^\"[0-9a-f]{64}\"$" |
+| `Range` | header | no | anyOf=type="string" \| type="null" |
+| `If-None-Match` | header | no | anyOf=type="string" \| type="null" |
 
 ### Responses
 
@@ -68,7 +46,38 @@
 | `429` | Too Many Requests |
 | `500` | Internal Server Error |
 
-## Complete owned contract
+## Maintained corroboration
+
+### Related interface records
+
+- [Operation parity: download_retrieval_file](../operation/operation-parity-download-retrieval-file.md)
+
+### Referenced contract dossiers
+
+- [schemas: CollectionIdParameter](schemas-collectionidparameter.md)
+- [schemas: ErrorResponse](schemas-errorresponse.md)
+
+## Governing policies
+
+- `compatibility/http-api/v1`
+
+## Evidence
+
+### Qualification
+
+- `make operation-qualification`
+- `make compose-smoke`
+
+### Executable sources
+
+- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
+- `openapi:riverhog` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+
+### Machine authority
+
+- `/external_contract/http_openapi/riverhog/paths/~1v1~1retrieval-jobs~1{job_id}~1content/get`
+
+### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 

@@ -4,6 +4,8 @@
 
 <!-- contract-element: durable-state:mango-fish-cursor:mango-fish-cursor-durable-state:2504b0617b -->
 
+Exact externally visible contract owned by this semantic dossier.
+
 | Audit field | Value |
 |---|---|
 | Authority | `mango-fish-cursor` |
@@ -12,26 +14,31 @@
 | Contract elements | 1 |
 | Extent decisions | 0 |
 
-## Machine authority
-
-- `/external_contract/durable_state/owners/2`
-
-## Effective policies
-
-- `compatibility/components/v1`
-
-## Executable sources and proof
-
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `state:mango-fish-cursor` — `state:mango-fish-cursor`
-- Proof: `make release-check`
-- Proof: `make database-qualification`
-
-## Contract summary
+## External contract
 
 - `format`: state-schema/sqlite
 
-## Complete owned contract
+## Governing policies
+
+- `compatibility/components/v1`
+
+## Evidence
+
+### Qualification
+
+- `make release-check`
+- `make database-qualification`
+
+### Executable sources
+
+- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
+- `state:mango-fish-cursor` — `state:mango-fish-cursor`
+
+### Machine authority
+
+- `/external_contract/durable_state/owners/2`
+
+### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 

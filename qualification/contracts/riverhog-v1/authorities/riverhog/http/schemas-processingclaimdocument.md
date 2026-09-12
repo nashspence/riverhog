@@ -4,6 +4,8 @@
 
 <!-- contract-element: http:riverhog:schemas-processingclaimdocument:a0c4a1f332 -->
 
+Exact externally visible contract owned by this semantic dossier.
+
 | Audit field | Value |
 |---|---|
 | Authority | `riverhog` |
@@ -12,35 +14,40 @@
 | Contract elements | 1 |
 | Extent decisions | 13 |
 
-## Machine authority
+## External contract
 
-- `/external_contract/http_openapi/riverhog/components/schemas/ProcessingClaimDocument`
+- `title`: ProcessingClaimDocument
+- `type`: object
 
-## Effective policies
+### Fields
 
-- `compatibility/http-api/v1`
-- `extent-rule/no-semantic-maximum/v1`
-- `extent-rule/schema-bound/v1`
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| `abandoned_at` | no | anyOf=type="string"; minLength=1; maxLength=64 \| type="null" |  |
+| `abandonment_reason` | no | anyOf=type="string"; minLength=1; maxLength=1000 \| type="null" |  |
+| `consumer` | yes | #/components/schemas/ProcessingClaimConsumerDocument |  |
+| `created_at` | yes | type="string"; minLength=1; maxLength=64 |  |
+| `expires_at` | yes | type="string"; minLength=1; maxLength=64 |  |
+| `fence` | yes | type="integer"; minimum=1 |  |
+| `format` | yes | type="string"; const="riverhog-processing-claim/v1" |  |
+| `id` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| `inputs` | yes | #/components/schemas/ReceivingSetDocument |  |
+| `outcome_settlement` | no | anyOf=#/components/schemas/ProcessingClaimOutcomeSettlementDocument \| type="null" |  |
+| `outcomes` | yes | #/components/schemas/OutcomeSetDocument |  |
+| `output_collection_id` | no | anyOf=#/components/schemas/CollectionId \| type="null" |  |
+| `plan` | no | anyOf=#/components/schemas/ProcessingClaimPlanDocument \| type="null" |  |
+| `purpose` | yes | type="string"; minLength=1; maxLength=160 |  |
+| `released_at` | no | anyOf=type="string"; minLength=1; maxLength=64 \| type="null" |  |
+| `settled_at` | no | anyOf=type="string"; minLength=1; maxLength=64 \| type="null" |  |
+| `state` | yes | type="string"; enum=["active","settled","retiring","abandoned","released"] |  |
+| `updated_at` | yes | type="string"; minLength=1; maxLength=64 |  |
+| `work_document` | yes | type="object"; additional keys=`additionalProperties`, `x-riverhog-encoded-bytes-max`, `x-riverhog-extent` |  |
+| `work_document_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| `work_id` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 
-## Executable sources and proof
+### Progression, limits, and lifecycle
 
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `openapi:riverhog` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
-- Proof: `make operation-qualification`
-- Proof: `make compose-smoke`
-
-## Referenced contract dossiers
-
-- [schemas: CollectionId](schemas-collectionid.md)
-- [schemas: OutcomeSetDocument](schemas-outcomesetdocument.md)
-- [schemas: ProcessingClaimConsumerDocument](schemas-processingclaimconsumerdocument.md)
-- [schemas: ProcessingClaimOutcomeSettlementDocument](schemas-processingclaimoutcomesettlementdocument.md)
-- [schemas: ProcessingClaimPlanDocument](schemas-processingclaimplandocument.md)
-- [schemas: ReceivingSetDocument](schemas-receivingsetdocument.md)
-
-## Extent decisions
-
-| Dimension | Unit | Policy | Bounds/reason |
+| Dimension | Unit | Policy | Bounds or reason |
 |---|---|---|---|
 | length | characters | `contract_max` | maximum=64, minimum=1, reason=schema-maximum |
 | length | characters | `contract_max` | maximum=1000, minimum=1, reason=schema-maximum |
@@ -56,38 +63,40 @@
 | length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
 | length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
 
-## Contract summary
+## Maintained corroboration
 
-- `title`: ProcessingClaimDocument
-- `type`: object
+### Referenced contract dossiers
 
-### Fields
+- [schemas: CollectionId](schemas-collectionid.md)
+- [schemas: OutcomeSetDocument](schemas-outcomesetdocument.md)
+- [schemas: ProcessingClaimConsumerDocument](schemas-processingclaimconsumerdocument.md)
+- [schemas: ProcessingClaimOutcomeSettlementDocument](schemas-processingclaimoutcomesettlementdocument.md)
+- [schemas: ProcessingClaimPlanDocument](schemas-processingclaimplandocument.md)
+- [schemas: ReceivingSetDocument](schemas-receivingsetdocument.md)
 
-| Field | Required | Shape | Description |
-|---|---:|---|---|
-| `abandoned_at` | no | object (2 fields) |  |
-| `abandonment_reason` | no | object (2 fields) |  |
-| `consumer` | yes | #/components/schemas/ProcessingClaimConsumerDocument |  |
-| `created_at` | yes | string |  |
-| `expires_at` | yes | string |  |
-| `fence` | yes | integer |  |
-| `format` | yes | string |  |
-| `id` | yes | string |  |
-| `inputs` | yes | #/components/schemas/ReceivingSetDocument |  |
-| `outcome_settlement` | no | object (1 fields) |  |
-| `outcomes` | yes | #/components/schemas/OutcomeSetDocument |  |
-| `output_collection_id` | no | object (1 fields) |  |
-| `plan` | no | object (1 fields) |  |
-| `purpose` | yes | string |  |
-| `released_at` | no | object (2 fields) |  |
-| `settled_at` | no | object (2 fields) |  |
-| `state` | yes | string |  |
-| `updated_at` | yes | string |  |
-| `work_document` | yes | object |  |
-| `work_document_sha256` | yes | string |  |
-| `work_id` | yes | string |  |
+## Governing policies
 
-## Complete owned contract
+- `compatibility/http-api/v1`
+- `extent-rule/no-semantic-maximum/v1`
+- `extent-rule/schema-bound/v1`
+
+## Evidence
+
+### Qualification
+
+- `make operation-qualification`
+- `make compose-smoke`
+
+### Executable sources
+
+- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
+- `openapi:riverhog` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+
+### Machine authority
+
+- `/external_contract/http_openapi/riverhog/components/schemas/ProcessingClaimDocument`
+
+### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 

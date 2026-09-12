@@ -4,6 +4,8 @@
 
 <!-- contract-element: protocol:riverhog-provenance-windows-contracts:https-nashspence-github-io-riverhog-v1-pr-d75497e2ae:f0dfbb037a -->
 
+Exact externally visible contract owned by this semantic dossier.
+
 | Audit field | Value |
 |---|---|
 | Authority | `riverhog-provenance-windows-contracts` |
@@ -12,22 +14,7 @@
 | Contract elements | 1 |
 | Extent decisions | 0 |
 
-## Machine authority
-
-- `/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1provenance~1observers~1schemas~1windows-reparse-point.json`
-
-## Effective policies
-
-- `compatibility/components/v1`
-
-## Executable sources and proof
-
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `protocol:https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/windows-reparse-point.json` — `reference/riverhog/provenance/contracts/windows/src/riverhog_provenance_windows_contracts/schemas/windows-reparse-point.schema.json`
-- Proof: `make dist-smoke`
-- Proof: `make build`
-
-## Contract summary
+## External contract
 
 - `$id`: https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/windows-reparse-point.json
 - `type`: object
@@ -36,12 +23,32 @@
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| `followed_for_primary_content` | yes | boolean |  |
-| `name_surrogate` | yes | boolean |  |
-| `reparse_tag` | yes | integer |  |
-| `reparse_tag_hex` | yes | string |  |
+| `followed_for_primary_content` | yes | type="boolean" |  |
+| `name_surrogate` | yes | type="boolean" |  |
+| `reparse_tag` | yes | type="integer"; minimum=0 |  |
+| `reparse_tag_hex` | yes | type="string"; pattern="^0x[0-9a-f]{8}$" |  |
 
-## Complete owned contract
+## Governing policies
+
+- `compatibility/components/v1`
+
+## Evidence
+
+### Qualification
+
+- `make dist-smoke`
+- `make build`
+
+### Executable sources
+
+- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
+- `protocol:https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/windows-reparse-point.json` — `reference/riverhog/provenance/contracts/windows/src/riverhog_provenance_windows_contracts/schemas/windows-reparse-point.schema.json`
+
+### Machine authority
+
+- `/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1provenance~1observers~1schemas~1windows-reparse-point.json`
+
+### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 

@@ -4,6 +4,8 @@
 
 <!-- contract-element: protocol:riverhog-storage-adapter-support:generated-riverhog-storage-adapter-objectheadrequest:524e2da9c9 -->
 
+Exact externally visible contract owned by this semantic dossier.
+
 | Audit field | Value |
 |---|---|
 | Authority | `riverhog-storage-adapter-support` |
@@ -12,22 +14,7 @@
 | Contract elements | 1 |
 | Extent decisions | 0 |
 
-## Machine authority
-
-- `/external_contract/protocol_schemas/generated:riverhog-storage-adapter/schemas/ObjectHeadRequest`
-
-## Effective policies
-
-- `compatibility/components/v1`
-
-## Executable sources and proof
-
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `protocol:generated:riverhog-storage-adapter` — `packages/riverhog-storage-adapter-support/src/riverhog_storage_adapter_support/schemas.py::storage_adapter_schema_bundle`
-- Proof: `make dist-smoke`
-- Proof: `make build`
-
-## Contract summary
+## External contract
 
 - `title`: ObjectHeadRequest
 - `type`: object
@@ -36,16 +23,36 @@
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| `expected_placement` | yes | string |  |
+| `expected_placement` | yes | type="string"; enum=["archive","immediate"] |  |
 | `object` | yes | #/$defs/ObjectLocator |  |
 
 ### Definitions
 
 | Definition | Shape |
 |---|---|
-| `ObjectLocator` | object |
+| `ObjectLocator` | type="object"; fields=`object_path`, `revision`; additional keys=`additionalProperties`, `required` |
 
-## Complete owned contract
+## Governing policies
+
+- `compatibility/components/v1`
+
+## Evidence
+
+### Qualification
+
+- `make dist-smoke`
+- `make build`
+
+### Executable sources
+
+- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
+- `protocol:generated:riverhog-storage-adapter` — `packages/riverhog-storage-adapter-support/src/riverhog_storage_adapter_support/schemas.py::storage_adapter_schema_bundle`
+
+### Machine authority
+
+- `/external_contract/protocol_schemas/generated:riverhog-storage-adapter/schemas/ObjectHeadRequest`
+
+### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 

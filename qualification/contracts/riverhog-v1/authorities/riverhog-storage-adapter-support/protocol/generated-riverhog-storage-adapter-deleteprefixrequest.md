@@ -4,6 +4,8 @@
 
 <!-- contract-element: protocol:riverhog-storage-adapter-support:generated-riverhog-storage-adapter-delete-ac2392c700:24fdf1c683 -->
 
+Exact externally visible contract owned by this semantic dossier.
+
 | Audit field | Value |
 |---|---|
 | Authority | `riverhog-storage-adapter-support` |
@@ -12,29 +14,7 @@
 | Contract elements | 1 |
 | Extent decisions | 1 |
 
-## Machine authority
-
-- `/external_contract/protocol_schemas/generated:riverhog-storage-adapter/schemas/DeletePrefixRequest`
-
-## Effective policies
-
-- `compatibility/components/v1`
-- `extent-rule/schema-bound/v1`
-
-## Executable sources and proof
-
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `protocol:generated:riverhog-storage-adapter` — `packages/riverhog-storage-adapter-support/src/riverhog_storage_adapter_support/schemas.py::storage_adapter_schema_bundle`
-- Proof: `make dist-smoke`
-- Proof: `make build`
-
-## Extent decisions
-
-| Dimension | Unit | Policy | Bounds/reason |
-|---|---|---|---|
-| length | characters | `contract_max` | maximum=4096, minimum=1, reason=schema-maximum |
-
-## Contract summary
+## External contract
 
 - `title`: DeletePrefixRequest
 - `type`: object
@@ -43,10 +23,37 @@
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| `mode` | no | string |  |
-| `object_prefix` | yes | string |  |
+| `mode` | no | type="string"; const="all_versions" |  |
+| `object_prefix` | yes | type="string"; minLength=1; maxLength=4096 |  |
 
-## Complete owned contract
+### Progression, limits, and lifecycle
+
+| Dimension | Unit | Policy | Bounds or reason |
+|---|---|---|---|
+| length | characters | `contract_max` | maximum=4096, minimum=1, reason=schema-maximum |
+
+## Governing policies
+
+- `compatibility/components/v1`
+- `extent-rule/schema-bound/v1`
+
+## Evidence
+
+### Qualification
+
+- `make dist-smoke`
+- `make build`
+
+### Executable sources
+
+- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
+- `protocol:generated:riverhog-storage-adapter` — `packages/riverhog-storage-adapter-support/src/riverhog_storage_adapter_support/schemas.py::storage_adapter_schema_bundle`
+
+### Machine authority
+
+- `/external_contract/protocol_schemas/generated:riverhog-storage-adapter/schemas/DeletePrefixRequest`
+
+### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 

@@ -4,6 +4,8 @@
 
 <!-- contract-element: cli:riverhog-recover:riverhog-recover:e47dfeaf6b -->
 
+Exact externally visible contract owned by this semantic dossier.
+
 | Audit field | Value |
 |---|---|
 | Authority | `riverhog-recover` |
@@ -12,32 +14,7 @@
 | Contract elements | 1 |
 | Extent decisions | 3 |
 
-## Machine authority
-
-- `/external_contract/cli/riverhog-recover/name`
-- `/external_contract/cli/riverhog-recover/parameters`
-
-## Effective policies
-
-- `compatibility/cli/v1`
-- `extent-rule/schema-bound/v1`
-
-## Executable sources and proof
-
-- `cli:riverhog-recover` — `reference/riverhog/recovery/src/riverhog_recover/cli.py::<module>`
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- Proof: `make dist-smoke`
-- Proof: `make operation-qualification`
-
-## Extent decisions
-
-| Dimension | Unit | Policy | Bounds/reason |
-|---|---|---|---|
-| cardinality | values-per-occurrence | `fixed` | maximum=0, minimum=0, reason=fixed-command-argument-arity |
-| cardinality | values-per-occurrence | `fixed` | maximum=0, minimum=0, reason=fixed-command-argument-arity |
-| cardinality | values-per-occurrence | `fixed` | maximum=0, minimum=0, reason=fixed-command-argument-arity |
-
-## Contract summary
+## External contract
 
 - Parser name: `riverhog-recover`
 
@@ -53,7 +30,37 @@
 | `` | _StoreAction | no | Path | --passphrases-file |
 | `` | _StoreAction | no |  | --age-command |
 
-## Complete owned contract
+### Progression, limits, and lifecycle
+
+| Dimension | Unit | Policy | Bounds or reason |
+|---|---|---|---|
+| cardinality | values-per-occurrence | `fixed` | maximum=0, minimum=0, reason=fixed-command-argument-arity |
+| cardinality | values-per-occurrence | `fixed` | maximum=0, minimum=0, reason=fixed-command-argument-arity |
+| cardinality | values-per-occurrence | `fixed` | maximum=0, minimum=0, reason=fixed-command-argument-arity |
+
+## Governing policies
+
+- `compatibility/cli/v1`
+- `extent-rule/schema-bound/v1`
+
+## Evidence
+
+### Qualification
+
+- `make dist-smoke`
+- `make operation-qualification`
+
+### Executable sources
+
+- `cli:riverhog-recover` — `reference/riverhog/recovery/src/riverhog_recover/cli.py::<module>`
+- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
+
+### Machine authority
+
+- `/external_contract/cli/riverhog-recover/name`
+- `/external_contract/cli/riverhog-recover/parameters`
+
+### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 

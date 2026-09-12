@@ -4,6 +4,8 @@
 
 <!-- contract-element: http:riverhog:get-v1-catalog-sync-checkpoint:c2273e44e6 -->
 
+Create Catalog Sync Checkpoint
+
 | Audit field | Value |
 |---|---|
 | Authority | `riverhog` |
@@ -12,31 +14,7 @@
 | Contract elements | 1 |
 | Extent decisions | 0 |
 
-## Machine authority
-
-- `/external_contract/http_openapi/riverhog/paths/~1v1~1catalog-sync~1checkpoint/get`
-
-## Effective policies
-
-- `compatibility/http-api/v1`
-
-## Executable sources and proof
-
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `openapi:riverhog` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
-- Proof: `make operation-qualification`
-- Proof: `make compose-smoke`
-
-## Related interface records
-
-- [Operation parity: create_catalog_sync_checkpoint](../operation/operation-parity-create-catalog-sync-checkpoint.md)
-
-## Referenced contract dossiers
-
-- [schemas: CatalogSyncCheckpoint](schemas-catalogsynccheckpoint.md)
-- [schemas: ErrorResponse](schemas-errorresponse.md)
-
-## Contract summary
+## External contract
 
 - `operationId`: create_catalog_sync_checkpoint
 - `summary`: Create Catalog Sync Checkpoint
@@ -52,7 +30,38 @@
 | `403` | Forbidden |
 | `500` | Internal Server Error |
 
-## Complete owned contract
+## Maintained corroboration
+
+### Related interface records
+
+- [Operation parity: create_catalog_sync_checkpoint](../operation/operation-parity-create-catalog-sync-checkpoint.md)
+
+### Referenced contract dossiers
+
+- [schemas: CatalogSyncCheckpoint](schemas-catalogsynccheckpoint.md)
+- [schemas: ErrorResponse](schemas-errorresponse.md)
+
+## Governing policies
+
+- `compatibility/http-api/v1`
+
+## Evidence
+
+### Qualification
+
+- `make operation-qualification`
+- `make compose-smoke`
+
+### Executable sources
+
+- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
+- `openapi:riverhog` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+
+### Machine authority
+
+- `/external_contract/http_openapi/riverhog/paths/~1v1~1catalog-sync~1checkpoint/get`
+
+### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 

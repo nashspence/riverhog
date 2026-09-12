@@ -4,6 +4,8 @@
 
 <!-- contract-element: protocol:riverhog-storage-adapter-support:generated-riverhog-storage-adapter-protocol:face8018ab -->
 
+Exact externally visible contract owned by this semantic dossier.
+
 | Audit field | Value |
 |---|---|
 | Authority | `riverhog-storage-adapter-support` |
@@ -12,7 +14,27 @@
 | Contract elements | 1 |
 | Extent decisions | 0 |
 
-## Machine authority
+## External contract
+
+- Shape: items=additional keys=`http_operations`, `semantic_acceptance`, `structural_models` | "ed6a7530471c36528ec0c944a389ae5b9f06bb3f643b45ff61c0f8bd47cc4ec6" | additional keys=`provider_ontology`, `unknown_fields` | "riverhog-storage-adapter-schema-bundle/v1" | additional keys=`operations` | "riverhog-storage-adapter/v1" | additional keys=`conformance`, `kind`
+
+## Governing policies
+
+- `compatibility/components/v1`
+
+## Evidence
+
+### Qualification
+
+- `make dist-smoke`
+- `make build`
+
+### Executable sources
+
+- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
+- `protocol:generated:riverhog-storage-adapter` — `packages/riverhog-storage-adapter-support/src/riverhog_storage_adapter_support/schemas.py::storage_adapter_schema_bundle`
+
+### Machine authority
 
 - `/external_contract/protocol_schemas/generated:riverhog-storage-adapter/authorities`
 - `/external_contract/protocol_schemas/generated:riverhog-storage-adapter/bundle_sha256`
@@ -22,22 +44,7 @@
 - `/external_contract/protocol_schemas/generated:riverhog-storage-adapter/protocol`
 - `/external_contract/protocol_schemas/generated:riverhog-storage-adapter/semantic_acceptance`
 
-## Effective policies
-
-- `compatibility/components/v1`
-
-## Executable sources and proof
-
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `protocol:generated:riverhog-storage-adapter` — `packages/riverhog-storage-adapter-support/src/riverhog_storage_adapter_support/schemas.py::storage_adapter_schema_bundle`
-- Proof: `make dist-smoke`
-- Proof: `make build`
-
-## Contract summary
-
-- Shape: array (7 items)
-
-## Complete owned contract
+### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 

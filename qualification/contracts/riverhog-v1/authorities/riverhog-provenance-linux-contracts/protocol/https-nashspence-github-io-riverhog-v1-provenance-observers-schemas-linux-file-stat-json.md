@@ -4,6 +4,8 @@
 
 <!-- contract-element: protocol:riverhog-provenance-linux-contracts:https-nashspence-github-io-riverhog-v1-pr-453aae6637:501bf68468 -->
 
+Exact externally visible contract owned by this semantic dossier.
+
 | Audit field | Value |
 |---|---|
 | Authority | `riverhog-provenance-linux-contracts` |
@@ -12,34 +14,7 @@
 | Contract elements | 1 |
 | Extent decisions | 6 |
 
-## Machine authority
-
-- `/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1provenance~1observers~1schemas~1linux-file-stat.json`
-
-## Effective policies
-
-- `compatibility/components/v1`
-- `extent-rule/extension-contract/v1`
-
-## Executable sources and proof
-
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `protocol:https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/linux-file-stat.json` — `reference/riverhog/provenance/contracts/linux/src/riverhog_provenance_linux_contracts/schemas/linux-file-stat.schema.json`
-- Proof: `make dist-smoke`
-- Proof: `make build`
-
-## Extent decisions
-
-| Dimension | Unit | Policy | Bounds/reason |
-|---|---|---|---|
-| value | schema-value | `extension_owned` | maximum=None, reason=independently-versioned-extension-authority |
-| value | schema-value | `extension_owned` | maximum=None, reason=independently-versioned-extension-authority |
-| value | schema-value | `extension_owned` | maximum=None, reason=independently-versioned-extension-authority |
-| value | schema-value | `extension_owned` | maximum=None, reason=independently-versioned-extension-authority |
-| value | schema-value | `extension_owned` | maximum=None, reason=independently-versioned-extension-authority |
-| value | schema-value | `extension_owned` | maximum=None, reason=independently-versioned-extension-authority |
-
-## Contract summary
+## External contract
 
 - `$id`: https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/linux-file-stat.json
 - `type`: object
@@ -48,32 +23,64 @@
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| `atomic_write_segments_max` | no | integer |  |
-| `atomic_write_unit_max` | no | integer |  |
-| `atomic_write_unit_max_opt` | no | integer |  |
-| `atomic_write_unit_min` | no | integer |  |
-| `blocks_512_bytes` | no | integer |  |
-| `dev_major` | no | integer |  |
-| `dev_minor` | no | integer |  |
-| `device` | yes | integer |  |
-| `dio_mem_align` | no | integer |  |
-| `dio_offset_align` | no | integer |  |
-| `dio_read_offset_align` | no | integer |  |
-| `gid` | yes | integer |  |
-| `inode` | yes | integer |  |
-| `mode` | yes | string |  |
-| `nlink` | yes | integer |  |
-| `preferred_io_block_size` | no | integer |  |
-| `rdev` | no | integer |  |
-| `size` | yes | integer |  |
-| `statx_attributes` | no | integer |  |
-| `statx_attributes_mask` | no | integer |  |
-| `statx_available` | no | boolean |  |
-| `statx_mask` | no | integer |  |
-| `subvolume_id` | no | integer |  |
-| `uid` | yes | integer |  |
+| `atomic_write_segments_max` | no | type="integer"; minimum=0 |  |
+| `atomic_write_unit_max` | no | type="integer"; minimum=0 |  |
+| `atomic_write_unit_max_opt` | no | type="integer"; minimum=0 |  |
+| `atomic_write_unit_min` | no | type="integer"; minimum=0 |  |
+| `blocks_512_bytes` | no | type="integer"; minimum=0 |  |
+| `dev_major` | no | type="integer"; minimum=0 |  |
+| `dev_minor` | no | type="integer"; minimum=0 |  |
+| `device` | yes | type="integer"; minimum=0 |  |
+| `dio_mem_align` | no | type="integer"; minimum=0 |  |
+| `dio_offset_align` | no | type="integer"; minimum=0 |  |
+| `dio_read_offset_align` | no | type="integer"; minimum=0 |  |
+| `gid` | yes | type="integer"; minimum=0 |  |
+| `inode` | yes | type="integer"; minimum=0 |  |
+| `mode` | yes | type="string"; pattern="^[0-7]+$" |  |
+| `nlink` | yes | type="integer"; minimum=0 |  |
+| `preferred_io_block_size` | no | type="integer"; minimum=0 |  |
+| `rdev` | no | type="integer"; minimum=0 |  |
+| `size` | yes | type="integer"; minimum=0 |  |
+| `statx_attributes` | no | type="integer"; minimum=0 |  |
+| `statx_attributes_mask` | no | type="integer"; minimum=0 |  |
+| `statx_available` | no | type="boolean" |  |
+| `statx_mask` | no | type="integer"; minimum=0 |  |
+| `subvolume_id` | no | type="integer"; minimum=0 |  |
+| `uid` | yes | type="integer"; minimum=0 |  |
 
-## Complete owned contract
+### Progression, limits, and lifecycle
+
+| Dimension | Unit | Policy | Bounds or reason |
+|---|---|---|---|
+| value | schema-value | `extension_owned` | maximum=None, reason=independently-versioned-extension-authority |
+| value | schema-value | `extension_owned` | maximum=None, reason=independently-versioned-extension-authority |
+| value | schema-value | `extension_owned` | maximum=None, reason=independently-versioned-extension-authority |
+| value | schema-value | `extension_owned` | maximum=None, reason=independently-versioned-extension-authority |
+| value | schema-value | `extension_owned` | maximum=None, reason=independently-versioned-extension-authority |
+| value | schema-value | `extension_owned` | maximum=None, reason=independently-versioned-extension-authority |
+
+## Governing policies
+
+- `compatibility/components/v1`
+- `extent-rule/extension-contract/v1`
+
+## Evidence
+
+### Qualification
+
+- `make dist-smoke`
+- `make build`
+
+### Executable sources
+
+- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
+- `protocol:https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/linux-file-stat.json` — `reference/riverhog/provenance/contracts/linux/src/riverhog_provenance_linux_contracts/schemas/linux-file-stat.schema.json`
+
+### Machine authority
+
+- `/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1provenance~1observers~1schemas~1linux-file-stat.json`
+
+### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 

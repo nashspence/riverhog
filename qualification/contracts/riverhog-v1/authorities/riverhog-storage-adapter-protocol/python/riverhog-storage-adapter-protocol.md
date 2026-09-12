@@ -4,6 +4,8 @@
 
 <!-- contract-element: python:riverhog-storage-adapter-protocol:riverhog-storage-adapter-protocol:4be9f0aa0d -->
 
+Exact externally visible contract owned by this semantic dossier.
+
 | Audit field | Value |
 |---|---|
 | Authority | `riverhog-storage-adapter-protocol` |
@@ -12,30 +14,35 @@
 | Contract elements | 1 |
 | Extent decisions | 0 |
 
-## Machine authority
-
-- `/external_contract/python/11`
-
-## Effective policies
-
-- `compatibility/python-api/v1`
-
-## Executable sources and proof
-
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `python:riverhog-storage-adapter-protocol` — `packages/riverhog-storage-adapter-protocol/src/riverhog_storage_adapter_protocol/__init__.py::<module>`
-- Proof: `make dist-smoke`
-- Proof: `make build`
-
-## Contract summary
+## External contract
 
 | Field | Shape |
 |---|---|
 | `distribution` | "riverhog-storage-adapter-protocol" |
-| `exports` | object (57 fields) |
+| `exports` | additional keys=`ADAPTER_PRIVATE_ASSERTION_PREFIX`, `AdapterDescriptor`, `BinaryContent`, `CompletedObjectReceipt`, `CompletedWriteLookupRequest`, `DeleteObjectRequest`, `DeletePrefixRequest`, `ImmutableObjectReceipt`, `MAX_WRITE_SEGMENT_PAGE_ITEMS`, `MaintenanceResult`, `ObjectHeadRequest`, `ObjectLocator`, `ObjectMetadataReceipt`, `ObjectPlacement`, `ObjectReadReceipt`, `ObjectReadRequest`, `ObjectReadStream`, `ReadExpired`, `ReadMode`, `ReadPreparationRequest`, `ReadReadiness`, `ReadReady`, `ReadRequested`, `ReadStatus`, `RequiredIdentityAssertions`, `STORAGE_ADAPTER_PROTOCOL`, `SemanticId`, `Sha256`, `SmallObjectWriteRequest`, `StorageAdapterError`, `StorageAdapterErrorBody`, `StorageAdapterErrorCode`, `StorageAdapterModel`, `StorageAdapterPort`, `StorageAdapterRejection`, `ValidatedStorageAdapterPort`, `WriteCompleteRequest`, `WriteCompletionAuthority`, `WriteSegmentListRequest`, `WriteSegmentPage`, `WriteSegmentReceipt`, `WriteSegmentRequest`, `WriteSession`, `WriteStartRequest`, `normalize_object_path`, `validate_completed_write_response`, `validate_object_metadata_response`, `validate_object_read_response`, `validate_read_status_response`, `validate_small_object_response`, `validate_write_completion_request`, `validate_write_segment_page_response`, `validate_write_segment_request`, `validate_write_segment_response`, `validate_write_session_response`, `validate_write_start_request`, `validated_storage_adapter` |
 | `module` | "riverhog_storage_adapter_protocol" |
 
-## Complete owned contract
+## Governing policies
+
+- `compatibility/python-api/v1`
+
+## Evidence
+
+### Qualification
+
+- `make dist-smoke`
+- `make build`
+
+### Executable sources
+
+- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
+- `python:riverhog-storage-adapter-protocol` — `packages/riverhog-storage-adapter-protocol/src/riverhog_storage_adapter_protocol/__init__.py::<module>`
+
+### Machine authority
+
+- `/external_contract/python/11`
+
+### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 

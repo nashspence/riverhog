@@ -4,6 +4,8 @@
 
 <!-- contract-element: boundary:stove0-target-support:stove0-target-support-component-boundary:a106e9e41a -->
 
+Exact externally visible contract owned by this semantic dossier.
+
 | Audit field | Value |
 |---|---|
 | Authority | `stove0-target-support` |
@@ -12,33 +14,38 @@
 | Contract elements | 1 |
 | Extent decisions | 0 |
 
-## Machine authority
-
-- `/boundaries/components/55`
-
-## Effective policies
-
-- `boundary/frozen-authority/v1`
-
-## Executable sources and proof
-
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `release:release.toml` — `release.toml`
-- Proof: `make release-check`
-- Proof: `make build`
-
-## Contract summary
+## External contract
 
 | Field | Shape |
 |---|---|
-| `console_scripts` | object (2 fields) |
-| `dependencies` | array (5 items) |
+| `console_scripts` | additional keys=`stove0-target-conformance`, `stove0-target-schemas` |
+| `dependencies` | ["http-api-contracts","riverhog-client","riverhog-protocol","stove0-target-client","stove0-target-protocol"] |
 | `distribution` | "stove0-target-support" |
-| `optional_dependencies` | object (0 fields) |
+| `optional_dependencies` | empty object |
 | `path` | "reference/stove0/packages/target-support" |
 | `role` | "reusable_library" |
 
-## Complete owned contract
+## Governing policies
+
+- `boundary/frozen-authority/v1`
+
+## Evidence
+
+### Qualification
+
+- `make release-check`
+- `make build`
+
+### Executable sources
+
+- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
+- `release:release.toml` — `release.toml`
+
+### Machine authority
+
+- `/boundaries/components/55`
+
+### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 

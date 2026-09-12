@@ -4,6 +4,8 @@
 
 <!-- contract-element: http:stove0:schemas-previewacceptanceview:1921dbce59 -->
 
+Exact externally visible contract owned by this semantic dossier.
+
 | Audit field | Value |
 |---|---|
 | Authority | `stove0` |
@@ -12,36 +14,7 @@
 | Contract elements | 1 |
 | Extent decisions | 3 |
 
-## Machine authority
-
-- `/external_contract/http_openapi/stove0/components/schemas/PreviewAcceptanceView`
-
-## Effective policies
-
-- `compatibility/http-api/v1`
-- `extent-rule/no-semantic-maximum/v1`
-- `extent-rule/schema-bound/v1`
-
-## Executable sources and proof
-
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `openapi:stove0` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
-- Proof: `make operation-qualification`
-- Proof: `make compose-smoke`
-
-## Referenced contract dossiers
-
-- [schemas: PreviewTargetExpectationView](schemas-previewtargetexpectationview.md)
-
-## Extent decisions
-
-| Dimension | Unit | Policy | Bounds/reason |
-|---|---|---|---|
-| length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
-| length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
-| cardinality | items | `operational_policy` | maximum=None, reason=no-declared-semantic-maximum |
-
-## Contract summary
+## External contract
 
 - `title`: PreviewAcceptanceView
 - `type`: object
@@ -50,11 +23,47 @@
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| `branch_set_sha256` | yes | string |  |
-| `preview_sha256` | yes | string |  |
-| `target_plans` | yes | array |  |
+| `branch_set_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| `preview_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| `target_plans` | yes | type="array"; items=(#/components/schemas/PreviewTargetExpectationView) |  |
 
-## Complete owned contract
+### Progression, limits, and lifecycle
+
+| Dimension | Unit | Policy | Bounds or reason |
+|---|---|---|---|
+| length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
+| length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
+| cardinality | items | `operational_policy` | maximum=None, reason=no-declared-semantic-maximum |
+
+## Maintained corroboration
+
+### Referenced contract dossiers
+
+- [schemas: PreviewTargetExpectationView](schemas-previewtargetexpectationview.md)
+
+## Governing policies
+
+- `compatibility/http-api/v1`
+- `extent-rule/no-semantic-maximum/v1`
+- `extent-rule/schema-bound/v1`
+
+## Evidence
+
+### Qualification
+
+- `make operation-qualification`
+- `make compose-smoke`
+
+### Executable sources
+
+- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
+- `openapi:stove0` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+
+### Machine authority
+
+- `/external_contract/http_openapi/stove0/components/schemas/PreviewAcceptanceView`
+
+### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 

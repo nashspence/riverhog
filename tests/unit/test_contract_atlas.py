@@ -99,66 +99,109 @@ def test_atlas_rollups_and_dossiers_are_exact_and_descriptive() -> None:
     assert all("/contexts/" not in item["path"] for item in documents)
     assert all("/traces/" not in item["path"] for item in documents)
     assert all(not Path(item["path"]).name.startswith("c-") for item in dossier_documents)
-    assert checked.files[root["atlas"]["root"]].startswith(b"# Riverhog v1 contract atlas\n")
+    assert checked.files[root["atlas"]["root"]].startswith(
+        b"# Riverhog repository v1 contract audit\n"
+    )
     assert hashlib.sha256(checked.files[root["atlas"]["root"]]).hexdigest() == next(
         item["sha256"] for item in documents if item["kind"] == "root-index"
     )
-    assert max(len(payload) for payload in checked.files.values()) <= atlas.MAX_HUMAN_DOCUMENT_BYTES
-    assert all(b"## Complete owned contract" in checked.files[item["dossier"]] for item in elements)
+    # Presentation-quality witness, deliberately outside machine-closure validation.
+    assert max(len(payload) for payload in checked.files.values()) <= (
+        atlas.AUDIT_DOCUMENT_TARGET_BYTES
+    )
+    assert all(b"### Exact owned JSON" in checked.files[item["dossier"]] for item in elements)
 
 
 def test_human_entrypoint_exposes_closure_exclusions_and_relationships() -> None:
     checked = atlas.load_atlas(ARTIFACT)
     root = checked.root
     root_page = checked.files[root["atlas"]["root"]].decode()
-    exclusions_page = checked.files["riverhog-v1/exclusions/index.md"].decode()
-    relationships_page = checked.files["riverhog-v1/relationships/index.md"].decode()
-    authority_map = checked.files["riverhog-v1/relationships/authorities/index.md"].decode()
+    evidence_page = checked.files["riverhog-v1/evidence/index.md"].decode()
+    exclusions_page = checked.files["riverhog-v1/evidence/exclusions.md"].decode()
+    relationships_page = checked.files["riverhog-v1/evidence/relationships.md"].decode()
+    authority_inventory = checked.files["riverhog-v1/evidence/authorities.md"].decode()
     relationship = root["atlas"]["relationships"]
 
     ordered_sections = (
-        "**Closure: complete; anomalies: 0.**",
-        "## Guided contract map",
-        "## Completeness and evidence reference",
-        "## Closure and identity accounting",
-        "## Aggregate contract shape",
+        "> **Audit question:**",
+        "**Audit path:** Scope → Semantics → Evidence",
+        "## Contract map",
+        "## Contract-wide policies",
+        "## Freeze evidence",
     )
     assert [root_page.index(section) for section in ordered_sections] == sorted(
         root_page.index(section) for section in ordered_sections
     )
-    assert all(f"| `{name}` | 0 |" in root_page for name in root["discovery"]["anomalies"])
-    assert "### Public Riverhog service and API" in root_page
-    assert "### Archive custody and recovery" in root_page
-    assert "### Reusable contract and library authorities" in root_page
-    assert "### Independently implementable extension boundaries" in root_page
-    assert "### Installed nonnormative references" in root_page
-    assert "## Complete authority inventory" not in root_page
-    assert exclusions_page.count("| `excluded:") == root["counts"]["excluded_candidates"]
-    assert "## Riverhog service boundary" in relationships_page
-    assert "Public service | [riverhog]" in relationships_page
-    assert "Packaged implementation | [riverhog-server]" in relationships_page
+    assert all(
+        f"| {name.replace('_', ' ')} | pass |" in evidence_page
+        for name in root["discovery"]["anomalies"]
+    )
+    assert "### Riverhog product" in root_page
+    assert "### Maintainer-selected nonnormative references" in root_page
+    assert "### [Cross-cutting v1 authorities]" in root_page
+    assert "Guided contract map" not in root_page
+    assert "SHA-256" not in root_page
+    assert exclusions_page.count("- `excluded:") == root["counts"]["excluded_candidates"]
+    assert "# Relationship-edge inventory" in relationships_page
+    assert "not a second navigation hierarchy" in relationships_page
+    assert "intentionally an alphabetical reconciliation inventory" in authority_inventory
     assert relationship["schema"] == atlas.RELATIONSHIP_SCHEMA
+    assert relationship["contract_map"]["schema"] == atlas.CONTRACT_MAP_SCHEMA
     assert any(item["kind"] == "runtime-image" for item in relationship["nodes"])
     assert any(item["type"] == "implements-protocol" for item in relationship["edges"])
-    routed = [
+    mapped = [
         item["authority"]
-        for route in relationship["authority_routes"]
-        for item in route["authorities"]
+        for node in relationship["contract_map"]["nodes"]
+        for item in node["authorities"]
     ]
     exact = {item["authority"] for item in root["elements"]}
-    assert len(routed) == len(set(routed))
-    assert set(routed) == exact
-    assert authority_map.count("| [") >= len(exact)
-    assert "Nonnormative reference authorities" in authority_map
+    assert len(mapped) == len(set(mapped))
+    assert set(mapped) == exact
+    assert authority_inventory.count("| [") >= len(exact)
     assert atlas._reachable_atlas_documents(root["atlas"]["root"], checked.files) == set(
         checked.files
     )
-    for node in relationship["nodes"]:
-        destination = atlas._relationship_node_path(node)
-        path, _, anchor = destination.partition("#")
-        assert path in checked.files
-        if anchor:
-            assert f'id="{anchor}"' in checked.files[path].decode()
+    assert not any(path.startswith("riverhog-v1/relationships/") for path in checked.files)
+
+
+def test_every_dossier_is_lossless_and_representative_contract_classes_are_semantics_first() -> (
+    None
+):
+    checked = atlas.load_atlas(ARTIFACT)
+    elements = checked.root["elements"]
+    projection = checked.root["projection"]
+
+    for item in elements:
+        page = checked.files[item["dossier"]].decode()
+        assert page.index("## External contract") < page.index("## Evidence")
+        assert "object (" not in page
+        assert "array (" not in page
+        for pointer in item["pointers"]:
+            value = atlas.pointer_value(projection, pointer)
+            exact = (
+                f"<!-- exact-contract-value: {atlas.canonical_sha256(value)} -->\n\n"
+                f"```json\n{atlas._pretty_json(value)}\n```"
+            )
+            assert exact in page
+
+    representative_interfaces = {
+        "http",
+        "cli",
+        "configuration",
+        "protocol",
+        "durable-state",
+        "release",
+    }
+    representatives = {
+        interface: next(item for item in elements if item["interface"] == interface)
+        for interface in representative_interfaces
+    }
+    assert set(representatives) == representative_interfaces
+    recovery = next(item for item in elements if "recovery-descriptor" in item["id"])
+    for item in [*representatives.values(), recovery]:
+        page = checked.files[item["dossier"]].decode()
+        assert page.index("## External contract") < page.index("## Governing policies")
+        assert page.index("## Governing policies") < page.index("## Evidence")
 
 
 def test_large_interfaces_route_through_semantic_families_and_local_references() -> None:
@@ -196,4 +239,7 @@ def test_policy_registry_is_contract_focused_and_application_counted() -> None:
     policy_page = checked.files["riverhog-v1/policies/index.md"].decode()
     assert "Applications:" in policy_page
     assert "Applications: **13**" in policy_page
+    assert policy_page.count("- Applicability:") == len(declared)
+    assert policy_page.count("- Observable result or violation:") == len(declared)
+    assert policy_page.count("- Executable authorities:") == len(declared)
     assert "Implementation-correctness witnesses remain outside" in policy_page

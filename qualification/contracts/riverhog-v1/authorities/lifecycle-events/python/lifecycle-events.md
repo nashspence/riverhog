@@ -4,6 +4,8 @@
 
 <!-- contract-element: python:lifecycle-events:lifecycle-events:eac5f60a5d -->
 
+Exact externally visible contract owned by this semantic dossier.
+
 | Audit field | Value |
 |---|---|
 | Authority | `lifecycle-events` |
@@ -12,30 +14,35 @@
 | Contract elements | 1 |
 | Extent decisions | 0 |
 
-## Machine authority
-
-- `/external_contract/python/1`
-
-## Effective policies
-
-- `compatibility/python-api/v1`
-
-## Executable sources and proof
-
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `python:lifecycle-events` — `packages/lifecycle-events/src/lifecycle_events/__init__.py::<module>`
-- Proof: `make dist-smoke`
-- Proof: `make build`
-
-## Contract summary
+## External contract
 
 | Field | Shape |
 |---|---|
 | `distribution` | "lifecycle-events" |
-| `exports` | object (12 fields) |
+| `exports` | additional keys=`CLOUDEVENTS_JSON_CONTENT_TYPE`, `CloudEvent`, `EventContext`, `EventPage`, `LifecycleEventClient`, `MAX_EVENT_CONTEXT_BYTES`, `SQLiteEventCursorStore`, `SQLiteLifecycleEventLog`, `caused_event`, `cloud_event`, `create_lifecycle_event_schema`, `normalize_event_context` |
 | `module` | "lifecycle_events" |
 
-## Complete owned contract
+## Governing policies
+
+- `compatibility/python-api/v1`
+
+## Evidence
+
+### Qualification
+
+- `make dist-smoke`
+- `make build`
+
+### Executable sources
+
+- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
+- `python:lifecycle-events` — `packages/lifecycle-events/src/lifecycle_events/__init__.py::<module>`
+
+### Machine authority
+
+- `/external_contract/python/1`
+
+### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 

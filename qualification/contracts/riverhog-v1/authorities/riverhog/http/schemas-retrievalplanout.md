@@ -4,6 +4,8 @@
 
 <!-- contract-element: http:riverhog:schemas-retrievalplanout:d94f1ee78a -->
 
+Exact externally visible contract owned by this semantic dossier.
+
 | Audit field | Value |
 |---|---|
 | Authority | `riverhog` |
@@ -12,30 +14,7 @@
 | Contract elements | 1 |
 | Extent decisions | 2 |
 
-## Machine authority
-
-- `/external_contract/http_openapi/riverhog/components/schemas/RetrievalPlanOut`
-
-## Effective policies
-
-- `compatibility/http-api/v1`
-- `extent-rule/schema-bound/v1`
-
-## Executable sources and proof
-
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `openapi:riverhog` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
-- Proof: `make operation-qualification`
-- Proof: `make compose-smoke`
-
-## Extent decisions
-
-| Dimension | Unit | Policy | Bounds/reason |
-|---|---|---|---|
-| length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
-| value | schema-value | `contract_max` | maximum=10000, minimum=1, reason=schema-maximum |
-
-## Contract summary
+## External contract
 
 - `title`: RetrievalPlanOut
 - `type`: object
@@ -44,20 +23,48 @@
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| `created_at` | yes | string |  |
-| `etag` | yes | object (2 fields) |  |
-| `expires_at` | yes | string |  |
-| `failure` | yes | object (2 fields) |  |
-| `file_count` | yes | integer |  |
-| `format` | yes | string |  |
-| `id` | yes | string |  |
-| `lease_seconds` | yes | integer |  |
-| `ready_at` | yes | object (2 fields) |  |
-| `requires_restore` | yes | boolean |  |
-| `restore_policy` | yes | string |  |
-| `state` | yes | string |  |
+| `created_at` | yes | type="string" |  |
+| `etag` | yes | anyOf=type="string"; pattern="^[0-9a-f]{64}$" \| type="null" |  |
+| `expires_at` | yes | type="string" |  |
+| `failure` | yes | anyOf=type="string"; minLength=1 \| type="null" |  |
+| `file_count` | yes | type="integer"; minimum=1; maximum=10000 |  |
+| `format` | yes | type="string"; const="riverhog-retrieval-plan/v1" |  |
+| `id` | yes | type="string" |  |
+| `lease_seconds` | yes | type="integer" |  |
+| `ready_at` | yes | anyOf=type="string" \| type="null" |  |
+| `requires_restore` | yes | type="boolean" |  |
+| `restore_policy` | yes | type="string"; enum=["allow","never"] |  |
+| `state` | yes | type="string"; enum=["planning","ready","consumed","expired","failed"] |  |
 
-## Complete owned contract
+### Progression, limits, and lifecycle
+
+| Dimension | Unit | Policy | Bounds or reason |
+|---|---|---|---|
+| length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
+| value | schema-value | `contract_max` | maximum=10000, minimum=1, reason=schema-maximum |
+
+## Governing policies
+
+- `compatibility/http-api/v1`
+- `extent-rule/schema-bound/v1`
+
+## Evidence
+
+### Qualification
+
+- `make operation-qualification`
+- `make compose-smoke`
+
+### Executable sources
+
+- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
+- `openapi:riverhog` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+
+### Machine authority
+
+- `/external_contract/http_openapi/riverhog/components/schemas/RetrievalPlanOut`
+
+### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 

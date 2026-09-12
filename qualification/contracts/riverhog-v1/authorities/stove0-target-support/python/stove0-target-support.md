@@ -4,6 +4,8 @@
 
 <!-- contract-element: python:stove0-target-support:stove0-target-support:3b93c1aeb1 -->
 
+Exact externally visible contract owned by this semantic dossier.
+
 | Audit field | Value |
 |---|---|
 | Authority | `stove0-target-support` |
@@ -12,30 +14,35 @@
 | Contract elements | 1 |
 | Extent decisions | 0 |
 
-## Machine authority
-
-- `/external_contract/python/24`
-
-## Effective policies
-
-- `compatibility/python-api/v1`
-
-## Executable sources and proof
-
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `python:stove0-target-support` — `reference/stove0/packages/target-support/src/stove0_target_support/__init__.py::<module>`
-- Proof: `make dist-smoke`
-- Proof: `make build`
-
-## Contract summary
+## External contract
 
 | Field | Shape |
 |---|---|
 | `distribution` | "stove0-target-support" |
-| `exports` | object (73 fields) |
+| `exports` | additional keys=`ARTIFACT_ID_PATTERN`, `AcceptedTargetJob`, `DEFAULT_TERMINAL_STATE_RETENTION_SECONDS`, `EFFECT_RECEIPT_FORMAT`, `EFFECT_TARGET_PROTOCOL`, `EffectPlan`, `EffectPlanPayload`, `ExternalEffectReceipt`, `ExternalEffectReceiptPayload`, `InputArtifact`, `InputArtifactContract`, `InputDisposition`, `IntentSemanticValidator`, `JSON_SCHEMA_ONLY_SEMANTIC_PROFILE`, `JobExecutor`, `OperationContract`, `OperationContractPayload`, `OutputArtifact`, `OutputArtifactContract`, `OutputCollectionRef`, `PersistentTargetService`, `SHA256_PATTERN`, `SemanticId`, `Sha256`, `TARGET_CONFORMANCE_RESULT`, `TARGET_HTTP_OPERATIONS`, `TARGET_SCHEMA_BUNDLE_FORMAT`, `TARGET_TERMINAL_STATE_RETENTION_ENV`, `TRANSFORM_TARGET_PROTOCOL`, `TargetClient`, `TargetCollectionPublication`, `TargetConformanceCase`, `TargetConformanceResult`, `TargetContract`, `TargetContractPayload`, `TargetDeclaration`, `TargetEffectCommitUncertain`, `TargetExecutionCanceled`, `TargetExecutionEvidence`, `TargetExecutionFailure`, `TargetExecutionInapplicable`, `TargetExecutionRuntime`, `TargetExecutionSession`, `TargetFailure`, `TargetHttpBinding`, `TargetHttpResponse`, `TargetInapplicable`, `TargetJobDeclaration`, `TargetJobRequest`, `TargetJobState`, `TargetJobStatus`, `TargetOperationSupport`, `TargetPlan`, `TargetPreflightRequest`, `TargetPreflightResponse`, `TargetProgress`, `TargetProtocol`, `TargetProtocolModel`, `TargetResultKind`, `TargetRuntimeAuthority`, `TargetService`, `TargetServiceError`, `TransformPlan`, `TransformPlanPayload`, `WorkspaceAssurance`, `canonical_json_bytes`, `canonical_json_sha256`, `conformance_report`, `target_schema_bundle`, `terminal_state_retention_seconds`, `validate_declaration_against_operation`, `validate_preflight_response_against_request`, `validate_status_against_request` |
 | `module` | "stove0_target_support" |
 
-## Complete owned contract
+## Governing policies
+
+- `compatibility/python-api/v1`
+
+## Evidence
+
+### Qualification
+
+- `make dist-smoke`
+- `make build`
+
+### Executable sources
+
+- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
+- `python:stove0-target-support` — `reference/stove0/packages/target-support/src/stove0_target_support/__init__.py::<module>`
+
+### Machine authority
+
+- `/external_contract/python/24`
+
+### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 

@@ -4,6 +4,8 @@
 
 <!-- contract-element: release:release:release-platforms:d8a16a7667 -->
 
+Exact externally visible contract owned by this semantic dossier.
+
 | Audit field | Value |
 |---|---|
 | Authority | `release` |
@@ -12,29 +14,34 @@
 | Contract elements | 1 |
 | Extent decisions | 0 |
 
-## Machine authority
-
-- `/external_contract/release/platforms`
-
-## Effective policies
-
-- `compatibility/components/v1`
-
-## Executable sources and proof
-
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `release:release.toml` — `release.toml`
-- Proof: `make release-check`
-- Proof: `make build`
-
-## Contract summary
+## External contract
 
 | Field | Shape |
 |---|---|
-| `end_user_artifacts` | array (3 items) |
-| `runtime_images` | array (1 items) |
+| `end_user_artifacts` | ["linux-x64","macos-arm64","windows-x64"] |
+| `runtime_images` | ["linux/amd64"] |
 
-## Complete owned contract
+## Governing policies
+
+- `compatibility/components/v1`
+
+## Evidence
+
+### Qualification
+
+- `make release-check`
+- `make build`
+
+### Executable sources
+
+- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
+- `release:release.toml` — `release.toml`
+
+### Machine authority
+
+- `/external_contract/release/platforms`
+
+### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 

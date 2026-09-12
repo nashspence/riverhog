@@ -4,6 +4,8 @@
 
 <!-- contract-element: http:stove0:schemas-coordinationcollectionresult:63aad8c924 -->
 
+Parent-visible collection produced by the coordinator's actual join leaf.
+
 | Audit field | Value |
 |---|---|
 | Authority | `stove0` |
@@ -12,36 +14,7 @@
 | Contract elements | 1 |
 | Extent decisions | 3 |
 
-## Machine authority
-
-- `/external_contract/http_openapi/stove0/components/schemas/CoordinationCollectionResult`
-
-## Effective policies
-
-- `compatibility/http-api/v1`
-- `extent-rule/schema-bound/v1`
-
-## Executable sources and proof
-
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `openapi:stove0` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
-- Proof: `make operation-qualification`
-- Proof: `make compose-smoke`
-
-## Referenced contract dossiers
-
-- [schemas: ArtifactSelectionRef](schemas-artifactselectionref.md)
-- [schemas: CollectionRootRef](schemas-collectionrootref.md)
-
-## Extent decisions
-
-| Dimension | Unit | Policy | Bounds/reason |
-|---|---|---|---|
-| length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
-| length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
-| length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
-
-## Contract summary
+## External contract
 
 - `title`: CoordinationCollectionResult
 - `description`: Parent-visible collection produced by the coordinator's actual join leaf.
@@ -51,13 +24,49 @@
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| `derivation_sha256` | yes | string |  |
-| `join_settlement_sha256` | yes | string |  |
+| `derivation_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| `join_settlement_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 | `output_collection` | yes | #/components/schemas/CollectionRootRef |  |
 | `output_selection` | yes | #/components/schemas/ArtifactSelectionRef |  |
-| `producer_work_id` | yes | string |  |
+| `producer_work_id` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 
-## Complete owned contract
+### Progression, limits, and lifecycle
+
+| Dimension | Unit | Policy | Bounds or reason |
+|---|---|---|---|
+| length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
+| length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
+| length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
+
+## Maintained corroboration
+
+### Referenced contract dossiers
+
+- [schemas: ArtifactSelectionRef](schemas-artifactselectionref.md)
+- [schemas: CollectionRootRef](schemas-collectionrootref.md)
+
+## Governing policies
+
+- `compatibility/http-api/v1`
+- `extent-rule/schema-bound/v1`
+
+## Evidence
+
+### Qualification
+
+- `make operation-qualification`
+- `make compose-smoke`
+
+### Executable sources
+
+- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
+- `openapi:stove0` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+
+### Machine authority
+
+- `/external_contract/http_openapi/stove0/components/schemas/CoordinationCollectionResult`
+
+### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 

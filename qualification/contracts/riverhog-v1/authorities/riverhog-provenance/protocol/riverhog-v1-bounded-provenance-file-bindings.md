@@ -4,6 +4,8 @@
 
 <!-- contract-element: protocol:riverhog-provenance:riverhog-v1-bounded-provenance-file-bindings:00ab173f22 -->
 
+Exact externally visible contract owned by this semantic dossier.
+
 | Audit field | Value |
 |---|---|
 | Authority | `riverhog-provenance` |
@@ -12,34 +14,7 @@
 | Contract elements | 1 |
 | Extent decisions | 4 |
 
-## Machine authority
-
-- `/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1schemas~1riverhog-provenance-bindings-v1.schema.json`
-
-## Effective policies
-
-- `compatibility/components/v1`
-- `extent-rule/bounded-segment/v1`
-- `extent-rule/no-semantic-maximum/v1`
-- `extent-rule/schema-bound/v1`
-
-## Executable sources and proof
-
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `protocol:https://nashspence.github.io/riverhog/v1/schemas/riverhog-provenance-bindings-v1.schema.json` — `packages/riverhog-provenance/src/riverhog_provenance/schemas/riverhog-provenance-bindings-v1.schema.json`
-- Proof: `make dist-smoke`
-- Proof: `make build`
-
-## Extent decisions
-
-| Dimension | Unit | Policy | Bounds/reason |
-|---|---|---|---|
-| value | schema-value | `operational_policy` | maximum=None, reason=no-declared-semantic-maximum |
-| length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
-| cardinality | items | `segmented_no_total_max` | maximum=512, minimum=1, reason=bounded-provenance-binding-volume |
-| value | schema-value | `operational_policy` | maximum=None, reason=no-declared-semantic-maximum |
-
-## Contract summary
+## External contract
 
 - `$id`: https://nashspence.github.io/riverhog/v1/schemas/riverhog-provenance-bindings-v1.schema.json
 - `title`: Riverhog v1 bounded provenance file bindings
@@ -49,18 +24,50 @@
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| `files` | yes | array |  |
-| `first_file_order` | yes | integer |  |
-| `schema` | yes | object (1 fields) |  |
+| `files` | yes | type="array"; minItems=1; maxItems=512; items=(#/$defs/file); additional keys=`x-riverhog-extent` |  |
+| `first_file_order` | yes | type="integer"; minimum=0 |  |
+| `schema` | yes | const="riverhog-provenance-bindings/v1" |  |
 
 ### Definitions
 
 | Definition | Shape |
 |---|---|
-| `file` | object |
-| `sha256` | string |
+| `file` | type="object"; fields=`bytes`, `current_state_id`, `journal_id`, `omission_reason`, `path`, `sha256`, `status`; oneOf=fields=`status`; additional keys=`not`, `required` \| fields=`status`; additional keys=`not`, `required`; additional keys=`additionalProperties`, `required` |
+| `sha256` | type="string"; pattern="^[0-9a-f]{64}$" |
 
-## Complete owned contract
+### Progression, limits, and lifecycle
+
+| Dimension | Unit | Policy | Bounds or reason |
+|---|---|---|---|
+| value | schema-value | `operational_policy` | maximum=None, reason=no-declared-semantic-maximum |
+| length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
+| cardinality | items | `segmented_no_total_max` | maximum=512, minimum=1, reason=bounded-provenance-binding-volume |
+| value | schema-value | `operational_policy` | maximum=None, reason=no-declared-semantic-maximum |
+
+## Governing policies
+
+- `compatibility/components/v1`
+- `extent-rule/bounded-segment/v1`
+- `extent-rule/no-semantic-maximum/v1`
+- `extent-rule/schema-bound/v1`
+
+## Evidence
+
+### Qualification
+
+- `make dist-smoke`
+- `make build`
+
+### Executable sources
+
+- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
+- `protocol:https://nashspence.github.io/riverhog/v1/schemas/riverhog-provenance-bindings-v1.schema.json` — `packages/riverhog-provenance/src/riverhog_provenance/schemas/riverhog-provenance-bindings-v1.schema.json`
+
+### Machine authority
+
+- `/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1schemas~1riverhog-provenance-bindings-v1.schema.json`
+
+### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 

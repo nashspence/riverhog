@@ -4,6 +4,8 @@
 
 <!-- contract-element: python:riverhog-storage-adapter-support:riverhog-storage-adapter-support:2ea2497644 -->
 
+Exact externally visible contract owned by this semantic dossier.
+
 | Audit field | Value |
 |---|---|
 | Authority | `riverhog-storage-adapter-support` |
@@ -12,30 +14,35 @@
 | Contract elements | 1 |
 | Extent decisions | 0 |
 
-## Machine authority
-
-- `/external_contract/python/12`
-
-## Effective policies
-
-- `compatibility/python-api/v1`
-
-## Executable sources and proof
-
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `python:riverhog-storage-adapter-support` — `packages/riverhog-storage-adapter-support/src/riverhog_storage_adapter_support/__init__.py::<module>`
-- Proof: `make dist-smoke`
-- Proof: `make build`
-
-## Contract summary
+## External contract
 
 | Field | Shape |
 |---|---|
 | `distribution` | "riverhog-storage-adapter-support" |
-| `exports` | object (21 fields) |
+| `exports` | additional keys=`DEFAULT_MAXIMUM_HEADER_BYTES`, `FRAMED_BODY_FORMAT`, `FRAMED_BODY_MEDIA_TYPE`, `FRAMED_STORAGE_ADAPTER_HTTP_PATHS`, `FramedBodyError`, `FramedContent`, `STORAGE_ADAPTER_CONFORMANCE_RESULT`, `STORAGE_ADAPTER_HTTP_OPERATIONS`, `STORAGE_ADAPTER_SCHEMA_BUNDLE_FORMAT`, `StorageAdapterClient`, `StorageAdapterConformanceResult`, `StorageAdapterHttpBinding`, `StorageAdapterHttpResponse`, `StorageAdapterProtocolError`, `StorageAdapterServiceError`, `framed_body`, `framed_body_length`, `framed_declaration_bytes`, `parse_framed_stream`, `run_storage_adapter_conformance`, `storage_adapter_schema_bundle` |
 | `module` | "riverhog_storage_adapter_support" |
 
-## Complete owned contract
+## Governing policies
+
+- `compatibility/python-api/v1`
+
+## Evidence
+
+### Qualification
+
+- `make dist-smoke`
+- `make build`
+
+### Executable sources
+
+- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
+- `python:riverhog-storage-adapter-support` — `packages/riverhog-storage-adapter-support/src/riverhog_storage_adapter_support/__init__.py::<module>`
+
+### Machine authority
+
+- `/external_contract/python/12`
+
+### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 

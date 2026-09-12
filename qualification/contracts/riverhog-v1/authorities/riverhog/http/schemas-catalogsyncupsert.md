@@ -4,6 +4,8 @@
 
 <!-- contract-element: http:riverhog:schemas-catalogsyncupsert:14fa1be7c8 -->
 
+Exact externally visible contract owned by this semantic dossier.
+
 | Audit field | Value |
 |---|---|
 | Authority | `riverhog` |
@@ -12,30 +14,29 @@
 | Contract elements | 1 |
 | Extent decisions | 7 |
 
-## Machine authority
+## External contract
 
-- `/external_contract/http_openapi/riverhog/components/schemas/CatalogSyncUpsert`
+- `title`: CatalogSyncUpsert
+- `type`: object
 
-## Effective policies
+### Fields
 
-- `compatibility/http-api/v1`
-- `extent-rule/schema-bound/v1`
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| `archive_root_sha256` | yes | type="string"; minLength=64; maxLength=64; pattern="^[0-9a-f]{64}$" |  |
+| `collection_id` | yes | #/components/schemas/CollectionId |  |
+| `content_identity` | yes | type="string"; minLength=64; maxLength=64; pattern="^[0-9a-f]{64}$" |  |
+| `description` | yes | anyOf=#/components/schemas/CollectionDescription \| type="null" |  |
+| `description_identity` | yes | type="string"; minLength=64; maxLength=64; pattern="^[0-9a-f]{64}$" |  |
+| `description_revision` | yes | type="integer"; minimum=0; maximum=9007199254740991 |  |
+| `operation` | no | type="string"; const="upsert" |  |
+| `revision` | yes | type="string"; minLength=1; maxLength=19; pattern="^(?:[1-9][0-9]{0,17}\|[1-8][0-9]{18})$" |  |
+| `tag_revision` | yes | type="integer"; minimum=1; maximum=9007199254740991 |  |
+| `tag_set_identity` | yes | type="string"; minLength=64; maxLength=64; pattern="^[0-9a-f]{64}$" |  |
 
-## Executable sources and proof
+### Progression, limits, and lifecycle
 
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `openapi:riverhog` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
-- Proof: `make operation-qualification`
-- Proof: `make compose-smoke`
-
-## Referenced contract dossiers
-
-- [schemas: CollectionDescription](schemas-collectiondescription.md)
-- [schemas: CollectionId](schemas-collectionid.md)
-
-## Extent decisions
-
-| Dimension | Unit | Policy | Bounds/reason |
+| Dimension | Unit | Policy | Bounds or reason |
 |---|---|---|---|
 | length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
 | length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
@@ -45,27 +46,35 @@
 | value | schema-value | `contract_max` | maximum=9007199254740991, minimum=1, reason=schema-maximum |
 | length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
 
-## Contract summary
+## Maintained corroboration
 
-- `title`: CatalogSyncUpsert
-- `type`: object
+### Referenced contract dossiers
 
-### Fields
+- [schemas: CollectionDescription](schemas-collectiondescription.md)
+- [schemas: CollectionId](schemas-collectionid.md)
 
-| Field | Required | Shape | Description |
-|---|---:|---|---|
-| `archive_root_sha256` | yes | string |  |
-| `collection_id` | yes | #/components/schemas/CollectionId |  |
-| `content_identity` | yes | string |  |
-| `description` | yes | object (1 fields) |  |
-| `description_identity` | yes | string |  |
-| `description_revision` | yes | integer |  |
-| `operation` | no | string |  |
-| `revision` | yes | string |  |
-| `tag_revision` | yes | integer |  |
-| `tag_set_identity` | yes | string |  |
+## Governing policies
 
-## Complete owned contract
+- `compatibility/http-api/v1`
+- `extent-rule/schema-bound/v1`
+
+## Evidence
+
+### Qualification
+
+- `make operation-qualification`
+- `make compose-smoke`
+
+### Executable sources
+
+- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
+- `openapi:riverhog` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+
+### Machine authority
+
+- `/external_contract/http_openapi/riverhog/components/schemas/CatalogSyncUpsert`
+
+### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 

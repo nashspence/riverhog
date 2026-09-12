@@ -4,6 +4,8 @@
 
 <!-- contract-element: http:riverhog:schemas-collectiondescription:12d7c3bc08 -->
 
+Exact externally visible contract owned by this semantic dossier.
+
 | Audit field | Value |
 |---|---|
 | Authority | `riverhog` |
@@ -12,34 +14,39 @@
 | Contract elements | 1 |
 | Extent decisions | 2 |
 
-## Machine authority
+## External contract
 
-- `/external_contract/http_openapi/riverhog/components/schemas/CollectionDescription`
+- `type`: string
 
-## Effective policies
+### Progression, limits, and lifecycle
 
-- `compatibility/http-api/v1`
-- `extent-rule/schema-bound/v1`
-
-## Executable sources and proof
-
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `openapi:riverhog` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
-- Proof: `make operation-qualification`
-- Proof: `make compose-smoke`
-
-## Extent decisions
-
-| Dimension | Unit | Policy | Bounds/reason |
+| Dimension | Unit | Policy | Bounds or reason |
 |---|---|---|---|
 | encoded-size | bytes | `contract_max` | maximum=32768, reason=bounded-human-authored-catalog-description |
 | length | characters | `contract_max` | maximum=32768, minimum=1, reason=schema-maximum |
 
-## Contract summary
+## Governing policies
 
-- `type`: string
+- `compatibility/http-api/v1`
+- `extent-rule/schema-bound/v1`
 
-## Complete owned contract
+## Evidence
+
+### Qualification
+
+- `make operation-qualification`
+- `make compose-smoke`
+
+### Executable sources
+
+- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
+- `openapi:riverhog` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+
+### Machine authority
+
+- `/external_contract/http_openapi/riverhog/components/schemas/CollectionDescription`
+
+### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 

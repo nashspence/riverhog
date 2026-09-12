@@ -4,6 +4,8 @@
 
 <!-- contract-element: durable-state:durable-state:durable-state-contract:6411199bcc -->
 
+Exact externally visible contract owned by this semantic dossier.
+
 | Audit field | Value |
 |---|---|
 | Authority | `durable-state` |
@@ -12,25 +14,30 @@
 | Contract elements | 1 |
 | Extent decisions | 0 |
 
-## Machine authority
-
-- `/external_contract/durable_state/schema`
-
-## Effective policies
-
-- `compatibility/components/v1`
-
-## Executable sources and proof
-
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- Proof: `make release-check`
-- Proof: `make database-qualification`
-
-## Contract summary
+## External contract
 
 - Shape: "riverhog-durable-state-inventory/v1"
 
-## Complete owned contract
+## Governing policies
+
+- `compatibility/components/v1`
+
+## Evidence
+
+### Qualification
+
+- `make release-check`
+- `make database-qualification`
+
+### Executable sources
+
+- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
+
+### Machine authority
+
+- `/external_contract/durable_state/schema`
+
+### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 

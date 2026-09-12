@@ -4,6 +4,8 @@
 
 <!-- contract-element: http:riverhog:schemas-collectionuploadrawdigestprogressdocument:7173619fcf -->
 
+Exact externally visible contract owned by this semantic dossier.
+
 | Audit field | Value |
 |---|---|
 | Authority | `riverhog` |
@@ -12,22 +14,7 @@
 | Contract elements | 1 |
 | Extent decisions | 0 |
 
-## Machine authority
-
-- `/external_contract/http_openapi/riverhog/components/schemas/CollectionUploadRawDigestProgressDocument`
-
-## Effective policies
-
-- `compatibility/http-api/v1`
-
-## Executable sources and proof
-
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `openapi:riverhog` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
-- Proof: `make operation-qualification`
-- Proof: `make compose-smoke`
-
-## Contract summary
+## External contract
 
 - `title`: CollectionUploadRawDigestProgressDocument
 - `type`: object
@@ -36,12 +23,32 @@
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| `accepted_parts` | yes | integer |  |
-| `complete` | yes | boolean |  |
-| `expected_parts` | yes | integer |  |
-| `path` | yes | string |  |
+| `accepted_parts` | yes | type="integer"; minimum=0 |  |
+| `complete` | yes | type="boolean" |  |
+| `expected_parts` | yes | type="integer"; minimum=1 |  |
+| `path` | yes | type="string" |  |
 
-## Complete owned contract
+## Governing policies
+
+- `compatibility/http-api/v1`
+
+## Evidence
+
+### Qualification
+
+- `make operation-qualification`
+- `make compose-smoke`
+
+### Executable sources
+
+- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
+- `openapi:riverhog` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+
+### Machine authority
+
+- `/external_contract/http_openapi/riverhog/components/schemas/CollectionUploadRawDigestProgressDocument`
+
+### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 

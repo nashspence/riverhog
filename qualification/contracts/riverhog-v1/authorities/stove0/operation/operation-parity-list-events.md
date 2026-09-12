@@ -4,6 +4,8 @@
 
 <!-- contract-element: operation:stove0:operation-parity-list-events:77134fed8b -->
 
+Exact externally visible contract owned by this semantic dossier.
+
 | Audit field | Value |
 |---|---|
 | Authority | `stove0` |
@@ -12,28 +14,7 @@
 | Contract elements | 1 |
 | Extent decisions | 0 |
 
-## Machine authority
-
-- `/external_contract/operations/131`
-
-## Effective policies
-
-- `compatibility/cli/v1`
-- `compatibility/components/v1`
-- `compatibility/http-api/v1`
-
-## Executable sources and proof
-
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `operations:operation-matrix` — `scripts/operation_qualification.py::operation_matrix`
-- Proof: `make operation-qualification`
-
-## Related interface records
-
-- [GET /v1/events](../http/get-v1-events.md)
-- [stove0 event list](../cli/stove0-event-list.md)
-
-## Contract summary
+## External contract
 
 | Concern | Contract |
 |---|---|
@@ -48,7 +29,35 @@
 | `read_collection` | {"cursor_parameter": "after", "kind": "cursor-feed", "limit_parameter": "limit"} |
 | `response_authority` | operator-projection |
 
-## Complete owned contract
+## Maintained corroboration
+
+### Related interface records
+
+- [GET /v1/events](../http/get-v1-events.md)
+- [stove0 event list](../cli/stove0-event-list.md)
+
+## Governing policies
+
+- `compatibility/cli/v1`
+- `compatibility/components/v1`
+- `compatibility/http-api/v1`
+
+## Evidence
+
+### Qualification
+
+- `make operation-qualification`
+
+### Executable sources
+
+- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
+- `operations:operation-matrix` — `scripts/operation_qualification.py::operation_matrix`
+
+### Machine authority
+
+- `/external_contract/operations/131`
+
+### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 

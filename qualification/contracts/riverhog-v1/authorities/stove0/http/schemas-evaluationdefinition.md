@@ -4,6 +4,8 @@
 
 <!-- contract-element: http:stove0:schemas-evaluationdefinition:29c20edb8a -->
 
+Exact externally visible contract owned by this semantic dossier.
+
 | Audit field | Value |
 |---|---|
 | Authority | `stove0` |
@@ -12,39 +14,7 @@
 | Contract elements | 1 |
 | Extent decisions | 3 |
 
-## Machine authority
-
-- `/external_contract/http_openapi/stove0/components/schemas/EvaluationDefinition`
-
-## Effective policies
-
-- `compatibility/http-api/v1`
-- `extent-rule/no-semantic-maximum/v1`
-- `extent-rule/schema-bound/v1`
-
-## Executable sources and proof
-
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `openapi:stove0` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
-- Proof: `make operation-qualification`
-- Proof: `make compose-smoke`
-
-## Referenced contract dossiers
-
-- [schemas: CollectionRootRef](schemas-collectionrootref.md)
-- [schemas: EvaluationMatrix](schemas-evaluationmatrix.md)
-- [schemas: JsonValue](schemas-jsonvalue.md)
-- [schemas: RecipeRef](schemas-reciperef.md)
-
-## Extent decisions
-
-| Dimension | Unit | Policy | Bounds/reason |
-|---|---|---|---|
-| cardinality | entries | `operational_policy` | maximum=None, reason=no-declared-semantic-maximum |
-| length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
-| cardinality | items | `operational_policy` | maximum=None, reason=no-declared-semantic-maximum |
-
-## Contract summary
+## External contract
 
 - `title`: EvaluationDefinition
 - `type`: object
@@ -53,15 +23,54 @@
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| `common_intent` | no | object |  |
-| `evaluation_id` | yes | string |  |
-| `format` | no | string |  |
-| `inputs` | yes | array |  |
+| `common_intent` | no | type="object"; additional keys=`additionalProperties` |  |
+| `evaluation_id` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| `format` | no | type="string"; const="stove0-evaluation-definition/v1" |  |
+| `inputs` | yes | type="array"; minItems=1; items=(#/components/schemas/CollectionRootRef) |  |
 | `matrix` | yes | #/components/schemas/EvaluationMatrix |  |
-| `purpose` | no | string |  |
+| `purpose` | no | type="string"; enum=["trial","evaluation"] |  |
 | `recipe` | yes | #/components/schemas/RecipeRef |  |
 
-## Complete owned contract
+### Progression, limits, and lifecycle
+
+| Dimension | Unit | Policy | Bounds or reason |
+|---|---|---|---|
+| cardinality | entries | `operational_policy` | maximum=None, reason=no-declared-semantic-maximum |
+| length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
+| cardinality | items | `operational_policy` | maximum=None, reason=no-declared-semantic-maximum |
+
+## Maintained corroboration
+
+### Referenced contract dossiers
+
+- [schemas: CollectionRootRef](schemas-collectionrootref.md)
+- [schemas: EvaluationMatrix](schemas-evaluationmatrix.md)
+- [schemas: JsonValue](schemas-jsonvalue.md)
+- [schemas: RecipeRef](schemas-reciperef.md)
+
+## Governing policies
+
+- `compatibility/http-api/v1`
+- `extent-rule/no-semantic-maximum/v1`
+- `extent-rule/schema-bound/v1`
+
+## Evidence
+
+### Qualification
+
+- `make operation-qualification`
+- `make compose-smoke`
+
+### Executable sources
+
+- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
+- `openapi:stove0` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+
+### Machine authority
+
+- `/external_contract/http_openapi/stove0/components/schemas/EvaluationDefinition`
+
+### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 

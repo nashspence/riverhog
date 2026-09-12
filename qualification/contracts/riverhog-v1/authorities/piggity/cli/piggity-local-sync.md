@@ -4,6 +4,8 @@
 
 <!-- contract-element: cli:piggity:piggity-local-sync:e57cc3d544 -->
 
+Exact externally visible contract owned by this semantic dossier.
+
 | Audit field | Value |
 |---|---|
 | Authority | `piggity` |
@@ -12,24 +14,29 @@
 | Contract elements | 1 |
 | Extent decisions | 3 |
 
-## Machine authority
+## External contract
 
-- `/external_contract/cli/piggity/commands/local/commands/sync/name`
-- `/external_contract/cli/piggity/commands/local/commands/sync/parameters`
+- Parser name: `sync`
 
-## Effective policies
+### Parameters
 
-- `compatibility/cli/v1`
-- `extent-rule/schema-bound/v1`
+| Name | Kind | Required | Type | Options |
+|---|---|---:|---|---|
+| `wait` | TyperOption | no | {'class': 'typer._click.types.BoolParamType', 'name': 'boolean'} | --wait |
+| `restore_policy` | TyperOption | no | {'class': 'typer._click.types.StringParamType', 'name': 'text'} | --restore-policy |
+| `json_mode` | TyperOption | no | {'class': 'typer._click.types.BoolParamType', 'name': 'boolean'} | --json |
 
-## Executable sources and proof
+### Progression, limits, and lifecycle
 
-- `cli:piggity` — `reference/riverhog/applications/piggity/src/piggity/main.py::<module>`
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- Proof: `make dist-smoke`
-- Proof: `make operation-qualification`
+| Dimension | Unit | Policy | Bounds or reason |
+|---|---|---|---|
+| cardinality | values-per-occurrence | `fixed` | maximum=1, minimum=1, reason=fixed-command-argument-arity |
+| cardinality | values-per-occurrence | `fixed` | maximum=1, minimum=1, reason=fixed-command-argument-arity |
+| cardinality | values-per-occurrence | `fixed` | maximum=1, minimum=1, reason=fixed-command-argument-arity |
 
-## Related interface records
+## Maintained corroboration
+
+### Related interface records
 
 - [Operation parity: get_portable_collection_inventory](../../riverhog/operation/operation-parity-get-portable-collection-inventory.md)
 - [Operation parity: get_collection](../../riverhog/operation/operation-parity-get-collection.md)
@@ -43,27 +50,29 @@
 - [Operation parity: advance_retrieval_plan](../../riverhog/operation/operation-parity-advance-retrieval-plan.md)
 - [Operation parity: list_retrieval_plan_files](../../riverhog/operation/operation-parity-list-retrieval-plan-files.md)
 
-## Extent decisions
+## Governing policies
 
-| Dimension | Unit | Policy | Bounds/reason |
-|---|---|---|---|
-| cardinality | values-per-occurrence | `fixed` | maximum=1, minimum=1, reason=fixed-command-argument-arity |
-| cardinality | values-per-occurrence | `fixed` | maximum=1, minimum=1, reason=fixed-command-argument-arity |
-| cardinality | values-per-occurrence | `fixed` | maximum=1, minimum=1, reason=fixed-command-argument-arity |
+- `compatibility/cli/v1`
+- `extent-rule/schema-bound/v1`
 
-## Contract summary
+## Evidence
 
-- Parser name: `sync`
+### Qualification
 
-### Parameters
+- `make dist-smoke`
+- `make operation-qualification`
 
-| Name | Kind | Required | Type | Options |
-|---|---|---:|---|---|
-| `wait` | TyperOption | no | {'class': 'typer._click.types.BoolParamType', 'name': 'boolean'} | --wait |
-| `restore_policy` | TyperOption | no | {'class': 'typer._click.types.StringParamType', 'name': 'text'} | --restore-policy |
-| `json_mode` | TyperOption | no | {'class': 'typer._click.types.BoolParamType', 'name': 'boolean'} | --json |
+### Executable sources
 
-## Complete owned contract
+- `cli:piggity` — `reference/riverhog/applications/piggity/src/piggity/main.py::<module>`
+- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
+
+### Machine authority
+
+- `/external_contract/cli/piggity/commands/local/commands/sync/name`
+- `/external_contract/cli/piggity/commands/local/commands/sync/parameters`
+
+### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 

@@ -4,6 +4,8 @@
 
 <!-- contract-element: http:stove0:post-v1-admission-policies-policy-id-backfill:bcad9123a8 -->
 
+Backfill Admission Policy
+
 | Audit field | Value |
 |---|---|
 | Authority | `stove0` |
@@ -12,31 +14,7 @@
 | Contract elements | 1 |
 | Extent decisions | 0 |
 
-## Machine authority
-
-- `/external_contract/http_openapi/stove0/paths/~1v1~1admission-policies~1{policy_id}:backfill/post`
-
-## Effective policies
-
-- `compatibility/http-api/v1`
-
-## Executable sources and proof
-
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `openapi:stove0` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
-- Proof: `make operation-qualification`
-- Proof: `make compose-smoke`
-
-## Related interface records
-
-- [Operation parity: backfill_admission_policy](../operation/operation-parity-backfill-admission-policy.md)
-
-## Referenced contract dossiers
-
-- [schemas: AdmissionPolicyStatus](schemas-admissionpolicystatus.md)
-- [schemas: ErrorResponse](schemas-errorresponse.md)
-
-## Contract summary
+## External contract
 
 - `operationId`: backfill_admission_policy
 - `summary`: Backfill Admission Policy
@@ -45,7 +23,7 @@
 
 | Name | In | Required | Schema |
 |---|---|---:|---|
-| `policy_id` | path | yes | string |
+| `policy_id` | path | yes | type="string" |
 
 ### Responses
 
@@ -57,7 +35,38 @@
 | `403` | Forbidden |
 | `500` | Internal Server Error |
 
-## Complete owned contract
+## Maintained corroboration
+
+### Related interface records
+
+- [Operation parity: backfill_admission_policy](../operation/operation-parity-backfill-admission-policy.md)
+
+### Referenced contract dossiers
+
+- [schemas: AdmissionPolicyStatus](schemas-admissionpolicystatus.md)
+- [schemas: ErrorResponse](schemas-errorresponse.md)
+
+## Governing policies
+
+- `compatibility/http-api/v1`
+
+## Evidence
+
+### Qualification
+
+- `make operation-qualification`
+- `make compose-smoke`
+
+### Executable sources
+
+- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
+- `openapi:stove0` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+
+### Machine authority
+
+- `/external_contract/http_openapi/stove0/paths/~1v1~1admission-policies~1{policy_id}:backfill/post`
+
+### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 

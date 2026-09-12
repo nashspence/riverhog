@@ -4,6 +4,8 @@
 
 <!-- contract-element: http:riverhog:schemas-collectiondeletionplanout:21e8fd2ce3 -->
 
+Exact externally visible contract owned by this semantic dossier.
+
 | Audit field | Value |
 |---|---|
 | Authority | `riverhog` |
@@ -12,41 +14,7 @@
 | Contract elements | 1 |
 | Extent decisions | 6 |
 
-## Machine authority
-
-- `/external_contract/http_openapi/riverhog/components/schemas/CollectionDeletionPlanOut`
-
-## Effective policies
-
-- `compatibility/http-api/v1`
-- `extent-rule/no-semantic-maximum/v1`
-- `extent-rule/schema-bound/v1`
-
-## Executable sources and proof
-
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `openapi:riverhog` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
-- Proof: `make operation-qualification`
-- Proof: `make compose-smoke`
-
-## Referenced contract dossiers
-
-- [schemas: CollectionDeletionArchiveCopyOut](schemas-collectiondeletionarchivecopyout.md)
-- [schemas: CollectionId](schemas-collectionid.md)
-- [schemas: RetirementClaimReferenceDocument](schemas-retirementclaimreferencedocument.md)
-
-## Extent decisions
-
-| Dimension | Unit | Policy | Bounds/reason |
-|---|---|---|---|
-| cardinality | items | `operational_policy` | maximum=None, reason=no-declared-semantic-maximum |
-| cardinality | items | `contract_max` | maximum=0, reason=state-conditioned-empty-set |
-| cardinality | items | `operational_policy` | maximum=None, reason=no-declared-semantic-maximum |
-| cardinality | items | `contract_max` | maximum=55, reason=bounded-diagnostic-sample-with-explicit-overflow-markers |
-| value | schema-value | `operational_policy` | maximum=None, reason=no-declared-semantic-maximum |
-| cardinality | entries | `operational_policy` | maximum=None, reason=no-declared-semantic-maximum |
-
-## Contract summary
+## External contract
 
 - `title`: CollectionDeletionPlanOut
 - `type`: object
@@ -55,24 +23,65 @@
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| `archive_copies` | yes | array |  |
-| `archive_object_count` | yes | integer |  |
-| `billing_note` | yes | string |  |
-| `blockers` | yes | array |  |
-| `bytes` | yes | integer |  |
-| `challenge` | yes | object (2 fields) |  |
+| `archive_copies` | yes | type="array"; items=(#/components/schemas/CollectionDeletionArchiveCopyOut) |  |
+| `archive_object_count` | yes | type="integer" |  |
+| `billing_note` | yes | type="string" |  |
+| `blockers` | yes | type="array"; maxItems=55; items=(type="string"); additional keys=`x-riverhog-extent` |  |
+| `bytes` | yes | type="integer" |  |
+| `challenge` | yes | anyOf=type="string" \| type="null" |  |
 | `collection_id` | yes | #/components/schemas/CollectionId |  |
-| `expires_at` | yes | string |  |
-| `file_count` | yes | integer |  |
-| `inventory_identity` | yes | string |  |
-| `metadata_rows` | yes | object |  |
-| `remote_storage_bytes` | yes | integer |  |
-| `retirement_claim` | no | object (1 fields) |  |
-| `status` | yes | string |  |
-| `upload_file_count` | yes | integer |  |
-| `warning` | yes | string |  |
+| `expires_at` | yes | type="string" |  |
+| `file_count` | yes | type="integer" |  |
+| `inventory_identity` | yes | type="string" |  |
+| `metadata_rows` | yes | type="object"; additional keys=`additionalProperties` |  |
+| `remote_storage_bytes` | yes | type="integer" |  |
+| `retirement_claim` | no | anyOf=#/components/schemas/RetirementClaimReferenceDocument \| type="null" |  |
+| `status` | yes | type="string"; enum=["ready","blocked","deleting"] |  |
+| `upload_file_count` | yes | type="integer" |  |
+| `warning` | yes | type="string" |  |
 
-## Complete owned contract
+### Progression, limits, and lifecycle
+
+| Dimension | Unit | Policy | Bounds or reason |
+|---|---|---|---|
+| cardinality | items | `operational_policy` | maximum=None, reason=no-declared-semantic-maximum |
+| cardinality | items | `contract_max` | maximum=0, reason=state-conditioned-empty-set |
+| cardinality | items | `operational_policy` | maximum=None, reason=no-declared-semantic-maximum |
+| cardinality | items | `contract_max` | maximum=55, reason=bounded-diagnostic-sample-with-explicit-overflow-markers |
+| value | schema-value | `operational_policy` | maximum=None, reason=no-declared-semantic-maximum |
+| cardinality | entries | `operational_policy` | maximum=None, reason=no-declared-semantic-maximum |
+
+## Maintained corroboration
+
+### Referenced contract dossiers
+
+- [schemas: CollectionDeletionArchiveCopyOut](schemas-collectiondeletionarchivecopyout.md)
+- [schemas: CollectionId](schemas-collectionid.md)
+- [schemas: RetirementClaimReferenceDocument](schemas-retirementclaimreferencedocument.md)
+
+## Governing policies
+
+- `compatibility/http-api/v1`
+- `extent-rule/no-semantic-maximum/v1`
+- `extent-rule/schema-bound/v1`
+
+## Evidence
+
+### Qualification
+
+- `make operation-qualification`
+- `make compose-smoke`
+
+### Executable sources
+
+- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
+- `openapi:riverhog` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+
+### Machine authority
+
+- `/external_contract/http_openapi/riverhog/components/schemas/CollectionDeletionPlanOut`
+
+### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 

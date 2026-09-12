@@ -4,6 +4,8 @@
 
 <!-- contract-element: http:riverhog:schemas-createorresumecollectionuploadsessionrequest:b45d70029f -->
 
+Exact externally visible contract owned by this semantic dossier.
+
 | Audit field | Value |
 |---|---|
 | Authority | `riverhog` |
@@ -12,41 +14,7 @@
 | Contract elements | 1 |
 | Extent decisions | 5 |
 
-## Machine authority
-
-- `/external_contract/http_openapi/riverhog/components/schemas/CreateOrResumeCollectionUploadSessionRequest`
-
-## Effective policies
-
-- `compatibility/http-api/v1`
-- `extent-rule/bounded-segment/v1`
-- `extent-rule/no-semantic-maximum/v1`
-- `extent-rule/schema-bound/v1`
-
-## Executable sources and proof
-
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `openapi:riverhog` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
-- Proof: `make operation-qualification`
-- Proof: `make compose-smoke`
-
-## Referenced contract dossiers
-
-- [schemas: ArchiveStoreName](schemas-archivestorename.md)
-- [schemas: CollectionDescription](schemas-collectiondescription.md)
-- [schemas: CollectionTag](schemas-collectiontag.md)
-
-## Extent decisions
-
-| Dimension | Unit | Policy | Bounds/reason |
-|---|---|---|---|
-| encoded-size | bytes | `contract_max` | maximum=4096, reason=bounded-lifecycle-event-context |
-| cardinality | entries | `operational_policy` | maximum=None, reason=no-declared-semantic-maximum |
-| length | characters | `contract_max` | maximum=200, minimum=1, reason=schema-maximum |
-| length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
-| cardinality | items | `segmented_no_total_max` | maximum=100, minimum=None, reason=bounded-upload-staging-step; collection-tag-set-is-unbounded |
-
-## Contract summary
+## External contract
 
 - `title`: CreateOrResumeCollectionUploadSessionRequest
 - `type`: object
@@ -55,18 +23,59 @@
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| `archive_store` | no | object (1 fields) |  |
-| `custody_mode` | no | string |  |
-| `description` | no | object (1 fields) |  |
-| `event_context` | no | object (2 fields) |  |
-| `idempotency_key` | yes | string |  |
-| `ingest_source` | no | object (2 fields) |  |
-| `initial_tag_set_identity` | yes | string |  |
-| `provenance_mode` | no | string |  |
-| `provenance_omission_reason` | no | object (2 fields) |  |
-| `tags` | no | array |  |
+| `archive_store` | no | anyOf=#/components/schemas/ArchiveStoreName \| type="null" |  |
+| `custody_mode` | no | type="string"; enum=["producer-retained","custody-transfer"] |  |
+| `description` | no | anyOf=#/components/schemas/CollectionDescription \| type="null" |  |
+| `event_context` | no | anyOf=type="object"; additional keys=`additionalProperties`, `x-riverhog-encoded-bytes-max`, `x-riverhog-extent` \| type="null" |  |
+| `idempotency_key` | yes | type="string"; minLength=1; maxLength=200; pattern="^\\S(?:[\\s\\S]*\\S)?$" |  |
+| `ingest_source` | no | anyOf=type="string" \| type="null" |  |
+| `initial_tag_set_identity` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| `provenance_mode` | no | type="string"; enum=["captured","omitted"] |  |
+| `provenance_omission_reason` | no | anyOf=type="string"; minLength=1; pattern="^\\S(?:[\\s\\S]*\\S)?$" \| type="null" |  |
+| `tags` | no | type="array"; maxItems=100; items=(#/components/schemas/CollectionTag); additional keys=`x-riverhog-extent` |  |
 
-## Complete owned contract
+### Progression, limits, and lifecycle
+
+| Dimension | Unit | Policy | Bounds or reason |
+|---|---|---|---|
+| encoded-size | bytes | `contract_max` | maximum=4096, reason=bounded-lifecycle-event-context |
+| cardinality | entries | `operational_policy` | maximum=None, reason=no-declared-semantic-maximum |
+| length | characters | `contract_max` | maximum=200, minimum=1, reason=schema-maximum |
+| length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
+| cardinality | items | `segmented_no_total_max` | maximum=100, minimum=None, reason=bounded-upload-staging-step; collection-tag-set-is-unbounded |
+
+## Maintained corroboration
+
+### Referenced contract dossiers
+
+- [schemas: ArchiveStoreName](schemas-archivestorename.md)
+- [schemas: CollectionDescription](schemas-collectiondescription.md)
+- [schemas: CollectionTag](schemas-collectiontag.md)
+
+## Governing policies
+
+- `compatibility/http-api/v1`
+- `extent-rule/bounded-segment/v1`
+- `extent-rule/no-semantic-maximum/v1`
+- `extent-rule/schema-bound/v1`
+
+## Evidence
+
+### Qualification
+
+- `make operation-qualification`
+- `make compose-smoke`
+
+### Executable sources
+
+- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
+- `openapi:riverhog` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+
+### Machine authority
+
+- `/external_contract/http_openapi/riverhog/components/schemas/CreateOrResumeCollectionUploadSessionRequest`
+
+### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 

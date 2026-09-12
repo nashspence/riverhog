@@ -4,6 +4,8 @@
 
 <!-- contract-element: boundary:repository:contract-projection-identity:5fc959cadf -->
 
+Exact externally visible contract owned by this semantic dossier.
+
 | Audit field | Value |
 |---|---|
 | Authority | `repository` |
@@ -12,27 +14,32 @@
 | Contract elements | 1 |
 | Extent decisions | 0 |
 
-## Machine authority
+## External contract
+
+- Shape: ["riverhog-contract-freeze/v1","v1"]
+
+## Governing policies
+
+- `boundary/frozen-authority/v1`
+
+## Evidence
+
+### Qualification
+
+- `make release-check`
+- `make build`
+
+### Executable sources
+
+- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
+- `release:release.toml` — `release.toml`
+
+### Machine authority
 
 - `/schema`
 - `/series`
 
-## Effective policies
-
-- `boundary/frozen-authority/v1`
-
-## Executable sources and proof
-
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `release:release.toml` — `release.toml`
-- Proof: `make release-check`
-- Proof: `make build`
-
-## Contract summary
-
-- Shape: array (2 items)
-
-## Complete owned contract
+### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 

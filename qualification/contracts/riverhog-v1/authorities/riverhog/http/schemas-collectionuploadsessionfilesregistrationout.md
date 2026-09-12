@@ -4,6 +4,8 @@
 
 <!-- contract-element: http:riverhog:schemas-collectionuploadsessionfilesregistrationout:ebe60d1b35 -->
 
+Exact externally visible contract owned by this semantic dossier.
+
 | Audit field | Value |
 |---|---|
 | Authority | `riverhog` |
@@ -12,37 +14,7 @@
 | Contract elements | 1 |
 | Extent decisions | 2 |
 
-## Machine authority
-
-- `/external_contract/http_openapi/riverhog/components/schemas/CollectionUploadSessionFilesRegistrationOut`
-
-## Effective policies
-
-- `compatibility/http-api/v1`
-- `extent-rule/no-semantic-maximum/v1`
-
-## Executable sources and proof
-
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `openapi:riverhog` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
-- Proof: `make operation-qualification`
-- Proof: `make compose-smoke`
-
-## Referenced contract dossiers
-
-- [schemas: ArchiveStoreName](schemas-archivestorename.md)
-- [schemas: CollectionId](schemas-collectionid.md)
-- [schemas: CollectionUploadFileOut](schemas-collectionuploadfileout.md)
-- [schemas: CollectionUploadVolumeSummaryDocument](schemas-collectionuploadvolumesummarydocument.md)
-
-## Extent decisions
-
-| Dimension | Unit | Policy | Bounds/reason |
-|---|---|---|---|
-| cardinality | items | `operational_policy` | maximum=None, reason=no-declared-semantic-maximum |
-| cardinality | items | `operational_policy` | maximum=None, reason=no-declared-semantic-maximum |
-
-## Contract summary
+## External contract
 
 - `title`: CollectionUploadSessionFilesRegistrationOut
 - `type`: object
@@ -53,14 +25,51 @@
 |---|---:|---|---|
 | `archive_store` | yes | #/components/schemas/ArchiveStoreName |  |
 | `collection_id` | yes | #/components/schemas/CollectionId |  |
-| `encryption_format` | yes | string |  |
-| `files` | yes | array |  |
-| `ingest_source` | yes | object (2 fields) |  |
-| `passphrase_id` | yes | string |  |
-| `state` | yes | string |  |
-| `volumes` | yes | array |  |
+| `encryption_format` | yes | type="string" |  |
+| `files` | yes | type="array"; items=(#/components/schemas/CollectionUploadFileOut) |  |
+| `ingest_source` | yes | anyOf=type="string" \| type="null" |  |
+| `passphrase_id` | yes | type="string"; pattern="^[A-Za-z0-9_-]{16,128}$" |  |
+| `state` | yes | type="string"; const="open" |  |
+| `volumes` | yes | type="array"; items=(#/components/schemas/CollectionUploadVolumeSummaryDocument) |  |
 
-## Complete owned contract
+### Progression, limits, and lifecycle
+
+| Dimension | Unit | Policy | Bounds or reason |
+|---|---|---|---|
+| cardinality | items | `operational_policy` | maximum=None, reason=no-declared-semantic-maximum |
+| cardinality | items | `operational_policy` | maximum=None, reason=no-declared-semantic-maximum |
+
+## Maintained corroboration
+
+### Referenced contract dossiers
+
+- [schemas: ArchiveStoreName](schemas-archivestorename.md)
+- [schemas: CollectionId](schemas-collectionid.md)
+- [schemas: CollectionUploadFileOut](schemas-collectionuploadfileout.md)
+- [schemas: CollectionUploadVolumeSummaryDocument](schemas-collectionuploadvolumesummarydocument.md)
+
+## Governing policies
+
+- `compatibility/http-api/v1`
+- `extent-rule/no-semantic-maximum/v1`
+
+## Evidence
+
+### Qualification
+
+- `make operation-qualification`
+- `make compose-smoke`
+
+### Executable sources
+
+- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
+- `openapi:riverhog` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+
+### Machine authority
+
+- `/external_contract/http_openapi/riverhog/components/schemas/CollectionUploadSessionFilesRegistrationOut`
+
+### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 

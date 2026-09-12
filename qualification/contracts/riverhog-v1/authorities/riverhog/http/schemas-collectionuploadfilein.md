@@ -4,6 +4,8 @@
 
 <!-- contract-element: http:riverhog:schemas-collectionuploadfilein:38d42c5c93 -->
 
+Exact externally visible contract owned by this semantic dossier.
+
 | Audit field | Value |
 |---|---|
 | Authority | `riverhog` |
@@ -12,38 +14,7 @@
 | Contract elements | 1 |
 | Extent decisions | 2 |
 
-## Machine authority
-
-- `/external_contract/http_openapi/riverhog/components/schemas/CollectionUploadFileIn`
-
-## Effective policies
-
-- `compatibility/http-api/v1`
-- `extent-rule/no-semantic-maximum/v1`
-- `extent-rule/schema-bound/v1`
-
-## Executable sources and proof
-
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `openapi:riverhog` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
-- Proof: `make operation-qualification`
-- Proof: `make compose-smoke`
-
-## Referenced contract dossiers
-
-- [schemas: CanonicalRelPath](schemas-canonicalrelpath.md)
-- [schemas: CapturedFileProvenanceBinding](schemas-capturedfileprovenancebinding.md)
-- [schemas: CollectionUploadRawPartsIn](schemas-collectionuploadrawpartsin.md)
-- [schemas: OmittedFileProvenanceBinding](schemas-omittedfileprovenancebinding.md)
-
-## Extent decisions
-
-| Dimension | Unit | Policy | Bounds/reason |
-|---|---|---|---|
-| value | schema-value | `operational_policy` | maximum=None, reason=no-declared-semantic-maximum |
-| length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
-
-## Contract summary
+## External contract
 
 - `title`: CollectionUploadFileIn
 - `type`: object
@@ -52,13 +23,51 @@
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| `bytes` | yes | integer |  |
+| `bytes` | yes | type="integer"; minimum=0 |  |
 | `path` | yes | #/components/schemas/CanonicalRelPath |  |
-| `provenance` | no | object (2 fields) |  |
-| `raw_parts` | no | object (1 fields) |  |
-| `sha256` | yes | string |  |
+| `provenance` | no | anyOf=oneOf=#/components/schemas/CapturedFileProvenanceBinding \| #/components/schemas/OmittedFileProvenanceBinding; additional keys=`discriminator` \| type="null" |  |
+| `raw_parts` | no | anyOf=#/components/schemas/CollectionUploadRawPartsIn \| type="null" |  |
+| `sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 
-## Complete owned contract
+### Progression, limits, and lifecycle
+
+| Dimension | Unit | Policy | Bounds or reason |
+|---|---|---|---|
+| value | schema-value | `operational_policy` | maximum=None, reason=no-declared-semantic-maximum |
+| length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
+
+## Maintained corroboration
+
+### Referenced contract dossiers
+
+- [schemas: CanonicalRelPath](schemas-canonicalrelpath.md)
+- [schemas: CapturedFileProvenanceBinding](schemas-capturedfileprovenancebinding.md)
+- [schemas: CollectionUploadRawPartsIn](schemas-collectionuploadrawpartsin.md)
+- [schemas: OmittedFileProvenanceBinding](schemas-omittedfileprovenancebinding.md)
+
+## Governing policies
+
+- `compatibility/http-api/v1`
+- `extent-rule/no-semantic-maximum/v1`
+- `extent-rule/schema-bound/v1`
+
+## Evidence
+
+### Qualification
+
+- `make operation-qualification`
+- `make compose-smoke`
+
+### Executable sources
+
+- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
+- `openapi:riverhog` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+
+### Machine authority
+
+- `/external_contract/http_openapi/riverhog/components/schemas/CollectionUploadFileIn`
+
+### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 

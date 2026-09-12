@@ -4,6 +4,8 @@
 
 <!-- contract-element: http:riverhog:get-v1-download-quotas:5d9557f411 -->
 
+List Download Quotas
+
 | Audit field | Value |
 |---|---|
 | Authority | `riverhog` |
@@ -12,45 +14,7 @@
 | Contract elements | 1 |
 | Extent decisions | 2 |
 
-## Machine authority
-
-- `/external_contract/http_openapi/riverhog/paths/~1v1~1download-quotas/get`
-
-## Effective policies
-
-- `compatibility/http-api/v1`
-- `extent-rule/route-progression/v1`
-- `extent-rule/schema-bound/v1`
-
-## Executable sources and proof
-
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `openapi:riverhog` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
-- Proof: `make operation-qualification`
-- Proof: `make compose-smoke`
-
-## Related interface records
-
-- [Operation parity: list_download_quotas](../operation/operation-parity-list-download-quotas.md)
-
-## Referenced contract dossiers
-
-- [schemas: ApplicationName](schemas-applicationname.md)
-- [schemas: BrowsePageToken](schemas-browsepagetoken.md)
-- [schemas: BrowseQuery](schemas-browsequery.md)
-- [schemas: DownloadQuotaSort](schemas-downloadquotasort.md)
-- [schemas: ErrorResponse](schemas-errorresponse.md)
-- [schemas: KeyDownloadQuotaListOut](schemas-keydownloadquotalistout.md)
-- [schemas: SortOrder](schemas-sortorder.md)
-
-## Extent decisions
-
-| Dimension | Unit | Policy | Bounds/reason |
-|---|---|---|---|
-| logical-result-cardinality | items | `segmented_no_total_max` | reason=bounded-route-progression |
-| value | schema-value | `contract_max` | maximum=100, minimum=1, reason=schema-maximum |
-
-## Contract summary
+## External contract
 
 - `operationId`: list_download_quotas
 - `summary`: List Download Quotas
@@ -60,13 +24,13 @@
 
 | Name | In | Required | Schema |
 |---|---|---:|---|
-| `page_size` | query | no | integer |
-| `page_token` | query | no | object (2 fields) |
-| `sort` | query | no | #/components/schemas/DownloadQuotaSort |
-| `order` | query | no | #/components/schemas/SortOrder |
-| `q` | query | no | object (2 fields) |
-| `app` | query | no | object (2 fields) |
-| `active` | query | no | object (2 fields) |
+| `page_size` | query | no | type="integer"; minimum=1; maximum=100 |
+| `page_token` | query | no | anyOf=#/components/schemas/BrowsePageToken \| type="null" |
+| `sort` | query | no | $ref="#/components/schemas/DownloadQuotaSort" |
+| `order` | query | no | $ref="#/components/schemas/SortOrder" |
+| `q` | query | no | anyOf=#/components/schemas/BrowseQuery \| type="null" |
+| `app` | query | no | anyOf=#/components/schemas/ApplicationName \| type="null" |
+| `active` | query | no | anyOf=type="boolean" \| type="null" |
 
 ### Responses
 
@@ -78,7 +42,52 @@
 | `403` | Forbidden |
 | `500` | Internal Server Error |
 
-## Complete owned contract
+### Progression, limits, and lifecycle
+
+| Dimension | Unit | Policy | Bounds or reason |
+|---|---|---|---|
+| logical-result-cardinality | items | `segmented_no_total_max` | reason=bounded-route-progression |
+| value | schema-value | `contract_max` | maximum=100, minimum=1, reason=schema-maximum |
+
+## Maintained corroboration
+
+### Related interface records
+
+- [Operation parity: list_download_quotas](../operation/operation-parity-list-download-quotas.md)
+
+### Referenced contract dossiers
+
+- [schemas: ApplicationName](schemas-applicationname.md)
+- [schemas: BrowsePageToken](schemas-browsepagetoken.md)
+- [schemas: BrowseQuery](schemas-browsequery.md)
+- [schemas: DownloadQuotaSort](schemas-downloadquotasort.md)
+- [schemas: ErrorResponse](schemas-errorresponse.md)
+- [schemas: KeyDownloadQuotaListOut](schemas-keydownloadquotalistout.md)
+- [schemas: SortOrder](schemas-sortorder.md)
+
+## Governing policies
+
+- `compatibility/http-api/v1`
+- `extent-rule/route-progression/v1`
+- `extent-rule/schema-bound/v1`
+
+## Evidence
+
+### Qualification
+
+- `make operation-qualification`
+- `make compose-smoke`
+
+### Executable sources
+
+- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
+- `openapi:riverhog` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+
+### Machine authority
+
+- `/external_contract/http_openapi/riverhog/paths/~1v1~1download-quotas/get`
+
+### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 

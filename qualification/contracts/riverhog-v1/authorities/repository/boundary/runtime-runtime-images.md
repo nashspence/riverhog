@@ -4,6 +4,8 @@
 
 <!-- contract-element: boundary:repository:runtime-runtime-images:27155f9290 -->
 
+Exact externally visible contract owned by this semantic dossier.
+
 | Audit field | Value |
 |---|---|
 | Authority | `repository` |
@@ -12,40 +14,45 @@
 | Contract elements | 1 |
 | Extent decisions | 0 |
 
-## Machine authority
-
-- `/boundaries/runtime_images/runtime`
-
-## Effective policies
-
-- `boundary/frozen-authority/v1`
-
-## Executable sources and proof
-
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `release:release.toml` — `release.toml`
-- Proof: `make release-check`
-- Proof: `make build`
-
-## Contract summary
+## External contract
 
 | Field | Shape |
 |---|---|
-| `mango-fish` | object (4 fields) |
-| `riverhog` | object (4 fields) |
-| `riverhog-ftp-adapter` | object (4 fields) |
-| `riverhog-storage-adapter-aws` | object (4 fields) |
-| `riverhog-storage-adapter-backblaze` | object (4 fields) |
-| `riverhog-storage-adapter-filesystem` | object (4 fields) |
-| `stove0` | object (4 fields) |
-| `stove0-exiftool-observer` | object (4 fields) |
-| `stove0-ffprobe-sampling-observer` | object (4 fields) |
-| `stove0-nvenc-av1-opus-target` | object (4 fields) |
-| `stove0-opus-target` | object (4 fields) |
-| `stove0-review-materialize-target` | object (4 fields) |
-| `stove0-review-rclone-effect-target` | object (4 fields) |
+| `mango-fish` | additional keys=`distributions`, `repository`, `role` |
+| `riverhog` | additional keys=`distributions`, `repository`, `role` |
+| `riverhog-ftp-adapter` | additional keys=`distributions`, `repository`, `role` |
+| `riverhog-storage-adapter-aws` | additional keys=`distributions`, `repository`, `role` |
+| `riverhog-storage-adapter-backblaze` | additional keys=`distributions`, `repository`, `role` |
+| `riverhog-storage-adapter-filesystem` | additional keys=`distributions`, `repository`, `role` |
+| `stove0` | additional keys=`distributions`, `repository`, `role` |
+| `stove0-exiftool-observer` | additional keys=`distributions`, `repository`, `role` |
+| `stove0-ffprobe-sampling-observer` | additional keys=`distributions`, `repository`, `role` |
+| `stove0-nvenc-av1-opus-target` | additional keys=`distributions`, `repository`, `role` |
+| `stove0-opus-target` | additional keys=`distributions`, `repository`, `role` |
+| `stove0-review-materialize-target` | additional keys=`distributions`, `repository`, `role` |
+| `stove0-review-rclone-effect-target` | additional keys=`distributions`, `repository`, `role` |
 
-## Complete owned contract
+## Governing policies
+
+- `boundary/frozen-authority/v1`
+
+## Evidence
+
+### Qualification
+
+- `make release-check`
+- `make build`
+
+### Executable sources
+
+- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
+- `release:release.toml` — `release.toml`
+
+### Machine authority
+
+- `/boundaries/runtime_images/runtime`
+
+### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 

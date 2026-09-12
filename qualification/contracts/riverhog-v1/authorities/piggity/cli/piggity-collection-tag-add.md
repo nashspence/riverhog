@@ -4,6 +4,8 @@
 
 <!-- contract-element: cli:piggity:piggity-collection-tag-add:ac394eb4f5 -->
 
+Exact externally visible contract owned by this semantic dossier.
+
 | Audit field | Value |
 |---|---|
 | Authority | `piggity` |
@@ -12,40 +14,7 @@
 | Contract elements | 1 |
 | Extent decisions | 6 |
 
-## Machine authority
-
-- `/external_contract/cli/piggity/commands/collection/commands/tag/commands/add/name`
-- `/external_contract/cli/piggity/commands/collection/commands/tag/commands/add/parameters`
-
-## Effective policies
-
-- `compatibility/cli/v1`
-- `extent-rule/schema-bound/v1`
-
-## Executable sources and proof
-
-- `cli:piggity` — `reference/riverhog/applications/piggity/src/piggity/main.py::<module>`
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- Proof: `make dist-smoke`
-- Proof: `make operation-qualification`
-
-## Related interface records
-
-- [Operation parity: get_collection](../../riverhog/operation/operation-parity-get-collection.md)
-- [Operation parity: add_collection_tag](../../riverhog/operation/operation-parity-add-collection-tag.md)
-
-## Extent decisions
-
-| Dimension | Unit | Policy | Bounds/reason |
-|---|---|---|---|
-| cardinality | values-per-occurrence | `fixed` | maximum=1, minimum=1, reason=fixed-command-argument-arity |
-| cardinality | values-per-occurrence | `fixed` | maximum=1, minimum=1, reason=fixed-command-argument-arity |
-| cardinality | values-per-occurrence | `fixed` | maximum=1, minimum=1, reason=fixed-command-argument-arity |
-| cardinality | values-per-occurrence | `fixed` | maximum=1, minimum=1, reason=fixed-command-argument-arity |
-| cardinality | values-per-occurrence | `fixed` | maximum=1, minimum=1, reason=fixed-command-argument-arity |
-| cardinality | values-per-occurrence | `fixed` | maximum=1, minimum=1, reason=fixed-command-argument-arity |
-
-## Contract summary
+## External contract
 
 - Parser name: `add`
 
@@ -60,7 +29,47 @@
 | `operation_id` | TyperOption | no | {'class': 'typer._click.types.StringParamType', 'name': 'text'} | --operation-id |
 | `json_mode` | TyperOption | no | {'class': 'typer._click.types.BoolParamType', 'name': 'boolean'} | --json |
 
-## Complete owned contract
+### Progression, limits, and lifecycle
+
+| Dimension | Unit | Policy | Bounds or reason |
+|---|---|---|---|
+| cardinality | values-per-occurrence | `fixed` | maximum=1, minimum=1, reason=fixed-command-argument-arity |
+| cardinality | values-per-occurrence | `fixed` | maximum=1, minimum=1, reason=fixed-command-argument-arity |
+| cardinality | values-per-occurrence | `fixed` | maximum=1, minimum=1, reason=fixed-command-argument-arity |
+| cardinality | values-per-occurrence | `fixed` | maximum=1, minimum=1, reason=fixed-command-argument-arity |
+| cardinality | values-per-occurrence | `fixed` | maximum=1, minimum=1, reason=fixed-command-argument-arity |
+| cardinality | values-per-occurrence | `fixed` | maximum=1, minimum=1, reason=fixed-command-argument-arity |
+
+## Maintained corroboration
+
+### Related interface records
+
+- [Operation parity: get_collection](../../riverhog/operation/operation-parity-get-collection.md)
+- [Operation parity: add_collection_tag](../../riverhog/operation/operation-parity-add-collection-tag.md)
+
+## Governing policies
+
+- `compatibility/cli/v1`
+- `extent-rule/schema-bound/v1`
+
+## Evidence
+
+### Qualification
+
+- `make dist-smoke`
+- `make operation-qualification`
+
+### Executable sources
+
+- `cli:piggity` — `reference/riverhog/applications/piggity/src/piggity/main.py::<module>`
+- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
+
+### Machine authority
+
+- `/external_contract/cli/piggity/commands/collection/commands/tag/commands/add/name`
+- `/external_contract/cli/piggity/commands/collection/commands/tag/commands/add/parameters`
+
+### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 

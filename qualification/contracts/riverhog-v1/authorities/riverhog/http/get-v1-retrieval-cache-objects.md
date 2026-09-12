@@ -4,6 +4,8 @@
 
 <!-- contract-element: http:riverhog:get-v1-retrieval-cache-objects:91e5040e4e -->
 
+List Retrieval Cache Objects
+
 | Audit field | Value |
 |---|---|
 | Authority | `riverhog` |
@@ -12,28 +14,53 @@
 | Contract elements | 1 |
 | Extent decisions | 2 |
 
-## Machine authority
+## External contract
 
-- `/external_contract/http_openapi/riverhog/paths/~1v1~1retrieval-cache~1objects/get`
+- `operationId`: list_retrieval_cache_objects
+- `summary`: List Retrieval Cache Objects
+- `security`: `[{"HTTPBearer": []}]`
 
-## Effective policies
+### Parameters
 
-- `compatibility/http-api/v1`
-- `extent-rule/route-progression/v1`
-- `extent-rule/schema-bound/v1`
+| Name | In | Required | Schema |
+|---|---|---:|---|
+| `page_size` | query | no | type="integer"; minimum=1; maximum=100 |
+| `page_token` | query | no | anyOf=#/components/schemas/BrowsePageToken \| type="null" |
+| `q` | query | no | anyOf=#/components/schemas/BrowseQuery \| type="null" |
+| `collection_id` | query | no | anyOf=#/components/schemas/CollectionIdParameter \| type="null" |
+| `source_store` | query | no | anyOf=#/components/schemas/ArchiveStoreName \| type="null" |
+| `cache_store` | query | no | anyOf=#/components/schemas/RetrievalCacheStoreName \| type="null" |
+| `state` | query | no | anyOf=#/components/schemas/RetrievalCacheState \| type="null" |
+| `protection` | query | no | anyOf=#/components/schemas/RetrievalCacheProtection \| type="null" |
+| `expires_before` | query | no | anyOf=type="string" \| type="null" |
+| `expires_after` | query | no | anyOf=type="string" \| type="null" |
+| `sort` | query | no | $ref="#/components/schemas/RetrievalCacheSort" |
+| `order` | query | no | $ref="#/components/schemas/SortOrder" |
 
-## Executable sources and proof
+### Responses
 
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `openapi:riverhog` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
-- Proof: `make operation-qualification`
-- Proof: `make compose-smoke`
+| Status | Description |
+|---|---|
+| `200` | Successful Response |
+| `400` | Bad Request |
+| `401` | Unauthorized |
+| `403` | Forbidden |
+| `500` | Internal Server Error |
 
-## Related interface records
+### Progression, limits, and lifecycle
+
+| Dimension | Unit | Policy | Bounds or reason |
+|---|---|---|---|
+| logical-result-cardinality | items | `segmented_no_total_max` | reason=bounded-route-progression |
+| value | schema-value | `contract_max` | maximum=100, minimum=1, reason=schema-maximum |
+
+## Maintained corroboration
+
+### Related interface records
 
 - [Operation parity: list_retrieval_cache_objects](../operation/operation-parity-list-retrieval-cache-objects.md)
 
-## Referenced contract dossiers
+### Referenced contract dossiers
 
 - [schemas: ArchiveStoreName](schemas-archivestorename.md)
 - [schemas: BrowsePageToken](schemas-browsepagetoken.md)
@@ -47,47 +74,29 @@
 - [schemas: RetrievalCacheStoreName](schemas-retrievalcachestorename.md)
 - [schemas: SortOrder](schemas-sortorder.md)
 
-## Extent decisions
+## Governing policies
 
-| Dimension | Unit | Policy | Bounds/reason |
-|---|---|---|---|
-| logical-result-cardinality | items | `segmented_no_total_max` | reason=bounded-route-progression |
-| value | schema-value | `contract_max` | maximum=100, minimum=1, reason=schema-maximum |
+- `compatibility/http-api/v1`
+- `extent-rule/route-progression/v1`
+- `extent-rule/schema-bound/v1`
 
-## Contract summary
+## Evidence
 
-- `operationId`: list_retrieval_cache_objects
-- `summary`: List Retrieval Cache Objects
-- `security`: `[{"HTTPBearer": []}]`
+### Qualification
 
-### Parameters
+- `make operation-qualification`
+- `make compose-smoke`
 
-| Name | In | Required | Schema |
-|---|---|---:|---|
-| `page_size` | query | no | integer |
-| `page_token` | query | no | object (2 fields) |
-| `q` | query | no | object (2 fields) |
-| `collection_id` | query | no | object (2 fields) |
-| `source_store` | query | no | object (2 fields) |
-| `cache_store` | query | no | object (2 fields) |
-| `state` | query | no | object (2 fields) |
-| `protection` | query | no | object (2 fields) |
-| `expires_before` | query | no | object (2 fields) |
-| `expires_after` | query | no | object (2 fields) |
-| `sort` | query | no | #/components/schemas/RetrievalCacheSort |
-| `order` | query | no | #/components/schemas/SortOrder |
+### Executable sources
 
-### Responses
+- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
+- `openapi:riverhog` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
 
-| Status | Description |
-|---|---|
-| `200` | Successful Response |
-| `400` | Bad Request |
-| `401` | Unauthorized |
-| `403` | Forbidden |
-| `500` | Internal Server Error |
+### Machine authority
 
-## Complete owned contract
+- `/external_contract/http_openapi/riverhog/paths/~1v1~1retrieval-cache~1objects/get`
+
+### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 

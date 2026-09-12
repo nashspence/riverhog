@@ -4,6 +4,8 @@
 
 <!-- contract-element: http:riverhog:get-v1-archive-copies-collection-id-desti-954373ca14:9d18502bd8 -->
 
+Get Archive Copy Job
+
 | Audit field | Value |
 |---|---|
 | Authority | `riverhog` |
@@ -12,31 +14,7 @@
 | Contract elements | 1 |
 | Extent decisions | 0 |
 
-## Machine authority
-
-- `/external_contract/http_openapi/riverhog/paths/~1v1~1archive~1copies~1{collection_id}~1{destination_store}/get`
-
-## Effective policies
-
-- `compatibility/http-api/v1`
-
-## Executable sources and proof
-
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `openapi:riverhog` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
-- Proof: `make operation-qualification`
-- Proof: `make compose-smoke`
-
-## Related interface records
-
-- [Operation parity: get_archive_copy_job](../operation/operation-parity-get-archive-copy-job.md)
-
-## Referenced contract dossiers
-
-- [schemas: ArchiveCopyJobOut](schemas-archivecopyjobout.md)
-- [schemas: ErrorResponse](schemas-errorresponse.md)
-
-## Contract summary
+## External contract
 
 - `operationId`: get_archive_copy_job
 - `summary`: Get Archive Copy Job
@@ -46,8 +24,8 @@
 
 | Name | In | Required | Schema |
 |---|---|---:|---|
-| `collection_id` | path | yes | integer |
-| `destination_store` | path | yes | string |
+| `collection_id` | path | yes | type="integer"; minimum=1 |
+| `destination_store` | path | yes | type="string"; pattern="^[a-z0-9]+(?:-[a-z0-9]+)*$" |
 
 ### Responses
 
@@ -60,7 +38,38 @@
 | `404` | Not Found |
 | `500` | Internal Server Error |
 
-## Complete owned contract
+## Maintained corroboration
+
+### Related interface records
+
+- [Operation parity: get_archive_copy_job](../operation/operation-parity-get-archive-copy-job.md)
+
+### Referenced contract dossiers
+
+- [schemas: ArchiveCopyJobOut](schemas-archivecopyjobout.md)
+- [schemas: ErrorResponse](schemas-errorresponse.md)
+
+## Governing policies
+
+- `compatibility/http-api/v1`
+
+## Evidence
+
+### Qualification
+
+- `make operation-qualification`
+- `make compose-smoke`
+
+### Executable sources
+
+- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
+- `openapi:riverhog` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+
+### Machine authority
+
+- `/external_contract/http_openapi/riverhog/paths/~1v1~1archive~1copies~1{collection_id}~1{destination_store}/get`
+
+### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 

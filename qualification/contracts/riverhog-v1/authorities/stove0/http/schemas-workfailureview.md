@@ -4,6 +4,8 @@
 
 <!-- contract-element: http:stove0:schemas-workfailureview:2dbb61c015 -->
 
+Exact externally visible contract owned by this semantic dossier.
+
 | Audit field | Value |
 |---|---|
 | Authority | `stove0` |
@@ -12,30 +14,7 @@
 | Contract elements | 1 |
 | Extent decisions | 2 |
 
-## Machine authority
-
-- `/external_contract/http_openapi/stove0/components/schemas/WorkFailureView`
-
-## Effective policies
-
-- `compatibility/http-api/v1`
-- `extent-rule/schema-bound/v1`
-
-## Executable sources and proof
-
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `openapi:stove0` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
-- Proof: `make operation-qualification`
-- Proof: `make compose-smoke`
-
-## Extent decisions
-
-| Dimension | Unit | Policy | Bounds/reason |
-|---|---|---|---|
-| length | characters | `contract_max` | maximum=160, minimum=1, reason=schema-maximum |
-| length | characters | `contract_max` | maximum=1000, minimum=1, reason=schema-maximum |
-
-## Contract summary
+## External contract
 
 - `title`: WorkFailureView
 - `type`: object
@@ -44,11 +23,39 @@
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| `code` | yes | string |  |
-| `message` | yes | string |  |
-| `retryable` | yes | boolean |  |
+| `code` | yes | type="string"; minLength=1; maxLength=160 |  |
+| `message` | yes | type="string"; minLength=1; maxLength=1000 |  |
+| `retryable` | yes | type="boolean" |  |
 
-## Complete owned contract
+### Progression, limits, and lifecycle
+
+| Dimension | Unit | Policy | Bounds or reason |
+|---|---|---|---|
+| length | characters | `contract_max` | maximum=160, minimum=1, reason=schema-maximum |
+| length | characters | `contract_max` | maximum=1000, minimum=1, reason=schema-maximum |
+
+## Governing policies
+
+- `compatibility/http-api/v1`
+- `extent-rule/schema-bound/v1`
+
+## Evidence
+
+### Qualification
+
+- `make operation-qualification`
+- `make compose-smoke`
+
+### Executable sources
+
+- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
+- `openapi:stove0` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+
+### Machine authority
+
+- `/external_contract/http_openapi/stove0/components/schemas/WorkFailureView`
+
+### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 

@@ -4,6 +4,8 @@
 
 <!-- contract-element: http:riverhog:schemas-processingclaimcreatedocument:5abc67569d -->
 
+Exact externally visible contract owned by this semantic dossier.
+
 | Audit field | Value |
 |---|---|
 | Authority | `riverhog` |
@@ -12,35 +14,7 @@
 | Contract elements | 1 |
 | Extent decisions | 6 |
 
-## Machine authority
-
-- `/external_contract/http_openapi/riverhog/components/schemas/ProcessingClaimCreateDocument`
-
-## Effective policies
-
-- `compatibility/http-api/v1`
-- `extent-rule/no-semantic-maximum/v1`
-- `extent-rule/schema-bound/v1`
-
-## Executable sources and proof
-
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `openapi:riverhog` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
-- Proof: `make operation-qualification`
-- Proof: `make compose-smoke`
-
-## Extent decisions
-
-| Dimension | Unit | Policy | Bounds/reason |
-|---|---|---|---|
-| value | schema-value | `contract_max` | maximum=86400, minimum=30, reason=schema-maximum |
-| length | characters | `contract_max` | maximum=160, minimum=1, reason=schema-maximum |
-| encoded-size | bytes | `contract_max` | maximum=4194304, reason=bounded-work-document-envelope |
-| cardinality | entries | `operational_policy` | maximum=None, reason=no-declared-semantic-maximum |
-| length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
-| length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
-
-## Contract summary
+## External contract
 
 - `title`: ProcessingClaimCreateDocument
 - `type`: object
@@ -49,13 +23,46 @@
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| `lease_seconds` | no | integer |  |
-| `purpose` | no | string |  |
-| `work_document` | yes | object |  |
-| `work_document_sha256` | yes | string |  |
-| `work_id` | yes | string |  |
+| `lease_seconds` | no | type="integer"; minimum=30; maximum=86400 |  |
+| `purpose` | no | type="string"; minLength=1; maxLength=160 |  |
+| `work_document` | yes | type="object"; additional keys=`additionalProperties`, `x-riverhog-encoded-bytes-max`, `x-riverhog-extent` |  |
+| `work_document_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| `work_id` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 
-## Complete owned contract
+### Progression, limits, and lifecycle
+
+| Dimension | Unit | Policy | Bounds or reason |
+|---|---|---|---|
+| value | schema-value | `contract_max` | maximum=86400, minimum=30, reason=schema-maximum |
+| length | characters | `contract_max` | maximum=160, minimum=1, reason=schema-maximum |
+| encoded-size | bytes | `contract_max` | maximum=4194304, reason=bounded-work-document-envelope |
+| cardinality | entries | `operational_policy` | maximum=None, reason=no-declared-semantic-maximum |
+| length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
+| length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
+
+## Governing policies
+
+- `compatibility/http-api/v1`
+- `extent-rule/no-semantic-maximum/v1`
+- `extent-rule/schema-bound/v1`
+
+## Evidence
+
+### Qualification
+
+- `make operation-qualification`
+- `make compose-smoke`
+
+### Executable sources
+
+- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
+- `openapi:riverhog` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+
+### Machine authority
+
+- `/external_contract/http_openapi/riverhog/components/schemas/ProcessingClaimCreateDocument`
+
+### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 

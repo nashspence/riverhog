@@ -4,6 +4,8 @@
 
 <!-- contract-element: http:riverhog:get-v1-download-quota:0b03b5747a -->
 
+Get Download Quota
+
 | Audit field | Value |
 |---|---|
 | Authority | `riverhog` |
@@ -12,31 +14,7 @@
 | Contract elements | 1 |
 | Extent decisions | 0 |
 
-## Machine authority
-
-- `/external_contract/http_openapi/riverhog/paths/~1v1~1download-quota/get`
-
-## Effective policies
-
-- `compatibility/http-api/v1`
-
-## Executable sources and proof
-
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `openapi:riverhog` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
-- Proof: `make operation-qualification`
-- Proof: `make compose-smoke`
-
-## Related interface records
-
-- [Operation parity: get_download_quota](../operation/operation-parity-get-download-quota.md)
-
-## Referenced contract dossiers
-
-- [schemas: ErrorResponse](schemas-errorresponse.md)
-- [schemas: KeyDownloadQuotaOut](schemas-keydownloadquotaout.md)
-
-## Contract summary
+## External contract
 
 - `operationId`: get_download_quota
 - `summary`: Get Download Quota
@@ -54,7 +32,38 @@
 | `429` | Too Many Requests |
 | `500` | Internal Server Error |
 
-## Complete owned contract
+## Maintained corroboration
+
+### Related interface records
+
+- [Operation parity: get_download_quota](../operation/operation-parity-get-download-quota.md)
+
+### Referenced contract dossiers
+
+- [schemas: ErrorResponse](schemas-errorresponse.md)
+- [schemas: KeyDownloadQuotaOut](schemas-keydownloadquotaout.md)
+
+## Governing policies
+
+- `compatibility/http-api/v1`
+
+## Evidence
+
+### Qualification
+
+- `make operation-qualification`
+- `make compose-smoke`
+
+### Executable sources
+
+- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
+- `openapi:riverhog` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+
+### Machine authority
+
+- `/external_contract/http_openapi/riverhog/paths/~1v1~1download-quota/get`
+
+### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 

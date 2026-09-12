@@ -4,6 +4,8 @@
 
 <!-- contract-element: http:riverhog:schemas-riverhogeventcause:59b3f4a517 -->
 
+Exact externally visible contract owned by this semantic dossier.
+
 | Audit field | Value |
 |---|---|
 | Authority | `riverhog` |
@@ -12,32 +14,7 @@
 | Contract elements | 1 |
 | Extent decisions | 4 |
 
-## Machine authority
-
-- `/external_contract/http_openapi/riverhog/components/schemas/RiverhogEventCause`
-
-## Effective policies
-
-- `compatibility/http-api/v1`
-- `extent-rule/schema-bound/v1`
-
-## Executable sources and proof
-
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `openapi:riverhog` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
-- Proof: `make operation-qualification`
-- Proof: `make compose-smoke`
-
-## Extent decisions
-
-| Dimension | Unit | Policy | Bounds/reason |
-|---|---|---|---|
-| length | characters | `contract_max` | maximum=300, minimum=1, reason=schema-maximum |
-| length | characters | `contract_max` | maximum=1000, minimum=1, reason=schema-maximum |
-| length | characters | `contract_max` | maximum=1000, minimum=1, reason=schema-maximum |
-| length | characters | `contract_max` | maximum=300, minimum=1, reason=schema-maximum |
-
-## Contract summary
+## External contract
 
 - `title`: RiverhogEventCause
 - `type`: object
@@ -46,12 +23,42 @@
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| `id` | yes | string |  |
-| `source` | yes | string |  |
-| `subject` | no | object (2 fields) |  |
-| `type` | yes | string |  |
+| `id` | yes | type="string"; minLength=1; maxLength=300 |  |
+| `source` | yes | type="string"; minLength=1; maxLength=1000 |  |
+| `subject` | no | anyOf=type="string"; minLength=1; maxLength=1000 \| type="null" |  |
+| `type` | yes | type="string"; minLength=1; maxLength=300 |  |
 
-## Complete owned contract
+### Progression, limits, and lifecycle
+
+| Dimension | Unit | Policy | Bounds or reason |
+|---|---|---|---|
+| length | characters | `contract_max` | maximum=300, minimum=1, reason=schema-maximum |
+| length | characters | `contract_max` | maximum=1000, minimum=1, reason=schema-maximum |
+| length | characters | `contract_max` | maximum=1000, minimum=1, reason=schema-maximum |
+| length | characters | `contract_max` | maximum=300, minimum=1, reason=schema-maximum |
+
+## Governing policies
+
+- `compatibility/http-api/v1`
+- `extent-rule/schema-bound/v1`
+
+## Evidence
+
+### Qualification
+
+- `make operation-qualification`
+- `make compose-smoke`
+
+### Executable sources
+
+- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
+- `openapi:riverhog` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+
+### Machine authority
+
+- `/external_contract/http_openapi/riverhog/components/schemas/RiverhogEventCause`
+
+### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 

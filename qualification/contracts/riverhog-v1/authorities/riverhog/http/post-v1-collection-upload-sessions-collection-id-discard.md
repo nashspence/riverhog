@@ -4,6 +4,8 @@
 
 <!-- contract-element: http:riverhog:post-v1-collection-upload-sessions-collec-d4e0df816c:aa9e184204 -->
 
+Discard Collection Upload
+
 | Audit field | Value |
 |---|---|
 | Authority | `riverhog` |
@@ -12,32 +14,7 @@
 | Contract elements | 1 |
 | Extent decisions | 0 |
 
-## Machine authority
-
-- `/external_contract/http_openapi/riverhog/paths/~1v1~1collection-upload-sessions~1{collection_id}~1discard/post`
-
-## Effective policies
-
-- `compatibility/http-api/v1`
-
-## Executable sources and proof
-
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `openapi:riverhog` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
-- Proof: `make operation-qualification`
-- Proof: `make compose-smoke`
-
-## Related interface records
-
-- [Operation parity: discard_collection_upload](../operation/operation-parity-discard-collection-upload.md)
-
-## Referenced contract dossiers
-
-- [schemas: CollectionUploadDiscardResultOut](schemas-collectionuploaddiscardresultout.md)
-- [schemas: DiscardCollectionUploadRequest](schemas-discardcollectionuploadrequest.md)
-- [schemas: ErrorResponse](schemas-errorresponse.md)
-
-## Contract summary
+## External contract
 
 - `operationId`: discard_collection_upload
 - `summary`: Discard Collection Upload
@@ -47,7 +24,7 @@
 
 | Name | In | Required | Schema |
 |---|---|---:|---|
-| `collection_id` | path | yes | integer |
+| `collection_id` | path | yes | type="integer"; minimum=1 |
 
 ### Request body
 
@@ -63,7 +40,39 @@
 | `403` | Forbidden |
 | `500` | Internal Server Error |
 
-## Complete owned contract
+## Maintained corroboration
+
+### Related interface records
+
+- [Operation parity: discard_collection_upload](../operation/operation-parity-discard-collection-upload.md)
+
+### Referenced contract dossiers
+
+- [schemas: CollectionUploadDiscardResultOut](schemas-collectionuploaddiscardresultout.md)
+- [schemas: DiscardCollectionUploadRequest](schemas-discardcollectionuploadrequest.md)
+- [schemas: ErrorResponse](schemas-errorresponse.md)
+
+## Governing policies
+
+- `compatibility/http-api/v1`
+
+## Evidence
+
+### Qualification
+
+- `make operation-qualification`
+- `make compose-smoke`
+
+### Executable sources
+
+- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
+- `openapi:riverhog` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+
+### Machine authority
+
+- `/external_contract/http_openapi/riverhog/paths/~1v1~1collection-upload-sessions~1{collection_id}~1discard/post`
+
+### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 

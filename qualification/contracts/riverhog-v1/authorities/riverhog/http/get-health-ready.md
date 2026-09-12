@@ -4,6 +4,8 @@
 
 <!-- contract-element: http:riverhog:get-health-ready:4df1f2db11 -->
 
+Health Ready
+
 | Audit field | Value |
 |---|---|
 | Authority | `riverhog` |
@@ -12,31 +14,7 @@
 | Contract elements | 1 |
 | Extent decisions | 0 |
 
-## Machine authority
-
-- `/external_contract/http_openapi/riverhog/paths/~1health~1ready/get`
-
-## Effective policies
-
-- `compatibility/http-api/v1`
-
-## Executable sources and proof
-
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `openapi:riverhog` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
-- Proof: `make operation-qualification`
-- Proof: `make compose-smoke`
-
-## Related interface records
-
-- [Operation parity: health_ready](../operation/operation-parity-health-ready.md)
-
-## Referenced contract dossiers
-
-- [schemas: ErrorResponse](schemas-errorresponse.md)
-- [schemas: HealthResponse](schemas-healthresponse.md)
-
-## Contract summary
+## External contract
 
 - `operationId`: health_ready
 - `summary`: Health Ready
@@ -49,7 +27,38 @@
 | `500` | Internal Server Error |
 | `503` | Service Unavailable |
 
-## Complete owned contract
+## Maintained corroboration
+
+### Related interface records
+
+- [Operation parity: health_ready](../operation/operation-parity-health-ready.md)
+
+### Referenced contract dossiers
+
+- [schemas: ErrorResponse](schemas-errorresponse.md)
+- [schemas: HealthResponse](schemas-healthresponse.md)
+
+## Governing policies
+
+- `compatibility/http-api/v1`
+
+## Evidence
+
+### Qualification
+
+- `make operation-qualification`
+- `make compose-smoke`
+
+### Executable sources
+
+- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
+- `openapi:riverhog` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+
+### Machine authority
+
+- `/external_contract/http_openapi/riverhog/paths/~1health~1ready/get`
+
+### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 

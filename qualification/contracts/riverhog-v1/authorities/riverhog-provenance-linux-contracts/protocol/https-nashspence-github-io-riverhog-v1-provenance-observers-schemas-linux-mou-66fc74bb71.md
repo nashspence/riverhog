@@ -4,6 +4,8 @@
 
 <!-- contract-element: protocol:riverhog-provenance-linux-contracts:https-nashspence-github-io-riverhog-v1-pr-66fc74bb71:2727c47cb7 -->
 
+Exact externally visible contract owned by this semantic dossier.
+
 | Audit field | Value |
 |---|---|
 | Authority | `riverhog-provenance-linux-contracts` |
@@ -12,31 +14,7 @@
 | Contract elements | 1 |
 | Extent decisions | 3 |
 
-## Machine authority
-
-- `/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1provenance~1observers~1schemas~1linux-mount-context.json`
-
-## Effective policies
-
-- `compatibility/components/v1`
-- `extent-rule/extension-contract/v1`
-
-## Executable sources and proof
-
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `protocol:https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/linux-mount-context.json` — `reference/riverhog/provenance/contracts/linux/src/riverhog_provenance_linux_contracts/schemas/linux-mount-context.schema.json`
-- Proof: `make dist-smoke`
-- Proof: `make build`
-
-## Extent decisions
-
-| Dimension | Unit | Policy | Bounds/reason |
-|---|---|---|---|
-| cardinality | items | `extension_owned` | maximum=None, reason=independently-versioned-extension-authority |
-| cardinality | items | `extension_owned` | maximum=None, reason=independently-versioned-extension-authority |
-| cardinality | items | `extension_owned` | maximum=None, reason=independently-versioned-extension-authority |
-
-## Contract summary
+## External contract
 
 - `$id`: https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/linux-mount-context.json
 - `type`: object
@@ -45,18 +23,47 @@
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| `device` | yes | string |  |
-| `filesystem_type` | yes | string |  |
-| `mount_id` | yes | integer |  |
-| `mount_options` | yes | array |  |
-| `mount_point` | yes | string |  |
-| `optional_fields` | yes | array |  |
-| `parent_id` | yes | integer |  |
-| `root` | yes | string |  |
-| `source` | yes | string |  |
-| `super_options` | yes | array |  |
+| `device` | yes | type="string" |  |
+| `filesystem_type` | yes | type="string"; minLength=1 |  |
+| `mount_id` | yes | type="integer"; minimum=0 |  |
+| `mount_options` | yes | type="array"; items=(type="string") |  |
+| `mount_point` | yes | type="string" |  |
+| `optional_fields` | yes | type="array"; items=(type="string") |  |
+| `parent_id` | yes | type="integer"; minimum=0 |  |
+| `root` | yes | type="string" |  |
+| `source` | yes | type="string" |  |
+| `super_options` | yes | type="array"; items=(type="string") |  |
 
-## Complete owned contract
+### Progression, limits, and lifecycle
+
+| Dimension | Unit | Policy | Bounds or reason |
+|---|---|---|---|
+| cardinality | items | `extension_owned` | maximum=None, reason=independently-versioned-extension-authority |
+| cardinality | items | `extension_owned` | maximum=None, reason=independently-versioned-extension-authority |
+| cardinality | items | `extension_owned` | maximum=None, reason=independently-versioned-extension-authority |
+
+## Governing policies
+
+- `compatibility/components/v1`
+- `extent-rule/extension-contract/v1`
+
+## Evidence
+
+### Qualification
+
+- `make dist-smoke`
+- `make build`
+
+### Executable sources
+
+- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
+- `protocol:https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/linux-mount-context.json` — `reference/riverhog/provenance/contracts/linux/src/riverhog_provenance_linux_contracts/schemas/linux-mount-context.schema.json`
+
+### Machine authority
+
+- `/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1provenance~1observers~1schemas~1linux-mount-context.json`
+
+### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 

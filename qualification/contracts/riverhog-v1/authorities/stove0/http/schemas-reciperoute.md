@@ -4,6 +4,8 @@
 
 <!-- contract-element: http:stove0:schemas-reciperoute:fdf6aa9229 -->
 
+One ordinary target/effect leaf selected by a recipe.
+
 | Audit field | Value |
 |---|---|
 | Authority | `stove0` |
@@ -12,41 +14,7 @@
 | Contract elements | 1 |
 | Extent decisions | 6 |
 
-## Machine authority
-
-- `/external_contract/http_openapi/stove0/components/schemas/RecipeRoute`
-
-## Effective policies
-
-- `compatibility/http-api/v1`
-- `extent-rule/no-semantic-maximum/v1`
-
-## Executable sources and proof
-
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `openapi:stove0` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
-- Proof: `make operation-qualification`
-- Proof: `make compose-smoke`
-
-## Referenced contract dossiers
-
-- [schemas: ArtifactRule](schemas-artifactrule.md)
-- [schemas: FactPredicate](schemas-factpredicate.md)
-- [schemas: JsonValue](schemas-jsonvalue.md)
-- [schemas: OperationProjection](schemas-operationprojection.md)
-
-## Extent decisions
-
-| Dimension | Unit | Policy | Bounds/reason |
-|---|---|---|---|
-| cardinality | items | `operational_policy` | maximum=None, reason=no-declared-semantic-maximum |
-| cardinality | items | `operational_policy` | maximum=None, reason=no-declared-semantic-maximum |
-| cardinality | entries | `operational_policy` | maximum=None, reason=no-declared-semantic-maximum |
-| cardinality | items | `operational_policy` | maximum=None, reason=no-declared-semantic-maximum |
-| cardinality | entries | `operational_policy` | maximum=None, reason=no-declared-semantic-maximum |
-| cardinality | items | `operational_policy` | maximum=None, reason=no-declared-semantic-maximum |
-
-## Contract summary
+## External contract
 
 - `title`: RecipeRoute
 - `description`: One ordinary target/effect leaf selected by a recipe.
@@ -56,20 +24,61 @@
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| `artifact_rules` | no | array |  |
-| `associated_roles` | no | array |  |
-| `id` | yes | string |  |
-| `input_retrieval_policy` | no | string |  |
-| `intent` | no | object |  |
-| `kind` | no | string |  |
-| `operation_id` | yes | string |  |
-| `primary_role` | no | object (2 fields) |  |
-| `projections` | no | array |  |
-| `target_options` | no | object |  |
-| `target_registration_id` | yes | string |  |
-| `when` | no | array |  |
+| `artifact_rules` | no | type="array"; items=(#/components/schemas/ArtifactRule) |  |
+| `associated_roles` | no | type="array"; items=(type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$") |  |
+| `id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
+| `input_retrieval_policy` | no | type="string"; enum=["available-only","allow"] |  |
+| `intent` | no | type="object"; additional keys=`additionalProperties` |  |
+| `kind` | no | type="string"; const="operation" |  |
+| `operation_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
+| `primary_role` | no | anyOf=type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" \| type="null" |  |
+| `projections` | no | type="array"; items=(#/components/schemas/OperationProjection) |  |
+| `target_options` | no | type="object"; additional keys=`additionalProperties` |  |
+| `target_registration_id` | yes | type="string" |  |
+| `when` | no | type="array"; items=(#/components/schemas/FactPredicate) |  |
 
-## Complete owned contract
+### Progression, limits, and lifecycle
+
+| Dimension | Unit | Policy | Bounds or reason |
+|---|---|---|---|
+| cardinality | items | `operational_policy` | maximum=None, reason=no-declared-semantic-maximum |
+| cardinality | items | `operational_policy` | maximum=None, reason=no-declared-semantic-maximum |
+| cardinality | entries | `operational_policy` | maximum=None, reason=no-declared-semantic-maximum |
+| cardinality | items | `operational_policy` | maximum=None, reason=no-declared-semantic-maximum |
+| cardinality | entries | `operational_policy` | maximum=None, reason=no-declared-semantic-maximum |
+| cardinality | items | `operational_policy` | maximum=None, reason=no-declared-semantic-maximum |
+
+## Maintained corroboration
+
+### Referenced contract dossiers
+
+- [schemas: ArtifactRule](schemas-artifactrule.md)
+- [schemas: FactPredicate](schemas-factpredicate.md)
+- [schemas: JsonValue](schemas-jsonvalue.md)
+- [schemas: OperationProjection](schemas-operationprojection.md)
+
+## Governing policies
+
+- `compatibility/http-api/v1`
+- `extent-rule/no-semantic-maximum/v1`
+
+## Evidence
+
+### Qualification
+
+- `make operation-qualification`
+- `make compose-smoke`
+
+### Executable sources
+
+- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
+- `openapi:stove0` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+
+### Machine authority
+
+- `/external_contract/http_openapi/stove0/components/schemas/RecipeRoute`
+
+### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 

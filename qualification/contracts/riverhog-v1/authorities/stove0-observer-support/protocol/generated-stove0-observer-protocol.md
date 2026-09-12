@@ -4,6 +4,8 @@
 
 <!-- contract-element: protocol:stove0-observer-support:generated-stove0-observer-protocol:f27802529a -->
 
+Exact externally visible contract owned by this semantic dossier.
+
 | Audit field | Value |
 |---|---|
 | Authority | `stove0-observer-support` |
@@ -12,7 +14,27 @@
 | Contract elements | 1 |
 | Extent decisions | 0 |
 
-## Machine authority
+## External contract
+
+- Shape: items=additional keys=`http_operations`, `semantic_acceptance`, `structural_models` | "d7ee01cb66cac26b457031d54882a95ce2b1ae0e163df53590fee00ae1a8f0ce" | additional keys=`contract_identity`, `unknown_fields`, `unknown_protocol_revision` | "stove0-observer-schema-bundle/v1" | additional keys=`operations` | "stove0-content-observer/v1" | additional keys=`binding`, `identity`, `kind`, `unavailable_profile`
+
+## Governing policies
+
+- `compatibility/components/v1`
+
+## Evidence
+
+### Qualification
+
+- `make dist-smoke`
+- `make build`
+
+### Executable sources
+
+- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
+- `protocol:generated:stove0-observer` — `reference/stove0/packages/observer-support/src/stove0_observer_support/schemas.py::observer_schema_bundle`
+
+### Machine authority
 
 - `/external_contract/protocol_schemas/generated:stove0-observer/authorities`
 - `/external_contract/protocol_schemas/generated:stove0-observer/bundle_sha256`
@@ -22,22 +44,7 @@
 - `/external_contract/protocol_schemas/generated:stove0-observer/protocol`
 - `/external_contract/protocol_schemas/generated:stove0-observer/semantic_acceptance`
 
-## Effective policies
-
-- `compatibility/components/v1`
-
-## Executable sources and proof
-
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `protocol:generated:stove0-observer` — `reference/stove0/packages/observer-support/src/stove0_observer_support/schemas.py::observer_schema_bundle`
-- Proof: `make dist-smoke`
-- Proof: `make build`
-
-## Contract summary
-
-- Shape: array (7 items)
-
-## Complete owned contract
+### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 

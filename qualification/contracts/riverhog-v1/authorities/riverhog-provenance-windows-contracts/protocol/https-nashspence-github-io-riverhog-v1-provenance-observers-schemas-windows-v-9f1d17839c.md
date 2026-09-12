@@ -4,6 +4,8 @@
 
 <!-- contract-element: protocol:riverhog-provenance-windows-contracts:https-nashspence-github-io-riverhog-v1-pr-9f1d17839c:c6eda73b5b -->
 
+Exact externally visible contract owned by this semantic dossier.
+
 | Audit field | Value |
 |---|---|
 | Authority | `riverhog-provenance-windows-contracts` |
@@ -12,30 +14,7 @@
 | Contract elements | 1 |
 | Extent decisions | 2 |
 
-## Machine authority
-
-- `/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1provenance~1observers~1schemas~1windows-volume-context.json`
-
-## Effective policies
-
-- `compatibility/components/v1`
-- `extent-rule/extension-contract/v1`
-
-## Executable sources and proof
-
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `protocol:https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/windows-volume-context.json` — `reference/riverhog/provenance/contracts/windows/src/riverhog_provenance_windows_contracts/schemas/windows-volume-context.schema.json`
-- Proof: `make dist-smoke`
-- Proof: `make build`
-
-## Extent decisions
-
-| Dimension | Unit | Policy | Bounds/reason |
-|---|---|---|---|
-| value | schema-value | `extension_owned` | maximum=None, reason=independently-versioned-extension-authority |
-| value | schema-value | `extension_owned` | maximum=None, reason=independently-versioned-extension-authority |
-
-## Contract summary
+## External contract
 
 - `$id`: https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/windows-volume-context.json
 - `type`: object
@@ -44,19 +23,47 @@
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| `bytes_per_sector` | yes | integer |  |
-| `drive_type` | yes | integer |  |
-| `filesystem_flags` | yes | integer |  |
-| `filesystem_name` | yes | string |  |
-| `final_path` | yes | string |  |
-| `maximum_component_length` | yes | integer |  |
-| `mount_path` | yes | string |  |
-| `sectors_per_cluster` | yes | integer |  |
-| `volume_guid_path` | yes | string |  |
-| `volume_label` | yes | string |  |
-| `volume_serial_number` | yes | integer |  |
+| `bytes_per_sector` | yes | type="integer"; minimum=0 |  |
+| `drive_type` | yes | type="integer"; minimum=0 |  |
+| `filesystem_flags` | yes | type="integer"; minimum=0 |  |
+| `filesystem_name` | yes | type="string"; minLength=1 |  |
+| `final_path` | yes | type="string" |  |
+| `maximum_component_length` | yes | type="integer"; minimum=0 |  |
+| `mount_path` | yes | type="string" |  |
+| `sectors_per_cluster` | yes | type="integer"; minimum=0 |  |
+| `volume_guid_path` | yes | type="string" |  |
+| `volume_label` | yes | type="string" |  |
+| `volume_serial_number` | yes | type="integer"; minimum=0 |  |
 
-## Complete owned contract
+### Progression, limits, and lifecycle
+
+| Dimension | Unit | Policy | Bounds or reason |
+|---|---|---|---|
+| value | schema-value | `extension_owned` | maximum=None, reason=independently-versioned-extension-authority |
+| value | schema-value | `extension_owned` | maximum=None, reason=independently-versioned-extension-authority |
+
+## Governing policies
+
+- `compatibility/components/v1`
+- `extent-rule/extension-contract/v1`
+
+## Evidence
+
+### Qualification
+
+- `make dist-smoke`
+- `make build`
+
+### Executable sources
+
+- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
+- `protocol:https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/windows-volume-context.json` — `reference/riverhog/provenance/contracts/windows/src/riverhog_provenance_windows_contracts/schemas/windows-volume-context.schema.json`
+
+### Machine authority
+
+- `/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1provenance~1observers~1schemas~1windows-volume-context.json`
+
+### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 

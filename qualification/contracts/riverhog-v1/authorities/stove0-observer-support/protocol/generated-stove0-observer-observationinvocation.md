@@ -4,6 +4,8 @@
 
 <!-- contract-element: protocol:stove0-observer-support:generated-stove0-observer-observationinvocation:bbcbfd5cd0 -->
 
+Fence-bound invocation authority excluded from semantic request identity.
+
 | Audit field | Value |
 |---|---|
 | Authority | `stove0-observer-support` |
@@ -12,26 +14,35 @@
 | Contract elements | 1 |
 | Extent decisions | 17 |
 
-## Machine authority
+## External contract
 
-- `/external_contract/protocol_schemas/generated:stove0-observer/schemas/ObservationInvocation`
+- `title`: ObservationInvocation
+- `description`: Fence-bound invocation authority excluded from semantic request identity.
+- `type`: object
 
-## Effective policies
+### Fields
 
-- `compatibility/components/v1`
-- `extent-rule/no-semantic-maximum/v1`
-- `extent-rule/schema-bound/v1`
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| `claim_id` | yes | type="string"; minLength=1; maxLength=160 |  |
+| `fence` | yes | type="integer"; minimum=1 |  |
+| `request` | yes | #/$defs/ObservationRequest |  |
+| `runtime` | yes | #/$defs/ObserverRuntimeAuthority |  |
 
-## Executable sources and proof
+### Definitions
 
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `protocol:generated:stove0-observer` — `reference/stove0/packages/observer-support/src/stove0_observer_support/schemas.py::observer_schema_bundle`
-- Proof: `make dist-smoke`
-- Proof: `make build`
+| Definition | Shape |
+|---|---|
+| `ArtifactSubject` | type="object"; fields=`bytes`, `collection`, `id`, `media_type`, `path`, `role`, `sha256`; additional keys=`additionalProperties`, `required` |
+| `CollectionId` | type="integer"; minimum=1 |
+| `CollectionRootRef` | type="object"; fields=`archive_root_sha256`, `collection_id`, `content_identity`; additional keys=`additionalProperties`, `required` |
+| `JsonValue` | empty object |
+| `ObservationRequest` | type="object"; fields=`format`, `maximum_result_bytes`, `observer_contract_id`, `observer_contract_sha256`, `observer_descriptor_sha256`, `observer_registration_id`, `options`, `request_id`, `retrieval_policy`, `subjects`, `timeout_seconds`, `work_id`; additional keys=`additionalProperties`, `required` |
+| `ObserverRuntimeAuthority` | type="object"; fields=`allow_insecure_http`, `capability_token`, `riverhog_base_url`, `transport`, `workspace_assurance`; additional keys=`additionalProperties`, `required` |
 
-## Extent decisions
+### Progression, limits, and lifecycle
 
-| Dimension | Unit | Policy | Bounds/reason |
+| Dimension | Unit | Policy | Bounds or reason |
 |---|---|---|---|
 | length | characters | `contract_max` | maximum=160, minimum=1, reason=schema-maximum |
 | value | schema-value | `operational_policy` | maximum=None, reason=no-declared-semantic-maximum |
@@ -51,33 +62,29 @@
 | length | characters | `contract_max` | maximum=4096, minimum=1, reason=schema-maximum |
 | length | characters | `contract_max` | maximum=2048, minimum=1, reason=schema-maximum |
 
-## Contract summary
+## Governing policies
 
-- `title`: ObservationInvocation
-- `description`: Fence-bound invocation authority excluded from semantic request identity.
-- `type`: object
+- `compatibility/components/v1`
+- `extent-rule/no-semantic-maximum/v1`
+- `extent-rule/schema-bound/v1`
 
-### Fields
+## Evidence
 
-| Field | Required | Shape | Description |
-|---|---:|---|---|
-| `claim_id` | yes | string |  |
-| `fence` | yes | integer |  |
-| `request` | yes | #/$defs/ObservationRequest |  |
-| `runtime` | yes | #/$defs/ObserverRuntimeAuthority |  |
+### Qualification
 
-### Definitions
+- `make dist-smoke`
+- `make build`
 
-| Definition | Shape |
-|---|---|
-| `ArtifactSubject` | object |
-| `CollectionId` | integer |
-| `CollectionRootRef` | object |
-| `JsonValue` | object (0 fields) |
-| `ObservationRequest` | object |
-| `ObserverRuntimeAuthority` | object |
+### Executable sources
 
-## Complete owned contract
+- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
+- `protocol:generated:stove0-observer` — `reference/stove0/packages/observer-support/src/stove0_observer_support/schemas.py::observer_schema_bundle`
+
+### Machine authority
+
+- `/external_contract/protocol_schemas/generated:stove0-observer/schemas/ObservationInvocation`
+
+### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 

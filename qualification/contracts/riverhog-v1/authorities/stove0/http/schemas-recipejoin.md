@@ -4,6 +4,8 @@
 
 <!-- contract-element: http:stove0:schemas-recipejoin:36972c33e8 -->
 
+Exact externally visible contract owned by this semantic dossier.
+
 | Audit field | Value |
 |---|---|
 | Authority | `stove0` |
@@ -12,38 +14,7 @@
 | Contract elements | 1 |
 | Extent decisions | 4 |
 
-## Machine authority
-
-- `/external_contract/http_openapi/stove0/components/schemas/RecipeJoin`
-
-## Effective policies
-
-- `compatibility/http-api/v1`
-- `extent-rule/no-semantic-maximum/v1`
-
-## Executable sources and proof
-
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `openapi:stove0` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
-- Proof: `make operation-qualification`
-- Proof: `make compose-smoke`
-
-## Referenced contract dossiers
-
-- [schemas: JsonValue](schemas-jsonvalue.md)
-- [schemas: OperationProjection](schemas-operationprojection.md)
-- [schemas: RecipeJoinMember](schemas-recipejoinmember.md)
-
-## Extent decisions
-
-| Dimension | Unit | Policy | Bounds/reason |
-|---|---|---|---|
-| cardinality | entries | `operational_policy` | maximum=None, reason=no-declared-semantic-maximum |
-| cardinality | items | `operational_policy` | maximum=None, reason=no-declared-semantic-maximum |
-| cardinality | items | `operational_policy` | maximum=None, reason=no-declared-semantic-maximum |
-| cardinality | entries | `operational_policy` | maximum=None, reason=no-declared-semantic-maximum |
-
-## Contract summary
+## External contract
 
 - `title`: RecipeJoin
 - `type`: object
@@ -52,16 +23,54 @@
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| `id` | yes | string |  |
-| `input_retrieval_policy` | no | string |  |
-| `intent` | no | object |  |
-| `members` | yes | array |  |
-| `operation_id` | yes | string |  |
-| `projections` | no | array |  |
-| `target_options` | no | object |  |
-| `target_registration_id` | yes | string |  |
+| `id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
+| `input_retrieval_policy` | no | type="string"; enum=["available-only","allow"] |  |
+| `intent` | no | type="object"; additional keys=`additionalProperties` |  |
+| `members` | yes | type="array"; minItems=2; items=(#/components/schemas/RecipeJoinMember) |  |
+| `operation_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
+| `projections` | no | type="array"; items=(#/components/schemas/OperationProjection) |  |
+| `target_options` | no | type="object"; additional keys=`additionalProperties` |  |
+| `target_registration_id` | yes | type="string" |  |
 
-## Complete owned contract
+### Progression, limits, and lifecycle
+
+| Dimension | Unit | Policy | Bounds or reason |
+|---|---|---|---|
+| cardinality | entries | `operational_policy` | maximum=None, reason=no-declared-semantic-maximum |
+| cardinality | items | `operational_policy` | maximum=None, reason=no-declared-semantic-maximum |
+| cardinality | items | `operational_policy` | maximum=None, reason=no-declared-semantic-maximum |
+| cardinality | entries | `operational_policy` | maximum=None, reason=no-declared-semantic-maximum |
+
+## Maintained corroboration
+
+### Referenced contract dossiers
+
+- [schemas: JsonValue](schemas-jsonvalue.md)
+- [schemas: OperationProjection](schemas-operationprojection.md)
+- [schemas: RecipeJoinMember](schemas-recipejoinmember.md)
+
+## Governing policies
+
+- `compatibility/http-api/v1`
+- `extent-rule/no-semantic-maximum/v1`
+
+## Evidence
+
+### Qualification
+
+- `make operation-qualification`
+- `make compose-smoke`
+
+### Executable sources
+
+- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
+- `openapi:stove0` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+
+### Machine authority
+
+- `/external_contract/http_openapi/stove0/components/schemas/RecipeJoin`
+
+### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 

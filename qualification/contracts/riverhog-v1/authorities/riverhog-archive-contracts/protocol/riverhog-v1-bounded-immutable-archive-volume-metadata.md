@@ -4,6 +4,8 @@
 
 <!-- contract-element: protocol:riverhog-archive-contracts:riverhog-v1-bounded-immutable-archive-vol-a08fdea82e:4b65368595 -->
 
+Exact externally visible contract owned by this semantic dossier.
+
 | Audit field | Value |
 |---|---|
 | Authority | `riverhog-archive-contracts` |
@@ -12,27 +14,36 @@
 | Contract elements | 1 |
 | Extent decisions | 14 |
 
-## Machine authority
+## External contract
 
-- `/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1schemas~1collection-archive-volume-v1.schema.json`
+- `$id`: https://nashspence.github.io/riverhog/v1/schemas/collection-archive-volume-v1.schema.json
+- `title`: Riverhog v1 bounded immutable archive-volume metadata
+- `type`: object
 
-## Effective policies
+### Fields
 
-- `compatibility/components/v1`
-- `extent-rule/bounded-segment/v1`
-- `extent-rule/no-semantic-maximum/v1`
-- `extent-rule/schema-bound/v1`
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| `archive_generation` | yes | #/$defs/sha256 |  |
+| `archive_tree_sha256` | yes | #/$defs/sha256 |  |
+| `schema` | yes | const="collection-archive-volume/v1" |  |
+| `volume` | yes | oneOf=#/$defs/pack \| #/$defs/segment |  |
 
-## Executable sources and proof
+### Definitions
 
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `protocol:https://nashspence.github.io/riverhog/v1/schemas/collection-archive-volume-v1.schema.json` — `packages/riverhog-archive-contracts/schemas/collection-archive-volume-v1.schema.json`
-- Proof: `make dist-smoke`
-- Proof: `make build`
+| Definition | Shape |
+|---|---|
+| `age_state` | type="object"; fields=`format`, `header_b64`, `payload_nonce_b64`, `plaintext_size`; additional keys=`additionalProperties`, `required` |
+| `pack` | type="object"; fields=`age_state`, `files`, `id`, `index_sha256`, `kind`, `parts`, `path`, `plaintext_bytes`, `plan_sha256`, `sequence`, `source_bytes`; additional keys=`additionalProperties`, `required` |
+| `part` | type="object"; fields=`number`, `plaintext_bytes`, `plaintext_sha256`, `plaintext_start`, `stored_bytes`, `stored_sha256`; additional keys=`additionalProperties`, `required` |
+| `segment` | type="object"; fields=`age_state`, `file`, `id`, `kind`, `parts`, `path`, `plaintext_bytes`, `sequence`; additional keys=`additionalProperties`, `required` |
+| `segment_file` | type="object"; fields=`bytes`, `file_bytes`, `offset`, `path`, `sha256`; additional keys=`additionalProperties`, `required` |
+| `sequence` | type="string"; pattern="^[0-9a-f]{64}$" |
+| `sha256` | type="string"; pattern="^[0-9a-f]{64}$" |
 
-## Extent decisions
+### Progression, limits, and lifecycle
 
-| Dimension | Unit | Policy | Bounds/reason |
+| Dimension | Unit | Policy | Bounds or reason |
 |---|---|---|---|
 | value | schema-value | `operational_policy` | maximum=None, reason=no-declared-semantic-maximum |
 | value | schema-value | `contract_max` | maximum=50000, minimum=1, reason=schema-maximum |
@@ -49,34 +60,30 @@
 | length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
 | length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
 
-## Contract summary
+## Governing policies
 
-- `$id`: https://nashspence.github.io/riverhog/v1/schemas/collection-archive-volume-v1.schema.json
-- `title`: Riverhog v1 bounded immutable archive-volume metadata
-- `type`: object
+- `compatibility/components/v1`
+- `extent-rule/bounded-segment/v1`
+- `extent-rule/no-semantic-maximum/v1`
+- `extent-rule/schema-bound/v1`
 
-### Fields
+## Evidence
 
-| Field | Required | Shape | Description |
-|---|---:|---|---|
-| `archive_generation` | yes | #/$defs/sha256 |  |
-| `archive_tree_sha256` | yes | #/$defs/sha256 |  |
-| `schema` | yes | object (1 fields) |  |
-| `volume` | yes | object (1 fields) |  |
+### Qualification
 
-### Definitions
+- `make dist-smoke`
+- `make build`
 
-| Definition | Shape |
-|---|---|
-| `age_state` | object |
-| `pack` | object |
-| `part` | object |
-| `segment` | object |
-| `segment_file` | object |
-| `sequence` | string |
-| `sha256` | string |
+### Executable sources
 
-## Complete owned contract
+- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
+- `protocol:https://nashspence.github.io/riverhog/v1/schemas/collection-archive-volume-v1.schema.json` — `packages/riverhog-archive-contracts/schemas/collection-archive-volume-v1.schema.json`
+
+### Machine authority
+
+- `/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1schemas~1collection-archive-volume-v1.schema.json`
+
+### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 

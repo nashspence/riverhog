@@ -4,6 +4,8 @@
 
 <!-- contract-element: extent:extent-contract:extent-principle-operational-capacity:bf93940c4b -->
 
+Exact externally visible contract owned by this semantic dossier.
+
 | Audit field | Value |
 |---|---|
 | Authority | `extent-contract` |
@@ -12,26 +14,31 @@
 | Contract elements | 1 |
 | Extent decisions | 0 |
 
-## Machine authority
-
-- `/external_contract/extents/principles/operational_capacity`
-
-## Effective policies
-
-- `extent-principle/operational-capacity/v1`
-
-## Executable sources and proof
-
-- `extent:extent-contract` — `scripts/extent_contract.py::extent_projection`
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- Proof: `make contract-freeze`
-- Proof: `make operation-qualification`
-
-## Contract summary
+## External contract
 
 - Shape: "Capacity policy may explicitly reject, defer, or throttle work, but must not silently truncate it or become an undocumented semantic ceiling."
 
-## Complete owned contract
+## Governing policies
+
+- `extent-principle/operational-capacity/v1`
+
+## Evidence
+
+### Qualification
+
+- `make contract-freeze`
+- `make operation-qualification`
+
+### Executable sources
+
+- `extent:extent-contract` — `scripts/extent_contract.py::extent_projection`
+- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
+
+### Machine authority
+
+- `/external_contract/extents/principles/operational_capacity`
+
+### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 

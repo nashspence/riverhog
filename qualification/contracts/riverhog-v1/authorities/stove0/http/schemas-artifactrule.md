@@ -4,6 +4,8 @@
 
 <!-- contract-element: http:stove0:schemas-artifactrule:1d9ed84d81 -->
 
+Classify one path; first matching rule wins.
+
 | Audit field | Value |
 |---|---|
 | Authority | `stove0` |
@@ -12,22 +14,7 @@
 | Contract elements | 1 |
 | Extent decisions | 0 |
 
-## Machine authority
-
-- `/external_contract/http_openapi/stove0/components/schemas/ArtifactRule`
-
-## Effective policies
-
-- `compatibility/http-api/v1`
-
-## Executable sources and proof
-
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `openapi:stove0` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
-- Proof: `make operation-qualification`
-- Proof: `make compose-smoke`
-
-## Contract summary
+## External contract
 
 - `title`: ArtifactRule
 - `description`: Classify one path; first matching rule wins.
@@ -37,11 +24,31 @@
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| `glob` | no | string |  |
-| `media_type` | no | object (2 fields) |  |
-| `role` | no | string |  |
+| `glob` | no | type="string" |  |
+| `media_type` | no | anyOf=type="string" \| type="null" |  |
+| `role` | no | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
 
-## Complete owned contract
+## Governing policies
+
+- `compatibility/http-api/v1`
+
+## Evidence
+
+### Qualification
+
+- `make operation-qualification`
+- `make compose-smoke`
+
+### Executable sources
+
+- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
+- `openapi:stove0` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+
+### Machine authority
+
+- `/external_contract/http_openapi/stove0/components/schemas/ArtifactRule`
+
+### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 

@@ -4,6 +4,8 @@
 
 <!-- contract-element: http:riverhog:schemas-processingclaimplandocument:0e187c388f -->
 
+Exact externally visible contract owned by this semantic dossier.
+
 | Audit field | Value |
 |---|---|
 | Authority | `riverhog` |
@@ -12,40 +14,7 @@
 | Contract elements | 1 |
 | Extent decisions | 5 |
 
-## Machine authority
-
-- `/external_contract/http_openapi/riverhog/components/schemas/ProcessingClaimPlanDocument`
-
-## Effective policies
-
-- `compatibility/http-api/v1`
-- `extent-rule/no-semantic-maximum/v1`
-- `extent-rule/schema-bound/v1`
-
-## Executable sources and proof
-
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `openapi:riverhog` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
-- Proof: `make operation-qualification`
-- Proof: `make compose-smoke`
-
-## Referenced contract dossiers
-
-- [schemas: ArtifactSetAuthorityDocument](schemas-artifactsetauthoritydocument.md)
-- [schemas: ExactSetAuthorityDocument](schemas-exactsetauthoritydocument.md)
-- [schemas: OperationIdentityDocument](schemas-operationidentitydocument.md)
-
-## Extent decisions
-
-| Dimension | Unit | Policy | Bounds/reason |
-|---|---|---|---|
-| encoded-size | bytes | `contract_max` | maximum=16777216, reason=bounded-controller-evidence-envelope |
-| cardinality | entries | `operational_policy` | maximum=None, reason=no-declared-semantic-maximum |
-| length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
-| length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
-| length | characters | `contract_max` | maximum=64, minimum=1, reason=schema-maximum |
-
-## Contract summary
+## External contract
 
 - `title`: ProcessingClaimPlanDocument
 - `type`: object
@@ -55,16 +24,56 @@
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | `artifacts` | yes | #/components/schemas/ArtifactSetAuthorityDocument |  |
-| `controller_evidence` | yes | object |  |
-| `controller_evidence_sha256` | yes | string |  |
-| `execution_id` | yes | string |  |
+| `controller_evidence` | yes | type="object"; additional keys=`additionalProperties`, `x-riverhog-encoded-bytes-max`, `x-riverhog-extent` |  |
+| `controller_evidence_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| `execution_id` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 | `inputs` | yes | #/components/schemas/ExactSetAuthorityDocument |  |
 | `operation` | yes | #/components/schemas/OperationIdentityDocument |  |
-| `retirement_grace_seconds` | yes | integer |  |
-| `retirement_policy` | yes | string |  |
-| `sealed_at` | yes | string |  |
+| `retirement_grace_seconds` | yes | type="integer"; minimum=0 |  |
+| `retirement_policy` | yes | type="string"; enum=["retain","retire-after-verified-output"] |  |
+| `sealed_at` | yes | type="string"; minLength=1; maxLength=64 |  |
 
-## Complete owned contract
+### Progression, limits, and lifecycle
+
+| Dimension | Unit | Policy | Bounds or reason |
+|---|---|---|---|
+| encoded-size | bytes | `contract_max` | maximum=16777216, reason=bounded-controller-evidence-envelope |
+| cardinality | entries | `operational_policy` | maximum=None, reason=no-declared-semantic-maximum |
+| length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
+| length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
+| length | characters | `contract_max` | maximum=64, minimum=1, reason=schema-maximum |
+
+## Maintained corroboration
+
+### Referenced contract dossiers
+
+- [schemas: ArtifactSetAuthorityDocument](schemas-artifactsetauthoritydocument.md)
+- [schemas: ExactSetAuthorityDocument](schemas-exactsetauthoritydocument.md)
+- [schemas: OperationIdentityDocument](schemas-operationidentitydocument.md)
+
+## Governing policies
+
+- `compatibility/http-api/v1`
+- `extent-rule/no-semantic-maximum/v1`
+- `extent-rule/schema-bound/v1`
+
+## Evidence
+
+### Qualification
+
+- `make operation-qualification`
+- `make compose-smoke`
+
+### Executable sources
+
+- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
+- `openapi:riverhog` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+
+### Machine authority
+
+- `/external_contract/http_openapi/riverhog/components/schemas/ProcessingClaimPlanDocument`
+
+### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 

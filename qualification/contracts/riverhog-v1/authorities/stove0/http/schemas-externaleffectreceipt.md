@@ -4,6 +4,8 @@
 
 <!-- contract-element: http:stove0:schemas-externaleffectreceipt:ceb57cc4bd -->
 
+Exact externally visible contract owned by this semantic dossier.
+
 | Audit field | Value |
 |---|---|
 | Authority | `stove0` |
@@ -12,30 +14,28 @@
 | Contract elements | 1 |
 | Extent decisions | 9 |
 
-## Machine authority
+## External contract
 
-- `/external_contract/http_openapi/stove0/components/schemas/ExternalEffectReceipt`
+- `title`: ExternalEffectReceipt
+- `type`: object
 
-## Effective policies
+### Fields
 
-- `compatibility/http-api/v1`
-- `extent-rule/no-semantic-maximum/v1`
-- `extent-rule/schema-bound/v1`
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| `execution_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| `format` | no | type="string"; const="stove0-external-effect-receipt/v1" |  |
+| `job_id` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| `operation_contract_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| `plan_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| `receipt_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| `request_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| `result` | yes | type="object"; additional keys=`additionalProperties`, `x-riverhog-encoded-bytes-max`, `x-riverhog-extent` |  |
+| `target_contract_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 
-## Executable sources and proof
+### Progression, limits, and lifecycle
 
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `openapi:stove0` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
-- Proof: `make operation-qualification`
-- Proof: `make compose-smoke`
-
-## Referenced contract dossiers
-
-- [schemas: JsonValue](schemas-jsonvalue.md)
-
-## Extent decisions
-
-| Dimension | Unit | Policy | Bounds/reason |
+| Dimension | Unit | Policy | Bounds or reason |
 |---|---|---|---|
 | length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
 | length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
@@ -47,26 +47,35 @@
 | cardinality | entries | `operational_policy` | maximum=None, reason=no-declared-semantic-maximum |
 | length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
 
-## Contract summary
+## Maintained corroboration
 
-- `title`: ExternalEffectReceipt
-- `type`: object
+### Referenced contract dossiers
 
-### Fields
+- [schemas: JsonValue](schemas-jsonvalue.md)
 
-| Field | Required | Shape | Description |
-|---|---:|---|---|
-| `execution_sha256` | yes | string |  |
-| `format` | no | string |  |
-| `job_id` | yes | string |  |
-| `operation_contract_sha256` | yes | string |  |
-| `plan_sha256` | yes | string |  |
-| `receipt_sha256` | yes | string |  |
-| `request_sha256` | yes | string |  |
-| `result` | yes | object |  |
-| `target_contract_sha256` | yes | string |  |
+## Governing policies
 
-## Complete owned contract
+- `compatibility/http-api/v1`
+- `extent-rule/no-semantic-maximum/v1`
+- `extent-rule/schema-bound/v1`
+
+## Evidence
+
+### Qualification
+
+- `make operation-qualification`
+- `make compose-smoke`
+
+### Executable sources
+
+- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
+- `openapi:stove0` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+
+### Machine authority
+
+- `/external_contract/http_openapi/stove0/components/schemas/ExternalEffectReceipt`
+
+### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 

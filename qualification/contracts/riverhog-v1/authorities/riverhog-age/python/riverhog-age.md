@@ -4,6 +4,8 @@
 
 <!-- contract-element: python:riverhog-age:riverhog-age:041d136a3a -->
 
+Exact externally visible contract owned by this semantic dossier.
+
 | Audit field | Value |
 |---|---|
 | Authority | `riverhog-age` |
@@ -12,30 +14,35 @@
 | Contract elements | 1 |
 | Extent decisions | 0 |
 
-## Machine authority
-
-- `/external_contract/python/2`
-
-## Effective policies
-
-- `compatibility/python-api/v1`
-
-## Executable sources and proof
-
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `python:riverhog-age` — `packages/riverhog-age/src/riverhog_age/__init__.py::<module>`
-- Proof: `make dist-smoke`
-- Proof: `make build`
-
-## Contract summary
+## External contract
 
 | Field | Shape |
 |---|---|
 | `distribution` | "riverhog-age" |
-| `exports` | object (21 fields) |
+| `exports` | additional keys=`AEAD_TAG_SIZE`, `AgeAlignedUnitPlan`, `AgeDecryptError`, `AgeFormatError`, `CHUNK_SIZE`, `DEFAULT_CHUNKS_PER_AGE_UNIT`, `DEFAULT_SCRYPT_LOG_N`, `PAYLOAD_NONCE_SIZE`, `ResumableAgeScryptSession`, `UploadState`, `age_chunk_count_for_plaintext_len`, `age_ciphertext_len_for_plaintext_len`, `decrypt_age_scrypt`, `encrypt_age_scrypt`, `iter_decrypt_age_scrypt`, `iter_decrypt_payload_chunks`, `make_age_aligned_unit_plans`, `parse_scrypt_header`, `parse_scrypt_header_from_age_file`, `plaintext_bytes_for_ciphertext_offset`, `split_plaintext_chunks` |
 | `module` | "riverhog_age" |
 
-## Complete owned contract
+## Governing policies
+
+- `compatibility/python-api/v1`
+
+## Evidence
+
+### Qualification
+
+- `make dist-smoke`
+- `make build`
+
+### Executable sources
+
+- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
+- `python:riverhog-age` — `packages/riverhog-age/src/riverhog_age/__init__.py::<module>`
+
+### Machine authority
+
+- `/external_contract/python/2`
+
+### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 

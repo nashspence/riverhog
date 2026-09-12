@@ -4,6 +4,8 @@
 
 <!-- contract-element: protocol:stove0-review-sampler-support:generated-stove0-review-sampler-protocol:8f6ec4c996 -->
 
+Exact externally visible contract owned by this semantic dossier.
+
 | Audit field | Value |
 |---|---|
 | Authority | `stove0-review-sampler-support` |
@@ -12,7 +14,27 @@
 | Contract elements | 1 |
 | Extent decisions | 0 |
 
-## Machine authority
+## External contract
+
+- Shape: items=additional keys=`http_operations`, `semantic_acceptance`, `structural_models` | "dbbc9320e223fb591a30981339ba8c7a7f8b7de2358ce3a3cc38c2c7fbf78119" | "stove0-review-sampler-schema-bundle/v1" | additional keys=`operations` | "stove0-review-sampler/v1" | additional keys=`kind`, `validator`
+
+## Governing policies
+
+- `compatibility/components/v1`
+
+## Evidence
+
+### Qualification
+
+- `make dist-smoke`
+- `make build`
+
+### Executable sources
+
+- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
+- `protocol:generated:stove0-review-sampler` — `reference/stove0/targets/review/sampler/support/src/stove0_review_sampler_support/schemas.py::sampler_schema_bundle`
+
+### Machine authority
 
 - `/external_contract/protocol_schemas/generated:stove0-review-sampler/authorities`
 - `/external_contract/protocol_schemas/generated:stove0-review-sampler/bundle_sha256`
@@ -21,22 +43,7 @@
 - `/external_contract/protocol_schemas/generated:stove0-review-sampler/protocol`
 - `/external_contract/protocol_schemas/generated:stove0-review-sampler/semantic_acceptance`
 
-## Effective policies
-
-- `compatibility/components/v1`
-
-## Executable sources and proof
-
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `protocol:generated:stove0-review-sampler` — `reference/stove0/targets/review/sampler/support/src/stove0_review_sampler_support/schemas.py::sampler_schema_bundle`
-- Proof: `make dist-smoke`
-- Proof: `make build`
-
-## Contract summary
-
-- Shape: array (6 items)
-
-## Complete owned contract
+### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 

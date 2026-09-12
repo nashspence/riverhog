@@ -4,6 +4,8 @@
 
 <!-- contract-element: protocol:riverhog-storage-adapter-support:generated-riverhog-storage-adapter-writesegmentpage:f462fcb7a3 -->
 
+One bounded page under an adapter-owned immutable traversal view.
+
 | Audit field | Value |
 |---|---|
 | Authority | `riverhog-storage-adapter-support` |
@@ -12,33 +14,7 @@
 | Contract elements | 1 |
 | Extent decisions | 4 |
 
-## Machine authority
-
-- `/external_contract/protocol_schemas/generated:riverhog-storage-adapter/schemas/WriteSegmentPage`
-
-## Effective policies
-
-- `compatibility/components/v1`
-- `extent-rule/bounded-segment/v1`
-- `extent-rule/schema-bound/v1`
-
-## Executable sources and proof
-
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `protocol:generated:riverhog-storage-adapter` — `packages/riverhog-storage-adapter-support/src/riverhog_storage_adapter_support/schemas.py::storage_adapter_schema_bundle`
-- Proof: `make dist-smoke`
-- Proof: `make build`
-
-## Extent decisions
-
-| Dimension | Unit | Policy | Bounds/reason |
-|---|---|---|---|
-| cardinality | items | `segmented_no_total_max` | maximum=128, minimum=None, reason=bounded-storage-write-segment-page |
-| length | characters | `contract_max` | maximum=4000, minimum=1, reason=schema-maximum |
-| length | characters | `contract_max` | maximum=4000, minimum=1, reason=schema-maximum |
-| length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
-
-## Contract summary
+## External contract
 
 - `title`: WriteSegmentPage
 - `description`: One bounded page under an adapter-owned immutable traversal view.
@@ -48,21 +24,52 @@
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| `completion` | no | object (2 fields) |  |
-| `next_after_number` | no | object (3 fields) |  |
-| `segments` | no | array |  |
+| `completion` | no | anyOf=#/$defs/WriteCompletionAuthority \| type="null" |  |
+| `next_after_number` | no | anyOf=type="integer"; minimum=1 \| type="null" |  |
+| `segments` | no | type="array"; maxItems=128; items=(#/$defs/WriteSegmentReceipt); additional keys=`x-riverhog-extent` |  |
 | `session` | yes | #/$defs/WriteSession |  |
-| `traversal_token` | yes | string |  |
+| `traversal_token` | yes | type="string"; minLength=1; maxLength=4000 |  |
 
 ### Definitions
 
 | Definition | Shape |
 |---|---|
-| `WriteCompletionAuthority` | object |
-| `WriteSegmentReceipt` | object |
-| `WriteSession` | object |
+| `WriteCompletionAuthority` | type="object"; fields=`authority_token`, `segment_count`, `stored_bytes`; additional keys=`additionalProperties`, `required` |
+| `WriteSegmentReceipt` | type="object"; fields=`number`, `segment_token`, `stored_bytes`, `stored_sha256`; additional keys=`additionalProperties`, `required` |
+| `WriteSession` | type="object"; fields=`expected_bytes`, `object_path`, `write_token`; additional keys=`additionalProperties`, `required` |
 
-## Complete owned contract
+### Progression, limits, and lifecycle
+
+| Dimension | Unit | Policy | Bounds or reason |
+|---|---|---|---|
+| cardinality | items | `segmented_no_total_max` | maximum=128, minimum=None, reason=bounded-storage-write-segment-page |
+| length | characters | `contract_max` | maximum=4000, minimum=1, reason=schema-maximum |
+| length | characters | `contract_max` | maximum=4000, minimum=1, reason=schema-maximum |
+| length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
+
+## Governing policies
+
+- `compatibility/components/v1`
+- `extent-rule/bounded-segment/v1`
+- `extent-rule/schema-bound/v1`
+
+## Evidence
+
+### Qualification
+
+- `make dist-smoke`
+- `make build`
+
+### Executable sources
+
+- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
+- `protocol:generated:riverhog-storage-adapter` — `packages/riverhog-storage-adapter-support/src/riverhog_storage_adapter_support/schemas.py::storage_adapter_schema_bundle`
+
+### Machine authority
+
+- `/external_contract/protocol_schemas/generated:riverhog-storage-adapter/schemas/WriteSegmentPage`
+
+### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 

@@ -4,6 +4,8 @@
 
 <!-- contract-element: http:stove0:schemas-stove0lifecycleevent:31fdc50ad8 -->
 
+Exact externally visible contract owned by this semantic dossier.
+
 | Audit field | Value |
 |---|---|
 | Authority | `stove0` |
@@ -12,22 +14,16 @@
 | Contract elements | 1 |
 | Extent decisions | 0 |
 
-## Machine authority
+## External contract
 
-- `/external_contract/http_openapi/stove0/components/schemas/Stove0LifecycleEvent`
+| Field | Shape |
+|---|---|
+| `discriminator` | additional keys=`mapping`, `propertyName` |
+| `oneOf` | items=#/components/schemas/WorkCreatedEvent \| #/components/schemas/WorkUpdatedEvent \| #/components/schemas/BranchSetAdmittedEvent \| #/components/schemas/JoinAdmittedEvent \| #/components/schemas/EvaluationCreatedEvent \| #/components/schemas/EvaluationUpdatedEvent |
 
-## Effective policies
+## Maintained corroboration
 
-- `compatibility/http-api/v1`
-
-## Executable sources and proof
-
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `openapi:stove0` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
-- Proof: `make operation-qualification`
-- Proof: `make compose-smoke`
-
-## Referenced contract dossiers
+### Referenced contract dossiers
 
 - [schemas: BranchSetAdmittedEvent](schemas-branchsetadmittedevent.md)
 - [schemas: EvaluationCreatedEvent](schemas-evaluationcreatedevent.md)
@@ -36,14 +32,27 @@
 - [schemas: WorkCreatedEvent](schemas-workcreatedevent.md)
 - [schemas: WorkUpdatedEvent](schemas-workupdatedevent.md)
 
-## Contract summary
+## Governing policies
 
-| Field | Shape |
-|---|---|
-| `discriminator` | object (2 fields) |
-| `oneOf` | array (6 items) |
+- `compatibility/http-api/v1`
 
-## Complete owned contract
+## Evidence
+
+### Qualification
+
+- `make operation-qualification`
+- `make compose-smoke`
+
+### Executable sources
+
+- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
+- `openapi:stove0` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+
+### Machine authority
+
+- `/external_contract/http_openapi/stove0/components/schemas/Stove0LifecycleEvent`
+
+### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 

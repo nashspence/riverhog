@@ -4,6 +4,8 @@
 
 <!-- contract-element: http:riverhog:post-v1-collection-upload-sessions-collec-ab6864a026:fb1b215b94 -->
 
+Add Collection Upload Session Tags
+
 | Audit field | Value |
 |---|---|
 | Authority | `riverhog` |
@@ -12,32 +14,7 @@
 | Contract elements | 1 |
 | Extent decisions | 0 |
 
-## Machine authority
-
-- `/external_contract/http_openapi/riverhog/paths/~1v1~1collection-upload-sessions~1{collection_id}~1tags/post`
-
-## Effective policies
-
-- `compatibility/http-api/v1`
-
-## Executable sources and proof
-
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `openapi:riverhog` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
-- Proof: `make operation-qualification`
-- Proof: `make compose-smoke`
-
-## Related interface records
-
-- [Operation parity: add_collection_upload_session_tags](../operation/operation-parity-add-collection-upload-session-tags.md)
-
-## Referenced contract dossiers
-
-- [schemas: AddCollectionUploadTagsRequest](schemas-addcollectionuploadtagsrequest.md)
-- [schemas: CollectionUploadTagsOut](schemas-collectionuploadtagsout.md)
-- [schemas: ErrorResponse](schemas-errorresponse.md)
-
-## Contract summary
+## External contract
 
 - `operationId`: add_collection_upload_session_tags
 - `summary`: Add Collection Upload Session Tags
@@ -47,7 +24,7 @@
 
 | Name | In | Required | Schema |
 |---|---|---:|---|
-| `collection_id` | path | yes | integer |
+| `collection_id` | path | yes | type="integer"; minimum=1 |
 
 ### Request body
 
@@ -63,7 +40,39 @@
 | `403` | Forbidden |
 | `500` | Internal Server Error |
 
-## Complete owned contract
+## Maintained corroboration
+
+### Related interface records
+
+- [Operation parity: add_collection_upload_session_tags](../operation/operation-parity-add-collection-upload-session-tags.md)
+
+### Referenced contract dossiers
+
+- [schemas: AddCollectionUploadTagsRequest](schemas-addcollectionuploadtagsrequest.md)
+- [schemas: CollectionUploadTagsOut](schemas-collectionuploadtagsout.md)
+- [schemas: ErrorResponse](schemas-errorresponse.md)
+
+## Governing policies
+
+- `compatibility/http-api/v1`
+
+## Evidence
+
+### Qualification
+
+- `make operation-qualification`
+- `make compose-smoke`
+
+### Executable sources
+
+- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
+- `openapi:riverhog` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+
+### Machine authority
+
+- `/external_contract/http_openapi/riverhog/paths/~1v1~1collection-upload-sessions~1{collection_id}~1tags/post`
+
+### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 

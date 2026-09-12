@@ -4,6 +4,8 @@
 
 <!-- contract-element: boundary:riverhog-provenance-contracts:riverhog-provenance-contracts-component-boundary:6aca73c088 -->
 
+Exact externally visible contract owned by this semantic dossier.
+
 | Audit field | Value |
 |---|---|
 | Authority | `riverhog-provenance-contracts` |
@@ -12,33 +14,38 @@
 | Contract elements | 1 |
 | Extent decisions | 0 |
 
-## Machine authority
-
-- `/boundaries/components/9`
-
-## Effective policies
-
-- `boundary/frozen-authority/v1`
-
-## Executable sources and proof
-
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `release:release.toml` — `release.toml`
-- Proof: `make release-check`
-- Proof: `make build`
-
-## Contract summary
+## External contract
 
 | Field | Shape |
 |---|---|
-| `console_scripts` | object (0 fields) |
-| `dependencies` | array (0 items) |
+| `console_scripts` | empty object |
+| `dependencies` | [] |
 | `distribution` | "riverhog-provenance-contracts" |
-| `optional_dependencies` | object (0 fields) |
+| `optional_dependencies` | empty object |
 | `path` | "packages/riverhog-provenance-contracts" |
 | `role` | "reusable_library" |
 
-## Complete owned contract
+## Governing policies
+
+- `boundary/frozen-authority/v1`
+
+## Evidence
+
+### Qualification
+
+- `make release-check`
+- `make build`
+
+### Executable sources
+
+- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
+- `release:release.toml` — `release.toml`
+
+### Machine authority
+
+- `/boundaries/components/9`
+
+### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 

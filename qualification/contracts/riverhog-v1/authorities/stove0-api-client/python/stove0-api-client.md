@@ -4,6 +4,8 @@
 
 <!-- contract-element: python:stove0-api-client:stove0-api-client:0462b65b31 -->
 
+Exact externally visible contract owned by this semantic dossier.
+
 | Audit field | Value |
 |---|---|
 | Authority | `stove0-api-client` |
@@ -12,30 +14,35 @@
 | Contract elements | 1 |
 | Extent decisions | 0 |
 
-## Machine authority
-
-- `/external_contract/python/15`
-
-## Effective policies
-
-- `compatibility/python-api/v1`
-
-## Executable sources and proof
-
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `python:stove0-api-client` — `reference/stove0/packages/api-client/src/stove0_api_client/__init__.py::<module>`
-- Proof: `make dist-smoke`
-- Proof: `make build`
-
-## Contract summary
+## External contract
 
 | Field | Shape |
 |---|---|
 | `distribution` | "stove0-api-client" |
-| `exports` | object (3 fields) |
+| `exports` | additional keys=`HealthResponse`, `Stove0ApiClient`, `Stove0ApiError` |
 | `module` | "stove0_api_client" |
 
-## Complete owned contract
+## Governing policies
+
+- `compatibility/python-api/v1`
+
+## Evidence
+
+### Qualification
+
+- `make dist-smoke`
+- `make build`
+
+### Executable sources
+
+- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
+- `python:stove0-api-client` — `reference/stove0/packages/api-client/src/stove0_api_client/__init__.py::<module>`
+
+### Machine authority
+
+- `/external_contract/python/15`
+
+### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 

@@ -4,6 +4,8 @@
 
 <!-- contract-element: http:stove0:get-v1-admission-policies:5153661f2e -->
 
+List Admission Policies
+
 | Audit field | Value |
 |---|---|
 | Authority | `stove0` |
@@ -12,31 +14,7 @@
 | Contract elements | 1 |
 | Extent decisions | 0 |
 
-## Machine authority
-
-- `/external_contract/http_openapi/stove0/paths/~1v1~1admission-policies/get`
-
-## Effective policies
-
-- `compatibility/http-api/v1`
-
-## Executable sources and proof
-
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `openapi:stove0` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
-- Proof: `make operation-qualification`
-- Proof: `make compose-smoke`
-
-## Related interface records
-
-- [Operation parity: list_admission_policies](../operation/operation-parity-list-admission-policies.md)
-
-## Referenced contract dossiers
-
-- [schemas: AdmissionPolicyCatalogView](schemas-admissionpolicycatalogview.md)
-- [schemas: ErrorResponse](schemas-errorresponse.md)
-
-## Contract summary
+## External contract
 
 - `operationId`: list_admission_policies
 - `summary`: List Admission Policies
@@ -51,7 +29,38 @@
 | `403` | Forbidden |
 | `500` | Internal Server Error |
 
-## Complete owned contract
+## Maintained corroboration
+
+### Related interface records
+
+- [Operation parity: list_admission_policies](../operation/operation-parity-list-admission-policies.md)
+
+### Referenced contract dossiers
+
+- [schemas: AdmissionPolicyCatalogView](schemas-admissionpolicycatalogview.md)
+- [schemas: ErrorResponse](schemas-errorresponse.md)
+
+## Governing policies
+
+- `compatibility/http-api/v1`
+
+## Evidence
+
+### Qualification
+
+- `make operation-qualification`
+- `make compose-smoke`
+
+### Executable sources
+
+- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
+- `openapi:stove0` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+
+### Machine authority
+
+- `/external_contract/http_openapi/stove0/paths/~1v1~1admission-policies/get`
+
+### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 

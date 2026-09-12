@@ -4,6 +4,8 @@
 
 <!-- contract-element: python:riverhog-client:riverhog-client-transform:c62128b3c3 -->
 
+Exact externally visible contract owned by this semantic dossier.
+
 | Audit field | Value |
 |---|---|
 | Authority | `riverhog-client` |
@@ -12,30 +14,35 @@
 | Contract elements | 1 |
 | Extent decisions | 0 |
 
-## Machine authority
-
-- `/external_contract/python/6`
-
-## Effective policies
-
-- `compatibility/python-api/v1`
-
-## Executable sources and proof
-
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `python:riverhog-client:riverhog_client.transform` — `packages/riverhog-client/src/riverhog_client/transform/__init__.py::<module>`
-- Proof: `make dist-smoke`
-- Proof: `make build`
-
-## Contract summary
+## External contract
 
 | Field | Shape |
 |---|---|
 | `distribution` | "riverhog-client" |
-| `exports` | object (16 fields) |
+| `exports` | additional keys=`CancellationCheck`, `CapabilityApiClient`, `ClaimedArtifact`, `ClaimedCollectionApi`, `ClaimedCollectionReader`, `ClaimedCollectionRuntime`, `ClaimedCollectionRuntimeRegistry`, `ClaimedRetrieval`, `CollectionTransformRuntime`, `DerivedCollectionReceipt`, `DerivedCollectionSpec`, `DerivedCollectionWriter`, `Heartbeat`, `IncrementalDerivedCollectionWriter`, `TransformWorkspace`, `WorkspaceAssurance` |
 | `module` | "riverhog_client.transform" |
 
-## Complete owned contract
+## Governing policies
+
+- `compatibility/python-api/v1`
+
+## Evidence
+
+### Qualification
+
+- `make dist-smoke`
+- `make build`
+
+### Executable sources
+
+- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
+- `python:riverhog-client:riverhog_client.transform` — `packages/riverhog-client/src/riverhog_client/transform/__init__.py::<module>`
+
+### Machine authority
+
+- `/external_contract/python/6`
+
+### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 

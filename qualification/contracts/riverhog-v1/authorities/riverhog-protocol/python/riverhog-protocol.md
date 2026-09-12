@@ -4,6 +4,8 @@
 
 <!-- contract-element: python:riverhog-protocol:riverhog-protocol:5514955137 -->
 
+Exact externally visible contract owned by this semantic dossier.
+
 | Audit field | Value |
 |---|---|
 | Authority | `riverhog-protocol` |
@@ -12,30 +14,35 @@
 | Contract elements | 1 |
 | Extent decisions | 0 |
 
-## Machine authority
-
-- `/external_contract/python/7`
-
-## Effective policies
-
-- `compatibility/python-api/v1`
-
-## Executable sources and proof
-
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `python:riverhog-protocol` — `packages/riverhog-protocol/src/riverhog_protocol/__init__.py::<module>`
-- Proof: `make dist-smoke`
-- Proof: `make build`
-
-## Contract summary
+## External contract
 
 | Field | Shape |
 |---|---|
 | `distribution` | "riverhog-protocol" |
-| `exports` | object (196 fields) |
+| `exports` | additional keys=`ApplicationAccessSort`, `ApplicationKeySort`, `ApplicationSort`, `ArchiveCopySort`, `ArchiveCopyState`, `ArchiveCopyStoreSelectionDocument`, `ArchiveStoreName`, `ArchiveStoreSort`, `ArtifactDisposition`, `BadRequest`, `CATALOG_SYNC_CURSOR_BYTES_MAX`, `CATALOG_SYNC_FORMAT`, `CATALOG_SYNC_PAGE_SIZE_MAX`, `COLLECTION_DESCRIPTION_DOCUMENT_BYTES_MAX`, `COLLECTION_DESCRIPTION_DOCUMENT_FORMAT`, `COLLECTION_DESCRIPTION_RELATIVE_PATH`, `COLLECTION_DESCRIPTION_UTF8_BYTES_MAX`, `COLLECTION_FINALIZED`, `COLLECTION_TAG_HEAD_FORMAT`, `COLLECTION_TAG_HEAD_RELATIVE_PATH`, `COLLECTION_TAG_NODE_BYTES_MAX`, `COLLECTION_TAG_NODE_FORMAT`, `COLLECTION_TAG_NODE_RELATIVE_PREFIX`, `COLLECTION_TAG_PAGE_SIZE_MAX`, `COLLECTION_TAG_PAGE_UTF8_BYTES_MAX`, `COLLECTION_TAG_REQUEST_MEMBERS_MAX`, `COLLECTION_TAG_UTF8_BYTES_MAX`, `COLLECTION_UPLOAD_FILE_BATCH_MAX`, `COLLECTION_UPLOAD_PROVENANCE_APPEND_BYTES_MAX`, `COLLECTION_UPLOAD_UNIT_SOURCE_MAX`, `COLLECTION_UPLOAD_WORK_BATCH_MAX`, `COLLECTION_WAKE_EVENT_TYPES`, `CapabilityAction`, `CapturedFileProvenanceBinding`, `CatalogSyncChange`, `CatalogSyncChangePage`, `CatalogSyncCheckpoint`, `CatalogSyncCollectionPage`, `CatalogSyncCursor`, `CatalogSyncCursorExpired`, `CatalogSyncDelete`, `CatalogSyncDescriptor`, `CatalogSyncHistoryExpired`, `CatalogSyncIdentity`, `CatalogSyncPosition`, `CatalogSyncRevision`, `CatalogSyncSourceChanged`, `CatalogSyncUpsert`, `CatalogSyncViewChanged`, `ClaimState`, `CollectionArtifactIdentity`, `CollectionArtifactIdentityDocument`, `CollectionDerivation`, `CollectionDerivationDocument`, `CollectionDerivationResponseDocument`, `CollectionDescription`, `CollectionDescriptionDocument`, `CollectionId`, `CollectionIdParameter`, `CollectionProcessingOutcomeIdentity`, `CollectionRootIdentity`, `CollectionRootIdentityDocument`, `CollectionSort`, `CollectionTag`, `CollectionTagChild`, `CollectionTagHeadDocument`, `CollectionTagIntegrityError`, `CollectionTagNode`, `CollectionTagNodeMissing`, `CollectionTagNodeStore`, `CollectionTagSet`, `CollectionTagSetRoot`, `CollectionUploadArtifactCustodyReceiptDocument`, `CollectionUploadCustodyMode`, `CollectionUploadCustodyObjectDocument`, `CollectionUploadFileBatchDocument`, `CollectionUploadFileIn`, `CollectionUploadProvenanceJournalCreateDocument`, `CollectionUploadProvenanceJournalState`, `CollectionUploadProvenanceJournalStatusDocument`, `CollectionUploadRawDigestBatchDocument`, `CollectionUploadRawDigestProgressDocument`, `CollectionUploadRawPartsIn`, `CollectionUploadRegistrationConstraintsDocument`, `CollectionUploadSort`, `CollectionUploadState`, `CollectionUploadUnitAssignmentDocument`, `CollectionUploadUnitDocument`, `CollectionUploadUnitNumber`, `CollectionUploadUnitSourceDocument`, `CollectionUploadUnitState`, `CollectionUploadUnitWorkDocument`, `CollectionUploadVolumeId`, `CollectionUploadVolumeKind`, `CollectionUploadVolumeSummaryDocument`, `CollectionUploadWorkBatchDocument`, `Conflict`, `DERIVATION_DISPOSITION_EVIDENCE_PREFIX`, `DERIVATION_EVIDENCE_ORDINAL_HEX_WIDTH`, `DERIVATION_EVIDENCE_PATH`, `DERIVATION_OUTPUT_EVIDENCE_PREFIX`, `DownloadAllowanceExceeded`, `DownloadQuotaSort`, `FileProvenanceBinding`, `Forbidden`, `HashMismatch`, `ImmutableFileIdentityDocument`, `InvalidPath`, `InvalidRange`, `InvalidState`, `LifecycleEventCursor`, `MAX_CATALOG_SYNC_REVISION`, `MAX_COLLECTION_DESCRIPTION_REVISION`, `MAX_COLLECTION_TAG_REVISION`, `MAX_LIFECYCLE_EVENT_SEQUENCE`, `MemoryCollectionTagNodeStore`, `NotFound`, `OmittedFileProvenanceBinding`, `OperationIdentity`, `OperationIdentityDocument`, `PORTABLE_COLLECTION_FORMAT`, `PORTABLE_COLLECTION_INVENTORY_PAGE_FORMAT`, `PRODUCER_EVIDENCE_PATH`, `PortableCollectionError`, `PortableCollectionFile`, `PortableCollectionHeader`, `PortableCollectionIdentityBuilder`, `PortableCollectionInventoryAuthority`, `PortableCollectionInventoryPage`, `PreconditionFailed`, `PreconditionRequired`, `ProcessingClaimAbandonDocument`, `ProcessingClaimCreateDocument`, `ProcessingClaimDocument`, `ProcessingClaimFenceDocument`, `ProcessingClaimId`, `ProcessingClaimOutcomesSettleDocument`, `ProcessingClaimPageDocument`, `ProcessingClaimPlanSealDocument`, `ProcessingClaimRenewDocument`, `ProcessingClaimRestartDocument`, `ProcessingClaimSettleDocument`, `ProcessingClaimSort`, `ProcessingOutcomeBindingDocument`, `ProcessingOutcomeIdentityDocument`, `ProducerEvidence`, `ProvenanceSort`, `ProvenanceStatus`, `RETRIEVAL_FILE_BATCH_MAX`, `RIVERHOG_ERROR_TYPES_BY_CODE`, `RIVERHOG_EVENT_TYPES`, `RIVERHOG_HTTP_ERROR_AUTHORITY`, `RecipeIdentity`, `RecipeIdentityDocument`, `RetirementClaimReferenceDocument`, `RetrievalCacheProtection`, `RetrievalCacheSort`, `RetrievalCacheState`, `RetrievalCacheStoreName`, `RetrievalFileReferenceDocument`, `RetrievalFileReferenceSetDocument`, `RiverhogError`, `RiverhogEventPage`, `RiverhogLifecycleEvent`, `SearchSort`, `ServiceUnavailable`, `SortOrder`, `TransformCapabilityCreateDocument`, `TransformCapabilityDocument`, `TransformIntent`, `Unauthorized`, `canonical_json_bytes`, `canonical_json_sha256`, `collection_description_identity`, `collection_id_for_event`, `collection_tag_head_identity`, `collection_tag_node_digest`, `collection_tag_node_path`, `collection_tag_set_identity`, `collection_tag_sha256`, `collection_upload_path_order_key`, `collection_upload_raw_digest_summary`, `decode_collection_tag_node`, `derivation_evidence_page_path`, `encode_collection_tag_node`, `error_type_for_code`, `portable_collection_inventory_identity`, `validate_archive_store_name`, `validate_collection_description`, `validate_collection_id`, `validate_collection_tag`, `validate_collection_upload_artifact_custody_receipt`, `validate_collection_upload_batch_against_registration_constraints`, `validate_lifecycle_event_cursor`, `validate_riverhog_event`, `verify_derivation_evidence` |
 | `module` | "riverhog_protocol" |
 
-## Complete owned contract
+## Governing policies
+
+- `compatibility/python-api/v1`
+
+## Evidence
+
+### Qualification
+
+- `make dist-smoke`
+- `make build`
+
+### Executable sources
+
+- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
+- `python:riverhog-protocol` — `packages/riverhog-protocol/src/riverhog_protocol/__init__.py::<module>`
+
+### Machine authority
+
+- `/external_contract/python/7`
+
+### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 

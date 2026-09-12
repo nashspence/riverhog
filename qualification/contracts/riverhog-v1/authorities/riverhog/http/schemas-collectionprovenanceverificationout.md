@@ -4,6 +4,8 @@
 
 <!-- contract-element: http:riverhog:schemas-collectionprovenanceverificationout:d332a86c17 -->
 
+Exact externally visible contract owned by this semantic dossier.
+
 | Audit field | Value |
 |---|---|
 | Authority | `riverhog` |
@@ -12,31 +14,38 @@
 | Contract elements | 1 |
 | Extent decisions | 0 |
 
-## Machine authority
+## External contract
 
-- `/external_contract/http_openapi/riverhog/components/schemas/CollectionProvenanceVerificationOut`
+- `title`: CollectionProvenanceVerificationOut
 
-## Effective policies
+## Maintained corroboration
 
-- `compatibility/http-api/v1`
-
-## Executable sources and proof
-
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `openapi:riverhog` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
-- Proof: `make operation-qualification`
-- Proof: `make compose-smoke`
-
-## Referenced contract dossiers
+### Referenced contract dossiers
 
 - [schemas: CapturedCollectionProvenanceVerification](schemas-capturedcollectionprovenanceverification.md)
 - [schemas: OmittedCollectionProvenanceVerification](schemas-omittedcollectionprovenanceverification.md)
 
-## Contract summary
+## Governing policies
 
-- `title`: CollectionProvenanceVerificationOut
+- `compatibility/http-api/v1`
 
-## Complete owned contract
+## Evidence
+
+### Qualification
+
+- `make operation-qualification`
+- `make compose-smoke`
+
+### Executable sources
+
+- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
+- `openapi:riverhog` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+
+### Machine authority
+
+- `/external_contract/http_openapi/riverhog/components/schemas/CollectionProvenanceVerificationOut`
+
+### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 

@@ -4,6 +4,8 @@
 
 <!-- contract-element: http:riverhog:get-v1-collections-collection-id-provenance-files:de53ae10a9 -->
 
+List Collection Provenance
+
 | Audit field | Value |
 |---|---|
 | Authority | `riverhog` |
@@ -12,43 +14,7 @@
 | Contract elements | 1 |
 | Extent decisions | 2 |
 
-## Machine authority
-
-- `/external_contract/http_openapi/riverhog/paths/~1v1~1collections~1{collection_id}~1provenance~1files/get`
-
-## Effective policies
-
-- `compatibility/http-api/v1`
-- `extent-rule/route-progression/v1`
-- `extent-rule/schema-bound/v1`
-
-## Executable sources and proof
-
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `openapi:riverhog` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
-- Proof: `make operation-qualification`
-- Proof: `make compose-smoke`
-
-## Related interface records
-
-- [Operation parity: list_collection_provenance](../operation/operation-parity-list-collection-provenance.md)
-
-## Referenced contract dossiers
-
-- [schemas: BrowsePageToken](schemas-browsepagetoken.md)
-- [schemas: BrowseQuery](schemas-browsequery.md)
-- [schemas: ErrorResponse](schemas-errorresponse.md)
-- [schemas: ListCollectionFileProvenanceResponse](schemas-listcollectionfileprovenanceresponse.md)
-- [schemas: ProvenanceStatus](schemas-provenancestatus.md)
-
-## Extent decisions
-
-| Dimension | Unit | Policy | Bounds/reason |
-|---|---|---|---|
-| logical-result-cardinality | items | `segmented_no_total_max` | reason=bounded-route-progression |
-| value | schema-value | `contract_max` | maximum=100, minimum=1, reason=schema-maximum |
-
-## Contract summary
+## External contract
 
 - `operationId`: list_collection_provenance
 - `summary`: List Collection Provenance
@@ -58,13 +24,13 @@
 
 | Name | In | Required | Schema |
 |---|---|---:|---|
-| `collection_id` | path | yes | integer |
-| `page_size` | query | no | integer |
-| `page_token` | query | no | object (2 fields) |
-| `q` | query | no | object (2 fields) |
-| `status` | query | no | object (2 fields) |
-| `sort` | query | no | string |
-| `order` | query | no | string |
+| `collection_id` | path | yes | type="integer"; minimum=1 |
+| `page_size` | query | no | type="integer"; minimum=1; maximum=100 |
+| `page_token` | query | no | anyOf=#/components/schemas/BrowsePageToken \| type="null" |
+| `q` | query | no | anyOf=#/components/schemas/BrowseQuery \| type="null" |
+| `status` | query | no | anyOf=#/components/schemas/ProvenanceStatus \| type="null" |
+| `sort` | query | no | type="string"; enum=["path","bytes","status"] |
+| `order` | query | no | type="string"; enum=["asc","desc"] |
 
 ### Responses
 
@@ -78,7 +44,50 @@
 | `409` | Conflict |
 | `500` | Internal Server Error |
 
-## Complete owned contract
+### Progression, limits, and lifecycle
+
+| Dimension | Unit | Policy | Bounds or reason |
+|---|---|---|---|
+| logical-result-cardinality | items | `segmented_no_total_max` | reason=bounded-route-progression |
+| value | schema-value | `contract_max` | maximum=100, minimum=1, reason=schema-maximum |
+
+## Maintained corroboration
+
+### Related interface records
+
+- [Operation parity: list_collection_provenance](../operation/operation-parity-list-collection-provenance.md)
+
+### Referenced contract dossiers
+
+- [schemas: BrowsePageToken](schemas-browsepagetoken.md)
+- [schemas: BrowseQuery](schemas-browsequery.md)
+- [schemas: ErrorResponse](schemas-errorresponse.md)
+- [schemas: ListCollectionFileProvenanceResponse](schemas-listcollectionfileprovenanceresponse.md)
+- [schemas: ProvenanceStatus](schemas-provenancestatus.md)
+
+## Governing policies
+
+- `compatibility/http-api/v1`
+- `extent-rule/route-progression/v1`
+- `extent-rule/schema-bound/v1`
+
+## Evidence
+
+### Qualification
+
+- `make operation-qualification`
+- `make compose-smoke`
+
+### Executable sources
+
+- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
+- `openapi:riverhog` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+
+### Machine authority
+
+- `/external_contract/http_openapi/riverhog/paths/~1v1~1collections~1{collection_id}~1provenance~1files/get`
+
+### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 

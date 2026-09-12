@@ -4,6 +4,8 @@
 
 <!-- contract-element: durable-state:riverhog-ftp-custody:riverhog-ftp-custody-durable-state:319b9df697 -->
 
+Exact externally visible contract owned by this semantic dossier.
+
 | Audit field | Value |
 |---|---|
 | Authority | `riverhog-ftp-custody` |
@@ -12,26 +14,31 @@
 | Contract elements | 1 |
 | Extent decisions | 0 |
 
-## Machine authority
-
-- `/external_contract/durable_state/owners/6`
-
-## Effective policies
-
-- `compatibility/components/v1`
-
-## Executable sources and proof
-
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `state:riverhog-ftp-custody` — `state:riverhog-ftp-custody`
-- Proof: `make release-check`
-- Proof: `make database-qualification`
-
-## Contract summary
+## External contract
 
 - `format`: riverhog-ftp-adapter-claim/v1
 
-## Complete owned contract
+## Governing policies
+
+- `compatibility/components/v1`
+
+## Evidence
+
+### Qualification
+
+- `make release-check`
+- `make database-qualification`
+
+### Executable sources
+
+- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
+- `state:riverhog-ftp-custody` — `state:riverhog-ftp-custody`
+
+### Machine authority
+
+- `/external_contract/durable_state/owners/6`
+
+### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 

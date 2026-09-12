@@ -4,6 +4,8 @@
 
 <!-- contract-element: http:stove0:schemas-targetproductionauthority:5d406c80aa -->
 
+Exact externally visible contract owned by this semantic dossier.
+
 | Audit field | Value |
 |---|---|
 | Authority | `stove0` |
@@ -12,38 +14,7 @@
 | Contract elements | 1 |
 | Extent decisions | 5 |
 
-## Machine authority
-
-- `/external_contract/http_openapi/stove0/components/schemas/TargetProductionAuthority`
-
-## Effective policies
-
-- `compatibility/http-api/v1`
-- `extent-rule/schema-bound/v1`
-
-## Executable sources and proof
-
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `openapi:stove0` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
-- Proof: `make operation-qualification`
-- Proof: `make compose-smoke`
-
-## Referenced contract dossiers
-
-- [schemas: ArtifactDispositionSetIdentity](schemas-artifactdispositionsetidentity.md)
-- [schemas: OutputArtifactSetIdentity](schemas-outputartifactsetidentity.md)
-
-## Extent decisions
-
-| Dimension | Unit | Policy | Bounds/reason |
-|---|---|---|---|
-| length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
-| length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
-| length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
-| length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
-| length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
-
-## Contract summary
+## External contract
 
 - `title`: TargetProductionAuthority
 - `type`: object
@@ -52,18 +23,56 @@
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| `disposition_count` | yes | integer |  |
-| `disposition_sha256` | yes | string |  |
-| `format` | no | string |  |
-| `job_id` | yes | string |  |
+| `disposition_count` | yes | type="integer"; minimum=1 |  |
+| `disposition_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| `format` | no | type="string"; const="stove0-target-production/v1" |  |
+| `job_id` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 | `outputs` | yes | #/components/schemas/OutputArtifactSetIdentity |  |
-| `plan_sha256` | yes | string |  |
-| `production_sha256` | yes | string |  |
+| `plan_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| `production_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 | `riverhog_disposition_set` | yes | #/components/schemas/ArtifactDispositionSetIdentity |  |
-| `source_edge_count` | yes | integer |  |
-| `source_edge_sha256` | yes | string |  |
+| `source_edge_count` | yes | type="integer"; minimum=1 |  |
+| `source_edge_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 
-## Complete owned contract
+### Progression, limits, and lifecycle
+
+| Dimension | Unit | Policy | Bounds or reason |
+|---|---|---|---|
+| length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
+| length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
+| length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
+| length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
+| length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
+
+## Maintained corroboration
+
+### Referenced contract dossiers
+
+- [schemas: ArtifactDispositionSetIdentity](schemas-artifactdispositionsetidentity.md)
+- [schemas: OutputArtifactSetIdentity](schemas-outputartifactsetidentity.md)
+
+## Governing policies
+
+- `compatibility/http-api/v1`
+- `extent-rule/schema-bound/v1`
+
+## Evidence
+
+### Qualification
+
+- `make operation-qualification`
+- `make compose-smoke`
+
+### Executable sources
+
+- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
+- `openapi:stove0` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+
+### Machine authority
+
+- `/external_contract/http_openapi/stove0/components/schemas/TargetProductionAuthority`
+
+### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 

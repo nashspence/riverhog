@@ -4,6 +4,8 @@
 
 <!-- contract-element: http:stove0:get-v1-recipes-recipe-id:d3bdcc8c7b -->
 
+Get Recipe
+
 | Audit field | Value |
 |---|---|
 | Authority | `stove0` |
@@ -12,31 +14,7 @@
 | Contract elements | 1 |
 | Extent decisions | 0 |
 
-## Machine authority
-
-- `/external_contract/http_openapi/stove0/paths/~1v1~1recipes~1{recipe_id}/get`
-
-## Effective policies
-
-- `compatibility/http-api/v1`
-
-## Executable sources and proof
-
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `openapi:stove0` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
-- Proof: `make operation-qualification`
-- Proof: `make compose-smoke`
-
-## Related interface records
-
-- [Operation parity: get_recipe](../operation/operation-parity-get-recipe.md)
-
-## Referenced contract dossiers
-
-- [schemas: ErrorResponse](schemas-errorresponse.md)
-- [schemas: RecipeView](schemas-recipeview.md)
-
-## Contract summary
+## External contract
 
 - `operationId`: get_recipe
 - `summary`: Get Recipe
@@ -45,8 +23,8 @@
 
 | Name | In | Required | Schema |
 |---|---|---:|---|
-| `recipe_id` | path | yes | string |
-| `revision` | query | no | object (2 fields) |
+| `recipe_id` | path | yes | type="string" |
+| `revision` | query | no | anyOf=type="integer" \| type="null" |
 
 ### Responses
 
@@ -59,7 +37,38 @@
 | `404` | Not Found |
 | `500` | Internal Server Error |
 
-## Complete owned contract
+## Maintained corroboration
+
+### Related interface records
+
+- [Operation parity: get_recipe](../operation/operation-parity-get-recipe.md)
+
+### Referenced contract dossiers
+
+- [schemas: ErrorResponse](schemas-errorresponse.md)
+- [schemas: RecipeView](schemas-recipeview.md)
+
+## Governing policies
+
+- `compatibility/http-api/v1`
+
+## Evidence
+
+### Qualification
+
+- `make operation-qualification`
+- `make compose-smoke`
+
+### Executable sources
+
+- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
+- `openapi:stove0` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+
+### Machine authority
+
+- `/external_contract/http_openapi/stove0/paths/~1v1~1recipes~1{recipe_id}/get`
+
+### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 

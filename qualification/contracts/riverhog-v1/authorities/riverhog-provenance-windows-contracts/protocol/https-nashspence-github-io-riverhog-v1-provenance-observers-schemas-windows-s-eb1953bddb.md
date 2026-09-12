@@ -4,6 +4,8 @@
 
 <!-- contract-element: protocol:riverhog-provenance-windows-contracts:https-nashspence-github-io-riverhog-v1-pr-eb1953bddb:459d9fbc6e -->
 
+Exact externally visible contract owned by this semantic dossier.
+
 | Audit field | Value |
 |---|---|
 | Authority | `riverhog-provenance-windows-contracts` |
@@ -12,22 +14,7 @@
 | Contract elements | 1 |
 | Extent decisions | 0 |
 
-## Machine authority
-
-- `/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1provenance~1observers~1schemas~1windows-security-descriptor.json`
-
-## Effective policies
-
-- `compatibility/components/v1`
-
-## Executable sources and proof
-
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `protocol:https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/windows-security-descriptor.json` — `reference/riverhog/provenance/contracts/windows/src/riverhog_provenance_windows_contracts/schemas/windows-security-descriptor.schema.json`
-- Proof: `make dist-smoke`
-- Proof: `make build`
-
-## Contract summary
+## External contract
 
 - `$id`: https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/windows-security-descriptor.json
 - `type`: object
@@ -36,13 +23,33 @@
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| `control` | yes | integer |  |
-| `group_sid` | yes | string |  |
-| `owner_sid` | yes | string |  |
-| `sacl_included` | yes | boolean |  |
-| `security_information` | yes | integer |  |
+| `control` | yes | type="integer"; minimum=0 |  |
+| `group_sid` | yes | type="string"; pattern="^(?:\|S-[0-9-]+)$" |  |
+| `owner_sid` | yes | type="string"; pattern="^(?:\|S-[0-9-]+)$" |  |
+| `sacl_included` | yes | type="boolean" |  |
+| `security_information` | yes | type="integer"; minimum=0 |  |
 
-## Complete owned contract
+## Governing policies
+
+- `compatibility/components/v1`
+
+## Evidence
+
+### Qualification
+
+- `make dist-smoke`
+- `make build`
+
+### Executable sources
+
+- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
+- `protocol:https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/windows-security-descriptor.json` — `reference/riverhog/provenance/contracts/windows/src/riverhog_provenance_windows_contracts/schemas/windows-security-descriptor.schema.json`
+
+### Machine authority
+
+- `/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1provenance~1observers~1schemas~1windows-security-descriptor.json`
+
+### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 

@@ -4,6 +4,8 @@
 
 <!-- contract-element: http:stove0:schemas-workflowpreview:71eacf8046 -->
 
+Exact externally visible contract owned by this semantic dossier.
+
 | Audit field | Value |
 |---|---|
 | Authority | `stove0` |
@@ -12,35 +14,31 @@
 | Contract elements | 1 |
 | Extent decisions | 7 |
 
-## Machine authority
+## External contract
 
-- `/external_contract/http_openapi/stove0/components/schemas/WorkflowPreview`
+- `title`: WorkflowPreview
+- `type`: object
 
-## Effective policies
+### Fields
 
-- `compatibility/http-api/v1`
-- `extent-rule/no-semantic-maximum/v1`
-- `extent-rule/schema-bound/v1`
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| `branch_set_plan` | no | anyOf=#/components/schemas/BranchSetPlan \| type="null" |  |
+| `branch_sets` | no | type="array"; items=(#/components/schemas/BranchSetPlan) |  |
+| `format` | no | type="string"; const="stove0-workflow-preview/v1" |  |
+| `observations` | no | type="array"; items=(#/components/schemas/ObservationEvidence) |  |
+| `outcome` | no | anyOf=#/components/schemas/PreviewOutcome \| type="null" |  |
+| `preview_id` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| `preview_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| `selections` | no | type="array"; items=(#/components/schemas/ArtifactSelection) |  |
+| `state` | yes | type="string"; enum=["ready","inapplicable","failed","canceled"] |  |
+| `target_plans` | no | type="array"; items=(#/components/schemas/BranchTargetPreview) |  |
+| `warnings` | no | type="array"; items=(type="string") |  |
+| `work` | yes | #/components/schemas/WorkIdentity |  |
 
-## Executable sources and proof
+### Progression, limits, and lifecycle
 
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `openapi:stove0` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
-- Proof: `make operation-qualification`
-- Proof: `make compose-smoke`
-
-## Referenced contract dossiers
-
-- [schemas: ArtifactSelection](schemas-artifactselection.md)
-- [schemas: BranchSetPlan](schemas-branchsetplan.md)
-- [schemas: BranchTargetPreview](schemas-branchtargetpreview.md)
-- [schemas: ObservationEvidence](schemas-observationevidence.md)
-- [schemas: PreviewOutcome](schemas-previewoutcome.md)
-- [schemas: WorkIdentity](schemas-workidentity.md)
-
-## Extent decisions
-
-| Dimension | Unit | Policy | Bounds/reason |
+| Dimension | Unit | Policy | Bounds or reason |
 |---|---|---|---|
 | cardinality | items | `operational_policy` | maximum=None, reason=no-declared-semantic-maximum |
 | cardinality | items | `operational_policy` | maximum=None, reason=no-declared-semantic-maximum |
@@ -50,29 +48,40 @@
 | cardinality | items | `operational_policy` | maximum=None, reason=no-declared-semantic-maximum |
 | cardinality | items | `operational_policy` | maximum=None, reason=no-declared-semantic-maximum |
 
-## Contract summary
+## Maintained corroboration
 
-- `title`: WorkflowPreview
-- `type`: object
+### Referenced contract dossiers
 
-### Fields
+- [schemas: ArtifactSelection](schemas-artifactselection.md)
+- [schemas: BranchSetPlan](schemas-branchsetplan.md)
+- [schemas: BranchTargetPreview](schemas-branchtargetpreview.md)
+- [schemas: ObservationEvidence](schemas-observationevidence.md)
+- [schemas: PreviewOutcome](schemas-previewoutcome.md)
+- [schemas: WorkIdentity](schemas-workidentity.md)
 
-| Field | Required | Shape | Description |
-|---|---:|---|---|
-| `branch_set_plan` | no | object (1 fields) |  |
-| `branch_sets` | no | array |  |
-| `format` | no | string |  |
-| `observations` | no | array |  |
-| `outcome` | no | object (1 fields) |  |
-| `preview_id` | yes | string |  |
-| `preview_sha256` | yes | string |  |
-| `selections` | no | array |  |
-| `state` | yes | string |  |
-| `target_plans` | no | array |  |
-| `warnings` | no | array |  |
-| `work` | yes | #/components/schemas/WorkIdentity |  |
+## Governing policies
 
-## Complete owned contract
+- `compatibility/http-api/v1`
+- `extent-rule/no-semantic-maximum/v1`
+- `extent-rule/schema-bound/v1`
+
+## Evidence
+
+### Qualification
+
+- `make operation-qualification`
+- `make compose-smoke`
+
+### Executable sources
+
+- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
+- `openapi:stove0` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+
+### Machine authority
+
+- `/external_contract/http_openapi/stove0/components/schemas/WorkflowPreview`
+
+### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 

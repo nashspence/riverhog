@@ -4,6 +4,8 @@
 
 <!-- contract-element: http:riverhog:schemas-uploadedarchivecopyout:e859b617b5 -->
 
+Exact externally visible contract owned by this semantic dossier.
+
 | Audit field | Value |
 |---|---|
 | Authority | `riverhog` |
@@ -12,27 +14,7 @@
 | Contract elements | 1 |
 | Extent decisions | 0 |
 
-## Machine authority
-
-- `/external_contract/http_openapi/riverhog/components/schemas/UploadedArchiveCopyOut`
-
-## Effective policies
-
-- `compatibility/http-api/v1`
-
-## Executable sources and proof
-
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `openapi:riverhog` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
-- Proof: `make operation-qualification`
-- Proof: `make compose-smoke`
-
-## Referenced contract dossiers
-
-- [schemas: ArchiveStoreName](schemas-archivestorename.md)
-- [schemas: UploadedArchiveRootPublicationOut](schemas-uploadedarchiverootpublicationout.md)
-
-## Contract summary
+## External contract
 
 - `title`: UploadedArchiveCopyOut
 - `type`: object
@@ -42,16 +24,43 @@
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | `archive_root` | yes | #/components/schemas/UploadedArchiveRootPublicationOut |  |
-| `failure` | yes | null |  |
-| `last_uploaded_at` | yes | string |  |
-| `last_verified_at` | yes | string |  |
-| `object_count` | yes | integer |  |
-| `state` | yes | string |  |
-| `storage_prefix` | yes | string |  |
+| `failure` | yes | type="null" |  |
+| `last_uploaded_at` | yes | type="string" |  |
+| `last_verified_at` | yes | type="string" |  |
+| `object_count` | yes | type="integer"; minimum=1 |  |
+| `state` | yes | type="string"; const="uploaded" |  |
+| `storage_prefix` | yes | type="string"; minLength=1 |  |
 | `store` | yes | #/components/schemas/ArchiveStoreName |  |
-| `stored_bytes` | yes | integer |  |
+| `stored_bytes` | yes | type="integer"; minimum=1 |  |
 
-## Complete owned contract
+## Maintained corroboration
+
+### Referenced contract dossiers
+
+- [schemas: ArchiveStoreName](schemas-archivestorename.md)
+- [schemas: UploadedArchiveRootPublicationOut](schemas-uploadedarchiverootpublicationout.md)
+
+## Governing policies
+
+- `compatibility/http-api/v1`
+
+## Evidence
+
+### Qualification
+
+- `make operation-qualification`
+- `make compose-smoke`
+
+### Executable sources
+
+- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
+- `openapi:riverhog` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+
+### Machine authority
+
+- `/external_contract/http_openapi/riverhog/components/schemas/UploadedArchiveCopyOut`
+
+### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 

@@ -4,6 +4,8 @@
 
 <!-- contract-element: http:riverhog:schemas-portablecollectioninventoryauthority:df9243ffe3 -->
 
+The immutable authority shared by every bounded inventory page.
+
 | Audit field | Value |
 |---|---|
 | Authority | `riverhog` |
@@ -12,33 +14,7 @@
 | Contract elements | 1 |
 | Extent decisions | 1 |
 
-## Machine authority
-
-- `/external_contract/http_openapi/riverhog/components/schemas/PortableCollectionInventoryAuthority`
-
-## Effective policies
-
-- `compatibility/http-api/v1`
-- `extent-rule/schema-bound/v1`
-
-## Executable sources and proof
-
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `openapi:riverhog` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
-- Proof: `make operation-qualification`
-- Proof: `make compose-smoke`
-
-## Referenced contract dossiers
-
-- [schemas: PortableCollectionHeader](schemas-portablecollectionheader.md)
-
-## Extent decisions
-
-| Dimension | Unit | Policy | Bounds/reason |
-|---|---|---|---|
-| length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
-
-## Contract summary
+## External contract
 
 - `title`: PortableCollectionInventoryAuthority
 - `description`: The immutable authority shared by every bounded inventory page.
@@ -48,12 +24,45 @@
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| `file_bytes` | yes | integer |  |
-| `file_count` | yes | integer |  |
+| `file_bytes` | yes | type="integer"; minimum=0 |  |
+| `file_count` | yes | type="integer"; minimum=1 |  |
 | `header` | yes | #/components/schemas/PortableCollectionHeader |  |
-| `inventory_identity` | yes | string |  |
+| `inventory_identity` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 
-## Complete owned contract
+### Progression, limits, and lifecycle
+
+| Dimension | Unit | Policy | Bounds or reason |
+|---|---|---|---|
+| length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
+
+## Maintained corroboration
+
+### Referenced contract dossiers
+
+- [schemas: PortableCollectionHeader](schemas-portablecollectionheader.md)
+
+## Governing policies
+
+- `compatibility/http-api/v1`
+- `extent-rule/schema-bound/v1`
+
+## Evidence
+
+### Qualification
+
+- `make operation-qualification`
+- `make compose-smoke`
+
+### Executable sources
+
+- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
+- `openapi:riverhog` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+
+### Machine authority
+
+- `/external_contract/http_openapi/riverhog/components/schemas/PortableCollectionInventoryAuthority`
+
+### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 

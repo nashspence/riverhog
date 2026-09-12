@@ -4,6 +4,8 @@
 
 <!-- contract-element: http:riverhog-ftp-adapter:post-v1-sources-source-id-flush:c19398bc43 -->
 
+Flush
+
 | Audit field | Value |
 |---|---|
 | Authority | `riverhog-ftp-adapter` |
@@ -12,37 +14,7 @@
 | Contract elements | 1 |
 | Extent decisions | 1 |
 
-## Machine authority
-
-- `/external_contract/http_openapi/riverhog-ftp-adapter/paths/~1v1~1sources~1{source_id}~1flush/post`
-
-## Effective policies
-
-- `compatibility/http-api/v1`
-- `extent-rule/no-semantic-maximum/v1`
-
-## Executable sources and proof
-
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `openapi:riverhog-ftp-adapter` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
-- Proof: `make operation-qualification`
-- Proof: `make compose-smoke`
-
-## Related interface records
-
-- [Operation parity: flush_ftp_adapter_source](../operation/operation-parity-flush-ftp-adapter-source.md)
-
-## Referenced contract dossiers
-
-- [schemas: ErrorResponse](schemas-errorresponse.md)
-
-## Extent decisions
-
-| Dimension | Unit | Policy | Bounds/reason |
-|---|---|---|---|
-| cardinality | entries | `operational_policy` | maximum=None, reason=no-declared-semantic-maximum |
-
-## Contract summary
+## External contract
 
 - `operationId`: flush_ftp_adapter_source
 - `summary`: Flush
@@ -52,7 +24,7 @@
 
 | Name | In | Required | Schema |
 |---|---|---:|---|
-| `source_id` | path | yes | string |
+| `source_id` | path | yes | type="string" |
 
 ### Responses
 
@@ -64,7 +36,44 @@
 | `403` | Forbidden |
 | `500` | Internal Server Error |
 
-## Complete owned contract
+### Progression, limits, and lifecycle
+
+| Dimension | Unit | Policy | Bounds or reason |
+|---|---|---|---|
+| cardinality | entries | `operational_policy` | maximum=None, reason=no-declared-semantic-maximum |
+
+## Maintained corroboration
+
+### Related interface records
+
+- [Operation parity: flush_ftp_adapter_source](../operation/operation-parity-flush-ftp-adapter-source.md)
+
+### Referenced contract dossiers
+
+- [schemas: ErrorResponse](schemas-errorresponse.md)
+
+## Governing policies
+
+- `compatibility/http-api/v1`
+- `extent-rule/no-semantic-maximum/v1`
+
+## Evidence
+
+### Qualification
+
+- `make operation-qualification`
+- `make compose-smoke`
+
+### Executable sources
+
+- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
+- `openapi:riverhog-ftp-adapter` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+
+### Machine authority
+
+- `/external_contract/http_openapi/riverhog-ftp-adapter/paths/~1v1~1sources~1{source_id}~1flush/post`
+
+### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 

@@ -4,6 +4,8 @@
 
 <!-- contract-element: operation:riverhog:operation-parity-list-catalog-sync-collections:e309737dfc -->
 
+Exact externally visible contract owned by this semantic dossier.
+
 | Audit field | Value |
 |---|---|
 | Authority | `riverhog` |
@@ -12,28 +14,7 @@
 | Contract elements | 1 |
 | Extent decisions | 0 |
 
-## Machine authority
-
-- `/external_contract/operations/22`
-
-## Effective policies
-
-- `compatibility/cli/v1`
-- `compatibility/components/v1`
-- `compatibility/http-api/v1`
-
-## Executable sources and proof
-
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `operations:operation-matrix` — `scripts/operation_qualification.py::operation_matrix`
-- Proof: `make operation-qualification`
-
-## Related interface records
-
-- [GET /v1/catalog-sync/collections](../http/get-v1-catalog-sync-collections.md)
-- [piggity catalog-sync collections](../../piggity/cli/piggity-catalog-sync-collections.md)
-
-## Contract summary
+## External contract
 
 | Concern | Contract |
 |---|---|
@@ -48,7 +29,35 @@
 | `read_collection` | {"authority": "catalog-sync-bootstrap", "cursor_parameter": "cursor", "kind": "exact-authority-page", "limit_parameter": "limit"} |
 | `response_authority` | canonical-document |
 
-## Complete owned contract
+## Maintained corroboration
+
+### Related interface records
+
+- [GET /v1/catalog-sync/collections](../http/get-v1-catalog-sync-collections.md)
+- [piggity catalog-sync collections](../../piggity/cli/piggity-catalog-sync-collections.md)
+
+## Governing policies
+
+- `compatibility/cli/v1`
+- `compatibility/components/v1`
+- `compatibility/http-api/v1`
+
+## Evidence
+
+### Qualification
+
+- `make operation-qualification`
+
+### Executable sources
+
+- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
+- `operations:operation-matrix` — `scripts/operation_qualification.py::operation_matrix`
+
+### Machine authority
+
+- `/external_contract/operations/22`
+
+### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 

@@ -4,6 +4,8 @@
 
 <!-- contract-element: http:riverhog:schemas-collectionuploadrawdigestbatchdocument:088760615c -->
 
+One append-only bounded slice of a registered raw source digest sequence.
+
 | Audit field | Value |
 |---|---|
 | Authority | `riverhog` |
@@ -12,31 +14,7 @@
 | Contract elements | 1 |
 | Extent decisions | 2 |
 
-## Machine authority
-
-- `/external_contract/http_openapi/riverhog/components/schemas/CollectionUploadRawDigestBatchDocument`
-
-## Effective policies
-
-- `compatibility/http-api/v1`
-- `extent-rule/bounded-segment/v1`
-- `extent-rule/schema-bound/v1`
-
-## Executable sources and proof
-
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `openapi:riverhog` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
-- Proof: `make operation-qualification`
-- Proof: `make compose-smoke`
-
-## Extent decisions
-
-| Dimension | Unit | Policy | Bounds/reason |
-|---|---|---|---|
-| length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
-| cardinality | items | `segmented_no_total_max` | maximum=1024, minimum=1, reason=bounded-raw-digest-append |
-
-## Contract summary
+## External contract
 
 - `title`: CollectionUploadRawDigestBatchDocument
 - `description`: One append-only bounded slice of a registered raw source digest sequence.
@@ -46,11 +24,40 @@
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| `first_part` | yes | integer |  |
-| `path` | yes | string |  |
-| `sha256s` | yes | array |  |
+| `first_part` | yes | type="integer"; minimum=0 |  |
+| `path` | yes | type="string" |  |
+| `sha256s` | yes | type="array"; minItems=1; maxItems=1024; items=(type="string"; pattern="^[0-9a-f]{64}$"); additional keys=`x-riverhog-extent` |  |
 
-## Complete owned contract
+### Progression, limits, and lifecycle
+
+| Dimension | Unit | Policy | Bounds or reason |
+|---|---|---|---|
+| length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
+| cardinality | items | `segmented_no_total_max` | maximum=1024, minimum=1, reason=bounded-raw-digest-append |
+
+## Governing policies
+
+- `compatibility/http-api/v1`
+- `extent-rule/bounded-segment/v1`
+- `extent-rule/schema-bound/v1`
+
+## Evidence
+
+### Qualification
+
+- `make operation-qualification`
+- `make compose-smoke`
+
+### Executable sources
+
+- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
+- `openapi:riverhog` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+
+### Machine authority
+
+- `/external_contract/http_openapi/riverhog/components/schemas/CollectionUploadRawDigestBatchDocument`
+
+### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 

@@ -4,6 +4,8 @@
 
 <!-- contract-element: protocol:stove0-observer-support:generated-stove0-observer-observationresult:033cccc2b7 -->
 
+Exact externally visible contract owned by this semantic dossier.
+
 | Audit field | Value |
 |---|---|
 | Authority | `stove0-observer-support` |
@@ -12,26 +14,46 @@
 | Contract elements | 1 |
 | Extent decisions | 14 |
 
-## Machine authority
+## External contract
 
-- `/external_contract/protocol_schemas/generated:stove0-observer/schemas/ObservationResult`
+- `title`: ObservationResult
+- `type`: object
 
-## Effective policies
+### Fields
 
-- `compatibility/components/v1`
-- `extent-rule/no-semantic-maximum/v1`
-- `extent-rule/schema-bound/v1`
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| `execution_evidence` | no | type="object"; additional keys=`additionalProperties` |  |
+| `facts` | no | anyOf=type="object"; additional keys=`additionalProperties` \| type="null" |  |
+| `facts_schema` | no | anyOf=#/$defs/JsonSchemaDocument \| type="null" |  |
+| `facts_sha256` | no | anyOf=type="string"; pattern="^[0-9a-f]{64}$" \| type="null" |  |
+| `failure` | no | anyOf=#/$defs/ObservationFailure \| type="null" |  |
+| `format` | no | type="string"; const="stove0-observation-result/v1" |  |
+| `inapplicable` | no | anyOf=#/$defs/ObservationInapplicable \| type="null" |  |
+| `observer` | yes | #/$defs/ObserverImplementation |  |
+| `observer_contract_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
+| `observer_contract_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| `request_id` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| `result_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| `state` | yes | type="string"; enum=["observed","inapplicable","failed","canceled"] |  |
+| `subjects` | yes | type="array"; minItems=1; items=(#/$defs/ArtifactSubject) |  |
 
-## Executable sources and proof
+### Definitions
 
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `protocol:generated:stove0-observer` — `reference/stove0/packages/observer-support/src/stove0_observer_support/schemas.py::observer_schema_bundle`
-- Proof: `make dist-smoke`
-- Proof: `make build`
+| Definition | Shape |
+|---|---|
+| `ArtifactSubject` | type="object"; fields=`bytes`, `collection`, `id`, `media_type`, `path`, `role`, `sha256`; additional keys=`additionalProperties`, `required` |
+| `CollectionId` | type="integer"; minimum=1 |
+| `CollectionRootRef` | type="object"; fields=`archive_root_sha256`, `collection_id`, `content_identity`; additional keys=`additionalProperties`, `required` |
+| `JsonSchemaDocument` | type="object"; fields=`dialect`, `format_policy`, `id`, `schema`, `sha256`; additional keys=`additionalProperties`, `required` |
+| `JsonValue` | empty object |
+| `ObservationFailure` | type="object"; fields=`code`, `message`, `retryable`; additional keys=`additionalProperties`, `required` |
+| `ObservationInapplicable` | type="object"; fields=`code`, `message`; additional keys=`additionalProperties`, `required` |
+| `ObserverImplementation` | type="object"; fields=`descriptor_sha256`, `id`, `protocol`, `source_revision`, `version`; additional keys=`additionalProperties`, `required` |
 
-## Extent decisions
+### Progression, limits, and lifecycle
 
-| Dimension | Unit | Policy | Bounds/reason |
+| Dimension | Unit | Policy | Bounds or reason |
 |---|---|---|---|
 | cardinality | entries | `operational_policy` | maximum=None, reason=no-declared-semantic-maximum |
 | cardinality | entries | `operational_policy` | maximum=None, reason=no-declared-semantic-maximum |
@@ -48,44 +70,29 @@
 | length | characters | `contract_max` | maximum=200, minimum=1, reason=schema-maximum |
 | length | characters | `contract_max` | maximum=120, minimum=1, reason=schema-maximum |
 
-## Contract summary
+## Governing policies
 
-- `title`: ObservationResult
-- `type`: object
+- `compatibility/components/v1`
+- `extent-rule/no-semantic-maximum/v1`
+- `extent-rule/schema-bound/v1`
 
-### Fields
+## Evidence
 
-| Field | Required | Shape | Description |
-|---|---:|---|---|
-| `execution_evidence` | no | object |  |
-| `facts` | no | object (3 fields) |  |
-| `facts_schema` | no | object (2 fields) |  |
-| `facts_sha256` | no | object (3 fields) |  |
-| `failure` | no | object (2 fields) |  |
-| `format` | no | string |  |
-| `inapplicable` | no | object (2 fields) |  |
-| `observer` | yes | #/$defs/ObserverImplementation |  |
-| `observer_contract_id` | yes | string |  |
-| `observer_contract_sha256` | yes | string |  |
-| `request_id` | yes | string |  |
-| `result_sha256` | yes | string |  |
-| `state` | yes | string |  |
-| `subjects` | yes | array |  |
+### Qualification
 
-### Definitions
+- `make dist-smoke`
+- `make build`
 
-| Definition | Shape |
-|---|---|
-| `ArtifactSubject` | object |
-| `CollectionId` | integer |
-| `CollectionRootRef` | object |
-| `JsonSchemaDocument` | object |
-| `JsonValue` | object (0 fields) |
-| `ObservationFailure` | object |
-| `ObservationInapplicable` | object |
-| `ObserverImplementation` | object |
+### Executable sources
 
-## Complete owned contract
+- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
+- `protocol:generated:stove0-observer` — `reference/stove0/packages/observer-support/src/stove0_observer_support/schemas.py::observer_schema_bundle`
+
+### Machine authority
+
+- `/external_contract/protocol_schemas/generated:stove0-observer/schemas/ObservationResult`
+
+### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 

@@ -4,6 +4,8 @@
 
 <!-- contract-element: boundary:riverhog-ftp-adapter:riverhog-ftp-adapter-component-boundary:33f5955bfe -->
 
+Exact externally visible contract owned by this semantic dossier.
+
 | Audit field | Value |
 |---|---|
 | Authority | `riverhog-ftp-adapter` |
@@ -12,33 +14,38 @@
 | Contract elements | 1 |
 | Extent decisions | 0 |
 
-## Machine authority
-
-- `/boundaries/components/27`
-
-## Effective policies
-
-- `boundary/frozen-authority/v1`
-
-## Executable sources and proof
-
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `release:release.toml` — `release.toml`
-- Proof: `make release-check`
-- Proof: `make build`
-
-## Contract summary
+## External contract
 
 | Field | Shape |
 |---|---|
-| `console_scripts` | object (1 fields) |
-| `dependencies` | array (5 items) |
+| `console_scripts` | additional keys=`riverhog-ftp-adapter` |
+| `dependencies` | ["http-api-contracts","riverhog-client","riverhog-ftp-adapter-api-client","riverhog-protocol","riverhog-provenance"] |
 | `distribution` | "riverhog-ftp-adapter" |
-| `optional_dependencies` | object (0 fields) |
+| `optional_dependencies` | empty object |
 | `path` | "reference/riverhog/ingress/ftp" |
 | `role` | "reference_component" |
 
-## Complete owned contract
+## Governing policies
+
+- `boundary/frozen-authority/v1`
+
+## Evidence
+
+### Qualification
+
+- `make release-check`
+- `make build`
+
+### Executable sources
+
+- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
+- `release:release.toml` — `release.toml`
+
+### Machine authority
+
+- `/boundaries/components/27`
+
+### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 

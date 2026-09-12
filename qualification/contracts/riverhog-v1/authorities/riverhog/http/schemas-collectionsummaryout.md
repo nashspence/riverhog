@@ -4,6 +4,8 @@
 
 <!-- contract-element: http:riverhog:schemas-collectionsummaryout:7097828626 -->
 
+Exact externally visible contract owned by this semantic dossier.
+
 | Audit field | Value |
 |---|---|
 | Authority | `riverhog` |
@@ -12,31 +14,36 @@
 | Contract elements | 1 |
 | Extent decisions | 8 |
 
-## Machine authority
+## External contract
 
-- `/external_contract/http_openapi/riverhog/components/schemas/CollectionSummaryOut`
+- `title`: CollectionSummaryOut
+- `type`: object
 
-## Effective policies
+### Fields
 
-- `compatibility/http-api/v1`
-- `extent-rule/no-semantic-maximum/v1`
-- `extent-rule/schema-bound/v1`
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| `archive_copy_count` | yes | type="integer"; minimum=0 |  |
+| `archive_root_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| `bytes` | yes | type="integer" |  |
+| `content_identity` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| `created_at` | yes | type="string" |  |
+| `description` | yes | anyOf=#/components/schemas/CollectionDescription \| type="null" |  |
+| `description_identity` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| `description_publication` | yes | type="string"; enum=["not_required","current","reconciling"] |  |
+| `description_revision` | yes | type="integer"; minimum=0; maximum=9007199254740991 |  |
+| `encryption_format` | yes | type="string" |  |
+| `files` | yes | type="integer" |  |
+| `id` | yes | #/components/schemas/CollectionId |  |
+| `passphrase_id` | yes | type="string"; pattern="^[A-Za-z0-9_-]{16,128}$" |  |
+| `remote_storage_bytes` | yes | type="integer" |  |
+| `tag_publication` | yes | type="string"; enum=["current","reconciling"] |  |
+| `tag_revision` | yes | type="integer"; minimum=1; maximum=9007199254740991 |  |
+| `tag_set_identity` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 
-## Executable sources and proof
+### Progression, limits, and lifecycle
 
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `openapi:riverhog` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
-- Proof: `make operation-qualification`
-- Proof: `make compose-smoke`
-
-## Referenced contract dossiers
-
-- [schemas: CollectionDescription](schemas-collectiondescription.md)
-- [schemas: CollectionId](schemas-collectionid.md)
-
-## Extent decisions
-
-| Dimension | Unit | Policy | Bounds/reason |
+| Dimension | Unit | Policy | Bounds or reason |
 |---|---|---|---|
 | length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
 | value | schema-value | `operational_policy` | maximum=None, reason=no-declared-semantic-maximum |
@@ -47,34 +54,36 @@
 | value | schema-value | `contract_max` | maximum=9007199254740991, minimum=1, reason=schema-maximum |
 | length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
 
-## Contract summary
+## Maintained corroboration
 
-- `title`: CollectionSummaryOut
-- `type`: object
+### Referenced contract dossiers
 
-### Fields
+- [schemas: CollectionDescription](schemas-collectiondescription.md)
+- [schemas: CollectionId](schemas-collectionid.md)
 
-| Field | Required | Shape | Description |
-|---|---:|---|---|
-| `archive_copy_count` | yes | integer |  |
-| `archive_root_sha256` | yes | string |  |
-| `bytes` | yes | integer |  |
-| `content_identity` | yes | string |  |
-| `created_at` | yes | string |  |
-| `description` | yes | object (1 fields) |  |
-| `description_identity` | yes | string |  |
-| `description_publication` | yes | string |  |
-| `description_revision` | yes | integer |  |
-| `encryption_format` | yes | string |  |
-| `files` | yes | integer |  |
-| `id` | yes | #/components/schemas/CollectionId |  |
-| `passphrase_id` | yes | string |  |
-| `remote_storage_bytes` | yes | integer |  |
-| `tag_publication` | yes | string |  |
-| `tag_revision` | yes | integer |  |
-| `tag_set_identity` | yes | string |  |
+## Governing policies
 
-## Complete owned contract
+- `compatibility/http-api/v1`
+- `extent-rule/no-semantic-maximum/v1`
+- `extent-rule/schema-bound/v1`
+
+## Evidence
+
+### Qualification
+
+- `make operation-qualification`
+- `make compose-smoke`
+
+### Executable sources
+
+- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
+- `openapi:riverhog` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+
+### Machine authority
+
+- `/external_contract/http_openapi/riverhog/components/schemas/CollectionSummaryOut`
+
+### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 

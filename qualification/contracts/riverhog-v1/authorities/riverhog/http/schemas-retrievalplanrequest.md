@@ -4,6 +4,8 @@
 
 <!-- contract-element: http:riverhog:schemas-retrievalplanrequest:e6b84ec030 -->
 
+Exact externally visible contract owned by this semantic dossier.
+
 | Audit field | Value |
 |---|---|
 | Authority | `riverhog` |
@@ -12,35 +14,7 @@
 | Contract elements | 1 |
 | Extent decisions | 2 |
 
-## Machine authority
-
-- `/external_contract/http_openapi/riverhog/components/schemas/RetrievalPlanRequest`
-
-## Effective policies
-
-- `compatibility/http-api/v1`
-- `extent-rule/bounded-segment/v1`
-- `extent-rule/schema-bound/v1`
-
-## Executable sources and proof
-
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `openapi:riverhog` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
-- Proof: `make operation-qualification`
-- Proof: `make compose-smoke`
-
-## Referenced contract dossiers
-
-- [schemas: RetrievalFileReferenceDocument](schemas-retrievalfilereferencedocument.md)
-
-## Extent decisions
-
-| Dimension | Unit | Policy | Bounds/reason |
-|---|---|---|---|
-| cardinality | items | `segmented_no_total_max` | maximum=10000, minimum=1, reason=bounded-retrieval-work-request |
-| length | characters | `contract_max` | maximum=200, minimum=1, reason=schema-maximum |
-
-## Contract summary
+## External contract
 
 - `title`: RetrievalPlanRequest
 - `type`: object
@@ -49,12 +23,47 @@
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| `files` | yes | array |  |
-| `idempotency_key` | yes | string |  |
-| `lease_seconds` | no | object (2 fields) |  |
-| `restore_policy` | no | string |  |
+| `files` | yes | type="array"; minItems=1; maxItems=10000; items=(#/components/schemas/RetrievalFileReferenceDocument); additional keys=`x-riverhog-extent` |  |
+| `idempotency_key` | yes | type="string"; minLength=1; maxLength=200; pattern="^\\S(?:[\\s\\S]*\\S)?$" |  |
+| `lease_seconds` | no | anyOf=type="integer"; minimum=1 \| type="null" |  |
+| `restore_policy` | no | type="string"; enum=["allow","never"] |  |
 
-## Complete owned contract
+### Progression, limits, and lifecycle
+
+| Dimension | Unit | Policy | Bounds or reason |
+|---|---|---|---|
+| cardinality | items | `segmented_no_total_max` | maximum=10000, minimum=1, reason=bounded-retrieval-work-request |
+| length | characters | `contract_max` | maximum=200, minimum=1, reason=schema-maximum |
+
+## Maintained corroboration
+
+### Referenced contract dossiers
+
+- [schemas: RetrievalFileReferenceDocument](schemas-retrievalfilereferencedocument.md)
+
+## Governing policies
+
+- `compatibility/http-api/v1`
+- `extent-rule/bounded-segment/v1`
+- `extent-rule/schema-bound/v1`
+
+## Evidence
+
+### Qualification
+
+- `make operation-qualification`
+- `make compose-smoke`
+
+### Executable sources
+
+- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
+- `openapi:riverhog` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+
+### Machine authority
+
+- `/external_contract/http_openapi/riverhog/components/schemas/RetrievalPlanRequest`
+
+### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 

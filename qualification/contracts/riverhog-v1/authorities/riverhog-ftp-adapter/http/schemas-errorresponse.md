@@ -4,6 +4,8 @@
 
 <!-- contract-element: http:riverhog-ftp-adapter:schemas-errorresponse:934af2ff90 -->
 
+Exact externally visible contract owned by this semantic dossier.
+
 | Audit field | Value |
 |---|---|
 | Authority | `riverhog-ftp-adapter` |
@@ -12,26 +14,7 @@
 | Contract elements | 1 |
 | Extent decisions | 0 |
 
-## Machine authority
-
-- `/external_contract/http_openapi/riverhog-ftp-adapter/components/schemas/ErrorResponse`
-
-## Effective policies
-
-- `compatibility/http-api/v1`
-
-## Executable sources and proof
-
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `openapi:riverhog-ftp-adapter` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
-- Proof: `make operation-qualification`
-- Proof: `make compose-smoke`
-
-## Referenced contract dossiers
-
-- [schemas: ErrorBody](schemas-errorbody.md)
-
-## Contract summary
+## External contract
 
 - `title`: ErrorResponse
 - `type`: object
@@ -42,7 +25,33 @@
 |---|---:|---|---|
 | `error` | yes | #/components/schemas/ErrorBody |  |
 
-## Complete owned contract
+## Maintained corroboration
+
+### Referenced contract dossiers
+
+- [schemas: ErrorBody](schemas-errorbody.md)
+
+## Governing policies
+
+- `compatibility/http-api/v1`
+
+## Evidence
+
+### Qualification
+
+- `make operation-qualification`
+- `make compose-smoke`
+
+### Executable sources
+
+- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
+- `openapi:riverhog-ftp-adapter` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+
+### Machine authority
+
+- `/external_contract/http_openapi/riverhog-ftp-adapter/components/schemas/ErrorResponse`
+
+### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 

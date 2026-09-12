@@ -4,6 +4,8 @@
 
 <!-- contract-element: http:riverhog:put-v1-apps-app-keys-key-id-access:77935b9de0 -->
 
+Replace App Key Access
+
 | Audit field | Value |
 |---|---|
 | Authority | `riverhog` |
@@ -12,39 +14,7 @@
 | Contract elements | 1 |
 | Extent decisions | 1 |
 
-## Machine authority
-
-- `/external_contract/http_openapi/riverhog/paths/~1v1~1apps~1{app}~1keys~1{key_id}~1access/put`
-
-## Effective policies
-
-- `compatibility/http-api/v1`
-- `extent-rule/schema-bound/v1`
-
-## Executable sources and proof
-
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `openapi:riverhog` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
-- Proof: `make operation-qualification`
-- Proof: `make compose-smoke`
-
-## Related interface records
-
-- [Operation parity: replace_app_key_access](../operation/operation-parity-replace-app-key-access.md)
-
-## Referenced contract dossiers
-
-- [schemas: AppAccessSetOut](schemas-appaccesssetout.md)
-- [schemas: ErrorResponse](schemas-errorresponse.md)
-- [schemas: ReplaceAppAccessRequest](schemas-replaceappaccessrequest.md)
-
-## Extent decisions
-
-| Dimension | Unit | Policy | Bounds/reason |
-|---|---|---|---|
-| length | characters | `fixed` | maximum=16, minimum=16, reason=fixed-public-representation |
-
-## Contract summary
+## External contract
 
 - `operationId`: replace_app_key_access
 - `summary`: Replace App Key Access
@@ -54,8 +24,8 @@
 
 | Name | In | Required | Schema |
 |---|---|---:|---|
-| `app` | path | yes | string |
-| `key_id` | path | yes | string |
+| `app` | path | yes | type="string"; pattern="^[a-z0-9]+(?:-[a-z0-9]+)*$" |
+| `key_id` | path | yes | type="string"; pattern="^[0-9a-f]{16}$" |
 
 ### Request body
 
@@ -72,7 +42,46 @@
 | `404` | Not Found |
 | `500` | Internal Server Error |
 
-## Complete owned contract
+### Progression, limits, and lifecycle
+
+| Dimension | Unit | Policy | Bounds or reason |
+|---|---|---|---|
+| length | characters | `fixed` | maximum=16, minimum=16, reason=fixed-public-representation |
+
+## Maintained corroboration
+
+### Related interface records
+
+- [Operation parity: replace_app_key_access](../operation/operation-parity-replace-app-key-access.md)
+
+### Referenced contract dossiers
+
+- [schemas: AppAccessSetOut](schemas-appaccesssetout.md)
+- [schemas: ErrorResponse](schemas-errorresponse.md)
+- [schemas: ReplaceAppAccessRequest](schemas-replaceappaccessrequest.md)
+
+## Governing policies
+
+- `compatibility/http-api/v1`
+- `extent-rule/schema-bound/v1`
+
+## Evidence
+
+### Qualification
+
+- `make operation-qualification`
+- `make compose-smoke`
+
+### Executable sources
+
+- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
+- `openapi:riverhog` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+
+### Machine authority
+
+- `/external_contract/http_openapi/riverhog/paths/~1v1~1apps~1{app}~1keys~1{key_id}~1access/put`
+
+### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 

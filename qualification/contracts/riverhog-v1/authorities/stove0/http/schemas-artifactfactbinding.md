@@ -4,6 +4,8 @@
 
 <!-- contract-element: http:stove0:schemas-artifactfactbinding:6b436b0c1a -->
 
+Locate subject-keyed records inside one observer's declared facts schema.
+
 | Audit field | Value |
 |---|---|
 | Authority | `stove0` |
@@ -12,22 +14,7 @@
 | Contract elements | 1 |
 | Extent decisions | 0 |
 
-## Machine authority
-
-- `/external_contract/http_openapi/stove0/components/schemas/ArtifactFactBinding`
-
-## Effective policies
-
-- `compatibility/http-api/v1`
-
-## Executable sources and proof
-
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `openapi:stove0` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
-- Proof: `make operation-qualification`
-- Proof: `make compose-smoke`
-
-## Contract summary
+## External contract
 
 - `title`: ArtifactFactBinding
 - `description`: Locate subject-keyed records inside one observer's declared facts schema.
@@ -37,10 +24,30 @@
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| `artifact_id_pointer` | no | string |  |
-| `records_pointer` | yes | string |  |
+| `artifact_id_pointer` | no | type="string"; pattern="^(?:\|/(?:[^~/]\|~[01])*(?:/(?:[^~/]\|~[01])*)*)$" |  |
+| `records_pointer` | yes | type="string"; pattern="^(?:\|/(?:[^~/]\|~[01])*(?:/(?:[^~/]\|~[01])*)*)$" |  |
 
-## Complete owned contract
+## Governing policies
+
+- `compatibility/http-api/v1`
+
+## Evidence
+
+### Qualification
+
+- `make operation-qualification`
+- `make compose-smoke`
+
+### Executable sources
+
+- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
+- `openapi:stove0` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+
+### Machine authority
+
+- `/external_contract/http_openapi/stove0/components/schemas/ArtifactFactBinding`
+
+### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 

@@ -4,6 +4,8 @@
 
 <!-- contract-element: http:riverhog:schemas-archivecopyjobout:4841696744 -->
 
+Exact externally visible contract owned by this semantic dossier.
+
 | Audit field | Value |
 |---|---|
 | Authority | `riverhog` |
@@ -12,30 +14,7 @@
 | Contract elements | 1 |
 | Extent decisions | 0 |
 
-## Machine authority
-
-- `/external_contract/http_openapi/riverhog/components/schemas/ArchiveCopyJobOut`
-
-## Effective policies
-
-- `compatibility/http-api/v1`
-
-## Executable sources and proof
-
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `openapi:riverhog` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
-- Proof: `make operation-qualification`
-- Proof: `make compose-smoke`
-
-## Referenced contract dossiers
-
-- [schemas: ApplicationKeyId](schemas-applicationkeyid.md)
-- [schemas: ApplicationName](schemas-applicationname.md)
-- [schemas: ArchiveCopyState](schemas-archivecopystate.md)
-- [schemas: ArchiveStoreName](schemas-archivestorename.md)
-- [schemas: CollectionId](schemas-collectionid.md)
-
-## Contract summary
+## External contract
 
 - `title`: ArchiveCopyJobOut
 - `type`: object
@@ -45,18 +24,48 @@
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | `collection_id` | yes | #/components/schemas/CollectionId |  |
-| `completed_at` | yes | object (2 fields) |  |
+| `completed_at` | yes | anyOf=type="string" \| type="null" |  |
 | `destination_store` | yes | #/components/schemas/ArchiveStoreName |  |
-| `expires_at` | yes | object (2 fields) |  |
-| `failure` | yes | object (2 fields) |  |
-| `initiated_by_app` | yes | object (1 fields) |  |
-| `initiated_by_key_id` | yes | object (1 fields) |  |
-| `ready_at` | yes | object (2 fields) |  |
-| `requested_at` | yes | object (2 fields) |  |
-| `source_store` | yes | object (1 fields) |  |
+| `expires_at` | yes | anyOf=type="string" \| type="null" |  |
+| `failure` | yes | anyOf=type="string"; minLength=1 \| type="null" |  |
+| `initiated_by_app` | yes | anyOf=#/components/schemas/ApplicationName \| type="null" |  |
+| `initiated_by_key_id` | yes | anyOf=#/components/schemas/ApplicationKeyId \| type="null" |  |
+| `ready_at` | yes | anyOf=type="string" \| type="null" |  |
+| `requested_at` | yes | anyOf=type="string" \| type="null" |  |
+| `source_store` | yes | anyOf=#/components/schemas/ArchiveStoreName \| type="null" |  |
 | `state` | yes | #/components/schemas/ArchiveCopyState |  |
 
-## Complete owned contract
+## Maintained corroboration
+
+### Referenced contract dossiers
+
+- [schemas: ApplicationKeyId](schemas-applicationkeyid.md)
+- [schemas: ApplicationName](schemas-applicationname.md)
+- [schemas: ArchiveCopyState](schemas-archivecopystate.md)
+- [schemas: ArchiveStoreName](schemas-archivestorename.md)
+- [schemas: CollectionId](schemas-collectionid.md)
+
+## Governing policies
+
+- `compatibility/http-api/v1`
+
+## Evidence
+
+### Qualification
+
+- `make operation-qualification`
+- `make compose-smoke`
+
+### Executable sources
+
+- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
+- `openapi:riverhog` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+
+### Machine authority
+
+- `/external_contract/http_openapi/riverhog/components/schemas/ArchiveCopyJobOut`
+
+### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 

@@ -4,6 +4,8 @@
 
 <!-- contract-element: http:riverhog:get-v1-retrieval-cache-objects-collection-bf09699679:aa97bc0a0c -->
 
+Get Retrieval Cache Object
+
 | Audit field | Value |
 |---|---|
 | Authority | `riverhog` |
@@ -12,31 +14,7 @@
 | Contract elements | 1 |
 | Extent decisions | 0 |
 
-## Machine authority
-
-- `/external_contract/http_openapi/riverhog/paths/~1v1~1retrieval-cache~1objects~1{collection_id}~1{source_store}~1{object_id}/get`
-
-## Effective policies
-
-- `compatibility/http-api/v1`
-
-## Executable sources and proof
-
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `openapi:riverhog` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
-- Proof: `make operation-qualification`
-- Proof: `make compose-smoke`
-
-## Related interface records
-
-- [Operation parity: get_retrieval_cache_object](../operation/operation-parity-get-retrieval-cache-object.md)
-
-## Referenced contract dossiers
-
-- [schemas: ErrorResponse](schemas-errorresponse.md)
-- [schemas: RetrievalCacheObjectOut](schemas-retrievalcacheobjectout.md)
-
-## Contract summary
+## External contract
 
 - `operationId`: get_retrieval_cache_object
 - `summary`: Get Retrieval Cache Object
@@ -46,9 +24,9 @@
 
 | Name | In | Required | Schema |
 |---|---|---:|---|
-| `collection_id` | path | yes | integer |
-| `source_store` | path | yes | string |
-| `object_id` | path | yes | string |
+| `collection_id` | path | yes | type="integer"; minimum=1 |
+| `source_store` | path | yes | type="string"; pattern="^[a-z0-9]+(?:-[a-z0-9]+)*$" |
+| `object_id` | path | yes | type="string" |
 
 ### Responses
 
@@ -61,7 +39,38 @@
 | `404` | Not Found |
 | `500` | Internal Server Error |
 
-## Complete owned contract
+## Maintained corroboration
+
+### Related interface records
+
+- [Operation parity: get_retrieval_cache_object](../operation/operation-parity-get-retrieval-cache-object.md)
+
+### Referenced contract dossiers
+
+- [schemas: ErrorResponse](schemas-errorresponse.md)
+- [schemas: RetrievalCacheObjectOut](schemas-retrievalcacheobjectout.md)
+
+## Governing policies
+
+- `compatibility/http-api/v1`
+
+## Evidence
+
+### Qualification
+
+- `make operation-qualification`
+- `make compose-smoke`
+
+### Executable sources
+
+- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
+- `openapi:riverhog` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+
+### Machine authority
+
+- `/external_contract/http_openapi/riverhog/paths/~1v1~1retrieval-cache~1objects~1{collection_id}~1{source_store}~1{object_id}/get`
+
+### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 

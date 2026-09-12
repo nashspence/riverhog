@@ -4,6 +4,8 @@
 
 <!-- contract-element: operation:stove0:operation-parity-get-artifact-selection:cde72fc375 -->
 
+Exact externally visible contract owned by this semantic dossier.
+
 | Audit field | Value |
 |---|---|
 | Authority | `stove0` |
@@ -12,28 +14,7 @@
 | Contract elements | 1 |
 | Extent decisions | 0 |
 
-## Machine authority
-
-- `/external_contract/operations/123`
-
-## Effective policies
-
-- `compatibility/cli/v1`
-- `compatibility/components/v1`
-- `compatibility/http-api/v1`
-
-## Executable sources and proof
-
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `operations:operation-matrix` — `scripts/operation_qualification.py::operation_matrix`
-- Proof: `make operation-qualification`
-
-## Related interface records
-
-- [GET /v1/artifact-selections/{selection_sha256}](../http/get-v1-artifact-selections-selection-sha256.md)
-- [stove0 selection show](../cli/stove0-selection-show.md)
-
-## Contract summary
+## External contract
 
 | Concern | Contract |
 |---|---|
@@ -48,7 +29,35 @@
 | `read_collection` | {"authority": "artifact-selection", "authority_parameter": "selection_sha256", "cursor_parameter": "continuation", "fixed_limit": 256, "kind": "exact-authority-page"} |
 | `response_authority` | canonical-document |
 
-## Complete owned contract
+## Maintained corroboration
+
+### Related interface records
+
+- [GET /v1/artifact-selections/{selection_sha256}](../http/get-v1-artifact-selections-selection-sha256.md)
+- [stove0 selection show](../cli/stove0-selection-show.md)
+
+## Governing policies
+
+- `compatibility/cli/v1`
+- `compatibility/components/v1`
+- `compatibility/http-api/v1`
+
+## Evidence
+
+### Qualification
+
+- `make operation-qualification`
+
+### Executable sources
+
+- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
+- `operations:operation-matrix` — `scripts/operation_qualification.py::operation_matrix`
+
+### Machine authority
+
+- `/external_contract/operations/123`
+
+### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 

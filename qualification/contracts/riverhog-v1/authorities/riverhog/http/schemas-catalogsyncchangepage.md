@@ -4,6 +4,8 @@
 
 <!-- contract-element: http:riverhog:schemas-catalogsyncchangepage:a10a7f5278 -->
 
+Exact externally visible contract owned by this semantic dossier.
+
 | Audit field | Value |
 |---|---|
 | Authority | `riverhog` |
@@ -12,39 +14,7 @@
 | Contract elements | 1 |
 | Extent decisions | 5 |
 
-## Machine authority
-
-- `/external_contract/http_openapi/riverhog/components/schemas/CatalogSyncChangePage`
-
-## Effective policies
-
-- `compatibility/http-api/v1`
-- `extent-rule/route-progression/v1`
-- `extent-rule/schema-bound/v1`
-
-## Executable sources and proof
-
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `openapi:riverhog` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
-- Proof: `make operation-qualification`
-- Proof: `make compose-smoke`
-
-## Referenced contract dossiers
-
-- [schemas: CatalogSyncDelete](schemas-catalogsyncdelete.md)
-- [schemas: CatalogSyncUpsert](schemas-catalogsyncupsert.md)
-
-## Extent decisions
-
-| Dimension | Unit | Policy | Bounds/reason |
-|---|---|---|---|
-| length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
-| cardinality | items | `segmented_no_total_max` | maximum=100, reason=bounded-route-page |
-| length | characters | `contract_max` | maximum=4096, minimum=1, reason=schema-maximum |
-| length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
-| length | characters | `contract_max` | maximum=19, minimum=1, reason=schema-maximum |
-
-## Contract summary
+## External contract
 
 - `title`: CatalogSyncChangePage
 - `type`: object
@@ -53,15 +23,54 @@
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| `authorization_view_identity` | yes | string |  |
-| `caught_up` | yes | boolean |  |
-| `changes` | yes | array |  |
-| `format` | no | string |  |
-| `next_cursor` | yes | string |  |
-| `source_identity` | yes | string |  |
-| `through_revision` | yes | string |  |
+| `authorization_view_identity` | yes | type="string"; minLength=64; maxLength=64; pattern="^[0-9a-f]{64}$" |  |
+| `caught_up` | yes | type="boolean" |  |
+| `changes` | yes | type="array"; maxItems=100; items=(oneOf=#/components/schemas/CatalogSyncUpsert \| #/components/schemas/CatalogSyncDelete; additional keys=`discriminator`) |  |
+| `format` | no | type="string"; const="riverhog-catalog-sync/v1" |  |
+| `next_cursor` | yes | type="string"; minLength=1; maxLength=4096 |  |
+| `source_identity` | yes | type="string"; minLength=64; maxLength=64; pattern="^[0-9a-f]{64}$" |  |
+| `through_revision` | yes | type="string"; minLength=1; maxLength=19; pattern="^(?:0\|[1-9][0-9]{0,17}\|[1-8][0-9]{18})$" |  |
 
-## Complete owned contract
+### Progression, limits, and lifecycle
+
+| Dimension | Unit | Policy | Bounds or reason |
+|---|---|---|---|
+| length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
+| cardinality | items | `segmented_no_total_max` | maximum=100, reason=bounded-route-page |
+| length | characters | `contract_max` | maximum=4096, minimum=1, reason=schema-maximum |
+| length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
+| length | characters | `contract_max` | maximum=19, minimum=1, reason=schema-maximum |
+
+## Maintained corroboration
+
+### Referenced contract dossiers
+
+- [schemas: CatalogSyncDelete](schemas-catalogsyncdelete.md)
+- [schemas: CatalogSyncUpsert](schemas-catalogsyncupsert.md)
+
+## Governing policies
+
+- `compatibility/http-api/v1`
+- `extent-rule/route-progression/v1`
+- `extent-rule/schema-bound/v1`
+
+## Evidence
+
+### Qualification
+
+- `make operation-qualification`
+- `make compose-smoke`
+
+### Executable sources
+
+- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
+- `openapi:riverhog` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+
+### Machine authority
+
+- `/external_contract/http_openapi/riverhog/components/schemas/CatalogSyncChangePage`
+
+### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 

@@ -4,6 +4,8 @@
 
 <!-- contract-element: http:riverhog:schemas-processingclaimsettledocument:81a030c9d6 -->
 
+Exact externally visible contract owned by this semantic dossier.
+
 | Audit field | Value |
 |---|---|
 | Authority | `riverhog` |
@@ -12,28 +14,7 @@
 | Contract elements | 1 |
 | Extent decisions | 0 |
 
-## Machine authority
-
-- `/external_contract/http_openapi/riverhog/components/schemas/ProcessingClaimSettleDocument`
-
-## Effective policies
-
-- `compatibility/http-api/v1`
-
-## Executable sources and proof
-
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `openapi:riverhog` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
-- Proof: `make operation-qualification`
-- Proof: `make compose-smoke`
-
-## Referenced contract dossiers
-
-- [schemas: CollectionDerivationDocument](schemas-collectionderivationdocument.md)
-- [schemas: CollectionId](schemas-collectionid.md)
-- [schemas: ProcessingOutcomeBindingDocument](schemas-processingoutcomebindingdocument.md)
-
-## Contract summary
+## External contract
 
 - `title`: ProcessingClaimSettleDocument
 - `type`: object
@@ -43,11 +24,39 @@
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | `derivation` | yes | #/components/schemas/CollectionDerivationDocument |  |
-| `fence` | yes | integer |  |
-| `outcome` | no | object (1 fields) |  |
+| `fence` | yes | type="integer"; minimum=1 |  |
+| `outcome` | no | anyOf=#/components/schemas/ProcessingOutcomeBindingDocument \| type="null" |  |
 | `output_collection_id` | yes | #/components/schemas/CollectionId |  |
 
-## Complete owned contract
+## Maintained corroboration
+
+### Referenced contract dossiers
+
+- [schemas: CollectionDerivationDocument](schemas-collectionderivationdocument.md)
+- [schemas: CollectionId](schemas-collectionid.md)
+- [schemas: ProcessingOutcomeBindingDocument](schemas-processingoutcomebindingdocument.md)
+
+## Governing policies
+
+- `compatibility/http-api/v1`
+
+## Evidence
+
+### Qualification
+
+- `make operation-qualification`
+- `make compose-smoke`
+
+### Executable sources
+
+- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
+- `openapi:riverhog` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+
+### Machine authority
+
+- `/external_contract/http_openapi/riverhog/components/schemas/ProcessingClaimSettleDocument`
+
+### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 

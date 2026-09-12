@@ -4,6 +4,8 @@
 
 <!-- contract-element: protocol:riverhog-storage-adapter-support:generated-riverhog-storage-adapter-writesession:c956556895 -->
 
+Exact externally visible contract owned by this semantic dossier.
+
 | Audit field | Value |
 |---|---|
 | Authority | `riverhog-storage-adapter-support` |
@@ -12,30 +14,7 @@
 | Contract elements | 1 |
 | Extent decisions | 2 |
 
-## Machine authority
-
-- `/external_contract/protocol_schemas/generated:riverhog-storage-adapter/schemas/WriteSession`
-
-## Effective policies
-
-- `compatibility/components/v1`
-- `extent-rule/schema-bound/v1`
-
-## Executable sources and proof
-
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `protocol:generated:riverhog-storage-adapter` — `packages/riverhog-storage-adapter-support/src/riverhog_storage_adapter_support/schemas.py::storage_adapter_schema_bundle`
-- Proof: `make dist-smoke`
-- Proof: `make build`
-
-## Extent decisions
-
-| Dimension | Unit | Policy | Bounds/reason |
-|---|---|---|---|
-| length | characters | `contract_max` | maximum=4096, minimum=1, reason=schema-maximum |
-| length | characters | `contract_max` | maximum=4000, minimum=1, reason=schema-maximum |
-
-## Contract summary
+## External contract
 
 - `title`: WriteSession
 - `type`: object
@@ -44,11 +23,39 @@
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| `expected_bytes` | yes | integer | Exact immutable-object byte length admitted by this write session. The value remains fixed until the write becomes terminal. |
-| `object_path` | yes | string |  |
-| `write_token` | yes | string | Opaque adapter-owned persistable continuation handle. For the same configured adapter it remains replayable across client, transport, Riverhog, and adapter process restarts until completion, explicit abort, or caller-authorized incomplete-write reclamation makes the write terminal. |
+| `expected_bytes` | yes | type="integer"; minimum=1 | Exact immutable-object byte length admitted by this write session. The value remains fixed until the write becomes terminal. |
+| `object_path` | yes | type="string"; minLength=1; maxLength=4096 |  |
+| `write_token` | yes | type="string"; minLength=1; maxLength=4000 | Opaque adapter-owned persistable continuation handle. For the same configured adapter it remains replayable across client, transport, Riverhog, and adapter process restarts until completion, explicit abort, or caller-authorized incomplete-write reclamation makes the write terminal. |
 
-## Complete owned contract
+### Progression, limits, and lifecycle
+
+| Dimension | Unit | Policy | Bounds or reason |
+|---|---|---|---|
+| length | characters | `contract_max` | maximum=4096, minimum=1, reason=schema-maximum |
+| length | characters | `contract_max` | maximum=4000, minimum=1, reason=schema-maximum |
+
+## Governing policies
+
+- `compatibility/components/v1`
+- `extent-rule/schema-bound/v1`
+
+## Evidence
+
+### Qualification
+
+- `make dist-smoke`
+- `make build`
+
+### Executable sources
+
+- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
+- `protocol:generated:riverhog-storage-adapter` — `packages/riverhog-storage-adapter-support/src/riverhog_storage_adapter_support/schemas.py::storage_adapter_schema_bundle`
+
+### Machine authority
+
+- `/external_contract/protocol_schemas/generated:riverhog-storage-adapter/schemas/WriteSession`
+
+### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 

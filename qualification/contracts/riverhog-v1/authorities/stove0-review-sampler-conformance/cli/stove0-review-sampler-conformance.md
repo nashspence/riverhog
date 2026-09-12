@@ -4,6 +4,8 @@
 
 <!-- contract-element: cli:stove0-review-sampler-conformance:stove0-review-sampler-conformance:c57fa0f5ef -->
 
+Exact externally visible contract owned by this semantic dossier.
+
 | Audit field | Value |
 |---|---|
 | Authority | `stove0-review-sampler-conformance` |
@@ -12,31 +14,7 @@
 | Contract elements | 1 |
 | Extent decisions | 2 |
 
-## Machine authority
-
-- `/external_contract/cli/stove0-review-sampler-conformance/name`
-- `/external_contract/cli/stove0-review-sampler-conformance/parameters`
-
-## Effective policies
-
-- `compatibility/cli/v1`
-- `extent-rule/schema-bound/v1`
-
-## Executable sources and proof
-
-- `cli:stove0-review-sampler-conformance` — `reference/stove0/targets/review/sampler/support/src/stove0_review_sampler_support/conformance.py::<module>`
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- Proof: `make dist-smoke`
-- Proof: `make operation-qualification`
-
-## Extent decisions
-
-| Dimension | Unit | Policy | Bounds/reason |
-|---|---|---|---|
-| cardinality | values-per-occurrence | `fixed` | maximum=0, minimum=0, reason=fixed-command-argument-arity |
-| cardinality | values-per-occurrence | `fixed` | maximum=0, minimum=0, reason=fixed-command-argument-arity |
-
-## Contract summary
+## External contract
 
 - Parser name: `stove0-review-sampler-conformance`
 
@@ -50,7 +28,36 @@
 | `` | _StoreTrueAction | no |  | --allow-insecure-http |
 | `` | _VersionAction | no |  | --version |
 
-## Complete owned contract
+### Progression, limits, and lifecycle
+
+| Dimension | Unit | Policy | Bounds or reason |
+|---|---|---|---|
+| cardinality | values-per-occurrence | `fixed` | maximum=0, minimum=0, reason=fixed-command-argument-arity |
+| cardinality | values-per-occurrence | `fixed` | maximum=0, minimum=0, reason=fixed-command-argument-arity |
+
+## Governing policies
+
+- `compatibility/cli/v1`
+- `extent-rule/schema-bound/v1`
+
+## Evidence
+
+### Qualification
+
+- `make dist-smoke`
+- `make operation-qualification`
+
+### Executable sources
+
+- `cli:stove0-review-sampler-conformance` — `reference/stove0/targets/review/sampler/support/src/stove0_review_sampler_support/conformance.py::<module>`
+- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
+
+### Machine authority
+
+- `/external_contract/cli/stove0-review-sampler-conformance/name`
+- `/external_contract/cli/stove0-review-sampler-conformance/parameters`
+
+### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 

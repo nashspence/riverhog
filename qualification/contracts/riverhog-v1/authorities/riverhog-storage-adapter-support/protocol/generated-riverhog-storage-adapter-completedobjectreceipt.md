@@ -4,6 +4,8 @@
 
 <!-- contract-element: protocol:riverhog-storage-adapter-support:generated-riverhog-storage-adapter-comple-18fc1686ec:5487e99746 -->
 
+Exact externally visible contract owned by this semantic dossier.
+
 | Audit field | Value |
 |---|---|
 | Authority | `riverhog-storage-adapter-support` |
@@ -12,25 +14,27 @@
 | Contract elements | 1 |
 | Extent decisions | 7 |
 
-## Machine authority
+## External contract
 
-- `/external_contract/protocol_schemas/generated:riverhog-storage-adapter/schemas/CompletedObjectReceipt`
+- `title`: CompletedObjectReceipt
+- `type`: object
 
-## Effective policies
+### Fields
 
-- `compatibility/components/v1`
-- `extent-rule/schema-bound/v1`
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| `completed_at` | yes | type="string"; minLength=1; maxLength=100 |  |
+| `entity_token` | no | anyOf=type="string"; minLength=1; maxLength=4000 \| type="null" |  |
+| `object_path` | yes | type="string"; minLength=1; maxLength=4096 |  |
+| `revision` | no | anyOf=type="string"; minLength=1; maxLength=2000 \| type="null" |  |
+| `stored_bytes` | yes | type="integer"; minimum=1 |  |
+| `verified_content_type` | yes | type="string"; minLength=1; maxLength=255 |  |
+| `verified_identity_assertions` | yes | type="object"; additional keys=`additionalProperties`, `maxProperties`, `x-riverhog-encoded-bytes-max`, `x-riverhog-extent` | Inert caller-owned facts used only to identify and reconcile an exact stored object. Adapters canonicalize, persist, return, and compare these assertions; they must not interpret them as routing, retrieval, retention, credentials, placement, or provider-control instructions. Adapters may retain additional adapter-private assertions. |
+| `verified_placement` | yes | type="string"; enum=["archive","immediate"] |  |
 
-## Executable sources and proof
+### Progression, limits, and lifecycle
 
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `protocol:generated:riverhog-storage-adapter` — `packages/riverhog-storage-adapter-support/src/riverhog_storage_adapter_support/schemas.py::storage_adapter_schema_bundle`
-- Proof: `make dist-smoke`
-- Proof: `make build`
-
-## Extent decisions
-
-| Dimension | Unit | Policy | Bounds/reason |
+| Dimension | Unit | Policy | Bounds or reason |
 |---|---|---|---|
 | length | characters | `contract_max` | maximum=100, minimum=1, reason=schema-maximum |
 | length | characters | `contract_max` | maximum=4000, minimum=1, reason=schema-maximum |
@@ -40,25 +44,28 @@
 | encoded-size | bytes | `contract_max` | maximum=16384, reason=bounded-object-identity-assertion-envelope |
 | cardinality | entries | `contract_max` | maximum=64, reason=bounded-object-identity-assertion-envelope |
 
-## Contract summary
+## Governing policies
 
-- `title`: CompletedObjectReceipt
-- `type`: object
+- `compatibility/components/v1`
+- `extent-rule/schema-bound/v1`
 
-### Fields
+## Evidence
 
-| Field | Required | Shape | Description |
-|---|---:|---|---|
-| `completed_at` | yes | string |  |
-| `entity_token` | no | object (3 fields) |  |
-| `object_path` | yes | string |  |
-| `revision` | no | object (3 fields) |  |
-| `stored_bytes` | yes | integer |  |
-| `verified_content_type` | yes | string |  |
-| `verified_identity_assertions` | yes | object | Inert caller-owned facts used only to identify and reconcile an exact stored object. Adapters canonicalize, persist, return, and compare these assertions; they must not interpret them as routing, retrieval, retention, credentials, placement, or provider-control instructions. Adapters may retain additional adapter-private assertions. |
-| `verified_placement` | yes | string |  |
+### Qualification
 
-## Complete owned contract
+- `make dist-smoke`
+- `make build`
+
+### Executable sources
+
+- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
+- `protocol:generated:riverhog-storage-adapter` — `packages/riverhog-storage-adapter-support/src/riverhog_storage_adapter_support/schemas.py::storage_adapter_schema_bundle`
+
+### Machine authority
+
+- `/external_contract/protocol_schemas/generated:riverhog-storage-adapter/schemas/CompletedObjectReceipt`
+
+### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 

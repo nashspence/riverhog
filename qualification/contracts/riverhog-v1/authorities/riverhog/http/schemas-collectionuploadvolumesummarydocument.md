@@ -4,6 +4,8 @@
 
 <!-- contract-element: http:riverhog:schemas-collectionuploadvolumesummarydocument:659de219af -->
 
+Protocol-owned identity of one immutable collection archive volume.
+
 | Audit field | Value |
 |---|---|
 | Authority | `riverhog` |
@@ -12,22 +14,7 @@
 | Contract elements | 1 |
 | Extent decisions | 0 |
 
-## Machine authority
-
-- `/external_contract/http_openapi/riverhog/components/schemas/CollectionUploadVolumeSummaryDocument`
-
-## Effective policies
-
-- `compatibility/http-api/v1`
-
-## Executable sources and proof
-
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `openapi:riverhog` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
-- Proof: `make operation-qualification`
-- Proof: `make compose-smoke`
-
-## Contract summary
+## External contract
 
 - `title`: CollectionUploadVolumeSummaryDocument
 - `description`: Protocol-owned identity of one immutable collection archive volume.
@@ -37,11 +24,31 @@
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| `kind` | yes | string |  |
-| `sequence` | yes | integer |  |
-| `volume_id` | yes | string |  |
+| `kind` | yes | type="string"; enum=["pack","segment"] |  |
+| `sequence` | yes | type="integer"; minimum=0 |  |
+| `volume_id` | yes | type="string"; pattern="^(?:pack\|segment)-[0-9a-f]{64}$" |  |
 
-## Complete owned contract
+## Governing policies
+
+- `compatibility/http-api/v1`
+
+## Evidence
+
+### Qualification
+
+- `make operation-qualification`
+- `make compose-smoke`
+
+### Executable sources
+
+- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
+- `openapi:riverhog` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+
+### Machine authority
+
+- `/external_contract/http_openapi/riverhog/components/schemas/CollectionUploadVolumeSummaryDocument`
+
+### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 

@@ -4,6 +4,8 @@
 
 <!-- contract-element: protocol:stove0-target-support:generated-stove0-target-operationcontract:85bdd342ae -->
 
+Exact externally visible contract owned by this semantic dossier.
+
 | Audit field | Value |
 |---|---|
 | Authority | `stove0-target-support` |
@@ -12,26 +14,38 @@
 | Contract elements | 1 |
 | Extent decisions | 10 |
 
-## Machine authority
+## External contract
 
-- `/external_contract/protocol_schemas/generated:stove0-target/schemas/OperationContract`
+- `title`: OperationContract
+- `type`: object
 
-## Effective policies
+### Fields
 
-- `compatibility/components/v1`
-- `extent-rule/no-semantic-maximum/v1`
-- `extent-rule/schema-bound/v1`
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| `contract_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| `effect_receipt_schema` | no | anyOf=#/$defs/JsonSchemaDocument \| type="null" |  |
+| `id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
+| `inputs` | yes | type="array"; minItems=1; items=(#/$defs/InputArtifactContract) |  |
+| `intent_schema` | yes | #/$defs/JsonSchemaDocument |  |
+| `intent_semantics` | yes | #/$defs/SemanticValidationProfile |  |
+| `outputs` | no | type="array"; items=(#/$defs/OutputArtifactContract) |  |
+| `result_kind` | no | type="string"; enum=["collection","external-effect"] |  |
+| `source_retirement_permitted` | no | type="boolean" |  |
 
-## Executable sources and proof
+### Definitions
 
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `protocol:generated:stove0-target` — `reference/stove0/packages/target-support/src/stove0_target_support/schemas.py::target_schema_bundle`
-- Proof: `make dist-smoke`
-- Proof: `make build`
+| Definition | Shape |
+|---|---|
+| `InputArtifactContract` | type="object"; fields=`allowed_dispositions`, `maximum`, `minimum`, `role`; additional keys=`additionalProperties`, `required` |
+| `JsonSchemaDocument` | type="object"; fields=`dialect`, `format_policy`, `id`, `schema`, `sha256`; additional keys=`additionalProperties`, `required` |
+| `JsonValue` | empty object |
+| `OutputArtifactContract` | type="object"; fields=`derived_from_roles`, `maximum`, `minimum`, `role`; additional keys=`additionalProperties`, `required` |
+| `SemanticValidationProfile` | type="object"; fields=`conformance_vectors_sha256`, `id`, `profile_sha256`, `rules`; additional keys=`additionalProperties`, `required` |
 
-## Extent decisions
+### Progression, limits, and lifecycle
 
-| Dimension | Unit | Policy | Bounds/reason |
+| Dimension | Unit | Policy | Bounds or reason |
 |---|---|---|---|
 | length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
 | cardinality | items | `operational_policy` | maximum=None, reason=no-declared-semantic-maximum |
@@ -44,36 +58,29 @@
 | length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
 | cardinality | items | `operational_policy` | maximum=None, reason=no-declared-semantic-maximum |
 
-## Contract summary
+## Governing policies
 
-- `title`: OperationContract
-- `type`: object
+- `compatibility/components/v1`
+- `extent-rule/no-semantic-maximum/v1`
+- `extent-rule/schema-bound/v1`
 
-### Fields
+## Evidence
 
-| Field | Required | Shape | Description |
-|---|---:|---|---|
-| `contract_sha256` | yes | string |  |
-| `effect_receipt_schema` | no | object (2 fields) |  |
-| `id` | yes | string |  |
-| `inputs` | yes | array |  |
-| `intent_schema` | yes | #/$defs/JsonSchemaDocument |  |
-| `intent_semantics` | yes | #/$defs/SemanticValidationProfile |  |
-| `outputs` | no | array |  |
-| `result_kind` | no | string |  |
-| `source_retirement_permitted` | no | boolean |  |
+### Qualification
 
-### Definitions
+- `make dist-smoke`
+- `make build`
 
-| Definition | Shape |
-|---|---|
-| `InputArtifactContract` | object |
-| `JsonSchemaDocument` | object |
-| `JsonValue` | object (0 fields) |
-| `OutputArtifactContract` | object |
-| `SemanticValidationProfile` | object |
+### Executable sources
 
-## Complete owned contract
+- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
+- `protocol:generated:stove0-target` — `reference/stove0/packages/target-support/src/stove0_target_support/schemas.py::target_schema_bundle`
+
+### Machine authority
+
+- `/external_contract/protocol_schemas/generated:stove0-target/schemas/OperationContract`
+
+### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 

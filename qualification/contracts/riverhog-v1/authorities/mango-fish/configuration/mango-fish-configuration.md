@@ -4,6 +4,8 @@
 
 <!-- contract-element: configuration:mango-fish:mango-fish-configuration:cf7172ea24 -->
 
+Exact externally visible contract owned by this semantic dossier.
+
 | Audit field | Value |
 |---|---|
 | Authority | `mango-fish` |
@@ -12,31 +14,7 @@
 | Contract elements | 1 |
 | Extent decisions | 2 |
 
-## Machine authority
-
-- `/external_contract/configuration_documents/mango-fish`
-
-## Effective policies
-
-- `compatibility/configuration/v1`
-- `extent-rule/configuration-composition/v1`
-- `extent-rule/schema-bound/v1`
-
-## Executable sources and proof
-
-- `configuration:mango-fish` — `reference/riverhog/applications/mango-fish/src/mango_fish/relay.py::MangoFishConfig`
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- Proof: `make unit`
-- Proof: `make compose-smoke`
-
-## Extent decisions
-
-| Dimension | Unit | Policy | Bounds/reason |
-|---|---|---|---|
-| value | schema-value | `contract_max` | maximum=100, minimum=1, reason=schema-maximum |
-| cardinality | items | `operational_policy` | maximum=None, reason=validated-deployment-composition |
-
-## Contract summary
+## External contract
 
 - `title`: MangoFishConfig
 - `type`: object
@@ -45,20 +23,49 @@
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| `batch_size` | no | integer |  |
-| `poll_interval_seconds` | no | number |  |
-| `request_timeout_seconds` | no | number |  |
-| `sources` | yes | array |  |
-| `state_path` | yes | string |  |
-| `version` | no | integer |  |
+| `batch_size` | no | type="integer"; minimum=1; maximum=100 |  |
+| `poll_interval_seconds` | no | type="number"; additional keys=`exclusiveMinimum` |  |
+| `request_timeout_seconds` | no | type="number"; additional keys=`exclusiveMinimum` |  |
+| `sources` | yes | type="array"; minItems=1; items=(#/$defs/SourceConfig) |  |
+| `state_path` | yes | type="string"; format="path" |  |
+| `version` | no | type="integer" |  |
 
 ### Definitions
 
 | Definition | Shape |
 |---|---|
-| `SourceConfig` | object |
+| `SourceConfig` | type="object"; fields=`events_url`, `name`, `token_env`, `webhook_url_env`; additional keys=`additionalProperties`, `required` |
 
-## Complete owned contract
+### Progression, limits, and lifecycle
+
+| Dimension | Unit | Policy | Bounds or reason |
+|---|---|---|---|
+| value | schema-value | `contract_max` | maximum=100, minimum=1, reason=schema-maximum |
+| cardinality | items | `operational_policy` | maximum=None, reason=validated-deployment-composition |
+
+## Governing policies
+
+- `compatibility/configuration/v1`
+- `extent-rule/configuration-composition/v1`
+- `extent-rule/schema-bound/v1`
+
+## Evidence
+
+### Qualification
+
+- `make unit`
+- `make compose-smoke`
+
+### Executable sources
+
+- `configuration:mango-fish` — `reference/riverhog/applications/mango-fish/src/mango_fish/relay.py::MangoFishConfig`
+- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
+
+### Machine authority
+
+- `/external_contract/configuration_documents/mango-fish`
+
+### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 

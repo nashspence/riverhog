@@ -4,6 +4,8 @@
 
 <!-- contract-element: python:riverhog-provenance:riverhog-provenance:30a3727f59 -->
 
+Exact externally visible contract owned by this semantic dossier.
+
 | Audit field | Value |
 |---|---|
 | Authority | `riverhog-provenance` |
@@ -12,30 +14,35 @@
 | Contract elements | 1 |
 | Extent decisions | 0 |
 
-## Machine authority
-
-- `/external_contract/python/8`
-
-## Effective policies
-
-- `compatibility/python-api/v1`
-
-## Executable sources and proof
-
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `python:riverhog-provenance` — `packages/riverhog-provenance/src/riverhog_provenance/__init__.py::<module>`
-- Proof: `make dist-smoke`
-- Proof: `make build`
-
-## Contract summary
+## External contract
 
 | Field | Shape |
 |---|---|
 | `distribution` | "riverhog-provenance" |
-| `exports` | object (80 fields) |
+| `exports` | additional keys=`DEFAULT_OBSERVER_AGENT_ID`, `DerivativeJournalSeed`, `ExternalStateReference`, `FileProvenanceBinding`, `FileStateObserver`, `FileStateObserverFactory`, `INSTALLATION_ID_FILENAME`, `IncrementalJournalEntry`, `JournalFrame`, `JournalSummary`, `LargeValueDisposition`, `NativeObservationError`, `ObservationPolicy`, `ObservationRequest`, `ObservationResult`, `PROVENANCE_BINDING_SEGMENT_BYTES_MAX`, `PROVENANCE_BINDING_SEGMENT_FILES_MAX`, `PROVENANCE_BINDING_SEGMENT_SCHEMA`, `PROVENANCE_ENTRY_SCHEMA`, `PROVENANCE_JOURNAL_ENTRY_BYTES_MAX`, `PROVENANCE_JOURNAL_SEGMENT_BYTES_MAX`, `PROVENANCE_OBSERVER_BINDING_FORMAT`, `PROVENANCE_OBSERVER_ENTRY_POINT_GROUP`, `PROVENANCE_OBSERVER_REFERENCE_FORMAT`, `PROVENANCE_PROFILE`, `PROVENANCE_ROOT_DOCUMENT_BYTES_MAX`, `PROVENANCE_ROOT_SCHEMA`, `PROVENANCE_SEQUENCE_BITS`, `PROVENANCE_SEQUENCE_HEX_WIDTH`, `PROVENANCE_TERMINAL_SCHEMA`, `PROVENANCE_VOLUME_DOCUMENT_BYTES_MAX`, `PROVENANCE_VOLUME_SCHEMA`, `PayloadBindingRequest`, `PreparedFileProvenance`, `ProvenanceObserverBinding`, `ProvenanceObserverError`, `ProvenancePayloadIdentity`, `ProvenanceProviderMetadata`, `ProvenanceRootDocument`, `ProvenanceTerminalDocument`, `ProvenanceValidationError`, `ProvenanceVolumeDocument`, `ResolvedProvenanceObserver`, `SIDECAR_SUFFIX`, `SchemaValidationUnavailable`, `SymlinkRefusedError`, `UnstableFileError`, `UnsupportedFileTypeError`, `UnsupportedPlatformError`, `append_observation`, `append_replacement_transformation`, `binding_segment_bytes`, `bounded_binding_segment_bytes`, `canonical_sidecar_path`, `create_derivative_journal`, `create_derivative_journal_from_identity`, `create_derivative_journal_seed`, `create_derivative_source_entry`, `create_observation_journal`, `current_state_reference`, `format_provenance_sequence`, `list_provenance_observers`, `load_or_create_installation_id`, `parse_binding_segment`, `parse_journal`, `parse_provenance_sequence`, `prepare_file_provenance`, `provenance_journal_filename`, `resolve_incremental_journal_current_state`, `resolve_provenance_observer`, `software_agent_id`, `update_ordered_volume_commitment`, `user_installation_id`, `validate_entry_document`, `validate_graph_fragment`, `validate_incremental_journal_entry`, `validate_journal`, `validate_journal_chunks`, `validate_journal_set`, `verify_payload_binding` |
 | `module` | "riverhog_provenance" |
 
-## Complete owned contract
+## Governing policies
+
+- `compatibility/python-api/v1`
+
+## Evidence
+
+### Qualification
+
+- `make dist-smoke`
+- `make build`
+
+### Executable sources
+
+- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
+- `python:riverhog-provenance` — `packages/riverhog-provenance/src/riverhog_provenance/__init__.py::<module>`
+
+### Machine authority
+
+- `/external_contract/python/8`
+
+### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 

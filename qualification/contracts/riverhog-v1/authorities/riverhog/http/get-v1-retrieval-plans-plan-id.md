@@ -4,6 +4,8 @@
 
 <!-- contract-element: http:riverhog:get-v1-retrieval-plans-plan-id:ab01950102 -->
 
+Get Retrieval Plan
+
 | Audit field | Value |
 |---|---|
 | Authority | `riverhog` |
@@ -12,31 +14,7 @@
 | Contract elements | 1 |
 | Extent decisions | 0 |
 
-## Machine authority
-
-- `/external_contract/http_openapi/riverhog/paths/~1v1~1retrieval-plans~1{plan_id}/get`
-
-## Effective policies
-
-- `compatibility/http-api/v1`
-
-## Executable sources and proof
-
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `openapi:riverhog` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
-- Proof: `make operation-qualification`
-- Proof: `make compose-smoke`
-
-## Related interface records
-
-- [Operation parity: get_retrieval_plan](../operation/operation-parity-get-retrieval-plan.md)
-
-## Referenced contract dossiers
-
-- [schemas: ErrorResponse](schemas-errorresponse.md)
-- [schemas: RetrievalPlanOut](schemas-retrievalplanout.md)
-
-## Contract summary
+## External contract
 
 - `operationId`: get_retrieval_plan
 - `summary`: Get Retrieval Plan
@@ -46,7 +24,7 @@
 
 | Name | In | Required | Schema |
 |---|---|---:|---|
-| `plan_id` | path | yes | string |
+| `plan_id` | path | yes | type="string" |
 
 ### Responses
 
@@ -59,7 +37,38 @@
 | `404` | Not Found |
 | `500` | Internal Server Error |
 
-## Complete owned contract
+## Maintained corroboration
+
+### Related interface records
+
+- [Operation parity: get_retrieval_plan](../operation/operation-parity-get-retrieval-plan.md)
+
+### Referenced contract dossiers
+
+- [schemas: ErrorResponse](schemas-errorresponse.md)
+- [schemas: RetrievalPlanOut](schemas-retrievalplanout.md)
+
+## Governing policies
+
+- `compatibility/http-api/v1`
+
+## Evidence
+
+### Qualification
+
+- `make operation-qualification`
+- `make compose-smoke`
+
+### Executable sources
+
+- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
+- `openapi:riverhog` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+
+### Machine authority
+
+- `/external_contract/http_openapi/riverhog/paths/~1v1~1retrieval-plans~1{plan_id}/get`
+
+### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 

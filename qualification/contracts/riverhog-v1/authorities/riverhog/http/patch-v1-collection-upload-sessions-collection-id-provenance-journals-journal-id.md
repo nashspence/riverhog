@@ -4,6 +4,8 @@
 
 <!-- contract-element: http:riverhog:patch-v1-collection-upload-sessions-colle-7eff7dfe3e:43f71e064a -->
 
+Append Collection Upload Session Provenance Journal
+
 | Audit field | Value |
 |---|---|
 | Authority | `riverhog` |
@@ -12,38 +14,7 @@
 | Contract elements | 1 |
 | Extent decisions | 1 |
 
-## Machine authority
-
-- `/external_contract/http_openapi/riverhog/paths/~1v1~1collection-upload-sessions~1{collection_id}~1provenance~1journals~1{journal_id}/patch`
-
-## Effective policies
-
-- `compatibility/http-api/v1`
-- `extent-rule/schema-bound/v1`
-
-## Executable sources and proof
-
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `openapi:riverhog` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
-- Proof: `make operation-qualification`
-- Proof: `make compose-smoke`
-
-## Related interface records
-
-- [Operation parity: append_collection_upload_session_provenance_journal](../operation/operation-parity-append-collection-upload-session-provenance-journal.md)
-
-## Referenced contract dossiers
-
-- [schemas: CollectionUploadProvenanceJournalStatusDocument](schemas-collectionuploadprovenancejournalstatusdocument.md)
-- [schemas: ErrorResponse](schemas-errorresponse.md)
-
-## Extent decisions
-
-| Dimension | Unit | Policy | Bounds/reason |
-|---|---|---|---|
-| value | schema-value | `contract_max` | maximum=1048576, minimum=1, reason=schema-maximum |
-
-## Contract summary
+## External contract
 
 - `operationId`: append_collection_upload_session_provenance_journal
 - `summary`: Append Collection Upload Session Provenance Journal
@@ -53,10 +24,10 @@
 
 | Name | In | Required | Schema |
 |---|---|---:|---|
-| `collection_id` | path | yes | integer |
-| `journal_id` | path | yes | string |
-| `Upload-Offset` | header | yes | integer |
-| `Content-Length` | header | yes | integer |
+| `collection_id` | path | yes | type="integer"; minimum=1 |
+| `journal_id` | path | yes | type="string"; pattern="^urn:uuid:[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$" |
+| `Upload-Offset` | header | yes | type="integer"; minimum=0 |
+| `Content-Length` | header | yes | type="integer"; minimum=1; maximum=1048576 |
 
 ### Request body
 
@@ -75,7 +46,45 @@
 | `411` | Length Required |
 | `500` | Internal Server Error |
 
-## Complete owned contract
+### Progression, limits, and lifecycle
+
+| Dimension | Unit | Policy | Bounds or reason |
+|---|---|---|---|
+| value | schema-value | `contract_max` | maximum=1048576, minimum=1, reason=schema-maximum |
+
+## Maintained corroboration
+
+### Related interface records
+
+- [Operation parity: append_collection_upload_session_provenance_journal](../operation/operation-parity-append-collection-upload-session-provenance-journal.md)
+
+### Referenced contract dossiers
+
+- [schemas: CollectionUploadProvenanceJournalStatusDocument](schemas-collectionuploadprovenancejournalstatusdocument.md)
+- [schemas: ErrorResponse](schemas-errorresponse.md)
+
+## Governing policies
+
+- `compatibility/http-api/v1`
+- `extent-rule/schema-bound/v1`
+
+## Evidence
+
+### Qualification
+
+- `make operation-qualification`
+- `make compose-smoke`
+
+### Executable sources
+
+- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
+- `openapi:riverhog` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+
+### Machine authority
+
+- `/external_contract/http_openapi/riverhog/paths/~1v1~1collection-upload-sessions~1{collection_id}~1provenance~1journals~1{journal_id}/patch`
+
+### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 

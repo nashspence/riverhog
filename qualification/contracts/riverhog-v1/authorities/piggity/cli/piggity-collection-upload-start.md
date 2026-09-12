@@ -4,6 +4,8 @@
 
 <!-- contract-element: cli:piggity:piggity-collection-upload-start:c66ea3d944 -->
 
+Exact externally visible contract owned by this semantic dossier.
+
 | Audit field | Value |
 |---|---|
 | Authority | `piggity` |
@@ -12,53 +14,7 @@
 | Contract elements | 1 |
 | Extent decisions | 11 |
 
-## Machine authority
-
-- `/external_contract/cli/piggity/commands/collection/commands/upload/commands/start/name`
-- `/external_contract/cli/piggity/commands/collection/commands/upload/commands/start/parameters`
-
-## Effective policies
-
-- `compatibility/cli/v1`
-- `extent-rule/no-semantic-maximum/v1`
-- `extent-rule/schema-bound/v1`
-
-## Executable sources and proof
-
-- `cli:piggity` — `reference/riverhog/applications/piggity/src/piggity/main.py::<module>`
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- Proof: `make dist-smoke`
-- Proof: `make operation-qualification`
-
-## Related interface records
-
-- [Operation parity: create_or_resume_collection_upload_session](../../riverhog/operation/operation-parity-create-or-resume-collection-upload-session.md)
-- [Operation parity: get_collection_upload_session](../../riverhog/operation/operation-parity-get-collection-upload-session.md)
-- [Operation parity: complete_collection_upload_session](../../riverhog/operation/operation-parity-complete-collection-upload-session.md)
-- [Operation parity: register_collection_upload_session_files](../../riverhog/operation/operation-parity-register-collection-upload-session-files.md)
-- [Operation parity: register_collection_upload_session_raw_part_digests](../../riverhog/operation/operation-parity-register-collection-upload-session-raw-part-digests.md)
-- [Operation parity: add_collection_upload_session_tags](../../riverhog/operation/operation-parity-add-collection-upload-session-tags.md)
-- [Operation parity: get_collection_upload_session_unit](../../riverhog/operation/operation-parity-get-collection-upload-session-unit.md)
-- [Operation parity: put_collection_upload_session_unit](../../riverhog/operation/operation-parity-put-collection-upload-session-unit.md)
-- [Operation parity: acquire_collection_upload_session_work](../../riverhog/operation/operation-parity-acquire-collection-upload-session-work.md)
-
-## Extent decisions
-
-| Dimension | Unit | Policy | Bounds/reason |
-|---|---|---|---|
-| cardinality | values-per-occurrence | `fixed` | maximum=1, minimum=1, reason=fixed-command-argument-arity |
-| cardinality | values-per-occurrence | `fixed` | maximum=1, minimum=1, reason=fixed-command-argument-arity |
-| cardinality | values-per-occurrence | `fixed` | maximum=1, minimum=1, reason=fixed-command-argument-arity |
-| cardinality | values-per-occurrence | `fixed` | maximum=1, minimum=1, reason=fixed-command-argument-arity |
-| cardinality | values-per-occurrence | `fixed` | maximum=1, minimum=1, reason=fixed-command-argument-arity |
-| cardinality | values-per-occurrence | `fixed` | maximum=1, minimum=1, reason=fixed-command-argument-arity |
-| cardinality | values-per-occurrence | `fixed` | maximum=1, minimum=1, reason=fixed-command-argument-arity |
-| cardinality | values-per-occurrence | `fixed` | maximum=1, minimum=1, reason=fixed-command-argument-arity |
-| cardinality | values-per-occurrence | `fixed` | maximum=1, minimum=1, reason=fixed-command-argument-arity |
-| cardinality | occurrences | `operational_policy` | maximum=None, reason=no-declared-semantic-maximum |
-| cardinality | values-per-occurrence | `fixed` | maximum=1, minimum=1, reason=fixed-command-argument-arity |
-
-## Contract summary
+## External contract
 
 - Parser name: `start`
 
@@ -77,7 +33,60 @@
 | `json_mode` | TyperOption | no | {'class': 'typer._click.types.BoolParamType', 'name': 'boolean'} | --json |
 | `dry_run` | TyperOption | no | {'class': 'typer._click.types.BoolParamType', 'name': 'boolean'} | --dry-run |
 
-## Complete owned contract
+### Progression, limits, and lifecycle
+
+| Dimension | Unit | Policy | Bounds or reason |
+|---|---|---|---|
+| cardinality | values-per-occurrence | `fixed` | maximum=1, minimum=1, reason=fixed-command-argument-arity |
+| cardinality | values-per-occurrence | `fixed` | maximum=1, minimum=1, reason=fixed-command-argument-arity |
+| cardinality | values-per-occurrence | `fixed` | maximum=1, minimum=1, reason=fixed-command-argument-arity |
+| cardinality | values-per-occurrence | `fixed` | maximum=1, minimum=1, reason=fixed-command-argument-arity |
+| cardinality | values-per-occurrence | `fixed` | maximum=1, minimum=1, reason=fixed-command-argument-arity |
+| cardinality | values-per-occurrence | `fixed` | maximum=1, minimum=1, reason=fixed-command-argument-arity |
+| cardinality | values-per-occurrence | `fixed` | maximum=1, minimum=1, reason=fixed-command-argument-arity |
+| cardinality | values-per-occurrence | `fixed` | maximum=1, minimum=1, reason=fixed-command-argument-arity |
+| cardinality | values-per-occurrence | `fixed` | maximum=1, minimum=1, reason=fixed-command-argument-arity |
+| cardinality | occurrences | `operational_policy` | maximum=None, reason=no-declared-semantic-maximum |
+| cardinality | values-per-occurrence | `fixed` | maximum=1, minimum=1, reason=fixed-command-argument-arity |
+
+## Maintained corroboration
+
+### Related interface records
+
+- [Operation parity: create_or_resume_collection_upload_session](../../riverhog/operation/operation-parity-create-or-resume-collection-upload-session.md)
+- [Operation parity: get_collection_upload_session](../../riverhog/operation/operation-parity-get-collection-upload-session.md)
+- [Operation parity: complete_collection_upload_session](../../riverhog/operation/operation-parity-complete-collection-upload-session.md)
+- [Operation parity: register_collection_upload_session_files](../../riverhog/operation/operation-parity-register-collection-upload-session-files.md)
+- [Operation parity: register_collection_upload_session_raw_part_digests](../../riverhog/operation/operation-parity-register-collection-upload-session-raw-part-digests.md)
+- [Operation parity: add_collection_upload_session_tags](../../riverhog/operation/operation-parity-add-collection-upload-session-tags.md)
+- [Operation parity: get_collection_upload_session_unit](../../riverhog/operation/operation-parity-get-collection-upload-session-unit.md)
+- [Operation parity: put_collection_upload_session_unit](../../riverhog/operation/operation-parity-put-collection-upload-session-unit.md)
+- [Operation parity: acquire_collection_upload_session_work](../../riverhog/operation/operation-parity-acquire-collection-upload-session-work.md)
+
+## Governing policies
+
+- `compatibility/cli/v1`
+- `extent-rule/no-semantic-maximum/v1`
+- `extent-rule/schema-bound/v1`
+
+## Evidence
+
+### Qualification
+
+- `make dist-smoke`
+- `make operation-qualification`
+
+### Executable sources
+
+- `cli:piggity` — `reference/riverhog/applications/piggity/src/piggity/main.py::<module>`
+- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
+
+### Machine authority
+
+- `/external_contract/cli/piggity/commands/collection/commands/upload/commands/start/name`
+- `/external_contract/cli/piggity/commands/collection/commands/upload/commands/start/parameters`
+
+### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 

@@ -4,6 +4,8 @@
 
 <!-- contract-element: http:riverhog:get-v1-collection-upload-sessions-collection-id-work:4db52caad0 -->
 
+Acquire Collection Upload Session Work
+
 | Audit field | Value |
 |---|---|
 | Authority | `riverhog` |
@@ -12,38 +14,7 @@
 | Contract elements | 1 |
 | Extent decisions | 1 |
 
-## Machine authority
-
-- `/external_contract/http_openapi/riverhog/paths/~1v1~1collection-upload-sessions~1{collection_id}~1work/get`
-
-## Effective policies
-
-- `compatibility/http-api/v1`
-- `extent-rule/schema-bound/v1`
-
-## Executable sources and proof
-
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `openapi:riverhog` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
-- Proof: `make operation-qualification`
-- Proof: `make compose-smoke`
-
-## Related interface records
-
-- [Operation parity: acquire_collection_upload_session_work](../operation/operation-parity-acquire-collection-upload-session-work.md)
-
-## Referenced contract dossiers
-
-- [schemas: CollectionUploadWorkBatchDocument](schemas-collectionuploadworkbatchdocument.md)
-- [schemas: ErrorResponse](schemas-errorresponse.md)
-
-## Extent decisions
-
-| Dimension | Unit | Policy | Bounds/reason |
-|---|---|---|---|
-| value | schema-value | `contract_max` | maximum=64, minimum=1, reason=schema-maximum |
-
-## Contract summary
+## External contract
 
 - `operationId`: acquire_collection_upload_session_work
 - `summary`: Acquire Collection Upload Session Work
@@ -53,8 +24,8 @@
 
 | Name | In | Required | Schema |
 |---|---|---:|---|
-| `collection_id` | path | yes | integer |
-| `limit` | query | no | integer |
+| `collection_id` | path | yes | type="integer"; minimum=1 |
+| `limit` | query | no | type="integer"; minimum=1; maximum=64 |
 
 ### Responses
 
@@ -67,7 +38,45 @@
 | `404` | Not Found |
 | `500` | Internal Server Error |
 
-## Complete owned contract
+### Progression, limits, and lifecycle
+
+| Dimension | Unit | Policy | Bounds or reason |
+|---|---|---|---|
+| value | schema-value | `contract_max` | maximum=64, minimum=1, reason=schema-maximum |
+
+## Maintained corroboration
+
+### Related interface records
+
+- [Operation parity: acquire_collection_upload_session_work](../operation/operation-parity-acquire-collection-upload-session-work.md)
+
+### Referenced contract dossiers
+
+- [schemas: CollectionUploadWorkBatchDocument](schemas-collectionuploadworkbatchdocument.md)
+- [schemas: ErrorResponse](schemas-errorresponse.md)
+
+## Governing policies
+
+- `compatibility/http-api/v1`
+- `extent-rule/schema-bound/v1`
+
+## Evidence
+
+### Qualification
+
+- `make operation-qualification`
+- `make compose-smoke`
+
+### Executable sources
+
+- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
+- `openapi:riverhog` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+
+### Machine authority
+
+- `/external_contract/http_openapi/riverhog/paths/~1v1~1collection-upload-sessions~1{collection_id}~1work/get`
+
+### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 

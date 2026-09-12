@@ -4,6 +4,8 @@
 
 <!-- contract-element: boundary:repository:platforms-runtime-images:85d134374a -->
 
+Exact externally visible contract owned by this semantic dossier.
+
 | Audit field | Value |
 |---|---|
 | Authority | `repository` |
@@ -12,26 +14,31 @@
 | Contract elements | 1 |
 | Extent decisions | 0 |
 
-## Machine authority
+## External contract
 
-- `/boundaries/runtime_images/platforms`
+- Shape: ["linux/amd64"]
 
-## Effective policies
+## Governing policies
 
 - `boundary/frozen-authority/v1`
 
-## Executable sources and proof
+## Evidence
+
+### Qualification
+
+- `make release-check`
+- `make build`
+
+### Executable sources
 
 - `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
 - `release:release.toml` — `release.toml`
-- Proof: `make release-check`
-- Proof: `make build`
 
-## Contract summary
+### Machine authority
 
-- Shape: array (1 items)
+- `/boundaries/runtime_images/platforms`
 
-## Complete owned contract
+### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 

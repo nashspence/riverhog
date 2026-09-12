@@ -4,6 +4,8 @@
 
 <!-- contract-element: http:riverhog:schemas-appkeyout:41aeadc2ae -->
 
+Exact externally visible contract owned by this semantic dossier.
+
 | Audit field | Value |
 |---|---|
 | Authority | `riverhog` |
@@ -12,29 +14,7 @@
 | Contract elements | 1 |
 | Extent decisions | 0 |
 
-## Machine authority
-
-- `/external_contract/http_openapi/riverhog/components/schemas/AppKeyOut`
-
-## Effective policies
-
-- `compatibility/http-api/v1`
-
-## Executable sources and proof
-
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `openapi:riverhog` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
-- Proof: `make operation-qualification`
-- Proof: `make compose-smoke`
-
-## Referenced contract dossiers
-
-- [schemas: ApplicationAccessGrantSet](schemas-applicationaccessgrantset.md)
-- [schemas: ApplicationKeyId](schemas-applicationkeyid.md)
-- [schemas: ApplicationName](schemas-applicationname.md)
-- [schemas: MonthlyDownloadQuotaBytes](schemas-monthlydownloadquotabytes.md)
-
-## Contract summary
+## External contract
 
 - `title`: AppKeyOut
 - `type`: object
@@ -45,15 +25,44 @@
 |---|---:|---|---|
 | `access` | yes | #/components/schemas/ApplicationAccessGrantSet |  |
 | `app` | yes | #/components/schemas/ApplicationName |  |
-| `created_at` | yes | string |  |
-| `expires_at` | yes | object (2 fields) |  |
+| `created_at` | yes | type="string" |  |
+| `expires_at` | yes | anyOf=type="string" \| type="null" |  |
 | `id` | yes | #/components/schemas/ApplicationKeyId |  |
-| `last_used_at` | yes | object (2 fields) |  |
-| `monthly_download_quota_bytes` | yes | object (1 fields) |  |
-| `revoked_at` | yes | object (2 fields) |  |
-| `status` | yes | string |  |
+| `last_used_at` | yes | anyOf=type="string" \| type="null" |  |
+| `monthly_download_quota_bytes` | yes | anyOf=#/components/schemas/MonthlyDownloadQuotaBytes \| type="null" |  |
+| `revoked_at` | yes | anyOf=type="string" \| type="null" |  |
+| `status` | yes | type="string"; enum=["active","expired","revoked"] |  |
 
-## Complete owned contract
+## Maintained corroboration
+
+### Referenced contract dossiers
+
+- [schemas: ApplicationAccessGrantSet](schemas-applicationaccessgrantset.md)
+- [schemas: ApplicationKeyId](schemas-applicationkeyid.md)
+- [schemas: ApplicationName](schemas-applicationname.md)
+- [schemas: MonthlyDownloadQuotaBytes](schemas-monthlydownloadquotabytes.md)
+
+## Governing policies
+
+- `compatibility/http-api/v1`
+
+## Evidence
+
+### Qualification
+
+- `make operation-qualification`
+- `make compose-smoke`
+
+### Executable sources
+
+- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
+- `openapi:riverhog` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+
+### Machine authority
+
+- `/external_contract/http_openapi/riverhog/components/schemas/AppKeyOut`
+
+### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 

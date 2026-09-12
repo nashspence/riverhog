@@ -4,6 +4,8 @@
 
 <!-- contract-element: http:stove0:schemas-operationprojection:ef6a8f5504 -->
 
+One declarative JSON-pointer copy into an operation request.
+
 | Audit field | Value |
 |---|---|
 | Authority | `stove0` |
@@ -12,22 +14,7 @@
 | Contract elements | 1 |
 | Extent decisions | 0 |
 
-## Machine authority
-
-- `/external_contract/http_openapi/stove0/components/schemas/OperationProjection`
-
-## Effective policies
-
-- `compatibility/http-api/v1`
-
-## Executable sources and proof
-
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `openapi:stove0` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
-- Proof: `make operation-qualification`
-- Proof: `make compose-smoke`
-
-## Contract summary
+## External contract
 
 - `title`: OperationProjection
 - `description`: One declarative JSON-pointer copy into an operation request.
@@ -37,12 +24,32 @@
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| `destination` | yes | string |  |
-| `destination_pointer` | yes | string |  |
-| `source` | yes | string |  |
-| `source_pointer` | yes | string |  |
+| `destination` | yes | type="string"; enum=["intent","target-options"] |  |
+| `destination_pointer` | yes | type="string"; pattern="^(?:\|/(?:[^~/]\|~[01])*(?:/(?:[^~/]\|~[01])*)*)$" |  |
+| `source` | yes | type="string"; enum=["work-effective-intent","work-evaluation"] |  |
+| `source_pointer` | yes | type="string"; pattern="^(?:\|/(?:[^~/]\|~[01])*(?:/(?:[^~/]\|~[01])*)*)$" |  |
 
-## Complete owned contract
+## Governing policies
+
+- `compatibility/http-api/v1`
+
+## Evidence
+
+### Qualification
+
+- `make operation-qualification`
+- `make compose-smoke`
+
+### Executable sources
+
+- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
+- `openapi:stove0` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+
+### Machine authority
+
+- `/external_contract/http_openapi/stove0/components/schemas/OperationProjection`
+
+### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 

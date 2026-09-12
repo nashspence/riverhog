@@ -4,6 +4,8 @@
 
 <!-- contract-element: http:riverhog:post-v1-collection-processing-claims-claim-id-settle:0aa3966dab -->
 
+Settle Processing Claim
+
 | Audit field | Value |
 |---|---|
 | Authority | `riverhog` |
@@ -12,39 +14,7 @@
 | Contract elements | 1 |
 | Extent decisions | 1 |
 
-## Machine authority
-
-- `/external_contract/http_openapi/riverhog/paths/~1v1~1collection-processing-claims~1{claim_id}~1settle/post`
-
-## Effective policies
-
-- `compatibility/http-api/v1`
-- `extent-rule/schema-bound/v1`
-
-## Executable sources and proof
-
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `openapi:riverhog` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
-- Proof: `make operation-qualification`
-- Proof: `make compose-smoke`
-
-## Related interface records
-
-- [Operation parity: settle_processing_claim](../operation/operation-parity-settle-processing-claim.md)
-
-## Referenced contract dossiers
-
-- [schemas: ErrorResponse](schemas-errorresponse.md)
-- [schemas: ProcessingClaimDocument](schemas-processingclaimdocument.md)
-- [schemas: ProcessingClaimSettleDocument](schemas-processingclaimsettledocument.md)
-
-## Extent decisions
-
-| Dimension | Unit | Policy | Bounds/reason |
-|---|---|---|---|
-| length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
-
-## Contract summary
+## External contract
 
 - `operationId`: settle_processing_claim
 - `summary`: Settle Processing Claim
@@ -54,7 +24,7 @@
 
 | Name | In | Required | Schema |
 |---|---|---:|---|
-| `claim_id` | path | yes | string |
+| `claim_id` | path | yes | type="string"; pattern="^[0-9a-f]{64}$" |
 
 ### Request body
 
@@ -72,7 +42,46 @@
 | `409` | Conflict |
 | `500` | Internal Server Error |
 
-## Complete owned contract
+### Progression, limits, and lifecycle
+
+| Dimension | Unit | Policy | Bounds or reason |
+|---|---|---|---|
+| length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
+
+## Maintained corroboration
+
+### Related interface records
+
+- [Operation parity: settle_processing_claim](../operation/operation-parity-settle-processing-claim.md)
+
+### Referenced contract dossiers
+
+- [schemas: ErrorResponse](schemas-errorresponse.md)
+- [schemas: ProcessingClaimDocument](schemas-processingclaimdocument.md)
+- [schemas: ProcessingClaimSettleDocument](schemas-processingclaimsettledocument.md)
+
+## Governing policies
+
+- `compatibility/http-api/v1`
+- `extent-rule/schema-bound/v1`
+
+## Evidence
+
+### Qualification
+
+- `make operation-qualification`
+- `make compose-smoke`
+
+### Executable sources
+
+- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
+- `openapi:riverhog` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+
+### Machine authority
+
+- `/external_contract/http_openapi/riverhog/paths/~1v1~1collection-processing-claims~1{claim_id}~1settle/post`
+
+### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 

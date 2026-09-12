@@ -4,6 +4,8 @@
 
 <!-- contract-element: protocol:stove0-target-support:generated-stove0-target-targetconformanceresult:4818b112f4 -->
 
+Exact externally visible contract owned by this semantic dossier.
+
 | Audit field | Value |
 |---|---|
 | Authority | `stove0-target-support` |
@@ -12,26 +14,84 @@
 | Contract elements | 1 |
 | Extent decisions | 133 |
 
-## Machine authority
+## External contract
 
-- `/external_contract/protocol_schemas/generated:stove0-target/schemas/TargetConformanceResult`
+- `title`: TargetConformanceResult
+- `type`: object
 
-## Effective policies
+### Fields
 
-- `compatibility/components/v1`
-- `extent-rule/no-semantic-maximum/v1`
-- `extent-rule/schema-bound/v1`
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| `coverage` | yes | #/$defs/TargetConformanceCoverage |  |
+| `format` | no | type="string"; const="stove0-target-conformance-result/v1" |  |
+| `operation_evidence` | no | type="array"; items=(#/$defs/TargetOperationConformanceEvidence) |  |
+| `operations` | yes | type="array"; items=(#/$defs/TargetOperationConformance) |  |
+| `status` | yes | type="string"; enum=["conformant","partially-exercised","inspected"] |  |
+| `target` | yes | #/$defs/TargetContract |  |
 
-## Executable sources and proof
+### Definitions
 
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `protocol:generated:stove0-target` — `reference/stove0/packages/target-support/src/stove0_target_support/schemas.py::target_schema_bundle`
-- Proof: `make dist-smoke`
-- Proof: `make build`
+| Definition | Shape |
+|---|---|
+| `AcceptedTargetJob` | type="object"; fields=`declaration`, `request_sha256`; additional keys=`additionalProperties`, `required` |
+| `ArtifactDispositionSetIdentity` | type="object"; fields=`disposition_count`, `output_artifact_count`, `output_edge_count`, `sha256`; additional keys=`required` |
+| `ArtifactSelectionRef` | type="object"; fields=`artifact_count`, `selection_sha256`, `total_bytes`; additional keys=`additionalProperties`, `required` |
+| `ArtifactSubject` | type="object"; fields=`bytes`, `collection`, `id`, `media_type`, `path`, `role`, `sha256`; additional keys=`additionalProperties`, `required` |
+| `BranchWorkBinding` | type="object"; fields=`artifact_selection_sha256`, `branch_id`, `decision_sha256`, `kind`, `parent_work_id`; additional keys=`additionalProperties`, `required` |
+| `CollectionId` | type="integer"; minimum=1 |
+| `CollectionRootRef` | type="object"; fields=`archive_root_sha256`, `collection_id`, `content_identity`; additional keys=`additionalProperties`, `required` |
+| `ControllerEvidence` | type="object"; fields=`controller_evidence_sha256`, `execution_envelope`, `format`; additional keys=`additionalProperties`, `required` |
+| `EffectPlan` | type="object"; fields=`inputs`, `intent`, `observation_result_sha256s`, `operation_contract_sha256`, `operation_id`, `plan_sha256`, `protocol`, `target_contract_sha256`, `target_implementation_id`, `target_options`; additional keys=`additionalProperties`, `required` |
+| `EvaluationBinding` | type="object"; fields=`evaluation_id`, `matrix_sha256`, `parameters`, `variant_id`; additional keys=`additionalProperties`, `required` |
+| `ExecutionEnvelope` | type="object"; fields=`claim_id`, `execution_envelope_sha256`, `fence`, `format`, `target_plan`, `workflow_plan`; additional keys=`additionalProperties`, `required` |
+| `ExternalEffectReceipt` | type="object"; fields=`execution_sha256`, `format`, `job_id`, `operation_contract_sha256`, `plan_sha256`, `receipt_sha256`, `request_sha256`, `result`, `target_contract_sha256`; additional keys=`additionalProperties`, `required` |
+| `InputArtifactContract` | type="object"; fields=`allowed_dispositions`, `maximum`, `minimum`, `role`; additional keys=`additionalProperties`, `required` |
+| `JoinWorkBinding` | type="object"; fields=`branch_set_sha256`, `kind`, `members`, `parent_work_id`; additional keys=`additionalProperties`, `required` |
+| `JoinWorkMemberBinding` | type="object"; fields=`artifact_selection_sha256`, `branch_id`, `producer_settlement_sha256`, `settlement_sha256`; additional keys=`additionalProperties`, `required` |
+| `JsonSchemaDocument` | type="object"; fields=`dialect`, `format_policy`, `id`, `schema`, `sha256`; additional keys=`additionalProperties`, `required` |
+| `JsonValue` | empty object |
+| `ObservationEvidence` | type="object"; fields=`request`, `result`; additional keys=`additionalProperties`, `required` |
+| `ObservationFailure` | type="object"; fields=`code`, `message`, `retryable`; additional keys=`additionalProperties`, `required` |
+| `ObservationInapplicable` | type="object"; fields=`code`, `message`; additional keys=`additionalProperties`, `required` |
+| `ObservationRequest` | type="object"; fields=`format`, `maximum_result_bytes`, `observer_contract_id`, `observer_contract_sha256`, `observer_descriptor_sha256`, `observer_registration_id`, `options`, `request_id`, `retrieval_policy`, `subjects`, `timeout_seconds`, `work_id`; additional keys=`additionalProperties`, `required` |
+| `ObservationResult` | type="object"; fields=`execution_evidence`, `facts`, `facts_schema`, `facts_sha256`, `failure`, `format`, `inapplicable`, `observer`, `observer_contract_id`, `observer_contract_sha256`, `request_id`, `result_sha256`, `state`, `subjects`; additional keys=`additionalProperties`, `required` |
+| `ObserverImplementation` | type="object"; fields=`descriptor_sha256`, `id`, `protocol`, `source_revision`, `version`; additional keys=`additionalProperties`, `required` |
+| `OperationContract` | type="object"; fields=`contract_sha256`, `effect_receipt_schema`, `id`, `inputs`, `intent_schema`, `intent_semantics`, `outputs`, `result_kind`, `source_retirement_permitted`; additional keys=`additionalProperties`, `required` |
+| `OperationRef` | type="object"; fields=`id`, `sha256`; additional keys=`additionalProperties`, `required` |
+| `OutputArtifactContract` | type="object"; fields=`derived_from_roles`, `maximum`, `minimum`, `role`; additional keys=`additionalProperties`, `required` |
+| `OutputArtifactRoleCount` | type="object"; fields=`count`, `role`; additional keys=`additionalProperties`, `required` |
+| `OutputArtifactSetIdentity` | type="object"; fields=`artifact_count`, `roles`, `sha256`, `total_bytes`; additional keys=`additionalProperties`, `required` |
+| `OutputCollectionRef` | type="object"; fields=`archive_root_sha256`, `collection_id`, `content_identity`, `derivation_sha256`; additional keys=`additionalProperties`, `required` |
+| `RecipeRef` | type="object"; fields=`id`, `revision`, `sha256`; additional keys=`additionalProperties`, `required` |
+| `SemanticIntentConformanceVector` | type="object"; fields=`accepted`, `id`, `intent`; additional keys=`additionalProperties`, `required` |
+| `SemanticIntentConformanceVectors` | type="object"; fields=`format`, `profile_id`, `vectors`; additional keys=`additionalProperties`, `required` |
+| `SemanticValidationProfile` | type="object"; fields=`conformance_vectors_sha256`, `id`, `profile_sha256`, `rules`; additional keys=`additionalProperties`, `required` |
+| `TargetConformanceCoverage` | type="object"; fields=`advertised`, `complete`, `exercised`; additional keys=`additionalProperties`, `required` |
+| `TargetContract` | type="object"; fields=`contract_sha256`, `image_digest`, `implementation_id`, `implementation_version`, `operations`, `protocol`, `source_revision`, `transport`; additional keys=`additionalProperties`, `required` |
+| `TargetExecutionEvidence` | type="object"; fields=`execution_sha256`, `operation_contract_sha256`, `plan_sha256`, `runtime`, `target_contract_sha256`; additional keys=`additionalProperties`, `required` |
+| `TargetFailure` | type="object"; fields=`code`, `message`, `retryable`; additional keys=`additionalProperties`, `required` |
+| `TargetInapplicable` | type="object"; fields=`code`, `message`; additional keys=`additionalProperties`, `required` |
+| `TargetInputAuthority` | type="object"; fields=`roles`, `selection`; additional keys=`additionalProperties`, `required` |
+| `TargetInputRoleCount` | type="object"; fields=`count`, `role`; additional keys=`additionalProperties`, `required` |
+| `TargetJobDeclaration` | type="object"; fields=`claim_id`, `controller_evidence`, `fence`, `job_id`, `plan`, `workspace_assurance`; additional keys=`additionalProperties`, `required` |
+| `TargetJobStatus` | type="object"; fields=`attempt`, `derivation`, `effect_receipt`, `execution_evidence`, `failure`, `inapplicable`, `job_id`, `output_collection`, `plan_sha256`, `production`, `progress`, `protocol`, `request_sha256`, `state`; allOf=additional keys=`else`, `if`, `then`; additional keys=`additionalProperties`, `required` |
+| `TargetOperationConformance` | type="object"; fields=`intent_semantics_conformance_vectors_sha256`, `intent_semantics_id`, `intent_semantics_sha256`, `operation_contract_sha256`, `operation_id`, `options_schema_sha256`, `result_kind`, `semantic_conformance`; additional keys=`additionalProperties`, `required` |
+| `TargetOperationConformanceEvidence` | type="object"; fields=`accepted_job`, `job_status`, `operation`, `operation_id`, `preflight`, `preflight_request`, `semantic_conformance`, `submission`; additional keys=`additionalProperties`, `required` |
+| `TargetOperationSupport` | type="object"; fields=`operation_contract_sha256`, `operation_id`, `options_schema`, `result_kind`; additional keys=`additionalProperties`, `required` |
+| `TargetPlanBinding` | type="object"; fields=`operation_contract_sha256`, `plan`, `plan_sha256`, `protocol`, `target_contract_sha256`, `target_implementation_id`; additional keys=`additionalProperties`, `required` |
+| `TargetPreflightRequest` | type="object"; fields=`inputs`, `intent`, `observations`, `operation_contract_sha256`, `operation_id`, `protocol`, `target_options`; additional keys=`additionalProperties`, `required` |
+| `TargetPreflightResponse` | type="object"; fields=`plan`, `target`; additional keys=`additionalProperties`, `required` |
+| `TargetProductionAuthority` | type="object"; fields=`disposition_count`, `disposition_sha256`, `format`, `job_id`, `outputs`, `plan_sha256`, `production_sha256`, `riverhog_disposition_set`, `source_edge_count`, `source_edge_sha256`; additional keys=`additionalProperties`, `required` |
+| `TargetProgress` | type="object"; fields=`completed`, `phase`, `total`, `unit`; additional keys=`additionalProperties`, `required` |
+| `TargetSemanticConformance` | type="object"; fields=`accepted_vector_ids`, `conformance_vectors_sha256`, `profile_id`, `profile_sha256`, `rejected_vector_ids`, `status`, `vectors`; additional keys=`additionalProperties`, `required` |
+| `TransformPlan` | type="object"; fields=`inputs`, `intent`, `observation_result_sha256s`, `operation_contract_sha256`, `operation_id`, `plan_sha256`, `protocol`, `target_contract_sha256`, `target_implementation_id`, `target_options`; additional keys=`additionalProperties`, `required` |
+| `WorkIdentity` | type="object"; fields=`effective_intent`, `evaluation`, `fork_join`, `format`, `inputs`, `recipe`, `work_id`; additional keys=`additionalProperties`, `required` |
+| `WorkflowPlan` | type="object"; fields=`format`, `input_retrieval_policy`, `observations`, `operation`, `output_policy`, `requested_target_options`, `result_kind`, `retirement_grace_seconds`, `retirement_policy`, `target_contract_sha256`, `target_registration_id`, `work`, `workflow_plan_sha256`; additional keys=`additionalProperties`, `required` |
 
-## Extent decisions
+### Progression, limits, and lifecycle
 
-| Dimension | Unit | Policy | Bounds/reason |
+| Dimension | Unit | Policy | Bounds or reason |
 |---|---|---|---|
 | cardinality | items | `operational_policy` | maximum=None, reason=no-declared-semantic-maximum |
 | cardinality | items | `operational_policy` | maximum=None, reason=no-declared-semantic-maximum |
@@ -167,82 +227,29 @@
 | length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
 | length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
 
-## Contract summary
+## Governing policies
 
-- `title`: TargetConformanceResult
-- `type`: object
+- `compatibility/components/v1`
+- `extent-rule/no-semantic-maximum/v1`
+- `extent-rule/schema-bound/v1`
 
-### Fields
+## Evidence
 
-| Field | Required | Shape | Description |
-|---|---:|---|---|
-| `coverage` | yes | #/$defs/TargetConformanceCoverage |  |
-| `format` | no | string |  |
-| `operation_evidence` | no | array |  |
-| `operations` | yes | array |  |
-| `status` | yes | string |  |
-| `target` | yes | #/$defs/TargetContract |  |
+### Qualification
 
-### Definitions
+- `make dist-smoke`
+- `make build`
 
-| Definition | Shape |
-|---|---|
-| `AcceptedTargetJob` | object |
-| `ArtifactDispositionSetIdentity` | object |
-| `ArtifactSelectionRef` | object |
-| `ArtifactSubject` | object |
-| `BranchWorkBinding` | object |
-| `CollectionId` | integer |
-| `CollectionRootRef` | object |
-| `ControllerEvidence` | object |
-| `EffectPlan` | object |
-| `EvaluationBinding` | object |
-| `ExecutionEnvelope` | object |
-| `ExternalEffectReceipt` | object |
-| `InputArtifactContract` | object |
-| `JoinWorkBinding` | object |
-| `JoinWorkMemberBinding` | object |
-| `JsonSchemaDocument` | object |
-| `JsonValue` | object (0 fields) |
-| `ObservationEvidence` | object |
-| `ObservationFailure` | object |
-| `ObservationInapplicable` | object |
-| `ObservationRequest` | object |
-| `ObservationResult` | object |
-| `ObserverImplementation` | object |
-| `OperationContract` | object |
-| `OperationRef` | object |
-| `OutputArtifactContract` | object |
-| `OutputArtifactRoleCount` | object |
-| `OutputArtifactSetIdentity` | object |
-| `OutputCollectionRef` | object |
-| `RecipeRef` | object |
-| `SemanticIntentConformanceVector` | object |
-| `SemanticIntentConformanceVectors` | object |
-| `SemanticValidationProfile` | object |
-| `TargetConformanceCoverage` | object |
-| `TargetContract` | object |
-| `TargetExecutionEvidence` | object |
-| `TargetFailure` | object |
-| `TargetInapplicable` | object |
-| `TargetInputAuthority` | object |
-| `TargetInputRoleCount` | object |
-| `TargetJobDeclaration` | object |
-| `TargetJobStatus` | object |
-| `TargetOperationConformance` | object |
-| `TargetOperationConformanceEvidence` | object |
-| `TargetOperationSupport` | object |
-| `TargetPlanBinding` | object |
-| `TargetPreflightRequest` | object |
-| `TargetPreflightResponse` | object |
-| `TargetProductionAuthority` | object |
-| `TargetProgress` | object |
-| `TargetSemanticConformance` | object |
-| `TransformPlan` | object |
-| `WorkIdentity` | object |
-| `WorkflowPlan` | object |
+### Executable sources
 
-## Complete owned contract
+- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
+- `protocol:generated:stove0-target` — `reference/stove0/packages/target-support/src/stove0_target_support/schemas.py::target_schema_bundle`
+
+### Machine authority
+
+- `/external_contract/protocol_schemas/generated:stove0-target/schemas/TargetConformanceResult`
+
+### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 

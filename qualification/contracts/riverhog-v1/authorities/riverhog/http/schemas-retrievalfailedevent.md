@@ -4,6 +4,8 @@
 
 <!-- contract-element: http:riverhog:schemas-retrievalfailedevent:284f8534c2 -->
 
+Exact externally visible contract owned by this semantic dossier.
+
 | Audit field | Value |
 |---|---|
 | Authority | `riverhog` |
@@ -12,26 +14,7 @@
 | Contract elements | 1 |
 | Extent decisions | 0 |
 
-## Machine authority
-
-- `/external_contract/http_openapi/riverhog/components/schemas/RetrievalFailedEvent`
-
-## Effective policies
-
-- `compatibility/http-api/v1`
-
-## Executable sources and proof
-
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `openapi:riverhog` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
-- Proof: `make operation-qualification`
-- Proof: `make compose-smoke`
-
-## Referenced contract dossiers
-
-- [schemas: RetrievalFailedData](schemas-retrievalfaileddata.md)
-
-## Contract summary
+## External contract
 
 - `title`: RetrievalFailedEvent
 - `type`: object
@@ -41,15 +24,41 @@
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | `data` | yes | #/components/schemas/RetrievalFailedData |  |
-| `datacontenttype` | no | string |  |
-| `id` | yes | string |  |
-| `source` | yes | string |  |
-| `specversion` | no | string |  |
-| `subject` | no | object (2 fields) |  |
-| `time` | yes | string |  |
-| `type` | yes | string |  |
+| `datacontenttype` | no | type="string"; const="application/json" |  |
+| `id` | yes | type="string"; minLength=1 |  |
+| `source` | yes | type="string"; minLength=1 |  |
+| `specversion` | no | type="string"; const="1.0" |  |
+| `subject` | no | anyOf=type="string"; minLength=1 \| type="null" |  |
+| `time` | yes | type="string" |  |
+| `type` | yes | type="string"; const="io.riverhog.riverhog.retrieval.failed" |  |
 
-## Complete owned contract
+## Maintained corroboration
+
+### Referenced contract dossiers
+
+- [schemas: RetrievalFailedData](schemas-retrievalfaileddata.md)
+
+## Governing policies
+
+- `compatibility/http-api/v1`
+
+## Evidence
+
+### Qualification
+
+- `make operation-qualification`
+- `make compose-smoke`
+
+### Executable sources
+
+- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
+- `openapi:riverhog` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+
+### Machine authority
+
+- `/external_contract/http_openapi/riverhog/components/schemas/RetrievalFailedEvent`
+
+### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 

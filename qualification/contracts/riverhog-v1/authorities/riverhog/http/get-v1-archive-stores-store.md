@@ -4,6 +4,8 @@
 
 <!-- contract-element: http:riverhog:get-v1-archive-stores-store:c92b41278f -->
 
+Get Archive Store
+
 | Audit field | Value |
 |---|---|
 | Authority | `riverhog` |
@@ -12,31 +14,7 @@
 | Contract elements | 1 |
 | Extent decisions | 0 |
 
-## Machine authority
-
-- `/external_contract/http_openapi/riverhog/paths/~1v1~1archive~1stores~1{store}/get`
-
-## Effective policies
-
-- `compatibility/http-api/v1`
-
-## Executable sources and proof
-
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `openapi:riverhog` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
-- Proof: `make operation-qualification`
-- Proof: `make compose-smoke`
-
-## Related interface records
-
-- [Operation parity: get_archive_store](../operation/operation-parity-get-archive-store.md)
-
-## Referenced contract dossiers
-
-- [schemas: ArchiveStoreOut](schemas-archivestoreout.md)
-- [schemas: ErrorResponse](schemas-errorresponse.md)
-
-## Contract summary
+## External contract
 
 - `operationId`: get_archive_store
 - `summary`: Get Archive Store
@@ -46,7 +24,7 @@
 
 | Name | In | Required | Schema |
 |---|---|---:|---|
-| `store` | path | yes | string |
+| `store` | path | yes | type="string"; pattern="^[a-z0-9]+(?:-[a-z0-9]+)*$" |
 
 ### Responses
 
@@ -59,7 +37,38 @@
 | `404` | Not Found |
 | `500` | Internal Server Error |
 
-## Complete owned contract
+## Maintained corroboration
+
+### Related interface records
+
+- [Operation parity: get_archive_store](../operation/operation-parity-get-archive-store.md)
+
+### Referenced contract dossiers
+
+- [schemas: ArchiveStoreOut](schemas-archivestoreout.md)
+- [schemas: ErrorResponse](schemas-errorresponse.md)
+
+## Governing policies
+
+- `compatibility/http-api/v1`
+
+## Evidence
+
+### Qualification
+
+- `make operation-qualification`
+- `make compose-smoke`
+
+### Executable sources
+
+- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
+- `openapi:riverhog` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+
+### Machine authority
+
+- `/external_contract/http_openapi/riverhog/paths/~1v1~1archive~1stores~1{store}/get`
+
+### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 

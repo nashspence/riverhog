@@ -4,6 +4,8 @@
 
 <!-- contract-element: protocol:riverhog-provenance:riverhog-provenance-v1-journal-entry:90e67ecf37 -->
 
+One immutable entry in a hash-chained RFC 7464 per-file provenance journal.
+
 | Audit field | Value |
 |---|---|
 | Authority | `riverhog-provenance` |
@@ -12,26 +14,121 @@
 | Contract elements | 1 |
 | Extent decisions | 79 |
 
-## Machine authority
+## External contract
 
-- `/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1provenance~1journal-entry.schema.json`
+- `$id`: https://nashspence.github.io/riverhog/v1/provenance/journal-entry.schema.json
+- `title`: Riverhog provenance v1 journal entry
+- `description`: One immutable entry in a hash-chained RFC 7464 per-file provenance journal.
+- `type`: object
 
-## Effective policies
+### Fields
 
-- `compatibility/components/v1`
-- `extent-rule/no-semantic-maximum/v1`
-- `extent-rule/schema-bound/v1`
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| `$schema` | yes | const="https://nashspence.github.io/riverhog/v1/provenance/journal-entry.schema.json" |  |
+| `body` | yes | type="object" |  |
+| `entry_kind` | yes | type="string"; enum=["journal_init","assertion","correction","checkpoint"] |  |
+| `id` | yes | #/$defs/urnUuid |  |
+| `journal_id` | yes | #/$defs/urnUuid |  |
+| `notes` | no | type="array"; minItems=1; items=(#/$defs/nonEmptyString); additional keys=`uniqueItems` |  |
+| `previous_entry` | no | #/$defs/entryReference |  |
+| `profile` | yes | const="https://nashspence.github.io/riverhog/v1/provenance" |  |
+| `recorded_at` | yes | #/$defs/utcDateTime |  |
+| `recorded_by_agent_id` | yes | #/$defs/urnUuid |  |
+| `recording_environment_id` | no | #/$defs/urnUuid |  |
+| `schema_version` | yes | const="1.0.0" |  |
+| `sequence` | yes | type="integer"; minimum=0; maximum="9223372036854775807" |  |
+| `type` | yes | const="riverhog_provenance_journal_entry" |  |
 
-## Executable sources and proof
+### Definitions
 
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `protocol:https://nashspence.github.io/riverhog/v1/provenance/journal-entry.schema.json` — `packages/riverhog-provenance/src/riverhog_provenance/schemas/riverhog-provenance-v1-journal-entry.schema.json`
-- Proof: `make dist-smoke`
-- Proof: `make build`
+| Definition | Shape |
+|---|---|
+| `absoluteUri` | type="string"; format="uri"; pattern="^[^\\u0000\\uD800-\\uDFFF]+$" |
+| `accessMetadata` | type="object"; fields=`group`, `owner`, `posix_mode`; additional keys=`additionalProperties`, `minProperties` |
+| `activityTime` | type="object"; fields=`ended_at`, `note`, `started_at`, `status`; allOf=additional keys=`if`, `then` \| additional keys=`if`, `then` \| additional keys=`if`, `then` \| additional keys=`if`, `then`; additional keys=`additionalProperties`, `required` |
+| `agent` | oneOf=#/$defs/softwareAgent \| #/$defs/personAgent \| #/$defs/organizationAgent \| #/$defs/hardwareAgent |
+| `assertionBody` | type="object"; fields=`assertions`; additional keys=`additionalProperties`, `required` |
+| `association` | type="object"; fields=`agent_id`, `plan_id`, `role`, `role_uri`; allOf=additional keys=`if`, `then` \| additional keys=`if`, `then`; additional keys=`additionalProperties`, `required` |
+| `booleanValue` | type="object"; fields=`data`, `type`; additional keys=`additionalProperties`, `required` |
+| `byteString` | type="object"; fields=`byte_length`, `data`, `digests`, `encoding`, `media_type`; additional keys=`additionalProperties`, `required` |
+| `bytesValue` | type="object"; fields=`byte_length`, `data`, `digests`, `encoding`, `media_type`, `type`; additional keys=`additionalProperties`, `required` |
+| `captureDetail` | type="object"; fields=`command_line`, `configuration_digest`, `profile_id`, `provenance_observer`, `working_directory`; additional keys=`additionalProperties`, `minProperties` |
+| `captureEvent` | type="object"; fields=`associations`, `consistency`, `coverage`, `detail`, `diagnostics`, `ended_at`, `environment_id`, `id`, `notes`, `operations`, `outcome`, `started_at`, `state_id`, `type`; allOf=additional keys=`if`, `then`; additional keys=`additionalProperties`, `required` |
+| `capturedValue` | oneOf=#/$defs/bytesValue \| #/$defs/textValue \| #/$defs/integerValue \| #/$defs/decimalValue \| #/$defs/booleanValue \| #/$defs/timestampValue \| #/$defs/uriValue \| #/$defs/entityReferenceValue \| #/$defs/jsonValue |
+| `checkpointBody` | type="object"; fields=`checkpoint_kind`, `checkpoint_kind_uri`, `counts`, `covered_through`, `note`, `stream_prefix_sha256`; allOf=additional keys=`if`, `then`; additional keys=`additionalProperties`, `required` |
+| `checkpointCounts` | type="object"; fields=`activities`, `captures`, `entries`, `lineages`, `relations`, `states`; additional keys=`additionalProperties`, `required` |
+| `comparisonDimension` | type="object"; fields=`basis`, `dimension`, `note`, `result`; additional keys=`additionalProperties`, `required` |
+| `comparisonRelation` | type="object"; fields=`asserted_by_agent_id`, `compared_at`, `confidence`, `dimensions`, `from_capture_id`, `from_state`, `id`, `notes`, `to_capture_id`, `to_state`, `type`; additional keys=`additionalProperties`, `required` |
+| `contentDescription` | type="object"; fields=`digests`, `size_bytes`; additional keys=`additionalProperties`, `required` |
+| `continuityBasis` | type="object"; fields=`type`, `uri`; allOf=additional keys=`if`, `then`; additional keys=`additionalProperties`, `required` |
+| `continuityRelation` | type="object"; fields=`asserted_by_agent_id`, `basis`, `confidence`, `continuity_kind`, `from_state`, `id`, `note`, `to_state`, `type`; additional keys=`additionalProperties`, `required` |
+| `correctionBody` | type="object"; fields=`action`, `reason`, `replacement`, `supersedes`; allOf=additional keys=`if`, `then` \| additional keys=`if`, `then`; additional keys=`additionalProperties`, `required` |
+| `coverage` | type="object"; fields=`access_control`, `alternate_streams`, `basic_filesystem`, `content_fixity`, `extended_attributes`, `file_flags`, `locator`, `native_identifiers`, `native_metadata_other`, `ownership`, `permissions`, `resource_forks`, `security_metadata`, `special_file_features`, `storage_layout`, `timestamps`; additional keys=`additionalProperties`, `required` |
+| `coverageStatus` | type="string"; enum=["complete","partial","not_supported","not_applicable","not_requested","failed"] |
+| `decimalValue` | type="object"; fields=`data`, `type`; additional keys=`additionalProperties`, `required` |
+| `derivationRelation` | type="object"; fields=`activity_id`, `derivation_kind`, `derivation_kind_uri`, `generated_state`, `id`, `type`, `used_state`; allOf=additional keys=`if`, `then`; additional keys=`additionalProperties`, `required` |
+| `diagnostic` | type="object"; fields=`category`, `code`, `message`, `native_code`, `severity`, `source`; additional keys=`additionalProperties`, `required` |
+| `digest` | type="object"; fields=`algorithm`, `algorithm_uri`, `encoding`, `originator_agent_id`, `purpose`, `purpose_uri`, `value`; allOf=additional keys=`if`, `then` \| additional keys=`if`, `then` \| additional keys=`if`, `then` \| additional keys=`if`, `then`; additional keys=`additionalProperties`, `required` |
+| `digestOnlyValue` | type="object"; fields=`byte_length`, `digests`, `type`; additional keys=`additionalProperties`, `required` |
+| `entityReferenceValue` | type="object"; fields=`data`, `type`; additional keys=`additionalProperties`, `required` |
+| `entryReference` | type="object"; fields=`entry_id`, `json_sha256`, `sequence`; additional keys=`additionalProperties`, `required` |
+| `environment` | type="object"; fields=`filesystem`, `host`, `id`, `operating_system`, `runtime`, `type`; additional keys=`additionalProperties`, `required` |
+| `fieldSourceDescriptor` | allOf=#/$defs/sourceDescriptor \| additional keys=`required` |
+| `fileLineage` | type="object"; fields=`asserted_by_agent_id`, `continuity_basis`, `continuity_basis_uri`, `id`, `identifiers`, `label`, `notes`, `type`; allOf=additional keys=`if`, `then`; additional keys=`additionalProperties`, `required` |
+| `fileState` | type="object"; fields=`content`, `filesystem_metadata`, `id`, `lineage_id`, `locator`, `notes`, `type`; additional keys=`additionalProperties`, `required` |
+| `filesystem` | type="object"; fields=`case_preserving`, `case_sensitive`, `mount_locator`, `name_normalization`, `networked`, `snapshot_identifiers`, `type`, `type_uri`, `version`, `volume_identifiers`; additional keys=`additionalProperties`, `required` |
+| `filesystemMetadata` | type="object"; fields=`access`, `native_identifiers`, `native_metadata`, `timestamps`; additional keys=`additionalProperties`, `required` |
+| `generationRelation` | type="object"; fields=`activity_id`, `id`, `role`, `role_uri`, `state`, `type`; allOf=additional keys=`if`, `then`; additional keys=`additionalProperties`, `required` |
+| `graphFragment` | type="object"; fields=`activities`, `agents`, `captures`, `environments`, `extensions`, `lineages`, `payload_bindings`, `relations`, `states`; additional keys=`additionalProperties`, `minProperties` |
+| `hardwareAgent` | type="object"; fields=`id`, `identifiers`, `model`, `name`, `type`, `vendor`, `version`; additional keys=`additionalProperties`, `required` |
+| `host` | type="object"; fields=`hardware_architecture`, `hardware_model`, `id`, `identifiers`, `name`; additional keys=`additionalProperties`, `required` |
+| `identifier` | type="object"; fields=`authority_id`, `representation`, `scheme`, `scope`, `value`; allOf=additional keys=`if`, `then` \| additional keys=`if`, `then` \| additional keys=`if`, `then`; additional keys=`additionalProperties`, `required` |
+| `integerValue` | type="object"; fields=`data`, `type`; additional keys=`additionalProperties`, `required` |
+| `interpretation` | type="object"; fields=`agent_id`, `confidence`, `kind`, `note`, `schema`, `value`; allOf=additional keys=`if`, `then` \| additional keys=`if`, `then`; additional keys=`additionalProperties`, `required` |
+| `invalidationRelation` | type="object"; fields=`activity_id`, `id`, `reason`, `state`, `type`; additional keys=`additionalProperties`, `required` |
+| `journalInitBody` | type="object"; fields=`assertions`, `journal`; additional keys=`additionalProperties`, `required` |
+| `journalPolicy` | type="object"; fields=`correction_model`, `entry_digest_algorithm`, `entry_digest_coverage`, `label`, `payload_semantics`, `primary_lineage_id`, `retention_intent`, `retention_intent_uri`, `scope`, `serialization`, `state_representation`; allOf=additional keys=`if`, `then`; additional keys=`additionalProperties`, `required` |
+| `jsonValue` | type="object"; fields=`data`, `schema`, `type`; additional keys=`additionalProperties`, `required` |
+| `kernel` | type="object"; fields=`name`, `release`, `version`; additional keys=`additionalProperties`, `minProperties` |
+| `locator` | type="object"; fields=`authority_id`, `bytes`, `kind`, `source_encoding`, `syntax`, `text`, `text_role`; anyOf=additional keys=`required` \| additional keys=`required`; allOf=additional keys=`if`, `then` \| additional keys=`if`, `then` \| additional keys=`if`, `then` \| additional keys=`if`, `then` \| additional keys=`if`, `then` \| additional keys=`if`, `then`; additional keys=`additionalProperties`, `required` |
+| `nativeCoverageCategory` | type="string"; enum=["extended_attributes","access_control","alternate_streams","resource_forks","file_flags","security_metadata","storage_layout","special_file_features","native_metadata_other"] |
+| `nativeMetadata` | type="object"; fields=`capture_status`, `coverage_category`, `interpretations`, `kind`, `kind_uri`, `name`, `name_bytes`, `name_role`, `name_source_encoding`, `namespace`, `note`, `observed_byte_length`, `sensitivity`, `source`, `value`; allOf=additional keys=`if`, `then` \| additional keys=`if`, `then` \| additional keys=`if`, `then` \| additional keys=`if`, `then` \| additional keys=`if`, `then` \| additional keys=`if`, `then` \| additional keys=`if`, `then` \| additional keys=`if`, `then`; additional keys=`additionalProperties`, `required` |
+| `nonEmptyString` | type="string"; minLength=1; pattern="^[^\\u0000\\uD800-\\uDFFF]+$" |
+| `nonNullJson` | anyOf=#/$defs/portableString \| type="number" \| type="boolean" \| type="array"; items=(#/$defs/nonNullJson) \| type="object"; additional keys=`additionalProperties`, `propertyNames` |
+| `observedIdentifier` | type="object"; fields=`authority_id`, `representation`, `scheme`, `scope`, `source`, `value`; allOf=additional keys=`if`, `then` \| additional keys=`if`, `then` \| additional keys=`if`, `then`; additional keys=`additionalProperties`, `required` |
+| `operatingSystem` | type="object"; fields=`build`, `family`, `family_name`, `identifiers`, `kernel`, `name`, `version`; allOf=additional keys=`if`, `then`; additional keys=`additionalProperties`, `required` |
+| `organizationAgent` | type="object"; fields=`id`, `identifiers`, `name`, `type`; additional keys=`additionalProperties`, `required` |
+| `payloadBinding` | type="object"; fields=`asserted_by_agent_id`, `basis`, `basis_uri`, `established_by_activity_id`, `established_by_capture_id`, `id`, `note`, `operation`, `relative_payload_locator`, `replaces_binding_id`, `role`, `role_uri`, `state`, `type`; allOf=additional keys=`if`, `then` \| additional keys=`if`, `then` \| additional keys=`if`, `then` \| additional keys=`if`, `then`; additional keys=`additionalProperties`, `required` |
+| `personAgent` | type="object"; fields=`id`, `identifiers`, `name`, `type`; additional keys=`additionalProperties`, `required` |
+| `portableString` | type="string"; pattern="^[^\\u0000\\uD800-\\uDFFF]*$" |
+| `principal` | type="object"; fields=`identifiers`, `kind`, `name`, `resolution`; anyOf=additional keys=`required` \| additional keys=`required`; additional keys=`additionalProperties`, `required` |
+| `processDetail` | type="object"; fields=`command_line`, `configuration_digest`, `external_event_identifier`, `plan_id`, `working_directory`; additional keys=`additionalProperties`, `minProperties` |
+| `processEvidence` | type="object"; fields=`asserted_by_agent_id`, `basis`, `basis_uri`, `comparison_relation_id`, `confidence`, `description`, `id`, `reference`; allOf=additional keys=`if`, `then` \| additional keys=`if`, `then`; additional keys=`additionalProperties`, `required` |
+| `provenanceContractReference` | type="object"; fields=`contract_id`, `contract_sha256`, `format`, `provider`; additional keys=`additionalProperties`, `required` |
+| `provenanceObserverReference` | type="object"; fields=`contract`, `distribution`, `format`, `observer_id`, `provider`, `version`; additional keys=`additionalProperties`, `dependentRequired`, `required` |
+| `relation` | oneOf=#/$defs/usageRelation \| #/$defs/generationRelation \| #/$defs/derivationRelation \| #/$defs/invalidationRelation \| #/$defs/continuityRelation \| #/$defs/comparisonRelation |
+| `relationRole` | type="string"; enum=["source","input","reference","component","metadata_source","result","output","derivative","replacement","copy","other"] |
+| `runtime` | type="object"; fields=`character_encoding`, `container`, `effective_principal`, `identifiers`, `locale`, `privilege`, `process_architecture`, `time_zone`, `utc_offset`; additional keys=`additionalProperties`, `required` |
+| `semanticAssertion` | type="object"; fields=`asserted_by_agent_id`, `confidence`, `id`, `note`, `property`, `subject_id`, `type`, `value`; additional keys=`additionalProperties`, `required` |
+| `sha256Hex` | type="string"; pattern="^[0-9a-f]{64}$" |
+| `softwareAgent` | type="object"; fields=`build`, `executable_digests`, `id`, `identifiers`, `name`, `type`, `vendor`, `version`; anyOf=additional keys=`required` \| additional keys=`required` \| additional keys=`required`; additional keys=`additionalProperties`, `required` |
+| `sourceDescriptor` | type="object"; fields=`api`, `api_uri`, `field`, `field_uri`, `platform`, `platform_name`, `version`; allOf=additional keys=`if`, `then`; additional keys=`additionalProperties`, `required` |
+| `sourcePlatform` | type="string"; enum=["linux","windows","macos","freebsd","openbsd","netbsd","illumos","aix","posix","android","ios","solaris","other"] |
+| `stateReference` | type="object"; fields=`entry_id`, `entry_json_sha256`, `id`, `journal_id`, `scope`, `sidecar_uri`; allOf=additional keys=`if`, `then` \| additional keys=`if`, `then`; additional keys=`additionalProperties`, `dependentRequired`, `required` |
+| `textValue` | type="object"; fields=`byte_length`, `data`, `language`, `media_type`, `source_encoding`, `type`; additional keys=`additionalProperties`, `dependentRequired`, `required` |
+| `timestampObservation` | type="object"; fields=`assumption`, `kind`, `kind_uri`, `raw_epoch`, `raw_unit`, `raw_unit_name`, `raw_value`, `resolution_ns`, `source`, `value`, `value_status`; allOf=additional keys=`if`, `then` \| additional keys=`if`, `then` \| additional keys=`if`, `then` \| additional keys=`if`, `then` \| additional keys=`if`, `then`; additional keys=`additionalProperties`, `dependentRequired`, `required` |
+| `timestampValue` | type="object"; fields=`data`, `resolution_ns`, `type`; additional keys=`additionalProperties`, `required` |
+| `transitionActivity` | type="object"; fields=`associations`, `detail`, `environment_id`, `event_label`, `event_type`, `event_type_uri`, `evidence`, `id`, `notes`, `outcome`, `time`, `type`; allOf=additional keys=`if`, `then`; additional keys=`additionalProperties`, `required` |
+| `typedValue` | oneOf=#/$defs/capturedValue \| #/$defs/digestOnlyValue |
+| `uriValue` | type="object"; fields=`data`, `type`; additional keys=`additionalProperties`, `required` |
+| `urnUuid` | type="string"; pattern="^urn:uuid:[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$" |
+| `usageRelation` | type="object"; fields=`activity_id`, `id`, `role`, `role_uri`, `state`, `type`; allOf=additional keys=`if`, `then`; additional keys=`additionalProperties`, `required` |
+| `utcDateTime` | type="string"; format="date-time"; pattern="^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(?:\\.[0-9]{1,9})?Z$" |
 
-## Extent decisions
+### Progression, limits, and lifecycle
 
-| Dimension | Unit | Policy | Bounds/reason |
+| Dimension | Unit | Policy | Bounds or reason |
 |---|---|---|---|
 | length | characters | `fixed` | maximum=4, minimum=4, reason=fixed-public-representation |
 | cardinality | entries | `operational_policy` | maximum=None, reason=no-declared-semantic-maximum |
@@ -113,119 +210,29 @@
 | cardinality | items | `operational_policy` | maximum=None, reason=no-declared-semantic-maximum |
 | value | schema-value | `contract_max` | maximum=9223372036854775807, minimum=0, reason=schema-maximum |
 
-## Contract summary
+## Governing policies
 
-- `$id`: https://nashspence.github.io/riverhog/v1/provenance/journal-entry.schema.json
-- `title`: Riverhog provenance v1 journal entry
-- `description`: One immutable entry in a hash-chained RFC 7464 per-file provenance journal.
-- `type`: object
+- `compatibility/components/v1`
+- `extent-rule/no-semantic-maximum/v1`
+- `extent-rule/schema-bound/v1`
 
-### Fields
+## Evidence
 
-| Field | Required | Shape | Description |
-|---|---:|---|---|
-| `$schema` | yes | object (1 fields) |  |
-| `body` | yes | object |  |
-| `entry_kind` | yes | string |  |
-| `id` | yes | #/$defs/urnUuid |  |
-| `journal_id` | yes | #/$defs/urnUuid |  |
-| `notes` | no | array |  |
-| `previous_entry` | no | #/$defs/entryReference |  |
-| `profile` | yes | object (1 fields) |  |
-| `recorded_at` | yes | #/$defs/utcDateTime |  |
-| `recorded_by_agent_id` | yes | #/$defs/urnUuid |  |
-| `recording_environment_id` | no | #/$defs/urnUuid |  |
-| `schema_version` | yes | object (1 fields) |  |
-| `sequence` | yes | integer |  |
-| `type` | yes | object (1 fields) |  |
+### Qualification
 
-### Definitions
+- `make dist-smoke`
+- `make build`
 
-| Definition | Shape |
-|---|---|
-| `absoluteUri` | string |
-| `accessMetadata` | object |
-| `activityTime` | object |
-| `agent` | object (1 fields) |
-| `assertionBody` | object |
-| `association` | object |
-| `booleanValue` | object |
-| `byteString` | object |
-| `bytesValue` | object |
-| `captureDetail` | object |
-| `captureEvent` | object |
-| `capturedValue` | object (1 fields) |
-| `checkpointBody` | object |
-| `checkpointCounts` | object |
-| `comparisonDimension` | object |
-| `comparisonRelation` | object |
-| `contentDescription` | object |
-| `continuityBasis` | object |
-| `continuityRelation` | object |
-| `correctionBody` | object |
-| `coverage` | object |
-| `coverageStatus` | string |
-| `decimalValue` | object |
-| `derivationRelation` | object |
-| `diagnostic` | object |
-| `digest` | object |
-| `digestOnlyValue` | object |
-| `entityReferenceValue` | object |
-| `entryReference` | object |
-| `environment` | object |
-| `fieldSourceDescriptor` | object (1 fields) |
-| `fileLineage` | object |
-| `fileState` | object |
-| `filesystem` | object |
-| `filesystemMetadata` | object |
-| `generationRelation` | object |
-| `graphFragment` | object |
-| `hardwareAgent` | object |
-| `host` | object |
-| `identifier` | object |
-| `integerValue` | object |
-| `interpretation` | object |
-| `invalidationRelation` | object |
-| `journalInitBody` | object |
-| `journalPolicy` | object |
-| `jsonValue` | object |
-| `kernel` | object |
-| `locator` | object |
-| `nativeCoverageCategory` | string |
-| `nativeMetadata` | object |
-| `nonEmptyString` | string |
-| `nonNullJson` | object (1 fields) |
-| `observedIdentifier` | object |
-| `operatingSystem` | object |
-| `organizationAgent` | object |
-| `payloadBinding` | object |
-| `personAgent` | object |
-| `portableString` | string |
-| `principal` | object |
-| `processDetail` | object |
-| `processEvidence` | object |
-| `provenanceContractReference` | object |
-| `provenanceObserverReference` | object |
-| `relation` | object (1 fields) |
-| `relationRole` | string |
-| `runtime` | object |
-| `semanticAssertion` | object |
-| `sha256Hex` | string |
-| `softwareAgent` | object |
-| `sourceDescriptor` | object |
-| `sourcePlatform` | string |
-| `stateReference` | object |
-| `textValue` | object |
-| `timestampObservation` | object |
-| `timestampValue` | object |
-| `transitionActivity` | object |
-| `typedValue` | object (2 fields) |
-| `uriValue` | object |
-| `urnUuid` | string |
-| `usageRelation` | object |
-| `utcDateTime` | string |
+### Executable sources
 
-## Complete owned contract
+- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
+- `protocol:https://nashspence.github.io/riverhog/v1/provenance/journal-entry.schema.json` — `packages/riverhog-provenance/src/riverhog_provenance/schemas/riverhog-provenance-v1-journal-entry.schema.json`
+
+### Machine authority
+
+- `/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1provenance~1journal-entry.schema.json`
+
+### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 

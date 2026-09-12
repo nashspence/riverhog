@@ -4,6 +4,8 @@
 
 <!-- contract-element: python:riverhog-provenance-contracts:riverhog-provenance-contracts:6b7a434d1b -->
 
+Exact externally visible contract owned by this semantic dossier.
+
 | Audit field | Value |
 |---|---|
 | Authority | `riverhog-provenance-contracts` |
@@ -12,30 +14,35 @@
 | Contract elements | 1 |
 | Extent decisions | 0 |
 
-## Machine authority
-
-- `/external_contract/python/9`
-
-## Effective policies
-
-- `compatibility/python-api/v1`
-
-## Executable sources and proof
-
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `python:riverhog-provenance-contracts` — `packages/riverhog-provenance-contracts/src/riverhog_provenance_contracts/__init__.py::<module>`
-- Proof: `make dist-smoke`
-- Proof: `make build`
-
-## Contract summary
+## External contract
 
 | Field | Shape |
 |---|---|
 | `distribution` | "riverhog-provenance-contracts" |
-| `exports` | object (14 fields) |
+| `exports` | additional keys=`CANONICAL_UUID_URN_PATTERN`, `PROVENANCE_CONTRACT_BINDING_FORMAT`, `PROVENANCE_CONTRACT_ENTRY_POINT_GROUP`, `PROVENANCE_CONTRACT_REFERENCE_FORMAT`, `PROVENANCE_SCHEMA_DIALECT`, `PROVENANCE_SCHEMA_FORMAT_POLICY`, `ProvenanceContractBinding`, `ProvenanceEntryId`, `ProvenanceJournalId`, `ProvenanceJournalStateReference`, `ProvenanceStateId`, `SHA256_PATTERN`, `index_schema_documents`, `require_canonical_uuid_urn` |
 | `module` | "riverhog_provenance_contracts" |
 
-## Complete owned contract
+## Governing policies
+
+- `compatibility/python-api/v1`
+
+## Evidence
+
+### Qualification
+
+- `make dist-smoke`
+- `make build`
+
+### Executable sources
+
+- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
+- `python:riverhog-provenance-contracts` — `packages/riverhog-provenance-contracts/src/riverhog_provenance_contracts/__init__.py::<module>`
+
+### Machine authority
+
+- `/external_contract/python/9`
+
+### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 

@@ -4,6 +4,8 @@
 
 <!-- contract-element: protocol:riverhog-archive-contracts:riverhog-v1-immutable-collection-archive-root:2e0361021c -->
 
+Exact externally visible contract owned by this semantic dossier.
+
 | Audit field | Value |
 |---|---|
 | Authority | `riverhog-archive-contracts` |
@@ -12,34 +14,7 @@
 | Contract elements | 1 |
 | Extent decisions | 5 |
 
-## Machine authority
-
-- `/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1schemas~1collection-archive-manifest-v1.schema.json`
-
-## Effective policies
-
-- `compatibility/components/v1`
-- `extent-rule/no-semantic-maximum/v1`
-- `extent-rule/schema-bound/v1`
-
-## Executable sources and proof
-
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `protocol:https://nashspence.github.io/riverhog/v1/schemas/collection-archive-manifest-v1.schema.json` — `packages/riverhog-archive-contracts/schemas/collection-archive-manifest-v1.schema.json`
-- Proof: `make dist-smoke`
-- Proof: `make build`
-
-## Extent decisions
-
-| Dimension | Unit | Policy | Bounds/reason |
-|---|---|---|---|
-| value | schema-value | `operational_policy` | maximum=None, reason=no-declared-semantic-maximum |
-| value | schema-value | `operational_policy` | maximum=None, reason=no-declared-semantic-maximum |
-| length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
-| value | schema-value | `operational_policy` | maximum=None, reason=no-declared-semantic-maximum |
-| value | schema-value | `operational_policy` | maximum=None, reason=no-declared-semantic-maximum |
-
-## Contract summary
+## External contract
 
 - `$id`: https://nashspence.github.io/riverhog/v1/schemas/collection-archive-manifest-v1.schema.json
 - `title`: Riverhog v1 immutable collection archive root
@@ -50,22 +25,54 @@
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | `archive_generation` | yes | #/$defs/sha256 |  |
-| `format` | yes | object |  |
+| `format` | yes | type="object"; fields=`encryption`, `pack_index`, `part_digest`, `selective_read`; additional keys=`additionalProperties`, `required` |  |
 | `provenance` | no | #/$defs/provenance |  |
-| `schema` | yes | object (1 fields) |  |
+| `schema` | yes | const="collection-archive-manifest/v1" |  |
 | `tree` | yes | #/$defs/tree |  |
-| `volume_sequence` | yes | object |  |
+| `volume_sequence` | yes | type="object"; fields=`sha256`; additional keys=`additionalProperties`, `required` |  |
 
 ### Definitions
 
 | Definition | Shape |
 |---|---|
-| `provenance` | object |
-| `provenance_root` | object |
-| `sha256` | string |
-| `tree` | object |
+| `provenance` | type="object"; fields=`identity`, `root`; additional keys=`additionalProperties`, `required` |
+| `provenance_root` | type="object"; fields=`id`, `kind`, `path`, `plaintext_bytes`, `sha256`, `stored_bytes`, `stored_sha256`; additional keys=`additionalProperties`, `required` |
+| `sha256` | type="string"; pattern="^[0-9a-f]{64}$" |
+| `tree` | type="object"; fields=`bytes`, `files`, `sha256`; additional keys=`additionalProperties`, `required` |
 
-## Complete owned contract
+### Progression, limits, and lifecycle
+
+| Dimension | Unit | Policy | Bounds or reason |
+|---|---|---|---|
+| value | schema-value | `operational_policy` | maximum=None, reason=no-declared-semantic-maximum |
+| value | schema-value | `operational_policy` | maximum=None, reason=no-declared-semantic-maximum |
+| length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
+| value | schema-value | `operational_policy` | maximum=None, reason=no-declared-semantic-maximum |
+| value | schema-value | `operational_policy` | maximum=None, reason=no-declared-semantic-maximum |
+
+## Governing policies
+
+- `compatibility/components/v1`
+- `extent-rule/no-semantic-maximum/v1`
+- `extent-rule/schema-bound/v1`
+
+## Evidence
+
+### Qualification
+
+- `make dist-smoke`
+- `make build`
+
+### Executable sources
+
+- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
+- `protocol:https://nashspence.github.io/riverhog/v1/schemas/collection-archive-manifest-v1.schema.json` — `packages/riverhog-archive-contracts/schemas/collection-archive-manifest-v1.schema.json`
+
+### Machine authority
+
+- `/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1schemas~1collection-archive-manifest-v1.schema.json`
+
+### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 

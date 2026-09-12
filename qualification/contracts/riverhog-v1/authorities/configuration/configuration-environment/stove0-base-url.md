@@ -4,6 +4,8 @@
 
 <!-- contract-element: configuration-environment:configuration:stove0-base-url:15582a93e3 -->
 
+Exact externally visible contract owned by this semantic dossier.
+
 | Audit field | Value |
 |---|---|
 | Authority | `configuration` |
@@ -12,29 +14,34 @@
 | Contract elements | 1 |
 | Extent decisions | 0 |
 
-## Machine authority
-
-- `/external_contract/configuration_environment/81`
-
-## Effective policies
-
-- `compatibility/configuration/v1`
-
-## Executable sources and proof
-
-- `configuration-environment:STOVE0_BASE_URL` — `configuration-environment:STOVE0_BASE_URL`
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- Proof: `make unit`
-- Proof: `make compose-smoke`
-
-## Contract summary
+## External contract
 
 | Field | Shape |
 |---|---|
-| `consumers` | array (1 items) |
+| `consumers` | ["stove0-api-client"] |
 | `name` | "STOVE0_BASE_URL" |
 
-## Complete owned contract
+## Governing policies
+
+- `compatibility/configuration/v1`
+
+## Evidence
+
+### Qualification
+
+- `make unit`
+- `make compose-smoke`
+
+### Executable sources
+
+- `configuration-environment:STOVE0_BASE_URL` — `configuration-environment:STOVE0_BASE_URL`
+- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
+
+### Machine authority
+
+- `/external_contract/configuration_environment/81`
+
+### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 

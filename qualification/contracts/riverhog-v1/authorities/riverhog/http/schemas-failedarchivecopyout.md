@@ -4,6 +4,8 @@
 
 <!-- contract-element: http:riverhog:schemas-failedarchivecopyout:069daa6dc4 -->
 
+Exact externally visible contract owned by this semantic dossier.
+
 | Audit field | Value |
 |---|---|
 | Authority | `riverhog` |
@@ -12,27 +14,7 @@
 | Contract elements | 1 |
 | Extent decisions | 0 |
 
-## Machine authority
-
-- `/external_contract/http_openapi/riverhog/components/schemas/FailedArchiveCopyOut`
-
-## Effective policies
-
-- `compatibility/http-api/v1`
-
-## Executable sources and proof
-
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `openapi:riverhog` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
-- Proof: `make operation-qualification`
-- Proof: `make compose-smoke`
-
-## Referenced contract dossiers
-
-- [schemas: ArchiveStoreName](schemas-archivestorename.md)
-- [schemas: FailedArchiveRootPublicationOut](schemas-failedarchiverootpublicationout.md)
-
-## Contract summary
+## External contract
 
 - `title`: FailedArchiveCopyOut
 - `type`: object
@@ -42,16 +24,43 @@
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | `archive_root` | yes | #/components/schemas/FailedArchiveRootPublicationOut |  |
-| `failure` | yes | string |  |
-| `last_uploaded_at` | yes | object (2 fields) |  |
-| `last_verified_at` | yes | object (2 fields) |  |
-| `object_count` | yes | integer |  |
-| `state` | yes | string |  |
-| `storage_prefix` | yes | object (2 fields) |  |
+| `failure` | yes | type="string"; minLength=1 |  |
+| `last_uploaded_at` | yes | anyOf=type="string" \| type="null" |  |
+| `last_verified_at` | yes | anyOf=type="string" \| type="null" |  |
+| `object_count` | yes | type="integer"; minimum=0 |  |
+| `state` | yes | type="string"; const="failed" |  |
+| `storage_prefix` | yes | anyOf=type="string"; minLength=1 \| type="null" |  |
 | `store` | yes | #/components/schemas/ArchiveStoreName |  |
-| `stored_bytes` | yes | integer |  |
+| `stored_bytes` | yes | type="integer"; minimum=0 |  |
 
-## Complete owned contract
+## Maintained corroboration
+
+### Referenced contract dossiers
+
+- [schemas: ArchiveStoreName](schemas-archivestorename.md)
+- [schemas: FailedArchiveRootPublicationOut](schemas-failedarchiverootpublicationout.md)
+
+## Governing policies
+
+- `compatibility/http-api/v1`
+
+## Evidence
+
+### Qualification
+
+- `make operation-qualification`
+- `make compose-smoke`
+
+### Executable sources
+
+- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
+- `openapi:riverhog` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+
+### Machine authority
+
+- `/external_contract/http_openapi/riverhog/components/schemas/FailedArchiveCopyOut`
+
+### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 

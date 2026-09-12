@@ -4,6 +4,8 @@
 
 <!-- contract-element: http:riverhog:schemas-retrievalcachestorestatusout:593a25b981 -->
 
+Exact externally visible contract owned by this semantic dossier.
+
 | Audit field | Value |
 |---|---|
 | Authority | `riverhog` |
@@ -12,26 +14,7 @@
 | Contract elements | 1 |
 | Extent decisions | 0 |
 
-## Machine authority
-
-- `/external_contract/http_openapi/riverhog/components/schemas/RetrievalCacheStoreStatusOut`
-
-## Effective policies
-
-- `compatibility/http-api/v1`
-
-## Executable sources and proof
-
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `openapi:riverhog` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
-- Proof: `make operation-qualification`
-- Proof: `make compose-smoke`
-
-## Referenced contract dossiers
-
-- [schemas: RetrievalCacheStoreName](schemas-retrievalcachestorename.md)
-
-## Contract summary
+## External contract
 
 - `title`: RetrievalCacheStoreStatusOut
 - `type`: object
@@ -40,14 +23,40 @@
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| `admission_budget_bytes` | no | object (2 fields) |  |
-| `admission_enabled` | yes | boolean |  |
+| `admission_budget_bytes` | no | anyOf=type="integer"; minimum=1 \| type="null" |  |
+| `admission_enabled` | yes | type="boolean" |  |
 | `cache_store` | yes | #/components/schemas/RetrievalCacheStoreName |  |
-| `committed_bytes` | yes | integer |  |
-| `priority` | yes | integer |  |
-| `reserved_bytes` | yes | integer |  |
+| `committed_bytes` | yes | type="integer"; minimum=0 |  |
+| `priority` | yes | type="integer"; minimum=1 |  |
+| `reserved_bytes` | yes | type="integer"; minimum=0 |  |
 
-## Complete owned contract
+## Maintained corroboration
+
+### Referenced contract dossiers
+
+- [schemas: RetrievalCacheStoreName](schemas-retrievalcachestorename.md)
+
+## Governing policies
+
+- `compatibility/http-api/v1`
+
+## Evidence
+
+### Qualification
+
+- `make operation-qualification`
+- `make compose-smoke`
+
+### Executable sources
+
+- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
+- `openapi:riverhog` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+
+### Machine authority
+
+- `/external_contract/http_openapi/riverhog/components/schemas/RetrievalCacheStoreStatusOut`
+
+### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 

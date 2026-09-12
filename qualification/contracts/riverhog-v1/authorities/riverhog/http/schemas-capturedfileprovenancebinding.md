@@ -4,6 +4,8 @@
 
 <!-- contract-element: http:riverhog:schemas-capturedfileprovenancebinding:61c9a53c26 -->
 
+Exact externally visible contract owned by this semantic dossier.
+
 | Audit field | Value |
 |---|---|
 | Authority | `riverhog` |
@@ -12,27 +14,7 @@
 | Contract elements | 1 |
 | Extent decisions | 0 |
 
-## Machine authority
-
-- `/external_contract/http_openapi/riverhog/components/schemas/CapturedFileProvenanceBinding`
-
-## Effective policies
-
-- `compatibility/http-api/v1`
-
-## Executable sources and proof
-
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `openapi:riverhog` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
-- Proof: `make operation-qualification`
-- Proof: `make compose-smoke`
-
-## Referenced contract dossiers
-
-- [schemas: ProvenanceJournalId](schemas-provenancejournalid.md)
-- [schemas: ProvenanceStateId](schemas-provenancestateid.md)
-
-## Contract summary
+## External contract
 
 - `title`: CapturedFileProvenanceBinding
 - `type`: object
@@ -43,9 +25,36 @@
 |---|---:|---|---|
 | `current_state_id` | yes | #/components/schemas/ProvenanceStateId |  |
 | `journal_id` | yes | #/components/schemas/ProvenanceJournalId |  |
-| `status` | yes | string |  |
+| `status` | yes | type="string"; const="captured" |  |
 
-## Complete owned contract
+## Maintained corroboration
+
+### Referenced contract dossiers
+
+- [schemas: ProvenanceJournalId](schemas-provenancejournalid.md)
+- [schemas: ProvenanceStateId](schemas-provenancestateid.md)
+
+## Governing policies
+
+- `compatibility/http-api/v1`
+
+## Evidence
+
+### Qualification
+
+- `make operation-qualification`
+- `make compose-smoke`
+
+### Executable sources
+
+- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
+- `openapi:riverhog` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+
+### Machine authority
+
+- `/external_contract/http_openapi/riverhog/components/schemas/CapturedFileProvenanceBinding`
+
+### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 

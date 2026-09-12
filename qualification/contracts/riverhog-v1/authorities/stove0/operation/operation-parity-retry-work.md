@@ -4,6 +4,8 @@
 
 <!-- contract-element: operation:stove0:operation-parity-retry-work:aaa9396625 -->
 
+Exact externally visible contract owned by this semantic dossier.
+
 | Audit field | Value |
 |---|---|
 | Authority | `stove0` |
@@ -12,28 +14,7 @@
 | Contract elements | 1 |
 | Extent decisions | 0 |
 
-## Machine authority
-
-- `/external_contract/operations/144`
-
-## Effective policies
-
-- `compatibility/cli/v1`
-- `compatibility/components/v1`
-- `compatibility/http-api/v1`
-
-## Executable sources and proof
-
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `operations:operation-matrix` — `scripts/operation_qualification.py::operation_matrix`
-- Proof: `make operation-qualification`
-
-## Related interface records
-
-- [POST /v1/work/{work_id}/retry](../http/post-v1-work-work-id-retry.md)
-- [stove0 work retry](../cli/stove0-work-retry.md)
-
-## Contract summary
+## External contract
 
 | Concern | Contract |
 |---|---|
@@ -48,7 +29,35 @@
 | `read_collection` | None |
 | `response_authority` | operator-projection |
 
-## Complete owned contract
+## Maintained corroboration
+
+### Related interface records
+
+- [POST /v1/work/{work_id}/retry](../http/post-v1-work-work-id-retry.md)
+- [stove0 work retry](../cli/stove0-work-retry.md)
+
+## Governing policies
+
+- `compatibility/cli/v1`
+- `compatibility/components/v1`
+- `compatibility/http-api/v1`
+
+## Evidence
+
+### Qualification
+
+- `make operation-qualification`
+
+### Executable sources
+
+- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
+- `operations:operation-matrix` — `scripts/operation_qualification.py::operation_matrix`
+
+### Machine authority
+
+- `/external_contract/operations/144`
+
+### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 

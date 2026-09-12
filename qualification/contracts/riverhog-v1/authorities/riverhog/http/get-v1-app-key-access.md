@@ -4,6 +4,8 @@
 
 <!-- contract-element: http:riverhog:get-v1-app-key-access:82e1f5f3f3 -->
 
+List App Key Access
+
 | Audit field | Value |
 |---|---|
 | Authority | `riverhog` |
@@ -12,28 +14,51 @@
 | Contract elements | 1 |
 | Extent decisions | 2 |
 
-## Machine authority
+## External contract
 
-- `/external_contract/http_openapi/riverhog/paths/~1v1~1app-key-access/get`
+- `operationId`: list_app_key_access
+- `summary`: List App Key Access
+- `security`: `[{"HTTPBearer": []}]`
 
-## Effective policies
+### Parameters
 
-- `compatibility/http-api/v1`
-- `extent-rule/route-progression/v1`
-- `extent-rule/schema-bound/v1`
+| Name | In | Required | Schema |
+|---|---|---:|---|
+| `page_size` | query | no | type="integer"; minimum=1; maximum=100 |
+| `page_token` | query | no | anyOf=#/components/schemas/BrowsePageToken \| type="null" |
+| `sort` | query | no | $ref="#/components/schemas/ApplicationAccessSort" |
+| `order` | query | no | $ref="#/components/schemas/SortOrder" |
+| `q` | query | no | anyOf=#/components/schemas/BrowseQuery \| type="null" |
+| `app` | query | no | anyOf=#/components/schemas/ApplicationName \| type="null" |
+| `key` | query | no | anyOf=#/components/schemas/ApplicationKeyId \| type="null" |
+| `permission` | query | no | anyOf=#/components/schemas/ApplicationPermission \| type="null" |
+| `resource` | query | no | anyOf=#/components/schemas/ApplicationResource \| type="null" |
+| `active` | query | no | anyOf=type="boolean" \| type="null" |
 
-## Executable sources and proof
+### Responses
 
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `openapi:riverhog` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
-- Proof: `make operation-qualification`
-- Proof: `make compose-smoke`
+| Status | Description |
+|---|---|
+| `200` | Successful Response |
+| `400` | Bad Request |
+| `401` | Unauthorized |
+| `403` | Forbidden |
+| `500` | Internal Server Error |
 
-## Related interface records
+### Progression, limits, and lifecycle
+
+| Dimension | Unit | Policy | Bounds or reason |
+|---|---|---|---|
+| logical-result-cardinality | items | `segmented_no_total_max` | reason=bounded-route-progression |
+| value | schema-value | `contract_max` | maximum=100, minimum=1, reason=schema-maximum |
+
+## Maintained corroboration
+
+### Related interface records
 
 - [Operation parity: list_app_key_access](../operation/operation-parity-list-app-key-access.md)
 
-## Referenced contract dossiers
+### Referenced contract dossiers
 
 - [schemas: AppAccessListOut](schemas-appaccesslistout.md)
 - [schemas: ApplicationAccessSort](schemas-applicationaccesssort.md)
@@ -46,45 +71,29 @@
 - [schemas: ErrorResponse](schemas-errorresponse.md)
 - [schemas: SortOrder](schemas-sortorder.md)
 
-## Extent decisions
+## Governing policies
 
-| Dimension | Unit | Policy | Bounds/reason |
-|---|---|---|---|
-| logical-result-cardinality | items | `segmented_no_total_max` | reason=bounded-route-progression |
-| value | schema-value | `contract_max` | maximum=100, minimum=1, reason=schema-maximum |
+- `compatibility/http-api/v1`
+- `extent-rule/route-progression/v1`
+- `extent-rule/schema-bound/v1`
 
-## Contract summary
+## Evidence
 
-- `operationId`: list_app_key_access
-- `summary`: List App Key Access
-- `security`: `[{"HTTPBearer": []}]`
+### Qualification
 
-### Parameters
+- `make operation-qualification`
+- `make compose-smoke`
 
-| Name | In | Required | Schema |
-|---|---|---:|---|
-| `page_size` | query | no | integer |
-| `page_token` | query | no | object (2 fields) |
-| `sort` | query | no | #/components/schemas/ApplicationAccessSort |
-| `order` | query | no | #/components/schemas/SortOrder |
-| `q` | query | no | object (2 fields) |
-| `app` | query | no | object (2 fields) |
-| `key` | query | no | object (2 fields) |
-| `permission` | query | no | object (2 fields) |
-| `resource` | query | no | object (2 fields) |
-| `active` | query | no | object (2 fields) |
+### Executable sources
 
-### Responses
+- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
+- `openapi:riverhog` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
 
-| Status | Description |
-|---|---|
-| `200` | Successful Response |
-| `400` | Bad Request |
-| `401` | Unauthorized |
-| `403` | Forbidden |
-| `500` | Internal Server Error |
+### Machine authority
 
-## Complete owned contract
+- `/external_contract/http_openapi/riverhog/paths/~1v1~1app-key-access/get`
+
+### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 

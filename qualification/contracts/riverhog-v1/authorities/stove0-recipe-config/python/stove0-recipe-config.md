@@ -4,6 +4,8 @@
 
 <!-- contract-element: python:stove0-recipe-config:stove0-recipe-config:9ce53ad9d1 -->
 
+Exact externally visible contract owned by this semantic dossier.
+
 | Audit field | Value |
 |---|---|
 | Authority | `stove0-recipe-config` |
@@ -12,30 +14,35 @@
 | Contract elements | 1 |
 | Extent decisions | 0 |
 
-## Machine authority
-
-- `/external_contract/python/21`
-
-## Effective policies
-
-- `compatibility/python-api/v1`
-
-## Executable sources and proof
-
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `python:stove0-recipe-config` — `reference/stove0/packages/recipe-config/src/stove0_recipe_config/__init__.py::<module>`
-- Proof: `make dist-smoke`
-- Proof: `make build`
-
-## Contract summary
+## External contract
 
 | Field | Shape |
 |---|---|
 | `distribution` | "stove0-recipe-config" |
-| `exports` | object (13 fields) |
+| `exports` | additional keys=`ArtifactAssociation`, `ArtifactFactBinding`, `ArtifactRule`, `FactPredicate`, `ObserverUse`, `OperationProjection`, `RecipeBranch`, `RecipeCatalog`, `RecipeCoordinationRoute`, `RecipeDefinition`, `RecipeJoin`, `RecipeJoinMember`, `RecipeRoute` |
 | `module` | "stove0_recipe_config" |
 
-## Complete owned contract
+## Governing policies
+
+- `compatibility/python-api/v1`
+
+## Evidence
+
+### Qualification
+
+- `make dist-smoke`
+- `make build`
+
+### Executable sources
+
+- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
+- `python:stove0-recipe-config` — `reference/stove0/packages/recipe-config/src/stove0_recipe_config/__init__.py::<module>`
+
+### Machine authority
+
+- `/external_contract/python/21`
+
+### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 

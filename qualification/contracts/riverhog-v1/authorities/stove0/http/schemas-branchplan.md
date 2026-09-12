@@ -4,6 +4,8 @@
 
 <!-- contract-element: http:stove0:schemas-branchplan:1a290228b3 -->
 
+One named required child work using the ordinary WorkflowPlan contract.
+
 | Audit field | Value |
 |---|---|
 | Authority | `stove0` |
@@ -12,27 +14,7 @@
 | Contract elements | 1 |
 | Extent decisions | 0 |
 
-## Machine authority
-
-- `/external_contract/http_openapi/stove0/components/schemas/BranchPlan`
-
-## Effective policies
-
-- `compatibility/http-api/v1`
-
-## Executable sources and proof
-
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `openapi:stove0` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
-- Proof: `make operation-qualification`
-- Proof: `make compose-smoke`
-
-## Referenced contract dossiers
-
-- [schemas: ArtifactSelectionRef](schemas-artifactselectionref.md)
-- [schemas: WorkflowPlan](schemas-workflowplan.md)
-
-## Contract summary
+## External contract
 
 - `title`: BranchPlan
 - `description`: One named required child work using the ordinary WorkflowPlan contract.
@@ -43,11 +25,38 @@
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | `artifact_selection` | yes | #/components/schemas/ArtifactSelectionRef |  |
-| `branch_id` | yes | string |  |
-| `kind` | no | string |  |
+| `branch_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
+| `kind` | no | type="string"; const="leaf" |  |
 | `workflow_plan` | yes | #/components/schemas/WorkflowPlan |  |
 
-## Complete owned contract
+## Maintained corroboration
+
+### Referenced contract dossiers
+
+- [schemas: ArtifactSelectionRef](schemas-artifactselectionref.md)
+- [schemas: WorkflowPlan](schemas-workflowplan.md)
+
+## Governing policies
+
+- `compatibility/http-api/v1`
+
+## Evidence
+
+### Qualification
+
+- `make operation-qualification`
+- `make compose-smoke`
+
+### Executable sources
+
+- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
+- `openapi:stove0` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+
+### Machine authority
+
+- `/external_contract/http_openapi/stove0/components/schemas/BranchPlan`
+
+### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 

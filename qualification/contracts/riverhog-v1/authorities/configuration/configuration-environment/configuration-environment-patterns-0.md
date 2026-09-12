@@ -4,6 +4,8 @@
 
 <!-- contract-element: configuration-environment:configuration:configuration-environment-patterns-0:686eafb0a8 -->
 
+Exact externally visible contract owned by this semantic dossier.
+
 | Audit field | Value |
 |---|---|
 | Authority | `configuration` |
@@ -12,40 +14,45 @@
 | Contract elements | 1 |
 | Extent decisions | 4 |
 
-## Machine authority
+## External contract
 
-- `/external_contract/configuration_environment_patterns/0`
+| Field | Shape |
+|---|---|
+| `consumer` | "riverhog-server" |
+| `parameters` | additional keys=`setting`, `store` |
+| `template` | "RIVERHOG_ARCHIVE_STORE_{store}_{setting}" |
 
-## Effective policies
+### Progression, limits, and lifecycle
 
-- `compatibility/configuration/v1`
-- `extent-rule/configured-capacity/v1`
-
-## Executable sources and proof
-
-- `configuration-environment:inventory` — `scripts/contract_freeze.py::_environment_inventory`
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- Proof: `make unit`
-- Proof: `make compose-smoke`
-
-## Extent decisions
-
-| Dimension | Unit | Policy | Bounds/reason |
+| Dimension | Unit | Policy | Bounds or reason |
 |---|---|---|---|
 | value | configured-value | `operational_policy` | maximum=None, reason=operator-configured-capacity |
 | value | configured-value | `operational_policy` | maximum=None, reason=operator-configured-capacity |
 | value | configured-value | `operational_policy` | maximum=None, reason=operator-configured-capacity |
 | value | configured-value | `operational_policy` | maximum=None, reason=operator-configured-capacity |
 
-## Contract summary
+## Governing policies
 
-| Field | Shape |
-|---|---|
-| `consumer` | "riverhog-server" |
-| `parameters` | object (2 fields) |
-| `template` | "RIVERHOG_ARCHIVE_STORE_{store}_{setting}" |
+- `compatibility/configuration/v1`
+- `extent-rule/configured-capacity/v1`
 
-## Complete owned contract
+## Evidence
+
+### Qualification
+
+- `make unit`
+- `make compose-smoke`
+
+### Executable sources
+
+- `configuration-environment:inventory` — `scripts/contract_freeze.py::_environment_inventory`
+- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
+
+### Machine authority
+
+- `/external_contract/configuration_environment_patterns/0`
+
+### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 

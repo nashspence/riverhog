@@ -4,6 +4,8 @@
 
 <!-- contract-element: python:riverhog-application-access:riverhog-application-access:4cfffe4208 -->
 
+Exact externally visible contract owned by this semantic dossier.
+
 | Audit field | Value |
 |---|---|
 | Authority | `riverhog-application-access` |
@@ -12,30 +14,35 @@
 | Contract elements | 1 |
 | Extent decisions | 0 |
 
-## Machine authority
-
-- `/external_contract/python/3`
-
-## Effective policies
-
-- `compatibility/python-api/v1`
-
-## Executable sources and proof
-
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `python:riverhog-application-access` — `packages/riverhog-application-access/src/riverhog_application_access/__init__.py::<module>`
-- Proof: `make dist-smoke`
-- Proof: `make build`
-
-## Contract summary
+## External contract
 
 | Field | Shape |
 |---|---|
 | `distribution` | "riverhog-application-access" |
-| `exports` | object (44 fields) |
+| `exports` | additional keys=`ALL_PERMISSIONS`, `ALL_RESOURCES`, `APPLICATION_KEY_ID_PATTERN`, `APPLICATION_NAME_PATTERN`, `APPLICATION_PERMISSIONS`, `ARCHIVES_MANAGE`, `ARCHIVES_READ`, `ApplicationAccess`, `ApplicationAccessError`, `ApplicationAccessGrant`, `ApplicationAccessGrantSet`, `ApplicationKeyId`, `ApplicationName`, `ApplicationPermission`, `ApplicationResource`, `CATALOG_READ`, `COLLECTIONS_CREATE`, `COLLECTIONS_DELETE`, `COLLECTION_DESCRIPTIONS_MANAGE`, `COLLECTION_PREFIX`, `COLLECTION_SCOPED_PERMISSIONS`, `COLLECTION_TAGS_MANAGE`, `COLLECTION_TRANSFORMS_CONTROL`, `COLLECTION_TRANSFORMS_EXECUTE`, `EVENTS_READ`, `EVENTS_READ_ALL`, `KEYS_MANAGE`, `MonthlyDownloadQuotaBytes`, `PROVENANCE_EXPORT`, `PROVENANCE_READ`, `QUOTAS_MANAGE`, `RETRIEVAL_MANAGE`, `TAG_PREFIX`, `access_covers`, `collection_resource`, `normalize_access`, `permission_covers`, `permission_resources`, `resource_covers`, `tag_resource`, `validate_application_key_id`, `validate_application_name`, `validate_application_resource`, `validate_monthly_download_quota_bytes` |
 | `module` | "riverhog_application_access" |
 
-## Complete owned contract
+## Governing policies
+
+- `compatibility/python-api/v1`
+
+## Evidence
+
+### Qualification
+
+- `make dist-smoke`
+- `make build`
+
+### Executable sources
+
+- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
+- `python:riverhog-application-access` — `packages/riverhog-application-access/src/riverhog_application_access/__init__.py::<module>`
+
+### Machine authority
+
+- `/external_contract/python/3`
+
+### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 

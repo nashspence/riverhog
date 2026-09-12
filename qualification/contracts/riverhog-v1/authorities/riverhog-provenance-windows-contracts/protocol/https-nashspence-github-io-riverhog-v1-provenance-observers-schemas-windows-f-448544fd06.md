@@ -4,6 +4,8 @@
 
 <!-- contract-element: protocol:riverhog-provenance-windows-contracts:https-nashspence-github-io-riverhog-v1-pr-448544fd06:693d7e9b24 -->
 
+Exact externally visible contract owned by this semantic dossier.
+
 | Audit field | Value |
 |---|---|
 | Authority | `riverhog-provenance-windows-contracts` |
@@ -12,25 +14,35 @@
 | Contract elements | 1 |
 | Extent decisions | 11 |
 
-## Machine authority
+## External contract
 
-- `/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1provenance~1observers~1schemas~1windows-file-stat.json`
+- `$id`: https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/windows-file-stat.json
+- `type`: object
 
-## Effective policies
+### Fields
 
-- `compatibility/components/v1`
-- `extent-rule/extension-contract/v1`
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| `allocation_size` | yes | type="integer"; minimum=0 |  |
+| `change_time_ticks` | yes | type="integer" |  |
+| `creation_time_ticks` | yes | type="integer" |  |
+| `delete_pending` | yes | type="boolean" |  |
+| `end_of_file` | yes | type="integer"; minimum=0 |  |
+| `file_attributes` | yes | type="integer"; minimum=0 |  |
+| `file_id_bits` | yes | type="integer"; enum=[64,128] |  |
+| `file_id_hex` | yes | type="string"; pattern="^[0-9a-f]+$" |  |
+| `file_id_scheme` | yes | enum=["windows-file-id-128","windows-file-index-64"] |  |
+| `file_index_64` | yes | type="integer"; minimum=0 |  |
+| `last_access_time_ticks` | yes | type="integer" |  |
+| `last_write_time_ticks` | yes | type="integer" |  |
+| `number_of_links` | yes | type="integer"; minimum=0 |  |
+| `reparse_tag` | yes | type="integer"; minimum=0 |  |
+| `storage` | yes | type="object"; fields=`byte_offset_for_partition_alignment`, `byte_offset_for_sector_alignment`, `filesystem_effective_physical_bytes_per_sector_for_atomicity`, `flags`, `logical_bytes_per_sector`, `physical_bytes_per_sector_for_atomicity`, `physical_bytes_per_sector_for_performance`; additional keys=`additionalProperties` |  |
+| `volume_serial_number` | yes | type="integer"; minimum=0 |  |
 
-## Executable sources and proof
+### Progression, limits, and lifecycle
 
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `protocol:https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/windows-file-stat.json` — `reference/riverhog/provenance/contracts/windows/src/riverhog_provenance_windows_contracts/schemas/windows-file-stat.schema.json`
-- Proof: `make dist-smoke`
-- Proof: `make build`
-
-## Extent decisions
-
-| Dimension | Unit | Policy | Bounds/reason |
+| Dimension | Unit | Policy | Bounds or reason |
 |---|---|---|---|
 | value | schema-value | `extension_owned` | maximum=None, reason=independently-versioned-extension-authority |
 | value | schema-value | `extension_owned` | maximum=None, reason=independently-versioned-extension-authority |
@@ -44,33 +56,28 @@
 | value | schema-value | `extension_owned` | maximum=None, reason=independently-versioned-extension-authority |
 | value | schema-value | `extension_owned` | maximum=None, reason=independently-versioned-extension-authority |
 
-## Contract summary
+## Governing policies
 
-- `$id`: https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/windows-file-stat.json
-- `type`: object
+- `compatibility/components/v1`
+- `extent-rule/extension-contract/v1`
 
-### Fields
+## Evidence
 
-| Field | Required | Shape | Description |
-|---|---:|---|---|
-| `allocation_size` | yes | integer |  |
-| `change_time_ticks` | yes | integer |  |
-| `creation_time_ticks` | yes | integer |  |
-| `delete_pending` | yes | boolean |  |
-| `end_of_file` | yes | integer |  |
-| `file_attributes` | yes | integer |  |
-| `file_id_bits` | yes | integer |  |
-| `file_id_hex` | yes | string |  |
-| `file_id_scheme` | yes | object (1 fields) |  |
-| `file_index_64` | yes | integer |  |
-| `last_access_time_ticks` | yes | integer |  |
-| `last_write_time_ticks` | yes | integer |  |
-| `number_of_links` | yes | integer |  |
-| `reparse_tag` | yes | integer |  |
-| `storage` | yes | object |  |
-| `volume_serial_number` | yes | integer |  |
+### Qualification
 
-## Complete owned contract
+- `make dist-smoke`
+- `make build`
+
+### Executable sources
+
+- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
+- `protocol:https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/windows-file-stat.json` — `reference/riverhog/provenance/contracts/windows/src/riverhog_provenance_windows_contracts/schemas/windows-file-stat.schema.json`
+
+### Machine authority
+
+- `/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1provenance~1observers~1schemas~1windows-file-stat.json`
+
+### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 

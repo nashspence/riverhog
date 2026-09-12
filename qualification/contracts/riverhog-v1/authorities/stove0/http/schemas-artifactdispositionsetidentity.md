@@ -4,6 +4,8 @@
 
 <!-- contract-element: http:stove0:schemas-artifactdispositionsetidentity:55812ad649 -->
 
+Small identity for one sealed claim-scoped relational disposition set.
+
 | Audit field | Value |
 |---|---|
 | Authority | `stove0` |
@@ -12,22 +14,7 @@
 | Contract elements | 1 |
 | Extent decisions | 0 |
 
-## Machine authority
-
-- `/external_contract/http_openapi/stove0/components/schemas/ArtifactDispositionSetIdentity`
-
-## Effective policies
-
-- `compatibility/http-api/v1`
-
-## Executable sources and proof
-
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `openapi:stove0` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
-- Proof: `make operation-qualification`
-- Proof: `make compose-smoke`
-
-## Contract summary
+## External contract
 
 - `title`: ArtifactDispositionSetIdentity
 - `description`: Small identity for one sealed claim-scoped relational disposition set.
@@ -37,12 +24,32 @@
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| `disposition_count` | yes | integer |  |
-| `output_artifact_count` | yes | integer |  |
-| `output_edge_count` | yes | integer |  |
-| `sha256` | yes | string |  |
+| `disposition_count` | yes | type="integer" |  |
+| `output_artifact_count` | yes | type="integer" |  |
+| `output_edge_count` | yes | type="integer" |  |
+| `sha256` | yes | type="string" |  |
 
-## Complete owned contract
+## Governing policies
+
+- `compatibility/http-api/v1`
+
+## Evidence
+
+### Qualification
+
+- `make operation-qualification`
+- `make compose-smoke`
+
+### Executable sources
+
+- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
+- `openapi:stove0` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+
+### Machine authority
+
+- `/external_contract/http_openapi/stove0/components/schemas/ArtifactDispositionSetIdentity`
+
+### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 

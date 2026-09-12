@@ -4,6 +4,8 @@
 
 <!-- contract-element: http:riverhog:schemas-collectionderivationdocument:78d3d731d2 -->
 
+Exact externally visible contract owned by this semantic dossier.
+
 | Audit field | Value |
 |---|---|
 | Authority | `riverhog` |
@@ -12,33 +14,31 @@
 | Contract elements | 1 |
 | Extent decisions | 8 |
 
-## Machine authority
+## External contract
 
-- `/external_contract/http_openapi/riverhog/components/schemas/CollectionDerivationDocument`
+- `title`: CollectionDerivationDocument
+- `type`: object
 
-## Effective policies
+### Fields
 
-- `compatibility/http-api/v1`
-- `extent-rule/no-semantic-maximum/v1`
-- `extent-rule/schema-bound/v1`
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| `artifact_set_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| `claim` | yes | #/components/schemas/ClaimFenceDocument |  |
+| `controller_evidence` | yes | type="object"; additional keys=`additionalProperties`, `x-riverhog-encoded-bytes-max`, `x-riverhog-extent` |  |
+| `controller_evidence_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| `disposition_set` | yes | #/components/schemas/ArtifactDispositionSetIdentityDocument |  |
+| `execution_envelope_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| `execution_id` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| `execution_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| `format` | yes | type="string"; const="riverhog-collection-derivation/v1" |  |
+| `input_set_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| `operation` | yes | #/components/schemas/OperationIdentityDocument |  |
+| `recipe` | yes | #/components/schemas/RecipeIdentityDocument |  |
 
-## Executable sources and proof
+### Progression, limits, and lifecycle
 
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `openapi:riverhog` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
-- Proof: `make operation-qualification`
-- Proof: `make compose-smoke`
-
-## Referenced contract dossiers
-
-- [schemas: ArtifactDispositionSetIdentityDocument](schemas-artifactdispositionsetidentitydocument.md)
-- [schemas: ClaimFenceDocument](schemas-claimfencedocument.md)
-- [schemas: OperationIdentityDocument](schemas-operationidentitydocument.md)
-- [schemas: RecipeIdentityDocument](schemas-recipeidentitydocument.md)
-
-## Extent decisions
-
-| Dimension | Unit | Policy | Bounds/reason |
+| Dimension | Unit | Policy | Bounds or reason |
 |---|---|---|---|
 | length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
 | encoded-size | bytes | `contract_max` | maximum=16777216, reason=bounded-controller-evidence-envelope |
@@ -49,29 +49,38 @@
 | length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
 | length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
 
-## Contract summary
+## Maintained corroboration
 
-- `title`: CollectionDerivationDocument
-- `type`: object
+### Referenced contract dossiers
 
-### Fields
+- [schemas: ArtifactDispositionSetIdentityDocument](schemas-artifactdispositionsetidentitydocument.md)
+- [schemas: ClaimFenceDocument](schemas-claimfencedocument.md)
+- [schemas: OperationIdentityDocument](schemas-operationidentitydocument.md)
+- [schemas: RecipeIdentityDocument](schemas-recipeidentitydocument.md)
 
-| Field | Required | Shape | Description |
-|---|---:|---|---|
-| `artifact_set_sha256` | yes | string |  |
-| `claim` | yes | #/components/schemas/ClaimFenceDocument |  |
-| `controller_evidence` | yes | object |  |
-| `controller_evidence_sha256` | yes | string |  |
-| `disposition_set` | yes | #/components/schemas/ArtifactDispositionSetIdentityDocument |  |
-| `execution_envelope_sha256` | yes | string |  |
-| `execution_id` | yes | string |  |
-| `execution_sha256` | yes | string |  |
-| `format` | yes | string |  |
-| `input_set_sha256` | yes | string |  |
-| `operation` | yes | #/components/schemas/OperationIdentityDocument |  |
-| `recipe` | yes | #/components/schemas/RecipeIdentityDocument |  |
+## Governing policies
 
-## Complete owned contract
+- `compatibility/http-api/v1`
+- `extent-rule/no-semantic-maximum/v1`
+- `extent-rule/schema-bound/v1`
+
+## Evidence
+
+### Qualification
+
+- `make operation-qualification`
+- `make compose-smoke`
+
+### Executable sources
+
+- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
+- `openapi:riverhog` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+
+### Machine authority
+
+- `/external_contract/http_openapi/riverhog/components/schemas/CollectionDerivationDocument`
+
+### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 

@@ -4,6 +4,8 @@
 
 <!-- contract-element: http:stove0:schemas-targetjobdeclaration:1c2286c704 -->
 
+Exact externally visible contract owned by this semantic dossier.
+
 | Audit field | Value |
 |---|---|
 | Authority | `stove0` |
@@ -12,36 +14,7 @@
 | Contract elements | 1 |
 | Extent decisions | 2 |
 
-## Machine authority
-
-- `/external_contract/http_openapi/stove0/components/schemas/TargetJobDeclaration`
-
-## Effective policies
-
-- `compatibility/http-api/v1`
-- `extent-rule/schema-bound/v1`
-
-## Executable sources and proof
-
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `openapi:stove0` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
-- Proof: `make operation-qualification`
-- Proof: `make compose-smoke`
-
-## Referenced contract dossiers
-
-- [schemas: ControllerEvidence](schemas-controllerevidence.md)
-- [schemas: EffectPlan](schemas-effectplan.md)
-- [schemas: TransformPlan](schemas-transformplan.md)
-
-## Extent decisions
-
-| Dimension | Unit | Policy | Bounds/reason |
-|---|---|---|---|
-| length | characters | `contract_max` | maximum=160, minimum=1, reason=schema-maximum |
-| length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
-
-## Contract summary
+## External contract
 
 - `title`: TargetJobDeclaration
 - `type`: object
@@ -50,14 +23,50 @@
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| `claim_id` | yes | string |  |
+| `claim_id` | yes | type="string"; minLength=1; maxLength=160 |  |
 | `controller_evidence` | yes | #/components/schemas/ControllerEvidence |  |
-| `fence` | yes | integer |  |
-| `job_id` | yes | string |  |
-| `plan` | yes | object (3 fields) |  |
-| `workspace_assurance` | yes | string |  |
+| `fence` | yes | type="integer"; minimum=1 |  |
+| `job_id` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| `plan` | yes | oneOf=#/components/schemas/TransformPlan \| #/components/schemas/EffectPlan; additional keys=`discriminator` |  |
+| `workspace_assurance` | yes | type="string"; enum=["encrypted","ephemeral"] |  |
 
-## Complete owned contract
+### Progression, limits, and lifecycle
+
+| Dimension | Unit | Policy | Bounds or reason |
+|---|---|---|---|
+| length | characters | `contract_max` | maximum=160, minimum=1, reason=schema-maximum |
+| length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
+
+## Maintained corroboration
+
+### Referenced contract dossiers
+
+- [schemas: ControllerEvidence](schemas-controllerevidence.md)
+- [schemas: EffectPlan](schemas-effectplan.md)
+- [schemas: TransformPlan](schemas-transformplan.md)
+
+## Governing policies
+
+- `compatibility/http-api/v1`
+- `extent-rule/schema-bound/v1`
+
+## Evidence
+
+### Qualification
+
+- `make operation-qualification`
+- `make compose-smoke`
+
+### Executable sources
+
+- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
+- `openapi:stove0` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+
+### Machine authority
+
+- `/external_contract/http_openapi/stove0/components/schemas/TargetJobDeclaration`
+
+### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 

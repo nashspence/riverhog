@@ -4,6 +4,8 @@
 
 <!-- contract-element: protocol:stove0-target-support:generated-stove0-target-targetpreflightresponse:9ac3ee61c5 -->
 
+Exact externally visible contract owned by this semantic dossier.
+
 | Audit field | Value |
 |---|---|
 | Authority | `stove0-target-support` |
@@ -12,22 +14,7 @@
 | Contract elements | 1 |
 | Extent decisions | 0 |
 
-## Machine authority
-
-- `/external_contract/protocol_schemas/generated:stove0-target/schemas/TargetPreflightResponse`
-
-## Effective policies
-
-- `compatibility/components/v1`
-
-## Executable sources and proof
-
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `protocol:generated:stove0-target` — `reference/stove0/packages/target-support/src/stove0_target_support/schemas.py::target_schema_bundle`
-- Proof: `make dist-smoke`
-- Proof: `make build`
-
-## Contract summary
+## External contract
 
 - `title`: TargetPreflightResponse
 - `type`: object
@@ -36,24 +23,44 @@
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| `plan` | yes | object (3 fields) |  |
+| `plan` | yes | oneOf=#/$defs/TransformPlan \| #/$defs/EffectPlan; additional keys=`discriminator` |  |
 | `target` | yes | #/$defs/TargetContract |  |
 
 ### Definitions
 
 | Definition | Shape |
 |---|---|
-| `ArtifactSelectionRef` | object |
-| `EffectPlan` | object |
-| `JsonSchemaDocument` | object |
-| `JsonValue` | object (0 fields) |
-| `TargetContract` | object |
-| `TargetInputAuthority` | object |
-| `TargetInputRoleCount` | object |
-| `TargetOperationSupport` | object |
-| `TransformPlan` | object |
+| `ArtifactSelectionRef` | type="object"; fields=`artifact_count`, `selection_sha256`, `total_bytes`; additional keys=`additionalProperties`, `required` |
+| `EffectPlan` | type="object"; fields=`inputs`, `intent`, `observation_result_sha256s`, `operation_contract_sha256`, `operation_id`, `plan_sha256`, `protocol`, `target_contract_sha256`, `target_implementation_id`, `target_options`; additional keys=`additionalProperties`, `required` |
+| `JsonSchemaDocument` | type="object"; fields=`dialect`, `format_policy`, `id`, `schema`, `sha256`; additional keys=`additionalProperties`, `required` |
+| `JsonValue` | empty object |
+| `TargetContract` | type="object"; fields=`contract_sha256`, `image_digest`, `implementation_id`, `implementation_version`, `operations`, `protocol`, `source_revision`, `transport`; additional keys=`additionalProperties`, `required` |
+| `TargetInputAuthority` | type="object"; fields=`roles`, `selection`; additional keys=`additionalProperties`, `required` |
+| `TargetInputRoleCount` | type="object"; fields=`count`, `role`; additional keys=`additionalProperties`, `required` |
+| `TargetOperationSupport` | type="object"; fields=`operation_contract_sha256`, `operation_id`, `options_schema`, `result_kind`; additional keys=`additionalProperties`, `required` |
+| `TransformPlan` | type="object"; fields=`inputs`, `intent`, `observation_result_sha256s`, `operation_contract_sha256`, `operation_id`, `plan_sha256`, `protocol`, `target_contract_sha256`, `target_implementation_id`, `target_options`; additional keys=`additionalProperties`, `required` |
 
-## Complete owned contract
+## Governing policies
+
+- `compatibility/components/v1`
+
+## Evidence
+
+### Qualification
+
+- `make dist-smoke`
+- `make build`
+
+### Executable sources
+
+- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
+- `protocol:generated:stove0-target` — `reference/stove0/packages/target-support/src/stove0_target_support/schemas.py::target_schema_bundle`
+
+### Machine authority
+
+- `/external_contract/protocol_schemas/generated:stove0-target/schemas/TargetPreflightResponse`
+
+### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 

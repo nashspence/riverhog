@@ -4,6 +4,8 @@
 
 <!-- contract-element: http:riverhog:post-v1-retrieval-jobs:e2da42a493 -->
 
+Create Retrieval Job
+
 | Audit field | Value |
 |---|---|
 | Authority | `riverhog` |
@@ -12,32 +14,7 @@
 | Contract elements | 1 |
 | Extent decisions | 0 |
 
-## Machine authority
-
-- `/external_contract/http_openapi/riverhog/paths/~1v1~1retrieval-jobs/post`
-
-## Effective policies
-
-- `compatibility/http-api/v1`
-
-## Executable sources and proof
-
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `openapi:riverhog` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
-- Proof: `make operation-qualification`
-- Proof: `make compose-smoke`
-
-## Related interface records
-
-- [Operation parity: create_retrieval_job](../operation/operation-parity-create-retrieval-job.md)
-
-## Referenced contract dossiers
-
-- [schemas: CreateRetrievalJobRequest](schemas-createretrievaljobrequest.md)
-- [schemas: ErrorResponse](schemas-errorresponse.md)
-- [schemas: RetrievalJobOut](schemas-retrievaljobout.md)
-
-## Contract summary
+## External contract
 
 - `operationId`: create_retrieval_job
 - `summary`: Create Retrieval Job
@@ -47,7 +24,7 @@
 
 | Name | In | Required | Schema |
 |---|---|---:|---|
-| `If-Match` | header | yes | string |
+| `If-Match` | header | yes | type="string"; pattern="^\"[0-9a-f]{64}\"$" |
 
 ### Request body
 
@@ -66,7 +43,39 @@
 | `429` | Too Many Requests |
 | `500` | Internal Server Error |
 
-## Complete owned contract
+## Maintained corroboration
+
+### Related interface records
+
+- [Operation parity: create_retrieval_job](../operation/operation-parity-create-retrieval-job.md)
+
+### Referenced contract dossiers
+
+- [schemas: CreateRetrievalJobRequest](schemas-createretrievaljobrequest.md)
+- [schemas: ErrorResponse](schemas-errorresponse.md)
+- [schemas: RetrievalJobOut](schemas-retrievaljobout.md)
+
+## Governing policies
+
+- `compatibility/http-api/v1`
+
+## Evidence
+
+### Qualification
+
+- `make operation-qualification`
+- `make compose-smoke`
+
+### Executable sources
+
+- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
+- `openapi:riverhog` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+
+### Machine authority
+
+- `/external_contract/http_openapi/riverhog/paths/~1v1~1retrieval-jobs/post`
+
+### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 

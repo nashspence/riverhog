@@ -4,6 +4,8 @@
 
 <!-- contract-element: http:riverhog:schemas-archivecopyjoblistout:4d316d5212 -->
 
+Exact externally visible contract owned by this semantic dossier.
+
 | Audit field | Value |
 |---|---|
 | Authority | `riverhog` |
@@ -12,39 +14,7 @@
 | Contract elements | 1 |
 | Extent decisions | 2 |
 
-## Machine authority
-
-- `/external_contract/http_openapi/riverhog/components/schemas/ArchiveCopyJobListOut`
-
-## Effective policies
-
-- `compatibility/http-api/v1`
-- `extent-rule/route-progression/v1`
-- `extent-rule/schema-bound/v1`
-
-## Executable sources and proof
-
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `openapi:riverhog` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
-- Proof: `make operation-qualification`
-- Proof: `make compose-smoke`
-
-## Referenced contract dossiers
-
-- [schemas: ArchiveCopyJobListFiltersOut](schemas-archivecopyjoblistfiltersout.md)
-- [schemas: ArchiveCopyJobOut](schemas-archivecopyjobout.md)
-- [schemas: ArchiveCopySort](schemas-archivecopysort.md)
-- [schemas: BrowsePageToken](schemas-browsepagetoken.md)
-- [schemas: SortOrder](schemas-sortorder.md)
-
-## Extent decisions
-
-| Dimension | Unit | Policy | Bounds/reason |
-|---|---|---|---|
-| cardinality | items | `segmented_no_total_max` | reason=bounded-route-page |
-| value | schema-value | `contract_max` | maximum=100, minimum=1, reason=schema-maximum |
-
-## Contract summary
+## External contract
 
 - `title`: ArchiveCopyJobListOut
 - `type`: object
@@ -53,15 +23,54 @@
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| `copies` | yes | array |  |
+| `copies` | yes | type="array"; items=(#/components/schemas/ArchiveCopyJobOut) |  |
 | `filters` | yes | #/components/schemas/ArchiveCopyJobListFiltersOut |  |
-| `next_page_token` | yes | object (1 fields) |  |
+| `next_page_token` | yes | anyOf=#/components/schemas/BrowsePageToken \| type="null" |  |
 | `order` | yes | #/components/schemas/SortOrder |  |
-| `page_size` | yes | integer |  |
-| `query` | yes | object (2 fields) |  |
+| `page_size` | yes | type="integer"; minimum=1; maximum=100 |  |
+| `query` | yes | anyOf=type="string" \| type="null" |  |
 | `sort` | yes | #/components/schemas/ArchiveCopySort |  |
 
-## Complete owned contract
+### Progression, limits, and lifecycle
+
+| Dimension | Unit | Policy | Bounds or reason |
+|---|---|---|---|
+| cardinality | items | `segmented_no_total_max` | reason=bounded-route-page |
+| value | schema-value | `contract_max` | maximum=100, minimum=1, reason=schema-maximum |
+
+## Maintained corroboration
+
+### Referenced contract dossiers
+
+- [schemas: ArchiveCopyJobListFiltersOut](schemas-archivecopyjoblistfiltersout.md)
+- [schemas: ArchiveCopyJobOut](schemas-archivecopyjobout.md)
+- [schemas: ArchiveCopySort](schemas-archivecopysort.md)
+- [schemas: BrowsePageToken](schemas-browsepagetoken.md)
+- [schemas: SortOrder](schemas-sortorder.md)
+
+## Governing policies
+
+- `compatibility/http-api/v1`
+- `extent-rule/route-progression/v1`
+- `extent-rule/schema-bound/v1`
+
+## Evidence
+
+### Qualification
+
+- `make operation-qualification`
+- `make compose-smoke`
+
+### Executable sources
+
+- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
+- `openapi:riverhog` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+
+### Machine authority
+
+- `/external_contract/http_openapi/riverhog/components/schemas/ArchiveCopyJobListOut`
+
+### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 

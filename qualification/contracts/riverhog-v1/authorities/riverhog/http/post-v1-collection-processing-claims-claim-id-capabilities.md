@@ -4,6 +4,8 @@
 
 <!-- contract-element: http:riverhog:post-v1-collection-processing-claims-clai-dfec4c2ebf:6a2f26e134 -->
 
+Create Transform Capability
+
 | Audit field | Value |
 |---|---|
 | Authority | `riverhog` |
@@ -12,39 +14,7 @@
 | Contract elements | 1 |
 | Extent decisions | 1 |
 
-## Machine authority
-
-- `/external_contract/http_openapi/riverhog/paths/~1v1~1collection-processing-claims~1{claim_id}~1capabilities/post`
-
-## Effective policies
-
-- `compatibility/http-api/v1`
-- `extent-rule/schema-bound/v1`
-
-## Executable sources and proof
-
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `openapi:riverhog` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
-- Proof: `make operation-qualification`
-- Proof: `make compose-smoke`
-
-## Related interface records
-
-- [Operation parity: create_transform_capability](../operation/operation-parity-create-transform-capability.md)
-
-## Referenced contract dossiers
-
-- [schemas: ErrorResponse](schemas-errorresponse.md)
-- [schemas: TransformCapabilityCreateDocument](schemas-transformcapabilitycreatedocument.md)
-- [schemas: TransformCapabilityDocument](schemas-transformcapabilitydocument.md)
-
-## Extent decisions
-
-| Dimension | Unit | Policy | Bounds/reason |
-|---|---|---|---|
-| length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
-
-## Contract summary
+## External contract
 
 - `operationId`: create_transform_capability
 - `summary`: Create Transform Capability
@@ -54,7 +24,7 @@
 
 | Name | In | Required | Schema |
 |---|---|---:|---|
-| `claim_id` | path | yes | string |
+| `claim_id` | path | yes | type="string"; pattern="^[0-9a-f]{64}$" |
 
 ### Request body
 
@@ -72,7 +42,46 @@
 | `409` | Conflict |
 | `500` | Internal Server Error |
 
-## Complete owned contract
+### Progression, limits, and lifecycle
+
+| Dimension | Unit | Policy | Bounds or reason |
+|---|---|---|---|
+| length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
+
+## Maintained corroboration
+
+### Related interface records
+
+- [Operation parity: create_transform_capability](../operation/operation-parity-create-transform-capability.md)
+
+### Referenced contract dossiers
+
+- [schemas: ErrorResponse](schemas-errorresponse.md)
+- [schemas: TransformCapabilityCreateDocument](schemas-transformcapabilitycreatedocument.md)
+- [schemas: TransformCapabilityDocument](schemas-transformcapabilitydocument.md)
+
+## Governing policies
+
+- `compatibility/http-api/v1`
+- `extent-rule/schema-bound/v1`
+
+## Evidence
+
+### Qualification
+
+- `make operation-qualification`
+- `make compose-smoke`
+
+### Executable sources
+
+- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
+- `openapi:riverhog` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+
+### Machine authority
+
+- `/external_contract/http_openapi/riverhog/paths/~1v1~1collection-processing-claims~1{claim_id}~1capabilities/post`
+
+### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 

@@ -4,6 +4,8 @@
 
 <!-- contract-element: python:stove0-operator-contracts:stove0-operator-contracts:22b04821ad -->
 
+Exact externally visible contract owned by this semantic dossier.
+
 | Audit field | Value |
 |---|---|
 | Authority | `stove0-operator-contracts` |
@@ -12,30 +14,35 @@
 | Contract elements | 1 |
 | Extent decisions | 0 |
 
-## Machine authority
-
-- `/external_contract/python/19`
-
-## Effective policies
-
-- `compatibility/python-api/v1`
-
-## Executable sources and proof
-
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `python:stove0-operator-contracts` — `reference/stove0/packages/operator-contracts/src/stove0_operator_contracts/__init__.py::<module>`
-- Proof: `make dist-smoke`
-- Proof: `make build`
-
-## Contract summary
+## External contract
 
 | Field | Shape |
 |---|---|
 | `distribution` | "stove0-operator-contracts" |
-| `exports` | object (71 fields) |
+| `exports` | additional keys=`ADMISSION_POLICY_COUNT_MAX`, `AdmissionCatalog`, `AdmissionIntent`, `AdmissionPage`, `AdmissionPhase`, `AdmissionPolicy`, `AdmissionPolicyCatalogView`, `AdmissionPolicyStatus`, `AdmissionRun`, `AdmissionSort`, `AdmissionState`, `AdmissionView`, `ArtifactSelectionPage`, `BRANCH_SET_ADMITTED`, `BranchSetAdmittedEvent`, `BranchSetAdmittedEventData`, `EVALUATION_CREATED`, `EVALUATION_UPDATED`, `EvaluationChildView`, `EvaluationCreatedEvent`, `EvaluationCreatedEventData`, `EvaluationPage`, `EvaluationPhase`, `EvaluationReviewIn`, `EvaluationReviewView`, `EvaluationSort`, `EvaluationUpdatedEvent`, `EvaluationUpdatedEventData`, `EvaluationView`, `JOIN_ADMITTED`, `JoinAdmittedEvent`, `JoinAdmittedEventData`, `RecipeCatalogView`, `RecipeView`, `STOVE0_EVENT_SOURCE`, `STOVE0_EVENT_TYPES`, `STOVE0_HTTP_ERROR_AUTHORITY`, `SchedulerFailure`, `SchedulerPruning`, `SchedulerRole`, `SchedulerRun`, `SchedulerRunIn`, `SchedulerStatus`, `SchedulerWorkBatch`, `SortOrder`, `Stove0CloudEvent`, `Stove0EventData`, `Stove0EventPage`, `Stove0EventType`, `Stove0LifecycleEvent`, `WORK_CREATED`, `WORK_UPDATED`, `WorkClaimView`, `WorkCreateIn`, `WorkCreatedEvent`, `WorkCreatedEventData`, `WorkFailureView`, `WorkInapplicableView`, `WorkPage`, `WorkPhase`, `WorkSort`, `WorkUpdatedEvent`, `WorkUpdatedEventData`, `WorkView`, `WorkflowPreviewIn`, `parse_stove0_event`, `stove0_event`, `validate_evaluation_child_shape`, `validate_evaluation_review_shape`, `validate_evaluation_state_shape`, `validate_work_state_shape` |
 | `module` | "stove0_operator_contracts" |
 
-## Complete owned contract
+## Governing policies
+
+- `compatibility/python-api/v1`
+
+## Evidence
+
+### Qualification
+
+- `make dist-smoke`
+- `make build`
+
+### Executable sources
+
+- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
+- `python:stove0-operator-contracts` — `reference/stove0/packages/operator-contracts/src/stove0_operator_contracts/__init__.py::<module>`
+
+### Machine authority
+
+- `/external_contract/python/19`
+
+### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 

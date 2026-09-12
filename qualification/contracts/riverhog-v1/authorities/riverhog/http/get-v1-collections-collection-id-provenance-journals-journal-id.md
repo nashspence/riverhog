@@ -4,6 +4,8 @@
 
 <!-- contract-element: http:riverhog:get-v1-collections-collection-id-provenan-3a9ce32406:fbdb931347 -->
 
+Stream Collection Provenance Journal
+
 | Audit field | Value |
 |---|---|
 | Authority | `riverhog` |
@@ -12,30 +14,7 @@
 | Contract elements | 1 |
 | Extent decisions | 0 |
 
-## Machine authority
-
-- `/external_contract/http_openapi/riverhog/paths/~1v1~1collections~1{collection_id}~1provenance~1journals~1{journal_id}/get`
-
-## Effective policies
-
-- `compatibility/http-api/v1`
-
-## Executable sources and proof
-
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `openapi:riverhog` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
-- Proof: `make operation-qualification`
-- Proof: `make compose-smoke`
-
-## Related interface records
-
-- [Operation parity: stream_collection_provenance_journal](../operation/operation-parity-stream-collection-provenance-journal.md)
-
-## Referenced contract dossiers
-
-- [schemas: ErrorResponse](schemas-errorresponse.md)
-
-## Contract summary
+## External contract
 
 - `operationId`: stream_collection_provenance_journal
 - `summary`: Stream Collection Provenance Journal
@@ -45,10 +24,10 @@
 
 | Name | In | Required | Schema |
 |---|---|---:|---|
-| `collection_id` | path | yes | integer |
-| `journal_id` | path | yes | string |
-| `Range` | header | no | object (2 fields) |
-| `If-Match` | header | no | object (2 fields) |
+| `collection_id` | path | yes | type="integer"; minimum=1 |
+| `journal_id` | path | yes | type="string"; pattern="^urn:uuid:[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$" |
+| `Range` | header | no | anyOf=type="string" \| type="null" |
+| `If-Match` | header | no | anyOf=type="string" \| type="null" |
 
 ### Responses
 
@@ -64,7 +43,37 @@
 | `428` | Precondition Required |
 | `500` | Internal Server Error |
 
-## Complete owned contract
+## Maintained corroboration
+
+### Related interface records
+
+- [Operation parity: stream_collection_provenance_journal](../operation/operation-parity-stream-collection-provenance-journal.md)
+
+### Referenced contract dossiers
+
+- [schemas: ErrorResponse](schemas-errorresponse.md)
+
+## Governing policies
+
+- `compatibility/http-api/v1`
+
+## Evidence
+
+### Qualification
+
+- `make operation-qualification`
+- `make compose-smoke`
+
+### Executable sources
+
+- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
+- `openapi:riverhog` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+
+### Machine authority
+
+- `/external_contract/http_openapi/riverhog/paths/~1v1~1collections~1{collection_id}~1provenance~1journals~1{journal_id}/get`
+
+### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 

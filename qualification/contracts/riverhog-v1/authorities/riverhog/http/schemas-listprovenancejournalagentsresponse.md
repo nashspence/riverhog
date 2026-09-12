@@ -4,6 +4,8 @@
 
 <!-- contract-element: http:riverhog:schemas-listprovenancejournalagentsresponse:4a3def0a49 -->
 
+Exact externally visible contract owned by this semantic dossier.
+
 | Audit field | Value |
 |---|---|
 | Authority | `riverhog` |
@@ -12,38 +14,7 @@
 | Contract elements | 1 |
 | Extent decisions | 2 |
 
-## Machine authority
-
-- `/external_contract/http_openapi/riverhog/components/schemas/ListProvenanceJournalAgentsResponse`
-
-## Effective policies
-
-- `compatibility/http-api/v1`
-- `extent-rule/route-progression/v1`
-- `extent-rule/schema-bound/v1`
-
-## Executable sources and proof
-
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `openapi:riverhog` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
-- Proof: `make operation-qualification`
-- Proof: `make compose-smoke`
-
-## Referenced contract dossiers
-
-- [schemas: BrowsePageToken](schemas-browsepagetoken.md)
-- [schemas: CollectionId](schemas-collectionid.md)
-- [schemas: ProvenanceJournalAgentOut](schemas-provenancejournalagentout.md)
-- [schemas: ProvenanceJournalId](schemas-provenancejournalid.md)
-
-## Extent decisions
-
-| Dimension | Unit | Policy | Bounds/reason |
-|---|---|---|---|
-| cardinality | items | `segmented_no_total_max` | reason=bounded-route-page |
-| value | schema-value | `contract_max` | maximum=100, minimum=1, reason=schema-maximum |
-
-## Contract summary
+## External contract
 
 - `title`: ListProvenanceJournalAgentsResponse
 - `type`: object
@@ -52,13 +23,51 @@
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| `agents` | yes | array |  |
+| `agents` | yes | type="array"; items=(#/components/schemas/ProvenanceJournalAgentOut) |  |
 | `collection_id` | yes | #/components/schemas/CollectionId |  |
 | `journal_id` | yes | #/components/schemas/ProvenanceJournalId |  |
-| `next_page_token` | yes | object (1 fields) |  |
-| `page_size` | yes | integer |  |
+| `next_page_token` | yes | anyOf=#/components/schemas/BrowsePageToken \| type="null" |  |
+| `page_size` | yes | type="integer"; minimum=1; maximum=100 |  |
 
-## Complete owned contract
+### Progression, limits, and lifecycle
+
+| Dimension | Unit | Policy | Bounds or reason |
+|---|---|---|---|
+| cardinality | items | `segmented_no_total_max` | reason=bounded-route-page |
+| value | schema-value | `contract_max` | maximum=100, minimum=1, reason=schema-maximum |
+
+## Maintained corroboration
+
+### Referenced contract dossiers
+
+- [schemas: BrowsePageToken](schemas-browsepagetoken.md)
+- [schemas: CollectionId](schemas-collectionid.md)
+- [schemas: ProvenanceJournalAgentOut](schemas-provenancejournalagentout.md)
+- [schemas: ProvenanceJournalId](schemas-provenancejournalid.md)
+
+## Governing policies
+
+- `compatibility/http-api/v1`
+- `extent-rule/route-progression/v1`
+- `extent-rule/schema-bound/v1`
+
+## Evidence
+
+### Qualification
+
+- `make operation-qualification`
+- `make compose-smoke`
+
+### Executable sources
+
+- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
+- `openapi:riverhog` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+
+### Machine authority
+
+- `/external_contract/http_openapi/riverhog/components/schemas/ListProvenanceJournalAgentsResponse`
+
+### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 

@@ -4,6 +4,8 @@
 
 <!-- contract-element: http:riverhog:get-v1-collections-collection-id-provenan-6d605f4732:7858de50cd -->
 
+Trace Collection File Provenance
+
 | Audit field | Value |
 |---|---|
 | Authority | `riverhog` |
@@ -12,42 +14,7 @@
 | Contract elements | 1 |
 | Extent decisions | 3 |
 
-## Machine authority
-
-- `/external_contract/http_openapi/riverhog/paths/~1v1~1collections~1{collection_id}~1provenance~1trace~1{path}/get`
-
-## Effective policies
-
-- `compatibility/http-api/v1`
-- `extent-rule/route-progression/v1`
-- `extent-rule/schema-bound/v1`
-
-## Executable sources and proof
-
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `openapi:riverhog` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
-- Proof: `make operation-qualification`
-- Proof: `make compose-smoke`
-
-## Related interface records
-
-- [Operation parity: trace_collection_file_provenance](../operation/operation-parity-trace-collection-file-provenance.md)
-
-## Referenced contract dossiers
-
-- [schemas: BrowsePageToken](schemas-browsepagetoken.md)
-- [schemas: CollectionFileProvenanceTraceOut](schemas-collectionfileprovenancetraceout.md)
-- [schemas: ErrorResponse](schemas-errorresponse.md)
-
-## Extent decisions
-
-| Dimension | Unit | Policy | Bounds/reason |
-|---|---|---|---|
-| logical-result-cardinality | items | `segmented_no_total_max` | reason=bounded-route-progression |
-| length | characters | `contract_max` | maximum=4096, minimum=1, reason=schema-maximum |
-| value | schema-value | `contract_max` | maximum=100, minimum=1, reason=schema-maximum |
-
-## Contract summary
+## External contract
 
 - `operationId`: trace_collection_file_provenance
 - `summary`: Trace Collection File Provenance
@@ -57,10 +24,10 @@
 
 | Name | In | Required | Schema |
 |---|---|---:|---|
-| `collection_id` | path | yes | integer |
-| `path` | path | yes | string |
-| `page_size` | query | no | integer |
-| `page_token` | query | no | object (2 fields) |
+| `collection_id` | path | yes | type="integer"; minimum=1 |
+| `path` | path | yes | type="string"; format="riverhog-canonical-relpath-v1"; minLength=1; maxLength=4096; pattern="^[^/\\\\]+(?:/[^/\\\\]+)*$"; allOf=additional keys=`not` \| additional keys=`not`; additional keys=`x-unicode-normalization` |
+| `page_size` | query | no | type="integer"; minimum=1; maximum=100 |
+| `page_token` | query | no | anyOf=#/components/schemas/BrowsePageToken \| type="null" |
 
 ### Responses
 
@@ -74,7 +41,49 @@
 | `409` | Conflict |
 | `500` | Internal Server Error |
 
-## Complete owned contract
+### Progression, limits, and lifecycle
+
+| Dimension | Unit | Policy | Bounds or reason |
+|---|---|---|---|
+| logical-result-cardinality | items | `segmented_no_total_max` | reason=bounded-route-progression |
+| length | characters | `contract_max` | maximum=4096, minimum=1, reason=schema-maximum |
+| value | schema-value | `contract_max` | maximum=100, minimum=1, reason=schema-maximum |
+
+## Maintained corroboration
+
+### Related interface records
+
+- [Operation parity: trace_collection_file_provenance](../operation/operation-parity-trace-collection-file-provenance.md)
+
+### Referenced contract dossiers
+
+- [schemas: BrowsePageToken](schemas-browsepagetoken.md)
+- [schemas: CollectionFileProvenanceTraceOut](schemas-collectionfileprovenancetraceout.md)
+- [schemas: ErrorResponse](schemas-errorresponse.md)
+
+## Governing policies
+
+- `compatibility/http-api/v1`
+- `extent-rule/route-progression/v1`
+- `extent-rule/schema-bound/v1`
+
+## Evidence
+
+### Qualification
+
+- `make operation-qualification`
+- `make compose-smoke`
+
+### Executable sources
+
+- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
+- `openapi:riverhog` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+
+### Machine authority
+
+- `/external_contract/http_openapi/riverhog/paths/~1v1~1collections~1{collection_id}~1provenance~1trace~1{path}/get`
+
+### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 

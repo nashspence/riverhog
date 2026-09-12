@@ -4,6 +4,8 @@
 
 <!-- contract-element: operation:riverhog:operation-parity-list-processing-claim-di-7d7e9ee32e:62ff06b8e1 -->
 
+Exact externally visible contract owned by this semantic dossier.
+
 | Audit field | Value |
 |---|---|
 | Authority | `riverhog` |
@@ -12,27 +14,7 @@
 | Contract elements | 1 |
 | Extent decisions | 0 |
 
-## Machine authority
-
-- `/external_contract/operations/34`
-
-## Effective policies
-
-- `compatibility/cli/v1`
-- `compatibility/components/v1`
-- `compatibility/http-api/v1`
-
-## Executable sources and proof
-
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `operations:operation-matrix` — `scripts/operation_qualification.py::operation_matrix`
-- Proof: `make operation-qualification`
-
-## Related interface records
-
-- [GET /v1/collection-processing-claims/{claim_id}/derivation/output-edges](../http/get-v1-collection-processing-claims-claim-id-derivation-output-edges.md)
-
-## Contract summary
+## External contract
 
 | Concern | Contract |
 |---|---|
@@ -47,7 +29,34 @@
 | `read_collection` | {"authority": "processing-claim-disposition-outputs", "authority_parameter": "authority_sha256", "cursor_parameter": "start_ordinal", "fixed_limit": 128, "kind": "exact-authority-page"} |
 | `response_authority` | canonical-document |
 
-## Complete owned contract
+## Maintained corroboration
+
+### Related interface records
+
+- [GET /v1/collection-processing-claims/{claim_id}/derivation/output-edges](../http/get-v1-collection-processing-claims-claim-id-derivation-output-edges.md)
+
+## Governing policies
+
+- `compatibility/cli/v1`
+- `compatibility/components/v1`
+- `compatibility/http-api/v1`
+
+## Evidence
+
+### Qualification
+
+- `make operation-qualification`
+
+### Executable sources
+
+- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
+- `operations:operation-matrix` — `scripts/operation_qualification.py::operation_matrix`
+
+### Machine authority
+
+- `/external_contract/operations/34`
+
+### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 

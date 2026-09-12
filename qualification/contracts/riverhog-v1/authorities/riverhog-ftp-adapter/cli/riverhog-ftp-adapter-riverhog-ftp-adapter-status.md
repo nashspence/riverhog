@@ -4,6 +4,8 @@
 
 <!-- contract-element: cli:riverhog-ftp-adapter:riverhog-ftp-adapter-riverhog-ftp-adapter-status:194688f960 -->
 
+Exact externally visible contract owned by this semantic dossier.
+
 | Audit field | Value |
 |---|---|
 | Authority | `riverhog-ftp-adapter` |
@@ -12,23 +14,7 @@
 | Contract elements | 1 |
 | Extent decisions | 0 |
 
-## Machine authority
-
-- `/external_contract/cli/riverhog-ftp-adapter/commands/status/name`
-- `/external_contract/cli/riverhog-ftp-adapter/commands/status/parameters`
-
-## Effective policies
-
-- `compatibility/cli/v1`
-
-## Executable sources and proof
-
-- `cli:riverhog-ftp-adapter` — `reference/riverhog/ingress/ftp/src/riverhog_ftp_adapter/app.py::<module>`
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- Proof: `make dist-smoke`
-- Proof: `make operation-qualification`
-
-## Contract summary
+## External contract
 
 - Parser name: `riverhog-ftp-adapter status`
 
@@ -39,7 +25,28 @@
 | `` | _StoreAction | no | int | --page-size |
 | `` | _StoreAction | no |  | --page-token |
 
-## Complete owned contract
+## Governing policies
+
+- `compatibility/cli/v1`
+
+## Evidence
+
+### Qualification
+
+- `make dist-smoke`
+- `make operation-qualification`
+
+### Executable sources
+
+- `cli:riverhog-ftp-adapter` — `reference/riverhog/ingress/ftp/src/riverhog_ftp_adapter/app.py::<module>`
+- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
+
+### Machine authority
+
+- `/external_contract/cli/riverhog-ftp-adapter/commands/status/name`
+- `/external_contract/cli/riverhog-ftp-adapter/commands/status/parameters`
+
+### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 

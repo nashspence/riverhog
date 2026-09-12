@@ -4,6 +4,8 @@
 
 <!-- contract-element: configuration:stove0-review-target:stove0-review-target-configuration:39ebbd838e -->
 
+Exact externally visible contract owned by this semantic dossier.
+
 | Audit field | Value |
 |---|---|
 | Authority | `stove0-review-target` |
@@ -12,33 +14,7 @@
 | Contract elements | 1 |
 | Extent decisions | 4 |
 
-## Machine authority
-
-- `/external_contract/configuration_documents/stove0-review-target`
-
-## Effective policies
-
-- `compatibility/configuration/v1`
-- `extent-rule/configuration-composition/v1`
-- `extent-rule/schema-bound/v1`
-
-## Executable sources and proof
-
-- `configuration:stove0-review-target` — `reference/stove0/targets/review/support/src/stove0_review_target_support/app.py::ReviewTargetConfig`
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- Proof: `make unit`
-- Proof: `make compose-smoke`
-
-## Extent decisions
-
-| Dimension | Unit | Policy | Bounds/reason |
-|---|---|---|---|
-| length | characters | `contract_max` | maximum=2048, minimum=1, reason=schema-maximum |
-| length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
-| length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
-| cardinality | items | `operational_policy` | maximum=None, reason=validated-deployment-composition |
-
-## Contract summary
+## External contract
 
 - `title`: ReviewTargetConfig
 - `type`: object
@@ -47,15 +23,46 @@
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| `samplers` | yes | array |  |
+| `samplers` | yes | type="array"; minItems=1; items=(#/$defs/SamplerConfig) |  |
 
 ### Definitions
 
 | Definition | Shape |
 |---|---|
-| `SamplerConfig` | object |
+| `SamplerConfig` | type="object"; fields=`allow_insecure_http`, `base_url`, `descriptor_sha256`, `id`, `image_digest`, `token_file`; additional keys=`additionalProperties`, `required` |
 
-## Complete owned contract
+### Progression, limits, and lifecycle
+
+| Dimension | Unit | Policy | Bounds or reason |
+|---|---|---|---|
+| length | characters | `contract_max` | maximum=2048, minimum=1, reason=schema-maximum |
+| length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
+| length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
+| cardinality | items | `operational_policy` | maximum=None, reason=validated-deployment-composition |
+
+## Governing policies
+
+- `compatibility/configuration/v1`
+- `extent-rule/configuration-composition/v1`
+- `extent-rule/schema-bound/v1`
+
+## Evidence
+
+### Qualification
+
+- `make unit`
+- `make compose-smoke`
+
+### Executable sources
+
+- `configuration:stove0-review-target` — `reference/stove0/targets/review/support/src/stove0_review_target_support/app.py::ReviewTargetConfig`
+- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
+
+### Machine authority
+
+- `/external_contract/configuration_documents/stove0-review-target`
+
+### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 

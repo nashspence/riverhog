@@ -4,6 +4,8 @@
 
 <!-- contract-element: configuration-environment:configuration:riverhog-token:447bb29ff0 -->
 
+Exact externally visible contract owned by this semantic dossier.
+
 | Audit field | Value |
 |---|---|
 | Authority | `configuration` |
@@ -12,29 +14,34 @@
 | Contract elements | 1 |
 | Extent decisions | 0 |
 
-## Machine authority
-
-- `/external_contract/configuration_environment/74`
-
-## Effective policies
-
-- `compatibility/configuration/v1`
-
-## Executable sources and proof
-
-- `configuration-environment:RIVERHOG_TOKEN` — `configuration-environment:RIVERHOG_TOKEN`
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- Proof: `make unit`
-- Proof: `make compose-smoke`
-
-## Contract summary
+## External contract
 
 | Field | Shape |
 |---|---|
-| `consumers` | array (2 items) |
+| `consumers` | ["riverhog-client","stove0-server"] |
 | `name` | "RIVERHOG_TOKEN" |
 
-## Complete owned contract
+## Governing policies
+
+- `compatibility/configuration/v1`
+
+## Evidence
+
+### Qualification
+
+- `make unit`
+- `make compose-smoke`
+
+### Executable sources
+
+- `configuration-environment:RIVERHOG_TOKEN` — `configuration-environment:RIVERHOG_TOKEN`
+- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
+
+### Machine authority
+
+- `/external_contract/configuration_environment/74`
+
+### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 

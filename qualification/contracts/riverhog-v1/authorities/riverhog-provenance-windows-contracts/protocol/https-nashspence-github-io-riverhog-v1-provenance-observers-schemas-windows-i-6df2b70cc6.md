@@ -4,6 +4,8 @@
 
 <!-- contract-element: protocol:riverhog-provenance-windows-contracts:https-nashspence-github-io-riverhog-v1-pr-6df2b70cc6:a12e386383 -->
 
+Exact externally visible contract owned by this semantic dossier.
+
 | Audit field | Value |
 |---|---|
 | Authority | `riverhog-provenance-windows-contracts` |
@@ -12,30 +14,7 @@
 | Contract elements | 1 |
 | Extent decisions | 2 |
 
-## Machine authority
-
-- `/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1provenance~1observers~1schemas~1windows-integrity-info.json`
-
-## Effective policies
-
-- `compatibility/components/v1`
-- `extent-rule/extension-contract/v1`
-
-## Executable sources and proof
-
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `protocol:https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/windows-integrity-info.json` — `reference/riverhog/provenance/contracts/windows/src/riverhog_provenance_windows_contracts/schemas/windows-integrity-info.schema.json`
-- Proof: `make dist-smoke`
-- Proof: `make build`
-
-## Extent decisions
-
-| Dimension | Unit | Policy | Bounds/reason |
-|---|---|---|---|
-| value | schema-value | `extension_owned` | maximum=None, reason=independently-versioned-extension-authority |
-| value | schema-value | `extension_owned` | maximum=None, reason=independently-versioned-extension-authority |
-
-## Contract summary
+## External contract
 
 - `$id`: https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/windows-integrity-info.json
 - `type`: object
@@ -44,12 +23,40 @@
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| `checksum_algorithm` | yes | integer |  |
-| `checksum_chunk_size` | yes | integer |  |
-| `cluster_size` | yes | integer |  |
-| `flags` | yes | integer |  |
+| `checksum_algorithm` | yes | type="integer"; minimum=0 |  |
+| `checksum_chunk_size` | yes | type="integer"; minimum=0 |  |
+| `cluster_size` | yes | type="integer"; minimum=0 |  |
+| `flags` | yes | type="integer"; minimum=0 |  |
 
-## Complete owned contract
+### Progression, limits, and lifecycle
+
+| Dimension | Unit | Policy | Bounds or reason |
+|---|---|---|---|
+| value | schema-value | `extension_owned` | maximum=None, reason=independently-versioned-extension-authority |
+| value | schema-value | `extension_owned` | maximum=None, reason=independently-versioned-extension-authority |
+
+## Governing policies
+
+- `compatibility/components/v1`
+- `extent-rule/extension-contract/v1`
+
+## Evidence
+
+### Qualification
+
+- `make dist-smoke`
+- `make build`
+
+### Executable sources
+
+- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
+- `protocol:https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/windows-integrity-info.json` — `reference/riverhog/provenance/contracts/windows/src/riverhog_provenance_windows_contracts/schemas/windows-integrity-info.schema.json`
+
+### Machine authority
+
+- `/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1provenance~1observers~1schemas~1windows-integrity-info.json`
+
+### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 

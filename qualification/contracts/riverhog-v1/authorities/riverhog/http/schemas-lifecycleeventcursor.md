@@ -4,6 +4,8 @@
 
 <!-- contract-element: http:riverhog:schemas-lifecycleeventcursor:0532a58cc8 -->
 
+Exact externally visible contract owned by this semantic dossier.
+
 | Audit field | Value |
 |---|---|
 | Authority | `riverhog` |
@@ -12,33 +14,38 @@
 | Contract elements | 1 |
 | Extent decisions | 1 |
 
-## Machine authority
+## External contract
 
-- `/external_contract/http_openapi/riverhog/components/schemas/LifecycleEventCursor`
+- `type`: string
 
-## Effective policies
+### Progression, limits, and lifecycle
+
+| Dimension | Unit | Policy | Bounds or reason |
+|---|---|---|---|
+| length | characters | `contract_max` | maximum=19, minimum=1, reason=schema-maximum |
+
+## Governing policies
 
 - `compatibility/http-api/v1`
 - `extent-rule/schema-bound/v1`
 
-## Executable sources and proof
+## Evidence
+
+### Qualification
+
+- `make operation-qualification`
+- `make compose-smoke`
+
+### Executable sources
 
 - `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
 - `openapi:riverhog` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
-- Proof: `make operation-qualification`
-- Proof: `make compose-smoke`
 
-## Extent decisions
+### Machine authority
 
-| Dimension | Unit | Policy | Bounds/reason |
-|---|---|---|---|
-| length | characters | `contract_max` | maximum=19, minimum=1, reason=schema-maximum |
+- `/external_contract/http_openapi/riverhog/components/schemas/LifecycleEventCursor`
 
-## Contract summary
-
-- `type`: string
-
-## Complete owned contract
+### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 

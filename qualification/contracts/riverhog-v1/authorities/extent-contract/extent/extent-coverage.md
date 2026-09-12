@@ -4,6 +4,8 @@
 
 <!-- contract-element: extent:extent-contract:extent-coverage:ff25c7c922 -->
 
+Exact externally visible contract owned by this semantic dossier.
+
 | Audit field | Value |
 |---|---|
 | Authority | `extent-contract` |
@@ -12,22 +14,7 @@
 | Contract elements | 1 |
 | Extent decisions | 0 |
 
-## Machine authority
-
-- `/external_contract/extents/coverage`
-
-## Effective policies
-
-- `extent-principle/logical-totals/v1`
-
-## Executable sources and proof
-
-- `extent:extent-contract` — `scripts/extent_contract.py::extent_projection`
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- Proof: `make contract-freeze`
-- Proof: `make operation-qualification`
-
-## Contract summary
+## External contract
 
 | Field | Shape |
 |---|---|
@@ -35,12 +22,32 @@
 | `discovered` | 1962 |
 | `duplicate` | 0 |
 | `missing` | 0 |
-| `owners` | object (57 fields) |
-| `policies` | object (5 fields) |
+| `owners` | additional keys=`gogurt`, `gogurt-routes`, `https://nashspence.github.io/riverhog/v1/provenance/journal-entry.schema.json`, `https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/darwin-file-attributes.json`, `https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/darwin-file-flags.json`, `https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/darwin-file-stat.json`, `https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/linux-file-stat.json`, `https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/linux-fs-flags.json`, `https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/linux-fsxattr.json`, `https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/linux-mount-context.json`, `https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/linux-statx-attributes.json`, `https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/macos-volume-context.json`, `https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/observation-policy.json`, `https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/sparse-map.json`, `https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/windows-backup-stream-info.json`, `https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/windows-compression-state.json`, `https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/windows-file-attributes.json`, `https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/windows-file-stat.json`, `https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/windows-integrity-info.json`, `https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/windows-object-id.json`, `https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/windows-usn-record.json`, `https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/windows-volume-context.json`, `https://nashspence.github.io/riverhog/v1/schemas/collection-archive-manifest-v1.schema.json`, `https://nashspence.github.io/riverhog/v1/schemas/collection-archive-terminal-v1.schema.json`, `https://nashspence.github.io/riverhog/v1/schemas/collection-archive-volume-v1.schema.json`, `https://nashspence.github.io/riverhog/v1/schemas/riverhog-collection-description-v1.schema.json`, `https://nashspence.github.io/riverhog/v1/schemas/riverhog-provenance-bindings-v1.schema.json`, `https://nashspence.github.io/riverhog/v1/schemas/riverhog-provenance-root-v1.schema.json`, `https://nashspence.github.io/riverhog/v1/schemas/riverhog-provenance-terminal-v1.schema.json`, `https://nashspence.github.io/riverhog/v1/schemas/riverhog-provenance-volume-v1.schema.json`, `https://nashspence.github.io/riverhog/v1/schemas/riverhog-recovery-descriptor-v1.schema.json`, `mango-fish`, `piggity`, `riverhog`, `riverhog-client`, `riverhog-ftp-adapter`, `riverhog-ftp-adapter-api-client`, `riverhog-recover`, `riverhog-server`, `riverhog-storage-adapter-conformance`, `riverhog-storage-adapter-filesystem-materialize`, `riverhog-storage-adapter-protocol`, `riverhog-storage-adapter-schemas`, `stove0`, `stove0-api-client`, `stove0-observer-protocol`, `stove0-observer-schemas`, `stove0-recipes`, `stove0-review-sampler-conformance`, `stove0-review-sampler-protocol`, `stove0-review-sampler-schemas`, `stove0-review-target`, `stove0-review-target-sampler`, `stove0-server`, `stove0-target-protocol`, `stove0-target-schemas`, `stove0-target-support` |
+| `policies` | additional keys=`contract_max`, `extension_owned`, `fixed`, `operational_policy`, `segmented_no_total_max` |
 | `stale` | 0 |
 | `undecided` | 0 |
 
-## Complete owned contract
+## Governing policies
+
+- `extent-principle/logical-totals/v1`
+
+## Evidence
+
+### Qualification
+
+- `make contract-freeze`
+- `make operation-qualification`
+
+### Executable sources
+
+- `extent:extent-contract` — `scripts/extent_contract.py::extent_projection`
+- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
+
+### Machine authority
+
+- `/external_contract/extents/coverage`
+
+### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 

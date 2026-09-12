@@ -4,6 +4,8 @@
 
 <!-- contract-element: http:stove0:schemas-observationresult:732d745985 -->
 
+Exact externally visible contract owned by this semantic dossier.
+
 | Audit field | Value |
 |---|---|
 | Authority | `stove0` |
@@ -12,35 +14,33 @@
 | Contract elements | 1 |
 | Extent decisions | 7 |
 
-## Machine authority
+## External contract
 
-- `/external_contract/http_openapi/stove0/components/schemas/ObservationResult`
+- `title`: ObservationResult
+- `type`: object
 
-## Effective policies
+### Fields
 
-- `compatibility/http-api/v1`
-- `extent-rule/no-semantic-maximum/v1`
-- `extent-rule/schema-bound/v1`
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| `execution_evidence` | no | type="object"; additional keys=`additionalProperties` |  |
+| `facts` | no | anyOf=type="object"; additional keys=`additionalProperties` \| type="null" |  |
+| `facts_schema` | no | anyOf=#/components/schemas/JsonSchemaDocument \| type="null" |  |
+| `facts_sha256` | no | anyOf=type="string"; pattern="^[0-9a-f]{64}$" \| type="null" |  |
+| `failure` | no | anyOf=#/components/schemas/ObservationFailure \| type="null" |  |
+| `format` | no | type="string"; const="stove0-observation-result/v1" |  |
+| `inapplicable` | no | anyOf=#/components/schemas/ObservationInapplicable \| type="null" |  |
+| `observer` | yes | #/components/schemas/ObserverImplementation |  |
+| `observer_contract_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
+| `observer_contract_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| `request_id` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| `result_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| `state` | yes | type="string"; enum=["observed","inapplicable","failed","canceled"] |  |
+| `subjects` | yes | type="array"; minItems=1; items=(#/components/schemas/ArtifactSubject) |  |
 
-## Executable sources and proof
+### Progression, limits, and lifecycle
 
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `openapi:stove0` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
-- Proof: `make operation-qualification`
-- Proof: `make compose-smoke`
-
-## Referenced contract dossiers
-
-- [schemas: ArtifactSubject](schemas-artifactsubject.md)
-- [schemas: JsonSchemaDocument](schemas-jsonschemadocument.md)
-- [schemas: JsonValue](schemas-jsonvalue.md)
-- [schemas: ObservationFailure](schemas-observationfailure.md)
-- [schemas: ObservationInapplicable](schemas-observationinapplicable.md)
-- [schemas: ObserverImplementation](schemas-observerimplementation.md)
-
-## Extent decisions
-
-| Dimension | Unit | Policy | Bounds/reason |
+| Dimension | Unit | Policy | Bounds or reason |
 |---|---|---|---|
 | cardinality | entries | `operational_policy` | maximum=None, reason=no-declared-semantic-maximum |
 | cardinality | entries | `operational_policy` | maximum=None, reason=no-declared-semantic-maximum |
@@ -50,31 +50,40 @@
 | length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
 | cardinality | items | `operational_policy` | maximum=None, reason=no-declared-semantic-maximum |
 
-## Contract summary
+## Maintained corroboration
 
-- `title`: ObservationResult
-- `type`: object
+### Referenced contract dossiers
 
-### Fields
+- [schemas: ArtifactSubject](schemas-artifactsubject.md)
+- [schemas: JsonSchemaDocument](schemas-jsonschemadocument.md)
+- [schemas: JsonValue](schemas-jsonvalue.md)
+- [schemas: ObservationFailure](schemas-observationfailure.md)
+- [schemas: ObservationInapplicable](schemas-observationinapplicable.md)
+- [schemas: ObserverImplementation](schemas-observerimplementation.md)
 
-| Field | Required | Shape | Description |
-|---|---:|---|---|
-| `execution_evidence` | no | object |  |
-| `facts` | no | object (2 fields) |  |
-| `facts_schema` | no | object (1 fields) |  |
-| `facts_sha256` | no | object (2 fields) |  |
-| `failure` | no | object (1 fields) |  |
-| `format` | no | string |  |
-| `inapplicable` | no | object (1 fields) |  |
-| `observer` | yes | #/components/schemas/ObserverImplementation |  |
-| `observer_contract_id` | yes | string |  |
-| `observer_contract_sha256` | yes | string |  |
-| `request_id` | yes | string |  |
-| `result_sha256` | yes | string |  |
-| `state` | yes | string |  |
-| `subjects` | yes | array |  |
+## Governing policies
 
-## Complete owned contract
+- `compatibility/http-api/v1`
+- `extent-rule/no-semantic-maximum/v1`
+- `extent-rule/schema-bound/v1`
+
+## Evidence
+
+### Qualification
+
+- `make operation-qualification`
+- `make compose-smoke`
+
+### Executable sources
+
+- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
+- `openapi:stove0` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+
+### Machine authority
+
+- `/external_contract/http_openapi/stove0/components/schemas/ObservationResult`
+
+### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 

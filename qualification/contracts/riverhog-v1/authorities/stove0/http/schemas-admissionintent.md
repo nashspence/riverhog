@@ -4,6 +4,8 @@
 
 <!-- contract-element: http:stove0:schemas-admissionintent:ca5ce1169b -->
 
+Exact externally visible contract owned by this semantic dossier.
+
 | Audit field | Value |
 |---|---|
 | Authority | `stove0` |
@@ -12,32 +14,30 @@
 | Contract elements | 1 |
 | Extent decisions | 7 |
 
-## Machine authority
+## External contract
 
-- `/external_contract/http_openapi/stove0/components/schemas/AdmissionIntent`
+- `title`: AdmissionIntent
+- `type`: object
 
-## Effective policies
+### Fields
 
-- `compatibility/http-api/v1`
-- `extent-rule/no-semantic-maximum/v1`
-- `extent-rule/schema-bound/v1`
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| `admission_id` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| `collection` | yes | #/components/schemas/CatalogSyncDescriptor |  |
+| `effective_intent` | yes | type="object"; additional keys=`additionalProperties` |  |
+| `format` | no | type="string"; const="stove0-admission-intent/v1" |  |
+| `policy_id` | yes | type="string"; minLength=1; maxLength=160 |  |
+| `policy_revision` | yes | type="integer"; minimum=1 |  |
+| `policy_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| `recipe_id` | yes | type="string"; minLength=1; maxLength=160 |  |
+| `recipe_revision` | yes | type="integer"; minimum=1 |  |
+| `recipe_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| `required_tags` | yes | type="array"; items=(#/components/schemas/CollectionTag) |  |
 
-## Executable sources and proof
+### Progression, limits, and lifecycle
 
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `openapi:stove0` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
-- Proof: `make operation-qualification`
-- Proof: `make compose-smoke`
-
-## Referenced contract dossiers
-
-- [schemas: CatalogSyncDescriptor](schemas-catalogsyncdescriptor.md)
-- [schemas: CollectionTag](schemas-collectiontag.md)
-- [schemas: JsonValue](schemas-jsonvalue.md)
-
-## Extent decisions
-
-| Dimension | Unit | Policy | Bounds/reason |
+| Dimension | Unit | Policy | Bounds or reason |
 |---|---|---|---|
 | length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
 | cardinality | entries | `operational_policy` | maximum=None, reason=no-declared-semantic-maximum |
@@ -47,28 +47,37 @@
 | length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
 | cardinality | items | `operational_policy` | maximum=None, reason=no-declared-semantic-maximum |
 
-## Contract summary
+## Maintained corroboration
 
-- `title`: AdmissionIntent
-- `type`: object
+### Referenced contract dossiers
 
-### Fields
+- [schemas: CatalogSyncDescriptor](schemas-catalogsyncdescriptor.md)
+- [schemas: CollectionTag](schemas-collectiontag.md)
+- [schemas: JsonValue](schemas-jsonvalue.md)
 
-| Field | Required | Shape | Description |
-|---|---:|---|---|
-| `admission_id` | yes | string |  |
-| `collection` | yes | #/components/schemas/CatalogSyncDescriptor |  |
-| `effective_intent` | yes | object |  |
-| `format` | no | string |  |
-| `policy_id` | yes | string |  |
-| `policy_revision` | yes | integer |  |
-| `policy_sha256` | yes | string |  |
-| `recipe_id` | yes | string |  |
-| `recipe_revision` | yes | integer |  |
-| `recipe_sha256` | yes | string |  |
-| `required_tags` | yes | array |  |
+## Governing policies
 
-## Complete owned contract
+- `compatibility/http-api/v1`
+- `extent-rule/no-semantic-maximum/v1`
+- `extent-rule/schema-bound/v1`
+
+## Evidence
+
+### Qualification
+
+- `make operation-qualification`
+- `make compose-smoke`
+
+### Executable sources
+
+- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
+- `openapi:stove0` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+
+### Machine authority
+
+- `/external_contract/http_openapi/stove0/components/schemas/AdmissionIntent`
+
+### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 

@@ -4,6 +4,8 @@
 
 <!-- contract-element: http:riverhog:schemas-registercollectionuploadsessionfilesrequest:7f414b06b8 -->
 
+Exact externally visible contract owned by this semantic dossier.
+
 | Audit field | Value |
 |---|---|
 | Authority | `riverhog` |
@@ -12,33 +14,7 @@
 | Contract elements | 1 |
 | Extent decisions | 1 |
 
-## Machine authority
-
-- `/external_contract/http_openapi/riverhog/components/schemas/RegisterCollectionUploadSessionFilesRequest`
-
-## Effective policies
-
-- `compatibility/http-api/v1`
-- `extent-rule/bounded-segment/v1`
-
-## Executable sources and proof
-
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `openapi:riverhog` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
-- Proof: `make operation-qualification`
-- Proof: `make compose-smoke`
-
-## Referenced contract dossiers
-
-- [schemas: CollectionUploadFileIn](schemas-collectionuploadfilein.md)
-
-## Extent decisions
-
-| Dimension | Unit | Policy | Bounds/reason |
-|---|---|---|---|
-| cardinality | items | `segmented_no_total_max` | maximum=100, minimum=1, reason=bounded-upload-registration |
-
-## Contract summary
+## External contract
 
 - `title`: RegisterCollectionUploadSessionFilesRequest
 - `type`: object
@@ -47,9 +23,42 @@
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| `files` | yes | array |  |
+| `files` | yes | type="array"; minItems=1; maxItems=100; items=(#/components/schemas/CollectionUploadFileIn); additional keys=`x-riverhog-extent` |  |
 
-## Complete owned contract
+### Progression, limits, and lifecycle
+
+| Dimension | Unit | Policy | Bounds or reason |
+|---|---|---|---|
+| cardinality | items | `segmented_no_total_max` | maximum=100, minimum=1, reason=bounded-upload-registration |
+
+## Maintained corroboration
+
+### Referenced contract dossiers
+
+- [schemas: CollectionUploadFileIn](schemas-collectionuploadfilein.md)
+
+## Governing policies
+
+- `compatibility/http-api/v1`
+- `extent-rule/bounded-segment/v1`
+
+## Evidence
+
+### Qualification
+
+- `make operation-qualification`
+- `make compose-smoke`
+
+### Executable sources
+
+- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
+- `openapi:riverhog` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+
+### Machine authority
+
+- `/external_contract/http_openapi/riverhog/components/schemas/RegisterCollectionUploadSessionFilesRequest`
+
+### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 

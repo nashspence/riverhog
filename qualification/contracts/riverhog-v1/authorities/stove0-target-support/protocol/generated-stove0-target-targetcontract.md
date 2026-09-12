@@ -4,6 +4,8 @@
 
 <!-- contract-element: protocol:stove0-target-support:generated-stove0-target-targetcontract:5398dc2d99 -->
 
+Exact externally visible contract owned by this semantic dossier.
+
 | Audit field | Value |
 |---|---|
 | Authority | `stove0-target-support` |
@@ -12,34 +14,7 @@
 | Contract elements | 1 |
 | Extent decisions | 5 |
 
-## Machine authority
-
-- `/external_contract/protocol_schemas/generated:stove0-target/schemas/TargetContract`
-
-## Effective policies
-
-- `compatibility/components/v1`
-- `extent-rule/no-semantic-maximum/v1`
-- `extent-rule/schema-bound/v1`
-
-## Executable sources and proof
-
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `protocol:generated:stove0-target` — `reference/stove0/packages/target-support/src/stove0_target_support/schemas.py::target_schema_bundle`
-- Proof: `make dist-smoke`
-- Proof: `make build`
-
-## Extent decisions
-
-| Dimension | Unit | Policy | Bounds/reason |
-|---|---|---|---|
-| length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
-| length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
-| length | characters | `contract_max` | maximum=120, minimum=1, reason=schema-maximum |
-| cardinality | items | `operational_policy` | maximum=None, reason=no-declared-semantic-maximum |
-| length | characters | `contract_max` | maximum=200, minimum=1, reason=schema-maximum |
-
-## Contract summary
+## External contract
 
 - `title`: TargetContract
 - `type`: object
@@ -48,24 +23,56 @@
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| `contract_sha256` | yes | string |  |
-| `image_digest` | yes | string |  |
-| `implementation_id` | yes | string |  |
-| `implementation_version` | yes | string |  |
-| `operations` | yes | array |  |
-| `protocol` | no | string |  |
-| `source_revision` | yes | string |  |
-| `transport` | no | string |  |
+| `contract_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| `image_digest` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| `implementation_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
+| `implementation_version` | yes | type="string"; minLength=1; maxLength=120 |  |
+| `operations` | yes | type="array"; minItems=1; items=(#/$defs/TargetOperationSupport) |  |
+| `protocol` | no | type="string"; enum=["stove0-transform-target/v1","stove0-effect-target/v1"] |  |
+| `source_revision` | yes | type="string"; minLength=1; maxLength=200 |  |
+| `transport` | no | type="string"; const="riverhog-capability/v1" |  |
 
 ### Definitions
 
 | Definition | Shape |
 |---|---|
-| `JsonSchemaDocument` | object |
-| `JsonValue` | object (0 fields) |
-| `TargetOperationSupport` | object |
+| `JsonSchemaDocument` | type="object"; fields=`dialect`, `format_policy`, `id`, `schema`, `sha256`; additional keys=`additionalProperties`, `required` |
+| `JsonValue` | empty object |
+| `TargetOperationSupport` | type="object"; fields=`operation_contract_sha256`, `operation_id`, `options_schema`, `result_kind`; additional keys=`additionalProperties`, `required` |
 
-## Complete owned contract
+### Progression, limits, and lifecycle
+
+| Dimension | Unit | Policy | Bounds or reason |
+|---|---|---|---|
+| length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
+| length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
+| length | characters | `contract_max` | maximum=120, minimum=1, reason=schema-maximum |
+| cardinality | items | `operational_policy` | maximum=None, reason=no-declared-semantic-maximum |
+| length | characters | `contract_max` | maximum=200, minimum=1, reason=schema-maximum |
+
+## Governing policies
+
+- `compatibility/components/v1`
+- `extent-rule/no-semantic-maximum/v1`
+- `extent-rule/schema-bound/v1`
+
+## Evidence
+
+### Qualification
+
+- `make dist-smoke`
+- `make build`
+
+### Executable sources
+
+- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
+- `protocol:generated:stove0-target` — `reference/stove0/packages/target-support/src/stove0_target_support/schemas.py::target_schema_bundle`
+
+### Machine authority
+
+- `/external_contract/protocol_schemas/generated:stove0-target/schemas/TargetContract`
+
+### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 

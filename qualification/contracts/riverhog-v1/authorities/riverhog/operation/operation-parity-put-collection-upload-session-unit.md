@@ -4,6 +4,8 @@
 
 <!-- contract-element: operation:riverhog:operation-parity-put-collection-upload-session-unit:6b4dc13375 -->
 
+Exact externally visible contract owned by this semantic dossier.
+
 | Audit field | Value |
 |---|---|
 | Authority | `riverhog` |
@@ -12,28 +14,7 @@
 | Contract elements | 1 |
 | Extent decisions | 0 |
 
-## Machine authority
-
-- `/external_contract/operations/68`
-
-## Effective policies
-
-- `compatibility/cli/v1`
-- `compatibility/components/v1`
-- `compatibility/http-api/v1`
-
-## Executable sources and proof
-
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `operations:operation-matrix` — `scripts/operation_qualification.py::operation_matrix`
-- Proof: `make operation-qualification`
-
-## Related interface records
-
-- [PUT /v1/collection-upload-sessions/{collection_id}/volumes/{volume_id}/units/{unit}](../http/put-v1-collection-upload-sessions-collection-id-volumes-volume-id-units-unit.md)
-- [piggity collection upload start](../../piggity/cli/piggity-collection-upload-start.md)
-
-## Contract summary
+## External contract
 
 | Concern | Contract |
 |---|---|
@@ -48,7 +29,35 @@
 | `read_collection` | None |
 | `response_authority` | canonical-document |
 
-## Complete owned contract
+## Maintained corroboration
+
+### Related interface records
+
+- [PUT /v1/collection-upload-sessions/{collection_id}/volumes/{volume_id}/units/{unit}](../http/put-v1-collection-upload-sessions-collection-id-volumes-volume-id-units-unit.md)
+- [piggity collection upload start](../../piggity/cli/piggity-collection-upload-start.md)
+
+## Governing policies
+
+- `compatibility/cli/v1`
+- `compatibility/components/v1`
+- `compatibility/http-api/v1`
+
+## Evidence
+
+### Qualification
+
+- `make operation-qualification`
+
+### Executable sources
+
+- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
+- `operations:operation-matrix` — `scripts/operation_qualification.py::operation_matrix`
+
+### Machine authority
+
+- `/external_contract/operations/68`
+
+### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 

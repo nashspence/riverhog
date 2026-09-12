@@ -4,6 +4,8 @@
 
 <!-- contract-element: durable-state:gogurt-listener:gogurt-listener-durable-state:11bfac7224 -->
 
+Exact externally visible contract owned by this semantic dossier.
+
 | Audit field | Value |
 |---|---|
 | Authority | `gogurt-listener` |
@@ -12,26 +14,31 @@
 | Contract elements | 1 |
 | Extent decisions | 0 |
 
-## Machine authority
-
-- `/external_contract/durable_state/owners/4`
-
-## Effective policies
-
-- `compatibility/components/v1`
-
-## Executable sources and proof
-
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `state:gogurt-listener` — `state:gogurt-listener`
-- Proof: `make release-check`
-- Proof: `make database-qualification`
-
-## Contract summary
+## External contract
 
 - `format`: gogurt-listener-state/v1
 
-## Complete owned contract
+## Governing policies
+
+- `compatibility/components/v1`
+
+## Evidence
+
+### Qualification
+
+- `make release-check`
+- `make database-qualification`
+
+### Executable sources
+
+- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
+- `state:gogurt-listener` — `state:gogurt-listener`
+
+### Machine authority
+
+- `/external_contract/durable_state/owners/4`
+
+### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 

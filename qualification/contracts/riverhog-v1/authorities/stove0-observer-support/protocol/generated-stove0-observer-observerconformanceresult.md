@@ -4,6 +4,8 @@
 
 <!-- contract-element: protocol:stove0-observer-support:generated-stove0-observer-observerconformanceresult:bab9f16cd8 -->
 
+Exact externally visible contract owned by this semantic dossier.
+
 | Audit field | Value |
 |---|---|
 | Authority | `stove0-observer-support` |
@@ -12,26 +14,49 @@
 | Contract elements | 1 |
 | Extent decisions | 30 |
 
-## Machine authority
+## External contract
 
-- `/external_contract/protocol_schemas/generated:stove0-observer/schemas/ObserverConformanceResult`
+- `title`: ObserverConformanceResult
+- `type`: object
 
-## Effective policies
+### Fields
 
-- `compatibility/components/v1`
-- `extent-rule/no-semantic-maximum/v1`
-- `extent-rule/schema-bound/v1`
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| `contracts` | yes | type="array"; items=(#/$defs/ObserverContractConformance) |  |
+| `coverage` | yes | #/$defs/ObserverConformanceCoverage |  |
+| `descriptor` | yes | #/$defs/ObserverDescriptor |  |
+| `format` | no | type="string"; const="stove0-observer-conformance-result/v1" |  |
+| `status` | yes | type="string"; enum=["conformant","partially-exercised","inspected"] |  |
 
-## Executable sources and proof
+### Definitions
 
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `protocol:generated:stove0-observer` — `reference/stove0/packages/observer-support/src/stove0_observer_support/schemas.py::observer_schema_bundle`
-- Proof: `make dist-smoke`
-- Proof: `make build`
+| Definition | Shape |
+|---|---|
+| `ArtifactSubject` | type="object"; fields=`bytes`, `collection`, `id`, `media_type`, `path`, `role`, `sha256`; additional keys=`additionalProperties`, `required` |
+| `CollectionId` | type="integer"; minimum=1 |
+| `CollectionRootRef` | type="object"; fields=`archive_root_sha256`, `collection_id`, `content_identity`; additional keys=`additionalProperties`, `required` |
+| `JsonSchemaDocument` | type="object"; fields=`dialect`, `format_policy`, `id`, `schema`, `sha256`; additional keys=`additionalProperties`, `required` |
+| `JsonValue` | empty object |
+| `ObservationFailure` | type="object"; fields=`code`, `message`, `retryable`; additional keys=`additionalProperties`, `required` |
+| `ObservationInapplicable` | type="object"; fields=`code`, `message`; additional keys=`additionalProperties`, `required` |
+| `ObservationRequest` | type="object"; fields=`format`, `maximum_result_bytes`, `observer_contract_id`, `observer_contract_sha256`, `observer_descriptor_sha256`, `observer_registration_id`, `options`, `request_id`, `retrieval_policy`, `subjects`, `timeout_seconds`, `work_id`; additional keys=`additionalProperties`, `required` |
+| `ObservationResult` | type="object"; fields=`execution_evidence`, `facts`, `facts_schema`, `facts_sha256`, `failure`, `format`, `inapplicable`, `observer`, `observer_contract_id`, `observer_contract_sha256`, `request_id`, `result_sha256`, `state`, `subjects`; additional keys=`additionalProperties`, `required` |
+| `ObserverConformanceCoverage` | type="object"; fields=`advertised`, `complete`, `exercised`; additional keys=`additionalProperties`, `required` |
+| `ObserverContractConformance` | type="object"; fields=`contract_id`, `contract_sha256`, `evidence`, `execution`, `facts_schema_sha256`, `facts_semantics_conformance_vectors_sha256`, `facts_semantics_id`, `facts_semantics_sha256`, `maximum_result_bytes`, `options_schema_sha256`, `preferred_subject_batch_size`, `semantic_acceptance`; additional keys=`additionalProperties`, `required` |
+| `ObserverContractConformanceEvidence` | type="object"; fields=`observation`, `request`; additional keys=`additionalProperties`, `required` |
+| `ObserverContractSupport` | type="object"; fields=`contract_id`, `contract_sha256`, `facts_schema`, `facts_semantics`, `maximum_result_bytes`, `options_schema`, `preferred_subject_batch_size`; additional keys=`additionalProperties`, `required` |
+| `ObserverDescriptor` | type="object"; fields=`contracts`, `descriptor_sha256`, `image_digest`, `implementation_id`, `implementation_version`, `protocol`, `source_revision`; additional keys=`additionalProperties`, `required` |
+| `ObserverImplementation` | type="object"; fields=`descriptor_sha256`, `id`, `protocol`, `source_revision`, `version`; additional keys=`additionalProperties`, `required` |
+| `ObserverSemanticAcceptance` | type="object"; fields=`kind`, `profile_id`, `profile_sha256`, `vectors`; additional keys=`additionalProperties`, `required` |
+| `ObserverSemanticVectorEvidence` | type="object"; fields=`accepted_vector_ids`, `rejected_vector_ids`, `vectors`; additional keys=`additionalProperties`, `required` |
+| `SemanticFactsConformanceVector` | type="object"; fields=`accepted`, `facts`, `id`, `options`, `subjects`; additional keys=`additionalProperties`, `required` |
+| `SemanticFactsConformanceVectors` | type="object"; fields=`format`, `profile_id`, `vectors`; additional keys=`additionalProperties`, `required` |
+| `SemanticValidationProfile` | type="object"; fields=`conformance_vectors_sha256`, `id`, `profile_sha256`, `rules`; additional keys=`additionalProperties`, `required` |
 
-## Extent decisions
+### Progression, limits, and lifecycle
 
-| Dimension | Unit | Policy | Bounds/reason |
+| Dimension | Unit | Policy | Bounds or reason |
 |---|---|---|---|
 | cardinality | items | `operational_policy` | maximum=None, reason=no-declared-semantic-maximum |
 | cardinality | entries | `operational_policy` | maximum=None, reason=no-declared-semantic-maximum |
@@ -64,47 +89,29 @@
 | length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
 | cardinality | items | `operational_policy` | maximum=None, reason=no-declared-semantic-maximum |
 
-## Contract summary
+## Governing policies
 
-- `title`: ObserverConformanceResult
-- `type`: object
+- `compatibility/components/v1`
+- `extent-rule/no-semantic-maximum/v1`
+- `extent-rule/schema-bound/v1`
 
-### Fields
+## Evidence
 
-| Field | Required | Shape | Description |
-|---|---:|---|---|
-| `contracts` | yes | array |  |
-| `coverage` | yes | #/$defs/ObserverConformanceCoverage |  |
-| `descriptor` | yes | #/$defs/ObserverDescriptor |  |
-| `format` | no | string |  |
-| `status` | yes | string |  |
+### Qualification
 
-### Definitions
+- `make dist-smoke`
+- `make build`
 
-| Definition | Shape |
-|---|---|
-| `ArtifactSubject` | object |
-| `CollectionId` | integer |
-| `CollectionRootRef` | object |
-| `JsonSchemaDocument` | object |
-| `JsonValue` | object (0 fields) |
-| `ObservationFailure` | object |
-| `ObservationInapplicable` | object |
-| `ObservationRequest` | object |
-| `ObservationResult` | object |
-| `ObserverConformanceCoverage` | object |
-| `ObserverContractConformance` | object |
-| `ObserverContractConformanceEvidence` | object |
-| `ObserverContractSupport` | object |
-| `ObserverDescriptor` | object |
-| `ObserverImplementation` | object |
-| `ObserverSemanticAcceptance` | object |
-| `ObserverSemanticVectorEvidence` | object |
-| `SemanticFactsConformanceVector` | object |
-| `SemanticFactsConformanceVectors` | object |
-| `SemanticValidationProfile` | object |
+### Executable sources
 
-## Complete owned contract
+- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
+- `protocol:generated:stove0-observer` — `reference/stove0/packages/observer-support/src/stove0_observer_support/schemas.py::observer_schema_bundle`
+
+### Machine authority
+
+- `/external_contract/protocol_schemas/generated:stove0-observer/schemas/ObserverConformanceResult`
+
+### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 

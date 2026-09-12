@@ -4,6 +4,8 @@
 
 <!-- contract-element: http:stove0:schemas-branchsetevaluation:7f019b5895 -->
 
+Entirely derived view over a plan and ordinary child/join results.
+
 | Audit field | Value |
 |---|---|
 | Authority | `stove0` |
@@ -12,34 +14,38 @@
 | Contract elements | 1 |
 | Extent decisions | 11 |
 
-## Machine authority
+## External contract
 
-- `/external_contract/http_openapi/stove0/components/schemas/BranchSetEvaluation`
+- `title`: BranchSetEvaluation
+- `description`: Entirely derived view over a plan and ordinary child/join results.
+- `type`: object
 
-## Effective policies
+### Fields
 
-- `compatibility/http-api/v1`
-- `extent-rule/no-semantic-maximum/v1`
-- `extent-rule/schema-bound/v1`
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| `branch_set_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| `branch_set_succeeded` | yes | type="boolean" |  |
+| `canceled_branch_ids` | yes | type="array"; items=(type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$") |  |
+| `coordination_complete_for_retirement` | yes | type="boolean" |  |
+| `coordination_settlement` | yes | anyOf=#/components/schemas/CoordinationSettlement \| type="null" |  |
+| `failed_branch_ids` | yes | type="array"; items=(type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$") |  |
+| `inapplicable_branch_ids` | yes | type="array"; items=(type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$") |  |
+| `interrupted_branch_ids` | yes | type="array"; items=(type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$") |  |
+| `join_ready` | yes | type="boolean" |  |
+| `join_settlement` | yes | anyOf=#/components/schemas/JoinSettlement \| type="null" |  |
+| `join_state` | yes | type="string"; enum=["not-declared","waiting","ready","succeeded","failed","inapplicable","interrupted","canceled"] |  |
+| `resolved_join_plan` | yes | anyOf=#/components/schemas/JoinPlan \| type="null" |  |
+| `retirement_requested` | yes | type="boolean" |  |
+| `succeeded_branches` | yes | type="array"; items=(#/components/schemas/BranchSettlement) |  |
+| `succeeded_coordinations` | yes | type="array"; items=(#/components/schemas/CoordinationSettlement) |  |
+| `succeeded_effects` | yes | type="array"; items=(#/components/schemas/BranchEffectSettlement) |  |
+| `unsettled_branch_ids` | yes | type="array"; items=(type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$") |  |
+| `unsettled_work_ids` | yes | type="array"; items=(type="string"; pattern="^[0-9a-f]{64}$") |  |
 
-## Executable sources and proof
+### Progression, limits, and lifecycle
 
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `openapi:stove0` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
-- Proof: `make operation-qualification`
-- Proof: `make compose-smoke`
-
-## Referenced contract dossiers
-
-- [schemas: BranchEffectSettlement](schemas-brancheffectsettlement.md)
-- [schemas: BranchSettlement](schemas-branchsettlement.md)
-- [schemas: CoordinationSettlement](schemas-coordinationsettlement.md)
-- [schemas: JoinPlan](schemas-joinplan.md)
-- [schemas: JoinSettlement](schemas-joinsettlement.md)
-
-## Extent decisions
-
-| Dimension | Unit | Policy | Bounds/reason |
+| Dimension | Unit | Policy | Bounds or reason |
 |---|---|---|---|
 | length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
 | cardinality | items | `operational_policy` | maximum=None, reason=no-declared-semantic-maximum |
@@ -53,36 +59,39 @@
 | length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
 | cardinality | items | `operational_policy` | maximum=None, reason=no-declared-semantic-maximum |
 
-## Contract summary
+## Maintained corroboration
 
-- `title`: BranchSetEvaluation
-- `description`: Entirely derived view over a plan and ordinary child/join results.
-- `type`: object
+### Referenced contract dossiers
 
-### Fields
+- [schemas: BranchEffectSettlement](schemas-brancheffectsettlement.md)
+- [schemas: BranchSettlement](schemas-branchsettlement.md)
+- [schemas: CoordinationSettlement](schemas-coordinationsettlement.md)
+- [schemas: JoinPlan](schemas-joinplan.md)
+- [schemas: JoinSettlement](schemas-joinsettlement.md)
 
-| Field | Required | Shape | Description |
-|---|---:|---|---|
-| `branch_set_sha256` | yes | string |  |
-| `branch_set_succeeded` | yes | boolean |  |
-| `canceled_branch_ids` | yes | array |  |
-| `coordination_complete_for_retirement` | yes | boolean |  |
-| `coordination_settlement` | yes | object (1 fields) |  |
-| `failed_branch_ids` | yes | array |  |
-| `inapplicable_branch_ids` | yes | array |  |
-| `interrupted_branch_ids` | yes | array |  |
-| `join_ready` | yes | boolean |  |
-| `join_settlement` | yes | object (1 fields) |  |
-| `join_state` | yes | string |  |
-| `resolved_join_plan` | yes | object (1 fields) |  |
-| `retirement_requested` | yes | boolean |  |
-| `succeeded_branches` | yes | array |  |
-| `succeeded_coordinations` | yes | array |  |
-| `succeeded_effects` | yes | array |  |
-| `unsettled_branch_ids` | yes | array |  |
-| `unsettled_work_ids` | yes | array |  |
+## Governing policies
 
-## Complete owned contract
+- `compatibility/http-api/v1`
+- `extent-rule/no-semantic-maximum/v1`
+- `extent-rule/schema-bound/v1`
+
+## Evidence
+
+### Qualification
+
+- `make operation-qualification`
+- `make compose-smoke`
+
+### Executable sources
+
+- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
+- `openapi:stove0` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+
+### Machine authority
+
+- `/external_contract/http_openapi/stove0/components/schemas/BranchSetEvaluation`
+
+### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 

@@ -4,6 +4,8 @@
 
 <!-- contract-element: http:riverhog:schemas-archivecopyout:f690c2df76 -->
 
+Exact externally visible contract owned by this semantic dossier.
+
 | Audit field | Value |
 |---|---|
 | Authority | `riverhog` |
@@ -12,32 +14,39 @@
 | Contract elements | 1 |
 | Extent decisions | 0 |
 
-## Machine authority
+## External contract
 
-- `/external_contract/http_openapi/riverhog/components/schemas/ArchiveCopyOut`
+- `title`: ArchiveCopyOut
 
-## Effective policies
+## Maintained corroboration
 
-- `compatibility/http-api/v1`
-
-## Executable sources and proof
-
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `openapi:riverhog` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
-- Proof: `make operation-qualification`
-- Proof: `make compose-smoke`
-
-## Referenced contract dossiers
+### Referenced contract dossiers
 
 - [schemas: FailedArchiveCopyOut](schemas-failedarchivecopyout.md)
 - [schemas: IncompleteArchiveCopyOut](schemas-incompletearchivecopyout.md)
 - [schemas: UploadedArchiveCopyOut](schemas-uploadedarchivecopyout.md)
 
-## Contract summary
+## Governing policies
 
-- `title`: ArchiveCopyOut
+- `compatibility/http-api/v1`
 
-## Complete owned contract
+## Evidence
+
+### Qualification
+
+- `make operation-qualification`
+- `make compose-smoke`
+
+### Executable sources
+
+- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
+- `openapi:riverhog` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+
+### Machine authority
+
+- `/external_contract/http_openapi/riverhog/components/schemas/ArchiveCopyOut`
+
+### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 

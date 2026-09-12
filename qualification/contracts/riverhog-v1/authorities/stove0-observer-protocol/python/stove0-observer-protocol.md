@@ -4,6 +4,8 @@
 
 <!-- contract-element: python:stove0-observer-protocol:stove0-observer-protocol:5ae8e13a79 -->
 
+Exact externally visible contract owned by this semantic dossier.
+
 | Audit field | Value |
 |---|---|
 | Authority | `stove0-observer-protocol` |
@@ -12,30 +14,35 @@
 | Contract elements | 1 |
 | Extent decisions | 0 |
 
-## Machine authority
-
-- `/external_contract/python/17`
-
-## Effective policies
-
-- `compatibility/python-api/v1`
-
-## Executable sources and proof
-
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `python:stove0-observer-protocol` — `reference/stove0/packages/observer-protocol/src/stove0_observer_protocol/__init__.py::<module>`
-- Proof: `make dist-smoke`
-- Proof: `make build`
-
-## Contract summary
+## External contract
 
 | Field | Shape |
 |---|---|
 | `distribution` | "stove0-observer-protocol" |
-| `exports` | object (43 fields) |
+| `exports` | additional keys=`ARTIFACT_ID_PATTERN`, `ArtifactSubject`, `CollectionRootRef`, `FactsSemanticValidator`, `JSON_SCHEMA_ONLY_SEMANTIC_PROFILE`, `JsonSchemaDocument`, `OBSERVATION_REQUEST_FORMAT`, `OBSERVATION_RESULT_FORMAT`, `OBSERVER_HTTP_OPERATIONS`, `OBSERVER_PROTOCOL`, `ObservationEvidence`, `ObservationFailure`, `ObservationInapplicable`, `ObservationInvocation`, `ObservationRequest`, `ObservationRequestPayload`, `ObservationResult`, `ObservationResultPayload`, `ObservationState`, `ObserverContract`, `ObserverContractPayload`, `ObserverContractSupport`, `ObserverDescriptor`, `ObserverDescriptorPayload`, `ObserverImplementation`, `ObserverRuntimeAuthority`, `RIVERHOG_CAPABILITY_TRANSPORT`, `SHA256_PATTERN`, `SemanticFactsConformanceVector`, `SemanticFactsConformanceVectors`, `SemanticId`, `SemanticValidationProfile`, `SemanticValidationProfilePayload`, `SemanticValidatorBinding`, `SemanticValidatorProvider`, `SemanticValidatorRegistry`, `Sha256`, `accept_observation_result`, `canonical_json_bytes`, `canonical_json_sha256`, `require_semantic_validators`, `validate_observation_request`, `validate_observation_result_structure` |
 | `module` | "stove0_observer_protocol" |
 
-## Complete owned contract
+## Governing policies
+
+- `compatibility/python-api/v1`
+
+## Evidence
+
+### Qualification
+
+- `make dist-smoke`
+- `make build`
+
+### Executable sources
+
+- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
+- `python:stove0-observer-protocol` — `reference/stove0/packages/observer-protocol/src/stove0_observer_protocol/__init__.py::<module>`
+
+### Machine authority
+
+- `/external_contract/python/17`
+
+### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 

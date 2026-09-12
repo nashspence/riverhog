@@ -4,6 +4,8 @@
 
 <!-- contract-element: operation:riverhog:operation-parity-stream-collection-proven-322348bee0:8c445edec2 -->
 
+Exact externally visible contract owned by this semantic dossier.
+
 | Audit field | Value |
 |---|---|
 | Authority | `riverhog` |
@@ -12,28 +14,7 @@
 | Contract elements | 1 |
 | Extent decisions | 0 |
 
-## Machine authority
-
-- `/external_contract/operations/79`
-
-## Effective policies
-
-- `compatibility/cli/v1`
-- `compatibility/components/v1`
-- `compatibility/http-api/v1`
-
-## Executable sources and proof
-
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `operations:operation-matrix` — `scripts/operation_qualification.py::operation_matrix`
-- Proof: `make operation-qualification`
-
-## Related interface records
-
-- [GET /v1/collections/{collection_id}/provenance/journals/{journal_id}](../http/get-v1-collections-collection-id-provenance-journals-journal-id.md)
-- [piggity collection provenance export](../../piggity/cli/piggity-collection-provenance-export.md)
-
-## Contract summary
+## External contract
 
 | Concern | Contract |
 |---|---|
@@ -48,7 +29,35 @@
 | `read_collection` | None |
 | `response_authority` | stream-or-empty |
 
-## Complete owned contract
+## Maintained corroboration
+
+### Related interface records
+
+- [GET /v1/collections/{collection_id}/provenance/journals/{journal_id}](../http/get-v1-collections-collection-id-provenance-journals-journal-id.md)
+- [piggity collection provenance export](../../piggity/cli/piggity-collection-provenance-export.md)
+
+## Governing policies
+
+- `compatibility/cli/v1`
+- `compatibility/components/v1`
+- `compatibility/http-api/v1`
+
+## Evidence
+
+### Qualification
+
+- `make operation-qualification`
+
+### Executable sources
+
+- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
+- `operations:operation-matrix` — `scripts/operation_qualification.py::operation_matrix`
+
+### Machine authority
+
+- `/external_contract/operations/79`
+
+### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 

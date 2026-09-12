@@ -4,6 +4,8 @@
 
 <!-- contract-element: http:riverhog:schemas-collectionuploadlistitemout:93ae8d69d7 -->
 
+Exact externally visible contract owned by this semantic dossier.
+
 | Audit field | Value |
 |---|---|
 | Authority | `riverhog` |
@@ -12,43 +14,7 @@
 | Contract elements | 1 |
 | Extent decisions | 6 |
 
-## Machine authority
-
-- `/external_contract/http_openapi/riverhog/components/schemas/CollectionUploadListItemOut`
-
-## Effective policies
-
-- `compatibility/http-api/v1`
-- `extent-rule/no-semantic-maximum/v1`
-- `extent-rule/schema-bound/v1`
-
-## Executable sources and proof
-
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `openapi:riverhog` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
-- Proof: `make operation-qualification`
-- Proof: `make compose-smoke`
-
-## Referenced contract dossiers
-
-- [schemas: ArchiveStoreName](schemas-archivestorename.md)
-- [schemas: CollectionDescription](schemas-collectiondescription.md)
-- [schemas: CollectionId](schemas-collectionid.md)
-- [schemas: CompleteCollectionUploadCustodyOut](schemas-completecollectionuploadcustodyout.md)
-- [schemas: PendingCollectionUploadCustodyOut](schemas-pendingcollectionuploadcustodyout.md)
-
-## Extent decisions
-
-| Dimension | Unit | Policy | Bounds/reason |
-|---|---|---|---|
-| value | schema-value | `operational_policy` | maximum=None, reason=no-declared-semantic-maximum |
-| length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
-| value | schema-value | `contract_max` | maximum=9007199254740991, minimum=0, reason=schema-maximum |
-| value | schema-value | `operational_policy` | maximum=None, reason=no-declared-semantic-maximum |
-| value | schema-value | `contract_max` | maximum=9007199254740991, minimum=1, reason=schema-maximum |
-| length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
-
-## Contract summary
+## External contract
 
 - `title`: CollectionUploadListItemOut
 - `type`: object
@@ -58,28 +24,71 @@
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | `archive_store` | yes | #/components/schemas/ArchiveStoreName |  |
-| `bytes` | yes | integer |  |
+| `bytes` | yes | type="integer"; minimum=0 |  |
 | `collection_id` | yes | #/components/schemas/CollectionId |  |
-| `created_at` | yes | object (2 fields) |  |
-| `custody` | yes | object (3 fields) |  |
-| `custody_mode` | yes | string |  |
-| `description` | yes | object (1 fields) |  |
-| `description_identity` | yes | object (2 fields) |  |
-| `description_publication` | yes | string |  |
-| `description_revision` | yes | object (2 fields) |  |
-| `encryption_format` | yes | string |  |
-| `files` | yes | integer |  |
-| `ingest_source` | yes | object (2 fields) |  |
-| `orphaned_at` | yes | object (2 fields) |  |
-| `passphrase_id` | yes | string |  |
-| `state` | yes | string |  |
-| `tag_count` | yes | integer |  |
-| `tag_publication` | yes | string |  |
-| `tag_revision` | no | object (2 fields) |  |
-| `tag_set_identity` | no | object (2 fields) |  |
-| `upload_state_expires_at` | yes | object (2 fields) |  |
+| `created_at` | yes | anyOf=type="string" \| type="null" |  |
+| `custody` | yes | oneOf=#/components/schemas/PendingCollectionUploadCustodyOut \| #/components/schemas/CompleteCollectionUploadCustodyOut; additional keys=`discriminator` |  |
+| `custody_mode` | yes | type="string"; enum=["producer-retained","custody-transfer"] |  |
+| `description` | yes | anyOf=#/components/schemas/CollectionDescription \| type="null" |  |
+| `description_identity` | yes | anyOf=type="string"; pattern="^[0-9a-f]{64}$" \| type="null" |  |
+| `description_publication` | yes | type="string"; enum=["pending","not_required","current"] |  |
+| `description_revision` | yes | anyOf=type="integer"; minimum=0; maximum=9007199254740991 \| type="null" |  |
+| `encryption_format` | yes | type="string" |  |
+| `files` | yes | type="integer"; minimum=0 |  |
+| `ingest_source` | yes | anyOf=type="string" \| type="null" |  |
+| `orphaned_at` | yes | anyOf=type="string" \| type="null" |  |
+| `passphrase_id` | yes | type="string"; pattern="^[A-Za-z0-9_-]{16,128}$" |  |
+| `state` | yes | type="string"; enum=["open","closing","uploading","finalizing","orphaned","discarding"] |  |
+| `tag_count` | yes | type="integer"; minimum=0 |  |
+| `tag_publication` | yes | type="string"; enum=["pending","current"] |  |
+| `tag_revision` | no | anyOf=type="integer"; minimum=1; maximum=9007199254740991 \| type="null" |  |
+| `tag_set_identity` | no | anyOf=type="string"; pattern="^[0-9a-f]{64}$" \| type="null" |  |
+| `upload_state_expires_at` | yes | anyOf=type="string" \| type="null" |  |
 
-## Complete owned contract
+### Progression, limits, and lifecycle
+
+| Dimension | Unit | Policy | Bounds or reason |
+|---|---|---|---|
+| value | schema-value | `operational_policy` | maximum=None, reason=no-declared-semantic-maximum |
+| length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
+| value | schema-value | `contract_max` | maximum=9007199254740991, minimum=0, reason=schema-maximum |
+| value | schema-value | `operational_policy` | maximum=None, reason=no-declared-semantic-maximum |
+| value | schema-value | `contract_max` | maximum=9007199254740991, minimum=1, reason=schema-maximum |
+| length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
+
+## Maintained corroboration
+
+### Referenced contract dossiers
+
+- [schemas: ArchiveStoreName](schemas-archivestorename.md)
+- [schemas: CollectionDescription](schemas-collectiondescription.md)
+- [schemas: CollectionId](schemas-collectionid.md)
+- [schemas: CompleteCollectionUploadCustodyOut](schemas-completecollectionuploadcustodyout.md)
+- [schemas: PendingCollectionUploadCustodyOut](schemas-pendingcollectionuploadcustodyout.md)
+
+## Governing policies
+
+- `compatibility/http-api/v1`
+- `extent-rule/no-semantic-maximum/v1`
+- `extent-rule/schema-bound/v1`
+
+## Evidence
+
+### Qualification
+
+- `make operation-qualification`
+- `make compose-smoke`
+
+### Executable sources
+
+- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
+- `openapi:riverhog` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+
+### Machine authority
+
+- `/external_contract/http_openapi/riverhog/components/schemas/CollectionUploadListItemOut`
+
+### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 

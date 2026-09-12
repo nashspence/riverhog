@@ -4,6 +4,8 @@
 
 <!-- contract-element: python:gogurt-core:gogurt-core:a7d0d1dfa2 -->
 
+Exact externally visible contract owned by this semantic dossier.
+
 | Audit field | Value |
 |---|---|
 | Authority | `gogurt-core` |
@@ -12,30 +14,35 @@
 | Contract elements | 1 |
 | Extent decisions | 0 |
 
-## Machine authority
-
-- `/external_contract/python/13`
-
-## Effective policies
-
-- `compatibility/python-api/v1`
-
-## Executable sources and proof
-
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `python:gogurt-core` — `reference/gogurt/packages/core/src/gogurt_core/__init__.py::<module>`
-- Proof: `make dist-smoke`
-- Proof: `make build`
-
-## Contract summary
+## External contract
 
 | Field | Shape |
 |---|---|
 | `distribution` | "gogurt-core" |
-| `exports` | object (32 fields) |
+| `exports` | additional keys=`DEFAULT_GOGURT_CONFIG_FILENAME`, `GOGURT_EMOJI`, `GOGURT_MOUNTED_VOLUME_PROVIDER_BINDING_FORMAT`, `GOGURT_MOUNTED_VOLUME_PROVIDER_ENTRY_POINT_GROUP`, `GOGURT_PROVIDER_REFERENCE_FORMAT`, `GOGURT_ROUTES_SCHEMA`, `GOGURT_ROUTE_MARKER_FORMAT`, `GOGURT_ROUTE_PATTERN`, `GogurtAction`, `GogurtProviderKind`, `GogurtProviderReference`, `GogurtRouteMarker`, `MAX_GOGURT_INTERVAL_SECONDS`, `MAX_GOGURT_MARKER_IDENTITY_CHARS`, `MIN_GOGURT_INTERVAL_SECONDS`, `MountDiscovery`, `MountedMarkerObservation`, `MountedVolumeAccess`, `MountedVolumeProvider`, `MountedVolumeProviderBinding`, `PathInput`, `default_gogurt_config_file`, `execute_gogurt_action`, `iter_new_mounts`, `load_gogurt_actions`, `plan_gogurt_action`, `plan_gogurt_marker`, `revalidate_gogurt_action`, `route_for_gogurt_marker`, `validate_gogurt_action_executables`, `validate_gogurt_interval`, `write_gogurt_marker` |
 | `module` | "gogurt_core" |
 
-## Complete owned contract
+## Governing policies
+
+- `compatibility/python-api/v1`
+
+## Evidence
+
+### Qualification
+
+- `make dist-smoke`
+- `make build`
+
+### Executable sources
+
+- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
+- `python:gogurt-core` — `reference/gogurt/packages/core/src/gogurt_core/__init__.py::<module>`
+
+### Machine authority
+
+- `/external_contract/python/13`
+
+### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 

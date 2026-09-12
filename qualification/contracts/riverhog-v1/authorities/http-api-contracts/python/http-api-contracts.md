@@ -4,6 +4,8 @@
 
 <!-- contract-element: python:http-api-contracts:http-api-contracts:282e40cb09 -->
 
+Exact externally visible contract owned by this semantic dossier.
+
 | Audit field | Value |
 |---|---|
 | Authority | `http-api-contracts` |
@@ -12,30 +14,35 @@
 | Contract elements | 1 |
 | Extent decisions | 0 |
 
-## Machine authority
-
-- `/external_contract/python/0`
-
-## Effective policies
-
-- `compatibility/python-api/v1`
-
-## Executable sources and proof
-
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `python:http-api-contracts` — `packages/http-api-contracts/src/http_api_contracts/__init__.py::<module>`
-- Proof: `make dist-smoke`
-- Proof: `make build`
-
-## Contract summary
+## External contract
 
 | Field | Shape |
 |---|---|
 | `distribution` | "http-api-contracts" |
-| `exports` | object (54 fields) |
+| `exports` | additional keys=`BrowsePageToken`, `BrowseQuery`, `BrowseScalar`, `BrowseTokenCodec`, `BrowseTokenError`, `CANONICAL_VISIBLE_TEXT_PATTERN`, `CanonicalVisibleText`, `DEFAULT_HTTP_ERROR_AUTHORITY`, `ERROR_STATUS_BY_CODE`, `ErrorBody`, `ErrorResponse`, `FRAMED_BODY_DECLARATION_LENGTH_BYTES`, `FRAMED_BODY_FORMAT`, `FRAMED_BODY_MAXIMUM_DECLARATION_BYTES`, `FRAMED_BODY_MEDIA_TYPE`, `HealthResponse`, `HttpBodyKind`, `HttpErrorContract`, `HttpOperationContract`, `HttpOperationErrorAuthority`, `HttpPathParameterContract`, `HttpResponseHeaderContract`, `JSON_SEQUENCE_MEDIA_TYPE`, `MAX_BROWSE_QUERY_CHARACTERS`, `MAX_BROWSE_TOKEN_BYTES`, `OperationInterface`, `PUBLIC_ERROR_CODES`, `QuotedSha256Identity`, `Sha256Identity`, `apply_openapi_error_contract`, `canonical_json_bytes`, `cursor_feed_operation`, `error_code_for_status`, `error_payload`, `error_responses`, `exact_authority_page_operation`, `exact_set_page_operation`, `http_operation_for_request`, `http_operation_inventory`, `inline_type_schema`, `iter_json_sequence_records`, `mutable_browse_operation`, `operation_interface`, `operation_openapi`, `parse_declared_error_payload`, `parse_error_payload`, `parse_operation_error_payload`, `parse_quoted_sha256_identity`, `quote_sha256_identity`, `safe_http_base_url`, `status_for_error_code`, `structural_model_catalog`, `validate_browse_query`, `validate_sha256_identity` |
 | `module` | "http_api_contracts" |
 
-## Complete owned contract
+## Governing policies
+
+- `compatibility/python-api/v1`
+
+## Evidence
+
+### Qualification
+
+- `make dist-smoke`
+- `make build`
+
+### Executable sources
+
+- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
+- `python:http-api-contracts` — `packages/http-api-contracts/src/http_api_contracts/__init__.py::<module>`
+
+### Machine authority
+
+- `/external_contract/python/0`
+
+### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 

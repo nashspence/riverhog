@@ -4,6 +4,8 @@
 
 <!-- contract-element: http:riverhog:schemas-archivecopyretirementplanout:3f3e4bb826 -->
 
+Exact externally visible contract owned by this semantic dossier.
+
 | Audit field | Value |
 |---|---|
 | Authority | `riverhog` |
@@ -12,40 +14,7 @@
 | Contract elements | 1 |
 | Extent decisions | 4 |
 
-## Machine authority
-
-- `/external_contract/http_openapi/riverhog/components/schemas/ArchiveCopyRetirementPlanOut`
-
-## Effective policies
-
-- `compatibility/http-api/v1`
-- `extent-rule/no-semantic-maximum/v1`
-- `extent-rule/schema-bound/v1`
-
-## Executable sources and proof
-
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `openapi:riverhog` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
-- Proof: `make operation-qualification`
-- Proof: `make compose-smoke`
-
-## Referenced contract dossiers
-
-- [schemas: ArchiveCopyRetirementRetainedOut](schemas-archivecopyretirementretainedout.md)
-- [schemas: ArchiveCopyRetirementTargetOut](schemas-archivecopyretirementtargetout.md)
-- [schemas: ArchiveStoreName](schemas-archivestorename.md)
-- [schemas: CollectionId](schemas-collectionid.md)
-
-## Extent decisions
-
-| Dimension | Unit | Policy | Bounds/reason |
-|---|---|---|---|
-| cardinality | items | `operational_policy` | maximum=None, reason=no-declared-semantic-maximum |
-| cardinality | items | `contract_max` | maximum=0, reason=state-conditioned-empty-set |
-| cardinality | items | `operational_policy` | maximum=None, reason=no-declared-semantic-maximum |
-| cardinality | items | `operational_policy` | maximum=None, reason=no-declared-semantic-maximum |
-
-## Contract summary
+## External contract
 
 - `title`: ArchiveCopyRetirementPlanOut
 - `type`: object
@@ -54,20 +23,60 @@
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| `billing_note` | yes | string |  |
-| `blockers` | yes | array |  |
-| `challenge` | yes | object (2 fields) |  |
+| `billing_note` | yes | type="string" |  |
+| `blockers` | yes | type="array"; items=(type="string") |  |
+| `challenge` | yes | anyOf=type="string" \| type="null" |  |
 | `collection_id` | yes | #/components/schemas/CollectionId |  |
-| `expires_at` | yes | string |  |
-| `retained_copies` | yes | array |  |
-| `retired_retrieval_job_count` | yes | integer |  |
-| `status` | yes | string |  |
+| `expires_at` | yes | type="string" |  |
+| `retained_copies` | yes | type="array"; items=(#/components/schemas/ArchiveCopyRetirementRetainedOut) |  |
+| `retired_retrieval_job_count` | yes | type="integer" |  |
+| `status` | yes | type="string"; enum=["ready","blocked","retiring"] |  |
 | `store` | yes | #/components/schemas/ArchiveStoreName |  |
 | `target_copy` | yes | #/components/schemas/ArchiveCopyRetirementTargetOut |  |
-| `verification_note` | yes | string |  |
-| `warning` | yes | string |  |
+| `verification_note` | yes | type="string" |  |
+| `warning` | yes | type="string" |  |
 
-## Complete owned contract
+### Progression, limits, and lifecycle
+
+| Dimension | Unit | Policy | Bounds or reason |
+|---|---|---|---|
+| cardinality | items | `operational_policy` | maximum=None, reason=no-declared-semantic-maximum |
+| cardinality | items | `contract_max` | maximum=0, reason=state-conditioned-empty-set |
+| cardinality | items | `operational_policy` | maximum=None, reason=no-declared-semantic-maximum |
+| cardinality | items | `operational_policy` | maximum=None, reason=no-declared-semantic-maximum |
+
+## Maintained corroboration
+
+### Referenced contract dossiers
+
+- [schemas: ArchiveCopyRetirementRetainedOut](schemas-archivecopyretirementretainedout.md)
+- [schemas: ArchiveCopyRetirementTargetOut](schemas-archivecopyretirementtargetout.md)
+- [schemas: ArchiveStoreName](schemas-archivestorename.md)
+- [schemas: CollectionId](schemas-collectionid.md)
+
+## Governing policies
+
+- `compatibility/http-api/v1`
+- `extent-rule/no-semantic-maximum/v1`
+- `extent-rule/schema-bound/v1`
+
+## Evidence
+
+### Qualification
+
+- `make operation-qualification`
+- `make compose-smoke`
+
+### Executable sources
+
+- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
+- `openapi:riverhog` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+
+### Machine authority
+
+- `/external_contract/http_openapi/riverhog/components/schemas/ArchiveCopyRetirementPlanOut`
+
+### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 

@@ -4,6 +4,8 @@
 
 <!-- contract-element: configuration:stove0-recipes:stove0-recipes-configuration:d7b3e8d372 -->
 
+Exact externally visible contract owned by this semantic dossier.
+
 | Audit field | Value |
 |---|---|
 | Authority | `stove0-recipes` |
@@ -12,26 +14,45 @@
 | Contract elements | 1 |
 | Extent decisions | 39 |
 
-## Machine authority
+## External contract
 
-- `/external_contract/configuration_documents/stove0-recipes`
+- `title`: RecipeCatalog
+- `type`: object
 
-## Effective policies
+### Fields
 
-- `compatibility/configuration/v1`
-- `extent-rule/configuration-composition/v1`
-- `extent-rule/schema-bound/v1`
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| `format` | no | type="string"; const="stove0-recipes/v1" |  |
+| `operations` | yes | type="array"; items=(#/$defs/OperationContract) |  |
+| `recipes` | yes | type="array"; items=(#/$defs/RecipeDefinition) |  |
 
-## Executable sources and proof
+### Definitions
 
-- `configuration:stove0-recipes` — `reference/stove0/packages/recipe-config/src/stove0_recipe_config/models.py::RecipeCatalog`
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- Proof: `make unit`
-- Proof: `make compose-smoke`
+| Definition | Shape |
+|---|---|
+| `ArtifactAssociation` | type="object"; fields=`associated_roles`, `path_identity`, `primary_role`; additional keys=`additionalProperties`, `required` |
+| `ArtifactFactBinding` | type="object"; fields=`artifact_id_pointer`, `records_pointer`; additional keys=`additionalProperties`, `required` |
+| `ArtifactRule` | type="object"; fields=`glob`, `media_type`, `role`; additional keys=`additionalProperties` |
+| `FactPredicate` | type="object"; fields=`artifact_facts`, `artifact_roles`, `observation_contract_id`, `operator`, `pointer`, `value`; additional keys=`additionalProperties`, `required` |
+| `InputArtifactContract` | type="object"; fields=`allowed_dispositions`, `maximum`, `minimum`, `role`; additional keys=`additionalProperties`, `required` |
+| `JsonSchemaDocument` | type="object"; fields=`dialect`, `format_policy`, `id`, `schema`, `sha256`; additional keys=`additionalProperties`, `required` |
+| `JsonValue` | empty object |
+| `ObserverUse` | type="object"; fields=`artifact_rules`, `contract_id`, `contract_sha256`, `maximum_result_bytes`, `options`, `registration_id`, `retrieval_policy`, `timeout_seconds`; additional keys=`additionalProperties`, `required` |
+| `OperationContract` | type="object"; fields=`contract_sha256`, `effect_receipt_schema`, `id`, `inputs`, `intent_schema`, `intent_semantics`, `outputs`, `result_kind`, `source_retirement_permitted`; additional keys=`additionalProperties`, `required` |
+| `OperationProjection` | type="object"; fields=`destination`, `destination_pointer`, `source`, `source_pointer`; additional keys=`additionalProperties`, `required` |
+| `OutputArtifactContract` | type="object"; fields=`derived_from_roles`, `maximum`, `minimum`, `role`; additional keys=`additionalProperties`, `required` |
+| `RecipeCoordinationRoute` | type="object"; fields=`artifact_rules`, `associated_roles`, `id`, `intent`, `kind`, `primary_role`, `projections`, `recipe`, `when`; additional keys=`additionalProperties`, `required` |
+| `RecipeDefinition` | type="object"; fields=`allow_derived_inputs`, `artifact_associations`, `event_input_closure`, `id`, `join`, `observers`, `retirement_grace_seconds`, `revision`, `routes`, `source_retirement_policy`, `unmatched_artifact_disposition`; additional keys=`additionalProperties`, `required` |
+| `RecipeJoin` | type="object"; fields=`id`, `input_retrieval_policy`, `intent`, `members`, `operation_id`, `projections`, `target_options`, `target_registration_id`; additional keys=`additionalProperties`, `required` |
+| `RecipeJoinMember` | type="object"; fields=`branch_id`, `output_roles`; additional keys=`additionalProperties`, `required` |
+| `RecipeRef` | type="object"; fields=`id`, `revision`, `sha256`; additional keys=`additionalProperties`, `required` |
+| `RecipeRoute` | type="object"; fields=`artifact_rules`, `associated_roles`, `id`, `input_retrieval_policy`, `intent`, `kind`, `operation_id`, `primary_role`, `projections`, `target_options`, `target_registration_id`, `when`; additional keys=`additionalProperties`, `required` |
+| `SemanticValidationProfile` | type="object"; fields=`conformance_vectors_sha256`, `id`, `profile_sha256`, `rules`; additional keys=`additionalProperties`, `required` |
 
-## Extent decisions
+### Progression, limits, and lifecycle
 
-| Dimension | Unit | Policy | Bounds/reason |
+| Dimension | Unit | Policy | Bounds or reason |
 |---|---|---|---|
 | cardinality | items | `operational_policy` | maximum=None, reason=validated-deployment-composition |
 | cardinality | items | `operational_policy` | maximum=None, reason=validated-deployment-composition |
@@ -73,43 +94,29 @@
 | cardinality | items | `operational_policy` | maximum=None, reason=validated-deployment-composition |
 | cardinality | items | `operational_policy` | maximum=None, reason=validated-deployment-composition |
 
-## Contract summary
+## Governing policies
 
-- `title`: RecipeCatalog
-- `type`: object
+- `compatibility/configuration/v1`
+- `extent-rule/configuration-composition/v1`
+- `extent-rule/schema-bound/v1`
 
-### Fields
+## Evidence
 
-| Field | Required | Shape | Description |
-|---|---:|---|---|
-| `format` | no | string |  |
-| `operations` | yes | array |  |
-| `recipes` | yes | array |  |
+### Qualification
 
-### Definitions
+- `make unit`
+- `make compose-smoke`
 
-| Definition | Shape |
-|---|---|
-| `ArtifactAssociation` | object |
-| `ArtifactFactBinding` | object |
-| `ArtifactRule` | object |
-| `FactPredicate` | object |
-| `InputArtifactContract` | object |
-| `JsonSchemaDocument` | object |
-| `JsonValue` | object (0 fields) |
-| `ObserverUse` | object |
-| `OperationContract` | object |
-| `OperationProjection` | object |
-| `OutputArtifactContract` | object |
-| `RecipeCoordinationRoute` | object |
-| `RecipeDefinition` | object |
-| `RecipeJoin` | object |
-| `RecipeJoinMember` | object |
-| `RecipeRef` | object |
-| `RecipeRoute` | object |
-| `SemanticValidationProfile` | object |
+### Executable sources
 
-## Complete owned contract
+- `configuration:stove0-recipes` — `reference/stove0/packages/recipe-config/src/stove0_recipe_config/models.py::RecipeCatalog`
+- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
+
+### Machine authority
+
+- `/external_contract/configuration_documents/stove0-recipes`
+
+### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 

@@ -4,6 +4,8 @@
 
 <!-- contract-element: configuration:riverhog-ftp-adapter:riverhog-ftp-adapter-configuration:e46af825b1 -->
 
+Exact externally visible contract owned by this semantic dossier.
+
 | Audit field | Value |
 |---|---|
 | Authority | `riverhog-ftp-adapter` |
@@ -12,26 +14,40 @@
 | Contract elements | 1 |
 | Extent decisions | 15 |
 
-## Machine authority
+## External contract
 
-- `/external_contract/configuration_documents/riverhog-ftp-adapter`
+- `title`: FtpAdapterConfig
+- `type`: object
 
-## Effective policies
+### Fields
 
-- `compatibility/configuration/v1`
-- `extent-rule/configuration-composition/v1`
-- `extent-rule/schema-bound/v1`
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| `allow_insecure_http` | no | type="boolean" |  |
+| `api_token` | yes | type="string"; minLength=1; maxLength=4096 |  |
+| `claim_attempt_budget` | no | type="integer"; minimum=2 |  |
+| `completion_failure_attempt_budget` | no | type="integer"; minimum=1 |  |
+| `completion_failure_capacity` | no | type="integer"; minimum=1 |  |
+| `discovery_entry_budget` | no | type="integer"; minimum=1 |  |
+| `host_id` | yes | type="string"; minLength=1; maxLength=255 |  |
+| `pending_claim_capacity` | no | type="integer"; minimum=1 |  |
+| `poll_seconds` | no | type="number"; minimum=0.1; maximum=3600 |  |
+| `provenance_observer` | no | anyOf=type="string"; minLength=1; maxLength=255 \| type="null" |  |
+| `riverhog_base_url` | yes | type="string"; minLength=1; maxLength=2048 |  |
+| `riverhog_token` | yes | type="string"; minLength=1; maxLength=4096 |  |
+| `sources` | yes | type="array"; minItems=1; items=(#/$defs/SourceConfig) |  |
 
-## Executable sources and proof
+### Definitions
 
-- `configuration:riverhog-ftp-adapter` — `reference/riverhog/ingress/ftp/src/riverhog_ftp_adapter/config.py::FtpAdapterConfig`
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- Proof: `make unit`
-- Proof: `make compose-smoke`
+| Definition | Shape |
+|---|---|
+| `CollectionDescription` | type="string"; minLength=1; maxLength=32768; additional keys=`x-riverhog-encoded-bytes-max`, `x-riverhog-extent`, `x-unicode-normalization` |
+| `CollectionTag` | type="string"; minLength=1; maxLength=65536; additional keys=`x-riverhog-encoded-bytes-max`, `x-riverhog-extent`, `x-unicode-normalization` |
+| `SourceConfig` | type="object"; fields=`archive_store`, `close_mode`, `description`, `id`, `ingest_source`, `max_bytes`, `max_files`, `provenance`, `provenance_omission_reason`, `root`, `tags`; additional keys=`additionalProperties`, `required` |
 
-## Extent decisions
+### Progression, limits, and lifecycle
 
-| Dimension | Unit | Policy | Bounds/reason |
+| Dimension | Unit | Policy | Bounds or reason |
 |---|---|---|---|
 | encoded-size | bytes | `contract_max` | maximum=32768, reason=bounded-human-authored-catalog-description |
 | length | characters | `contract_max` | maximum=32768, minimum=1, reason=schema-maximum |
@@ -49,38 +65,29 @@
 | length | characters | `contract_max` | maximum=4096, minimum=1, reason=schema-maximum |
 | cardinality | items | `operational_policy` | maximum=None, reason=validated-deployment-composition |
 
-## Contract summary
+## Governing policies
 
-- `title`: FtpAdapterConfig
-- `type`: object
+- `compatibility/configuration/v1`
+- `extent-rule/configuration-composition/v1`
+- `extent-rule/schema-bound/v1`
 
-### Fields
+## Evidence
 
-| Field | Required | Shape | Description |
-|---|---:|---|---|
-| `allow_insecure_http` | no | boolean |  |
-| `api_token` | yes | string |  |
-| `claim_attempt_budget` | no | integer |  |
-| `completion_failure_attempt_budget` | no | integer |  |
-| `completion_failure_capacity` | no | integer |  |
-| `discovery_entry_budget` | no | integer |  |
-| `host_id` | yes | string |  |
-| `pending_claim_capacity` | no | integer |  |
-| `poll_seconds` | no | number |  |
-| `provenance_observer` | no | object (3 fields) |  |
-| `riverhog_base_url` | yes | string |  |
-| `riverhog_token` | yes | string |  |
-| `sources` | yes | array |  |
+### Qualification
 
-### Definitions
+- `make unit`
+- `make compose-smoke`
 
-| Definition | Shape |
-|---|---|
-| `CollectionDescription` | string |
-| `CollectionTag` | string |
-| `SourceConfig` | object |
+### Executable sources
 
-## Complete owned contract
+- `configuration:riverhog-ftp-adapter` — `reference/riverhog/ingress/ftp/src/riverhog_ftp_adapter/config.py::FtpAdapterConfig`
+- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
+
+### Machine authority
+
+- `/external_contract/configuration_documents/riverhog-ftp-adapter`
+
+### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 

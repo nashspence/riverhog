@@ -4,6 +4,8 @@
 
 <!-- contract-element: configuration-environment:configuration:stove0-operational-state-retention-seconds:6d2f2e0943 -->
 
+Exact externally visible contract owned by this semantic dossier.
+
 | Audit field | Value |
 |---|---|
 | Authority | `configuration` |
@@ -12,36 +14,41 @@
 | Contract elements | 1 |
 | Extent decisions | 1 |
 
-## Machine authority
+## External contract
 
-- `/external_contract/configuration_environment/108`
+| Field | Shape |
+|---|---|
+| `consumers` | ["stove0-server"] |
+| `name` | "STOVE0_OPERATIONAL_STATE_RETENTION_SECONDS" |
 
-## Effective policies
+### Progression, limits, and lifecycle
+
+| Dimension | Unit | Policy | Bounds or reason |
+|---|---|---|---|
+| value | configured-value | `operational_policy` | maximum=None, reason=operator-configured-capacity |
+
+## Governing policies
 
 - `compatibility/configuration/v1`
 - `extent-rule/configured-capacity/v1`
 
-## Executable sources and proof
+## Evidence
+
+### Qualification
+
+- `make unit`
+- `make compose-smoke`
+
+### Executable sources
 
 - `configuration-environment:STOVE0_OPERATIONAL_STATE_RETENTION_SECONDS` — `configuration-environment:STOVE0_OPERATIONAL_STATE_RETENTION_SECONDS`
 - `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- Proof: `make unit`
-- Proof: `make compose-smoke`
 
-## Extent decisions
+### Machine authority
 
-| Dimension | Unit | Policy | Bounds/reason |
-|---|---|---|---|
-| value | configured-value | `operational_policy` | maximum=None, reason=operator-configured-capacity |
+- `/external_contract/configuration_environment/108`
 
-## Contract summary
-
-| Field | Shape |
-|---|---|
-| `consumers` | array (1 items) |
-| `name` | "STOVE0_OPERATIONAL_STATE_RETENTION_SECONDS" |
-
-## Complete owned contract
+### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 

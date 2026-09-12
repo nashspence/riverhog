@@ -4,6 +4,8 @@
 
 <!-- contract-element: release:release:release-artifacts:c408be4985 -->
 
+Exact externally visible contract owned by this semantic dossier.
+
 | Audit field | Value |
 |---|---|
 | Authority | `release` |
@@ -12,33 +14,38 @@
 | Contract elements | 1 |
 | Extent decisions | 0 |
 
-## Machine authority
-
-- `/external_contract/release/artifacts`
-
-## Effective policies
-
-- `compatibility/components/v1`
-
-## Executable sources and proof
-
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `release:release.toml` — `release.toml`
-- Proof: `make release-check`
-- Proof: `make build`
-
-## Contract summary
+## External contract
 
 | Field | Shape |
 |---|---|
 | `contract` | "riverhog-v1-contract.tar.gz" |
 | `documentation` | "riverhog-docs-v{version}.tar.gz" |
-| `evidence` | array (8 items) |
-| `notices` | object (5 fields) |
-| `python_formats` | array (2 items) |
+| `evidence` | ["riverhog-v1-contract.tar.gz","install-manifest.json","release-manifest.json","SHA256SUMS","SHA256SUMS.minisig","release.spdx.json","release.intoto.jsonl","THIRD_PARTY_NOTICES.md"] |
+| `notices` | format="tar.gz"; additional keys=`basis`, `directory`, `required_for`, `schema` |
+| `python_formats` | ["wheel","sdist"] |
 | `source` | "riverhog-source-v{version}.tar.gz" |
 
-## Complete owned contract
+## Governing policies
+
+- `compatibility/components/v1`
+
+## Evidence
+
+### Qualification
+
+- `make release-check`
+- `make build`
+
+### Executable sources
+
+- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
+- `release:release.toml` — `release.toml`
+
+### Machine authority
+
+- `/external_contract/release/artifacts`
+
+### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 

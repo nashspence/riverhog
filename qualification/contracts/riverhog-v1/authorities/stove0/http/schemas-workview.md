@@ -4,6 +4,8 @@
 
 <!-- contract-element: http:stove0:schemas-workview:754d420c65 -->
 
+Operator projection of mutable work; never an execution identity.
+
 | Audit field | Value |
 |---|---|
 | Authority | `stove0` |
@@ -12,24 +14,56 @@
 | Contract elements | 1 |
 | Extent decisions | 6 |
 
-## Machine authority
+## External contract
 
-- `/external_contract/http_openapi/stove0/components/schemas/WorkView`
+- `title`: WorkView
+- `description`: Operator projection of mutable work; never an execution identity.
+- `type`: object
 
-## Effective policies
+### Fields
 
-- `compatibility/http-api/v1`
-- `extent-rule/no-semantic-maximum/v1`
-- `extent-rule/schema-bound/v1`
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| `abandon_outcome` | no | anyOf=type="string"; enum=["inapplicable","failed","canceled"] \| type="null" |  |
+| `branch_set_plan` | no | anyOf=#/components/schemas/BranchSetPlan \| type="null" |  |
+| `claim` | no | anyOf=#/components/schemas/WorkClaimView \| type="null" |  |
+| `controller_evidence` | no | anyOf=#/components/schemas/ControllerEvidence \| type="null" |  |
+| `coordination_cancel_requested` | no | type="boolean" |  |
+| `coordination_settlement` | no | anyOf=#/components/schemas/CoordinationSettlement \| type="null" |  |
+| `expected_target_plan_sha256` | no | anyOf=type="string"; pattern="^[0-9a-f]{64}$" \| type="null" |  |
+| `failure` | no | anyOf=#/components/schemas/WorkFailureView \| type="null" |  |
+| `format` | no | type="string"; const="stove0-work-view/v1" |  |
+| `inapplicable` | no | anyOf=#/components/schemas/WorkInapplicableView \| type="null" |  |
+| `join_plan` | no | anyOf=#/components/schemas/JoinPlan \| type="null" |  |
+| `observation_requests` | no | type="array"; items=(#/components/schemas/ObservationRequest) |  |
+| `observation_results` | no | type="array"; items=(#/components/schemas/ObservationResult) |  |
+| `output` | no | anyOf=#/components/schemas/OutputCollectionRef \| type="null" |  |
+| `phase` | yes | type="string"; enum=["eligible","claimed","observing","planning","target_preflight","queued","executing","output_finalizing","verifying","settled","retirement_pending","coordinating","abandon_pending","complete","inapplicable","failed","canceled"] |  |
+| `preview_acceptance` | no | anyOf=#/components/schemas/PreviewAcceptanceView \| type="null" |  |
+| `retirement_remaining` | no | type="array"; items=(type="integer") |  |
+| `revision` | yes | type="integer"; minimum=1 |  |
+| `target_plan` | no | anyOf=oneOf=#/components/schemas/TransformPlan \| #/components/schemas/EffectPlan; additional keys=`discriminator` \| type="null" |  |
+| `target_request` | no | anyOf=#/components/schemas/AcceptedTargetJob \| type="null" |  |
+| `target_settlement` | no | anyOf=#/components/schemas/TargetSettlementAuthority \| type="null" |  |
+| `target_status` | no | anyOf=#/components/schemas/TargetJobStatus \| type="null" |  |
+| `work` | yes | #/components/schemas/WorkIdentity |  |
+| `work_id` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| `workflow_plan` | no | anyOf=#/components/schemas/WorkflowPlan \| type="null" |  |
 
-## Executable sources and proof
+### Progression, limits, and lifecycle
 
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `openapi:stove0` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
-- Proof: `make operation-qualification`
-- Proof: `make compose-smoke`
+| Dimension | Unit | Policy | Bounds or reason |
+|---|---|---|---|
+| length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
+| cardinality | items | `operational_policy` | maximum=None, reason=no-declared-semantic-maximum |
+| cardinality | items | `operational_policy` | maximum=None, reason=no-declared-semantic-maximum |
+| value | schema-value | `operational_policy` | maximum=None, reason=no-declared-semantic-maximum |
+| cardinality | items | `operational_policy` | maximum=None, reason=no-declared-semantic-maximum |
+| length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
 
-## Referenced contract dossiers
+## Maintained corroboration
+
+### Referenced contract dossiers
 
 - [schemas: AcceptedTargetJob](schemas-acceptedtargetjob.md)
 - [schemas: BranchSetPlan](schemas-branchsetplan.md)
@@ -50,54 +84,29 @@
 - [schemas: WorkInapplicableView](schemas-workinapplicableview.md)
 - [schemas: WorkflowPlan](schemas-workflowplan.md)
 
-## Extent decisions
+## Governing policies
 
-| Dimension | Unit | Policy | Bounds/reason |
-|---|---|---|---|
-| length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
-| cardinality | items | `operational_policy` | maximum=None, reason=no-declared-semantic-maximum |
-| cardinality | items | `operational_policy` | maximum=None, reason=no-declared-semantic-maximum |
-| value | schema-value | `operational_policy` | maximum=None, reason=no-declared-semantic-maximum |
-| cardinality | items | `operational_policy` | maximum=None, reason=no-declared-semantic-maximum |
-| length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
+- `compatibility/http-api/v1`
+- `extent-rule/no-semantic-maximum/v1`
+- `extent-rule/schema-bound/v1`
 
-## Contract summary
+## Evidence
 
-- `title`: WorkView
-- `description`: Operator projection of mutable work; never an execution identity.
-- `type`: object
+### Qualification
 
-### Fields
+- `make operation-qualification`
+- `make compose-smoke`
 
-| Field | Required | Shape | Description |
-|---|---:|---|---|
-| `abandon_outcome` | no | object (2 fields) |  |
-| `branch_set_plan` | no | object (1 fields) |  |
-| `claim` | no | object (1 fields) |  |
-| `controller_evidence` | no | object (1 fields) |  |
-| `coordination_cancel_requested` | no | boolean |  |
-| `coordination_settlement` | no | object (1 fields) |  |
-| `expected_target_plan_sha256` | no | object (2 fields) |  |
-| `failure` | no | object (1 fields) |  |
-| `format` | no | string |  |
-| `inapplicable` | no | object (1 fields) |  |
-| `join_plan` | no | object (1 fields) |  |
-| `observation_requests` | no | array |  |
-| `observation_results` | no | array |  |
-| `output` | no | object (1 fields) |  |
-| `phase` | yes | string |  |
-| `preview_acceptance` | no | object (1 fields) |  |
-| `retirement_remaining` | no | array |  |
-| `revision` | yes | integer |  |
-| `target_plan` | no | object (2 fields) |  |
-| `target_request` | no | object (1 fields) |  |
-| `target_settlement` | no | object (1 fields) |  |
-| `target_status` | no | object (1 fields) |  |
-| `work` | yes | #/components/schemas/WorkIdentity |  |
-| `work_id` | yes | string |  |
-| `workflow_plan` | no | object (1 fields) |  |
+### Executable sources
 
-## Complete owned contract
+- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
+- `openapi:stove0` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+
+### Machine authority
+
+- `/external_contract/http_openapi/stove0/components/schemas/WorkView`
+
+### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 

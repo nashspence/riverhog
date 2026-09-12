@@ -4,6 +4,8 @@
 
 <!-- contract-element: http:stove0:schemas-recipecoordinationroute:fc76361359 -->
 
+One exact subrecipe selected as a branch-bound coordinator.
+
 | Audit field | Value |
 |---|---|
 | Authority | `stove0` |
@@ -12,41 +14,7 @@
 | Contract elements | 1 |
 | Extent decisions | 5 |
 
-## Machine authority
-
-- `/external_contract/http_openapi/stove0/components/schemas/RecipeCoordinationRoute`
-
-## Effective policies
-
-- `compatibility/http-api/v1`
-- `extent-rule/no-semantic-maximum/v1`
-
-## Executable sources and proof
-
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `openapi:stove0` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
-- Proof: `make operation-qualification`
-- Proof: `make compose-smoke`
-
-## Referenced contract dossiers
-
-- [schemas: ArtifactRule](schemas-artifactrule.md)
-- [schemas: FactPredicate](schemas-factpredicate.md)
-- [schemas: JsonValue](schemas-jsonvalue.md)
-- [schemas: OperationProjection](schemas-operationprojection.md)
-- [schemas: RecipeRef](schemas-reciperef.md)
-
-## Extent decisions
-
-| Dimension | Unit | Policy | Bounds/reason |
-|---|---|---|---|
-| cardinality | items | `operational_policy` | maximum=None, reason=no-declared-semantic-maximum |
-| cardinality | items | `operational_policy` | maximum=None, reason=no-declared-semantic-maximum |
-| cardinality | entries | `operational_policy` | maximum=None, reason=no-declared-semantic-maximum |
-| cardinality | items | `operational_policy` | maximum=None, reason=no-declared-semantic-maximum |
-| cardinality | items | `operational_policy` | maximum=None, reason=no-declared-semantic-maximum |
-
-## Contract summary
+## External contract
 
 - `title`: RecipeCoordinationRoute
 - `description`: One exact subrecipe selected as a branch-bound coordinator.
@@ -56,17 +24,58 @@
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| `artifact_rules` | no | array |  |
-| `associated_roles` | no | array |  |
-| `id` | yes | string |  |
-| `intent` | no | object |  |
-| `kind` | no | string |  |
-| `primary_role` | no | object (2 fields) |  |
-| `projections` | no | array |  |
+| `artifact_rules` | no | type="array"; items=(#/components/schemas/ArtifactRule) |  |
+| `associated_roles` | no | type="array"; items=(type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$") |  |
+| `id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
+| `intent` | no | type="object"; additional keys=`additionalProperties` |  |
+| `kind` | no | type="string"; const="coordination" |  |
+| `primary_role` | no | anyOf=type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" \| type="null" |  |
+| `projections` | no | type="array"; items=(#/components/schemas/OperationProjection) |  |
 | `recipe` | yes | #/components/schemas/RecipeRef |  |
-| `when` | no | array |  |
+| `when` | no | type="array"; items=(#/components/schemas/FactPredicate) |  |
 
-## Complete owned contract
+### Progression, limits, and lifecycle
+
+| Dimension | Unit | Policy | Bounds or reason |
+|---|---|---|---|
+| cardinality | items | `operational_policy` | maximum=None, reason=no-declared-semantic-maximum |
+| cardinality | items | `operational_policy` | maximum=None, reason=no-declared-semantic-maximum |
+| cardinality | entries | `operational_policy` | maximum=None, reason=no-declared-semantic-maximum |
+| cardinality | items | `operational_policy` | maximum=None, reason=no-declared-semantic-maximum |
+| cardinality | items | `operational_policy` | maximum=None, reason=no-declared-semantic-maximum |
+
+## Maintained corroboration
+
+### Referenced contract dossiers
+
+- [schemas: ArtifactRule](schemas-artifactrule.md)
+- [schemas: FactPredicate](schemas-factpredicate.md)
+- [schemas: JsonValue](schemas-jsonvalue.md)
+- [schemas: OperationProjection](schemas-operationprojection.md)
+- [schemas: RecipeRef](schemas-reciperef.md)
+
+## Governing policies
+
+- `compatibility/http-api/v1`
+- `extent-rule/no-semantic-maximum/v1`
+
+## Evidence
+
+### Qualification
+
+- `make operation-qualification`
+- `make compose-smoke`
+
+### Executable sources
+
+- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
+- `openapi:stove0` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+
+### Machine authority
+
+- `/external_contract/http_openapi/stove0/components/schemas/RecipeCoordinationRoute`
+
+### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 

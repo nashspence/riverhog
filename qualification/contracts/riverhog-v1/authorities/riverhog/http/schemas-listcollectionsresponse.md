@@ -4,6 +4,8 @@
 
 <!-- contract-element: http:riverhog:schemas-listcollectionsresponse:cbb9817340 -->
 
+Exact externally visible contract owned by this semantic dossier.
+
 | Audit field | Value |
 |---|---|
 | Authority | `riverhog` |
@@ -12,40 +14,7 @@
 | Contract elements | 1 |
 | Extent decisions | 3 |
 
-## Machine authority
-
-- `/external_contract/http_openapi/riverhog/components/schemas/ListCollectionsResponse`
-
-## Effective policies
-
-- `compatibility/http-api/v1`
-- `extent-rule/no-semantic-maximum/v1`
-- `extent-rule/schema-bound/v1`
-
-## Executable sources and proof
-
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `openapi:riverhog` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
-- Proof: `make operation-qualification`
-- Proof: `make compose-smoke`
-
-## Referenced contract dossiers
-
-- [schemas: BrowsePageToken](schemas-browsepagetoken.md)
-- [schemas: CollectionSort](schemas-collectionsort.md)
-- [schemas: CollectionSummaryOut](schemas-collectionsummaryout.md)
-- [schemas: CollectionTag](schemas-collectiontag.md)
-- [schemas: SortOrder](schemas-sortorder.md)
-
-## Extent decisions
-
-| Dimension | Unit | Policy | Bounds/reason |
-|---|---|---|---|
-| cardinality | items | `operational_policy` | maximum=None, reason=no-declared-semantic-maximum |
-| value | schema-value | `contract_max` | maximum=100, minimum=1, reason=schema-maximum |
-| cardinality | items | `contract_max` | maximum=100, reason=bounded-exact-tag-selector-batch |
-
-## Contract summary
+## External contract
 
 - `title`: ListCollectionsResponse
 - `type`: object
@@ -54,17 +23,57 @@
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| `collections` | yes | array |  |
-| `encryption_format` | yes | object (2 fields) |  |
-| `next_page_token` | yes | object (1 fields) |  |
+| `collections` | yes | type="array"; items=(#/components/schemas/CollectionSummaryOut) |  |
+| `encryption_format` | yes | anyOf=type="string" \| type="null" |  |
+| `next_page_token` | yes | anyOf=#/components/schemas/BrowsePageToken \| type="null" |  |
 | `order` | yes | #/components/schemas/SortOrder |  |
-| `page_size` | yes | integer |  |
-| `passphrase_id` | yes | object (2 fields) |  |
-| `query` | yes | object (2 fields) |  |
+| `page_size` | yes | type="integer"; minimum=1; maximum=100 |  |
+| `passphrase_id` | yes | anyOf=type="string" \| type="null" |  |
+| `query` | yes | anyOf=type="string" \| type="null" |  |
 | `sort` | yes | #/components/schemas/CollectionSort |  |
-| `tags` | yes | array |  |
+| `tags` | yes | type="array"; maxItems=100; items=(#/components/schemas/CollectionTag); additional keys=`x-riverhog-extent` |  |
 
-## Complete owned contract
+### Progression, limits, and lifecycle
+
+| Dimension | Unit | Policy | Bounds or reason |
+|---|---|---|---|
+| cardinality | items | `operational_policy` | maximum=None, reason=no-declared-semantic-maximum |
+| value | schema-value | `contract_max` | maximum=100, minimum=1, reason=schema-maximum |
+| cardinality | items | `contract_max` | maximum=100, reason=bounded-exact-tag-selector-batch |
+
+## Maintained corroboration
+
+### Referenced contract dossiers
+
+- [schemas: BrowsePageToken](schemas-browsepagetoken.md)
+- [schemas: CollectionSort](schemas-collectionsort.md)
+- [schemas: CollectionSummaryOut](schemas-collectionsummaryout.md)
+- [schemas: CollectionTag](schemas-collectiontag.md)
+- [schemas: SortOrder](schemas-sortorder.md)
+
+## Governing policies
+
+- `compatibility/http-api/v1`
+- `extent-rule/no-semantic-maximum/v1`
+- `extent-rule/schema-bound/v1`
+
+## Evidence
+
+### Qualification
+
+- `make operation-qualification`
+- `make compose-smoke`
+
+### Executable sources
+
+- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
+- `openapi:riverhog` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+
+### Machine authority
+
+- `/external_contract/http_openapi/riverhog/components/schemas/ListCollectionsResponse`
+
+### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 

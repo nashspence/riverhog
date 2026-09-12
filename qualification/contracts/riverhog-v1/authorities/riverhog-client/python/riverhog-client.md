@@ -4,6 +4,8 @@
 
 <!-- contract-element: python:riverhog-client:riverhog-client:c7633d0c7c -->
 
+Exact externally visible contract owned by this semantic dossier.
+
 | Audit field | Value |
 |---|---|
 | Authority | `riverhog-client` |
@@ -12,30 +14,35 @@
 | Contract elements | 1 |
 | Extent decisions | 0 |
 
-## Machine authority
-
-- `/external_contract/python/5`
-
-## Effective policies
-
-- `compatibility/python-api/v1`
-
-## Executable sources and proof
-
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `python:riverhog-client:riverhog_client` — `packages/riverhog-client/src/riverhog_client/__init__.py::<module>`
-- Proof: `make dist-smoke`
-- Proof: `make build`
-
-## Contract summary
+## External contract
 
 | Field | Shape |
 |---|---|
 | `distribution` | "riverhog-client" |
-| `exports` | object (46 fields) |
+| `exports` | additional keys=`ApiClient`, `ApplicationPermission`, `ApplicationResource`, `BadRequest`, `COLLECTION_UPLOAD_REGISTRATION_BATCH_FILES`, `CatalogReplica`, `CatalogSyncApi`, `CatalogSyncCursorExpired`, `CatalogSyncHistoryExpired`, `CatalogSyncSourceChanged`, `CatalogSyncViewChanged`, `CollectionProducer`, `CollectionUploadIdempotencyKey`, `Conflict`, `DownloadAllowanceExceeded`, `Forbidden`, `HashMismatch`, `IncrementalCollectionProducer`, `InvalidPath`, `InvalidRange`, `InvalidState`, `NotFound`, `ProducedCollection`, `ProducerArtifactCustody`, `ProducerArtifactIdentity`, `ProducerFile`, `ProducerInput`, `ProducerStream`, `ProvenanceMode`, `RangeReader`, `RawSourceHash`, `RestorePolicy`, `RetrievalDownload`, `RetrievalPlanIdempotencyKey`, `RiverhogError`, `ServiceUnavailable`, `Unauthorized`, `configured_download_concurrency`, `configured_download_window`, `configured_upload_concurrency`, `configured_upload_window`, `create_or_resume_with_initial_collection_tags`, `download_retrieval_files`, `hash_raw_source_chunks`, `put_collection_upload_unit`, `upload_collection_units` |
 | `module` | "riverhog_client" |
 
-## Complete owned contract
+## Governing policies
+
+- `compatibility/python-api/v1`
+
+## Evidence
+
+### Qualification
+
+- `make dist-smoke`
+- `make build`
+
+### Executable sources
+
+- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
+- `python:riverhog-client:riverhog_client` — `packages/riverhog-client/src/riverhog_client/__init__.py::<module>`
+
+### Machine authority
+
+- `/external_contract/python/5`
+
+### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 

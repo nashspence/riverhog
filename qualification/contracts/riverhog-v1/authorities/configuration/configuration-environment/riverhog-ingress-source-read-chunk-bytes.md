@@ -4,6 +4,8 @@
 
 <!-- contract-element: configuration-environment:configuration:riverhog-ingress-source-read-chunk-bytes:51b1621e81 -->
 
+Exact externally visible contract owned by this semantic dossier.
+
 | Audit field | Value |
 |---|---|
 | Authority | `configuration` |
@@ -12,36 +14,41 @@
 | Contract elements | 1 |
 | Extent decisions | 1 |
 
-## Machine authority
+## External contract
 
-- `/external_contract/configuration_environment/50`
+| Field | Shape |
+|---|---|
+| `consumers` | ["riverhog-server"] |
+| `name` | "RIVERHOG_INGRESS_SOURCE_READ_CHUNK_BYTES" |
 
-## Effective policies
+### Progression, limits, and lifecycle
+
+| Dimension | Unit | Policy | Bounds or reason |
+|---|---|---|---|
+| value | configured-value | `operational_policy` | maximum=None, reason=operator-configured-capacity |
+
+## Governing policies
 
 - `compatibility/configuration/v1`
 - `extent-rule/configured-capacity/v1`
 
-## Executable sources and proof
+## Evidence
+
+### Qualification
+
+- `make unit`
+- `make compose-smoke`
+
+### Executable sources
 
 - `configuration-environment:RIVERHOG_INGRESS_SOURCE_READ_CHUNK_BYTES` — `configuration-environment:RIVERHOG_INGRESS_SOURCE_READ_CHUNK_BYTES`
 - `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- Proof: `make unit`
-- Proof: `make compose-smoke`
 
-## Extent decisions
+### Machine authority
 
-| Dimension | Unit | Policy | Bounds/reason |
-|---|---|---|---|
-| value | configured-value | `operational_policy` | maximum=None, reason=operator-configured-capacity |
+- `/external_contract/configuration_environment/50`
 
-## Contract summary
-
-| Field | Shape |
-|---|---|
-| `consumers` | array (1 items) |
-| `name` | "RIVERHOG_INGRESS_SOURCE_READ_CHUNK_BYTES" |
-
-## Complete owned contract
+### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 

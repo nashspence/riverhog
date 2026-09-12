@@ -4,6 +4,8 @@
 
 <!-- contract-element: cli:stove0:stove0-scheduler-status:f193724712 -->
 
+Exact externally visible contract owned by this semantic dossier.
+
 | Audit field | Value |
 |---|---|
 | Authority | `stove0` |
@@ -12,31 +14,38 @@
 | Contract elements | 1 |
 | Extent decisions | 0 |
 
-## Machine authority
+## External contract
+
+- Parser name: `status`
+
+## Maintained corroboration
+
+### Related interface records
+
+- [Operation parity: scheduler_status](../operation/operation-parity-scheduler-status.md)
+
+## Governing policies
+
+- `compatibility/cli/v1`
+
+## Evidence
+
+### Qualification
+
+- `make dist-smoke`
+- `make operation-qualification`
+
+### Executable sources
+
+- `cli:stove0` — `reference/stove0/application/client/src/stove0_cli/main.py::<module>`
+- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
+
+### Machine authority
 
 - `/external_contract/cli/stove0/commands/scheduler/commands/status/name`
 - `/external_contract/cli/stove0/commands/scheduler/commands/status/parameters`
 
-## Effective policies
-
-- `compatibility/cli/v1`
-
-## Executable sources and proof
-
-- `cli:stove0` — `reference/stove0/application/client/src/stove0_cli/main.py::<module>`
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- Proof: `make dist-smoke`
-- Proof: `make operation-qualification`
-
-## Related interface records
-
-- [Operation parity: scheduler_status](../operation/operation-parity-scheduler-status.md)
-
-## Contract summary
-
-- Parser name: `status`
-
-## Complete owned contract
+### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 

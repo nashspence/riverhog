@@ -4,6 +4,8 @@
 
 <!-- contract-element: protocol:stove0-review-sampler-support:generated-stove0-review-sampler-samplerresult:84b113bb2c -->
 
+Exact externally visible contract owned by this semantic dossier.
+
 | Audit field | Value |
 |---|---|
 | Authority | `stove0-review-sampler-support` |
@@ -12,34 +14,7 @@
 | Contract elements | 1 |
 | Extent decisions | 5 |
 
-## Machine authority
-
-- `/external_contract/protocol_schemas/generated:stove0-review-sampler/schemas/SamplerResult`
-
-## Effective policies
-
-- `compatibility/components/v1`
-- `extent-rule/no-semantic-maximum/v1`
-- `extent-rule/schema-bound/v1`
-
-## Executable sources and proof
-
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `protocol:generated:stove0-review-sampler` — `reference/stove0/targets/review/sampler/support/src/stove0_review_sampler_support/schemas.py::sampler_schema_bundle`
-- Proof: `make dist-smoke`
-- Proof: `make build`
-
-## Extent decisions
-
-| Dimension | Unit | Policy | Bounds/reason |
-|---|---|---|---|
-| cardinality | entries | `operational_policy` | maximum=None, reason=no-declared-semantic-maximum |
-| cardinality | items | `operational_policy` | maximum=None, reason=no-declared-semantic-maximum |
-| length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
-| length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
-| length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
-
-## Contract summary
+## External contract
 
 - `title`: SamplerResult
 - `type`: object
@@ -48,26 +23,58 @@
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| `execution_evidence` | no | object |  |
-| `failure` | no | object (2 fields) |  |
-| `format` | no | string |  |
-| `inapplicable` | no | object (2 fields) |  |
-| `outputs` | no | array |  |
-| `request_sha256` | yes | string |  |
-| `result_sha256` | yes | string |  |
-| `sampler_descriptor_sha256` | yes | string |  |
-| `state` | yes | string |  |
+| `execution_evidence` | no | type="object"; additional keys=`additionalProperties` |  |
+| `failure` | no | anyOf=#/$defs/SamplerFailure \| type="null" |  |
+| `format` | no | type="string"; const="stove0-review-sampler-result/v1" |  |
+| `inapplicable` | no | anyOf=#/$defs/SamplerInapplicable \| type="null" |  |
+| `outputs` | no | type="array"; items=(#/$defs/SamplerOutput) |  |
+| `request_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| `result_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| `sampler_descriptor_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| `state` | yes | type="string"; enum=["succeeded","inapplicable","failed","canceled"] |  |
 
 ### Definitions
 
 | Definition | Shape |
 |---|---|
-| `JsonValue` | object (0 fields) |
-| `SamplerFailure` | object |
-| `SamplerInapplicable` | object |
-| `SamplerOutput` | object |
+| `JsonValue` | empty object |
+| `SamplerFailure` | type="object"; fields=`code`, `message`, `retryable`; additional keys=`additionalProperties`, `required` |
+| `SamplerInapplicable` | type="object"; fields=`code`, `message`; additional keys=`additionalProperties`, `required` |
+| `SamplerOutput` | type="object"; fields=`bytes`, `derived_from`, `id`, `media_type`, `path`, `sha256`; additional keys=`additionalProperties`, `required` |
 
-## Complete owned contract
+### Progression, limits, and lifecycle
+
+| Dimension | Unit | Policy | Bounds or reason |
+|---|---|---|---|
+| cardinality | entries | `operational_policy` | maximum=None, reason=no-declared-semantic-maximum |
+| cardinality | items | `operational_policy` | maximum=None, reason=no-declared-semantic-maximum |
+| length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
+| length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
+| length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
+
+## Governing policies
+
+- `compatibility/components/v1`
+- `extent-rule/no-semantic-maximum/v1`
+- `extent-rule/schema-bound/v1`
+
+## Evidence
+
+### Qualification
+
+- `make dist-smoke`
+- `make build`
+
+### Executable sources
+
+- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
+- `protocol:generated:stove0-review-sampler` — `reference/stove0/targets/review/sampler/support/src/stove0_review_sampler_support/schemas.py::sampler_schema_bundle`
+
+### Machine authority
+
+- `/external_contract/protocol_schemas/generated:stove0-review-sampler/schemas/SamplerResult`
+
+### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 

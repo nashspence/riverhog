@@ -4,6 +4,8 @@
 
 <!-- contract-element: cli:stove0-target-conformance:stove0-target-conformance:f16077bd02 -->
 
+Exact externally visible contract owned by this semantic dossier.
+
 | Audit field | Value |
 |---|---|
 | Authority | `stove0-target-conformance` |
@@ -12,23 +14,7 @@
 | Contract elements | 1 |
 | Extent decisions | 0 |
 
-## Machine authority
-
-- `/external_contract/cli/stove0-target-conformance/name`
-- `/external_contract/cli/stove0-target-conformance/parameters`
-
-## Effective policies
-
-- `compatibility/cli/v1`
-
-## Executable sources and proof
-
-- `cli:stove0-target-conformance` — `reference/stove0/packages/target-support/src/stove0_target_support/conformance.py::<module>`
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- Proof: `make dist-smoke`
-- Proof: `make operation-qualification`
-
-## Contract summary
+## External contract
 
 - Parser name: `stove0-target-conformance`
 
@@ -39,7 +25,28 @@
 | `` | _StoreAction | yes |  |  |
 | `` | _AppendAction | no | Path | --case |
 
-## Complete owned contract
+## Governing policies
+
+- `compatibility/cli/v1`
+
+## Evidence
+
+### Qualification
+
+- `make dist-smoke`
+- `make operation-qualification`
+
+### Executable sources
+
+- `cli:stove0-target-conformance` — `reference/stove0/packages/target-support/src/stove0_target_support/conformance.py::<module>`
+- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
+
+### Machine authority
+
+- `/external_contract/cli/stove0-target-conformance/name`
+- `/external_contract/cli/stove0-target-conformance/parameters`
+
+### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 

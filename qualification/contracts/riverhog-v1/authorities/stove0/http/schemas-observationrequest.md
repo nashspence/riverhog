@@ -4,6 +4,8 @@
 
 <!-- contract-element: http:stove0:schemas-observationrequest:a5956711b0 -->
 
+Exact externally visible contract owned by this semantic dossier.
+
 | Audit field | Value |
 |---|---|
 | Authority | `stove0` |
@@ -12,31 +14,31 @@
 | Contract elements | 1 |
 | Extent decisions | 8 |
 
-## Machine authority
+## External contract
 
-- `/external_contract/http_openapi/stove0/components/schemas/ObservationRequest`
+- `title`: ObservationRequest
+- `type`: object
 
-## Effective policies
+### Fields
 
-- `compatibility/http-api/v1`
-- `extent-rule/no-semantic-maximum/v1`
-- `extent-rule/schema-bound/v1`
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| `format` | no | type="string"; const="stove0-observation-request/v1" |  |
+| `maximum_result_bytes` | no | type="integer"; minimum=1; maximum=67108864 |  |
+| `observer_contract_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
+| `observer_contract_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| `observer_descriptor_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| `observer_registration_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9.-]{0,118}[a-z0-9])?$" |  |
+| `options` | no | type="object"; additional keys=`additionalProperties` |  |
+| `request_id` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| `retrieval_policy` | no | type="string"; enum=["available-only","allow"] |  |
+| `subjects` | yes | type="array"; minItems=1; items=(#/components/schemas/ArtifactSubject) |  |
+| `timeout_seconds` | no | type="integer"; minimum=1; maximum=86400 |  |
+| `work_id` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 
-## Executable sources and proof
+### Progression, limits, and lifecycle
 
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `openapi:stove0` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
-- Proof: `make operation-qualification`
-- Proof: `make compose-smoke`
-
-## Referenced contract dossiers
-
-- [schemas: ArtifactSubject](schemas-artifactsubject.md)
-- [schemas: JsonValue](schemas-jsonvalue.md)
-
-## Extent decisions
-
-| Dimension | Unit | Policy | Bounds/reason |
+| Dimension | Unit | Policy | Bounds or reason |
 |---|---|---|---|
 | value | schema-value | `contract_max` | maximum=67108864, minimum=1, reason=schema-maximum |
 | length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
@@ -47,29 +49,36 @@
 | value | schema-value | `contract_max` | maximum=86400, minimum=1, reason=schema-maximum |
 | length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
 
-## Contract summary
+## Maintained corroboration
 
-- `title`: ObservationRequest
-- `type`: object
+### Referenced contract dossiers
 
-### Fields
+- [schemas: ArtifactSubject](schemas-artifactsubject.md)
+- [schemas: JsonValue](schemas-jsonvalue.md)
 
-| Field | Required | Shape | Description |
-|---|---:|---|---|
-| `format` | no | string |  |
-| `maximum_result_bytes` | no | integer |  |
-| `observer_contract_id` | yes | string |  |
-| `observer_contract_sha256` | yes | string |  |
-| `observer_descriptor_sha256` | yes | string |  |
-| `observer_registration_id` | yes | string |  |
-| `options` | no | object |  |
-| `request_id` | yes | string |  |
-| `retrieval_policy` | no | string |  |
-| `subjects` | yes | array |  |
-| `timeout_seconds` | no | integer |  |
-| `work_id` | yes | string |  |
+## Governing policies
 
-## Complete owned contract
+- `compatibility/http-api/v1`
+- `extent-rule/no-semantic-maximum/v1`
+- `extent-rule/schema-bound/v1`
+
+## Evidence
+
+### Qualification
+
+- `make operation-qualification`
+- `make compose-smoke`
+
+### Executable sources
+
+- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
+- `openapi:stove0` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+
+### Machine authority
+
+- `/external_contract/http_openapi/stove0/components/schemas/ObservationRequest`
+
+### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 

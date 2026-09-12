@@ -4,6 +4,8 @@
 
 <!-- contract-element: durable-state:riverhog-provenance-installation:riverhog-provenance-installation-durable-state:2a3ee53941 -->
 
+Exact externally visible contract owned by this semantic dossier.
+
 | Audit field | Value |
 |---|---|
 | Authority | `riverhog-provenance-installation` |
@@ -12,26 +14,31 @@
 | Contract elements | 1 |
 | Extent decisions | 0 |
 
-## Machine authority
-
-- `/external_contract/durable_state/owners/7`
-
-## Effective policies
-
-- `compatibility/components/v1`
-
-## Executable sources and proof
-
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `state:riverhog-provenance-installation` — `state:riverhog-provenance-installation`
-- Proof: `make release-check`
-- Proof: `make database-qualification`
-
-## Contract summary
+## External contract
 
 - `format`: riverhog-provenance-installation-id/v1
 
-## Complete owned contract
+## Governing policies
+
+- `compatibility/components/v1`
+
+## Evidence
+
+### Qualification
+
+- `make release-check`
+- `make database-qualification`
+
+### Executable sources
+
+- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
+- `state:riverhog-provenance-installation` — `state:riverhog-provenance-installation`
+
+### Machine authority
+
+- `/external_contract/durable_state/owners/7`
+
+### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 

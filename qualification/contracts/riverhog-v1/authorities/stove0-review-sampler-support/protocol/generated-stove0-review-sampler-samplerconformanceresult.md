@@ -4,6 +4,8 @@
 
 <!-- contract-element: protocol:stove0-review-sampler-support:generated-stove0-review-sampler-samplerco-d72f170b7c:470b0487a6 -->
 
+Exact externally visible contract owned by this semantic dossier.
+
 | Audit field | Value |
 |---|---|
 | Authority | `stove0-review-sampler-support` |
@@ -12,26 +14,42 @@
 | Contract elements | 1 |
 | Extent decisions | 34 |
 
-## Machine authority
+## External contract
 
-- `/external_contract/protocol_schemas/generated:stove0-review-sampler/schemas/SamplerConformanceResult`
+- `title`: SamplerConformanceResult
+- `type`: object
 
-## Effective policies
+### Fields
 
-- `compatibility/components/v1`
-- `extent-rule/no-semantic-maximum/v1`
-- `extent-rule/schema-bound/v1`
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| `coverage` | yes | #/$defs/SamplerConformanceCoverage |  |
+| `format` | no | type="string"; const="stove0-review-sampler-conformance-result/v1" |  |
+| `request` | no | anyOf=#/$defs/SamplerRequest \| type="null" |  |
+| `sample` | no | anyOf=#/$defs/SamplerResult \| type="null" |  |
+| `sampler` | yes | #/$defs/SamplerDescriptor |  |
+| `sampling` | yes | type="string"; enum=["exercised","not-exercised"] |  |
+| `status` | yes | type="string"; enum=["conformant","inspected"] |  |
 
-## Executable sources and proof
+### Definitions
 
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `protocol:generated:stove0-review-sampler` — `reference/stove0/targets/review/sampler/support/src/stove0_review_sampler_support/schemas.py::sampler_schema_bundle`
-- Proof: `make dist-smoke`
-- Proof: `make build`
+| Definition | Shape |
+|---|---|
+| `JsonSchemaDocument` | type="object"; fields=`dialect`, `format_policy`, `id`, `schema`, `sha256`; additional keys=`additionalProperties`, `required` |
+| `JsonValue` | empty object |
+| `SamplerConformanceCoverage` | type="object"; fields=`advertised`, `complete`, `exercised`; additional keys=`additionalProperties`, `required` |
+| `SamplerDescriptor` | type="object"; fields=`descriptor_sha256`, `image_digest`, `implementation_id`, `implementation_version`, `output_role`, `portable_intent_schema`, `primary_operation_contract_sha256`, `primary_operation_id`, `protocol`, `source_revision`; additional keys=`additionalProperties`, `required` |
+| `SamplerFailure` | type="object"; fields=`code`, `message`, `retryable`; additional keys=`additionalProperties`, `required` |
+| `SamplerInapplicable` | type="object"; fields=`code`, `message`; additional keys=`additionalProperties`, `required` |
+| `SamplerInput` | type="object"; fields=`bytes`, `id`, `media_type`, `path`, `sha256`; additional keys=`additionalProperties`, `required` |
+| `SamplerOutput` | type="object"; fields=`bytes`, `derived_from`, `id`, `media_type`, `path`, `sha256`; additional keys=`additionalProperties`, `required` |
+| `SamplerRequest` | type="object"; fields=`cancellation_path`, `format`, `inputs`, `maximum_output_bytes`, `portable_intent`, `request_sha256`, `sampler_descriptor_sha256`, `timeout_seconds`, `windows`, `workspace_id`; additional keys=`additionalProperties`, `required` |
+| `SamplerResult` | type="object"; fields=`execution_evidence`, `failure`, `format`, `inapplicable`, `outputs`, `request_sha256`, `result_sha256`, `sampler_descriptor_sha256`, `state`; additional keys=`additionalProperties`, `required` |
+| `SamplerWindow` | type="object"; fields=`duration_ms`, `id`, `input_id`, `output_path`, `start_ms`; additional keys=`additionalProperties`, `required` |
 
-## Extent decisions
+### Progression, limits, and lifecycle
 
-| Dimension | Unit | Policy | Bounds/reason |
+| Dimension | Unit | Policy | Bounds or reason |
 |---|---|---|---|
 | cardinality | entries | `operational_policy` | maximum=None, reason=no-declared-semantic-maximum |
 | length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
@@ -68,40 +86,29 @@
 | length | characters | `fixed` | maximum=64, minimum=64, reason=fixed-public-representation |
 | length | characters | `contract_max` | maximum=4096, minimum=1, reason=schema-maximum |
 
-## Contract summary
+## Governing policies
 
-- `title`: SamplerConformanceResult
-- `type`: object
+- `compatibility/components/v1`
+- `extent-rule/no-semantic-maximum/v1`
+- `extent-rule/schema-bound/v1`
 
-### Fields
+## Evidence
 
-| Field | Required | Shape | Description |
-|---|---:|---|---|
-| `coverage` | yes | #/$defs/SamplerConformanceCoverage |  |
-| `format` | no | string |  |
-| `request` | no | object (2 fields) |  |
-| `sample` | no | object (2 fields) |  |
-| `sampler` | yes | #/$defs/SamplerDescriptor |  |
-| `sampling` | yes | string |  |
-| `status` | yes | string |  |
+### Qualification
 
-### Definitions
+- `make dist-smoke`
+- `make build`
 
-| Definition | Shape |
-|---|---|
-| `JsonSchemaDocument` | object |
-| `JsonValue` | object (0 fields) |
-| `SamplerConformanceCoverage` | object |
-| `SamplerDescriptor` | object |
-| `SamplerFailure` | object |
-| `SamplerInapplicable` | object |
-| `SamplerInput` | object |
-| `SamplerOutput` | object |
-| `SamplerRequest` | object |
-| `SamplerResult` | object |
-| `SamplerWindow` | object |
+### Executable sources
 
-## Complete owned contract
+- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
+- `protocol:generated:stove0-review-sampler` — `reference/stove0/targets/review/sampler/support/src/stove0_review_sampler_support/schemas.py::sampler_schema_bundle`
+
+### Machine authority
+
+- `/external_contract/protocol_schemas/generated:stove0-review-sampler/schemas/SamplerConformanceResult`
+
+### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 

@@ -4,6 +4,8 @@
 
 <!-- contract-element: http:stove0:put-v1-target-executions-job-id-source-ed-4cec468e6f:fbe1589e58 -->
 
+Declare Target Execution Source Edge
+
 | Audit field | Value |
 |---|---|
 | Authority | `stove0` |
@@ -12,32 +14,7 @@
 | Contract elements | 1 |
 | Extent decisions | 0 |
 
-## Machine authority
-
-- `/external_contract/http_openapi/stove0/paths/~1v1~1target-executions~1{job_id}~1source-edges~1{output_id}~1{input_id}/put`
-
-## Effective policies
-
-- `compatibility/http-api/v1`
-
-## Executable sources and proof
-
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `openapi:stove0` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
-- Proof: `make operation-qualification`
-- Proof: `make compose-smoke`
-
-## Related interface records
-
-- [Operation parity: declare_target_execution_source_edge](../operation/operation-parity-declare-target-execution-source-edge.md)
-
-## Referenced contract dossiers
-
-- [schemas: ErrorResponse](schemas-errorresponse.md)
-- [schemas: OutputSourceEdge](schemas-outputsourceedge.md)
-- [schemas: TargetCallbackAcknowledgement](schemas-targetcallbackacknowledgement.md)
-
-## Contract summary
+## External contract
 
 - `operationId`: declare_target_execution_source_edge
 - `summary`: Declare Target Execution Source Edge
@@ -46,9 +23,9 @@
 
 | Name | In | Required | Schema |
 |---|---|---:|---|
-| `job_id` | path | yes | string |
-| `output_id` | path | yes | string |
-| `input_id` | path | yes | string |
+| `job_id` | path | yes | type="string" |
+| `output_id` | path | yes | type="string" |
+| `input_id` | path | yes | type="string" |
 
 ### Request body
 
@@ -64,7 +41,39 @@
 | `403` | Forbidden |
 | `500` | Internal Server Error |
 
-## Complete owned contract
+## Maintained corroboration
+
+### Related interface records
+
+- [Operation parity: declare_target_execution_source_edge](../operation/operation-parity-declare-target-execution-source-edge.md)
+
+### Referenced contract dossiers
+
+- [schemas: ErrorResponse](schemas-errorresponse.md)
+- [schemas: OutputSourceEdge](schemas-outputsourceedge.md)
+- [schemas: TargetCallbackAcknowledgement](schemas-targetcallbackacknowledgement.md)
+
+## Governing policies
+
+- `compatibility/http-api/v1`
+
+## Evidence
+
+### Qualification
+
+- `make operation-qualification`
+- `make compose-smoke`
+
+### Executable sources
+
+- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
+- `openapi:stove0` — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+
+### Machine authority
+
+- `/external_contract/http_openapi/stove0/paths/~1v1~1target-executions~1{job_id}~1source-edges~1{output_id}~1{input_id}/put`
+
+### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 

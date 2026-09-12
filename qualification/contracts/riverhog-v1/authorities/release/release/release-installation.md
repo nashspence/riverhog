@@ -4,6 +4,8 @@
 
 <!-- contract-element: release:release:release-installation:63e13a1ed0 -->
 
+Exact externally visible contract owned by this semantic dossier.
+
 | Audit field | Value |
 |---|---|
 | Authority | `release` |
@@ -12,34 +14,39 @@
 | Contract elements | 1 |
 | Extent decisions | 0 |
 
-## Machine authority
-
-- `/external_contract/release/installation`
-
-## Effective policies
-
-- `compatibility/components/v1`
-
-## Executable sources and proof
-
-- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
-- `release:release.toml` — `release.toml`
-- Proof: `make release-check`
-- Proof: `make build`
-
-## Contract summary
+## External contract
 
 | Field | Shape |
 |---|---|
-| `listener` | object (6 fields) |
+| `listener` | additional keys=`autorun`, `provider_identity`, `provider_selection`, `resume`, `root`, `scope` |
 | `lock_format` | "pylock.toml" |
 | `managed_python` | true |
 | `method` | "uv-tool" |
-| `roots` | array (4 items) |
+| `roots` | ["gogurt","piggity","riverhog-recover","stove0-client"] |
 | `simple_index_path` | "artifacts/v{version}/simple/" |
 | `wheel_only` | true |
 
-## Complete owned contract
+## Governing policies
+
+- `compatibility/components/v1`
+
+## Evidence
+
+### Qualification
+
+- `make release-check`
+- `make build`
+
+### Executable sources
+
+- `generator:contract-projection` — `scripts/contract_freeze.py::contract_projection`
+- `release:release.toml` — `release.toml`
+
+### Machine authority
+
+- `/external_contract/release/installation`
+
+### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
