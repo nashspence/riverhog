@@ -17,6 +17,7 @@ REPO_ROOT = Path(__file__).resolve().parents[2]
 CONTRACT_ROOT = REPO_ROOT / "qualification/contracts/riverhog-v1.json"
 CONTRACT_FILES = {CONTRACT_ROOT}
 QUALIFICATION_INPUTS = {
+    REPO_ROOT / "qualification/configuration-contract.toml",
     REPO_ROOT / "qualification/fixtures/gogurt/gogurt-routes.yaml",
     REPO_ROOT / "qualification/fixtures/gogurt/scripts/fake_archive_device.py",
     REPO_ROOT / "qualification/fixtures/riverhog-ftp-adapter/config.json",

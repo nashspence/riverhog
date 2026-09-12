@@ -121,6 +121,7 @@ def test_human_entrypoint_exposes_closure_exclusions_and_relationships() -> None
     exclusions_page = checked.files["riverhog-v1/evidence/exclusions.md"].decode()
     relationships_page = checked.files["riverhog-v1/evidence/relationships.md"].decode()
     authority_inventory = checked.files["riverhog-v1/evidence/authorities.md"].decode()
+    configuration_inventory = checked.files["riverhog-v1/evidence/configuration.md"].decode()
     relationship = root["atlas"]["relationships"]
 
     ordered_sections = (
@@ -151,6 +152,18 @@ def test_human_entrypoint_exposes_closure_exclusions_and_relationships() -> None
     assert "# Relationship-edge inventory" in relationships_page
     assert "not a second navigation hierarchy" in relationships_page
     assert "intentionally an alphabetical reconciliation inventory" in authority_inventory
+    assert "## Declared aggregate authorities" in authority_inventory
+    assert "## Non-contractual projection machinery" in authority_inventory
+    assert "`contract-projection-envelope`" in authority_inventory
+    assert "`extent-contract` | Repository-wide v1 external extent" in authority_inventory
+    assert "does not own any setting's semantics" in configuration_inventory
+    assert "Environment contracts: **127**" in configuration_inventory
+    assert "Unique names: **119**" in configuration_inventory
+    assert "| unowned | pass |" in configuration_inventory
+    assert "[RIVERHOG_BASE_URL]" in configuration_inventory
+    assert "`riverhog-client`" in configuration_inventory
+    assert "`riverhog-ftp-adapter`" in configuration_inventory
+    assert "`stove0-server`" in configuration_inventory
     assert relationship["schema"] == atlas.RELATIONSHIP_SCHEMA
     assert relationship["contract_map"]["schema"] == atlas.CONTRACT_MAP_SCHEMA
     assert any(item["kind"] == "runtime-image" for item in relationship["nodes"])
@@ -168,6 +181,19 @@ def test_human_entrypoint_exposes_closure_exclusions_and_relationships() -> None
         checked.files
     )
     assert not any(path.startswith("riverhog-v1/relationships/") for path in checked.files)
+
+
+def test_authority_registry_rejects_an_undeclared_synthetic_owner() -> None:
+    checked = atlas.load_atlas(ARTIFACT)
+    elements = json.loads(json.dumps(checked.root["elements"]))
+    elements[0]["authority"] = "nearest-looking-bucket"
+
+    with pytest.raises(atlas.ContractAtlasError, match="lack legitimate authorities"):
+        atlas._validate_authority_registry(
+            elements,
+            checked.root["projection"],
+            checked.root["trace"],
+        )
 
 
 def test_every_dossier_is_lossless_and_representative_contract_classes_are_semantics_first() -> (
