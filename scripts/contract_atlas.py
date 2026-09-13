@@ -1810,6 +1810,12 @@ def _interface_index_path(authority: str, interface: str) -> str:
     )
 
 
+def _extension_context_path(extension: Mapping[str, object]) -> str:
+    """Return the identity-derived side-context path for one extension boundary."""
+
+    return f"{ATLAS_DIRECTORY}/extensions/{_slug(str(extension['id']), limit=96)}.md"
+
+
 def _render_dossier(
     element: Mapping[str, object],
     projection: Mapping[str, object],
@@ -1852,8 +1858,6 @@ def _render_dossier(
         "|---|---|",
         f"| Authority | [{_md(element['authority'])}]({_relative_link(path, authority_path)}) |",
         f"| Interface | [{_md(interface_label)}]({_relative_link(path, interface_path)}) |",
-        "| Contract elements | 1 |",
-        f"| Extent decisions | {len(cast(Sequence[object], element['extent_decision_ids']))} |",
         "",
         "## External contract",
         "",
@@ -2583,10 +2587,40 @@ def _render_contract_map(
         children[cast(str | None, node.get("parent"))].append(node)
 
     relationship_nodes = cast(Sequence[Mapping[str, object]], relationship["nodes"])
-    extensions_by_owner: dict[str, list[Mapping[str, object]]] = defaultdict(list)
-    for item in relationship_nodes:
-        if item["kind"] in {"extension-point", "process-protocol"}:
-            extensions_by_owner[str(item["owner"])].append(item)
+    relationship_nodes_by_id = {str(item["id"]): item for item in relationship_nodes}
+    extension_nodes_by_id = {
+        str(item["id"]): item
+        for item in relationship_nodes
+        if item["kind"] in {"extension-point", "process-protocol"}
+    }
+    extensions_by_owner_interface: dict[tuple[str, str], list[Mapping[str, object]]] = defaultdict(
+        list
+    )
+    for extension in extension_nodes_by_id.values():
+        owner = str(extension["owner"])
+        owner_interfaces = [
+            str(item["interface"])
+            for item in cast(Sequence[Mapping[str, object]], extension["semantic_interfaces"])
+            if item["authority"] == owner
+        ]
+        if len(owner_interfaces) != 1:
+            raise ContractAtlasError(
+                f"extension must resolve to one owning semantic interface: {extension['id']}"
+            )
+        extensions_by_owner_interface[(owner, owner_interfaces[0])].append(extension)
+    extensions_by_provider: dict[str, list[Mapping[str, object]]] = defaultdict(list)
+    for edge in cast(Sequence[Mapping[str, object]], relationship["edges"]):
+        if edge["type"] not in {"implements-extension-point", "implements-protocol"}:
+            continue
+        extension = extension_nodes_by_id[str(edge["target"])]
+        provider = relationship_nodes_by_id[str(edge["source"])]
+        extensions_by_provider[str(provider["name"])].append(extension)
+
+    def extension_links(extensions: Sequence[Mapping[str, object]]) -> str:
+        return ", ".join(
+            f"[{_md(item['name'])}]({_relative_link(source, _extension_context_path(item))})"
+            for item in sorted(extensions, key=lambda value: str(value["name"]))
+        )
 
     def render_authority(
         authority: Mapping[str, object],
@@ -2594,58 +2628,42 @@ def _render_contract_map(
         prefix: str,
     ) -> list[str]:
         authority_name = str(authority["authority"])
-        element_label = (
-            "contract element" if authority["contract_elements"] == 1 else "contract elements"
-        )
+        provider_extensions = extensions_by_provider.get(authority_name, ())
+        provider_annotation = ""
+        if provider_extensions:
+            kinds = {str(item["kind"]) for item in provider_extensions}
+            label = (
+                "Implements protocol" if kinds == {"process-protocol"} else "Provider for extension"
+            )
+            if len(provider_extensions) != 1:
+                label += "s"
+            provider_annotation = f" {label}: {extension_links(provider_extensions)}."
         result = [
             f"{prefix}- [{_md(authority_name)}]"
             f"({_relative_link(source, _authority_index_path(authority_name))}) — "
-            f"{authority['contract_elements']} {element_label}; {_md(authority['purpose'])}"
+            f"{_md(authority['purpose'])}{provider_annotation}"
         ]
         for interface in cast(Sequence[Mapping[str, object]], authority["interfaces"]):
             interface_id = str(interface["id"])
+            owner_extensions = extensions_by_owner_interface.get((authority_name, interface_id), ())
+            owner_annotation = ""
+            if owner_extensions:
+                kinds = {str(item["kind"]) for item in owner_extensions}
+                label = "Defines protocol" if kinds == {"process-protocol"} else "Defines extension"
+                if len(owner_extensions) != 1:
+                    label += "s"
+                owner_annotation = f" — {label}: {extension_links(owner_extensions)}."
             result.append(
                 f"{prefix}  - [{_md(interface['label'])}]"
                 f"({_relative_link(source, _interface_index_path(authority_name, interface_id))}) "
-                f"({interface['contract_elements']})"
+                f"({interface['contract_elements']}){owner_annotation}"
             )
-        for extension in sorted(
-            extensions_by_owner.get(authority_name, ()), key=lambda item: str(item["name"])
-        ):
-            mechanism = (
-                "Python extension" if extension["kind"] == "extension-point" else "Process protocol"
-            )
-            result.append(f"{prefix}  - {mechanism}: `{_md(extension['name'])}`")
-            for interface in cast(Sequence[Mapping[str, object]], extension["semantic_interfaces"]):
-                interface_authority = str(interface["authority"])
-                interface_id = str(interface["interface"])
-                interface_path = _interface_index_path(interface_authority, interface_id)
-                result.append(
-                    f"{prefix}    - [{_md(interface_authority)} · {_md(interface['label'])}]"
-                    f"({_relative_link(source, interface_path)}) "
-                    f"({interface['contract_elements']})"
-                )
         return result
 
     def render_node(node: Mapping[str, object], depth: int) -> list[str]:
         prefix = "  " * depth
         authorities = cast(Sequence[Mapping[str, object]], node["authorities"])
-        descendants = children.get(str(node["id"]), [])
-        displayed_authorities = len(authorities) + sum(
-            len(cast(Sequence[object], child["authorities"])) for child in descendants
-        )
-        contract_elements = sum(cast(int, item["contract_elements"]) for item in authorities) + sum(
-            cast(int, item["contract_elements"])
-            for child in descendants
-            for item in cast(Sequence[Mapping[str, object]], child["authorities"])
-        )
-        result = [
-            f"{prefix}- {_map_node_link(source, node)} — "
-            f"{displayed_authorities} "
-            f"{'authority' if displayed_authorities == 1 else 'authorities'}, "
-            f"{contract_elements} "
-            f"{'contract element' if contract_elements == 1 else 'contract elements'}"
-        ]
+        result = [f"{prefix}- {_map_node_link(source, node)}"]
         for authority in authorities:
             result.extend(render_authority(authority, prefix=f"{prefix}  "))
         for child in children.get(str(node["id"]), []):
@@ -2810,6 +2828,131 @@ def _render_contract_surfaces(
             "counts": counts,
             "map_node_ids": list(node_ids),
         }
+    return files, metadata
+
+
+def _render_extension_contexts(
+    relationship: Mapping[str, object],
+) -> tuple[dict[str, bytes], dict[str, dict[str, object]]]:
+    """Render non-semantic context for each frozen extension boundary."""
+
+    root_path = f"{ATLAS_DIRECTORY}/index.md"
+    evidence_path = f"{ATLAS_DIRECTORY}/evidence/relationships.md"
+    nodes = {
+        str(item["id"]): item
+        for item in cast(Sequence[Mapping[str, object]], relationship["nodes"])
+    }
+    edges = cast(Sequence[Mapping[str, object]], relationship["edges"])
+    extensions = sorted(
+        (
+            item
+            for item in nodes.values()
+            if item["kind"] in {"extension-point", "process-protocol"}
+        ),
+        key=lambda item: str(item["id"]),
+    )
+    files: dict[str, bytes] = {}
+    metadata: dict[str, dict[str, object]] = {}
+    for extension in extensions:
+        path = _extension_context_path(extension)
+        owner = str(extension["owner"])
+        owner_edges = [
+            edge
+            for edge in edges
+            if edge["target"] == extension["id"]
+            and edge["type"] in {"owns-extension-point", "owns-protocol"}
+        ]
+        if len(owner_edges) != 1:
+            raise ContractAtlasError(
+                f"extension must have one exact owner relationship: {extension['id']}"
+            )
+        implementation_edges = sorted(
+            (
+                edge
+                for edge in edges
+                if edge["target"] == extension["id"]
+                and edge["type"] in {"implements-extension-point", "implements-protocol"}
+            ),
+            key=lambda edge: (str(edge["source"]), str(edge.get("binding", ""))),
+        )
+        mechanism = (
+            "Python entry-point extension"
+            if extension["kind"] == "extension-point"
+            else "independently deployed process protocol"
+        )
+        node_link = _anchor_link(
+            path, evidence_path, _relationship_node_anchor(str(extension["id"]))
+        )
+        owner_link = _anchor_link(path, evidence_path, _relationship_edge_anchor(owner_edges[0]))
+        lines = [
+            f"# {extension['name']}",
+            "",
+            f"[Atlas]({_relative_link(path, root_path)}) · [Relationship evidence]({node_link})",
+            "",
+            str(extension["description"]),
+            "",
+            f"- Identity: `{extension['id']}`",
+            f"- Mechanism: {mechanism}",
+            f"- Owner: [{_md(owner)}]"
+            f"({_relative_link(path, _authority_index_path(owner))}) "
+            f"([exact relationship]({owner_link}))",
+            "",
+            "## Semantic interfaces",
+            "",
+        ]
+        for interface in cast(Sequence[Mapping[str, object]], extension["semantic_interfaces"]):
+            interface_authority = str(interface["authority"])
+            interface_id = str(interface["interface"])
+            interface_path = _interface_index_path(interface_authority, interface_id)
+            binding_edges = [
+                edge
+                for edge in edges
+                if edge["target"] == extension["id"]
+                and edge["source"] == f"component:{interface_authority}"
+                and edge["type"] == "binds-protocol"
+            ]
+            if len(binding_edges) > 1:
+                raise ContractAtlasError(
+                    f"semantic interface repeats an extension binding: {extension['id']}"
+                )
+            binding_link = (
+                _anchor_link(
+                    path,
+                    evidence_path,
+                    _relationship_edge_anchor(binding_edges[0]),
+                )
+                if binding_edges
+                else ""
+            )
+            binding = f" ([exact binding]({binding_link}))" if binding_link else ""
+            lines.append(
+                f"- [{_md(interface_authority)} · {_md(interface['label'])}]"
+                f"({_relative_link(path, interface_path)}){binding}"
+            )
+        lines.extend(
+            [
+                "",
+                "## Checked-in nonnormative implementations",
+                "",
+            ]
+        )
+        if implementation_edges:
+            for edge in implementation_edges:
+                provider = nodes[str(edge["source"])]
+                edge_link = _anchor_link(path, evidence_path, _relationship_edge_anchor(edge))
+                lines.append(
+                    f"- [{_md(provider['name'])}]({edge_link}) — {_md(provider['description'])}"
+                )
+        else:
+            lines.append("No checked-in implementation is part of this conformance set.")
+        files[path] = ("\n".join(lines).rstrip() + "\n").encode()
+        metadata[path] = {
+            "kind": "extension-context",
+            "counts": {},
+            "extension_id": extension["id"],
+        }
+    if len(files) != len(extensions):
+        raise ContractAtlasError("extension context paths are not unique")
     return files, metadata
 
 
@@ -2979,7 +3122,6 @@ def _render_atlas(
                 f"{ATLAS_DIRECTORY}/authorities/{authority_slug}/"
                 f"{_slug(interface, limit=48)}/index.md"
             )
-            interface_counts = _counts(values)
             lines = [
                 f"# {authority}: {_interface_label(interface)}",
                 "",
@@ -2987,23 +3129,13 @@ def _render_atlas(
                 f"[Authority]({_relative_link(interface_path, authority_path)}) · "
                 f"[Policies]({_relative_link(interface_path, policy_path)})",
                 "",
-                *([INTERFACE_PURPOSES[interface], ""] if interface in INTERFACE_PURPOSES else []),
-                f"Contract elements: **{interface_counts['contract_elements']}** · "
-                f"Extent decisions: **{interface_counts['extent_decisions']}**",
-                "",
-                *_table_counts(
-                    cast(Mapping[str, object], interface_counts["by_policy"]),
-                    "Policy",
-                    links={
-                        policy: _anchor_link(interface_path, policy_path, _policy_anchor(policy))
-                        for policy in cast(Mapping[str, object], interface_counts["by_policy"])
-                    },
+                INTERFACE_PURPOSES.get(
+                    interface,
+                    f"{_interface_label(interface)} contract owned by {authority}.",
                 ),
                 "",
                 "## Semantic dossiers",
                 "",
-                "| Dossier | Extent decisions |",
-                "|---|---:|",
             ]
             values.sort(
                 key=lambda item: (
@@ -3017,17 +3149,17 @@ def _render_atlas(
                 )
             )
             for item in values:
-                extent_count = len(cast(Sequence[object], item["extent_decision_ids"]))
                 lines.append(
-                    f"| [{_md(item['title'])}]"
-                    f"({_relative_link(interface_path, str(item['dossier']))}) | "
-                    f"{extent_count} |"
+                    f"- [{_md(item['title'])}]"
+                    f"({_relative_link(interface_path, str(item['dossier']))})"
                 )
             files[interface_path] = ("\n".join(lines).rstrip() + "\n").encode()
 
     relationship = _relationship_model(projection, trace, elements, component_descriptions)
     surface_files, surface_metadata = _render_contract_surfaces(relationship, elements)
+    extension_files, extension_metadata = _render_extension_contexts(relationship)
     files.update(surface_files)
+    files.update(extension_files)
 
     root_counts = _counts(elements, exclusions)
     root_path = f"{ATLAS_DIRECTORY}/index.md"
@@ -3572,6 +3704,10 @@ def _render_atlas(
             surface_descriptor = surface_metadata[path]
             document_counts = cast(dict[str, object], surface_descriptor["counts"])
             kind = str(surface_descriptor["kind"])
+        elif path in extension_metadata:
+            extension_descriptor = extension_metadata[path]
+            document_counts = cast(dict[str, object], extension_descriptor["counts"])
+            kind = str(extension_descriptor["kind"])
         elif path.endswith("/index.md") and path.count("/") == 3:
             authority_slug = path.split("/")[2]
             subset = [
@@ -3607,6 +3743,15 @@ def _render_atlas(
                         if key not in {"kind", "counts"}
                     }
                     if path in surface_metadata
+                    else {}
+                ),
+                **(
+                    {
+                        key: value
+                        for key, value in extension_metadata[path].items()
+                        if key not in {"kind", "counts"}
+                    }
+                    if path in extension_metadata
                     else {}
                 ),
             }
@@ -3985,6 +4130,8 @@ def validate_atlas(
             raise ContractAtlasError(
                 f"atlas dossier does not identify its contract element: {item['id']}"
             )
+        if "| Contract elements |" in dossier_text or "| Extent decisions |" in dossier_text:
+            raise ContractAtlasError(f"atlas dossier repeats aggregate accounting: {item['id']}")
         if any(
             policy.encode() not in dossier for policy in cast(Sequence[str], item["policy_ids"])
         ):
@@ -4320,6 +4467,13 @@ def validate_atlas(
     )
     if any(term in root_page for term in forbidden_root_terms):
         raise ContractAtlasError("atlas root competes with its contract map or evidence layer")
+    if (
+        "contract elements" in root_page
+        or re.search(r"— \d+ authorit(?:y|ies)", root_page) is not None
+        or "Python extension:" in root_page
+        or "Process protocol:" in root_page
+    ):
+        raise ContractAtlasError("atlas root repeats accounting or renders extensions as children")
     reachable_documents = _reachable_atlas_documents(root_path, atlas.files)
     if reachable_documents != set(atlas.files):
         unreachable = sorted(set(atlas.files) - reachable_documents)
@@ -4473,7 +4627,7 @@ def validate_atlas(
         authority_path = _authority_index_path(authority)
         root_link = _relative_link(root_path, authority_path)
         inventory_link = _relative_link(authority_inventory_path, authority_path)
-        if f"]({root_link})" not in root_page:
+        if root_page.count(f"]({root_link})") != 1:
             raise ContractAtlasError(f"human contract map omits exact authority: {authority}")
         if f"]({inventory_link})" not in authority_inventory_page:
             raise ContractAtlasError(f"authority evidence omits exact authority: {authority}")
@@ -4482,11 +4636,35 @@ def validate_atlas(
         ):
             interface_path = _interface_index_path(authority, interface)
             interface_link = _relative_link(root_path, interface_path)
-            if f"]({interface_link})" not in root_page:
+            if root_page.count(f"]({interface_link})") != 1:
                 raise ContractAtlasError(
                     f"human contract map omits direct interface navigation: "
                     f"{authority}: {interface}"
                 )
+            interface_page = atlas.files[interface_path].decode()
+            if any(
+                value in interface_page
+                for value in (
+                    "Contract elements:",
+                    "Extent decisions:",
+                    "| Policy | Count |",
+                    "| Dossier | Extent decisions |",
+                )
+            ):
+                raise ContractAtlasError(
+                    f"human interface repeats aggregate accounting: {authority}: {interface}"
+                )
+            interface_elements = [
+                item
+                for item in elements
+                if item["authority"] == authority and item["interface"] == interface
+            ]
+            for item in interface_elements:
+                dossier_link = _relative_link(interface_path, str(item["dossier"]))
+                if interface_page.count(f"]({dossier_link})") != 1:
+                    raise ContractAtlasError(
+                        f"human interface omits semantic dossier: {item['id']}"
+                    )
     authority_registry = cast(Mapping[str, object], trace_value["authority_registry"])
     for item in cast(Sequence[Mapping[str, object]], authority_registry["declared_authorities"]):
         if any(_md(item[key]) not in authority_inventory_page for key in ("id", "meaning")):
@@ -4553,6 +4731,153 @@ def validate_atlas(
             or relationship_page.count(f'id="{_relationship_edge_anchor(edge)}"') != 1
         ):
             raise ContractAtlasError(f"relationship evidence omits edge: {edge}")
+    extension_nodes = [
+        node
+        for node in relationship_nodes
+        if node["kind"] in {"extension-point", "process-protocol"}
+    ]
+    expected_extension_paths = {_extension_context_path(extension) for extension in extension_nodes}
+    actual_extension_paths = {
+        path for path in atlas.files if path.startswith(f"{ATLAS_DIRECTORY}/extensions/")
+    }
+    if actual_extension_paths != expected_extension_paths:
+        raise ContractAtlasError("extension context pages are missing, duplicated, or stale")
+    root_lines = root_page.splitlines()
+    for extension in extension_nodes:
+        extension_id = str(extension["id"])
+        extension_path = _extension_context_path(extension)
+        extension_page = atlas.files[extension_path].decode()
+        extension_link = _relative_link(root_path, extension_path)
+        descriptor = descriptors[extension_path]
+        if (
+            descriptor.get("kind") != "extension-context"
+            or descriptor.get("extension_id") != extension_id
+            or descriptor.get("counts") != {}
+        ):
+            raise ContractAtlasError(
+                f"extension context descriptor is not relationship-only: {extension_id}"
+            )
+        if any(
+            value in extension_page
+            for value in (
+                "Contract elements",
+                "Extent decisions",
+                "## Governing policies",
+                "## Semantic dossiers",
+            )
+        ):
+            raise ContractAtlasError(
+                f"extension context duplicates semantic accounting: {extension_id}"
+            )
+        node_link = _anchor_link(
+            extension_path,
+            f"{ATLAS_DIRECTORY}/evidence/relationships.md",
+            _relationship_node_anchor(extension_id),
+        )
+        if (
+            f"- Identity: `{extension_id}`" not in extension_page
+            or _md(extension["description"]) not in extension_page
+            or f"]({node_link})" not in extension_page
+            or "## Checked-in nonnormative implementations" not in extension_page
+        ):
+            raise ContractAtlasError(f"extension context is incomplete: {extension_id}")
+        owner = str(extension["owner"])
+        owner_interfaces = [
+            item
+            for item in cast(Sequence[Mapping[str, object]], extension["semantic_interfaces"])
+            if item["authority"] == owner
+        ]
+        if len(owner_interfaces) != 1:
+            raise ContractAtlasError(
+                f"extension context does not have one owning interface: {extension_id}"
+            )
+        owner_interface = owner_interfaces[0]
+        owner_interface_path = _interface_index_path(owner, str(owner_interface["interface"]))
+        owner_interface_link = _relative_link(root_path, owner_interface_path)
+        owner_lines = [line for line in root_lines if f"]({owner_interface_link})" in line]
+        if (
+            len(owner_lines) != 1
+            or f"({owner_interface['contract_elements']})" not in owner_lines[0]
+            or f"]({extension_link})" not in owner_lines[0]
+            or owner_lines[0].index(f"({owner_interface['contract_elements']})")
+            > owner_lines[0].index(f"]({extension_link})")
+        ):
+            raise ContractAtlasError(
+                f"extension owner annotation is not inline after its interface count: "
+                f"{extension_id}"
+            )
+        for semantic_interface_record in cast(
+            Sequence[Mapping[str, object]], extension["semantic_interfaces"]
+        ):
+            semantic_path = _interface_index_path(
+                str(semantic_interface_record["authority"]),
+                str(semantic_interface_record["interface"]),
+            )
+            if f"]({_relative_link(extension_path, semantic_path)})" not in extension_page:
+                raise ContractAtlasError(
+                    f"extension context omits an exact semantic interface: {extension_id}"
+                )
+        for edge in [edge for edge in relationship_edges if edge["target"] == extension_id]:
+            edge_link = _anchor_link(
+                extension_path,
+                f"{ATLAS_DIRECTORY}/evidence/relationships.md",
+                _relationship_edge_anchor(edge),
+            )
+            if f"]({edge_link})" not in extension_page:
+                raise ContractAtlasError(
+                    f"extension context omits exact relationship evidence: {extension_id}"
+                )
+        implementation_edges = [
+            edge
+            for edge in relationship_edges
+            if edge["target"] == extension_id
+            and edge["type"] in {"implements-extension-point", "implements-protocol"}
+        ]
+        for edge in implementation_edges:
+            provider = relationship_nodes_by_id[str(edge["source"])]
+            edge_link = _anchor_link(
+                extension_path,
+                f"{ATLAS_DIRECTORY}/evidence/relationships.md",
+                _relationship_edge_anchor(edge),
+            )
+            if (
+                _md(provider["name"]) not in extension_page
+                or _md(provider["description"]) not in extension_page
+                or f"]({edge_link})" not in extension_page
+            ):
+                raise ContractAtlasError(
+                    f"extension context omits a checked-in implementation: {extension_id}"
+                )
+            provider_name = str(provider["name"])
+            if provider_name in exact_authorities:
+                provider_authority_link = _relative_link(
+                    root_path, _authority_index_path(provider_name)
+                )
+                provider_lines = [
+                    line for line in root_lines if f"]({provider_authority_link}) —" in line
+                ]
+                if len(provider_lines) != 1 or f"]({extension_link})" not in provider_lines[0]:
+                    raise ContractAtlasError(
+                        f"extension provider annotation is not authority metadata: "
+                        f"{provider_name}: {extension_id}"
+                    )
+                provider_interface_links = {
+                    _relative_link(
+                        root_path,
+                        _interface_index_path(provider_name, str(item["interface"])),
+                    )
+                    for item in elements
+                    if item["authority"] == provider_name
+                }
+                if any(
+                    f"]({interface_link})" in line and f"]({extension_link})" in line
+                    for line in root_lines
+                    for interface_link in provider_interface_links
+                ):
+                    raise ContractAtlasError(
+                        f"extension provider is misrepresented as interface ownership: "
+                        f"{provider_name}: {extension_id}"
+                    )
     if "Maintainer-selected nonnormative references" not in root_page:
         raise ContractAtlasError("atlas front door does not identify references as nonnormative")
     if any("/families/" in path for path in atlas.files) or "Semantic families" in root_page:
@@ -4628,6 +4953,17 @@ def validate_atlas(
                     for item in cast(Sequence[Mapping[str, object]], node["authorities"])
                 ),
             }
+        elif kind == "extension-context":
+            extension_id = str(descriptor["extension_id"])
+            if extension_id not in {
+                str(node["id"])
+                for node in relationship_nodes
+                if node["kind"] in {"extension-point", "process-protocol"}
+            }:
+                raise ContractAtlasError(
+                    f"extension context names an unknown relationship: {extension_id}"
+                )
+            expected_counts = {}
         elif kind == "dossier":
             expected_counts = _counts([elements_by_id[str(descriptor["element_id"])]])
         else:

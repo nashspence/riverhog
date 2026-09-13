@@ -210,10 +210,50 @@ def test_contract_map_routes_every_interface_and_extension_without_duplicate_sem
     assert all(item["contract_elements"] == 0 for item in extension_nodes)
     assert all(item["semantic_interfaces"] for item in extension_nodes)
     for node in extension_nodes:
-        assert f"`{node['name']}`" in root_page
+        extension_path = atlas._extension_context_path(node)
+        extension_link = atlas._relative_link(root_path, extension_path)
+        extension_page = checked.files[extension_path].decode()
+        descriptor = next(
+            item for item in root["atlas"]["documents"] if item["path"] == extension_path
+        )
+
+        assert f"]({extension_link})" in root_page
+        assert descriptor["kind"] == "extension-context"
+        assert descriptor["counts"] == {}
+        assert descriptor["extension_id"] == node["id"]
+        assert f"- Identity: `{node['id']}`" in extension_page
+        assert node["description"] in extension_page
+        assert "## Checked-in nonnormative implementations" in extension_page
+        assert "Contract elements" not in extension_page
+        assert "Extent decisions" not in extension_page
         for interface in node["semantic_interfaces"]:
             key = (interface["authority"], interface["interface"])
             assert interface["contract_elements"] == interface_counts[key]
+            target = atlas._interface_index_path(*key)
+            assert f"]({atlas._relative_link(extension_path, target)})" in extension_page
+
+
+def test_primary_semantic_path_is_exact_without_aggregate_accounting() -> None:
+    checked = atlas.load_atlas(ARTIFACT)
+    root = checked.root
+    root_page = checked.files[root["atlas"]["root"]].decode()
+
+    assert "contract elements" not in root_page
+    assert not re.search(r"— \d+ authorit(?:y|ies)", root_page)
+    assert "Python extension:" not in root_page
+    assert "Process protocol:" not in root_page
+
+    for document in root["atlas"]["documents"]:
+        page = checked.files[document["path"]].decode()
+        if document["kind"] == "interface-index":
+            assert "Contract elements:" not in page
+            assert "Extent decisions:" not in page
+            assert "| Policy | Count |" not in page
+            assert "| Dossier | Extent decisions |" not in page
+            assert "## Semantic dossiers" in page
+        elif document["kind"] == "dossier":
+            assert "| Contract elements |" not in page
+            assert "| Extent decisions |" not in page
 
 
 def test_http_semantics_are_owned_once_and_operation_parity_remains_exact_evidence() -> None:
