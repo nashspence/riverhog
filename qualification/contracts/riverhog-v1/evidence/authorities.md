@@ -8,7 +8,9 @@ This page is intentionally an alphabetical reconciliation inventory, not another
 
 | Interface | Count |
 |---|---:|
+| `artifact-verification` | 3 |
 | `cli` | 167 |
+| `compatibility-guarantees` | 7 |
 | `configuration` | 7 |
 | `configuration-environment` | 252 |
 | `durable-state` | 8 |
@@ -17,12 +19,17 @@ This page is intentionally an alphabetical reconciliation inventory, not another
 | `http-schemas` | 394 |
 | `http-security-schemes` | 2 |
 | `http-service-declaration` | 3 |
+| `installation-roots` | 4 |
 | `process-protocol` | 4 |
 | `process-protocol-operations` | 24 |
 | `process-protocol-schemas` | 43 |
+| `publication-locations` | 2 |
 | `python` | 2640 |
-| `release` | 121 |
+| `python-distributions` | 71 |
+| `release-artifacts` | 12 |
+| `runtime-images` | 13 |
 | `schema` | 31 |
+| `versioning-tags` | 5 |
 
 ## Declared aggregate authorities
 
@@ -46,6 +53,7 @@ These values remain in the exact machine projection for validation, but do not o
 | `contract-projection-envelope` | `/schema, /series` | Machine projection identity, not an external product promise. |
 | `durable-state-registry-envelope` | `/external_contract/durable_state/schema` | Registry format identity; each durable-state promise belongs to its named owner. |
 | `extent-projection-envelope` | `/external_contract/extents/coverage, /external_contract/extents/schema, /external_contract/extents/sha256` | Generated coverage and identity metadata, not external extent semantics. |
+| `release-publication-envelope` | `/external_contract/release/publication/schema` | Release generator and evidence format metadata; the exact publication promises belong to the meaningful release interfaces. |
 
 ## Authorities
 
@@ -69,7 +77,7 @@ These values remain in the exact machine projection for validation, but do not o
 | [mango-fish-cursor](../authorities/mango-fish-cursor/index.md) | 1 | durable-state |
 | [piggity](../authorities/piggity/index.md) | 93 | cli, configuration-environment |
 | [piggity-local](../authorities/piggity-local/index.md) | 1 | durable-state |
-| [release](../authorities/release/index.md) | 121 | release |
+| [release](../authorities/release/index.md) | 117 | artifact-verification, compatibility-guarantees, installation-roots, publication-locations, python-distributions, release-artifacts, runtime-images, versioning-tags |
 | [riverhog](../authorities/riverhog/index.md) | 364 | http-operations, http-schemas, http-security-schemes, http-service-declaration |
 | [riverhog-age](../authorities/riverhog-age/index.md) | 34 | python |
 | [riverhog-application-access](../authorities/riverhog-application-access/index.md) | 47 | python |

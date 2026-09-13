@@ -10,7 +10,7 @@ Policies are defined once here and referenced from every dossier where they are 
 |---|---:|
 | [compatibility/archive/v1](#p-915b8756ae) | 1 |
 | [compatibility/cli/v1](#p-48a89776de) | 168 |
-| [compatibility/components/v1](#p-95e9a12259) | 225 |
+| [compatibility/components/v1](#p-95e9a12259) | 221 |
 | [compatibility/configuration/v1](#p-8dc08bb461) | 260 |
 | [compatibility/http-api/v1](#p-5bc717c2c0) | 547 |
 | [compatibility/python-api/v1](#p-e574772ba5) | 2641 |
@@ -186,7 +186,7 @@ A supported deployment runs components from one coordinated product version.
   - [state:stove0-control](../evidence/sources.md#src-45e44b17fd)
   - [state:stove0-target-jobs](../evidence/sources.md#src-7b4138829a)
 
-Applications: **225**
+Applications: **221**
 <a id="p-8dc08bb461"></a>
 #### `compatibility/configuration/v1`
 
@@ -560,6 +560,136 @@ Every later v1 recovery release reads every valid earlier v1 archive and provena
   - [release:release.toml](../evidence/sources.md#src-c5380dbe5f)
 
 Applications: **1**
+
+## Publication
+
+| Policy | Applications |
+|---|---:|
+| [publication/role-retention/v1](#p-3e4dc2e851) | 88 |
+| [publication/platform-scope/v1](#p-7dacd6d393) | 17 |
+| [publication/image-digest-scope/v1](#p-634e69c23f) | 13 |
+
+### Definitions
+
+<a id="p-3e4dc2e851"></a>
+#### `publication/role-retention/v1`
+
+Publication creates no new product, API, protocol, provider, or direct-consumption promise. Each publication unit retains its exact release role and links to its existing semantic owners.
+
+- Applicability: `["/external_contract/release/publication/distributions/config-validation", "/external_contract/release/publication/distributions/gogurt", "/external_contract/release/publication/distributions/gogurt-core", "/external_contract/release/publication/distributions/gogurt-linux-listener-host", "/external_contract/release/publication/distributions/gogurt-linux-mounted-volume", "/external_contract/release/publication/distributions/gogurt-listener-runtime", "/external_contract/release/publication/distributions/gogurt-macos-listener-host", "/external_contract/release/publication/distributions/gogurt-macos-mounted-volume", "/external_contract/release/publication/distributions/gogurt-path-volume-support", "/external_contract/release/publication/distributions/gogurt-windows-listener-host", "/external_contract/release/publication/distributions/gogurt-windows-mounted-volume", "/external_contract/release/publication/distributions/http-api-contracts", "/external_contract/release/publication/distributions/lifecycle-events", "/external_contract/release/publication/distributions/mango-fish", "/external_contract/release/publication/distributions/piggity", "/external_contract/release/publication/distributions/riverhog-age", "/external_contract/release/publication/distributions/riverhog-application-access", "/external_contract/release/publication/distributions/riverhog-archive-contracts", "/external_contract/release/publication/distributions/riverhog-client", "/external_contract/release/publication/distributions/riverhog-ftp-adapter", "/external_contract/release/publication/distributions/riverhog-ftp-adapter-api-client", "/external_contract/release/publication/distributions/riverhog-protocol", "/external_contract/release/publication/distributions/riverhog-provenance", "/external_contract/release/publication/distributions/riverhog-provenance-contracts", "/external_contract/release/publication/distributions/riverhog-provenance-linux-contracts", "/external_contract/release/publication/distributions/riverhog-provenance-linux-observer", "/external_contract/release/publication/distributions/riverhog-provenance-macos-contracts", "/external_contract/release/publication/distributions/riverhog-provenance-macos-observer", "/external_contract/release/publication/distributions/riverhog-provenance-windows-contracts", "/external_contract/release/publication/distributions/riverhog-provenance-windows-observer", "/external_contract/release/publication/distributions/riverhog-recover", "/external_contract/release/publication/distributions/riverhog-server", "/external_contract/release/publication/distributions/riverhog-storage-adapter-asgi-support", "/external_contract/release/publication/distributions/riverhog-storage-adapter-aws", "/external_contract/release/publication/distributions/riverhog-storage-adapter-backblaze", "/external_contract/release/publication/distributions/riverhog-storage-adapter-filesystem", "/external_contract/release/publication/distributions/riverhog-storage-adapter-protocol", "/external_contract/release/publication/distributions/riverhog-storage-adapter-s3-support", "/external_contract/release/publication/distributions/riverhog-storage-adapter-support", "/external_contract/release/publication/distributions/state-schema", "/external_contract/release/publication/distributions/stove0-api-client", "/external_contract/release/publication/distributions/stove0-client", "/external_contract/release/publication/distributions/stove0-exiftool-observer", "/external_contract/release/publication/distributions/stove0-ffprobe-sampling-observer", "/external_contract/release/publication/distributions/stove0-media-archive-target-contracts", "/external_contract/release/publication/distributions/stove0-media-archive-target-support", "/external_contract/release/publication/distributions/stove0-media-metadata-observer-contracts", "/external_contract/release/publication/distributions/stove0-media-sampling-observer-contracts", "/external_contract/release/publication/distributions/stove0-nvenc-av1-opus-review-sampler", "/external_contract/release/publication/distributions/stove0-nvenc-av1-opus-target", "/external_contract/release/publication/distributions/stove0-observer-client", "/external_contract/release/publication/distributions/stove0-observer-protocol", "/external_contract/release/publication/distributions/stove0-observer-support", "/external_contract/release/publication/distributions/stove0-operator-contracts", "/external_contract/release/publication/distributions/stove0-opus-review-sampler", "/external_contract/release/publication/distributions/stove0-opus-target", "/external_contract/release/publication/distributions/stove0-protocol", "/external_contract/release/publication/distributions/stove0-recipe-config", "/external_contract/release/publication/distributions/stove0-review-materialize-target", "/external_contract/release/publication/distributions/stove0-review-planning", "/external_contract/release/publication/distributions/stove0-review-rclone-effect-target", "/external_contract/release/publication/distributions/stove0-review-sampler-client", "/external_contract/release/publication/distributions/stove0-review-sampler-protocol", "/external_contract/release/publication/distributions/stove0-review-sampler-support", "/external_contract/release/publication/distributions/stove0-review-target-contracts", "/external_contract/release/publication/distributions/stove0-review-target-support", "/external_contract/release/publication/distributions/stove0-server", "/external_contract/release/publication/distributions/stove0-target-client", "/external_contract/release/publication/distributions/stove0-target-protocol", "/external_contract/release/publication/distributions/stove0-target-support", "/external_contract/release/publication/distributions/time-formats", "/external_contract/release/publication/runtime_images/mango-fish", "/external_contract/release/publication/runtime_images/riverhog", "/external_contract/release/publication/runtime_images/riverhog-ftp-adapter", "/external_contract/release/publication/runtime_images/riverhog-storage-adapter-aws", "/external_contract/release/publication/runtime_images/riverhog-storage-adapter-backblaze", "/external_contract/release/publication/runtime_images/riverhog-storage-adapter-filesystem", "/external_contract/release/publication/runtime_images/stove0", "/external_contract/release/publication/runtime_images/stove0-exiftool-observer", "/external_contract/release/publication/runtime_images/stove0-ffprobe-sampling-observer", "/external_contract/release/publication/runtime_images/stove0-nvenc-av1-opus-target", "/external_contract/release/publication/runtime_images/stove0-opus-target", "/external_contract/release/publication/runtime_images/stove0-review-materialize-target", "/external_contract/release/publication/runtime_images/stove0-review-rclone-effect-target", "/external_contract/release/publication/installation_roots/gogurt", "/external_contract/release/publication/installation_roots/piggity", "/external_contract/release/publication/installation_roots/riverhog-recover", "/external_contract/release/publication/installation_roots/stove0-client"]`
+- Observable result or violation: `{"conforming_result": "the observable surface satisfies the stated meaning", "violation": "the observable surface contradicts the stated meaning"}`
+- Executable authorities:
+  - [generator:contract-projection](../evidence/sources.md#src-47381a6c4f)
+  - [release-distribution:config-validation](../evidence/sources.md#src-391296b020)
+  - [release-distribution:gogurt](../evidence/sources.md#src-3e7b582a54)
+  - [release-distribution:gogurt-core](../evidence/sources.md#src-2850fdf46b)
+  - [release-distribution:gogurt-linux-listener-host](../evidence/sources.md#src-388e655d12)
+  - [release-distribution:gogurt-linux-mounted-volume](../evidence/sources.md#src-db58b362bd)
+  - [release-distribution:gogurt-listener-runtime](../evidence/sources.md#src-23725dce0b)
+  - [release-distribution:gogurt-macos-listener-host](../evidence/sources.md#src-51ef474638)
+  - [release-distribution:gogurt-macos-mounted-volume](../evidence/sources.md#src-ea30a89c8b)
+  - [release-distribution:gogurt-path-volume-support](../evidence/sources.md#src-fc01fccb44)
+  - [release-distribution:gogurt-windows-listener-host](../evidence/sources.md#src-99f0891144)
+  - [release-distribution:gogurt-windows-mounted-volume](../evidence/sources.md#src-d3a2fa67cb)
+  - [release-distribution:http-api-contracts](../evidence/sources.md#src-1554c834c7)
+  - [release-distribution:lifecycle-events](../evidence/sources.md#src-36336fc3be)
+  - [release-distribution:mango-fish](../evidence/sources.md#src-8f9c704431)
+  - [release-distribution:piggity](../evidence/sources.md#src-c6f8868ecf)
+  - [release-distribution:riverhog-age](../evidence/sources.md#src-2d271f6b70)
+  - [release-distribution:riverhog-application-access](../evidence/sources.md#src-1524c1360d)
+  - [release-distribution:riverhog-archive-contracts](../evidence/sources.md#src-f6ac304b52)
+  - [release-distribution:riverhog-client](../evidence/sources.md#src-7d25f2c873)
+  - [release-distribution:riverhog-ftp-adapter](../evidence/sources.md#src-37bda529c9)
+  - [release-distribution:riverhog-ftp-adapter-api-client](../evidence/sources.md#src-70a41aeb48)
+  - [release-distribution:riverhog-protocol](../evidence/sources.md#src-1221d32c9e)
+  - [release-distribution:riverhog-provenance](../evidence/sources.md#src-95dbd50af1)
+  - [release-distribution:riverhog-provenance-contracts](../evidence/sources.md#src-d222cdb3b8)
+  - [release-distribution:riverhog-provenance-linux-contracts](../evidence/sources.md#src-0bc97c8819)
+  - [release-distribution:riverhog-provenance-linux-observer](../evidence/sources.md#src-511bdc989a)
+  - [release-distribution:riverhog-provenance-macos-contracts](../evidence/sources.md#src-7b7622c15a)
+  - [release-distribution:riverhog-provenance-macos-observer](../evidence/sources.md#src-40294474bf)
+  - [release-distribution:riverhog-provenance-windows-contracts](../evidence/sources.md#src-3899e85b99)
+  - [release-distribution:riverhog-provenance-windows-observer](../evidence/sources.md#src-39aea5b4b6)
+  - [release-distribution:riverhog-recover](../evidence/sources.md#src-917183ebd1)
+  - [release-distribution:riverhog-server](../evidence/sources.md#src-7debc5c818)
+  - [release-distribution:riverhog-storage-adapter-asgi-support](../evidence/sources.md#src-f4e68c2bf9)
+  - [release-distribution:riverhog-storage-adapter-aws](../evidence/sources.md#src-ef11c798d9)
+  - [release-distribution:riverhog-storage-adapter-backblaze](../evidence/sources.md#src-039f9af430)
+  - [release-distribution:riverhog-storage-adapter-filesystem](../evidence/sources.md#src-58a272031a)
+  - [release-distribution:riverhog-storage-adapter-protocol](../evidence/sources.md#src-986408de09)
+  - [release-distribution:riverhog-storage-adapter-s3-support](../evidence/sources.md#src-19239f8eca)
+  - [release-distribution:riverhog-storage-adapter-support](../evidence/sources.md#src-e3b24ac45f)
+  - [release-distribution:state-schema](../evidence/sources.md#src-07745187f2)
+  - [release-distribution:stove0-api-client](../evidence/sources.md#src-65fbc03822)
+  - [release-distribution:stove0-client](../evidence/sources.md#src-2b4e27da80)
+  - [release-distribution:stove0-exiftool-observer](../evidence/sources.md#src-8b7b7e5eed)
+  - [release-distribution:stove0-ffprobe-sampling-observer](../evidence/sources.md#src-e01a1e596d)
+  - [release-distribution:stove0-media-archive-target-contracts](../evidence/sources.md#src-7f1e7fec9e)
+  - [release-distribution:stove0-media-archive-target-support](../evidence/sources.md#src-0d39629f02)
+  - [release-distribution:stove0-media-metadata-observer-contracts](../evidence/sources.md#src-64ab741526)
+  - [release-distribution:stove0-media-sampling-observer-contracts](../evidence/sources.md#src-135c11f96b)
+  - [release-distribution:stove0-nvenc-av1-opus-review-sampler](../evidence/sources.md#src-27f096c998)
+  - [release-distribution:stove0-nvenc-av1-opus-target](../evidence/sources.md#src-b520cbce2a)
+  - [release-distribution:stove0-observer-client](../evidence/sources.md#src-ada50e7589)
+  - [release-distribution:stove0-observer-protocol](../evidence/sources.md#src-7c927fed76)
+  - [release-distribution:stove0-observer-support](../evidence/sources.md#src-49de4b2b28)
+  - [release-distribution:stove0-operator-contracts](../evidence/sources.md#src-3697a2cd79)
+  - [release-distribution:stove0-opus-review-sampler](../evidence/sources.md#src-21ddb4cd93)
+  - [release-distribution:stove0-opus-target](../evidence/sources.md#src-710aa0c3de)
+  - [release-distribution:stove0-protocol](../evidence/sources.md#src-8793f1ad67)
+  - [release-distribution:stove0-recipe-config](../evidence/sources.md#src-124da7769c)
+  - [release-distribution:stove0-review-materialize-target](../evidence/sources.md#src-8b1c7b0fd5)
+  - [release-distribution:stove0-review-planning](../evidence/sources.md#src-41edb4d9f8)
+  - [release-distribution:stove0-review-rclone-effect-target](../evidence/sources.md#src-e1595567d0)
+  - [release-distribution:stove0-review-sampler-client](../evidence/sources.md#src-9090dabce1)
+  - [release-distribution:stove0-review-sampler-protocol](../evidence/sources.md#src-248793bf47)
+  - [release-distribution:stove0-review-sampler-support](../evidence/sources.md#src-08f9b590a6)
+  - [release-distribution:stove0-review-target-contracts](../evidence/sources.md#src-288a68ea62)
+  - [release-distribution:stove0-review-target-support](../evidence/sources.md#src-56e42e89a6)
+  - [release-distribution:stove0-server](../evidence/sources.md#src-56a02fc153)
+  - [release-distribution:stove0-target-client](../evidence/sources.md#src-370da30421)
+  - [release-distribution:stove0-target-protocol](../evidence/sources.md#src-182457b760)
+  - [release-distribution:stove0-target-support](../evidence/sources.md#src-745a95dbc1)
+  - [release-distribution:time-formats](../evidence/sources.md#src-514b283d5f)
+  - [release-images:docker-bake](../evidence/sources.md#src-8d3f4df21c)
+  - [release-installation:planner](../evidence/sources.md#src-d1a927fc4b)
+  - [release-publication:planner](../evidence/sources.md#src-03a2f48338)
+  - [release:release.toml](../evidence/sources.md#src-c5380dbe5f)
+
+Applications: **88**
+<a id="p-7dacd6d393"></a>
+#### `publication/platform-scope/v1`
+
+A platform or architecture claim applies only to the exact published image, distribution, or installation form that carries it. Qualification platforms remain evidence unless an external contract independently protects them.
+
+- Applicability: `["/external_contract/release/publication/runtime_images/mango-fish", "/external_contract/release/publication/runtime_images/riverhog", "/external_contract/release/publication/runtime_images/riverhog-ftp-adapter", "/external_contract/release/publication/runtime_images/riverhog-storage-adapter-aws", "/external_contract/release/publication/runtime_images/riverhog-storage-adapter-backblaze", "/external_contract/release/publication/runtime_images/riverhog-storage-adapter-filesystem", "/external_contract/release/publication/runtime_images/stove0", "/external_contract/release/publication/runtime_images/stove0-exiftool-observer", "/external_contract/release/publication/runtime_images/stove0-ffprobe-sampling-observer", "/external_contract/release/publication/runtime_images/stove0-nvenc-av1-opus-target", "/external_contract/release/publication/runtime_images/stove0-opus-target", "/external_contract/release/publication/runtime_images/stove0-review-materialize-target", "/external_contract/release/publication/runtime_images/stove0-review-rclone-effect-target", "/external_contract/release/publication/installation_roots/gogurt", "/external_contract/release/publication/installation_roots/piggity", "/external_contract/release/publication/installation_roots/riverhog-recover", "/external_contract/release/publication/installation_roots/stove0-client"]`
+- Observable result or violation: `{"conforming_result": "the observable surface satisfies the stated meaning", "violation": "the observable surface contradicts the stated meaning"}`
+- Executable authorities:
+  - [generator:contract-projection](../evidence/sources.md#src-47381a6c4f)
+  - [release-distribution:gogurt](../evidence/sources.md#src-3e7b582a54)
+  - [release-distribution:piggity](../evidence/sources.md#src-c6f8868ecf)
+  - [release-distribution:riverhog-recover](../evidence/sources.md#src-917183ebd1)
+  - [release-distribution:stove0-client](../evidence/sources.md#src-2b4e27da80)
+  - [release-images:docker-bake](../evidence/sources.md#src-8d3f4df21c)
+  - [release-installation:planner](../evidence/sources.md#src-d1a927fc4b)
+  - [release-publication:planner](../evidence/sources.md#src-03a2f48338)
+  - [release:release.toml](../evidence/sources.md#src-c5380dbe5f)
+
+Applications: **17**
+<a id="p-634e69c23f"></a>
+#### `publication/image-digest-scope/v1`
+
+Per-release image digests are publication evidence rather than permanent v1 contract constants.
+
+- Applicability: `["/external_contract/release/publication/runtime_images/mango-fish", "/external_contract/release/publication/runtime_images/riverhog", "/external_contract/release/publication/runtime_images/riverhog-ftp-adapter", "/external_contract/release/publication/runtime_images/riverhog-storage-adapter-aws", "/external_contract/release/publication/runtime_images/riverhog-storage-adapter-backblaze", "/external_contract/release/publication/runtime_images/riverhog-storage-adapter-filesystem", "/external_contract/release/publication/runtime_images/stove0", "/external_contract/release/publication/runtime_images/stove0-exiftool-observer", "/external_contract/release/publication/runtime_images/stove0-ffprobe-sampling-observer", "/external_contract/release/publication/runtime_images/stove0-nvenc-av1-opus-target", "/external_contract/release/publication/runtime_images/stove0-opus-target", "/external_contract/release/publication/runtime_images/stove0-review-materialize-target", "/external_contract/release/publication/runtime_images/stove0-review-rclone-effect-target"]`
+- Observable result or violation: `{"conforming_result": "the observable surface satisfies the stated meaning", "violation": "the observable surface contradicts the stated meaning"}`
+- Executable authorities:
+  - [generator:contract-projection](../evidence/sources.md#src-47381a6c4f)
+  - [release-images:docker-bake](../evidence/sources.md#src-8d3f4df21c)
+  - [release-publication:planner](../evidence/sources.md#src-03a2f48338)
+  - [release:release.toml](../evidence/sources.md#src-c5380dbe5f)
+
+Applications: **13**
 
 ## Extent Principles
 

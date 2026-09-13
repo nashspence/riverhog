@@ -110,6 +110,14 @@ NONCONTRACTUAL_PROJECTION_AUTHORITIES: tuple[dict[str, object], ...] = (
         ],
         "reason": "Generated coverage and identity metadata, not external extent semantics.",
     },
+    {
+        "id": "release-publication-envelope",
+        "pointers": ["/external_contract/release/publication/schema"],
+        "reason": (
+            "Release generator and evidence format metadata; the exact publication promises "
+            "belong to the meaningful release interfaces."
+        ),
+    },
 )
 PROCESS_SCHEMA_BUNDLES: dict[str, Callable[[], dict[str, Any]]] = {
     "riverhog-storage-adapter": storage_adapter_schema_bundle,

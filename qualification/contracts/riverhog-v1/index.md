@@ -9,7 +9,14 @@
 ### Release envelope
 
 - [release](authorities/release/index.md) — Coordinated v1 compatibility and publication promises.
-  - [Release](authorities/release/release/index.md) (121)
+  - [Runtime Images](authorities/release/runtime-images/index.md) (13)
+  - [Python Distributions](authorities/release/python-distributions/index.md) (71)
+  - [Installation Roots](authorities/release/installation-roots/index.md) (4)
+  - [Release Artifacts](authorities/release/release-artifacts/index.md) (12)
+  - [Publication Locations](authorities/release/publication-locations/index.md) (2)
+  - [Artifact Verification](authorities/release/artifact-verification/index.md) (3)
+  - [Versioning and Tags](authorities/release/versioning-tags/index.md) (5)
+  - [Compatibility Guarantees](authorities/release/compatibility-guarantees/index.md) (7)
 
 ### Riverhog product
 

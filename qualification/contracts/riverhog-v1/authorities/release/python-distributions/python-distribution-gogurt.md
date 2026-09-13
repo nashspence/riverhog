@@ -1,0 +1,80 @@
+# Python distribution: gogurt
+
+[Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
+
+<!-- contract-element: python-distributions:release:python-distribution-gogurt:7df28f3cb4 -->
+
+Optional nonnormative mounted-volume ingestion reference application for Riverhog.
+
+| Audit field | Value |
+|---|---|
+| Authority | [release](../index.md) |
+| Interface | [Python Distributions](index.md) |
+
+## External contract
+
+<a id="s-96a0be4c25"></a>
+| Concern | Contract |
+|---|---|
+| <a id="s-9f96bcff2f"></a>`artifacts` | [{"coordinate": "dist/gogurt-{version}-py3-none-any.whl", "format": "wheel"}, {"coordinate": "dist/gogurt-{version}.tar.gz", "format": "sdist"}] |
+| <a id="s-9323e67d07"></a>`channel` | github-release |
+| <a id="s-d290b63892"></a>`description` | Optional nonnormative mounted-volume ingestion reference application for Riverhog. |
+| <a id="s-55f6e90fbe"></a>`requires_python` | >=3.12 |
+| <a id="s-198b438cc4"></a>`role` | reference_application |
+| <a id="s-1962b7fa78"></a>`source` | reference/gogurt/application/pyproject.toml |
+
+## Existing ownership context
+
+Publication preserves these existing component authorities; it does not reclassify or duplicate their interfaces.
+
+- [gogurt](../../../evidence/relationships.md#rn-eeb2be4a71)
+
+## Governing policies
+
+- <a id="pa-37d8e79811"></a>[compatibility/components/v1](../../../policies/index.md#p-95e9a12259)
+- <a id="pa-1939d299f8"></a>[publication/role-retention/v1](../../../policies/index.md#p-3e4dc2e851)
+
+## Evidence
+
+### Qualification
+
+- [make release-check](../../../evidence/sources.md#q-8d8d22d6a6)
+- [make dist-smoke](../../../evidence/sources.md#q-0ba2578a3e)
+- [make build](../../../evidence/sources.md#q-d1121e35fa)
+
+### Executable sources
+
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [release-distribution:gogurt](../../../evidence/sources.md#src-3e7b582a54) — `reference/gogurt/application/pyproject.toml`
+- [release-publication:planner](../../../evidence/sources.md#src-03a2f48338) — `scripts/release.py::publication_contract`
+- [release:release.toml](../../../evidence/sources.md#src-c5380dbe5f) — `release.toml`
+
+### Machine authority
+
+- `/external_contract/release/publication/distributions/gogurt`
+
+### Exact owned JSON
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 6dc8a82511aded05e37bdff21af93fa4a4c5271d15edff8135ffdf4ce77584de -->
+
+```json
+{
+  "artifacts": [
+    {
+      "coordinate": "dist/gogurt-{version}-py3-none-any.whl",
+      "format": "wheel"
+    },
+    {
+      "coordinate": "dist/gogurt-{version}.tar.gz",
+      "format": "sdist"
+    }
+  ],
+  "channel": "github-release",
+  "description": "Optional nonnormative mounted-volume ingestion reference application for Riverhog.",
+  "requires_python": ">=3.12",
+  "role": "reference_application",
+  "source": "reference/gogurt/application/pyproject.toml"
+}
+```

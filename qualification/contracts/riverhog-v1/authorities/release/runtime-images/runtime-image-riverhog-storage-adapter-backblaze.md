@@ -1,0 +1,84 @@
+# Runtime image: riverhog-storage-adapter-backblaze
+
+[Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
+
+<!-- contract-element: runtime-images:release:runtime-image-riverhog-storage-adapter-backblaze:a9ce012b4f -->
+
+Optional nonnormative Backblaze B2 storage reference for Riverhog.
+
+| Audit field | Value |
+|---|---|
+| Authority | [release](../index.md) |
+| Interface | [Runtime Images](index.md) |
+
+## External contract
+
+<a id="s-8ed8987c04"></a>
+| Concern | Contract |
+|---|---|
+| <a id="s-8de919ee8b"></a>`build_target` | riverhog-storage-adapter-backblaze |
+| <a id="s-d7d3447989"></a>`description` | Optional nonnormative Backblaze B2 storage reference for Riverhog. |
+| <a id="s-2760bc934b"></a>`distribution_roots` | ["riverhog-storage-adapter-backblaze"] |
+| <a id="s-2e2dba66bd"></a>`format` | oci-image |
+| <a id="s-d84f7a1e41"></a>`platforms` | ["linux/amd64"] |
+| <a id="s-cf5084e717"></a>`repository` | ghcr.io/nashspence/riverhog-storage-adapter-backblaze |
+| <a id="s-f37fe9c223"></a>`role` | reference |
+| <a id="s-97ee88894f"></a>`tag_templates` | ["ghcr.io/nashspence/riverhog-storage-adapter-backblaze:{version}", "ghcr.io/nashspence/riverhog-storage-adapter-backblaze:sha-{source_sha}"] |
+
+## Existing ownership context
+
+Publication preserves these existing component authorities; it does not reclassify or duplicate their interfaces.
+
+- [riverhog-storage-adapter-backblaze](../../../evidence/relationships.md#rn-4178e6e967)
+
+## Governing policies
+
+- <a id="pa-b8df4418d1"></a>[compatibility/components/v1](../../../policies/index.md#p-95e9a12259)
+- <a id="pa-8b5d5467a8"></a>[publication/image-digest-scope/v1](../../../policies/index.md#p-634e69c23f)
+- <a id="pa-8e05911915"></a>[publication/platform-scope/v1](../../../policies/index.md#p-7dacd6d393)
+- <a id="pa-cc78ec7247"></a>[publication/role-retention/v1](../../../policies/index.md#p-3e4dc2e851)
+
+## Evidence
+
+### Qualification
+
+- [make release-check](../../../evidence/sources.md#q-8d8d22d6a6)
+- [make dist-smoke](../../../evidence/sources.md#q-0ba2578a3e)
+- [make build](../../../evidence/sources.md#q-d1121e35fa)
+
+### Executable sources
+
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [release-images:docker-bake](../../../evidence/sources.md#src-8d3f4df21c) — `docker-bake.hcl`
+- [release-publication:planner](../../../evidence/sources.md#src-03a2f48338) — `scripts/release.py::publication_contract`
+- [release:release.toml](../../../evidence/sources.md#src-c5380dbe5f) — `release.toml`
+
+### Machine authority
+
+- `/external_contract/release/publication/runtime_images/riverhog-storage-adapter-backblaze`
+
+### Exact owned JSON
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 6314b30c5133c534973fe356bbabea8ba70d3cacf575030d07812a7223174c2b -->
+
+```json
+{
+  "build_target": "riverhog-storage-adapter-backblaze",
+  "description": "Optional nonnormative Backblaze B2 storage reference for Riverhog.",
+  "distribution_roots": [
+    "riverhog-storage-adapter-backblaze"
+  ],
+  "format": "oci-image",
+  "platforms": [
+    "linux/amd64"
+  ],
+  "repository": "ghcr.io/nashspence/riverhog-storage-adapter-backblaze",
+  "role": "reference",
+  "tag_templates": [
+    "ghcr.io/nashspence/riverhog-storage-adapter-backblaze:{version}",
+    "ghcr.io/nashspence/riverhog-storage-adapter-backblaze:sha-{source_sha}"
+  ]
+}
+```

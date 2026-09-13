@@ -29,7 +29,9 @@ RELATIONSHIP_SCHEMA = "riverhog-contract-human-relationships/v1"
 CONTRACT_MAP_SCHEMA = "riverhog-contract-human-map/v1"
 
 INTERFACE_LABELS: dict[str, str] = {
+    "artifact-verification": "Artifact Verification",
     "cli": "CLI",
+    "compatibility-guarantees": "Compatibility Guarantees",
     "configuration": "Configuration Documents",
     "configuration-environment": "Configuration Environment",
     "durable-state": "Durable State",
@@ -38,17 +40,33 @@ INTERFACE_LABELS: dict[str, str] = {
     "http-schemas": "HTTP Schemas",
     "http-service-declaration": "HTTP Service Declaration",
     "http-security-schemes": "HTTP Security Schemes",
+    "installation-roots": "Installation Roots",
     "process-protocol": "Process Protocol",
     "process-protocol-operations": "Process Protocol Operations",
     "process-protocol-schemas": "Process Protocol Schemas",
+    "publication-locations": "Publication Locations",
     "python": "Python",
-    "release": "Release",
+    "python-distributions": "Python Distributions",
+    "release-artifacts": "Release Artifacts",
+    "runtime-images": "Runtime Images",
     "schema": "Schemas",
+    "versioning-tags": "Versioning and Tags",
 }
+RELEASE_INTERFACES = (
+    "runtime-images",
+    "python-distributions",
+    "installation-roots",
+    "release-artifacts",
+    "publication-locations",
+    "artifact-verification",
+    "versioning-tags",
+    "compatibility-guarantees",
+)
 INTERFACE_ORDER = {
     interface: index
     for index, interface in enumerate(
         (
+            *RELEASE_INTERFACES,
             "http-operations",
             "http-schemas",
             "http-service-declaration",
@@ -61,6 +79,8 @@ INTERFACE_ORDER = {
     )
 }
 INTERFACE_PURPOSES: dict[str, str] = {
+    "artifact-verification": "External verification mechanisms for published artifacts.",
+    "compatibility-guarantees": "Coordinated v1 compatibility promises.",
     "http-operations": "Callable HTTP operations.",
     "http-schemas": "Supporting HTTP data definitions; these are not callable operations.",
     "http-service-declaration": (
@@ -69,6 +89,7 @@ INTERFACE_PURPOSES: dict[str, str] = {
     "http-security-schemes": (
         "Supporting HTTP authorization definitions; these are not callable operations."
     ),
+    "installation-roots": "Maintained installation roots and their exact installation forms.",
     "process-protocol": (
         "Cross-participant protocol identity, compatibility, and common acceptance rules. "
         "Exact operations and schemas are separately owned below."
@@ -78,7 +99,12 @@ INTERFACE_PURPOSES: dict[str, str] = {
         "describe that protocol binding, not a product/service HTTP API."
     ),
     "process-protocol-schemas": "Structured values exchanged by a process protocol.",
+    "publication-locations": "Stable externally used publication locations.",
+    "python-distributions": "Published Python distribution identities and artifact forms.",
+    "release-artifacts": "Discrete files published with a coordinated release.",
+    "runtime-images": "Published OCI runtime-image identities.",
     "schema": "Standalone structured-value contracts; these do not define an interaction.",
+    "versioning-tags": "Coordinated version and immutable-tag semantics.",
 }
 
 EXCLUSION_POLICIES: tuple[dict[str, str], ...] = (
@@ -121,7 +147,9 @@ DETECTORS: tuple[dict[str, str], ...] = (
 )
 
 QUALIFICATION_ROUTES: dict[str, tuple[str, ...]] = {
+    "artifact-verification": ("make release-check", "make dist-smoke", "make build"),
     "cli": ("make dist-smoke", "make operation-qualification"),
+    "compatibility-guarantees": ("make release-check", "make dist-smoke", "make build"),
     "configuration": ("make unit", "make compose-smoke"),
     "configuration-environment": ("make unit", "make compose-smoke"),
     "durable-state": ("make release-check", "make database-qualification"),
@@ -130,12 +158,17 @@ QUALIFICATION_ROUTES: dict[str, tuple[str, ...]] = {
     "http-schemas": ("make operation-qualification", "make compose-smoke"),
     "http-security-schemes": ("make operation-qualification", "make compose-smoke"),
     "http-service-declaration": ("make operation-qualification", "make compose-smoke"),
+    "installation-roots": ("make release-check", "make dist-smoke", "make build"),
     "process-protocol": ("make dist-smoke", "make build"),
     "process-protocol-operations": ("make dist-smoke", "make build"),
     "process-protocol-schemas": ("make dist-smoke", "make build"),
+    "publication-locations": ("make release-check", "make dist-smoke", "make build"),
     "python": ("make dist-smoke", "make build"),
-    "release": ("make release-check", "make dist-smoke", "make build"),
+    "python-distributions": ("make release-check", "make dist-smoke", "make build"),
+    "release-artifacts": ("make release-check", "make dist-smoke", "make build"),
+    "runtime-images": ("make release-check", "make dist-smoke", "make build"),
     "schema": ("make dist-smoke", "make build"),
+    "versioning-tags": ("make release-check", "make dist-smoke", "make build"),
     "excluded": ("make dist-smoke", "make build"),
 }
 
@@ -307,6 +340,21 @@ def _policy_registry(projection: Mapping[str, object]) -> dict[str, object]:
     external = cast(Mapping[str, object], projection["external_contract"])
     release = cast(Mapping[str, object], external["release"])
     compatibility = cast(Mapping[str, object], release["compatibility"])
+    publication = cast(Mapping[str, object], release["publication"])
+    publication_policies = cast(Mapping[str, object], publication["policy"])
+    publication_base = "/external_contract/release/publication"
+    distribution_pointers = [
+        f"{publication_base}/distributions/{_escape_pointer(str(name))}"
+        for name in sorted(cast(Mapping[str, object], publication["distributions"]))
+    ]
+    image_pointers = [
+        f"{publication_base}/runtime_images/{_escape_pointer(str(name))}"
+        for name in sorted(cast(Mapping[str, object], publication["runtime_images"]))
+    ]
+    installation_pointers = [
+        f"{publication_base}/installation_roots/{_escape_pointer(str(name))}"
+        for name in sorted(cast(Mapping[str, object], publication["installation_roots"]))
+    ]
     extents = cast(Mapping[str, object], external["extents"])
     return {
         "compatibility": [
@@ -316,6 +364,30 @@ def _policy_registry(projection: Mapping[str, object]) -> dict[str, object]:
                 "applies_to": [f"/external_contract/release/compatibility/{key}"],
             }
             for key, value in sorted(compatibility.items())
+        ],
+        "publication": [
+            {
+                "id": "publication/role-retention/v1",
+                "meaning": publication_policies["role_retention"],
+                "source_pointer": f"{publication_base}/policy/role_retention",
+                "applies_to": [
+                    *distribution_pointers,
+                    *image_pointers,
+                    *installation_pointers,
+                ],
+            },
+            {
+                "id": "publication/platform-scope/v1",
+                "meaning": publication_policies["platform_scope"],
+                "source_pointer": f"{publication_base}/policy/platform_scope",
+                "applies_to": [*image_pointers, *installation_pointers],
+            },
+            {
+                "id": "publication/image-digest-scope/v1",
+                "meaning": publication_policies["image_digest_scope"],
+                "source_pointer": f"{publication_base}/policy/image_digest_scope",
+                "applies_to": image_pointers,
+            },
         ],
         "extent_principles": [
             {
@@ -352,7 +424,14 @@ def _compatibility_policies(interface: str) -> list[str]:
         "process-protocol-operations": "compatibility/components/v1",
         "process-protocol-schemas": "compatibility/components/v1",
         "python": "compatibility/python-api/v1",
-        "release": "compatibility/components/v1",
+        "artifact-verification": "compatibility/components/v1",
+        "compatibility-guarantees": "compatibility/components/v1",
+        "installation-roots": "compatibility/components/v1",
+        "publication-locations": "compatibility/components/v1",
+        "python-distributions": "compatibility/components/v1",
+        "release-artifacts": "compatibility/components/v1",
+        "runtime-images": "compatibility/components/v1",
+        "versioning-tags": "compatibility/components/v1",
         "schema": "compatibility/components/v1",
     }
     return [mapping[interface]]
@@ -448,19 +527,18 @@ def _protocol_owner(authority: str, sources: Mapping[str, Mapping[str, object]])
     return authority
 
 
-def _publication_group(role: str) -> str:
-    groups = {
-        "deployed_implementation": "Riverhog product publication",
-        "end_user_artifact": "Riverhog product publication",
-        "reusable_library": "Reusable library and support publication",
-        "internal_build_unit": "Reusable library and support publication",
-        "reference_application": "Nonnormative reference-application publication",
-        "reference_component": "Nonnormative reference-component publication",
+def _publication_classification(role: str) -> str:
+    classifications = {
+        "deployed_implementation",
+        "end_user_artifact",
+        "reusable_library",
+        "internal_build_unit",
+        "reference_application",
+        "reference_component",
     }
-    try:
-        return groups[role]
-    except KeyError as exc:
-        raise ContractAtlasError(f"published unit has no human release group: {role}") from exc
+    if role not in classifications:
+        raise ContractAtlasError(f"published unit has no release classification: {role}")
+    return role
 
 
 def _release_elements(elements: list[dict[str, object]], release: Mapping[str, object]) -> None:
@@ -468,27 +546,19 @@ def _release_elements(elements: list[dict[str, object]], release: Mapping[str, o
     base = "/external_contract/release/publication"
     common_sources = ["release:release.toml", "release-publication:planner"]
 
-    _add_element(
-        elements,
-        authority="release",
-        interface="release",
-        title="Publication envelope format",
-        pointers=[f"{base}/schema"],
-        detector="release-metadata",
-        source_ids=common_sources,
-        details={"publication_group": "Release-wide artifacts and trust"},
-    )
-    for section in ("policy", "versioning", "coordinates"):
+    for section, interface in (
+        ("versioning", "versioning-tags"),
+        ("coordinates", "publication-locations"),
+    ):
         for name in sorted(cast(Mapping[str, object], publication[section])):
             _add_element(
                 elements,
                 authority="release",
-                interface="release",
+                interface=interface,
                 title=f"{section.title()}: {name.replace('_', ' ')}",
                 pointers=[f"{base}/{section}/{_escape_pointer(name)}"],
                 detector="release-metadata",
                 source_ids=common_sources,
-                details={"publication_group": "Release-wide artifacts and trust"},
             )
 
     distributions = cast(Mapping[str, Mapping[str, object]], publication["distributions"])
@@ -497,17 +567,23 @@ def _release_elements(elements: list[dict[str, object]], release: Mapping[str, o
         _add_element(
             elements,
             authority="release",
-            interface="release",
+            interface="python-distributions",
             title=f"Python distribution: {name}",
             pointers=[f"{base}/distributions/{_escape_pointer(name)}"],
             detector="release-metadata",
             source_ids=[*common_sources, f"release-distribution:{name}"],
             details={
-                "publication_group": _publication_group(role),
+                "classification": _publication_classification(role),
                 "publication_kind": "distribution",
                 "role": role,
                 "semantic_owners": [name],
             },
+        )
+        elements[-1]["policy_ids"] = sorted(
+            {
+                *cast(Sequence[str], elements[-1]["policy_ids"]),
+                "publication/role-retention/v1",
+            }
         )
 
     for target, unit in sorted(
@@ -516,25 +592,33 @@ def _release_elements(elements: list[dict[str, object]], release: Mapping[str, o
         roots = [str(item) for item in cast(Sequence[object], unit["distribution_roots"])]
         root_roles = {str(distributions[root]["role"]) for root in roots}
         if unit["role"] == "product":
-            group = "Riverhog product publication"
+            classification = "product"
         elif len(root_roles) == 1:
-            group = _publication_group(next(iter(root_roles)))
+            classification = _publication_classification(next(iter(root_roles)))
         else:
             raise ContractAtlasError(f"runtime image crosses publication roles: {target}")
         _add_element(
             elements,
             authority="release",
-            interface="release",
+            interface="runtime-images",
             title=f"Runtime image: {target}",
             pointers=[f"{base}/runtime_images/{_escape_pointer(target)}"],
             detector="release-metadata",
             source_ids=[*common_sources, "release-images:docker-bake"],
             details={
-                "publication_group": group,
+                "classification": classification,
                 "publication_kind": "runtime-image",
                 "role": unit["role"],
                 "semantic_owners": roots,
             },
+        )
+        elements[-1]["policy_ids"] = sorted(
+            {
+                *cast(Sequence[str], elements[-1]["policy_ids"]),
+                "publication/image-digest-scope/v1",
+                "publication/platform-scope/v1",
+                "publication/role-retention/v1",
+            }
         )
 
     for name, unit in sorted(
@@ -545,7 +629,7 @@ def _release_elements(elements: list[dict[str, object]], release: Mapping[str, o
         _add_element(
             elements,
             authority="release",
-            interface="release",
+            interface="installation-roots",
             title=f"Installation root: {name}",
             pointers=[f"{base}/installation_roots/{_escape_pointer(name)}"],
             detector="release-metadata",
@@ -555,24 +639,33 @@ def _release_elements(elements: list[dict[str, object]], release: Mapping[str, o
                 f"release-distribution:{distribution}",
             ],
             details={
-                "publication_group": _publication_group(role),
+                "classification": _publication_classification(role),
                 "publication_kind": "installation-root",
                 "role": role,
                 "semantic_owners": [distribution],
             },
         )
+        elements[-1]["policy_ids"] = sorted(
+            {
+                *cast(Sequence[str], elements[-1]["policy_ids"]),
+                "publication/platform-scope/v1",
+                "publication/role-retention/v1",
+            }
+        )
 
-    for section, title_prefix in (("release_artifacts", "Release artifact"), ("trust", "Trust")):
+    for section, title_prefix, interface in (
+        ("release_artifacts", "Release artifact", "release-artifacts"),
+        ("trust", "Trust", "artifact-verification"),
+    ):
         for name in sorted(cast(Mapping[str, object], publication[section])):
             _add_element(
                 elements,
                 authority="release",
-                interface="release",
+                interface=interface,
                 title=f"{title_prefix}: {name}",
                 pointers=[f"{base}/{section}/{_escape_pointer(name)}"],
                 detector="release-metadata",
                 source_ids=common_sources,
-                details={"publication_group": "Release-wide artifacts and trust"},
             )
 
     compatibility = cast(Mapping[str, object], release["compatibility"])
@@ -580,12 +673,11 @@ def _release_elements(elements: list[dict[str, object]], release: Mapping[str, o
         element = _add_element(
             elements,
             authority="release",
-            interface="release",
+            interface="compatibility-guarantees",
             title=f"Compatibility: {policy_name.replace('_', ' ')}",
             pointers=[f"/external_contract/release/compatibility/{_escape_pointer(policy_name)}"],
             detector="release-metadata",
             source_ids=["release:release.toml"],
-            details={"publication_group": "Release-wide artifacts and trust"},
         )
         element["policy_ids"] = [f"compatibility/{policy_name.replace('_', '-')}/v1"]
 
@@ -1336,10 +1428,19 @@ def _terminal_pointers(value: object, pointer: str = "") -> list[str]:
 
 def _projection_coverage(
     elements: Sequence[Mapping[str, object]],
+    policies: Mapping[str, object],
     projection: Mapping[str, object],
     noncontractual_projection: Sequence[Mapping[str, object]],
 ) -> dict[str, object]:
     pointers = [pointer for item in elements for pointer in cast(Sequence[str], item["pointers"])]
+    policy_pointers = [
+        str(policy["source_pointer"])
+        for values in policies.values()
+        for policy in cast(Sequence[Mapping[str, object]], values)
+        if "source_pointer" in policy
+    ]
+    if len(policy_pointers) != len(set(policy_pointers)):
+        raise ContractAtlasError("policy source ownership is duplicated")
     noncontractual_pointers = [
         pointer
         for item in noncontractual_projection
@@ -1367,7 +1468,7 @@ def _projection_coverage(
     owned = {
         terminal: [
             pointer
-            for pointer in pointers
+            for pointer in [*pointers, *policy_pointers]
             if terminal == pointer or terminal.startswith(f"{pointer}/")
         ]
         for terminal in semantic_terminals
@@ -1388,6 +1489,13 @@ def _projection_coverage(
     return {
         "projection_terminals": len(terminals),
         "semantic_terminals": len(semantic_terminals),
+        "policy_terminals": sum(
+            any(
+                terminal == pointer or terminal.startswith(f"{pointer}/")
+                for pointer in policy_pointers
+            )
+            for terminal in semantic_terminals
+        ),
         "noncontractual_terminals": len(noncontractual_terminals),
         "extent_decisions": len(declared_decision_ids),
         "missing": sum(not owners for owners in owned.values())
@@ -1618,39 +1726,51 @@ def _validate_release_units(
     release = cast(Mapping[str, object], external["release"])
     publication = cast(Mapping[str, object], release["publication"])
     base = "/external_contract/release/publication"
-    expected = {f"{base}/schema"}
-    for section in ("policy", "versioning", "coordinates"):
-        expected.update(
-            f"{base}/{section}/{_escape_pointer(str(name))}"
-            for name in cast(Mapping[str, object], publication[section])
-        )
-    for section in (
-        "distributions",
-        "runtime_images",
-        "installation_roots",
-        "release_artifacts",
-        "trust",
+    expected: dict[str, str] = {}
+    for section, interface in (
+        ("versioning", "versioning-tags"),
+        ("coordinates", "publication-locations"),
+        ("distributions", "python-distributions"),
+        ("runtime_images", "runtime-images"),
+        ("installation_roots", "installation-roots"),
+        ("release_artifacts", "release-artifacts"),
+        ("trust", "artifact-verification"),
     ):
         expected.update(
-            f"{base}/{section}/{_escape_pointer(str(name))}"
-            for name in cast(Mapping[str, object], publication[section])
+            {
+                f"{base}/{section}/{_escape_pointer(str(name))}": interface
+                for name in cast(Mapping[str, object], publication[section])
+            }
         )
     expected.update(
-        f"/external_contract/release/compatibility/{_escape_pointer(str(name))}"
-        for name in cast(Mapping[str, object], release["compatibility"])
+        {
+            f"/external_contract/release/compatibility/{_escape_pointer(str(name))}": (
+                "compatibility-guarantees"
+            )
+            for name in cast(Mapping[str, object], release["compatibility"])
+        }
     )
-    release_elements = [item for item in elements if item["interface"] == "release"]
+    release_elements = [item for item in elements if item["authority"] == "release"]
     actual = {str(cast(Sequence[str], item["pointers"])[0]): item for item in release_elements}
     if (
         len(actual) != len(release_elements)
         or any(len(cast(Sequence[str], item["pointers"])) != 1 for item in release_elements)
-        or set(actual) != expected
+        or set(actual) != set(expected)
     ):
         raise ContractAtlasError("release publication exact-unit projection and atlas differ")
+    if any(item["interface"] != expected[pointer] for pointer, item in actual.items()):
+        raise ContractAtlasError("release unit belongs to the wrong semantic interface")
+
+    distributions = cast(Mapping[str, Mapping[str, object]], publication["distributions"])
+    publication_policy_ids = {
+        "publication/role-retention/v1",
+        "publication/platform-scope/v1",
+        "publication/image-digest-scope/v1",
+    }
     for pointer, item in actual.items():
         details = cast(Mapping[str, object], item.get("details", {}))
-        if item["authority"] != "release" or not details.get("publication_group"):
-            raise ContractAtlasError(f"release unit lacks exact ownership or grouping: {pointer}")
+        policy_ids = set(cast(Sequence[str], item["policy_ids"]))
+        expected_publication_policies: set[str] = set()
         if "/distributions/" in pointer:
             name = pointer.rsplit("/", 1)[-1].replace("~1", "/").replace("~0", "~")
             if f"release-distribution:{name}" not in cast(
@@ -1660,6 +1780,45 @@ def _validate_release_units(
             unit = cast(Mapping[str, object], pointer_value(projection, pointer))
             if not str(unit.get("requires_python", "")):
                 raise ContractAtlasError(f"distribution lacks Requires-Python: {name}")
+            if details.get("classification") != unit["role"]:
+                raise ContractAtlasError(f"distribution classification is stale: {name}")
+            expected_publication_policies = {"publication/role-retention/v1"}
+        elif "/runtime_images/" in pointer:
+            unit = cast(Mapping[str, object], pointer_value(projection, pointer))
+            roots = [str(value) for value in cast(Sequence[object], unit["distribution_roots"])]
+            root_roles = {str(distributions[root]["role"]) for root in roots}
+            expected_classification = (
+                "product"
+                if unit["role"] == "product"
+                else next(iter(root_roles))
+                if len(root_roles) == 1
+                else None
+            )
+            if details.get("classification") != expected_classification:
+                raise ContractAtlasError(f"runtime-image classification is stale: {pointer}")
+            expected_publication_policies = set(publication_policy_ids)
+        elif "/installation_roots/" in pointer:
+            unit = cast(Mapping[str, object], pointer_value(projection, pointer))
+            role = distributions[str(unit["distribution"])]["role"]
+            if details.get("classification") != role:
+                raise ContractAtlasError(f"installation-root classification is stale: {pointer}")
+            expected_publication_policies = {
+                "publication/role-retention/v1",
+                "publication/platform-scope/v1",
+            }
+        if policy_ids & publication_policy_ids != expected_publication_policies:
+            raise ContractAtlasError(f"release publication policy application is stale: {pointer}")
+    if any(
+        pointer in actual
+        for pointer in (
+            f"{base}/schema",
+            *(
+                f"{base}/policy/{_escape_pointer(str(name))}"
+                for name in cast(Mapping[str, object], publication["policy"])
+            ),
+        )
+    ):
+        raise ContractAtlasError("release metadata or policy is duplicated as a semantic unit")
     if "platforms" in release:
         raise ContractAtlasError("release envelope exposes a global platform claim")
 
@@ -2332,7 +2491,7 @@ def _render_dossier(
         lines.extend(
             _render_operation(cast(Mapping[str, object], values[0]), pointers[0], placed_subjects)
         )
-    elif interface == "release" and len(values) == 1 and isinstance(values[0], Mapping):
+    elif interface in RELEASE_INTERFACES and len(values) == 1 and isinstance(values[0], Mapping):
         lines.extend(
             _render_operation(cast(Mapping[str, object], values[0]), pointers[0], placed_subjects)
         )
@@ -3628,49 +3787,24 @@ def _render_atlas(
                 "## Semantic dossiers",
                 "",
             ]
-            if interface == "release":
-                publication_groups: dict[str, list[Mapping[str, object]]] = defaultdict(list)
-                for item in values:
-                    details = cast(Mapping[str, object], item.get("details", {}))
-                    group = str(details.get("publication_group", ""))
-                    if not group:
-                        raise ContractAtlasError(
-                            f"release unit lacks a presentation group: {item['id']}"
-                        )
-                    publication_groups[group].append(item)
-                group_order = (
-                    "Riverhog product publication",
-                    "Reusable library and support publication",
-                    "Nonnormative reference-application publication",
-                    "Nonnormative reference-component publication",
-                    "Release-wide artifacts and trust",
-                )
+            if interface in RELEASE_INTERFACES:
                 lines.extend(
                     [
-                        "| Publication group | Exact units |",
-                        "|---|---:|",
-                        *(
-                            f"| {group} | {len(publication_groups[group])} |"
-                            for group in group_order
-                            if publication_groups.get(group)
-                        ),
-                        "",
+                        "| Exact unit | Classification |",
+                        "|---|---|",
                     ]
                 )
-                for group in group_order:
-                    group_values = publication_groups.get(group)
-                    if not group_values:
-                        continue
-                    lines.extend([f"### {group}", ""])
-                    for release_item in sorted(group_values, key=lambda value: str(value["title"])):
-                        details = cast(Mapping[str, object], release_item.get("details", {}))
-                        role = f" — `{details['role']}`" if "role" in details else ""
-                        lines.append(
-                            f"- [{_md(release_item['title'])}]"
-                            f"({_relative_link(interface_path, str(release_item['dossier']))})"
-                            f"{role}"
-                        )
-                    lines.append("")
+                for release_item in sorted(values, key=lambda value: str(value["title"])):
+                    details = cast(Mapping[str, object], release_item.get("details", {}))
+                    classification = details.get("classification", "—")
+                    rendered_classification = (
+                        f"`{_md(classification)}`" if classification != "—" else "—"
+                    )
+                    lines.append(
+                        f"| [{_md(release_item['title'])}]"
+                        f"({_relative_link(interface_path, str(release_item['dossier']))}) | "
+                        f"{rendered_classification} |"
+                    )
             elif interface == "python":
                 by_module: dict[str, list[dict[str, object]]] = defaultdict(list)
                 for item in values:
@@ -4445,7 +4579,7 @@ def build_atlas(
     ]
     meta_closure = _detector_meta_closure(normalized_projection, normalized_trace)
     projection_coverage = _projection_coverage(
-        elements, normalized_projection, noncontractual_projection
+        elements, policies, normalized_projection, noncontractual_projection
     )
     detection_ids = [str(item["id"]) for item in detections]
     resolution_detection_ids = [str(item["detection_id"]) for item in resolutions]
@@ -4867,7 +5001,10 @@ def validate_atlas(
         elements, projection_value, trace_value
     )
     observed_projection_coverage = _projection_coverage(
-        elements, projection_value, noncontractual_projection
+        elements,
+        cast(Mapping[str, object], root["policies"]),
+        projection_value,
+        noncontractual_projection,
     )
     if discovery["projection_coverage"] != observed_projection_coverage:
         raise ContractAtlasError("projection-to-atlas coverage is stale")
