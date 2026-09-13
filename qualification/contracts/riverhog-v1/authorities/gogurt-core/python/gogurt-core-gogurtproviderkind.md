@@ -1,0 +1,62 @@
+# gogurt_core.GogurtProviderKind
+
+[Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
+
+<!-- contract-element: python:gogurt-core:gogurt-core-gogurtproviderkind:30cca42de5 -->
+
+Exact externally visible contract owned by this semantic dossier.
+
+| Audit field | Value |
+|---|---|
+| Authority | [gogurt-core](../index.md) |
+| Interface | [Python](index.md) |
+
+## External contract
+
+<a id="s-9ea53d70aa"></a>
+| Field | Shape |
+|---|---|
+| <a id="s-76d9719dbf"></a>`contract` | additional keys=`kind`, `value` |
+| <a id="s-22f74b97e3"></a>`distribution` | "gogurt-core" |
+| <a id="s-9a817f8a54"></a>`module` | "gogurt_core" |
+| <a id="s-085810ff9f"></a>`name` | "GogurtProviderKind" |
+| <a id="s-237ae06389"></a>`unit` | "export" |
+
+## Governing policies
+
+- <a id="pa-b67a411059"></a>[compatibility/python-api/v1](../../../policies/index.md#p-e574772ba5)
+
+## Evidence
+
+### Qualification
+
+- [make dist-smoke](../../../evidence/sources.md#q-0ba2578a3e)
+- [make build](../../../evidence/sources.md#q-d1121e35fa)
+
+### Executable sources
+
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [python:gogurt-core:gogurt_core](../../../evidence/sources.md#src-e253e4a684) — `reference/gogurt/packages/core/src/gogurt_core/__init__.py`
+
+### Machine authority
+
+- `/external_contract/python/gogurt_core.GogurtProviderKind`
+
+### Exact owned JSON
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 3ae5aae0654a7172b99794fa0cd01acb18487f647227ac0b70f680f3d3b6b4e3 -->
+
+```json
+{
+  "contract": {
+    "kind": "type-alias",
+    "value": "typing.Literal['mounted-volume', 'listener-host']"
+  },
+  "distribution": "gogurt-core",
+  "module": "gogurt_core",
+  "name": "GogurtProviderKind",
+  "unit": "export"
+}
+```

@@ -1,0 +1,70 @@
+# riverhog_provenance.ResolvedProvenanceObserver.observer_reference
+
+[Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
+
+<!-- contract-element: python:riverhog-provenance:riverhog-provenance-resolvedprovenanceobs-10cea0a3ad:32daa04e3f -->
+
+Exact externally visible contract owned by this semantic dossier.
+
+| Audit field | Value |
+|---|---|
+| Authority | [riverhog-provenance](../index.md) |
+| Interface | [Python](index.md) |
+
+## External contract
+
+<a id="s-429952c3ce"></a>
+| Field | Shape |
+|---|---|
+| <a id="s-6d2f4e2abd"></a>`contract` | additional keys=`kind`, `signature` |
+| <a id="s-251212f9f2"></a>`distribution` | "riverhog-provenance" |
+| <a id="s-86923c6652"></a>`module` | "riverhog_provenance" |
+| <a id="s-9eaafe4739"></a>`name` | "observer_reference" |
+| <a id="s-44ba369c09"></a>`owner` | "riverhog_provenance.ResolvedProvenanceObserver" |
+| <a id="s-7af1983495"></a>`unit` | "member" |
+
+## Maintained corroboration
+
+### Related interface records
+
+- [riverhog_provenance.ResolvedProvenanceObserver](riverhog-provenance-resolvedprovenanceobserver.md)
+
+## Governing policies
+
+- <a id="pa-2323d14107"></a>[compatibility/python-api/v1](../../../policies/index.md#p-e574772ba5)
+
+## Evidence
+
+### Qualification
+
+- [make dist-smoke](../../../evidence/sources.md#q-0ba2578a3e)
+- [make build](../../../evidence/sources.md#q-d1121e35fa)
+
+### Executable sources
+
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [python:riverhog-provenance:riverhog_provenance](../../../evidence/sources.md#src-38ef3a6054) — `packages/riverhog-provenance/src/riverhog_provenance/__init__.py`
+
+### Machine authority
+
+- `/external_contract/python/riverhog_provenance.ResolvedProvenanceObserver.observer_reference`
+
+### Exact owned JSON
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 8f431356e9697ddae0a208c03b7681c040873bced73d1b99b41d8353b4b3226a -->
+
+```json
+{
+  "contract": {
+    "kind": "method",
+    "signature": "\"(self) -> 'dict[str, object]'\""
+  },
+  "distribution": "riverhog-provenance",
+  "module": "riverhog_provenance",
+  "name": "observer_reference",
+  "owner": "riverhog_provenance.ResolvedProvenanceObserver",
+  "unit": "member"
+}
+```

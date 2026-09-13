@@ -1,0 +1,62 @@
+# riverhog_protocol.ArchiveCopyState
+
+[Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
+
+<!-- contract-element: python:riverhog-protocol:riverhog-protocol-archivecopystate:ee49f8608f -->
+
+Exact externally visible contract owned by this semantic dossier.
+
+| Audit field | Value |
+|---|---|
+| Authority | [riverhog-protocol](../index.md) |
+| Interface | [Python](index.md) |
+
+## External contract
+
+<a id="s-3128cda516"></a>
+| Field | Shape |
+|---|---|
+| <a id="s-dd3b42e894"></a>`contract` | additional keys=`kind`, `value` |
+| <a id="s-4cae8e37a0"></a>`distribution` | "riverhog-protocol" |
+| <a id="s-3258dbfb0d"></a>`module` | "riverhog_protocol" |
+| <a id="s-b62aa1aa56"></a>`name` | "ArchiveCopyState" |
+| <a id="s-b9ebdec850"></a>`unit` | "export" |
+
+## Governing policies
+
+- <a id="pa-579d82eb78"></a>[compatibility/python-api/v1](../../../policies/index.md#p-e574772ba5)
+
+## Evidence
+
+### Qualification
+
+- [make dist-smoke](../../../evidence/sources.md#q-0ba2578a3e)
+- [make build](../../../evidence/sources.md#q-d1121e35fa)
+
+### Executable sources
+
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [python:riverhog-protocol:riverhog_protocol](../../../evidence/sources.md#src-19e35f15d9) — `packages/riverhog-protocol/src/riverhog_protocol/__init__.py`
+
+### Machine authority
+
+- `/external_contract/python/riverhog_protocol.ArchiveCopyState`
+
+### Exact owned JSON
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: f45c9c9a11c195a74fe39bc11218a4049e96237991cfb9c01a55f8094477880e -->
+
+```json
+{
+  "contract": {
+    "kind": "type-alias",
+    "value": "typing.Literal['requested', 'waiting', 'checking', 'copying', 'canceling', 'completed', 'failed', 'canceled']"
+  },
+  "distribution": "riverhog-protocol",
+  "module": "riverhog_protocol",
+  "name": "ArchiveCopyState",
+  "unit": "export"
+}
+```

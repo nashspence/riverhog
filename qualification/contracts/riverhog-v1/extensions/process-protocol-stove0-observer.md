@@ -11,7 +11,9 @@ Independently deployed process protocol owned by stove0-observer-protocol.
 ## Semantic interfaces
 
 - [stove0-observer-protocol · Python](../authorities/stove0-observer-protocol/python/index.md)
-- [stove0-observer-support · Protocols](../authorities/stove0-observer-support/protocol/index.md) ([exact binding](../evidence/relationships.md#re-ee62dc4283))
+- [stove0-observer-support · Process Protocol](../authorities/stove0-observer-support/process-protocol/index.md) ([exact binding](../evidence/relationships.md#re-ee62dc4283))
+- [stove0-observer-support · Process Protocol Operations](../authorities/stove0-observer-support/process-protocol-operations/index.md) ([exact binding](../evidence/relationships.md#re-ee62dc4283))
+- [stove0-observer-support · Process Protocol Schemas](../authorities/stove0-observer-support/process-protocol-schemas/index.md) ([exact binding](../evidence/relationships.md#re-ee62dc4283))
 
 ## Checked-in nonnormative implementations
 

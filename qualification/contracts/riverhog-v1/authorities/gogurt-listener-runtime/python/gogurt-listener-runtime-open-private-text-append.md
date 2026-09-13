@@ -1,0 +1,62 @@
+# gogurt_listener_runtime.open_private_text_append
+
+[Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
+
+<!-- contract-element: python:gogurt-listener-runtime:gogurt-listener-runtime-open-private-text-append:7b9bdec5ab -->
+
+Exact externally visible contract owned by this semantic dossier.
+
+| Audit field | Value |
+|---|---|
+| Authority | [gogurt-listener-runtime](../index.md) |
+| Interface | [Python](index.md) |
+
+## External contract
+
+<a id="s-fafa0d530d"></a>
+| Field | Shape |
+|---|---|
+| <a id="s-ab1aa2a2a7"></a>`contract` | additional keys=`kind`, `signature` |
+| <a id="s-c4d60b7c25"></a>`distribution` | "gogurt-listener-runtime" |
+| <a id="s-cec2a4f4fb"></a>`module` | "gogurt_listener_runtime" |
+| <a id="s-316c8584eb"></a>`name` | "open_private_text_append" |
+| <a id="s-0c8385f394"></a>`unit` | "export" |
+
+## Governing policies
+
+- <a id="pa-80791b7534"></a>[compatibility/python-api/v1](../../../policies/index.md#p-e574772ba5)
+
+## Evidence
+
+### Qualification
+
+- [make dist-smoke](../../../evidence/sources.md#q-0ba2578a3e)
+- [make build](../../../evidence/sources.md#q-d1121e35fa)
+
+### Executable sources
+
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [python:gogurt-listener-runtime:gogurt_listener_runtime](../../../evidence/sources.md#src-259980dd25) — `reference/gogurt/packages/listener-runtime/src/gogurt_listener_runtime/__init__.py`
+
+### Machine authority
+
+- `/external_contract/python/gogurt_listener_runtime.open_private_text_append`
+
+### Exact owned JSON
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: d40897642ce6abb46d63c5679a55344ee4b1fb95f063563f6f4dc6bcf2886bab -->
+
+```json
+{
+  "contract": {
+    "kind": "function",
+    "signature": "\"(path: 'Path', *, encoding: 'str', errors: 'str | None') -> 'TextIO'\""
+  },
+  "distribution": "gogurt-listener-runtime",
+  "module": "gogurt_listener_runtime",
+  "name": "open_private_text_append",
+  "unit": "export"
+}
+```

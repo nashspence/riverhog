@@ -1,0 +1,62 @@
+# stove0_review_target_support.load_sampler_registrations
+
+[Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
+
+<!-- contract-element: python:stove0-review-target-support:stove0-review-target-support-load-sampler-983c3a74a6:05ff1996a2 -->
+
+Exact externally visible contract owned by this semantic dossier.
+
+| Audit field | Value |
+|---|---|
+| Authority | [stove0-review-target-support](../index.md) |
+| Interface | [Python](index.md) |
+
+## External contract
+
+<a id="s-22758ad523"></a>
+| Field | Shape |
+|---|---|
+| <a id="s-73ad88e3bd"></a>`contract` | additional keys=`kind`, `signature` |
+| <a id="s-05f286766f"></a>`distribution` | "stove0-review-target-support" |
+| <a id="s-edc330e8cc"></a>`module` | "stove0_review_target_support" |
+| <a id="s-4b4364fc0d"></a>`name` | "load_sampler_registrations" |
+| <a id="s-9811133c52"></a>`unit` | "export" |
+
+## Governing policies
+
+- <a id="pa-922a3c2b53"></a>[compatibility/python-api/v1](../../../policies/index.md#p-e574772ba5)
+
+## Evidence
+
+### Qualification
+
+- [make dist-smoke](../../../evidence/sources.md#q-0ba2578a3e)
+- [make build](../../../evidence/sources.md#q-d1121e35fa)
+
+### Executable sources
+
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [python:stove0-review-target-support:stove0_review_target_support](../../../evidence/sources.md#src-2a89a71c41) — `reference/stove0/targets/review/support/src/stove0_review_target_support/__init__.py`
+
+### Machine authority
+
+- `/external_contract/python/stove0_review_target_support.load_sampler_registrations`
+
+### Exact owned JSON
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 1d6056be0f8343e11dd8d280d3edc389b9a03b4b52839ba7a6f78275457d6a12 -->
+
+```json
+{
+  "contract": {
+    "kind": "function",
+    "signature": "\"(path: 'Path') -> 'tuple[SamplerRegistration, ...]'\""
+  },
+  "distribution": "stove0-review-target-support",
+  "module": "stove0_review_target_support",
+  "name": "load_sampler_registrations",
+  "unit": "export"
+}
+```

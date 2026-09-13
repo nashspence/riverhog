@@ -1,0 +1,70 @@
+# gogurt_core.MountedVolumeAccess.discover
+
+[Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
+
+<!-- contract-element: python:gogurt-core:gogurt-core-mountedvolumeaccess-discover:2813cac76f -->
+
+Exact externally visible contract owned by this semantic dossier.
+
+| Audit field | Value |
+|---|---|
+| Authority | [gogurt-core](../index.md) |
+| Interface | [Python](index.md) |
+
+## External contract
+
+<a id="s-46a8e2eee7"></a>
+| Field | Shape |
+|---|---|
+| <a id="s-50d7eaf62b"></a>`contract` | additional keys=`kind`, `signature` |
+| <a id="s-2ff1b8568e"></a>`distribution` | "gogurt-core" |
+| <a id="s-01308283b8"></a>`module` | "gogurt_core" |
+| <a id="s-22dc1c1a5c"></a>`name` | "discover" |
+| <a id="s-0a5ab4c587"></a>`owner` | "gogurt_core.MountedVolumeAccess" |
+| <a id="s-25fb10dda0"></a>`unit` | "member" |
+
+## Maintained corroboration
+
+### Related interface records
+
+- [gogurt_core.MountedVolumeAccess](gogurt-core-mountedvolumeaccess.md)
+
+## Governing policies
+
+- <a id="pa-85e9be10ac"></a>[compatibility/python-api/v1](../../../policies/index.md#p-e574772ba5)
+
+## Evidence
+
+### Qualification
+
+- [make dist-smoke](../../../evidence/sources.md#q-0ba2578a3e)
+- [make build](../../../evidence/sources.md#q-d1121e35fa)
+
+### Executable sources
+
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [python:gogurt-core:gogurt_core](../../../evidence/sources.md#src-e253e4a684) — `reference/gogurt/packages/core/src/gogurt_core/__init__.py`
+
+### Machine authority
+
+- `/external_contract/python/gogurt_core.MountedVolumeAccess.discover`
+
+### Exact owned JSON
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 31d70d30bc51510605c061a7c95c76101e9856de4d9e9bfb63920547b6103543 -->
+
+```json
+{
+  "contract": {
+    "kind": "method",
+    "signature": "\"(self) -> 'Sequence[Path]'\""
+  },
+  "distribution": "gogurt-core",
+  "module": "gogurt_core",
+  "name": "discover",
+  "owner": "gogurt_core.MountedVolumeAccess",
+  "unit": "member"
+}
+```

@@ -1,0 +1,62 @@
+# gogurt_path_volume_support.MAX_PATH_MARKER_BYTES
+
+[Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
+
+<!-- contract-element: python:gogurt-path-volume-support:gogurt-path-volume-support-max-path-marker-bytes:7cfbef9252 -->
+
+Exact externally visible contract owned by this semantic dossier.
+
+| Audit field | Value |
+|---|---|
+| Authority | [gogurt-path-volume-support](../index.md) |
+| Interface | [Python](index.md) |
+
+## External contract
+
+<a id="s-7a050fe6cc"></a>
+| Field | Shape |
+|---|---|
+| <a id="s-b31027b7db"></a>`contract` | additional keys=`kind`, `value` |
+| <a id="s-86b0a62592"></a>`distribution` | "gogurt-path-volume-support" |
+| <a id="s-960ed6dcce"></a>`module` | "gogurt_path_volume_support" |
+| <a id="s-b01866c1bc"></a>`name` | "MAX_PATH_MARKER_BYTES" |
+| <a id="s-454e724615"></a>`unit` | "export" |
+
+## Governing policies
+
+- <a id="pa-fcae99c8cb"></a>[compatibility/python-api/v1](../../../policies/index.md#p-e574772ba5)
+
+## Evidence
+
+### Qualification
+
+- [make dist-smoke](../../../evidence/sources.md#q-0ba2578a3e)
+- [make build](../../../evidence/sources.md#q-d1121e35fa)
+
+### Executable sources
+
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [python:gogurt-path-volume-support:gogurt_path_volume_support](../../../evidence/sources.md#src-a67d948855) — `reference/gogurt/mounted-volume/path-support/src/gogurt_path_volume_support/__init__.py`
+
+### Machine authority
+
+- `/external_contract/python/gogurt_path_volume_support.MAX_PATH_MARKER_BYTES`
+
+### Exact owned JSON
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: c17b9d2248b1a365d22b6924f3df5eb485fb46d803e4f163ebaef7276d8920d6 -->
+
+```json
+{
+  "contract": {
+    "kind": "constant",
+    "value": 4096
+  },
+  "distribution": "gogurt-path-volume-support",
+  "module": "gogurt_path_volume_support",
+  "name": "MAX_PATH_MARKER_BYTES",
+  "unit": "export"
+}
+```

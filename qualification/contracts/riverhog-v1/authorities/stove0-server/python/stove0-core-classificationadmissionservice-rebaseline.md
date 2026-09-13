@@ -1,0 +1,70 @@
+# stove0_core.ClassificationAdmissionService.rebaseline
+
+[Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
+
+<!-- contract-element: python:stove0-server:stove0-core-classificationadmissionservic-2d69e13c5f:15825397a4 -->
+
+Exact externally visible contract owned by this semantic dossier.
+
+| Audit field | Value |
+|---|---|
+| Authority | [stove0-server](../index.md) |
+| Interface | [Python](index.md) |
+
+## External contract
+
+<a id="s-6cf4ea1451"></a>
+| Field | Shape |
+|---|---|
+| <a id="s-1070ce9826"></a>`contract` | additional keys=`kind`, `signature` |
+| <a id="s-ea67479dc7"></a>`distribution` | "stove0-server" |
+| <a id="s-e2f698244e"></a>`module` | "stove0_core" |
+| <a id="s-85662dd33d"></a>`name` | "rebaseline" |
+| <a id="s-871614e04e"></a>`owner` | "stove0_core.ClassificationAdmissionService" |
+| <a id="s-f57563e823"></a>`unit` | "member" |
+
+## Maintained corroboration
+
+### Related interface records
+
+- [stove0_core.ClassificationAdmissionService](stove0-core-classificationadmissionservice.md)
+
+## Governing policies
+
+- <a id="pa-cf41fbfeb8"></a>[compatibility/python-api/v1](../../../policies/index.md#p-e574772ba5)
+
+## Evidence
+
+### Qualification
+
+- [make dist-smoke](../../../evidence/sources.md#q-0ba2578a3e)
+- [make build](../../../evidence/sources.md#q-d1121e35fa)
+
+### Executable sources
+
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [python:stove0-server:stove0_core](../../../evidence/sources.md#src-7558b08e7f) — `reference/stove0/application/server/src/stove0_core/__init__.py`
+
+### Machine authority
+
+- `/external_contract/python/stove0_core.ClassificationAdmissionService.rebaseline`
+
+### Exact owned JSON
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 69db8a10a80f17911be969012945b90a4b359bea25d1cd1cb1562610a4a3d311 -->
+
+```json
+{
+  "contract": {
+    "kind": "method",
+    "signature": "'(self, policy_id: \\'str\\', *, mode: \"Literal[\\'observe\\', \\'backfill\\']\" = \\'observe\\') -> \\'AdmissionPolicyStatus\\''"
+  },
+  "distribution": "stove0-server",
+  "module": "stove0_core",
+  "name": "rebaseline",
+  "owner": "stove0_core.ClassificationAdmissionService",
+  "unit": "member"
+}
+```

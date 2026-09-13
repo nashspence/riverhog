@@ -1,0 +1,70 @@
+# riverhog_storage_adapter_s3_support.S3StorageAdapter.head_object
+
+[Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
+
+<!-- contract-element: python:riverhog-storage-adapter-s3-support:riverhog-storage-adapter-s3-support-s3sto-5c8ecd362c:b65f8e2419 -->
+
+Exact externally visible contract owned by this semantic dossier.
+
+| Audit field | Value |
+|---|---|
+| Authority | [riverhog-storage-adapter-s3-support](../index.md) |
+| Interface | [Python](index.md) |
+
+## External contract
+
+<a id="s-30f360d9f1"></a>
+| Field | Shape |
+|---|---|
+| <a id="s-aad9935b71"></a>`contract` | additional keys=`kind`, `signature` |
+| <a id="s-d2687ebbeb"></a>`distribution` | "riverhog-storage-adapter-s3-support" |
+| <a id="s-81326de46b"></a>`module` | "riverhog_storage_adapter_s3_support" |
+| <a id="s-0416bb1b0d"></a>`name` | "head_object" |
+| <a id="s-4f56e2e970"></a>`owner` | "riverhog_storage_adapter_s3_support.S3StorageAdapter" |
+| <a id="s-e4ca75947e"></a>`unit` | "member" |
+
+## Maintained corroboration
+
+### Related interface records
+
+- [riverhog_storage_adapter_s3_support.S3StorageAdapter](riverhog-storage-adapter-s3-support-s3storageadapter.md)
+
+## Governing policies
+
+- <a id="pa-f940f7f3ac"></a>[compatibility/python-api/v1](../../../policies/index.md#p-e574772ba5)
+
+## Evidence
+
+### Qualification
+
+- [make dist-smoke](../../../evidence/sources.md#q-0ba2578a3e)
+- [make build](../../../evidence/sources.md#q-d1121e35fa)
+
+### Executable sources
+
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [python:riverhog-storage-adapter-s3-support:riverhog_storage_adapter_s3_support](../../../evidence/sources.md#src-aa14de5031) — `reference/riverhog/storage/s3-support/src/riverhog_storage_adapter_s3_support/__init__.py`
+
+### Machine authority
+
+- `/external_contract/python/riverhog_storage_adapter_s3_support.S3StorageAdapter.head_object`
+
+### Exact owned JSON
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: a2050c06fb0c69a55e61e62a35ad0198fc22e4dfb657c3c7bb1741bd487fbf8d -->
+
+```json
+{
+  "contract": {
+    "kind": "method",
+    "signature": "\"(self, request: 'ObjectHeadRequest') -> 'ObjectMetadataReceipt | None'\""
+  },
+  "distribution": "riverhog-storage-adapter-s3-support",
+  "module": "riverhog_storage_adapter_s3_support",
+  "name": "head_object",
+  "owner": "riverhog_storage_adapter_s3_support.S3StorageAdapter",
+  "unit": "member"
+}
+```

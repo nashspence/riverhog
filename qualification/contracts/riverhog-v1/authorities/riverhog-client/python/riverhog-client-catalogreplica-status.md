@@ -1,0 +1,70 @@
+# riverhog_client.CatalogReplica.status
+
+[Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
+
+<!-- contract-element: python:riverhog-client:riverhog-client-catalogreplica-status:34ab2faa87 -->
+
+Exact externally visible contract owned by this semantic dossier.
+
+| Audit field | Value |
+|---|---|
+| Authority | [riverhog-client](../index.md) |
+| Interface | [Python](index.md) |
+
+## External contract
+
+<a id="s-59c19d5948"></a>
+| Field | Shape |
+|---|---|
+| <a id="s-61e709b40d"></a>`contract` | additional keys=`kind`, `signature` |
+| <a id="s-b3edc06291"></a>`distribution` | "riverhog-client" |
+| <a id="s-f70ab69f4f"></a>`module` | "riverhog_client" |
+| <a id="s-8e43ec15c8"></a>`name` | "status" |
+| <a id="s-ad500e921e"></a>`owner` | "riverhog_client.CatalogReplica" |
+| <a id="s-b3f9c5b9eb"></a>`unit` | "member" |
+
+## Maintained corroboration
+
+### Related interface records
+
+- [riverhog_client.CatalogReplica](riverhog-client-catalogreplica.md)
+
+## Governing policies
+
+- <a id="pa-ced5ead630"></a>[compatibility/python-api/v1](../../../policies/index.md#p-e574772ba5)
+
+## Evidence
+
+### Qualification
+
+- [make dist-smoke](../../../evidence/sources.md#q-0ba2578a3e)
+- [make build](../../../evidence/sources.md#q-d1121e35fa)
+
+### Executable sources
+
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [python:riverhog-client:riverhog_client](../../../evidence/sources.md#src-c149020c71) — `packages/riverhog-client/src/riverhog_client/__init__.py`
+
+### Machine authority
+
+- `/external_contract/python/riverhog_client.CatalogReplica.status`
+
+### Exact owned JSON
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 996aa0a6e7a68c1c7e738c3d9555018e5399a3ce847fa4d1ce93494390c37005 -->
+
+```json
+{
+  "contract": {
+    "kind": "method",
+    "signature": "\"(self) -> 'dict[str, object]'\""
+  },
+  "distribution": "riverhog-client",
+  "module": "riverhog_client",
+  "name": "status",
+  "owner": "riverhog_client.CatalogReplica",
+  "unit": "member"
+}
+```

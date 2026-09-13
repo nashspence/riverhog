@@ -1,0 +1,62 @@
+# stove0_review_planning.contract_report
+
+[Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
+
+<!-- contract-element: python:stove0-review-planning:stove0-review-planning-contract-report:55ffc7c4f5 -->
+
+Exact externally visible contract owned by this semantic dossier.
+
+| Audit field | Value |
+|---|---|
+| Authority | [stove0-review-planning](../index.md) |
+| Interface | [Python](index.md) |
+
+## External contract
+
+<a id="s-daee5d59ca"></a>
+| Field | Shape |
+|---|---|
+| <a id="s-2e4f8b5c48"></a>`contract` | additional keys=`kind`, `signature` |
+| <a id="s-55fed2e22f"></a>`distribution` | "stove0-review-planning" |
+| <a id="s-fb669c2d50"></a>`module` | "stove0_review_planning" |
+| <a id="s-49db3157b3"></a>`name` | "contract_report" |
+| <a id="s-0d34f77d39"></a>`unit` | "export" |
+
+## Governing policies
+
+- <a id="pa-70a712b4f1"></a>[compatibility/python-api/v1](../../../policies/index.md#p-e574772ba5)
+
+## Evidence
+
+### Qualification
+
+- [make dist-smoke](../../../evidence/sources.md#q-0ba2578a3e)
+- [make build](../../../evidence/sources.md#q-d1121e35fa)
+
+### Executable sources
+
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [python:stove0-review-planning:stove0_review_planning](../../../evidence/sources.md#src-354ae519e9) — `reference/stove0/targets/review/planning/src/stove0_review_planning/__init__.py`
+
+### Machine authority
+
+- `/external_contract/python/stove0_review_planning.contract_report`
+
+### Exact owned JSON
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: a1ae7ba951af337f4d794e95d7a067fea1b8fb258d6052e64b426d5408d70150 -->
+
+```json
+{
+  "contract": {
+    "kind": "function",
+    "signature": "\"() -> 'dict[str, object]'\""
+  },
+  "distribution": "stove0-review-planning",
+  "module": "stove0_review_planning",
+  "name": "contract_report",
+  "unit": "export"
+}
+```

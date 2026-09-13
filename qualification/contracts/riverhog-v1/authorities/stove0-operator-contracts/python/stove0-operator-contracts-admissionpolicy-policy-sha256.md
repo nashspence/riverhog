@@ -1,0 +1,70 @@
+# stove0_operator_contracts.AdmissionPolicy.policy_sha256
+
+[Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
+
+<!-- contract-element: python:stove0-operator-contracts:stove0-operator-contracts-admissionpolicy-3f103a16fd:f5970982d5 -->
+
+Exact externally visible contract owned by this semantic dossier.
+
+| Audit field | Value |
+|---|---|
+| Authority | [stove0-operator-contracts](../index.md) |
+| Interface | [Python](index.md) |
+
+## External contract
+
+<a id="s-9e8200ce2a"></a>
+| Field | Shape |
+|---|---|
+| <a id="s-3448b0ea39"></a>`contract` | additional keys=`kind`, `signature` |
+| <a id="s-a7d96558b9"></a>`distribution` | "stove0-operator-contracts" |
+| <a id="s-fed88ec8ff"></a>`module` | "stove0_operator_contracts" |
+| <a id="s-57d14acf26"></a>`name` | "policy_sha256" |
+| <a id="s-e72fed68ee"></a>`owner` | "stove0_operator_contracts.AdmissionPolicy" |
+| <a id="s-eda37a3353"></a>`unit` | "member" |
+
+## Maintained corroboration
+
+### Related interface records
+
+- [stove0_operator_contracts.AdmissionPolicy](stove0-operator-contracts-admissionpolicy.md)
+
+## Governing policies
+
+- <a id="pa-ab9eafbf54"></a>[compatibility/python-api/v1](../../../policies/index.md#p-e574772ba5)
+
+## Evidence
+
+### Qualification
+
+- [make dist-smoke](../../../evidence/sources.md#q-0ba2578a3e)
+- [make build](../../../evidence/sources.md#q-d1121e35fa)
+
+### Executable sources
+
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [python:stove0-operator-contracts:stove0_operator_contracts](../../../evidence/sources.md#src-51ad84528d) — `reference/stove0/packages/operator-contracts/src/stove0_operator_contracts/__init__.py`
+
+### Machine authority
+
+- `/external_contract/python/stove0_operator_contracts.AdmissionPolicy.policy_sha256`
+
+### Exact owned JSON
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 457bc1498c75d67ade8c974fcec47db5277b2e1e7601b7d2084ec6e2a866fc9a -->
+
+```json
+{
+  "contract": {
+    "kind": "property",
+    "signature": "\"(self) -> 'str'\""
+  },
+  "distribution": "stove0-operator-contracts",
+  "module": "stove0_operator_contracts",
+  "name": "policy_sha256",
+  "owner": "stove0_operator_contracts.AdmissionPolicy",
+  "unit": "member"
+}
+```

@@ -1,0 +1,62 @@
+# riverhog_provenance.PROVENANCE_BINDING_SEGMENT_BYTES_MAX
+
+[Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
+
+<!-- contract-element: python:riverhog-provenance:riverhog-provenance-provenance-binding-se-33e1ae8da3:7482aaa409 -->
+
+Exact externally visible contract owned by this semantic dossier.
+
+| Audit field | Value |
+|---|---|
+| Authority | [riverhog-provenance](../index.md) |
+| Interface | [Python](index.md) |
+
+## External contract
+
+<a id="s-8a85d546ee"></a>
+| Field | Shape |
+|---|---|
+| <a id="s-deefcf3301"></a>`contract` | additional keys=`kind`, `value` |
+| <a id="s-30247be402"></a>`distribution` | "riverhog-provenance" |
+| <a id="s-4127c575d2"></a>`module` | "riverhog_provenance" |
+| <a id="s-0663939546"></a>`name` | "PROVENANCE_BINDING_SEGMENT_BYTES_MAX" |
+| <a id="s-ed12722b73"></a>`unit` | "export" |
+
+## Governing policies
+
+- <a id="pa-59bf1e0dce"></a>[compatibility/python-api/v1](../../../policies/index.md#p-e574772ba5)
+
+## Evidence
+
+### Qualification
+
+- [make dist-smoke](../../../evidence/sources.md#q-0ba2578a3e)
+- [make build](../../../evidence/sources.md#q-d1121e35fa)
+
+### Executable sources
+
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [python:riverhog-provenance:riverhog_provenance](../../../evidence/sources.md#src-38ef3a6054) — `packages/riverhog-provenance/src/riverhog_provenance/__init__.py`
+
+### Machine authority
+
+- `/external_contract/python/riverhog_provenance.PROVENANCE_BINDING_SEGMENT_BYTES_MAX`
+
+### Exact owned JSON
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 39bede3d11d00d991ca9050b791f9b1bd0d4387b717ac765c0da5aab76688ad2 -->
+
+```json
+{
+  "contract": {
+    "kind": "constant",
+    "value": 4194304
+  },
+  "distribution": "riverhog-provenance",
+  "module": "riverhog_provenance",
+  "name": "PROVENANCE_BINDING_SEGMENT_BYTES_MAX",
+  "unit": "export"
+}
+```

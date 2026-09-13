@@ -1,0 +1,70 @@
+# riverhog_client.ApiClient.create_app_key
+
+[Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
+
+<!-- contract-element: python:riverhog-client:riverhog-client-apiclient-create-app-key:8fc4cca262 -->
+
+Exact externally visible contract owned by this semantic dossier.
+
+| Audit field | Value |
+|---|---|
+| Authority | [riverhog-client](../index.md) |
+| Interface | [Python](index.md) |
+
+## External contract
+
+<a id="s-a6ed37379c"></a>
+| Field | Shape |
+|---|---|
+| <a id="s-2e611a93a4"></a>`contract` | additional keys=`kind`, `signature` |
+| <a id="s-68b67127e9"></a>`distribution` | "riverhog-client" |
+| <a id="s-ba2371d0bc"></a>`module` | "riverhog_client" |
+| <a id="s-9b3c20ca38"></a>`name` | "create_app_key" |
+| <a id="s-848357a4d6"></a>`owner` | "riverhog_client.ApiClient" |
+| <a id="s-f5264611a6"></a>`unit` | "member" |
+
+## Maintained corroboration
+
+### Related interface records
+
+- [riverhog_client.ApiClient](riverhog-client-apiclient.md)
+
+## Governing policies
+
+- <a id="pa-98cfb3d850"></a>[compatibility/python-api/v1](../../../policies/index.md#p-e574772ba5)
+
+## Evidence
+
+### Qualification
+
+- [make dist-smoke](../../../evidence/sources.md#q-0ba2578a3e)
+- [make build](../../../evidence/sources.md#q-d1121e35fa)
+
+### Executable sources
+
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [python:riverhog-client:riverhog_client](../../../evidence/sources.md#src-c149020c71) — `packages/riverhog-client/src/riverhog_client/__init__.py`
+
+### Machine authority
+
+- `/external_contract/python/riverhog_client.ApiClient.create_app_key`
+
+### Exact owned JSON
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 3f3433b1dcb062772e4474d95740cd9bb14aea4586d0b15473dcee7c3b5d107a -->
+
+```json
+{
+  "contract": {
+    "kind": "method",
+    "signature": "\"(self, app: 'ApplicationName', *, access: 'Sequence[Mapping[str, str]]', expires_in_seconds: 'int | None' = None) -> 'dict[str, Any]'\""
+  },
+  "distribution": "riverhog-client",
+  "module": "riverhog_client",
+  "name": "create_app_key",
+  "owner": "riverhog_client.ApiClient",
+  "unit": "member"
+}
+```

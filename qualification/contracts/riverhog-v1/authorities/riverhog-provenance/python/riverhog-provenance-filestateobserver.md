@@ -1,0 +1,68 @@
+# riverhog_provenance.FileStateObserver
+
+[Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
+
+<!-- contract-element: python:riverhog-provenance:riverhog-provenance-filestateobserver:f059c564f6 -->
+
+Exact externally visible contract owned by this semantic dossier.
+
+| Audit field | Value |
+|---|---|
+| Authority | [riverhog-provenance](../index.md) |
+| Interface | [Python](index.md) |
+
+## External contract
+
+<a id="s-3a1543f768"></a>
+| Field | Shape |
+|---|---|
+| <a id="s-7da8dd3f50"></a>`contract` | additional keys=`kind`, `signature` |
+| <a id="s-5c7880e214"></a>`distribution` | "riverhog-provenance" |
+| <a id="s-c14081b2ed"></a>`module` | "riverhog_provenance" |
+| <a id="s-773b0edabc"></a>`name` | "FileStateObserver" |
+| <a id="s-4b6854675e"></a>`unit` | "export" |
+
+## Maintained corroboration
+
+### Related interface records
+
+- [riverhog_provenance.FileStateObserver.observe](riverhog-provenance-filestateobserver-observe.md)
+
+## Governing policies
+
+- <a id="pa-8d6b2bc9db"></a>[compatibility/python-api/v1](../../../policies/index.md#p-e574772ba5)
+
+## Evidence
+
+### Qualification
+
+- [make dist-smoke](../../../evidence/sources.md#q-0ba2578a3e)
+- [make build](../../../evidence/sources.md#q-d1121e35fa)
+
+### Executable sources
+
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [python:riverhog-provenance:riverhog_provenance](../../../evidence/sources.md#src-38ef3a6054) — `packages/riverhog-provenance/src/riverhog_provenance/__init__.py`
+
+### Machine authority
+
+- `/external_contract/python/riverhog_provenance.FileStateObserver`
+
+### Exact owned JSON
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 639dabed99f9b95bc5d8318a30487d8b856a249ccac4c804dd2e38241f629b8f -->
+
+```json
+{
+  "contract": {
+    "kind": "class",
+    "signature": "'(*args, **kwargs)'"
+  },
+  "distribution": "riverhog-provenance",
+  "module": "riverhog_provenance",
+  "name": "FileStateObserver",
+  "unit": "export"
+}
+```

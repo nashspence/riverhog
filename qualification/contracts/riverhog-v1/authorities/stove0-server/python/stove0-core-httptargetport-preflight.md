@@ -1,0 +1,70 @@
+# stove0_core.HttpTargetPort.preflight
+
+[Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
+
+<!-- contract-element: python:stove0-server:stove0-core-httptargetport-preflight:30c0d6298e -->
+
+Exact externally visible contract owned by this semantic dossier.
+
+| Audit field | Value |
+|---|---|
+| Authority | [stove0-server](../index.md) |
+| Interface | [Python](index.md) |
+
+## External contract
+
+<a id="s-032400161c"></a>
+| Field | Shape |
+|---|---|
+| <a id="s-024ee1abcc"></a>`contract` | additional keys=`kind`, `signature` |
+| <a id="s-54828be333"></a>`distribution` | "stove0-server" |
+| <a id="s-ffdbcd04ac"></a>`module` | "stove0_core" |
+| <a id="s-3eb1cc98f2"></a>`name` | "preflight" |
+| <a id="s-2c0113e06e"></a>`owner` | "stove0_core.HttpTargetPort" |
+| <a id="s-fd1cdd6591"></a>`unit` | "member" |
+
+## Maintained corroboration
+
+### Related interface records
+
+- [stove0_core.HttpTargetPort](stove0-core-httptargetport.md)
+
+## Governing policies
+
+- <a id="pa-c9921e2e6c"></a>[compatibility/python-api/v1](../../../policies/index.md#p-e574772ba5)
+
+## Evidence
+
+### Qualification
+
+- [make dist-smoke](../../../evidence/sources.md#q-0ba2578a3e)
+- [make build](../../../evidence/sources.md#q-d1121e35fa)
+
+### Executable sources
+
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [python:stove0-server:stove0_core](../../../evidence/sources.md#src-7558b08e7f) — `reference/stove0/application/server/src/stove0_core/__init__.py`
+
+### Machine authority
+
+- `/external_contract/python/stove0_core.HttpTargetPort.preflight`
+
+### Exact owned JSON
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: ebcb02a8aaa6b8228f7ef68dd4e70cf70211fc712c072bad6529203ba897430b -->
+
+```json
+{
+  "contract": {
+    "kind": "method",
+    "signature": "\"(self, registration_id: 'str', request: 'TargetPreflightRequest') -> 'TargetPreflightResponse'\""
+  },
+  "distribution": "stove0-server",
+  "module": "stove0_core",
+  "name": "preflight",
+  "owner": "stove0_core.HttpTargetPort",
+  "unit": "member"
+}
+```

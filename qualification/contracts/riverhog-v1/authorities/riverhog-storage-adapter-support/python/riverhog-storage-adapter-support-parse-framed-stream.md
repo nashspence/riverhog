@@ -1,0 +1,62 @@
+# riverhog_storage_adapter_support.parse_framed_stream
+
+[Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
+
+<!-- contract-element: python:riverhog-storage-adapter-support:riverhog-storage-adapter-support-parse-framed-stream:f8ec4da54f -->
+
+Exact externally visible contract owned by this semantic dossier.
+
+| Audit field | Value |
+|---|---|
+| Authority | [riverhog-storage-adapter-support](../index.md) |
+| Interface | [Python](index.md) |
+
+## External contract
+
+<a id="s-633b4476fc"></a>
+| Field | Shape |
+|---|---|
+| <a id="s-b4c2507b17"></a>`contract` | additional keys=`kind`, `signature` |
+| <a id="s-238685f6c4"></a>`distribution` | "riverhog-storage-adapter-support" |
+| <a id="s-87f802a6c6"></a>`module` | "riverhog_storage_adapter_support" |
+| <a id="s-bebc30f3f3"></a>`name` | "parse_framed_stream" |
+| <a id="s-983c8fd085"></a>`unit` | "export" |
+
+## Governing policies
+
+- <a id="pa-8eba7a8697"></a>[compatibility/python-api/v1](../../../policies/index.md#p-e574772ba5)
+
+## Evidence
+
+### Qualification
+
+- [make dist-smoke](../../../evidence/sources.md#q-0ba2578a3e)
+- [make build](../../../evidence/sources.md#q-d1121e35fa)
+
+### Executable sources
+
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [python:riverhog-storage-adapter-support:riverhog_storage_adapter_support](../../../evidence/sources.md#src-284271cd54) — `packages/riverhog-storage-adapter-support/src/riverhog_storage_adapter_support/__init__.py`
+
+### Machine authority
+
+- `/external_contract/python/riverhog_storage_adapter_support.parse_framed_stream`
+
+### Exact owned JSON
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 130f3811cb36e1debaab4a7aaa5ab4b1c0cb83e226ff87615fe9edffb4bae06e -->
+
+```json
+{
+  "contract": {
+    "kind": "function",
+    "signature": "\"(chunks: 'Iterable[bytes]', model: 'type[ModelT]', *, content_length: 'int', maximum_header_bytes: 'int' = 32768) -> 'tuple[ModelT, FramedContent]'\""
+  },
+  "distribution": "riverhog-storage-adapter-support",
+  "module": "riverhog_storage_adapter_support",
+  "name": "parse_framed_stream",
+  "unit": "export"
+}
+```

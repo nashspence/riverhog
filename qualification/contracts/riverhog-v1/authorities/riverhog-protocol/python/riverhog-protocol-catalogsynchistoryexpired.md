@@ -1,0 +1,62 @@
+# riverhog_protocol.CatalogSyncHistoryExpired
+
+[Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
+
+<!-- contract-element: python:riverhog-protocol:riverhog-protocol-catalogsynchistoryexpired:e0642d7125 -->
+
+Exact externally visible contract owned by this semantic dossier.
+
+| Audit field | Value |
+|---|---|
+| Authority | [riverhog-protocol](../index.md) |
+| Interface | [Python](index.md) |
+
+## External contract
+
+<a id="s-28d2ca157c"></a>
+| Field | Shape |
+|---|---|
+| <a id="s-f2904bf26c"></a>`contract` | additional keys=`kind`, `signature` |
+| <a id="s-3611f9af25"></a>`distribution` | "riverhog-protocol" |
+| <a id="s-d6dd22ea29"></a>`module` | "riverhog_protocol" |
+| <a id="s-a9b042c488"></a>`name` | "CatalogSyncHistoryExpired" |
+| <a id="s-7a23a52c34"></a>`unit` | "export" |
+
+## Governing policies
+
+- <a id="pa-9454165a47"></a>[compatibility/python-api/v1](../../../policies/index.md#p-e574772ba5)
+
+## Evidence
+
+### Qualification
+
+- [make dist-smoke](../../../evidence/sources.md#q-0ba2578a3e)
+- [make build](../../../evidence/sources.md#q-d1121e35fa)
+
+### Executable sources
+
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [python:riverhog-protocol:riverhog_protocol](../../../evidence/sources.md#src-19e35f15d9) — `packages/riverhog-protocol/src/riverhog_protocol/__init__.py`
+
+### Machine authority
+
+- `/external_contract/python/riverhog_protocol.CatalogSyncHistoryExpired`
+
+### Exact owned JSON
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: b967adf16c753a39de40aa8a6a9b4f1c22430a2ae35355948a82b03c7372e555 -->
+
+```json
+{
+  "contract": {
+    "kind": "class",
+    "signature": "\"(message: 'str', *, code: 'str | None' = None, observed_status: 'int | None' = None, details: 'dict[str, Any] | None' = None) -> 'None'\""
+  },
+  "distribution": "riverhog-protocol",
+  "module": "riverhog_protocol",
+  "name": "CatalogSyncHistoryExpired",
+  "unit": "export"
+}
+```

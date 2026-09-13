@@ -1,0 +1,62 @@
+# gogurt_listener_runtime.atomic_write
+
+[Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
+
+<!-- contract-element: python:gogurt-listener-runtime:gogurt-listener-runtime-atomic-write:8e59df4501 -->
+
+Exact externally visible contract owned by this semantic dossier.
+
+| Audit field | Value |
+|---|---|
+| Authority | [gogurt-listener-runtime](../index.md) |
+| Interface | [Python](index.md) |
+
+## External contract
+
+<a id="s-e39a94a854"></a>
+| Field | Shape |
+|---|---|
+| <a id="s-6f021a5122"></a>`contract` | additional keys=`kind`, `signature` |
+| <a id="s-59a76ac7ef"></a>`distribution` | "gogurt-listener-runtime" |
+| <a id="s-064f63f81c"></a>`module` | "gogurt_listener_runtime" |
+| <a id="s-57f2fde26a"></a>`name` | "atomic_write" |
+| <a id="s-bbc92ae0bb"></a>`unit` | "export" |
+
+## Governing policies
+
+- <a id="pa-19146dd9ee"></a>[compatibility/python-api/v1](../../../policies/index.md#p-e574772ba5)
+
+## Evidence
+
+### Qualification
+
+- [make dist-smoke](../../../evidence/sources.md#q-0ba2578a3e)
+- [make build](../../../evidence/sources.md#q-d1121e35fa)
+
+### Executable sources
+
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [python:gogurt-listener-runtime:gogurt_listener_runtime](../../../evidence/sources.md#src-259980dd25) — `reference/gogurt/packages/listener-runtime/src/gogurt_listener_runtime/__init__.py`
+
+### Machine authority
+
+- `/external_contract/python/gogurt_listener_runtime.atomic_write`
+
+### Exact owned JSON
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: f889fd2e0f2f0556e70bf555f59a82e5955d44ea303f2113cd030baa7100680f -->
+
+```json
+{
+  "contract": {
+    "kind": "function",
+    "signature": "\"(destination: 'Path', content: 'bytes', *, mode: 'int') -> 'None'\""
+  },
+  "distribution": "gogurt-listener-runtime",
+  "module": "gogurt_listener_runtime",
+  "name": "atomic_write",
+  "unit": "export"
+}
+```

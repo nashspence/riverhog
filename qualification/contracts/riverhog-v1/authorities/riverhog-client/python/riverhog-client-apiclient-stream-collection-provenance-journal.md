@@ -1,0 +1,70 @@
+# riverhog_client.ApiClient.stream_collection_provenance_journal
+
+[Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
+
+<!-- contract-element: python:riverhog-client:riverhog-client-apiclient-stream-collecti-903bed7a28:cef2214529 -->
+
+Exact externally visible contract owned by this semantic dossier.
+
+| Audit field | Value |
+|---|---|
+| Authority | [riverhog-client](../index.md) |
+| Interface | [Python](index.md) |
+
+## External contract
+
+<a id="s-ef08386f9d"></a>
+| Field | Shape |
+|---|---|
+| <a id="s-10ce8eed78"></a>`contract` | additional keys=`kind`, `signature` |
+| <a id="s-251c3274ea"></a>`distribution` | "riverhog-client" |
+| <a id="s-a162b7b9a7"></a>`module` | "riverhog_client" |
+| <a id="s-45e88dfd2f"></a>`name` | "stream_collection_provenance_journal" |
+| <a id="s-56a4b56712"></a>`owner` | "riverhog_client.ApiClient" |
+| <a id="s-43ebfce0f0"></a>`unit` | "member" |
+
+## Maintained corroboration
+
+### Related interface records
+
+- [riverhog_client.ApiClient](riverhog-client-apiclient.md)
+
+## Governing policies
+
+- <a id="pa-606ffa5e5d"></a>[compatibility/python-api/v1](../../../policies/index.md#p-e574772ba5)
+
+## Evidence
+
+### Qualification
+
+- [make dist-smoke](../../../evidence/sources.md#q-0ba2578a3e)
+- [make build](../../../evidence/sources.md#q-d1121e35fa)
+
+### Executable sources
+
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [python:riverhog-client:riverhog_client](../../../evidence/sources.md#src-c149020c71) — `packages/riverhog-client/src/riverhog_client/__init__.py`
+
+### Machine authority
+
+- `/external_contract/python/riverhog_client.ApiClient.stream_collection_provenance_journal`
+
+### Exact owned JSON
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 91113cf5dddb5540a787e7d3574a0a86840c4390bee1b0e6083ee11f22254266 -->
+
+```json
+{
+  "contract": {
+    "kind": "method",
+    "signature": "\"(self, collection_id: 'CollectionId', journal_id: 'ProvenanceJournalId', *, start: 'int' = 0, end: 'int | None' = None, expected_bytes: 'int | None' = None, expected_sha256: 'str | None' = None, chunk_size: 'int' = 8388608) -> 'Iterator[Iterator[bytes]]'\""
+  },
+  "distribution": "riverhog-client",
+  "module": "riverhog_client",
+  "name": "stream_collection_provenance_journal",
+  "owner": "riverhog_client.ApiClient",
+  "unit": "member"
+}
+```

@@ -1,0 +1,62 @@
+# gogurt_listener_runtime.LISTENER_STATE_SCHEMA
+
+[Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
+
+<!-- contract-element: python:gogurt-listener-runtime:gogurt-listener-runtime-listener-state-schema:24e5a431c7 -->
+
+Exact externally visible contract owned by this semantic dossier.
+
+| Audit field | Value |
+|---|---|
+| Authority | [gogurt-listener-runtime](../index.md) |
+| Interface | [Python](index.md) |
+
+## External contract
+
+<a id="s-3402b7c4ed"></a>
+| Field | Shape |
+|---|---|
+| <a id="s-9f83a1be4a"></a>`contract` | additional keys=`kind`, `value` |
+| <a id="s-80ea7f5377"></a>`distribution` | "gogurt-listener-runtime" |
+| <a id="s-e7d6466030"></a>`module` | "gogurt_listener_runtime" |
+| <a id="s-f5a6c40636"></a>`name` | "LISTENER_STATE_SCHEMA" |
+| <a id="s-3044a2d02c"></a>`unit` | "export" |
+
+## Governing policies
+
+- <a id="pa-571c8278bb"></a>[compatibility/python-api/v1](../../../policies/index.md#p-e574772ba5)
+
+## Evidence
+
+### Qualification
+
+- [make dist-smoke](../../../evidence/sources.md#q-0ba2578a3e)
+- [make build](../../../evidence/sources.md#q-d1121e35fa)
+
+### Executable sources
+
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [python:gogurt-listener-runtime:gogurt_listener_runtime](../../../evidence/sources.md#src-259980dd25) — `reference/gogurt/packages/listener-runtime/src/gogurt_listener_runtime/__init__.py`
+
+### Machine authority
+
+- `/external_contract/python/gogurt_listener_runtime.LISTENER_STATE_SCHEMA`
+
+### Exact owned JSON
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 0e618ce6616c59db3c38325b6fdef0708e78ac3245bd94e491483ff5d4d2511a -->
+
+```json
+{
+  "contract": {
+    "kind": "constant",
+    "value": 1
+  },
+  "distribution": "gogurt-listener-runtime",
+  "module": "gogurt_listener_runtime",
+  "name": "LISTENER_STATE_SCHEMA",
+  "unit": "export"
+}
+```

@@ -10,10 +10,10 @@ Policies are defined once here and referenced from every dossier where they are 
 |---|---:|
 | [compatibility/archive/v1](#p-915b8756ae) | 1 |
 | [compatibility/cli/v1](#p-48a89776de) | 168 |
-| [compatibility/components/v1](#p-95e9a12259) | 92 |
+| [compatibility/components/v1](#p-95e9a12259) | 116 |
 | [compatibility/configuration/v1](#p-8dc08bb461) | 260 |
 | [compatibility/http-api/v1](#p-5bc717c2c0) | 547 |
-| [compatibility/python-api/v1](#p-e574772ba5) | 63 |
+| [compatibility/python-api/v1](#p-e574772ba5) | 2641 |
 | [compatibility/recovery/v1](#p-04aa4508f1) | 1 |
 
 ### Definitions
@@ -112,7 +112,7 @@ A supported deployment runs components from one coordinated product version.
   - [state:stove0-control](../evidence/sources.md#src-45e44b17fd)
   - [state:stove0-target-jobs](../evidence/sources.md#src-7b4138829a)
 
-Applications: **92**
+Applications: **116**
 <a id="p-8dc08bb461"></a>
 #### `compatibility/configuration/v1`
 
@@ -473,7 +473,7 @@ Freeze-protected declared public-module exports and public signatures remain bac
   - [python:stove0-target-support:stove0_target_support](../evidence/sources.md#src-3c01163237)
   - [release:release.toml](../evidence/sources.md#src-c5380dbe5f)
 
-Applications: **63**
+Applications: **2641**
 <a id="p-04aa4508f1"></a>
 #### `compatibility/recovery/v1`
 

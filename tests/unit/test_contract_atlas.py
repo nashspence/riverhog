@@ -4,6 +4,7 @@ import hashlib
 import json
 import re
 import sys
+from functools import cache
 from pathlib import Path
 
 import pytest
@@ -15,6 +16,13 @@ if str(REPO_ROOT / "scripts") not in sys.path:
 import contract_atlas as atlas  # noqa: E402
 
 ARTIFACT = REPO_ROOT / "qualification/contracts/riverhog-v1.json"
+
+
+@cache
+def checked_atlas() -> atlas.ContractAtlas:
+    """Load and validate the large checked closure once for presentation assertions."""
+
+    return atlas.load_atlas(ARTIFACT)
 
 
 def test_semantic_json_identity_does_not_distinguish_integral_float_spelling() -> None:
@@ -38,7 +46,7 @@ def test_machine_closure_round_trips_unsafe_integers_without_sharding() -> None:
 
 
 def test_checked_atlas_rejects_a_stale_unreferenced_document(tmp_path: Path) -> None:
-    checked = atlas.load_atlas(ARTIFACT)
+    checked = checked_atlas()
     root = tmp_path / ARTIFACT.name
     root.write_bytes(ARTIFACT.read_bytes())
     for relative, payload in checked.files.items():
@@ -53,7 +61,7 @@ def test_checked_atlas_rejects_a_stale_unreferenced_document(tmp_path: Path) -> 
 
 
 def test_checked_atlas_rejects_document_identity_or_path_escape() -> None:
-    checked = atlas.load_atlas(ARTIFACT)
+    checked = checked_atlas()
     changed = json.loads(json.dumps(checked.root))
     changed["atlas"]["documents"][0]["bytes"] += 1
     with pytest.raises(atlas.ContractAtlasError, match="document identity mismatch"):
@@ -66,7 +74,7 @@ def test_checked_atlas_rejects_document_identity_or_path_escape() -> None:
 
 
 def test_every_machine_terminal_and_extent_decision_has_one_human_owner() -> None:
-    checked = atlas.load_atlas(ARTIFACT)
+    checked = checked_atlas()
     discovery = checked.root["discovery"]
 
     assert discovery["anomalies"] == {
@@ -86,7 +94,7 @@ def test_every_machine_terminal_and_extent_decision_has_one_human_owner() -> Non
 
 
 def test_atlas_rollups_and_dossiers_are_exact_and_descriptive() -> None:
-    checked = atlas.load_atlas(ARTIFACT)
+    checked = checked_atlas()
     root = checked.root
     elements = root["elements"]
     documents = root["atlas"]["documents"]
@@ -114,7 +122,7 @@ def test_atlas_rollups_and_dossiers_are_exact_and_descriptive() -> None:
 
 
 def test_human_entrypoint_exposes_closure_exclusions_and_relationships() -> None:
-    checked = atlas.load_atlas(ARTIFACT)
+    checked = checked_atlas()
     root = checked.root
     root_page = checked.files[root["atlas"]["root"]].decode()
     evidence_page = checked.files["riverhog-v1/evidence/index.md"].decode()
@@ -186,7 +194,7 @@ def test_human_entrypoint_exposes_closure_exclusions_and_relationships() -> None
 
 
 def test_contract_map_routes_every_interface_and_extension_without_duplicate_semantics() -> None:
-    checked = atlas.load_atlas(ARTIFACT)
+    checked = checked_atlas()
     root = checked.root
     root_path = root["atlas"]["root"]
     root_page = checked.files[root_path].decode()
@@ -234,7 +242,7 @@ def test_contract_map_routes_every_interface_and_extension_without_duplicate_sem
 
 
 def test_primary_semantic_path_is_exact_without_aggregate_accounting() -> None:
-    checked = atlas.load_atlas(ARTIFACT)
+    checked = checked_atlas()
     root = checked.root
     root_page = checked.files[root["atlas"]["root"]].decode()
 
@@ -257,7 +265,7 @@ def test_primary_semantic_path_is_exact_without_aggregate_accounting() -> None:
 
 
 def test_http_semantics_are_owned_once_and_operation_parity_remains_exact_evidence() -> None:
-    checked = atlas.load_atlas(ARTIFACT)
+    checked = checked_atlas()
     root = checked.root
     elements = root["elements"]
     records = root["trace"]["operation_qualification"]["records"]
@@ -290,7 +298,7 @@ def test_http_semantics_are_owned_once_and_operation_parity_remains_exact_eviden
 
 
 def test_every_frozen_component_has_an_exact_boundary_audit_result() -> None:
-    checked = atlas.load_atlas(ARTIFACT)
+    checked = checked_atlas()
     projection = checked.root["projection"]
     relationships = checked.root["atlas"]["relationships"]
     elements = checked.root["elements"]
@@ -306,7 +314,7 @@ def test_every_frozen_component_has_an_exact_boundary_audit_result() -> None:
 
 
 def test_semantic_identity_excludes_boundary_governance() -> None:
-    checked = atlas.load_atlas(ARTIFACT)
+    checked = checked_atlas()
     projection = json.loads(json.dumps(checked.root["projection"]))
     policies = checked.root["policies"]
     unsafe_paths = checked.root["projection_unsafe_integer_paths"]
@@ -317,7 +325,7 @@ def test_semantic_identity_excludes_boundary_governance() -> None:
 
 
 def test_authority_registry_rejects_an_undeclared_synthetic_owner() -> None:
-    checked = atlas.load_atlas(ARTIFACT)
+    checked = checked_atlas()
     elements = json.loads(json.dumps(checked.root["elements"]))
     elements[0]["authority"] = "nearest-looking-bucket"
 
@@ -332,7 +340,7 @@ def test_authority_registry_rejects_an_undeclared_synthetic_owner() -> None:
 def test_every_dossier_is_lossless_and_representative_contract_classes_are_semantics_first() -> (
     None
 ):
-    checked = atlas.load_atlas(ARTIFACT)
+    checked = checked_atlas()
     elements = checked.root["elements"]
     projection = checked.root["projection"]
 
@@ -353,7 +361,10 @@ def test_every_dossier_is_lossless_and_representative_contract_classes_are_seman
         "http-operations",
         "cli",
         "configuration",
-        "protocol",
+        "process-protocol",
+        "process-protocol-operations",
+        "process-protocol-schemas",
+        "schema",
         "durable-state",
         "release",
     }
@@ -370,7 +381,7 @@ def test_every_dossier_is_lossless_and_representative_contract_classes_are_seman
 
 
 def test_interfaces_are_flat_exact_inventories_with_local_references() -> None:
-    checked = atlas.load_atlas(ARTIFACT)
+    checked = checked_atlas()
     documents = checked.root["atlas"]["documents"]
 
     assert not any(item["kind"] == "family-index" for item in documents)
@@ -386,8 +397,109 @@ def test_interfaces_are_flat_exact_inventories_with_local_references() -> None:
     )
 
 
+def test_process_protocols_own_exact_metadata_operations_and_schemas() -> None:
+    checked = checked_atlas()
+    elements = checked.root["elements"]
+    projection = checked.root["projection"]
+    by_interface: dict[str, list[dict[str, object]]] = {}
+    for item in elements:
+        by_interface.setdefault(item["interface"], []).append(item)
+
+    assert len(by_interface["process-protocol"]) == 4
+    assert len(by_interface["process-protocol-operations"]) == 24
+    assert len(by_interface["process-protocol-schemas"]) == 43
+    assert len(by_interface["schema"]) == 31
+    assert "protocol" not in by_interface
+
+    generated = {
+        name: document
+        for name, document in projection["external_contract"]["protocol_schemas"].items()
+        if name.startswith("generated:")
+    }
+    for name, document in generated.items():
+        base = f"/external_contract/protocol_schemas/{atlas._escape_pointer(name)}"
+        parent = next(
+            item
+            for item in by_interface["process-protocol"]
+            if f"{base}/format" in item["pointers"]
+        )
+        assert not any(
+            pointer.startswith(f"{base}/http_binding") or pointer.startswith(f"{base}/schemas")
+            for pointer in parent["pointers"]
+        )
+        operation_pointers = {
+            pointer
+            for item in by_interface["process-protocol-operations"]
+            for pointer in item["pointers"]
+            if pointer.startswith(f"{base}/")
+        }
+        schema_pointers = {
+            pointer
+            for item in by_interface["process-protocol-schemas"]
+            for pointer in item["pointers"]
+            if pointer.startswith(f"{base}/")
+        }
+        assert operation_pointers == {
+            f"{base}/http_binding/operations/{index}"
+            for index in range(len(document["http_binding"]["operations"]))
+        }
+        assert schema_pointers == {
+            f"{base}/schemas/{atlas._escape_pointer(schema)}" for schema in document["schemas"]
+        }
+
+
+def test_python_contract_units_are_exact_and_navigate_module_export_member() -> None:
+    checked = checked_atlas()
+    root = checked.root
+    surfaces = root["projection"]["external_contract"]["python"]
+    elements = [item for item in root["elements"] if item["interface"] == "python"]
+    registry = root["trace"]["python_registry"]
+
+    assert len(elements) == len(surfaces) == registry["coverage"]["protected"]
+    assert {surface["unit"] for surface in surfaces.values()} == {"export", "member"}
+    assert "riverhog_client.ApiClient" in surfaces
+    assert "riverhog_client.ApiClient.list_collections" in surfaces
+    assert "riverhog_client.transform.CapabilityApiClient.__enter__" in surfaces
+    assert surfaces["riverhog_client.ApiClient.list_collections"]["contract"]["signature"]
+    assert "members" not in surfaces["riverhog_client.ApiClient"]["contract"]
+
+    index = checked.files["riverhog-v1/authorities/riverhog-client/python/index.md"].decode()
+    assert index.index("### `riverhog_client`") < index.index("### `riverhog_client.transform`")
+    export_line = "- [riverhog_client.ApiClient](riverhog-client-apiclient.md)"
+    member_line = (
+        "  - [riverhog_client.ApiClient.list_collections]"
+        "(riverhog-client-apiclient-list-collections.md)"
+    )
+    assert export_line in index
+    assert member_line in index
+    assert index.index(export_line) < index.index(member_line)
+
+
+def test_exact_protocol_and_python_unit_validation_fails_closed_on_drift() -> None:
+    checked = checked_atlas()
+    changed_elements = json.loads(json.dumps(checked.root["elements"]))
+    process_operation = next(
+        item for item in changed_elements if item["interface"] == "process-protocol-operations"
+    )
+    process_operation["interface"] = "process-protocol-schemas"
+    with pytest.raises(atlas.ContractAtlasError, match="operation lacks exact ownership"):
+        atlas._validate_process_protocol_units(changed_elements, checked.root["projection"])
+
+    changed_trace = json.loads(json.dumps(checked.root["trace"]))
+    protected = next(
+        item
+        for item in changed_trace["python_registry"]["dispositions"]
+        if item["disposition"] == "protected"
+    )
+    changed_trace["python_registry"]["dispositions"].remove(protected)
+    with pytest.raises(atlas.ContractAtlasError, match="does not protect every exact public unit"):
+        atlas._validate_python_units(
+            checked.root["elements"], checked.root["projection"], changed_trace
+        )
+
+
 def test_policy_registry_is_contract_focused_and_application_counted() -> None:
-    checked = atlas.load_atlas(ARTIFACT)
+    checked = checked_atlas()
     policies = checked.root["policies"]
     elements = checked.root["elements"]
     declared = {item["id"] for category in policies.values() for item in category}
@@ -411,7 +523,7 @@ def test_policy_registry_is_contract_focused_and_application_counted() -> None:
 
 
 def test_every_extent_fact_names_and_links_its_exact_subject() -> None:
-    checked = atlas.load_atlas(ARTIFACT)
+    checked = checked_atlas()
     decisions = {
         item["id"]: item
         for item in checked.root["projection"]["external_contract"]["extents"]["decisions"]
@@ -446,7 +558,7 @@ def test_every_extent_fact_names_and_links_its_exact_subject() -> None:
 
 
 def test_atlas_routes_policies_sources_and_relationships_to_exact_subjects() -> None:
-    checked = atlas.load_atlas(ARTIFACT)
+    checked = checked_atlas()
     root = checked.root
     policy_page = checked.files["riverhog-v1/policies/index.md"].decode()
     source_page = checked.files["riverhog-v1/evidence/sources.md"].decode()

@@ -1,0 +1,113 @@
+# gogurt_listener_runtime.ListenerConfig
+
+[Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
+
+<!-- contract-element: python:gogurt-listener-runtime:gogurt-listener-runtime-listenerconfig:bf5adfbb7c -->
+
+Exact externally visible contract owned by this semantic dossier.
+
+| Audit field | Value |
+|---|---|
+| Authority | [gogurt-listener-runtime](../index.md) |
+| Interface | [Python](index.md) |
+
+## External contract
+
+<a id="s-070199c165"></a>
+| Field | Shape |
+|---|---|
+| <a id="s-c0d6cc211c"></a>`contract` | additional keys=`fields`, `kind`, `signature` |
+| <a id="s-10d2b301bf"></a>`distribution` | "gogurt-listener-runtime" |
+| <a id="s-85a9f64738"></a>`module` | "gogurt_listener_runtime" |
+| <a id="s-0ecbbe7fe0"></a>`name` | "ListenerConfig" |
+| <a id="s-a6329e81f8"></a>`unit` | "export" |
+
+## Maintained corroboration
+
+### Related interface records
+
+- [gogurt_listener_runtime.ListenerConfig.content](gogurt-listener-runtime-listenerconfig-content.md)
+- [gogurt_listener_runtime.ListenerConfig.payload](gogurt-listener-runtime-listenerconfig-payload.md)
+- [gogurt_listener_runtime.ListenerConfig.read](gogurt-listener-runtime-listenerconfig-read.md)
+- [gogurt_listener_runtime.ListenerConfig.write](gogurt-listener-runtime-listenerconfig-write.md)
+
+## Governing policies
+
+- <a id="pa-6373f140d4"></a>[compatibility/python-api/v1](../../../policies/index.md#p-e574772ba5)
+
+## Evidence
+
+### Qualification
+
+- [make dist-smoke](../../../evidence/sources.md#q-0ba2578a3e)
+- [make build](../../../evidence/sources.md#q-d1121e35fa)
+
+### Executable sources
+
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [python:gogurt-listener-runtime:gogurt_listener_runtime](../../../evidence/sources.md#src-259980dd25) — `reference/gogurt/packages/listener-runtime/src/gogurt_listener_runtime/__init__.py`
+
+### Machine authority
+
+- `/external_contract/python/gogurt_listener_runtime.ListenerConfig`
+
+### Exact owned JSON
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 238d15b4d6f7ef1432c953203efefcdcaf21234ee0550f208eeef9013d9e9b1f -->
+
+```json
+{
+  "contract": {
+    "fields": [
+      {
+        "default": "required",
+        "name": "executable",
+        "type": "'Path'"
+      },
+      {
+        "default": "required",
+        "name": "routes_file",
+        "type": "'Path'"
+      },
+      {
+        "default": "required",
+        "name": "actions_dir",
+        "type": "'Path | None'"
+      },
+      {
+        "default": "required",
+        "name": "interval_seconds",
+        "type": "'float'"
+      },
+      {
+        "default": "required",
+        "name": "state_dir",
+        "type": "'Path'"
+      },
+      {
+        "default": "required",
+        "name": "mounted_volume_provider",
+        "type": "'GogurtProviderReference'"
+      },
+      {
+        "default": "required",
+        "name": "listener_host_provider",
+        "type": "'GogurtProviderReference'"
+      },
+      {
+        "default": "True",
+        "name": "autorun",
+        "type": "'bool'"
+      }
+    ],
+    "kind": "class",
+    "signature": "\"(executable: 'Path', routes_file: 'Path', actions_dir: 'Path | None', interval_seconds: 'float', state_dir: 'Path', mounted_volume_provider: 'GogurtProviderReference', listener_host_provider: 'GogurtProviderReference', autorun: 'bool' = True) -> None\""
+  },
+  "distribution": "gogurt-listener-runtime",
+  "module": "gogurt_listener_runtime",
+  "name": "ListenerConfig",
+  "unit": "export"
+}
+```

@@ -1,0 +1,70 @@
+# riverhog_client.ApiClient.list_download_quotas
+
+[Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
+
+<!-- contract-element: python:riverhog-client:riverhog-client-apiclient-list-download-quotas:e549c4b18e -->
+
+Exact externally visible contract owned by this semantic dossier.
+
+| Audit field | Value |
+|---|---|
+| Authority | [riverhog-client](../index.md) |
+| Interface | [Python](index.md) |
+
+## External contract
+
+<a id="s-d2c23cc06f"></a>
+| Field | Shape |
+|---|---|
+| <a id="s-81fbb57da0"></a>`contract` | additional keys=`kind`, `signature` |
+| <a id="s-111d15c433"></a>`distribution` | "riverhog-client" |
+| <a id="s-c8ba915997"></a>`module` | "riverhog_client" |
+| <a id="s-dbe005703e"></a>`name` | "list_download_quotas" |
+| <a id="s-d25982b5d3"></a>`owner` | "riverhog_client.ApiClient" |
+| <a id="s-2ea75bcfd1"></a>`unit` | "member" |
+
+## Maintained corroboration
+
+### Related interface records
+
+- [riverhog_client.ApiClient](riverhog-client-apiclient.md)
+
+## Governing policies
+
+- <a id="pa-f44d806336"></a>[compatibility/python-api/v1](../../../policies/index.md#p-e574772ba5)
+
+## Evidence
+
+### Qualification
+
+- [make dist-smoke](../../../evidence/sources.md#q-0ba2578a3e)
+- [make build](../../../evidence/sources.md#q-d1121e35fa)
+
+### Executable sources
+
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [python:riverhog-client:riverhog_client](../../../evidence/sources.md#src-c149020c71) — `packages/riverhog-client/src/riverhog_client/__init__.py`
+
+### Machine authority
+
+- `/external_contract/python/riverhog_client.ApiClient.list_download_quotas`
+
+### Exact owned JSON
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: ba125f7085670fdcd941544b0e176d9caa22a2c3d9060c4090c223f322528db7 -->
+
+```json
+{
+  "contract": {
+    "kind": "method",
+    "signature": "\"(self, *, page_size: 'int' = 25, page_token: 'str | None' = None, q: 'str | None' = None, sort: 'DownloadQuotaSort' = 'app', order: 'SortOrder' = 'asc', app: 'ApplicationName | None' = None, active: 'bool | None' = None) -> 'dict[str, Any]'\""
+  },
+  "distribution": "riverhog-client",
+  "module": "riverhog_client",
+  "name": "list_download_quotas",
+  "owner": "riverhog_client.ApiClient",
+  "unit": "member"
+}
+```

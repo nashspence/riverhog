@@ -1,0 +1,70 @@
+# stove0_core.WorkStore.compare_and_swap_target_settlement_seal
+
+[Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
+
+<!-- contract-element: python:stove0-server:stove0-core-workstore-compare-and-swap-ta-b5c1789954:fe2a1987ce -->
+
+Exact externally visible contract owned by this semantic dossier.
+
+| Audit field | Value |
+|---|---|
+| Authority | [stove0-server](../index.md) |
+| Interface | [Python](index.md) |
+
+## External contract
+
+<a id="s-8d43d2da1b"></a>
+| Field | Shape |
+|---|---|
+| <a id="s-aaae41cff1"></a>`contract` | additional keys=`kind`, `signature` |
+| <a id="s-8a072306d8"></a>`distribution` | "stove0-server" |
+| <a id="s-14ec58eb2a"></a>`module` | "stove0_core" |
+| <a id="s-967a6db09d"></a>`name` | "compare_and_swap_target_settlement_seal" |
+| <a id="s-187a85729a"></a>`owner` | "stove0_core.WorkStore" |
+| <a id="s-1a8cd03631"></a>`unit` | "member" |
+
+## Maintained corroboration
+
+### Related interface records
+
+- [stove0_core.WorkStore](stove0-core-workstore.md)
+
+## Governing policies
+
+- <a id="pa-b81bc5fbca"></a>[compatibility/python-api/v1](../../../policies/index.md#p-e574772ba5)
+
+## Evidence
+
+### Qualification
+
+- [make dist-smoke](../../../evidence/sources.md#q-0ba2578a3e)
+- [make build](../../../evidence/sources.md#q-d1121e35fa)
+
+### Executable sources
+
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [python:stove0-server:stove0_core](../../../evidence/sources.md#src-7558b08e7f) — `reference/stove0/application/server/src/stove0_core/__init__.py`
+
+### Machine authority
+
+- `/external_contract/python/stove0_core.WorkStore.compare_and_swap_target_settlement_seal`
+
+### Exact owned JSON
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: f23575dcf758de589509a05061a219a6e610576b92eb8ca91297476f6ee03f2e -->
+
+```json
+{
+  "contract": {
+    "kind": "method",
+    "signature": "\"(self, work_id: 'str', job_id: 'str', *, expected_revision: 'int', replacement: 'TargetSettlementSealRecord') -> 'TargetSettlementSealRecord'\""
+  },
+  "distribution": "stove0-server",
+  "module": "stove0_core",
+  "name": "compare_and_swap_target_settlement_seal",
+  "owner": "stove0_core.WorkStore",
+  "unit": "member"
+}
+```

@@ -1,0 +1,62 @@
+# riverhog_provenance.parse_binding_segment
+
+[Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
+
+<!-- contract-element: python:riverhog-provenance:riverhog-provenance-parse-binding-segment:e6853b3363 -->
+
+Exact externally visible contract owned by this semantic dossier.
+
+| Audit field | Value |
+|---|---|
+| Authority | [riverhog-provenance](../index.md) |
+| Interface | [Python](index.md) |
+
+## External contract
+
+<a id="s-1856ae5d79"></a>
+| Field | Shape |
+|---|---|
+| <a id="s-c1fd456706"></a>`contract` | additional keys=`kind`, `signature` |
+| <a id="s-35701a28b3"></a>`distribution` | "riverhog-provenance" |
+| <a id="s-9b2ec61974"></a>`module` | "riverhog_provenance" |
+| <a id="s-3f5639e782"></a>`name` | "parse_binding_segment" |
+| <a id="s-6dfeffa706"></a>`unit` | "export" |
+
+## Governing policies
+
+- <a id="pa-ea360c0cc7"></a>[compatibility/python-api/v1](../../../policies/index.md#p-e574772ba5)
+
+## Evidence
+
+### Qualification
+
+- [make dist-smoke](../../../evidence/sources.md#q-0ba2578a3e)
+- [make build](../../../evidence/sources.md#q-d1121e35fa)
+
+### Executable sources
+
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [python:riverhog-provenance:riverhog_provenance](../../../evidence/sources.md#src-38ef3a6054) — `packages/riverhog-provenance/src/riverhog_provenance/__init__.py`
+
+### Machine authority
+
+- `/external_contract/python/riverhog_provenance.parse_binding_segment`
+
+### Exact owned JSON
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: dc17c3e9001a46078f1e2b3a2c9987af9b98b4c9631876a8707c67b4ae776f08 -->
+
+```json
+{
+  "contract": {
+    "kind": "function",
+    "signature": "\"(content: 'bytes') -> 'tuple[int, list[dict[str, object]]]'\""
+  },
+  "distribution": "riverhog-provenance",
+  "module": "riverhog_provenance",
+  "name": "parse_binding_segment",
+  "unit": "export"
+}
+```

@@ -1,0 +1,62 @@
+# riverhog_protocol.FileProvenanceBinding
+
+[Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
+
+<!-- contract-element: python:riverhog-protocol:riverhog-protocol-fileprovenancebinding:e973c5d61e -->
+
+Exact externally visible contract owned by this semantic dossier.
+
+| Audit field | Value |
+|---|---|
+| Authority | [riverhog-protocol](../index.md) |
+| Interface | [Python](index.md) |
+
+## External contract
+
+<a id="s-60d924664a"></a>
+| Field | Shape |
+|---|---|
+| <a id="s-a249786fa1"></a>`contract` | type="typing._AnnotatedAlias"; additional keys=`kind` |
+| <a id="s-0dfa687fb4"></a>`distribution` | "riverhog-protocol" |
+| <a id="s-7ec48cfbbc"></a>`module` | "riverhog_protocol" |
+| <a id="s-1ac8b70ff5"></a>`name` | "FileProvenanceBinding" |
+| <a id="s-b39ea7c194"></a>`unit` | "export" |
+
+## Governing policies
+
+- <a id="pa-e68608dfd0"></a>[compatibility/python-api/v1](../../../policies/index.md#p-e574772ba5)
+
+## Evidence
+
+### Qualification
+
+- [make dist-smoke](../../../evidence/sources.md#q-0ba2578a3e)
+- [make build](../../../evidence/sources.md#q-d1121e35fa)
+
+### Executable sources
+
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [python:riverhog-protocol:riverhog_protocol](../../../evidence/sources.md#src-19e35f15d9) — `packages/riverhog-protocol/src/riverhog_protocol/__init__.py`
+
+### Machine authority
+
+- `/external_contract/python/riverhog_protocol.FileProvenanceBinding`
+
+### Exact owned JSON
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: c3de173b6284bb55ab6cf7b4ec7d105ae5f879a40c943d6e613699459e3a6ad6 -->
+
+```json
+{
+  "contract": {
+    "kind": "object",
+    "type": "typing._AnnotatedAlias"
+  },
+  "distribution": "riverhog-protocol",
+  "module": "riverhog_protocol",
+  "name": "FileProvenanceBinding",
+  "unit": "export"
+}
+```

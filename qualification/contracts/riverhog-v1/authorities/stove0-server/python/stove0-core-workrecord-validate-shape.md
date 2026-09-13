@@ -1,0 +1,70 @@
+# stove0_core.WorkRecord.validate_shape
+
+[Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
+
+<!-- contract-element: python:stove0-server:stove0-core-workrecord-validate-shape:634983849d -->
+
+Exact externally visible contract owned by this semantic dossier.
+
+| Audit field | Value |
+|---|---|
+| Authority | [stove0-server](../index.md) |
+| Interface | [Python](index.md) |
+
+## External contract
+
+<a id="s-fd95d33fe8"></a>
+| Field | Shape |
+|---|---|
+| <a id="s-4021c0397d"></a>`contract` | additional keys=`kind`, `signature` |
+| <a id="s-04fef61d43"></a>`distribution` | "stove0-server" |
+| <a id="s-d4420dd339"></a>`module` | "stove0_core" |
+| <a id="s-d86514554a"></a>`name` | "validate_shape" |
+| <a id="s-b0a4a03463"></a>`owner` | "stove0_core.WorkRecord" |
+| <a id="s-ab60693283"></a>`unit` | "member" |
+
+## Maintained corroboration
+
+### Related interface records
+
+- [stove0_core.WorkRecord](stove0-core-workrecord.md)
+
+## Governing policies
+
+- <a id="pa-731fefe830"></a>[compatibility/python-api/v1](../../../policies/index.md#p-e574772ba5)
+
+## Evidence
+
+### Qualification
+
+- [make dist-smoke](../../../evidence/sources.md#q-0ba2578a3e)
+- [make build](../../../evidence/sources.md#q-d1121e35fa)
+
+### Executable sources
+
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [python:stove0-server:stove0_core](../../../evidence/sources.md#src-7558b08e7f) — `reference/stove0/application/server/src/stove0_core/__init__.py`
+
+### Machine authority
+
+- `/external_contract/python/stove0_core.WorkRecord.validate_shape`
+
+### Exact owned JSON
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: efe723709466502063b38cd24319df3a82da045c2f925b94aa62849c1c7a9be0 -->
+
+```json
+{
+  "contract": {
+    "kind": "method",
+    "signature": "\"(self) -> 'Self'\""
+  },
+  "distribution": "stove0-server",
+  "module": "stove0_core",
+  "name": "validate_shape",
+  "owner": "stove0_core.WorkRecord",
+  "unit": "member"
+}
+```

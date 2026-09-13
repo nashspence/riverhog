@@ -1,0 +1,62 @@
+# stove0_media_archive_target_contracts.AV1_OPUS_ARCHIVE_OPERATION_ID
+
+[Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
+
+<!-- contract-element: python:stove0-media-archive-target-contracts:stove0-media-archive-target-contracts-av1-361cd05eab:a127b26794 -->
+
+Exact externally visible contract owned by this semantic dossier.
+
+| Audit field | Value |
+|---|---|
+| Authority | [stove0-media-archive-target-contracts](../index.md) |
+| Interface | [Python](index.md) |
+
+## External contract
+
+<a id="s-d40ce8a7b6"></a>
+| Field | Shape |
+|---|---|
+| <a id="s-0e5f007d60"></a>`contract` | additional keys=`kind`, `value` |
+| <a id="s-d42efe3405"></a>`distribution` | "stove0-media-archive-target-contracts" |
+| <a id="s-63a2569f1b"></a>`module` | "stove0_media_archive_target_contracts" |
+| <a id="s-91930c60f0"></a>`name` | "AV1_OPUS_ARCHIVE_OPERATION_ID" |
+| <a id="s-4a1d853845"></a>`unit` | "export" |
+
+## Governing policies
+
+- <a id="pa-5b9388d118"></a>[compatibility/python-api/v1](../../../policies/index.md#p-e574772ba5)
+
+## Evidence
+
+### Qualification
+
+- [make dist-smoke](../../../evidence/sources.md#q-0ba2578a3e)
+- [make build](../../../evidence/sources.md#q-d1121e35fa)
+
+### Executable sources
+
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [python:stove0-media-archive-target-contracts:stove0_media_archive_target_contracts](../../../evidence/sources.md#src-dfeb5229f2) — `reference/stove0/targets/media-archive/contracts/src/stove0_media_archive_target_contracts/__init__.py`
+
+### Machine authority
+
+- `/external_contract/python/stove0_media_archive_target_contracts.AV1_OPUS_ARCHIVE_OPERATION_ID`
+
+### Exact owned JSON
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 0affd44baae3b95d35f535981ae0fde214dbe84d7242821c266b7b2a31effa9a -->
+
+```json
+{
+  "contract": {
+    "kind": "constant",
+    "value": "stove0.media.av1-opus-archive/v1"
+  },
+  "distribution": "stove0-media-archive-target-contracts",
+  "module": "stove0_media_archive_target_contracts",
+  "name": "AV1_OPUS_ARCHIVE_OPERATION_ID",
+  "unit": "export"
+}
+```

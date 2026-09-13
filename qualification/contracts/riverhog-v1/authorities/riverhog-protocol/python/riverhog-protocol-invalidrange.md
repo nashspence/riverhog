@@ -1,0 +1,62 @@
+# riverhog_protocol.InvalidRange
+
+[Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
+
+<!-- contract-element: python:riverhog-protocol:riverhog-protocol-invalidrange:438e9b1355 -->
+
+Exact externally visible contract owned by this semantic dossier.
+
+| Audit field | Value |
+|---|---|
+| Authority | [riverhog-protocol](../index.md) |
+| Interface | [Python](index.md) |
+
+## External contract
+
+<a id="s-ae9c8b4627"></a>
+| Field | Shape |
+|---|---|
+| <a id="s-6741ddcd4b"></a>`contract` | additional keys=`kind`, `signature` |
+| <a id="s-7bce3cd522"></a>`distribution` | "riverhog-protocol" |
+| <a id="s-b636df99c1"></a>`module` | "riverhog_protocol" |
+| <a id="s-153d8d4693"></a>`name` | "InvalidRange" |
+| <a id="s-b7ab140bf4"></a>`unit` | "export" |
+
+## Governing policies
+
+- <a id="pa-8fbc160354"></a>[compatibility/python-api/v1](../../../policies/index.md#p-e574772ba5)
+
+## Evidence
+
+### Qualification
+
+- [make dist-smoke](../../../evidence/sources.md#q-0ba2578a3e)
+- [make build](../../../evidence/sources.md#q-d1121e35fa)
+
+### Executable sources
+
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [python:riverhog-protocol:riverhog_protocol](../../../evidence/sources.md#src-19e35f15d9) — `packages/riverhog-protocol/src/riverhog_protocol/__init__.py`
+
+### Machine authority
+
+- `/external_contract/python/riverhog_protocol.InvalidRange`
+
+### Exact owned JSON
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 6bca5eed163d510529c0067f4bb6c434ab49f099448f1e480cdf33b31f6fa8f6 -->
+
+```json
+{
+  "contract": {
+    "kind": "class",
+    "signature": "\"(message: 'str', *, code: 'str | None' = None, observed_status: 'int | None' = None, details: 'dict[str, Any] | None' = None) -> 'None'\""
+  },
+  "distribution": "riverhog-protocol",
+  "module": "riverhog_protocol",
+  "name": "InvalidRange",
+  "unit": "export"
+}
+```

@@ -1,0 +1,70 @@
+# stove0_core.Stove0WorkService.begin_observations
+
+[Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
+
+<!-- contract-element: python:stove0-server:stove0-core-stove0workservice-begin-observations:30c3ecce53 -->
+
+Exact externally visible contract owned by this semantic dossier.
+
+| Audit field | Value |
+|---|---|
+| Authority | [stove0-server](../index.md) |
+| Interface | [Python](index.md) |
+
+## External contract
+
+<a id="s-c616522c73"></a>
+| Field | Shape |
+|---|---|
+| <a id="s-66817d7f8e"></a>`contract` | additional keys=`kind`, `signature` |
+| <a id="s-f598495c4a"></a>`distribution` | "stove0-server" |
+| <a id="s-788d9f71bf"></a>`module` | "stove0_core" |
+| <a id="s-bd1539e6a1"></a>`name` | "begin_observations" |
+| <a id="s-412f200dc4"></a>`owner` | "stove0_core.Stove0WorkService" |
+| <a id="s-e4edb6ed53"></a>`unit` | "member" |
+
+## Maintained corroboration
+
+### Related interface records
+
+- [stove0_core.Stove0WorkService](stove0-core-stove0workservice.md)
+
+## Governing policies
+
+- <a id="pa-14c9cec4d0"></a>[compatibility/python-api/v1](../../../policies/index.md#p-e574772ba5)
+
+## Evidence
+
+### Qualification
+
+- [make dist-smoke](../../../evidence/sources.md#q-0ba2578a3e)
+- [make build](../../../evidence/sources.md#q-d1121e35fa)
+
+### Executable sources
+
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [python:stove0-server:stove0_core](../../../evidence/sources.md#src-7558b08e7f) — `reference/stove0/application/server/src/stove0_core/__init__.py`
+
+### Machine authority
+
+- `/external_contract/python/stove0_core.Stove0WorkService.begin_observations`
+
+### Exact owned JSON
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 7444ad71a062e65ebb70f3768b013f55d26b20cd10e5105035c20428d94c3b21 -->
+
+```json
+{
+  "contract": {
+    "kind": "method",
+    "signature": "\"(self, work_id: 'str', requests: 'Sequence[ObservationRequest]', *, expected_revision: 'int') -> 'WorkRecord'\""
+  },
+  "distribution": "stove0-server",
+  "module": "stove0_core",
+  "name": "begin_observations",
+  "owner": "stove0_core.Stove0WorkService",
+  "unit": "member"
+}
+```

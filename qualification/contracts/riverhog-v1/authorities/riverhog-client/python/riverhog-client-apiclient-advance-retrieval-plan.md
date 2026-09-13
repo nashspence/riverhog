@@ -1,0 +1,70 @@
+# riverhog_client.ApiClient.advance_retrieval_plan
+
+[Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
+
+<!-- contract-element: python:riverhog-client:riverhog-client-apiclient-advance-retrieval-plan:02998f65b7 -->
+
+Exact externally visible contract owned by this semantic dossier.
+
+| Audit field | Value |
+|---|---|
+| Authority | [riverhog-client](../index.md) |
+| Interface | [Python](index.md) |
+
+## External contract
+
+<a id="s-6adc0150db"></a>
+| Field | Shape |
+|---|---|
+| <a id="s-f62f29a3ed"></a>`contract` | additional keys=`kind`, `signature` |
+| <a id="s-b5746936db"></a>`distribution` | "riverhog-client" |
+| <a id="s-77d08ba66b"></a>`module` | "riverhog_client" |
+| <a id="s-b256f86f5a"></a>`name` | "advance_retrieval_plan" |
+| <a id="s-181439ea56"></a>`owner` | "riverhog_client.ApiClient" |
+| <a id="s-f76f5352f6"></a>`unit` | "member" |
+
+## Maintained corroboration
+
+### Related interface records
+
+- [riverhog_client.ApiClient](riverhog-client-apiclient.md)
+
+## Governing policies
+
+- <a id="pa-856d2871c2"></a>[compatibility/python-api/v1](../../../policies/index.md#p-e574772ba5)
+
+## Evidence
+
+### Qualification
+
+- [make dist-smoke](../../../evidence/sources.md#q-0ba2578a3e)
+- [make build](../../../evidence/sources.md#q-d1121e35fa)
+
+### Executable sources
+
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [python:riverhog-client:riverhog_client](../../../evidence/sources.md#src-c149020c71) — `packages/riverhog-client/src/riverhog_client/__init__.py`
+
+### Machine authority
+
+- `/external_contract/python/riverhog_client.ApiClient.advance_retrieval_plan`
+
+### Exact owned JSON
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 5a9b5ac8f0c39e04b1f1588dd809019d9157fe9bf7781a00bdd2ad70b9d9a43d -->
+
+```json
+{
+  "contract": {
+    "kind": "method",
+    "signature": "\"(self, plan_id: 'str') -> 'dict[str, Any]'\""
+  },
+  "distribution": "riverhog-client",
+  "module": "riverhog_client",
+  "name": "advance_retrieval_plan",
+  "owner": "riverhog_client.ApiClient",
+  "unit": "member"
+}
+```

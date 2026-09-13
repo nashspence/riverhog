@@ -1,0 +1,70 @@
+# riverhog_client.transform.ClaimedCollectionRuntimeRegistry.refresh
+
+[Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
+
+<!-- contract-element: python:riverhog-client:riverhog-client-transform-claimedcollecti-f7b79a9112:960fa400b1 -->
+
+Exact externally visible contract owned by this semantic dossier.
+
+| Audit field | Value |
+|---|---|
+| Authority | [riverhog-client](../index.md) |
+| Interface | [Python](index.md) |
+
+## External contract
+
+<a id="s-508450abce"></a>
+| Field | Shape |
+|---|---|
+| <a id="s-b92c9b6379"></a>`contract` | additional keys=`kind`, `signature` |
+| <a id="s-5d1878ed80"></a>`distribution` | "riverhog-client" |
+| <a id="s-f10f279bea"></a>`module` | "riverhog_client.transform" |
+| <a id="s-b5f72894ee"></a>`name` | "refresh" |
+| <a id="s-21dce42628"></a>`owner` | "riverhog_client.transform.ClaimedCollectionRuntimeRegistry" |
+| <a id="s-8ffcccf52d"></a>`unit` | "member" |
+
+## Maintained corroboration
+
+### Related interface records
+
+- [riverhog_client.transform.ClaimedCollectionRuntimeRegistry](riverhog-client-transform-claimedcollectionruntimeregistry.md)
+
+## Governing policies
+
+- <a id="pa-4b037f0826"></a>[compatibility/python-api/v1](../../../policies/index.md#p-e574772ba5)
+
+## Evidence
+
+### Qualification
+
+- [make dist-smoke](../../../evidence/sources.md#q-0ba2578a3e)
+- [make build](../../../evidence/sources.md#q-d1121e35fa)
+
+### Executable sources
+
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [python:riverhog-client:riverhog_client.transform](../../../evidence/sources.md#src-7a247bb534) — `packages/riverhog-client/src/riverhog_client/transform/__init__.py`
+
+### Machine authority
+
+- `/external_contract/python/riverhog_client.transform.ClaimedCollectionRuntimeRegistry.refresh`
+
+### Exact owned JSON
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 5324bc0c35570ce65979f258427749eba2a6a7de6725c008457f5e1f26c534b4 -->
+
+```json
+{
+  "contract": {
+    "kind": "method",
+    "signature": "\"(self, job_id: 'str', capability_token: 'str') -> 'None'\""
+  },
+  "distribution": "riverhog-client",
+  "module": "riverhog_client.transform",
+  "name": "refresh",
+  "owner": "riverhog_client.transform.ClaimedCollectionRuntimeRegistry",
+  "unit": "member"
+}
+```

@@ -1,0 +1,62 @@
+# gogurt_core.route_for_gogurt_marker
+
+[Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
+
+<!-- contract-element: python:gogurt-core:gogurt-core-route-for-gogurt-marker:0b3d53c781 -->
+
+Exact externally visible contract owned by this semantic dossier.
+
+| Audit field | Value |
+|---|---|
+| Authority | [gogurt-core](../index.md) |
+| Interface | [Python](index.md) |
+
+## External contract
+
+<a id="s-de36c8cf22"></a>
+| Field | Shape |
+|---|---|
+| <a id="s-441abb2e26"></a>`contract` | additional keys=`kind`, `signature` |
+| <a id="s-2ac8fe7703"></a>`distribution` | "gogurt-core" |
+| <a id="s-e97b7ba87c"></a>`module` | "gogurt_core" |
+| <a id="s-352693dd4d"></a>`name` | "route_for_gogurt_marker" |
+| <a id="s-85ce0137f2"></a>`unit` | "export" |
+
+## Governing policies
+
+- <a id="pa-e07e6688eb"></a>[compatibility/python-api/v1](../../../policies/index.md#p-e574772ba5)
+
+## Evidence
+
+### Qualification
+
+- [make dist-smoke](../../../evidence/sources.md#q-0ba2578a3e)
+- [make build](../../../evidence/sources.md#q-d1121e35fa)
+
+### Executable sources
+
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [python:gogurt-core:gogurt_core](../../../evidence/sources.md#src-e253e4a684) — `reference/gogurt/packages/core/src/gogurt_core/__init__.py`
+
+### Machine authority
+
+- `/external_contract/python/gogurt_core.route_for_gogurt_marker`
+
+### Exact owned JSON
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: ee130591331f4cab76833317916228caefc608e4489f4fddb7b0636f90231c79 -->
+
+```json
+{
+  "contract": {
+    "kind": "function",
+    "signature": "\"(config_file: 'PathInput', route_name: 'str') -> 'str'\""
+  },
+  "distribution": "gogurt-core",
+  "module": "gogurt_core",
+  "name": "route_for_gogurt_marker",
+  "unit": "export"
+}
+```

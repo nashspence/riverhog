@@ -1,0 +1,70 @@
+# stove0_observer_support.ObservationResultBuilder.failed
+
+[Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
+
+<!-- contract-element: python:stove0-observer-support:stove0-observer-support-observationresult-1eda5b8bf8:89fabc1c51 -->
+
+Exact externally visible contract owned by this semantic dossier.
+
+| Audit field | Value |
+|---|---|
+| Authority | [stove0-observer-support](../index.md) |
+| Interface | [Python](index.md) |
+
+## External contract
+
+<a id="s-e27856c103"></a>
+| Field | Shape |
+|---|---|
+| <a id="s-fcf9a8d05b"></a>`contract` | additional keys=`kind`, `signature` |
+| <a id="s-cafbabe62b"></a>`distribution` | "stove0-observer-support" |
+| <a id="s-2fac84d0ec"></a>`module` | "stove0_observer_support" |
+| <a id="s-0325efe40f"></a>`name` | "failed" |
+| <a id="s-0c24c7d4cc"></a>`owner` | "stove0_observer_support.ObservationResultBuilder" |
+| <a id="s-4139588381"></a>`unit` | "member" |
+
+## Maintained corroboration
+
+### Related interface records
+
+- [stove0_observer_support.ObservationResultBuilder](stove0-observer-support-observationresultbuilder.md)
+
+## Governing policies
+
+- <a id="pa-da8c8f2e97"></a>[compatibility/python-api/v1](../../../policies/index.md#p-e574772ba5)
+
+## Evidence
+
+### Qualification
+
+- [make dist-smoke](../../../evidence/sources.md#q-0ba2578a3e)
+- [make build](../../../evidence/sources.md#q-d1121e35fa)
+
+### Executable sources
+
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [python:stove0-observer-support:stove0_observer_support](../../../evidence/sources.md#src-13bf3acd32) — `reference/stove0/packages/observer-support/src/stove0_observer_support/__init__.py`
+
+### Machine authority
+
+- `/external_contract/python/stove0_observer_support.ObservationResultBuilder.failed`
+
+### Exact owned JSON
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 0aec8395f38097d62aab84ff7bdf00a778976b9950b30028ebc6c99bb081261e -->
+
+```json
+{
+  "contract": {
+    "kind": "method",
+    "signature": "\"(self, *, code: 'str', message: 'str', retryable: 'bool', execution_evidence: 'Mapping[str, JsonValue] | None' = None) -> 'ObservationResult'\""
+  },
+  "distribution": "stove0-observer-support",
+  "module": "stove0_observer_support",
+  "name": "failed",
+  "owner": "stove0_observer_support.ObservationResultBuilder",
+  "unit": "member"
+}
+```

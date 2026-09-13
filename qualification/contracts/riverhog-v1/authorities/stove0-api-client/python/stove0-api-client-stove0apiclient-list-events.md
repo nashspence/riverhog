@@ -1,0 +1,70 @@
+# stove0_api_client.Stove0ApiClient.list_events
+
+[Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
+
+<!-- contract-element: python:stove0-api-client:stove0-api-client-stove0apiclient-list-events:e215328a73 -->
+
+Exact externally visible contract owned by this semantic dossier.
+
+| Audit field | Value |
+|---|---|
+| Authority | [stove0-api-client](../index.md) |
+| Interface | [Python](index.md) |
+
+## External contract
+
+<a id="s-5c6c95db10"></a>
+| Field | Shape |
+|---|---|
+| <a id="s-be8f120fc1"></a>`contract` | additional keys=`kind`, `signature` |
+| <a id="s-487eaee4c0"></a>`distribution` | "stove0-api-client" |
+| <a id="s-e841c58d66"></a>`module` | "stove0_api_client" |
+| <a id="s-30749d572c"></a>`name` | "list_events" |
+| <a id="s-5e8bb0be12"></a>`owner` | "stove0_api_client.Stove0ApiClient" |
+| <a id="s-a30a7875da"></a>`unit` | "member" |
+
+## Maintained corroboration
+
+### Related interface records
+
+- [stove0_api_client.Stove0ApiClient](stove0-api-client-stove0apiclient.md)
+
+## Governing policies
+
+- <a id="pa-685d2d79f3"></a>[compatibility/python-api/v1](../../../policies/index.md#p-e574772ba5)
+
+## Evidence
+
+### Qualification
+
+- [make dist-smoke](../../../evidence/sources.md#q-0ba2578a3e)
+- [make build](../../../evidence/sources.md#q-d1121e35fa)
+
+### Executable sources
+
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [python:stove0-api-client:stove0_api_client](../../../evidence/sources.md#src-5d52ac5998) — `reference/stove0/packages/api-client/src/stove0_api_client/__init__.py`
+
+### Machine authority
+
+- `/external_contract/python/stove0_api_client.Stove0ApiClient.list_events`
+
+### Exact owned JSON
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 0c019d91d71135c04919aab5f2d14363b5b22fdb9edc6c4fa1a820ce59ae2b1a -->
+
+```json
+{
+  "contract": {
+    "kind": "method",
+    "signature": "\"(self, *, after: 'str | None' = None, limit: 'int' = 100) -> 'Stove0EventPage'\""
+  },
+  "distribution": "stove0-api-client",
+  "module": "stove0_api_client",
+  "name": "list_events",
+  "owner": "stove0_api_client.Stove0ApiClient",
+  "unit": "member"
+}
+```

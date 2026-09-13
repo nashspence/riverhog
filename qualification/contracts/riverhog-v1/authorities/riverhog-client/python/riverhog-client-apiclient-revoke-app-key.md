@@ -1,0 +1,70 @@
+# riverhog_client.ApiClient.revoke_app_key
+
+[Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
+
+<!-- contract-element: python:riverhog-client:riverhog-client-apiclient-revoke-app-key:0bd07fd14f -->
+
+Exact externally visible contract owned by this semantic dossier.
+
+| Audit field | Value |
+|---|---|
+| Authority | [riverhog-client](../index.md) |
+| Interface | [Python](index.md) |
+
+## External contract
+
+<a id="s-d8e11c1ae7"></a>
+| Field | Shape |
+|---|---|
+| <a id="s-15b378099a"></a>`contract` | additional keys=`kind`, `signature` |
+| <a id="s-7d275cebb1"></a>`distribution` | "riverhog-client" |
+| <a id="s-1f3a504bf1"></a>`module` | "riverhog_client" |
+| <a id="s-073d67e59c"></a>`name` | "revoke_app_key" |
+| <a id="s-6125ed2fe1"></a>`owner` | "riverhog_client.ApiClient" |
+| <a id="s-9be687366d"></a>`unit` | "member" |
+
+## Maintained corroboration
+
+### Related interface records
+
+- [riverhog_client.ApiClient](riverhog-client-apiclient.md)
+
+## Governing policies
+
+- <a id="pa-b58b0212fa"></a>[compatibility/python-api/v1](../../../policies/index.md#p-e574772ba5)
+
+## Evidence
+
+### Qualification
+
+- [make dist-smoke](../../../evidence/sources.md#q-0ba2578a3e)
+- [make build](../../../evidence/sources.md#q-d1121e35fa)
+
+### Executable sources
+
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [python:riverhog-client:riverhog_client](../../../evidence/sources.md#src-c149020c71) — `packages/riverhog-client/src/riverhog_client/__init__.py`
+
+### Machine authority
+
+- `/external_contract/python/riverhog_client.ApiClient.revoke_app_key`
+
+### Exact owned JSON
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: ce6107576c82ed95caae43d8a3790ba35fd3427cfce0b460b36544a50de59d6c -->
+
+```json
+{
+  "contract": {
+    "kind": "method",
+    "signature": "\"(self, app: 'ApplicationName', key_id: 'ApplicationKeyId') -> 'dict[str, Any]'\""
+  },
+  "distribution": "riverhog-client",
+  "module": "riverhog_client",
+  "name": "revoke_app_key",
+  "owner": "riverhog_client.ApiClient",
+  "unit": "member"
+}
+```

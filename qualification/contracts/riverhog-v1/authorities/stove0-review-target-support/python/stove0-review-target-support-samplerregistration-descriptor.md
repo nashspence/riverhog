@@ -1,0 +1,70 @@
+# stove0_review_target_support.SamplerRegistration.descriptor
+
+[Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
+
+<!-- contract-element: python:stove0-review-target-support:stove0-review-target-support-samplerregis-14dadda07e:443e2d8835 -->
+
+Exact externally visible contract owned by this semantic dossier.
+
+| Audit field | Value |
+|---|---|
+| Authority | [stove0-review-target-support](../index.md) |
+| Interface | [Python](index.md) |
+
+## External contract
+
+<a id="s-41ca2be81b"></a>
+| Field | Shape |
+|---|---|
+| <a id="s-06d524aabc"></a>`contract` | additional keys=`kind`, `signature` |
+| <a id="s-0ead72d46a"></a>`distribution` | "stove0-review-target-support" |
+| <a id="s-b46424e25b"></a>`module` | "stove0_review_target_support" |
+| <a id="s-e7cada9020"></a>`name` | "descriptor" |
+| <a id="s-34120ee5e9"></a>`owner` | "stove0_review_target_support.SamplerRegistration" |
+| <a id="s-0bd0d82b1e"></a>`unit` | "member" |
+
+## Maintained corroboration
+
+### Related interface records
+
+- [stove0_review_target_support.SamplerRegistration](stove0-review-target-support-samplerregistration.md)
+
+## Governing policies
+
+- <a id="pa-8e9ca1d56e"></a>[compatibility/python-api/v1](../../../policies/index.md#p-e574772ba5)
+
+## Evidence
+
+### Qualification
+
+- [make dist-smoke](../../../evidence/sources.md#q-0ba2578a3e)
+- [make build](../../../evidence/sources.md#q-d1121e35fa)
+
+### Executable sources
+
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [python:stove0-review-target-support:stove0_review_target_support](../../../evidence/sources.md#src-2a89a71c41) — `reference/stove0/targets/review/support/src/stove0_review_target_support/__init__.py`
+
+### Machine authority
+
+- `/external_contract/python/stove0_review_target_support.SamplerRegistration.descriptor`
+
+### Exact owned JSON
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: ea9077a6c0ea178dc7426a6fd09e20231f12ae1bd715054861368adbe6a3ff54 -->
+
+```json
+{
+  "contract": {
+    "kind": "method",
+    "signature": "\"(self) -> 'SamplerDescriptor'\""
+  },
+  "distribution": "stove0-review-target-support",
+  "module": "stove0_review_target_support",
+  "name": "descriptor",
+  "owner": "stove0_review_target_support.SamplerRegistration",
+  "unit": "member"
+}
+```

@@ -1,0 +1,70 @@
+# stove0_media_archive_target_contracts.MediaProjectionPolicy.canonical_tags
+
+[Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
+
+<!-- contract-element: python:stove0-media-archive-target-contracts:stove0-media-archive-target-contracts-med-e42d70e1aa:b96fa0002a -->
+
+Exact externally visible contract owned by this semantic dossier.
+
+| Audit field | Value |
+|---|---|
+| Authority | [stove0-media-archive-target-contracts](../index.md) |
+| Interface | [Python](index.md) |
+
+## External contract
+
+<a id="s-eb5f71e154"></a>
+| Field | Shape |
+|---|---|
+| <a id="s-744a54fd3e"></a>`contract` | additional keys=`kind`, `signature` |
+| <a id="s-1e4e953068"></a>`distribution` | "stove0-media-archive-target-contracts" |
+| <a id="s-50f9379838"></a>`module` | "stove0_media_archive_target_contracts" |
+| <a id="s-6c06dc4188"></a>`name` | "canonical_tags" |
+| <a id="s-fb18c64f00"></a>`owner` | "stove0_media_archive_target_contracts.MediaProjectionPolicy" |
+| <a id="s-aeb76e8dfd"></a>`unit` | "member" |
+
+## Maintained corroboration
+
+### Related interface records
+
+- [stove0_media_archive_target_contracts.MediaProjectionPolicy](stove0-media-archive-target-contracts-mediaprojectionpolicy.md)
+
+## Governing policies
+
+- <a id="pa-f06c90d5ac"></a>[compatibility/python-api/v1](../../../policies/index.md#p-e574772ba5)
+
+## Evidence
+
+### Qualification
+
+- [make dist-smoke](../../../evidence/sources.md#q-0ba2578a3e)
+- [make build](../../../evidence/sources.md#q-d1121e35fa)
+
+### Executable sources
+
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [python:stove0-media-archive-target-contracts:stove0_media_archive_target_contracts](../../../evidence/sources.md#src-dfeb5229f2) — `reference/stove0/targets/media-archive/contracts/src/stove0_media_archive_target_contracts/__init__.py`
+
+### Machine authority
+
+- `/external_contract/python/stove0_media_archive_target_contracts.MediaProjectionPolicy.canonical_tags`
+
+### Exact owned JSON
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 7454c087f0575e212b65a18c3f78e660ea0619100f9b86a48202ebc37ac7f9e2 -->
+
+```json
+{
+  "contract": {
+    "kind": "classmethod",
+    "signature": "\"(cls, value: 'tuple[str, ...]') -> 'tuple[str, ...]'\""
+  },
+  "distribution": "stove0-media-archive-target-contracts",
+  "module": "stove0_media_archive_target_contracts",
+  "name": "canonical_tags",
+  "owner": "stove0_media_archive_target_contracts.MediaProjectionPolicy",
+  "unit": "member"
+}
+```

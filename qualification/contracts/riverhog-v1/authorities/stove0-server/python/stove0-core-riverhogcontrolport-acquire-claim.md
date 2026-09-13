@@ -1,0 +1,70 @@
+# stove0_core.RiverhogControlPort.acquire_claim
+
+[Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
+
+<!-- contract-element: python:stove0-server:stove0-core-riverhogcontrolport-acquire-claim:087573aa5f -->
+
+Exact externally visible contract owned by this semantic dossier.
+
+| Audit field | Value |
+|---|---|
+| Authority | [stove0-server](../index.md) |
+| Interface | [Python](index.md) |
+
+## External contract
+
+<a id="s-ab73ecedd9"></a>
+| Field | Shape |
+|---|---|
+| <a id="s-a7d5c63962"></a>`contract` | additional keys=`kind`, `signature` |
+| <a id="s-840c591ba3"></a>`distribution` | "stove0-server" |
+| <a id="s-2f0e9fdeea"></a>`module` | "stove0_core" |
+| <a id="s-bd1f4e0244"></a>`name` | "acquire_claim" |
+| <a id="s-72c7fd472b"></a>`owner` | "stove0_core.RiverhogControlPort" |
+| <a id="s-f7ba701167"></a>`unit` | "member" |
+
+## Maintained corroboration
+
+### Related interface records
+
+- [stove0_core.RiverhogControlPort](stove0-core-riverhogcontrolport.md)
+
+## Governing policies
+
+- <a id="pa-59b031dff5"></a>[compatibility/python-api/v1](../../../policies/index.md#p-e574772ba5)
+
+## Evidence
+
+### Qualification
+
+- [make dist-smoke](../../../evidence/sources.md#q-0ba2578a3e)
+- [make build](../../../evidence/sources.md#q-d1121e35fa)
+
+### Executable sources
+
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [python:stove0-server:stove0_core](../../../evidence/sources.md#src-7558b08e7f) — `reference/stove0/application/server/src/stove0_core/__init__.py`
+
+### Machine authority
+
+- `/external_contract/python/stove0_core.RiverhogControlPort.acquire_claim`
+
+### Exact owned JSON
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: b36aa83a2722459a115fce999dd24a6c154fd4c641c069ff96239179be03ae38 -->
+
+```json
+{
+  "contract": {
+    "kind": "method",
+    "signature": "\"(self, work: 'WorkIdentity') -> 'ClaimBinding'\""
+  },
+  "distribution": "stove0-server",
+  "module": "stove0_core",
+  "name": "acquire_claim",
+  "owner": "stove0_core.RiverhogControlPort",
+  "unit": "member"
+}
+```

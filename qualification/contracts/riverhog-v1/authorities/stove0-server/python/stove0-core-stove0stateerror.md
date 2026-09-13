@@ -1,0 +1,62 @@
+# stove0_core.Stove0StateError
+
+[Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
+
+<!-- contract-element: python:stove0-server:stove0-core-stove0stateerror:d11294ca64 -->
+
+Exact externally visible contract owned by this semantic dossier.
+
+| Audit field | Value |
+|---|---|
+| Authority | [stove0-server](../index.md) |
+| Interface | [Python](index.md) |
+
+## External contract
+
+<a id="s-3090c70020"></a>
+| Field | Shape |
+|---|---|
+| <a id="s-1312931ac2"></a>`contract` | additional keys=`kind`, `signature` |
+| <a id="s-f35b09f26d"></a>`distribution` | "stove0-server" |
+| <a id="s-2feedf68fd"></a>`module` | "stove0_core" |
+| <a id="s-cc61bcbd57"></a>`name` | "Stove0StateError" |
+| <a id="s-d0b004aa98"></a>`unit` | "export" |
+
+## Governing policies
+
+- <a id="pa-8a607ab0b0"></a>[compatibility/python-api/v1](../../../policies/index.md#p-e574772ba5)
+
+## Evidence
+
+### Qualification
+
+- [make dist-smoke](../../../evidence/sources.md#q-0ba2578a3e)
+- [make build](../../../evidence/sources.md#q-d1121e35fa)
+
+### Executable sources
+
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [python:stove0-server:stove0_core](../../../evidence/sources.md#src-7558b08e7f) — `reference/stove0/application/server/src/stove0_core/__init__.py`
+
+### Machine authority
+
+- `/external_contract/python/stove0_core.Stove0StateError`
+
+### Exact owned JSON
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 4ea5205f71fe19409006c5683462fd68b71eed7a09964d64c8c68e60f580e73f -->
+
+```json
+{
+  "contract": {
+    "kind": "class",
+    "signature": "unavailable"
+  },
+  "distribution": "stove0-server",
+  "module": "stove0_core",
+  "name": "Stove0StateError",
+  "unit": "export"
+}
+```

@@ -1,0 +1,69 @@
+# stove0_core.Stove0Scheduler
+
+[Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
+
+<!-- contract-element: python:stove0-server:stove0-core-stove0scheduler:2c8abc0818 -->
+
+Exact externally visible contract owned by this semantic dossier.
+
+| Audit field | Value |
+|---|---|
+| Authority | [stove0-server](../index.md) |
+| Interface | [Python](index.md) |
+
+## External contract
+
+<a id="s-e32802d7cf"></a>
+| Field | Shape |
+|---|---|
+| <a id="s-a236496132"></a>`contract` | additional keys=`kind`, `signature` |
+| <a id="s-0c14982fe8"></a>`distribution` | "stove0-server" |
+| <a id="s-ec0fd4d5b3"></a>`module` | "stove0_core" |
+| <a id="s-ed7ad16265"></a>`name` | "Stove0Scheduler" |
+| <a id="s-3e3b76b538"></a>`unit` | "export" |
+
+## Maintained corroboration
+
+### Related interface records
+
+- [stove0_core.Stove0Scheduler.advance](stove0-core-stove0scheduler-advance.md)
+- [stove0_core.Stove0Scheduler.run_once](stove0-core-stove0scheduler-run-once.md)
+
+## Governing policies
+
+- <a id="pa-6e40bfe717"></a>[compatibility/python-api/v1](../../../policies/index.md#p-e574772ba5)
+
+## Evidence
+
+### Qualification
+
+- [make dist-smoke](../../../evidence/sources.md#q-0ba2578a3e)
+- [make build](../../../evidence/sources.md#q-d1121e35fa)
+
+### Executable sources
+
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [python:stove0-server:stove0_core](../../../evidence/sources.md#src-7558b08e7f) — `reference/stove0/application/server/src/stove0_core/__init__.py`
+
+### Machine authority
+
+- `/external_contract/python/stove0_core.Stove0Scheduler`
+
+### Exact owned JSON
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: d30e65e43f05a5208516df5e21a53eeaa6def5a7dabbec808c01093fd04d9720 -->
+
+```json
+{
+  "contract": {
+    "kind": "class",
+    "signature": "\"(*, coordinator: 'Stove0Coordinator', state: 'SqlAlchemyStateStore', production_seals: 'ProductionSealProcessor | None' = None, admission: 'AdmissionProcessor | None' = None, operational_state_retention_seconds: 'int' = 2592000) -> 'None'\""
+  },
+  "distribution": "stove0-server",
+  "module": "stove0_core",
+  "name": "Stove0Scheduler",
+  "unit": "export"
+}
+```

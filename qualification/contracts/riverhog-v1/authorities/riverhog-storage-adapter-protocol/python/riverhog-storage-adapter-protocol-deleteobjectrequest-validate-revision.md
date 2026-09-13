@@ -1,0 +1,70 @@
+# riverhog_storage_adapter_protocol.DeleteObjectRequest.validate_revision
+
+[Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
+
+<!-- contract-element: python:riverhog-storage-adapter-protocol:riverhog-storage-adapter-protocol-deleteo-fbff60e079:25b1f39858 -->
+
+Exact externally visible contract owned by this semantic dossier.
+
+| Audit field | Value |
+|---|---|
+| Authority | [riverhog-storage-adapter-protocol](../index.md) |
+| Interface | [Python](index.md) |
+
+## External contract
+
+<a id="s-9553967ad9"></a>
+| Field | Shape |
+|---|---|
+| <a id="s-3fb2e1d9cf"></a>`contract` | additional keys=`kind`, `signature` |
+| <a id="s-90118a0dbc"></a>`distribution` | "riverhog-storage-adapter-protocol" |
+| <a id="s-ef746151c6"></a>`module` | "riverhog_storage_adapter_protocol" |
+| <a id="s-b45f3f4e9f"></a>`name` | "validate_revision" |
+| <a id="s-fdf2d922eb"></a>`owner` | "riverhog_storage_adapter_protocol.DeleteObjectRequest" |
+| <a id="s-b0e3e68fcb"></a>`unit` | "member" |
+
+## Maintained corroboration
+
+### Related interface records
+
+- [riverhog_storage_adapter_protocol.DeleteObjectRequest](riverhog-storage-adapter-protocol-deleteobjectrequest.md)
+
+## Governing policies
+
+- <a id="pa-26b29ee3d7"></a>[compatibility/python-api/v1](../../../policies/index.md#p-e574772ba5)
+
+## Evidence
+
+### Qualification
+
+- [make dist-smoke](../../../evidence/sources.md#q-0ba2578a3e)
+- [make build](../../../evidence/sources.md#q-d1121e35fa)
+
+### Executable sources
+
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [python:riverhog-storage-adapter-protocol:riverhog_storage_adapter_protocol](../../../evidence/sources.md#src-2da8857a83) — `packages/riverhog-storage-adapter-protocol/src/riverhog_storage_adapter_protocol/__init__.py`
+
+### Machine authority
+
+- `/external_contract/python/riverhog_storage_adapter_protocol.DeleteObjectRequest.validate_revision`
+
+### Exact owned JSON
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 8f0b1069584ba08ab4736c068d8d10fff67688098d96ce4b6d6d3629f1c187dc -->
+
+```json
+{
+  "contract": {
+    "kind": "method",
+    "signature": "\"(self) -> 'Self'\""
+  },
+  "distribution": "riverhog-storage-adapter-protocol",
+  "module": "riverhog_storage_adapter_protocol",
+  "name": "validate_revision",
+  "owner": "riverhog_storage_adapter_protocol.DeleteObjectRequest",
+  "unit": "member"
+}
+```

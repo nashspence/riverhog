@@ -1,0 +1,70 @@
+# riverhog_client.ApiClient.cancel_archive_copy_job
+
+[Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
+
+<!-- contract-element: python:riverhog-client:riverhog-client-apiclient-cancel-archive-copy-job:2c86d297eb -->
+
+Exact externally visible contract owned by this semantic dossier.
+
+| Audit field | Value |
+|---|---|
+| Authority | [riverhog-client](../index.md) |
+| Interface | [Python](index.md) |
+
+## External contract
+
+<a id="s-529b0068f3"></a>
+| Field | Shape |
+|---|---|
+| <a id="s-57a2eb846f"></a>`contract` | additional keys=`kind`, `signature` |
+| <a id="s-b15e37dc9c"></a>`distribution` | "riverhog-client" |
+| <a id="s-a6024983ec"></a>`module` | "riverhog_client" |
+| <a id="s-317cd44ba0"></a>`name` | "cancel_archive_copy_job" |
+| <a id="s-e9d5fa759a"></a>`owner` | "riverhog_client.ApiClient" |
+| <a id="s-f4d3e79aeb"></a>`unit` | "member" |
+
+## Maintained corroboration
+
+### Related interface records
+
+- [riverhog_client.ApiClient](riverhog-client-apiclient.md)
+
+## Governing policies
+
+- <a id="pa-6686a6a0fe"></a>[compatibility/python-api/v1](../../../policies/index.md#p-e574772ba5)
+
+## Evidence
+
+### Qualification
+
+- [make dist-smoke](../../../evidence/sources.md#q-0ba2578a3e)
+- [make build](../../../evidence/sources.md#q-d1121e35fa)
+
+### Executable sources
+
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [python:riverhog-client:riverhog_client](../../../evidence/sources.md#src-c149020c71) — `packages/riverhog-client/src/riverhog_client/__init__.py`
+
+### Machine authority
+
+- `/external_contract/python/riverhog_client.ApiClient.cancel_archive_copy_job`
+
+### Exact owned JSON
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: b5b045bebdfc73b52fcd9ffc7b26975d03d98115ff2fcf1ae46e4e8b9873c067 -->
+
+```json
+{
+  "contract": {
+    "kind": "method",
+    "signature": "\"(self, collection_id: 'CollectionId', *, destination_store: 'ArchiveStoreName') -> 'dict[str, Any]'\""
+  },
+  "distribution": "riverhog-client",
+  "module": "riverhog_client",
+  "name": "cancel_archive_copy_job",
+  "owner": "riverhog_client.ApiClient",
+  "unit": "member"
+}
+```

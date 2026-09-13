@@ -1,0 +1,70 @@
+# stove0_core.RiverhogApi.list_processing_claim_outcomes
+
+[Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
+
+<!-- contract-element: python:stove0-server:stove0-core-riverhogapi-list-processing-c-eb048df859:d7f8d6670d -->
+
+Exact externally visible contract owned by this semantic dossier.
+
+| Audit field | Value |
+|---|---|
+| Authority | [stove0-server](../index.md) |
+| Interface | [Python](index.md) |
+
+## External contract
+
+<a id="s-b9ed50ba38"></a>
+| Field | Shape |
+|---|---|
+| <a id="s-976f645fc9"></a>`contract` | additional keys=`kind`, `signature` |
+| <a id="s-e94f7d6941"></a>`distribution` | "stove0-server" |
+| <a id="s-f0b0ff279a"></a>`module` | "stove0_core" |
+| <a id="s-c22421a3e4"></a>`name` | "list_processing_claim_outcomes" |
+| <a id="s-9c2b229f95"></a>`owner` | "stove0_core.RiverhogApi" |
+| <a id="s-0ce628392a"></a>`unit` | "member" |
+
+## Maintained corroboration
+
+### Related interface records
+
+- [stove0_core.RiverhogApi](stove0-core-riverhogapi.md)
+
+## Governing policies
+
+- <a id="pa-7096e4c675"></a>[compatibility/python-api/v1](../../../policies/index.md#p-e574772ba5)
+
+## Evidence
+
+### Qualification
+
+- [make dist-smoke](../../../evidence/sources.md#q-0ba2578a3e)
+- [make build](../../../evidence/sources.md#q-d1121e35fa)
+
+### Executable sources
+
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [python:stove0-server:stove0_core](../../../evidence/sources.md#src-7558b08e7f) — `reference/stove0/application/server/src/stove0_core/__init__.py`
+
+### Machine authority
+
+- `/external_contract/python/stove0_core.RiverhogApi.list_processing_claim_outcomes`
+
+### Exact owned JSON
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: df6d3640357589241ccf0816c3d6b5ab95c533640573f159ee2965586dc94559 -->
+
+```json
+{
+  "contract": {
+    "kind": "method",
+    "signature": "\"(self, claim_id: 'str', *, authority_sha256: 'str', start_ordinal: 'int' = 0) -> 'ProcessingOutcomePageDocument'\""
+  },
+  "distribution": "stove0-server",
+  "module": "stove0_core",
+  "name": "list_processing_claim_outcomes",
+  "owner": "stove0_core.RiverhogApi",
+  "unit": "member"
+}
+```

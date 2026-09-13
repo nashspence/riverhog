@@ -1,0 +1,130 @@
+# generated:stove0-observer protocol
+
+[Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
+
+<!-- contract-element: process-protocol:stove0-observer-support:generated-stove0-observer-protocol:dc23edfcb6 -->
+
+Exact externally visible contract owned by this semantic dossier.
+
+| Audit field | Value |
+|---|---|
+| Authority | [stove0-observer-support](../index.md) |
+| Interface | [Process Protocol](index.md) |
+
+## External contract
+
+| Subject | Shape |
+|---|---|
+| <a id="s-c7c5590254"></a>`authorities` | additional keys=`http_operations`, `semantic_acceptance`, `structural_models` |
+| <a id="s-d5ea9dbeda"></a>`bundle_sha256` | "d7ee01cb66cac26b457031d54882a95ce2b1ae0e163df53590fee00ae1a8f0ce" |
+| <a id="s-2413957c85"></a>`compatibility` | additional keys=`contract_identity`, `unknown_fields`, `unknown_protocol_revision` |
+| <a id="s-7ec445dc33"></a>`format` | "stove0-observer-schema-bundle/v1" |
+| <a id="s-afb71a9619"></a>`protocol` | "stove0-content-observer/v1" |
+| <a id="s-1eafdfd27d"></a>`semantic_acceptance` | additional keys=`binding`, `identity`, `kind`, `unavailable_profile` |
+
+## Maintained corroboration
+
+### Related interface records
+
+- [GET /v1/observer](../process-protocol-operations/get-v1-observer.md)
+- [POST /v1/observe](../process-protocol-operations/post-v1-observe.md)
+- [generated:stove0-observer: ErrorResponse](../process-protocol-schemas/generated-stove0-observer-errorresponse.md)
+- [generated:stove0-observer: ObservationInvocation](../process-protocol-schemas/generated-stove0-observer-observationinvocation.md)
+- [generated:stove0-observer: ObservationRequest](../process-protocol-schemas/generated-stove0-observer-observationrequest.md)
+- [generated:stove0-observer: ObservationResult](../process-protocol-schemas/generated-stove0-observer-observationresult.md)
+- [generated:stove0-observer: ObserverConformanceResult](../process-protocol-schemas/generated-stove0-observer-observerconformanceresult.md)
+- [generated:stove0-observer: ObserverContract](../process-protocol-schemas/generated-stove0-observer-observercontract.md)
+- [generated:stove0-observer: ObserverDescriptor](../process-protocol-schemas/generated-stove0-observer-observerdescriptor.md)
+
+## Governing policies
+
+- <a id="pa-bf2ab137ad"></a>[compatibility/components/v1](../../../policies/index.md#p-95e9a12259)
+
+## Evidence
+
+### Qualification
+
+- [make dist-smoke](../../../evidence/sources.md#q-0ba2578a3e)
+- [make build](../../../evidence/sources.md#q-d1121e35fa)
+
+### Executable sources
+
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [protocol:generated:stove0-observer](../../../evidence/sources.md#src-dcc0b5485b) — `reference/stove0/packages/observer-support/src/stove0_observer_support/schemas.py::observer_schema_bundle`
+
+### Machine authority
+
+- `/external_contract/protocol_schemas/generated:stove0-observer/authorities`
+- `/external_contract/protocol_schemas/generated:stove0-observer/bundle_sha256`
+- `/external_contract/protocol_schemas/generated:stove0-observer/compatibility`
+- `/external_contract/protocol_schemas/generated:stove0-observer/format`
+- `/external_contract/protocol_schemas/generated:stove0-observer/protocol`
+- `/external_contract/protocol_schemas/generated:stove0-observer/semantic_acceptance`
+
+### Exact owned JSON
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+### `/external_contract/protocol_schemas/generated:stove0-observer/authorities`
+
+<!-- exact-contract-value: 723bdc629c692bd71cc54f046e71fc791297a8c6a984b85d1f0962ee4c72194e -->
+
+```json
+{
+  "http_operations": "http_binding.operations",
+  "semantic_acceptance": "semantic_acceptance",
+  "structural_models": "schemas"
+}
+```
+
+### `/external_contract/protocol_schemas/generated:stove0-observer/bundle_sha256`
+
+<!-- exact-contract-value: 51bba52db678f3e30f171c5bf012f1fb0c17a6fb3dd1cdae46441fe29a50fa94 -->
+
+```json
+"d7ee01cb66cac26b457031d54882a95ce2b1ae0e163df53590fee00ae1a8f0ce"
+```
+
+### `/external_contract/protocol_schemas/generated:stove0-observer/compatibility`
+
+<!-- exact-contract-value: 2cbdd4f0020ba7220dc9f1a5f82d0e1149904af6dad73a4daedfc2bd6cb3f2c3 -->
+
+```json
+{
+  "contract_identity": "canonical-json-sha256",
+  "unknown_fields": "reject",
+  "unknown_protocol_revision": "reject"
+}
+```
+
+### `/external_contract/protocol_schemas/generated:stove0-observer/format`
+
+<!-- exact-contract-value: 065211257aaa3d23713fbecd42883a406ec11bb49c25702110eabd34a3ca9367 -->
+
+```json
+"stove0-observer-schema-bundle/v1"
+```
+
+### `/external_contract/protocol_schemas/generated:stove0-observer/protocol`
+
+<!-- exact-contract-value: 323e380a7c090e7fc1fcabf5c1f93281781a1762ee6703d2888b13179f9083cd -->
+
+```json
+"stove0-content-observer/v1"
+```
+
+### `/external_contract/protocol_schemas/generated:stove0-observer/semantic_acceptance`
+
+<!-- exact-contract-value: 4c9c2fc956c554081c04e778a6984703fcf498e5e081c1da627e71d810898308 -->
+
+```json
+{
+  "binding": "ObserverContract.facts_semantics",
+  "identity": [
+    "id",
+    "profile_sha256"
+  ],
+  "kind": "profile-registry",
+  "unavailable_profile": "reject"
+}
+```

@@ -1,0 +1,70 @@
+# stove0_core.EvaluationStore.create
+
+[Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
+
+<!-- contract-element: python:stove0-server:stove0-core-evaluationstore-create:1291da6b62 -->
+
+Exact externally visible contract owned by this semantic dossier.
+
+| Audit field | Value |
+|---|---|
+| Authority | [stove0-server](../index.md) |
+| Interface | [Python](index.md) |
+
+## External contract
+
+<a id="s-e6176cdf78"></a>
+| Field | Shape |
+|---|---|
+| <a id="s-57ccd41e17"></a>`contract` | additional keys=`kind`, `signature` |
+| <a id="s-2395b6da11"></a>`distribution` | "stove0-server" |
+| <a id="s-946693d462"></a>`module` | "stove0_core" |
+| <a id="s-339f5b600a"></a>`name` | "create" |
+| <a id="s-10af7bce06"></a>`owner` | "stove0_core.EvaluationStore" |
+| <a id="s-5c718617d9"></a>`unit` | "member" |
+
+## Maintained corroboration
+
+### Related interface records
+
+- [stove0_core.EvaluationStore](stove0-core-evaluationstore.md)
+
+## Governing policies
+
+- <a id="pa-391a6053ab"></a>[compatibility/python-api/v1](../../../policies/index.md#p-e574772ba5)
+
+## Evidence
+
+### Qualification
+
+- [make dist-smoke](../../../evidence/sources.md#q-0ba2578a3e)
+- [make build](../../../evidence/sources.md#q-d1121e35fa)
+
+### Executable sources
+
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [python:stove0-server:stove0_core](../../../evidence/sources.md#src-7558b08e7f) — `reference/stove0/application/server/src/stove0_core/__init__.py`
+
+### Machine authority
+
+- `/external_contract/python/stove0_core.EvaluationStore.create`
+
+### Exact owned JSON
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 91bde2014fd3b026f9484ce319ff1e205d012a034379d6325bbc4ffcd04d56e4 -->
+
+```json
+{
+  "contract": {
+    "kind": "method",
+    "signature": "\"(self, record: 'EvaluationRecord') -> 'EvaluationRecord'\""
+  },
+  "distribution": "stove0-server",
+  "module": "stove0_core",
+  "name": "create",
+  "owner": "stove0_core.EvaluationStore",
+  "unit": "member"
+}
+```

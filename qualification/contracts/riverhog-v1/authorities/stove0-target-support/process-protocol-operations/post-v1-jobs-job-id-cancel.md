@@ -1,0 +1,104 @@
+# POST /v1/jobs/{job_id}/cancel
+
+[Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
+
+<!-- contract-element: process-protocol-operations:stove0-target-support:post-v1-jobs-job-id-cancel:29f6009b41 -->
+
+Exact externally visible contract owned by this semantic dossier.
+
+| Audit field | Value |
+|---|---|
+| Authority | [stove0-target-support](../index.md) |
+| Interface | [Process Protocol Operations](index.md) |
+
+## External contract
+
+<a id="s-c2615635df"></a>
+| Concern | Contract |
+|---|---|
+| <a id="s-727902a579"></a>`error_schema` | ErrorResponse |
+| <a id="s-66b5ba4d44"></a>`errors` | [{"code": "bad_request", "status": 400}, {"code": "unauthorized", "status": 401}, {"code": "job_not_found", "status": 404}, {"code": "target_failed", "status": 500}] |
+| <a id="s-2952109d6a"></a>`method` | POST |
+| <a id="s-29aa99ff49"></a>`path` | /v1/jobs/{job_id}/cancel |
+| <a id="s-c7a9292c6e"></a>`path_parameters` | [{"name": "job_id", "schema": {"pattern": "^[0-9a-f]{64}$", "type": "string"}}] |
+| <a id="s-a67f2734e0"></a>`request` | {"kind": "none", "schema": null} |
+| <a id="s-0b3082da5d"></a>`response` | {"headers": [], "kind": "json", "schema": "TargetJobStatus", "statuses": [200]} |
+
+## Maintained corroboration
+
+### Related interface records
+
+- [generated:stove0-target protocol](../process-protocol/generated-stove0-target-protocol.md)
+
+## Governing policies
+
+- <a id="pa-054413e081"></a>[compatibility/components/v1](../../../policies/index.md#p-95e9a12259)
+
+## Evidence
+
+### Qualification
+
+- [make dist-smoke](../../../evidence/sources.md#q-0ba2578a3e)
+- [make build](../../../evidence/sources.md#q-d1121e35fa)
+
+### Executable sources
+
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [protocol:generated:stove0-target](../../../evidence/sources.md#src-2c42f9d39a) — `reference/stove0/packages/target-support/src/stove0_target_support/schemas.py::target_schema_bundle`
+
+### Machine authority
+
+- `/external_contract/protocol_schemas/generated:stove0-target/http_binding/operations/4`
+
+### Exact owned JSON
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: b1f16536ce04d0421877c3f1d17f02ddd2170b43d27d5db639c07a15302d9155 -->
+
+```json
+{
+  "error_schema": "ErrorResponse",
+  "errors": [
+    {
+      "code": "bad_request",
+      "status": 400
+    },
+    {
+      "code": "unauthorized",
+      "status": 401
+    },
+    {
+      "code": "job_not_found",
+      "status": 404
+    },
+    {
+      "code": "target_failed",
+      "status": 500
+    }
+  ],
+  "method": "POST",
+  "path": "/v1/jobs/{job_id}/cancel",
+  "path_parameters": [
+    {
+      "name": "job_id",
+      "schema": {
+        "pattern": "^[0-9a-f]{64}$",
+        "type": "string"
+      }
+    }
+  ],
+  "request": {
+    "kind": "none",
+    "schema": null
+  },
+  "response": {
+    "headers": [],
+    "kind": "json",
+    "schema": "TargetJobStatus",
+    "statuses": [
+      200
+    ]
+  }
+}
+```

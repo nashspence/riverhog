@@ -1,0 +1,62 @@
+# riverhog_provenance.ProvenanceValidationError
+
+[Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
+
+<!-- contract-element: python:riverhog-provenance:riverhog-provenance-provenancevalidationerror:59e6ff9b24 -->
+
+Exact externally visible contract owned by this semantic dossier.
+
+| Audit field | Value |
+|---|---|
+| Authority | [riverhog-provenance](../index.md) |
+| Interface | [Python](index.md) |
+
+## External contract
+
+<a id="s-d6609655e2"></a>
+| Field | Shape |
+|---|---|
+| <a id="s-0278086a7d"></a>`contract` | additional keys=`kind`, `signature` |
+| <a id="s-9f34b82c3e"></a>`distribution` | "riverhog-provenance" |
+| <a id="s-8dd8cee3b1"></a>`module` | "riverhog_provenance" |
+| <a id="s-3091f9bed8"></a>`name` | "ProvenanceValidationError" |
+| <a id="s-ba7e97af60"></a>`unit` | "export" |
+
+## Governing policies
+
+- <a id="pa-efa764b2f5"></a>[compatibility/python-api/v1](../../../policies/index.md#p-e574772ba5)
+
+## Evidence
+
+### Qualification
+
+- [make dist-smoke](../../../evidence/sources.md#q-0ba2578a3e)
+- [make build](../../../evidence/sources.md#q-d1121e35fa)
+
+### Executable sources
+
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [python:riverhog-provenance:riverhog_provenance](../../../evidence/sources.md#src-38ef3a6054) — `packages/riverhog-provenance/src/riverhog_provenance/__init__.py`
+
+### Machine authority
+
+- `/external_contract/python/riverhog_provenance.ProvenanceValidationError`
+
+### Exact owned JSON
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 3af6b39201a1a223ca6b03e5e0426604c6e26f6e036951e4bdf6bb32018d6d1d -->
+
+```json
+{
+  "contract": {
+    "kind": "class",
+    "signature": "unavailable"
+  },
+  "distribution": "riverhog-provenance",
+  "module": "riverhog_provenance",
+  "name": "ProvenanceValidationError",
+  "unit": "export"
+}
+```

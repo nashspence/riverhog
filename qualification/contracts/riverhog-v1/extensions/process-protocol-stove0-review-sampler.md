@@ -11,7 +11,9 @@ Independently deployed process protocol owned by stove0-review-sampler-protocol.
 ## Semantic interfaces
 
 - [stove0-review-sampler-protocol · Python](../authorities/stove0-review-sampler-protocol/python/index.md)
-- [stove0-review-sampler-support · Protocols](../authorities/stove0-review-sampler-support/protocol/index.md) ([exact binding](../evidence/relationships.md#re-dd4c604c3c))
+- [stove0-review-sampler-support · Process Protocol](../authorities/stove0-review-sampler-support/process-protocol/index.md) ([exact binding](../evidence/relationships.md#re-dd4c604c3c))
+- [stove0-review-sampler-support · Process Protocol Operations](../authorities/stove0-review-sampler-support/process-protocol-operations/index.md) ([exact binding](../evidence/relationships.md#re-dd4c604c3c))
+- [stove0-review-sampler-support · Process Protocol Schemas](../authorities/stove0-review-sampler-support/process-protocol-schemas/index.md) ([exact binding](../evidence/relationships.md#re-dd4c604c3c))
 
 ## Checked-in nonnormative implementations
 

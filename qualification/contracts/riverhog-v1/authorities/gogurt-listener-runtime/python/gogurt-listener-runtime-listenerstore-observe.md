@@ -1,0 +1,70 @@
+# gogurt_listener_runtime.ListenerStore.observe
+
+[Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
+
+<!-- contract-element: python:gogurt-listener-runtime:gogurt-listener-runtime-listenerstore-observe:27d522adbc -->
+
+Exact externally visible contract owned by this semantic dossier.
+
+| Audit field | Value |
+|---|---|
+| Authority | [gogurt-listener-runtime](../index.md) |
+| Interface | [Python](index.md) |
+
+## External contract
+
+<a id="s-bd5a7ef2b5"></a>
+| Field | Shape |
+|---|---|
+| <a id="s-3e4db51404"></a>`contract` | additional keys=`kind`, `signature` |
+| <a id="s-e6ce9a7a9a"></a>`distribution` | "gogurt-listener-runtime" |
+| <a id="s-121c9ca41b"></a>`module` | "gogurt_listener_runtime" |
+| <a id="s-1b6a19b935"></a>`name` | "observe" |
+| <a id="s-fb6eeeac92"></a>`owner` | "gogurt_listener_runtime.ListenerStore" |
+| <a id="s-801a673624"></a>`unit` | "member" |
+
+## Maintained corroboration
+
+### Related interface records
+
+- [gogurt_listener_runtime.ListenerStore](gogurt-listener-runtime-listenerstore.md)
+
+## Governing policies
+
+- <a id="pa-332303be83"></a>[compatibility/python-api/v1](../../../policies/index.md#p-e574772ba5)
+
+## Evidence
+
+### Qualification
+
+- [make dist-smoke](../../../evidence/sources.md#q-0ba2578a3e)
+- [make build](../../../evidence/sources.md#q-d1121e35fa)
+
+### Executable sources
+
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [python:gogurt-listener-runtime:gogurt_listener_runtime](../../../evidence/sources.md#src-259980dd25) — `reference/gogurt/packages/listener-runtime/src/gogurt_listener_runtime/__init__.py`
+
+### Machine authority
+
+- `/external_contract/python/gogurt_listener_runtime.ListenerStore.observe`
+
+### Exact owned JSON
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 9c4afd9f110e365bfde5140272698d975c544ce87babc31b559701d2e33d4aab -->
+
+```json
+{
+  "contract": {
+    "kind": "method",
+    "signature": "\"(self, mount_points: 'Sequence[Path]', planner: 'Callable[[Path], Mapping[str, object]]', *, now: 'float') -> 'list[str]'\""
+  },
+  "distribution": "gogurt-listener-runtime",
+  "module": "gogurt_listener_runtime",
+  "name": "observe",
+  "owner": "gogurt_listener_runtime.ListenerStore",
+  "unit": "member"
+}
+```

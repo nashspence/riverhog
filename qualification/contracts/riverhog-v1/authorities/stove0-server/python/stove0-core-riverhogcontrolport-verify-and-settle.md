@@ -1,0 +1,70 @@
+# stove0_core.RiverhogControlPort.verify_and_settle
+
+[Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
+
+<!-- contract-element: python:stove0-server:stove0-core-riverhogcontrolport-verify-and-settle:19b4dc06bf -->
+
+Exact externally visible contract owned by this semantic dossier.
+
+| Audit field | Value |
+|---|---|
+| Authority | [stove0-server](../index.md) |
+| Interface | [Python](index.md) |
+
+## External contract
+
+<a id="s-52ea7ab79e"></a>
+| Field | Shape |
+|---|---|
+| <a id="s-a277c13c69"></a>`contract` | additional keys=`kind`, `signature` |
+| <a id="s-15cb3026de"></a>`distribution` | "stove0-server" |
+| <a id="s-d3b9bdfb14"></a>`module` | "stove0_core" |
+| <a id="s-ea24596723"></a>`name` | "verify_and_settle" |
+| <a id="s-b94389ea30"></a>`owner` | "stove0_core.RiverhogControlPort" |
+| <a id="s-3778a03c87"></a>`unit` | "member" |
+
+## Maintained corroboration
+
+### Related interface records
+
+- [stove0_core.RiverhogControlPort](stove0-core-riverhogcontrolport.md)
+
+## Governing policies
+
+- <a id="pa-f41091851a"></a>[compatibility/python-api/v1](../../../policies/index.md#p-e574772ba5)
+
+## Evidence
+
+### Qualification
+
+- [make dist-smoke](../../../evidence/sources.md#q-0ba2578a3e)
+- [make build](../../../evidence/sources.md#q-d1121e35fa)
+
+### Executable sources
+
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [python:stove0-server:stove0_core](../../../evidence/sources.md#src-7558b08e7f) — `reference/stove0/application/server/src/stove0_core/__init__.py`
+
+### Machine authority
+
+- `/external_contract/python/stove0_core.RiverhogControlPort.verify_and_settle`
+
+### Exact owned JSON
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: c769f4f5830d155d26962eb275a9b0e0a84ac18341555dc6c44e5c469c8cc51b -->
+
+```json
+{
+  "contract": {
+    "kind": "method",
+    "signature": "\"(self, record: 'WorkRecord', parent_outcome: 'ParentOutcomeBinding | None' = None) -> 'tuple[OutputCollectionRef, TargetSettlementAuthority | None]'\""
+  },
+  "distribution": "stove0-server",
+  "module": "stove0_core",
+  "name": "verify_and_settle",
+  "owner": "stove0_core.RiverhogControlPort",
+  "unit": "member"
+}
+```

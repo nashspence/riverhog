@@ -1,0 +1,62 @@
+# riverhog_provenance.PROVENANCE_TERMINAL_SCHEMA
+
+[Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
+
+<!-- contract-element: python:riverhog-provenance:riverhog-provenance-provenance-terminal-schema:6a6dec59df -->
+
+Exact externally visible contract owned by this semantic dossier.
+
+| Audit field | Value |
+|---|---|
+| Authority | [riverhog-provenance](../index.md) |
+| Interface | [Python](index.md) |
+
+## External contract
+
+<a id="s-fd07c2e943"></a>
+| Field | Shape |
+|---|---|
+| <a id="s-6197d8eb50"></a>`contract` | additional keys=`kind`, `value` |
+| <a id="s-19d3071e6a"></a>`distribution` | "riverhog-provenance" |
+| <a id="s-f4508bfb31"></a>`module` | "riverhog_provenance" |
+| <a id="s-bea989bca5"></a>`name` | "PROVENANCE_TERMINAL_SCHEMA" |
+| <a id="s-0fb4f48c03"></a>`unit` | "export" |
+
+## Governing policies
+
+- <a id="pa-5a70509e02"></a>[compatibility/python-api/v1](../../../policies/index.md#p-e574772ba5)
+
+## Evidence
+
+### Qualification
+
+- [make dist-smoke](../../../evidence/sources.md#q-0ba2578a3e)
+- [make build](../../../evidence/sources.md#q-d1121e35fa)
+
+### Executable sources
+
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [python:riverhog-provenance:riverhog_provenance](../../../evidence/sources.md#src-38ef3a6054) — `packages/riverhog-provenance/src/riverhog_provenance/__init__.py`
+
+### Machine authority
+
+- `/external_contract/python/riverhog_provenance.PROVENANCE_TERMINAL_SCHEMA`
+
+### Exact owned JSON
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 915babea96617e554f8adc9b0f260fcfa4f278961fd8d839e6120efdbf140884 -->
+
+```json
+{
+  "contract": {
+    "kind": "constant",
+    "value": "riverhog-provenance-terminal/v1"
+  },
+  "distribution": "riverhog-provenance",
+  "module": "riverhog_provenance",
+  "name": "PROVENANCE_TERMINAL_SCHEMA",
+  "unit": "export"
+}
+```

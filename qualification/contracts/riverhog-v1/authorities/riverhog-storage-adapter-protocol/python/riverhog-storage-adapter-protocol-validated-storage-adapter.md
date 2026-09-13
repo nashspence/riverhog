@@ -1,0 +1,62 @@
+# riverhog_storage_adapter_protocol.validated_storage_adapter
+
+[Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
+
+<!-- contract-element: python:riverhog-storage-adapter-protocol:riverhog-storage-adapter-protocol-validat-d0b27f1383:4a9fc31dfe -->
+
+Exact externally visible contract owned by this semantic dossier.
+
+| Audit field | Value |
+|---|---|
+| Authority | [riverhog-storage-adapter-protocol](../index.md) |
+| Interface | [Python](index.md) |
+
+## External contract
+
+<a id="s-3bfbde7af4"></a>
+| Field | Shape |
+|---|---|
+| <a id="s-dda9fdadbe"></a>`contract` | additional keys=`kind`, `signature` |
+| <a id="s-85d5895918"></a>`distribution` | "riverhog-storage-adapter-protocol" |
+| <a id="s-6f227418f4"></a>`module` | "riverhog_storage_adapter_protocol" |
+| <a id="s-b3363cdf7e"></a>`name` | "validated_storage_adapter" |
+| <a id="s-bc53a5a3ac"></a>`unit` | "export" |
+
+## Governing policies
+
+- <a id="pa-6b4894f7ca"></a>[compatibility/python-api/v1](../../../policies/index.md#p-e574772ba5)
+
+## Evidence
+
+### Qualification
+
+- [make dist-smoke](../../../evidence/sources.md#q-0ba2578a3e)
+- [make build](../../../evidence/sources.md#q-d1121e35fa)
+
+### Executable sources
+
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [python:riverhog-storage-adapter-protocol:riverhog_storage_adapter_protocol](../../../evidence/sources.md#src-2da8857a83) — `packages/riverhog-storage-adapter-protocol/src/riverhog_storage_adapter_protocol/__init__.py`
+
+### Machine authority
+
+- `/external_contract/python/riverhog_storage_adapter_protocol.validated_storage_adapter`
+
+### Exact owned JSON
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: ebf238714980f358fd0a60bda76bc9809b015f83da15986f59eb1c976b8451b6 -->
+
+```json
+{
+  "contract": {
+    "kind": "function",
+    "signature": "\"(adapter: 'StorageAdapterPort') -> 'ValidatedStorageAdapterPort'\""
+  },
+  "distribution": "riverhog-storage-adapter-protocol",
+  "module": "riverhog_storage_adapter_protocol",
+  "name": "validated_storage_adapter",
+  "unit": "export"
+}
+```

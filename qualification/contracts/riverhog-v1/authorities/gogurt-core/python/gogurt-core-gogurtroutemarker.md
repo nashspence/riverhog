@@ -1,0 +1,81 @@
+# gogurt_core.GogurtRouteMarker
+
+[Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
+
+<!-- contract-element: python:gogurt-core:gogurt-core-gogurtroutemarker:03e2385c4d -->
+
+Exact externally visible contract owned by this semantic dossier.
+
+| Audit field | Value |
+|---|---|
+| Authority | [gogurt-core](../index.md) |
+| Interface | [Python](index.md) |
+
+## External contract
+
+<a id="s-062f7ad259"></a>
+| Field | Shape |
+|---|---|
+| <a id="s-41a1e5b31a"></a>`contract` | additional keys=`fields`, `kind`, `signature` |
+| <a id="s-6c14fd0f43"></a>`distribution` | "gogurt-core" |
+| <a id="s-5b1d17b159"></a>`module` | "gogurt_core" |
+| <a id="s-3b24993859"></a>`name` | "GogurtRouteMarker" |
+| <a id="s-f33be52755"></a>`unit` | "export" |
+
+## Maintained corroboration
+
+### Related interface records
+
+- [gogurt_core.GogurtRouteMarker.as_dict](gogurt-core-gogurtroutemarker-as-dict.md)
+- [gogurt_core.GogurtRouteMarker.from_mapping](gogurt-core-gogurtroutemarker-from-mapping.md)
+
+## Governing policies
+
+- <a id="pa-ad62a9f216"></a>[compatibility/python-api/v1](../../../policies/index.md#p-e574772ba5)
+
+## Evidence
+
+### Qualification
+
+- [make dist-smoke](../../../evidence/sources.md#q-0ba2578a3e)
+- [make build](../../../evidence/sources.md#q-d1121e35fa)
+
+### Executable sources
+
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [python:gogurt-core:gogurt_core](../../../evidence/sources.md#src-e253e4a684) — `reference/gogurt/packages/core/src/gogurt_core/__init__.py`
+
+### Machine authority
+
+- `/external_contract/python/gogurt_core.GogurtRouteMarker`
+
+### Exact owned JSON
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: b617ecefa074b84b3d34ccbc4d88dc35427cffa8e55c3bb49b76621825f1e7b7 -->
+
+```json
+{
+  "contract": {
+    "fields": [
+      {
+        "default": "required",
+        "name": "route",
+        "type": "'str'"
+      },
+      {
+        "default": "'gogurt-route-marker/v1'",
+        "name": "format",
+        "type": "'str'"
+      }
+    ],
+    "kind": "class",
+    "signature": "\"(route: 'str', format: 'str' = 'gogurt-route-marker/v1') -> None\""
+  },
+  "distribution": "gogurt-core",
+  "module": "gogurt_core",
+  "name": "GogurtRouteMarker",
+  "unit": "export"
+}
+```

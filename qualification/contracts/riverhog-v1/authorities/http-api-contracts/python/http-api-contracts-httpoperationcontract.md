@@ -1,0 +1,127 @@
+# http_api_contracts.HttpOperationContract
+
+[Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
+
+<!-- contract-element: python:http-api-contracts:http-api-contracts-httpoperationcontract:43a5de12e5 -->
+
+Exact externally visible contract owned by this semantic dossier.
+
+| Audit field | Value |
+|---|---|
+| Authority | [http-api-contracts](../index.md) |
+| Interface | [Python](index.md) |
+
+## External contract
+
+<a id="s-4697ee66fd"></a>
+| Field | Shape |
+|---|---|
+| <a id="s-9df0574623"></a>`contract` | additional keys=`fields`, `kind`, `signature` |
+| <a id="s-3b6f6c83a4"></a>`distribution` | "http-api-contracts" |
+| <a id="s-1f3a479549"></a>`module` | "http_api_contracts" |
+| <a id="s-b780ffae35"></a>`name` | "HttpOperationContract" |
+| <a id="s-78eda8b34e"></a>`unit` | "export" |
+
+## Maintained corroboration
+
+### Related interface records
+
+- [http_api_contracts.HttpOperationContract.accepts_error](http-api-contracts-httpoperationcontract-accepts-error.md)
+- [http_api_contracts.HttpOperationContract.error_statuses](http-api-contracts-httpoperationcontract-error-statuses.md)
+- [http_api_contracts.HttpOperationContract.matches](http-api-contracts-httpoperationcontract-matches.md)
+
+## Governing policies
+
+- <a id="pa-de6fdf542e"></a>[compatibility/python-api/v1](../../../policies/index.md#p-e574772ba5)
+
+## Evidence
+
+### Qualification
+
+- [make dist-smoke](../../../evidence/sources.md#q-0ba2578a3e)
+- [make build](../../../evidence/sources.md#q-d1121e35fa)
+
+### Executable sources
+
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [python:http-api-contracts:http_api_contracts](../../../evidence/sources.md#src-a522df4cfd) — `packages/http-api-contracts/src/http_api_contracts/__init__.py`
+
+### Machine authority
+
+- `/external_contract/python/http_api_contracts.HttpOperationContract`
+
+### Exact owned JSON
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: b3123f489d4d2f618b0f8a05cab4c3525454360f14b319b9b84aa8c2c736395f -->
+
+```json
+{
+  "contract": {
+    "fields": [
+      {
+        "default": "required",
+        "name": "method",
+        "type": "\"Literal['GET', 'POST', 'PUT', 'DELETE', 'PATCH']\""
+      },
+      {
+        "default": "required",
+        "name": "path",
+        "type": "'str'"
+      },
+      {
+        "default": "None",
+        "name": "request_type",
+        "type": "'object | None'"
+      },
+      {
+        "default": "None",
+        "name": "response_type",
+        "type": "'object | None'"
+      },
+      {
+        "default": "'none'",
+        "name": "request_kind",
+        "type": "'HttpBodyKind'"
+      },
+      {
+        "default": "'json'",
+        "name": "response_kind",
+        "type": "'HttpBodyKind'"
+      },
+      {
+        "default": "(200,)",
+        "name": "success_statuses",
+        "type": "'tuple[int, ...]'"
+      },
+      {
+        "default": "()",
+        "name": "errors",
+        "type": "'tuple[HttpErrorContract, ...]'"
+      },
+      {
+        "default": "()",
+        "name": "path_parameters",
+        "type": "'tuple[HttpPathParameterContract, ...]'"
+      },
+      {
+        "default": "()",
+        "name": "response_headers",
+        "type": "'tuple[HttpResponseHeaderContract, ...]'"
+      },
+      {
+        "default": "<class 'http_api_contracts.ErrorResponse'>",
+        "name": "error_type",
+        "type": "'type[BaseModel]'"
+      }
+    ],
+    "kind": "class",
+    "signature": "'(method: \"Literal[\\'GET\\', \\'POST\\', \\'PUT\\', \\'DELETE\\', \\'PATCH\\']\", path: \\'str\\', request_type: \\'object | None\\' = None, response_type: \\'object | None\\' = None, request_kind: \\'HttpBodyKind\\' = \\'none\\', response_kind: \\'HttpBodyKind\\' = \\'json\\', success_statuses: \\'tuple[int, ...]\\' = (200,), errors: \\'tuple[HttpErrorContract, ...]\\' = (), path_parameters: \\'tuple[HttpPathParameterContract, ...]\\' = (), response_headers: \\'tuple[HttpResponseHeaderContract, ...]\\' = (), error_type: \\'type[BaseModel]\\' = <class \\'http_api_contracts.ErrorResponse\\'>) -> None'"
+  },
+  "distribution": "http-api-contracts",
+  "module": "http_api_contracts",
+  "name": "HttpOperationContract",
+  "unit": "export"
+}
+```

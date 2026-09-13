@@ -1,0 +1,70 @@
+# stove0_core.Stove0Coordinator.inspect_coordination
+
+[Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
+
+<!-- contract-element: python:stove0-server:stove0-core-stove0coordinator-inspect-coordination:b8e4783065 -->
+
+Exact externally visible contract owned by this semantic dossier.
+
+| Audit field | Value |
+|---|---|
+| Authority | [stove0-server](../index.md) |
+| Interface | [Python](index.md) |
+
+## External contract
+
+<a id="s-58def29f21"></a>
+| Field | Shape |
+|---|---|
+| <a id="s-cf4b164cf8"></a>`contract` | additional keys=`kind`, `signature` |
+| <a id="s-2758687c16"></a>`distribution` | "stove0-server" |
+| <a id="s-095ebe3191"></a>`module` | "stove0_core" |
+| <a id="s-4851f50104"></a>`name` | "inspect_coordination" |
+| <a id="s-354d182692"></a>`owner` | "stove0_core.Stove0Coordinator" |
+| <a id="s-5626e1e20d"></a>`unit` | "member" |
+
+## Maintained corroboration
+
+### Related interface records
+
+- [stove0_core.Stove0Coordinator](stove0-core-stove0coordinator.md)
+
+## Governing policies
+
+- <a id="pa-c2a174c5c9"></a>[compatibility/python-api/v1](../../../policies/index.md#p-e574772ba5)
+
+## Evidence
+
+### Qualification
+
+- [make dist-smoke](../../../evidence/sources.md#q-0ba2578a3e)
+- [make build](../../../evidence/sources.md#q-d1121e35fa)
+
+### Executable sources
+
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [python:stove0-server:stove0_core](../../../evidence/sources.md#src-7558b08e7f) — `reference/stove0/application/server/src/stove0_core/__init__.py`
+
+### Machine authority
+
+- `/external_contract/python/stove0_core.Stove0Coordinator.inspect_coordination`
+
+### Exact owned JSON
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: b001ce98f6821b5ac509f985ab119545cda937b333183ff6ffcd9667cb641d11 -->
+
+```json
+{
+  "contract": {
+    "kind": "method",
+    "signature": "\"(self, work_id: 'str') -> 'BranchSetEvaluation'\""
+  },
+  "distribution": "stove0-server",
+  "module": "stove0_core",
+  "name": "inspect_coordination",
+  "owner": "stove0_core.Stove0Coordinator",
+  "unit": "member"
+}
+```

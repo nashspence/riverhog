@@ -1,0 +1,70 @@
+# stove0_operator_contracts.EvaluationView.from_record
+
+[Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
+
+<!-- contract-element: python:stove0-operator-contracts:stove0-operator-contracts-evaluationview-from-record:fecf36b83f -->
+
+Exact externally visible contract owned by this semantic dossier.
+
+| Audit field | Value |
+|---|---|
+| Authority | [stove0-operator-contracts](../index.md) |
+| Interface | [Python](index.md) |
+
+## External contract
+
+<a id="s-9523845453"></a>
+| Field | Shape |
+|---|---|
+| <a id="s-7ef81bfd83"></a>`contract` | additional keys=`kind`, `signature` |
+| <a id="s-6aa158af51"></a>`distribution` | "stove0-operator-contracts" |
+| <a id="s-36483db858"></a>`module` | "stove0_operator_contracts" |
+| <a id="s-9b64438131"></a>`name` | "from_record" |
+| <a id="s-3f7dda719f"></a>`owner` | "stove0_operator_contracts.EvaluationView" |
+| <a id="s-f8fff9bf8c"></a>`unit` | "member" |
+
+## Maintained corroboration
+
+### Related interface records
+
+- [stove0_operator_contracts.EvaluationView](stove0-operator-contracts-evaluationview.md)
+
+## Governing policies
+
+- <a id="pa-3b65b586af"></a>[compatibility/python-api/v1](../../../policies/index.md#p-e574772ba5)
+
+## Evidence
+
+### Qualification
+
+- [make dist-smoke](../../../evidence/sources.md#q-0ba2578a3e)
+- [make build](../../../evidence/sources.md#q-d1121e35fa)
+
+### Executable sources
+
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [python:stove0-operator-contracts:stove0_operator_contracts](../../../evidence/sources.md#src-51ad84528d) — `reference/stove0/packages/operator-contracts/src/stove0_operator_contracts/__init__.py`
+
+### Machine authority
+
+- `/external_contract/python/stove0_operator_contracts.EvaluationView.from_record`
+
+### Exact owned JSON
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: fc606349fa8e2ebe59f053f753d96fef572017575f407fa25643e608d6788f75 -->
+
+```json
+{
+  "contract": {
+    "kind": "classmethod",
+    "signature": "\"(cls, record: 'BaseModel | Mapping[str, Any]') -> 'EvaluationView'\""
+  },
+  "distribution": "stove0-operator-contracts",
+  "module": "stove0_operator_contracts",
+  "name": "from_record",
+  "owner": "stove0_operator_contracts.EvaluationView",
+  "unit": "member"
+}
+```

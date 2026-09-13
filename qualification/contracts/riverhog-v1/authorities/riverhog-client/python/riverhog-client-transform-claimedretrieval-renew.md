@@ -1,0 +1,70 @@
+# riverhog_client.transform.ClaimedRetrieval.renew
+
+[Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
+
+<!-- contract-element: python:riverhog-client:riverhog-client-transform-claimedretrieval-renew:5636d98721 -->
+
+Exact externally visible contract owned by this semantic dossier.
+
+| Audit field | Value |
+|---|---|
+| Authority | [riverhog-client](../index.md) |
+| Interface | [Python](index.md) |
+
+## External contract
+
+<a id="s-63159fd7a7"></a>
+| Field | Shape |
+|---|---|
+| <a id="s-dec4d618f9"></a>`contract` | additional keys=`kind`, `signature` |
+| <a id="s-a09268caa2"></a>`distribution` | "riverhog-client" |
+| <a id="s-e1ff57d7ae"></a>`module` | "riverhog_client.transform" |
+| <a id="s-9997854a7e"></a>`name` | "renew" |
+| <a id="s-dd41721135"></a>`owner` | "riverhog_client.transform.ClaimedRetrieval" |
+| <a id="s-66b7684dee"></a>`unit` | "member" |
+
+## Maintained corroboration
+
+### Related interface records
+
+- [riverhog_client.transform.ClaimedRetrieval](riverhog-client-transform-claimedretrieval.md)
+
+## Governing policies
+
+- <a id="pa-268c05c3ab"></a>[compatibility/python-api/v1](../../../policies/index.md#p-e574772ba5)
+
+## Evidence
+
+### Qualification
+
+- [make dist-smoke](../../../evidence/sources.md#q-0ba2578a3e)
+- [make build](../../../evidence/sources.md#q-d1121e35fa)
+
+### Executable sources
+
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [python:riverhog-client:riverhog_client.transform](../../../evidence/sources.md#src-7a247bb534) — `packages/riverhog-client/src/riverhog_client/transform/__init__.py`
+
+### Machine authority
+
+- `/external_contract/python/riverhog_client.transform.ClaimedRetrieval.renew`
+
+### Exact owned JSON
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 09ca466e46ff16c7eead33ce1d10a8d2fcd2531c2442a44a068e01dffa70aca3 -->
+
+```json
+{
+  "contract": {
+    "kind": "method",
+    "signature": "\"(self, *, lease_seconds: 'int') -> 'dict[str, Any]'\""
+  },
+  "distribution": "riverhog-client",
+  "module": "riverhog_client.transform",
+  "name": "renew",
+  "owner": "riverhog_client.transform.ClaimedRetrieval",
+  "unit": "member"
+}
+```

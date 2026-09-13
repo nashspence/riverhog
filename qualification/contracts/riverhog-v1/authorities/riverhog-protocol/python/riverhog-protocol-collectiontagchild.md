@@ -1,0 +1,74 @@
+# riverhog_protocol.CollectionTagChild
+
+[Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
+
+<!-- contract-element: python:riverhog-protocol:riverhog-protocol-collectiontagchild:a479e369d5 -->
+
+Exact externally visible contract owned by this semantic dossier.
+
+| Audit field | Value |
+|---|---|
+| Authority | [riverhog-protocol](../index.md) |
+| Interface | [Python](index.md) |
+
+## External contract
+
+<a id="s-9df3c8aa6c"></a>
+| Field | Shape |
+|---|---|
+| <a id="s-9e26f1abe6"></a>`contract` | additional keys=`fields`, `kind`, `signature` |
+| <a id="s-1d1496de87"></a>`distribution` | "riverhog-protocol" |
+| <a id="s-234a17bc18"></a>`module` | "riverhog_protocol" |
+| <a id="s-bbaffe8399"></a>`name` | "CollectionTagChild" |
+| <a id="s-d747464133"></a>`unit` | "export" |
+
+## Governing policies
+
+- <a id="pa-60b8083034"></a>[compatibility/python-api/v1](../../../policies/index.md#p-e574772ba5)
+
+## Evidence
+
+### Qualification
+
+- [make dist-smoke](../../../evidence/sources.md#q-0ba2578a3e)
+- [make build](../../../evidence/sources.md#q-d1121e35fa)
+
+### Executable sources
+
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [python:riverhog-protocol:riverhog_protocol](../../../evidence/sources.md#src-19e35f15d9) — `packages/riverhog-protocol/src/riverhog_protocol/__init__.py`
+
+### Machine authority
+
+- `/external_contract/python/riverhog_protocol.CollectionTagChild`
+
+### Exact owned JSON
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: dbe2256d986951686ceb38415f79cad14e14742e163e02744997a118aa9142fd -->
+
+```json
+{
+  "contract": {
+    "fields": [
+      {
+        "default": "required",
+        "name": "label",
+        "type": "'int'"
+      },
+      {
+        "default": "required",
+        "name": "digest",
+        "type": "'str'"
+      }
+    ],
+    "kind": "class",
+    "signature": "\"(label: 'int', digest: 'str') -> None\""
+  },
+  "distribution": "riverhog-protocol",
+  "module": "riverhog_protocol",
+  "name": "CollectionTagChild",
+  "unit": "export"
+}
+```

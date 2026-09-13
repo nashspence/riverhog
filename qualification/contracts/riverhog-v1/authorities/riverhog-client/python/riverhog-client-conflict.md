@@ -1,0 +1,62 @@
+# riverhog_client.Conflict
+
+[Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
+
+<!-- contract-element: python:riverhog-client:riverhog-client-conflict:ac79297f1b -->
+
+Exact externally visible contract owned by this semantic dossier.
+
+| Audit field | Value |
+|---|---|
+| Authority | [riverhog-client](../index.md) |
+| Interface | [Python](index.md) |
+
+## External contract
+
+<a id="s-706897f898"></a>
+| Field | Shape |
+|---|---|
+| <a id="s-59d9b73311"></a>`contract` | additional keys=`kind`, `signature` |
+| <a id="s-b3cd74ae94"></a>`distribution` | "riverhog-client" |
+| <a id="s-60a5f6d196"></a>`module` | "riverhog_client" |
+| <a id="s-7d56797a11"></a>`name` | "Conflict" |
+| <a id="s-d909e48376"></a>`unit` | "export" |
+
+## Governing policies
+
+- <a id="pa-4f157a3427"></a>[compatibility/python-api/v1](../../../policies/index.md#p-e574772ba5)
+
+## Evidence
+
+### Qualification
+
+- [make dist-smoke](../../../evidence/sources.md#q-0ba2578a3e)
+- [make build](../../../evidence/sources.md#q-d1121e35fa)
+
+### Executable sources
+
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [python:riverhog-client:riverhog_client](../../../evidence/sources.md#src-c149020c71) — `packages/riverhog-client/src/riverhog_client/__init__.py`
+
+### Machine authority
+
+- `/external_contract/python/riverhog_client.Conflict`
+
+### Exact owned JSON
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: c97f622e8a76c27355923d92701ceeac8a0628d8a6dab51fb3faec6621e44b84 -->
+
+```json
+{
+  "contract": {
+    "kind": "class",
+    "signature": "\"(message: 'str', *, code: 'str | None' = None, observed_status: 'int | None' = None, details: 'dict[str, Any] | None' = None) -> 'None'\""
+  },
+  "distribution": "riverhog-client",
+  "module": "riverhog_client",
+  "name": "Conflict",
+  "unit": "export"
+}
+```

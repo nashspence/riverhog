@@ -1,0 +1,62 @@
+# gogurt_path_volume_support.PATH_MARKER_NAME
+
+[Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
+
+<!-- contract-element: python:gogurt-path-volume-support:gogurt-path-volume-support-path-marker-name:3e3c713ad1 -->
+
+Exact externally visible contract owned by this semantic dossier.
+
+| Audit field | Value |
+|---|---|
+| Authority | [gogurt-path-volume-support](../index.md) |
+| Interface | [Python](index.md) |
+
+## External contract
+
+<a id="s-02043a19c4"></a>
+| Field | Shape |
+|---|---|
+| <a id="s-d519bd6315"></a>`contract` | additional keys=`kind`, `value` |
+| <a id="s-df43e215fa"></a>`distribution` | "gogurt-path-volume-support" |
+| <a id="s-bfa876cdde"></a>`module` | "gogurt_path_volume_support" |
+| <a id="s-bfee8f6133"></a>`name` | "PATH_MARKER_NAME" |
+| <a id="s-8d6968559c"></a>`unit` | "export" |
+
+## Governing policies
+
+- <a id="pa-30d5a9bf6a"></a>[compatibility/python-api/v1](../../../policies/index.md#p-e574772ba5)
+
+## Evidence
+
+### Qualification
+
+- [make dist-smoke](../../../evidence/sources.md#q-0ba2578a3e)
+- [make build](../../../evidence/sources.md#q-d1121e35fa)
+
+### Executable sources
+
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [python:gogurt-path-volume-support:gogurt_path_volume_support](../../../evidence/sources.md#src-a67d948855) — `reference/gogurt/mounted-volume/path-support/src/gogurt_path_volume_support/__init__.py`
+
+### Machine authority
+
+- `/external_contract/python/gogurt_path_volume_support.PATH_MARKER_NAME`
+
+### Exact owned JSON
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 1384562054f9b47fe54b9e022ed59295b6a258cd6d3de9db35c359b7eb744823 -->
+
+```json
+{
+  "contract": {
+    "kind": "constant",
+    "value": ".gogurt"
+  },
+  "distribution": "gogurt-path-volume-support",
+  "module": "gogurt_path_volume_support",
+  "name": "PATH_MARKER_NAME",
+  "unit": "export"
+}
+```

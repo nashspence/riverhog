@@ -1,0 +1,62 @@
+# gogurt_listener_runtime.LISTENER_HEARTBEAT_SCHEMA
+
+[Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
+
+<!-- contract-element: python:gogurt-listener-runtime:gogurt-listener-runtime-listener-heartbeat-schema:632af222e7 -->
+
+Exact externally visible contract owned by this semantic dossier.
+
+| Audit field | Value |
+|---|---|
+| Authority | [gogurt-listener-runtime](../index.md) |
+| Interface | [Python](index.md) |
+
+## External contract
+
+<a id="s-5b35d953ce"></a>
+| Field | Shape |
+|---|---|
+| <a id="s-03a1ce9325"></a>`contract` | additional keys=`kind`, `value` |
+| <a id="s-ec295d4fbb"></a>`distribution` | "gogurt-listener-runtime" |
+| <a id="s-8958bb9a99"></a>`module` | "gogurt_listener_runtime" |
+| <a id="s-088109d6ac"></a>`name` | "LISTENER_HEARTBEAT_SCHEMA" |
+| <a id="s-b0077053db"></a>`unit` | "export" |
+
+## Governing policies
+
+- <a id="pa-06210b5cf5"></a>[compatibility/python-api/v1](../../../policies/index.md#p-e574772ba5)
+
+## Evidence
+
+### Qualification
+
+- [make dist-smoke](../../../evidence/sources.md#q-0ba2578a3e)
+- [make build](../../../evidence/sources.md#q-d1121e35fa)
+
+### Executable sources
+
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [python:gogurt-listener-runtime:gogurt_listener_runtime](../../../evidence/sources.md#src-259980dd25) — `reference/gogurt/packages/listener-runtime/src/gogurt_listener_runtime/__init__.py`
+
+### Machine authority
+
+- `/external_contract/python/gogurt_listener_runtime.LISTENER_HEARTBEAT_SCHEMA`
+
+### Exact owned JSON
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: b4489207ebf95de34d667240eee4848a8c66ec19c86ef66c14230170b0cf3e88 -->
+
+```json
+{
+  "contract": {
+    "kind": "constant",
+    "value": "gogurt-listener-heartbeat/v1"
+  },
+  "distribution": "gogurt-listener-runtime",
+  "module": "gogurt_listener_runtime",
+  "name": "LISTENER_HEARTBEAT_SCHEMA",
+  "unit": "export"
+}
+```

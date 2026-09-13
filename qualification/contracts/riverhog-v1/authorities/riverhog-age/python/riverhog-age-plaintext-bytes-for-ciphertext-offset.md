@@ -1,0 +1,62 @@
+# riverhog_age.plaintext_bytes_for_ciphertext_offset
+
+[Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
+
+<!-- contract-element: python:riverhog-age:riverhog-age-plaintext-bytes-for-ciphertext-offset:228e7a8334 -->
+
+Exact externally visible contract owned by this semantic dossier.
+
+| Audit field | Value |
+|---|---|
+| Authority | [riverhog-age](../index.md) |
+| Interface | [Python](index.md) |
+
+## External contract
+
+<a id="s-1db72bebc5"></a>
+| Field | Shape |
+|---|---|
+| <a id="s-8abcd2aecb"></a>`contract` | additional keys=`kind`, `signature` |
+| <a id="s-0ce1822be3"></a>`distribution` | "riverhog-age" |
+| <a id="s-18b90c0857"></a>`module` | "riverhog_age" |
+| <a id="s-d1446d10d1"></a>`name` | "plaintext_bytes_for_ciphertext_offset" |
+| <a id="s-70cd7e0a70"></a>`unit` | "export" |
+
+## Governing policies
+
+- <a id="pa-0cb20f7b51"></a>[compatibility/python-api/v1](../../../policies/index.md#p-e574772ba5)
+
+## Evidence
+
+### Qualification
+
+- [make dist-smoke](../../../evidence/sources.md#q-0ba2578a3e)
+- [make build](../../../evidence/sources.md#q-d1121e35fa)
+
+### Executable sources
+
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [python:riverhog-age:riverhog_age](../../../evidence/sources.md#src-a842e50b8b) — `packages/riverhog-age/src/riverhog_age/__init__.py`
+
+### Machine authority
+
+- `/external_contract/python/riverhog_age.plaintext_bytes_for_ciphertext_offset`
+
+### Exact owned JSON
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 2e2d8dfc9fb97eb700dfe15912c473bc1a169ee700f09d4722fab842349c3091 -->
+
+```json
+{
+  "contract": {
+    "kind": "function",
+    "signature": "\"(*, state: 'UploadState | bytes | str | Mapping[str, object]', plaintext_bytes: 'int', ciphertext_bytes: 'int', ciphertext_offset: 'int') -> 'int'\""
+  },
+  "distribution": "riverhog-age",
+  "module": "riverhog_age",
+  "name": "plaintext_bytes_for_ciphertext_offset",
+  "unit": "export"
+}
+```

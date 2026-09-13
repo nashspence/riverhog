@@ -1,0 +1,70 @@
+# stove0_core.Stove0WorkService.fail
+
+[Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
+
+<!-- contract-element: python:stove0-server:stove0-core-stove0workservice-fail:64ac0ad315 -->
+
+Exact externally visible contract owned by this semantic dossier.
+
+| Audit field | Value |
+|---|---|
+| Authority | [stove0-server](../index.md) |
+| Interface | [Python](index.md) |
+
+## External contract
+
+<a id="s-dc0cf20d29"></a>
+| Field | Shape |
+|---|---|
+| <a id="s-be08adc25f"></a>`contract` | additional keys=`kind`, `signature` |
+| <a id="s-49aefb2a4e"></a>`distribution` | "stove0-server" |
+| <a id="s-99805f374a"></a>`module` | "stove0_core" |
+| <a id="s-9a360c17e8"></a>`name` | "fail" |
+| <a id="s-b005fcbaec"></a>`owner` | "stove0_core.Stove0WorkService" |
+| <a id="s-6251aa8d89"></a>`unit` | "member" |
+
+## Maintained corroboration
+
+### Related interface records
+
+- [stove0_core.Stove0WorkService](stove0-core-stove0workservice.md)
+
+## Governing policies
+
+- <a id="pa-617a87c572"></a>[compatibility/python-api/v1](../../../policies/index.md#p-e574772ba5)
+
+## Evidence
+
+### Qualification
+
+- [make dist-smoke](../../../evidence/sources.md#q-0ba2578a3e)
+- [make build](../../../evidence/sources.md#q-d1121e35fa)
+
+### Executable sources
+
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [python:stove0-server:stove0_core](../../../evidence/sources.md#src-7558b08e7f) — `reference/stove0/application/server/src/stove0_core/__init__.py`
+
+### Machine authority
+
+- `/external_contract/python/stove0_core.Stove0WorkService.fail`
+
+### Exact owned JSON
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: d3eece7c87c5d6df92effdf826099ee61e6fe75c133ab5f9ecbb480a681a002a -->
+
+```json
+{
+  "contract": {
+    "kind": "method",
+    "signature": "\"(self, work_id: 'str', failure: 'WorkFailure', *, expected_revision: 'int') -> 'WorkRecord'\""
+  },
+  "distribution": "stove0-server",
+  "module": "stove0_core",
+  "name": "fail",
+  "owner": "stove0_core.Stove0WorkService",
+  "unit": "member"
+}
+```

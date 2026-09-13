@@ -1,0 +1,70 @@
+# stove0_core.PlanningPort.operation_contract
+
+[Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
+
+<!-- contract-element: python:stove0-server:stove0-core-planningport-operation-contract:a47e9bf33b -->
+
+Exact externally visible contract owned by this semantic dossier.
+
+| Audit field | Value |
+|---|---|
+| Authority | [stove0-server](../index.md) |
+| Interface | [Python](index.md) |
+
+## External contract
+
+<a id="s-8f0012cbb6"></a>
+| Field | Shape |
+|---|---|
+| <a id="s-315412e2d8"></a>`contract` | additional keys=`kind`, `signature` |
+| <a id="s-d16a3faf1c"></a>`distribution` | "stove0-server" |
+| <a id="s-dda8ffdcb0"></a>`module` | "stove0_core" |
+| <a id="s-e4b8c6512e"></a>`name` | "operation_contract" |
+| <a id="s-879e8d2ae5"></a>`owner` | "stove0_core.PlanningPort" |
+| <a id="s-0d79cd78d5"></a>`unit` | "member" |
+
+## Maintained corroboration
+
+### Related interface records
+
+- [stove0_core.PlanningPort](stove0-core-planningport.md)
+
+## Governing policies
+
+- <a id="pa-eb135e4794"></a>[compatibility/python-api/v1](../../../policies/index.md#p-e574772ba5)
+
+## Evidence
+
+### Qualification
+
+- [make dist-smoke](../../../evidence/sources.md#q-0ba2578a3e)
+- [make build](../../../evidence/sources.md#q-d1121e35fa)
+
+### Executable sources
+
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [python:stove0-server:stove0_core](../../../evidence/sources.md#src-7558b08e7f) — `reference/stove0/application/server/src/stove0_core/__init__.py`
+
+### Machine authority
+
+- `/external_contract/python/stove0_core.PlanningPort.operation_contract`
+
+### Exact owned JSON
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: fc19c65cc5e731af05ee3250c1b96ec692a3d9cea57f699531659932deb2f06b -->
+
+```json
+{
+  "contract": {
+    "kind": "method",
+    "signature": "\"(self, operation: 'OperationRef') -> 'OperationContract'\""
+  },
+  "distribution": "stove0-server",
+  "module": "stove0_core",
+  "name": "operation_contract",
+  "owner": "stove0_core.PlanningPort",
+  "unit": "member"
+}
+```

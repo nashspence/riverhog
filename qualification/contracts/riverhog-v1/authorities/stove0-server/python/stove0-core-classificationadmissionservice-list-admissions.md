@@ -1,0 +1,70 @@
+# stove0_core.ClassificationAdmissionService.list_admissions
+
+[Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
+
+<!-- contract-element: python:stove0-server:stove0-core-classificationadmissionservic-c3a1704819:bac208c3c1 -->
+
+Exact externally visible contract owned by this semantic dossier.
+
+| Audit field | Value |
+|---|---|
+| Authority | [stove0-server](../index.md) |
+| Interface | [Python](index.md) |
+
+## External contract
+
+<a id="s-77c92b57df"></a>
+| Field | Shape |
+|---|---|
+| <a id="s-355c90a66b"></a>`contract` | additional keys=`kind`, `signature` |
+| <a id="s-2f0e669f33"></a>`distribution` | "stove0-server" |
+| <a id="s-a18c0c5046"></a>`module` | "stove0_core" |
+| <a id="s-8a504478bb"></a>`name` | "list_admissions" |
+| <a id="s-c0466ca7f3"></a>`owner` | "stove0_core.ClassificationAdmissionService" |
+| <a id="s-d4b0fcdcc6"></a>`unit` | "member" |
+
+## Maintained corroboration
+
+### Related interface records
+
+- [stove0_core.ClassificationAdmissionService](stove0-core-classificationadmissionservice.md)
+
+## Governing policies
+
+- <a id="pa-d69d2b1312"></a>[compatibility/python-api/v1](../../../policies/index.md#p-e574772ba5)
+
+## Evidence
+
+### Qualification
+
+- [make dist-smoke](../../../evidence/sources.md#q-0ba2578a3e)
+- [make build](../../../evidence/sources.md#q-d1121e35fa)
+
+### Executable sources
+
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [python:stove0-server:stove0_core](../../../evidence/sources.md#src-7558b08e7f) — `reference/stove0/application/server/src/stove0_core/__init__.py`
+
+### Machine authority
+
+- `/external_contract/python/stove0_core.ClassificationAdmissionService.list_admissions`
+
+### Exact owned JSON
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: b49f2b4057dd52504437c2cd3ac4907ecff3f7d44844aae36fa33ef4f5eaf5a0 -->
+
+```json
+{
+  "contract": {
+    "kind": "method",
+    "signature": "\"(self, *, page_size: 'int', position: 'tuple[str | int | bool | bytes | None, ...] | None', policy_id: 'str | None', state: 'AdmissionState | None', query: 'str | None', sort: 'AdmissionSort', order: 'SortOrder') -> 'dict[str, object]'\""
+  },
+  "distribution": "stove0-server",
+  "module": "stove0_core",
+  "name": "list_admissions",
+  "owner": "stove0_core.ClassificationAdmissionService",
+  "unit": "member"
+}
+```

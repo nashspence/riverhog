@@ -1,0 +1,62 @@
+# riverhog_age.PAYLOAD_NONCE_SIZE
+
+[Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
+
+<!-- contract-element: python:riverhog-age:riverhog-age-payload-nonce-size:243748c738 -->
+
+Exact externally visible contract owned by this semantic dossier.
+
+| Audit field | Value |
+|---|---|
+| Authority | [riverhog-age](../index.md) |
+| Interface | [Python](index.md) |
+
+## External contract
+
+<a id="s-6eed9d37ef"></a>
+| Field | Shape |
+|---|---|
+| <a id="s-30eed6ef13"></a>`contract` | additional keys=`kind`, `value` |
+| <a id="s-51cb42b543"></a>`distribution` | "riverhog-age" |
+| <a id="s-af399fbc71"></a>`module` | "riverhog_age" |
+| <a id="s-829a5468c3"></a>`name` | "PAYLOAD_NONCE_SIZE" |
+| <a id="s-e54d25928b"></a>`unit` | "export" |
+
+## Governing policies
+
+- <a id="pa-77dfa07291"></a>[compatibility/python-api/v1](../../../policies/index.md#p-e574772ba5)
+
+## Evidence
+
+### Qualification
+
+- [make dist-smoke](../../../evidence/sources.md#q-0ba2578a3e)
+- [make build](../../../evidence/sources.md#q-d1121e35fa)
+
+### Executable sources
+
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [python:riverhog-age:riverhog_age](../../../evidence/sources.md#src-a842e50b8b) — `packages/riverhog-age/src/riverhog_age/__init__.py`
+
+### Machine authority
+
+- `/external_contract/python/riverhog_age.PAYLOAD_NONCE_SIZE`
+
+### Exact owned JSON
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: ed65c97e51277498c29e44ef40704ffa7002d5c1d4805caf5989e9192a39db77 -->
+
+```json
+{
+  "contract": {
+    "kind": "constant",
+    "value": 16
+  },
+  "distribution": "riverhog-age",
+  "module": "riverhog_age",
+  "name": "PAYLOAD_NONCE_SIZE",
+  "unit": "export"
+}
+```

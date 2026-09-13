@@ -1,0 +1,62 @@
+# riverhog_provenance.PROVENANCE_OBSERVER_REFERENCE_FORMAT
+
+[Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
+
+<!-- contract-element: python:riverhog-provenance:riverhog-provenance-provenance-observer-r-a2ddb80455:9d08491a33 -->
+
+Exact externally visible contract owned by this semantic dossier.
+
+| Audit field | Value |
+|---|---|
+| Authority | [riverhog-provenance](../index.md) |
+| Interface | [Python](index.md) |
+
+## External contract
+
+<a id="s-30ea86094a"></a>
+| Field | Shape |
+|---|---|
+| <a id="s-438c05faf7"></a>`contract` | additional keys=`kind`, `value` |
+| <a id="s-44fe3b5c70"></a>`distribution` | "riverhog-provenance" |
+| <a id="s-9b7cd41773"></a>`module` | "riverhog_provenance" |
+| <a id="s-5af7bc355d"></a>`name` | "PROVENANCE_OBSERVER_REFERENCE_FORMAT" |
+| <a id="s-468ea359bf"></a>`unit` | "export" |
+
+## Governing policies
+
+- <a id="pa-5a8de6be41"></a>[compatibility/python-api/v1](../../../policies/index.md#p-e574772ba5)
+
+## Evidence
+
+### Qualification
+
+- [make dist-smoke](../../../evidence/sources.md#q-0ba2578a3e)
+- [make build](../../../evidence/sources.md#q-d1121e35fa)
+
+### Executable sources
+
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [python:riverhog-provenance:riverhog_provenance](../../../evidence/sources.md#src-38ef3a6054) — `packages/riverhog-provenance/src/riverhog_provenance/__init__.py`
+
+### Machine authority
+
+- `/external_contract/python/riverhog_provenance.PROVENANCE_OBSERVER_REFERENCE_FORMAT`
+
+### Exact owned JSON
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: e2b0de55a4f20ad861d70faab2d528f06dc63f6726c33492511da37d2d41199c -->
+
+```json
+{
+  "contract": {
+    "kind": "constant",
+    "value": "riverhog-provenance-observer-reference/v1"
+  },
+  "distribution": "riverhog-provenance",
+  "module": "riverhog_provenance",
+  "name": "PROVENANCE_OBSERVER_REFERENCE_FORMAT",
+  "unit": "export"
+}
+```

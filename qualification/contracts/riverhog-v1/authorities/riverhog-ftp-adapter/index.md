@@ -2,7 +2,7 @@
 
 [Atlas](../../index.md) · [Policies](../../policies/index.md)
 
-Contract elements: **25** · Extent decisions: **35**
+Contract elements: **37** · Extent decisions: **35**
 
 ## Interfaces
 
@@ -13,4 +13,4 @@ Contract elements: **25** · Extent decisions: **35**
 - [CLI](cli/index.md) (7)
 - [Configuration Documents](configuration/index.md) (2)
 - [Configuration Environment](configuration-environment/index.md) (3)
-- [Python](python/index.md) (1)
+- [Python](python/index.md) (13)

@@ -1,0 +1,70 @@
+# lifecycle_events.SQLiteLifecycleEventLog.append_once
+
+[Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
+
+<!-- contract-element: python:lifecycle-events:lifecycle-events-sqlitelifecycleeventlog-append-once:45de4aa4bc -->
+
+Exact externally visible contract owned by this semantic dossier.
+
+| Audit field | Value |
+|---|---|
+| Authority | [lifecycle-events](../index.md) |
+| Interface | [Python](index.md) |
+
+## External contract
+
+<a id="s-0ad7e233c6"></a>
+| Field | Shape |
+|---|---|
+| <a id="s-75202714de"></a>`contract` | additional keys=`kind`, `signature` |
+| <a id="s-aff9c2828d"></a>`distribution` | "lifecycle-events" |
+| <a id="s-a4f4bee032"></a>`module` | "lifecycle_events" |
+| <a id="s-0009390c3d"></a>`name` | "append_once" |
+| <a id="s-fc1ca750ed"></a>`owner` | "lifecycle_events.SQLiteLifecycleEventLog" |
+| <a id="s-343feb8e2a"></a>`unit` | "member" |
+
+## Maintained corroboration
+
+### Related interface records
+
+- [lifecycle_events.SQLiteLifecycleEventLog](lifecycle-events-sqlitelifecycleeventlog.md)
+
+## Governing policies
+
+- <a id="pa-f7579b703f"></a>[compatibility/python-api/v1](../../../policies/index.md#p-e574772ba5)
+
+## Evidence
+
+### Qualification
+
+- [make dist-smoke](../../../evidence/sources.md#q-0ba2578a3e)
+- [make build](../../../evidence/sources.md#q-d1121e35fa)
+
+### Executable sources
+
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [python:lifecycle-events:lifecycle_events](../../../evidence/sources.md#src-7ab82f5e27) — `packages/lifecycle-events/src/lifecycle_events/__init__.py`
+
+### Machine authority
+
+- `/external_contract/python/lifecycle_events.SQLiteLifecycleEventLog.append_once`
+
+### Exact owned JSON
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 609873e555c740c9eb2bdc708d4912f93e63067003fbbf0e77c9b7a3efb99898 -->
+
+```json
+{
+  "contract": {
+    "kind": "method",
+    "signature": "\"(self, event: 'CloudEvent', *, owner: 'str', context: 'dict[str, object] | None' = None, context_expires_at: 'str | None' = None) -> 'int'\""
+  },
+  "distribution": "lifecycle-events",
+  "module": "lifecycle_events",
+  "name": "append_once",
+  "owner": "lifecycle_events.SQLiteLifecycleEventLog",
+  "unit": "member"
+}
+```

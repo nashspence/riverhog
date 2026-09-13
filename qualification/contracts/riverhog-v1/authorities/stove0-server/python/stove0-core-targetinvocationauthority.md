@@ -1,0 +1,74 @@
+# stove0_core.TargetInvocationAuthority
+
+[Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
+
+<!-- contract-element: python:stove0-server:stove0-core-targetinvocationauthority:bfc0707647 -->
+
+Exact externally visible contract owned by this semantic dossier.
+
+| Audit field | Value |
+|---|---|
+| Authority | [stove0-server](../index.md) |
+| Interface | [Python](index.md) |
+
+## External contract
+
+<a id="s-ff0f2b9c06"></a>
+| Field | Shape |
+|---|---|
+| <a id="s-80321ebb61"></a>`contract` | additional keys=`fields`, `kind`, `signature` |
+| <a id="s-861887ced6"></a>`distribution` | "stove0-server" |
+| <a id="s-8a33b7a78f"></a>`module` | "stove0_core" |
+| <a id="s-b4cbefde73"></a>`name` | "TargetInvocationAuthority" |
+| <a id="s-17bb16cbfd"></a>`unit` | "export" |
+
+## Governing policies
+
+- <a id="pa-802d2fdd67"></a>[compatibility/python-api/v1](../../../policies/index.md#p-e574772ba5)
+
+## Evidence
+
+### Qualification
+
+- [make dist-smoke](../../../evidence/sources.md#q-0ba2578a3e)
+- [make build](../../../evidence/sources.md#q-d1121e35fa)
+
+### Executable sources
+
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [python:stove0-server:stove0_core](../../../evidence/sources.md#src-7558b08e7f) — `reference/stove0/application/server/src/stove0_core/__init__.py`
+
+### Machine authority
+
+- `/external_contract/python/stove0_core.TargetInvocationAuthority`
+
+### Exact owned JSON
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: cf63f20ecfa8a84ea6aab33c628b93cf7ac1788e0e939766f709fc527b2bac6c -->
+
+```json
+{
+  "contract": {
+    "fields": [
+      {
+        "default": "required",
+        "name": "runtime",
+        "type": "'TargetRuntimeAuthority'"
+      },
+      {
+        "default": "required",
+        "name": "workspace_assurance",
+        "type": "'WorkspaceAssurance'"
+      }
+    ],
+    "kind": "class",
+    "signature": "\"(runtime: 'TargetRuntimeAuthority', workspace_assurance: 'WorkspaceAssurance') -> None\""
+  },
+  "distribution": "stove0-server",
+  "module": "stove0_core",
+  "name": "TargetInvocationAuthority",
+  "unit": "export"
+}
+```

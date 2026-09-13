@@ -1,0 +1,63 @@
+# riverhog_storage_adapter_protocol.WriteSegmentReceipt
+
+[Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
+
+<!-- contract-element: python:riverhog-storage-adapter-protocol:riverhog-storage-adapter-protocol-writese-8da51dfdd8:6ce8dbe968 -->
+
+Exact externally visible contract owned by this semantic dossier.
+
+| Audit field | Value |
+|---|---|
+| Authority | [riverhog-storage-adapter-protocol](../index.md) |
+| Interface | [Python](index.md) |
+
+## External contract
+
+<a id="s-4981821f64"></a>
+| Field | Shape |
+|---|---|
+| <a id="s-626db68127"></a>`contract` | additional keys=`kind`, `schema_sha256`, `signature` |
+| <a id="s-23c4d39d68"></a>`distribution` | "riverhog-storage-adapter-protocol" |
+| <a id="s-68537c251b"></a>`module` | "riverhog_storage_adapter_protocol" |
+| <a id="s-40e101eb69"></a>`name` | "WriteSegmentReceipt" |
+| <a id="s-3b42ed9c50"></a>`unit` | "export" |
+
+## Governing policies
+
+- <a id="pa-47471a17ec"></a>[compatibility/python-api/v1](../../../policies/index.md#p-e574772ba5)
+
+## Evidence
+
+### Qualification
+
+- [make dist-smoke](../../../evidence/sources.md#q-0ba2578a3e)
+- [make build](../../../evidence/sources.md#q-d1121e35fa)
+
+### Executable sources
+
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [python:riverhog-storage-adapter-protocol:riverhog_storage_adapter_protocol](../../../evidence/sources.md#src-2da8857a83) — `packages/riverhog-storage-adapter-protocol/src/riverhog_storage_adapter_protocol/__init__.py`
+
+### Machine authority
+
+- `/external_contract/python/riverhog_storage_adapter_protocol.WriteSegmentReceipt`
+
+### Exact owned JSON
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 90e6ce5f008f94676a6e3c573e2fbe6695787892247d7027bcc2659f16346227 -->
+
+```json
+{
+  "contract": {
+    "kind": "class",
+    "schema_sha256": "78f82d84ff68316a37a5d4d95d212d082ea0eada74506b6745aee67978f169da",
+    "signature": "\"(*, number: Annotated[int, Ge(ge=1)], segment_token: Annotated[str, MinLen(min_length=1), MaxLen(max_length=4000)], stored_bytes: Annotated[int, Ge(ge=1)], stored_sha256: Optional[Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)]] = None) -> None\""
+  },
+  "distribution": "riverhog-storage-adapter-protocol",
+  "module": "riverhog_storage_adapter_protocol",
+  "name": "WriteSegmentReceipt",
+  "unit": "export"
+}
+```

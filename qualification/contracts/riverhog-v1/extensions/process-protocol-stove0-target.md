@@ -11,7 +11,9 @@ Independently deployed process protocol owned by stove0-target-protocol.
 ## Semantic interfaces
 
 - [stove0-target-protocol · Python](../authorities/stove0-target-protocol/python/index.md)
-- [stove0-target-support · Protocols](../authorities/stove0-target-support/protocol/index.md) ([exact binding](../evidence/relationships.md#re-f67fa92e93))
+- [stove0-target-support · Process Protocol](../authorities/stove0-target-support/process-protocol/index.md) ([exact binding](../evidence/relationships.md#re-f67fa92e93))
+- [stove0-target-support · Process Protocol Operations](../authorities/stove0-target-support/process-protocol-operations/index.md) ([exact binding](../evidence/relationships.md#re-f67fa92e93))
+- [stove0-target-support · Process Protocol Schemas](../authorities/stove0-target-support/process-protocol-schemas/index.md) ([exact binding](../evidence/relationships.md#re-f67fa92e93))
 
 ## Checked-in nonnormative implementations
 

@@ -1,0 +1,62 @@
+# stove0_protocol.ARTIFACT_SELECTION_PAGE_MAX
+
+[Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
+
+<!-- contract-element: python:stove0-protocol:stove0-protocol-artifact-selection-page-max:dbf12e553c -->
+
+Exact externally visible contract owned by this semantic dossier.
+
+| Audit field | Value |
+|---|---|
+| Authority | [stove0-protocol](../index.md) |
+| Interface | [Python](index.md) |
+
+## External contract
+
+<a id="s-bf1010af6c"></a>
+| Field | Shape |
+|---|---|
+| <a id="s-5bd65e1d1e"></a>`contract` | additional keys=`kind`, `value` |
+| <a id="s-2b7b466e71"></a>`distribution` | "stove0-protocol" |
+| <a id="s-19fa64d6d0"></a>`module` | "stove0_protocol" |
+| <a id="s-86ed19db01"></a>`name` | "ARTIFACT_SELECTION_PAGE_MAX" |
+| <a id="s-01187d2863"></a>`unit` | "export" |
+
+## Governing policies
+
+- <a id="pa-ad7032c1ec"></a>[compatibility/python-api/v1](../../../policies/index.md#p-e574772ba5)
+
+## Evidence
+
+### Qualification
+
+- [make dist-smoke](../../../evidence/sources.md#q-0ba2578a3e)
+- [make build](../../../evidence/sources.md#q-d1121e35fa)
+
+### Executable sources
+
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [python:stove0-protocol:stove0_protocol](../../../evidence/sources.md#src-084138045e) — `reference/stove0/packages/protocol/src/stove0_protocol/__init__.py`
+
+### Machine authority
+
+- `/external_contract/python/stove0_protocol.ARTIFACT_SELECTION_PAGE_MAX`
+
+### Exact owned JSON
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 803a13c803b1202e7802c934fb78d49948c6551714627da1690acf6b71b887eb -->
+
+```json
+{
+  "contract": {
+    "kind": "constant",
+    "value": 256
+  },
+  "distribution": "stove0-protocol",
+  "module": "stove0_protocol",
+  "name": "ARTIFACT_SELECTION_PAGE_MAX",
+  "unit": "export"
+}
+```

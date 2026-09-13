@@ -1,0 +1,62 @@
+# stove0_target_protocol.canonical_json_bytes
+
+[Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
+
+<!-- contract-element: python:stove0-target-protocol:stove0-target-protocol-canonical-json-bytes:b615531e57 -->
+
+Exact externally visible contract owned by this semantic dossier.
+
+| Audit field | Value |
+|---|---|
+| Authority | [stove0-target-protocol](../index.md) |
+| Interface | [Python](index.md) |
+
+## External contract
+
+<a id="s-ff942a5cf7"></a>
+| Field | Shape |
+|---|---|
+| <a id="s-1b978e57b1"></a>`contract` | additional keys=`kind`, `signature` |
+| <a id="s-fb3072176f"></a>`distribution` | "stove0-target-protocol" |
+| <a id="s-7b322a2b7f"></a>`module` | "stove0_target_protocol" |
+| <a id="s-17583f94c8"></a>`name` | "canonical_json_bytes" |
+| <a id="s-072ce0ac23"></a>`unit` | "export" |
+
+## Governing policies
+
+- <a id="pa-a4a1d62776"></a>[compatibility/python-api/v1](../../../policies/index.md#p-e574772ba5)
+
+## Evidence
+
+### Qualification
+
+- [make dist-smoke](../../../evidence/sources.md#q-0ba2578a3e)
+- [make build](../../../evidence/sources.md#q-d1121e35fa)
+
+### Executable sources
+
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [python:stove0-target-protocol:stove0_target_protocol](../../../evidence/sources.md#src-f4f0b22026) — `reference/stove0/packages/target-protocol/src/stove0_target_protocol/__init__.py`
+
+### Machine authority
+
+- `/external_contract/python/stove0_target_protocol.canonical_json_bytes`
+
+### Exact owned JSON
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 18493f606b8431421bd7c5defc59b2dc1c922c437ca418dfeb33fc881cbb034a -->
+
+```json
+{
+  "contract": {
+    "kind": "function",
+    "signature": "\"(value: 'object') -> 'bytes'\""
+  },
+  "distribution": "stove0-target-protocol",
+  "module": "stove0_target_protocol",
+  "name": "canonical_json_bytes",
+  "unit": "export"
+}
+```

@@ -1,0 +1,70 @@
+# gogurt_listener_runtime.ListenerAdapter.process_is_running
+
+[Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
+
+<!-- contract-element: python:gogurt-listener-runtime:gogurt-listener-runtime-listeneradapter-p-a015db742d:0de9cf095f -->
+
+Exact externally visible contract owned by this semantic dossier.
+
+| Audit field | Value |
+|---|---|
+| Authority | [gogurt-listener-runtime](../index.md) |
+| Interface | [Python](index.md) |
+
+## External contract
+
+<a id="s-a4e648193f"></a>
+| Field | Shape |
+|---|---|
+| <a id="s-b030028626"></a>`contract` | additional keys=`kind`, `signature` |
+| <a id="s-0f6dfd77f1"></a>`distribution` | "gogurt-listener-runtime" |
+| <a id="s-332c8fef54"></a>`module` | "gogurt_listener_runtime" |
+| <a id="s-e607e784c1"></a>`name` | "process_is_running" |
+| <a id="s-f731b91355"></a>`owner` | "gogurt_listener_runtime.ListenerAdapter" |
+| <a id="s-2f483ccadf"></a>`unit` | "member" |
+
+## Maintained corroboration
+
+### Related interface records
+
+- [gogurt_listener_runtime.ListenerAdapter](gogurt-listener-runtime-listeneradapter.md)
+
+## Governing policies
+
+- <a id="pa-11b1c52e01"></a>[compatibility/python-api/v1](../../../policies/index.md#p-e574772ba5)
+
+## Evidence
+
+### Qualification
+
+- [make dist-smoke](../../../evidence/sources.md#q-0ba2578a3e)
+- [make build](../../../evidence/sources.md#q-d1121e35fa)
+
+### Executable sources
+
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [python:gogurt-listener-runtime:gogurt_listener_runtime](../../../evidence/sources.md#src-259980dd25) — `reference/gogurt/packages/listener-runtime/src/gogurt_listener_runtime/__init__.py`
+
+### Machine authority
+
+- `/external_contract/python/gogurt_listener_runtime.ListenerAdapter.process_is_running`
+
+### Exact owned JSON
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 78716486789e0824b736556b30e44d99e44e68bf0d788ffdc63154ec1d143bd6 -->
+
+```json
+{
+  "contract": {
+    "kind": "method",
+    "signature": "\"(self, pid: 'int') -> 'bool'\""
+  },
+  "distribution": "gogurt-listener-runtime",
+  "module": "gogurt_listener_runtime",
+  "name": "process_is_running",
+  "owner": "gogurt_listener_runtime.ListenerAdapter",
+  "unit": "member"
+}
+```

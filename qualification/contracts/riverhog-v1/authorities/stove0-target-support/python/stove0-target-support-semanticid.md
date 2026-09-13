@@ -1,0 +1,62 @@
+# stove0_target_support.SemanticId
+
+[Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
+
+<!-- contract-element: python:stove0-target-support:stove0-target-support-semanticid:f189dfa7a9 -->
+
+Exact externally visible contract owned by this semantic dossier.
+
+| Audit field | Value |
+|---|---|
+| Authority | [stove0-target-support](../index.md) |
+| Interface | [Python](index.md) |
+
+## External contract
+
+<a id="s-20f85db096"></a>
+| Field | Shape |
+|---|---|
+| <a id="s-702caf4a7e"></a>`contract` | type="typing._AnnotatedAlias"; additional keys=`kind` |
+| <a id="s-3e4edff4ea"></a>`distribution` | "stove0-target-support" |
+| <a id="s-06c40aee0f"></a>`module` | "stove0_target_support" |
+| <a id="s-555188739b"></a>`name` | "SemanticId" |
+| <a id="s-c4919a3f7d"></a>`unit` | "export" |
+
+## Governing policies
+
+- <a id="pa-6cb09e18ee"></a>[compatibility/python-api/v1](../../../policies/index.md#p-e574772ba5)
+
+## Evidence
+
+### Qualification
+
+- [make dist-smoke](../../../evidence/sources.md#q-0ba2578a3e)
+- [make build](../../../evidence/sources.md#q-d1121e35fa)
+
+### Executable sources
+
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [python:stove0-target-support:stove0_target_support](../../../evidence/sources.md#src-3c01163237) — `reference/stove0/packages/target-support/src/stove0_target_support/__init__.py`
+
+### Machine authority
+
+- `/external_contract/python/stove0_target_support.SemanticId`
+
+### Exact owned JSON
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 5ee7a0b2a02cc7cc74cb5a2aa34d3e7df750f1f1a61edda801b737423c2eb106 -->
+
+```json
+{
+  "contract": {
+    "kind": "object",
+    "type": "typing._AnnotatedAlias"
+  },
+  "distribution": "stove0-target-support",
+  "module": "stove0_target_support",
+  "name": "SemanticId",
+  "unit": "export"
+}
+```

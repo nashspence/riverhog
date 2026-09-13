@@ -1,0 +1,62 @@
+# riverhog_application_access.COLLECTION_TRANSFORMS_CONTROL
+
+[Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
+
+<!-- contract-element: python:riverhog-application-access:riverhog-application-access-collection-tr-0e035b2fa5:d12da4bc3b -->
+
+Exact externally visible contract owned by this semantic dossier.
+
+| Audit field | Value |
+|---|---|
+| Authority | [riverhog-application-access](../index.md) |
+| Interface | [Python](index.md) |
+
+## External contract
+
+<a id="s-9b884903a0"></a>
+| Field | Shape |
+|---|---|
+| <a id="s-9536d18fb1"></a>`contract` | additional keys=`kind`, `value` |
+| <a id="s-4fd25738b9"></a>`distribution` | "riverhog-application-access" |
+| <a id="s-db01486068"></a>`module` | "riverhog_application_access" |
+| <a id="s-d841284cb8"></a>`name` | "COLLECTION_TRANSFORMS_CONTROL" |
+| <a id="s-eaa0eb1c3c"></a>`unit` | "export" |
+
+## Governing policies
+
+- <a id="pa-af0d2bc616"></a>[compatibility/python-api/v1](../../../policies/index.md#p-e574772ba5)
+
+## Evidence
+
+### Qualification
+
+- [make dist-smoke](../../../evidence/sources.md#q-0ba2578a3e)
+- [make build](../../../evidence/sources.md#q-d1121e35fa)
+
+### Executable sources
+
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [python:riverhog-application-access:riverhog_application_access](../../../evidence/sources.md#src-9d9ce5fdac) — `packages/riverhog-application-access/src/riverhog_application_access/__init__.py`
+
+### Machine authority
+
+- `/external_contract/python/riverhog_application_access.COLLECTION_TRANSFORMS_CONTROL`
+
+### Exact owned JSON
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 0257214411b4e1e315fa7b4221c2b68ecb9c2de6d42e17628103c68a4262896f -->
+
+```json
+{
+  "contract": {
+    "kind": "constant",
+    "value": "collection-transforms:control"
+  },
+  "distribution": "riverhog-application-access",
+  "module": "riverhog_application_access",
+  "name": "COLLECTION_TRANSFORMS_CONTROL",
+  "unit": "export"
+}
+```

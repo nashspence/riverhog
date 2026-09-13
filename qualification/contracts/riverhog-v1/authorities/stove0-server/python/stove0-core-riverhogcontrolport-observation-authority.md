@@ -1,0 +1,70 @@
+# stove0_core.RiverhogControlPort.observation_authority
+
+[Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
+
+<!-- contract-element: python:stove0-server:stove0-core-riverhogcontrolport-observati-9e988c9afb:6ec98ec7b6 -->
+
+Exact externally visible contract owned by this semantic dossier.
+
+| Audit field | Value |
+|---|---|
+| Authority | [stove0-server](../index.md) |
+| Interface | [Python](index.md) |
+
+## External contract
+
+<a id="s-cf213dbbfc"></a>
+| Field | Shape |
+|---|---|
+| <a id="s-1857e28d36"></a>`contract` | additional keys=`kind`, `signature` |
+| <a id="s-50fc1e1ed6"></a>`distribution` | "stove0-server" |
+| <a id="s-73fefa3aa5"></a>`module` | "stove0_core" |
+| <a id="s-a0203e2812"></a>`name` | "observation_authority" |
+| <a id="s-17175c6656"></a>`owner` | "stove0_core.RiverhogControlPort" |
+| <a id="s-e7f3a3a635"></a>`unit` | "member" |
+
+## Maintained corroboration
+
+### Related interface records
+
+- [stove0_core.RiverhogControlPort](stove0-core-riverhogcontrolport.md)
+
+## Governing policies
+
+- <a id="pa-60d6a9e6b3"></a>[compatibility/python-api/v1](../../../policies/index.md#p-e574772ba5)
+
+## Evidence
+
+### Qualification
+
+- [make dist-smoke](../../../evidence/sources.md#q-0ba2578a3e)
+- [make build](../../../evidence/sources.md#q-d1121e35fa)
+
+### Executable sources
+
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [python:stove0-server:stove0_core](../../../evidence/sources.md#src-7558b08e7f) — `reference/stove0/application/server/src/stove0_core/__init__.py`
+
+### Machine authority
+
+- `/external_contract/python/stove0_core.RiverhogControlPort.observation_authority`
+
+### Exact owned JSON
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 47cc87e31dcae25fe423d437dda992b9ff0be1fe73981ab6f6b8748c8ae8f9c4 -->
+
+```json
+{
+  "contract": {
+    "kind": "method",
+    "signature": "\"(self, claim: 'ClaimBinding', request: 'ObservationRequest') -> 'ObserverRuntimeAuthority'\""
+  },
+  "distribution": "stove0-server",
+  "module": "stove0_core",
+  "name": "observation_authority",
+  "owner": "stove0_core.RiverhogControlPort",
+  "unit": "member"
+}
+```

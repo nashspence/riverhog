@@ -1,0 +1,70 @@
+# riverhog_provenance.JournalSummary.tail
+
+[Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
+
+<!-- contract-element: python:riverhog-provenance:riverhog-provenance-journalsummary-tail:cbec293571 -->
+
+Exact externally visible contract owned by this semantic dossier.
+
+| Audit field | Value |
+|---|---|
+| Authority | [riverhog-provenance](../index.md) |
+| Interface | [Python](index.md) |
+
+## External contract
+
+<a id="s-4d78ed2aa3"></a>
+| Field | Shape |
+|---|---|
+| <a id="s-8c53820161"></a>`contract` | additional keys=`kind`, `signature` |
+| <a id="s-17a920afa7"></a>`distribution` | "riverhog-provenance" |
+| <a id="s-ecaafa823c"></a>`module` | "riverhog_provenance" |
+| <a id="s-b860c8be3e"></a>`name` | "tail" |
+| <a id="s-35764c50cf"></a>`owner` | "riverhog_provenance.JournalSummary" |
+| <a id="s-4026666702"></a>`unit` | "member" |
+
+## Maintained corroboration
+
+### Related interface records
+
+- [riverhog_provenance.JournalSummary](riverhog-provenance-journalsummary.md)
+
+## Governing policies
+
+- <a id="pa-5d5c0571e0"></a>[compatibility/python-api/v1](../../../policies/index.md#p-e574772ba5)
+
+## Evidence
+
+### Qualification
+
+- [make dist-smoke](../../../evidence/sources.md#q-0ba2578a3e)
+- [make build](../../../evidence/sources.md#q-d1121e35fa)
+
+### Executable sources
+
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [python:riverhog-provenance:riverhog_provenance](../../../evidence/sources.md#src-38ef3a6054) — `packages/riverhog-provenance/src/riverhog_provenance/__init__.py`
+
+### Machine authority
+
+- `/external_contract/python/riverhog_provenance.JournalSummary.tail`
+
+### Exact owned JSON
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 15e18e8fd47e858c6020a079f42b9e96fb30b71cd263123e1aeb08e950630965 -->
+
+```json
+{
+  "contract": {
+    "kind": "property",
+    "signature": "\"(self) -> 'JournalFrame'\""
+  },
+  "distribution": "riverhog-provenance",
+  "module": "riverhog_provenance",
+  "name": "tail",
+  "owner": "riverhog_provenance.JournalSummary",
+  "unit": "member"
+}
+```

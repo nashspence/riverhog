@@ -1,0 +1,62 @@
+# riverhog_age.AgeFormatError
+
+[Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
+
+<!-- contract-element: python:riverhog-age:riverhog-age-ageformaterror:27dfe17519 -->
+
+Exact externally visible contract owned by this semantic dossier.
+
+| Audit field | Value |
+|---|---|
+| Authority | [riverhog-age](../index.md) |
+| Interface | [Python](index.md) |
+
+## External contract
+
+<a id="s-492993f948"></a>
+| Field | Shape |
+|---|---|
+| <a id="s-4985569786"></a>`contract` | additional keys=`kind`, `signature` |
+| <a id="s-ac3c5de386"></a>`distribution` | "riverhog-age" |
+| <a id="s-04e703be2a"></a>`module` | "riverhog_age" |
+| <a id="s-5328535950"></a>`name` | "AgeFormatError" |
+| <a id="s-cc8e2bba1f"></a>`unit` | "export" |
+
+## Governing policies
+
+- <a id="pa-069044b3eb"></a>[compatibility/python-api/v1](../../../policies/index.md#p-e574772ba5)
+
+## Evidence
+
+### Qualification
+
+- [make dist-smoke](../../../evidence/sources.md#q-0ba2578a3e)
+- [make build](../../../evidence/sources.md#q-d1121e35fa)
+
+### Executable sources
+
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [python:riverhog-age:riverhog_age](../../../evidence/sources.md#src-a842e50b8b) — `packages/riverhog-age/src/riverhog_age/__init__.py`
+
+### Machine authority
+
+- `/external_contract/python/riverhog_age.AgeFormatError`
+
+### Exact owned JSON
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 3a6cc4b18d5fd52b161b40535ec6dfaf7cb03fa56658e62720eedd32fa47540f -->
+
+```json
+{
+  "contract": {
+    "kind": "class",
+    "signature": "unavailable"
+  },
+  "distribution": "riverhog-age",
+  "module": "riverhog_age",
+  "name": "AgeFormatError",
+  "unit": "export"
+}
+```

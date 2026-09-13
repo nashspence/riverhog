@@ -1,0 +1,70 @@
+# state_schema.StateConnection.begin_nested
+
+[Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
+
+<!-- contract-element: python:state-schema:state-schema-stateconnection-begin-nested:9d5e1abb17 -->
+
+Exact externally visible contract owned by this semantic dossier.
+
+| Audit field | Value |
+|---|---|
+| Authority | [state-schema](../index.md) |
+| Interface | [Python](index.md) |
+
+## External contract
+
+<a id="s-d0f5866097"></a>
+| Field | Shape |
+|---|---|
+| <a id="s-587a3c4262"></a>`contract` | additional keys=`kind`, `signature` |
+| <a id="s-c2296a3fbe"></a>`distribution` | "state-schema" |
+| <a id="s-f12e6a236e"></a>`module` | "state_schema" |
+| <a id="s-349474d8b1"></a>`name` | "begin_nested" |
+| <a id="s-150d32a19c"></a>`owner` | "state_schema.StateConnection" |
+| <a id="s-49db5738db"></a>`unit` | "member" |
+
+## Maintained corroboration
+
+### Related interface records
+
+- [state_schema.StateConnection](state-schema-stateconnection.md)
+
+## Governing policies
+
+- <a id="pa-00a214bc57"></a>[compatibility/python-api/v1](../../../policies/index.md#p-e574772ba5)
+
+## Evidence
+
+### Qualification
+
+- [make dist-smoke](../../../evidence/sources.md#q-0ba2578a3e)
+- [make build](../../../evidence/sources.md#q-d1121e35fa)
+
+### Executable sources
+
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [python:state-schema:state_schema](../../../evidence/sources.md#src-57d87d192c) — `packages/state-schema/src/state_schema/__init__.py`
+
+### Machine authority
+
+- `/external_contract/python/state_schema.StateConnection.begin_nested`
+
+### Exact owned JSON
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 4de7d13ef1310de6cf2849e2c348a15c7eb57a6b5de4d3e9a740287bea0f6cc6 -->
+
+```json
+{
+  "contract": {
+    "kind": "method",
+    "signature": "\"(self) -> 'NestedTransaction'\""
+  },
+  "distribution": "state-schema",
+  "module": "state_schema",
+  "name": "begin_nested",
+  "owner": "state_schema.StateConnection",
+  "unit": "member"
+}
+```

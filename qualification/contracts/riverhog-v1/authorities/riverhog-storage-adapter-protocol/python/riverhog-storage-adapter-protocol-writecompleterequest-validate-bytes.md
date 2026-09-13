@@ -1,0 +1,70 @@
+# riverhog_storage_adapter_protocol.WriteCompleteRequest.validate_bytes
+
+[Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
+
+<!-- contract-element: python:riverhog-storage-adapter-protocol:riverhog-storage-adapter-protocol-writeco-a0224de961:ea521185da -->
+
+Exact externally visible contract owned by this semantic dossier.
+
+| Audit field | Value |
+|---|---|
+| Authority | [riverhog-storage-adapter-protocol](../index.md) |
+| Interface | [Python](index.md) |
+
+## External contract
+
+<a id="s-93cca69db4"></a>
+| Field | Shape |
+|---|---|
+| <a id="s-5ec1b3b23a"></a>`contract` | additional keys=`kind`, `signature` |
+| <a id="s-52b61fc5f9"></a>`distribution` | "riverhog-storage-adapter-protocol" |
+| <a id="s-6552e7e25c"></a>`module` | "riverhog_storage_adapter_protocol" |
+| <a id="s-96fa32a7f6"></a>`name` | "validate_bytes" |
+| <a id="s-f34ba856a2"></a>`owner` | "riverhog_storage_adapter_protocol.WriteCompleteRequest" |
+| <a id="s-1471111c04"></a>`unit` | "member" |
+
+## Maintained corroboration
+
+### Related interface records
+
+- [riverhog_storage_adapter_protocol.WriteCompleteRequest](riverhog-storage-adapter-protocol-writecompleterequest.md)
+
+## Governing policies
+
+- <a id="pa-28e093c743"></a>[compatibility/python-api/v1](../../../policies/index.md#p-e574772ba5)
+
+## Evidence
+
+### Qualification
+
+- [make dist-smoke](../../../evidence/sources.md#q-0ba2578a3e)
+- [make build](../../../evidence/sources.md#q-d1121e35fa)
+
+### Executable sources
+
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [python:riverhog-storage-adapter-protocol:riverhog_storage_adapter_protocol](../../../evidence/sources.md#src-2da8857a83) — `packages/riverhog-storage-adapter-protocol/src/riverhog_storage_adapter_protocol/__init__.py`
+
+### Machine authority
+
+- `/external_contract/python/riverhog_storage_adapter_protocol.WriteCompleteRequest.validate_bytes`
+
+### Exact owned JSON
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: cea679a91a5e8103850a9fe848b944de83032796a2059dd8f703bcc1816983db -->
+
+```json
+{
+  "contract": {
+    "kind": "method",
+    "signature": "\"(self) -> 'Self'\""
+  },
+  "distribution": "riverhog-storage-adapter-protocol",
+  "module": "riverhog_storage_adapter_protocol",
+  "name": "validate_bytes",
+  "owner": "riverhog_storage_adapter_protocol.WriteCompleteRequest",
+  "unit": "member"
+}
+```

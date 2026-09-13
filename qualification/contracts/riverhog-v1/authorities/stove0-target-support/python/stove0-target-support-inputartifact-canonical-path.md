@@ -1,0 +1,70 @@
+# stove0_target_support.InputArtifact.canonical_path
+
+[Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
+
+<!-- contract-element: python:stove0-target-support:stove0-target-support-inputartifact-canonical-path:af9e5afdd1 -->
+
+Exact externally visible contract owned by this semantic dossier.
+
+| Audit field | Value |
+|---|---|
+| Authority | [stove0-target-support](../index.md) |
+| Interface | [Python](index.md) |
+
+## External contract
+
+<a id="s-eae56b5032"></a>
+| Field | Shape |
+|---|---|
+| <a id="s-5c731acfb8"></a>`contract` | additional keys=`kind`, `signature` |
+| <a id="s-ae6eac4171"></a>`distribution` | "stove0-target-support" |
+| <a id="s-610eb7c98c"></a>`module` | "stove0_target_support" |
+| <a id="s-c839904aa4"></a>`name` | "canonical_path" |
+| <a id="s-9966c20d6b"></a>`owner` | "stove0_target_support.InputArtifact" |
+| <a id="s-c93e031a61"></a>`unit` | "member" |
+
+## Maintained corroboration
+
+### Related interface records
+
+- [stove0_target_support.InputArtifact](stove0-target-support-inputartifact.md)
+
+## Governing policies
+
+- <a id="pa-76a14b76ad"></a>[compatibility/python-api/v1](../../../policies/index.md#p-e574772ba5)
+
+## Evidence
+
+### Qualification
+
+- [make dist-smoke](../../../evidence/sources.md#q-0ba2578a3e)
+- [make build](../../../evidence/sources.md#q-d1121e35fa)
+
+### Executable sources
+
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [python:stove0-target-support:stove0_target_support](../../../evidence/sources.md#src-3c01163237) — `reference/stove0/packages/target-support/src/stove0_target_support/__init__.py`
+
+### Machine authority
+
+- `/external_contract/python/stove0_target_support.InputArtifact.canonical_path`
+
+### Exact owned JSON
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 1d3da1774b7e1dd5ff95f8624f3db57a938446adaa97f425d003c773fd76577f -->
+
+```json
+{
+  "contract": {
+    "kind": "classmethod",
+    "signature": "\"(cls, value: 'str') -> 'str'\""
+  },
+  "distribution": "stove0-target-support",
+  "module": "stove0_target_support",
+  "name": "canonical_path",
+  "owner": "stove0_target_support.InputArtifact",
+  "unit": "member"
+}
+```

@@ -1,0 +1,70 @@
+# riverhog_provenance.ObservationResult.payload_binding
+
+[Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
+
+<!-- contract-element: python:riverhog-provenance:riverhog-provenance-observationresult-pay-97112a1544:f868eb9e66 -->
+
+Exact externally visible contract owned by this semantic dossier.
+
+| Audit field | Value |
+|---|---|
+| Authority | [riverhog-provenance](../index.md) |
+| Interface | [Python](index.md) |
+
+## External contract
+
+<a id="s-7d15c9e149"></a>
+| Field | Shape |
+|---|---|
+| <a id="s-2256b4b00c"></a>`contract` | additional keys=`kind`, `signature` |
+| <a id="s-bd43bbda14"></a>`distribution` | "riverhog-provenance" |
+| <a id="s-2695f09207"></a>`module` | "riverhog_provenance" |
+| <a id="s-faed3d56a1"></a>`name` | "payload_binding" |
+| <a id="s-1c8c0420b1"></a>`owner` | "riverhog_provenance.ObservationResult" |
+| <a id="s-fa290a2f0a"></a>`unit` | "member" |
+
+## Maintained corroboration
+
+### Related interface records
+
+- [riverhog_provenance.ObservationResult](riverhog-provenance-observationresult.md)
+
+## Governing policies
+
+- <a id="pa-3b8923f57c"></a>[compatibility/python-api/v1](../../../policies/index.md#p-e574772ba5)
+
+## Evidence
+
+### Qualification
+
+- [make dist-smoke](../../../evidence/sources.md#q-0ba2578a3e)
+- [make build](../../../evidence/sources.md#q-d1121e35fa)
+
+### Executable sources
+
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [python:riverhog-provenance:riverhog_provenance](../../../evidence/sources.md#src-38ef3a6054) — `packages/riverhog-provenance/src/riverhog_provenance/__init__.py`
+
+### Machine authority
+
+- `/external_contract/python/riverhog_provenance.ObservationResult.payload_binding`
+
+### Exact owned JSON
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 9106fce2cf86494bb46f3e066edd37c081d0549dbe0090e487aab6019007d68d -->
+
+```json
+{
+  "contract": {
+    "kind": "property",
+    "signature": "\"(self) -> 'JsonObject | None'\""
+  },
+  "distribution": "riverhog-provenance",
+  "module": "riverhog_provenance",
+  "name": "payload_binding",
+  "owner": "riverhog_provenance.ObservationResult",
+  "unit": "member"
+}
+```

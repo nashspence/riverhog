@@ -1,0 +1,62 @@
+# riverhog_recover.RecoveryError
+
+[Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
+
+<!-- contract-element: python:riverhog-recover:riverhog-recover-recoveryerror:0551187dc5 -->
+
+Exact externally visible contract owned by this semantic dossier.
+
+| Audit field | Value |
+|---|---|
+| Authority | [riverhog-recover](../index.md) |
+| Interface | [Python](index.md) |
+
+## External contract
+
+<a id="s-9eeb66482e"></a>
+| Field | Shape |
+|---|---|
+| <a id="s-7b9ef91690"></a>`contract` | additional keys=`kind`, `signature` |
+| <a id="s-65f78ac3b9"></a>`distribution` | "riverhog-recover" |
+| <a id="s-0136d233f2"></a>`module` | "riverhog_recover" |
+| <a id="s-544505e2e2"></a>`name` | "RecoveryError" |
+| <a id="s-e106abd745"></a>`unit` | "export" |
+
+## Governing policies
+
+- <a id="pa-af0a945bf2"></a>[compatibility/python-api/v1](../../../policies/index.md#p-e574772ba5)
+
+## Evidence
+
+### Qualification
+
+- [make dist-smoke](../../../evidence/sources.md#q-0ba2578a3e)
+- [make build](../../../evidence/sources.md#q-d1121e35fa)
+
+### Executable sources
+
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [python:riverhog-recover:riverhog_recover](../../../evidence/sources.md#src-dbfe6c5e2e) — `reference/riverhog/recovery/src/riverhog_recover/__init__.py`
+
+### Machine authority
+
+- `/external_contract/python/riverhog_recover.RecoveryError`
+
+### Exact owned JSON
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 895294b88259a6700fdf509cdd1edbc70a6ecff4f979e0833f8021b5639aac39 -->
+
+```json
+{
+  "contract": {
+    "kind": "class",
+    "signature": "unavailable"
+  },
+  "distribution": "riverhog-recover",
+  "module": "riverhog_recover",
+  "name": "RecoveryError",
+  "unit": "export"
+}
+```

@@ -1,0 +1,70 @@
+# stove0_operator_contracts.Stove0EventData.get
+
+[Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
+
+<!-- contract-element: python:stove0-operator-contracts:stove0-operator-contracts-stove0eventdata-get:ca20af1421 -->
+
+Exact externally visible contract owned by this semantic dossier.
+
+| Audit field | Value |
+|---|---|
+| Authority | [stove0-operator-contracts](../index.md) |
+| Interface | [Python](index.md) |
+
+## External contract
+
+<a id="s-6ff33d52c4"></a>
+| Field | Shape |
+|---|---|
+| <a id="s-088fcda60a"></a>`contract` | additional keys=`kind`, `signature` |
+| <a id="s-2fe920398e"></a>`distribution` | "stove0-operator-contracts" |
+| <a id="s-792487b900"></a>`module` | "stove0_operator_contracts" |
+| <a id="s-d2c171809f"></a>`name` | "get" |
+| <a id="s-cedfc2f773"></a>`owner` | "stove0_operator_contracts.Stove0EventData" |
+| <a id="s-b94f67a4cf"></a>`unit` | "member" |
+
+## Maintained corroboration
+
+### Related interface records
+
+- [stove0_operator_contracts.Stove0EventData](stove0-operator-contracts-stove0eventdata.md)
+
+## Governing policies
+
+- <a id="pa-19f4581f5d"></a>[compatibility/python-api/v1](../../../policies/index.md#p-e574772ba5)
+
+## Evidence
+
+### Qualification
+
+- [make dist-smoke](../../../evidence/sources.md#q-0ba2578a3e)
+- [make build](../../../evidence/sources.md#q-d1121e35fa)
+
+### Executable sources
+
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [python:stove0-operator-contracts:stove0_operator_contracts](../../../evidence/sources.md#src-51ad84528d) — `reference/stove0/packages/operator-contracts/src/stove0_operator_contracts/__init__.py`
+
+### Machine authority
+
+- `/external_contract/python/stove0_operator_contracts.Stove0EventData.get`
+
+### Exact owned JSON
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 781eb1b070a17ff06d56b8a36aca8ec831c2bb964451faff55dca895b215f850 -->
+
+```json
+{
+  "contract": {
+    "kind": "method",
+    "signature": "\"(self, key: 'str', default: 'Any' = None) -> 'Any'\""
+  },
+  "distribution": "stove0-operator-contracts",
+  "module": "stove0_operator_contracts",
+  "name": "get",
+  "owner": "stove0_operator_contracts.Stove0EventData",
+  "unit": "member"
+}
+```

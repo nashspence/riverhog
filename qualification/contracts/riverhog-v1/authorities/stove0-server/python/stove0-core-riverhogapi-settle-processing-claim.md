@@ -1,0 +1,70 @@
+# stove0_core.RiverhogApi.settle_processing_claim
+
+[Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
+
+<!-- contract-element: python:stove0-server:stove0-core-riverhogapi-settle-processing-claim:490a9d1bba -->
+
+Exact externally visible contract owned by this semantic dossier.
+
+| Audit field | Value |
+|---|---|
+| Authority | [stove0-server](../index.md) |
+| Interface | [Python](index.md) |
+
+## External contract
+
+<a id="s-4dd2d3137d"></a>
+| Field | Shape |
+|---|---|
+| <a id="s-1921083d67"></a>`contract` | additional keys=`kind`, `signature` |
+| <a id="s-153beb4e14"></a>`distribution` | "stove0-server" |
+| <a id="s-b47b619a9c"></a>`module` | "stove0_core" |
+| <a id="s-20a0eed63b"></a>`name` | "settle_processing_claim" |
+| <a id="s-5b077e7478"></a>`owner` | "stove0_core.RiverhogApi" |
+| <a id="s-61eae5ed9e"></a>`unit` | "member" |
+
+## Maintained corroboration
+
+### Related interface records
+
+- [stove0_core.RiverhogApi](stove0-core-riverhogapi.md)
+
+## Governing policies
+
+- <a id="pa-7cfd4580e1"></a>[compatibility/python-api/v1](../../../policies/index.md#p-e574772ba5)
+
+## Evidence
+
+### Qualification
+
+- [make dist-smoke](../../../evidence/sources.md#q-0ba2578a3e)
+- [make build](../../../evidence/sources.md#q-d1121e35fa)
+
+### Executable sources
+
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [python:stove0-server:stove0_core](../../../evidence/sources.md#src-7558b08e7f) — `reference/stove0/application/server/src/stove0_core/__init__.py`
+
+### Machine authority
+
+- `/external_contract/python/stove0_core.RiverhogApi.settle_processing_claim`
+
+### Exact owned JSON
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 679016b135f7dde7f811db00ee3a9f2f35dd1cbba9e82a59e08d5e41587da10f -->
+
+```json
+{
+  "contract": {
+    "kind": "method",
+    "signature": "\"(self, claim_id: 'str', *, fence: 'int', output_collection_id: 'int', derivation: 'Mapping[str, Any]', outcome_claim_id: 'str | None' = None, outcome_fence: 'int | None' = None, outcome_id: 'str | None' = None) -> 'ProcessingClaimDocument'\""
+  },
+  "distribution": "stove0-server",
+  "module": "stove0_core",
+  "name": "settle_processing_claim",
+  "owner": "stove0_core.RiverhogApi",
+  "unit": "member"
+}
+```

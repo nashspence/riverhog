@@ -1,0 +1,62 @@
+# gogurt_listener_runtime.run_listener
+
+[Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
+
+<!-- contract-element: python:gogurt-listener-runtime:gogurt-listener-runtime-run-listener:74ec87e59b -->
+
+Exact externally visible contract owned by this semantic dossier.
+
+| Audit field | Value |
+|---|---|
+| Authority | [gogurt-listener-runtime](../index.md) |
+| Interface | [Python](index.md) |
+
+## External contract
+
+<a id="s-8c1d401aef"></a>
+| Field | Shape |
+|---|---|
+| <a id="s-438c1fe2f8"></a>`contract` | additional keys=`kind`, `signature` |
+| <a id="s-eec0b6f86d"></a>`distribution` | "gogurt-listener-runtime" |
+| <a id="s-31d4ff91f3"></a>`module` | "gogurt_listener_runtime" |
+| <a id="s-79bf859d27"></a>`name` | "run_listener" |
+| <a id="s-7362adb1e3"></a>`unit` | "export" |
+
+## Governing policies
+
+- <a id="pa-b36877128f"></a>[compatibility/python-api/v1](../../../policies/index.md#p-e574772ba5)
+
+## Evidence
+
+### Qualification
+
+- [make dist-smoke](../../../evidence/sources.md#q-0ba2578a3e)
+- [make build](../../../evidence/sources.md#q-d1121e35fa)
+
+### Executable sources
+
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [python:gogurt-listener-runtime:gogurt_listener_runtime](../../../evidence/sources.md#src-259980dd25) — `reference/gogurt/packages/listener-runtime/src/gogurt_listener_runtime/__init__.py`
+
+### Machine authority
+
+- `/external_contract/python/gogurt_listener_runtime.run_listener`
+
+### Exact owned JSON
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: b0cb19ab8cccc822fa5f036a856f9a1430c10c243af2e5c64b5886a42c84c827 -->
+
+```json
+{
+  "contract": {
+    "kind": "function",
+    "signature": "\"(config_file: 'Path', *, mounted_volume_provider: 'MountedVolumeProvider', product_version: 'str') -> 'None'\""
+  },
+  "distribution": "gogurt-listener-runtime",
+  "module": "gogurt_listener_runtime",
+  "name": "run_listener",
+  "unit": "export"
+}
+```

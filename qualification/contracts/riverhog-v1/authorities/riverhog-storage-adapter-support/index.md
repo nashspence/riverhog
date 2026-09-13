@@ -2,10 +2,12 @@
 
 [Atlas](../../index.md) · [Policies](../../policies/index.md)
 
-Contract elements: **27** · Extent decisions: **68**
+Contract elements: **86** · Extent decisions: **68**
 
 ## Interfaces
 
+- [Process Protocol](process-protocol/index.md) (1)
+- [Process Protocol Operations](process-protocol-operations/index.md) (15)
+- [Process Protocol Schemas](process-protocol-schemas/index.md) (23)
 - [CLI](cli/index.md) (2)
-- [Protocols](protocol/index.md) (24)
-- [Python](python/index.md) (1)
+- [Python](python/index.md) (45)

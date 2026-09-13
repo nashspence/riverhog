@@ -1,0 +1,69 @@
+# riverhog_protocol.CollectionTagNodeStore
+
+[Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
+
+<!-- contract-element: python:riverhog-protocol:riverhog-protocol-collectiontagnodestore:942caabd0d -->
+
+Exact externally visible contract owned by this semantic dossier.
+
+| Audit field | Value |
+|---|---|
+| Authority | [riverhog-protocol](../index.md) |
+| Interface | [Python](index.md) |
+
+## External contract
+
+<a id="s-333358c6d5"></a>
+| Field | Shape |
+|---|---|
+| <a id="s-5e24d380b1"></a>`contract` | additional keys=`kind`, `signature` |
+| <a id="s-9fc3489cbd"></a>`distribution` | "riverhog-protocol" |
+| <a id="s-5acda6e216"></a>`module` | "riverhog_protocol" |
+| <a id="s-e737c29f39"></a>`name` | "CollectionTagNodeStore" |
+| <a id="s-88d1d4cbc6"></a>`unit` | "export" |
+
+## Maintained corroboration
+
+### Related interface records
+
+- [riverhog_protocol.CollectionTagNodeStore.get](riverhog-protocol-collectiontagnodestore-get.md)
+- [riverhog_protocol.CollectionTagNodeStore.put](riverhog-protocol-collectiontagnodestore-put.md)
+
+## Governing policies
+
+- <a id="pa-6002681a6b"></a>[compatibility/python-api/v1](../../../policies/index.md#p-e574772ba5)
+
+## Evidence
+
+### Qualification
+
+- [make dist-smoke](../../../evidence/sources.md#q-0ba2578a3e)
+- [make build](../../../evidence/sources.md#q-d1121e35fa)
+
+### Executable sources
+
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [python:riverhog-protocol:riverhog_protocol](../../../evidence/sources.md#src-19e35f15d9) — `packages/riverhog-protocol/src/riverhog_protocol/__init__.py`
+
+### Machine authority
+
+- `/external_contract/python/riverhog_protocol.CollectionTagNodeStore`
+
+### Exact owned JSON
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 251304c4d95ac7a804aa5ed6a2e657ce32671430e3c7c85f746f78931a586860 -->
+
+```json
+{
+  "contract": {
+    "kind": "class",
+    "signature": "'(*args, **kwargs)'"
+  },
+  "distribution": "riverhog-protocol",
+  "module": "riverhog_protocol",
+  "name": "CollectionTagNodeStore",
+  "unit": "export"
+}
+```

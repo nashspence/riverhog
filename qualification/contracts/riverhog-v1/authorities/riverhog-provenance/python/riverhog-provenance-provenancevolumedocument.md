@@ -1,0 +1,128 @@
+# riverhog_provenance.ProvenanceVolumeDocument
+
+[Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
+
+<!-- contract-element: python:riverhog-provenance:riverhog-provenance-provenancevolumedocument:c918167837 -->
+
+Exact externally visible contract owned by this semantic dossier.
+
+| Audit field | Value |
+|---|---|
+| Authority | [riverhog-provenance](../index.md) |
+| Interface | [Python](index.md) |
+
+## External contract
+
+<a id="s-8ed9f2d910"></a>
+| Field | Shape |
+|---|---|
+| <a id="s-caddeb7e32"></a>`contract` | additional keys=`fields`, `kind`, `signature` |
+| <a id="s-fa0def82e6"></a>`distribution` | "riverhog-provenance" |
+| <a id="s-f221669769"></a>`module` | "riverhog_provenance" |
+| <a id="s-414054d5bf"></a>`name` | "ProvenanceVolumeDocument" |
+| <a id="s-e164d75201"></a>`unit` | "export" |
+
+## Maintained corroboration
+
+### Related interface records
+
+- [riverhog_provenance.ProvenanceVolumeDocument.from_json_bytes](riverhog-provenance-provenancevolumedocument-from-json-bytes.md)
+- [riverhog_provenance.ProvenanceVolumeDocument.metadata_path](riverhog-provenance-provenancevolumedocument-metadata-path.md)
+- [riverhog_provenance.ProvenanceVolumeDocument.to_json_bytes](riverhog-provenance-provenancevolumedocument-to-json-bytes.md)
+- [riverhog_provenance.ProvenanceVolumeDocument.to_mapping](riverhog-provenance-provenancevolumedocument-to-mapping.md)
+
+## Governing policies
+
+- <a id="pa-65f1742c19"></a>[compatibility/python-api/v1](../../../policies/index.md#p-e574772ba5)
+
+## Evidence
+
+### Qualification
+
+- [make dist-smoke](../../../evidence/sources.md#q-0ba2578a3e)
+- [make build](../../../evidence/sources.md#q-d1121e35fa)
+
+### Executable sources
+
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [python:riverhog-provenance:riverhog_provenance](../../../evidence/sources.md#src-38ef3a6054) — `packages/riverhog-provenance/src/riverhog_provenance/__init__.py`
+
+### Machine authority
+
+- `/external_contract/python/riverhog_provenance.ProvenanceVolumeDocument`
+
+### Exact owned JSON
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: d2ccf2501f0ea7de41427ec5cbaa4617ab892b4dee87dab735ebf0249b389e76 -->
+
+```json
+{
+  "contract": {
+    "fields": [
+      {
+        "default": "required",
+        "name": "archive_generation",
+        "type": "'str'"
+      },
+      {
+        "default": "required",
+        "name": "archive_tree_sha256",
+        "type": "'str'"
+      },
+      {
+        "default": "required",
+        "name": "sequence",
+        "type": "'int'"
+      },
+      {
+        "default": "required",
+        "name": "payload",
+        "type": "'ProvenancePayloadIdentity'"
+      },
+      {
+        "default": "None",
+        "name": "first_file_order",
+        "type": "'int | None'"
+      },
+      {
+        "default": "None",
+        "name": "file_count",
+        "type": "'int | None'"
+      },
+      {
+        "default": "None",
+        "name": "journal_id",
+        "type": "'str | None'"
+      },
+      {
+        "default": "None",
+        "name": "journal_offset",
+        "type": "'int | None'"
+      },
+      {
+        "default": "None",
+        "name": "journal_bytes",
+        "type": "'int | None'"
+      },
+      {
+        "default": "None",
+        "name": "journal_sha256",
+        "type": "'str | None'"
+      },
+      {
+        "default": "'riverhog-provenance-volume/v1'",
+        "name": "schema",
+        "type": "'str'"
+      }
+    ],
+    "kind": "class",
+    "signature": "\"(archive_generation: 'str', archive_tree_sha256: 'str', sequence: 'int', payload: 'ProvenancePayloadIdentity', first_file_order: 'int | None' = None, file_count: 'int | None' = None, journal_id: 'str | None' = None, journal_offset: 'int | None' = None, journal_bytes: 'int | None' = None, journal_sha256: 'str | None' = None, schema: 'str' = 'riverhog-provenance-volume/v1') -> None\""
+  },
+  "distribution": "riverhog-provenance",
+  "module": "riverhog_provenance",
+  "name": "ProvenanceVolumeDocument",
+  "unit": "export"
+}
+```

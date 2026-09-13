@@ -1,0 +1,70 @@
+# riverhog_protocol.ProcessingClaimCreateDocument.validate_claim
+
+[Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
+
+<!-- contract-element: python:riverhog-protocol:riverhog-protocol-processingclaimcreatedo-659f55cdbb:7bfc88ada4 -->
+
+Exact externally visible contract owned by this semantic dossier.
+
+| Audit field | Value |
+|---|---|
+| Authority | [riverhog-protocol](../index.md) |
+| Interface | [Python](index.md) |
+
+## External contract
+
+<a id="s-0af5ec798b"></a>
+| Field | Shape |
+|---|---|
+| <a id="s-3d7aa2d306"></a>`contract` | additional keys=`kind`, `signature` |
+| <a id="s-ca9dcf91d8"></a>`distribution` | "riverhog-protocol" |
+| <a id="s-6851a03b51"></a>`module` | "riverhog_protocol" |
+| <a id="s-95ed9755cd"></a>`name` | "validate_claim" |
+| <a id="s-4b147393e0"></a>`owner` | "riverhog_protocol.ProcessingClaimCreateDocument" |
+| <a id="s-84b346d2f9"></a>`unit` | "member" |
+
+## Maintained corroboration
+
+### Related interface records
+
+- [riverhog_protocol.ProcessingClaimCreateDocument](riverhog-protocol-processingclaimcreatedocument.md)
+
+## Governing policies
+
+- <a id="pa-1394a093d0"></a>[compatibility/python-api/v1](../../../policies/index.md#p-e574772ba5)
+
+## Evidence
+
+### Qualification
+
+- [make dist-smoke](../../../evidence/sources.md#q-0ba2578a3e)
+- [make build](../../../evidence/sources.md#q-d1121e35fa)
+
+### Executable sources
+
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [python:riverhog-protocol:riverhog_protocol](../../../evidence/sources.md#src-19e35f15d9) — `packages/riverhog-protocol/src/riverhog_protocol/__init__.py`
+
+### Machine authority
+
+- `/external_contract/python/riverhog_protocol.ProcessingClaimCreateDocument.validate_claim`
+
+### Exact owned JSON
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 48af1794cfc281418669eb627efff74f6cce5e4176cae8acea75ef4c68ea44b2 -->
+
+```json
+{
+  "contract": {
+    "kind": "method",
+    "signature": "\"(self) -> 'Self'\""
+  },
+  "distribution": "riverhog-protocol",
+  "module": "riverhog_protocol",
+  "name": "validate_claim",
+  "owner": "riverhog_protocol.ProcessingClaimCreateDocument",
+  "unit": "member"
+}
+```

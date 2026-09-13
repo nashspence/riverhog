@@ -1,0 +1,62 @@
+# stove0_operator_contracts.AdmissionSort
+
+[Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
+
+<!-- contract-element: python:stove0-operator-contracts:stove0-operator-contracts-admissionsort:cfaad93c86 -->
+
+Exact externally visible contract owned by this semantic dossier.
+
+| Audit field | Value |
+|---|---|
+| Authority | [stove0-operator-contracts](../index.md) |
+| Interface | [Python](index.md) |
+
+## External contract
+
+<a id="s-70ca4d11dd"></a>
+| Field | Shape |
+|---|---|
+| <a id="s-b3a887f0ab"></a>`contract` | type="typing._LiteralGenericAlias"; additional keys=`kind` |
+| <a id="s-b75eb09f57"></a>`distribution` | "stove0-operator-contracts" |
+| <a id="s-086d04c0ec"></a>`module` | "stove0_operator_contracts" |
+| <a id="s-46386b8761"></a>`name` | "AdmissionSort" |
+| <a id="s-0268d6ea09"></a>`unit` | "export" |
+
+## Governing policies
+
+- <a id="pa-fbfa2934cb"></a>[compatibility/python-api/v1](../../../policies/index.md#p-e574772ba5)
+
+## Evidence
+
+### Qualification
+
+- [make dist-smoke](../../../evidence/sources.md#q-0ba2578a3e)
+- [make build](../../../evidence/sources.md#q-d1121e35fa)
+
+### Executable sources
+
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [python:stove0-operator-contracts:stove0_operator_contracts](../../../evidence/sources.md#src-51ad84528d) — `reference/stove0/packages/operator-contracts/src/stove0_operator_contracts/__init__.py`
+
+### Machine authority
+
+- `/external_contract/python/stove0_operator_contracts.AdmissionSort`
+
+### Exact owned JSON
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 21b64a3099920b379e3fa112a07df2f1da2f15e0cf38dd91aa7ef71bea9b10ac -->
+
+```json
+{
+  "contract": {
+    "kind": "object",
+    "type": "typing._LiteralGenericAlias"
+  },
+  "distribution": "stove0-operator-contracts",
+  "module": "stove0_operator_contracts",
+  "name": "AdmissionSort",
+  "unit": "export"
+}
+```

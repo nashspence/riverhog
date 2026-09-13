@@ -1,0 +1,62 @@
+# riverhog_provenance_linux_contracts.CONTRACT_BINDING
+
+[Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
+
+<!-- contract-element: python:riverhog-provenance-linux-contracts:riverhog-provenance-linux-contracts-contract-binding:595cb6dd03 -->
+
+Exact externally visible contract owned by this semantic dossier.
+
+| Audit field | Value |
+|---|---|
+| Authority | [riverhog-provenance-linux-contracts](../index.md) |
+| Interface | [Python](index.md) |
+
+## External contract
+
+<a id="s-b8b7f52ee0"></a>
+| Field | Shape |
+|---|---|
+| <a id="s-def96a2837"></a>`contract` | type="riverhog_provenance_contracts.ProvenanceContractBinding"; additional keys=`kind` |
+| <a id="s-c0c147732a"></a>`distribution` | "riverhog-provenance-linux-contracts" |
+| <a id="s-ffb37a972d"></a>`module` | "riverhog_provenance_linux_contracts" |
+| <a id="s-68bc77f9a0"></a>`name` | "CONTRACT_BINDING" |
+| <a id="s-ae9b4db28a"></a>`unit` | "export" |
+
+## Governing policies
+
+- <a id="pa-9661dcab6a"></a>[compatibility/python-api/v1](../../../policies/index.md#p-e574772ba5)
+
+## Evidence
+
+### Qualification
+
+- [make dist-smoke](../../../evidence/sources.md#q-0ba2578a3e)
+- [make build](../../../evidence/sources.md#q-d1121e35fa)
+
+### Executable sources
+
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [python:riverhog-provenance-linux-contracts:riverhog_provenance_linux_contracts](../../../evidence/sources.md#src-2cb2292124) — `reference/riverhog/provenance/contracts/linux/src/riverhog_provenance_linux_contracts/__init__.py`
+
+### Machine authority
+
+- `/external_contract/python/riverhog_provenance_linux_contracts.CONTRACT_BINDING`
+
+### Exact owned JSON
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 1cf06bb69b8a1921df91e0a4a1853b875fe7888340e274118ebf4e8103cec6f6 -->
+
+```json
+{
+  "contract": {
+    "kind": "object",
+    "type": "riverhog_provenance_contracts.ProvenanceContractBinding"
+  },
+  "distribution": "riverhog-provenance-linux-contracts",
+  "module": "riverhog_provenance_linux_contracts",
+  "name": "CONTRACT_BINDING",
+  "unit": "export"
+}
+```

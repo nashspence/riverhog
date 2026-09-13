@@ -1,0 +1,74 @@
+# generated:riverhog-storage-adapter: MaintenanceResult
+
+[Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
+
+<!-- contract-element: process-protocol-schemas:riverhog-storage-adapter-support:generated-riverhog-storage-adapter-maintenanceresult:7138d08d6b -->
+
+Exact externally visible contract owned by this semantic dossier.
+
+| Audit field | Value |
+|---|---|
+| Authority | [riverhog-storage-adapter-support](../index.md) |
+| Interface | [Process Protocol Schemas](index.md) |
+
+## External contract
+
+<a id="s-720226b554"></a>
+- <a id="s-9838cbaddb"></a>`title`: MaintenanceResult
+- <a id="s-c0dba656c0"></a>`type`: object
+
+### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-11316610fc"></a>`affected` | yes | type="integer"; minimum=0 |  |
+
+## Maintained corroboration
+
+### Related interface records
+
+- [generated:riverhog-storage-adapter protocol](../process-protocol/generated-riverhog-storage-adapter-protocol.md)
+
+## Governing policies
+
+- <a id="pa-5c150aefbd"></a>[compatibility/components/v1](../../../policies/index.md#p-95e9a12259)
+
+## Evidence
+
+### Qualification
+
+- [make dist-smoke](../../../evidence/sources.md#q-0ba2578a3e)
+- [make build](../../../evidence/sources.md#q-d1121e35fa)
+
+### Executable sources
+
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [protocol:generated:riverhog-storage-adapter](../../../evidence/sources.md#src-ef281f2471) — `packages/riverhog-storage-adapter-support/src/riverhog_storage_adapter_support/schemas.py::storage_adapter_schema_bundle`
+
+### Machine authority
+
+- `/external_contract/protocol_schemas/generated:riverhog-storage-adapter/schemas/MaintenanceResult`
+
+### Exact owned JSON
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 1b8ad376bb41a2eb81c64450d4ccb99a09150f8f1c72f6203ecdad2b933a565c -->
+
+```json
+{
+  "additionalProperties": false,
+  "properties": {
+    "affected": {
+      "minimum": 0,
+      "title": "Affected",
+      "type": "integer"
+    }
+  },
+  "required": [
+    "affected"
+  ],
+  "title": "MaintenanceResult",
+  "type": "object"
+}
+```

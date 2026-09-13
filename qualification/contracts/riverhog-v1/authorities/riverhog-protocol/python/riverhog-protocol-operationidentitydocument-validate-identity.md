@@ -1,0 +1,70 @@
+# riverhog_protocol.OperationIdentityDocument.validate_identity
+
+[Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
+
+<!-- contract-element: python:riverhog-protocol:riverhog-protocol-operationidentitydocume-31c913810a:e626a7665e -->
+
+Exact externally visible contract owned by this semantic dossier.
+
+| Audit field | Value |
+|---|---|
+| Authority | [riverhog-protocol](../index.md) |
+| Interface | [Python](index.md) |
+
+## External contract
+
+<a id="s-67c15777f1"></a>
+| Field | Shape |
+|---|---|
+| <a id="s-455a37b97f"></a>`contract` | additional keys=`kind`, `signature` |
+| <a id="s-b82a8eaf9c"></a>`distribution` | "riverhog-protocol" |
+| <a id="s-a8f3a46329"></a>`module` | "riverhog_protocol" |
+| <a id="s-d07d0df02c"></a>`name` | "validate_identity" |
+| <a id="s-4a520dcf90"></a>`owner` | "riverhog_protocol.OperationIdentityDocument" |
+| <a id="s-3c7507b1f1"></a>`unit` | "member" |
+
+## Maintained corroboration
+
+### Related interface records
+
+- [riverhog_protocol.OperationIdentityDocument](riverhog-protocol-operationidentitydocument.md)
+
+## Governing policies
+
+- <a id="pa-01a3fb01b2"></a>[compatibility/python-api/v1](../../../policies/index.md#p-e574772ba5)
+
+## Evidence
+
+### Qualification
+
+- [make dist-smoke](../../../evidence/sources.md#q-0ba2578a3e)
+- [make build](../../../evidence/sources.md#q-d1121e35fa)
+
+### Executable sources
+
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [python:riverhog-protocol:riverhog_protocol](../../../evidence/sources.md#src-19e35f15d9) — `packages/riverhog-protocol/src/riverhog_protocol/__init__.py`
+
+### Machine authority
+
+- `/external_contract/python/riverhog_protocol.OperationIdentityDocument.validate_identity`
+
+### Exact owned JSON
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: c964f1dbd650e289976639c86907fc435e08138fa880b074f824e1add2bc416d -->
+
+```json
+{
+  "contract": {
+    "kind": "method",
+    "signature": "\"(self) -> 'Self'\""
+  },
+  "distribution": "riverhog-protocol",
+  "module": "riverhog_protocol",
+  "name": "validate_identity",
+  "owner": "riverhog_protocol.OperationIdentityDocument",
+  "unit": "member"
+}
+```

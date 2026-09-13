@@ -1,0 +1,62 @@
+# gogurt_listener_runtime.ensure_private_file
+
+[Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
+
+<!-- contract-element: python:gogurt-listener-runtime:gogurt-listener-runtime-ensure-private-file:14abb1fd86 -->
+
+Exact externally visible contract owned by this semantic dossier.
+
+| Audit field | Value |
+|---|---|
+| Authority | [gogurt-listener-runtime](../index.md) |
+| Interface | [Python](index.md) |
+
+## External contract
+
+<a id="s-13963b095e"></a>
+| Field | Shape |
+|---|---|
+| <a id="s-5663c0d787"></a>`contract` | additional keys=`kind`, `signature` |
+| <a id="s-b140720124"></a>`distribution` | "gogurt-listener-runtime" |
+| <a id="s-2ec2e85253"></a>`module` | "gogurt_listener_runtime" |
+| <a id="s-9af8cbf64e"></a>`name` | "ensure_private_file" |
+| <a id="s-58d8d524c6"></a>`unit` | "export" |
+
+## Governing policies
+
+- <a id="pa-28049ff9db"></a>[compatibility/python-api/v1](../../../policies/index.md#p-e574772ba5)
+
+## Evidence
+
+### Qualification
+
+- [make dist-smoke](../../../evidence/sources.md#q-0ba2578a3e)
+- [make build](../../../evidence/sources.md#q-d1121e35fa)
+
+### Executable sources
+
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [python:gogurt-listener-runtime:gogurt_listener_runtime](../../../evidence/sources.md#src-259980dd25) — `reference/gogurt/packages/listener-runtime/src/gogurt_listener_runtime/__init__.py`
+
+### Machine authority
+
+- `/external_contract/python/gogurt_listener_runtime.ensure_private_file`
+
+### Exact owned JSON
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 2b5558e78187feeb0856bcf47822abe41dfeaacc6c191700fa73d20cbe7c6b28 -->
+
+```json
+{
+  "contract": {
+    "kind": "function",
+    "signature": "\"(path: 'Path') -> 'None'\""
+  },
+  "distribution": "gogurt-listener-runtime",
+  "module": "gogurt_listener_runtime",
+  "name": "ensure_private_file",
+  "unit": "export"
+}
+```
