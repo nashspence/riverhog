@@ -147,6 +147,7 @@ def test_human_entrypoint_exposes_closure_exclusions_and_relationships() -> None
         for name in root["discovery"]["anomalies"]
     )
     assert "### Riverhog product" in root_page
+    assert root_page.index("### Release envelope") < root_page.index("### Riverhog product")
     assert "### Maintainer-selected nonnormative references" in root_page
     assert "### [Cross-cutting v1 authorities]" in root_page
     assert "Guided contract map" not in root_page
@@ -191,6 +192,18 @@ def test_human_entrypoint_exposes_closure_exclusions_and_relationships() -> None
         checked.files
     )
     assert not any(path.startswith("riverhog-v1/relationships/") for path in checked.files)
+
+    release_page = checked.files["riverhog-v1/authorities/release/release/index.md"].decode()
+    release_elements = [item for item in root["elements"] if item["interface"] == "release"]
+    assert "Supported Platforms" not in release_page
+    assert len(release_elements) == 121
+    assert all(item["details"]["publication_group"] for item in release_elements)
+    assert all(
+        release_page.index(group) < release_page.index("Python distribution: config-validation")
+        for group in ("| Publication group |", "### Riverhog product publication")
+    )
+    assert "### Nonnormative reference-application publication" in release_page
+    assert "### Nonnormative reference-component publication" in release_page
 
 
 def test_contract_map_routes_every_interface_and_extension_without_duplicate_semantics() -> None:

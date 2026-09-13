@@ -304,6 +304,7 @@ dist:
 	@$(UV_RUN) python scripts/check_distribution_licenses.py dist
 
 dist-smoke: dist
+	@$(UV_RUN) python scripts/release.py verify-distributions
 	@MISE_BIN="$(MISE_BIN)" ./scripts/test_distributions.sh
 
 build-riverhog:

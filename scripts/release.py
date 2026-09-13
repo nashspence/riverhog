@@ -25,7 +25,7 @@ from typing import Any, cast
 
 import release_installation as installation
 from packaging.requirements import InvalidRequirement, Requirement
-from packaging.specifiers import SpecifierSet
+from packaging.specifiers import InvalidSpecifier, SpecifierSet
 from runtime_image_attribution import RuntimeAttributionError, locked_runtime_payloads
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -44,6 +44,12 @@ REFERENCE_POLICY = (
     "Checked-in references form a closed, tightly scoped, maintainer-selected, nonnormative "
     "conformance set."
 )
+PUBLICATION_SCHEMA = "riverhog-release-publication/v1"
+PUBLICATION_POLICY_KEYS = {
+    "role_retention",
+    "platform_scope",
+    "image_digest_scope",
+}
 CONTRACT_AUTHORITIES = {
     "extent-contract": "Repository-wide v1 external extent principles and rules.",
     "release": "Coordinated v1 compatibility and publication promises.",
@@ -135,92 +141,6 @@ PROJECT_URLS = {
     "Issues": "https://github.com/nashspence/riverhog/issues",
     "Repository": "https://github.com/nashspence/riverhog",
 }
-RUNTIME_IMAGE_TARGETS = {
-    "riverhog": {
-        "role": "product",
-        "description": "Riverhog archive service.",
-        "distributions": ["riverhog-server"],
-        "repository": "ghcr.io/nashspence/riverhog",
-    },
-    "riverhog-ftp-adapter": {
-        "role": "reference",
-        "description": "Optional nonnormative Riverhog FTP ingress reference.",
-        "distributions": ["riverhog-ftp-adapter", "riverhog-provenance-linux-observer"],
-        "repository": "ghcr.io/nashspence/riverhog-ftp-adapter",
-    },
-    "riverhog-storage-adapter-aws": {
-        "role": "reference",
-        "description": "Optional nonnormative AWS storage reference for Riverhog.",
-        "distributions": ["riverhog-storage-adapter-aws"],
-        "repository": "ghcr.io/nashspence/riverhog-storage-adapter-aws",
-    },
-    "riverhog-storage-adapter-backblaze": {
-        "role": "reference",
-        "description": "Optional nonnormative Backblaze B2 storage reference for Riverhog.",
-        "distributions": ["riverhog-storage-adapter-backblaze"],
-        "repository": "ghcr.io/nashspence/riverhog-storage-adapter-backblaze",
-    },
-    "riverhog-storage-adapter-filesystem": {
-        "role": "reference",
-        "description": "Optional nonnormative Linux filesystem storage reference for Riverhog.",
-        "distributions": ["riverhog-storage-adapter-filesystem"],
-        "repository": "ghcr.io/nashspence/riverhog-storage-adapter-filesystem",
-    },
-    "mango-fish": {
-        "role": "reference",
-        "description": "Optional nonnormative CloudEvents reference application for Riverhog.",
-        "distributions": ["mango-fish"],
-        "repository": "ghcr.io/nashspence/riverhog-mango-fish",
-    },
-    "stove0": {
-        "role": "reference",
-        "description": "Optional nonnormative transformation reference application for Riverhog.",
-        "distributions": ["stove0-server"],
-        "repository": "ghcr.io/nashspence/riverhog-stove0",
-    },
-    "stove0-exiftool-observer": {
-        "role": "reference",
-        "description": "Optional nonnormative ExifTool observer reference for Stove0.",
-        "distributions": ["stove0-exiftool-observer"],
-        "repository": "ghcr.io/nashspence/riverhog-stove0-exiftool-observer",
-    },
-    "stove0-ffprobe-sampling-observer": {
-        "role": "reference",
-        "description": "Optional nonnormative FFprobe sampling-observer reference for Stove0.",
-        "distributions": ["stove0-ffprobe-sampling-observer"],
-        "repository": "ghcr.io/nashspence/riverhog-stove0-ffprobe-sampling-observer",
-    },
-    "stove0-nvenc-av1-opus-target": {
-        "role": "reference",
-        "description": "Optional nonnormative NVENC AV1 and Opus target reference for Stove0.",
-        "distributions": [
-            "stove0-nvenc-av1-opus-target",
-            "stove0-nvenc-av1-opus-review-sampler",
-        ],
-        "repository": "ghcr.io/nashspence/riverhog-stove0-nvenc-av1-opus-target",
-    },
-    "stove0-opus-target": {
-        "role": "reference",
-        "description": "Optional nonnormative Opus target reference for Stove0.",
-        "distributions": ["stove0-opus-target", "stove0-opus-review-sampler"],
-        "repository": "ghcr.io/nashspence/riverhog-stove0-opus-target",
-    },
-    "stove0-review-materialize-target": {
-        "role": "reference",
-        "description": "Optional nonnormative review materialization target reference for Stove0.",
-        "distributions": ["stove0-review-materialize-target"],
-        "repository": "ghcr.io/nashspence/riverhog-stove0-review-materialize-target",
-    },
-    "stove0-review-rclone-effect-target": {
-        "role": "reference",
-        "description": "Optional nonnormative rclone review-effect target reference for Stove0.",
-        "distributions": ["stove0-review-rclone-effect-target"],
-        "repository": "ghcr.io/nashspence/riverhog-stove0-review-rclone-effect-target",
-    },
-}
-TEST_IMAGE_TARGETS = {"test": {"local_tag": "riverhog-test:dev"}}
-RELEASE_IMAGE_PLATFORMS = ["linux/amd64"]
-END_USER_ARTIFACT_PLATFORMS = ["linux-x64", "macos-arm64", "windows-x64"]
 SIGNING_POLICY_KEYS = {
     "checksums",
     "signature",
@@ -288,6 +208,7 @@ class Project:
     role: str
     version: str
     description: str
+    requires_python: str
 
 
 class ReleaseError(RuntimeError):
@@ -431,6 +352,37 @@ def _bake_targets(root: Path) -> set[str]:
     return set(re.findall(r'"([^"]+)"', targets.group("body")))
 
 
+def _bake_platforms(root: Path) -> list[str]:
+    text = (root / "docker-bake.hcl").read_text(encoding="utf-8")
+    common = re.search(r'target "image-common" \{(?P<body>.*?)\n\}', text, re.DOTALL)
+    if common is None:
+        raise ReleaseError("docker-bake.hcl has no common image contract")
+    platforms = re.search(r"platforms\s*=\s*\[(?P<body>.*?)\]", common.group("body"), re.DOTALL)
+    if platforms is None:
+        raise ReleaseError("docker-bake.hcl common image contract has no platforms")
+    values = re.findall(r'"([^"]+)"', platforms.group("body"))
+    if not values or len(values) != len(set(values)):
+        raise ReleaseError("docker-bake.hcl common image platforms are absent or duplicated")
+    for target in _bake_targets(root):
+        match = re.search(
+            rf'target "{re.escape(target)}" \{{(?P<body>.*?)\n\}}',
+            text,
+            re.DOTALL,
+        )
+        if match is None:
+            raise ReleaseError(f"docker-bake.hcl has no definition for target: {target}")
+        body = match.group("body")
+        inherits = re.search(r"inherits\s*=\s*\[(?P<body>.*?)\]", body, re.DOTALL)
+        inherited_targets = (
+            re.findall(r'"([^"]+)"', inherits.group("body")) if inherits is not None else []
+        )
+        if "image-common" not in inherited_targets or re.search(r"(?m)^\s*platforms\s*=", body):
+            raise ReleaseError(
+                f"docker-bake.hcl target must inherit the exact common platform set: {target}"
+            )
+    return values
+
+
 def _bake_dockerfile(root: Path, target: str) -> Path:
     bake = (root / "docker-bake.hcl").read_text(encoding="utf-8")
     match = re.search(
@@ -550,6 +502,13 @@ def validate_release_contract(root: Path, *, expected_version: str | None = None
         raise ReleaseError("Riverhog requires one coordinated product version")
     if config.get("references") != {"policy": REFERENCE_POLICY}:
         raise ReleaseError("release.toml differs from the first-party reference policy")
+    publication = config.get("publication")
+    if (
+        not isinstance(publication, dict)
+        or set(publication) != PUBLICATION_POLICY_KEYS
+        or any(not isinstance(value, str) or not value.strip() for value in publication.values())
+    ):
+        raise ReleaseError("release.toml lacks the complete publication policy")
     if config.get("contract_authorities") != CONTRACT_AUTHORITIES:
         raise ReleaseError("release.toml differs from the explicit contract authorities")
     if config.get("qualification") != {
@@ -653,6 +612,13 @@ def validate_release_contract(root: Path, *, expected_version: str | None = None
         seen_names.add(name)
         version = str(metadata["version"])
         _version(version)
+        requires_python = str(metadata.get("requires-python", ""))
+        if not requires_python:
+            raise ReleaseError(f"{name} does not declare Requires-Python")
+        try:
+            SpecifierSet(requires_python)
+        except InvalidSpecifier as exc:
+            raise ReleaseError(f"{name} has invalid Requires-Python") from exc
         if expected_version is not None and version != expected_version:
             raise ReleaseError(f"{name} is {version}, expected {expected_version}")
         if classified[relative] == "reference_component":
@@ -682,6 +648,7 @@ def validate_release_contract(root: Path, *, expected_version: str | None = None
                 role=classified[relative],
                 version=version,
                 description=str(metadata["description"]),
+                requires_python=requires_python,
             )
         )
 
@@ -743,9 +710,10 @@ def validate_release_contract(root: Path, *, expected_version: str | None = None
         "runtime_images",
     }:
         raise ReleaseError("release.toml lacks the complete platform support contract")
-    if platforms_config["end_user_artifacts"] != END_USER_ARTIFACT_PLATFORMS:
+    if platforms_config["end_user_artifacts"] != list(installation.SUPPORTED_PLATFORMS):
         raise ReleaseError("v1 end-user artifacts must support Linux, macOS, and Windows")
-    if platforms_config["runtime_images"] != RELEASE_IMAGE_PLATFORMS:
+    bake_platforms = _bake_platforms(root)
+    if platforms_config["runtime_images"] != bake_platforms:
         raise ReleaseError("v1 runtime images must target the release image platforms")
 
     images_config = config.get("images")
@@ -755,12 +723,38 @@ def validate_release_contract(root: Path, *, expected_version: str | None = None
         "test_only",
     }:
         raise ReleaseError("release.toml lacks the complete image release contract")
-    if images_config["platforms"] != RELEASE_IMAGE_PLATFORMS:
+    if images_config["platforms"] != bake_platforms:
         raise ReleaseError("v1 release images must target the qualified Linux/amd64 platform")
     runtime_images = images_config["runtime"]
     test_images = images_config["test_only"]
-    if runtime_images != RUNTIME_IMAGE_TARGETS or test_images != TEST_IMAGE_TARGETS:
-        raise ReleaseError("release image inventory differs from the canonical bake graph")
+    if not isinstance(runtime_images, dict) or not isinstance(test_images, dict):
+        raise ReleaseError("release image inventory must be keyed mappings")
+    if not runtime_images or not test_images:
+        raise ReleaseError("release image inventory lacks runtime or test-only targets")
+    for target, value in runtime_images.items():
+        if not isinstance(value, dict) or set(value) != {
+            "role",
+            "description",
+            "distributions",
+            "repository",
+        }:
+            raise ReleaseError(f"runtime image declaration is incomplete: {target}")
+        if (
+            not isinstance(value["description"], str)
+            or not value["description"].strip()
+            or not isinstance(value["distributions"], list)
+            or not value["distributions"]
+            or len(value["distributions"]) != len(set(value["distributions"]))
+        ):
+            raise ReleaseError(f"runtime image declaration is invalid: {target}")
+    for target, value in test_images.items():
+        if (
+            not isinstance(value, dict)
+            or set(value) != {"local_tag"}
+            or not isinstance(value["local_tag"], str)
+            or not value["local_tag"].strip()
+        ):
+            raise ReleaseError(f"test-only image declaration is invalid: {target}")
     if set(runtime_images) | set(test_images) != _bake_targets(root):
         raise ReleaseError("release image inventory differs from docker-bake.hcl")
     image_distributions = {
@@ -910,6 +904,146 @@ def validate_release_contract(root: Path, *, expected_version: str | None = None
     return projects
 
 
+def _artifact_format(coordinate: str) -> str:
+    formats = (
+        (".tar.gz", "tar+gzip"),
+        (".intoto.jsonl", "in-toto-jsonl"),
+        (".spdx.json", "spdx-json"),
+        (".minisig", "minisign-signature"),
+        (".json", "json"),
+        (".md", "markdown"),
+    )
+    for suffix, value in formats:
+        if coordinate.endswith(suffix):
+            return value
+    if coordinate == "SHA256SUMS":
+        return "sha256-checksum-list"
+    raise ReleaseError(f"release artifact has no declared format: {coordinate}")
+
+
+def publication_contract(
+    root: Path,
+    projects: list[Project] | None = None,
+) -> dict[str, object]:
+    """Discover the exact v1 publication envelope from implementation-owned inputs."""
+
+    if projects is None:
+        projects = validate_release_contract(root)
+    config = _load_config(root)
+    runtime_images = cast(dict[str, dict[str, object]], config["images"]["runtime"])
+    artifacts = cast(dict[str, object], config["artifacts"])
+    installation_policy = cast(dict[str, object], config["installation"])
+    distributions: dict[str, object] = {}
+    for project in sorted(projects, key=lambda value: value.name):
+        artifact_name = project.name.replace("-", "_")
+        distributions[project.name] = {
+            "role": project.role,
+            "description": project.description,
+            "source": f"{project.path}/pyproject.toml",
+            "requires_python": project.requires_python,
+            "channel": config["python_distribution_channel"],
+            "artifacts": [
+                {
+                    "format": "wheel",
+                    "coordinate": f"dist/{artifact_name}-{{version}}-py3-none-any.whl",
+                },
+                {
+                    "format": "sdist",
+                    "coordinate": f"dist/{artifact_name}-{{version}}.tar.gz",
+                },
+            ],
+        }
+
+    images: dict[str, object] = {}
+    for target, value in sorted(runtime_images.items()):
+        repository = str(value["repository"])
+        images[target] = {
+            "role": value["role"],
+            "description": value["description"],
+            "format": "oci-image",
+            "repository": repository,
+            "build_target": target,
+            "platforms": list(config["images"]["platforms"]),
+            "tag_templates": [
+                f"{repository}:{{version}}",
+                f"{repository}:sha-{{source_sha}}",
+            ],
+            "distribution_roots": list(cast(list[str], value["distributions"])),
+        }
+
+    install_roots: dict[str, object] = {}
+    for name in installation.INSTALLATION_ROOTS:
+        if name not in distributions:
+            raise ReleaseError(f"installation root is not a published distribution: {name}")
+        install_roots[name] = {
+            "distribution": name,
+            "method": installation_policy["method"],
+            "platforms": list(installation.SUPPORTED_PLATFORMS),
+            "artifact_format": "wheel",
+            "lock": {
+                "format": installation_policy["lock_format"],
+                "coordinate": f"pylock.{name}.toml",
+            },
+        }
+
+    artifact_coordinates = {
+        "documentation": str(artifacts["documentation"]),
+        "source": str(artifacts["source"]),
+        "contract": str(artifacts["contract"]),
+        **{
+            f"evidence:{coordinate}": str(coordinate)
+            for coordinate in cast(list[str], artifacts["evidence"])
+            if coordinate != artifacts["contract"]
+        },
+        "installation:index": "riverhog-python-index-v{version}.tar.gz",
+        "installation:gogurt-listener-reference": "gogurt-listener-v{version}.md",
+    }
+    release_artifacts = {
+        name: {
+            "coordinate": coordinate,
+            "format": _artifact_format(coordinate),
+        }
+        for name, coordinate in sorted(artifact_coordinates.items())
+    }
+
+    signing = cast(dict[str, object], config["signing"])
+    tags = cast(dict[str, object], config["governance"]["tags"])
+    return {
+        "schema": PUBLICATION_SCHEMA,
+        "policy": dict(config["publication"]),
+        "versioning": {
+            "series": config["series"],
+            "distribution_version": "{version}",
+            "policy": config["version_policy"],
+            "tag_template": config["tag_template"],
+            "tag_immutability": tags["immutability"],
+        },
+        "coordinates": {
+            "source": config["source_url"],
+            "documentation": config["documentation_url"],
+        },
+        "distributions": distributions,
+        "runtime_images": images,
+        "installation_roots": install_roots,
+        "release_artifacts": release_artifacts,
+        "trust": {
+            "checksums": {
+                "scheme": signing["checksums"],
+                "coordinate": "SHA256SUMS",
+            },
+            "maintainer_signature": {
+                "scheme": signing["signature"],
+                "coordinate": "SHA256SUMS.minisig",
+                "public_key_distribution": signing["public_key"],
+            },
+            "workflow_attestation": {
+                "scheme": "github-oidc",
+                "meaning": signing["github_oidc"],
+            },
+        },
+    }
+
+
 def apply_release_version(root: Path, version: str) -> list[Project]:
     major, _, _ = _version(version)
     if major != 1:
@@ -1050,47 +1184,63 @@ def build_release_plan(root: Path, version: str, *, allow_dirty: bool = False) -
         _ensure_clean(root)
     projects = validate_release_contract(root)
     config = _load_config(root)
+    publication = publication_contract(root, projects)
     source_sha = _source_sha(root)
     previous_tag, commits = _release_notes(root, source_sha)
     python_artifacts = []
+    published_distributions = cast(dict[str, dict[str, object]], publication["distributions"])
     for project in projects:
-        artifact_name = project.name.replace("-", "_")
+        published = published_distributions[project.name]
         python_artifacts.append(
             {
                 "name": project.name,
                 "path": project.path,
-                "role": project.role,
+                "role": published["role"],
                 "current_version": project.version,
                 "release_version": version,
                 "artifacts": [
-                    f"dist/{artifact_name}-{version}-py3-none-any.whl",
-                    f"dist/{artifact_name}-{version}.tar.gz",
+                    str(item["coordinate"]).format(version=version)
+                    for item in cast(list[dict[str, object]], published["artifacts"])
                 ],
+                "requires_python": published["requires_python"],
             }
         )
     images = []
-    for target, value in config["images"]["runtime"].items():
+    for target, value in cast(dict[str, dict[str, object]], publication["runtime_images"]).items():
         repository = str(value["repository"])
         images.append(
             {
                 "target": target,
                 "role": value["role"],
                 "description": value["description"],
-                "distributions": value["distributions"],
+                "distributions": value["distribution_roots"],
                 "repository": repository,
-                "platforms": list(config["images"]["platforms"]),
-                "tags": [f"{repository}:{version}", f"{repository}:sha-{source_sha}"],
+                "platforms": value["platforms"],
+                "tags": [
+                    str(template).format(version=version, source_sha=source_sha)
+                    for template in cast(list[str], value["tag_templates"])
+                ],
             }
         )
+    release_artifacts = cast(dict[str, dict[str, str]], publication["release_artifacts"])
     supporting = {
-        "documentation": config["artifacts"]["documentation"].format(version=version),
-        "source": config["artifacts"]["source"].format(version=version),
-        "contract": config["artifacts"]["contract"],
+        "documentation": release_artifacts["documentation"]["coordinate"].format(version=version),
+        "source": release_artifacts["source"]["coordinate"].format(version=version),
+        "contract": release_artifacts["contract"]["coordinate"],
         "installation": {
-            "manifest": "install-manifest.json",
-            "locks": [f"pylock.{name}.toml" for name in installation.INSTALLATION_ROOTS],
-            "index_snapshot": f"riverhog-python-index-v{version}.tar.gz",
-            "gogurt_listener_reference": f"gogurt-listener-v{version}.md",
+            "manifest": release_artifacts["evidence:install-manifest.json"]["coordinate"],
+            "locks": [
+                str(item["lock"]["coordinate"])
+                for item in cast(
+                    dict[str, dict[str, Any]], publication["installation_roots"]
+                ).values()
+            ],
+            "index_snapshot": release_artifacts["installation:index"]["coordinate"].format(
+                version=version
+            ),
+            "gogurt_listener_reference": release_artifacts[
+                "installation:gogurt-listener-reference"
+            ]["coordinate"].format(version=version),
         },
         "notices": dict(config["artifacts"]["notices"]),
         "evidence": list(config["artifacts"]["evidence"]),
@@ -1105,6 +1255,7 @@ def build_release_plan(root: Path, version: str, *, allow_dirty: bool = False) -
         "version_policy": config["version_policy"],
         "compatibility": config["compatibility"],
         "reference_policy": config["references"]["policy"],
+        "publication": publication,
         "python": python_artifacts,
         "images": images,
         "supporting_artifacts": supporting,
@@ -1370,7 +1521,7 @@ def _write_source_archive(
                         archive.addfile(info)
 
 
-def _distribution_metadata(path: Path) -> tuple[str, str, set[str]]:
+def _distribution_metadata(path: Path) -> tuple[str, str, str, set[str]]:
     if path.suffix == ".whl":
         with zipfile.ZipFile(path) as archive:
             names = [name for name in archive.namelist() if name.endswith(".dist-info/METADATA")]
@@ -1393,10 +1544,11 @@ def _distribution_metadata(path: Path) -> tuple[str, str, set[str]]:
     metadata = BytesParser(policy=policy.default).parsebytes(body)
     name = str(metadata.get("Name", ""))
     version = str(metadata.get("Version", ""))
+    requires_python = str(metadata.get("Requires-Python", ""))
     dependencies = {
         _dependency_name(str(value)) for value in (metadata.get_all("Requires-Dist") or [])
     }
-    return _normalize_name(name), version, dependencies
+    return _normalize_name(name), version, requires_python, dependencies
 
 
 def _project_dependency_graph(
@@ -1452,10 +1604,19 @@ def _validate_distribution_artifacts(
     version: str,
 ) -> dict[str, tuple[Project, set[str]]]:
     expected: dict[str, Project] = {}
-    for project in projects:
-        artifact_name = project.name.replace("-", "_")
-        expected[f"{artifact_name}-{version}-py3-none-any.whl"] = project
-        expected[f"{artifact_name}-{version}.tar.gz"] = project
+    publication = publication_contract(root, projects)
+    distributions = cast(dict[str, dict[str, object]], publication["distributions"])
+    projects_by_name = {project.name: project for project in projects}
+    for name, unit in distributions.items():
+        project = projects_by_name[name]
+        for artifact in cast(list[dict[str, str]], unit["artifacts"]):
+            coordinate = artifact["coordinate"].format(version=version)
+            artifact_path = PurePosixPath(coordinate)
+            if artifact_path.parent != PurePosixPath("dist"):
+                raise ReleaseError(f"distribution artifact is outside dist: {coordinate}")
+            if artifact_path.name in expected:
+                raise ReleaseError(f"distribution artifact is repeated: {coordinate}")
+            expected[artifact_path.name] = project
     dist = root / "dist"
     actual = {path.name for path in dist.iterdir() if path.is_file()}
     if actual != set(expected):
@@ -1466,9 +1627,13 @@ def _validate_distribution_artifacts(
     _internal, direct, _licenses = _project_dependency_graph(root, projects)
     validated: dict[str, tuple[Project, set[str]]] = {}
     for name, project in expected.items():
-        artifact_name, artifact_version, dependencies = _distribution_metadata(dist / name)
+        artifact_name, artifact_version, requires_python, dependencies = _distribution_metadata(
+            dist / name
+        )
         if artifact_name != project.name or artifact_version != version:
             raise ReleaseError(f"artifact identity differs from its release unit: {name}")
+        if requires_python != project.requires_python:
+            raise ReleaseError(f"artifact Requires-Python differs from {project.name}: {name}")
         if dependencies != direct[project.name]:
             raise ReleaseError(f"artifact dependencies differ from {project.name}: {name}")
         validated[name] = project, dependencies
@@ -2768,7 +2933,7 @@ def build_release_evidence(
         "tag": f"v{version}",
         "source_sha": source_sha,
         "python_distributions": len(projects),
-        "runtime_images": len(RUNTIME_IMAGE_TARGETS),
+        "runtime_images": len(_load_config(root)["images"]["runtime"]),
         "installation_roots": len(install_manifest["components"]),
         "evidence_subjects": verification["subjects"],
         "evidence_files": verification["files"],
@@ -2824,6 +2989,10 @@ def _parser() -> argparse.ArgumentParser:
     )
     subparsers = parser.add_subparsers(dest="command", required=True)
     subparsers.add_parser("check", help="Validate release inventory, metadata, and versions.")
+    subparsers.add_parser(
+        "verify-distributions",
+        help="Verify built distribution identity, dependencies, and Requires-Python.",
+    )
 
     plan = subparsers.add_parser("plan", help="Generate SHA-bound release notes and inventory.")
     plan.add_argument("--version", required=True)
@@ -2870,6 +3039,25 @@ def main(argv: list[str] | None = None) -> int:
                 "python_distributions": len(projects),
             }
             print(json.dumps(payload, indent=2, sort_keys=True))
+        elif args.command == "verify-distributions":
+            projects = validate_release_contract(ROOT)
+            validated = _validate_distribution_artifacts(
+                ROOT,
+                projects,
+                version=projects[0].version,
+            )
+            print(
+                json.dumps(
+                    {
+                        "schema": PUBLICATION_SCHEMA,
+                        "python_distributions": len(projects),
+                        "distribution_artifacts": len(validated),
+                        "requires_python_verified": len(validated),
+                    },
+                    indent=2,
+                    sort_keys=True,
+                )
+            )
         elif args.command == "plan":
             payload = build_release_plan(
                 ROOT,

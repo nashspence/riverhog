@@ -1699,6 +1699,35 @@ def trace_projection(projection: Mapping[str, object]) -> dict[str, object]:
     )
     sources: list[dict[str, object]] = [
         {"id": "release:release.toml", "source": {"path": "release.toml"}},
+        *[
+            cast(
+                dict[str, object],
+                {
+                    "id": f"release-distribution:{project.name}",
+                    "owner": project.name,
+                    "source": {"path": f"{project.path}/pyproject.toml"},
+                },
+            )
+            for project in projects
+        ],
+        {
+            "id": "release-images:docker-bake",
+            "source": {"path": "docker-bake.hcl"},
+        },
+        {
+            "id": "release-installation:planner",
+            "source": {
+                "path": "scripts/release_installation.py",
+                "symbol": "INSTALLATION_POLICY",
+            },
+        },
+        {
+            "id": "release-publication:planner",
+            "source": {
+                "path": "scripts/release.py",
+                "symbol": "publication_contract",
+            },
+        },
         {
             "id": "audit:contract-freeze-exceptions",
             "source": {"path": exception_source},
@@ -1792,12 +1821,8 @@ def contract_projection() -> dict[str, object]:
     operations = operation_qualification.operation_matrix()
     external_contract: dict[str, object] = {
         "release": {
-            "installation": config["installation"],
-            "artifacts": config["artifacts"],
+            "publication": release_contract.publication_contract(ROOT, projects),
             "compatibility": config["compatibility"],
-            "platforms": config["platforms"],
-            "tag_template": config["tag_template"],
-            "version_policy": config["version_policy"],
         },
         "http_openapi": http_openapi,
         "http_route_supplements": _http_route_supplements(http_openapi, operations),

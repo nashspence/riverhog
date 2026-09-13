@@ -216,6 +216,11 @@ cases = ["filesystem-retrieval-cache", "b2-archive", "b2-retrieval-cache", "aws-
 [references]
 policy = "Checked-in references form a closed, tightly scoped, maintainer-selected, nonnormative conformance set."
 
+[publication]
+role_retention = "Publication creates no new product, API, protocol, provider, or direct-consumption promise. Each publication unit retains its exact release role and links to its existing semantic owners."
+platform_scope = "A platform or architecture claim applies only to the exact published image, distribution, or installation form that carries it. Qualification platforms remain evidence unless an external contract independently protects them."
+image_digest_scope = "Per-release image digests are publication evidence rather than permanent v1 contract constants."
+
 [signing]
 checksums = "SHA-256"
 signature = "minisign"

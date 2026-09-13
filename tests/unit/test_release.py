@@ -54,7 +54,7 @@ def _copy_release_contract(module: ModuleType, destination: Path) -> None:
             target = destination / source.relative_to(REPO_ROOT)
             target.parent.mkdir(parents=True, exist_ok=True)
             shutil.copy2(source, target)
-    for image in module.RUNTIME_IMAGE_TARGETS:
+    for image in release["images"]["runtime"]:
         source = module._bake_dockerfile(REPO_ROOT, image)
         relative = source.relative_to(REPO_ROOT)
         target = destination / relative
@@ -198,6 +198,24 @@ def test_reusable_library_requires_explicit_exports_for_every_public_module(
     public_root.write_text('"""No declared public surface."""\n', encoding="utf-8")
 
     with pytest.raises(module.ReleaseError, match="explicit public __all__"):
+        module.validate_release_contract(tmp_path)
+
+
+def test_runtime_image_cannot_silently_override_its_published_platforms(
+    tmp_path: Path,
+) -> None:
+    module = load_script()
+    _copy_release_contract(module, tmp_path)
+    bake = tmp_path / "docker-bake.hcl"
+    text = bake.read_text(encoding="utf-8")
+    text = text.replace(
+        'target "riverhog" {\n  inherits   = ["image-common"]',
+        'target "riverhog" {\n  inherits   = ["image-common"]\n  platforms  = ["linux/arm64"]',
+        1,
+    )
+    bake.write_text(text, encoding="utf-8")
+
+    with pytest.raises(module.ReleaseError, match="exact common platform set: riverhog"):
         module.validate_release_contract(tmp_path)
 
 
@@ -461,7 +479,10 @@ def test_release_plan_is_exact_sha_bound_and_excludes_the_test_image() -> None:
     assert all(character in "0123456789abcdef" for character in plan["source_sha"])
     assert len(plan["python"]) == 71
     assert all(len(project["artifacts"]) == 2 for project in plan["python"])
-    assert {image["target"] for image in plan["images"]} == set(module.RUNTIME_IMAGE_TARGETS)
+    publication = module.publication_contract(REPO_ROOT)
+    assert plan["publication"] == publication
+    assert {image["target"] for image in plan["images"]} == set(publication["runtime_images"])
+    assert all(project["requires_python"] == ">=3.12" for project in plan["python"])
     assert plan["reference_policy"] == module.REFERENCE_POLICY
     assert {image["role"] for image in plan["images"]} == {"product", "reference"}
     assert {image["target"] for image in plan["images"] if image["role"] == "product"} == {
