@@ -38,10 +38,17 @@ EXCLUSION_POLICIES: tuple[dict[str, str], ...] = (
         ),
         "scope": "Installed service, adapter, observer, target, sampler, and effect launchers.",
     },
+    {
+        "id": "exclusion/python-package-no-declared-api/v1",
+        "meaning": (
+            "The installed Python package declares no explicit __all__ surface and therefore "
+            "does not expose a freeze-protected Python API."
+        ),
+        "scope": "Importable packages carried by release wheels without declared exports.",
+    },
 )
 
 DETECTORS: tuple[dict[str, str], ...] = (
-    {"id": "boundary", "authority": "validated release boundary projection"},
     {"id": "cli-tree", "authority": "installed parser tree"},
     {"id": "configuration-document", "authority": "validated configuration schema"},
     {"id": "configuration-environment", "authority": "executable environment binding"},
@@ -50,12 +57,11 @@ DETECTORS: tuple[dict[str, str], ...] = (
     {"id": "http-openapi", "authority": "running ASGI app"},
     {"id": "operation-matrix", "authority": "executable operation parity matrix"},
     {"id": "protocol-schema", "authority": "published or generated protocol schema"},
-    {"id": "python-export", "authority": "published reusable-library export"},
+    {"id": "python-export", "authority": "declared release-package export"},
     {"id": "release-metadata", "authority": "validated release contract"},
 )
 
 QUALIFICATION_ROUTES: dict[str, tuple[str, ...]] = {
-    "boundary": ("make release-check", "make build"),
     "cli": ("make dist-smoke", "make operation-qualification"),
     "configuration": ("make unit", "make compose-smoke"),
     "configuration-environment": ("make unit", "make compose-smoke"),
@@ -93,6 +99,24 @@ def canonical_bytes(value: object) -> bytes:
 
 def canonical_sha256(value: object) -> str:
     return hashlib.sha256(canonical_bytes(value)).hexdigest()
+
+
+def _semantic_identity(
+    projection: Mapping[str, object],
+    policies: Mapping[str, object],
+    unsafe_integer_paths: Sequence[str],
+) -> dict[str, object]:
+    """Return semantic contract identity without boundary-governance evidence."""
+
+    return {
+        "schema": CONTRACT_IDENTITY_SCHEMA,
+        "series": projection["series"],
+        "external_contract": projection["external_contract"],
+        "policies": {key: value for key, value in policies.items() if key != "exclusion"},
+        "unsafe_integer_paths": [
+            path for path in unsafe_integer_paths if path.startswith("/external_contract/")
+        ],
+    }
 
 
 def _encoded_json(value: object) -> tuple[object, list[str]]:
@@ -210,12 +234,6 @@ def _source_index(trace: Mapping[str, object]) -> dict[str, dict[str, object]]:
                 "id": "extent:extent-contract",
                 "source": {"path": "scripts/extent_contract.py", "symbol": "extent_projection"},
             },
-            "configuration-environment:inventory": {
-                "id": "configuration-environment:inventory",
-                "source": {
-                    "path": "qualification/configuration-contract.toml",
-                },
-            },
         }
     )
     return dict(sorted(sources.items()))
@@ -227,13 +245,6 @@ def _policy_registry(projection: Mapping[str, object]) -> dict[str, object]:
     compatibility = cast(Mapping[str, object], release["compatibility"])
     extents = cast(Mapping[str, object], external["extents"])
     return {
-        "boundary": [
-            {
-                "id": "boundary/frozen-authority/v1",
-                "meaning": "The authority and extension boundary is maintainer-frozen for v1.",
-                "applies_to": ["/boundaries"],
-            }
-        ],
         "compatibility": [
             {
                 "id": f"compatibility/{key.replace('_', '-')}/v1",
@@ -264,7 +275,6 @@ def _policy_registry(projection: Mapping[str, object]) -> dict[str, object]:
 
 def _compatibility_policies(interface: str) -> list[str]:
     mapping = {
-        "boundary": "boundary/frozen-authority/v1",
         "cli": "compatibility/cli/v1",
         "configuration": "compatibility/configuration/v1",
         "configuration-environment": "compatibility/configuration/v1",
@@ -312,7 +322,7 @@ def _add_element(
         "title": title,
         "pointers": normalized_pointers,
         "detector": detector,
-        "disposition": "contractual",
+        "disposition": "protected",
         "policy_ids": _compatibility_policies(interface),
         "source_authority_ids": sorted({"generator:contract-projection", *source_ids}),
         "qualification_routes": list(QUALIFICATION_ROUTES[interface]),
@@ -323,64 +333,6 @@ def _add_element(
         item["details"] = dict(details)
     elements.append(item)
     return item
-
-
-def _boundary_elements(projection: Mapping[str, object]) -> list[dict[str, object]]:
-    boundaries = cast(Mapping[str, object], projection["boundaries"])
-    elements: list[dict[str, object]] = []
-    _add_element(
-        elements,
-        authority="repository",
-        interface="boundary",
-        family="references",
-        title="Reference component policy",
-        pointers=["/boundaries/reference_policy"],
-        detector="boundary",
-        source_ids=["release:release.toml"],
-    )
-    for index, component in enumerate(
-        cast(Sequence[Mapping[str, object]], boundaries["components"])
-    ):
-        name = str(component["distribution"])
-        _add_element(
-            elements,
-            authority=name,
-            interface="boundary",
-            family="components",
-            title=f"{name} component boundary",
-            pointers=[f"/boundaries/components/{index}"],
-            detector="boundary",
-            source_ids=["release:release.toml"],
-        )
-    for family, _values in sorted(cast(Mapping[str, object], boundaries["runtime_images"]).items()):
-        _add_element(
-            elements,
-            authority="repository",
-            interface="boundary",
-            family="runtime-images",
-            title=f"{family.replace('_', ' ').title()} runtime images",
-            pointers=[f"/boundaries/runtime_images/{_escape_pointer(family)}"],
-            detector="boundary",
-            source_ids=["release:release.toml"],
-        )
-    for section, family in (
-        ("entry_point_extensions", "entry-point-extensions"),
-        ("process_extensions", "process-extensions"),
-    ):
-        for index, item in enumerate(cast(Sequence[Mapping[str, object]], boundaries[section])):
-            authority = str(item.get("owner", item.get("contract_owner", "repository")))
-            name = str(item.get("group", item.get("name", f"{section}-{index}")))
-            _add_element(
-                elements,
-                authority=authority,
-                interface="boundary",
-                family=family,
-                title=name,
-                pointers=[f"/boundaries/{section}/{index}"],
-                detector="boundary",
-                source_ids=["release:release.toml"],
-            )
-    return elements
 
 
 def _walk_cli(
@@ -596,24 +548,31 @@ def _external_elements(
         for index, item in enumerate(cast(Sequence[Mapping[str, object]], external[section])):
             name = str(item.get("name", item.get("template", f"{section}-{index}")))
             authority = str(item["owner"])
-            classification = str(item.get("classification", "patterns"))
             _add_element(
                 elements,
                 authority=authority,
                 interface="configuration-environment",
-                family="patterns" if section.endswith("patterns") else classification,
+                family="patterns" if section.endswith("patterns") else "settings",
                 title=name,
                 pointers=[f"/external_contract/{section}/{index}"],
                 detector="configuration-environment",
                 source_ids=[
-                    "configuration-environment:inventory",
                     (f"configuration-environment-pattern:{authority}:{item['template']}")
                     if section.endswith("patterns")
                     else f"configuration-environment:{authority}:{name}",
                 ],
                 details={
-                    "classification": classification,
                     "consumers": list(cast(Sequence[str], item["consumers"])),
+                    "input_shape": item["input_shape"],
+                    **(
+                        {
+                            "default_expressions": list(
+                                cast(Sequence[str], item["default_expressions"])
+                            )
+                        }
+                        if "default_expressions" in item
+                        else {}
+                    ),
                 },
             )
 
@@ -682,11 +641,7 @@ def _external_elements(
             title=module,
             pointers=[f"/external_contract/python/{index}"],
             detector="python-export",
-            source_ids=[
-                f"python:{authority}:{module}"
-                if authority == "riverhog-client"
-                else f"python:{authority}"
-            ],
+            source_ids=[f"python:{authority}:{module}"],
         )
 
     state = cast(Mapping[str, object], external["durable_state"])
@@ -826,44 +781,68 @@ def _link_operation_parity(
             cast(list[str], related_element["related_element_ids"]).append(str(operation["id"]))
 
 
-def _excluded_launchers(projection: Mapping[str, object]) -> list[dict[str, object]]:
-    boundaries = cast(Mapping[str, object], projection["boundaries"])
-    external = cast(Mapping[str, object], projection["external_contract"])
-    cli_names = set(cast(Mapping[str, object], external["cli"]))
+def _excluded_launchers(trace: Mapping[str, object]) -> list[dict[str, object]]:
+    registry = cast(Mapping[str, object], trace["console_script_registry"])
+    detections = {
+        str(item["id"]): item
+        for item in cast(Sequence[Mapping[str, object]], registry["detections"])
+    }
+    resolutions = {
+        str(item["candidate_id"]): item
+        for item in cast(Sequence[Mapping[str, object]], registry["resolutions"])
+    }
     exclusions: list[dict[str, object]] = []
-    for index, component in enumerate(
-        cast(Sequence[Mapping[str, object]], boundaries["components"])
-    ):
-        for name, target in sorted(
-            cast(Mapping[str, object], component["console_scripts"]).items()
-        ):
-            if name in cli_names:
-                continue
-            exclusions.append(
-                {
-                    "id": f"excluded:console-script:{name}",
-                    "kind": "console-script",
-                    "detector": "cli-tree",
-                    "disposition": "excluded",
-                    "policy_id": "exclusion/process-launcher-not-cli/v1",
-                    "boundary_pointer": (
-                        f"/boundaries/components/{index}/console_scripts/{_escape_pointer(name)}"
-                    ),
-                    "source_authority_ids": ["release:release.toml"],
-                    "installed_target": target,
-                }
-            )
+    for disposition in cast(Sequence[Mapping[str, object]], registry["dispositions"]):
+        if disposition["disposition"] != "excluded":
+            continue
+        candidate_id = str(disposition["candidate_id"])
+        resolution = resolutions[candidate_id]
+        detection = detections[str(resolution["detection_id"])]
+        exclusions.append(
+            {
+                "id": f"excluded:{candidate_id}",
+                "candidate_id": candidate_id,
+                "kind": "console-script",
+                "detector": str(registry["detector"]),
+                "disposition": "excluded",
+                "policy_id": disposition["policy_id"],
+                "reason": disposition["reason"],
+                "boundary_pointer": detection["source_pointer"],
+                "source_authority_ids": ["release:release.toml"],
+                "installed_target": detection["target"],
+            }
+        )
     return exclusions
 
 
-def _detector_meta_closure(projection: Mapping[str, object]) -> dict[str, object]:
-    boundaries = cast(Mapping[str, object], projection["boundaries"])
-    external = cast(Mapping[str, object], projection["external_contract"])
-    cli_names = set(cast(Mapping[str, object], external["cli"]))
-    python_units = {
-        str(surface["distribution"])
-        for surface in cast(Sequence[Mapping[str, object]], external["python"])
+def _excluded_python_packages(trace: Mapping[str, object]) -> list[dict[str, object]]:
+    registry = cast(Mapping[str, object], trace["python_registry"])
+    detections = {
+        f"python:{item['distribution']}:{item['module']}": item
+        for item in cast(Sequence[Mapping[str, object]], registry["detections"])
     }
+    return [
+        {
+            "id": f"excluded:{disposition['candidate_id']}",
+            "candidate_id": disposition["candidate_id"],
+            "kind": "python-package",
+            "detector": registry["detector"],
+            "disposition": "excluded",
+            "policy_id": disposition["policy_id"],
+            "reason": disposition["reason"],
+            "boundary_pointer": detections[str(disposition["candidate_id"])]["path"],
+            "source_authority_ids": [str(disposition["candidate_id"])],
+            "installed_target": detections[str(disposition["candidate_id"])]["module"],
+        }
+        for disposition in cast(Sequence[Mapping[str, object]], registry["dispositions"])
+        if disposition["disposition"] == "excluded"
+    ]
+
+
+def _detector_meta_closure(
+    projection: Mapping[str, object], trace: Mapping[str, object]
+) -> dict[str, object]:
+    boundaries = cast(Mapping[str, object], projection["boundaries"])
     channels: list[dict[str, object]] = []
     for component in cast(Sequence[Mapping[str, object]], boundaries["components"]):
         distribution = str(component["distribution"])
@@ -874,25 +853,40 @@ def _detector_meta_closure(projection: Mapping[str, object]) -> dict[str, object
                 "detector": "release-metadata",
             }
         )
-        if distribution in python_units:
-            channels.append(
-                {"id": f"python:{distribution}", "kind": "python", "detector": "python-export"}
-            )
-        for name in sorted(cast(Mapping[str, object], component["console_scripts"])):
-            channels.append(
-                {
-                    "id": f"console-script:{distribution}:{name}",
-                    "kind": "console-script",
-                    **(
-                        {"detector": "cli-tree"}
-                        if name in cli_names
-                        else {
-                            "disposition": "excluded",
-                            "policy_id": "exclusion/process-launcher-not-cli/v1",
-                        }
-                    ),
-                }
-            )
+    python_registry = cast(Mapping[str, object], trace["python_registry"])
+    python_dispositions = {
+        str(item["candidate_id"]): item
+        for item in cast(Sequence[Mapping[str, object]], python_registry["dispositions"])
+    }
+    for resolution in cast(Sequence[Mapping[str, object]], python_registry["resolutions"]):
+        candidate_id = str(resolution["candidate_id"])
+        disposition = python_dispositions[candidate_id]
+        channels.append(
+            {
+                "id": candidate_id,
+                "kind": "python",
+                "detector": python_registry["detector"],
+                "disposition": disposition["disposition"],
+                "policy_id": disposition["policy_id"],
+            }
+        )
+    console_registry = cast(Mapping[str, object], trace["console_script_registry"])
+    console_dispositions = {
+        str(item["candidate_id"]): item
+        for item in cast(Sequence[Mapping[str, object]], console_registry["dispositions"])
+    }
+    for resolution in cast(Sequence[Mapping[str, object]], console_registry["resolutions"]):
+        candidate_id = str(resolution["candidate_id"])
+        disposition = console_dispositions[candidate_id]
+        channels.append(
+            {
+                "id": candidate_id,
+                "kind": "console-script",
+                "detector": console_registry["detector"],
+                "disposition": disposition["disposition"],
+                "policy_id": disposition["policy_id"],
+            }
+        )
     for point in cast(Sequence[Mapping[str, object]], boundaries["entry_point_extensions"]):
         channels.append(
             {
@@ -925,9 +919,8 @@ def _detector_meta_closure(projection: Mapping[str, object]) -> dict[str, object
     detector_bindings: dict[str, list[str]] = defaultdict(list)
     exclusion_bindings: dict[str, list[str]] = defaultdict(list)
     for channel in channels:
-        if "detector" in channel:
-            detector_bindings[str(channel["detector"])].append(str(channel["id"]))
-        else:
+        detector_bindings[str(channel["detector"])].append(str(channel["id"]))
+        if channel.get("disposition") == "excluded":
             exclusion_bindings[str(channel["policy_id"])].append(str(channel["id"]))
     return {
         "schema": DETECTOR_CLOSURE_SCHEMA,
@@ -947,13 +940,56 @@ def _detector_meta_closure(projection: Mapping[str, object]) -> dict[str, object
                     ).items()
                 )
             ),
+            "protected": sum(item.get("disposition") == "protected" for item in channels),
             "excluded": sum(item.get("disposition") == "excluded" for item in channels),
             "missing": 0,
             "duplicate": len(ids) - len(set(ids)),
             "stale": 0,
-            "undecided": sum(("detector" in item) == ("disposition" in item) for item in channels),
+            "undecided": 0,
         },
     }
+
+
+def _validate_staged_registry(
+    registry: Mapping[str, object],
+    *,
+    label: str,
+    require_one_resolution_per_detection: bool,
+) -> None:
+    detections = cast(Sequence[Mapping[str, object]], registry["detections"])
+    candidates = cast(Sequence[Mapping[str, object]], registry["candidates"])
+    dispositions = cast(Sequence[Mapping[str, object]], registry["dispositions"])
+    detection_ids = [str(item["id"]) for item in detections]
+    candidate_ids = [str(item["id"]) for item in candidates]
+    disposition_ids = [str(item["candidate_id"]) for item in dispositions]
+    if (
+        len(detection_ids) != len(set(detection_ids))
+        or len(candidate_ids) != len(set(candidate_ids))
+        or len(disposition_ids) != len(set(disposition_ids))
+        or set(candidate_ids) != set(disposition_ids)
+    ):
+        raise ContractAtlasError(f"{label} discovery stages are incomplete or duplicated")
+    if require_one_resolution_per_detection:
+        resolutions = cast(Sequence[Mapping[str, object]], registry["resolutions"])
+        resolution_detection_ids = [str(item["detection_id"]) for item in resolutions]
+        resolution_candidate_ids = [str(item["candidate_id"]) for item in resolutions]
+        if (
+            len(resolution_detection_ids) != len(set(resolution_detection_ids))
+            or set(resolution_detection_ids) != set(detection_ids)
+            or set(resolution_candidate_ids) != set(candidate_ids)
+        ):
+            raise ContractAtlasError(f"{label} detection-to-candidate resolution is not exact")
+    coverage = cast(Mapping[str, object], registry["coverage"])
+    if (
+        coverage.get("detected") != len(detections)
+        or coverage.get("resolved") != len(cast(Sequence[object], registry["resolutions"]))
+        or coverage.get("protected")
+        != sum(item["disposition"] == "protected" for item in dispositions)
+        or coverage.get("excluded")
+        != sum(item["disposition"] == "excluded" for item in dispositions)
+        or coverage.get("undispositioned") != 0
+    ):
+        raise ContractAtlasError(f"{label} discovery coverage is stale")
 
 
 def _counts(
@@ -1971,9 +2007,9 @@ def _render_dossier(
                 "",
                 "### Configuration authority and bindings",
                 "",
-                "The declaration fixes normative ownership and classification. The parser "
-                "expression is the source-linked authority for the accepted domain and effective "
-                "default exercised by qualification.",
+                "The owning implementation defines the setting. The parser expression records "
+                "each independently discovered consumer binding and effective default exercised "
+                "by qualification.",
                 "",
                 "| Kind | Consumer | Source | Authority |",
                 "|---|---|---|---|",
@@ -3014,8 +3050,8 @@ def _render_atlas(
         f"[Freeze evidence]({_relative_link(exclusion_path, evidence_path)}) · "
         f"[Policies]({_relative_link(exclusion_path, policy_path)})",
         "",
-        "This page supports the ‘no more’ side of the audit by naming every discovered delivery "
-        "candidate intentionally excluded from the external CLI surface.",
+        "This page supports the ‘no more’ side of the audit by naming every discovered release "
+        "candidate intentionally excluded from freeze protection.",
         "",
         f"Excluded candidates: **{len(exclusions)}**",
         "",
@@ -3099,7 +3135,8 @@ def _render_atlas(
         "| Source authority | Applications | Executable location |",
         "|---|---:|---|",
     ]
-    for source_id, count in source_counts.items():
+    for source_id in source_index:
+        count = source_counts.get(source_id, 0)
         source_record = source_index[source_id]
         location = cast(Mapping[str, object], source_record.get("source", {}))
         bindings = cast(Sequence[Mapping[str, object]], source_record.get("bindings", ()))
@@ -3134,7 +3171,13 @@ def _render_atlas(
         Sequence[Mapping[str, object]], authority_registry["noncontractual_projection"]
     )
     configuration_registry = cast(Mapping[str, object], trace["configuration_registry"])
+    configuration_document_registry = cast(
+        Mapping[str, object], trace["configuration_document_registry"]
+    )
     configuration_counts = cast(Mapping[str, object], configuration_registry["counts"])
+    configuration_document_counts = cast(
+        Mapping[str, object], configuration_document_registry["counts"]
+    )
     configuration_coverage = cast(Mapping[str, object], configuration_registry["coverage"])
     configuration_dossiers: dict[str, str] = {}
     for element in elements:
@@ -3144,6 +3187,13 @@ def _render_atlas(
             value = pointer_value(projection, pointer)
             if isinstance(value, Mapping) and isinstance(value.get("id"), str):
                 configuration_dossiers[str(value["id"])] = str(element["dossier"])
+    configuration_document_dossiers = {
+        pointer.rsplit("/", 1)[-1].replace("~1", "/").replace("~0", "~"): str(element["dossier"])
+        for element in elements
+        if element["interface"] == "configuration"
+        for pointer in cast(Sequence[str], element["pointers"])
+        if pointer.startswith("/external_contract/configuration_documents/")
+    }
     configuration_lines = [
         "# Configuration ownership registry",
         "",
@@ -3151,7 +3201,7 @@ def _render_atlas(
         f"[Freeze evidence]({_relative_link(configuration_evidence_path, evidence_path)})",
         "",
         "This is the exhaustive discovery and reconciliation view. It does not own any "
-        "setting's semantics; every contractual entry links to its normative owner's dossier.",
+        "setting's semantics; every protected entry links to its normative owner's dossier.",
         "",
         "## Coverage",
         "",
@@ -3165,22 +3215,20 @@ def _render_atlas(
         "## Shape",
         "",
         f"Environment contracts: **{configuration_counts['contracts']}** · "
+        f"Configuration documents: **{configuration_document_counts['contracts']}** · "
         f"Unique names: **{configuration_counts['unique_environment_names']}** · "
-        f"Parameterized families: **{configuration_counts['patterns']}**",
+        f"Parameterized families: **{configuration_counts['patterns']}** · "
+        f"Raw implementation reads: **{configuration_counts['detections']}** · "
+        f"Explicit ambiguity resolutions: **{configuration_counts['resolution_exceptions']}**",
         "",
         *_table_counts(
             cast(Mapping[str, object], configuration_counts["by_owner"]), "Normative owner"
         ),
         "",
-        *_table_counts(
-            cast(Mapping[str, object], configuration_counts["by_classification"]),
-            "Classification",
-        ),
-        "",
         "## Exact environment contracts",
         "",
-        "| Normative owner | Setting | Consumers | Classification | Disposition | Source |",
-        "|---|---|---|---|---|---|",
+        "| Normative owner | Setting | Consumers | Default expressions | Source |",
+        "|---|---|---|---|---|",
     ]
     for record in cast(Sequence[Mapping[str, object]], configuration_registry["records"]):
         contract_id = str(record["id"])
@@ -3199,7 +3247,7 @@ def _render_atlas(
         configuration_lines.append(
             f"| `{_md(record['owner'])}` | {setting} | "
             f"`{_md(', '.join(cast(Sequence[str], record['consumers'])))}` | "
-            f"`{_md(record['classification'])}` | `{_md(record['disposition'])}` | "
+            f"`{_md(', '.join(cast(Sequence[str], record['default_expressions'])))}` | "
             f"[{_md(source_id)}]({source_link}) |"
         )
     patterns = cast(Sequence[Mapping[str, object]], configuration_registry["patterns"])
@@ -3209,9 +3257,8 @@ def _render_atlas(
                 "",
                 "## Parameterized families",
                 "",
-                "| Normative owner | Template | Consumers | Setting classifications | "
-                "Disposition |",
-                "|---|---|---|---|---|",
+                "| Normative owner | Template | Consumers | Settings |",
+                "|---|---|---|---|",
             ]
         )
         for pattern in patterns:
@@ -3222,17 +3269,42 @@ def _render_atlas(
                 if dossier is not None
                 else f"`{_md(pattern['template'])}`"
             )
-            classifications = ", ".join(
-                f"{name}: {classification}"
-                for name, classification in cast(
-                    Mapping[str, str], pattern["classifications"]
-                ).items()
-            )
             configuration_lines.append(
                 f"| `{_md(pattern['owner'])}` | {template} | "
                 f"`{_md(', '.join(cast(Sequence[str], pattern['consumers'])))}` | "
-                f"{_md(classifications)} | `{_md(pattern['disposition'])}` |"
+                f"`{_md(', '.join(cast(Sequence[str], pattern['settings'])))}` |"
             )
+    configuration_lines.extend(
+        [
+            "",
+            "## Exact configuration documents",
+            "",
+            "| Normative owner | Configuration authority | Consumers | Input shape | Source |",
+            "|---|---|---|---|---|",
+        ]
+    )
+    for record in cast(
+        Sequence[Mapping[str, object]], configuration_document_registry["candidates"]
+    ):
+        contract_id = str(record["id"])
+        dossier = configuration_document_dossiers.get(contract_id)
+        authority = (
+            f"[{_md(contract_id)}]({_relative_link(configuration_evidence_path, dossier)})"
+            if dossier is not None
+            else f"`{_md(contract_id)}`"
+        )
+        source_id = f"configuration:{contract_id}"
+        source_link = _anchor_link(
+            configuration_evidence_path,
+            source_evidence_path,
+            _source_anchor(source_id),
+        )
+        configuration_lines.append(
+            f"| `{_md(record['owner'])}` | {authority} | "
+            f"`{_md(', '.join(cast(Sequence[str], record['consumers'])))}` | "
+            f"`{_md(', '.join(cast(Sequence[str], record['input_shapes'])))}` | "
+            f"[{_md(source_id)}]({source_link}) |"
+        )
     files[configuration_evidence_path] = ("\n".join(configuration_lines).rstrip() + "\n").encode()
 
     authority_lines = [
@@ -3396,6 +3468,10 @@ def _render_atlas(
         "",
         "| Measure | Value |",
         "|---|---:|",
+        f"| Detected constructs | {len(cast(Sequence[object], discovery['detections']))} |",
+        f"| Exact resolutions | {len(cast(Sequence[object], discovery['resolutions']))} |",
+        f"| Resolved candidates | {len(cast(Sequence[object], discovery['candidates']))} |",
+        f"| Explicit dispositions | {len(cast(Sequence[object], discovery['dispositions']))} |",
         f"| Contract elements | {root_counts['contract_elements']} |",
         f"| Extent decisions | {root_counts['extent_decisions']} |",
         f"| Explicit exclusions | {root_counts['excluded_candidates']} |",
@@ -3562,10 +3638,7 @@ def build_atlas(
     encoded_trace, trace_integer_paths = _encoded_json(trace)
     normalized_projection = cast(dict[str, object], encoded_projection)
     normalized_trace = cast(dict[str, object], encoded_trace)
-    elements = [
-        *_boundary_elements(normalized_projection),
-        *_external_elements(normalized_projection, normalized_trace),
-    ]
+    elements = _external_elements(normalized_projection, normalized_trace)
     _attach_extent_decisions(elements, normalized_projection)
     _link_operation_parity(elements, normalized_projection)
     noncontractual_projection = _validate_authority_registry(
@@ -3576,7 +3649,10 @@ def build_atlas(
         raise ContractAtlasError("semantic contract element identities are not unique")
     _assign_dossiers(elements)
     elements.sort(key=lambda item: str(item["id"]))
-    exclusions = _excluded_launchers(normalized_projection)
+    exclusions = [
+        *_excluded_launchers(normalized_trace),
+        *_excluded_python_packages(normalized_trace),
+    ]
     source_index = _source_index(normalized_trace)
     for item in [*elements, *exclusions]:
         missing = set(cast(Sequence[str], item["source_authority_ids"])) - set(source_index)
@@ -3594,32 +3670,98 @@ def build_atlas(
     if not used_policy_ids <= declared_policy_ids:
         undeclared = sorted(used_policy_ids - declared_policy_ids)
         raise ContractAtlasError(f"contract elements use undeclared policies: {undeclared}")
+    detections = [
+        {
+            "id": f"detection:{item['id']}",
+            "detector": item["detector"],
+            "source_authority_ids": item["source_authority_ids"],
+            "pointers": item["pointers"],
+        }
+        for item in elements
+    ] + [
+        {
+            "id": f"detection:{item['candidate_id']}",
+            "detector": item["detector"],
+            "source_authority_ids": item["source_authority_ids"],
+            "source": item["boundary_pointer"],
+        }
+        for item in exclusions
+    ]
+    resolutions = [
+        {
+            "detection_id": f"detection:{item['id']}",
+            "candidate_id": f"candidate:{item['id']}",
+            "authority": item["authority"],
+            "interface": item["interface"],
+            "element_id": item["id"],
+        }
+        for item in elements
+    ] + [
+        {
+            "detection_id": f"detection:{item['candidate_id']}",
+            "candidate_id": item["candidate_id"],
+            "kind": item["kind"],
+        }
+        for item in exclusions
+    ]
     candidates = [
         {
             "id": f"candidate:{item['id']}",
             "detector": item["detector"],
-            "disposition": "contractual",
             "element_id": item["id"],
             "source_authority_ids": item["source_authority_ids"],
         }
         for item in elements
+    ] + [
+        {
+            "id": item["candidate_id"],
+            "detector": item["detector"],
+            "source_authority_ids": item["source_authority_ids"],
+        }
+        for item in exclusions
     ]
-    meta_closure = _detector_meta_closure(normalized_projection)
+    dispositions = [
+        {
+            "candidate_id": f"candidate:{item['id']}",
+            "disposition": "protected",
+            "policy_ids": item["policy_ids"],
+        }
+        for item in elements
+    ] + [
+        {
+            "candidate_id": item["candidate_id"],
+            "disposition": "excluded",
+            "policy_ids": [item["policy_id"]],
+        }
+        for item in exclusions
+    ]
+    meta_closure = _detector_meta_closure(normalized_projection, normalized_trace)
     projection_coverage = _projection_coverage(
         elements, normalized_projection, noncontractual_projection
     )
+    detection_ids = [str(item["id"]) for item in detections]
+    resolution_detection_ids = [str(item["detection_id"]) for item in resolutions]
+    candidate_ids = [str(item["id"]) for item in candidates]
+    disposition_candidate_ids = [str(item["candidate_id"]) for item in dispositions]
     discovery = {
         "detectors": list(DETECTORS),
         "meta_closure": meta_closure,
+        "detections": detections,
+        "resolutions": resolutions,
         "candidates": candidates,
+        "dispositions": dispositions,
         "exclusions": exclusions,
         "projection_coverage": projection_coverage,
         "anomalies": {
-            "missing": projection_coverage["missing"],
-            "duplicate": len(candidates) - len({str(item["id"]) for item in candidates}),
-            "stale": projection_coverage["stale"],
-            "undecided": 0,
-            "multiply_disposed": 0,
+            "missing": cast(int, projection_coverage["missing"])
+            + len(set(detection_ids) - set(resolution_detection_ids)),
+            "duplicate": (len(detection_ids) - len(set(detection_ids)))
+            + (len(candidate_ids) - len(set(candidate_ids))),
+            "stale": cast(int, projection_coverage["stale"])
+            + len(set(resolution_detection_ids) - set(detection_ids)),
+            "undecided": len(set(candidate_ids) - set(disposition_candidate_ids)),
+            "multiply_disposed": len(disposition_candidate_ids)
+            - len(set(disposition_candidate_ids)),
             "multiply_represented": projection_coverage["multiply_represented"],
         },
     }
@@ -3627,14 +3769,9 @@ def build_atlas(
         raise ContractAtlasError(
             f"semantic atlas does not exactly own the machine projection: {discovery['anomalies']}"
         )
-    semantic_identity = {
-        "schema": CONTRACT_IDENTITY_SCHEMA,
-        "series": normalized_projection["series"],
-        "boundaries": normalized_projection["boundaries"],
-        "external_contract": normalized_projection["external_contract"],
-        "policies": {key: value for key, value in policies.items() if key != "exclusion"},
-        "unsafe_integer_paths": projection_integer_paths,
-    }
+    semantic_identity = _semantic_identity(
+        normalized_projection, policies, projection_integer_paths
+    )
     coverage_identity = {
         "schema": COVERAGE_IDENTITY_SCHEMA,
         "discovery": discovery,
@@ -3958,14 +4095,37 @@ def validate_atlas(
     )
     if discovery["projection_coverage"] != observed_projection_coverage:
         raise ContractAtlasError("projection-to-atlas coverage is stale")
+    detections = cast(Sequence[Mapping[str, object]], discovery["detections"])
+    resolutions = cast(Sequence[Mapping[str, object]], discovery["resolutions"])
     candidates = cast(Sequence[Mapping[str, object]], discovery["candidates"])
-    candidate_elements = [str(item.get("element_id")) for item in candidates]
+    dispositions = cast(Sequence[Mapping[str, object]], discovery["dispositions"])
+    protected_candidates = {
+        str(item["candidate_id"]) for item in dispositions if item["disposition"] == "protected"
+    }
+    excluded_candidates = {
+        str(item["candidate_id"]) for item in dispositions if item["disposition"] == "excluded"
+    }
+    candidate_ids = [str(item["id"]) for item in candidates]
+    detection_ids = [str(item["id"]) for item in detections]
+    resolved_detection_ids = [str(item["detection_id"]) for item in resolutions]
+    resolved_candidate_ids = [str(item["candidate_id"]) for item in resolutions]
+    candidate_elements = [str(item["element_id"]) for item in candidates if "element_id" in item]
     if (
         len(candidate_elements) != len(set(candidate_elements))
         or set(candidate_elements) != set(ids)
-        or any(item.get("disposition") != "contractual" for item in candidates)
+        or protected_candidates != {f"candidate:{identity}" for identity in ids}
+        or excluded_candidates
+        != {
+            str(item["candidate_id"])
+            for item in cast(Sequence[Mapping[str, object]], discovery["exclusions"])
+        }
+        or set(candidate_ids) != protected_candidates | excluded_candidates
+        or len(detection_ids) != len(set(detection_ids))
+        or len(resolved_detection_ids) != len(set(resolved_detection_ids))
+        or set(detection_ids) != set(resolved_detection_ids)
+        or set(candidate_ids) != set(resolved_candidate_ids)
     ):
-        raise ContractAtlasError("contractual discovery candidates do not match atlas elements")
+        raise ContractAtlasError("discovery candidates and dispositions do not match the atlas")
 
     source_index = _source_index(trace_value)
     checked_sources = {
@@ -3975,25 +4135,68 @@ def validate_atlas(
     if checked_sources != source_index:
         raise ContractAtlasError("source authority index is stale")
     configuration_registry = cast(Mapping[str, object], trace_value["configuration_registry"])
+    configuration_document_registry = cast(
+        Mapping[str, object], trace_value["configuration_document_registry"]
+    )
     configuration_coverage = cast(Mapping[str, object], configuration_registry["coverage"])
     if any(configuration_coverage.values()):
         raise ContractAtlasError("configuration registry contains unresolved ownership anomalies")
+    _validate_staged_registry(
+        cast(Mapping[str, object], trace_value["python_registry"]),
+        label="Python package",
+        require_one_resolution_per_detection=True,
+    )
+    _validate_staged_registry(
+        cast(Mapping[str, object], trace_value["console_script_registry"]),
+        label="console-script",
+        require_one_resolution_per_detection=True,
+    )
+    _validate_staged_registry(
+        configuration_document_registry,
+        label="configuration-document",
+        require_one_resolution_per_detection=True,
+    )
+    configuration_detection_ids = {
+        str(item["id"])
+        for item in cast(Sequence[Mapping[str, object]], configuration_registry["detections"])
+    }
+    configuration_resolved_detection_ids = {
+        str(identity)
+        for record in cast(Sequence[Mapping[str, object]], configuration_registry["records"])
+        for identity in cast(Sequence[str], record["detection_ids"])
+    } | {
+        str(item["detection_id"])
+        for item in cast(
+            Sequence[Mapping[str, object]], configuration_registry["resolution_exceptions"]
+        )
+    }
+    configuration_candidate_ids = {
+        str(item["id"])
+        for item in cast(Sequence[Mapping[str, object]], configuration_registry["candidates"])
+    }
+    configuration_disposition_ids = {
+        str(item["candidate_id"])
+        for item in cast(Sequence[Mapping[str, object]], configuration_registry["dispositions"])
+    }
+    configuration_resolution_ids = [
+        str(item["detection_id"])
+        for item in cast(Sequence[Mapping[str, object]], configuration_registry["resolutions"])
+    ]
+    if (
+        configuration_detection_ids != configuration_resolved_detection_ids
+        or len(configuration_resolution_ids) != len(set(configuration_resolution_ids))
+        or set(configuration_resolution_ids) != configuration_detection_ids
+        or configuration_candidate_ids != configuration_disposition_ids
+    ):
+        raise ContractAtlasError("configuration discovery stages are not exact")
     external = cast(Mapping[str, object], projection_value["external_contract"])
     projected_configuration = [
         *cast(Sequence[Mapping[str, object]], external["configuration_environment"]),
         *cast(Sequence[Mapping[str, object]], external["configuration_environment_patterns"]),
     ]
     registry_configuration = [
-        *(
-            record
-            for record in cast(Sequence[Mapping[str, object]], configuration_registry["records"])
-            if record["disposition"] == "contractual"
-        ),
-        *(
-            record
-            for record in cast(Sequence[Mapping[str, object]], configuration_registry["patterns"])
-            if record["disposition"] == "contractual"
-        ),
+        *cast(Sequence[Mapping[str, object]], configuration_registry["records"]),
+        *cast(Sequence[Mapping[str, object]], configuration_registry["patterns"]),
     ]
     if {str(record["id"]) for record in projected_configuration} != {
         str(record["id"]) for record in registry_configuration
@@ -4009,6 +4212,17 @@ def validate_atlas(
     }
     if configuration_element_ids != {str(record["id"]) for record in projected_configuration}:
         raise ContractAtlasError("configuration registry does not have exact atlas ownership")
+    projected_configuration_documents = set(
+        cast(Mapping[str, object], external["configuration_documents"])
+    )
+    discovered_configuration_documents = {
+        str(item["id"])
+        for item in cast(
+            Sequence[Mapping[str, object]], configuration_document_registry["candidates"]
+        )
+    }
+    if projected_configuration_documents != discovered_configuration_documents:
+        raise ContractAtlasError("configuration-document registry differs from external contract")
     exclusions = cast(Sequence[Mapping[str, object]], discovery["exclusions"])
     policies = cast(Mapping[str, object], root["policies"])
     declared_policy_ids = {
@@ -4339,14 +4553,11 @@ def validate_atlas(
                 if f"]({link})" not in page:
                     raise ContractAtlasError(f"semantic-family index omits dossier: {item['id']}")
 
-    semantic_identity = {
-        "schema": CONTRACT_IDENTITY_SCHEMA,
-        "series": projection_value["series"],
-        "boundaries": projection_value["boundaries"],
-        "external_contract": projection_value["external_contract"],
-        "policies": {key: value for key, value in policies.items() if key != "exclusion"},
-        "unsafe_integer_paths": root["projection_unsafe_integer_paths"],
-    }
+    semantic_identity = _semantic_identity(
+        projection_value,
+        policies,
+        cast(Sequence[str], root["projection_unsafe_integer_paths"]),
+    )
     coverage_identity = {
         "schema": COVERAGE_IDENTITY_SCHEMA,
         "discovery": discovery,
