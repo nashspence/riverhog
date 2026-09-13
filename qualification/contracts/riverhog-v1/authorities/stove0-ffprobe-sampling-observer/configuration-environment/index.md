@@ -6,8 +6,7 @@ Contract elements: **8** · Extent decisions: **0**
 
 | Family | Count |
 |---|---:|
-| <a id="f-1d31d466df"></a>`credential` | 2 |
-| <a id="f-bdc14c36c2"></a>`identity` | 6 |
+| <a id="f-d7a496f867"></a>`settings` | 8 |
 
 | Policy | Count |
 |---|---:|
@@ -17,11 +16,11 @@ Contract elements: **8** · Extent decisions: **0**
 
 | Dossier | Family | Extent decisions |
 |---|---|---:|
-| [STOVE0_FFPROBE_SAMPLING_OBSERVER_TOKEN](stove0-ffprobe-sampling-observer-token.md) | `credential` | 0 |
-| [STOVE0_FFPROBE_SAMPLING_OBSERVER_TOKEN_FILE](stove0-ffprobe-sampling-observer-token-file.md) | `credential` | 0 |
-| [STOVE0_FFPROBE_BIN](stove0-ffprobe-bin.md) | `identity` | 0 |
-| [STOVE0_FFPROBE_SAMPLING_OBSERVER_HOST](stove0-ffprobe-sampling-observer-host.md) | `identity` | 0 |
-| [STOVE0_FFPROBE_SAMPLING_OBSERVER_IMAGE_DIGEST](stove0-ffprobe-sampling-observer-image-digest.md) | `identity` | 0 |
-| [STOVE0_FFPROBE_SAMPLING_OBSERVER_PORT](stove0-ffprobe-sampling-observer-port.md) | `identity` | 0 |
-| [STOVE0_FFPROBE_SAMPLING_OBSERVER_SOURCE_REVISION](stove0-ffprobe-sampling-observer-source-revision.md) | `identity` | 0 |
-| [STOVE0_FFPROBE_SAMPLING_OBSERVER_WORKSPACE](stove0-ffprobe-sampling-observer-workspace.md) | `identity` | 0 |
+| [STOVE0_FFPROBE_BIN](stove0-ffprobe-bin.md) | `settings` | 0 |
+| [STOVE0_FFPROBE_SAMPLING_OBSERVER_HOST](stove0-ffprobe-sampling-observer-host.md) | `settings` | 0 |
+| [STOVE0_FFPROBE_SAMPLING_OBSERVER_IMAGE_DIGEST](stove0-ffprobe-sampling-observer-image-digest.md) | `settings` | 0 |
+| [STOVE0_FFPROBE_SAMPLING_OBSERVER_PORT](stove0-ffprobe-sampling-observer-port.md) | `settings` | 0 |
+| [STOVE0_FFPROBE_SAMPLING_OBSERVER_SOURCE_REVISION](stove0-ffprobe-sampling-observer-source-revision.md) | `settings` | 0 |
+| [STOVE0_FFPROBE_SAMPLING_OBSERVER_TOKEN](stove0-ffprobe-sampling-observer-token.md) | `settings` | 0 |
+| [STOVE0_FFPROBE_SAMPLING_OBSERVER_TOKEN_FILE](stove0-ffprobe-sampling-observer-token-file.md) | `settings` | 0 |
+| [STOVE0_FFPROBE_SAMPLING_OBSERVER_WORKSPACE](stove0-ffprobe-sampling-observer-workspace.md) | `settings` | 0 |

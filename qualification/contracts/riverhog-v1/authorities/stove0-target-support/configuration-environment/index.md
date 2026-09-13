@@ -6,7 +6,7 @@ Contract elements: **1** · Extent decisions: **1**
 
 | Family | Count |
 |---|---:|
-| <a id="f-34051fda6d"></a>`runtime` | 1 |
+| <a id="f-9bf40b3a0f"></a>`settings` | 1 |
 
 | Policy | Count |
 |---|---:|
@@ -17,4 +17,4 @@ Contract elements: **1** · Extent decisions: **1**
 
 | Dossier | Family | Extent decisions |
 |---|---|---:|
-| [STOVE0_TARGET_TERMINAL_STATE_RETENTION_SECONDS](stove0-target-terminal-state-retention-seconds.md) | `runtime` | 1 |
+| [STOVE0_TARGET_TERMINAL_STATE_RETENTION_SECONDS](stove0-target-terminal-state-retention-seconds.md) | `settings` | 1 |

@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: configuration-environment:riverhog-client:riverhog-download-timeout-seconds:22678d4f8d -->
+<!-- contract-element: configuration-environment:riverhog-client:riverhog-download-timeout-seconds:c180953b6d -->
 
 Exact externally visible contract owned by this semantic dossier.
 
@@ -10,21 +10,21 @@ Exact externally visible contract owned by this semantic dossier.
 |---|---|
 | Authority | [riverhog-client](../index.md) |
 | Interface | [configuration-environment](index.md) |
-| Family | [runtime](index.md#f-e4b312fabf) |
+| Family | [settings](index.md#f-7ff1624ad7) |
 | Contract elements | 1 |
 | Extent decisions | 1 |
 
 ## External contract
 
-<a id="s-11a73a67cc"></a>
+<a id="s-d9dcf35fac"></a>
 | Field | Shape |
 |---|---|
-| <a id="s-ef6fbaebe3"></a>`classification` | "runtime" |
-| <a id="s-56b56d915a"></a>`consumers` | ["riverhog-client"] |
-| <a id="s-79743ce45b"></a>`disposition` | "contractual" |
-| <a id="s-05a1ce1ce4"></a>`id` | "riverhog-client:environment:RIVERHOG_DOWNLOAD_TIMEOUT_SECONDS" |
-| <a id="s-514e7dfc94"></a>`name` | "RIVERHOG_DOWNLOAD_TIMEOUT_SECONDS" |
-| <a id="s-bba7a7ca74"></a>`owner` | "riverhog-client" |
+| <a id="s-10a1d823b2"></a>`consumers` | ["riverhog-client"] |
+| <a id="s-49794b453e"></a>`default_expressions` | ["unset"] |
+| <a id="s-4ed1357761"></a>`id` | "riverhog-client:environment:RIVERHOG_DOWNLOAD_TIMEOUT_SECONDS" |
+| <a id="s-6a48654def"></a>`input_shape` | "environment-string" |
+| <a id="s-632be535e2"></a>`name` | "RIVERHOG_DOWNLOAD_TIMEOUT_SECONDS" |
+| <a id="s-0341ad22d1"></a>`owner` | "riverhog-client" |
 
 ### Progression, limits, and lifecycle
 
@@ -34,12 +34,12 @@ Shared facts for every subject below: configuration="RIVERHOG_DOWNLOAD_TIMEOUT_S
 
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
-| [RIVERHOG_DOWNLOAD_TIMEOUT_SECONDS](#s-11a73a67cc) | `value · configured-value · operational_policy` | shared above |
+| [RIVERHOG_DOWNLOAD_TIMEOUT_SECONDS](#s-d9dcf35fac) | `value · configured-value · operational_policy` | shared above |
 
 ## Governing policies
 
-- <a id="pa-724640aa4a"></a>[compatibility/configuration/v1](../../../policies/index.md#p-8dc08bb461)
-- <a id="pa-54f597582a"></a>[extent-rule/configured-capacity/v1](../../../policies/index.md#p-3ebc61fc99)
+- <a id="pa-be99dda840"></a>[compatibility/configuration/v1](../../../policies/index.md#p-8dc08bb461)
+- <a id="pa-9beec59c8b"></a>[extent-rule/configured-capacity/v1](../../../policies/index.md#p-3ebc61fc99)
 
 ## Evidence
 
@@ -50,37 +50,37 @@ Shared facts for every subject below: configuration="RIVERHOG_DOWNLOAD_TIMEOUT_S
 
 ### Executable sources
 
-- [configuration-environment:inventory](../../../evidence/sources.md#src-26b33461d2) — `qualification/configuration-contract.toml`
 - [configuration-environment:riverhog-client:RIVERHOG_DOWNLOAD_TIMEOUT_SECONDS](../../../evidence/sources.md#src-7d03d4b83f) — `packages/riverhog-client/src/riverhog_client/client.py`
 - [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
 
 ### Configuration authority and bindings
 
-The declaration fixes normative ownership and classification. The parser expression is the source-linked authority for the accepted domain and effective default exercised by qualification.
+The owning implementation defines the setting. The parser expression records each independently discovered consumer binding and effective default exercised by qualification.
 
 | Kind | Consumer | Source | Authority |
 |---|---|---|---|
-| declaration | — | `qualification/configuration-contract.toml` | `/environment/5/names` |
-| parser | `riverhog-client` | `packages/riverhog-client/src/riverhog_client/client.py` | `_timeout_seconds('RIVERHOG_DOWNLOAD_TIMEOUT_SECONDS', _DOWNLOAD_TIMEOUT_SECONDS)` |
+| parser | `riverhog-client` | `packages/riverhog-client/src/riverhog_client/client.py` | `os.getenv(env_name)` |
 
 ### Machine authority
 
-- `/external_contract/configuration_environment/13`
+- `/external_contract/configuration_environment/16`
 
 ### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 43959cebd02589540f5841073acb1b449c991a220bd6b6382393d00431d9e1bb -->
+<!-- exact-contract-value: ff0559c69365382acfe7ffc1902e0f49f9136e33c6baa6af39f9b95563780f8d -->
 
 ```json
 {
-  "classification": "runtime",
   "consumers": [
     "riverhog-client"
   ],
-  "disposition": "contractual",
+  "default_expressions": [
+    "unset"
+  ],
   "id": "riverhog-client:environment:RIVERHOG_DOWNLOAD_TIMEOUT_SECONDS",
+  "input_shape": "environment-string",
   "name": "RIVERHOG_DOWNLOAD_TIMEOUT_SECONDS",
   "owner": "riverhog-client"
 }

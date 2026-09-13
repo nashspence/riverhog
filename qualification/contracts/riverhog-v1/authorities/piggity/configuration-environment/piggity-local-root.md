@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: configuration-environment:piggity:piggity-local-root:08698a98e6 -->
+<!-- contract-element: configuration-environment:piggity:piggity-local-root:48148cab33 -->
 
 Exact externally visible contract owned by this semantic dossier.
 
@@ -10,25 +10,25 @@ Exact externally visible contract owned by this semantic dossier.
 |---|---|
 | Authority | [piggity](../index.md) |
 | Interface | [configuration-environment](index.md) |
-| Family | [identity](index.md#f-5718a6415e) |
+| Family | [settings](index.md#f-63bc29edfb) |
 | Contract elements | 1 |
 | Extent decisions | 0 |
 
 ## External contract
 
-<a id="s-bf86dd537b"></a>
+<a id="s-70ab20d602"></a>
 | Field | Shape |
 |---|---|
-| <a id="s-5051f90947"></a>`classification` | "identity" |
-| <a id="s-98d6331adc"></a>`consumers` | ["piggity"] |
-| <a id="s-f518188ae9"></a>`disposition` | "contractual" |
-| <a id="s-7ab9da7b1b"></a>`id` | "piggity:environment:PIGGITY_LOCAL_ROOT" |
-| <a id="s-ffbf567bef"></a>`name` | "PIGGITY_LOCAL_ROOT" |
-| <a id="s-8d1db45f77"></a>`owner` | "piggity" |
+| <a id="s-cf5ca173ed"></a>`consumers` | ["piggity"] |
+| <a id="s-ba39d61b87"></a>`default_expressions` | ["''"] |
+| <a id="s-3b7a45f265"></a>`id` | "piggity:environment:PIGGITY_LOCAL_ROOT" |
+| <a id="s-0cfd103afc"></a>`input_shape` | "environment-string" |
+| <a id="s-e26009ba61"></a>`name` | "PIGGITY_LOCAL_ROOT" |
+| <a id="s-ba143c7f61"></a>`owner` | "piggity" |
 
 ## Governing policies
 
-- <a id="pa-fa21e0b90a"></a>[compatibility/configuration/v1](../../../policies/index.md#p-8dc08bb461)
+- <a id="pa-3471f05d94"></a>[compatibility/configuration/v1](../../../policies/index.md#p-8dc08bb461)
 
 ## Evidence
 
@@ -39,37 +39,37 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Executable sources
 
-- [configuration-environment:inventory](../../../evidence/sources.md#src-26b33461d2) — `qualification/configuration-contract.toml`
 - [configuration-environment:piggity:PIGGITY_LOCAL_ROOT](../../../evidence/sources.md#src-7c4314c2cb) — `reference/riverhog/applications/piggity/src/piggity/local.py`
 - [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
 
 ### Configuration authority and bindings
 
-The declaration fixes normative ownership and classification. The parser expression is the source-linked authority for the accepted domain and effective default exercised by qualification.
+The owning implementation defines the setting. The parser expression records each independently discovered consumer binding and effective default exercised by qualification.
 
 | Kind | Consumer | Source | Authority |
 |---|---|---|---|
-| declaration | — | `qualification/configuration-contract.toml` | `/environment/1/names` |
 | parser | `piggity` | `reference/riverhog/applications/piggity/src/piggity/local.py` | `os.getenv('PIGGITY_LOCAL_ROOT', '')` |
 
 ### Machine authority
 
-- `/external_contract/configuration_environment/3`
+- `/external_contract/configuration_environment/6`
 
 ### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 5374e148c1027e67e696399b9ae11740c80e71c7d4e59f6d7fe4b109895dbf72 -->
+<!-- exact-contract-value: 4a3db9f691d77c059197085f0e155b0c0412bb63df1d186355ba4bbd400139e9 -->
 
 ```json
 {
-  "classification": "identity",
   "consumers": [
     "piggity"
   ],
-  "disposition": "contractual",
+  "default_expressions": [
+    "''"
+  ],
   "id": "piggity:environment:PIGGITY_LOCAL_ROOT",
+  "input_shape": "environment-string",
   "name": "PIGGITY_LOCAL_ROOT",
   "owner": "piggity"
 }

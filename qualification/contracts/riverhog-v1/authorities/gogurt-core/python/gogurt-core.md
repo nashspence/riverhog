@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: python:gogurt-core:gogurt-core:a7d0d1dfa2 -->
+<!-- contract-element: python:gogurt-core:gogurt-core:15a56bbb9b -->
 
 Exact externally visible contract owned by this semantic dossier.
 
@@ -16,16 +16,17 @@ Exact externally visible contract owned by this semantic dossier.
 
 ## External contract
 
-<a id="s-bf61041e8a"></a>
+<a id="s-06ea1743bf"></a>
 | Field | Shape |
 |---|---|
-| <a id="s-9bd8773bba"></a>`distribution` | "gogurt-core" |
-| <a id="s-0cb1aa9232"></a>`exports` | additional keys=`DEFAULT_GOGURT_CONFIG_FILENAME`, `GOGURT_EMOJI`, `GOGURT_MOUNTED_VOLUME_PROVIDER_BINDING_FORMAT`, `GOGURT_MOUNTED_VOLUME_PROVIDER_ENTRY_POINT_GROUP`, `GOGURT_PROVIDER_REFERENCE_FORMAT`, `GOGURT_ROUTES_SCHEMA`, `GOGURT_ROUTE_MARKER_FORMAT`, `GOGURT_ROUTE_PATTERN`, `GogurtAction`, `GogurtProviderKind`, `GogurtProviderReference`, `GogurtRouteMarker`, `MAX_GOGURT_INTERVAL_SECONDS`, `MAX_GOGURT_MARKER_IDENTITY_CHARS`, `MIN_GOGURT_INTERVAL_SECONDS`, `MountDiscovery`, `MountedMarkerObservation`, `MountedVolumeAccess`, `MountedVolumeProvider`, `MountedVolumeProviderBinding`, `PathInput`, `default_gogurt_config_file`, `execute_gogurt_action`, `iter_new_mounts`, `load_gogurt_actions`, `plan_gogurt_action`, `plan_gogurt_marker`, `revalidate_gogurt_action`, `route_for_gogurt_marker`, `validate_gogurt_action_executables`, `validate_gogurt_interval`, `write_gogurt_marker` |
-| <a id="s-0cfe90ada5"></a>`module` | "gogurt_core" |
+| <a id="s-c111b9892e"></a>`candidate_id` | "python:gogurt-core:gogurt_core" |
+| <a id="s-eb2aec503d"></a>`distribution` | "gogurt-core" |
+| <a id="s-e5bb74c62c"></a>`exports` | additional keys=`DEFAULT_GOGURT_CONFIG_FILENAME`, `GOGURT_EMOJI`, `GOGURT_MOUNTED_VOLUME_PROVIDER_BINDING_FORMAT`, `GOGURT_MOUNTED_VOLUME_PROVIDER_ENTRY_POINT_GROUP`, `GOGURT_PROVIDER_REFERENCE_FORMAT`, `GOGURT_ROUTES_SCHEMA`, `GOGURT_ROUTE_MARKER_FORMAT`, `GOGURT_ROUTE_PATTERN`, `GogurtAction`, `GogurtProviderKind`, `GogurtProviderReference`, `GogurtRouteMarker`, `MAX_GOGURT_INTERVAL_SECONDS`, `MAX_GOGURT_MARKER_IDENTITY_CHARS`, `MIN_GOGURT_INTERVAL_SECONDS`, `MountDiscovery`, `MountedMarkerObservation`, `MountedVolumeAccess`, `MountedVolumeProvider`, `MountedVolumeProviderBinding`, `PathInput`, `default_gogurt_config_file`, `execute_gogurt_action`, `iter_new_mounts`, `load_gogurt_actions`, `plan_gogurt_action`, `plan_gogurt_marker`, `revalidate_gogurt_action`, `route_for_gogurt_marker`, `validate_gogurt_action_executables`, `validate_gogurt_interval`, `write_gogurt_marker` |
+| <a id="s-dfedde9b77"></a>`module` | "gogurt_core" |
 
 ## Governing policies
 
-- <a id="pa-6ae383a932"></a>[compatibility/python-api/v1](../../../policies/index.md#p-e574772ba5)
+- <a id="pa-a3cfa60764"></a>[compatibility/python-api/v1](../../../policies/index.md#p-e574772ba5)
 
 ## Evidence
 
@@ -37,20 +38,21 @@ Exact externally visible contract owned by this semantic dossier.
 ### Executable sources
 
 - [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
-- [python:gogurt-core](../../../evidence/sources.md#src-13281d4333) — `reference/gogurt/packages/core/src/gogurt_core/__init__.py::<module>`
+- [python:gogurt-core:gogurt_core](../../../evidence/sources.md#src-e253e4a684) — `reference/gogurt/packages/core/src/gogurt_core/__init__.py`
 
 ### Machine authority
 
-- `/external_contract/python/13`
+- `/external_contract/python/0`
 
 ### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: d8d6b55970c60b15013cb6be9dbf5df46e20d9a05e50c37ef09b7400e91c3934 -->
+<!-- exact-contract-value: 9c3c86647087e0006be2343c9d3db17ee9ad510194f5cc17194df008c349b304 -->
 
 ```json
 {
+  "candidate_id": "python:gogurt-core:gogurt_core",
   "distribution": "gogurt-core",
   "exports": {
     "DEFAULT_GOGURT_CONFIG_FILENAME": {
@@ -144,7 +146,7 @@ The following JSON is the complete value owned at each machine-authority pointer
         }
       ],
       "kind": "class",
-      "signature": "(route: 'str', command: 'tuple[str, ...]') -> None"
+      "signature": "\"(route: 'str', command: 'tuple[str, ...]') -> None\""
     },
     "GogurtProviderKind": {
       "kind": "type-alias",
@@ -177,14 +179,14 @@ The following JSON is the complete value owned at each machine-authority pointer
       "members": {
         "as_dict": {
           "kind": "method",
-          "signature": "(self) -> 'dict[str, str]'"
+          "signature": "\"(self) -> 'dict[str, str]'\""
         },
         "from_mapping": {
           "kind": "classmethod",
-          "signature": "(cls, value: 'object') -> 'GogurtProviderReference'"
+          "signature": "\"(cls, value: 'object') -> 'GogurtProviderReference'\""
         }
       },
-      "signature": "(kind: 'GogurtProviderKind', name: 'str', provider_id: 'str', format: 'str' = 'gogurt-provider-reference/v1') -> None"
+      "signature": "\"(kind: 'GogurtProviderKind', name: 'str', provider_id: 'str', format: 'str' = 'gogurt-provider-reference/v1') -> None\""
     },
     "GogurtRouteMarker": {
       "fields": [
@@ -203,14 +205,14 @@ The following JSON is the complete value owned at each machine-authority pointer
       "members": {
         "as_dict": {
           "kind": "method",
-          "signature": "(self) -> 'dict[str, str]'"
+          "signature": "\"(self) -> 'dict[str, str]'\""
         },
         "from_mapping": {
           "kind": "classmethod",
-          "signature": "(cls, value: 'object') -> 'GogurtRouteMarker'"
+          "signature": "\"(cls, value: 'object') -> 'GogurtRouteMarker'\""
         }
       },
-      "signature": "(route: 'str', format: 'str' = 'gogurt-route-marker/v1') -> None"
+      "signature": "\"(route: 'str', format: 'str' = 'gogurt-route-marker/v1') -> None\""
     },
     "MAX_GOGURT_INTERVAL_SECONDS": {
       "kind": "constant",
@@ -242,35 +244,35 @@ The following JSON is the complete value owned at each machine-authority pointer
         }
       ],
       "kind": "class",
-      "signature": "(marker: 'GogurtRouteMarker', identity: 'str') -> None"
+      "signature": "\"(marker: 'GogurtRouteMarker', identity: 'str') -> None\""
     },
     "MountedVolumeAccess": {
       "kind": "class",
       "members": {
         "discover": {
           "kind": "method",
-          "signature": "(self) -> 'Sequence[Path]'"
+          "signature": "\"(self) -> 'Sequence[Path]'\""
         },
         "observe_marker": {
           "kind": "method",
-          "signature": "(self, mount_point: 'Path') -> 'MountedMarkerObservation | None'"
+          "signature": "\"(self, mount_point: 'Path') -> 'MountedMarkerObservation | None'\""
         },
         "publish_marker": {
           "kind": "method",
-          "signature": "(self, mount_point: 'Path', marker: 'GogurtRouteMarker', *, expected: 'MountedMarkerObservation | None') -> 'MountedMarkerObservation'"
+          "signature": "\"(self, mount_point: 'Path', marker: 'GogurtRouteMarker', *, expected: 'MountedMarkerObservation | None') -> 'MountedMarkerObservation'\""
         }
       },
-      "signature": "(*args, **kwargs)"
+      "signature": "'(*args, **kwargs)'"
     },
     "MountedVolumeProvider": {
       "kind": "class",
       "members": {
         "reference": {
           "kind": "property",
-          "signature": "(self) -> 'GogurtProviderReference'"
+          "signature": "\"(self) -> 'GogurtProviderReference'\""
         }
       },
-      "signature": "(*args, **kwargs)"
+      "signature": "'(*args, **kwargs)'"
     },
     "MountedVolumeProviderBinding": {
       "fields": [
@@ -291,7 +293,7 @@ The following JSON is the complete value owned at each machine-authority pointer
         }
       ],
       "kind": "class",
-      "signature": "(provider_id: 'str', access: 'MountedVolumeAccess', format: 'str' = 'gogurt-mounted-volume-provider-binding/v1') -> None"
+      "signature": "\"(provider_id: 'str', access: 'MountedVolumeAccess', format: 'str' = 'gogurt-mounted-volume-provider-binding/v1') -> None\""
     },
     "PathInput": {
       "kind": "object",
@@ -299,47 +301,47 @@ The following JSON is the complete value owned at each machine-authority pointer
     },
     "default_gogurt_config_file": {
       "kind": "function",
-      "signature": "(config_dir: 'PathInput', *, filename: 'str' = 'gogurt-routes.yaml') -> 'Path'"
+      "signature": "\"(config_dir: 'PathInput', *, filename: 'str' = 'gogurt-routes.yaml') -> 'Path'\""
     },
     "execute_gogurt_action": {
       "kind": "function",
-      "signature": "(plan: 'Mapping[str, object]', *, provider: 'MountedVolumeProvider', capture_output: 'bool' = False) -> 'subprocess.CompletedProcess[str]'"
+      "signature": "\"(plan: 'Mapping[str, object]', *, provider: 'MountedVolumeProvider', capture_output: 'bool' = False) -> 'subprocess.CompletedProcess[str]'\""
     },
     "iter_new_mounts": {
       "kind": "function",
-      "signature": "(*, discover: 'Callable[[], Sequence[Path]]', interval_seconds: 'float' = 2.0, include_existing: 'bool' = False, sleep: 'Callable[[float], None]' = <built-in function sleep>) -> 'Iterator[Path]'"
+      "signature": "\"(*, discover: 'Callable[[], Sequence[Path]]', interval_seconds: 'float' = 2.0, include_existing: 'bool' = False, sleep: 'Callable[[float], None]' = <built-in function sleep>) -> 'Iterator[Path]'\""
     },
     "load_gogurt_actions": {
       "kind": "function",
-      "signature": "(config_file: 'PathInput') -> 'list[GogurtAction]'"
+      "signature": "\"(config_file: 'PathInput') -> 'list[GogurtAction]'\""
     },
     "plan_gogurt_action": {
       "kind": "function",
-      "signature": "(config_file: 'PathInput', mount_point: 'PathInput', *, provider: 'MountedVolumeProvider', actions_dir: 'PathInput | None' = None) -> 'dict[str, object]'"
+      "signature": "\"(config_file: 'PathInput', mount_point: 'PathInput', *, provider: 'MountedVolumeProvider', actions_dir: 'PathInput | None' = None) -> 'dict[str, object]'\""
     },
     "plan_gogurt_marker": {
       "kind": "function",
-      "signature": "(config_file: 'PathInput', route_name: 'str', mount_point: 'PathInput', *, provider: 'MountedVolumeProvider', force: 'bool' = False) -> 'dict[str, object]'"
+      "signature": "\"(config_file: 'PathInput', route_name: 'str', mount_point: 'PathInput', *, provider: 'MountedVolumeProvider', force: 'bool' = False) -> 'dict[str, object]'\""
     },
     "revalidate_gogurt_action": {
       "kind": "function",
-      "signature": "(plan: 'Mapping[str, object]', *, provider: 'MountedVolumeProvider') -> 'list[str]'"
+      "signature": "\"(plan: 'Mapping[str, object]', *, provider: 'MountedVolumeProvider') -> 'list[str]'\""
     },
     "route_for_gogurt_marker": {
       "kind": "function",
-      "signature": "(config_file: 'PathInput', route_name: 'str') -> 'str'"
+      "signature": "\"(config_file: 'PathInput', route_name: 'str') -> 'str'\""
     },
     "validate_gogurt_action_executables": {
       "kind": "function",
-      "signature": "(config_file: 'PathInput', *, actions_dir: 'PathInput | None' = None) -> 'list[GogurtAction]'"
+      "signature": "\"(config_file: 'PathInput', *, actions_dir: 'PathInput | None' = None) -> 'list[GogurtAction]'\""
     },
     "validate_gogurt_interval": {
       "kind": "function",
-      "signature": "(value: 'object') -> 'float'"
+      "signature": "\"(value: 'object') -> 'float'\""
     },
     "write_gogurt_marker": {
       "kind": "function",
-      "signature": "(config_file: 'PathInput', route_name: 'str', mount_point: 'PathInput', *, provider: 'MountedVolumeProvider', force: 'bool' = False) -> 'MountedMarkerObservation'"
+      "signature": "\"(config_file: 'PathInput', route_name: 'str', mount_point: 'PathInput', *, provider: 'MountedVolumeProvider', force: 'bool' = False) -> 'MountedMarkerObservation'\""
     }
   },
   "module": "gogurt_core"

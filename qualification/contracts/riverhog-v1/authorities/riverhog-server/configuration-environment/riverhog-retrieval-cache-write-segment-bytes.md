@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: configuration-environment:riverhog-server:riverhog-retrieval-cache-write-segment-bytes:d993a26a25 -->
+<!-- contract-element: configuration-environment:riverhog-server:riverhog-retrieval-cache-write-segment-bytes:aa701b6601 -->
 
 Exact externally visible contract owned by this semantic dossier.
 
@@ -10,21 +10,21 @@ Exact externally visible contract owned by this semantic dossier.
 |---|---|
 | Authority | [riverhog-server](../index.md) |
 | Interface | [configuration-environment](index.md) |
-| Family | [runtime](families/runtime/index.md) |
+| Family | [settings](families/settings/index.md) |
 | Contract elements | 1 |
 | Extent decisions | 1 |
 
 ## External contract
 
-<a id="s-3bf78de3fa"></a>
+<a id="s-a4749ac7f3"></a>
 | Field | Shape |
 |---|---|
-| <a id="s-dc45123d5a"></a>`classification` | "runtime" |
-| <a id="s-9364d1a9f1"></a>`consumers` | ["riverhog-server"] |
-| <a id="s-afc861908b"></a>`disposition` | "contractual" |
-| <a id="s-6a8524b81a"></a>`id` | "riverhog-server:environment:RIVERHOG_RETRIEVAL_CACHE_WRITE_SEGMENT_BYTES" |
-| <a id="s-990d2b0cff"></a>`name` | "RIVERHOG_RETRIEVAL_CACHE_WRITE_SEGMENT_BYTES" |
-| <a id="s-5b3245d215"></a>`owner` | "riverhog-server" |
+| <a id="s-a43b0da62e"></a>`consumers` | ["riverhog-server"] |
+| <a id="s-14e364ccc3"></a>`default_expressions` | ["'64MiB'"] |
+| <a id="s-bff0e51f69"></a>`id` | "riverhog-server:environment:RIVERHOG_RETRIEVAL_CACHE_WRITE_SEGMENT_BYTES" |
+| <a id="s-9ac8b2959d"></a>`input_shape` | "environment-string" |
+| <a id="s-45655e8c1b"></a>`name` | "RIVERHOG_RETRIEVAL_CACHE_WRITE_SEGMENT_BYTES" |
+| <a id="s-6c4637bf18"></a>`owner` | "riverhog-server" |
 
 ### Progression, limits, and lifecycle
 
@@ -34,12 +34,12 @@ Shared facts for every subject below: configuration="RIVERHOG_RETRIEVAL_CACHE_WR
 
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
-| [RIVERHOG_RETRIEVAL_CACHE_WRITE_SEGMENT_BYTES](#s-3bf78de3fa) | `value · configured-value · operational_policy` | shared above |
+| [RIVERHOG_RETRIEVAL_CACHE_WRITE_SEGMENT_BYTES](#s-a4749ac7f3) | `value · configured-value · operational_policy` | shared above |
 
 ## Governing policies
 
-- <a id="pa-0bde370915"></a>[compatibility/configuration/v1](../../../policies/index.md#p-8dc08bb461)
-- <a id="pa-c44a9f7aff"></a>[extent-rule/configured-capacity/v1](../../../policies/index.md#p-3ebc61fc99)
+- <a id="pa-349c971bab"></a>[compatibility/configuration/v1](../../../policies/index.md#p-8dc08bb461)
+- <a id="pa-ef6b6e7247"></a>[extent-rule/configured-capacity/v1](../../../policies/index.md#p-3ebc61fc99)
 
 ## Evidence
 
@@ -50,38 +50,37 @@ Shared facts for every subject below: configuration="RIVERHOG_RETRIEVAL_CACHE_WR
 
 ### Executable sources
 
-- [configuration-environment:inventory](../../../evidence/sources.md#src-26b33461d2) — `qualification/configuration-contract.toml`
 - [configuration-environment:riverhog-server:RIVERHOG_RETRIEVAL_CACHE_WRITE_SEGMENT_BYTES](../../../evidence/sources.md#src-26efc77b40) — `riverhog/src/riverhog_core/runtime_config.py`
 - [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
 
 ### Configuration authority and bindings
 
-The declaration fixes normative ownership and classification. The parser expression is the source-linked authority for the accepted domain and effective default exercised by qualification.
+The owning implementation defines the setting. The parser expression records each independently discovered consumer binding and effective default exercised by qualification.
 
 | Kind | Consumer | Source | Authority |
 |---|---|---|---|
-| declaration | — | `qualification/configuration-contract.toml` | `/environment/14/names` |
-| parser | `riverhog-server` | `riverhog/src/riverhog_core/runtime_config.py` | `_parse_bytes(os.getenv('RIVERHOG_RETRIEVAL_CACHE_WRITE_SEGMENT_BYTES', '64MiB'), name='RIVERHOG_RETRIEVAL_CACHE_WRITE_SEGMENT_BYTES', minimum=1)` |
 | parser | `riverhog-server` | `riverhog/src/riverhog_core/runtime_config.py` | `os.getenv('RIVERHOG_RETRIEVAL_CACHE_WRITE_SEGMENT_BYTES', '64MiB')` |
 
 ### Machine authority
 
-- `/external_contract/configuration_environment/68`
+- `/external_contract/configuration_environment/73`
 
 ### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 55e5281aa25dbc2947aab8ff5058714ac64974a775932fc679f5c60074b52c76 -->
+<!-- exact-contract-value: 7241665bd2040c30fe4f2afa7bda911f3bf3fbae8c72c69cef88caca422b93f4 -->
 
 ```json
 {
-  "classification": "runtime",
   "consumers": [
     "riverhog-server"
   ],
-  "disposition": "contractual",
+  "default_expressions": [
+    "'64MiB'"
+  ],
   "id": "riverhog-server:environment:RIVERHOG_RETRIEVAL_CACHE_WRITE_SEGMENT_BYTES",
+  "input_shape": "environment-string",
   "name": "RIVERHOG_RETRIEVAL_CACHE_WRITE_SEGMENT_BYTES",
   "owner": "riverhog-server"
 }

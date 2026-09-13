@@ -6,9 +6,7 @@ Contract elements: **5** · Extent decisions: **1**
 
 | Family | Count |
 |---|---:|
-| <a id="f-c08977de6d"></a>`credential` | 1 |
-| <a id="f-8336665b97"></a>`identity` | 1 |
-| <a id="f-538df43105"></a>`runtime` | 3 |
+| <a id="f-2409cf74f4"></a>`settings` | 5 |
 
 | Policy | Count |
 |---|---:|
@@ -19,8 +17,8 @@ Contract elements: **5** · Extent decisions: **1**
 
 | Dossier | Family | Extent decisions |
 |---|---|---:|
-| [STOVE0_TOKEN](stove0-token.md) | `credential` | 0 |
-| [STOVE0_BASE_URL](stove0-base-url.md) | `identity` | 0 |
-| [STOVE0_ALLOW_INSECURE_HTTP](stove0-allow-insecure-http.md) | `runtime` | 0 |
-| [STOVE0_HTTP2](stove0-http2.md) | `runtime` | 0 |
-| [STOVE0_HTTP_TIMEOUT_SECONDS](stove0-http-timeout-seconds.md) | `runtime` | 1 |
+| [STOVE0_ALLOW_INSECURE_HTTP](stove0-allow-insecure-http.md) | `settings` | 0 |
+| [STOVE0_BASE_URL](stove0-base-url.md) | `settings` | 0 |
+| [STOVE0_HTTP2](stove0-http2.md) | `settings` | 0 |
+| [STOVE0_HTTP_TIMEOUT_SECONDS](stove0-http-timeout-seconds.md) | `settings` | 1 |
+| [STOVE0_TOKEN](stove0-token.md) | `settings` | 0 |

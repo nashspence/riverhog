@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: configuration-environment:riverhog-server:riverhog-browse-token-signing-key:8cd336d06c -->
+<!-- contract-element: configuration-environment:riverhog-server:riverhog-browse-token-signing-key:7b9b9558ba -->
 
 Exact externally visible contract owned by this semantic dossier.
 
@@ -10,25 +10,25 @@ Exact externally visible contract owned by this semantic dossier.
 |---|---|
 | Authority | [riverhog-server](../index.md) |
 | Interface | [configuration-environment](index.md) |
-| Family | [credential](families/credential/index.md) |
+| Family | [settings](families/settings/index.md) |
 | Contract elements | 1 |
 | Extent decisions | 0 |
 
 ## External contract
 
-<a id="s-b86dc65d81"></a>
+<a id="s-71aef6f25d"></a>
 | Field | Shape |
 |---|---|
-| <a id="s-7a6e63525b"></a>`classification` | "credential" |
-| <a id="s-1e81b89850"></a>`consumers` | ["riverhog-server"] |
-| <a id="s-adf479974a"></a>`disposition` | "contractual" |
-| <a id="s-657f4a2ce7"></a>`id` | "riverhog-server:environment:RIVERHOG_BROWSE_TOKEN_SIGNING_KEY" |
-| <a id="s-08fd5560b5"></a>`name` | "RIVERHOG_BROWSE_TOKEN_SIGNING_KEY" |
-| <a id="s-6f4b6e09b4"></a>`owner` | "riverhog-server" |
+| <a id="s-a3df3866fb"></a>`consumers` | ["riverhog-server"] |
+| <a id="s-3fe8602d6c"></a>`default_expressions` | ["''"] |
+| <a id="s-ffb1f55176"></a>`id` | "riverhog-server:environment:RIVERHOG_BROWSE_TOKEN_SIGNING_KEY" |
+| <a id="s-cf559f5a8f"></a>`input_shape` | "environment-string" |
+| <a id="s-8019296a33"></a>`name` | "RIVERHOG_BROWSE_TOKEN_SIGNING_KEY" |
+| <a id="s-796b4f0f4b"></a>`owner` | "riverhog-server" |
 
 ## Governing policies
 
-- <a id="pa-e3368c4976"></a>[compatibility/configuration/v1](../../../policies/index.md#p-8dc08bb461)
+- <a id="pa-af0eb2df15"></a>[compatibility/configuration/v1](../../../policies/index.md#p-8dc08bb461)
 
 ## Evidence
 
@@ -39,37 +39,37 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Executable sources
 
-- [configuration-environment:inventory](../../../evidence/sources.md#src-26b33461d2) — `qualification/configuration-contract.toml`
 - [configuration-environment:riverhog-server:RIVERHOG_BROWSE_TOKEN_SIGNING_KEY](../../../evidence/sources.md#src-70d116fdbc) — `riverhog/src/riverhog_core/runtime_config.py`
 - [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
 
 ### Configuration authority and bindings
 
-The declaration fixes normative ownership and classification. The parser expression is the source-linked authority for the accepted domain and effective default exercised by qualification.
+The owning implementation defines the setting. The parser expression records each independently discovered consumer binding and effective default exercised by qualification.
 
 | Kind | Consumer | Source | Authority |
 |---|---|---|---|
-| declaration | — | `qualification/configuration-contract.toml` | `/environment/12/names` |
 | parser | `riverhog-server` | `riverhog/src/riverhog_core/runtime_config.py` | `os.getenv('RIVERHOG_BROWSE_TOKEN_SIGNING_KEY', '')` |
 
 ### Machine authority
 
-- `/external_contract/configuration_environment/45`
+- `/external_contract/configuration_environment/50`
 
 ### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 01a1c204ae607afd6581e39f3c8248e0484e45253308d81668f9658037d08ac9 -->
+<!-- exact-contract-value: 011850a00b922fbbcd3dd02f78c1fe3e1b4449c6b3208b0e0fdafbc8d6d999e1 -->
 
 ```json
 {
-  "classification": "credential",
   "consumers": [
     "riverhog-server"
   ],
-  "disposition": "contractual",
+  "default_expressions": [
+    "''"
+  ],
   "id": "riverhog-server:environment:RIVERHOG_BROWSE_TOKEN_SIGNING_KEY",
+  "input_shape": "environment-string",
   "name": "RIVERHOG_BROWSE_TOKEN_SIGNING_KEY",
   "owner": "riverhog-server"
 }

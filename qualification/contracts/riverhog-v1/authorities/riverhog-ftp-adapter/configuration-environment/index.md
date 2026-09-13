@@ -6,8 +6,7 @@ Contract elements: **3** · Extent decisions: **0**
 
 | Family | Count |
 |---|---:|
-| <a id="f-c8cec63455"></a>`identity` | 2 |
-| <a id="f-7da220a9da"></a>`runtime` | 1 |
+| <a id="f-fbe482a5e7"></a>`settings` | 3 |
 
 | Policy | Count |
 |---|---:|
@@ -17,6 +16,6 @@ Contract elements: **3** · Extent decisions: **0**
 
 | Dossier | Family | Extent decisions |
 |---|---|---:|
-| [RIVERHOG_BASE_URL](riverhog-base-url.md) | `identity` | 0 |
-| [RIVERHOG_FTP_ADAPTER_CONFIG](riverhog-ftp-adapter-config.md) | `identity` | 0 |
-| [RIVERHOG_ALLOW_INSECURE_HTTP](riverhog-allow-insecure-http.md) | `runtime` | 0 |
+| [RIVERHOG_ALLOW_INSECURE_HTTP](riverhog-allow-insecure-http.md) | `settings` | 0 |
+| [RIVERHOG_BASE_URL](riverhog-base-url.md) | `settings` | 0 |
+| [RIVERHOG_FTP_ADAPTER_CONFIG](riverhog-ftp-adapter-config.md) | `settings` | 0 |

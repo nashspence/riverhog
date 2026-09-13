@@ -18,4 +18,4 @@ Contract elements: **1** · Extent decisions: **2**
 
 | Dossier | Family | Extent decisions |
 |---|---|---:|
-| [mango-fish configuration](mango-fish-configuration.md) | `documents` | 2 |
+| [mango-fish:configuration:mango-fish-config configuration](mango-fish-configuration-mango-fish-config-configuration.md) | `documents` | 2 |

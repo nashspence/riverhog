@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: configuration-environment:riverhog-server:riverhog-event-source:6706643589 -->
+<!-- contract-element: configuration-environment:riverhog-server:riverhog-event-source:0efd21f707 -->
 
 Exact externally visible contract owned by this semantic dossier.
 
@@ -10,25 +10,25 @@ Exact externally visible contract owned by this semantic dossier.
 |---|---|
 | Authority | [riverhog-server](../index.md) |
 | Interface | [configuration-environment](index.md) |
-| Family | [identity](families/identity/index.md) |
+| Family | [settings](families/settings/index.md) |
 | Contract elements | 1 |
 | Extent decisions | 0 |
 
 ## External contract
 
-<a id="s-021597da78"></a>
+<a id="s-51bdf3ea73"></a>
 | Field | Shape |
 |---|---|
-| <a id="s-fb44eedbb2"></a>`classification` | "identity" |
-| <a id="s-de450a9408"></a>`consumers` | ["riverhog-server"] |
-| <a id="s-26fda41a31"></a>`disposition` | "contractual" |
-| <a id="s-7b17b012fe"></a>`id` | "riverhog-server:environment:RIVERHOG_EVENT_SOURCE" |
-| <a id="s-9d016ce2fa"></a>`name` | "RIVERHOG_EVENT_SOURCE" |
-| <a id="s-1cfe26331e"></a>`owner` | "riverhog-server" |
+| <a id="s-46d6397232"></a>`consumers` | ["riverhog-server"] |
+| <a id="s-c720b22b45"></a>`default_expressions` | ["'urn:riverhog'"] |
+| <a id="s-8708489666"></a>`id` | "riverhog-server:environment:RIVERHOG_EVENT_SOURCE" |
+| <a id="s-0bb8695d4e"></a>`input_shape` | "environment-string" |
+| <a id="s-cb037aed18"></a>`name` | "RIVERHOG_EVENT_SOURCE" |
+| <a id="s-869feebb7c"></a>`owner` | "riverhog-server" |
 
 ## Governing policies
 
-- <a id="pa-cda3852358"></a>[compatibility/configuration/v1](../../../policies/index.md#p-8dc08bb461)
+- <a id="pa-9dd967d966"></a>[compatibility/configuration/v1](../../../policies/index.md#p-8dc08bb461)
 
 ## Evidence
 
@@ -39,37 +39,37 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Executable sources
 
-- [configuration-environment:inventory](../../../evidence/sources.md#src-26b33461d2) — `qualification/configuration-contract.toml`
 - [configuration-environment:riverhog-server:RIVERHOG_EVENT_SOURCE](../../../evidence/sources.md#src-cc7e1cd9d7) — `riverhog/src/riverhog_core/runtime_config.py`
 - [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
 
 ### Configuration authority and bindings
 
-The declaration fixes normative ownership and classification. The parser expression is the source-linked authority for the accepted domain and effective default exercised by qualification.
+The owning implementation defines the setting. The parser expression records each independently discovered consumer binding and effective default exercised by qualification.
 
 | Kind | Consumer | Source | Authority |
 |---|---|---|---|
-| declaration | — | `qualification/configuration-contract.toml` | `/environment/13/names` |
 | parser | `riverhog-server` | `riverhog/src/riverhog_core/runtime_config.py` | `os.getenv('RIVERHOG_EVENT_SOURCE', 'urn:riverhog')` |
 
 ### Machine authority
 
-- `/external_contract/configuration_environment/55`
+- `/external_contract/configuration_environment/60`
 
 ### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: bf90257f50d6a8a62d75c821435f2760da579c14c8b9f513aa9455837ee9d6d8 -->
+<!-- exact-contract-value: 09c8643350d173b66a3e672f6cc1efbfacde6afdca3c3521c7d84934ae53373b -->
 
 ```json
 {
-  "classification": "identity",
   "consumers": [
     "riverhog-server"
   ],
-  "disposition": "contractual",
+  "default_expressions": [
+    "'urn:riverhog'"
+  ],
   "id": "riverhog-server:environment:RIVERHOG_EVENT_SOURCE",
+  "input_shape": "environment-string",
   "name": "RIVERHOG_EVENT_SOURCE",
   "owner": "riverhog-server"
 }

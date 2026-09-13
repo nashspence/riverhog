@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: configuration-environment:riverhog-ftp-adapter:riverhog-allow-insecure-http:bcb0c36de8 -->
+<!-- contract-element: configuration-environment:riverhog-ftp-adapter:riverhog-allow-insecure-http:ceb4ceebd9 -->
 
 Exact externally visible contract owned by this semantic dossier.
 
@@ -10,25 +10,25 @@ Exact externally visible contract owned by this semantic dossier.
 |---|---|
 | Authority | [riverhog-ftp-adapter](../index.md) |
 | Interface | [configuration-environment](index.md) |
-| Family | [runtime](index.md#f-7da220a9da) |
+| Family | [settings](index.md#f-fbe482a5e7) |
 | Contract elements | 1 |
 | Extent decisions | 0 |
 
 ## External contract
 
-<a id="s-20d8c220d5"></a>
+<a id="s-da42edbdae"></a>
 | Field | Shape |
 |---|---|
-| <a id="s-e6b0f79731"></a>`classification` | "runtime" |
-| <a id="s-afe2b91816"></a>`consumers` | ["riverhog-ftp-adapter"] |
-| <a id="s-de4fe39928"></a>`disposition` | "contractual" |
-| <a id="s-26e4801367"></a>`id` | "riverhog-ftp-adapter:environment:RIVERHOG_ALLOW_INSECURE_HTTP" |
-| <a id="s-c40791ce1d"></a>`name` | "RIVERHOG_ALLOW_INSECURE_HTTP" |
-| <a id="s-e151128158"></a>`owner` | "riverhog-ftp-adapter" |
+| <a id="s-cb8b3d3b8e"></a>`consumers` | ["riverhog-ftp-adapter"] |
+| <a id="s-24d8864685"></a>`default_expressions` | ["'false'"] |
+| <a id="s-c407419be0"></a>`id` | "riverhog-ftp-adapter:environment:RIVERHOG_ALLOW_INSECURE_HTTP" |
+| <a id="s-9d5b6c09f0"></a>`input_shape` | "environment-string" |
+| <a id="s-c08568c77a"></a>`name` | "RIVERHOG_ALLOW_INSECURE_HTTP" |
+| <a id="s-bf0770eba1"></a>`owner` | "riverhog-ftp-adapter" |
 
 ## Governing policies
 
-- <a id="pa-cfb1692136"></a>[compatibility/configuration/v1](../../../policies/index.md#p-8dc08bb461)
+- <a id="pa-1bcca6bc7b"></a>[compatibility/configuration/v1](../../../policies/index.md#p-8dc08bb461)
 
 ## Evidence
 
@@ -39,37 +39,37 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Executable sources
 
-- [configuration-environment:inventory](../../../evidence/sources.md#src-26b33461d2) — `qualification/configuration-contract.toml`
 - [configuration-environment:riverhog-ftp-adapter:RIVERHOG_ALLOW_INSECURE_HTTP](../../../evidence/sources.md#src-8be0f96180) — `reference/riverhog/ingress/ftp/src/riverhog_ftp_adapter/config.py`
 - [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
 
 ### Configuration authority and bindings
 
-The declaration fixes normative ownership and classification. The parser expression is the source-linked authority for the accepted domain and effective default exercised by qualification.
+The owning implementation defines the setting. The parser expression records each independently discovered consumer binding and effective default exercised by qualification.
 
 | Kind | Consumer | Source | Authority |
 |---|---|---|---|
-| declaration | — | `qualification/configuration-contract.toml` | `/environment/7/names` |
 | parser | `riverhog-ftp-adapter` | `reference/riverhog/ingress/ftp/src/riverhog_ftp_adapter/config.py` | `os.environ.get('RIVERHOG_ALLOW_INSECURE_HTTP', 'false')` |
 
 ### Machine authority
 
-- `/external_contract/configuration_environment/21`
+- `/external_contract/configuration_environment/24`
 
 ### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 1a1f5fa5688b5bca2000d3404ccce0d471b80ee4ceaf70bcaba2e7732dfe017f -->
+<!-- exact-contract-value: e235ed8b0d5c5f2e0a2501ce3616478210d5b434cc3b6205d48587cc2eb070de -->
 
 ```json
 {
-  "classification": "runtime",
   "consumers": [
     "riverhog-ftp-adapter"
   ],
-  "disposition": "contractual",
+  "default_expressions": [
+    "'false'"
+  ],
   "id": "riverhog-ftp-adapter:environment:RIVERHOG_ALLOW_INSECURE_HTTP",
+  "input_shape": "environment-string",
   "name": "RIVERHOG_ALLOW_INSECURE_HTTP",
   "owner": "riverhog-ftp-adapter"
 }

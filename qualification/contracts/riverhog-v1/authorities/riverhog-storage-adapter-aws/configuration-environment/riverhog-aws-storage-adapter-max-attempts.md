@@ -1,0 +1,87 @@
+# RIVERHOG_AWS_STORAGE_ADAPTER_MAX_ATTEMPTS
+
+[Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
+
+<!-- contract-element: configuration-environment:riverhog-storage-adapter-aws:riverhog-aws-storage-adapter-max-attempts:ee0cd86997 -->
+
+Exact externally visible contract owned by this semantic dossier.
+
+| Audit field | Value |
+|---|---|
+| Authority | [riverhog-storage-adapter-aws](../index.md) |
+| Interface | [configuration-environment](index.md) |
+| Family | [settings](index.md#f-2034712ffe) |
+| Contract elements | 1 |
+| Extent decisions | 1 |
+
+## External contract
+
+<a id="s-5b5ad305a7"></a>
+| Field | Shape |
+|---|---|
+| <a id="s-d3dd57dbb2"></a>`consumers` | ["riverhog-storage-adapter-aws"] |
+| <a id="s-c889318b3c"></a>`default_expressions` | ["''"] |
+| <a id="s-6178250fdc"></a>`id` | "riverhog-storage-adapter-aws:environment:RIVERHOG_AWS_STORAGE_ADAPTER_MAX_ATTEMPTS" |
+| <a id="s-fe5e59c7f3"></a>`input_shape` | "environment-string" |
+| <a id="s-cf768fb7d8"></a>`name` | "RIVERHOG_AWS_STORAGE_ADAPTER_MAX_ATTEMPTS" |
+| <a id="s-87339d9e18"></a>`owner` | "riverhog-storage-adapter-aws" |
+
+### Progression, limits, and lifecycle
+
+#### [extent-rule/configured-capacity/v1](../../../policies/index.md#p-3ebc61fc99)
+
+Shared facts for every subject below: configuration="RIVERHOG_AWS_STORAGE_ADAPTER_MAX_ATTEMPTS"; consumers=["riverhog-storage-adapter-aws"]; maximum=null; reason="operator-configured-capacity"
+
+| Applies to | Contract | Bounds or reason |
+|---|---|---|
+| [RIVERHOG_AWS_STORAGE_ADAPTER_MAX_ATTEMPTS](#s-5b5ad305a7) | `value · configured-value · operational_policy` | shared above |
+
+## Governing policies
+
+- <a id="pa-628810f546"></a>[compatibility/configuration/v1](../../../policies/index.md#p-8dc08bb461)
+- <a id="pa-b14f74dbc7"></a>[extent-rule/configured-capacity/v1](../../../policies/index.md#p-3ebc61fc99)
+
+## Evidence
+
+### Qualification
+
+- [make unit](../../../evidence/sources.md#q-ce47068f50)
+- [make compose-smoke](../../../evidence/sources.md#q-413b0b241b)
+
+### Executable sources
+
+- [configuration-environment:riverhog-storage-adapter-aws:RIVERHOG_AWS_STORAGE_ADAPTER_MAX_ATTEMPTS](../../../evidence/sources.md#src-989751bd37) — `reference/riverhog/storage/aws/src/riverhog_storage_adapter_aws/app.py`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+
+### Configuration authority and bindings
+
+The owning implementation defines the setting. The parser expression records each independently discovered consumer binding and effective default exercised by qualification.
+
+| Kind | Consumer | Source | Authority |
+|---|---|---|---|
+| parser | `riverhog-storage-adapter-aws` | `reference/riverhog/storage/aws/src/riverhog_storage_adapter_aws/app.py` | `os.getenv(f'{_PREFIX}{name}', '')` |
+
+### Machine authority
+
+- `/external_contract/configuration_environment/97`
+
+### Exact owned JSON
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 8d5d2476689115031f62ec8e5cc21a411b953b7955f0777a733df085afc5beb8 -->
+
+```json
+{
+  "consumers": [
+    "riverhog-storage-adapter-aws"
+  ],
+  "default_expressions": [
+    "''"
+  ],
+  "id": "riverhog-storage-adapter-aws:environment:RIVERHOG_AWS_STORAGE_ADAPTER_MAX_ATTEMPTS",
+  "input_shape": "environment-string",
+  "name": "RIVERHOG_AWS_STORAGE_ADAPTER_MAX_ATTEMPTS",
+  "owner": "riverhog-storage-adapter-aws"
+}
+```

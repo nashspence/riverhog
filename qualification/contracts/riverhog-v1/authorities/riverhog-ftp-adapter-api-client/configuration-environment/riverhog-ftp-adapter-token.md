@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: configuration-environment:riverhog-ftp-adapter-api-client:riverhog-ftp-adapter-token:152609ed91 -->
+<!-- contract-element: configuration-environment:riverhog-ftp-adapter-api-client:riverhog-ftp-adapter-token:7e77684aa6 -->
 
 Exact externally visible contract owned by this semantic dossier.
 
@@ -10,25 +10,25 @@ Exact externally visible contract owned by this semantic dossier.
 |---|---|
 | Authority | [riverhog-ftp-adapter-api-client](../index.md) |
 | Interface | [configuration-environment](index.md) |
-| Family | [credential](index.md#f-e056120d8e) |
+| Family | [settings](index.md#f-ff6755198b) |
 | Contract elements | 1 |
 | Extent decisions | 0 |
 
 ## External contract
 
-<a id="s-d7a4e6e0e8"></a>
+<a id="s-c4b672867c"></a>
 | Field | Shape |
 |---|---|
-| <a id="s-1f968da003"></a>`classification` | "credential" |
-| <a id="s-a5e7a20adb"></a>`consumers` | ["riverhog-ftp-adapter-api-client"] |
-| <a id="s-2eb73f8083"></a>`disposition` | "contractual" |
-| <a id="s-f2739e6aac"></a>`id` | "riverhog-ftp-adapter-api-client:environment:RIVERHOG_FTP_ADAPTER_TOKEN" |
-| <a id="s-495c4fd74d"></a>`name` | "RIVERHOG_FTP_ADAPTER_TOKEN" |
-| <a id="s-eba1397ffc"></a>`owner` | "riverhog-ftp-adapter-api-client" |
+| <a id="s-396c43f461"></a>`consumers` | ["riverhog-ftp-adapter-api-client"] |
+| <a id="s-d2f643cba8"></a>`default_expressions` | ["unset"] |
+| <a id="s-3f3f65b51c"></a>`id` | "riverhog-ftp-adapter-api-client:environment:RIVERHOG_FTP_ADAPTER_TOKEN" |
+| <a id="s-c9113b6c41"></a>`input_shape` | "environment-string" |
+| <a id="s-019de684d7"></a>`name` | "RIVERHOG_FTP_ADAPTER_TOKEN" |
+| <a id="s-cd554621c2"></a>`owner` | "riverhog-ftp-adapter-api-client" |
 
 ## Governing policies
 
-- <a id="pa-9c997ebebe"></a>[compatibility/configuration/v1](../../../policies/index.md#p-8dc08bb461)
+- <a id="pa-044bace8e9"></a>[compatibility/configuration/v1](../../../policies/index.md#p-8dc08bb461)
 
 ## Evidence
 
@@ -39,37 +39,37 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Executable sources
 
-- [configuration-environment:inventory](../../../evidence/sources.md#src-26b33461d2) — `qualification/configuration-contract.toml`
 - [configuration-environment:riverhog-ftp-adapter-api-client:RIVERHOG_FTP_ADAPTER_TOKEN](../../../evidence/sources.md#src-5a52b017b3) — `reference/riverhog/ingress/ftp-api-client/src/riverhog_ftp_adapter_api_client/client.py`
 - [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
 
 ### Configuration authority and bindings
 
-The declaration fixes normative ownership and classification. The parser expression is the source-linked authority for the accepted domain and effective default exercised by qualification.
+The owning implementation defines the setting. The parser expression records each independently discovered consumer binding and effective default exercised by qualification.
 
 | Kind | Consumer | Source | Authority |
 |---|---|---|---|
-| declaration | — | `qualification/configuration-contract.toml` | `/environment/8/names` |
 | parser | `riverhog-ftp-adapter-api-client` | `reference/riverhog/ingress/ftp-api-client/src/riverhog_ftp_adapter_api_client/client.py` | `os.getenv('RIVERHOG_FTP_ADAPTER_TOKEN')` |
 
 ### Machine authority
 
-- `/external_contract/configuration_environment/28`
+- `/external_contract/configuration_environment/31`
 
 ### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: a1d8d6dbaa29e92069de1149ca3d3a9c601519ebbb6abc02a4ce8aa7851f8b39 -->
+<!-- exact-contract-value: 920e01d3744b6157c872c4b2add2b5db846d03f0a3c937843f09ca00b6389367 -->
 
 ```json
 {
-  "classification": "credential",
   "consumers": [
     "riverhog-ftp-adapter-api-client"
   ],
-  "disposition": "contractual",
+  "default_expressions": [
+    "unset"
+  ],
   "id": "riverhog-ftp-adapter-api-client:environment:RIVERHOG_FTP_ADAPTER_TOKEN",
+  "input_shape": "environment-string",
   "name": "RIVERHOG_FTP_ADAPTER_TOKEN",
   "owner": "riverhog-ftp-adapter-api-client"
 }

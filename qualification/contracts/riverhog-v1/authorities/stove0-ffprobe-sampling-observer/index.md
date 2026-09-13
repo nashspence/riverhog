@@ -6,10 +6,10 @@ Contract elements: **9** · Extent decisions: **0**
 
 | Interface | Count |
 |---|---:|
-| `boundary` | 1 |
 | `configuration-environment` | 8 |
+| `python` | 1 |
 
 ## Interfaces
 
-- [boundary](boundary/index.md) — 1 elements
 - [configuration-environment](configuration-environment/index.md) — 8 elements
+- [python](python/index.md) — 1 elements

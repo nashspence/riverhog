@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: configuration-environment:riverhog-server:riverhog-event-context-reap-batch-size:4caad53032 -->
+<!-- contract-element: configuration-environment:riverhog-server:riverhog-event-context-reap-batch-size:4df7c116e8 -->
 
 Exact externally visible contract owned by this semantic dossier.
 
@@ -10,21 +10,21 @@ Exact externally visible contract owned by this semantic dossier.
 |---|---|
 | Authority | [riverhog-server](../index.md) |
 | Interface | [configuration-environment](index.md) |
-| Family | [runtime](families/runtime/index.md) |
+| Family | [settings](families/settings/index.md) |
 | Contract elements | 1 |
 | Extent decisions | 1 |
 
 ## External contract
 
-<a id="s-1cd6fe0a97"></a>
+<a id="s-53a88dfb96"></a>
 | Field | Shape |
 |---|---|
-| <a id="s-71e578a1e6"></a>`classification` | "runtime" |
-| <a id="s-923821698e"></a>`consumers` | ["riverhog-server"] |
-| <a id="s-f764dbb689"></a>`disposition` | "contractual" |
-| <a id="s-a7a2756f2e"></a>`id` | "riverhog-server:environment:RIVERHOG_EVENT_CONTEXT_REAP_BATCH_SIZE" |
-| <a id="s-8f98162f43"></a>`name` | "RIVERHOG_EVENT_CONTEXT_REAP_BATCH_SIZE" |
-| <a id="s-5f637bee10"></a>`owner` | "riverhog-server" |
+| <a id="s-cad8bbbd17"></a>`consumers` | ["riverhog-server"] |
+| <a id="s-dadceebea3"></a>`default_expressions` | ["'100'"] |
+| <a id="s-dbe47075d5"></a>`id` | "riverhog-server:environment:RIVERHOG_EVENT_CONTEXT_REAP_BATCH_SIZE" |
+| <a id="s-f6d00c3d7b"></a>`input_shape` | "environment-string" |
+| <a id="s-c305899a87"></a>`name` | "RIVERHOG_EVENT_CONTEXT_REAP_BATCH_SIZE" |
+| <a id="s-02d8846ea8"></a>`owner` | "riverhog-server" |
 
 ### Progression, limits, and lifecycle
 
@@ -34,12 +34,12 @@ Shared facts for every subject below: configuration="RIVERHOG_EVENT_CONTEXT_REAP
 
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
-| [RIVERHOG_EVENT_CONTEXT_REAP_BATCH_SIZE](#s-1cd6fe0a97) | `value · configured-value · operational_policy` | shared above |
+| [RIVERHOG_EVENT_CONTEXT_REAP_BATCH_SIZE](#s-53a88dfb96) | `value · configured-value · operational_policy` | shared above |
 
 ## Governing policies
 
-- <a id="pa-e53911fe0b"></a>[compatibility/configuration/v1](../../../policies/index.md#p-8dc08bb461)
-- <a id="pa-ae29b20c0a"></a>[extent-rule/configured-capacity/v1](../../../policies/index.md#p-3ebc61fc99)
+- <a id="pa-bf8a6f04bc"></a>[compatibility/configuration/v1](../../../policies/index.md#p-8dc08bb461)
+- <a id="pa-bddc31216e"></a>[extent-rule/configured-capacity/v1](../../../policies/index.md#p-3ebc61fc99)
 
 ## Evidence
 
@@ -50,38 +50,37 @@ Shared facts for every subject below: configuration="RIVERHOG_EVENT_CONTEXT_REAP
 
 ### Executable sources
 
-- [configuration-environment:inventory](../../../evidence/sources.md#src-26b33461d2) — `qualification/configuration-contract.toml`
 - [configuration-environment:riverhog-server:RIVERHOG_EVENT_CONTEXT_REAP_BATCH_SIZE](../../../evidence/sources.md#src-fef401b6a9) — `riverhog/src/riverhog_core/runtime_config.py`
 - [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
 
 ### Configuration authority and bindings
 
-The declaration fixes normative ownership and classification. The parser expression is the source-linked authority for the accepted domain and effective default exercised by qualification.
+The owning implementation defines the setting. The parser expression records each independently discovered consumer binding and effective default exercised by qualification.
 
 | Kind | Consumer | Source | Authority |
 |---|---|---|---|
-| declaration | — | `qualification/configuration-contract.toml` | `/environment/14/names` |
-| parser | `riverhog-server` | `riverhog/src/riverhog_core/runtime_config.py` | `_parse_int(os.getenv('RIVERHOG_EVENT_CONTEXT_REAP_BATCH_SIZE', '100'), name='RIVERHOG_EVENT_CONTEXT_REAP_BATCH_SIZE', minimum=1)` |
 | parser | `riverhog-server` | `riverhog/src/riverhog_core/runtime_config.py` | `os.getenv('RIVERHOG_EVENT_CONTEXT_REAP_BATCH_SIZE', '100')` |
 
 ### Machine authority
 
-- `/external_contract/configuration_environment/53`
+- `/external_contract/configuration_environment/58`
 
 ### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: e5815ee70a8f078596876a483418c60ac6dae36b2fbe7a1bb44cf5e8eebd2020 -->
+<!-- exact-contract-value: 7cdef7895f4357311bec98c50f6d4092a7dd4220557df1902e613121a9feca77 -->
 
 ```json
 {
-  "classification": "runtime",
   "consumers": [
     "riverhog-server"
   ],
-  "disposition": "contractual",
+  "default_expressions": [
+    "'100'"
+  ],
   "id": "riverhog-server:environment:RIVERHOG_EVENT_CONTEXT_REAP_BATCH_SIZE",
+  "input_shape": "environment-string",
   "name": "RIVERHOG_EVENT_CONTEXT_REAP_BATCH_SIZE",
   "owner": "riverhog-server"
 }

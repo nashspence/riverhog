@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: configuration-environment:stove0-exiftool-observer:stove0-exiftool-observer-image-digest:5f33892bdc -->
+<!-- contract-element: configuration-environment:stove0-exiftool-observer:stove0-exiftool-observer-image-digest:ff44fd4882 -->
 
 Exact externally visible contract owned by this semantic dossier.
 
@@ -10,25 +10,25 @@ Exact externally visible contract owned by this semantic dossier.
 |---|---|
 | Authority | [stove0-exiftool-observer](../index.md) |
 | Interface | [configuration-environment](index.md) |
-| Family | [identity](index.md#f-653370c949) |
+| Family | [settings](index.md#f-ec8ef5e777) |
 | Contract elements | 1 |
 | Extent decisions | 0 |
 
 ## External contract
 
-<a id="s-41e02220a1"></a>
+<a id="s-08f1419e44"></a>
 | Field | Shape |
 |---|---|
-| <a id="s-69b91b86e7"></a>`classification` | "identity" |
-| <a id="s-84903db1b5"></a>`consumers` | ["stove0-exiftool-observer"] |
-| <a id="s-f6debf4615"></a>`disposition` | "contractual" |
-| <a id="s-db7c90b69a"></a>`id` | "stove0-exiftool-observer:environment:STOVE0_EXIFTOOL_OBSERVER_IMAGE_DIGEST" |
-| <a id="s-f3010b390a"></a>`name` | "STOVE0_EXIFTOOL_OBSERVER_IMAGE_DIGEST" |
-| <a id="s-8d1cbb3d58"></a>`owner` | "stove0-exiftool-observer" |
+| <a id="s-31ef2dba16"></a>`consumers` | ["stove0-exiftool-observer"] |
+| <a id="s-d3fe509e33"></a>`default_expressions` | ["''"] |
+| <a id="s-2e729be853"></a>`id` | "stove0-exiftool-observer:environment:STOVE0_EXIFTOOL_OBSERVER_IMAGE_DIGEST" |
+| <a id="s-f6e2dd3a40"></a>`input_shape` | "environment-string" |
+| <a id="s-2cd6cd9947"></a>`name` | "STOVE0_EXIFTOOL_OBSERVER_IMAGE_DIGEST" |
+| <a id="s-3602620722"></a>`owner` | "stove0-exiftool-observer" |
 
 ## Governing policies
 
-- <a id="pa-1f07685ef3"></a>[compatibility/configuration/v1](../../../policies/index.md#p-8dc08bb461)
+- <a id="pa-a44ab9ff7c"></a>[compatibility/configuration/v1](../../../policies/index.md#p-8dc08bb461)
 
 ## Evidence
 
@@ -39,37 +39,37 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Executable sources
 
-- [configuration-environment:inventory](../../../evidence/sources.md#src-26b33461d2) — `qualification/configuration-contract.toml`
 - [configuration-environment:stove0-exiftool-observer:STOVE0_EXIFTOOL_OBSERVER_IMAGE_DIGEST](../../../evidence/sources.md#src-e2f881a54b) — `reference/stove0/observers/exiftool/src/stove0_exiftool_observer/app.py`
 - [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
 
 ### Configuration authority and bindings
 
-The declaration fixes normative ownership and classification. The parser expression is the source-linked authority for the accepted domain and effective default exercised by qualification.
+The owning implementation defines the setting. The parser expression records each independently discovered consumer binding and effective default exercised by qualification.
 
 | Kind | Consumer | Source | Authority |
 |---|---|---|---|
-| declaration | — | `qualification/configuration-contract.toml` | `/environment/19/names` |
 | parser | `stove0-exiftool-observer` | `reference/stove0/observers/exiftool/src/stove0_exiftool_observer/app.py` | `os.getenv('STOVE0_EXIFTOOL_OBSERVER_IMAGE_DIGEST', '')` |
 
 ### Machine authority
 
-- `/external_contract/configuration_environment/87`
+- `/external_contract/configuration_environment/150`
 
 ### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 0b4b57447d552522ef2c6784333632796413285f53aacf7e8f93e031f16dd967 -->
+<!-- exact-contract-value: c5f7854415e9986fe7b7d765e956968b143ea471e5bf4d422a3eabb592e54003 -->
 
 ```json
 {
-  "classification": "identity",
   "consumers": [
     "stove0-exiftool-observer"
   ],
-  "disposition": "contractual",
+  "default_expressions": [
+    "''"
+  ],
   "id": "stove0-exiftool-observer:environment:STOVE0_EXIFTOOL_OBSERVER_IMAGE_DIGEST",
+  "input_shape": "environment-string",
   "name": "STOVE0_EXIFTOOL_OBSERVER_IMAGE_DIGEST",
   "owner": "stove0-exiftool-observer"
 }

@@ -2,14 +2,16 @@
 
 [Atlas](../../index.md) · [Policies](../../policies/index.md)
 
-Contract elements: **2** · Extent decisions: **3**
+Contract elements: **10** · Extent decisions: **6**
 
 | Interface | Count |
 |---|---:|
-| `boundary` | 1 |
 | `cli` | 1 |
+| `configuration-environment` | 8 |
+| `python` | 1 |
 
 ## Interfaces
 
-- [boundary](boundary/index.md) — 1 elements
 - [cli](cli/index.md) — 1 elements
+- [configuration-environment](configuration-environment/index.md) — 8 elements
+- [python](python/index.md) — 1 elements

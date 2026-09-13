@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: configuration-environment:riverhog-server:riverhog-retrieval-range-merge-gap-bytes:1a80f5d80a -->
+<!-- contract-element: configuration-environment:riverhog-server:riverhog-retrieval-range-merge-gap-bytes:f845f185e2 -->
 
 Exact externally visible contract owned by this semantic dossier.
 
@@ -10,21 +10,21 @@ Exact externally visible contract owned by this semantic dossier.
 |---|---|
 | Authority | [riverhog-server](../index.md) |
 | Interface | [configuration-environment](index.md) |
-| Family | [runtime](families/runtime/index.md) |
+| Family | [settings](families/settings/index.md) |
 | Contract elements | 1 |
 | Extent decisions | 1 |
 
 ## External contract
 
-<a id="s-0e8ce1fd7c"></a>
+<a id="s-205dff964b"></a>
 | Field | Shape |
 |---|---|
-| <a id="s-d8d91dcccb"></a>`classification` | "runtime" |
-| <a id="s-8e543c475e"></a>`consumers` | ["riverhog-server"] |
-| <a id="s-45c37da8a4"></a>`disposition` | "contractual" |
-| <a id="s-c7d082cc1f"></a>`id` | "riverhog-server:environment:RIVERHOG_RETRIEVAL_RANGE_MERGE_GAP_BYTES" |
-| <a id="s-38ce56b288"></a>`name` | "RIVERHOG_RETRIEVAL_RANGE_MERGE_GAP_BYTES" |
-| <a id="s-efc59f7a1f"></a>`owner` | "riverhog-server" |
+| <a id="s-668719968c"></a>`consumers` | ["riverhog-server"] |
+| <a id="s-c78f34962b"></a>`default_expressions` | ["unset"] |
+| <a id="s-8a0133ded5"></a>`id` | "riverhog-server:environment:RIVERHOG_RETRIEVAL_RANGE_MERGE_GAP_BYTES" |
+| <a id="s-aa83bf285f"></a>`input_shape` | "environment-string" |
+| <a id="s-663968b1c7"></a>`name` | "RIVERHOG_RETRIEVAL_RANGE_MERGE_GAP_BYTES" |
+| <a id="s-d6a05173f7"></a>`owner` | "riverhog-server" |
 
 ### Progression, limits, and lifecycle
 
@@ -34,12 +34,12 @@ Shared facts for every subject below: configuration="RIVERHOG_RETRIEVAL_RANGE_ME
 
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
-| [RIVERHOG_RETRIEVAL_RANGE_MERGE_GAP_BYTES](#s-0e8ce1fd7c) | `value · configured-value · operational_policy` | shared above |
+| [RIVERHOG_RETRIEVAL_RANGE_MERGE_GAP_BYTES](#s-205dff964b) | `value · configured-value · operational_policy` | shared above |
 
 ## Governing policies
 
-- <a id="pa-988ef35884"></a>[compatibility/configuration/v1](../../../policies/index.md#p-8dc08bb461)
-- <a id="pa-7a992b1f5e"></a>[extent-rule/configured-capacity/v1](../../../policies/index.md#p-3ebc61fc99)
+- <a id="pa-9ba2ed5b3a"></a>[compatibility/configuration/v1](../../../policies/index.md#p-8dc08bb461)
+- <a id="pa-03136e4a5f"></a>[extent-rule/configured-capacity/v1](../../../policies/index.md#p-3ebc61fc99)
 
 ## Evidence
 
@@ -50,37 +50,37 @@ Shared facts for every subject below: configuration="RIVERHOG_RETRIEVAL_RANGE_ME
 
 ### Executable sources
 
-- [configuration-environment:inventory](../../../evidence/sources.md#src-26b33461d2) — `qualification/configuration-contract.toml`
 - [configuration-environment:riverhog-server:RIVERHOG_RETRIEVAL_RANGE_MERGE_GAP_BYTES](../../../evidence/sources.md#src-972a8351e5) — `riverhog/src/riverhog_core/pack_retrieval.py`
 - [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
 
 ### Configuration authority and bindings
 
-The declaration fixes normative ownership and classification. The parser expression is the source-linked authority for the accepted domain and effective default exercised by qualification.
+The owning implementation defines the setting. The parser expression records each independently discovered consumer binding and effective default exercised by qualification.
 
 | Kind | Consumer | Source | Authority |
 |---|---|---|---|
-| declaration | — | `qualification/configuration-contract.toml` | `/environment/14/names` |
-| parser | `riverhog-server` | `riverhog/src/riverhog_core/pack_retrieval.py` | `_scoped_env_bytes(values, 'RIVERHOG_RETRIEVAL_RANGE_MERGE_GAP_BYTES', 0, store_name=store_name)` |
+| parser | `riverhog-server` | `riverhog/src/riverhog_core/pack_retrieval.py` | `values.get(global_name)` |
 
 ### Machine authority
 
-- `/external_contract/configuration_environment/76`
+- `/external_contract/configuration_environment/81`
 
 ### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: bd40797f2c7510ba9756ae906b8df58298077114da82357f71fd1124aa830ae4 -->
+<!-- exact-contract-value: 92cc1129724964339d878b0c21357d2efbebb7f8259c9d78b10f19bc340df17b -->
 
 ```json
 {
-  "classification": "runtime",
   "consumers": [
     "riverhog-server"
   ],
-  "disposition": "contractual",
+  "default_expressions": [
+    "unset"
+  ],
   "id": "riverhog-server:environment:RIVERHOG_RETRIEVAL_RANGE_MERGE_GAP_BYTES",
+  "input_shape": "environment-string",
   "name": "RIVERHOG_RETRIEVAL_RANGE_MERGE_GAP_BYTES",
   "owner": "riverhog-server"
 }

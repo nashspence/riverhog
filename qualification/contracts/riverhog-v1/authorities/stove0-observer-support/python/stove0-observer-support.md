@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: python:stove0-observer-support:stove0-observer-support:05ba78f9d7 -->
+<!-- contract-element: python:stove0-observer-support:stove0-observer-support:5f7c68ae5b -->
 
 Exact externally visible contract owned by this semantic dossier.
 
@@ -16,16 +16,17 @@ Exact externally visible contract owned by this semantic dossier.
 
 ## External contract
 
-<a id="s-923283d7cd"></a>
+<a id="s-e9958ce81f"></a>
 | Field | Shape |
 |---|---|
-| <a id="s-d73bfcc25e"></a>`distribution` | "stove0-observer-support" |
-| <a id="s-d34602df00"></a>`exports` | additional keys=`CancellationCheck`, `ContentObserver`, `FactsSemanticValidator`, `Heartbeat`, `OBSERVER_CONFORMANCE_RESULT`, `OBSERVER_HTTP_OPERATIONS`, `OBSERVER_SCHEMA_BUNDLE_FORMAT`, `ObservationResultBuilder`, `ObservationRuntime`, `ObserverClient`, `ObserverConformanceResult`, `ObserverHttpBinding`, `ObserverHttpResponse`, `conformance_report`, `observer_schema_bundle` |
-| <a id="s-872525d7fd"></a>`module` | "stove0_observer_support" |
+| <a id="s-06781f0117"></a>`candidate_id` | "python:stove0-observer-support:stove0_observer_support" |
+| <a id="s-d6a55a5317"></a>`distribution` | "stove0-observer-support" |
+| <a id="s-6185273d43"></a>`exports` | additional keys=`CancellationCheck`, `ContentObserver`, `FactsSemanticValidator`, `Heartbeat`, `OBSERVER_CONFORMANCE_RESULT`, `OBSERVER_HTTP_OPERATIONS`, `OBSERVER_SCHEMA_BUNDLE_FORMAT`, `ObservationResultBuilder`, `ObservationRuntime`, `ObserverClient`, `ObserverConformanceResult`, `ObserverHttpBinding`, `ObserverHttpResponse`, `conformance_report`, `observer_schema_bundle` |
+| <a id="s-2b4821b1a3"></a>`module` | "stove0_observer_support" |
 
 ## Governing policies
 
-- <a id="pa-0aac798efe"></a>[compatibility/python-api/v1](../../../policies/index.md#p-e574772ba5)
+- <a id="pa-85b5a49ce5"></a>[compatibility/python-api/v1](../../../policies/index.md#p-e574772ba5)
 
 ## Evidence
 
@@ -37,20 +38,21 @@ Exact externally visible contract owned by this semantic dossier.
 ### Executable sources
 
 - [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
-- [python:stove0-observer-support](../../../evidence/sources.md#src-56a43288ef) — `reference/stove0/packages/observer-support/src/stove0_observer_support/__init__.py::<module>`
+- [python:stove0-observer-support:stove0_observer_support](../../../evidence/sources.md#src-13bf3acd32) — `reference/stove0/packages/observer-support/src/stove0_observer_support/__init__.py`
 
 ### Machine authority
 
-- `/external_contract/python/18`
+- `/external_contract/python/43`
 
 ### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 12aea67f5d0455ab1ca5ceccb01692b1b97d911e7e776b81df322b2a11435d16 -->
+<!-- exact-contract-value: 0810675cc73325c314910d20a1ab72c2fc4c8c98b3072a4c4637699f14bf37de -->
 
 ```json
 {
+  "candidate_id": "python:stove0-observer-support:stove0_observer_support",
   "distribution": "stove0-observer-support",
   "exports": {
     "CancellationCheck": {
@@ -62,14 +64,14 @@ The following JSON is the complete value owned at each machine-authority pointer
       "members": {
         "descriptor": {
           "kind": "method",
-          "signature": "(self) -> 'ObserverDescriptor'"
+          "signature": "\"(self) -> 'ObserverDescriptor'\""
         },
         "observe": {
           "kind": "method",
-          "signature": "(self, request: 'ObservationRequest', runtime: 'ObservationRuntime') -> 'ObservationResult'"
+          "signature": "\"(self, request: 'ObservationRequest', runtime: 'ObservationRuntime') -> 'ObservationResult'\""
         }
       },
-      "signature": "(*args, **kwargs)"
+      "signature": "'(*args, **kwargs)'"
     },
     "FactsSemanticValidator": {
       "kind": "object",
@@ -96,103 +98,103 @@ The following JSON is the complete value owned at each machine-authority pointer
       "members": {
         "canceled": {
           "kind": "method",
-          "signature": "(self, *, execution_evidence: 'Mapping[str, JsonValue] | None' = None) -> 'ObservationResult'"
+          "signature": "\"(self, *, execution_evidence: 'Mapping[str, JsonValue] | None' = None) -> 'ObservationResult'\""
         },
         "failed": {
           "kind": "method",
-          "signature": "(self, *, code: 'str', message: 'str', retryable: 'bool', execution_evidence: 'Mapping[str, JsonValue] | None' = None) -> 'ObservationResult'"
+          "signature": "\"(self, *, code: 'str', message: 'str', retryable: 'bool', execution_evidence: 'Mapping[str, JsonValue] | None' = None) -> 'ObservationResult'\""
         },
         "inapplicable": {
           "kind": "method",
-          "signature": "(self, *, code: 'str', message: 'str', execution_evidence: 'Mapping[str, JsonValue] | None' = None) -> 'ObservationResult'"
+          "signature": "\"(self, *, code: 'str', message: 'str', execution_evidence: 'Mapping[str, JsonValue] | None' = None) -> 'ObservationResult'\""
         },
         "observed": {
           "kind": "method",
-          "signature": "(self, facts: 'Mapping[str, JsonValue]', *, execution_evidence: 'Mapping[str, JsonValue] | None' = None) -> 'ObservationResult'"
+          "signature": "\"(self, facts: 'Mapping[str, JsonValue]', *, execution_evidence: 'Mapping[str, JsonValue] | None' = None) -> 'ObservationResult'\""
         }
       },
-      "signature": "(descriptor: 'ObserverDescriptor', request: 'ObservationRequest') -> 'None'"
+      "signature": "\"(descriptor: 'ObserverDescriptor', request: 'ObservationRequest') -> 'None'\""
     },
     "ObservationRuntime": {
       "kind": "class",
       "members": {
         "close": {
           "kind": "method",
-          "signature": "(self) -> 'None'"
+          "signature": "\"(self) -> 'None'\""
         },
         "from_invocation": {
           "kind": "classmethod",
-          "signature": "(cls, invocation: 'ObservationInvocation', *, cancellation_check: 'CancellationCheck | None' = None, heartbeat: 'Heartbeat | None' = None) -> 'ObservationRuntime'"
+          "signature": "\"(cls, invocation: 'ObservationInvocation', *, cancellation_check: 'CancellationCheck | None' = None, heartbeat: 'Heartbeat | None' = None) -> 'ObservationRuntime'\""
         },
         "heartbeat": {
           "kind": "method",
-          "signature": "(self) -> 'None'"
+          "signature": "\"(self) -> 'None'\""
         },
         "materialize": {
           "kind": "method",
-          "signature": "(self, subject: 'ArtifactSubject', *, workspace: 'TransformWorkspace', relative_path: 'str | None' = None, **prepare_kwargs: 'Any') -> 'Path'"
+          "signature": "\"(self, subject: 'ArtifactSubject', *, workspace: 'TransformWorkspace', relative_path: 'str | None' = None, **prepare_kwargs: 'Any') -> 'Path'\""
         },
         "open_workspace": {
           "kind": "method",
-          "signature": "(self, root: 'Path') -> 'TransformWorkspace'"
+          "signature": "\"(self, root: 'Path') -> 'TransformWorkspace'\""
         },
         "prepare": {
           "kind": "method",
-          "signature": "(self, subjects: 'Sequence[ArtifactSubject] | None' = None, **kwargs: 'Any') -> 'ClaimedRetrieval'"
+          "signature": "\"(self, subjects: 'Sequence[ArtifactSubject] | None' = None, **kwargs: 'Any') -> 'ClaimedRetrieval'\""
         },
         "read_bytes": {
           "kind": "method",
-          "signature": "(self, subject: 'ArtifactSubject', *, maximum_bytes: 'int', **prepare_kwargs: 'Any') -> 'bytes'"
+          "signature": "\"(self, subject: 'ArtifactSubject', *, maximum_bytes: 'int', **prepare_kwargs: 'Any') -> 'bytes'\""
         },
         "refresh_capability": {
           "kind": "method",
-          "signature": "(self, capability_token: 'str') -> 'None'"
+          "signature": "\"(self, capability_token: 'str') -> 'None'\""
         },
         "stream": {
           "kind": "method",
-          "signature": "(self, subject: 'ArtifactSubject', *, start: 'int' = 0, end: 'int | None' = None, chunk_size: 'int' = 8388608, **prepare_kwargs: 'Any') -> 'Iterator[Iterator[bytes]]'"
+          "signature": "\"(self, subject: 'ArtifactSubject', *, start: 'int' = 0, end: 'int | None' = None, chunk_size: 'int' = 8388608, **prepare_kwargs: 'Any') -> 'Iterator[Iterator[bytes]]'\""
         },
         "subjects": {
           "kind": "method",
-          "signature": "(self) -> 'tuple[tuple[ArtifactSubject, ClaimedArtifact], ...]'"
+          "signature": "\"(self) -> 'tuple[tuple[ArtifactSubject, ClaimedArtifact], ...]'\""
         }
       },
-      "signature": "(api: 'Any', *, request: 'ObservationRequest', claim_id: 'str', fence: 'int', cancellation_check: 'CancellationCheck | None' = None, heartbeat: 'Heartbeat | None' = None, workspace_assurance: 'str' = 'ephemeral', owned_api: 'bool' = False) -> 'None'"
+      "signature": "\"(api: 'Any', *, request: 'ObservationRequest', claim_id: 'str', fence: 'int', cancellation_check: 'CancellationCheck | None' = None, heartbeat: 'Heartbeat | None' = None, workspace_assurance: 'str' = 'ephemeral', owned_api: 'bool' = False) -> 'None'\""
     },
     "ObserverClient": {
       "kind": "class",
       "members": {
         "descriptor": {
           "kind": "method",
-          "signature": "(self) -> 'ObserverDescriptor'"
+          "signature": "\"(self) -> 'ObserverDescriptor'\""
         },
         "observe": {
           "kind": "method",
-          "signature": "(self, invocation: 'ObservationInvocation', *, descriptor: 'ObserverDescriptor') -> 'Any'"
+          "signature": "\"(self, invocation: 'ObservationInvocation', *, descriptor: 'ObserverDescriptor') -> 'Any'\""
         }
       },
-      "signature": "(*args, **kwargs)"
+      "signature": "'(*args, **kwargs)'"
     },
     "ObserverConformanceResult": {
       "kind": "class",
       "members": {
         "validate_result": {
           "kind": "method",
-          "signature": "(self) -> 'Self'"
+          "signature": "\"(self) -> 'Self'\""
         }
       },
       "schema_sha256": "e27ed5abfaeb7544a3910aa4ab0216c2fc7f5fe0341296cb0b299304e601db95",
-      "signature": "(*, format: Literal['stove0-observer-conformance-result/v1'] = 'stove0-observer-conformance-result/v1', status: Literal['conformant', 'partially-exercised', 'inspected'], descriptor: stove0_protocol.models.ObserverDescriptor, coverage: stove0_observer_support.conformance.ObserverConformanceCoverage, contracts: tuple[stove0_observer_support.conformance.ObserverContractConformance, ...]) -> None"
+      "signature": "\"(*, format: Literal['stove0-observer-conformance-result/v1'] = 'stove0-observer-conformance-result/v1', status: Literal['conformant', 'partially-exercised', 'inspected'], descriptor: stove0_protocol.models.ObserverDescriptor, coverage: stove0_observer_support.conformance.ObserverConformanceCoverage, contracts: tuple[stove0_observer_support.conformance.ObserverContractConformance, ...]) -> None\""
     },
     "ObserverHttpBinding": {
       "kind": "class",
       "members": {
         "handle": {
           "kind": "method",
-          "signature": "(self, method: 'str', path: 'str', body: 'bytes' = b'') -> 'ObserverHttpResponse'"
+          "signature": "\"(self, method: 'str', path: 'str', body: 'bytes' = b'') -> 'ObserverHttpResponse'\""
         }
       },
-      "signature": "(observer: 'ContentObserver', *, semantic_validators: 'SemanticValidatorProvider | None' = None, maximum_request_bytes: 'int' = 4194304, maximum_concurrency: 'int' = 1) -> 'None'"
+      "signature": "\"(observer: 'ContentObserver', *, semantic_validators: 'SemanticValidatorProvider | None' = None, maximum_request_bytes: 'int' = 4194304, maximum_concurrency: 'int' = 1) -> 'None'\""
     },
     "ObserverHttpResponse": {
       "fields": [
@@ -213,15 +215,15 @@ The following JSON is the complete value owned at each machine-authority pointer
         }
       ],
       "kind": "class",
-      "signature": "(status: 'int', headers: 'tuple[tuple[str, str], ...]', body: 'bytes') -> None"
+      "signature": "\"(status: 'int', headers: 'tuple[tuple[str, str], ...]', body: 'bytes') -> None\""
     },
     "conformance_report": {
       "kind": "function",
-      "signature": "(client: 'ObserverClient', *, invocations: 'Sequence[ObservationInvocation]' = (), semantic_vectors: 'Sequence[SemanticFactsConformanceVectors]' = (), semantic_validators: 'SemanticValidatorProvider | None' = None) -> 'ObserverConformanceResult'"
+      "signature": "\"(client: 'ObserverClient', *, invocations: 'Sequence[ObservationInvocation]' = (), semantic_vectors: 'Sequence[SemanticFactsConformanceVectors]' = (), semantic_validators: 'SemanticValidatorProvider | None' = None) -> 'ObserverConformanceResult'\""
     },
     "observer_schema_bundle": {
       "kind": "function",
-      "signature": "() -> 'dict[str, Any]'"
+      "signature": "\"() -> 'dict[str, Any]'\""
     }
   },
   "module": "stove0_observer_support"

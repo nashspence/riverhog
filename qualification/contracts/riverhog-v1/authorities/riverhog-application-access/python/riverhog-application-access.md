@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: python:riverhog-application-access:riverhog-application-access:4cfffe4208 -->
+<!-- contract-element: python:riverhog-application-access:riverhog-application-access:bac1c08f38 -->
 
 Exact externally visible contract owned by this semantic dossier.
 
@@ -16,16 +16,17 @@ Exact externally visible contract owned by this semantic dossier.
 
 ## External contract
 
-<a id="s-495fe6be8d"></a>
+<a id="s-7b1d96f90d"></a>
 | Field | Shape |
 |---|---|
-| <a id="s-757b63970b"></a>`distribution` | "riverhog-application-access" |
-| <a id="s-0ba0db7885"></a>`exports` | additional keys=`ALL_PERMISSIONS`, `ALL_RESOURCES`, `APPLICATION_KEY_ID_PATTERN`, `APPLICATION_NAME_PATTERN`, `APPLICATION_PERMISSIONS`, `ARCHIVES_MANAGE`, `ARCHIVES_READ`, `ApplicationAccess`, `ApplicationAccessError`, `ApplicationAccessGrant`, `ApplicationAccessGrantSet`, `ApplicationKeyId`, `ApplicationName`, `ApplicationPermission`, `ApplicationResource`, `CATALOG_READ`, `COLLECTIONS_CREATE`, `COLLECTIONS_DELETE`, `COLLECTION_DESCRIPTIONS_MANAGE`, `COLLECTION_PREFIX`, `COLLECTION_SCOPED_PERMISSIONS`, `COLLECTION_TAGS_MANAGE`, `COLLECTION_TRANSFORMS_CONTROL`, `COLLECTION_TRANSFORMS_EXECUTE`, `EVENTS_READ`, `EVENTS_READ_ALL`, `KEYS_MANAGE`, `MonthlyDownloadQuotaBytes`, `PROVENANCE_EXPORT`, `PROVENANCE_READ`, `QUOTAS_MANAGE`, `RETRIEVAL_MANAGE`, `TAG_PREFIX`, `access_covers`, `collection_resource`, `normalize_access`, `permission_covers`, `permission_resources`, `resource_covers`, `tag_resource`, `validate_application_key_id`, `validate_application_name`, `validate_application_resource`, `validate_monthly_download_quota_bytes` |
-| <a id="s-bbebd6deb0"></a>`module` | "riverhog_application_access" |
+| <a id="s-0a69c3f8e0"></a>`candidate_id` | "python:riverhog-application-access:riverhog_application_access" |
+| <a id="s-816d959f74"></a>`distribution` | "riverhog-application-access" |
+| <a id="s-7b0c60bf13"></a>`exports` | additional keys=`ALL_PERMISSIONS`, `ALL_RESOURCES`, `APPLICATION_KEY_ID_PATTERN`, `APPLICATION_NAME_PATTERN`, `APPLICATION_PERMISSIONS`, `ARCHIVES_MANAGE`, `ARCHIVES_READ`, `ApplicationAccess`, `ApplicationAccessError`, `ApplicationAccessGrant`, `ApplicationAccessGrantSet`, `ApplicationKeyId`, `ApplicationName`, `ApplicationPermission`, `ApplicationResource`, `CATALOG_READ`, `COLLECTIONS_CREATE`, `COLLECTIONS_DELETE`, `COLLECTION_DESCRIPTIONS_MANAGE`, `COLLECTION_PREFIX`, `COLLECTION_SCOPED_PERMISSIONS`, `COLLECTION_TAGS_MANAGE`, `COLLECTION_TRANSFORMS_CONTROL`, `COLLECTION_TRANSFORMS_EXECUTE`, `EVENTS_READ`, `EVENTS_READ_ALL`, `KEYS_MANAGE`, `MonthlyDownloadQuotaBytes`, `PROVENANCE_EXPORT`, `PROVENANCE_READ`, `QUOTAS_MANAGE`, `RETRIEVAL_MANAGE`, `TAG_PREFIX`, `access_covers`, `collection_resource`, `normalize_access`, `permission_covers`, `permission_resources`, `resource_covers`, `tag_resource`, `validate_application_key_id`, `validate_application_name`, `validate_application_resource`, `validate_monthly_download_quota_bytes` |
+| <a id="s-c8c4afa754"></a>`module` | "riverhog_application_access" |
 
 ## Governing policies
 
-- <a id="pa-78d7bf4534"></a>[compatibility/python-api/v1](../../../policies/index.md#p-e574772ba5)
+- <a id="pa-0b28d0d42e"></a>[compatibility/python-api/v1](../../../policies/index.md#p-e574772ba5)
 
 ## Evidence
 
@@ -37,20 +38,21 @@ Exact externally visible contract owned by this semantic dossier.
 ### Executable sources
 
 - [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
-- [python:riverhog-application-access](../../../evidence/sources.md#src-8a8a1adad7) — `packages/riverhog-application-access/src/riverhog_application_access/__init__.py::<module>`
+- [python:riverhog-application-access:riverhog_application_access](../../../evidence/sources.md#src-9d9ce5fdac) — `packages/riverhog-application-access/src/riverhog_application_access/__init__.py`
 
 ### Machine authority
 
-- `/external_contract/python/3`
+- `/external_contract/python/12`
 
 ### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 09a41f6eae0338b377ad4a80b56a4b00ee98c104c843b3ef974fd8ac6b07e309 -->
+<!-- exact-contract-value: 1df0dd8a13cce277730e52ad3319a505ddfbbf68a3271f10dfd30b5b6921dc26 -->
 
 ```json
 {
+  "candidate_id": "python:riverhog-application-access:riverhog_application_access",
   "distribution": "riverhog-application-access",
   "exports": {
     "ALL_PERMISSIONS": {
@@ -112,7 +114,7 @@ The following JSON is the complete value owned at each machine-authority pointer
         }
       ],
       "kind": "class",
-      "signature": "(permission: 'ApplicationPermission', resource: 'ApplicationResource' = '*') -> None"
+      "signature": "\"(permission: 'ApplicationPermission', resource: 'ApplicationResource' = '*') -> None\""
     },
     "ApplicationAccessError": {
       "kind": "class",
@@ -123,26 +125,26 @@ The following JSON is the complete value owned at each machine-authority pointer
       "members": {
         "as_access": {
           "kind": "method",
-          "signature": "(self) -> 'ApplicationAccess'"
+          "signature": "\"(self) -> 'ApplicationAccess'\""
         },
         "validate_relationship": {
           "kind": "method",
-          "signature": "(self) -> 'ApplicationAccessGrant'"
+          "signature": "\"(self) -> 'ApplicationAccessGrant'\""
         }
       },
       "schema_sha256": "a587a8ba6e6662132a0d755eaea10095b5ab546cf17c3e2bb525d93630fb90e1",
-      "signature": "(*, permission: ApplicationPermission, resource: ApplicationResource = '*') -> None"
+      "signature": "\"(*, permission: ApplicationPermission, resource: ApplicationResource = '*') -> None\""
     },
     "ApplicationAccessGrantSet": {
       "kind": "class",
       "members": {
         "validate_set": {
           "kind": "method",
-          "signature": "(self) -> 'ApplicationAccessGrantSet'"
+          "signature": "\"(self) -> 'ApplicationAccessGrantSet'\""
         }
       },
       "schema_sha256": "d10037ab0ccafe138959e093e3b62aeac69ae2b01271ebeabc7550a9ecc98897",
-      "signature": "(root: 'RootModelRootType' = PydanticUndefined) -> None"
+      "signature": "\"(root: 'RootModelRootType' = PydanticUndefined) -> None\""
     },
     "ApplicationKeyId": {
       "kind": "type-alias",
@@ -244,47 +246,47 @@ The following JSON is the complete value owned at each machine-authority pointer
     },
     "access_covers": {
       "kind": "function",
-      "signature": "(grantor: 'ApplicationAccess', requested: 'ApplicationAccess') -> 'bool'"
+      "signature": "\"(grantor: 'ApplicationAccess', requested: 'ApplicationAccess') -> 'bool'\""
     },
     "collection_resource": {
       "kind": "function",
-      "signature": "(collection_id: 'int | str') -> 'str'"
+      "signature": "\"(collection_id: 'int | str') -> 'str'\""
     },
     "normalize_access": {
       "kind": "function",
-      "signature": "(values: 'Iterable[ApplicationAccess | tuple[str, str]]') -> 'tuple[ApplicationAccess, ...]'"
+      "signature": "\"(values: 'Iterable[ApplicationAccess | tuple[str, str]]') -> 'tuple[ApplicationAccess, ...]'\""
     },
     "permission_covers": {
       "kind": "function",
-      "signature": "(grantor: 'str', requested: 'str') -> 'bool'"
+      "signature": "\"(grantor: 'str', requested: 'str') -> 'bool'\""
     },
     "permission_resources": {
       "kind": "function",
-      "signature": "(access: 'Iterable[ApplicationAccess]', permission: 'str') -> 'set[str]'"
+      "signature": "\"(access: 'Iterable[ApplicationAccess]', permission: 'str') -> 'set[str]'\""
     },
     "resource_covers": {
       "kind": "function",
-      "signature": "(grantor: 'str', requested: 'str') -> 'bool'"
+      "signature": "\"(grantor: 'str', requested: 'str') -> 'bool'\""
     },
     "tag_resource": {
       "kind": "function",
-      "signature": "(tag: 'str') -> 'str'"
+      "signature": "\"(tag: 'str') -> 'str'\""
     },
     "validate_application_key_id": {
       "kind": "function",
-      "signature": "(value: 'str') -> 'str'"
+      "signature": "\"(value: 'str') -> 'str'\""
     },
     "validate_application_name": {
       "kind": "function",
-      "signature": "(value: 'str') -> 'str'"
+      "signature": "\"(value: 'str') -> 'str'\""
     },
     "validate_application_resource": {
       "kind": "function",
-      "signature": "(value: 'str') -> 'str'"
+      "signature": "\"(value: 'str') -> 'str'\""
     },
     "validate_monthly_download_quota_bytes": {
       "kind": "function",
-      "signature": "(value: 'object') -> 'int'"
+      "signature": "\"(value: 'object') -> 'int'\""
     }
   },
   "module": "riverhog_application_access"

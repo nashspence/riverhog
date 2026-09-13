@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: configuration-environment:riverhog-server:riverhog-ingress-source-read-chunk-bytes:ca00cdd5ae -->
+<!-- contract-element: configuration-environment:riverhog-server:riverhog-ingress-source-read-chunk-bytes:e4e966479a -->
 
 Exact externally visible contract owned by this semantic dossier.
 
@@ -10,21 +10,21 @@ Exact externally visible contract owned by this semantic dossier.
 |---|---|
 | Authority | [riverhog-server](../index.md) |
 | Interface | [configuration-environment](index.md) |
-| Family | [runtime](families/runtime/index.md) |
+| Family | [settings](families/settings/index.md) |
 | Contract elements | 1 |
 | Extent decisions | 1 |
 
 ## External contract
 
-<a id="s-79f8ec8b66"></a>
+<a id="s-bff615c87e"></a>
 | Field | Shape |
 |---|---|
-| <a id="s-ff4ac2a6d7"></a>`classification` | "runtime" |
-| <a id="s-3b66af5af9"></a>`consumers` | ["riverhog-server"] |
-| <a id="s-aa68141c3c"></a>`disposition` | "contractual" |
-| <a id="s-523002be62"></a>`id` | "riverhog-server:environment:RIVERHOG_INGRESS_SOURCE_READ_CHUNK_BYTES" |
-| <a id="s-af9e9db7e5"></a>`name` | "RIVERHOG_INGRESS_SOURCE_READ_CHUNK_BYTES" |
-| <a id="s-228a0a0fe8"></a>`owner` | "riverhog-server" |
+| <a id="s-b6aa311db5"></a>`consumers` | ["riverhog-server"] |
+| <a id="s-62067d9431"></a>`default_expressions` | ["unset"] |
+| <a id="s-27e6fb1e12"></a>`id` | "riverhog-server:environment:RIVERHOG_INGRESS_SOURCE_READ_CHUNK_BYTES" |
+| <a id="s-1e94bb914a"></a>`input_shape` | "environment-string" |
+| <a id="s-6be1a5a47c"></a>`name` | "RIVERHOG_INGRESS_SOURCE_READ_CHUNK_BYTES" |
+| <a id="s-cf178005dd"></a>`owner` | "riverhog-server" |
 
 ### Progression, limits, and lifecycle
 
@@ -34,12 +34,12 @@ Shared facts for every subject below: configuration="RIVERHOG_INGRESS_SOURCE_REA
 
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
-| [RIVERHOG_INGRESS_SOURCE_READ_CHUNK_BYTES](#s-79f8ec8b66) | `value · configured-value · operational_policy` | shared above |
+| [RIVERHOG_INGRESS_SOURCE_READ_CHUNK_BYTES](#s-bff615c87e) | `value · configured-value · operational_policy` | shared above |
 
 ## Governing policies
 
-- <a id="pa-501c901368"></a>[compatibility/configuration/v1](../../../policies/index.md#p-8dc08bb461)
-- <a id="pa-2f324217ee"></a>[extent-rule/configured-capacity/v1](../../../policies/index.md#p-3ebc61fc99)
+- <a id="pa-57dd29d8ce"></a>[compatibility/configuration/v1](../../../policies/index.md#p-8dc08bb461)
+- <a id="pa-26e3a9ea28"></a>[extent-rule/configured-capacity/v1](../../../policies/index.md#p-3ebc61fc99)
 
 ## Evidence
 
@@ -50,37 +50,37 @@ Shared facts for every subject below: configuration="RIVERHOG_INGRESS_SOURCE_REA
 
 ### Executable sources
 
-- [configuration-environment:inventory](../../../evidence/sources.md#src-26b33461d2) — `qualification/configuration-contract.toml`
 - [configuration-environment:riverhog-server:RIVERHOG_INGRESS_SOURCE_READ_CHUNK_BYTES](../../../evidence/sources.md#src-bf9ecd1b0a) — `riverhog/src/riverhog_core/throughput.py`
 - [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
 
 ### Configuration authority and bindings
 
-The declaration fixes normative ownership and classification. The parser expression is the source-linked authority for the accepted domain and effective default exercised by qualification.
+The owning implementation defines the setting. The parser expression records each independently discovered consumer binding and effective default exercised by qualification.
 
 | Kind | Consumer | Source | Authority |
 |---|---|---|---|
-| declaration | — | `qualification/configuration-contract.toml` | `/environment/14/names` |
-| parser | `riverhog-server` | `riverhog/src/riverhog_core/throughput.py` | `_env_bytes(values, 'RIVERHOG_INGRESS_SOURCE_READ_CHUNK_BYTES', DEFAULT_SOURCE_READ_CHUNK_BYTES)` |
+| parser | `riverhog-server` | `riverhog/src/riverhog_core/throughput.py` | `values.get(name)` |
 
 ### Machine authority
 
-- `/external_contract/configuration_environment/57`
+- `/external_contract/configuration_environment/62`
 
 ### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 861da022cfbb4b8ab947e778a18ea4ba176a26a835f8f6ccb7150f9c2557d628 -->
+<!-- exact-contract-value: d9c9d557b9ffcdf9e31ed932e3b71ceca8d706b22a0700f7706b9c3c15e21b4e -->
 
 ```json
 {
-  "classification": "runtime",
   "consumers": [
     "riverhog-server"
   ],
-  "disposition": "contractual",
+  "default_expressions": [
+    "unset"
+  ],
   "id": "riverhog-server:environment:RIVERHOG_INGRESS_SOURCE_READ_CHUNK_BYTES",
+  "input_shape": "environment-string",
   "name": "RIVERHOG_INGRESS_SOURCE_READ_CHUNK_BYTES",
   "owner": "riverhog-server"
 }

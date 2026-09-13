@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: python:gogurt-listener-runtime:gogurt-listener-runtime:5c2769595e -->
+<!-- contract-element: python:gogurt-listener-runtime:gogurt-listener-runtime:79c4f2755d -->
 
 Exact externally visible contract owned by this semantic dossier.
 
@@ -16,16 +16,17 @@ Exact externally visible contract owned by this semantic dossier.
 
 ## External contract
 
-<a id="s-81cd0a2d8d"></a>
+<a id="s-495fe6be8d"></a>
 | Field | Shape |
 |---|---|
-| <a id="s-c6e580bb00"></a>`distribution` | "gogurt-listener-runtime" |
-| <a id="s-1c45d58c2b"></a>`exports` | additional keys=`GOGURT_LISTENER_HOST_PROVIDER_BINDING_FORMAT`, `GOGURT_LISTENER_HOST_PROVIDER_ENTRY_POINT_GROUP`, `LISTENER_CONFIG_SCHEMA`, `LISTENER_HEARTBEAT_SCHEMA`, `LISTENER_OPERATIONS`, `LISTENER_STATE_SCHEMA`, `LISTENER_STATUS_SCHEMA`, `ListenerAdapter`, `ListenerConfig`, `ListenerError`, `ListenerHostProviderBinding`, `ListenerLock`, `ListenerPlatformError`, `ListenerRuntime`, `ListenerRuntimePaths`, `ListenerStore`, `NativeListenerStatus`, `PRIVATE_DIRECTORY_MODE`, `PRIVATE_FILE_MODE`, `atomic_write`, `ensure_private_directory`, `ensure_private_file`, `ensure_private_files`, `install_listener`, `listener_status`, `open_private_text_append`, `promote_staged`, `restart_listener`, `run_listener`, `stage_bytes`, `start_listener`, `stop_listener`, `uninstall_listener` |
-| <a id="s-b9f847f59f"></a>`module` | "gogurt_listener_runtime" |
+| <a id="s-adbaa67eec"></a>`candidate_id` | "python:gogurt-listener-runtime:gogurt_listener_runtime" |
+| <a id="s-757b63970b"></a>`distribution` | "gogurt-listener-runtime" |
+| <a id="s-0ba0db7885"></a>`exports` | additional keys=`GOGURT_LISTENER_HOST_PROVIDER_BINDING_FORMAT`, `GOGURT_LISTENER_HOST_PROVIDER_ENTRY_POINT_GROUP`, `LISTENER_CONFIG_SCHEMA`, `LISTENER_HEARTBEAT_SCHEMA`, `LISTENER_OPERATIONS`, `LISTENER_STATE_SCHEMA`, `LISTENER_STATUS_SCHEMA`, `ListenerAdapter`, `ListenerConfig`, `ListenerError`, `ListenerHostProviderBinding`, `ListenerLock`, `ListenerPlatformError`, `ListenerRuntime`, `ListenerRuntimePaths`, `ListenerStore`, `NativeListenerStatus`, `PRIVATE_DIRECTORY_MODE`, `PRIVATE_FILE_MODE`, `atomic_write`, `ensure_private_directory`, `ensure_private_file`, `ensure_private_files`, `install_listener`, `listener_status`, `open_private_text_append`, `promote_staged`, `restart_listener`, `run_listener`, `stage_bytes`, `start_listener`, `stop_listener`, `uninstall_listener` |
+| <a id="s-bbebd6deb0"></a>`module` | "gogurt_listener_runtime" |
 
 ## Governing policies
 
-- <a id="pa-9712d193c5"></a>[compatibility/python-api/v1](../../../policies/index.md#p-e574772ba5)
+- <a id="pa-9ff964a000"></a>[compatibility/python-api/v1](../../../policies/index.md#p-e574772ba5)
 
 ## Evidence
 
@@ -37,20 +38,21 @@ Exact externally visible contract owned by this semantic dossier.
 ### Executable sources
 
 - [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
-- [python:gogurt-listener-runtime](../../../evidence/sources.md#src-d3bf6489d6) — `reference/gogurt/packages/listener-runtime/src/gogurt_listener_runtime/__init__.py::<module>`
+- [python:gogurt-listener-runtime:gogurt_listener_runtime](../../../evidence/sources.md#src-259980dd25) — `reference/gogurt/packages/listener-runtime/src/gogurt_listener_runtime/__init__.py`
 
 ### Machine authority
 
-- `/external_contract/python/14`
+- `/external_contract/python/3`
 
 ### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 41173d54de2d90b1dad2313e619dfea4cea4cd43eb9eb333af8dfdc67a9d6b68 -->
+<!-- exact-contract-value: b96424c9e4462d18204524e3022e6262bc261373de09c562346b5b12643cc579 -->
 
 ```json
 {
+  "candidate_id": "python:gogurt-listener-runtime:gogurt_listener_runtime",
   "distribution": "gogurt-listener-runtime",
   "exports": {
     "GOGURT_LISTENER_HOST_PROVIDER_BINDING_FORMAT": {
@@ -93,30 +95,30 @@ The following JSON is the complete value owned at each machine-authority pointer
       "members": {
         "process_is_running": {
           "kind": "method",
-          "signature": "(self, pid: 'int') -> 'bool'"
+          "signature": "\"(self, pid: 'int') -> 'bool'\""
         },
         "register": {
           "kind": "method",
-          "signature": "(self, paths: 'ListenerRuntimePaths', command: 'Sequence[str]') -> 'None'"
+          "signature": "\"(self, paths: 'ListenerRuntimePaths', command: 'Sequence[str]') -> 'None'\""
         },
         "start": {
           "kind": "method",
-          "signature": "(self, paths: 'ListenerRuntimePaths') -> 'None'"
+          "signature": "\"(self, paths: 'ListenerRuntimePaths') -> 'None'\""
         },
         "status": {
           "kind": "method",
-          "signature": "(self, paths: 'ListenerRuntimePaths') -> 'NativeListenerStatus'"
+          "signature": "\"(self, paths: 'ListenerRuntimePaths') -> 'NativeListenerStatus'\""
         },
         "stop": {
           "kind": "method",
-          "signature": "(self, paths: 'ListenerRuntimePaths') -> 'None'"
+          "signature": "\"(self, paths: 'ListenerRuntimePaths') -> 'None'\""
         },
         "unregister": {
           "kind": "method",
-          "signature": "(self, paths: 'ListenerRuntimePaths') -> 'None'"
+          "signature": "\"(self, paths: 'ListenerRuntimePaths') -> 'None'\""
         }
       },
-      "signature": "(*args, **kwargs)"
+      "signature": "'(*args, **kwargs)'"
     },
     "ListenerConfig": {
       "fields": [
@@ -165,22 +167,22 @@ The following JSON is the complete value owned at each machine-authority pointer
       "members": {
         "content": {
           "kind": "method",
-          "signature": "(self) -> 'bytes'"
+          "signature": "\"(self) -> 'bytes'\""
         },
         "payload": {
           "kind": "method",
-          "signature": "(self) -> 'dict[str, object]'"
+          "signature": "\"(self) -> 'dict[str, object]'\""
         },
         "read": {
           "kind": "classmethod",
-          "signature": "(cls, path: 'Path') -> 'ListenerConfig'"
+          "signature": "\"(cls, path: 'Path') -> 'ListenerConfig'\""
         },
         "write": {
           "kind": "method",
-          "signature": "(self, path: 'Path') -> 'None'"
+          "signature": "\"(self, path: 'Path') -> 'None'\""
         }
       },
-      "signature": "(executable: 'Path', routes_file: 'Path', actions_dir: 'Path | None', interval_seconds: 'float', state_dir: 'Path', mounted_volume_provider: 'GogurtProviderReference', listener_host_provider: 'GogurtProviderReference', autorun: 'bool' = True) -> None"
+      "signature": "\"(executable: 'Path', routes_file: 'Path', actions_dir: 'Path | None', interval_seconds: 'float', state_dir: 'Path', mounted_volume_provider: 'GogurtProviderReference', listener_host_provider: 'GogurtProviderReference', autorun: 'bool' = True) -> None\""
     },
     "ListenerError": {
       "kind": "class",
@@ -215,11 +217,11 @@ The following JSON is the complete value owned at each machine-authority pointer
         }
       ],
       "kind": "class",
-      "signature": "(provider_id: 'str', paths: 'Callable[[], ListenerRuntimePaths]', adapter: 'Callable[[], ListenerAdapter]', executable: 'Callable[[str | None], Path]', format: 'str' = 'gogurt-listener-host-provider-binding/v1') -> None"
+      "signature": "\"(provider_id: 'str', paths: 'Callable[[], ListenerRuntimePaths]', adapter: 'Callable[[], ListenerAdapter]', executable: 'Callable[[str | None], Path]', format: 'str' = 'gogurt-listener-host-provider-binding/v1') -> None\""
     },
     "ListenerLock": {
       "kind": "class",
-      "signature": "(path: 'Path') -> 'None'"
+      "signature": "\"(path: 'Path') -> 'None'\""
     },
     "ListenerPlatformError": {
       "kind": "class",
@@ -230,18 +232,18 @@ The following JSON is the complete value owned at each machine-authority pointer
       "members": {
         "request_stop": {
           "kind": "method",
-          "signature": "(self) -> 'None'"
+          "signature": "\"(self) -> 'None'\""
         },
         "run": {
           "kind": "method",
-          "signature": "(self) -> 'None'"
+          "signature": "\"(self) -> 'None'\""
         },
         "run_once": {
           "kind": "method",
-          "signature": "(self) -> 'None'"
+          "signature": "\"(self) -> 'None'\""
         }
       },
-      "signature": "(config: 'ListenerConfig', paths: 'ListenerRuntimePaths', *, mounted_volume_provider: 'MountedVolumeProvider', product_version: 'str', clock: 'Callable[[], float]' = <built-in function time>, sleep: 'Callable[[float], None]' = <built-in function sleep>, logger: 'logging.Logger | None' = None) -> 'None'"
+      "signature": "\"(config: 'ListenerConfig', paths: 'ListenerRuntimePaths', *, mounted_volume_provider: 'MountedVolumeProvider', product_version: 'str', clock: 'Callable[[], float]' = <built-in function time>, sleep: 'Callable[[float], None]' = <built-in function sleep>, logger: 'logging.Logger | None' = None) -> 'None'\""
     },
     "ListenerRuntimePaths": {
       "fields": [
@@ -282,41 +284,41 @@ The following JSON is the complete value owned at each machine-authority pointer
         }
       ],
       "kind": "class",
-      "signature": "(state_dir: 'Path', config_file: 'Path', database_file: 'Path', heartbeat_file: 'Path', lock_file: 'Path', log_file: 'Path', stop_file: 'Path') -> None"
+      "signature": "\"(state_dir: 'Path', config_file: 'Path', database_file: 'Path', heartbeat_file: 'Path', lock_file: 'Path', log_file: 'Path', stop_file: 'Path') -> None\""
     },
     "ListenerStore": {
       "kind": "class",
       "members": {
         "create": {
           "kind": "method",
-          "signature": "(self) -> 'None'"
+          "signature": "\"(self) -> 'None'\""
         },
         "finish_dispatch": {
           "kind": "method",
-          "signature": "(self, dispatch_id: 'str', *, return_code: 'int | None', error: 'str | None', uncertain: 'bool' = False, now: 'float') -> 'str'"
+          "signature": "\"(self, dispatch_id: 'str', *, return_code: 'int | None', error: 'str | None', uncertain: 'bool' = False, now: 'float') -> 'str'\""
         },
         "mark_running_uncertain": {
           "kind": "method",
-          "signature": "(self, dispatch_id: 'str', *, error: 'str', now: 'float') -> 'None'"
+          "signature": "\"(self, dispatch_id: 'str', *, error: 'str', now: 'float') -> 'None'\""
         },
         "observe": {
           "kind": "method",
-          "signature": "(self, mount_points: 'Sequence[Path]', planner: 'Callable[[Path], Mapping[str, object]]', *, now: 'float') -> 'list[str]'"
+          "signature": "\"(self, mount_points: 'Sequence[Path]', planner: 'Callable[[Path], Mapping[str, object]]', *, now: 'float') -> 'list[str]'\""
         },
         "runnable": {
           "kind": "method",
-          "signature": "(self, *, now: 'float', limit: 'int') -> 'list[str]'"
+          "signature": "\"(self, *, now: 'float', limit: 'int') -> 'list[str]'\""
         },
         "start_dispatch": {
           "kind": "method",
-          "signature": "(self, dispatch_id: 'str', *, now: 'float') -> 'dict[str, object] | None'"
+          "signature": "\"(self, dispatch_id: 'str', *, now: 'float') -> 'dict[str, object] | None'\""
         },
         "summary": {
           "kind": "method",
-          "signature": "(self, *, timeout_seconds: 'float' = 30) -> 'dict[str, object]'"
+          "signature": "\"(self, *, timeout_seconds: 'float' = 30) -> 'dict[str, object]'\""
         }
       },
-      "signature": "(path: 'Path') -> 'None'"
+      "signature": "\"(path: 'Path') -> 'None'\""
     },
     "NativeListenerStatus": {
       "fields": [
@@ -337,7 +339,7 @@ The following JSON is the complete value owned at each machine-authority pointer
         }
       ],
       "kind": "class",
-      "signature": "(installed: 'bool', enabled: 'bool', running: 'bool') -> None"
+      "signature": "\"(installed: 'bool', enabled: 'bool', running: 'bool') -> None\""
     },
     "PRIVATE_DIRECTORY_MODE": {
       "kind": "constant",
@@ -349,59 +351,59 @@ The following JSON is the complete value owned at each machine-authority pointer
     },
     "atomic_write": {
       "kind": "function",
-      "signature": "(destination: 'Path', content: 'bytes', *, mode: 'int') -> 'None'"
+      "signature": "\"(destination: 'Path', content: 'bytes', *, mode: 'int') -> 'None'\""
     },
     "ensure_private_directory": {
       "kind": "function",
-      "signature": "(path: 'Path') -> 'None'"
+      "signature": "\"(path: 'Path') -> 'None'\""
     },
     "ensure_private_file": {
       "kind": "function",
-      "signature": "(path: 'Path') -> 'None'"
+      "signature": "\"(path: 'Path') -> 'None'\""
     },
     "ensure_private_files": {
       "kind": "function",
-      "signature": "(paths: 'Iterable[Path]') -> 'None'"
+      "signature": "\"(paths: 'Iterable[Path]') -> 'None'\""
     },
     "install_listener": {
       "kind": "function",
-      "signature": "(routes_file: 'Path', *, actions_dir: 'Path | None', interval_seconds: 'float' = 2.0, executable: 'Path', paths: 'ListenerRuntimePaths', adapter: 'ListenerAdapter', product_version: 'str', mounted_volume_provider: 'GogurtProviderReference', listener_host_provider: 'GogurtProviderReference', wait_for_health: 'bool' = True) -> 'dict[str, object]'"
+      "signature": "\"(routes_file: 'Path', *, actions_dir: 'Path | None', interval_seconds: 'float' = 2.0, executable: 'Path', paths: 'ListenerRuntimePaths', adapter: 'ListenerAdapter', product_version: 'str', mounted_volume_provider: 'GogurtProviderReference', listener_host_provider: 'GogurtProviderReference', wait_for_health: 'bool' = True) -> 'dict[str, object]'\""
     },
     "listener_status": {
       "kind": "function",
-      "signature": "(*, paths: 'ListenerRuntimePaths', adapter: 'ListenerAdapter', product_version: 'str', now: 'float | None' = None) -> 'dict[str, object]'"
+      "signature": "\"(*, paths: 'ListenerRuntimePaths', adapter: 'ListenerAdapter', product_version: 'str', now: 'float | None' = None) -> 'dict[str, object]'\""
     },
     "open_private_text_append": {
       "kind": "function",
-      "signature": "(path: 'Path', *, encoding: 'str', errors: 'str | None') -> 'TextIO'"
+      "signature": "\"(path: 'Path', *, encoding: 'str', errors: 'str | None') -> 'TextIO'\""
     },
     "promote_staged": {
       "kind": "function",
-      "signature": "(temporary: 'Path', destination: 'Path', *, mode: 'int') -> 'None'"
+      "signature": "\"(temporary: 'Path', destination: 'Path', *, mode: 'int') -> 'None'\""
     },
     "restart_listener": {
       "kind": "function",
-      "signature": "(*, paths: 'ListenerRuntimePaths', adapter: 'ListenerAdapter', product_version: 'str') -> 'dict[str, object]'"
+      "signature": "\"(*, paths: 'ListenerRuntimePaths', adapter: 'ListenerAdapter', product_version: 'str') -> 'dict[str, object]'\""
     },
     "run_listener": {
       "kind": "function",
-      "signature": "(config_file: 'Path', *, mounted_volume_provider: 'MountedVolumeProvider', product_version: 'str') -> 'None'"
+      "signature": "\"(config_file: 'Path', *, mounted_volume_provider: 'MountedVolumeProvider', product_version: 'str') -> 'None'\""
     },
     "stage_bytes": {
       "kind": "function",
-      "signature": "(destination: 'Path', content: 'bytes', *, mode: 'int') -> 'Path'"
+      "signature": "\"(destination: 'Path', content: 'bytes', *, mode: 'int') -> 'Path'\""
     },
     "start_listener": {
       "kind": "function",
-      "signature": "(*, paths: 'ListenerRuntimePaths', adapter: 'ListenerAdapter', product_version: 'str') -> 'dict[str, object]'"
+      "signature": "\"(*, paths: 'ListenerRuntimePaths', adapter: 'ListenerAdapter', product_version: 'str') -> 'dict[str, object]'\""
     },
     "stop_listener": {
       "kind": "function",
-      "signature": "(*, paths: 'ListenerRuntimePaths', adapter: 'ListenerAdapter', product_version: 'str') -> 'dict[str, object]'"
+      "signature": "\"(*, paths: 'ListenerRuntimePaths', adapter: 'ListenerAdapter', product_version: 'str') -> 'dict[str, object]'\""
     },
     "uninstall_listener": {
       "kind": "function",
-      "signature": "(*, paths: 'ListenerRuntimePaths', adapter: 'ListenerAdapter', product_version: 'str') -> 'dict[str, object]'"
+      "signature": "\"(*, paths: 'ListenerRuntimePaths', adapter: 'ListenerAdapter', product_version: 'str') -> 'dict[str, object]'\""
     }
   },
   "module": "gogurt_listener_runtime"

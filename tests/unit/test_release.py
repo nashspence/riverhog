@@ -140,7 +140,7 @@ def test_release_contract_classifies_every_coordinated_distribution() -> None:
     }
     release = tomllib.loads((REPO_ROOT / "release.toml").read_text(encoding="utf-8"))
     assert release["compatibility"]["python_api"].startswith(
-        "Reusable-library declared public-module exports"
+        "Freeze-protected declared public-module exports"
     )
     assert {owner["id"] for owner in release["state"]["owners"]} == {
         "gogurt-listener",

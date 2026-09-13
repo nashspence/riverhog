@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: configuration-environment:piggity:piggity-upload-finalize-timeout-seconds:ff1f8afb32 -->
+<!-- contract-element: configuration-environment:piggity:piggity-upload-finalize-timeout-seconds:9dfbb3ac4b -->
 
 Exact externally visible contract owned by this semantic dossier.
 
@@ -10,21 +10,21 @@ Exact externally visible contract owned by this semantic dossier.
 |---|---|
 | Authority | [piggity](../index.md) |
 | Interface | [configuration-environment](index.md) |
-| Family | [runtime](index.md#f-b2e9f036cd) |
+| Family | [settings](index.md#f-63bc29edfb) |
 | Contract elements | 1 |
 | Extent decisions | 1 |
 
 ## External contract
 
-<a id="s-1966a8d0ec"></a>
+<a id="s-b7a4f6f148"></a>
 | Field | Shape |
 |---|---|
-| <a id="s-88eb5b5a25"></a>`classification` | "runtime" |
-| <a id="s-9a2311e6cd"></a>`consumers` | ["piggity"] |
-| <a id="s-2e888d0743"></a>`disposition` | "contractual" |
-| <a id="s-cf3af0a6fd"></a>`id` | "piggity:environment:PIGGITY_UPLOAD_FINALIZE_TIMEOUT_SECONDS" |
-| <a id="s-4341315209"></a>`name` | "PIGGITY_UPLOAD_FINALIZE_TIMEOUT_SECONDS" |
-| <a id="s-4ea39658ad"></a>`owner` | "piggity" |
+| <a id="s-7590734788"></a>`consumers` | ["piggity"] |
+| <a id="s-d8ebd849d8"></a>`default_expressions` | ["unset"] |
+| <a id="s-a600f51a3c"></a>`id` | "piggity:environment:PIGGITY_UPLOAD_FINALIZE_TIMEOUT_SECONDS" |
+| <a id="s-81d1d3813e"></a>`input_shape` | "environment-string" |
+| <a id="s-727a81b3ac"></a>`name` | "PIGGITY_UPLOAD_FINALIZE_TIMEOUT_SECONDS" |
+| <a id="s-10a1945249"></a>`owner` | "piggity" |
 
 ### Progression, limits, and lifecycle
 
@@ -34,12 +34,12 @@ Shared facts for every subject below: configuration="PIGGITY_UPLOAD_FINALIZE_TIM
 
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
-| [PIGGITY_UPLOAD_FINALIZE_TIMEOUT_SECONDS](#s-1966a8d0ec) | `value · configured-value · operational_policy` | shared above |
+| [PIGGITY_UPLOAD_FINALIZE_TIMEOUT_SECONDS](#s-b7a4f6f148) | `value · configured-value · operational_policy` | shared above |
 
 ## Governing policies
 
-- <a id="pa-aa85cdcd4e"></a>[compatibility/configuration/v1](../../../policies/index.md#p-8dc08bb461)
-- <a id="pa-b33ce227c4"></a>[extent-rule/configured-capacity/v1](../../../policies/index.md#p-3ebc61fc99)
+- <a id="pa-83f0b3ae69"></a>[compatibility/configuration/v1](../../../policies/index.md#p-8dc08bb461)
+- <a id="pa-56e7e300e5"></a>[extent-rule/configured-capacity/v1](../../../policies/index.md#p-3ebc61fc99)
 
 ## Evidence
 
@@ -50,37 +50,37 @@ Shared facts for every subject below: configuration="PIGGITY_UPLOAD_FINALIZE_TIM
 
 ### Executable sources
 
-- [configuration-environment:inventory](../../../evidence/sources.md#src-26b33461d2) — `qualification/configuration-contract.toml`
 - [configuration-environment:piggity:PIGGITY_UPLOAD_FINALIZE_TIMEOUT_SECONDS](../../../evidence/sources.md#src-40c863880d) — `reference/riverhog/applications/piggity/src/piggity/main.py`
 - [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
 
 ### Configuration authority and bindings
 
-The declaration fixes normative ownership and classification. The parser expression is the source-linked authority for the accepted domain and effective default exercised by qualification.
+The owning implementation defines the setting. The parser expression records each independently discovered consumer binding and effective default exercised by qualification.
 
 | Kind | Consumer | Source | Authority |
 |---|---|---|---|
-| declaration | — | `qualification/configuration-contract.toml` | `/environment/2/names` |
 | parser | `piggity` | `reference/riverhog/applications/piggity/src/piggity/main.py` | `os.getenv('PIGGITY_UPLOAD_FINALIZE_TIMEOUT_SECONDS')` |
 
 ### Machine authority
 
-- `/external_contract/configuration_environment/8`
+- `/external_contract/configuration_environment/10`
 
 ### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 00c30a8aeaefc6e816289cabf9bea577a195ddb9a62181dbe3424578321a8e4d -->
+<!-- exact-contract-value: c4f5569d2f1b05e173bfc8eb4a04c5ca03b530c5c9a3af4cd89174590464822e -->
 
 ```json
 {
-  "classification": "runtime",
   "consumers": [
     "piggity"
   ],
-  "disposition": "contractual",
+  "default_expressions": [
+    "unset"
+  ],
   "id": "piggity:environment:PIGGITY_UPLOAD_FINALIZE_TIMEOUT_SECONDS",
+  "input_shape": "environment-string",
   "name": "PIGGITY_UPLOAD_FINALIZE_TIMEOUT_SECONDS",
   "owner": "piggity"
 }

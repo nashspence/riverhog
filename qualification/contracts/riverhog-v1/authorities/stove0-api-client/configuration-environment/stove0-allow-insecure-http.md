@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: configuration-environment:stove0-api-client:stove0-allow-insecure-http:4479c7e49f -->
+<!-- contract-element: configuration-environment:stove0-api-client:stove0-allow-insecure-http:03dc6fb209 -->
 
 Exact externally visible contract owned by this semantic dossier.
 
@@ -10,25 +10,25 @@ Exact externally visible contract owned by this semantic dossier.
 |---|---|
 | Authority | [stove0-api-client](../index.md) |
 | Interface | [configuration-environment](index.md) |
-| Family | [runtime](index.md#f-538df43105) |
+| Family | [settings](index.md#f-2409cf74f4) |
 | Contract elements | 1 |
 | Extent decisions | 0 |
 
 ## External contract
 
-<a id="s-24fc48da99"></a>
+<a id="s-d0c45c1a2b"></a>
 | Field | Shape |
 |---|---|
-| <a id="s-82da5037a6"></a>`classification` | "runtime" |
-| <a id="s-fa86d7a910"></a>`consumers` | ["stove0-api-client"] |
-| <a id="s-d1aff09a7b"></a>`disposition` | "contractual" |
-| <a id="s-0452f51736"></a>`id` | "stove0-api-client:environment:STOVE0_ALLOW_INSECURE_HTTP" |
-| <a id="s-071aa15ddd"></a>`name` | "STOVE0_ALLOW_INSECURE_HTTP" |
-| <a id="s-40f3826282"></a>`owner` | "stove0-api-client" |
+| <a id="s-47cc2d8760"></a>`consumers` | ["stove0-api-client"] |
+| <a id="s-d2d1e00bbb"></a>`default_expressions` | ["unset"] |
+| <a id="s-820d19aacb"></a>`id` | "stove0-api-client:environment:STOVE0_ALLOW_INSECURE_HTTP" |
+| <a id="s-2953890d77"></a>`input_shape` | "environment-string" |
+| <a id="s-a1035d4640"></a>`name` | "STOVE0_ALLOW_INSECURE_HTTP" |
+| <a id="s-5796450659"></a>`owner` | "stove0-api-client" |
 
 ## Governing policies
 
-- <a id="pa-7fda23d108"></a>[compatibility/configuration/v1](../../../policies/index.md#p-8dc08bb461)
+- <a id="pa-7777078974"></a>[compatibility/configuration/v1](../../../policies/index.md#p-8dc08bb461)
 
 ## Evidence
 
@@ -39,37 +39,37 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Executable sources
 
-- [configuration-environment:inventory](../../../evidence/sources.md#src-26b33461d2) — `qualification/configuration-contract.toml`
 - [configuration-environment:stove0-api-client:STOVE0_ALLOW_INSECURE_HTTP](../../../evidence/sources.md#src-a9f40fdb75) — `reference/stove0/packages/api-client/src/stove0_api_client/client.py`
 - [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
 
 ### Configuration authority and bindings
 
-The declaration fixes normative ownership and classification. The parser expression is the source-linked authority for the accepted domain and effective default exercised by qualification.
+The owning implementation defines the setting. The parser expression records each independently discovered consumer binding and effective default exercised by qualification.
 
 | Kind | Consumer | Source | Authority |
 |---|---|---|---|
-| declaration | — | `qualification/configuration-contract.toml` | `/environment/17/names` |
-| parser | `stove0-api-client` | `reference/stove0/packages/api-client/src/stove0_api_client/client.py` | `_boolean_env('STOVE0_ALLOW_INSECURE_HTTP', False)` |
+| parser | `stove0-api-client` | `reference/stove0/packages/api-client/src/stove0_api_client/client.py` | `os.getenv(name)` |
 
 ### Machine authority
 
-- `/external_contract/configuration_environment/80`
+- `/external_contract/configuration_environment/143`
 
 ### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: f81fdac4a9154b2e04b3ea638416272356353d44f3644b425831c20ec54c8d24 -->
+<!-- exact-contract-value: e8f456c42f63aeac466e31d910135d2cf9a6fa4772223df7134a5fd90c2ca40b -->
 
 ```json
 {
-  "classification": "runtime",
   "consumers": [
     "stove0-api-client"
   ],
-  "disposition": "contractual",
+  "default_expressions": [
+    "unset"
+  ],
   "id": "stove0-api-client:environment:STOVE0_ALLOW_INSECURE_HTTP",
+  "input_shape": "environment-string",
   "name": "STOVE0_ALLOW_INSECURE_HTTP",
   "owner": "stove0-api-client"
 }

@@ -19,19 +19,20 @@ Exact externally visible contract owned by this semantic dossier.
 <a id="s-868df593f6"></a>
 | Field | Shape |
 |---|---|
-| <a id="s-90af33dd67"></a>`classifications` | additional keys=`ADAPTER_ALLOW_INSECURE_HTTP`, `ADAPTER_MAX_CONNECTIONS`, `ADAPTER_TIMEOUT_SECONDS`, `ADAPTER_TOKEN_FILE`, `ADAPTER_URL`, `DOWNLOAD_SAFETY_BUFFER_BYTES`, `MONTHLY_DOWNLOAD_ALLOWANCE_BYTES` |
 | <a id="s-20593819b0"></a>`consumers` | ["riverhog-server"] |
-| <a id="s-b226e6cdee"></a>`disposition` | "contractual" |
 | <a id="s-d00519f807"></a>`id` | "riverhog-server:environment-pattern:RIVERHOG_ARCHIVE_STORE_{store}_{setting}" |
+| <a id="s-3016c4b244"></a>`input_shape` | "environment-string" |
 | <a id="s-d1cd0ff44c"></a>`owner` | "riverhog-server" |
 | <a id="s-84c52d0e1b"></a>`parameters` | additional keys=`setting`, `store` |
+| <a id="s-92cc250601"></a>`settings` | ["ADAPTER_URL","ADAPTER_TOKEN_FILE","ADAPTER_ALLOW_INSECURE_HTTP","ADAPTER_MAX_CONNECTIONS","ADAPTER_TIMEOUT_SECONDS","MONTHLY_DOWNLOAD_ALLOWANCE_BYTES","DOWNLOAD_SAFETY_BUFFER_BYTES"] |
+| <a id="s-7ba33b3116"></a>`source_symbol` | "_archive_store_environment_name" |
 | <a id="s-e55cd62afd"></a>`template` | "RIVERHOG_ARCHIVE_STORE_{store}_{setting}" |
 
 ### Progression, limits, and lifecycle
 
 #### [extent-rule/configured-capacity/v1](../../../policies/index.md#p-3ebc61fc99)
 
-Shared facts for every subject below: classification="runtime"; consumers=["riverhog-server"]; maximum=null; reason="operator-configured-capacity"
+Shared facts for every subject below: classification=null; consumers=["riverhog-server"]; maximum=null; reason="operator-configured-capacity"
 
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
@@ -55,17 +56,15 @@ Shared facts for every subject below: classification="runtime"; consumers=["rive
 ### Executable sources
 
 - [configuration-environment-pattern:riverhog-server:RIVERHOG_ARCHIVE_STORE_{store}_{setting}](../../../evidence/sources.md#src-3071ba44b3) — `riverhog/src/riverhog_core/runtime_config.py`
-- [configuration-environment:inventory](../../../evidence/sources.md#src-26b33461d2) — `qualification/configuration-contract.toml`
 - [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
 
 ### Configuration authority and bindings
 
-The declaration fixes normative ownership and classification. The parser expression is the source-linked authority for the accepted domain and effective default exercised by qualification.
+The owning implementation defines the setting. The parser expression records each independently discovered consumer binding and effective default exercised by qualification.
 
 | Kind | Consumer | Source | Authority |
 |---|---|---|---|
-| declaration | — | `qualification/configuration-contract.toml` | `/environment_pattern/0` |
-| parser | `riverhog-server` | `riverhog/src/riverhog_core/runtime_config.py` | `ARCHIVE_STORE_ENVIRONMENT_TEMPLATE and ARCHIVE_STORE_ENVIRONMENT_SETTINGS` |
+| parser | `riverhog-server` | `riverhog/src/riverhog_core/runtime_config.py` | `_archive_store_environment_name` |
 
 ### Machine authority
 
@@ -75,24 +74,15 @@ The declaration fixes normative ownership and classification. The parser express
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 050700ae9a296d8138337ce9ed60e8a389d11262bed489cd3004ad2e09eb2dad -->
+<!-- exact-contract-value: 5df1ffa17cdfa9e963e0fb7360f6e32b8d2b25967a478894dfe8112048d6f4e4 -->
 
 ```json
 {
-  "classifications": {
-    "ADAPTER_ALLOW_INSECURE_HTTP": "runtime",
-    "ADAPTER_MAX_CONNECTIONS": "runtime",
-    "ADAPTER_TIMEOUT_SECONDS": "runtime",
-    "ADAPTER_TOKEN_FILE": "credential",
-    "ADAPTER_URL": "identity",
-    "DOWNLOAD_SAFETY_BUFFER_BYTES": "runtime",
-    "MONTHLY_DOWNLOAD_ALLOWANCE_BYTES": "runtime"
-  },
   "consumers": [
     "riverhog-server"
   ],
-  "disposition": "contractual",
   "id": "riverhog-server:environment-pattern:RIVERHOG_ARCHIVE_STORE_{store}_{setting}",
+  "input_shape": "environment-string",
   "owner": "riverhog-server",
   "parameters": {
     "setting": [
@@ -109,6 +99,16 @@ The following JSON is the complete value owned at each machine-authority pointer
       "source": "RIVERHOG_ARCHIVE_STORES"
     }
   },
+  "settings": [
+    "ADAPTER_URL",
+    "ADAPTER_TOKEN_FILE",
+    "ADAPTER_ALLOW_INSECURE_HTTP",
+    "ADAPTER_MAX_CONNECTIONS",
+    "ADAPTER_TIMEOUT_SECONDS",
+    "MONTHLY_DOWNLOAD_ALLOWANCE_BYTES",
+    "DOWNLOAD_SAFETY_BUFFER_BYTES"
+  ],
+  "source_symbol": "_archive_store_environment_name",
   "template": "RIVERHOG_ARCHIVE_STORE_{store}_{setting}"
 }
 ```

@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: configuration-environment:stove0-server:stove0-scheduler-interval-seconds:4d6f7df67a -->
+<!-- contract-element: configuration-environment:stove0-server:stove0-scheduler-interval-seconds:fa5752e04b -->
 
 Exact externally visible contract owned by this semantic dossier.
 
@@ -10,21 +10,21 @@ Exact externally visible contract owned by this semantic dossier.
 |---|---|
 | Authority | [stove0-server](../index.md) |
 | Interface | [configuration-environment](index.md) |
-| Family | [runtime](index.md#f-2da04c48df) |
+| Family | [settings](index.md#f-12475197c9) |
 | Contract elements | 1 |
 | Extent decisions | 1 |
 
 ## External contract
 
-<a id="s-7a1e93aef1"></a>
+<a id="s-f1434e7972"></a>
 | Field | Shape |
 |---|---|
-| <a id="s-cd71426c29"></a>`classification` | "runtime" |
-| <a id="s-31f233c17f"></a>`consumers` | ["stove0-server"] |
-| <a id="s-1694a0d8e0"></a>`disposition` | "contractual" |
-| <a id="s-8b573f8c6b"></a>`id` | "stove0-server:environment:STOVE0_SCHEDULER_INTERVAL_SECONDS" |
-| <a id="s-be64f6ddb2"></a>`name` | "STOVE0_SCHEDULER_INTERVAL_SECONDS" |
-| <a id="s-8669d543f0"></a>`owner` | "stove0-server" |
+| <a id="s-8b1bac247a"></a>`consumers` | ["stove0-server"] |
+| <a id="s-7885b7d9a8"></a>`default_expressions` | ["str(default)"] |
+| <a id="s-cd0ba82178"></a>`id` | "stove0-server:environment:STOVE0_SCHEDULER_INTERVAL_SECONDS" |
+| <a id="s-cf63d91846"></a>`input_shape` | "environment-string" |
+| <a id="s-3e0815658c"></a>`name` | "STOVE0_SCHEDULER_INTERVAL_SECONDS" |
+| <a id="s-4651ce2447"></a>`owner` | "stove0-server" |
 
 ### Progression, limits, and lifecycle
 
@@ -34,12 +34,12 @@ Shared facts for every subject below: configuration="STOVE0_SCHEDULER_INTERVAL_S
 
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
-| [STOVE0_SCHEDULER_INTERVAL_SECONDS](#s-7a1e93aef1) | `value · configured-value · operational_policy` | shared above |
+| [STOVE0_SCHEDULER_INTERVAL_SECONDS](#s-f1434e7972) | `value · configured-value · operational_policy` | shared above |
 
 ## Governing policies
 
-- <a id="pa-ddf1ec92a3"></a>[compatibility/configuration/v1](../../../policies/index.md#p-8dc08bb461)
-- <a id="pa-1ee211c1b2"></a>[extent-rule/configured-capacity/v1](../../../policies/index.md#p-3ebc61fc99)
+- <a id="pa-1330e662a2"></a>[compatibility/configuration/v1](../../../policies/index.md#p-8dc08bb461)
+- <a id="pa-5a1d00743c"></a>[extent-rule/configured-capacity/v1](../../../policies/index.md#p-3ebc61fc99)
 
 ## Evidence
 
@@ -50,37 +50,37 @@ Shared facts for every subject below: configuration="STOVE0_SCHEDULER_INTERVAL_S
 
 ### Executable sources
 
-- [configuration-environment:inventory](../../../evidence/sources.md#src-26b33461d2) — `qualification/configuration-contract.toml`
 - [configuration-environment:stove0-server:STOVE0_SCHEDULER_INTERVAL_SECONDS](../../../evidence/sources.md#src-1ba44b59b5) — `reference/stove0/application/server/src/stove0_core/runtime_config.py`
 - [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
 
 ### Configuration authority and bindings
 
-The declaration fixes normative ownership and classification. The parser expression is the source-linked authority for the accepted domain and effective default exercised by qualification.
+The owning implementation defines the setting. The parser expression records each independently discovered consumer binding and effective default exercised by qualification.
 
 | Kind | Consumer | Source | Authority |
 |---|---|---|---|
-| declaration | — | `qualification/configuration-contract.toml` | `/environment/28/names` |
-| parser | `stove0-server` | `reference/stove0/application/server/src/stove0_core/runtime_config.py` | `_number(values, 'STOVE0_SCHEDULER_INTERVAL_SECONDS', 5.0, minimum=0.1)` |
+| parser | `stove0-server` | `reference/stove0/application/server/src/stove0_core/runtime_config.py` | `values.get(name, str(default))` |
 
 ### Machine authority
 
-- `/external_contract/configuration_environment/119`
+- `/external_contract/configuration_environment/241`
 
 ### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: c7ab06aaffbbbab985fe7436fdc02aa97843d3dd76efff85365763f0d03658df -->
+<!-- exact-contract-value: 0758248a149d2eb4a31493de104fffde1aae50240bc0da902d199fcfcfa1b4f9 -->
 
 ```json
 {
-  "classification": "runtime",
   "consumers": [
     "stove0-server"
   ],
-  "disposition": "contractual",
+  "default_expressions": [
+    "str(default)"
+  ],
   "id": "stove0-server:environment:STOVE0_SCHEDULER_INTERVAL_SECONDS",
+  "input_shape": "environment-string",
   "name": "STOVE0_SCHEDULER_INTERVAL_SECONDS",
   "owner": "stove0-server"
 }

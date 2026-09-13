@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: configuration-environment:riverhog-client:riverhog-base-url:a52c86db5b -->
+<!-- contract-element: configuration-environment:riverhog-client:riverhog-base-url:6228e2e81f -->
 
 Exact externally visible contract owned by this semantic dossier.
 
@@ -10,25 +10,25 @@ Exact externally visible contract owned by this semantic dossier.
 |---|---|
 | Authority | [riverhog-client](../index.md) |
 | Interface | [configuration-environment](index.md) |
-| Family | [identity](index.md#f-00fcde6edd) |
+| Family | [settings](index.md#f-7ff1624ad7) |
 | Contract elements | 1 |
 | Extent decisions | 0 |
 
 ## External contract
 
-<a id="s-b7a4f6f148"></a>
+<a id="s-11a73a67cc"></a>
 | Field | Shape |
 |---|---|
-| <a id="s-83399b165d"></a>`classification` | "identity" |
-| <a id="s-7590734788"></a>`consumers` | ["riverhog-client"] |
-| <a id="s-90e44cb41b"></a>`disposition` | "contractual" |
-| <a id="s-a600f51a3c"></a>`id` | "riverhog-client:environment:RIVERHOG_BASE_URL" |
-| <a id="s-727a81b3ac"></a>`name` | "RIVERHOG_BASE_URL" |
-| <a id="s-10a1945249"></a>`owner` | "riverhog-client" |
+| <a id="s-56b56d915a"></a>`consumers` | ["riverhog-client"] |
+| <a id="s-2837f1949b"></a>`default_expressions` | ["unset"] |
+| <a id="s-05a1ce1ce4"></a>`id` | "riverhog-client:environment:RIVERHOG_BASE_URL" |
+| <a id="s-a39bc19e88"></a>`input_shape` | "environment-string" |
+| <a id="s-514e7dfc94"></a>`name` | "RIVERHOG_BASE_URL" |
+| <a id="s-bba7a7ca74"></a>`owner` | "riverhog-client" |
 
 ## Governing policies
 
-- <a id="pa-5fca68700b"></a>[compatibility/configuration/v1](../../../policies/index.md#p-8dc08bb461)
+- <a id="pa-28f552d6db"></a>[compatibility/configuration/v1](../../../policies/index.md#p-8dc08bb461)
 
 ## Evidence
 
@@ -39,38 +39,37 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Executable sources
 
-- [configuration-environment:inventory](../../../evidence/sources.md#src-26b33461d2) — `qualification/configuration-contract.toml`
 - [configuration-environment:riverhog-client:RIVERHOG_BASE_URL](../../../evidence/sources.md#src-475671fe74) — `packages/riverhog-client/src/riverhog_client/client.py`
 - [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
 
 ### Configuration authority and bindings
 
-The declaration fixes normative ownership and classification. The parser expression is the source-linked authority for the accepted domain and effective default exercised by qualification.
+The owning implementation defines the setting. The parser expression records each independently discovered consumer binding and effective default exercised by qualification.
 
 | Kind | Consumer | Source | Authority |
 |---|---|---|---|
-| declaration | — | `qualification/configuration-contract.toml` | `/environment/4/names` |
 | parser | `riverhog-client` | `packages/riverhog-client/src/riverhog_client/client.py` | `os.getenv('RIVERHOG_BASE_URL')` |
-| parser | `riverhog-client` | `packages/riverhog-client/src/riverhog_client/client.py` | `safe_http_base_url(base_url or os.getenv('RIVERHOG_BASE_URL') or 'http://127.0.0.1:8000', setting='RIVERHOG_BASE_URL', allow_insecure_http=self.allow_insecure_http)` |
 
 ### Machine authority
 
-- `/external_contract/configuration_environment/10`
+- `/external_contract/configuration_environment/13`
 
 ### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 1e7d9fbb8711ab74e113c6ec0b7f7caba018648f85f8507e04283c6cf7807d57 -->
+<!-- exact-contract-value: 02c74db099381f19d65370253d80f4ae683173d74e5dcff0a7c9a80bc9cf51b9 -->
 
 ```json
 {
-  "classification": "identity",
   "consumers": [
     "riverhog-client"
   ],
-  "disposition": "contractual",
+  "default_expressions": [
+    "unset"
+  ],
   "id": "riverhog-client:environment:RIVERHOG_BASE_URL",
+  "input_shape": "environment-string",
   "name": "RIVERHOG_BASE_URL",
   "owner": "riverhog-client"
 }

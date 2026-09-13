@@ -1,0 +1,76 @@
+# STOVE0_REVIEW_MATERIALIZE_TARGET_PORT
+
+[Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
+
+<!-- contract-element: configuration-environment:stove0-review-materialize-target:stove0-review-materialize-target-port:09200d4e61 -->
+
+Exact externally visible contract owned by this semantic dossier.
+
+| Audit field | Value |
+|---|---|
+| Authority | [stove0-review-materialize-target](../index.md) |
+| Interface | [configuration-environment](index.md) |
+| Family | [settings](index.md#f-474ca4f8b4) |
+| Contract elements | 1 |
+| Extent decisions | 0 |
+
+## External contract
+
+<a id="s-e73f26dd50"></a>
+| Field | Shape |
+|---|---|
+| <a id="s-aca441222c"></a>`consumers` | ["stove0-review-materialize-target"] |
+| <a id="s-ac107dc046"></a>`default_expressions` | ["'8080'"] |
+| <a id="s-268e9e6049"></a>`id` | "stove0-review-materialize-target:environment:STOVE0_REVIEW_MATERIALIZE_TARGET_PORT" |
+| <a id="s-4630333763"></a>`input_shape` | "environment-string" |
+| <a id="s-f95cc39852"></a>`name` | "STOVE0_REVIEW_MATERIALIZE_TARGET_PORT" |
+| <a id="s-b3f721f522"></a>`owner` | "stove0-review-materialize-target" |
+
+## Governing policies
+
+- <a id="pa-8b6f46aa12"></a>[compatibility/configuration/v1](../../../policies/index.md#p-8dc08bb461)
+
+## Evidence
+
+### Qualification
+
+- [make unit](../../../evidence/sources.md#q-ce47068f50)
+- [make compose-smoke](../../../evidence/sources.md#q-413b0b241b)
+
+### Executable sources
+
+- [configuration-environment:stove0-review-materialize-target:STOVE0_REVIEW_MATERIALIZE_TARGET_PORT](../../../evidence/sources.md#src-bafe419002) — `reference/stove0/targets/review/materialize-target/src/stove0_review_materialize_target/app.py`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+
+### Configuration authority and bindings
+
+The owning implementation defines the setting. The parser expression records each independently discovered consumer binding and effective default exercised by qualification.
+
+| Kind | Consumer | Source | Authority |
+|---|---|---|---|
+| parser | `stove0-review-materialize-target` | `reference/stove0/targets/review/materialize-target/src/stove0_review_materialize_target/app.py` | `os.getenv(f'{PREFIX}_PORT', '8080')` |
+
+### Machine authority
+
+- `/external_contract/configuration_environment/201`
+
+### Exact owned JSON
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 169485902747f18c1221d3885e497f4352cb6190156e248c49046c99d7f103ad -->
+
+```json
+{
+  "consumers": [
+    "stove0-review-materialize-target"
+  ],
+  "default_expressions": [
+    "'8080'"
+  ],
+  "id": "stove0-review-materialize-target:environment:STOVE0_REVIEW_MATERIALIZE_TARGET_PORT",
+  "input_shape": "environment-string",
+  "name": "STOVE0_REVIEW_MATERIALIZE_TARGET_PORT",
+  "owner": "stove0-review-materialize-target"
+}
+```

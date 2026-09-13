@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: configuration-environment:stove0-server:stove0-api-token:3f97a38334 -->
+<!-- contract-element: configuration-environment:stove0-server:stove0-api-token:27d1df0d0f -->
 
 Exact externally visible contract owned by this semantic dossier.
 
@@ -10,25 +10,25 @@ Exact externally visible contract owned by this semantic dossier.
 |---|---|
 | Authority | [stove0-server](../index.md) |
 | Interface | [configuration-environment](index.md) |
-| Family | [credential](index.md#f-182b18fbb1) |
+| Family | [settings](index.md#f-12475197c9) |
 | Contract elements | 1 |
 | Extent decisions | 0 |
 
 ## External contract
 
-<a id="s-6cd1741870"></a>
+<a id="s-30c0913544"></a>
 | Field | Shape |
 |---|---|
-| <a id="s-162b0c277b"></a>`classification` | "credential" |
-| <a id="s-f89c1c3048"></a>`consumers` | ["stove0-server"] |
-| <a id="s-76707167a2"></a>`disposition` | "contractual" |
-| <a id="s-ee9ed3533d"></a>`id` | "stove0-server:environment:STOVE0_API_TOKEN" |
-| <a id="s-7027ddbe71"></a>`name` | "STOVE0_API_TOKEN" |
-| <a id="s-5b4c4db475"></a>`owner` | "stove0-server" |
+| <a id="s-d00e440158"></a>`consumers` | ["stove0-server"] |
+| <a id="s-665a0384a8"></a>`default_expressions` | ["''"] |
+| <a id="s-6b03089d6d"></a>`id` | "stove0-server:environment:STOVE0_API_TOKEN" |
+| <a id="s-0c7781c780"></a>`input_shape` | "environment-string" |
+| <a id="s-4fdea0c27a"></a>`name` | "STOVE0_API_TOKEN" |
+| <a id="s-8ee07180a7"></a>`owner` | "stove0-server" |
 
 ## Governing policies
 
-- <a id="pa-4e45ba6ae8"></a>[compatibility/configuration/v1](../../../policies/index.md#p-8dc08bb461)
+- <a id="pa-82758651ec"></a>[compatibility/configuration/v1](../../../policies/index.md#p-8dc08bb461)
 
 ## Evidence
 
@@ -39,38 +39,37 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Executable sources
 
-- [configuration-environment:inventory](../../../evidence/sources.md#src-26b33461d2) — `qualification/configuration-contract.toml`
 - [configuration-environment:stove0-server:STOVE0_API_TOKEN](../../../evidence/sources.md#src-b54731a17b) — `reference/stove0/application/server/src/stove0_core/runtime_config.py`
 - [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
 
 ### Configuration authority and bindings
 
-The declaration fixes normative ownership and classification. The parser expression is the source-linked authority for the accepted domain and effective default exercised by qualification.
+The owning implementation defines the setting. The parser expression records each independently discovered consumer binding and effective default exercised by qualification.
 
 | Kind | Consumer | Source | Authority |
 |---|---|---|---|
-| declaration | — | `qualification/configuration-contract.toml` | `/environment/26/names` |
-| parser | `stove0-server` | `reference/stove0/application/server/src/stove0_core/runtime_config.py` | `_secret(values, 'STOVE0_API_TOKEN', required=False)` |
-| parser | `stove0-server` | `reference/stove0/application/server/src/stove0_core/runtime_config.py` | `_secret(values, 'STOVE0_API_TOKEN', required=True)` |
+| parser | `stove0-server` | `reference/stove0/application/server/src/stove0_core/runtime_config.py` | `values.get(name, '')` |
 
 ### Machine authority
 
-- `/external_contract/configuration_environment/110`
+- `/external_contract/configuration_environment/229`
 
 ### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 56a9907348886b7705d1942878e54da9d2f82602a76bf3465ee2754f3a8975e5 -->
+<!-- exact-contract-value: 66513233348bdbfc9093c7224ffea7fedf06b357880648ad42aef96544b97b15 -->
 
 ```json
 {
-  "classification": "credential",
   "consumers": [
     "stove0-server"
   ],
-  "disposition": "contractual",
+  "default_expressions": [
+    "''"
+  ],
   "id": "stove0-server:environment:STOVE0_API_TOKEN",
+  "input_shape": "environment-string",
   "name": "STOVE0_API_TOKEN",
   "owner": "stove0-server"
 }

@@ -1,0 +1,76 @@
+# STOVE0_NVENC_AV1_OPUS_REVIEW_SAMPLER_WORKSPACE
+
+[Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
+
+<!-- contract-element: configuration-environment:stove0-nvenc-av1-opus-review-sampler:stove0-nvenc-av1-opus-review-sampler-workspace:9f5ac66f54 -->
+
+Exact externally visible contract owned by this semantic dossier.
+
+| Audit field | Value |
+|---|---|
+| Authority | [stove0-nvenc-av1-opus-review-sampler](../index.md) |
+| Interface | [configuration-environment](index.md) |
+| Family | [settings](index.md#f-748ed91c55) |
+| Contract elements | 1 |
+| Extent decisions | 0 |
+
+## External contract
+
+<a id="s-60d36f56ec"></a>
+| Field | Shape |
+|---|---|
+| <a id="s-6a75627f71"></a>`consumers` | ["stove0-nvenc-av1-opus-review-sampler"] |
+| <a id="s-7f0cb5f08e"></a>`default_expressions` | ["'/run/stove0-review'"] |
+| <a id="s-9855b52610"></a>`id` | "stove0-nvenc-av1-opus-review-sampler:environment:STOVE0_NVENC_AV1_OPUS_REVIEW_SAMPLER_WORKSPACE" |
+| <a id="s-93a8c602ad"></a>`input_shape` | "environment-string" |
+| <a id="s-25d67a7319"></a>`name` | "STOVE0_NVENC_AV1_OPUS_REVIEW_SAMPLER_WORKSPACE" |
+| <a id="s-1c9291919b"></a>`owner` | "stove0-nvenc-av1-opus-review-sampler" |
+
+## Governing policies
+
+- <a id="pa-e127a83b41"></a>[compatibility/configuration/v1](../../../policies/index.md#p-8dc08bb461)
+
+## Evidence
+
+### Qualification
+
+- [make unit](../../../evidence/sources.md#q-ce47068f50)
+- [make compose-smoke](../../../evidence/sources.md#q-413b0b241b)
+
+### Executable sources
+
+- [configuration-environment:stove0-nvenc-av1-opus-review-sampler:STOVE0_NVENC_AV1_OPUS_REVIEW_SAMPLER_WORKSPACE](../../../evidence/sources.md#src-6b93ebbc94) — `reference/stove0/targets/nvenc-av1-opus/review-sampler/src/stove0_nvenc_av1_opus_review_sampler/app.py`
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+
+### Configuration authority and bindings
+
+The owning implementation defines the setting. The parser expression records each independently discovered consumer binding and effective default exercised by qualification.
+
+| Kind | Consumer | Source | Authority |
+|---|---|---|---|
+| parser | `stove0-nvenc-av1-opus-review-sampler` | `reference/stove0/targets/nvenc-av1-opus/review-sampler/src/stove0_nvenc_av1_opus_review_sampler/app.py` | `os.getenv(f'{prefix}_WORKSPACE', '/run/stove0-review')` |
+
+### Machine authority
+
+- `/external_contract/configuration_environment/171`
+
+### Exact owned JSON
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: b2c09cf3ab6cee8acc98ca1018173296c4f4e7b808d902c2baaa4987746d060b -->
+
+```json
+{
+  "consumers": [
+    "stove0-nvenc-av1-opus-review-sampler"
+  ],
+  "default_expressions": [
+    "'/run/stove0-review'"
+  ],
+  "id": "stove0-nvenc-av1-opus-review-sampler:environment:STOVE0_NVENC_AV1_OPUS_REVIEW_SAMPLER_WORKSPACE",
+  "input_shape": "environment-string",
+  "name": "STOVE0_NVENC_AV1_OPUS_REVIEW_SAMPLER_WORKSPACE",
+  "owner": "stove0-nvenc-av1-opus-review-sampler"
+}
+```

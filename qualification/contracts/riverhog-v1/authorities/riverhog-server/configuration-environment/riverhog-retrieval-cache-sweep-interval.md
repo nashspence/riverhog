@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: configuration-environment:riverhog-server:riverhog-retrieval-cache-sweep-interval:a4f82c2f77 -->
+<!-- contract-element: configuration-environment:riverhog-server:riverhog-retrieval-cache-sweep-interval:3886780362 -->
 
 Exact externally visible contract owned by this semantic dossier.
 
@@ -10,21 +10,21 @@ Exact externally visible contract owned by this semantic dossier.
 |---|---|
 | Authority | [riverhog-server](../index.md) |
 | Interface | [configuration-environment](index.md) |
-| Family | [runtime](families/runtime/index.md) |
+| Family | [settings](families/settings/index.md) |
 | Contract elements | 1 |
 | Extent decisions | 1 |
 
 ## External contract
 
-<a id="s-a44ff15aa7"></a>
+<a id="s-abc6c0ac51"></a>
 | Field | Shape |
 |---|---|
-| <a id="s-539f60852a"></a>`classification` | "runtime" |
-| <a id="s-cbfaedd8f7"></a>`consumers` | ["riverhog-server"] |
-| <a id="s-6159b0cd74"></a>`disposition` | "contractual" |
-| <a id="s-2908730b97"></a>`id` | "riverhog-server:environment:RIVERHOG_RETRIEVAL_CACHE_SWEEP_INTERVAL" |
-| <a id="s-394d41cd98"></a>`name` | "RIVERHOG_RETRIEVAL_CACHE_SWEEP_INTERVAL" |
-| <a id="s-436907c2b0"></a>`owner` | "riverhog-server" |
+| <a id="s-1ed351fe80"></a>`consumers` | ["riverhog-server"] |
+| <a id="s-942ac43e20"></a>`default_expressions` | ["'5m'"] |
+| <a id="s-d14f4cb1fe"></a>`id` | "riverhog-server:environment:RIVERHOG_RETRIEVAL_CACHE_SWEEP_INTERVAL" |
+| <a id="s-23ed4889af"></a>`input_shape` | "environment-string" |
+| <a id="s-b3f8b0388d"></a>`name` | "RIVERHOG_RETRIEVAL_CACHE_SWEEP_INTERVAL" |
+| <a id="s-92764138c3"></a>`owner` | "riverhog-server" |
 
 ### Progression, limits, and lifecycle
 
@@ -34,12 +34,12 @@ Shared facts for every subject below: configuration="RIVERHOG_RETRIEVAL_CACHE_SW
 
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
-| [RIVERHOG_RETRIEVAL_CACHE_SWEEP_INTERVAL](#s-a44ff15aa7) | `value · configured-value · operational_policy` | shared above |
+| [RIVERHOG_RETRIEVAL_CACHE_SWEEP_INTERVAL](#s-abc6c0ac51) | `value · configured-value · operational_policy` | shared above |
 
 ## Governing policies
 
-- <a id="pa-7b80c0f1f1"></a>[compatibility/configuration/v1](../../../policies/index.md#p-8dc08bb461)
-- <a id="pa-36ac77b607"></a>[extent-rule/configured-capacity/v1](../../../policies/index.md#p-3ebc61fc99)
+- <a id="pa-a50799bba4"></a>[compatibility/configuration/v1](../../../policies/index.md#p-8dc08bb461)
+- <a id="pa-2ec725ac5e"></a>[extent-rule/configured-capacity/v1](../../../policies/index.md#p-3ebc61fc99)
 
 ## Evidence
 
@@ -50,37 +50,37 @@ Shared facts for every subject below: configuration="RIVERHOG_RETRIEVAL_CACHE_SW
 
 ### Executable sources
 
-- [configuration-environment:inventory](../../../evidence/sources.md#src-26b33461d2) — `qualification/configuration-contract.toml`
 - [configuration-environment:riverhog-server:RIVERHOG_RETRIEVAL_CACHE_SWEEP_INTERVAL](../../../evidence/sources.md#src-d858623918) — `riverhog/src/riverhog_core/runtime_config.py`
 - [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
 
 ### Configuration authority and bindings
 
-The declaration fixes normative ownership and classification. The parser expression is the source-linked authority for the accepted domain and effective default exercised by qualification.
+The owning implementation defines the setting. The parser expression records each independently discovered consumer binding and effective default exercised by qualification.
 
 | Kind | Consumer | Source | Authority |
 |---|---|---|---|
-| declaration | — | `qualification/configuration-contract.toml` | `/environment/14/names` |
 | parser | `riverhog-server` | `riverhog/src/riverhog_core/runtime_config.py` | `os.getenv('RIVERHOG_RETRIEVAL_CACHE_SWEEP_INTERVAL', '5m')` |
 
 ### Machine authority
 
-- `/external_contract/configuration_environment/67`
+- `/external_contract/configuration_environment/72`
 
 ### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 07b5081d5360952a06742abfa191777b8b6b1fb4d5299d6313dd01468004a3f3 -->
+<!-- exact-contract-value: 19aff8b639cd317efb63416f413d438e181b54ed74680a0779bdd745280bff14 -->
 
 ```json
 {
-  "classification": "runtime",
   "consumers": [
     "riverhog-server"
   ],
-  "disposition": "contractual",
+  "default_expressions": [
+    "'5m'"
+  ],
   "id": "riverhog-server:environment:RIVERHOG_RETRIEVAL_CACHE_SWEEP_INTERVAL",
+  "input_shape": "environment-string",
   "name": "RIVERHOG_RETRIEVAL_CACHE_SWEEP_INTERVAL",
   "owner": "riverhog-server"
 }

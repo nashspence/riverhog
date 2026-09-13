@@ -6,9 +6,7 @@ Contract elements: **5** · Extent decisions: **1**
 
 | Family | Count |
 |---|---:|
-| <a id="f-e056120d8e"></a>`credential` | 1 |
-| <a id="f-7063261835"></a>`identity` | 1 |
-| <a id="f-1b544c4817"></a>`runtime` | 3 |
+| <a id="f-ff6755198b"></a>`settings` | 5 |
 
 | Policy | Count |
 |---|---:|
@@ -19,8 +17,8 @@ Contract elements: **5** · Extent decisions: **1**
 
 | Dossier | Family | Extent decisions |
 |---|---|---:|
-| [RIVERHOG_FTP_ADAPTER_TOKEN](riverhog-ftp-adapter-token.md) | `credential` | 0 |
-| [RIVERHOG_FTP_ADAPTER_BASE_URL](riverhog-ftp-adapter-base-url.md) | `identity` | 0 |
-| [RIVERHOG_FTP_ADAPTER_ALLOW_INSECURE_HTTP](riverhog-ftp-adapter-allow-insecure-http.md) | `runtime` | 0 |
-| [RIVERHOG_FTP_ADAPTER_HTTP2](riverhog-ftp-adapter-http2.md) | `runtime` | 0 |
-| [RIVERHOG_FTP_ADAPTER_HTTP_TIMEOUT_SECONDS](riverhog-ftp-adapter-http-timeout-seconds.md) | `runtime` | 1 |
+| [RIVERHOG_FTP_ADAPTER_ALLOW_INSECURE_HTTP](riverhog-ftp-adapter-allow-insecure-http.md) | `settings` | 0 |
+| [RIVERHOG_FTP_ADAPTER_BASE_URL](riverhog-ftp-adapter-base-url.md) | `settings` | 0 |
+| [RIVERHOG_FTP_ADAPTER_HTTP2](riverhog-ftp-adapter-http2.md) | `settings` | 0 |
+| [RIVERHOG_FTP_ADAPTER_HTTP_TIMEOUT_SECONDS](riverhog-ftp-adapter-http-timeout-seconds.md) | `settings` | 1 |
+| [RIVERHOG_FTP_ADAPTER_TOKEN](riverhog-ftp-adapter-token.md) | `settings` | 0 |

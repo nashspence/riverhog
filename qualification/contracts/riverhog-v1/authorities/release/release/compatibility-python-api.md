@@ -17,7 +17,7 @@ Exact externally visible contract owned by this semantic dossier.
 ## External contract
 
 <a id="s-7d6f9abc79"></a>
-- Shape: "Reusable-library declared public-module exports and public signatures remain backward compatible throughout v1; undeclared implementation submodules and other component roles are not Python API promises."
+- Shape: "Freeze-protected declared public-module exports and public signatures remain backward compatible throughout v1; importable packages explicitly excluded from the Python surface are not Python API promises."
 
 ## Governing policies
 
@@ -43,8 +43,8 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: ecf544dd59d5ef2c7fd2d9914ab0230ea456a75ae18045efa13467056c0c9287 -->
+<!-- exact-contract-value: 47e0d58419088f26cfb1536ec9e42a06bb328025388b107cbb3f3c9ba83e6a1d -->
 
 ```json
-"Reusable-library declared public-module exports and public signatures remain backward compatible throughout v1; undeclared implementation submodules and other component roles are not Python API promises."
+"Freeze-protected declared public-module exports and public signatures remain backward compatible throughout v1; importable packages explicitly excluded from the Python surface are not Python API promises."
 ```

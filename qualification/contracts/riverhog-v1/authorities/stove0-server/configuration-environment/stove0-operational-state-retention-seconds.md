@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: configuration-environment:stove0-server:stove0-operational-state-retention-seconds:63b375a30c -->
+<!-- contract-element: configuration-environment:stove0-server:stove0-operational-state-retention-seconds:6c314ec0c1 -->
 
 Exact externally visible contract owned by this semantic dossier.
 
@@ -10,21 +10,21 @@ Exact externally visible contract owned by this semantic dossier.
 |---|---|
 | Authority | [stove0-server](../index.md) |
 | Interface | [configuration-environment](index.md) |
-| Family | [runtime](index.md#f-2da04c48df) |
+| Family | [settings](index.md#f-12475197c9) |
 | Contract elements | 1 |
 | Extent decisions | 1 |
 
 ## External contract
 
-<a id="s-03d76831f6"></a>
+<a id="s-a6b78ccc35"></a>
 | Field | Shape |
 |---|---|
-| <a id="s-945cad7561"></a>`classification` | "runtime" |
-| <a id="s-9d176682fc"></a>`consumers` | ["stove0-server"] |
-| <a id="s-de476f4a9e"></a>`disposition` | "contractual" |
-| <a id="s-70fa9907ac"></a>`id` | "stove0-server:environment:STOVE0_OPERATIONAL_STATE_RETENTION_SECONDS" |
-| <a id="s-709f3f0d7c"></a>`name` | "STOVE0_OPERATIONAL_STATE_RETENTION_SECONDS" |
-| <a id="s-3cae61146e"></a>`owner` | "stove0-server" |
+| <a id="s-baa03590c9"></a>`consumers` | ["stove0-server"] |
+| <a id="s-b93146a195"></a>`default_expressions` | ["str(default)"] |
+| <a id="s-9426f68511"></a>`id` | "stove0-server:environment:STOVE0_OPERATIONAL_STATE_RETENTION_SECONDS" |
+| <a id="s-583946b8e7"></a>`input_shape` | "environment-string" |
+| <a id="s-a3b971cdef"></a>`name` | "STOVE0_OPERATIONAL_STATE_RETENTION_SECONDS" |
+| <a id="s-9d68c87baf"></a>`owner` | "stove0-server" |
 
 ### Progression, limits, and lifecycle
 
@@ -34,12 +34,12 @@ Shared facts for every subject below: configuration="STOVE0_OPERATIONAL_STATE_RE
 
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
-| [STOVE0_OPERATIONAL_STATE_RETENTION_SECONDS](#s-03d76831f6) | `value · configured-value · operational_policy` | shared above |
+| [STOVE0_OPERATIONAL_STATE_RETENTION_SECONDS](#s-a6b78ccc35) | `value · configured-value · operational_policy` | shared above |
 
 ## Governing policies
 
-- <a id="pa-5445626c90"></a>[compatibility/configuration/v1](../../../policies/index.md#p-8dc08bb461)
-- <a id="pa-dd5603c131"></a>[extent-rule/configured-capacity/v1](../../../policies/index.md#p-3ebc61fc99)
+- <a id="pa-93d40f9011"></a>[compatibility/configuration/v1](../../../policies/index.md#p-8dc08bb461)
+- <a id="pa-6d376549d7"></a>[extent-rule/configured-capacity/v1](../../../policies/index.md#p-3ebc61fc99)
 
 ## Evidence
 
@@ -50,37 +50,37 @@ Shared facts for every subject below: configuration="STOVE0_OPERATIONAL_STATE_RE
 
 ### Executable sources
 
-- [configuration-environment:inventory](../../../evidence/sources.md#src-26b33461d2) — `qualification/configuration-contract.toml`
 - [configuration-environment:stove0-server:STOVE0_OPERATIONAL_STATE_RETENTION_SECONDS](../../../evidence/sources.md#src-024a6340ee) — `reference/stove0/application/server/src/stove0_core/runtime_config.py`
 - [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
 
 ### Configuration authority and bindings
 
-The declaration fixes normative ownership and classification. The parser expression is the source-linked authority for the accepted domain and effective default exercised by qualification.
+The owning implementation defines the setting. The parser expression records each independently discovered consumer binding and effective default exercised by qualification.
 
 | Kind | Consumer | Source | Authority |
 |---|---|---|---|
-| declaration | — | `qualification/configuration-contract.toml` | `/environment/28/names` |
-| parser | `stove0-server` | `reference/stove0/application/server/src/stove0_core/runtime_config.py` | `_integer(values, 'STOVE0_OPERATIONAL_STATE_RETENTION_SECONDS', DEFAULT_OPERATIONAL_STATE_RETENTION_SECONDS, minimum=1)` |
+| parser | `stove0-server` | `reference/stove0/application/server/src/stove0_core/runtime_config.py` | `values.get(name, str(default))` |
 
 ### Machine authority
 
-- `/external_contract/configuration_environment/117`
+- `/external_contract/configuration_environment/239`
 
 ### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: f12344747655afd7a5e119cdf3bc584204e064d1a6864fcd77e826ee36658733 -->
+<!-- exact-contract-value: 6bc5adf110c61421515a7dac18604a36ee954a7383b9bf4ffe3418d2c0cf6839 -->
 
 ```json
 {
-  "classification": "runtime",
   "consumers": [
     "stove0-server"
   ],
-  "disposition": "contractual",
+  "default_expressions": [
+    "str(default)"
+  ],
   "id": "stove0-server:environment:STOVE0_OPERATIONAL_STATE_RETENTION_SECONDS",
+  "input_shape": "environment-string",
   "name": "STOVE0_OPERATIONAL_STATE_RETENTION_SECONDS",
   "owner": "stove0-server"
 }

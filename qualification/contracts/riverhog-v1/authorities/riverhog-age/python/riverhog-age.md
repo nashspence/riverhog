@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: python:riverhog-age:riverhog-age:041d136a3a -->
+<!-- contract-element: python:riverhog-age:riverhog-age:51fef2d344 -->
 
 Exact externally visible contract owned by this semantic dossier.
 
@@ -16,16 +16,17 @@ Exact externally visible contract owned by this semantic dossier.
 
 ## External contract
 
-<a id="s-4c8ca035dd"></a>
+<a id="s-78d6826568"></a>
 | Field | Shape |
 |---|---|
-| <a id="s-bdf9e99415"></a>`distribution` | "riverhog-age" |
-| <a id="s-ee62223ccf"></a>`exports` | additional keys=`AEAD_TAG_SIZE`, `AgeAlignedUnitPlan`, `AgeDecryptError`, `AgeFormatError`, `CHUNK_SIZE`, `DEFAULT_CHUNKS_PER_AGE_UNIT`, `DEFAULT_SCRYPT_LOG_N`, `PAYLOAD_NONCE_SIZE`, `ResumableAgeScryptSession`, `UploadState`, `age_chunk_count_for_plaintext_len`, `age_ciphertext_len_for_plaintext_len`, `decrypt_age_scrypt`, `encrypt_age_scrypt`, `iter_decrypt_age_scrypt`, `iter_decrypt_payload_chunks`, `make_age_aligned_unit_plans`, `parse_scrypt_header`, `parse_scrypt_header_from_age_file`, `plaintext_bytes_for_ciphertext_offset`, `split_plaintext_chunks` |
-| <a id="s-0be54f5b31"></a>`module` | "riverhog_age" |
+| <a id="s-5686d80f1f"></a>`candidate_id` | "python:riverhog-age:riverhog_age" |
+| <a id="s-1df31a4f1b"></a>`distribution` | "riverhog-age" |
+| <a id="s-0b8cb2b70c"></a>`exports` | additional keys=`AEAD_TAG_SIZE`, `AgeAlignedUnitPlan`, `AgeDecryptError`, `AgeFormatError`, `CHUNK_SIZE`, `DEFAULT_CHUNKS_PER_AGE_UNIT`, `DEFAULT_SCRYPT_LOG_N`, `PAYLOAD_NONCE_SIZE`, `ResumableAgeScryptSession`, `UploadState`, `age_chunk_count_for_plaintext_len`, `age_ciphertext_len_for_plaintext_len`, `decrypt_age_scrypt`, `encrypt_age_scrypt`, `iter_decrypt_age_scrypt`, `iter_decrypt_payload_chunks`, `make_age_aligned_unit_plans`, `parse_scrypt_header`, `parse_scrypt_header_from_age_file`, `plaintext_bytes_for_ciphertext_offset`, `split_plaintext_chunks` |
+| <a id="s-1dcebca617"></a>`module` | "riverhog_age" |
 
 ## Governing policies
 
-- <a id="pa-7c047976ea"></a>[compatibility/python-api/v1](../../../policies/index.md#p-e574772ba5)
+- <a id="pa-d909428816"></a>[compatibility/python-api/v1](../../../policies/index.md#p-e574772ba5)
 
 ## Evidence
 
@@ -37,20 +38,21 @@ Exact externally visible contract owned by this semantic dossier.
 ### Executable sources
 
 - [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
-- [python:riverhog-age](../../../evidence/sources.md#src-bd475bcd01) — `packages/riverhog-age/src/riverhog_age/__init__.py::<module>`
+- [python:riverhog-age:riverhog_age](../../../evidence/sources.md#src-a842e50b8b) — `packages/riverhog-age/src/riverhog_age/__init__.py`
 
 ### Machine authority
 
-- `/external_contract/python/2`
+- `/external_contract/python/11`
 
 ### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: dbc94502693c9e96dd4ce1dcd315c9ee75212fffae9bad869d40587086ed0638 -->
+<!-- exact-contract-value: 9bbd4998f51b67f558f2da0f8235ab2e79f7aeaabfa4d2988954c17241790133 -->
 
 ```json
 {
+  "candidate_id": "python:riverhog-age:riverhog_age",
   "distribution": "riverhog-age",
   "exports": {
     "AEAD_TAG_SIZE": {
@@ -104,14 +106,14 @@ The following JSON is the complete value owned at each machine-authority pointer
       "members": {
         "ciphertext_len": {
           "kind": "property",
-          "signature": "(self) -> 'int'"
+          "signature": "\"(self) -> 'int'\""
         },
         "plaintext_len": {
           "kind": "property",
-          "signature": "(self) -> 'int'"
+          "signature": "\"(self) -> 'int'\""
         }
       },
-      "signature": "(unit_number: 'int', first_chunk: 'int', chunk_count: 'int', includes_age_prefix: 'bool', plaintext_start: 'int', plaintext_end: 'int', ciphertext_start: 'int', ciphertext_end: 'int') -> None"
+      "signature": "\"(unit_number: 'int', first_chunk: 'int', chunk_count: 'int', includes_age_prefix: 'bool', plaintext_start: 'int', plaintext_end: 'int', ciphertext_start: 'int', ciphertext_end: 'int') -> None\""
     },
     "AgeDecryptError": {
       "kind": "class",
@@ -142,42 +144,42 @@ The following JSON is the complete value owned at each machine-authority pointer
       "members": {
         "age_aligned_unit_plans": {
           "kind": "method",
-          "signature": "(self, plaintext_size: 'int', *, chunks_per_unit: 'int' = 1024) -> 'list[AgeAlignedUnitPlan]'"
+          "signature": "\"(self, plaintext_size: 'int', *, chunks_per_unit: 'int' = 1024) -> 'list[AgeAlignedUnitPlan]'\""
         },
         "age_prefix": {
           "kind": "property",
-          "signature": "(self) -> 'bytes'"
+          "signature": "\"(self) -> 'bytes'\""
         },
         "create": {
           "kind": "classmethod",
-          "signature": "(cls, passphrase: 'str | bytes', *, log_n: 'int' = 18, plaintext_size: 'int | None' = None, file_key: 'bytes | None' = None, scrypt_salt: 'bytes | None' = None, payload_nonce: 'bytes | None' = None, scrypt_maxmem: 'int | None' = None) -> 'ResumableAgeScryptSession'"
+          "signature": "\"(cls, passphrase: 'str | bytes', *, log_n: 'int' = 18, plaintext_size: 'int | None' = None, file_key: 'bytes | None' = None, scrypt_salt: 'bytes | None' = None, payload_nonce: 'bytes | None' = None, scrypt_maxmem: 'int | None' = None) -> 'ResumableAgeScryptSession'\""
         },
         "decrypt_chunk": {
           "kind": "method",
-          "signature": "(self, chunk_index: 'int', ciphertext: 'bytes', *, final: 'bool') -> 'bytes'"
+          "signature": "\"(self, chunk_index: 'int', ciphertext: 'bytes', *, final: 'bool') -> 'bytes'\""
         },
         "encrypt_chunk": {
           "kind": "method",
-          "signature": "(self, chunk_index: 'int', plaintext: 'bytes', *, final: 'bool') -> 'bytes'"
+          "signature": "\"(self, chunk_index: 'int', plaintext: 'bytes', *, final: 'bool') -> 'bytes'\""
         },
         "encrypt_part": {
           "kind": "method",
-          "signature": "(self, plan: 'AgeAlignedUnitPlan', plaintext_chunk_provider: 'Callable[[int, int, int], bytes]', *, plaintext_size: 'int') -> 'bytes'"
+          "signature": "\"(self, plan: 'AgeAlignedUnitPlan', plaintext_chunk_provider: 'Callable[[int, int, int], bytes]', *, plaintext_size: 'int') -> 'bytes'\""
         },
         "encrypt_plaintext": {
           "kind": "method",
-          "signature": "(self, plaintext: 'bytes') -> 'bytes'"
+          "signature": "\"(self, plaintext: 'bytes') -> 'bytes'\""
         },
         "export_state": {
           "kind": "method",
-          "signature": "(self, *, plaintext_size: 'int | None' = None) -> 'UploadState'"
+          "signature": "\"(self, *, plaintext_size: 'int | None' = None) -> 'UploadState'\""
         },
         "from_state": {
           "kind": "classmethod",
-          "signature": "(cls, passphrase: 'str | bytes', state: 'UploadState | bytes | str | Mapping[str, object]', *, scrypt_maxmem: 'int | None' = None) -> 'ResumableAgeScryptSession'"
+          "signature": "\"(cls, passphrase: 'str | bytes', state: 'UploadState | bytes | str | Mapping[str, object]', *, scrypt_maxmem: 'int | None' = None) -> 'ResumableAgeScryptSession'\""
         }
       },
-      "signature": "(*, header: 'bytes', payload_nonce: 'bytes', file_key: 'bytes')"
+      "signature": "\"(*, header: 'bytes', payload_nonce: 'bytes', file_key: 'bytes')\""
     },
     "UploadState": {
       "fields": [
@@ -206,58 +208,58 @@ The following JSON is the complete value owned at each machine-authority pointer
       "members": {
         "from_json_bytes": {
           "kind": "classmethod",
-          "signature": "(cls, data: 'bytes | str') -> 'UploadState'"
+          "signature": "\"(cls, data: 'bytes | str') -> 'UploadState'\""
         },
         "to_json_bytes": {
           "kind": "method",
-          "signature": "(self) -> 'bytes'"
+          "signature": "\"(self) -> 'bytes'\""
         }
       },
-      "signature": "(header: 'bytes', payload_nonce: 'bytes', plaintext_size: 'int | None' = None, format: 'str' = 'age-v1-scrypt-resumable') -> None"
+      "signature": "\"(header: 'bytes', payload_nonce: 'bytes', plaintext_size: 'int | None' = None, format: 'str' = 'age-v1-scrypt-resumable') -> None\""
     },
     "age_chunk_count_for_plaintext_len": {
       "kind": "function",
-      "signature": "(plaintext_size: 'int') -> 'int'"
+      "signature": "\"(plaintext_size: 'int') -> 'int'\""
     },
     "age_ciphertext_len_for_plaintext_len": {
       "kind": "function",
-      "signature": "(plaintext_size: 'int', *, age_prefix_len: 'int') -> 'int'"
+      "signature": "\"(plaintext_size: 'int', *, age_prefix_len: 'int') -> 'int'\""
     },
     "decrypt_age_scrypt": {
       "kind": "function",
-      "signature": "(age_file: 'bytes', passphrase: 'str | bytes', *, scrypt_maxmem: 'int | None' = None) -> 'bytes'"
+      "signature": "\"(age_file: 'bytes', passphrase: 'str | bytes', *, scrypt_maxmem: 'int | None' = None) -> 'bytes'\""
     },
     "encrypt_age_scrypt": {
       "kind": "function",
-      "signature": "(plaintext: 'bytes', passphrase: 'str | bytes', *, log_n: 'int' = 18, scrypt_maxmem: 'int | None' = None) -> 'bytes'"
+      "signature": "\"(plaintext: 'bytes', passphrase: 'str | bytes', *, log_n: 'int' = 18, scrypt_maxmem: 'int | None' = None) -> 'bytes'\""
     },
     "iter_decrypt_age_scrypt": {
       "kind": "function",
-      "signature": "(chunks: 'Iterable[bytes]', passphrase: 'str | bytes', *, scrypt_maxmem: 'int | None' = None) -> 'Iterator[bytes]'"
+      "signature": "\"(chunks: 'Iterable[bytes]', passphrase: 'str | bytes', *, scrypt_maxmem: 'int | None' = None) -> 'Iterator[bytes]'\""
     },
     "iter_decrypt_payload_chunks": {
       "kind": "function",
-      "signature": "(file_key: 'bytes', payload_nonce: 'bytes', ciphertext_chunks: 'Iterable[bytes]') -> 'Iterator[bytes]'"
+      "signature": "\"(file_key: 'bytes', payload_nonce: 'bytes', ciphertext_chunks: 'Iterable[bytes]') -> 'Iterator[bytes]'\""
     },
     "make_age_aligned_unit_plans": {
       "kind": "function",
-      "signature": "(plaintext_size: 'int', *, age_prefix_len: 'int', chunks_per_unit: 'int' = 1024) -> 'list[AgeAlignedUnitPlan]'"
+      "signature": "\"(plaintext_size: 'int', *, age_prefix_len: 'int', chunks_per_unit: 'int' = 1024) -> 'list[AgeAlignedUnitPlan]'\""
     },
     "parse_scrypt_header": {
       "kind": "function",
-      "signature": "(header: 'bytes') -> 'ParsedScryptHeader'"
+      "signature": "\"(header: 'bytes') -> 'ParsedScryptHeader'\""
     },
     "parse_scrypt_header_from_age_file": {
       "kind": "function",
-      "signature": "(age_file: 'bytes') -> 'ParsedScryptHeader'"
+      "signature": "\"(age_file: 'bytes') -> 'ParsedScryptHeader'\""
     },
     "plaintext_bytes_for_ciphertext_offset": {
       "kind": "function",
-      "signature": "(*, state: 'UploadState | bytes | str | Mapping[str, object]', plaintext_bytes: 'int', ciphertext_bytes: 'int', ciphertext_offset: 'int') -> 'int'"
+      "signature": "\"(*, state: 'UploadState | bytes | str | Mapping[str, object]', plaintext_bytes: 'int', ciphertext_bytes: 'int', ciphertext_offset: 'int') -> 'int'\""
     },
     "split_plaintext_chunks": {
       "kind": "function",
-      "signature": "(plaintext_size: 'int') -> 'list[tuple[int, int, int, bool]]'"
+      "signature": "\"(plaintext_size: 'int') -> 'list[tuple[int, int, int, bool]]'\""
     }
   },
   "module": "riverhog_age"

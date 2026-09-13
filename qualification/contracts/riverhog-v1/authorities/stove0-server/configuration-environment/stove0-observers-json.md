@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: configuration-environment:stove0-server:stove0-observers-json:78051fee18 -->
+<!-- contract-element: configuration-environment:stove0-server:stove0-observers-json:052705576f -->
 
 Exact externally visible contract owned by this semantic dossier.
 
@@ -10,25 +10,25 @@ Exact externally visible contract owned by this semantic dossier.
 |---|---|
 | Authority | [stove0-server](../index.md) |
 | Interface | [configuration-environment](index.md) |
-| Family | [identity](index.md#f-d2342f695d) |
+| Family | [settings](index.md#f-12475197c9) |
 | Contract elements | 1 |
 | Extent decisions | 0 |
 
 ## External contract
 
-<a id="s-7c4bc7f8a3"></a>
+<a id="s-e6ea24ca96"></a>
 | Field | Shape |
 |---|---|
-| <a id="s-29c1685294"></a>`classification` | "identity" |
-| <a id="s-de3bbf83d5"></a>`consumers` | ["stove0-server"] |
-| <a id="s-939075b802"></a>`disposition` | "contractual" |
-| <a id="s-dc7c1a2e94"></a>`id` | "stove0-server:environment:STOVE0_OBSERVERS_JSON" |
-| <a id="s-033e682cb8"></a>`name` | "STOVE0_OBSERVERS_JSON" |
-| <a id="s-609af60b93"></a>`owner` | "stove0-server" |
+| <a id="s-bba0f0c4a2"></a>`consumers` | ["stove0-server"] |
+| <a id="s-891c749759"></a>`default_expressions` | ["'{}'"] |
+| <a id="s-5c7cfbb798"></a>`id` | "stove0-server:environment:STOVE0_OBSERVERS_JSON" |
+| <a id="s-dd7740d2f8"></a>`input_shape` | "environment-string" |
+| <a id="s-35af37b988"></a>`name` | "STOVE0_OBSERVERS_JSON" |
+| <a id="s-bee3607ec5"></a>`owner` | "stove0-server" |
 
 ## Governing policies
 
-- <a id="pa-1215e09b79"></a>[compatibility/configuration/v1](../../../policies/index.md#p-8dc08bb461)
+- <a id="pa-8dab131f68"></a>[compatibility/configuration/v1](../../../policies/index.md#p-8dc08bb461)
 
 ## Evidence
 
@@ -39,37 +39,37 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Executable sources
 
-- [configuration-environment:inventory](../../../evidence/sources.md#src-26b33461d2) — `qualification/configuration-contract.toml`
 - [configuration-environment:stove0-server:STOVE0_OBSERVERS_JSON](../../../evidence/sources.md#src-5e770d1e0f) — `reference/stove0/application/server/src/stove0_core/runtime_config.py`
 - [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
 
 ### Configuration authority and bindings
 
-The declaration fixes normative ownership and classification. The parser expression is the source-linked authority for the accepted domain and effective default exercised by qualification.
+The owning implementation defines the setting. The parser expression records each independently discovered consumer binding and effective default exercised by qualification.
 
 | Kind | Consumer | Source | Authority |
 |---|---|---|---|
-| declaration | — | `qualification/configuration-contract.toml` | `/environment/27/names` |
-| parser | `stove0-server` | `reference/stove0/application/server/src/stove0_core/runtime_config.py` | `_registrations(values, 'STOVE0_OBSERVERS_JSON', semantic_validators=True)` |
+| parser | `stove0-server` | `reference/stove0/application/server/src/stove0_core/runtime_config.py` | `values.get(name, '{}')` |
 
 ### Machine authority
 
-- `/external_contract/configuration_environment/116`
+- `/external_contract/configuration_environment/238`
 
 ### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 588788b24473e2f9091051a704d2dcc9aa0134fc9ed8faf5aee8517538a16088 -->
+<!-- exact-contract-value: 0e3ef4e08911ff6cb2820f17986e7dfb33d01e02e059590267b12187de9065ff -->
 
 ```json
 {
-  "classification": "identity",
   "consumers": [
     "stove0-server"
   ],
-  "disposition": "contractual",
+  "default_expressions": [
+    "'{}'"
+  ],
   "id": "stove0-server:environment:STOVE0_OBSERVERS_JSON",
+  "input_shape": "environment-string",
   "name": "STOVE0_OBSERVERS_JSON",
   "owner": "stove0-server"
 }

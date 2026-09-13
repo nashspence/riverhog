@@ -17,4 +17,4 @@ Contract elements: **1** · Extent decisions: **2**
 
 | Dossier | Family | Extent decisions |
 |---|---|---:|
-| [gogurt-routes configuration](gogurt-routes-configuration.md) | `documents` | 2 |
+| [gogurt-core:configuration:gogurt-routes-schema configuration](gogurt-core-configuration-gogurt-routes-schema-configuration.md) | `documents` | 2 |

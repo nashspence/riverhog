@@ -115,7 +115,7 @@ def test_checked_contract_freeze_matches_every_executable_authority() -> None:
     }
     assert set(external["http_openapi"]) == {"riverhog", "riverhog-ftp-adapter", "stove0"}
     assert len(external["operations"]) == 147
-    assert len(external["python"]) == 25
+    assert len(external["python"]) == 62
     assert len(external["durable_state"]["owners"]) == 8
     extents = external["extents"]
     assert extents["coverage"]["classified"] == extents["coverage"]["discovered"]
@@ -124,13 +124,14 @@ def test_checked_contract_freeze_matches_every_executable_authority() -> None:
     )
     assert trace["schema"] == "riverhog-contract-trace/v1"
     assert trace["coverage"]["source_kinds"] == {
+        "audit": 1,
         "cli": 16,
-        "configuration": 6,
-        "configuration-environment": 127,
-        "configuration-environment-pattern": 1,
+        "configuration": 7,
+        "configuration-environment": 250,
+        "configuration-environment-pattern": 2,
         "openapi": 3,
         "protocol": 35,
-        "python": 25,
+        "python": 84,
         "release": 1,
         "state": 8,
     }
@@ -146,6 +147,7 @@ def test_checked_contract_freeze_matches_every_executable_authority() -> None:
     }
     assert {item["id"] for item in authority_registry["noncontractual_projection"]} == {
         "contract-projection-envelope",
+        "boundary-projection",
         "durable-state-registry-envelope",
         "extent-projection-envelope",
     }
@@ -155,33 +157,56 @@ def test_checked_contract_freeze_matches_every_executable_authority() -> None:
         sources["cli:riverhog-storage-adapter-conformance"]["owner"]
         == "riverhog-storage-adapter-support"
     )
-    assert sources["configuration:gogurt-routes"]["owner"] == "gogurt-core"
-    assert sources["configuration:stove0-recipes"]["owner"] == "stove0-recipe-config"
+    assert (
+        sources["configuration:gogurt-core:configuration:gogurt-routes-schema"]["owner"]
+        == "gogurt-core"
+    )
+    assert (
+        sources["configuration:stove0-recipe-config:configuration:recipe-catalog"]["owner"]
+        == "stove0-recipe-config"
+    )
     configuration = trace["configuration_registry"]
+    configuration_documents = trace["configuration_document_registry"]
+    assert configuration_documents["counts"] == {
+        "contracts": 7,
+        "detections": 7,
+        "resolved_detections": 7,
+    }
+    assert set(configuration_documents["coverage"].values()) == {0, 7}
+    assert {item["id"] for item in configuration_documents["candidates"]} == set(
+        external["configuration_documents"]
+    )
     assert configuration["counts"] == {
-        "contracts": 127,
-        "patterns": 1,
-        "unique_environment_names": 119,
+        "contracts": 250,
+        "detections": 199,
+        "patterns": 2,
+        "resolution_exceptions": 6,
+        "resolved_detections": 199,
+        "unique_environment_names": 240,
         "by_owner": {
-            "gogurt": 2,
+            "gogurt-linux-listener-host": 2,
+            "gogurt-windows-listener-host": 3,
             "piggity": 7,
             "riverhog-client": 12,
             "riverhog-ftp-adapter": 3,
             "riverhog-ftp-adapter-api-client": 5,
-            "riverhog-provenance": 1,
+            "riverhog-provenance": 3,
             "riverhog-server": 50,
+            "riverhog-storage-adapter-aws": 30,
+            "riverhog-storage-adapter-backblaze": 20,
+            "riverhog-storage-adapter-filesystem": 8,
             "stove0-api-client": 5,
             "stove0-exiftool-observer": 8,
             "stove0-ffprobe-sampling-observer": 8,
-            "stove0-nvenc-av1-opus-review-sampler": 1,
-            "stove0-nvenc-av1-opus-target": 2,
-            "stove0-opus-review-sampler": 1,
-            "stove0-opus-target": 1,
-            "stove0-server": 20,
+            "stove0-nvenc-av1-opus-review-sampler": 8,
+            "stove0-nvenc-av1-opus-target": 10,
+            "stove0-opus-review-sampler": 8,
+            "stove0-opus-target": 9,
+            "stove0-review-materialize-target": 10,
+            "stove0-review-rclone-effect-target": 15,
+            "stove0-server": 25,
             "stove0-target-support": 1,
         },
-        "by_classification": {"credential": 16, "identity": 42, "runtime": 69},
-        "by_disposition": {"contractual": 127},
     }
     assert set(configuration["coverage"].values()) == {0}
     components = {item["distribution"] for item in projection["boundaries"]["components"]}
@@ -193,12 +218,17 @@ def test_checked_contract_freeze_matches_every_executable_authority() -> None:
         item["owner"] for item in configuration["records"] if item["name"] == "RIVERHOG_BASE_URL"
     } == {"riverhog-client", "riverhog-ftp-adapter", "stove0-server"}
     assert not any(item["authority"] == "configuration" for item in checked.root["elements"])
+    assert not any(item["interface"] == "boundary" for item in checked.root["elements"])
+    assert not any(
+        pointer.startswith("/boundaries")
+        for item in checked.root["elements"]
+        for pointer in item["pointers"]
+    )
     assert not {
         "durable-state",
-        "gogurt-routes",
-        "stove0-recipes",
-        "stove0-review-target",
-        "stove0-review-target-sampler",
+        "gogurt-core:configuration:gogurt-routes-schema",
+        "stove0-recipe-config:configuration:recipe-catalog",
+        "stove0-review-target-support:configuration:review-target-config",
     } & {item["authority"] for item in checked.root["elements"]}
 
     root = checked.root
@@ -242,20 +272,103 @@ def test_contract_regeneration_cannot_bless_undeclared_boundary_drift(
         module.contract_projection()
 
 
-def test_configuration_contract_fails_closed_on_an_owner_outside_the_frozen_topology(
+def test_configuration_resolution_fails_closed_on_an_owner_outside_the_frozen_topology(
     monkeypatch: pytest.MonkeyPatch, tmp_path: Path
 ) -> None:
     module = load_script()
     changed = (
-        (REPO_ROOT / "qualification/configuration-contract.toml")
+        (REPO_ROOT / "qualification/contract-freeze-exceptions.toml")
         .read_text(encoding="utf-8")
-        .replace('owner = "gogurt"', 'owner = "unowned-setting"', 1)
+        .replace(
+            'source_authority_id = "configuration:mango-fish:configuration:mango-fish-config"',
+            'source_authority_id = "configuration:unowned-setting"',
+            1,
+        )
     )
-    contract = tmp_path / "configuration-contract.toml"
+    contract = tmp_path / "contract-freeze-exceptions.toml"
     contract.write_text(changed, encoding="utf-8")
-    monkeypatch.setattr(module, "CONFIGURATION_CONTRACT", contract)
+    monkeypatch.setattr(module, "CONTRACT_FREEZE_EXCEPTIONS", contract)
 
-    with pytest.raises(module.ContractFreezeError, match="not an existing authority"):
+    projection = module.contract_projection()
+    with pytest.raises(module.ContractFreezeError, match="unknown authorities"):
+        module.trace_projection(projection)
+
+
+def test_disposition_is_independent_of_detection_and_resolution() -> None:
+    module = load_script()
+    projects = module.release_contract.validate_release_contract(REPO_ROOT)
+    projection = module.contract_projection()
+    complete = module._release_surface_registries(projects, projection)
+    undispositioned = module._release_surface_registries(
+        projects, projection, include_dispositions=False
+    )
+
+    for name in complete:
+        assert undispositioned[name]["detections"] == complete[name]["detections"]
+        assert undispositioned[name]["resolutions"] == complete[name]["resolutions"]
+        assert undispositioned[name]["candidates"] == complete[name]["candidates"]
+        assert undispositioned[name]["dispositions"] == []
+        assert undispositioned[name]["coverage"]["undispositioned"] == len(
+            complete[name]["candidates"]
+        )
+
+
+def test_exception_overlay_cannot_create_or_describe_a_candidate(tmp_path: Path) -> None:
+    module = load_script()
+    path = tmp_path / "contract-freeze-exceptions.toml"
+    path.write_text(
+        "\n".join(
+            (
+                'schema = "riverhog-contract-freeze-exceptions/v1"',
+                "resolution = []",
+                "[[exclusion]]",
+                'candidate_id = "not-detected"',
+                'policy_id = "exclusion/example/v1"',
+                'reason = "example"',
+                'name = "RIVERHOG_INVENTED"',
+            )
+        ),
+        encoding="utf-8",
+    )
+    with pytest.raises(module.DiscoveryError, match="unexpected|incomplete"):
+        module.load_exceptions(path)
+
+
+def test_exception_overlay_cannot_create_an_undetected_candidate(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    module = load_script()
+    changed = (
+        (REPO_ROOT / "qualification/contract-freeze-exceptions.toml").read_text(encoding="utf-8")
+        + "\n[[exclusion]]\n"
+        + 'candidate_id = "console-script:missing:missing"\n'
+        + 'policy_id = "exclusion/process-launcher-not-cli/v1"\n'
+        + 'reason = "not actually detected"\n'
+    )
+    path = tmp_path / "contract-freeze-exceptions.toml"
+    path.write_text(changed, encoding="utf-8")
+    monkeypatch.setattr(module, "CONTRACT_FREEZE_EXCEPTIONS", path)
+    projection = module.contract_projection()
+
+    with pytest.raises(module.ContractFreezeError, match="exclusions are stale"):
+        module._console_script_registry(projection)
+
+
+def test_removing_resolution_hints_preserves_detection_and_fails_unresolved(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    module = load_script()
+    projects = module.release_contract.validate_release_contract(REPO_ROOT)
+    before = module._environment_detections(projects)
+    path = tmp_path / "contract-freeze-exceptions.toml"
+    path.write_text(
+        'schema = "riverhog-contract-freeze-exceptions/v1"\nresolution = []\nexclusion = []\n',
+        encoding="utf-8",
+    )
+    monkeypatch.setattr(module, "CONTRACT_FREEZE_EXCEPTIONS", path)
+
+    assert module._environment_detections(projects) == before
+    with pytest.raises(module.ContractFreezeError, match="configuration reads are unresolved"):
         module.contract_projection()
 
 

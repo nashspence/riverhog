@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: configuration-environment:riverhog-client:riverhog-upload-file-window:e5851d942e -->
+<!-- contract-element: configuration-environment:riverhog-client:riverhog-upload-file-window:01e7371bb8 -->
 
 Exact externally visible contract owned by this semantic dossier.
 
@@ -10,21 +10,21 @@ Exact externally visible contract owned by this semantic dossier.
 |---|---|
 | Authority | [riverhog-client](../index.md) |
 | Interface | [configuration-environment](index.md) |
-| Family | [runtime](index.md#f-e4b312fabf) |
+| Family | [settings](index.md#f-7ff1624ad7) |
 | Contract elements | 1 |
 | Extent decisions | 1 |
 
 ## External contract
 
-<a id="s-dc3b9e297a"></a>
+<a id="s-f3c5c446af"></a>
 | Field | Shape |
 |---|---|
-| <a id="s-12a3517adc"></a>`classification` | "runtime" |
-| <a id="s-2cfcf2ca71"></a>`consumers` | ["riverhog-client"] |
-| <a id="s-0cdf6596af"></a>`disposition` | "contractual" |
-| <a id="s-57bcabee8d"></a>`id` | "riverhog-client:environment:RIVERHOG_UPLOAD_FILE_WINDOW" |
-| <a id="s-3d0c74b453"></a>`name` | "RIVERHOG_UPLOAD_FILE_WINDOW" |
-| <a id="s-90ff047361"></a>`owner` | "riverhog-client" |
+| <a id="s-e5f41d64e9"></a>`consumers` | ["riverhog-client"] |
+| <a id="s-ee3ab728a9"></a>`default_expressions` | ["''"] |
+| <a id="s-4f2d62dbc3"></a>`id` | "riverhog-client:environment:RIVERHOG_UPLOAD_FILE_WINDOW" |
+| <a id="s-63e22c344b"></a>`input_shape` | "environment-string" |
+| <a id="s-034b439c45"></a>`name` | "RIVERHOG_UPLOAD_FILE_WINDOW" |
+| <a id="s-5b255b15bc"></a>`owner` | "riverhog-client" |
 
 ### Progression, limits, and lifecycle
 
@@ -34,12 +34,12 @@ Shared facts for every subject below: configuration="RIVERHOG_UPLOAD_FILE_WINDOW
 
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
-| [RIVERHOG_UPLOAD_FILE_WINDOW](#s-dc3b9e297a) | `value · configured-value · operational_policy` | shared above |
+| [RIVERHOG_UPLOAD_FILE_WINDOW](#s-f3c5c446af) | `value · configured-value · operational_policy` | shared above |
 
 ## Governing policies
 
-- <a id="pa-7fe83567fe"></a>[compatibility/configuration/v1](../../../policies/index.md#p-8dc08bb461)
-- <a id="pa-51003c1c83"></a>[extent-rule/configured-capacity/v1](../../../policies/index.md#p-3ebc61fc99)
+- <a id="pa-bc7da37588"></a>[compatibility/configuration/v1](../../../policies/index.md#p-8dc08bb461)
+- <a id="pa-ede95780ea"></a>[extent-rule/configured-capacity/v1](../../../policies/index.md#p-3ebc61fc99)
 
 ## Evidence
 
@@ -50,37 +50,37 @@ Shared facts for every subject below: configuration="RIVERHOG_UPLOAD_FILE_WINDOW
 
 ### Executable sources
 
-- [configuration-environment:inventory](../../../evidence/sources.md#src-26b33461d2) — `qualification/configuration-contract.toml`
 - [configuration-environment:riverhog-client:RIVERHOG_UPLOAD_FILE_WINDOW](../../../evidence/sources.md#src-93e4082935) — `packages/riverhog-client/src/riverhog_client/uploads.py`
 - [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
 
 ### Configuration authority and bindings
 
-The declaration fixes normative ownership and classification. The parser expression is the source-linked authority for the accepted domain and effective default exercised by qualification.
+The owning implementation defines the setting. The parser expression records each independently discovered consumer binding and effective default exercised by qualification.
 
 | Kind | Consumer | Source | Authority |
 |---|---|---|---|
-| declaration | — | `qualification/configuration-contract.toml` | `/environment/5/names` |
 | parser | `riverhog-client` | `packages/riverhog-client/src/riverhog_client/uploads.py` | `environment.get('RIVERHOG_UPLOAD_FILE_WINDOW', '')` |
 
 ### Machine authority
 
-- `/external_contract/configuration_environment/19`
+- `/external_contract/configuration_environment/22`
 
 ### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 043606c2b1ee704f8268e38cfa8e31e26cb1f1e25239df67cf3ba135e74e5613 -->
+<!-- exact-contract-value: dc22d3a4233a02d4708af7eefab7164674a5f35e44dadc157673270ff03f8e52 -->
 
 ```json
 {
-  "classification": "runtime",
   "consumers": [
     "riverhog-client"
   ],
-  "disposition": "contractual",
+  "default_expressions": [
+    "''"
+  ],
   "id": "riverhog-client:environment:RIVERHOG_UPLOAD_FILE_WINDOW",
+  "input_shape": "environment-string",
   "name": "RIVERHOG_UPLOAD_FILE_WINDOW",
   "owner": "riverhog-client"
 }

@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: configuration-environment:piggity:piggity-upload-finalize-poll-seconds:fd59ef751b -->
+<!-- contract-element: configuration-environment:piggity:piggity-upload-finalize-poll-seconds:fd4d6ff598 -->
 
 Exact externally visible contract owned by this semantic dossier.
 
@@ -10,21 +10,21 @@ Exact externally visible contract owned by this semantic dossier.
 |---|---|
 | Authority | [piggity](../index.md) |
 | Interface | [configuration-environment](index.md) |
-| Family | [runtime](index.md#f-b2e9f036cd) |
+| Family | [settings](index.md#f-63bc29edfb) |
 | Contract elements | 1 |
 | Extent decisions | 1 |
 
 ## External contract
 
-<a id="s-2436bad7d4"></a>
+<a id="s-e342da9aef"></a>
 | Field | Shape |
 |---|---|
-| <a id="s-42321b98d8"></a>`classification` | "runtime" |
-| <a id="s-478f37a840"></a>`consumers` | ["piggity"] |
-| <a id="s-5bf0005094"></a>`disposition` | "contractual" |
-| <a id="s-7ed31707ad"></a>`id` | "piggity:environment:PIGGITY_UPLOAD_FINALIZE_POLL_SECONDS" |
-| <a id="s-7d2e712aed"></a>`name` | "PIGGITY_UPLOAD_FINALIZE_POLL_SECONDS" |
-| <a id="s-cfbebc15f6"></a>`owner` | "piggity" |
+| <a id="s-1e916619c8"></a>`consumers` | ["piggity"] |
+| <a id="s-fa5f6c460e"></a>`default_expressions` | ["unset"] |
+| <a id="s-6907510a84"></a>`id` | "piggity:environment:PIGGITY_UPLOAD_FINALIZE_POLL_SECONDS" |
+| <a id="s-f2a6bcf8cf"></a>`input_shape` | "environment-string" |
+| <a id="s-89688e57e4"></a>`name` | "PIGGITY_UPLOAD_FINALIZE_POLL_SECONDS" |
+| <a id="s-b6d0b64384"></a>`owner` | "piggity" |
 
 ### Progression, limits, and lifecycle
 
@@ -34,12 +34,12 @@ Shared facts for every subject below: configuration="PIGGITY_UPLOAD_FINALIZE_POL
 
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
-| [PIGGITY_UPLOAD_FINALIZE_POLL_SECONDS](#s-2436bad7d4) | `value · configured-value · operational_policy` | shared above |
+| [PIGGITY_UPLOAD_FINALIZE_POLL_SECONDS](#s-e342da9aef) | `value · configured-value · operational_policy` | shared above |
 
 ## Governing policies
 
-- <a id="pa-63c0d1c141"></a>[compatibility/configuration/v1](../../../policies/index.md#p-8dc08bb461)
-- <a id="pa-2737a6a76e"></a>[extent-rule/configured-capacity/v1](../../../policies/index.md#p-3ebc61fc99)
+- <a id="pa-0a254a636a"></a>[compatibility/configuration/v1](../../../policies/index.md#p-8dc08bb461)
+- <a id="pa-7ce3c6fd5c"></a>[extent-rule/configured-capacity/v1](../../../policies/index.md#p-3ebc61fc99)
 
 ## Evidence
 
@@ -50,37 +50,37 @@ Shared facts for every subject below: configuration="PIGGITY_UPLOAD_FINALIZE_POL
 
 ### Executable sources
 
-- [configuration-environment:inventory](../../../evidence/sources.md#src-26b33461d2) — `qualification/configuration-contract.toml`
 - [configuration-environment:piggity:PIGGITY_UPLOAD_FINALIZE_POLL_SECONDS](../../../evidence/sources.md#src-2057e6d1cc) — `reference/riverhog/applications/piggity/src/piggity/main.py`
 - [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
 
 ### Configuration authority and bindings
 
-The declaration fixes normative ownership and classification. The parser expression is the source-linked authority for the accepted domain and effective default exercised by qualification.
+The owning implementation defines the setting. The parser expression records each independently discovered consumer binding and effective default exercised by qualification.
 
 | Kind | Consumer | Source | Authority |
 |---|---|---|---|
-| declaration | — | `qualification/configuration-contract.toml` | `/environment/2/names` |
 | parser | `piggity` | `reference/riverhog/applications/piggity/src/piggity/main.py` | `os.getenv('PIGGITY_UPLOAD_FINALIZE_POLL_SECONDS')` |
 
 ### Machine authority
 
-- `/external_contract/configuration_environment/7`
+- `/external_contract/configuration_environment/9`
 
 ### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 364a284afc1c04981948cd5122e243825eb08be0ce3d9bb4a3ec461d781ca7ea -->
+<!-- exact-contract-value: 4de716886e9c67cf949dab8f644e38d29cdf90eb5e325c9d2844aa3acf4afa89 -->
 
 ```json
 {
-  "classification": "runtime",
   "consumers": [
     "piggity"
   ],
-  "disposition": "contractual",
+  "default_expressions": [
+    "unset"
+  ],
   "id": "piggity:environment:PIGGITY_UPLOAD_FINALIZE_POLL_SECONDS",
+  "input_shape": "environment-string",
   "name": "PIGGITY_UPLOAD_FINALIZE_POLL_SECONDS",
   "owner": "piggity"
 }

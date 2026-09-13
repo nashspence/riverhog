@@ -2,12 +2,12 @@
 
 [Atlas](../../index.md) · [Policies](../../policies/index.md)
 
-Contract elements: **2** · Extent decisions: **0**
+Contract elements: **1** · Extent decisions: **0**
 
 | Interface | Count |
 |---|---:|
-| `boundary` | 2 |
+| `python` | 1 |
 
 ## Interfaces
 
-- [boundary](boundary/index.md) — 2 elements
+- [python](python/index.md) — 1 elements

@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: configuration-environment:piggity:piggity-upload-file-log-bytes:c8cbc86d7d -->
+<!-- contract-element: configuration-environment:piggity:piggity-upload-file-log-bytes:c44ce6204d -->
 
 Exact externally visible contract owned by this semantic dossier.
 
@@ -10,21 +10,21 @@ Exact externally visible contract owned by this semantic dossier.
 |---|---|
 | Authority | [piggity](../index.md) |
 | Interface | [configuration-environment](index.md) |
-| Family | [runtime](index.md#f-b2e9f036cd) |
+| Family | [settings](index.md#f-63bc29edfb) |
 | Contract elements | 1 |
 | Extent decisions | 1 |
 
 ## External contract
 
-<a id="s-70ab20d602"></a>
+<a id="s-1966a8d0ec"></a>
 | Field | Shape |
 |---|---|
-| <a id="s-3ec9f0afdb"></a>`classification` | "runtime" |
-| <a id="s-cf5ca173ed"></a>`consumers` | ["piggity"] |
-| <a id="s-4c6fa421bc"></a>`disposition` | "contractual" |
-| <a id="s-3b7a45f265"></a>`id` | "piggity:environment:PIGGITY_UPLOAD_FILE_LOG_BYTES" |
-| <a id="s-e26009ba61"></a>`name` | "PIGGITY_UPLOAD_FILE_LOG_BYTES" |
-| <a id="s-ba143c7f61"></a>`owner` | "piggity" |
+| <a id="s-9a2311e6cd"></a>`consumers` | ["piggity"] |
+| <a id="s-6b12b9694a"></a>`default_expressions` | ["unset"] |
+| <a id="s-cf3af0a6fd"></a>`id` | "piggity:environment:PIGGITY_UPLOAD_FILE_LOG_BYTES" |
+| <a id="s-0f9cc1851c"></a>`input_shape` | "environment-string" |
+| <a id="s-4341315209"></a>`name` | "PIGGITY_UPLOAD_FILE_LOG_BYTES" |
+| <a id="s-4ea39658ad"></a>`owner` | "piggity" |
 
 ### Progression, limits, and lifecycle
 
@@ -34,12 +34,12 @@ Shared facts for every subject below: configuration="PIGGITY_UPLOAD_FILE_LOG_BYT
 
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
-| [PIGGITY_UPLOAD_FILE_LOG_BYTES](#s-70ab20d602) | `value · configured-value · operational_policy` | shared above |
+| [PIGGITY_UPLOAD_FILE_LOG_BYTES](#s-1966a8d0ec) | `value · configured-value · operational_policy` | shared above |
 
 ## Governing policies
 
-- <a id="pa-fbe9cb94c6"></a>[compatibility/configuration/v1](../../../policies/index.md#p-8dc08bb461)
-- <a id="pa-8e8a855fbf"></a>[extent-rule/configured-capacity/v1](../../../policies/index.md#p-3ebc61fc99)
+- <a id="pa-3ddfdeca2f"></a>[compatibility/configuration/v1](../../../policies/index.md#p-8dc08bb461)
+- <a id="pa-9f0fd89a14"></a>[extent-rule/configured-capacity/v1](../../../policies/index.md#p-3ebc61fc99)
 
 ## Evidence
 
@@ -50,37 +50,37 @@ Shared facts for every subject below: configuration="PIGGITY_UPLOAD_FILE_LOG_BYT
 
 ### Executable sources
 
-- [configuration-environment:inventory](../../../evidence/sources.md#src-26b33461d2) — `qualification/configuration-contract.toml`
 - [configuration-environment:piggity:PIGGITY_UPLOAD_FILE_LOG_BYTES](../../../evidence/sources.md#src-283d9ea8ad) — `reference/riverhog/applications/piggity/src/piggity/main.py`
 - [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
 
 ### Configuration authority and bindings
 
-The declaration fixes normative ownership and classification. The parser expression is the source-linked authority for the accepted domain and effective default exercised by qualification.
+The owning implementation defines the setting. The parser expression records each independently discovered consumer binding and effective default exercised by qualification.
 
 | Kind | Consumer | Source | Authority |
 |---|---|---|---|
-| declaration | — | `qualification/configuration-contract.toml` | `/environment/2/names` |
 | parser | `piggity` | `reference/riverhog/applications/piggity/src/piggity/main.py` | `os.getenv('PIGGITY_UPLOAD_FILE_LOG_BYTES')` |
 
 ### Machine authority
 
-- `/external_contract/configuration_environment/6`
+- `/external_contract/configuration_environment/8`
 
 ### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 8fad412136031885976ee73416b03f2ea33c13f46c836cb66da7cf1e29c2de11 -->
+<!-- exact-contract-value: b80bc6ba9997482476f4898e98c8add2b2e1f2006d3fbdaf6649e42de2c90881 -->
 
 ```json
 {
-  "classification": "runtime",
   "consumers": [
     "piggity"
   ],
-  "disposition": "contractual",
+  "default_expressions": [
+    "unset"
+  ],
   "id": "piggity:environment:PIGGITY_UPLOAD_FILE_LOG_BYTES",
+  "input_shape": "environment-string",
   "name": "PIGGITY_UPLOAD_FILE_LOG_BYTES",
   "owner": "piggity"
 }

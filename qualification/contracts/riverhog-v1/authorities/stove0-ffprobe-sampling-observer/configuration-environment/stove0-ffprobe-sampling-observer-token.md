@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: configuration-environment:stove0-ffprobe-sampling-observer:stove0-ffprobe-sampling-observer-token:7710a074f3 -->
+<!-- contract-element: configuration-environment:stove0-ffprobe-sampling-observer:stove0-ffprobe-sampling-observer-token:d2b9e6bec2 -->
 
 Exact externally visible contract owned by this semantic dossier.
 
@@ -10,25 +10,25 @@ Exact externally visible contract owned by this semantic dossier.
 |---|---|
 | Authority | [stove0-ffprobe-sampling-observer](../index.md) |
 | Interface | [configuration-environment](index.md) |
-| Family | [credential](index.md#f-1d31d466df) |
+| Family | [settings](index.md#f-d7a496f867) |
 | Contract elements | 1 |
 | Extent decisions | 0 |
 
 ## External contract
 
-<a id="s-b3dd205ff4"></a>
+<a id="s-8f59324207"></a>
 | Field | Shape |
 |---|---|
-| <a id="s-31eac6c9b7"></a>`classification` | "credential" |
-| <a id="s-fdfa36834a"></a>`consumers` | ["stove0-ffprobe-sampling-observer"] |
-| <a id="s-af7adabe00"></a>`disposition` | "contractual" |
-| <a id="s-b929a15be2"></a>`id` | "stove0-ffprobe-sampling-observer:environment:STOVE0_FFPROBE_SAMPLING_OBSERVER_TOKEN" |
-| <a id="s-7a20528c0b"></a>`name` | "STOVE0_FFPROBE_SAMPLING_OBSERVER_TOKEN" |
-| <a id="s-211ee68554"></a>`owner` | "stove0-ffprobe-sampling-observer" |
+| <a id="s-5ce476d592"></a>`consumers` | ["stove0-ffprobe-sampling-observer"] |
+| <a id="s-3b4a852639"></a>`default_expressions` | ["unset"] |
+| <a id="s-8697d6dfab"></a>`id` | "stove0-ffprobe-sampling-observer:environment:STOVE0_FFPROBE_SAMPLING_OBSERVER_TOKEN" |
+| <a id="s-7e4f4054fb"></a>`input_shape` | "environment-string" |
+| <a id="s-514286516a"></a>`name` | "STOVE0_FFPROBE_SAMPLING_OBSERVER_TOKEN" |
+| <a id="s-2e2d9517c4"></a>`owner` | "stove0-ffprobe-sampling-observer" |
 
 ## Governing policies
 
-- <a id="pa-0138dcf3da"></a>[compatibility/configuration/v1](../../../policies/index.md#p-8dc08bb461)
+- <a id="pa-9d672c982a"></a>[compatibility/configuration/v1](../../../policies/index.md#p-8dc08bb461)
 
 ## Evidence
 
@@ -39,38 +39,38 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Executable sources
 
-- [configuration-environment:inventory](../../../evidence/sources.md#src-26b33461d2) — `qualification/configuration-contract.toml`
 - [configuration-environment:stove0-ffprobe-sampling-observer:STOVE0_FFPROBE_SAMPLING_OBSERVER_TOKEN](../../../evidence/sources.md#src-42afc1d184) — `reference/stove0/observers/ffprobe-sampling/src/stove0_ffprobe_sampling_observer/app.py`
 - [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
 
 ### Configuration authority and bindings
 
-The declaration fixes normative ownership and classification. The parser expression is the source-linked authority for the accepted domain and effective default exercised by qualification.
+The owning implementation defines the setting. The parser expression records each independently discovered consumer binding and effective default exercised by qualification.
 
 | Kind | Consumer | Source | Authority |
 |---|---|---|---|
-| declaration | — | `qualification/configuration-contract.toml` | `/environment/20/names` |
-| parser | `stove0-ffprobe-sampling-observer` | `reference/stove0/observers/ffprobe-sampling/src/stove0_ffprobe_sampling_observer/app.py` | `os.environ.pop('STOVE0_FFPROBE_SAMPLING_OBSERVER_TOKEN')` |
 | parser | `stove0-ffprobe-sampling-observer` | `reference/stove0/observers/ffprobe-sampling/src/stove0_ffprobe_sampling_observer/app.py` | `os.getenv('STOVE0_FFPROBE_SAMPLING_OBSERVER_TOKEN')` |
+| parser | `stove0-ffprobe-sampling-observer` | `reference/stove0/observers/ffprobe-sampling/src/stove0_ffprobe_sampling_observer/app.py` | `os.environ.pop('STOVE0_FFPROBE_SAMPLING_OBSERVER_TOKEN')` |
 
 ### Machine authority
 
-- `/external_contract/configuration_environment/98`
+- `/external_contract/configuration_environment/161`
 
 ### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: ab77e645d60de20d093c528e16c6f25fbcd9896af87b16029b487f9b004f8739 -->
+<!-- exact-contract-value: a43cc3f05d1c204c5396a9ed677562411959e8047995d01db7acd62b54951cfe -->
 
 ```json
 {
-  "classification": "credential",
   "consumers": [
     "stove0-ffprobe-sampling-observer"
   ],
-  "disposition": "contractual",
+  "default_expressions": [
+    "unset"
+  ],
   "id": "stove0-ffprobe-sampling-observer:environment:STOVE0_FFPROBE_SAMPLING_OBSERVER_TOKEN",
+  "input_shape": "environment-string",
   "name": "STOVE0_FFPROBE_SAMPLING_OBSERVER_TOKEN",
   "owner": "stove0-ffprobe-sampling-observer"
 }

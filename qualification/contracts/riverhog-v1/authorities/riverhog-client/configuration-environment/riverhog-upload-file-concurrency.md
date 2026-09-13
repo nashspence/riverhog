@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: configuration-environment:riverhog-client:riverhog-upload-file-concurrency:f4f58a730c -->
+<!-- contract-element: configuration-environment:riverhog-client:riverhog-upload-file-concurrency:7fbe26e56b -->
 
 Exact externally visible contract owned by this semantic dossier.
 
@@ -10,21 +10,21 @@ Exact externally visible contract owned by this semantic dossier.
 |---|---|
 | Authority | [riverhog-client](../index.md) |
 | Interface | [configuration-environment](index.md) |
-| Family | [runtime](index.md#f-e4b312fabf) |
+| Family | [settings](index.md#f-7ff1624ad7) |
 | Contract elements | 1 |
 | Extent decisions | 1 |
 
 ## External contract
 
-<a id="s-ef80127a53"></a>
+<a id="s-20d8c220d5"></a>
 | Field | Shape |
 |---|---|
-| <a id="s-973a05fb7c"></a>`classification` | "runtime" |
-| <a id="s-bf7f86f2e0"></a>`consumers` | ["riverhog-client"] |
-| <a id="s-27a3f61b1d"></a>`disposition` | "contractual" |
-| <a id="s-e8c3dd7148"></a>`id` | "riverhog-client:environment:RIVERHOG_UPLOAD_FILE_CONCURRENCY" |
-| <a id="s-53140a7a23"></a>`name` | "RIVERHOG_UPLOAD_FILE_CONCURRENCY" |
-| <a id="s-69c825bdc0"></a>`owner` | "riverhog-client" |
+| <a id="s-afe2b91816"></a>`consumers` | ["riverhog-client"] |
+| <a id="s-fd6337595d"></a>`default_expressions` | ["''"] |
+| <a id="s-26e4801367"></a>`id` | "riverhog-client:environment:RIVERHOG_UPLOAD_FILE_CONCURRENCY" |
+| <a id="s-8ec763253d"></a>`input_shape` | "environment-string" |
+| <a id="s-c40791ce1d"></a>`name` | "RIVERHOG_UPLOAD_FILE_CONCURRENCY" |
+| <a id="s-e151128158"></a>`owner` | "riverhog-client" |
 
 ### Progression, limits, and lifecycle
 
@@ -34,12 +34,12 @@ Shared facts for every subject below: configuration="RIVERHOG_UPLOAD_FILE_CONCUR
 
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
-| [RIVERHOG_UPLOAD_FILE_CONCURRENCY](#s-ef80127a53) | `value · configured-value · operational_policy` | shared above |
+| [RIVERHOG_UPLOAD_FILE_CONCURRENCY](#s-20d8c220d5) | `value · configured-value · operational_policy` | shared above |
 
 ## Governing policies
 
-- <a id="pa-323d97e3f1"></a>[compatibility/configuration/v1](../../../policies/index.md#p-8dc08bb461)
-- <a id="pa-b835273c2b"></a>[extent-rule/configured-capacity/v1](../../../policies/index.md#p-3ebc61fc99)
+- <a id="pa-dee16f2ab7"></a>[compatibility/configuration/v1](../../../policies/index.md#p-8dc08bb461)
+- <a id="pa-2a06b40712"></a>[extent-rule/configured-capacity/v1](../../../policies/index.md#p-3ebc61fc99)
 
 ## Evidence
 
@@ -50,37 +50,37 @@ Shared facts for every subject below: configuration="RIVERHOG_UPLOAD_FILE_CONCUR
 
 ### Executable sources
 
-- [configuration-environment:inventory](../../../evidence/sources.md#src-26b33461d2) — `qualification/configuration-contract.toml`
 - [configuration-environment:riverhog-client:RIVERHOG_UPLOAD_FILE_CONCURRENCY](../../../evidence/sources.md#src-5d0adeaf5d) — `packages/riverhog-client/src/riverhog_client/uploads.py`
 - [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
 
 ### Configuration authority and bindings
 
-The declaration fixes normative ownership and classification. The parser expression is the source-linked authority for the accepted domain and effective default exercised by qualification.
+The owning implementation defines the setting. The parser expression records each independently discovered consumer binding and effective default exercised by qualification.
 
 | Kind | Consumer | Source | Authority |
 |---|---|---|---|
-| declaration | — | `qualification/configuration-contract.toml` | `/environment/5/names` |
 | parser | `riverhog-client` | `packages/riverhog-client/src/riverhog_client/uploads.py` | `environment.get('RIVERHOG_UPLOAD_FILE_CONCURRENCY', '')` |
 
 ### Machine authority
 
-- `/external_contract/configuration_environment/18`
+- `/external_contract/configuration_environment/21`
 
 ### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 1258b62dfdbf93c06d21d32decab7c3be1b32cc83baaecb0d910bb3f2db4b64f -->
+<!-- exact-contract-value: 615addf630be0aefb01d2f5f566e6866a0713807ae142de2a6db7876a91ff010 -->
 
 ```json
 {
-  "classification": "runtime",
   "consumers": [
     "riverhog-client"
   ],
-  "disposition": "contractual",
+  "default_expressions": [
+    "''"
+  ],
   "id": "riverhog-client:environment:RIVERHOG_UPLOAD_FILE_CONCURRENCY",
+  "input_shape": "environment-string",
   "name": "RIVERHOG_UPLOAD_FILE_CONCURRENCY",
   "owner": "riverhog-client"
 }

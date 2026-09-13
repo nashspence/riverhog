@@ -18,4 +18,4 @@ Contract elements: **1** · Extent decisions: **39**
 
 | Dossier | Family | Extent decisions |
 |---|---|---:|
-| [stove0-recipes configuration](stove0-recipes-configuration.md) | `documents` | 39 |
+| [stove0-recipe-config:configuration:recipe-catalog configuration](stove0-recipe-config-configuration-recipe-catalog-configuration.md) | `documents` | 39 |

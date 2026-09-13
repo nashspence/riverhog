@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: configuration-environment:riverhog-server:riverhog-pack-member-bytes:c2b5ee25d2 -->
+<!-- contract-element: configuration-environment:riverhog-server:riverhog-pack-member-bytes:4c22a1ebc8 -->
 
 Exact externally visible contract owned by this semantic dossier.
 
@@ -10,21 +10,21 @@ Exact externally visible contract owned by this semantic dossier.
 |---|---|
 | Authority | [riverhog-server](../index.md) |
 | Interface | [configuration-environment](index.md) |
-| Family | [runtime](families/runtime/index.md) |
+| Family | [settings](families/settings/index.md) |
 | Contract elements | 1 |
 | Extent decisions | 1 |
 
 ## External contract
 
-<a id="s-51bdf3ea73"></a>
+<a id="s-5c633c982d"></a>
 | Field | Shape |
 |---|---|
-| <a id="s-63e71fe829"></a>`classification` | "runtime" |
-| <a id="s-46d6397232"></a>`consumers` | ["riverhog-server"] |
-| <a id="s-7e738d072b"></a>`disposition` | "contractual" |
-| <a id="s-8708489666"></a>`id` | "riverhog-server:environment:RIVERHOG_PACK_MEMBER_BYTES" |
-| <a id="s-cb037aed18"></a>`name` | "RIVERHOG_PACK_MEMBER_BYTES" |
-| <a id="s-869feebb7c"></a>`owner` | "riverhog-server" |
+| <a id="s-093b7de81f"></a>`consumers` | ["riverhog-server"] |
+| <a id="s-cb2ce64f5f"></a>`default_expressions` | ["unset"] |
+| <a id="s-e6605379f6"></a>`id` | "riverhog-server:environment:RIVERHOG_PACK_MEMBER_BYTES" |
+| <a id="s-1160de2df9"></a>`input_shape` | "environment-string" |
+| <a id="s-340ef8e53f"></a>`name` | "RIVERHOG_PACK_MEMBER_BYTES" |
+| <a id="s-51770eadf0"></a>`owner` | "riverhog-server" |
 
 ### Progression, limits, and lifecycle
 
@@ -34,12 +34,12 @@ Shared facts for every subject below: configuration="RIVERHOG_PACK_MEMBER_BYTES"
 
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
-| [RIVERHOG_PACK_MEMBER_BYTES](#s-51bdf3ea73) | `value · configured-value · operational_policy` | shared above |
+| [RIVERHOG_PACK_MEMBER_BYTES](#s-5c633c982d) | `value · configured-value · operational_policy` | shared above |
 
 ## Governing policies
 
-- <a id="pa-89d60048a1"></a>[compatibility/configuration/v1](../../../policies/index.md#p-8dc08bb461)
-- <a id="pa-fcefe4c562"></a>[extent-rule/configured-capacity/v1](../../../policies/index.md#p-3ebc61fc99)
+- <a id="pa-8b247ce9c0"></a>[compatibility/configuration/v1](../../../policies/index.md#p-8dc08bb461)
+- <a id="pa-2c589300d0"></a>[extent-rule/configured-capacity/v1](../../../policies/index.md#p-3ebc61fc99)
 
 ## Evidence
 
@@ -50,37 +50,37 @@ Shared facts for every subject below: configuration="RIVERHOG_PACK_MEMBER_BYTES"
 
 ### Executable sources
 
-- [configuration-environment:inventory](../../../evidence/sources.md#src-26b33461d2) — `qualification/configuration-contract.toml`
 - [configuration-environment:riverhog-server:RIVERHOG_PACK_MEMBER_BYTES](../../../evidence/sources.md#src-f8aff5063d) — `riverhog/src/riverhog_core/collection_plan.py`
 - [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
 
 ### Configuration authority and bindings
 
-The declaration fixes normative ownership and classification. The parser expression is the source-linked authority for the accepted domain and effective default exercised by qualification.
+The owning implementation defines the setting. The parser expression records each independently discovered consumer binding and effective default exercised by qualification.
 
 | Kind | Consumer | Source | Authority |
 |---|---|---|---|
-| declaration | — | `qualification/configuration-contract.toml` | `/environment/14/names` |
-| parser | `riverhog-server` | `riverhog/src/riverhog_core/collection_plan.py` | `_env_bytes(values, 'RIVERHOG_PACK_MEMBER_BYTES', DEFAULT_PACK_MEMBER_BYTES)` |
+| parser | `riverhog-server` | `riverhog/src/riverhog_core/collection_plan.py` | `values.get(name)` |
 
 ### Machine authority
 
-- `/external_contract/configuration_environment/60`
+- `/external_contract/configuration_environment/65`
 
 ### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: b2a25b263a755e60a6ae876a3a74ac84edf9bd2a4c3620c27ec0bf88becaea85 -->
+<!-- exact-contract-value: 68a1621d532485dd86ce8d718cecc3540f91674be2b13b36ebefce9a906986b6 -->
 
 ```json
 {
-  "classification": "runtime",
   "consumers": [
     "riverhog-server"
   ],
-  "disposition": "contractual",
+  "default_expressions": [
+    "unset"
+  ],
   "id": "riverhog-server:environment:RIVERHOG_PACK_MEMBER_BYTES",
+  "input_shape": "environment-string",
   "name": "RIVERHOG_PACK_MEMBER_BYTES",
   "owner": "riverhog-server"
 }

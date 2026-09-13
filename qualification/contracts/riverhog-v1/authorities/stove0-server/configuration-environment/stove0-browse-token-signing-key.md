@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: configuration-environment:stove0-server:stove0-browse-token-signing-key:be1e2eafcc -->
+<!-- contract-element: configuration-environment:stove0-server:stove0-browse-token-signing-key:7f21447c14 -->
 
 Exact externally visible contract owned by this semantic dossier.
 
@@ -10,25 +10,25 @@ Exact externally visible contract owned by this semantic dossier.
 |---|---|
 | Authority | [stove0-server](../index.md) |
 | Interface | [configuration-environment](index.md) |
-| Family | [credential](index.md#f-182b18fbb1) |
+| Family | [settings](index.md#f-12475197c9) |
 | Contract elements | 1 |
 | Extent decisions | 0 |
 
 ## External contract
 
-<a id="s-a5bdad2233"></a>
+<a id="s-4100c93200"></a>
 | Field | Shape |
 |---|---|
-| <a id="s-527a3da060"></a>`classification` | "credential" |
-| <a id="s-ee93841a02"></a>`consumers` | ["stove0-server"] |
-| <a id="s-2f60393843"></a>`disposition` | "contractual" |
-| <a id="s-1eb66f737d"></a>`id` | "stove0-server:environment:STOVE0_BROWSE_TOKEN_SIGNING_KEY" |
-| <a id="s-4ca352f816"></a>`name` | "STOVE0_BROWSE_TOKEN_SIGNING_KEY" |
-| <a id="s-2bd29e5838"></a>`owner` | "stove0-server" |
+| <a id="s-23f3e07db6"></a>`consumers` | ["stove0-server"] |
+| <a id="s-1e00eaa47b"></a>`default_expressions` | ["''"] |
+| <a id="s-1c7f09fb76"></a>`id` | "stove0-server:environment:STOVE0_BROWSE_TOKEN_SIGNING_KEY" |
+| <a id="s-875aa8c93f"></a>`input_shape` | "environment-string" |
+| <a id="s-c0627a9cb2"></a>`name` | "STOVE0_BROWSE_TOKEN_SIGNING_KEY" |
+| <a id="s-ffaf3a09a2"></a>`owner` | "stove0-server" |
 
 ## Governing policies
 
-- <a id="pa-d9abc45e57"></a>[compatibility/configuration/v1](../../../policies/index.md#p-8dc08bb461)
+- <a id="pa-7a0dfeb5e9"></a>[compatibility/configuration/v1](../../../policies/index.md#p-8dc08bb461)
 
 ## Evidence
 
@@ -39,37 +39,37 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Executable sources
 
-- [configuration-environment:inventory](../../../evidence/sources.md#src-26b33461d2) — `qualification/configuration-contract.toml`
 - [configuration-environment:stove0-server:STOVE0_BROWSE_TOKEN_SIGNING_KEY](../../../evidence/sources.md#src-f552366814) — `reference/stove0/application/server/src/stove0_core/runtime_config.py`
 - [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
 
 ### Configuration authority and bindings
 
-The declaration fixes normative ownership and classification. The parser expression is the source-linked authority for the accepted domain and effective default exercised by qualification.
+The owning implementation defines the setting. The parser expression records each independently discovered consumer binding and effective default exercised by qualification.
 
 | Kind | Consumer | Source | Authority |
 |---|---|---|---|
-| declaration | — | `qualification/configuration-contract.toml` | `/environment/26/names` |
-| parser | `stove0-server` | `reference/stove0/application/server/src/stove0_core/runtime_config.py` | `_secret(values, 'STOVE0_BROWSE_TOKEN_SIGNING_KEY', required=True)` |
+| parser | `stove0-server` | `reference/stove0/application/server/src/stove0_core/runtime_config.py` | `values.get(name, '')` |
 
 ### Machine authority
 
-- `/external_contract/configuration_environment/112`
+- `/external_contract/configuration_environment/232`
 
 ### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: b7ea3241bd51e115257456af6e370e251cc198ba8454faa7a4f241075cb902a6 -->
+<!-- exact-contract-value: 89c3493c390ee480a603e582cf34f29de33602a186b4d29808e60f7ae416689a -->
 
 ```json
 {
-  "classification": "credential",
   "consumers": [
     "stove0-server"
   ],
-  "disposition": "contractual",
+  "default_expressions": [
+    "''"
+  ],
   "id": "stove0-server:environment:STOVE0_BROWSE_TOKEN_SIGNING_KEY",
+  "input_shape": "environment-string",
   "name": "STOVE0_BROWSE_TOKEN_SIGNING_KEY",
   "owner": "stove0-server"
 }

@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: configuration-environment:riverhog-server:riverhog-catalog-sync-history-retention:cb1ffb3cfb -->
+<!-- contract-element: configuration-environment:riverhog-server:riverhog-catalog-sync-history-retention:3f8d70b212 -->
 
 Exact externally visible contract owned by this semantic dossier.
 
@@ -10,21 +10,21 @@ Exact externally visible contract owned by this semantic dossier.
 |---|---|
 | Authority | [riverhog-server](../index.md) |
 | Interface | [configuration-environment](index.md) |
-| Family | [runtime](families/runtime/index.md) |
+| Family | [settings](families/settings/index.md) |
 | Contract elements | 1 |
 | Extent decisions | 1 |
 
 ## External contract
 
-<a id="s-be3c1ab328"></a>
+<a id="s-add94be491"></a>
 | Field | Shape |
 |---|---|
-| <a id="s-2bccaf5535"></a>`classification` | "runtime" |
-| <a id="s-53a8b95257"></a>`consumers` | ["riverhog-server"] |
-| <a id="s-6a79a68ae5"></a>`disposition` | "contractual" |
-| <a id="s-0695702476"></a>`id` | "riverhog-server:environment:RIVERHOG_CATALOG_SYNC_HISTORY_RETENTION" |
-| <a id="s-e79d9952b9"></a>`name` | "RIVERHOG_CATALOG_SYNC_HISTORY_RETENTION" |
-| <a id="s-5894963f53"></a>`owner` | "riverhog-server" |
+| <a id="s-d2bd3c7959"></a>`consumers` | ["riverhog-server"] |
+| <a id="s-8b42e9e942"></a>`default_expressions` | ["'30d'"] |
+| <a id="s-b3a8cf981b"></a>`id` | "riverhog-server:environment:RIVERHOG_CATALOG_SYNC_HISTORY_RETENTION" |
+| <a id="s-b7e92ef304"></a>`input_shape` | "environment-string" |
+| <a id="s-66e2078736"></a>`name` | "RIVERHOG_CATALOG_SYNC_HISTORY_RETENTION" |
+| <a id="s-263bfe3ca9"></a>`owner` | "riverhog-server" |
 
 ### Progression, limits, and lifecycle
 
@@ -34,12 +34,12 @@ Shared facts for every subject below: configuration="RIVERHOG_CATALOG_SYNC_HISTO
 
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
-| [RIVERHOG_CATALOG_SYNC_HISTORY_RETENTION](#s-be3c1ab328) | `value · configured-value · operational_policy` | shared above |
+| [RIVERHOG_CATALOG_SYNC_HISTORY_RETENTION](#s-add94be491) | `value · configured-value · operational_policy` | shared above |
 
 ## Governing policies
 
-- <a id="pa-97cf1909da"></a>[compatibility/configuration/v1](../../../policies/index.md#p-8dc08bb461)
-- <a id="pa-89394e9acc"></a>[extent-rule/configured-capacity/v1](../../../policies/index.md#p-3ebc61fc99)
+- <a id="pa-7f56302820"></a>[compatibility/configuration/v1](../../../policies/index.md#p-8dc08bb461)
+- <a id="pa-f1c7422f7a"></a>[extent-rule/configured-capacity/v1](../../../policies/index.md#p-3ebc61fc99)
 
 ## Evidence
 
@@ -50,37 +50,37 @@ Shared facts for every subject below: configuration="RIVERHOG_CATALOG_SYNC_HISTO
 
 ### Executable sources
 
-- [configuration-environment:inventory](../../../evidence/sources.md#src-26b33461d2) — `qualification/configuration-contract.toml`
 - [configuration-environment:riverhog-server:RIVERHOG_CATALOG_SYNC_HISTORY_RETENTION](../../../evidence/sources.md#src-735831a8d4) — `riverhog/src/riverhog_core/runtime_config.py`
 - [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
 
 ### Configuration authority and bindings
 
-The declaration fixes normative ownership and classification. The parser expression is the source-linked authority for the accepted domain and effective default exercised by qualification.
+The owning implementation defines the setting. The parser expression records each independently discovered consumer binding and effective default exercised by qualification.
 
 | Kind | Consumer | Source | Authority |
 |---|---|---|---|
-| declaration | — | `qualification/configuration-contract.toml` | `/environment/14/names` |
 | parser | `riverhog-server` | `riverhog/src/riverhog_core/runtime_config.py` | `os.getenv('RIVERHOG_CATALOG_SYNC_HISTORY_RETENTION', '30d')` |
 
 ### Machine authority
 
-- `/external_contract/configuration_environment/49`
+- `/external_contract/configuration_environment/54`
 
 ### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 7d76fc5de699e15e1b0754c1bb181d2a59cec409b78beb9cbbe172bd926a5fca -->
+<!-- exact-contract-value: fb22db700f94d6046014e9211347cf95e9d649e757d5ad433e37bd2bbf701ba4 -->
 
 ```json
 {
-  "classification": "runtime",
   "consumers": [
     "riverhog-server"
   ],
-  "disposition": "contractual",
+  "default_expressions": [
+    "'30d'"
+  ],
   "id": "riverhog-server:environment:RIVERHOG_CATALOG_SYNC_HISTORY_RETENTION",
+  "input_shape": "environment-string",
   "name": "RIVERHOG_CATALOG_SYNC_HISTORY_RETENTION",
   "owner": "riverhog-server"
 }

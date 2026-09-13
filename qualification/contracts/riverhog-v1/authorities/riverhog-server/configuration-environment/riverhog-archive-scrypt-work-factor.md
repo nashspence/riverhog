@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: configuration-environment:riverhog-server:riverhog-archive-scrypt-work-factor:7ccbf81a74 -->
+<!-- contract-element: configuration-environment:riverhog-server:riverhog-archive-scrypt-work-factor:92e0418b6a -->
 
 Exact externally visible contract owned by this semantic dossier.
 
@@ -10,25 +10,25 @@ Exact externally visible contract owned by this semantic dossier.
 |---|---|
 | Authority | [riverhog-server](../index.md) |
 | Interface | [configuration-environment](index.md) |
-| Family | [runtime](families/runtime/index.md) |
+| Family | [settings](families/settings/index.md) |
 | Contract elements | 1 |
 | Extent decisions | 0 |
 
 ## External contract
 
-<a id="s-ee8d4c5bb2"></a>
+<a id="s-ba8bf00da0"></a>
 | Field | Shape |
 |---|---|
-| <a id="s-26db15b0c1"></a>`classification` | "runtime" |
-| <a id="s-9cef198e9c"></a>`consumers` | ["riverhog-server"] |
-| <a id="s-ef178cc569"></a>`disposition` | "contractual" |
-| <a id="s-c87995acf3"></a>`id` | "riverhog-server:environment:RIVERHOG_ARCHIVE_SCRYPT_WORK_FACTOR" |
-| <a id="s-199cea8e22"></a>`name` | "RIVERHOG_ARCHIVE_SCRYPT_WORK_FACTOR" |
-| <a id="s-a35e48e93a"></a>`owner` | "riverhog-server" |
+| <a id="s-fefed5a14e"></a>`consumers` | ["riverhog-server"] |
+| <a id="s-9f9519b503"></a>`default_expressions` | ["str(DEFAULT_ARCHIVE_SCRYPT_WORK_FACTOR)"] |
+| <a id="s-6e9078eeef"></a>`id` | "riverhog-server:environment:RIVERHOG_ARCHIVE_SCRYPT_WORK_FACTOR" |
+| <a id="s-b017fa7a37"></a>`input_shape` | "environment-string" |
+| <a id="s-5c224fe460"></a>`name` | "RIVERHOG_ARCHIVE_SCRYPT_WORK_FACTOR" |
+| <a id="s-316a058fc1"></a>`owner` | "riverhog-server" |
 
 ## Governing policies
 
-- <a id="pa-acd7c7f970"></a>[compatibility/configuration/v1](../../../policies/index.md#p-8dc08bb461)
+- <a id="pa-9485ecb079"></a>[compatibility/configuration/v1](../../../policies/index.md#p-8dc08bb461)
 
 ## Evidence
 
@@ -39,38 +39,37 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Executable sources
 
-- [configuration-environment:inventory](../../../evidence/sources.md#src-26b33461d2) — `qualification/configuration-contract.toml`
 - [configuration-environment:riverhog-server:RIVERHOG_ARCHIVE_SCRYPT_WORK_FACTOR](../../../evidence/sources.md#src-3434cbb4f1) — `riverhog/src/riverhog_core/runtime_config.py`
 - [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
 
 ### Configuration authority and bindings
 
-The declaration fixes normative ownership and classification. The parser expression is the source-linked authority for the accepted domain and effective default exercised by qualification.
+The owning implementation defines the setting. The parser expression records each independently discovered consumer binding and effective default exercised by qualification.
 
 | Kind | Consumer | Source | Authority |
 |---|---|---|---|
-| declaration | — | `qualification/configuration-contract.toml` | `/environment/14/names` |
-| parser | `riverhog-server` | `riverhog/src/riverhog_core/runtime_config.py` | `_parse_int(os.getenv('RIVERHOG_ARCHIVE_SCRYPT_WORK_FACTOR', str(DEFAULT_ARCHIVE_SCRYPT_WORK_FACTOR)), name='RIVERHOG_ARCHIVE_SCRYPT_WORK_FACTOR', minimum=1)` |
 | parser | `riverhog-server` | `riverhog/src/riverhog_core/runtime_config.py` | `os.getenv('RIVERHOG_ARCHIVE_SCRYPT_WORK_FACTOR', str(DEFAULT_ARCHIVE_SCRYPT_WORK_FACTOR))` |
 
 ### Machine authority
 
-- `/external_contract/configuration_environment/37`
+- `/external_contract/configuration_environment/42`
 
 ### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 3d5bafe6d9f0966de1111e1f25d1807857786bc235e9f210750e9f238197bd59 -->
+<!-- exact-contract-value: fe7aac0e70cdf0521b865961eb2c90eff76f60a7b32c8be97053597ef7214734 -->
 
 ```json
 {
-  "classification": "runtime",
   "consumers": [
     "riverhog-server"
   ],
-  "disposition": "contractual",
+  "default_expressions": [
+    "str(DEFAULT_ARCHIVE_SCRYPT_WORK_FACTOR)"
+  ],
   "id": "riverhog-server:environment:RIVERHOG_ARCHIVE_SCRYPT_WORK_FACTOR",
+  "input_shape": "environment-string",
   "name": "RIVERHOG_ARCHIVE_SCRYPT_WORK_FACTOR",
   "owner": "riverhog-server"
 }

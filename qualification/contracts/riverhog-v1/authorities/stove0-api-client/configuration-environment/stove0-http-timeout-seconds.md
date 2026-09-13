@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: configuration-environment:stove0-api-client:stove0-http-timeout-seconds:cdbaee86be -->
+<!-- contract-element: configuration-environment:stove0-api-client:stove0-http-timeout-seconds:77beb70893 -->
 
 Exact externally visible contract owned by this semantic dossier.
 
@@ -10,21 +10,21 @@ Exact externally visible contract owned by this semantic dossier.
 |---|---|
 | Authority | [stove0-api-client](../index.md) |
 | Interface | [configuration-environment](index.md) |
-| Family | [runtime](index.md#f-538df43105) |
+| Family | [settings](index.md#f-2409cf74f4) |
 | Contract elements | 1 |
 | Extent decisions | 1 |
 
 ## External contract
 
-<a id="s-658650862c"></a>
+<a id="s-5d16c3676e"></a>
 | Field | Shape |
 |---|---|
-| <a id="s-58ddaddc90"></a>`classification` | "runtime" |
-| <a id="s-e8619b82d7"></a>`consumers` | ["stove0-api-client"] |
-| <a id="s-5eff1bd53b"></a>`disposition` | "contractual" |
-| <a id="s-3dd36fbb03"></a>`id` | "stove0-api-client:environment:STOVE0_HTTP_TIMEOUT_SECONDS" |
-| <a id="s-dc1bc511db"></a>`name` | "STOVE0_HTTP_TIMEOUT_SECONDS" |
-| <a id="s-6010d735e6"></a>`owner` | "stove0-api-client" |
+| <a id="s-a4f6afb693"></a>`consumers` | ["stove0-api-client"] |
+| <a id="s-3a22260cfc"></a>`default_expressions` | ["unset"] |
+| <a id="s-b53af91022"></a>`id` | "stove0-api-client:environment:STOVE0_HTTP_TIMEOUT_SECONDS" |
+| <a id="s-5fe728f6a8"></a>`input_shape` | "environment-string" |
+| <a id="s-93dd6b430c"></a>`name` | "STOVE0_HTTP_TIMEOUT_SECONDS" |
+| <a id="s-36acc9190a"></a>`owner` | "stove0-api-client" |
 
 ### Progression, limits, and lifecycle
 
@@ -34,12 +34,12 @@ Shared facts for every subject below: configuration="STOVE0_HTTP_TIMEOUT_SECONDS
 
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
-| [STOVE0_HTTP_TIMEOUT_SECONDS](#s-658650862c) | `value · configured-value · operational_policy` | shared above |
+| [STOVE0_HTTP_TIMEOUT_SECONDS](#s-5d16c3676e) | `value · configured-value · operational_policy` | shared above |
 
 ## Governing policies
 
-- <a id="pa-4b33b846ec"></a>[compatibility/configuration/v1](../../../policies/index.md#p-8dc08bb461)
-- <a id="pa-8a3b9a9a20"></a>[extent-rule/configured-capacity/v1](../../../policies/index.md#p-3ebc61fc99)
+- <a id="pa-142681f0d2"></a>[compatibility/configuration/v1](../../../policies/index.md#p-8dc08bb461)
+- <a id="pa-64ad6f6949"></a>[extent-rule/configured-capacity/v1](../../../policies/index.md#p-3ebc61fc99)
 
 ## Evidence
 
@@ -50,37 +50,37 @@ Shared facts for every subject below: configuration="STOVE0_HTTP_TIMEOUT_SECONDS
 
 ### Executable sources
 
-- [configuration-environment:inventory](../../../evidence/sources.md#src-26b33461d2) — `qualification/configuration-contract.toml`
 - [configuration-environment:stove0-api-client:STOVE0_HTTP_TIMEOUT_SECONDS](../../../evidence/sources.md#src-a470f49fc7) — `reference/stove0/packages/api-client/src/stove0_api_client/client.py`
 - [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
 
 ### Configuration authority and bindings
 
-The declaration fixes normative ownership and classification. The parser expression is the source-linked authority for the accepted domain and effective default exercised by qualification.
+The owning implementation defines the setting. The parser expression records each independently discovered consumer binding and effective default exercised by qualification.
 
 | Kind | Consumer | Source | Authority |
 |---|---|---|---|
-| declaration | — | `qualification/configuration-contract.toml` | `/environment/17/names` |
-| parser | `stove0-api-client` | `reference/stove0/packages/api-client/src/stove0_api_client/client.py` | `_positive_float_env('STOVE0_HTTP_TIMEOUT_SECONDS', 300.0)` |
+| parser | `stove0-api-client` | `reference/stove0/packages/api-client/src/stove0_api_client/client.py` | `os.getenv(name)` |
 
 ### Machine authority
 
-- `/external_contract/configuration_environment/83`
+- `/external_contract/configuration_environment/146`
 
 ### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 68b4e9f79fc9f94111dec0331d2e28689f3d8df37c7384a1cf408db7b6d6d628 -->
+<!-- exact-contract-value: 1485f24a5835e12eeafbf2ae462c6b5ab5d5d062c770c4818bac20841501f602 -->
 
 ```json
 {
-  "classification": "runtime",
   "consumers": [
     "stove0-api-client"
   ],
-  "disposition": "contractual",
+  "default_expressions": [
+    "unset"
+  ],
   "id": "stove0-api-client:environment:STOVE0_HTTP_TIMEOUT_SECONDS",
+  "input_shape": "environment-string",
   "name": "STOVE0_HTTP_TIMEOUT_SECONDS",
   "owner": "stove0-api-client"
 }

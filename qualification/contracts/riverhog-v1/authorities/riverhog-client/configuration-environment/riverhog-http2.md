@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: configuration-environment:riverhog-client:riverhog-http2:57431041d3 -->
+<!-- contract-element: configuration-environment:riverhog-client:riverhog-http2:6c2512da57 -->
 
 Exact externally visible contract owned by this semantic dossier.
 
@@ -10,25 +10,25 @@ Exact externally visible contract owned by this semantic dossier.
 |---|---|
 | Authority | [riverhog-client](../index.md) |
 | Interface | [configuration-environment](index.md) |
-| Family | [runtime](index.md#f-e4b312fabf) |
+| Family | [settings](index.md#f-7ff1624ad7) |
 | Contract elements | 1 |
 | Extent decisions | 0 |
 
 ## External contract
 
-<a id="s-1ebfad79c3"></a>
+<a id="s-ef80127a53"></a>
 | Field | Shape |
 |---|---|
-| <a id="s-3e5887eac5"></a>`classification` | "runtime" |
-| <a id="s-42ed9823cb"></a>`consumers` | ["riverhog-client"] |
-| <a id="s-cece923a6f"></a>`disposition` | "contractual" |
-| <a id="s-27fcc796bf"></a>`id` | "riverhog-client:environment:RIVERHOG_HTTP2" |
-| <a id="s-def2479a70"></a>`name` | "RIVERHOG_HTTP2" |
-| <a id="s-18f1726a77"></a>`owner` | "riverhog-client" |
+| <a id="s-bf7f86f2e0"></a>`consumers` | ["riverhog-client"] |
+| <a id="s-113fcf79e0"></a>`default_expressions` | ["unset"] |
+| <a id="s-e8c3dd7148"></a>`id` | "riverhog-client:environment:RIVERHOG_HTTP2" |
+| <a id="s-3a65abf7e1"></a>`input_shape` | "environment-string" |
+| <a id="s-53140a7a23"></a>`name` | "RIVERHOG_HTTP2" |
+| <a id="s-69c825bdc0"></a>`owner` | "riverhog-client" |
 
 ## Governing policies
 
-- <a id="pa-469da6601b"></a>[compatibility/configuration/v1](../../../policies/index.md#p-8dc08bb461)
+- <a id="pa-b0de139d32"></a>[compatibility/configuration/v1](../../../policies/index.md#p-8dc08bb461)
 
 ## Evidence
 
@@ -39,37 +39,37 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Executable sources
 
-- [configuration-environment:inventory](../../../evidence/sources.md#src-26b33461d2) — `qualification/configuration-contract.toml`
 - [configuration-environment:riverhog-client:RIVERHOG_HTTP2](../../../evidence/sources.md#src-1774dabb11) — `packages/riverhog-client/src/riverhog_client/client.py`
 - [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
 
 ### Configuration authority and bindings
 
-The declaration fixes normative ownership and classification. The parser expression is the source-linked authority for the accepted domain and effective default exercised by qualification.
+The owning implementation defines the setting. The parser expression records each independently discovered consumer binding and effective default exercised by qualification.
 
 | Kind | Consumer | Source | Authority |
 |---|---|---|---|
-| declaration | — | `qualification/configuration-contract.toml` | `/environment/5/names` |
-| parser | `riverhog-client` | `packages/riverhog-client/src/riverhog_client/client.py` | `_bool_env('RIVERHOG_HTTP2', True)` |
+| parser | `riverhog-client` | `packages/riverhog-client/src/riverhog_client/client.py` | `os.getenv(env_name)` |
 
 ### Machine authority
 
-- `/external_contract/configuration_environment/15`
+- `/external_contract/configuration_environment/18`
 
 ### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 2ee50895295fb52bde755a329ccebd0b11bb1ad5d48573f5303f96eff2ac2bcd -->
+<!-- exact-contract-value: af852d0d95151fb425b476d832bb2ce45ff4163c5730a9a98842d8f0a44ff856 -->
 
 ```json
 {
-  "classification": "runtime",
   "consumers": [
     "riverhog-client"
   ],
-  "disposition": "contractual",
+  "default_expressions": [
+    "unset"
+  ],
   "id": "riverhog-client:environment:RIVERHOG_HTTP2",
+  "input_shape": "environment-string",
   "name": "RIVERHOG_HTTP2",
   "owner": "riverhog-client"
 }

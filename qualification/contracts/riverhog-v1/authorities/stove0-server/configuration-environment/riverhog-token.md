@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: configuration-environment:stove0-server:riverhog-token:6cb21f9514 -->
+<!-- contract-element: configuration-environment:stove0-server:riverhog-token:12382fc1af -->
 
 Exact externally visible contract owned by this semantic dossier.
 
@@ -10,25 +10,25 @@ Exact externally visible contract owned by this semantic dossier.
 |---|---|
 | Authority | [stove0-server](../index.md) |
 | Interface | [configuration-environment](index.md) |
-| Family | [credential](index.md#f-182b18fbb1) |
+| Family | [settings](index.md#f-12475197c9) |
 | Contract elements | 1 |
 | Extent decisions | 0 |
 
 ## External contract
 
-<a id="s-8af4063a2b"></a>
+<a id="s-b422e22e20"></a>
 | Field | Shape |
 |---|---|
-| <a id="s-ce2b2eef79"></a>`classification` | "credential" |
-| <a id="s-780fea1d0c"></a>`consumers` | ["stove0-server"] |
-| <a id="s-e236325de3"></a>`disposition` | "contractual" |
-| <a id="s-2760bd28e2"></a>`id` | "stove0-server:environment:RIVERHOG_TOKEN" |
-| <a id="s-9feb87a0c4"></a>`name` | "RIVERHOG_TOKEN" |
-| <a id="s-095861fb48"></a>`owner` | "stove0-server" |
+| <a id="s-96e799f355"></a>`consumers` | ["stove0-server"] |
+| <a id="s-0d52fe293f"></a>`default_expressions` | ["''"] |
+| <a id="s-8ba4ca9e6b"></a>`id` | "stove0-server:environment:RIVERHOG_TOKEN" |
+| <a id="s-d22473b377"></a>`input_shape` | "environment-string" |
+| <a id="s-9d56bbd460"></a>`name` | "RIVERHOG_TOKEN" |
+| <a id="s-03340cb28d"></a>`owner` | "stove0-server" |
 
 ## Governing policies
 
-- <a id="pa-b69afa86ae"></a>[compatibility/configuration/v1](../../../policies/index.md#p-8dc08bb461)
+- <a id="pa-a896e99fb4"></a>[compatibility/configuration/v1](../../../policies/index.md#p-8dc08bb461)
 
 ## Evidence
 
@@ -39,37 +39,37 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Executable sources
 
-- [configuration-environment:inventory](../../../evidence/sources.md#src-26b33461d2) — `qualification/configuration-contract.toml`
 - [configuration-environment:stove0-server:RIVERHOG_TOKEN](../../../evidence/sources.md#src-a2d6243ee8) — `reference/stove0/application/server/src/stove0_core/runtime_config.py`
 - [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
 
 ### Configuration authority and bindings
 
-The declaration fixes normative ownership and classification. The parser expression is the source-linked authority for the accepted domain and effective default exercised by qualification.
+The owning implementation defines the setting. The parser expression records each independently discovered consumer binding and effective default exercised by qualification.
 
 | Kind | Consumer | Source | Authority |
 |---|---|---|---|
-| declaration | — | `qualification/configuration-contract.toml` | `/environment/26/names` |
-| parser | `stove0-server` | `reference/stove0/application/server/src/stove0_core/runtime_config.py` | `_secret(values, 'RIVERHOG_TOKEN', required=True)` |
+| parser | `stove0-server` | `reference/stove0/application/server/src/stove0_core/runtime_config.py` | `values.get(name, '')` |
 
 ### Machine authority
 
-- `/external_contract/configuration_environment/108`
+- `/external_contract/configuration_environment/226`
 
 ### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: ebbb688c7766ae2e4f44527464f94723a83e0ee408e436aadb9a82a8c1499d1c -->
+<!-- exact-contract-value: 1974c662db271a854ecfdd5d2915ab2e82bd454e4ec2e8514f90dabf3325d224 -->
 
 ```json
 {
-  "classification": "credential",
   "consumers": [
     "stove0-server"
   ],
-  "disposition": "contractual",
+  "default_expressions": [
+    "''"
+  ],
   "id": "stove0-server:environment:RIVERHOG_TOKEN",
+  "input_shape": "environment-string",
   "name": "RIVERHOG_TOKEN",
   "owner": "stove0-server"
 }

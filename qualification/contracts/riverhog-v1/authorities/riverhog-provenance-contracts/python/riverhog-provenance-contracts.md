@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: python:riverhog-provenance-contracts:riverhog-provenance-contracts:6b7a434d1b -->
+<!-- contract-element: python:riverhog-provenance-contracts:riverhog-provenance-contracts:3246327003 -->
 
 Exact externally visible contract owned by this semantic dossier.
 
@@ -16,16 +16,17 @@ Exact externally visible contract owned by this semantic dossier.
 
 ## External contract
 
-<a id="s-086605c883"></a>
+<a id="s-9a2627e76f"></a>
 | Field | Shape |
 |---|---|
-| <a id="s-514882f135"></a>`distribution` | "riverhog-provenance-contracts" |
-| <a id="s-9c1a297173"></a>`exports` | additional keys=`CANONICAL_UUID_URN_PATTERN`, `PROVENANCE_CONTRACT_BINDING_FORMAT`, `PROVENANCE_CONTRACT_ENTRY_POINT_GROUP`, `PROVENANCE_CONTRACT_REFERENCE_FORMAT`, `PROVENANCE_SCHEMA_DIALECT`, `PROVENANCE_SCHEMA_FORMAT_POLICY`, `ProvenanceContractBinding`, `ProvenanceEntryId`, `ProvenanceJournalId`, `ProvenanceJournalStateReference`, `ProvenanceStateId`, `SHA256_PATTERN`, `index_schema_documents`, `require_canonical_uuid_urn` |
-| <a id="s-033f7e67b1"></a>`module` | "riverhog_provenance_contracts" |
+| <a id="s-e2b8db8386"></a>`candidate_id` | "python:riverhog-provenance-contracts:riverhog_provenance_contracts" |
+| <a id="s-1ffcdaaff8"></a>`distribution` | "riverhog-provenance-contracts" |
+| <a id="s-949fc23014"></a>`exports` | additional keys=`CANONICAL_UUID_URN_PATTERN`, `PROVENANCE_CONTRACT_BINDING_FORMAT`, `PROVENANCE_CONTRACT_ENTRY_POINT_GROUP`, `PROVENANCE_CONTRACT_REFERENCE_FORMAT`, `PROVENANCE_SCHEMA_DIALECT`, `PROVENANCE_SCHEMA_FORMAT_POLICY`, `ProvenanceContractBinding`, `ProvenanceEntryId`, `ProvenanceJournalId`, `ProvenanceJournalStateReference`, `ProvenanceStateId`, `SHA256_PATTERN`, `index_schema_documents`, `require_canonical_uuid_urn` |
+| <a id="s-0d61db01d2"></a>`module` | "riverhog_provenance_contracts" |
 
 ## Governing policies
 
-- <a id="pa-38c65189cb"></a>[compatibility/python-api/v1](../../../policies/index.md#p-e574772ba5)
+- <a id="pa-3c6fea0d63"></a>[compatibility/python-api/v1](../../../policies/index.md#p-e574772ba5)
 
 ## Evidence
 
@@ -37,20 +38,21 @@ Exact externally visible contract owned by this semantic dossier.
 ### Executable sources
 
 - [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
-- [python:riverhog-provenance-contracts](../../../evidence/sources.md#src-7722019950) — `packages/riverhog-provenance-contracts/src/riverhog_provenance_contracts/__init__.py::<module>`
+- [python:riverhog-provenance-contracts:riverhog_provenance_contracts](../../../evidence/sources.md#src-9b6289a988) — `packages/riverhog-provenance-contracts/src/riverhog_provenance_contracts/__init__.py`
 
 ### Machine authority
 
-- `/external_contract/python/9`
+- `/external_contract/python/19`
 
 ### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 3d6c1d56d977683bb678279b9bb0be21cc7f7fa86a1a3614dc5c5d165b334819 -->
+<!-- exact-contract-value: 3914689fa4412809d2f272ba3dbf70a748222f2286fe4989069007de7b159954 -->
 
 ```json
 {
+  "candidate_id": "python:riverhog-provenance-contracts:riverhog_provenance_contracts",
   "distribution": "riverhog-provenance-contracts",
   "exports": {
     "CANONICAL_UUID_URN_PATTERN": {
@@ -114,14 +116,14 @@ The following JSON is the complete value owned at each machine-authority pointer
       "members": {
         "reference": {
           "kind": "method",
-          "signature": "(self, provider: 'str') -> 'dict[str, str]'"
+          "signature": "\"(self, provider: 'str') -> 'dict[str, str]'\""
         },
         "schemas": {
           "kind": "property",
-          "signature": "(self) -> 'dict[str, dict[str, Any]]'"
+          "signature": "\"(self) -> 'dict[str, dict[str, Any]]'\""
         }
       },
-      "signature": "(*, contract_id: 'str', schemas: 'Iterable[Mapping[str, Any]]') -> 'None'"
+      "signature": "\"(*, contract_id: 'str', schemas: 'Iterable[Mapping[str, Any]]') -> 'None'\""
     },
     "ProvenanceEntryId": {
       "kind": "type-alias",
@@ -134,7 +136,7 @@ The following JSON is the complete value owned at each machine-authority pointer
     "ProvenanceJournalStateReference": {
       "kind": "class",
       "schema_sha256": "7f3d93e0df8f97bd47bb76100caba9e088809d1c50826896a8c184ecfb5acaf7",
-      "signature": "(*, journal_id: ProvenanceJournalId, current_state_id: ProvenanceStateId) -> None"
+      "signature": "'(*, journal_id: ProvenanceJournalId, current_state_id: ProvenanceStateId) -> None'"
     },
     "ProvenanceStateId": {
       "kind": "type-alias",
@@ -146,11 +148,11 @@ The following JSON is the complete value owned at each machine-authority pointer
     },
     "index_schema_documents": {
       "kind": "function",
-      "signature": "(documents: 'Iterable[Mapping[str, Any]]', *, owner: 'str') -> 'dict[str, dict[str, Any]]'"
+      "signature": "\"(documents: 'Iterable[Mapping[str, Any]]', *, owner: 'str') -> 'dict[str, dict[str, Any]]'\""
     },
     "require_canonical_uuid_urn": {
       "kind": "function",
-      "signature": "(value: 'str', field: 'str' = 'identity') -> 'str'"
+      "signature": "\"(value: 'str', field: 'str' = 'identity') -> 'str'\""
     }
   },
   "module": "riverhog_provenance_contracts"

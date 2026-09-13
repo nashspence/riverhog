@@ -79,7 +79,7 @@ def test_every_machine_terminal_and_extent_decision_has_one_human_owner() -> Non
     }
     coverage = discovery["projection_coverage"]
     assert coverage["projection_terminals"] > coverage["semantic_terminals"]
-    assert coverage["extent_decisions"] == 1962
+    assert coverage["extent_decisions"] == 1991
     assert coverage["missing"] == 0
     assert coverage["multiply_represented"] == 0
     assert coverage["stale"] == 0
@@ -93,7 +93,7 @@ def test_atlas_rollups_and_dossiers_are_exact_and_descriptive() -> None:
     dossier_documents = [item for item in documents if item["kind"] == "dossier"]
 
     assert len(dossier_documents) == len(elements) == root["counts"]["contract_elements"]
-    assert root["counts"]["extent_decisions"] == 1962
+    assert root["counts"]["extent_decisions"] == 1991
     assert sum(root["counts"]["by_authority"].values()) == len(elements)
     assert sum(root["counts"]["by_interface"].values()) == len(elements)
     assert all(item["path"].endswith(".md") for item in documents)
@@ -157,8 +157,10 @@ def test_human_entrypoint_exposes_closure_exclusions_and_relationships() -> None
     assert "`contract-projection-envelope`" in authority_inventory
     assert "`extent-contract` | Repository-wide v1 external extent" in authority_inventory
     assert "does not own any setting's semantics" in configuration_inventory
-    assert "Environment contracts: **127**" in configuration_inventory
-    assert "Unique names: **119**" in configuration_inventory
+    assert "Environment contracts: **250**" in configuration_inventory
+    assert "Unique names: **240**" in configuration_inventory
+    assert "Raw implementation reads: **199**" in configuration_inventory
+    assert "Explicit ambiguity resolutions: **6**" in configuration_inventory
     assert "| unowned | pass |" in configuration_inventory
     assert "[RIVERHOG_BASE_URL]" in configuration_inventory
     assert "`riverhog-client`" in configuration_inventory
@@ -181,6 +183,33 @@ def test_human_entrypoint_exposes_closure_exclusions_and_relationships() -> None
         checked.files
     )
     assert not any(path.startswith("riverhog-v1/relationships/") for path in checked.files)
+
+
+def test_every_frozen_component_has_an_exact_boundary_audit_result() -> None:
+    checked = atlas.load_atlas(ARTIFACT)
+    projection = checked.root["projection"]
+    relationships = checked.root["atlas"]["relationships"]
+    elements = checked.root["elements"]
+    components = {item["distribution"]: item for item in projection["boundaries"]["components"]}
+    component_nodes = {
+        item["name"]: item for item in relationships["nodes"] if item["kind"] == "component"
+    }
+
+    assert set(component_nodes) == set(components)
+    for name, node in component_nodes.items():
+        assert node["role"] == components[name]["role"]
+        assert node["contract_elements"] == sum(item["authority"] == name for item in elements)
+
+
+def test_semantic_identity_excludes_boundary_governance() -> None:
+    checked = atlas.load_atlas(ARTIFACT)
+    projection = json.loads(json.dumps(checked.root["projection"]))
+    policies = checked.root["policies"]
+    unsafe_paths = checked.root["projection_unsafe_integer_paths"]
+    before = atlas._semantic_identity(projection, policies, unsafe_paths)
+    projection["boundaries"]["components"][0]["role"] = "changed-only-for-test"
+
+    assert atlas._semantic_identity(projection, policies, unsafe_paths) == before
 
 
 def test_authority_registry_rejects_an_undeclared_synthetic_owner() -> None:
@@ -263,14 +292,13 @@ def test_policy_registry_is_contract_focused_and_application_counted() -> None:
     assert "external-contract-fact/v1" not in declared
     assert all("implementation-witness" not in identity for identity in declared)
     assert checked.root["counts"]["by_policy"]
-    assert (
-        checked.root["counts"]["by_policy"]["exclusion/process-launcher-not-cli/v1"]
-        == checked.root["counts"]["excluded_candidates"]
-        == 13
-    )
+    assert checked.root["counts"]["by_policy"]["exclusion/process-launcher-not-cli/v1"] == 13
+    assert checked.root["counts"]["by_policy"]["exclusion/python-package-no-declared-api/v1"] == 22
+    assert checked.root["counts"]["excluded_candidates"] == 35
     policy_page = checked.files["riverhog-v1/policies/index.md"].decode()
     assert "Applications:" in policy_page
     assert "Applications: **13**" in policy_page
+    assert "Applications: **22**" in policy_page
     assert policy_page.count("- Applicability:") == len(declared)
     assert policy_page.count("- Observable result or violation:") == len(declared)
     assert policy_page.count("- Executable authorities:") == len(declared)

@@ -6,10 +6,10 @@ Contract elements: **5** · Extent decisions: **19**
 
 | Interface | Count |
 |---|---:|
-| `boundary` | 1 |
 | `protocol` | 4 |
+| `python` | 1 |
 
 ## Interfaces
 
-- [boundary](boundary/index.md) — 1 elements
 - [protocol](protocol/index.md) — 4 elements
+- [python](python/index.md) — 1 elements

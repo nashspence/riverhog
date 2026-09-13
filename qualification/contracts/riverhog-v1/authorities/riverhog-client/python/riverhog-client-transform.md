@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: python:riverhog-client:riverhog-client-transform:c62128b3c3 -->
+<!-- contract-element: python:riverhog-client:riverhog-client-transform:f7a3422fdf -->
 
 Exact externally visible contract owned by this semantic dossier.
 
@@ -16,16 +16,17 @@ Exact externally visible contract owned by this semantic dossier.
 
 ## External contract
 
-<a id="s-7729f34ab6"></a>
+<a id="s-c5068a9262"></a>
 | Field | Shape |
 |---|---|
-| <a id="s-6476982873"></a>`distribution` | "riverhog-client" |
-| <a id="s-14fc046b90"></a>`exports` | additional keys=`CancellationCheck`, `CapabilityApiClient`, `ClaimedArtifact`, `ClaimedCollectionApi`, `ClaimedCollectionReader`, `ClaimedCollectionRuntime`, `ClaimedCollectionRuntimeRegistry`, `ClaimedRetrieval`, `CollectionTransformRuntime`, `DerivedCollectionReceipt`, `DerivedCollectionSpec`, `DerivedCollectionWriter`, `Heartbeat`, `IncrementalDerivedCollectionWriter`, `TransformWorkspace`, `WorkspaceAssurance` |
-| <a id="s-36e849b4eb"></a>`module` | "riverhog_client.transform" |
+| <a id="s-a97de01a1d"></a>`candidate_id` | "python:riverhog-client:riverhog_client.transform" |
+| <a id="s-41c4b7a2a8"></a>`distribution` | "riverhog-client" |
+| <a id="s-e99d9519a2"></a>`exports` | additional keys=`CancellationCheck`, `CapabilityApiClient`, `ClaimedArtifact`, `ClaimedCollectionApi`, `ClaimedCollectionReader`, `ClaimedCollectionRuntime`, `ClaimedCollectionRuntimeRegistry`, `ClaimedRetrieval`, `CollectionTransformRuntime`, `DerivedCollectionReceipt`, `DerivedCollectionSpec`, `DerivedCollectionWriter`, `Heartbeat`, `IncrementalDerivedCollectionWriter`, `TransformWorkspace`, `WorkspaceAssurance` |
+| <a id="s-4c78c7f6fa"></a>`module` | "riverhog_client.transform" |
 
 ## Governing policies
 
-- <a id="pa-2f559adb0d"></a>[compatibility/python-api/v1](../../../policies/index.md#p-e574772ba5)
+- <a id="pa-9ee5fb36ea"></a>[compatibility/python-api/v1](../../../policies/index.md#p-e574772ba5)
 
 ## Evidence
 
@@ -37,20 +38,21 @@ Exact externally visible contract owned by this semantic dossier.
 ### Executable sources
 
 - [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
-- [python:riverhog-client:riverhog_client.transform](../../../evidence/sources.md#src-7a247bb534) — `packages/riverhog-client/src/riverhog_client/transform/__init__.py::<module>`
+- [python:riverhog-client:riverhog_client.transform](../../../evidence/sources.md#src-7a247bb534) — `packages/riverhog-client/src/riverhog_client/transform/__init__.py`
 
 ### Machine authority
 
-- `/external_contract/python/6`
+- `/external_contract/python/15`
 
 ### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 4f0dff8be09ab7302b2f39d0598220ac3c7e773b633536b158b79dffc127b985 -->
+<!-- exact-contract-value: c6c188539db9607bafe32ca8192a666a6a17b99f635be5f9c34e9e4620159fcc -->
 
 ```json
 {
+  "candidate_id": "python:riverhog-client:riverhog_client.transform",
   "distribution": "riverhog-client",
   "exports": {
     "CancellationCheck": {
@@ -62,22 +64,22 @@ The following JSON is the complete value owned at each machine-authority pointer
       "members": {
         "close": {
           "kind": "method",
-          "signature": "(self) -> 'None'"
+          "signature": "\"(self) -> 'None'\""
         },
         "current": {
           "kind": "property",
-          "signature": "(self) -> 'Any'"
+          "signature": "\"(self) -> 'Any'\""
         },
         "replace": {
           "kind": "method",
-          "signature": "(self, client: 'Any', *, owns_client: 'bool' = True) -> 'None'"
+          "signature": "\"(self, client: 'Any', *, owns_client: 'bool' = True) -> 'None'\""
         },
         "spawn": {
           "kind": "method",
-          "signature": "(self) -> 'CapabilityApiClient'"
+          "signature": "\"(self) -> 'CapabilityApiClient'\""
         }
       },
-      "signature": "(client: 'Any', *, owns_client: 'bool' = False, _state: '_CapabilityClientState | None' = None, _root: 'bool' = True) -> 'None'"
+      "signature": "\"(client: 'Any', *, owns_client: 'bool' = False, _state: '_CapabilityClientState | None' = None, _root: 'bool' = True) -> 'None'\""
     },
     "ClaimedArtifact": {
       "fields": [
@@ -111,230 +113,230 @@ The following JSON is the complete value owned at each machine-authority pointer
       "members": {
         "as_dict": {
           "kind": "method",
-          "signature": "(self) -> 'dict[str, object]'"
+          "signature": "\"(self) -> 'dict[str, object]'\""
         },
         "key": {
           "kind": "property",
-          "signature": "(self) -> 'tuple[int, str]'"
+          "signature": "\"(self) -> 'tuple[int, str]'\""
         }
       },
-      "signature": "(root: 'CollectionRootIdentity', path: 'str', bytes: 'int', sha256: 'str', control: 'bool' = False) -> None"
+      "signature": "\"(root: 'CollectionRootIdentity', path: 'str', bytes: 'int', sha256: 'str', control: 'bool' = False) -> None\""
     },
     "ClaimedCollectionApi": {
       "kind": "class",
       "members": {
         "acknowledge_retrieval_job": {
           "kind": "method",
-          "signature": "(self, job_id: 'str') -> 'dict[str, Any]'"
+          "signature": "\"(self, job_id: 'str') -> 'dict[str, Any]'\""
         },
         "cancel_retrieval_job": {
           "kind": "method",
-          "signature": "(self, job_id: 'str') -> 'dict[str, Any]'"
+          "signature": "\"(self, job_id: 'str') -> 'dict[str, Any]'\""
         },
         "create_retrieval_job": {
           "kind": "method",
-          "signature": "(self, plan_id: 'str', *, plan_etag: 'str', event_context: 'Mapping[str, Any] | None' = None) -> 'dict[str, Any]'"
+          "signature": "\"(self, plan_id: 'str', *, plan_etag: 'str', event_context: 'Mapping[str, Any] | None' = None) -> 'dict[str, Any]'\""
         },
         "download_retrieval_file": {
           "kind": "method",
-          "signature": "(self, job_id: 'str', *, collection_id: 'CollectionId', path: 'str', output: 'Path', expected_bytes: 'int', expected_sha256: 'str') -> 'int'"
+          "signature": "\"(self, job_id: 'str', *, collection_id: 'CollectionId', path: 'str', output: 'Path', expected_bytes: 'int', expected_sha256: 'str') -> 'int'\""
         },
         "get_collection": {
           "kind": "method",
-          "signature": "(self, collection_id: 'CollectionId') -> 'dict[str, Any]'"
+          "signature": "\"(self, collection_id: 'CollectionId') -> 'dict[str, Any]'\""
         },
         "get_portable_collection_inventory": {
           "kind": "method",
-          "signature": "(self, collection_id: 'CollectionId', *, cursor: 'str | None' = None, limit: 'int' = 100, inventory_identity: 'str | None' = None) -> 'PortableCollectionInventoryPage'"
+          "signature": "\"(self, collection_id: 'CollectionId', *, cursor: 'str | None' = None, limit: 'int' = 100, inventory_identity: 'str | None' = None) -> 'PortableCollectionInventoryPage'\""
         },
         "get_retrieval_job": {
           "kind": "method",
-          "signature": "(self, job_id: 'str') -> 'dict[str, Any]'"
+          "signature": "\"(self, job_id: 'str') -> 'dict[str, Any]'\""
         },
         "list_retrieval_plan_files": {
           "kind": "method",
-          "signature": "(self, plan_id: 'str', *, plan_etag: 'str', start_ordinal: 'int' = 0, page_size: 'int' = 100) -> 'dict[str, Any]'"
+          "signature": "\"(self, plan_id: 'str', *, plan_etag: 'str', start_ordinal: 'int' = 0, page_size: 'int' = 100) -> 'dict[str, Any]'\""
         },
         "plan_retrieval": {
           "kind": "method",
-          "signature": "(self, files: 'Sequence[tuple[CollectionId, str]]', *, lease_seconds: 'int | None' = None, restore_policy: 'RiverhogRestorePolicy' = 'never') -> 'dict[str, Any]'"
+          "signature": "\"(self, files: 'Sequence[tuple[CollectionId, str]]', *, lease_seconds: 'int | None' = None, restore_policy: 'RiverhogRestorePolicy' = 'never') -> 'dict[str, Any]'\""
         },
         "renew_retrieval_job": {
           "kind": "method",
-          "signature": "(self, job_id: 'str', *, lease_seconds: 'int') -> 'dict[str, Any]'"
+          "signature": "\"(self, job_id: 'str', *, lease_seconds: 'int') -> 'dict[str, Any]'\""
         },
         "stream_retrieval_file": {
           "kind": "method",
-          "signature": "(self, job_id: 'str', *, collection_id: 'CollectionId', path: 'str', expected_bytes: 'int', expected_sha256: 'str', start: 'int' = 0, end: 'int | None' = None, chunk_size: 'int' = 8388608) -> 'AbstractContextManager[Iterator[bytes]]'"
+          "signature": "\"(self, job_id: 'str', *, collection_id: 'CollectionId', path: 'str', expected_bytes: 'int', expected_sha256: 'str', start: 'int' = 0, end: 'int | None' = None, chunk_size: 'int' = 8388608) -> 'AbstractContextManager[Iterator[bytes]]'\""
         }
       },
-      "signature": "(*args, **kwargs)"
+      "signature": "'(*args, **kwargs)'"
     },
     "ClaimedCollectionReader": {
       "kind": "class",
       "members": {
         "close_retrievals": {
           "kind": "method",
-          "signature": "(self) -> 'None'"
+          "signature": "\"(self) -> 'None'\""
         },
         "iter_inventory": {
           "kind": "method",
-          "signature": "(self, *, include_control: 'bool' = False) -> 'Iterator[ClaimedArtifact]'"
+          "signature": "\"(self, *, include_control: 'bool' = False) -> 'Iterator[ClaimedArtifact]'\""
         },
         "prepare": {
           "kind": "method",
-          "signature": "(self, artifacts: 'Sequence[ClaimedArtifact] | None' = None, *, lease_seconds: 'int' = 1800, restore_policy: 'RetrievalPolicy' = 'available-only', poll_seconds: 'float' = 2.0, timeout_seconds: 'float' = 86400) -> 'ClaimedRetrieval'"
+          "signature": "\"(self, artifacts: 'Sequence[ClaimedArtifact] | None' = None, *, lease_seconds: 'int' = 1800, restore_policy: 'RetrievalPolicy' = 'available-only', poll_seconds: 'float' = 2.0, timeout_seconds: 'float' = 86400) -> 'ClaimedRetrieval'\""
         },
         "replace_api": {
           "kind": "method",
-          "signature": "(self, api: 'ClaimedCollectionApi') -> 'None'"
+          "signature": "\"(self, api: 'ClaimedCollectionApi') -> 'None'\""
         }
       },
-      "signature": "(api: 'ClaimedCollectionApi', *, inputs: 'Sequence[CollectionRootIdentity]', work_id: 'str', claim_id: 'str', fence: 'int', heartbeat: 'Heartbeat | None' = None) -> 'None'"
+      "signature": "\"(api: 'ClaimedCollectionApi', *, inputs: 'Sequence[CollectionRootIdentity]', work_id: 'str', claim_id: 'str', fence: 'int', heartbeat: 'Heartbeat | None' = None) -> 'None'\""
     },
     "ClaimedCollectionRuntime": {
       "kind": "class",
       "members": {
         "close": {
           "kind": "method",
-          "signature": "(self) -> 'None'"
+          "signature": "\"(self) -> 'None'\""
         },
         "from_capability": {
           "kind": "classmethod",
-          "signature": "(cls, *, base_url: 'str', capability_token: 'str', inputs: 'Sequence[CollectionRootIdentity]', claim_id: 'str', fence: 'int', work_id: 'str', execution_id: 'str', allow_insecure_http: 'bool' = False, **kwargs: 'Any') -> 'ClaimedCollectionRuntime'"
+          "signature": "\"(cls, *, base_url: 'str', capability_token: 'str', inputs: 'Sequence[CollectionRootIdentity]', claim_id: 'str', fence: 'int', work_id: 'str', execution_id: 'str', allow_insecure_http: 'bool' = False, **kwargs: 'Any') -> 'ClaimedCollectionRuntime'\""
         },
         "heartbeat": {
           "kind": "method",
-          "signature": "(self) -> 'None'"
+          "signature": "\"(self) -> 'None'\""
         },
         "iter_inventory": {
           "kind": "method",
-          "signature": "(self)"
+          "signature": "'(self)'"
         },
         "open_workspace": {
           "kind": "method",
-          "signature": "(self, root: 'Path', *, assurance: 'WorkspaceAssurance') -> 'TransformWorkspace'"
+          "signature": "\"(self, root: 'Path', *, assurance: 'WorkspaceAssurance') -> 'TransformWorkspace'\""
         },
         "prepare_inputs": {
           "kind": "method",
-          "signature": "(self, artifacts: 'Sequence[ClaimedArtifact] | None' = None, **kwargs: 'Any') -> 'ClaimedRetrieval'"
+          "signature": "\"(self, artifacts: 'Sequence[ClaimedArtifact] | None' = None, **kwargs: 'Any') -> 'ClaimedRetrieval'\""
         },
         "refresh_capability": {
           "kind": "method",
-          "signature": "(self, capability_token: 'str') -> 'None'"
+          "signature": "\"(self, capability_token: 'str') -> 'None'\""
         }
       },
-      "signature": "(api: 'Any', *, inputs: 'Sequence[CollectionRootIdentity]', claim_id: 'str', fence: 'int', work_id: 'str', execution_id: 'str', cancellation_check: 'CancellationCheck | None' = None, input_retrieval_policy: \"Literal['available-only', 'allow']\" = 'available-only', owned_api: 'bool' = False) -> 'None'"
+      "signature": "'(api: \\'Any\\', *, inputs: \\'Sequence[CollectionRootIdentity]\\', claim_id: \\'str\\', fence: \\'int\\', work_id: \\'str\\', execution_id: \\'str\\', cancellation_check: \\'CancellationCheck | None\\' = None, input_retrieval_policy: \"Literal[\\'available-only\\', \\'allow\\']\" = \\'available-only\\', owned_api: \\'bool\\' = False) -> \\'None\\''"
     },
     "ClaimedCollectionRuntimeRegistry": {
       "kind": "class",
       "members": {
         "bind": {
           "kind": "method",
-          "signature": "(self, job_id: 'str', runtime: 'RefreshableClaimedCollectionRuntime') -> 'Iterator[RefreshableClaimedCollectionRuntime]'"
+          "signature": "\"(self, job_id: 'str', runtime: 'RefreshableClaimedCollectionRuntime') -> 'Iterator[RefreshableClaimedCollectionRuntime]'\""
         },
         "discard": {
           "kind": "method",
-          "signature": "(self, job_id: 'str') -> 'None'"
+          "signature": "\"(self, job_id: 'str') -> 'None'\""
         },
         "refresh": {
           "kind": "method",
-          "signature": "(self, job_id: 'str', capability_token: 'str') -> 'None'"
+          "signature": "\"(self, job_id: 'str', capability_token: 'str') -> 'None'\""
         }
       },
-      "signature": "() -> 'None'"
+      "signature": "\"() -> 'None'\""
     },
     "ClaimedRetrieval": {
       "kind": "class",
       "members": {
         "cleanup_pending": {
           "kind": "property",
-          "signature": "(self) -> 'bool'"
+          "signature": "\"(self) -> 'bool'\""
         },
         "close": {
           "kind": "method",
-          "signature": "(self, *, success: 'bool' = True) -> 'None'"
+          "signature": "\"(self, *, success: 'bool' = True) -> 'None'\""
         },
         "closed": {
           "kind": "property",
-          "signature": "(self) -> 'bool'"
+          "signature": "\"(self) -> 'bool'\""
         },
         "download": {
           "kind": "method",
-          "signature": "(self, artifact: 'ClaimedArtifact', output: 'Path') -> 'int'"
+          "signature": "\"(self, artifact: 'ClaimedArtifact', output: 'Path') -> 'int'\""
         },
         "read_bytes": {
           "kind": "method",
-          "signature": "(self, artifact: 'ClaimedArtifact', *, maximum_bytes: 'int') -> 'bytes'"
+          "signature": "\"(self, artifact: 'ClaimedArtifact', *, maximum_bytes: 'int') -> 'bytes'\""
         },
         "renew": {
           "kind": "method",
-          "signature": "(self, *, lease_seconds: 'int') -> 'dict[str, Any]'"
+          "signature": "\"(self, *, lease_seconds: 'int') -> 'dict[str, Any]'\""
         },
         "replace_api": {
           "kind": "method",
-          "signature": "(self, api: 'ClaimedCollectionApi') -> 'None'"
+          "signature": "\"(self, api: 'ClaimedCollectionApi') -> 'None'\""
         },
         "retry_close": {
           "kind": "method",
-          "signature": "(self) -> 'None'"
+          "signature": "\"(self) -> 'None'\""
         },
         "stream": {
           "kind": "method",
-          "signature": "(self, artifact: 'ClaimedArtifact', *, start: 'int' = 0, end: 'int | None' = None, chunk_size: 'int' = 8388608) -> 'Iterator[Iterator[bytes]]'"
+          "signature": "\"(self, artifact: 'ClaimedArtifact', *, start: 'int' = 0, end: 'int | None' = None, chunk_size: 'int' = 8388608) -> 'Iterator[Iterator[bytes]]'\""
         }
       },
-      "signature": "(api: 'ClaimedCollectionApi', *, job: 'Mapping[str, Any]', artifacts: 'Sequence[ClaimedArtifact]', heartbeat: 'Heartbeat | None' = None) -> 'None'"
+      "signature": "\"(api: 'ClaimedCollectionApi', *, job: 'Mapping[str, Any]', artifacts: 'Sequence[ClaimedArtifact]', heartbeat: 'Heartbeat | None' = None) -> 'None'\""
     },
     "CollectionTransformRuntime": {
       "kind": "class",
       "members": {
         "append_incremental_output": {
           "kind": "method",
-          "signature": "(self, writer: 'IncrementalDerivedCollectionWriter', source: 'ProducerInput', *, identity: 'ProducerArtifactIdentity') -> 'tuple[ProducerArtifactCustody, ...]'"
+          "signature": "\"(self, writer: 'IncrementalDerivedCollectionWriter', source: 'ProducerInput', *, identity: 'ProducerArtifactIdentity') -> 'tuple[ProducerArtifactCustody, ...]'\""
         },
         "close": {
           "kind": "method",
-          "signature": "(self) -> 'None'"
+          "signature": "\"(self) -> 'None'\""
         },
         "finish_incremental_publication": {
           "kind": "method",
-          "signature": "(self, writer: 'IncrementalDerivedCollectionWriter', *, execution_sha256: 'str', disposition_set: 'ArtifactDispositionSetIdentity', **kwargs: 'Any') -> 'DerivedCollectionReceipt'"
+          "signature": "\"(self, writer: 'IncrementalDerivedCollectionWriter', *, execution_sha256: 'str', disposition_set: 'ArtifactDispositionSetIdentity', **kwargs: 'Any') -> 'DerivedCollectionReceipt'\""
         },
         "from_capability": {
           "kind": "classmethod",
-          "signature": "(cls, *, base_url: 'str', capability_token: 'str', spec: 'DerivedCollectionSpec', claim_id: 'str', fence: 'int', work_id: 'str', execution_id: 'str', controller_evidence: 'Mapping[str, object]', allow_insecure_http: 'bool' = False, **kwargs: 'Any') -> 'CollectionTransformRuntime'"
+          "signature": "\"(cls, *, base_url: 'str', capability_token: 'str', spec: 'DerivedCollectionSpec', claim_id: 'str', fence: 'int', work_id: 'str', execution_id: 'str', controller_evidence: 'Mapping[str, object]', allow_insecure_http: 'bool' = False, **kwargs: 'Any') -> 'CollectionTransformRuntime'\""
         },
         "heartbeat": {
           "kind": "method",
-          "signature": "(self) -> 'None'"
+          "signature": "\"(self) -> 'None'\""
         },
         "iter_inventory": {
           "kind": "method",
-          "signature": "(self)"
+          "signature": "'(self)'"
         },
         "open_incremental_publication": {
           "kind": "method",
-          "signature": "(self, *, execution_envelope_sha256: 'str', source_context: 'Mapping[str, object] | None' = None) -> 'IncrementalDerivedCollectionWriter'"
+          "signature": "\"(self, *, execution_envelope_sha256: 'str', source_context: 'Mapping[str, object] | None' = None) -> 'IncrementalDerivedCollectionWriter'\""
         },
         "open_workspace": {
           "kind": "method",
-          "signature": "(self, root: 'Path', *, assurance: 'WorkspaceAssurance') -> 'TransformWorkspace'"
+          "signature": "\"(self, root: 'Path', *, assurance: 'WorkspaceAssurance') -> 'TransformWorkspace'\""
         },
         "prepare_inputs": {
           "kind": "method",
-          "signature": "(self, artifacts: 'Sequence[ClaimedArtifact] | None' = None, **kwargs: 'Any') -> 'ClaimedRetrieval'"
+          "signature": "\"(self, artifacts: 'Sequence[ClaimedArtifact] | None' = None, **kwargs: 'Any') -> 'ClaimedRetrieval'\""
         },
         "publish": {
           "kind": "method",
-          "signature": "(self, outputs: 'Sequence[ProducerInput]', *, execution_envelope_sha256: 'str', execution_sha256: 'str', disposition_set: 'ArtifactDispositionSetIdentity', source_context: 'Mapping[str, object] | None' = None, **kwargs: 'Any') -> 'DerivedCollectionReceipt'"
+          "signature": "\"(self, outputs: 'Sequence[ProducerInput]', *, execution_envelope_sha256: 'str', execution_sha256: 'str', disposition_set: 'ArtifactDispositionSetIdentity', source_context: 'Mapping[str, object] | None' = None, **kwargs: 'Any') -> 'DerivedCollectionReceipt'\""
         },
         "refresh_capability": {
           "kind": "method",
-          "signature": "(self, capability_token: 'str') -> 'None'"
+          "signature": "\"(self, capability_token: 'str') -> 'None'\""
         }
       },
-      "signature": "(api: 'Any', *, spec: 'DerivedCollectionSpec', claim_id: 'str', fence: 'int', work_id: 'str', execution_id: 'str', controller_evidence: 'Mapping[str, object]', producer_app: 'str', producer_version: 'str' = 'development', cancellation_check: 'CancellationCheck | None' = None, input_retrieval_policy: \"Literal['available-only', 'allow']\" = 'available-only', owned_api: 'bool' = False) -> 'None'"
+      "signature": "'(api: \\'Any\\', *, spec: \\'DerivedCollectionSpec\\', claim_id: \\'str\\', fence: \\'int\\', work_id: \\'str\\', execution_id: \\'str\\', controller_evidence: \\'Mapping[str, object]\\', producer_app: \\'str\\', producer_version: \\'str\\' = \\'development\\', cancellation_check: \\'CancellationCheck | None\\' = None, input_retrieval_policy: \"Literal[\\'available-only\\', \\'allow\\']\" = \\'available-only\\', owned_api: \\'bool\\' = False) -> \\'None\\''"
     },
     "DerivedCollectionReceipt": {
       "fields": [
@@ -363,14 +365,14 @@ The following JSON is the complete value owned at each machine-authority pointer
       "members": {
         "as_dict": {
           "kind": "method",
-          "signature": "(self) -> 'dict[str, object]'"
+          "signature": "\"(self) -> 'dict[str, object]'\""
         },
         "from_mapping": {
           "kind": "classmethod",
-          "signature": "(cls, value: 'Mapping[str, object]') -> 'DerivedCollectionReceipt'"
+          "signature": "\"(cls, value: 'Mapping[str, object]') -> 'DerivedCollectionReceipt'\""
         }
       },
-      "signature": "(collection_id: 'CollectionId', archive_root_sha256: 'str', content_identity: 'str', derivation: 'CollectionDerivation') -> None"
+      "signature": "\"(collection_id: 'CollectionId', archive_root_sha256: 'str', content_identity: 'str', derivation: 'CollectionDerivation') -> None\""
     },
     "DerivedCollectionSpec": {
       "fields": [
@@ -391,21 +393,21 @@ The following JSON is the complete value owned at each machine-authority pointer
         }
       ],
       "kind": "class",
-      "signature": "(inputs: 'tuple[CollectionRootIdentity, ...]', recipe: 'RecipeIdentity', operation: 'OperationIdentity') -> None"
+      "signature": "\"(inputs: 'tuple[CollectionRootIdentity, ...]', recipe: 'RecipeIdentity', operation: 'OperationIdentity') -> None\""
     },
     "DerivedCollectionWriter": {
       "kind": "class",
       "members": {
         "publish": {
           "kind": "method",
-          "signature": "(self, outputs: 'Sequence[ProducerInput]', *, execution_envelope_sha256: 'str', execution_sha256: 'str', disposition_set: 'ArtifactDispositionSetIdentity', source_context: 'Mapping[str, object] | None' = None, poll_seconds: 'float' = 2.0, timeout_seconds: 'float' = 86400) -> 'DerivedCollectionReceipt'"
+          "signature": "\"(self, outputs: 'Sequence[ProducerInput]', *, execution_envelope_sha256: 'str', execution_sha256: 'str', disposition_set: 'ArtifactDispositionSetIdentity', source_context: 'Mapping[str, object] | None' = None, poll_seconds: 'float' = 2.0, timeout_seconds: 'float' = 86400) -> 'DerivedCollectionReceipt'\""
         },
         "replace_api": {
           "kind": "method",
-          "signature": "(self, api: 'Any') -> 'None'"
+          "signature": "\"(self, api: 'Any') -> 'None'\""
         }
       },
-      "signature": "(api: 'Any', *, spec: 'DerivedCollectionSpec', claim_id: 'str', fence: 'int', work_id: 'str', execution_id: 'str', controller_evidence: 'Mapping[str, object]', producer_app: 'str', producer_version: 'str' = 'development') -> 'None'"
+      "signature": "\"(api: 'Any', *, spec: 'DerivedCollectionSpec', claim_id: 'str', fence: 'int', work_id: 'str', execution_id: 'str', controller_evidence: 'Mapping[str, object]', producer_app: 'str', producer_version: 'str' = 'development') -> 'None'\""
     },
     "Heartbeat": {
       "kind": "object",
@@ -416,22 +418,22 @@ The following JSON is the complete value owned at each machine-authority pointer
       "members": {
         "append": {
           "kind": "method",
-          "signature": "(self, source: 'ProducerInput', *, identity: 'ProducerArtifactIdentity') -> 'tuple[ProducerArtifactCustody, ...]'"
+          "signature": "\"(self, source: 'ProducerInput', *, identity: 'ProducerArtifactIdentity') -> 'tuple[ProducerArtifactCustody, ...]'\""
         },
         "finish": {
           "kind": "method",
-          "signature": "(self, *, execution_sha256: 'str', disposition_set: 'ArtifactDispositionSetIdentity', poll_seconds: 'float' = 2.0, timeout_seconds: 'float' = 86400) -> 'DerivedCollectionReceipt'"
+          "signature": "\"(self, *, execution_sha256: 'str', disposition_set: 'ArtifactDispositionSetIdentity', poll_seconds: 'float' = 2.0, timeout_seconds: 'float' = 86400) -> 'DerivedCollectionReceipt'\""
         },
         "heartbeat": {
           "kind": "method",
-          "signature": "(self) -> 'None'"
+          "signature": "\"(self) -> 'None'\""
         },
         "stop": {
           "kind": "method",
-          "signature": "(self) -> 'None'"
+          "signature": "\"(self) -> 'None'\""
         }
       },
-      "signature": "(api: 'Any', *, spec: 'DerivedCollectionSpec', claim_id: 'str', fence: 'int', work_id: 'str', execution_id: 'str', controller_evidence: 'Mapping[str, object]', producer_app: 'str', producer_version: 'str', execution_envelope_sha256: 'str', source_context: 'Mapping[str, object] | None' = None) -> 'None'"
+      "signature": "\"(api: 'Any', *, spec: 'DerivedCollectionSpec', claim_id: 'str', fence: 'int', work_id: 'str', execution_id: 'str', controller_evidence: 'Mapping[str, object]', producer_app: 'str', producer_version: 'str', execution_envelope_sha256: 'str', source_context: 'Mapping[str, object] | None' = None) -> 'None'\""
     },
     "TransformWorkspace": {
       "fields": [
@@ -455,18 +457,18 @@ The following JSON is the complete value owned at each machine-authority pointer
       "members": {
         "open": {
           "kind": "classmethod",
-          "signature": "(cls, root: 'Path', *, execution_id: 'str', assurance: 'WorkspaceAssurance') -> 'TransformWorkspace'"
+          "signature": "\"(cls, root: 'Path', *, execution_id: 'str', assurance: 'WorkspaceAssurance') -> 'TransformWorkspace'\""
         },
         "release": {
           "kind": "method",
-          "signature": "(self) -> 'None'"
+          "signature": "\"(self) -> 'None'\""
         },
         "resolve": {
           "kind": "method",
-          "signature": "(self, relative_path: 'str') -> 'Path'"
+          "signature": "\"(self, relative_path: 'str') -> 'Path'\""
         }
       },
-      "signature": "(root: 'Path', execution_id: 'str', assurance: 'WorkspaceAssurance') -> None"
+      "signature": "\"(root: 'Path', execution_id: 'str', assurance: 'WorkspaceAssurance') -> None\""
     },
     "WorkspaceAssurance": {
       "kind": "object",

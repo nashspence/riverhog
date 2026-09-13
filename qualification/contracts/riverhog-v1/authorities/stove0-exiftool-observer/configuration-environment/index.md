@@ -6,8 +6,7 @@ Contract elements: **8** · Extent decisions: **0**
 
 | Family | Count |
 |---|---:|
-| <a id="f-369f4c14fa"></a>`credential` | 2 |
-| <a id="f-653370c949"></a>`identity` | 6 |
+| <a id="f-ec8ef5e777"></a>`settings` | 8 |
 
 | Policy | Count |
 |---|---:|
@@ -17,11 +16,11 @@ Contract elements: **8** · Extent decisions: **0**
 
 | Dossier | Family | Extent decisions |
 |---|---|---:|
-| [STOVE0_EXIFTOOL_OBSERVER_TOKEN](stove0-exiftool-observer-token.md) | `credential` | 0 |
-| [STOVE0_EXIFTOOL_OBSERVER_TOKEN_FILE](stove0-exiftool-observer-token-file.md) | `credential` | 0 |
-| [STOVE0_EXIFTOOL_BIN](stove0-exiftool-bin.md) | `identity` | 0 |
-| [STOVE0_EXIFTOOL_OBSERVER_HOST](stove0-exiftool-observer-host.md) | `identity` | 0 |
-| [STOVE0_EXIFTOOL_OBSERVER_IMAGE_DIGEST](stove0-exiftool-observer-image-digest.md) | `identity` | 0 |
-| [STOVE0_EXIFTOOL_OBSERVER_PORT](stove0-exiftool-observer-port.md) | `identity` | 0 |
-| [STOVE0_EXIFTOOL_OBSERVER_SOURCE_REVISION](stove0-exiftool-observer-source-revision.md) | `identity` | 0 |
-| [STOVE0_EXIFTOOL_OBSERVER_WORKSPACE](stove0-exiftool-observer-workspace.md) | `identity` | 0 |
+| [STOVE0_EXIFTOOL_BIN](stove0-exiftool-bin.md) | `settings` | 0 |
+| [STOVE0_EXIFTOOL_OBSERVER_HOST](stove0-exiftool-observer-host.md) | `settings` | 0 |
+| [STOVE0_EXIFTOOL_OBSERVER_IMAGE_DIGEST](stove0-exiftool-observer-image-digest.md) | `settings` | 0 |
+| [STOVE0_EXIFTOOL_OBSERVER_PORT](stove0-exiftool-observer-port.md) | `settings` | 0 |
+| [STOVE0_EXIFTOOL_OBSERVER_SOURCE_REVISION](stove0-exiftool-observer-source-revision.md) | `settings` | 0 |
+| [STOVE0_EXIFTOOL_OBSERVER_TOKEN](stove0-exiftool-observer-token.md) | `settings` | 0 |
+| [STOVE0_EXIFTOOL_OBSERVER_TOKEN_FILE](stove0-exiftool-observer-token-file.md) | `settings` | 0 |
+| [STOVE0_EXIFTOOL_OBSERVER_WORKSPACE](stove0-exiftool-observer-workspace.md) | `settings` | 0 |

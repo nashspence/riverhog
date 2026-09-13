@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: python:riverhog-archive-contracts:riverhog-archive-contracts:9bd83ff525 -->
+<!-- contract-element: python:riverhog-archive-contracts:riverhog-archive-contracts:f4817aca7f -->
 
 Exact externally visible contract owned by this semantic dossier.
 
@@ -16,16 +16,17 @@ Exact externally visible contract owned by this semantic dossier.
 
 ## External contract
 
-<a id="s-00b716397d"></a>
+<a id="s-bf61041e8a"></a>
 | Field | Shape |
 |---|---|
-| <a id="s-3cbc140dc4"></a>`distribution` | "riverhog-archive-contracts" |
-| <a id="s-56161af44e"></a>`exports` | additional keys=`AGE_UPLOAD_STATE_FORMAT`, `ARCHIVE_ENCRYPTION_FORMAT`, `ARCHIVE_PACK_FILES_MAX`, `ARCHIVE_ROOT_DOCUMENT_BYTES_MAX`, `ARCHIVE_SEQUENCE_BITS`, `ARCHIVE_SEQUENCE_HEX_WIDTH`, `ARCHIVE_VOLUME_DOCUMENT_BYTES_MAX`, `ARCHIVE_VOLUME_PARTS_MAX`, `AgeUploadState`, `ArchiveFileIdentity`, `ArchiveManifestError`, `ArchiveProvenanceIdentity`, `ArchiveRootCiphertextIdentity`, `ArchiveVolume`, `COLLECTION_ARCHIVE_MANIFEST_SCHEMA`, `COLLECTION_ARCHIVE_TERMINAL_SCHEMA`, `COLLECTION_ARCHIVE_VOLUME_SCHEMA`, `CollectionArchiveManifest`, `CollectionArchiveTerminalDocument`, `CollectionArchiveVolumeDocument`, `CollectionEncryptionBinding`, `CollectionTreeIdentity`, `PACK_INDEX_SCHEMA`, `PART_DIGEST_FORMAT`, `PackArchiveVolume`, `ProvenanceRootIdentity`, `RECOVERY_DESCRIPTOR_PATH`, `RECOVERY_DESCRIPTOR_SCHEMA`, `RecoveryDescriptor`, `RecoveryDescriptorError`, `SELECTIVE_READ_FORMAT`, `SegmentArchiveVolume`, `SegmentFilePlacement`, `StoredPartIdentity`, `format_archive_sequence`, `normalize_passphrase_id`, `ordered_archive_volume_commitment`, `parse_archive_sequence`, `update_archive_sequence_commitment` |
-| <a id="s-bd1d09073a"></a>`module` | "riverhog_archive_contracts" |
+| <a id="s-374fe2eb57"></a>`candidate_id` | "python:riverhog-archive-contracts:riverhog_archive_contracts" |
+| <a id="s-9bd8773bba"></a>`distribution` | "riverhog-archive-contracts" |
+| <a id="s-0cb1aa9232"></a>`exports` | additional keys=`AGE_UPLOAD_STATE_FORMAT`, `ARCHIVE_ENCRYPTION_FORMAT`, `ARCHIVE_PACK_FILES_MAX`, `ARCHIVE_ROOT_DOCUMENT_BYTES_MAX`, `ARCHIVE_SEQUENCE_BITS`, `ARCHIVE_SEQUENCE_HEX_WIDTH`, `ARCHIVE_VOLUME_DOCUMENT_BYTES_MAX`, `ARCHIVE_VOLUME_PARTS_MAX`, `AgeUploadState`, `ArchiveFileIdentity`, `ArchiveManifestError`, `ArchiveProvenanceIdentity`, `ArchiveRootCiphertextIdentity`, `ArchiveVolume`, `COLLECTION_ARCHIVE_MANIFEST_SCHEMA`, `COLLECTION_ARCHIVE_TERMINAL_SCHEMA`, `COLLECTION_ARCHIVE_VOLUME_SCHEMA`, `CollectionArchiveManifest`, `CollectionArchiveTerminalDocument`, `CollectionArchiveVolumeDocument`, `CollectionEncryptionBinding`, `CollectionTreeIdentity`, `PACK_INDEX_SCHEMA`, `PART_DIGEST_FORMAT`, `PackArchiveVolume`, `ProvenanceRootIdentity`, `RECOVERY_DESCRIPTOR_PATH`, `RECOVERY_DESCRIPTOR_SCHEMA`, `RecoveryDescriptor`, `RecoveryDescriptorError`, `SELECTIVE_READ_FORMAT`, `SegmentArchiveVolume`, `SegmentFilePlacement`, `StoredPartIdentity`, `format_archive_sequence`, `normalize_passphrase_id`, `ordered_archive_volume_commitment`, `parse_archive_sequence`, `update_archive_sequence_commitment` |
+| <a id="s-0cfe90ada5"></a>`module` | "riverhog_archive_contracts" |
 
 ## Governing policies
 
-- <a id="pa-b890446d4c"></a>[compatibility/python-api/v1](../../../policies/index.md#p-e574772ba5)
+- <a id="pa-2e4f02a402"></a>[compatibility/python-api/v1](../../../policies/index.md#p-e574772ba5)
 
 ## Evidence
 
@@ -37,20 +38,21 @@ Exact externally visible contract owned by this semantic dossier.
 ### Executable sources
 
 - [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
-- [python:riverhog-archive-contracts](../../../evidence/sources.md#src-f696df2e90) — `packages/riverhog-archive-contracts/src/riverhog_archive_contracts/__init__.py::<module>`
+- [python:riverhog-archive-contracts:riverhog_archive_contracts](../../../evidence/sources.md#src-4557222ddc) — `packages/riverhog-archive-contracts/src/riverhog_archive_contracts/__init__.py`
 
 ### Machine authority
 
-- `/external_contract/python/4`
+- `/external_contract/python/13`
 
 ### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 74c44223339f7f7e1d12461497c7e26ef8610a0c1a069a578634464e396f895c -->
+<!-- exact-contract-value: 338a1f0279186321202921fe9868bf2f4f9a9be171e2f1b24d2a8a2a5e9ecd0b -->
 
 ```json
 {
+  "candidate_id": "python:riverhog-archive-contracts:riverhog_archive_contracts",
   "distribution": "riverhog-archive-contracts",
   "exports": {
     "AGE_UPLOAD_STATE_FORMAT": {
@@ -112,14 +114,14 @@ The following JSON is the complete value owned at each machine-authority pointer
       "members": {
         "from_mapping": {
           "kind": "classmethod",
-          "signature": "(cls, value: 'object', *, plaintext_bytes: 'int') -> 'AgeUploadState'"
+          "signature": "\"(cls, value: 'object', *, plaintext_bytes: 'int') -> 'AgeUploadState'\""
         },
         "to_mapping": {
           "kind": "method",
-          "signature": "(self) -> 'dict[str, object]'"
+          "signature": "\"(self) -> 'dict[str, object]'\""
         }
       },
-      "signature": "(header_b64: 'str', payload_nonce_b64: 'str', plaintext_size: 'int', format: 'str' = 'age-v1-scrypt-resumable') -> None"
+      "signature": "\"(header_b64: 'str', payload_nonce_b64: 'str', plaintext_size: 'int', format: 'str' = 'age-v1-scrypt-resumable') -> None\""
     },
     "ArchiveFileIdentity": {
       "fields": [
@@ -140,7 +142,7 @@ The following JSON is the complete value owned at each machine-authority pointer
         }
       ],
       "kind": "class",
-      "signature": "(path: 'str', bytes: 'int', sha256: 'str') -> None"
+      "signature": "\"(path: 'str', bytes: 'int', sha256: 'str') -> None\""
     },
     "ArchiveManifestError": {
       "kind": "class",
@@ -163,14 +165,14 @@ The following JSON is the complete value owned at each machine-authority pointer
       "members": {
         "from_mapping": {
           "kind": "classmethod",
-          "signature": "(cls, value: 'object') -> 'ArchiveProvenanceIdentity'"
+          "signature": "\"(cls, value: 'object') -> 'ArchiveProvenanceIdentity'\""
         },
         "to_mapping": {
           "kind": "method",
-          "signature": "(self) -> 'dict[str, object]'"
+          "signature": "\"(self) -> 'dict[str, object]'\""
         }
       },
-      "signature": "(identity: 'str', root: 'ProvenanceRootIdentity') -> None"
+      "signature": "\"(identity: 'str', root: 'ProvenanceRootIdentity') -> None\""
     },
     "ArchiveRootCiphertextIdentity": {
       "fields": [
@@ -191,7 +193,7 @@ The following JSON is the complete value owned at each machine-authority pointer
         }
       ],
       "kind": "class",
-      "signature": "(path: 'str', stored_bytes: 'int', stored_sha256: 'str') -> None"
+      "signature": "\"(path: 'str', stored_bytes: 'int', stored_sha256: 'str') -> None\""
     },
     "ArchiveVolume": {
       "kind": "object",
@@ -241,34 +243,34 @@ The following JSON is the complete value owned at each machine-authority pointer
       "members": {
         "bytes": {
           "kind": "property",
-          "signature": "(self) -> 'int'"
+          "signature": "\"(self) -> 'int'\""
         },
         "files": {
           "kind": "property",
-          "signature": "(self) -> 'int'"
+          "signature": "\"(self) -> 'int'\""
         },
         "from_json_bytes": {
           "kind": "classmethod",
-          "signature": "(cls, content: 'bytes | str') -> 'CollectionArchiveManifest'"
+          "signature": "\"(cls, content: 'bytes | str') -> 'CollectionArchiveManifest'\""
         },
         "from_mapping": {
           "kind": "classmethod",
-          "signature": "(cls, value: 'object') -> 'CollectionArchiveManifest'"
+          "signature": "\"(cls, value: 'object') -> 'CollectionArchiveManifest'\""
         },
         "to_json_bytes": {
           "kind": "method",
-          "signature": "(self) -> 'builtins.bytes'"
+          "signature": "\"(self) -> 'builtins.bytes'\""
         },
         "to_mapping": {
           "kind": "method",
-          "signature": "(self) -> 'dict[str, object]'"
+          "signature": "\"(self) -> 'dict[str, object]'\""
         },
         "tree_sha256": {
           "kind": "property",
-          "signature": "(self) -> 'str'"
+          "signature": "\"(self) -> 'str'\""
         }
       },
-      "signature": "(archive_generation: 'str', tree: 'CollectionTreeIdentity', ordered_volume_sha256: 'str', provenance: 'ArchiveProvenanceIdentity | None' = None, schema: 'str' = 'collection-archive-manifest/v1') -> None"
+      "signature": "\"(archive_generation: 'str', tree: 'CollectionTreeIdentity', ordered_volume_sha256: 'str', provenance: 'ArchiveProvenanceIdentity | None' = None, schema: 'str' = 'collection-archive-manifest/v1') -> None\""
     },
     "CollectionArchiveTerminalDocument": {
       "fields": [
@@ -302,22 +304,22 @@ The following JSON is the complete value owned at each machine-authority pointer
       "members": {
         "from_json_bytes": {
           "kind": "classmethod",
-          "signature": "(cls, content: 'bytes | str') -> 'CollectionArchiveTerminalDocument'"
+          "signature": "\"(cls, content: 'bytes | str') -> 'CollectionArchiveTerminalDocument'\""
         },
         "from_mapping": {
           "kind": "classmethod",
-          "signature": "(cls, value: 'object') -> 'CollectionArchiveTerminalDocument'"
+          "signature": "\"(cls, value: 'object') -> 'CollectionArchiveTerminalDocument'\""
         },
         "to_json_bytes": {
           "kind": "method",
-          "signature": "(self) -> 'builtins.bytes'"
+          "signature": "\"(self) -> 'builtins.bytes'\""
         },
         "to_mapping": {
           "kind": "method",
-          "signature": "(self) -> 'dict[str, object]'"
+          "signature": "\"(self) -> 'dict[str, object]'\""
         }
       },
-      "signature": "(archive_generation: 'str', archive_tree_sha256: 'str', sequence: 'int', kind: \"Literal['terminal']\" = 'terminal', schema: 'str' = 'collection-archive-terminal/v1') -> None"
+      "signature": "'(archive_generation: \\'str\\', archive_tree_sha256: \\'str\\', sequence: \\'int\\', kind: \"Literal[\\'terminal\\']\" = \\'terminal\\', schema: \\'str\\' = \\'collection-archive-terminal/v1\\') -> None'"
     },
     "CollectionArchiveVolumeDocument": {
       "fields": [
@@ -346,22 +348,22 @@ The following JSON is the complete value owned at each machine-authority pointer
       "members": {
         "from_json_bytes": {
           "kind": "classmethod",
-          "signature": "(cls, content: 'bytes | str') -> 'CollectionArchiveVolumeDocument'"
+          "signature": "\"(cls, content: 'bytes | str') -> 'CollectionArchiveVolumeDocument'\""
         },
         "from_mapping": {
           "kind": "classmethod",
-          "signature": "(cls, value: 'object') -> 'CollectionArchiveVolumeDocument'"
+          "signature": "\"(cls, value: 'object') -> 'CollectionArchiveVolumeDocument'\""
         },
         "to_json_bytes": {
           "kind": "method",
-          "signature": "(self) -> 'builtins.bytes'"
+          "signature": "\"(self) -> 'builtins.bytes'\""
         },
         "to_mapping": {
           "kind": "method",
-          "signature": "(self) -> 'dict[str, object]'"
+          "signature": "\"(self) -> 'dict[str, object]'\""
         }
       },
-      "signature": "(archive_generation: 'str', archive_tree_sha256: 'str', volume: 'ArchiveVolume', schema: 'str' = 'collection-archive-volume/v1') -> None"
+      "signature": "\"(archive_generation: 'str', archive_tree_sha256: 'str', volume: 'ArchiveVolume', schema: 'str' = 'collection-archive-volume/v1') -> None\""
     },
     "CollectionEncryptionBinding": {
       "fields": [
@@ -377,7 +379,7 @@ The following JSON is the complete value owned at each machine-authority pointer
         }
       ],
       "kind": "class",
-      "signature": "(format: 'str', passphrase_id: 'str') -> None"
+      "signature": "\"(format: 'str', passphrase_id: 'str') -> None\""
     },
     "CollectionTreeIdentity": {
       "fields": [
@@ -401,14 +403,14 @@ The following JSON is the complete value owned at each machine-authority pointer
       "members": {
         "from_mapping": {
           "kind": "classmethod",
-          "signature": "(cls, value: 'object') -> 'CollectionTreeIdentity'"
+          "signature": "\"(cls, value: 'object') -> 'CollectionTreeIdentity'\""
         },
         "to_mapping": {
           "kind": "method",
-          "signature": "(self) -> 'dict[str, object]'"
+          "signature": "\"(self) -> 'dict[str, object]'\""
         }
       },
-      "signature": "(files: 'int', bytes: 'int', sha256: 'str') -> None"
+      "signature": "\"(files: 'int', bytes: 'int', sha256: 'str') -> None\""
     },
     "PACK_INDEX_SCHEMA": {
       "kind": "constant",
@@ -480,10 +482,10 @@ The following JSON is the complete value owned at each machine-authority pointer
       "members": {
         "to_mapping": {
           "kind": "method",
-          "signature": "(self) -> 'dict[str, object]'"
+          "signature": "\"(self) -> 'dict[str, object]'\""
         }
       },
-      "signature": "(id: 'str', sequence: 'int', path: 'str', files: 'int', source_bytes: 'int', plaintext_bytes: 'int', age_state: 'AgeUploadState', index_sha256: 'str', plan_sha256: 'str', parts: 'tuple[StoredPartIdentity, ...]', kind: \"Literal['pack']\" = 'pack') -> None"
+      "signature": "'(id: \\'str\\', sequence: \\'int\\', path: \\'str\\', files: \\'int\\', source_bytes: \\'int\\', plaintext_bytes: \\'int\\', age_state: \\'AgeUploadState\\', index_sha256: \\'str\\', plan_sha256: \\'str\\', parts: \\'tuple[StoredPartIdentity, ...]\\', kind: \"Literal[\\'pack\\']\" = \\'pack\\') -> None'"
     },
     "ProvenanceRootIdentity": {
       "fields": [
@@ -527,14 +529,14 @@ The following JSON is the complete value owned at each machine-authority pointer
       "members": {
         "from_mapping": {
           "kind": "classmethod",
-          "signature": "(cls, value: 'object') -> 'ProvenanceRootIdentity'"
+          "signature": "\"(cls, value: 'object') -> 'ProvenanceRootIdentity'\""
         },
         "to_mapping": {
           "kind": "method",
-          "signature": "(self) -> 'dict[str, object]'"
+          "signature": "\"(self) -> 'dict[str, object]'\""
         }
       },
-      "signature": "(id: 'str', kind: \"Literal['provenance-root']\", path: 'str', plaintext_bytes: 'int', sha256: 'str', stored_bytes: 'int', stored_sha256: 'str') -> None"
+      "signature": "'(id: \\'str\\', kind: \"Literal[\\'provenance-root\\']\", path: \\'str\\', plaintext_bytes: \\'int\\', sha256: \\'str\\', stored_bytes: \\'int\\', stored_sha256: \\'str\\') -> None'"
     },
     "RECOVERY_DESCRIPTOR_PATH": {
       "kind": "constant",
@@ -566,14 +568,14 @@ The following JSON is the complete value owned at each machine-authority pointer
       "members": {
         "from_json_bytes": {
           "kind": "classmethod",
-          "signature": "(cls, content: 'bytes | str') -> 'RecoveryDescriptor'"
+          "signature": "\"(cls, content: 'bytes | str') -> 'RecoveryDescriptor'\""
         },
         "to_json_bytes": {
           "kind": "method",
-          "signature": "(self) -> 'bytes'"
+          "signature": "\"(self) -> 'bytes'\""
         }
       },
-      "signature": "(encryption: 'CollectionEncryptionBinding', root: 'ArchiveRootCiphertextIdentity', schema: 'str' = 'riverhog-recovery-descriptor/v1') -> None"
+      "signature": "\"(encryption: 'CollectionEncryptionBinding', root: 'ArchiveRootCiphertextIdentity', schema: 'str' = 'riverhog-recovery-descriptor/v1') -> None\""
     },
     "RecoveryDescriptorError": {
       "kind": "class",
@@ -630,18 +632,18 @@ The following JSON is the complete value owned at each machine-authority pointer
       "members": {
         "file_offset": {
           "kind": "property",
-          "signature": "(self) -> 'int'"
+          "signature": "\"(self) -> 'int'\""
         },
         "source_file": {
           "kind": "property",
-          "signature": "(self) -> 'ArchiveFileIdentity'"
+          "signature": "\"(self) -> 'ArchiveFileIdentity'\""
         },
         "to_mapping": {
           "kind": "method",
-          "signature": "(self) -> 'dict[str, object]'"
+          "signature": "\"(self) -> 'dict[str, object]'\""
         }
       },
-      "signature": "(id: 'str', sequence: 'int', path: 'str', plaintext_bytes: 'int', age_state: 'AgeUploadState', file: 'SegmentFilePlacement', parts: 'tuple[StoredPartIdentity, ...]', kind: \"Literal['segment']\" = 'segment') -> None"
+      "signature": "'(id: \\'str\\', sequence: \\'int\\', path: \\'str\\', plaintext_bytes: \\'int\\', age_state: \\'AgeUploadState\\', file: \\'SegmentFilePlacement\\', parts: \\'tuple[StoredPartIdentity, ...]\\', kind: \"Literal[\\'segment\\']\" = \\'segment\\') -> None'"
     },
     "SegmentFilePlacement": {
       "fields": [
@@ -675,14 +677,14 @@ The following JSON is the complete value owned at each machine-authority pointer
       "members": {
         "from_mapping": {
           "kind": "classmethod",
-          "signature": "(cls, value: 'object', *, plaintext_bytes: 'int') -> 'SegmentFilePlacement'"
+          "signature": "\"(cls, value: 'object', *, plaintext_bytes: 'int') -> 'SegmentFilePlacement'\""
         },
         "to_mapping": {
           "kind": "method",
-          "signature": "(self) -> 'dict[str, object]'"
+          "signature": "\"(self) -> 'dict[str, object]'\""
         }
       },
-      "signature": "(path: 'str', offset: 'int', bytes: 'int', file_bytes: 'int', sha256: 'str') -> None"
+      "signature": "\"(path: 'str', offset: 'int', bytes: 'int', file_bytes: 'int', sha256: 'str') -> None\""
     },
     "StoredPartIdentity": {
       "fields": [
@@ -721,34 +723,34 @@ The following JSON is the complete value owned at each machine-authority pointer
       "members": {
         "from_mapping": {
           "kind": "classmethod",
-          "signature": "(cls, value: 'object', *, expected_number: 'int', expected_start: 'int') -> 'StoredPartIdentity'"
+          "signature": "\"(cls, value: 'object', *, expected_number: 'int', expected_start: 'int') -> 'StoredPartIdentity'\""
         },
         "to_mapping": {
           "kind": "method",
-          "signature": "(self) -> 'dict[str, object]'"
+          "signature": "\"(self) -> 'dict[str, object]'\""
         }
       },
-      "signature": "(number: 'int', plaintext_start: 'int', plaintext_bytes: 'int', plaintext_sha256: 'str', stored_bytes: 'int', stored_sha256: 'str') -> None"
+      "signature": "\"(number: 'int', plaintext_start: 'int', plaintext_bytes: 'int', plaintext_sha256: 'str', stored_bytes: 'int', stored_sha256: 'str') -> None\""
     },
     "format_archive_sequence": {
       "kind": "function",
-      "signature": "(value: 'int') -> 'str'"
+      "signature": "\"(value: 'int') -> 'str'\""
     },
     "normalize_passphrase_id": {
       "kind": "function",
-      "signature": "(value: 'str') -> 'str'"
+      "signature": "\"(value: 'str') -> 'str'\""
     },
     "ordered_archive_volume_commitment": {
       "kind": "function",
-      "signature": "(documents: 'Iterable[ArchiveSequenceDocument]') -> 'str'"
+      "signature": "\"(documents: 'Iterable[ArchiveSequenceDocument]') -> 'str'\""
     },
     "parse_archive_sequence": {
       "kind": "function",
-      "signature": "(value: 'object', label: 'str' = 'archive sequence') -> 'int'"
+      "signature": "\"(value: 'object', label: 'str' = 'archive sequence') -> 'int'\""
     },
     "update_archive_sequence_commitment": {
       "kind": "function",
-      "signature": "(digest: 'Any', document: 'ArchiveSequenceDocument') -> 'None'"
+      "signature": "\"(digest: 'Any', document: 'ArchiveSequenceDocument') -> 'None'\""
     }
   },
   "module": "riverhog_archive_contracts"

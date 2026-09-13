@@ -9,8 +9,8 @@ Riverhog owns the public archive service and the reusable contracts that define 
 | Semantic area | Exact authorities | Contract elements |
 |---|---:|---:|
 | Riverhog service | 1 | 471 |
-| Riverhog-owned contracts and libraries | 13 | 80 |
-| Implementation and build | 5 | 56 |
+| Riverhog-owned contracts and libraries | 13 | 67 |
+| Implementation and build | 3 | 54 |
 
 ## Riverhog service
 
@@ -47,23 +47,23 @@ Authorities: **1** · Contract elements: **471**
 
 ## Riverhog-owned contracts and libraries
 
-Authorities: **13** · Contract elements: **80**
+Authorities: **13** · Contract elements: **67**
 
 | Exact authority | Contract elements | Interfaces | Maintained purpose |
 |---|---:|---|---|
-| [http-api-contracts](../authorities/http-api-contracts/index.md) | 2 | boundary, python | Public typed HTTP error, health, client, and operation contracts. |
-| [lifecycle-events](../authorities/lifecycle-events/index.md) | 2 | boundary, python | Durable CloudEvents lifecycle log and client primitives. |
-| [riverhog-age](../authorities/riverhog-age/index.md) | 2 | boundary, python | Resumable age encryption used by the Riverhog protocol. |
-| [riverhog-application-access](../authorities/riverhog-application-access/index.md) | 2 | boundary, python | Public Riverhog application-access contracts and canonical grant grammar. |
-| [riverhog-archive-contracts](../authorities/riverhog-archive-contracts/index.md) | 6 | boundary, protocol, python | Dependency-light immutable Riverhog archive recovery contracts. |
-| [riverhog-client](../authorities/riverhog-client/index.md) | 15 | boundary, configuration-environment, python | Typed generic Riverhog client and capability-scoped collection-processing runtime. |
-| [riverhog-protocol](../authorities/riverhog-protocol/index.md) | 3 | boundary, protocol, python | Canonical Riverhog wire and identity contracts. |
-| [riverhog-provenance](../authorities/riverhog-provenance/index.md) | 11 | boundary, configuration-environment, protocol, python | Portable Riverhog v1 per-file provenance journals and validation. |
-| [riverhog-provenance-contracts](../authorities/riverhog-provenance-contracts/index.md) | 3 | boundary, python | Canonical Riverhog provenance identity and reference contracts. |
+| [http-api-contracts](../authorities/http-api-contracts/index.md) | 1 | python | Public typed HTTP error, health, client, and operation contracts. |
+| [lifecycle-events](../authorities/lifecycle-events/index.md) | 1 | python | Durable CloudEvents lifecycle log and client primitives. |
+| [riverhog-age](../authorities/riverhog-age/index.md) | 1 | python | Resumable age encryption used by the Riverhog protocol. |
+| [riverhog-application-access](../authorities/riverhog-application-access/index.md) | 1 | python | Public Riverhog application-access contracts and canonical grant grammar. |
+| [riverhog-archive-contracts](../authorities/riverhog-archive-contracts/index.md) | 5 | protocol, python | Dependency-light immutable Riverhog archive recovery contracts. |
+| [riverhog-client](../authorities/riverhog-client/index.md) | 14 | configuration-environment, python | Typed generic Riverhog client and capability-scoped collection-processing runtime. |
+| [riverhog-protocol](../authorities/riverhog-protocol/index.md) | 2 | protocol, python | Canonical Riverhog wire and identity contracts. |
+| [riverhog-provenance](../authorities/riverhog-provenance/index.md) | 11 | configuration-environment, protocol, python | Portable Riverhog v1 per-file provenance journals and validation. |
+| [riverhog-provenance-contracts](../authorities/riverhog-provenance-contracts/index.md) | 1 | python | Canonical Riverhog provenance identity and reference contracts. |
 | [riverhog-provenance-installation](../authorities/riverhog-provenance-installation/index.md) | 1 | durable-state | Portable Riverhog v1 per-file provenance journals and validation. |
-| [riverhog-storage-adapter-asgi-support](../authorities/riverhog-storage-adapter-asgi-support/index.md) | 2 | boundary, python | Authenticated ASGI shell for independently scoped Riverhog storage adapters. |
-| [riverhog-storage-adapter-protocol](../authorities/riverhog-storage-adapter-protocol/index.md) | 3 | boundary, python | Provider-neutral opaque-object capability contracts for Riverhog storage adapters. |
-| [riverhog-storage-adapter-support](../authorities/riverhog-storage-adapter-support/index.md) | 28 | boundary, cli, protocol, python | HTTP binding and conformance support for Riverhog storage adapters. |
+| [riverhog-storage-adapter-asgi-support](../authorities/riverhog-storage-adapter-asgi-support/index.md) | 1 | python | Authenticated ASGI shell for independently scoped Riverhog storage adapters. |
+| [riverhog-storage-adapter-protocol](../authorities/riverhog-storage-adapter-protocol/index.md) | 1 | python | Provider-neutral opaque-object capability contracts for Riverhog storage adapters. |
+| [riverhog-storage-adapter-support](../authorities/riverhog-storage-adapter-support/index.md) | 27 | cli, protocol, python | HTTP binding and conformance support for Riverhog storage adapters. |
 
 ## Extension boundaries
 
@@ -79,12 +79,10 @@ Authorities: **13** · Contract elements: **80**
 
 ## Implementation and build
 
-Authorities: **5** · Contract elements: **56**
+Authorities: **3** · Contract elements: **54**
 
 | Exact authority | Contract elements | Interfaces | Maintained purpose |
 |---|---:|---|---|
-| [config-validation](../authorities/config-validation/index.md) | 1 | boundary | Strict YAML and JSON Schema configuration validation. |
 | [riverhog-catalog](../authorities/riverhog-catalog/index.md) | 1 | durable-state | Encrypted archive management, catalog, and retrieval. |
-| [riverhog-server](../authorities/riverhog-server/index.md) | 52 | boundary, configuration-environment | Encrypted archive management, catalog, and retrieval. |
-| [state-schema](../authorities/state-schema/index.md) | 1 | boundary | Forward-only relational state schema and migration contracts. |
-| [time-formats](../authorities/time-formats/index.md) | 1 | boundary | UTC timestamp and operator duration formats. |
+| [riverhog-server](../authorities/riverhog-server/index.md) | 52 | configuration-environment | Encrypted archive management, catalog, and retrieval. |
+| [state-schema](../authorities/state-schema/index.md) | 1 | python | Forward-only relational state schema and migration contracts. |

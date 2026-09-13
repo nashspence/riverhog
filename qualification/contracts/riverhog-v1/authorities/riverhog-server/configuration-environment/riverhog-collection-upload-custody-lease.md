@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: configuration-environment:riverhog-server:riverhog-collection-upload-custody-lease:4d7aa972b3 -->
+<!-- contract-element: configuration-environment:riverhog-server:riverhog-collection-upload-custody-lease:e884d856c3 -->
 
 Exact externally visible contract owned by this semantic dossier.
 
@@ -10,21 +10,21 @@ Exact externally visible contract owned by this semantic dossier.
 |---|---|
 | Authority | [riverhog-server](../index.md) |
 | Interface | [configuration-environment](index.md) |
-| Family | [runtime](families/runtime/index.md) |
+| Family | [settings](families/settings/index.md) |
 | Contract elements | 1 |
 | Extent decisions | 1 |
 
 ## External contract
 
-<a id="s-9857458ffa"></a>
+<a id="s-96459587f4"></a>
 | Field | Shape |
 |---|---|
-| <a id="s-224e6d19dc"></a>`classification` | "runtime" |
-| <a id="s-fe693377ae"></a>`consumers` | ["riverhog-server"] |
-| <a id="s-74c66258c4"></a>`disposition` | "contractual" |
-| <a id="s-8cbdf403cb"></a>`id` | "riverhog-server:environment:RIVERHOG_COLLECTION_UPLOAD_CUSTODY_LEASE" |
-| <a id="s-03c589148c"></a>`name` | "RIVERHOG_COLLECTION_UPLOAD_CUSTODY_LEASE" |
-| <a id="s-0666993cd6"></a>`owner` | "riverhog-server" |
+| <a id="s-77d8284e62"></a>`consumers` | ["riverhog-server"] |
+| <a id="s-a4ea8ca34c"></a>`default_expressions` | ["'1h'"] |
+| <a id="s-db2f70ffc3"></a>`id` | "riverhog-server:environment:RIVERHOG_COLLECTION_UPLOAD_CUSTODY_LEASE" |
+| <a id="s-f6de587738"></a>`input_shape` | "environment-string" |
+| <a id="s-a4e0febe13"></a>`name` | "RIVERHOG_COLLECTION_UPLOAD_CUSTODY_LEASE" |
+| <a id="s-efcd10c3b8"></a>`owner` | "riverhog-server" |
 
 ### Progression, limits, and lifecycle
 
@@ -34,12 +34,12 @@ Shared facts for every subject below: configuration="RIVERHOG_COLLECTION_UPLOAD_
 
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
-| [RIVERHOG_COLLECTION_UPLOAD_CUSTODY_LEASE](#s-9857458ffa) | `value · configured-value · operational_policy` | shared above |
+| [RIVERHOG_COLLECTION_UPLOAD_CUSTODY_LEASE](#s-96459587f4) | `value · configured-value · operational_policy` | shared above |
 
 ## Governing policies
 
-- <a id="pa-58487299ac"></a>[compatibility/configuration/v1](../../../policies/index.md#p-8dc08bb461)
-- <a id="pa-e1c7e3afbb"></a>[extent-rule/configured-capacity/v1](../../../policies/index.md#p-3ebc61fc99)
+- <a id="pa-0ece5057b9"></a>[compatibility/configuration/v1](../../../policies/index.md#p-8dc08bb461)
+- <a id="pa-4ee780e91c"></a>[extent-rule/configured-capacity/v1](../../../policies/index.md#p-3ebc61fc99)
 
 ## Evidence
 
@@ -50,37 +50,37 @@ Shared facts for every subject below: configuration="RIVERHOG_COLLECTION_UPLOAD_
 
 ### Executable sources
 
-- [configuration-environment:inventory](../../../evidence/sources.md#src-26b33461d2) — `qualification/configuration-contract.toml`
 - [configuration-environment:riverhog-server:RIVERHOG_COLLECTION_UPLOAD_CUSTODY_LEASE](../../../evidence/sources.md#src-4cfc3a8358) — `riverhog/src/riverhog_core/runtime_config.py`
 - [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
 
 ### Configuration authority and bindings
 
-The declaration fixes normative ownership and classification. The parser expression is the source-linked authority for the accepted domain and effective default exercised by qualification.
+The owning implementation defines the setting. The parser expression records each independently discovered consumer binding and effective default exercised by qualification.
 
 | Kind | Consumer | Source | Authority |
 |---|---|---|---|
-| declaration | — | `qualification/configuration-contract.toml` | `/environment/14/names` |
 | parser | `riverhog-server` | `riverhog/src/riverhog_core/runtime_config.py` | `os.getenv('RIVERHOG_COLLECTION_UPLOAD_CUSTODY_LEASE', '1h')` |
 
 ### Machine authority
 
-- `/external_contract/configuration_environment/51`
+- `/external_contract/configuration_environment/56`
 
 ### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 4da3b83c2fc03d04132942e5023f981d664b40aa4075114e2a92361c0de70020 -->
+<!-- exact-contract-value: 77d803267c8b64aaeb043d8471cdef294f499101f9b04d4dac2fd630ed25d49f -->
 
 ```json
 {
-  "classification": "runtime",
   "consumers": [
     "riverhog-server"
   ],
-  "disposition": "contractual",
+  "default_expressions": [
+    "'1h'"
+  ],
   "id": "riverhog-server:environment:RIVERHOG_COLLECTION_UPLOAD_CUSTODY_LEASE",
+  "input_shape": "environment-string",
   "name": "RIVERHOG_COLLECTION_UPLOAD_CUSTODY_LEASE",
   "owner": "riverhog-server"
 }
