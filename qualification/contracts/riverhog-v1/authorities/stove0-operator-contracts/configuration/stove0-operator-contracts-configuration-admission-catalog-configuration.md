@@ -10,8 +10,6 @@ Exact externally visible contract owned by this semantic dossier.
 |---|---|
 | Authority | [stove0-operator-contracts](../index.md) |
 | Interface | [Configuration Documents](index.md) |
-| Contract elements | 1 |
-| Extent decisions | 7 |
 
 ## External contract
 

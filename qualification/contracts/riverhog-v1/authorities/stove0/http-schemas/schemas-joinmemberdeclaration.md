@@ -10,8 +10,6 @@ Exact named branch and opaque output roles required by the join.
 |---|---|
 | Authority | [stove0](../index.md) |
 | Interface | [HTTP Schemas](index.md) |
-| Contract elements | 1 |
-| Extent decisions | 1 |
 
 ## External contract
 

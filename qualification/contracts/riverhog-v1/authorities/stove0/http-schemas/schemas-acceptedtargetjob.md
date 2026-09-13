@@ -10,8 +10,6 @@ Durable, non-secret identity of one accepted target job request.
 |---|---|
 | Authority | [stove0](../index.md) |
 | Interface | [HTTP Schemas](index.md) |
-| Contract elements | 1 |
-| Extent decisions | 1 |
 
 ## External contract
 

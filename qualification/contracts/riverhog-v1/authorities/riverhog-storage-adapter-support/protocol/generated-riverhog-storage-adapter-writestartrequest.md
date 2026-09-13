@@ -14,8 +14,6 @@ credentials used to realize that session remain adapter-private.
 |---|---|
 | Authority | [riverhog-storage-adapter-support](../index.md) |
 | Interface | [Protocols](index.md) |
-| Contract elements | 1 |
-| Extent decisions | 4 |
 
 ## External contract
 

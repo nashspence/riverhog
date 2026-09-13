@@ -2,14 +2,8 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Policies](../../../policies/index.md)
 
-Contract elements: **1** · Extent decisions: **0**
-
-| Policy | Count |
-|---|---:|
-| [compatibility/components/v1](../../../policies/index.md#p-95e9a12259) | 1 |
+Durable State contract owned by riverhog-catalog.
 
 ## Semantic dossiers
 
-| Dossier | Extent decisions |
-|---|---:|
-| [riverhog-catalog durable state](riverhog-catalog-durable-state.md) | 0 |
+- [riverhog-catalog durable state](riverhog-catalog-durable-state.md)

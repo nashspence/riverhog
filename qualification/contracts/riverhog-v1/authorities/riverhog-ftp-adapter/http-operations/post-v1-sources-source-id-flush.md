@@ -10,8 +10,6 @@ Flush
 |---|---|
 | Authority | [riverhog-ftp-adapter](../index.md) |
 | Interface | [HTTP Operations](index.md) |
-| Contract elements | 1 |
-| Extent decisions | 1 |
 
 ## External contract
 

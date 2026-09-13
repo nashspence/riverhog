@@ -2,14 +2,8 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Policies](../../../policies/index.md)
 
-Contract elements: **1** · Extent decisions: **0**
-
-| Policy | Count |
-|---|---:|
-| [compatibility/python-api/v1](../../../policies/index.md#p-e574772ba5) | 1 |
+Python contract owned by gogurt-macos-mounted-volume.
 
 ## Semantic dossiers
 
-| Dossier | Extent decisions |
-|---|---:|
-| [gogurt_macos_mounted_volume](gogurt-macos-mounted-volume.md) | 0 |
+- [gogurt_macos_mounted_volume](gogurt-macos-mounted-volume.md)

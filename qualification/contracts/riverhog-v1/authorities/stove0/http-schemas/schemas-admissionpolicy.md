@@ -10,8 +10,6 @@ One bounded, exact all-of classification admission rule.
 |---|---|
 | Authority | [stove0](../index.md) |
 | Interface | [HTTP Schemas](index.md) |
-| Contract elements | 1 |
-| Extent decisions | 4 |
 
 ## External contract
 

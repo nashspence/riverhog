@@ -10,8 +10,6 @@ List Collection Provenance
 |---|---|
 | Authority | [riverhog](../index.md) |
 | Interface | [HTTP Operations](index.md) |
-| Contract elements | 1 |
-| Extent decisions | 2 |
 
 ## External contract
 

@@ -10,8 +10,6 @@ One deployment-owned, content-opaque intake source.
 |---|---|
 | Authority | [riverhog-ftp-adapter](../index.md) |
 | Interface | [Configuration Documents](index.md) |
-| Contract elements | 1 |
-| Extent decisions | 8 |
 
 ## External contract
 

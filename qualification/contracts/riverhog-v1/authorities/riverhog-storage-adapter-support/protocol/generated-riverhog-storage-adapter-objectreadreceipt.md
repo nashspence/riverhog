@@ -10,8 +10,6 @@ Adapter-observed identity and range for one single-pass read.
 |---|---|
 | Authority | [riverhog-storage-adapter-support](../index.md) |
 | Interface | [Protocols](index.md) |
-| Contract elements | 1 |
-| Extent decisions | 1 |
 
 ## External contract
 

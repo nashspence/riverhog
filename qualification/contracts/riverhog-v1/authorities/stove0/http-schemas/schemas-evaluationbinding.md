@@ -10,8 +10,6 @@ Immutable membership of one work item in a trial/evaluation matrix.
 |---|---|
 | Authority | [stove0](../index.md) |
 | Interface | [HTTP Schemas](index.md) |
-| Contract elements | 1 |
-| Extent decisions | 3 |
 
 ## External contract
 

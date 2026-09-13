@@ -10,8 +10,6 @@ One exact, content-addressed selection of immutable artifacts.
 |---|---|
 | Authority | [stove0](../index.md) |
 | Interface | [HTTP Schemas](index.md) |
-| Contract elements | 1 |
-| Extent decisions | 2 |
 
 ## External contract
 

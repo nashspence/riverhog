@@ -10,8 +10,6 @@ Exact externally visible contract owned by this semantic dossier.
 |---|---|
 | Authority | [gogurt-core](../index.md) |
 | Interface | [Configuration Documents](index.md) |
-| Contract elements | 1 |
-| Extent decisions | 2 |
 
 ## External contract
 

@@ -10,8 +10,6 @@ Exact externally visible contract owned by this semantic dossier.
 |---|---|
 | Authority | [riverhog](../index.md) |
 | Interface | [HTTP Operations](index.md) |
-| Contract elements | 1 |
-| Extent decisions | 0 |
 
 ## External contract
 

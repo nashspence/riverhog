@@ -10,8 +10,6 @@ One immutable entry in a hash-chained RFC 7464 per-file provenance journal.
 |---|---|
 | Authority | [riverhog-provenance](../index.md) |
 | Interface | [Protocols](index.md) |
-| Contract elements | 1 |
-| Extent decisions | 79 |
 
 ## External contract
 

@@ -10,8 +10,6 @@ Small immutable identity for an exact canonically ordered logical set.
 |---|---|
 | Authority | [riverhog](../index.md) |
 | Interface | [HTTP Schemas](index.md) |
-| Contract elements | 1 |
-| Extent decisions | 2 |
 
 ## External contract
 

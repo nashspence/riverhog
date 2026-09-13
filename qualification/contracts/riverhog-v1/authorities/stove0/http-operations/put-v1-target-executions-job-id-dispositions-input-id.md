@@ -10,8 +10,6 @@ Declare Target Execution Disposition
 |---|---|
 | Authority | [stove0](../index.md) |
 | Interface | [HTTP Operations](index.md) |
-| Contract elements | 1 |
-| Extent decisions | 0 |
 
 ## External contract
 

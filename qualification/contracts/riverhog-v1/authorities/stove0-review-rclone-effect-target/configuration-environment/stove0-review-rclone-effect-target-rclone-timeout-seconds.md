@@ -10,8 +10,6 @@ Exact externally visible contract owned by this semantic dossier.
 |---|---|
 | Authority | [stove0-review-rclone-effect-target](../index.md) |
 | Interface | [Configuration Environment](index.md) |
-| Contract elements | 1 |
-| Extent decisions | 1 |
 
 ## External contract
 

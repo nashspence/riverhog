@@ -2,101 +2,93 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Policies](../../../policies/index.md)
 
-Contract elements: **86** · Extent decisions: **308**
-
-| Policy | Count |
-|---|---:|
-| [compatibility/cli/v1](../../../policies/index.md#p-48a89776de) | 86 |
-| [extent-rule/no-semantic-maximum/v1](../../../policies/index.md#p-574724b48a) | 4 |
-| [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0) | 67 |
+CLI contract owned by piggity.
 
 ## Semantic dossiers
 
-| Dossier | Extent decisions |
-|---|---:|
-| [piggity](piggity.md) | 3 |
-| [piggity app](piggity-app.md) | 0 |
-| [piggity app key](piggity-app-key.md) | 0 |
-| [piggity app key access](piggity-app-key-access.md) | 0 |
-| [piggity app key access add](piggity-app-key-access-add.md) | 4 |
-| [piggity app key access list](piggity-app-key-access-list.md) | 13 |
-| [piggity app key access remove](piggity-app-key-access-remove.md) | 2 |
-| [piggity app key access set](piggity-app-key-access-set.md) | 5 |
-| [piggity app key create](piggity-app-key-create.md) | 5 |
-| [piggity app key list](piggity-app-key-list.md) | 10 |
-| [piggity app key quota](piggity-app-key-quota.md) | 0 |
-| [piggity app key quota list](piggity-app-key-quota-list.md) | 10 |
-| [piggity app key quota set](piggity-app-key-quota-set.md) | 4 |
-| [piggity app key quota show](piggity-app-key-quota-show.md) | 1 |
-| [piggity app key revoke](piggity-app-key-revoke.md) | 3 |
-| [piggity app key rotate](piggity-app-key-rotate.md) | 3 |
-| [piggity app list](piggity-app-list.md) | 9 |
-| [piggity archive](piggity-archive.md) | 0 |
-| [piggity archive copy](piggity-archive-copy.md) | 0 |
-| [piggity archive copy cancel](piggity-archive-copy-cancel.md) | 2 |
-| [piggity archive copy list](piggity-archive-copy-list.md) | 9 |
-| [piggity archive copy show](piggity-archive-copy-show.md) | 2 |
-| [piggity archive copy start](piggity-archive-copy-start.md) | 4 |
-| [piggity archive copy watch](piggity-archive-copy-watch.md) | 3 |
-| [piggity archive retire](piggity-archive-retire.md) | 5 |
-| [piggity archive store](piggity-archive-store.md) | 0 |
-| [piggity archive store list](piggity-archive-store-list.md) | 8 |
-| [piggity archive store show](piggity-archive-store-show.md) | 2 |
-| [piggity catalog-sync](piggity-catalog-sync.md) | 0 |
-| [piggity catalog-sync changes](piggity-catalog-sync-changes.md) | 4 |
-| [piggity catalog-sync checkpoint](piggity-catalog-sync-checkpoint.md) | 1 |
-| [piggity catalog-sync collections](piggity-catalog-sync-collections.md) | 4 |
-| [piggity collection](piggity-collection.md) | 0 |
-| [piggity collection archive-copies](piggity-collection-archive-copies.md) | 5 |
-| [piggity collection delete](piggity-collection-delete.md) | 4 |
-| [piggity collection describe](piggity-collection-describe.md) | 5 |
-| [piggity collection list](piggity-collection-list.md) | 12 |
-| [piggity collection provenance](piggity-collection-provenance.md) | 0 |
-| [piggity collection provenance agents](piggity-collection-provenance-agents.md) | 6 |
-| [piggity collection provenance export](piggity-collection-provenance-export.md) | 4 |
-| [piggity collection provenance list](piggity-collection-provenance-list.md) | 10 |
-| [piggity collection provenance show](piggity-collection-provenance-show.md) | 3 |
-| [piggity collection provenance trace](piggity-collection-provenance-trace.md) | 6 |
-| [piggity collection provenance verification-cancel](piggity-collection-provenance-verification-cancel.md) | 2 |
-| [piggity collection provenance verification-show](piggity-collection-provenance-verification-show.md) | 2 |
-| [piggity collection provenance verify](piggity-collection-provenance-verify.md) | 3 |
-| [piggity collection show](piggity-collection-show.md) | 2 |
-| [piggity collection tag](piggity-collection-tag.md) | 0 |
-| [piggity collection tag add](piggity-collection-tag-add.md) | 6 |
-| [piggity collection tag contains](piggity-collection-tag-contains.md) | 5 |
-| [piggity collection tag list](piggity-collection-tag-list.md) | 8 |
-| [piggity collection tag remove](piggity-collection-tag-remove.md) | 6 |
-| [piggity collection upload](piggity-collection-upload.md) | 0 |
-| [piggity collection upload cancel](piggity-collection-upload-cancel.md) | 2 |
-| [piggity collection upload discard](piggity-collection-upload-discard.md) | 4 |
-| [piggity collection upload files](piggity-collection-upload-files.md) | 5 |
-| [piggity collection upload list](piggity-collection-upload-list.md) | 9 |
-| [piggity collection upload show](piggity-collection-upload-show.md) | 2 |
-| [piggity collection upload start](piggity-collection-upload-start.md) | 11 |
-| [piggity collection upload watch](piggity-collection-upload-watch.md) | 2 |
-| [piggity event](piggity-event.md) | 0 |
-| [piggity event list](piggity-event-list.md) | 4 |
-| [piggity find](piggity-find.md) | 9 |
-| [piggity local](piggity-local.md) | 0 |
-| [piggity local add](piggity-local-add.md) | 2 |
-| [piggity local audit](piggity-local-audit.md) | 1 |
-| [piggity local evict](piggity-local-evict.md) | 3 |
-| [piggity local list](piggity-local-list.md) | 8 |
-| [piggity local provenance-observer](piggity-local-provenance-observer.md) | 0 |
-| [piggity local provenance-observer list](piggity-local-provenance-observer-list.md) | 2 |
-| [piggity local provenance-observer show](piggity-local-provenance-observer-show.md) | 2 |
-| [piggity local remove](piggity-local-remove.md) | 2 |
-| [piggity local repair](piggity-local-repair.md) | 3 |
-| [piggity local show](piggity-local-show.md) | 2 |
-| [piggity local state](piggity-local-state.md) | 0 |
-| [piggity local state status](piggity-local-state-status.md) | 1 |
-| [piggity local state upgrade](piggity-local-state-upgrade.md) | 1 |
-| [piggity local state verify](piggity-local-state-verify.md) | 1 |
-| [piggity local sync](piggity-local-sync.md) | 3 |
-| [piggity retrieval](piggity-retrieval.md) | 0 |
-| [piggity retrieval cache](piggity-retrieval-cache.md) | 0 |
-| [piggity retrieval cache list](piggity-retrieval-cache-list.md) | 15 |
-| [piggity retrieval cache show](piggity-retrieval-cache-show.md) | 2 |
-| [piggity retrieval cache status](piggity-retrieval-cache-status.md) | 1 |
-| [piggity tag](piggity-tag.md) | 0 |
-| [piggity tag list](piggity-tag-list.md) | 6 |
+- [piggity](piggity.md)
+- [piggity app](piggity-app.md)
+- [piggity app key](piggity-app-key.md)
+- [piggity app key access](piggity-app-key-access.md)
+- [piggity app key access add](piggity-app-key-access-add.md)
+- [piggity app key access list](piggity-app-key-access-list.md)
+- [piggity app key access remove](piggity-app-key-access-remove.md)
+- [piggity app key access set](piggity-app-key-access-set.md)
+- [piggity app key create](piggity-app-key-create.md)
+- [piggity app key list](piggity-app-key-list.md)
+- [piggity app key quota](piggity-app-key-quota.md)
+- [piggity app key quota list](piggity-app-key-quota-list.md)
+- [piggity app key quota set](piggity-app-key-quota-set.md)
+- [piggity app key quota show](piggity-app-key-quota-show.md)
+- [piggity app key revoke](piggity-app-key-revoke.md)
+- [piggity app key rotate](piggity-app-key-rotate.md)
+- [piggity app list](piggity-app-list.md)
+- [piggity archive](piggity-archive.md)
+- [piggity archive copy](piggity-archive-copy.md)
+- [piggity archive copy cancel](piggity-archive-copy-cancel.md)
+- [piggity archive copy list](piggity-archive-copy-list.md)
+- [piggity archive copy show](piggity-archive-copy-show.md)
+- [piggity archive copy start](piggity-archive-copy-start.md)
+- [piggity archive copy watch](piggity-archive-copy-watch.md)
+- [piggity archive retire](piggity-archive-retire.md)
+- [piggity archive store](piggity-archive-store.md)
+- [piggity archive store list](piggity-archive-store-list.md)
+- [piggity archive store show](piggity-archive-store-show.md)
+- [piggity catalog-sync](piggity-catalog-sync.md)
+- [piggity catalog-sync changes](piggity-catalog-sync-changes.md)
+- [piggity catalog-sync checkpoint](piggity-catalog-sync-checkpoint.md)
+- [piggity catalog-sync collections](piggity-catalog-sync-collections.md)
+- [piggity collection](piggity-collection.md)
+- [piggity collection archive-copies](piggity-collection-archive-copies.md)
+- [piggity collection delete](piggity-collection-delete.md)
+- [piggity collection describe](piggity-collection-describe.md)
+- [piggity collection list](piggity-collection-list.md)
+- [piggity collection provenance](piggity-collection-provenance.md)
+- [piggity collection provenance agents](piggity-collection-provenance-agents.md)
+- [piggity collection provenance export](piggity-collection-provenance-export.md)
+- [piggity collection provenance list](piggity-collection-provenance-list.md)
+- [piggity collection provenance show](piggity-collection-provenance-show.md)
+- [piggity collection provenance trace](piggity-collection-provenance-trace.md)
+- [piggity collection provenance verification-cancel](piggity-collection-provenance-verification-cancel.md)
+- [piggity collection provenance verification-show](piggity-collection-provenance-verification-show.md)
+- [piggity collection provenance verify](piggity-collection-provenance-verify.md)
+- [piggity collection show](piggity-collection-show.md)
+- [piggity collection tag](piggity-collection-tag.md)
+- [piggity collection tag add](piggity-collection-tag-add.md)
+- [piggity collection tag contains](piggity-collection-tag-contains.md)
+- [piggity collection tag list](piggity-collection-tag-list.md)
+- [piggity collection tag remove](piggity-collection-tag-remove.md)
+- [piggity collection upload](piggity-collection-upload.md)
+- [piggity collection upload cancel](piggity-collection-upload-cancel.md)
+- [piggity collection upload discard](piggity-collection-upload-discard.md)
+- [piggity collection upload files](piggity-collection-upload-files.md)
+- [piggity collection upload list](piggity-collection-upload-list.md)
+- [piggity collection upload show](piggity-collection-upload-show.md)
+- [piggity collection upload start](piggity-collection-upload-start.md)
+- [piggity collection upload watch](piggity-collection-upload-watch.md)
+- [piggity event](piggity-event.md)
+- [piggity event list](piggity-event-list.md)
+- [piggity find](piggity-find.md)
+- [piggity local](piggity-local.md)
+- [piggity local add](piggity-local-add.md)
+- [piggity local audit](piggity-local-audit.md)
+- [piggity local evict](piggity-local-evict.md)
+- [piggity local list](piggity-local-list.md)
+- [piggity local provenance-observer](piggity-local-provenance-observer.md)
+- [piggity local provenance-observer list](piggity-local-provenance-observer-list.md)
+- [piggity local provenance-observer show](piggity-local-provenance-observer-show.md)
+- [piggity local remove](piggity-local-remove.md)
+- [piggity local repair](piggity-local-repair.md)
+- [piggity local show](piggity-local-show.md)
+- [piggity local state](piggity-local-state.md)
+- [piggity local state status](piggity-local-state-status.md)
+- [piggity local state upgrade](piggity-local-state-upgrade.md)
+- [piggity local state verify](piggity-local-state-verify.md)
+- [piggity local sync](piggity-local-sync.md)
+- [piggity retrieval](piggity-retrieval.md)
+- [piggity retrieval cache](piggity-retrieval-cache.md)
+- [piggity retrieval cache list](piggity-retrieval-cache-list.md)
+- [piggity retrieval cache show](piggity-retrieval-cache-show.md)
+- [piggity retrieval cache status](piggity-retrieval-cache-status.md)
+- [piggity tag](piggity-tag.md)
+- [piggity tag list](piggity-tag-list.md)

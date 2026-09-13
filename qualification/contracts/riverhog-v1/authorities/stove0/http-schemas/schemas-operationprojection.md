@@ -10,8 +10,6 @@ One declarative JSON-pointer copy into an operation request.
 |---|---|
 | Authority | [stove0](../index.md) |
 | Interface | [HTTP Schemas](index.md) |
-| Contract elements | 1 |
-| Extent decisions | 0 |
 
 ## External contract
 

@@ -10,8 +10,6 @@ Associate classified artifacts without assigning device meaning to Stove0.
 |---|---|
 | Authority | [stove0](../index.md) |
 | Interface | [HTTP Schemas](index.md) |
-| Contract elements | 1 |
-| Extent decisions | 1 |
 
 ## External contract
 

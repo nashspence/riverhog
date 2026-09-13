@@ -10,8 +10,6 @@ One bounded page under an adapter-owned immutable traversal view.
 |---|---|
 | Authority | [riverhog-storage-adapter-support](../index.md) |
 | Interface | [Protocols](index.md) |
-| Contract elements | 1 |
-| Extent decisions | 4 |
 
 ## External contract
 

@@ -10,8 +10,6 @@ Work-independent fields that deterministically materialize a workflow plan.
 |---|---|
 | Authority | [stove0](../index.md) |
 | Interface | [HTTP Schemas](index.md) |
-| Contract elements | 1 |
-| Extent decisions | 3 |
 
 ## External contract
 

@@ -16,8 +16,6 @@ identity while preserving the full document in the execution envelope.
 |---|---|
 | Authority | [stove0](../index.md) |
 | Interface | [HTTP Schemas](index.md) |
-| Contract elements | 1 |
-| Extent decisions | 4 |
 
 ## External contract
 

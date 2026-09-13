@@ -10,8 +10,6 @@ Target-owned preflight evidence for one exact previewed branch.
 |---|---|
 | Authority | [stove0](../index.md) |
 | Interface | [HTTP Schemas](index.md) |
-| Contract elements | 1 |
-| Extent decisions | 2 |
 
 ## External contract
 

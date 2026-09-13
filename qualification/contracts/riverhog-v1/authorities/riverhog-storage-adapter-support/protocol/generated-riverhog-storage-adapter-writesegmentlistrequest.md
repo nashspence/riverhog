@@ -10,8 +10,6 @@ Request one bounded page from an exact accepted-segment view.
 |---|---|
 | Authority | [riverhog-storage-adapter-support](../index.md) |
 | Interface | [Protocols](index.md) |
-| Contract elements | 1 |
-| Extent decisions | 2 |
 
 ## External contract
 

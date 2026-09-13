@@ -10,8 +10,6 @@ A nonempty, duplicate-free public grant set with canonical wildcard use.
 |---|---|
 | Authority | [riverhog](../index.md) |
 | Interface | [HTTP Schemas](index.md) |
-| Contract elements | 1 |
-| Extent decisions | 2 |
 
 ## External contract
 

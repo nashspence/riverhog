@@ -10,8 +10,6 @@ Success-only, Riverhog-verified result of one branch workflow plan.
 |---|---|
 | Authority | [stove0](../index.md) |
 | Interface | [HTTP Schemas](index.md) |
-| Contract elements | 1 |
-| Extent decisions | 5 |
 
 ## External contract
 

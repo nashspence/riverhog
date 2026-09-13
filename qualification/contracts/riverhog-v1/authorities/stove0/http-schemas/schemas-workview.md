@@ -10,8 +10,6 @@ Operator projection of mutable work; never an execution identity.
 |---|---|
 | Authority | [stove0](../index.md) |
 | Interface | [HTTP Schemas](index.md) |
-| Contract elements | 1 |
-| Extent decisions | 6 |
 
 ## External contract
 

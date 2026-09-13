@@ -10,8 +10,6 @@ One immutable set of required branches and one optional exact join.
 |---|---|
 | Authority | [stove0](../index.md) |
 | Interface | [HTTP Schemas](index.md) |
-| Contract elements | 1 |
-| Extent decisions | 5 |
 
 ## External contract
 

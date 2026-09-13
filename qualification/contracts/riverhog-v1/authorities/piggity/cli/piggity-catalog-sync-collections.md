@@ -10,8 +10,6 @@ Exact externally visible contract owned by this semantic dossier.
 |---|---|
 | Authority | [piggity](../index.md) |
 | Interface | [CLI](index.md) |
-| Contract elements | 1 |
-| Extent decisions | 4 |
 
 ## External contract
 

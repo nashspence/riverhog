@@ -10,8 +10,6 @@ One ordinary target/effect leaf selected by a recipe.
 |---|---|
 | Authority | [stove0](../index.md) |
 | Interface | [HTTP Schemas](index.md) |
-| Contract elements | 1 |
-| Extent decisions | 6 |
 
 ## External contract
 

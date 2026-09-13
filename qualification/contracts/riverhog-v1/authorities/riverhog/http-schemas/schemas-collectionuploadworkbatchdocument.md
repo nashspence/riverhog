@@ -10,8 +10,6 @@ A bounded acquisition step over currently actionable upload units.
 |---|---|
 | Authority | [riverhog](../index.md) |
 | Interface | [HTTP Schemas](index.md) |
-| Contract elements | 1 |
-| Extent decisions | 1 |
 
 ## External contract
 

@@ -10,8 +10,6 @@ Success-only exact completion of one root or branch-bound coordinator.
 |---|---|
 | Authority | [stove0](../index.md) |
 | Interface | [HTTP Schemas](index.md) |
-| Contract elements | 1 |
-| Extent decisions | 4 |
 
 ## External contract
 

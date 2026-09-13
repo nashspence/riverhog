@@ -10,8 +10,6 @@ Small exact input authority retained by Stove0 and traversed in bounded pages.
 |---|---|
 | Authority | [stove0](../index.md) |
 | Interface | [HTTP Schemas](index.md) |
-| Contract elements | 1 |
-| Extent decisions | 1 |
 
 ## External contract
 

@@ -2,14 +2,8 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Policies](../../../policies/index.md)
 
-Contract elements: **1** · Extent decisions: **0**
-
-| Policy | Count |
-|---|---:|
-| [compatibility/python-api/v1](../../../policies/index.md#p-e574772ba5) | 1 |
+Python contract owned by gogurt-windows-listener-host.
 
 ## Semantic dossiers
 
-| Dossier | Extent decisions |
-|---|---:|
-| [gogurt_windows_listener_host](gogurt-windows-listener-host.md) | 0 |
+- [gogurt_windows_listener_host](gogurt-windows-listener-host.md)

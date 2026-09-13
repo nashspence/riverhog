@@ -10,8 +10,6 @@ Exact externally visible contract owned by this semantic dossier.
 |---|---|
 | Authority | [gogurt-listener](../index.md) |
 | Interface | [Durable State](index.md) |
-| Contract elements | 1 |
-| Extent decisions | 0 |
 
 ## External contract
 

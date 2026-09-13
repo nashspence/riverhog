@@ -10,8 +10,6 @@ One exact source range supplied in a server-planned upload unit.
 |---|---|
 | Authority | [riverhog](../index.md) |
 | Interface | [HTTP Schemas](index.md) |
-| Contract elements | 1 |
-| Extent decisions | 3 |
 
 ## External contract
 

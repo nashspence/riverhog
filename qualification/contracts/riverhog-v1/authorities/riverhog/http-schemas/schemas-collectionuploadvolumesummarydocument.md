@@ -10,8 +10,6 @@ Protocol-owned identity of one immutable collection archive volume.
 |---|---|
 | Authority | [riverhog](../index.md) |
 | Interface | [HTTP Schemas](index.md) |
-| Contract elements | 1 |
-| Extent decisions | 0 |
 
 ## External contract
 

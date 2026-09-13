@@ -10,8 +10,6 @@ Stable positive evidence returned after the complete check set passes.
 |---|---|
 | Authority | [riverhog-storage-adapter-support](../index.md) |
 | Interface | [Protocols](index.md) |
-| Contract elements | 1 |
-| Extent decisions | 2 |
 
 ## External contract
 

@@ -10,8 +10,6 @@ One exact subrecipe selected as a branch-bound coordinator.
 |---|---|
 | Authority | [stove0](../index.md) |
 | Interface | [HTTP Schemas](index.md) |
-| Contract elements | 1 |
-| Extent decisions | 5 |
 
 ## External contract
 

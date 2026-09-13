@@ -10,8 +10,6 @@ One bounded continuation step through the exact target input authority.
 |---|---|
 | Authority | [stove0](../index.md) |
 | Interface | [HTTP Schemas](index.md) |
-| Contract elements | 1 |
-| Extent decisions | 3 |
 
 ## External contract
 

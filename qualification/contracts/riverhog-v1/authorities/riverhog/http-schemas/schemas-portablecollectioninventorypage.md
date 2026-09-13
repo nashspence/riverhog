@@ -10,8 +10,6 @@ One bounded, canonically ordered slice of an immutable inventory.
 |---|---|
 | Authority | [riverhog](../index.md) |
 | Interface | [HTTP Schemas](index.md) |
-| Contract elements | 1 |
-| Extent decisions | 2 |
 
 ## External contract
 

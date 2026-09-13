@@ -10,8 +10,6 @@ Entirely derived view over a plan and ordinary child/join results.
 |---|---|
 | Authority | [stove0](../index.md) |
 | Interface | [HTTP Schemas](index.md) |
-| Contract elements | 1 |
-| Extent decisions | 11 |
 
 ## External contract
 

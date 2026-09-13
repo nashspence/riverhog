@@ -10,8 +10,6 @@ Fence-bound invocation authority excluded from semantic request identity.
 |---|---|
 | Authority | [stove0-observer-support](../index.md) |
 | Interface | [Protocols](index.md) |
-| Contract elements | 1 |
-| Extent decisions | 17 |
 
 ## External contract
 

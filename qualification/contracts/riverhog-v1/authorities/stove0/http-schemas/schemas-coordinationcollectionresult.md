@@ -10,8 +10,6 @@ Parent-visible collection produced by the coordinator's actual join leaf.
 |---|---|
 | Authority | [stove0](../index.md) |
 | Interface | [HTTP Schemas](index.md) |
-| Contract elements | 1 |
-| Extent decisions | 3 |
 
 ## External contract
 

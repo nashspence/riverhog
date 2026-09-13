@@ -2,19 +2,12 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Policies](../../../policies/index.md)
 
-Contract elements: **5** · Extent decisions: **15**
-
-| Policy | Count |
-|---|---:|
-| [compatibility/components/v1](../../../policies/index.md#p-95e9a12259) | 5 |
-| [extent-rule/extension-contract/v1](../../../policies/index.md#p-75a89f9d1c) | 5 |
+Protocols contract owned by riverhog-provenance-linux-contracts.
 
 ## Semantic dossiers
 
-| Dossier | Extent decisions |
-|---|---:|
-| [https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/linux-file-stat.json](https-nashspence-github-io-riverhog-v1-provenance-observers-schemas-linux-file-stat-json.md) | 6 |
-| [https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/linux-fs-flags.json](https-nashspence-github-io-riverhog-v1-provenance-observers-schemas-linux-fs-flags-json.md) | 1 |
-| [https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/linux-fsxattr.json](https-nashspence-github-io-riverhog-v1-provenance-observers-schemas-linux-fsxattr-json.md) | 3 |
-| [https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/linux-mount-context.json](https-nashspence-github-io-riverhog-v1-provenance-observers-schemas-linux-mou-66fc74bb71.md) | 3 |
-| [https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/linux-statx-attributes.json](https-nashspence-github-io-riverhog-v1-provenance-observers-schemas-linux-sta-8be8c78b69.md) | 2 |
+- [https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/linux-file-stat.json](https-nashspence-github-io-riverhog-v1-provenance-observers-schemas-linux-file-stat-json.md)
+- [https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/linux-fs-flags.json](https-nashspence-github-io-riverhog-v1-provenance-observers-schemas-linux-fs-flags-json.md)
+- [https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/linux-fsxattr.json](https-nashspence-github-io-riverhog-v1-provenance-observers-schemas-linux-fsxattr-json.md)
+- [https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/linux-mount-context.json](https-nashspence-github-io-riverhog-v1-provenance-observers-schemas-linux-mou-66fc74bb71.md)
+- [https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/linux-statx-attributes.json](https-nashspence-github-io-riverhog-v1-provenance-observers-schemas-linux-sta-8be8c78b69.md)

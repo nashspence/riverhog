@@ -10,8 +10,6 @@ Secret-bearing target invocation; never store this document durably.
 |---|---|
 | Authority | [stove0-target-support](../index.md) |
 | Interface | [Protocols](index.md) |
-| Contract elements | 1 |
-| Extent decisions | 5 |
 
 ## External contract
 
