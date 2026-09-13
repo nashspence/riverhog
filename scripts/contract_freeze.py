@@ -117,6 +117,30 @@ PROCESS_SCHEMA_BUNDLES: dict[str, Callable[[], dict[str, Any]]] = {
     "stove0-review-sampler": sampler_schema_bundle,
     "stove0-target": target_schema_bundle,
 }
+PUBLIC_DATA_MODEL_METHODS = frozenset(
+    {
+        "__aenter__",
+        "__aexit__",
+        "__aiter__",
+        "__anext__",
+        "__await__",
+        "__bytes__",
+        "__call__",
+        "__contains__",
+        "__delitem__",
+        "__enter__",
+        "__exit__",
+        "__format__",
+        "__getattr__",
+        "__getitem__",
+        "__iter__",
+        "__len__",
+        "__next__",
+        "__reversed__",
+        "__setitem__",
+        "__str__",
+    }
+)
 
 
 class ContractFreezeError(RuntimeError):
@@ -187,7 +211,7 @@ def _class_surface(value: type[object]) -> dict[str, object]:
         "signature": _signature(value),
     }
     if issubclass(value, Enum):
-        surface["members"] = {
+        surface["enum_values"] = {
             name: _json_value(member.value) for name, member in value.__members__.items()
         }
     if issubclass(value, BaseModel):
@@ -210,9 +234,15 @@ def _class_surface(value: type[object]) -> dict[str, object]:
             }
             for field in fields(value)
         ]
+    return surface
+
+
+def _public_class_members(value: type[object]) -> dict[str, dict[str, str]]:
+    """Return directly declared callable/property units in one exported class."""
+
     members: dict[str, dict[str, str]] = {}
     for name, member in value.__dict__.items():
-        if name.startswith("_"):
+        if name.startswith("_") and name not in PUBLIC_DATA_MODEL_METHODS:
             continue
         candidate: object = member
         kind = "method"
@@ -227,9 +257,7 @@ def _class_surface(value: type[object]) -> dict[str, object]:
             kind = "property"
         if callable(candidate):
             members[name] = {"kind": kind, "signature": _signature(candidate)}
-    if members:
-        surface["members"] = members
-    return surface
+    return members
 
 
 def _python_export(value: object) -> dict[str, object]:
@@ -253,22 +281,26 @@ def _python_export(value: object) -> dict[str, object]:
 
 def _python_surfaces(
     projects: list[release_contract.Project],
-) -> list[dict[str, object]]:
+) -> dict[str, dict[str, object]]:
     exceptions = load_exceptions(CONTRACT_FREEZE_EXCEPTIONS)
     excluded = {
         item["candidate_id"]
         for item in exceptions["exclusion"]
         if item["candidate_id"].startswith("python:")
     }
-    result: list[dict[str, object]] = []
+    result: dict[str, dict[str, object]] = {}
     for detection in python_package_detections(ROOT, projects):
         project = str(detection["distribution"])
         package = str(detection["module"])
         candidate_id = f"python:{project}:{package}"
         module = importlib.import_module(package)
         exports = getattr(module, "__all__", None)
-        if exports is None or candidate_id in excluded:
+        if exports is None:
             continue
+        if candidate_id in excluded:
+            raise ContractFreezeError(
+                f"declared public Python API cannot be hidden by an exclusion: {candidate_id}"
+            )
         if (
             not isinstance(exports, list)
             or not exports
@@ -281,17 +313,37 @@ def _python_surfaces(
         missing = sorted(name for name in exports if not hasattr(module, name))
         if missing:
             raise ContractFreezeError(f"missing public exports for {project}:{package}: {missing}")
-        result.append(
-            {
-                "candidate_id": candidate_id,
+        for name in sorted(exports):
+            value = getattr(module, name)
+            public_identity = f"{package}.{name}"
+            if public_identity in result:
+                raise ContractFreezeError(
+                    f"public Python import identity is provided by multiple distributions: "
+                    f"{public_identity}"
+                )
+            result[public_identity] = {
                 "distribution": project,
                 "module": package,
-                "exports": {
-                    name: _python_export(getattr(module, name)) for name in sorted(exports)
-                },
+                "name": name,
+                "unit": "export",
+                "contract": _python_export(value),
             }
-        )
-    return result
+            if inspect.isclass(value):
+                for member_name, member_contract in sorted(_public_class_members(value).items()):
+                    member_identity = f"{public_identity}.{member_name}"
+                    if member_identity in result:
+                        raise ContractFreezeError(
+                            f"public Python identity is duplicated: {member_identity}"
+                        )
+                    result[member_identity] = {
+                        "distribution": project,
+                        "module": package,
+                        "name": member_name,
+                        "owner": public_identity,
+                        "unit": "member",
+                        "contract": member_contract,
+                    }
+    return dict(sorted(result.items()))
 
 
 def _python_registry(
@@ -310,68 +362,101 @@ def _python_registry(
     stale = sorted(set(excluded) - candidate_ids) if include_dispositions else []
     if stale:
         raise ContractFreezeError(f"contract-freeze exclusions are stale: {stale}")
+    protected_surfaces = _python_surfaces(projects)
     resolutions: list[dict[str, object]] = []
+    candidates: list[dict[str, object]] = []
     dispositions: list[dict[str, str]] = []
     for detection in detections:
         distribution = str(detection["distribution"])
         module_name = str(detection["module"])
-        candidate_id = f"python:{distribution}:{module_name}"
+        package_candidate_id = f"python:{distribution}:{module_name}"
         module = importlib.import_module(module_name)
         exports = getattr(module, "__all__", None)
         declared = exports is not None
+        if declared:
+            if package_candidate_id in excluded:
+                raise ContractFreezeError(
+                    "declared public Python API cannot be hidden by an exclusion: "
+                    f"{package_candidate_id}"
+                )
+            module_surfaces = {
+                public_identity: surface
+                for public_identity, surface in protected_surfaces.items()
+                if surface["distribution"] == distribution and surface["module"] == module_name
+            }
+            for public_identity, surface in module_surfaces.items():
+                candidate_id = f"python:{distribution}:{public_identity}"
+                resolution = {
+                    "detection_id": detection["id"],
+                    "candidate_id": candidate_id,
+                    "authority": distribution,
+                    "module": module_name,
+                    "public_identity": public_identity,
+                    "unit": surface["unit"],
+                }
+                resolutions.append(resolution)
+                candidates.append(
+                    {
+                        "id": candidate_id,
+                        "authority": distribution,
+                        "module": module_name,
+                        "public_identity": public_identity,
+                        "unit": surface["unit"],
+                    }
+                )
+                if include_dispositions:
+                    dispositions.append(
+                        {
+                            "candidate_id": candidate_id,
+                            "disposition": "protected",
+                            "policy_id": "compatibility/python-api/v1",
+                            "reason": (
+                                "The release package explicitly exports this exact Python unit."
+                            ),
+                        }
+                    )
+            continue
+
         resolutions.append(
             {
                 "detection_id": detection["id"],
-                "candidate_id": candidate_id,
+                "candidate_id": package_candidate_id,
                 "authority": distribution,
                 "module": module_name,
-                "declared_exports": declared,
+                "declared_exports": False,
             }
         )
-        if not include_dispositions:
-            continue
-        if candidate_id in excluded:
-            exception = excluded[candidate_id]
+        candidates.append(
+            {
+                "id": package_candidate_id,
+                "authority": distribution,
+                "module": module_name,
+                "unit": "package",
+            }
+        )
+        if include_dispositions:
+            exception = excluded.get(package_candidate_id)
             dispositions.append(
                 {
-                    "candidate_id": candidate_id,
+                    "candidate_id": package_candidate_id,
                     "disposition": "excluded",
-                    "policy_id": exception["policy_id"],
-                    "reason": exception["reason"],
-                }
-            )
-        elif declared:
-            dispositions.append(
-                {
-                    "candidate_id": candidate_id,
-                    "disposition": "protected",
-                    "policy_id": "compatibility/python-api/v1",
-                    "reason": (
-                        "The importable release package declares an explicit __all__ surface."
+                    "policy_id": (
+                        exception["policy_id"]
+                        if exception is not None
+                        else "exclusion/python-package-no-declared-api/v1"
                     ),
-                }
-            )
-        else:
-            dispositions.append(
-                {
-                    "candidate_id": candidate_id,
-                    "disposition": "excluded",
-                    "policy_id": "exclusion/python-package-no-declared-api/v1",
-                    "reason": "The importable package declares no public Python export surface.",
+                    "reason": (
+                        exception["reason"]
+                        if exception is not None
+                        else "The importable package declares no public Python export surface."
+                    ),
                 }
             )
     return {
         "detector": "release-wheel-package",
         "detections": detections,
         "resolutions": resolutions,
-        "candidates": [
-            {
-                "id": item["candidate_id"],
-                "authority": item["authority"],
-                "module": item["module"],
-            }
-            for item in resolutions
-        ],
+        "candidates": candidates,
         "dispositions": dispositions,
         "coverage": {
             "detected": len(detections),
@@ -379,7 +464,7 @@ def _python_registry(
             "protected": sum(item["disposition"] == "protected" for item in dispositions),
             "excluded": sum(item["disposition"] == "excluded" for item in dispositions),
             "unresolved": 0,
-            "undispositioned": len(candidate_ids) - len(dispositions),
+            "undispositioned": len(candidates) - len(dispositions),
             "stale_exceptions": 0,
         },
     }
@@ -430,18 +515,20 @@ def _extension_points(
     roles = {project.name: project.role for project in projects}
     paths = {project.name: project.path for project in projects}
     owners: dict[str, tuple[str, str]] = {}
-    for surface in _python_surfaces(projects):
-        module = importlib.import_module(str(surface["module"]))
-        for name in module.__all__:
-            value = getattr(module, name)
-            if name.endswith("_ENTRY_POINT_GROUP") and isinstance(value, str):
-                existing = owners.get(value)
-                owner_binding = (str(surface["distribution"]), name)
-                if existing is not None and existing != owner_binding:
-                    raise ContractFreezeError(
-                        f"entry-point group has multiple public owners: {value}"
-                    )
-                owners[value] = owner_binding
+    for surface in _python_surfaces(projects).values():
+        name = str(surface["name"])
+        contract = cast(Mapping[str, object], surface["contract"])
+        value = contract.get("value")
+        if (
+            surface["unit"] == "export"
+            and name.endswith("_ENTRY_POINT_GROUP")
+            and isinstance(value, str)
+        ):
+            existing = owners.get(value)
+            owner_binding = (str(surface["distribution"]), name)
+            if existing is not None and existing != owner_binding:
+                raise ContractFreezeError(f"entry-point group has multiple public owners: {value}")
+            owners[value] = owner_binding
 
     providers: dict[str, list[dict[str, str]]] = defaultdict(list)
     for project in projects:

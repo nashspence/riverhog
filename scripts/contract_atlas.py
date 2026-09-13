@@ -38,11 +38,14 @@ INTERFACE_LABELS: dict[str, str] = {
     "http-schemas": "HTTP Schemas",
     "http-service-declaration": "HTTP Service Declaration",
     "http-security-schemes": "HTTP Security Schemes",
-    "protocol": "Protocols",
+    "process-protocol": "Process Protocol",
+    "process-protocol-operations": "Process Protocol Operations",
+    "process-protocol-schemas": "Process Protocol Schemas",
     "python": "Python",
     "release": "Release",
+    "schema": "Schemas",
 }
-HTTP_INTERFACE_ORDER = {
+INTERFACE_ORDER = {
     interface: index
     for index, interface in enumerate(
         (
@@ -50,6 +53,10 @@ HTTP_INTERFACE_ORDER = {
             "http-schemas",
             "http-service-declaration",
             "http-security-schemes",
+            "process-protocol",
+            "process-protocol-operations",
+            "process-protocol-schemas",
+            "schema",
         )
     )
 }
@@ -62,6 +69,16 @@ INTERFACE_PURPOSES: dict[str, str] = {
     "http-security-schemes": (
         "Supporting HTTP authorization definitions; these are not callable operations."
     ),
+    "process-protocol": (
+        "Cross-participant protocol identity, compatibility, and common acceptance rules. "
+        "Exact operations and schemas are separately owned below."
+    ),
+    "process-protocol-operations": (
+        "Callable operations in an independently deployed process protocol; method and path "
+        "describe that protocol binding, not a product/service HTTP API."
+    ),
+    "process-protocol-schemas": "Structured values exchanged by a process protocol.",
+    "schema": "Standalone structured-value contracts; these do not define an interaction.",
 }
 
 EXCLUSION_POLICIES: tuple[dict[str, str], ...] = (
@@ -91,8 +108,15 @@ DETECTORS: tuple[dict[str, str], ...] = (
     {"id": "extent", "authority": "exhaustive extent classifier"},
     {"id": "http-openapi", "authority": "running ASGI app"},
     {"id": "operation-matrix", "authority": "executable operation parity matrix"},
-    {"id": "protocol-schema", "authority": "published or generated protocol schema"},
-    {"id": "python-export", "authority": "declared release-package export"},
+    {
+        "id": "process-protocol-bundle",
+        "authority": "generated process-protocol bundle",
+    },
+    {"id": "protocol-schema", "authority": "published standalone schema document"},
+    {
+        "id": "python-public-unit",
+        "authority": "declared release-package export or directly declared public member",
+    },
     {"id": "release-metadata", "authority": "validated release contract"},
 )
 
@@ -106,9 +130,12 @@ QUALIFICATION_ROUTES: dict[str, tuple[str, ...]] = {
     "http-schemas": ("make operation-qualification", "make compose-smoke"),
     "http-security-schemes": ("make operation-qualification", "make compose-smoke"),
     "http-service-declaration": ("make operation-qualification", "make compose-smoke"),
-    "protocol": ("make dist-smoke", "make build"),
+    "process-protocol": ("make dist-smoke", "make build"),
+    "process-protocol-operations": ("make dist-smoke", "make build"),
+    "process-protocol-schemas": ("make dist-smoke", "make build"),
     "python": ("make dist-smoke", "make build"),
     "release": ("make release-check", "make build"),
+    "schema": ("make dist-smoke", "make build"),
     "excluded": ("make dist-smoke", "make build"),
 }
 
@@ -321,9 +348,12 @@ def _compatibility_policies(interface: str) -> list[str]:
         "http-schemas": "compatibility/http-api/v1",
         "http-security-schemes": "compatibility/http-api/v1",
         "http-service-declaration": "compatibility/http-api/v1",
-        "protocol": "compatibility/components/v1",
+        "process-protocol": "compatibility/components/v1",
+        "process-protocol-operations": "compatibility/components/v1",
+        "process-protocol-schemas": "compatibility/components/v1",
         "python": "compatibility/python-api/v1",
         "release": "compatibility/components/v1",
+        "schema": "compatibility/components/v1",
     }
     return [mapping[interface]]
 
@@ -621,49 +651,123 @@ def _external_elements(
         base = f"/external_contract/protocol_schemas/{_escape_pointer(schema_authority)}"
         schemas = document.get("schemas")
         if schema_authority.startswith("generated:") and isinstance(schemas, Mapping):
-            metadata = [f"{base}/{_escape_pointer(key)}" for key in document if key != "schemas"]
-            _add_element(
+            binding = document.get("http_binding")
+            if not isinstance(binding, Mapping) or set(binding) != {"operations"}:
+                raise ContractAtlasError(
+                    "generated process protocol has an unexpected binding shape: "
+                    f"{schema_authority}"
+                )
+            operations = binding["operations"]
+            if not isinstance(operations, Sequence) or isinstance(operations, (str, bytes)):
+                raise ContractAtlasError(
+                    f"generated process protocol operations are not a sequence: {schema_authority}"
+                )
+            metadata = [
+                f"{base}/{_escape_pointer(key)}"
+                for key in document
+                if key not in {"http_binding", "schemas"}
+            ]
+            protocol_element = _add_element(
                 elements,
                 authority=authority,
-                interface="protocol",
+                interface="process-protocol",
                 title=f"{schema_authority} protocol",
                 pointers=metadata,
-                detector="protocol-schema",
+                detector="process-protocol-bundle",
                 source_ids=[f"protocol:{schema_authority}"],
             )
-            for name in sorted(schemas):
-                _add_element(
-                    elements,
-                    authority=authority,
-                    interface="protocol",
-                    title=f"{schema_authority}: {name}",
-                    pointers=[f"{base}/schemas/{_escape_pointer(name)}"],
-                    detector="protocol-schema",
-                    source_ids=[f"protocol:{schema_authority}"],
+            related: list[dict[str, object]] = []
+            for index, operation in enumerate(operations):
+                if not isinstance(operation, Mapping):
+                    raise ContractAtlasError(
+                        "generated process protocol operation is not a mapping: "
+                        f"{schema_authority}: {index}"
+                    )
+                operation_method = operation.get("method")
+                operation_path = operation.get("path")
+                if not isinstance(operation_method, str) or not isinstance(operation_path, str):
+                    raise ContractAtlasError(
+                        "generated process protocol operation lacks method/path: "
+                        f"{schema_authority}: {index}"
+                    )
+                related.append(
+                    _add_element(
+                        elements,
+                        authority=authority,
+                        interface="process-protocol-operations",
+                        title=f"{operation_method.upper()} {operation_path}",
+                        pointers=[f"{base}/http_binding/operations/{index}"],
+                        detector="process-protocol-bundle",
+                        source_ids=[f"protocol:{schema_authority}"],
+                        details={
+                            "method": operation_method.upper(),
+                            "path": operation_path,
+                        },
+                    )
                 )
+            for name in sorted(schemas):
+                related.append(
+                    _add_element(
+                        elements,
+                        authority=authority,
+                        interface="process-protocol-schemas",
+                        title=f"{schema_authority}: {name}",
+                        pointers=[f"{base}/schemas/{_escape_pointer(name)}"],
+                        detector="process-protocol-bundle",
+                        source_ids=[f"protocol:{schema_authority}"],
+                    )
+                )
+            cast(list[str], protocol_element["related_element_ids"]).extend(
+                str(item["id"]) for item in related
+            )
+            for item in related:
+                cast(list[str], item["related_element_ids"]).append(str(protocol_element["id"]))
         else:
             _add_element(
                 elements,
                 authority=authority,
-                interface="protocol",
+                interface="schema",
                 title=str(document.get("title", schema_authority)),
                 pointers=[base],
                 detector="protocol-schema",
                 source_ids=[f"protocol:{schema_authority}"],
             )
 
-    for index, surface in enumerate(cast(Sequence[Mapping[str, object]], external["python"])):
+    python_elements: dict[str, dict[str, object]] = {}
+    for public_identity, surface in sorted(
+        cast(Mapping[str, Mapping[str, object]], external["python"]).items()
+    ):
         authority = str(surface["distribution"])
         module = str(surface["module"])
-        _add_element(
+        unit = str(surface["unit"])
+        item = _add_element(
             elements,
             authority=authority,
             interface="python",
-            title=module,
-            pointers=[f"/external_contract/python/{index}"],
-            detector="python-export",
+            title=public_identity,
+            pointers=[f"/external_contract/python/{_escape_pointer(public_identity)}"],
+            detector="python-public-unit",
             source_ids=[f"python:{authority}:{module}"],
+            details={
+                "module": module,
+                "public_identity": public_identity,
+                "unit": unit,
+                **({"owner": surface["owner"]} if "owner" in surface else {}),
+            },
         )
+        python_elements[public_identity] = item
+    for public_identity, python_element in python_elements.items():
+        python_details = cast(Mapping[str, object], python_element["details"])
+        owner_identity = python_details.get("owner")
+        if owner_identity is None:
+            continue
+        owner_item = python_elements.get(str(owner_identity))
+        if owner_item is None:
+            raise ContractAtlasError(
+                f"Python public member lacks its exported owner: {public_identity}"
+            )
+        cast(list[str], python_element["related_element_ids"]).append(str(owner_item["id"]))
+        cast(list[str], owner_item["related_element_ids"]).append(str(python_element["id"]))
 
     state = cast(Mapping[str, object], external["durable_state"])
     for index, state_owner in enumerate(cast(Sequence[Mapping[str, object]], state["owners"])):
@@ -863,25 +967,37 @@ def _excluded_launchers(trace: Mapping[str, object]) -> list[dict[str, object]]:
 def _excluded_python_packages(trace: Mapping[str, object]) -> list[dict[str, object]]:
     registry = cast(Mapping[str, object], trace["python_registry"])
     detections = {
-        f"python:{item['distribution']}:{item['module']}": item
+        str(item["id"]): item
         for item in cast(Sequence[Mapping[str, object]], registry["detections"])
     }
-    return [
-        {
-            "id": f"excluded:{disposition['candidate_id']}",
-            "candidate_id": disposition["candidate_id"],
-            "kind": "python-package",
-            "detector": registry["detector"],
-            "disposition": "excluded",
-            "policy_id": disposition["policy_id"],
-            "reason": disposition["reason"],
-            "boundary_pointer": detections[str(disposition["candidate_id"])]["path"],
-            "source_authority_ids": [str(disposition["candidate_id"])],
-            "installed_target": detections[str(disposition["candidate_id"])]["module"],
-        }
-        for disposition in cast(Sequence[Mapping[str, object]], registry["dispositions"])
-        if disposition["disposition"] == "excluded"
-    ]
+    resolutions = {
+        str(item["candidate_id"]): item
+        for item in cast(Sequence[Mapping[str, object]], registry["resolutions"])
+    }
+    exclusions: list[dict[str, object]] = []
+    for disposition in cast(Sequence[Mapping[str, object]], registry["dispositions"]):
+        if disposition["disposition"] != "excluded":
+            continue
+        candidate_id = str(disposition["candidate_id"])
+        resolution = resolutions[candidate_id]
+        detection = detections[str(resolution["detection_id"])]
+        distribution = str(detection["distribution"])
+        module = str(detection["module"])
+        exclusions.append(
+            {
+                "id": f"excluded:{candidate_id}",
+                "candidate_id": candidate_id,
+                "kind": "python-package",
+                "detector": registry["detector"],
+                "disposition": "excluded",
+                "policy_id": disposition["policy_id"],
+                "reason": disposition["reason"],
+                "boundary_pointer": detection["path"],
+                "source_authority_ids": [f"python:{distribution}:{module}"],
+                "installed_target": module,
+            }
+        )
+    return exclusions
 
 
 def _detector_meta_closure(
@@ -937,7 +1053,7 @@ def _detector_meta_closure(
             {
                 "id": f"extension-entry-point:{point['group']}",
                 "kind": "extension-entry-point",
-                "detector": "python-export",
+                "detector": "python-public-unit",
             }
         )
     for point in cast(Sequence[Mapping[str, object]], boundaries["process_extensions"]):
@@ -945,7 +1061,7 @@ def _detector_meta_closure(
             {
                 "id": f"process-protocol:{point['name']}",
                 "kind": "process-protocol",
-                "detector": "protocol-schema",
+                "detector": "process-protocol-bundle",
             }
         )
     for image_kind, images in sorted(
@@ -1007,22 +1123,24 @@ def _validate_staged_registry(
     detection_ids = [str(item["id"]) for item in detections]
     candidate_ids = [str(item["id"]) for item in candidates]
     disposition_ids = [str(item["candidate_id"]) for item in dispositions]
+    resolutions = cast(Sequence[Mapping[str, object]], registry["resolutions"])
+    resolution_pairs = [
+        (str(item["detection_id"]), str(item["candidate_id"])) for item in resolutions
+    ]
+    resolution_detection_ids = [item[0] for item in resolution_pairs]
+    resolution_candidate_ids = [item[1] for item in resolution_pairs]
     if (
         len(detection_ids) != len(set(detection_ids))
         or len(candidate_ids) != len(set(candidate_ids))
         or len(disposition_ids) != len(set(disposition_ids))
         or set(candidate_ids) != set(disposition_ids)
+        or len(resolution_pairs) != len(set(resolution_pairs))
+        or set(resolution_detection_ids) != set(detection_ids)
+        or set(resolution_candidate_ids) != set(candidate_ids)
     ):
         raise ContractAtlasError(f"{label} discovery stages are incomplete or duplicated")
     if require_one_resolution_per_detection:
-        resolutions = cast(Sequence[Mapping[str, object]], registry["resolutions"])
-        resolution_detection_ids = [str(item["detection_id"]) for item in resolutions]
-        resolution_candidate_ids = [str(item["candidate_id"]) for item in resolutions]
-        if (
-            len(resolution_detection_ids) != len(set(resolution_detection_ids))
-            or set(resolution_detection_ids) != set(detection_ids)
-            or set(resolution_candidate_ids) != set(candidate_ids)
-        ):
+        if len(resolution_detection_ids) != len(set(resolution_detection_ids)):
             raise ContractAtlasError(f"{label} detection-to-candidate resolution is not exact")
     coverage = cast(Mapping[str, object], registry["coverage"])
     if (
@@ -1217,6 +1335,164 @@ def _validate_authority_registry(
     return noncontractual
 
 
+def _validate_process_protocol_units(
+    elements: Sequence[Mapping[str, object]], projection: Mapping[str, object]
+) -> None:
+    external = cast(Mapping[str, object], projection["external_contract"])
+    documents = cast(Mapping[str, Mapping[str, object]], external["protocol_schemas"])
+    by_pointer = {
+        str(pointer): item for item in elements for pointer in cast(Sequence[str], item["pointers"])
+    }
+    for schema_authority, document in documents.items():
+        base = f"/external_contract/protocol_schemas/{_escape_pointer(schema_authority)}"
+        schemas = document.get("schemas")
+        if not schema_authority.startswith("generated:") or not isinstance(schemas, Mapping):
+            item = by_pointer.get(base)
+            if item is None or item["interface"] != "schema":
+                raise ContractAtlasError(
+                    f"standalone schema lacks exact schema ownership: {schema_authority}"
+                )
+            continue
+
+        binding = document.get("http_binding")
+        if not isinstance(binding, Mapping) or set(binding) != {"operations"}:
+            raise ContractAtlasError(
+                f"generated process protocol binding shape is unresolved: {schema_authority}"
+            )
+        operations = cast(Sequence[Mapping[str, object]], binding["operations"])
+        metadata_pointers = {
+            f"{base}/{_escape_pointer(key)}"
+            for key in document
+            if key not in {"http_binding", "schemas"}
+        }
+        parent_candidates = {
+            str(item["id"]): item
+            for pointer in metadata_pointers
+            if (item := by_pointer.get(pointer)) is not None
+        }
+        if len(parent_candidates) != 1:
+            raise ContractAtlasError(
+                f"process protocol metadata lacks one exact owner: {schema_authority}"
+            )
+        parent = next(iter(parent_candidates.values()))
+        if (
+            parent["interface"] != "process-protocol"
+            or set(cast(Sequence[str], parent["pointers"])) != metadata_pointers
+            or any(
+                pointer.startswith(f"{base}/http_binding") or pointer.startswith(f"{base}/schemas")
+                for pointer in cast(Sequence[str], parent["pointers"])
+            )
+        ):
+            raise ContractAtlasError(
+                f"process protocol parent duplicates operation/schema semantics: {schema_authority}"
+            )
+
+        children: list[Mapping[str, object]] = []
+        for index, operation in enumerate(operations):
+            pointer = f"{base}/http_binding/operations/{index}"
+            item = by_pointer.get(pointer)
+            details = cast(Mapping[str, object], item.get("details", {})) if item else {}
+            if (
+                item is None
+                or item["interface"] != "process-protocol-operations"
+                or details.get("method") != str(operation["method"]).upper()
+                or details.get("path") != operation["path"]
+            ):
+                raise ContractAtlasError(
+                    f"process protocol operation lacks exact ownership: {schema_authority}: {index}"
+                )
+            children.append(item)
+        for name in schemas:
+            pointer = f"{base}/schemas/{_escape_pointer(str(name))}"
+            item = by_pointer.get(pointer)
+            if item is None or item["interface"] != "process-protocol-schemas":
+                raise ContractAtlasError(
+                    f"process protocol schema lacks exact ownership: {schema_authority}: {name}"
+                )
+            children.append(item)
+        child_ids = {str(item["id"]) for item in children}
+        if set(cast(Sequence[str], parent["related_element_ids"])) != child_ids or any(
+            str(parent["id"]) not in cast(Sequence[str], item["related_element_ids"])
+            for item in children
+        ):
+            raise ContractAtlasError(
+                f"process protocol child references are incomplete: {schema_authority}"
+            )
+
+
+def _validate_python_units(
+    elements: Sequence[Mapping[str, object]],
+    projection: Mapping[str, object],
+    trace: Mapping[str, object],
+) -> None:
+    external = cast(Mapping[str, object], projection["external_contract"])
+    surfaces = cast(Mapping[str, Mapping[str, object]], external["python"])
+    python_elements = [item for item in elements if item["interface"] == "python"]
+    expected_pointers = {
+        f"/external_contract/python/{_escape_pointer(public_identity)}": public_identity
+        for public_identity in surfaces
+    }
+    actual_by_pointer = {
+        str(cast(Sequence[str], item["pointers"])[0]): item for item in python_elements
+    }
+    if (
+        len(python_elements) != len(surfaces)
+        or any(len(cast(Sequence[str], item["pointers"])) != 1 for item in python_elements)
+        or set(actual_by_pointer) != set(expected_pointers)
+    ):
+        raise ContractAtlasError("Python exact-unit projection and atlas differ")
+
+    element_by_identity: dict[str, Mapping[str, object]] = {}
+    expected_candidates: set[str] = set()
+    for pointer, public_identity in expected_pointers.items():
+        surface = surfaces[public_identity]
+        item = actual_by_pointer[pointer]
+        distribution = str(surface["distribution"])
+        module = str(surface["module"])
+        details = cast(Mapping[str, object], item.get("details", {}))
+        if (
+            item["authority"] != distribution
+            or item["title"] != public_identity
+            or details.get("module") != module
+            or details.get("public_identity") != public_identity
+            or details.get("unit") != surface["unit"]
+            or f"python:{distribution}:{module}"
+            not in cast(Sequence[str], item["source_authority_ids"])
+        ):
+            raise ContractAtlasError(f"Python exact unit is misbound: {public_identity}")
+        expected_candidates.add(f"python:{distribution}:{public_identity}")
+        element_by_identity[public_identity] = item
+
+    for public_identity, surface in surfaces.items():
+        if surface["unit"] != "member":
+            continue
+        owner = str(surface["owner"])
+        owner_surface = surfaces.get(owner)
+        member = element_by_identity[public_identity]
+        owner_element = element_by_identity.get(owner)
+        if (
+            owner_surface is None
+            or owner_surface["unit"] != "export"
+            or owner_element is None
+            or str(owner_element["id"]) not in cast(Sequence[str], member["related_element_ids"])
+            or str(member["id"]) not in cast(Sequence[str], owner_element["related_element_ids"])
+        ):
+            raise ContractAtlasError(f"Python member lacks exact exported owner: {public_identity}")
+
+    registry = cast(Mapping[str, object], trace["python_registry"])
+    protected = {
+        str(item["candidate_id"])
+        for item in cast(Sequence[Mapping[str, object]], registry["dispositions"])
+        if item["disposition"] == "protected"
+    }
+    candidates = {
+        str(item["id"]): item
+        for item in cast(Sequence[Mapping[str, object]], registry["candidates"])
+    }
+    if protected != expected_candidates or not expected_candidates <= set(candidates):
+        raise ContractAtlasError("Python registry does not protect every exact public unit")
+
+
 def _assign_dossiers(elements: list[dict[str, object]]) -> None:
     used: set[str] = set()
     for element in sorted(elements, key=lambda item: str(item["id"])):
@@ -1303,7 +1579,7 @@ def _interface_label(interface: str) -> str:
 
 
 def _interface_sort_key(interface: str) -> tuple[int, str]:
-    return (HTTP_INTERFACE_ORDER.get(interface, len(HTTP_INTERFACE_ORDER)), interface)
+    return (INTERFACE_ORDER.get(interface, len(INTERFACE_ORDER)), interface)
 
 
 def _relationship_node_anchor(node_id: str) -> str:
@@ -1877,7 +2153,11 @@ def _render_dossier(
         )
     elif interface == "cli":
         lines.extend(_render_cli(pointers, values, placed_subjects))
-    elif interface == "http-operations" and len(values) == 1 and isinstance(values[0], Mapping):
+    elif (
+        interface in {"http-operations", "process-protocol-operations"}
+        and len(values) == 1
+        and isinstance(values[0], Mapping)
+    ):
         lines.extend(
             _render_operation(cast(Mapping[str, object], values[0]), pointers[0], placed_subjects)
         )
@@ -2237,7 +2517,9 @@ def _relationship_model(
                 "contract_elements": 0,
                 "semantic_interfaces": [
                     semantic_interface(str(item["contract_owner"]), "python"),
-                    semantic_interface(str(item["binding_support"]), "protocol"),
+                    semantic_interface(str(item["binding_support"]), "process-protocol"),
+                    semantic_interface(str(item["binding_support"]), "process-protocol-operations"),
+                    semantic_interface(str(item["binding_support"]), "process-protocol-schemas"),
                 ],
             }
         )
@@ -3137,22 +3419,63 @@ def _render_atlas(
                 "## Semantic dossiers",
                 "",
             ]
-            values.sort(
-                key=lambda item: (
-                    (
-                        str(cast(Mapping[str, object], item.get("details", {})).get("method", "")),
-                        str(cast(Mapping[str, object], item.get("details", {})).get("path", "")),
-                        str(item["title"]),
+            if interface == "python":
+                by_module: dict[str, list[dict[str, object]]] = defaultdict(list)
+                for item in values:
+                    details = cast(Mapping[str, object], item.get("details", {}))
+                    by_module[str(details["module"])].append(item)
+                for module, module_values in sorted(by_module.items()):
+                    exports = {
+                        str(cast(Mapping[str, object], item["details"])["public_identity"]): item
+                        for item in module_values
+                        if cast(Mapping[str, object], item["details"])["unit"] == "export"
+                    }
+                    members: dict[str, list[dict[str, object]]] = defaultdict(list)
+                    for item in module_values:
+                        details = cast(Mapping[str, object], item["details"])
+                        if details["unit"] == "member":
+                            members[str(details["owner"])].append(item)
+                    if set(members) - set(exports):
+                        raise ContractAtlasError(
+                            f"Python interface index has members without exports: {module}"
+                        )
+                    lines.extend([f"### `{_md(module)}`", ""])
+                    for public_identity, item in sorted(exports.items()):
+                        lines.append(
+                            f"- [{_md(public_identity)}]"
+                            f"({_relative_link(interface_path, str(item['dossier']))})"
+                        )
+                        for member in sorted(
+                            members.get(public_identity, ()), key=lambda value: str(value["title"])
+                        ):
+                            lines.append(
+                                f"  - [{_md(member['title'])}]"
+                                f"({_relative_link(interface_path, str(member['dossier']))})"
+                            )
+                    lines.append("")
+            else:
+                values.sort(
+                    key=lambda item: (
+                        (
+                            str(
+                                cast(Mapping[str, object], item.get("details", {})).get(
+                                    "method", ""
+                                )
+                            ),
+                            str(
+                                cast(Mapping[str, object], item.get("details", {})).get("path", "")
+                            ),
+                            str(item["title"]),
+                        )
+                        if interface in {"http-operations", "process-protocol-operations"}
+                        else (str(item["title"]),)
                     )
-                    if interface == "http-operations"
-                    else (str(item["title"]),)
                 )
-            )
-            for item in values:
-                lines.append(
-                    f"- [{_md(item['title'])}]"
-                    f"({_relative_link(interface_path, str(item['dossier']))})"
-                )
+                for item in values:
+                    lines.append(
+                        f"- [{_md(item['title'])}]"
+                        f"({_relative_link(interface_path, str(item['dossier']))})"
+                    )
             files[interface_path] = ("\n".join(lines).rstrip() + "\n").encode()
 
     relationship = _relationship_model(projection, trace, elements, component_descriptions)
@@ -4104,12 +4427,15 @@ def validate_atlas(
     )
     if unknown_interfaces:
         raise ContractAtlasError(f"contract elements use unknown interfaces: {unknown_interfaces}")
+    projection_value = cast(Mapping[str, object], root["projection"])
+    trace_value = cast(Mapping[str, object], root["trace"])
+    _validate_process_protocol_units(elements, projection_value)
+    _validate_python_units(elements, projection_value, trace_value)
     if any("family" in item for item in elements):
         raise ContractAtlasError("semantic-family metadata remains in the contract atlas")
     dossiers = [str(item["dossier"]) for item in elements]
     if len(dossiers) != len(set(dossiers)) or not set(dossiers) <= paths:
         raise ContractAtlasError("each contract element must own one unique atlas dossier")
-    projection_value = cast(Mapping[str, object], root["projection"])
     extent_decisions = {
         str(item["id"]): item
         for item in cast(
@@ -4218,7 +4544,6 @@ def validate_atlas(
                     f"atlas dossier does not route its referenced contract: {item['id']}"
                 )
 
-    trace_value = cast(Mapping[str, object], root["trace"])
     operation_qualification = cast(Mapping[str, object], trace_value["operation_qualification"])
     if operation_qualification.get("schema") != "riverhog-operation-qualification/v1":
         raise ContractAtlasError("operation qualification evidence has another schema")
@@ -4342,7 +4667,7 @@ def validate_atlas(
     _validate_staged_registry(
         cast(Mapping[str, object], trace_value["python_registry"]),
         label="Python package",
-        require_one_resolution_per_detection=True,
+        require_one_resolution_per_detection=False,
     )
     _validate_staged_registry(
         cast(Mapping[str, object], trace_value["console_script_registry"]),

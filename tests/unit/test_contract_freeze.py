@@ -116,7 +116,9 @@ def test_checked_contract_freeze_matches_every_executable_authority() -> None:
     assert set(external["http_openapi"]) == {"riverhog", "riverhog-ftp-adapter", "stove0"}
     assert len(external["http_route_supplements"]) == 2
     assert len(trace["operation_qualification"]["records"]) == 147
-    assert len(external["python"]) == 62
+    assert isinstance(external["python"], dict)
+    assert len(external["python"]) == trace["python_registry"]["coverage"]["protected"]
+    assert len(external["python"]) > len(trace["python_registry"]["detections"])
     assert len(external["durable_state"]["owners"]) == 8
     extents = external["extents"]
     assert extents["coverage"]["classified"] == extents["coverage"]["discovered"]
@@ -138,6 +140,15 @@ def test_checked_contract_freeze_matches_every_executable_authority() -> None:
     }
     assert trace["coverage"]["extent_decisions"] == len(extents["decisions"])
     assert trace["coverage"]["operation_qualification_records"] == 147
+    assert trace["python_registry"]["coverage"] == {
+        "detected": 84,
+        "resolved": len(trace["python_registry"]["resolutions"]),
+        "protected": len(external["python"]),
+        "excluded": 22,
+        "unresolved": 0,
+        "undispositioned": 0,
+        "stale_exceptions": 0,
+    }
     authority_registry = trace["authority_registry"]
     assert authority_registry["schema"] == "riverhog-contract-authority-registry/v1"
     assert {item["id"] for item in authority_registry["declared_authorities"]} == {
@@ -313,6 +324,110 @@ def test_disposition_is_independent_of_detection_and_resolution() -> None:
         assert undispositioned[name]["coverage"]["undispositioned"] == len(
             complete[name]["candidates"]
         )
+
+
+def test_python_class_members_assign_structure_to_the_smallest_public_unit() -> None:
+    module = load_script()
+
+    class Example:
+        @property
+        def status(self) -> str:
+            return "ready"
+
+        def run(self, value: int) -> int:
+            return value
+
+        def __call__(self, value: int) -> int:
+            return value
+
+        def __iter__(self) -> object:
+            return iter(())
+
+        def _private(self) -> None:
+            return None
+
+    class_surface = module._class_surface(Example)
+    members = module._public_class_members(Example)
+
+    assert "members" not in class_surface
+    assert set(members) == {"__call__", "__iter__", "run", "status"}
+    assert members["__call__"] == {
+        "kind": "method",
+        "signature": module._signature(Example.__call__),
+    }
+    assert members["status"] == {
+        "kind": "property",
+        "signature": module._signature(Example.status.fget),
+    }
+
+
+def test_python_public_import_paths_and_special_methods_are_exact_units() -> None:
+    module = load_script()
+    projects = module.release_contract.validate_release_contract(REPO_ROOT)
+    surfaces = module._python_surfaces(projects)
+
+    assert all(public_identity.count(".") >= 1 for public_identity in surfaces)
+    assert all(surface["unit"] in {"export", "member"} for surface in surfaces.values())
+    lifecycle_enter = surfaces["lifecycle_events.LifecycleEventClient.__enter__"]
+    assert lifecycle_enter["distribution"] == "lifecycle-events"
+    assert lifecycle_enter["module"] == "lifecycle_events"
+    assert lifecycle_enter["owner"] == "lifecycle_events.LifecycleEventClient"
+    assert lifecycle_enter["unit"] == "member"
+    assert lifecycle_enter["contract"]["kind"] == "method"
+    assert "self" in lifecycle_enter["contract"]["signature"]
+    assert "riverhog_client.transform.CapabilityApiClient.__getattr__" in surfaces
+    assert "riverhog_storage_adapter_support.FramedContent.__iter__" in surfaces
+    assert "stove0_operator_contracts.Stove0EventData.__getitem__" in surfaces
+    assert "enum_values" in surfaces["riverhog_provenance.LargeValueDisposition"]["contract"]
+    assert "riverhog_provenance.LargeValueDisposition.__str__" in surfaces
+
+
+def test_python_surface_discovery_detects_reexports_and_member_mutation(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    module = load_script()
+    shared = object()
+    first = ModuleType("first_api")
+    second = ModuleType("second_api")
+
+    class Worker:
+        def run(self) -> None:
+            return None
+
+        def __call__(self) -> None:
+            return None
+
+    first.__all__ = ["Shared", "Worker"]
+    first.Shared = shared
+    first.Worker = Worker
+    second.__all__ = ["Shared"]
+    second.Shared = shared
+    detections = [
+        {"distribution": "first-dist", "module": "first_api"},
+        {"distribution": "second-dist", "module": "second_api"},
+    ]
+    monkeypatch.setattr(module, "python_package_detections", lambda *_: detections)
+    monkeypatch.setattr(module, "load_exceptions", lambda *_: {"exclusion": []})
+    monkeypatch.setattr(
+        module.importlib,
+        "import_module",
+        lambda name: {"first_api": first, "second_api": second}[name],
+    )
+
+    before = module._python_surfaces([])
+    assert "first_api.Shared" in before
+    assert "second_api.Shared" in before
+    assert "first_api.Worker.run" in before
+    assert "first_api.Worker.__call__" in before
+
+    def renamed(self: object) -> None:
+        return None
+
+    del Worker.run
+    Worker.renamed = renamed
+    after = module._python_surfaces([])
+    assert "first_api.Worker.run" not in after
+    assert "first_api.Worker.renamed" in after
 
 
 def test_exception_overlay_cannot_create_or_describe_a_candidate(tmp_path: Path) -> None:
