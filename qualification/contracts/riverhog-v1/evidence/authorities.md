@@ -21,7 +21,7 @@ This page is intentionally an alphabetical reconciliation inventory, not another
 | `process-protocol-operations` | 24 |
 | `process-protocol-schemas` | 43 |
 | `python` | 2640 |
-| `release` | 12 |
+| `release` | 121 |
 | `schema` | 31 |
 
 ## Declared aggregate authorities
@@ -69,7 +69,7 @@ These values remain in the exact machine projection for validation, but do not o
 | [mango-fish-cursor](../authorities/mango-fish-cursor/index.md) | 1 | durable-state |
 | [piggity](../authorities/piggity/index.md) | 93 | cli, configuration-environment |
 | [piggity-local](../authorities/piggity-local/index.md) | 1 | durable-state |
-| [release](../authorities/release/index.md) | 12 | release |
+| [release](../authorities/release/index.md) | 121 | release |
 | [riverhog](../authorities/riverhog/index.md) | 364 | http-operations, http-schemas, http-security-schemes, http-service-declaration |
 | [riverhog-age](../authorities/riverhog-age/index.md) | 34 | python |
 | [riverhog-application-access](../authorities/riverhog-application-access/index.md) | 47 | python |

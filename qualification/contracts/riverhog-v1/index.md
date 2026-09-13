@@ -6,10 +6,15 @@
 
 ## Contract map
 
+### Release envelope
+
+- [release](authorities/release/index.md) — Coordinated v1 compatibility and publication promises.
+  - [Release](authorities/release/release/index.md) (121)
+
 ### Riverhog product
 
 - [Riverhog service](surfaces/riverhog.md#riverhog-service)
-  - [riverhog](authorities/riverhog/index.md) — Encrypted archive management, catalog, and retrieval.
+  - [riverhog](authorities/riverhog/index.md) — The Riverhog service API and its maintained cross-interface operation parity.
     - [HTTP Operations](authorities/riverhog/http-operations/index.md) (109)
     - [HTTP Schemas](authorities/riverhog/http-schemas/index.md) (253)
     - [HTTP Service Declaration](authorities/riverhog/http-service-declaration/index.md) (1)
@@ -138,7 +143,7 @@
     - [Durable State](authorities/piggity-local/durable-state/index.md) (1)
 - [Stove0](surfaces/stove0.md)
   - [Application](surfaces/stove0.md#application)
-    - [stove0](authorities/stove0/index.md) — Optional nonnormative content-opaque transformation reference application for Riverhog.
+    - [stove0](authorities/stove0/index.md) — The Stove0 reference application API and its maintained cross-interface operation parity.
       - [HTTP Operations](authorities/stove0/http-operations/index.md) (33)
       - [HTTP Schemas](authorities/stove0/http-schemas/index.md) (136)
       - [HTTP Service Declaration](authorities/stove0/http-service-declaration/index.md) (1)
@@ -242,8 +247,6 @@
 
 - [extent-contract](authorities/extent-contract/index.md) — Repository-wide v1 external extent principles and rules.
   - [Extent Contract](authorities/extent-contract/extent/index.md) (12)
-- [release](authorities/release/index.md) — Coordinated v1 compatibility and publication promises.
-  - [Release](authorities/release/release/index.md) (12)
 
 
 ## Contract-wide policies

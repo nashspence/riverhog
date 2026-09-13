@@ -1,8 +1,8 @@
-# Release version policy
+# Release artifact: installation:gogurt-listener-reference
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: release:release:release-version-policy:0a746a49c5 -->
+<!-- contract-element: release:release:release-artifact-installation-gogurt-list-d18d93ca30:e6d570a572 -->
 
 Exact externally visible contract owned by this semantic dossier.
 
@@ -13,35 +13,43 @@ Exact externally visible contract owned by this semantic dossier.
 
 ## External contract
 
-<a id="s-1ff05b155d"></a>
-- Shape: "coordinated"
+<a id="s-43811c1404"></a>
+| Concern | Contract |
+|---|---|
+| <a id="s-9d9e49c3f7"></a>`coordinate` | gogurt-listener-v{version}.md |
+| <a id="s-f11f401ad5"></a>`format` | markdown |
 
 ## Governing policies
 
-- <a id="pa-117743bd18"></a>[compatibility/components/v1](../../../policies/index.md#p-95e9a12259)
+- <a id="pa-56450f9d6b"></a>[compatibility/components/v1](../../../policies/index.md#p-95e9a12259)
 
 ## Evidence
 
 ### Qualification
 
 - [make release-check](../../../evidence/sources.md#q-8d8d22d6a6)
+- [make dist-smoke](../../../evidence/sources.md#q-0ba2578a3e)
 - [make build](../../../evidence/sources.md#q-d1121e35fa)
 
 ### Executable sources
 
 - [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [release-publication:planner](../../../evidence/sources.md#src-03a2f48338) — `scripts/release.py::publication_contract`
 - [release:release.toml](../../../evidence/sources.md#src-c5380dbe5f) — `release.toml`
 
 ### Machine authority
 
-- `/external_contract/release/version_policy`
+- `/external_contract/release/publication/release_artifacts/installation:gogurt-listener-reference`
 
 ### Exact owned JSON
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 6db9d9cdfd4e4e9364a7a1ba4139851f811f90e2d8a9ccd713f6851607e920d8 -->
+<!-- exact-contract-value: cb4aea5e4f2ef707420bd091cb3a581fd4ef1c7eaaba19fb6c7d09aa0ea8d917 -->
 
 ```json
-"coordinated"
+{
+  "coordinate": "gogurt-listener-v{version}.md",
+  "format": "markdown"
+}
 ```

@@ -1,0 +1,83 @@
+# Runtime image: stove0-nvenc-av1-opus-target
+
+[Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
+
+<!-- contract-element: release:release:runtime-image-stove0-nvenc-av1-opus-target:371ecb0eab -->
+
+Optional nonnormative NVENC AV1 and Opus target reference for Stove0.
+
+| Audit field | Value |
+|---|---|
+| Authority | [release](../index.md) |
+| Interface | [Release](index.md) |
+
+## External contract
+
+<a id="s-ab958bb633"></a>
+| Concern | Contract |
+|---|---|
+| <a id="s-57bf4a92e1"></a>`build_target` | stove0-nvenc-av1-opus-target |
+| <a id="s-e6937f1ff9"></a>`description` | Optional nonnormative NVENC AV1 and Opus target reference for Stove0. |
+| <a id="s-68ae32ea1e"></a>`distribution_roots` | ["stove0-nvenc-av1-opus-target", "stove0-nvenc-av1-opus-review-sampler"] |
+| <a id="s-e90eb68c3e"></a>`format` | oci-image |
+| <a id="s-5e869d6a92"></a>`platforms` | ["linux/amd64"] |
+| <a id="s-0c727c2e80"></a>`repository` | ghcr.io/nashspence/riverhog-stove0-nvenc-av1-opus-target |
+| <a id="s-ec04038413"></a>`role` | reference |
+| <a id="s-11b5f77caa"></a>`tag_templates` | ["ghcr.io/nashspence/riverhog-stove0-nvenc-av1-opus-target:{version}", "ghcr.io/nashspence/riverhog-stove0-nvenc-av1-opus-target:sha-{source_sha}"] |
+
+## Existing ownership context
+
+Publication preserves these existing component authorities; it does not reclassify or duplicate their interfaces.
+
+- [stove0-nvenc-av1-opus-target](../../../evidence/relationships.md#rn-e9196fec57)
+- [stove0-nvenc-av1-opus-review-sampler](../../../evidence/relationships.md#rn-3d4e1c390a)
+
+## Governing policies
+
+- <a id="pa-03d2ff71f8"></a>[compatibility/components/v1](../../../policies/index.md#p-95e9a12259)
+
+## Evidence
+
+### Qualification
+
+- [make release-check](../../../evidence/sources.md#q-8d8d22d6a6)
+- [make dist-smoke](../../../evidence/sources.md#q-0ba2578a3e)
+- [make build](../../../evidence/sources.md#q-d1121e35fa)
+
+### Executable sources
+
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [release-images:docker-bake](../../../evidence/sources.md#src-8d3f4df21c) — `docker-bake.hcl`
+- [release-publication:planner](../../../evidence/sources.md#src-03a2f48338) — `scripts/release.py::publication_contract`
+- [release:release.toml](../../../evidence/sources.md#src-c5380dbe5f) — `release.toml`
+
+### Machine authority
+
+- `/external_contract/release/publication/runtime_images/stove0-nvenc-av1-opus-target`
+
+### Exact owned JSON
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 737dcd9107fea6a527364f2c6ee82ec870d06debed27f4adde5625eaa8807dcb -->
+
+```json
+{
+  "build_target": "stove0-nvenc-av1-opus-target",
+  "description": "Optional nonnormative NVENC AV1 and Opus target reference for Stove0.",
+  "distribution_roots": [
+    "stove0-nvenc-av1-opus-target",
+    "stove0-nvenc-av1-opus-review-sampler"
+  ],
+  "format": "oci-image",
+  "platforms": [
+    "linux/amd64"
+  ],
+  "repository": "ghcr.io/nashspence/riverhog-stove0-nvenc-av1-opus-target",
+  "role": "reference",
+  "tag_templates": [
+    "ghcr.io/nashspence/riverhog-stove0-nvenc-av1-opus-target:{version}",
+    "ghcr.io/nashspence/riverhog-stove0-nvenc-av1-opus-target:sha-{source_sha}"
+  ]
+}
+```

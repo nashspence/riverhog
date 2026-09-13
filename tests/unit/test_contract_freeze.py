@@ -120,6 +120,24 @@ def test_checked_contract_freeze_matches_every_executable_authority() -> None:
     assert len(external["python"]) == trace["python_registry"]["coverage"]["protected"]
     assert len(external["python"]) > len(trace["python_registry"]["detections"])
     assert len(external["durable_state"]["owners"]) == 8
+    release = external["release"]
+    assert set(release) == {"compatibility", "publication"}
+    publication = release["publication"]
+    assert publication["schema"] == "riverhog-release-publication/v1"
+    assert len(publication["distributions"]) == 71
+    assert len(publication["runtime_images"]) == 13
+    assert len(publication["installation_roots"]) == 4
+    assert "test" not in publication["runtime_images"]
+    assert all(
+        unit["requires_python"] == ">=3.12" for unit in publication["distributions"].values()
+    )
+    assert all(
+        unit["platforms"] == ["linux/amd64"] for unit in publication["runtime_images"].values()
+    )
+    assert all(
+        unit["platforms"] == ["linux-x64", "macos-arm64", "windows-x64"]
+        for unit in publication["installation_roots"].values()
+    )
     extents = external["extents"]
     assert extents["coverage"]["classified"] == extents["coverage"]["discovered"]
     assert all(
@@ -136,6 +154,10 @@ def test_checked_contract_freeze_matches_every_executable_authority() -> None:
         "protocol": 35,
         "python": 84,
         "release": 1,
+        "release-distribution": 71,
+        "release-images": 1,
+        "release-installation": 1,
+        "release-publication": 1,
         "state": 8,
     }
     assert trace["coverage"]["extent_decisions"] == len(extents["decisions"])

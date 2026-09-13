@@ -25,6 +25,7 @@ Exact externally visible contract owned by this semantic dossier.
 ### Qualification
 
 - [make release-check](../../../evidence/sources.md#q-8d8d22d6a6)
+- [make dist-smoke](../../../evidence/sources.md#q-0ba2578a3e)
 - [make build](../../../evidence/sources.md#q-d1121e35fa)
 
 ### Executable sources

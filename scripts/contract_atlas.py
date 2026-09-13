@@ -134,7 +134,7 @@ QUALIFICATION_ROUTES: dict[str, tuple[str, ...]] = {
     "process-protocol-operations": ("make dist-smoke", "make build"),
     "process-protocol-schemas": ("make dist-smoke", "make build"),
     "python": ("make dist-smoke", "make build"),
-    "release": ("make release-check", "make build"),
+    "release": ("make release-check", "make dist-smoke", "make build"),
     "schema": ("make dist-smoke", "make build"),
     "excluded": ("make dist-smoke", "make build"),
 }
@@ -448,6 +448,148 @@ def _protocol_owner(authority: str, sources: Mapping[str, Mapping[str, object]])
     return authority
 
 
+def _publication_group(role: str) -> str:
+    groups = {
+        "deployed_implementation": "Riverhog product publication",
+        "end_user_artifact": "Riverhog product publication",
+        "reusable_library": "Reusable library and support publication",
+        "internal_build_unit": "Reusable library and support publication",
+        "reference_application": "Nonnormative reference-application publication",
+        "reference_component": "Nonnormative reference-component publication",
+    }
+    try:
+        return groups[role]
+    except KeyError as exc:
+        raise ContractAtlasError(f"published unit has no human release group: {role}") from exc
+
+
+def _release_elements(elements: list[dict[str, object]], release: Mapping[str, object]) -> None:
+    publication = cast(Mapping[str, object], release["publication"])
+    base = "/external_contract/release/publication"
+    common_sources = ["release:release.toml", "release-publication:planner"]
+
+    _add_element(
+        elements,
+        authority="release",
+        interface="release",
+        title="Publication envelope format",
+        pointers=[f"{base}/schema"],
+        detector="release-metadata",
+        source_ids=common_sources,
+        details={"publication_group": "Release-wide artifacts and trust"},
+    )
+    for section in ("policy", "versioning", "coordinates"):
+        for name in sorted(cast(Mapping[str, object], publication[section])):
+            _add_element(
+                elements,
+                authority="release",
+                interface="release",
+                title=f"{section.title()}: {name.replace('_', ' ')}",
+                pointers=[f"{base}/{section}/{_escape_pointer(name)}"],
+                detector="release-metadata",
+                source_ids=common_sources,
+                details={"publication_group": "Release-wide artifacts and trust"},
+            )
+
+    distributions = cast(Mapping[str, Mapping[str, object]], publication["distributions"])
+    for name, unit in sorted(distributions.items()):
+        role = str(unit["role"])
+        _add_element(
+            elements,
+            authority="release",
+            interface="release",
+            title=f"Python distribution: {name}",
+            pointers=[f"{base}/distributions/{_escape_pointer(name)}"],
+            detector="release-metadata",
+            source_ids=[*common_sources, f"release-distribution:{name}"],
+            details={
+                "publication_group": _publication_group(role),
+                "publication_kind": "distribution",
+                "role": role,
+                "semantic_owners": [name],
+            },
+        )
+
+    for target, unit in sorted(
+        cast(Mapping[str, Mapping[str, object]], publication["runtime_images"]).items()
+    ):
+        roots = [str(item) for item in cast(Sequence[object], unit["distribution_roots"])]
+        root_roles = {str(distributions[root]["role"]) for root in roots}
+        if unit["role"] == "product":
+            group = "Riverhog product publication"
+        elif len(root_roles) == 1:
+            group = _publication_group(next(iter(root_roles)))
+        else:
+            raise ContractAtlasError(f"runtime image crosses publication roles: {target}")
+        _add_element(
+            elements,
+            authority="release",
+            interface="release",
+            title=f"Runtime image: {target}",
+            pointers=[f"{base}/runtime_images/{_escape_pointer(target)}"],
+            detector="release-metadata",
+            source_ids=[*common_sources, "release-images:docker-bake"],
+            details={
+                "publication_group": group,
+                "publication_kind": "runtime-image",
+                "role": unit["role"],
+                "semantic_owners": roots,
+            },
+        )
+
+    for name, unit in sorted(
+        cast(Mapping[str, Mapping[str, object]], publication["installation_roots"]).items()
+    ):
+        distribution = str(unit["distribution"])
+        role = str(distributions[distribution]["role"])
+        _add_element(
+            elements,
+            authority="release",
+            interface="release",
+            title=f"Installation root: {name}",
+            pointers=[f"{base}/installation_roots/{_escape_pointer(name)}"],
+            detector="release-metadata",
+            source_ids=[
+                *common_sources,
+                "release-installation:planner",
+                f"release-distribution:{distribution}",
+            ],
+            details={
+                "publication_group": _publication_group(role),
+                "publication_kind": "installation-root",
+                "role": role,
+                "semantic_owners": [distribution],
+            },
+        )
+
+    for section, title_prefix in (("release_artifacts", "Release artifact"), ("trust", "Trust")):
+        for name in sorted(cast(Mapping[str, object], publication[section])):
+            _add_element(
+                elements,
+                authority="release",
+                interface="release",
+                title=f"{title_prefix}: {name}",
+                pointers=[f"{base}/{section}/{_escape_pointer(name)}"],
+                detector="release-metadata",
+                source_ids=common_sources,
+                details={"publication_group": "Release-wide artifacts and trust"},
+            )
+
+    compatibility = cast(Mapping[str, object], release["compatibility"])
+    for policy_name in sorted(compatibility):
+        element = _add_element(
+            elements,
+            authority="release",
+            interface="release",
+            title=f"Compatibility: {policy_name.replace('_', ' ')}",
+            pointers=[f"/external_contract/release/compatibility/{_escape_pointer(policy_name)}"],
+            detector="release-metadata",
+            source_ids=["release:release.toml"],
+            details={"publication_group": "Release-wide artifacts and trust"},
+        )
+        element["policy_ids"] = [f"compatibility/{policy_name.replace('_', '-')}/v1"]
+
+
 def _external_elements(
     projection: Mapping[str, object], trace: Mapping[str, object]
 ) -> list[dict[str, object]]:
@@ -455,31 +597,7 @@ def _external_elements(
     sources = _source_index(trace)
     elements: list[dict[str, object]] = []
 
-    for name, value in sorted(cast(Mapping[str, object], external["release"]).items()):
-        if name == "compatibility" and isinstance(value, Mapping):
-            for policy_name in sorted(value):
-                element = _add_element(
-                    elements,
-                    authority="release",
-                    interface="release",
-                    title=f"Compatibility: {policy_name.replace('_', ' ')}",
-                    pointers=[
-                        f"/external_contract/release/compatibility/{_escape_pointer(policy_name)}"
-                    ],
-                    detector="release-metadata",
-                    source_ids=["release:release.toml"],
-                )
-                element["policy_ids"] = [f"compatibility/{policy_name.replace('_', '-')}/v1"]
-            continue
-        _add_element(
-            elements,
-            authority="release",
-            interface="release",
-            title=f"Release {name.replace('_', ' ')}",
-            pointers=[f"/external_contract/release/{_escape_pointer(name)}"],
-            detector="release-metadata",
-            source_ids=["release:release.toml"],
-        )
+    _release_elements(elements, cast(Mapping[str, object], external["release"]))
 
     http = cast(Mapping[str, Mapping[str, object]], external["http_openapi"])
     for authority, document in sorted(http.items()):
@@ -1493,6 +1611,59 @@ def _validate_python_units(
         raise ContractAtlasError("Python registry does not protect every exact public unit")
 
 
+def _validate_release_units(
+    elements: Sequence[Mapping[str, object]], projection: Mapping[str, object]
+) -> None:
+    external = cast(Mapping[str, object], projection["external_contract"])
+    release = cast(Mapping[str, object], external["release"])
+    publication = cast(Mapping[str, object], release["publication"])
+    base = "/external_contract/release/publication"
+    expected = {f"{base}/schema"}
+    for section in ("policy", "versioning", "coordinates"):
+        expected.update(
+            f"{base}/{section}/{_escape_pointer(str(name))}"
+            for name in cast(Mapping[str, object], publication[section])
+        )
+    for section in (
+        "distributions",
+        "runtime_images",
+        "installation_roots",
+        "release_artifacts",
+        "trust",
+    ):
+        expected.update(
+            f"{base}/{section}/{_escape_pointer(str(name))}"
+            for name in cast(Mapping[str, object], publication[section])
+        )
+    expected.update(
+        f"/external_contract/release/compatibility/{_escape_pointer(str(name))}"
+        for name in cast(Mapping[str, object], release["compatibility"])
+    )
+    release_elements = [item for item in elements if item["interface"] == "release"]
+    actual = {str(cast(Sequence[str], item["pointers"])[0]): item for item in release_elements}
+    if (
+        len(actual) != len(release_elements)
+        or any(len(cast(Sequence[str], item["pointers"])) != 1 for item in release_elements)
+        or set(actual) != expected
+    ):
+        raise ContractAtlasError("release publication exact-unit projection and atlas differ")
+    for pointer, item in actual.items():
+        details = cast(Mapping[str, object], item.get("details", {}))
+        if item["authority"] != "release" or not details.get("publication_group"):
+            raise ContractAtlasError(f"release unit lacks exact ownership or grouping: {pointer}")
+        if "/distributions/" in pointer:
+            name = pointer.rsplit("/", 1)[-1].replace("~1", "/").replace("~0", "~")
+            if f"release-distribution:{name}" not in cast(
+                Sequence[str], item["source_authority_ids"]
+            ):
+                raise ContractAtlasError(f"distribution lacks source metadata evidence: {name}")
+            unit = cast(Mapping[str, object], pointer_value(projection, pointer))
+            if not str(unit.get("requires_python", "")):
+                raise ContractAtlasError(f"distribution lacks Requires-Python: {name}")
+    if "platforms" in release:
+        raise ContractAtlasError("release envelope exposes a global platform claim")
+
+
 def _assign_dossiers(elements: list[dict[str, object]]) -> None:
     used: set[str] = set()
     for element in sorted(elements, key=lambda item: str(item["id"])):
@@ -2161,9 +2332,33 @@ def _render_dossier(
         lines.extend(
             _render_operation(cast(Mapping[str, object], values[0]), pointers[0], placed_subjects)
         )
+    elif interface == "release" and len(values) == 1 and isinstance(values[0], Mapping):
+        lines.extend(
+            _render_operation(cast(Mapping[str, object], values[0]), pointers[0], placed_subjects)
+        )
     else:
         lines.extend(_render_generic(pointers, values, placed_subjects))
     lines.append("")
+
+    semantic_owners = cast(Sequence[str], details.get("semantic_owners", ()))
+    if semantic_owners:
+        relationship_evidence = f"{ATLAS_DIRECTORY}/evidence/relationships.md"
+        lines.extend(
+            [
+                "## Existing ownership context",
+                "",
+                "Publication preserves these existing component authorities; it does not "
+                "reclassify or duplicate their interfaces.",
+                "",
+                *(
+                    f"- [{_md(owner)}]"
+                    f"({_anchor_link(path, relationship_evidence, component_anchor)})"
+                    for owner in semantic_owners
+                    for component_anchor in (_relationship_node_anchor(f"component:{owner}"),)
+                ),
+                "",
+            ]
+        )
 
     extent_ids = cast(Sequence[str], element["extent_decision_ids"])
     if extent_ids:
@@ -2578,25 +2773,31 @@ def _relationship_model(
     release = cast(
         Mapping[str, object], cast(Mapping[str, object], projection["external_contract"])["release"]
     )
-    installation = cast(Mapping[str, object], release["installation"])
-    installation_id = f"installation:{installation['method']}"
+    publication = cast(Mapping[str, object], release["publication"])
+    installation_roots = cast(Mapping[str, Mapping[str, object]], publication["installation_roots"])
+    installation_methods = {str(value["method"]) for value in installation_roots.values()}
+    if len(installation_methods) != 1:
+        raise ContractAtlasError("publication installation roots lack one exact method")
+    installation_method = next(iter(installation_methods))
+    installation_id = f"installation:{installation_method}"
     nodes.append(
         {
             "id": installation_id,
             "kind": "installation",
-            "name": installation["method"],
+            "name": installation_method,
             "description": (
                 "Coordinated end-user installation roots declared by the release contract."
             ),
             "contract_elements": 0,
         }
     )
-    for root in cast(Sequence[str], installation["roots"]):
+    for root, unit in installation_roots.items():
         edges.append(
             {
                 "type": "installed-as",
-                "source": f"component:{root}",
+                "source": f"component:{unit['distribution']}",
                 "target": installation_id,
+                "binding": root,
             }
         )
 
@@ -2674,6 +2875,12 @@ def _relationship_model(
 
     product_node = next(item for item in nodes if item["id"] == product_images[0])
     map_specs = (
+        (
+            "release-envelope",
+            "Release envelope",
+            None,
+            None,
+        ),
         ("riverhog-product", "Riverhog product", None, None),
         (
             "riverhog-service",
@@ -2745,7 +2952,9 @@ def _relationship_model(
     for authority in authorities:
         owners = [component_by_id[item] for item in sorted(authority_owners[authority])]
         roles = {str(item["role"]) for item in owners}
-        if authority == product_node["name"]:
+        if authority == "release":
+            map_id = "release-envelope"
+        elif authority == product_node["name"]:
             map_id = "riverhog-service"
         elif owners and all(
             item["role"] in {"reference_application", "reference_component"}
@@ -2768,11 +2977,11 @@ def _relationship_model(
             map_id = "riverhog-implementation"
         else:
             map_id = "cross-cutting"
-        purpose = " ".join(sorted({str(item["description"]) for item in owners}))
+        purpose = declared_authority_meanings.get(authority)
+        if purpose is None:
+            purpose = " ".join(sorted({str(item["description"]) for item in owners}))
         if not purpose:
-            purpose = declared_authority_meanings.get(
-                authority, "Cross-cutting generated contract authority."
-            )
+            purpose = "Cross-cutting generated contract authority."
         direct_interfaces = [
             {
                 "id": interface,
@@ -3060,7 +3269,7 @@ def _render_contract_surfaces(
             f"{ATLAS_DIRECTORY}/surfaces/cross-cutting.md",
             "Cross-cutting v1 authorities",
             "These generated authorities bind repository-wide configuration, state, extent, "
-            "release, and boundary semantics without becoming a separate product surface.",
+            "and boundary semantics without becoming a separate product surface.",
             ("cross-cutting",),
         ),
     )
@@ -3419,7 +3628,50 @@ def _render_atlas(
                 "## Semantic dossiers",
                 "",
             ]
-            if interface == "python":
+            if interface == "release":
+                publication_groups: dict[str, list[Mapping[str, object]]] = defaultdict(list)
+                for item in values:
+                    details = cast(Mapping[str, object], item.get("details", {}))
+                    group = str(details.get("publication_group", ""))
+                    if not group:
+                        raise ContractAtlasError(
+                            f"release unit lacks a presentation group: {item['id']}"
+                        )
+                    publication_groups[group].append(item)
+                group_order = (
+                    "Riverhog product publication",
+                    "Reusable library and support publication",
+                    "Nonnormative reference-application publication",
+                    "Nonnormative reference-component publication",
+                    "Release-wide artifacts and trust",
+                )
+                lines.extend(
+                    [
+                        "| Publication group | Exact units |",
+                        "|---|---:|",
+                        *(
+                            f"| {group} | {len(publication_groups[group])} |"
+                            for group in group_order
+                            if publication_groups.get(group)
+                        ),
+                        "",
+                    ]
+                )
+                for group in group_order:
+                    group_values = publication_groups.get(group)
+                    if not group_values:
+                        continue
+                    lines.extend([f"### {group}", ""])
+                    for release_item in sorted(group_values, key=lambda value: str(value["title"])):
+                        details = cast(Mapping[str, object], release_item.get("details", {}))
+                        role = f" — `{details['role']}`" if "role" in details else ""
+                        lines.append(
+                            f"- [{_md(release_item['title'])}]"
+                            f"({_relative_link(interface_path, str(release_item['dossier']))})"
+                            f"{role}"
+                        )
+                    lines.append("")
+            elif interface == "python":
                 by_module: dict[str, list[dict[str, object]]] = defaultdict(list)
                 for item in values:
                     details = cast(Mapping[str, object], item.get("details", {}))
@@ -4431,6 +4683,7 @@ def validate_atlas(
     trace_value = cast(Mapping[str, object], root["trace"])
     _validate_process_protocol_units(elements, projection_value)
     _validate_python_units(elements, projection_value, trace_value)
+    _validate_release_units(elements, projection_value)
     if any("family" in item for item in elements):
         raise ContractAtlasError("semantic-family metadata remains in the contract atlas")
     dossiers = [str(item["dossier"]) for item in elements]

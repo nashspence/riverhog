@@ -19,14 +19,14 @@ This layer answers whether the discovered external universe was accounted for ex
 
 | Measure | Value |
 |---|---:|
-| Detected constructs | 3781 |
-| Exact resolutions | 3781 |
-| Resolved candidates | 3781 |
-| Explicit dispositions | 3781 |
-| Contract elements | 3746 |
+| Detected constructs | 3890 |
+| Exact resolutions | 3890 |
+| Resolved candidates | 3890 |
+| Explicit dispositions | 3890 |
+| Contract elements | 3855 |
 | Extent decisions | 1991 |
 | Explicit exclusions | 35 |
-| Source authorities | 410 |
+| Source authorities | 484 |
 
 ## Exact evidence
 

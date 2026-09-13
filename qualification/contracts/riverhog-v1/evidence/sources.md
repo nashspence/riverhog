@@ -8,18 +8,18 @@ This page is proof routing, not contract navigation. Every dossier names its loc
 
 | Qualification route | Count |
 |---|---:|
-| <a id="q-d1121e35fa"></a>`make build` | 2754 |
+| <a id="q-d1121e35fa"></a>`make build` | 2863 |
 | <a id="q-413b0b241b"></a>`make compose-smoke` | 805 |
 | <a id="q-8c74349e71"></a>`make contract-freeze` | 12 |
 | <a id="q-27f281b51e"></a>`make database-qualification` | 8 |
-| <a id="q-0ba2578a3e"></a>`make dist-smoke` | 2909 |
+| <a id="q-0ba2578a3e"></a>`make dist-smoke` | 3030 |
 | <a id="q-dd95e4459f"></a>`make operation-qualification` | 725 |
-| <a id="q-8d8d22d6a6"></a>`make release-check` | 20 |
+| <a id="q-8d8d22d6a6"></a>`make release-check` | 129 |
 | <a id="q-ce47068f50"></a>`make unit` | 259 |
 
 ## Source authorities
 
-Source authorities: **410**
+Source authorities: **484**
 
 | Source authority | Applications | Executable location |
 |---|---:|---|
@@ -300,7 +300,7 @@ Source authorities: **410**
 | <a id="src-28686050a7"></a>`configuration:stove0-recipe-config:configuration:recipe-catalog` | 1 | `reference/stove0/packages/recipe-config/src/stove0_recipe_config/models.py::RecipeCatalog` |
 | <a id="src-cca9387ce6"></a>`configuration:stove0-review-target-support:configuration:review-target-config` | 1 | `reference/stove0/targets/review/support/src/stove0_review_target_support/app.py::ReviewTargetConfig` |
 | <a id="src-5ac94d0a12"></a>`extent:extent-contract` | 12 | `scripts/extent_contract.py::extent_projection` |
-| <a id="src-47381a6c4f"></a>`generator:contract-projection` | 3746 | `scripts/contract_freeze.py::contract_projection` |
+| <a id="src-47381a6c4f"></a>`generator:contract-projection` | 3855 | `scripts/contract_freeze.py::contract_projection` |
 | <a id="src-c42f268fc9"></a>`openapi:riverhog` | 364 | `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI` |
 | <a id="src-c3a51ac29a"></a>`openapi:riverhog-ftp-adapter` | 12 | `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI` |
 | <a id="src-52e6e32124"></a>`openapi:stove0` | 170 | `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI` |
@@ -424,7 +424,81 @@ Source authorities: **410**
 | <a id="src-f4f0b22026"></a>`python:stove0-target-protocol:stove0_target_protocol` | 129 | `reference/stove0/packages/target-protocol/src/stove0_target_protocol/__init__.py` |
 | <a id="src-3c01163237"></a>`python:stove0-target-support:stove0_target_support` | 145 | `reference/stove0/packages/target-support/src/stove0_target_support/__init__.py` |
 | <a id="src-4f4a8234ef"></a>`python:time-formats:time_formats` | 1 | `packages/time-formats/src/time_formats/__init__.py` |
-| <a id="src-c5380dbe5f"></a>`release:release.toml` | 25 | `release.toml` |
+| <a id="src-391296b020"></a>`release-distribution:config-validation` | 1 | `packages/config-validation/pyproject.toml` |
+| <a id="src-3e7b582a54"></a>`release-distribution:gogurt` | 2 | `reference/gogurt/application/pyproject.toml` |
+| <a id="src-2850fdf46b"></a>`release-distribution:gogurt-core` | 1 | `reference/gogurt/packages/core/pyproject.toml` |
+| <a id="src-388e655d12"></a>`release-distribution:gogurt-linux-listener-host` | 1 | `reference/gogurt/listener-host/linux/pyproject.toml` |
+| <a id="src-db58b362bd"></a>`release-distribution:gogurt-linux-mounted-volume` | 1 | `reference/gogurt/mounted-volume/linux/pyproject.toml` |
+| <a id="src-23725dce0b"></a>`release-distribution:gogurt-listener-runtime` | 1 | `reference/gogurt/packages/listener-runtime/pyproject.toml` |
+| <a id="src-51ef474638"></a>`release-distribution:gogurt-macos-listener-host` | 1 | `reference/gogurt/listener-host/macos/pyproject.toml` |
+| <a id="src-ea30a89c8b"></a>`release-distribution:gogurt-macos-mounted-volume` | 1 | `reference/gogurt/mounted-volume/macos/pyproject.toml` |
+| <a id="src-fc01fccb44"></a>`release-distribution:gogurt-path-volume-support` | 1 | `reference/gogurt/mounted-volume/path-support/pyproject.toml` |
+| <a id="src-99f0891144"></a>`release-distribution:gogurt-windows-listener-host` | 1 | `reference/gogurt/listener-host/windows/pyproject.toml` |
+| <a id="src-d3a2fa67cb"></a>`release-distribution:gogurt-windows-mounted-volume` | 1 | `reference/gogurt/mounted-volume/windows/pyproject.toml` |
+| <a id="src-1554c834c7"></a>`release-distribution:http-api-contracts` | 1 | `packages/http-api-contracts/pyproject.toml` |
+| <a id="src-36336fc3be"></a>`release-distribution:lifecycle-events` | 1 | `packages/lifecycle-events/pyproject.toml` |
+| <a id="src-8f9c704431"></a>`release-distribution:mango-fish` | 1 | `reference/riverhog/applications/mango-fish/pyproject.toml` |
+| <a id="src-c6f8868ecf"></a>`release-distribution:piggity` | 2 | `reference/riverhog/applications/piggity/pyproject.toml` |
+| <a id="src-2d271f6b70"></a>`release-distribution:riverhog-age` | 1 | `packages/riverhog-age/pyproject.toml` |
+| <a id="src-1524c1360d"></a>`release-distribution:riverhog-application-access` | 1 | `packages/riverhog-application-access/pyproject.toml` |
+| <a id="src-f6ac304b52"></a>`release-distribution:riverhog-archive-contracts` | 1 | `packages/riverhog-archive-contracts/pyproject.toml` |
+| <a id="src-7d25f2c873"></a>`release-distribution:riverhog-client` | 1 | `packages/riverhog-client/pyproject.toml` |
+| <a id="src-37bda529c9"></a>`release-distribution:riverhog-ftp-adapter` | 1 | `reference/riverhog/ingress/ftp/pyproject.toml` |
+| <a id="src-70a41aeb48"></a>`release-distribution:riverhog-ftp-adapter-api-client` | 1 | `reference/riverhog/ingress/ftp-api-client/pyproject.toml` |
+| <a id="src-1221d32c9e"></a>`release-distribution:riverhog-protocol` | 1 | `packages/riverhog-protocol/pyproject.toml` |
+| <a id="src-95dbd50af1"></a>`release-distribution:riverhog-provenance` | 1 | `packages/riverhog-provenance/pyproject.toml` |
+| <a id="src-d222cdb3b8"></a>`release-distribution:riverhog-provenance-contracts` | 1 | `packages/riverhog-provenance-contracts/pyproject.toml` |
+| <a id="src-0bc97c8819"></a>`release-distribution:riverhog-provenance-linux-contracts` | 1 | `reference/riverhog/provenance/contracts/linux/pyproject.toml` |
+| <a id="src-511bdc989a"></a>`release-distribution:riverhog-provenance-linux-observer` | 1 | `reference/riverhog/provenance/observers/linux/pyproject.toml` |
+| <a id="src-7b7622c15a"></a>`release-distribution:riverhog-provenance-macos-contracts` | 1 | `reference/riverhog/provenance/contracts/macos/pyproject.toml` |
+| <a id="src-40294474bf"></a>`release-distribution:riverhog-provenance-macos-observer` | 1 | `reference/riverhog/provenance/observers/macos/pyproject.toml` |
+| <a id="src-3899e85b99"></a>`release-distribution:riverhog-provenance-windows-contracts` | 1 | `reference/riverhog/provenance/contracts/windows/pyproject.toml` |
+| <a id="src-39aea5b4b6"></a>`release-distribution:riverhog-provenance-windows-observer` | 1 | `reference/riverhog/provenance/observers/windows/pyproject.toml` |
+| <a id="src-917183ebd1"></a>`release-distribution:riverhog-recover` | 2 | `reference/riverhog/recovery/pyproject.toml` |
+| <a id="src-7debc5c818"></a>`release-distribution:riverhog-server` | 1 | `riverhog/pyproject.toml` |
+| <a id="src-f4e68c2bf9"></a>`release-distribution:riverhog-storage-adapter-asgi-support` | 1 | `packages/riverhog-storage-adapter-asgi-support/pyproject.toml` |
+| <a id="src-ef11c798d9"></a>`release-distribution:riverhog-storage-adapter-aws` | 1 | `reference/riverhog/storage/aws/pyproject.toml` |
+| <a id="src-039f9af430"></a>`release-distribution:riverhog-storage-adapter-backblaze` | 1 | `reference/riverhog/storage/backblaze/pyproject.toml` |
+| <a id="src-58a272031a"></a>`release-distribution:riverhog-storage-adapter-filesystem` | 1 | `reference/riverhog/storage/filesystem/pyproject.toml` |
+| <a id="src-986408de09"></a>`release-distribution:riverhog-storage-adapter-protocol` | 1 | `packages/riverhog-storage-adapter-protocol/pyproject.toml` |
+| <a id="src-19239f8eca"></a>`release-distribution:riverhog-storage-adapter-s3-support` | 1 | `reference/riverhog/storage/s3-support/pyproject.toml` |
+| <a id="src-e3b24ac45f"></a>`release-distribution:riverhog-storage-adapter-support` | 1 | `packages/riverhog-storage-adapter-support/pyproject.toml` |
+| <a id="src-07745187f2"></a>`release-distribution:state-schema` | 1 | `packages/state-schema/pyproject.toml` |
+| <a id="src-65fbc03822"></a>`release-distribution:stove0-api-client` | 1 | `reference/stove0/packages/api-client/pyproject.toml` |
+| <a id="src-2b4e27da80"></a>`release-distribution:stove0-client` | 2 | `reference/stove0/application/client/pyproject.toml` |
+| <a id="src-8b7b7e5eed"></a>`release-distribution:stove0-exiftool-observer` | 1 | `reference/stove0/observers/exiftool/pyproject.toml` |
+| <a id="src-e01a1e596d"></a>`release-distribution:stove0-ffprobe-sampling-observer` | 1 | `reference/stove0/observers/ffprobe-sampling/pyproject.toml` |
+| <a id="src-7f1e7fec9e"></a>`release-distribution:stove0-media-archive-target-contracts` | 1 | `reference/stove0/targets/media-archive/contracts/pyproject.toml` |
+| <a id="src-0d39629f02"></a>`release-distribution:stove0-media-archive-target-support` | 1 | `reference/stove0/targets/media-archive/support/pyproject.toml` |
+| <a id="src-64ab741526"></a>`release-distribution:stove0-media-metadata-observer-contracts` | 1 | `reference/stove0/observers/contracts/media-metadata/pyproject.toml` |
+| <a id="src-135c11f96b"></a>`release-distribution:stove0-media-sampling-observer-contracts` | 1 | `reference/stove0/observers/contracts/media-sampling/pyproject.toml` |
+| <a id="src-27f096c998"></a>`release-distribution:stove0-nvenc-av1-opus-review-sampler` | 1 | `reference/stove0/targets/nvenc-av1-opus/review-sampler/pyproject.toml` |
+| <a id="src-b520cbce2a"></a>`release-distribution:stove0-nvenc-av1-opus-target` | 1 | `reference/stove0/targets/nvenc-av1-opus/target/pyproject.toml` |
+| <a id="src-ada50e7589"></a>`release-distribution:stove0-observer-client` | 1 | `reference/stove0/packages/observer-client/pyproject.toml` |
+| <a id="src-7c927fed76"></a>`release-distribution:stove0-observer-protocol` | 1 | `reference/stove0/packages/observer-protocol/pyproject.toml` |
+| <a id="src-49de4b2b28"></a>`release-distribution:stove0-observer-support` | 1 | `reference/stove0/packages/observer-support/pyproject.toml` |
+| <a id="src-3697a2cd79"></a>`release-distribution:stove0-operator-contracts` | 1 | `reference/stove0/packages/operator-contracts/pyproject.toml` |
+| <a id="src-21ddb4cd93"></a>`release-distribution:stove0-opus-review-sampler` | 1 | `reference/stove0/targets/opus/review-sampler/pyproject.toml` |
+| <a id="src-710aa0c3de"></a>`release-distribution:stove0-opus-target` | 1 | `reference/stove0/targets/opus/target/pyproject.toml` |
+| <a id="src-8793f1ad67"></a>`release-distribution:stove0-protocol` | 1 | `reference/stove0/packages/protocol/pyproject.toml` |
+| <a id="src-124da7769c"></a>`release-distribution:stove0-recipe-config` | 1 | `reference/stove0/packages/recipe-config/pyproject.toml` |
+| <a id="src-8b1c7b0fd5"></a>`release-distribution:stove0-review-materialize-target` | 1 | `reference/stove0/targets/review/materialize-target/pyproject.toml` |
+| <a id="src-41edb4d9f8"></a>`release-distribution:stove0-review-planning` | 1 | `reference/stove0/targets/review/planning/pyproject.toml` |
+| <a id="src-e1595567d0"></a>`release-distribution:stove0-review-rclone-effect-target` | 1 | `reference/stove0/targets/review/rclone-effect-target/pyproject.toml` |
+| <a id="src-9090dabce1"></a>`release-distribution:stove0-review-sampler-client` | 1 | `reference/stove0/targets/review/sampler/client/pyproject.toml` |
+| <a id="src-248793bf47"></a>`release-distribution:stove0-review-sampler-protocol` | 1 | `reference/stove0/targets/review/sampler/protocol/pyproject.toml` |
+| <a id="src-08f9b590a6"></a>`release-distribution:stove0-review-sampler-support` | 1 | `reference/stove0/targets/review/sampler/support/pyproject.toml` |
+| <a id="src-288a68ea62"></a>`release-distribution:stove0-review-target-contracts` | 1 | `reference/stove0/targets/review/contracts/pyproject.toml` |
+| <a id="src-56e42e89a6"></a>`release-distribution:stove0-review-target-support` | 1 | `reference/stove0/targets/review/support/pyproject.toml` |
+| <a id="src-56a02fc153"></a>`release-distribution:stove0-server` | 1 | `reference/stove0/application/server/pyproject.toml` |
+| <a id="src-370da30421"></a>`release-distribution:stove0-target-client` | 1 | `reference/stove0/packages/target-client/pyproject.toml` |
+| <a id="src-182457b760"></a>`release-distribution:stove0-target-protocol` | 1 | `reference/stove0/packages/target-protocol/pyproject.toml` |
+| <a id="src-745a95dbc1"></a>`release-distribution:stove0-target-support` | 1 | `reference/stove0/packages/target-support/pyproject.toml` |
+| <a id="src-514b283d5f"></a>`release-distribution:time-formats` | 1 | `packages/time-formats/pyproject.toml` |
+| <a id="src-8d3f4df21c"></a>`release-images:docker-bake` | 13 | `docker-bake.hcl` |
+| <a id="src-d1a927fc4b"></a>`release-installation:planner` | 4 | `scripts/release_installation.py::INSTALLATION_POLICY` |
+| <a id="src-03a2f48338"></a>`release-publication:planner` | 114 | `scripts/release.py::publication_contract` |
+| <a id="src-c5380dbe5f"></a>`release:release.toml` | 134 | `release.toml` |
 | <a id="src-6b3ecfced3"></a>`state:gogurt-listener` | 1 | `state:gogurt-listener` |
 | <a id="src-b1cc215b8d"></a>`state:mango-fish-cursor` | 1 | `state:mango-fish-cursor` |
 | <a id="src-f6a1289f67"></a>`state:piggity-local` | 1 | `state:piggity-local` |

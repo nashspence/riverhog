@@ -359,10 +359,10 @@ This is the exact generated node and edge set behind the human contract map. It 
 | <a id="re-55ca15ecf2"></a>[stove0-opus-target](#rn-313a5c450f) | `implements-protocol` | [stove0-target](#rn-9d6e708ff3) | `` |
 | <a id="re-4424eb3893"></a>[stove0-review-materialize-target](#rn-4086d947a3) | `implements-protocol` | [stove0-target](#rn-9d6e708ff3) | `` |
 | <a id="re-6d03890ef2"></a>[stove0-review-rclone-effect-target](#rn-87283d63df) | `implements-protocol` | [stove0-target](#rn-9d6e708ff3) | `` |
-| <a id="re-cfb30e9083"></a>[gogurt](#rn-eeb2be4a71) | `installed-as` | [uv-tool](#rn-672a39762b) | `` |
-| <a id="re-880a456996"></a>[piggity](#rn-0a279524f4) | `installed-as` | [uv-tool](#rn-672a39762b) | `` |
-| <a id="re-5cdba7a0c8"></a>[riverhog-recover](#rn-813d97e5a4) | `installed-as` | [uv-tool](#rn-672a39762b) | `` |
-| <a id="re-af600ca3b8"></a>[stove0-client](#rn-c5aaef6318) | `installed-as` | [uv-tool](#rn-672a39762b) | `` |
+| <a id="re-06a84b812a"></a>[gogurt](#rn-eeb2be4a71) | `installed-as` | [uv-tool](#rn-672a39762b) | `gogurt` |
+| <a id="re-f538b279f1"></a>[piggity](#rn-0a279524f4) | `installed-as` | [uv-tool](#rn-672a39762b) | `piggity` |
+| <a id="re-bc8322c5e1"></a>[riverhog-recover](#rn-813d97e5a4) | `installed-as` | [uv-tool](#rn-672a39762b) | `riverhog-recover` |
+| <a id="re-173847e186"></a>[stove0-client](#rn-c5aaef6318) | `installed-as` | [uv-tool](#rn-672a39762b) | `stove0-client` |
 | <a id="re-a55892410a"></a>[gogurt-core](#rn-e1d2ac7df3) | `owns-extension-point` | [gogurt.mounted-volume-providers](#rn-6f779eb64b) | `` |
 | <a id="re-1ec0ff0278"></a>[gogurt-listener-runtime](#rn-df1cdfd17c) | `owns-extension-point` | [gogurt.listener-host-providers](#rn-bbe759bbb1) | `` |
 | <a id="re-2fa13e219d"></a>[riverhog-provenance](#rn-728e08e7c4) | `owns-extension-point` | [riverhog.provenance-observers](#rn-ed2bbc0e31) | `` |
