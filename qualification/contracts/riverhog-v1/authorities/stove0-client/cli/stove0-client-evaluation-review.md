@@ -9,8 +9,7 @@ Exact externally visible contract owned by this semantic dossier.
 | Audit field | Value |
 |---|---|
 | Authority | [stove0-client](../index.md) |
-| Interface | [cli](index.md) |
-| Family | [evaluation](families/evaluation/index.md) |
+| Interface | [CLI](index.md) |
 | Contract elements | 1 |
 | Extent decisions | 5 |
 
@@ -45,7 +44,7 @@ Shared facts for every subject below: minimum=1
 
 ### Related interface records
 
-- [Operation parity: review_evaluation_variant](../../stove0/operation/operation-parity-review-evaluation-variant.md)
+- [PUT /v1/evaluations/{evaluation_id}/variants/{variant_id}/review](../../stove0/http-operations/put-v1-evaluations-evaluation-id-variants-variant-id-review.md)
 
 ## Governing policies
 

@@ -9,8 +9,7 @@ Exact externally visible contract owned by this semantic dossier.
 | Audit field | Value |
 |---|---|
 | Authority | [stove0-client](../index.md) |
-| Interface | [cli](index.md) |
-| Family | [scheduler](families/scheduler/index.md) |
+| Interface | [CLI](index.md) |
 | Contract elements | 1 |
 | Extent decisions | 3 |
 
@@ -41,7 +40,7 @@ Shared facts for every subject below: minimum=1
 
 ### Related interface records
 
-- [Operation parity: run_scheduler](../../stove0/operation/operation-parity-run-scheduler.md)
+- [POST /v1/admin/scheduler/run](../../stove0/http-operations/post-v1-admin-scheduler-run.md)
 
 ## Governing policies
 

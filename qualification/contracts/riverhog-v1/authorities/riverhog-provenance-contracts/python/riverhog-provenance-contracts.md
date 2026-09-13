@@ -9,8 +9,7 @@ Exact externally visible contract owned by this semantic dossier.
 | Audit field | Value |
 |---|---|
 | Authority | [riverhog-provenance-contracts](../index.md) |
-| Interface | [python](index.md) |
-| Family | [modules](index.md#f-70ad9a8787) |
+| Interface | [Python](index.md) |
 | Contract elements | 1 |
 | Extent decisions | 0 |
 

@@ -9,8 +9,7 @@ Request one bounded page from an exact accepted-segment view.
 | Audit field | Value |
 |---|---|
 | Authority | [riverhog-storage-adapter-support](../index.md) |
-| Interface | [protocol](index.md) |
-| Family | [schemas](families/schemas/index.md) |
+| Interface | [Protocols](index.md) |
 | Contract elements | 1 |
 | Extent decisions | 2 |
 

@@ -1,12 +1,8 @@
-# mango-fish: configuration
+# mango-fish: Configuration Documents
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Policies](../../../policies/index.md)
 
 Contract elements: **1** · Extent decisions: **2**
-
-| Family | Count |
-|---|---:|
-| <a id="f-551542af63"></a>`documents` | 1 |
 
 | Policy | Count |
 |---|---:|
@@ -16,6 +12,6 @@ Contract elements: **1** · Extent decisions: **2**
 
 ## Semantic dossiers
 
-| Dossier | Family | Extent decisions |
-|---|---|---:|
-| [mango-fish:configuration:mango-fish-config configuration](mango-fish-configuration-mango-fish-config-configuration.md) | `documents` | 2 |
+| Dossier | Extent decisions |
+|---|---:|
+| [mango-fish:configuration:mango-fish-config configuration](mango-fish-configuration-mango-fish-config-configuration.md) | 2 |

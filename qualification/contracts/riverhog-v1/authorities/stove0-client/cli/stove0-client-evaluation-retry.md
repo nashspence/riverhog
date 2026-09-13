@@ -9,8 +9,7 @@ Exact externally visible contract owned by this semantic dossier.
 | Audit field | Value |
 |---|---|
 | Authority | [stove0-client](../index.md) |
-| Interface | [cli](index.md) |
-| Family | [evaluation](families/evaluation/index.md) |
+| Interface | [CLI](index.md) |
 | Contract elements | 1 |
 | Extent decisions | 2 |
 
@@ -40,7 +39,7 @@ Shared facts for every subject below: maximum=1; minimum=1; reason="fixed-comman
 
 ### Related interface records
 
-- [Operation parity: retry_evaluation_variant](../../stove0/operation/operation-parity-retry-evaluation-variant.md)
+- [POST /v1/evaluations/{evaluation_id}/variants/{variant_id}/retry](../../stove0/http-operations/post-v1-evaluations-evaluation-id-variants-variant-id-retry.md)
 
 ## Governing policies
 

@@ -9,8 +9,7 @@ Exact externally visible contract owned by this semantic dossier.
 | Audit field | Value |
 |---|---|
 | Authority | [piggity](../index.md) |
-| Interface | [cli](index.md) |
-| Family | [collection](families/collection/index.md) |
+| Interface | [CLI](index.md) |
 | Contract elements | 1 |
 | Extent decisions | 6 |
 
@@ -47,7 +46,7 @@ Shared facts for every subject below: minimum=1
 
 ### Related interface records
 
-- [Operation parity: list_collection_provenance_journal_agents](../../riverhog/operation/operation-parity-list-collection-provenance-journal-agents.md)
+- [GET /v1/collections/{collection_id}/provenance/journals/{journal_id}/agents](../../riverhog/http-operations/get-v1-collections-collection-id-provenance-journals-journal-id-agents.md)
 
 ## Governing policies
 

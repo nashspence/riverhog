@@ -4,12 +4,7 @@
 
 Contract elements: **16** · Extent decisions: **1**
 
-| Interface | Count |
-|---|---:|
-| `configuration-environment` | 15 |
-| `python` | 1 |
-
 ## Interfaces
 
-- [configuration-environment](configuration-environment/index.md) — 15 elements
-- [python](python/index.md) — 1 elements
+- [Configuration Environment](configuration-environment/index.md) (15)
+- [Python](python/index.md) (1)

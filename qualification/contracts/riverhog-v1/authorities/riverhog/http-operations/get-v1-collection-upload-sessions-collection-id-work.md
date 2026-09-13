@@ -1,0 +1,233 @@
+# GET /v1/collection-upload-sessions/{collection_id}/work
+
+[Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
+
+<!-- contract-element: http-operations:riverhog:get-v1-collection-upload-sessions-collection-id-work:7b0011a226 -->
+
+Acquire Collection Upload Session Work
+
+| Audit field | Value |
+|---|---|
+| Authority | [riverhog](../index.md) |
+| Interface | [HTTP Operations](index.md) |
+| Contract elements | 1 |
+| Extent decisions | 1 |
+
+## External contract
+
+<a id="s-c49fcc285b"></a>
+- <a id="s-c6a878ced1"></a>`operationId`: acquire_collection_upload_session_work
+- <a id="s-e31071e137"></a>`summary`: Acquire Collection Upload Session Work
+- <a id="s-5830733425"></a>`security`: `[{"HTTPBearer": []}]`
+
+### Parameters
+
+| Name | In | Required | Schema |
+|---|---|---:|---|
+| <a id="s-4817272220"></a>`collection_id` | path | yes | type="integer"; minimum=1 |
+| <a id="s-3ac16348cf"></a>`limit` | query | no | type="integer"; minimum=1; maximum=64 |
+
+### Responses
+
+| Status | Description |
+|---|---|
+| <a id="s-f83a0a8071"></a>`200` | Successful Response |
+| <a id="s-13fd040651"></a>`400` | Bad Request |
+| <a id="s-a3a786ddf9"></a>`401` | Unauthorized |
+| <a id="s-9b1524bd4e"></a>`403` | Forbidden |
+| <a id="s-9dd14f9f96"></a>`404` | Not Found |
+| <a id="s-9d7cfc09e9"></a>`500` | Internal Server Error |
+
+### Progression, limits, and lifecycle
+
+#### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
+
+Shared facts for every subject below: maximum=64; minimum=1; reason="schema-maximum"
+
+| Applies to | Contract | Bounds or reason |
+|---|---|---|
+| <a id="s-577bda457d"></a>[parameter limit](#s-3ac16348cf) | `value · schema-value · contract_max` | shared above |
+
+## Maintained corroboration
+
+### Related interface records
+
+- [piggity collection upload start](../../piggity/cli/piggity-collection-upload-start.md)
+
+### Referenced contract dossiers
+
+- [schemas: CollectionUploadWorkBatchDocument](../http-schemas/schemas-collectionuploadworkbatchdocument.md)
+- [schemas: ErrorResponse](../http-schemas/schemas-errorresponse.md)
+
+## Governing policies
+
+- <a id="pa-ce19a922fd"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0)
+- <a id="pa-a91e16b5bb"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
+
+## Evidence
+
+### Qualification
+
+- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459f)
+- [make compose-smoke](../../../evidence/sources.md#q-413b0b241b)
+
+### Executable sources
+
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc9) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+- [operations:operation-matrix](../../../evidence/sources.md#src-b032bdc56b) — `scripts/operation_qualification.py::operation_matrix`
+
+### Operation qualification evidence
+
+This evidence proves maintained client, CLI, response-authority, and provider qualification without creating a second semantic operation.
+
+```json
+{
+  "application": "riverhog",
+  "classification": "client-only-primitive",
+  "cli_commands": [
+    "collection upload start"
+  ],
+  "client": "ApiClient",
+  "method": "GET",
+  "operation_id": "acquire_collection_upload_session_work",
+  "path": "/v1/collection-upload-sessions/{collection_id}/work",
+  "provider_evidence": null,
+  "read_collection": null,
+  "response_authority": "canonical-document"
+}
+```
+
+### Machine authority
+
+- `/external_contract/http_openapi/riverhog/paths/~1v1~1collection-upload-sessions~1{collection_id}~1work/get`
+
+### Exact owned JSON
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: a7b7066a0533582660a7058aaa74180c78e9fd766403f5200ac8e4c0d772a890 -->
+
+```json
+{
+  "operationId": "acquire_collection_upload_session_work",
+  "parameters": [
+    {
+      "in": "path",
+      "name": "collection_id",
+      "required": true,
+      "schema": {
+        "minimum": 1,
+        "title": "Collection Id",
+        "type": "integer"
+      }
+    },
+    {
+      "in": "query",
+      "name": "limit",
+      "required": false,
+      "schema": {
+        "default": 16,
+        "maximum": 64,
+        "minimum": 1,
+        "title": "Limit",
+        "type": "integer"
+      }
+    }
+  ],
+  "responses": {
+    "200": {
+      "content": {
+        "application/json": {
+          "schema": {
+            "$ref": "#/components/schemas/CollectionUploadWorkBatchDocument"
+          }
+        }
+      },
+      "description": "Successful Response"
+    },
+    "400": {
+      "content": {
+        "application/json": {
+          "schema": {
+            "$ref": "#/components/schemas/ErrorResponse"
+          }
+        }
+      },
+      "description": "Bad Request",
+      "x-riverhog-error-codes": [
+        "bad_request"
+      ]
+    },
+    "401": {
+      "content": {
+        "application/json": {
+          "schema": {
+            "$ref": "#/components/schemas/ErrorResponse"
+          }
+        }
+      },
+      "description": "Unauthorized",
+      "x-riverhog-error-codes": [
+        "unauthorized"
+      ]
+    },
+    "403": {
+      "content": {
+        "application/json": {
+          "schema": {
+            "$ref": "#/components/schemas/ErrorResponse"
+          }
+        }
+      },
+      "description": "Forbidden",
+      "x-riverhog-error-codes": [
+        "forbidden"
+      ]
+    },
+    "404": {
+      "content": {
+        "application/json": {
+          "schema": {
+            "$ref": "#/components/schemas/ErrorResponse"
+          }
+        }
+      },
+      "description": "Not Found",
+      "x-riverhog-error-codes": [
+        "not_found"
+      ]
+    },
+    "500": {
+      "content": {
+        "application/json": {
+          "schema": {
+            "$ref": "#/components/schemas/ErrorResponse"
+          }
+        }
+      },
+      "description": "Internal Server Error",
+      "x-riverhog-error-codes": [
+        "internal_error"
+      ]
+    }
+  },
+  "security": [
+    {
+      "HTTPBearer": []
+    }
+  ],
+  "summary": "Acquire Collection Upload Session Work",
+  "tags": [
+    "collections"
+  ],
+  "x-riverhog-interface": "client-only-primitive",
+  "x-riverhog-permission-requirements": [
+    {
+      "any_of": [
+        "collections:create"
+      ]
+    }
+  ]
+}
+```

@@ -1,12 +1,8 @@
-# stove0-operator-contracts: configuration
+# stove0-operator-contracts: Configuration Documents
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Policies](../../../policies/index.md)
 
 Contract elements: **1** · Extent decisions: **7**
-
-| Family | Count |
-|---|---:|
-| <a id="f-fa61e2a67c"></a>`documents` | 1 |
 
 | Policy | Count |
 |---|---:|
@@ -16,6 +12,6 @@ Contract elements: **1** · Extent decisions: **7**
 
 ## Semantic dossiers
 
-| Dossier | Family | Extent decisions |
-|---|---|---:|
-| [stove0-operator-contracts:configuration:admission-catalog configuration](stove0-operator-contracts-configuration-admission-catalog-configuration.md) | `documents` | 7 |
+| Dossier | Extent decisions |
+|---|---:|
+| [stove0-operator-contracts:configuration:admission-catalog configuration](stove0-operator-contracts-configuration-admission-catalog-configuration.md) | 7 |

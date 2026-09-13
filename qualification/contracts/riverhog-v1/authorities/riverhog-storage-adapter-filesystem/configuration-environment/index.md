@@ -1,12 +1,8 @@
-# riverhog-storage-adapter-filesystem: configuration-environment
+# riverhog-storage-adapter-filesystem: Configuration Environment
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Policies](../../../policies/index.md)
 
 Contract elements: **8** · Extent decisions: **3**
-
-| Family | Count |
-|---|---:|
-| <a id="f-d4ef23f967"></a>`settings` | 8 |
 
 | Policy | Count |
 |---|---:|
@@ -15,13 +11,13 @@ Contract elements: **8** · Extent decisions: **3**
 
 ## Semantic dossiers
 
-| Dossier | Family | Extent decisions |
-|---|---|---:|
-| [RIVERHOG_FILESYSTEM_STORAGE_ADAPTER_HOST](riverhog-filesystem-storage-adapter-host.md) | `settings` | 0 |
-| [RIVERHOG_FILESYSTEM_STORAGE_ADAPTER_MINIMUM_FREE_BYTES](riverhog-filesystem-storage-adapter-minimum-free-bytes.md) | `settings` | 1 |
-| [RIVERHOG_FILESYSTEM_STORAGE_ADAPTER_PORT](riverhog-filesystem-storage-adapter-port.md) | `settings` | 0 |
-| [RIVERHOG_FILESYSTEM_STORAGE_ADAPTER_READ_CHUNK_BYTES](riverhog-filesystem-storage-adapter-read-chunk-bytes.md) | `settings` | 1 |
-| [RIVERHOG_FILESYSTEM_STORAGE_ADAPTER_ROOT](riverhog-filesystem-storage-adapter-root.md) | `settings` | 0 |
-| [RIVERHOG_FILESYSTEM_STORAGE_ADAPTER_SEGMENT_BYTES](riverhog-filesystem-storage-adapter-segment-bytes.md) | `settings` | 1 |
-| [RIVERHOG_FILESYSTEM_STORAGE_ADAPTER_TOKEN](riverhog-filesystem-storage-adapter-token.md) | `settings` | 0 |
-| [RIVERHOG_FILESYSTEM_STORAGE_ADAPTER_TOKEN_FILE](riverhog-filesystem-storage-adapter-token-file.md) | `settings` | 0 |
+| Dossier | Extent decisions |
+|---|---:|
+| [RIVERHOG_FILESYSTEM_STORAGE_ADAPTER_HOST](riverhog-filesystem-storage-adapter-host.md) | 0 |
+| [RIVERHOG_FILESYSTEM_STORAGE_ADAPTER_MINIMUM_FREE_BYTES](riverhog-filesystem-storage-adapter-minimum-free-bytes.md) | 1 |
+| [RIVERHOG_FILESYSTEM_STORAGE_ADAPTER_PORT](riverhog-filesystem-storage-adapter-port.md) | 0 |
+| [RIVERHOG_FILESYSTEM_STORAGE_ADAPTER_READ_CHUNK_BYTES](riverhog-filesystem-storage-adapter-read-chunk-bytes.md) | 1 |
+| [RIVERHOG_FILESYSTEM_STORAGE_ADAPTER_ROOT](riverhog-filesystem-storage-adapter-root.md) | 0 |
+| [RIVERHOG_FILESYSTEM_STORAGE_ADAPTER_SEGMENT_BYTES](riverhog-filesystem-storage-adapter-segment-bytes.md) | 1 |
+| [RIVERHOG_FILESYSTEM_STORAGE_ADAPTER_TOKEN](riverhog-filesystem-storage-adapter-token.md) | 0 |
+| [RIVERHOG_FILESYSTEM_STORAGE_ADAPTER_TOKEN_FILE](riverhog-filesystem-storage-adapter-token-file.md) | 0 |

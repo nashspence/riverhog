@@ -9,8 +9,7 @@ Exact externally visible contract owned by this semantic dossier.
 | Audit field | Value |
 |---|---|
 | Authority | [piggity](../index.md) |
-| Interface | [cli](index.md) |
-| Family | [catalog-sync](families/catalog-sync/index.md) |
+| Interface | [CLI](index.md) |
 | Contract elements | 1 |
 | Extent decisions | 1 |
 
@@ -38,7 +37,7 @@ Shared facts for every subject below: maximum=1; minimum=1; reason="fixed-comman
 
 ### Related interface records
 
-- [Operation parity: create_catalog_sync_checkpoint](../../riverhog/operation/operation-parity-create-catalog-sync-checkpoint.md)
+- [GET /v1/catalog-sync/checkpoint](../../riverhog/http-operations/get-v1-catalog-sync-checkpoint.md)
 
 ## Governing policies
 

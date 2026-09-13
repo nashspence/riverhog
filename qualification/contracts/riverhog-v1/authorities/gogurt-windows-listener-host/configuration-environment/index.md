@@ -1,12 +1,8 @@
-# gogurt-windows-listener-host: configuration-environment
+# gogurt-windows-listener-host: Configuration Environment
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Policies](../../../policies/index.md)
 
 Contract elements: **3** · Extent decisions: **0**
-
-| Family | Count |
-|---|---:|
-| <a id="f-0a399f4eb3"></a>`settings` | 3 |
 
 | Policy | Count |
 |---|---:|
@@ -14,8 +10,8 @@ Contract elements: **3** · Extent decisions: **0**
 
 ## Semantic dossiers
 
-| Dossier | Family | Extent decisions |
-|---|---|---:|
-| [LOCALAPPDATA](localappdata.md) | `settings` | 0 |
-| [PATHEXT](pathext.md) | `settings` | 0 |
-| [SystemRoot](systemroot.md) | `settings` | 0 |
+| Dossier | Extent decisions |
+|---|---:|
+| [LOCALAPPDATA](localappdata.md) | 0 |
+| [PATHEXT](pathext.md) | 0 |
+| [SystemRoot](systemroot.md) | 0 |

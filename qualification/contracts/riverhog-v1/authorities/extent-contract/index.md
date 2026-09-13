@@ -4,10 +4,6 @@
 
 Contract elements: **12** · Extent decisions: **0**
 
-| Interface | Count |
-|---|---:|
-| `extent` | 12 |
-
 ## Interfaces
 
-- [extent](extent/index.md) — 12 elements
+- [Extent Contract](extent/index.md) (12)

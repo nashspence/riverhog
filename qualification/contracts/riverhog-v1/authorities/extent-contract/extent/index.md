@@ -1,13 +1,8 @@
-# extent-contract: extent
+# extent-contract: Extent Contract
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Policies](../../../policies/index.md)
 
 Contract elements: **12** · Extent decisions: **0**
-
-| Family | Count |
-|---|---:|
-| <a id="f-38214870c8"></a>`principles` | 5 |
-| <a id="f-b9df1e5029"></a>`rules` | 7 |
 
 | Policy | Count |
 |---|---:|
@@ -26,17 +21,17 @@ Contract elements: **12** · Extent decisions: **0**
 
 ## Semantic dossiers
 
-| Dossier | Family | Extent decisions |
-|---|---|---:|
-| [Extent principle: bounded work](extent-principle-bounded-work.md) | `principles` | 0 |
-| [Extent principle: configuration](extent-principle-configuration.md) | `principles` | 0 |
-| [Extent principle: implementation privacy](extent-principle-implementation-privacy.md) | `principles` | 0 |
-| [Extent principle: logical totals](extent-principle-logical-totals.md) | `principles` | 0 |
-| [Extent principle: operational capacity](extent-principle-operational-capacity.md) | `principles` | 0 |
-| [Extent rule: bounded segment](extent-rule-bounded-segment.md) | `rules` | 0 |
-| [Extent rule: configuration composition](extent-rule-configuration-composition.md) | `rules` | 0 |
-| [Extent rule: configured capacity](extent-rule-configured-capacity.md) | `rules` | 0 |
-| [Extent rule: extension contract](extent-rule-extension-contract.md) | `rules` | 0 |
-| [Extent rule: no semantic maximum](extent-rule-no-semantic-maximum.md) | `rules` | 0 |
-| [Extent rule: route progression](extent-rule-route-progression.md) | `rules` | 0 |
-| [Extent rule: schema bound](extent-rule-schema-bound.md) | `rules` | 0 |
+| Dossier | Extent decisions |
+|---|---:|
+| [Extent principle: bounded work](extent-principle-bounded-work.md) | 0 |
+| [Extent principle: configuration](extent-principle-configuration.md) | 0 |
+| [Extent principle: implementation privacy](extent-principle-implementation-privacy.md) | 0 |
+| [Extent principle: logical totals](extent-principle-logical-totals.md) | 0 |
+| [Extent principle: operational capacity](extent-principle-operational-capacity.md) | 0 |
+| [Extent rule: bounded segment](extent-rule-bounded-segment.md) | 0 |
+| [Extent rule: configuration composition](extent-rule-configuration-composition.md) | 0 |
+| [Extent rule: configured capacity](extent-rule-configured-capacity.md) | 0 |
+| [Extent rule: extension contract](extent-rule-extension-contract.md) | 0 |
+| [Extent rule: no semantic maximum](extent-rule-no-semantic-maximum.md) | 0 |
+| [Extent rule: route progression](extent-rule-route-progression.md) | 0 |
+| [Extent rule: schema bound](extent-rule-schema-bound.md) | 0 |

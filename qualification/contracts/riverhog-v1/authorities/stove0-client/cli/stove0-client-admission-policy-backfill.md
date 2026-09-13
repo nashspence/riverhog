@@ -9,8 +9,7 @@ Exact externally visible contract owned by this semantic dossier.
 | Audit field | Value |
 |---|---|
 | Authority | [stove0-client](../index.md) |
-| Interface | [cli](index.md) |
-| Family | [admission](families/admission/index.md) |
+| Interface | [CLI](index.md) |
 | Contract elements | 1 |
 | Extent decisions | 1 |
 
@@ -38,7 +37,7 @@ Shared facts for every subject below: maximum=1; minimum=1; reason="fixed-comman
 
 ### Related interface records
 
-- [Operation parity: backfill_admission_policy](../../stove0/operation/operation-parity-backfill-admission-policy.md)
+- [POST /v1/admission-policies/{policy_id}:backfill](../../stove0/http-operations/post-v1-admission-policies-policy-id-backfill.md)
 
 ## Governing policies
 

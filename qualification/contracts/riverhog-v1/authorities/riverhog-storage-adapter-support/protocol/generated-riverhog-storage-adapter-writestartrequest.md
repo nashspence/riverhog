@@ -13,8 +13,7 @@ credentials used to realize that session remain adapter-private.
 | Audit field | Value |
 |---|---|
 | Authority | [riverhog-storage-adapter-support](../index.md) |
-| Interface | [protocol](index.md) |
-| Family | [schemas](families/schemas/index.md) |
+| Interface | [Protocols](index.md) |
 | Contract elements | 1 |
 | Extent decisions | 4 |
 

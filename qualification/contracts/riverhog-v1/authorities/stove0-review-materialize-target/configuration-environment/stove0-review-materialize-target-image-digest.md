@@ -9,8 +9,7 @@ Exact externally visible contract owned by this semantic dossier.
 | Audit field | Value |
 |---|---|
 | Authority | [stove0-review-materialize-target](../index.md) |
-| Interface | [configuration-environment](index.md) |
-| Family | [settings](index.md#f-474ca4f8b4) |
+| Interface | [Configuration Environment](index.md) |
 | Contract elements | 1 |
 | Extent decisions | 0 |
 

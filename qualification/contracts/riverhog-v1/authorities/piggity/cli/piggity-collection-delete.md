@@ -9,8 +9,7 @@ Exact externally visible contract owned by this semantic dossier.
 | Audit field | Value |
 |---|---|
 | Authority | [piggity](../index.md) |
-| Interface | [cli](index.md) |
-| Family | [collection](families/collection/index.md) |
+| Interface | [CLI](index.md) |
 | Contract elements | 1 |
 | Extent decisions | 4 |
 
@@ -44,8 +43,8 @@ Shared facts for every subject below: maximum=1; minimum=1; reason="fixed-comman
 
 ### Related interface records
 
-- [Operation parity: delete_collection](../../riverhog/operation/operation-parity-delete-collection.md)
-- [Operation parity: plan_collection_deletion](../../riverhog/operation/operation-parity-plan-collection-deletion.md)
+- [POST /v1/collections/{collection_id}/delete](../../riverhog/http-operations/post-v1-collections-collection-id-delete.md)
+- [POST /v1/collections/{collection_id}/deletion-plan](../../riverhog/http-operations/post-v1-collections-collection-id-deletion-plan.md)
 
 ## Governing policies
 

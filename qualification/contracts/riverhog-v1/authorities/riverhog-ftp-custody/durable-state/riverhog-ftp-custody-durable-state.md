@@ -9,8 +9,7 @@ Exact externally visible contract owned by this semantic dossier.
 | Audit field | Value |
 |---|---|
 | Authority | [riverhog-ftp-custody](../index.md) |
-| Interface | [durable-state](index.md) |
-| Family | [owners](index.md#f-5917b0b920) |
+| Interface | [Durable State](index.md) |
 | Contract elements | 1 |
 | Extent decisions | 0 |
 

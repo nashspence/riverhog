@@ -1,12 +1,8 @@
-# stove0-target-support: cli
+# stove0-target-support: CLI
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Policies](../../../policies/index.md)
 
 Contract elements: **2** · Extent decisions: **1**
-
-| Family | Count |
-|---|---:|
-| <a id="f-58e39c4c6f"></a>`root` | 2 |
 
 | Policy | Count |
 |---|---:|
@@ -15,7 +11,7 @@ Contract elements: **2** · Extent decisions: **1**
 
 ## Semantic dossiers
 
-| Dossier | Family | Extent decisions |
-|---|---|---:|
-| [stove0-target-conformance](stove0-target-conformance.md) | `root` | 0 |
-| [stove0-target-schemas](stove0-target-schemas.md) | `root` | 1 |
+| Dossier | Extent decisions |
+|---|---:|
+| [stove0-target-conformance](stove0-target-conformance.md) | 0 |
+| [stove0-target-schemas](stove0-target-schemas.md) | 1 |

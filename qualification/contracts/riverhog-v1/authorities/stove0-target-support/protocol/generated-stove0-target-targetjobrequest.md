@@ -9,8 +9,7 @@ Secret-bearing target invocation; never store this document durably.
 | Audit field | Value |
 |---|---|
 | Authority | [stove0-target-support](../index.md) |
-| Interface | [protocol](index.md) |
-| Family | [schemas](index.md#f-3862b77c4f) |
+| Interface | [Protocols](index.md) |
 | Contract elements | 1 |
 | Extent decisions | 5 |
 

@@ -9,8 +9,7 @@ Exact externally visible contract owned by this semantic dossier.
 | Audit field | Value |
 |---|---|
 | Authority | [riverhog-storage-adapter-filesystem](../index.md) |
-| Interface | [cli](index.md) |
-| Family | [root](index.md#f-0576933d58) |
+| Interface | [CLI](index.md) |
 | Contract elements | 1 |
 | Extent decisions | 3 |
 

@@ -1,12 +1,8 @@
-# riverhog-storage-adapter-filesystem: cli
+# riverhog-storage-adapter-filesystem: CLI
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Policies](../../../policies/index.md)
 
 Contract elements: **1** · Extent decisions: **3**
-
-| Family | Count |
-|---|---:|
-| <a id="f-0576933d58"></a>`root` | 1 |
 
 | Policy | Count |
 |---|---:|
@@ -15,6 +11,6 @@ Contract elements: **1** · Extent decisions: **3**
 
 ## Semantic dossiers
 
-| Dossier | Family | Extent decisions |
-|---|---|---:|
-| [riverhog-storage-adapter-filesystem-materialize](riverhog-storage-adapter-filesystem-materialize.md) | `root` | 3 |
+| Dossier | Extent decisions |
+|---|---:|
+| [riverhog-storage-adapter-filesystem-materialize](riverhog-storage-adapter-filesystem-materialize.md) | 3 |

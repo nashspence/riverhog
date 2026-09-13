@@ -1,12 +1,8 @@
-# stove0-recipe-config: python
+# stove0-recipe-config: Python
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Policies](../../../policies/index.md)
 
 Contract elements: **1** · Extent decisions: **0**
-
-| Family | Count |
-|---|---:|
-| <a id="f-567c3c0c54"></a>`modules` | 1 |
 
 | Policy | Count |
 |---|---:|
@@ -14,6 +10,6 @@ Contract elements: **1** · Extent decisions: **0**
 
 ## Semantic dossiers
 
-| Dossier | Family | Extent decisions |
-|---|---|---:|
-| [stove0_recipe_config](stove0-recipe-config.md) | `modules` | 0 |
+| Dossier | Extent decisions |
+|---|---:|
+| [stove0_recipe_config](stove0-recipe-config.md) | 0 |

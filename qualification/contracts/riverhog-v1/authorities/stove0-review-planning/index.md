@@ -4,12 +4,7 @@
 
 Contract elements: **2** · Extent decisions: **0**
 
-| Interface | Count |
-|---|---:|
-| `cli` | 1 |
-| `python` | 1 |
-
 ## Interfaces
 
-- [cli](cli/index.md) — 1 elements
-- [python](python/index.md) — 1 elements
+- [CLI](cli/index.md) (1)
+- [Python](python/index.md) (1)

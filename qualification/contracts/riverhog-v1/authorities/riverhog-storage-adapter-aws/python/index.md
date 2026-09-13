@@ -1,12 +1,8 @@
-# riverhog-storage-adapter-aws: python
+# riverhog-storage-adapter-aws: Python
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Policies](../../../policies/index.md)
 
 Contract elements: **1** · Extent decisions: **0**
-
-| Family | Count |
-|---|---:|
-| <a id="f-c79ae78a43"></a>`modules` | 1 |
 
 | Policy | Count |
 |---|---:|
@@ -14,6 +10,6 @@ Contract elements: **1** · Extent decisions: **0**
 
 ## Semantic dossiers
 
-| Dossier | Family | Extent decisions |
-|---|---|---:|
-| [riverhog_storage_adapter_aws](riverhog-storage-adapter-aws.md) | `modules` | 0 |
+| Dossier | Extent decisions |
+|---|---:|
+| [riverhog_storage_adapter_aws](riverhog-storage-adapter-aws.md) | 0 |

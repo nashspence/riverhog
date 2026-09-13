@@ -1,12 +1,8 @@
-# gogurt-linux-listener-host: configuration-environment
+# gogurt-linux-listener-host: Configuration Environment
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Policies](../../../policies/index.md)
 
 Contract elements: **2** · Extent decisions: **0**
-
-| Family | Count |
-|---|---:|
-| <a id="f-74b34cc57e"></a>`settings` | 2 |
 
 | Policy | Count |
 |---|---:|
@@ -14,7 +10,7 @@ Contract elements: **2** · Extent decisions: **0**
 
 ## Semantic dossiers
 
-| Dossier | Family | Extent decisions |
-|---|---|---:|
-| [XDG_CONFIG_HOME](xdg-config-home.md) | `settings` | 0 |
-| [XDG_STATE_HOME](xdg-state-home.md) | `settings` | 0 |
+| Dossier | Extent decisions |
+|---|---:|
+| [XDG_CONFIG_HOME](xdg-config-home.md) | 0 |
+| [XDG_STATE_HOME](xdg-state-home.md) | 0 |

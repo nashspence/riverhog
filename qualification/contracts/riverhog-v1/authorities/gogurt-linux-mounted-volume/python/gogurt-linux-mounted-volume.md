@@ -9,8 +9,7 @@ Exact externally visible contract owned by this semantic dossier.
 | Audit field | Value |
 |---|---|
 | Authority | [gogurt-linux-mounted-volume](../index.md) |
-| Interface | [python](index.md) |
-| Family | [modules](index.md#f-4db037d896) |
+| Interface | [Python](index.md) |
 | Contract elements | 1 |
 | Extent decisions | 0 |
 

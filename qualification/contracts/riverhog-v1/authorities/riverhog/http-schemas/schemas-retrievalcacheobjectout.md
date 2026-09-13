@@ -1,0 +1,185 @@
+# schemas: RetrievalCacheObjectOut
+
+[Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
+
+<!-- contract-element: http-schemas:riverhog:schemas-retrievalcacheobjectout:bbdaf1ff4c -->
+
+Exact externally visible contract owned by this semantic dossier.
+
+| Audit field | Value |
+|---|---|
+| Authority | [riverhog](../index.md) |
+| Interface | [HTTP Schemas](index.md) |
+| Contract elements | 1 |
+| Extent decisions | 1 |
+
+## External contract
+
+<a id="s-d8de960a53"></a>
+- <a id="s-71b5428fd5"></a>`title`: RetrievalCacheObjectOut
+- <a id="s-023b459ad5"></a>`type`: object
+
+### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-06cc3eb427"></a>`cache_store` | yes | #/components/schemas/RetrievalCacheStoreName |  |
+| <a id="s-3b10f667fb"></a>`cached_at` | yes | type="string" |  |
+| <a id="s-d3807612bf"></a>`collection_id` | yes | #/components/schemas/CollectionId |  |
+| <a id="s-627408e577"></a>`lease_categories` | yes | type="array"; items=(type="string"; enum=["new_archive","retrieval_job"]) |  |
+| <a id="s-5e4b6f164b"></a>`new_archive_expires_at` | yes | anyOf=type="string" \| type="null" |  |
+| <a id="s-51bc3513f0"></a>`object_id` | yes | type="string" |  |
+| <a id="s-d92ae72187"></a>`protected_until` | yes | anyOf=type="string" \| type="null" |  |
+| <a id="s-47dbf3c6e5"></a>`retrieval_job_leases` | yes | type="integer" |  |
+| <a id="s-ae87dd0d79"></a>`source_store` | yes | #/components/schemas/ArchiveStoreName |  |
+| <a id="s-cbb7f490d3"></a>`state` | yes | #/components/schemas/RetrievalCacheState |  |
+| <a id="s-c95d53b4cf"></a>`stored_bytes` | yes | type="integer" |  |
+| <a id="s-a582abba72"></a>`stored_sha256` | yes | anyOf=type="string" \| type="null" |  |
+| <a id="s-e2697d058e"></a>`verified_at` | yes | type="string" |  |
+
+### Progression, limits, and lifecycle
+
+#### [extent-rule/no-semantic-maximum/v1](../../../policies/index.md#p-574724b48a)
+
+Shared facts for every subject below: capacity_authority={"declared_maximum":null,"hidden_maximum":"forbidden","owner":"riverhog"}; maximum=null; reason="no-declared-semantic-maximum"
+
+| Applies to | Contract | Bounds or reason |
+|---|---|---|
+| [field lease_categories](#s-627408e577) | `cardinality · items · operational_policy` | shared above |
+
+## Maintained corroboration
+
+### Referenced contract dossiers
+
+- [schemas: ArchiveStoreName](schemas-archivestorename.md)
+- [schemas: CollectionId](schemas-collectionid.md)
+- [schemas: RetrievalCacheState](schemas-retrievalcachestate.md)
+- [schemas: RetrievalCacheStoreName](schemas-retrievalcachestorename.md)
+
+## Governing policies
+
+- <a id="pa-321017a5d6"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0)
+- <a id="pa-576eaf962c"></a>[extent-rule/no-semantic-maximum/v1](../../../policies/index.md#p-574724b48a)
+
+## Evidence
+
+### Qualification
+
+- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459f)
+- [make compose-smoke](../../../evidence/sources.md#q-413b0b241b)
+
+### Executable sources
+
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc9) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+
+### Machine authority
+
+- `/external_contract/http_openapi/riverhog/components/schemas/RetrievalCacheObjectOut`
+
+### Exact owned JSON
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 9cffc6baaebb7190c36f83db762b17e8a4892c78028fb285265bfe08e054a3e4 -->
+
+```json
+{
+  "additionalProperties": false,
+  "properties": {
+    "cache_store": {
+      "$ref": "#/components/schemas/RetrievalCacheStoreName"
+    },
+    "cached_at": {
+      "title": "Cached At",
+      "type": "string"
+    },
+    "collection_id": {
+      "$ref": "#/components/schemas/CollectionId"
+    },
+    "lease_categories": {
+      "items": {
+        "enum": [
+          "new_archive",
+          "retrieval_job"
+        ],
+        "type": "string"
+      },
+      "title": "Lease Categories",
+      "type": "array"
+    },
+    "new_archive_expires_at": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "New Archive Expires At"
+    },
+    "object_id": {
+      "title": "Object Id",
+      "type": "string"
+    },
+    "protected_until": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Protected Until"
+    },
+    "retrieval_job_leases": {
+      "title": "Retrieval Job Leases",
+      "type": "integer"
+    },
+    "source_store": {
+      "$ref": "#/components/schemas/ArchiveStoreName"
+    },
+    "state": {
+      "$ref": "#/components/schemas/RetrievalCacheState"
+    },
+    "stored_bytes": {
+      "title": "Stored Bytes",
+      "type": "integer"
+    },
+    "stored_sha256": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Stored Sha256"
+    },
+    "verified_at": {
+      "title": "Verified At",
+      "type": "string"
+    }
+  },
+  "required": [
+    "collection_id",
+    "source_store",
+    "cache_store",
+    "object_id",
+    "state",
+    "stored_bytes",
+    "stored_sha256",
+    "cached_at",
+    "verified_at",
+    "protected_until",
+    "new_archive_expires_at",
+    "lease_categories",
+    "retrieval_job_leases"
+  ],
+  "title": "RetrievalCacheObjectOut",
+  "type": "object"
+}
+```

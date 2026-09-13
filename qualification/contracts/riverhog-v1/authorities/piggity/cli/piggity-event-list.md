@@ -9,8 +9,7 @@ Exact externally visible contract owned by this semantic dossier.
 | Audit field | Value |
 |---|---|
 | Authority | [piggity](../index.md) |
-| Interface | [cli](index.md) |
-| Family | [event](families/event/index.md) |
+| Interface | [CLI](index.md) |
 | Contract elements | 1 |
 | Extent decisions | 4 |
 
@@ -43,7 +42,7 @@ Shared facts for every subject below: minimum=1
 
 ### Related interface records
 
-- [Operation parity: list_lifecycle_events](../../riverhog/operation/operation-parity-list-lifecycle-events.md)
+- [GET /v1/events](../../riverhog/http-operations/get-v1-events.md)
 
 ## Governing policies
 

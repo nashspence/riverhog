@@ -4,10 +4,6 @@
 
 Contract elements: **1** · Extent decisions: **0**
 
-| Interface | Count |
-|---|---:|
-| `python` | 1 |
-
 ## Interfaces
 
-- [python](python/index.md) — 1 elements
+- [Python](python/index.md) (1)

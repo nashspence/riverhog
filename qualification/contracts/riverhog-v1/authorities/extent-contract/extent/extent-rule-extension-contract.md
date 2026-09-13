@@ -9,8 +9,7 @@ Exact externally visible contract owned by this semantic dossier.
 | Audit field | Value |
 |---|---|
 | Authority | [extent-contract](../index.md) |
-| Interface | [extent](index.md) |
-| Family | [rules](index.md#f-b9df1e5029) |
+| Interface | [Extent Contract](index.md) |
 | Contract elements | 1 |
 | Extent decisions | 0 |
 

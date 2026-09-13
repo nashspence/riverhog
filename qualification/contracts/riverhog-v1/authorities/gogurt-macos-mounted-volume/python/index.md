@@ -1,12 +1,8 @@
-# gogurt-macos-mounted-volume: python
+# gogurt-macos-mounted-volume: Python
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Policies](../../../policies/index.md)
 
 Contract elements: **1** · Extent decisions: **0**
-
-| Family | Count |
-|---|---:|
-| <a id="f-6c5d1455bc"></a>`modules` | 1 |
 
 | Policy | Count |
 |---|---:|
@@ -14,6 +10,6 @@ Contract elements: **1** · Extent decisions: **0**
 
 ## Semantic dossiers
 
-| Dossier | Family | Extent decisions |
-|---|---|---:|
-| [gogurt_macos_mounted_volume](gogurt-macos-mounted-volume.md) | `modules` | 0 |
+| Dossier | Extent decisions |
+|---|---:|
+| [gogurt_macos_mounted_volume](gogurt-macos-mounted-volume.md) | 0 |

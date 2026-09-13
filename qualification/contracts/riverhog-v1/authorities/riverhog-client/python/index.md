@@ -1,12 +1,8 @@
-# riverhog-client: python
+# riverhog-client: Python
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Policies](../../../policies/index.md)
 
 Contract elements: **2** · Extent decisions: **0**
-
-| Family | Count |
-|---|---:|
-| <a id="f-b8f1c0c242"></a>`modules` | 2 |
 
 | Policy | Count |
 |---|---:|
@@ -14,7 +10,7 @@ Contract elements: **2** · Extent decisions: **0**
 
 ## Semantic dossiers
 
-| Dossier | Family | Extent decisions |
-|---|---|---:|
-| [riverhog_client](riverhog-client.md) | `modules` | 0 |
-| [riverhog_client.transform](riverhog-client-transform.md) | `modules` | 0 |
+| Dossier | Extent decisions |
+|---|---:|
+| [riverhog_client](riverhog-client.md) | 0 |
+| [riverhog_client.transform](riverhog-client-transform.md) | 0 |

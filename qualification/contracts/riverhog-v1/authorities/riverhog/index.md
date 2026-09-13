@@ -2,14 +2,11 @@
 
 [Atlas](../../index.md) · [Policies](../../policies/index.md)
 
-Contract elements: **471** · Extent decisions: **493**
-
-| Interface | Count |
-|---|---:|
-| `http` | 362 |
-| `operation` | 109 |
+Contract elements: **364** · Extent decisions: **493**
 
 ## Interfaces
 
-- [http](http/index.md) — 362 elements
-- [operation](operation/index.md) — 109 elements
+- [HTTP Operations](http-operations/index.md) (109)
+- [HTTP Schemas](http-schemas/index.md) (253)
+- [HTTP Service Declaration](http-service-declaration/index.md) (1)
+- [HTTP Security Schemes](http-security-schemes/index.md) (1)

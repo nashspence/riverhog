@@ -1,12 +1,8 @@
-# gogurt-macos-listener-host: python
+# gogurt-macos-listener-host: Python
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Policies](../../../policies/index.md)
 
 Contract elements: **1** · Extent decisions: **0**
-
-| Family | Count |
-|---|---:|
-| <a id="f-cd897bea77"></a>`modules` | 1 |
 
 | Policy | Count |
 |---|---:|
@@ -14,6 +10,6 @@ Contract elements: **1** · Extent decisions: **0**
 
 ## Semantic dossiers
 
-| Dossier | Family | Extent decisions |
-|---|---|---:|
-| [gogurt_macos_listener_host](gogurt-macos-listener-host.md) | `modules` | 0 |
+| Dossier | Extent decisions |
+|---|---:|
+| [gogurt_macos_listener_host](gogurt-macos-listener-host.md) | 0 |

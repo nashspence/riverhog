@@ -1,12 +1,8 @@
-# stove0-control: durable-state
+# stove0-control: Durable State
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Policies](../../../policies/index.md)
 
 Contract elements: **1** · Extent decisions: **0**
-
-| Family | Count |
-|---|---:|
-| <a id="f-c8f271895d"></a>`owners` | 1 |
 
 | Policy | Count |
 |---|---:|
@@ -14,6 +10,6 @@ Contract elements: **1** · Extent decisions: **0**
 
 ## Semantic dossiers
 
-| Dossier | Family | Extent decisions |
-|---|---|---:|
-| [stove0-control durable state](stove0-control-durable-state.md) | `owners` | 0 |
+| Dossier | Extent decisions |
+|---|---:|
+| [stove0-control durable state](stove0-control-durable-state.md) | 0 |

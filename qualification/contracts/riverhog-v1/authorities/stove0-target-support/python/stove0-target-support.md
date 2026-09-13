@@ -9,8 +9,7 @@ Exact externally visible contract owned by this semantic dossier.
 | Audit field | Value |
 |---|---|
 | Authority | [stove0-target-support](../index.md) |
-| Interface | [python](index.md) |
-| Family | [modules](index.md#f-39f19460d3) |
+| Interface | [Python](index.md) |
 | Contract elements | 1 |
 | Extent decisions | 0 |
 

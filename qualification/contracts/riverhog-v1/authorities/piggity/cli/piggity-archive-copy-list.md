@@ -9,8 +9,7 @@ Exact externally visible contract owned by this semantic dossier.
 | Audit field | Value |
 |---|---|
 | Authority | [piggity](../index.md) |
-| Interface | [cli](index.md) |
-| Family | [archive](families/archive/index.md) |
+| Interface | [CLI](index.md) |
 | Contract elements | 1 |
 | Extent decisions | 9 |
 
@@ -53,7 +52,7 @@ Shared facts for every subject below: minimum=1
 
 ### Related interface records
 
-- [Operation parity: list_archive_copy_jobs](../../riverhog/operation/operation-parity-list-archive-copy-jobs.md)
+- [GET /v1/archive/copies](../../riverhog/http-operations/get-v1-archive-copies.md)
 
 ## Governing policies
 

@@ -1,12 +1,8 @@
-# stove0-media-sampling-observer-contracts: python
+# stove0-media-sampling-observer-contracts: Python
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Policies](../../../policies/index.md)
 
 Contract elements: **1** · Extent decisions: **0**
-
-| Family | Count |
-|---|---:|
-| <a id="f-020e7ee701"></a>`modules` | 1 |
 
 | Policy | Count |
 |---|---:|
@@ -14,6 +10,6 @@ Contract elements: **1** · Extent decisions: **0**
 
 ## Semantic dossiers
 
-| Dossier | Family | Extent decisions |
-|---|---|---:|
-| [stove0_media_sampling_observer_contracts](stove0-media-sampling-observer-contracts.md) | `modules` | 0 |
+| Dossier | Extent decisions |
+|---|---:|
+| [stove0_media_sampling_observer_contracts](stove0-media-sampling-observer-contracts.md) | 0 |

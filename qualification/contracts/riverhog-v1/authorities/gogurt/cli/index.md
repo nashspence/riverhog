@@ -1,19 +1,8 @@
-# gogurt: cli
+# gogurt: CLI
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Policies](../../../policies/index.md)
 
 Contract elements: **21** · Extent decisions: **55**
-
-| Family | Count |
-|---|---:|
-| <a id="f-a22fba0f57"></a>`list` | 1 |
-| <a id="f-75084d8061"></a>`listener` | 8 |
-| <a id="f-4b28905304"></a>`mounts` | 1 |
-| <a id="f-35c12cf73e"></a>`provider` | 7 |
-| <a id="f-42e37a5404"></a>`root` | 1 |
-| <a id="f-a44511a3b2"></a>`run` | 1 |
-| <a id="f-9c41482fcc"></a>`watch` | 1 |
-| <a id="f-b46409492b"></a>`write` | 1 |
 
 | Policy | Count |
 |---|---:|
@@ -22,26 +11,26 @@ Contract elements: **21** · Extent decisions: **55**
 
 ## Semantic dossiers
 
-| Dossier | Family | Extent decisions |
-|---|---|---:|
-| [gogurt list](gogurt-list.md) | `list` | 2 |
-| [gogurt listener](gogurt-listener.md) | `listener` | 0 |
-| [gogurt listener _run](gogurt-listener-run.md) | `listener` | 1 |
-| [gogurt listener install](gogurt-listener-install.md) | `listener` | 8 |
-| [gogurt listener restart](gogurt-listener-restart.md) | `listener` | 2 |
-| [gogurt listener start](gogurt-listener-start.md) | `listener` | 2 |
-| [gogurt listener status](gogurt-listener-status.md) | `listener` | 2 |
-| [gogurt listener stop](gogurt-listener-stop.md) | `listener` | 2 |
-| [gogurt listener uninstall](gogurt-listener-uninstall.md) | `listener` | 2 |
-| [gogurt mounts](gogurt-mounts.md) | `mounts` | 2 |
-| [gogurt provider](gogurt-provider.md) | `provider` | 0 |
-| [gogurt provider listener-host](gogurt-provider-listener-host.md) | `provider` | 0 |
-| [gogurt provider listener-host list](gogurt-provider-listener-host-list.md) | `provider` | 2 |
-| [gogurt provider listener-host show](gogurt-provider-listener-host-show.md) | `provider` | 2 |
-| [gogurt provider mounted-volume](gogurt-provider-mounted-volume.md) | `provider` | 0 |
-| [gogurt provider mounted-volume list](gogurt-provider-mounted-volume-list.md) | `provider` | 2 |
-| [gogurt provider mounted-volume show](gogurt-provider-mounted-volume-show.md) | `provider` | 2 |
-| [gogurt](gogurt.md) | `root` | 3 |
-| [gogurt run](gogurt-run.md) | `run` | 6 |
-| [gogurt watch](gogurt-watch.md) | `watch` | 8 |
-| [gogurt write](gogurt-write.md) | `write` | 7 |
+| Dossier | Extent decisions |
+|---|---:|
+| [gogurt](gogurt.md) | 3 |
+| [gogurt list](gogurt-list.md) | 2 |
+| [gogurt listener](gogurt-listener.md) | 0 |
+| [gogurt listener _run](gogurt-listener-run.md) | 1 |
+| [gogurt listener install](gogurt-listener-install.md) | 8 |
+| [gogurt listener restart](gogurt-listener-restart.md) | 2 |
+| [gogurt listener start](gogurt-listener-start.md) | 2 |
+| [gogurt listener status](gogurt-listener-status.md) | 2 |
+| [gogurt listener stop](gogurt-listener-stop.md) | 2 |
+| [gogurt listener uninstall](gogurt-listener-uninstall.md) | 2 |
+| [gogurt mounts](gogurt-mounts.md) | 2 |
+| [gogurt provider](gogurt-provider.md) | 0 |
+| [gogurt provider listener-host](gogurt-provider-listener-host.md) | 0 |
+| [gogurt provider listener-host list](gogurt-provider-listener-host-list.md) | 2 |
+| [gogurt provider listener-host show](gogurt-provider-listener-host-show.md) | 2 |
+| [gogurt provider mounted-volume](gogurt-provider-mounted-volume.md) | 0 |
+| [gogurt provider mounted-volume list](gogurt-provider-mounted-volume-list.md) | 2 |
+| [gogurt provider mounted-volume show](gogurt-provider-mounted-volume-show.md) | 2 |
+| [gogurt run](gogurt-run.md) | 6 |
+| [gogurt watch](gogurt-watch.md) | 8 |
+| [gogurt write](gogurt-write.md) | 7 |

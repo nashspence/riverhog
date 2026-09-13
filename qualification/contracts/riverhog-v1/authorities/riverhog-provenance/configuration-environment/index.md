@@ -1,12 +1,8 @@
-# riverhog-provenance: configuration-environment
+# riverhog-provenance: Configuration Environment
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Policies](../../../policies/index.md)
 
 Contract elements: **3** · Extent decisions: **0**
-
-| Family | Count |
-|---|---:|
-| <a id="f-8ffdbd36a6"></a>`settings` | 3 |
 
 | Policy | Count |
 |---|---:|
@@ -14,8 +10,8 @@ Contract elements: **3** · Extent decisions: **0**
 
 ## Semantic dossiers
 
-| Dossier | Family | Extent decisions |
-|---|---|---:|
-| [LOCALAPPDATA](localappdata.md) | `settings` | 0 |
-| [RIVERHOG_PROVENANCE_STATE_HOME](riverhog-provenance-state-home.md) | `settings` | 0 |
-| [XDG_STATE_HOME](xdg-state-home.md) | `settings` | 0 |
+| Dossier | Extent decisions |
+|---|---:|
+| [LOCALAPPDATA](localappdata.md) | 0 |
+| [RIVERHOG_PROVENANCE_STATE_HOME](riverhog-provenance-state-home.md) | 0 |
+| [XDG_STATE_HOME](xdg-state-home.md) | 0 |

@@ -1,12 +1,8 @@
-# riverhog-protocol: protocol
+# riverhog-protocol: Protocols
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Policies](../../../policies/index.md)
 
 Contract elements: **1** · Extent decisions: **5**
-
-| Family | Count |
-|---|---:|
-| <a id="f-7249fc4319"></a>`schemas` | 1 |
 
 | Policy | Count |
 |---|---:|
@@ -15,6 +11,6 @@ Contract elements: **1** · Extent decisions: **5**
 
 ## Semantic dossiers
 
-| Dossier | Family | Extent decisions |
-|---|---|---:|
-| [Riverhog collection description document v1](riverhog-collection-description-document-v1.md) | `schemas` | 5 |
+| Dossier | Extent decisions |
+|---|---:|
+| [Riverhog collection description document v1](riverhog-collection-description-document-v1.md) | 5 |

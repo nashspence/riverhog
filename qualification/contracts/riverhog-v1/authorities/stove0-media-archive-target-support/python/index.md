@@ -1,12 +1,8 @@
-# stove0-media-archive-target-support: python
+# stove0-media-archive-target-support: Python
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Policies](../../../policies/index.md)
 
 Contract elements: **1** · Extent decisions: **0**
-
-| Family | Count |
-|---|---:|
-| <a id="f-560d96528b"></a>`modules` | 1 |
 
 | Policy | Count |
 |---|---:|
@@ -14,6 +10,6 @@ Contract elements: **1** · Extent decisions: **0**
 
 ## Semantic dossiers
 
-| Dossier | Family | Extent decisions |
-|---|---|---:|
-| [stove0_media_archive_target_support](stove0-media-archive-target-support.md) | `modules` | 0 |
+| Dossier | Extent decisions |
+|---|---:|
+| [stove0_media_archive_target_support](stove0-media-archive-target-support.md) | 0 |

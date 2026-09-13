@@ -1,12 +1,8 @@
-# gogurt-path-volume-support: python
+# gogurt-path-volume-support: Python
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Policies](../../../policies/index.md)
 
 Contract elements: **1** · Extent decisions: **0**
-
-| Family | Count |
-|---|---:|
-| <a id="f-ba97456dca"></a>`modules` | 1 |
 
 | Policy | Count |
 |---|---:|
@@ -14,6 +10,6 @@ Contract elements: **1** · Extent decisions: **0**
 
 ## Semantic dossiers
 
-| Dossier | Family | Extent decisions |
-|---|---|---:|
-| [gogurt_path_volume_support](gogurt-path-volume-support.md) | `modules` | 0 |
+| Dossier | Extent decisions |
+|---|---:|
+| [gogurt_path_volume_support](gogurt-path-volume-support.md) | 0 |

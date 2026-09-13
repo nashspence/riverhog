@@ -9,8 +9,7 @@ Exact externally visible contract owned by this semantic dossier.
 | Audit field | Value |
 |---|---|
 | Authority | [riverhog-storage-adapter-asgi-support](../index.md) |
-| Interface | [python](index.md) |
-| Family | [modules](index.md#f-e58ca8b8b8) |
+| Interface | [Python](index.md) |
 | Contract elements | 1 |
 | Extent decisions | 0 |
 

@@ -1,12 +1,8 @@
-# piggity: configuration-environment
+# piggity: Configuration Environment
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Policies](../../../policies/index.md)
 
 Contract elements: **7** · Extent decisions: **3**
-
-| Family | Count |
-|---|---:|
-| <a id="f-63bc29edfb"></a>`settings` | 7 |
 
 | Policy | Count |
 |---|---:|
@@ -15,12 +11,12 @@ Contract elements: **7** · Extent decisions: **3**
 
 ## Semantic dossiers
 
-| Dossier | Family | Extent decisions |
-|---|---|---:|
-| [PIGGITY_LOCAL_DATABASE](piggity-local-database.md) | `settings` | 0 |
-| [PIGGITY_LOCAL_ROOT](piggity-local-root.md) | `settings` | 0 |
-| [PIGGITY_PLAIN](piggity-plain.md) | `settings` | 0 |
-| [PIGGITY_UPLOAD_FILE_LOG_BYTES](piggity-upload-file-log-bytes.md) | `settings` | 1 |
-| [PIGGITY_UPLOAD_FINALIZE_POLL_SECONDS](piggity-upload-finalize-poll-seconds.md) | `settings` | 1 |
-| [PIGGITY_UPLOAD_FINALIZE_TIMEOUT_SECONDS](piggity-upload-finalize-timeout-seconds.md) | `settings` | 1 |
-| [TERM](term.md) | `settings` | 0 |
+| Dossier | Extent decisions |
+|---|---:|
+| [PIGGITY_LOCAL_DATABASE](piggity-local-database.md) | 0 |
+| [PIGGITY_LOCAL_ROOT](piggity-local-root.md) | 0 |
+| [PIGGITY_PLAIN](piggity-plain.md) | 0 |
+| [PIGGITY_UPLOAD_FILE_LOG_BYTES](piggity-upload-file-log-bytes.md) | 1 |
+| [PIGGITY_UPLOAD_FINALIZE_POLL_SECONDS](piggity-upload-finalize-poll-seconds.md) | 1 |
+| [PIGGITY_UPLOAD_FINALIZE_TIMEOUT_SECONDS](piggity-upload-finalize-timeout-seconds.md) | 1 |
+| [TERM](term.md) | 0 |

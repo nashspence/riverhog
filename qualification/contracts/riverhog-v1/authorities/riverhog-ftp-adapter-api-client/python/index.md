@@ -1,12 +1,8 @@
-# riverhog-ftp-adapter-api-client: python
+# riverhog-ftp-adapter-api-client: Python
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Policies](../../../policies/index.md)
 
 Contract elements: **1** · Extent decisions: **0**
-
-| Family | Count |
-|---|---:|
-| <a id="f-6667446192"></a>`modules` | 1 |
 
 | Policy | Count |
 |---|---:|
@@ -14,6 +10,6 @@ Contract elements: **1** · Extent decisions: **0**
 
 ## Semantic dossiers
 
-| Dossier | Family | Extent decisions |
-|---|---|---:|
-| [riverhog_ftp_adapter_api_client](riverhog-ftp-adapter-api-client.md) | `modules` | 0 |
+| Dossier | Extent decisions |
+|---|---:|
+| [riverhog_ftp_adapter_api_client](riverhog-ftp-adapter-api-client.md) | 0 |

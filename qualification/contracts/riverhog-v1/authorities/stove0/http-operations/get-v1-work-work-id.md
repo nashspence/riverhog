@@ -1,0 +1,194 @@
+# GET /v1/work/{work_id}
+
+[Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
+
+<!-- contract-element: http-operations:stove0:get-v1-work-work-id:c5ac1761dd -->
+
+Get Work
+
+| Audit field | Value |
+|---|---|
+| Authority | [stove0](../index.md) |
+| Interface | [HTTP Operations](index.md) |
+| Contract elements | 1 |
+| Extent decisions | 0 |
+
+## External contract
+
+<a id="s-35e0e40dc5"></a>
+- <a id="s-3b037366e5"></a>`operationId`: get_work
+- <a id="s-cd004bbefc"></a>`summary`: Get Work
+
+### Parameters
+
+| Name | In | Required | Schema |
+|---|---|---:|---|
+| <a id="s-77db0a335c"></a>`work_id` | path | yes | type="string" |
+
+### Responses
+
+| Status | Description |
+|---|---|
+| <a id="s-0ec142a631"></a>`200` | Successful Response |
+| <a id="s-a9182281a1"></a>`400` | Bad Request |
+| <a id="s-5c9785311d"></a>`401` | Unauthorized |
+| <a id="s-df4f706e77"></a>`403` | Forbidden |
+| <a id="s-4bc4bf3515"></a>`404` | Not Found |
+| <a id="s-2995ba3871"></a>`500` | Internal Server Error |
+
+## Maintained corroboration
+
+### Related interface records
+
+- [stove0-client work show](../../stove0-client/cli/stove0-client-work-show.md)
+
+### Referenced contract dossiers
+
+- [schemas: ErrorResponse](../http-schemas/schemas-errorresponse.md)
+- [schemas: WorkView](../http-schemas/schemas-workview.md)
+
+## Governing policies
+
+- <a id="pa-c08bab1ed9"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0)
+
+## Evidence
+
+### Qualification
+
+- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459f)
+- [make compose-smoke](../../../evidence/sources.md#q-413b0b241b)
+
+### Executable sources
+
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [openapi:stove0](../../../evidence/sources.md#src-52e6e32124) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+- [operations:operation-matrix](../../../evidence/sources.md#src-b032bdc56b) — `scripts/operation_qualification.py::operation_matrix`
+
+### Operation qualification evidence
+
+This evidence proves maintained client, CLI, response-authority, and provider qualification without creating a second semantic operation.
+
+```json
+{
+  "application": "stove0",
+  "classification": "human-cli+json",
+  "cli_commands": [
+    "work show"
+  ],
+  "client": "Stove0ApiClient",
+  "method": "GET",
+  "operation_id": "get_work",
+  "path": "/v1/work/{work_id}",
+  "provider_evidence": null,
+  "read_collection": null,
+  "response_authority": "operator-projection"
+}
+```
+
+### Machine authority
+
+- `/external_contract/http_openapi/stove0/paths/~1v1~1work~1{work_id}/get`
+
+### Exact owned JSON
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: 43f6cdcfaf785b80e918976dbeaf7e2f5ce3ce617ba46e208496141c31e95382 -->
+
+```json
+{
+  "operationId": "get_work",
+  "parameters": [
+    {
+      "in": "path",
+      "name": "work_id",
+      "required": true,
+      "schema": {
+        "title": "Work Id",
+        "type": "string"
+      }
+    }
+  ],
+  "responses": {
+    "200": {
+      "content": {
+        "application/json": {
+          "schema": {
+            "$ref": "#/components/schemas/WorkView"
+          }
+        }
+      },
+      "description": "Successful Response"
+    },
+    "400": {
+      "content": {
+        "application/json": {
+          "schema": {
+            "$ref": "#/components/schemas/ErrorResponse"
+          }
+        }
+      },
+      "description": "Bad Request",
+      "x-riverhog-error-codes": [
+        "bad_request"
+      ]
+    },
+    "401": {
+      "content": {
+        "application/json": {
+          "schema": {
+            "$ref": "#/components/schemas/ErrorResponse"
+          }
+        }
+      },
+      "description": "Unauthorized",
+      "x-riverhog-error-codes": [
+        "unauthorized"
+      ]
+    },
+    "403": {
+      "content": {
+        "application/json": {
+          "schema": {
+            "$ref": "#/components/schemas/ErrorResponse"
+          }
+        }
+      },
+      "description": "Forbidden",
+      "x-riverhog-error-codes": [
+        "forbidden"
+      ]
+    },
+    "404": {
+      "content": {
+        "application/json": {
+          "schema": {
+            "$ref": "#/components/schemas/ErrorResponse"
+          }
+        }
+      },
+      "description": "Not Found",
+      "x-riverhog-error-codes": [
+        "not_found"
+      ]
+    },
+    "500": {
+      "content": {
+        "application/json": {
+          "schema": {
+            "$ref": "#/components/schemas/ErrorResponse"
+          }
+        }
+      },
+      "description": "Internal Server Error",
+      "x-riverhog-error-codes": [
+        "internal_error"
+      ]
+    }
+  },
+  "summary": "Get Work",
+  "tags": [
+    "work"
+  ]
+}
+```

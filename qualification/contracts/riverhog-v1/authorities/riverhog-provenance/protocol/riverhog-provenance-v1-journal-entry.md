@@ -9,8 +9,7 @@ One immutable entry in a hash-chained RFC 7464 per-file provenance journal.
 | Audit field | Value |
 |---|---|
 | Authority | [riverhog-provenance](../index.md) |
-| Interface | [protocol](index.md) |
-| Family | [schemas](index.md#f-6adfbad66e) |
+| Interface | [Protocols](index.md) |
 | Contract elements | 1 |
 | Extent decisions | 79 |
 

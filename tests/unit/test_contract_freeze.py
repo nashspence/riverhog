@@ -79,7 +79,7 @@ def test_checked_contract_freeze_matches_every_executable_authority() -> None:
         "durable_state",
         "extents",
         "http_openapi",
-        "operations",
+        "http_route_supplements",
         "protocol_schemas",
         "python",
         "release",
@@ -114,7 +114,8 @@ def test_checked_contract_freeze_matches_every_executable_authority() -> None:
         "tag",
     }
     assert set(external["http_openapi"]) == {"riverhog", "riverhog-ftp-adapter", "stove0"}
-    assert len(external["operations"]) == 147
+    assert len(external["http_route_supplements"]) == 2
+    assert len(trace["operation_qualification"]["records"]) == 147
     assert len(external["python"]) == 62
     assert len(external["durable_state"]["owners"]) == 8
     extents = external["extents"]
@@ -136,6 +137,7 @@ def test_checked_contract_freeze_matches_every_executable_authority() -> None:
         "state": 8,
     }
     assert trace["coverage"]["extent_decisions"] == len(extents["decisions"])
+    assert trace["coverage"]["operation_qualification_records"] == 147
     authority_registry = trace["authority_registry"]
     assert authority_registry["schema"] == "riverhog-contract-authority-registry/v1"
     assert {item["id"] for item in authority_registry["declared_authorities"]} == {
@@ -413,11 +415,11 @@ def test_audit_commands_route_by_authority_interface_and_dossier(
     assert summary["discovery_anomalies"]["missing"] == 0
     assert summary["atlas_root"] == "riverhog-v1/index.md"
 
-    assert module.main(["list", "--authority", "riverhog", "--interface", "http"]) == 0
+    assert module.main(["list", "--authority", "riverhog", "--interface", "http-operations"]) == 0
     elements = json.loads(capsys.readouterr().out)
     assert elements
     assert {item["authority"] for item in elements} == {"riverhog"}
-    assert {item["interface"] for item in elements} == {"http"}
+    assert {item["interface"] for item in elements} == {"http-operations"}
 
     assert module.main(["show", elements[0]["id"]]) == 0
     shown = json.loads(capsys.readouterr().out)

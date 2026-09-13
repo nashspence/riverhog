@@ -9,8 +9,7 @@ Exact externally visible contract owned by this semantic dossier.
 | Audit field | Value |
 |---|---|
 | Authority | [riverhog-ftp-adapter](../index.md) |
-| Interface | [cli](index.md) |
-| Family | [riverhog-ftp-adapter status](index.md#f-ca752dc011) |
+| Interface | [CLI](index.md) |
 | Contract elements | 1 |
 | Extent decisions | 0 |
 
@@ -24,6 +23,12 @@ Exact externally visible contract owned by this semantic dossier.
 |---|---|---:|---|---|
 | <a id="s-f54fd55b02"></a>`` | _StoreAction | no | int | --page-size |
 | <a id="s-2a51aae1b2"></a>`` | _StoreAction | no |  | --page-token |
+
+## Maintained corroboration
+
+### Related interface records
+
+- [GET /v1/status](../http-operations/get-v1-status.md)
 
 ## Governing policies
 

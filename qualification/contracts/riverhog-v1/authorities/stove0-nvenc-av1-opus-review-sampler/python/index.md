@@ -1,12 +1,8 @@
-# stove0-nvenc-av1-opus-review-sampler: python
+# stove0-nvenc-av1-opus-review-sampler: Python
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Policies](../../../policies/index.md)
 
 Contract elements: **1** · Extent decisions: **0**
-
-| Family | Count |
-|---|---:|
-| <a id="f-2dd1f7942e"></a>`modules` | 1 |
 
 | Policy | Count |
 |---|---:|
@@ -14,6 +10,6 @@ Contract elements: **1** · Extent decisions: **0**
 
 ## Semantic dossiers
 
-| Dossier | Family | Extent decisions |
-|---|---|---:|
-| [stove0_nvenc_av1_opus_review_sampler](stove0-nvenc-av1-opus-review-sampler.md) | `modules` | 0 |
+| Dossier | Extent decisions |
+|---|---:|
+| [stove0_nvenc_av1_opus_review_sampler](stove0-nvenc-av1-opus-review-sampler.md) | 0 |

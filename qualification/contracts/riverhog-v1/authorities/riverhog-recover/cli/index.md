@@ -1,12 +1,8 @@
-# riverhog-recover: cli
+# riverhog-recover: CLI
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Policies](../../../policies/index.md)
 
 Contract elements: **1** · Extent decisions: **3**
-
-| Family | Count |
-|---|---:|
-| <a id="f-67c1311009"></a>`root` | 1 |
 
 | Policy | Count |
 |---|---:|
@@ -15,6 +11,6 @@ Contract elements: **1** · Extent decisions: **3**
 
 ## Semantic dossiers
 
-| Dossier | Family | Extent decisions |
-|---|---|---:|
-| [riverhog-recover](riverhog-recover.md) | `root` | 3 |
+| Dossier | Extent decisions |
+|---|---:|
+| [riverhog-recover](riverhog-recover.md) | 3 |

@@ -1,12 +1,8 @@
-# riverhog-ftp-adapter: configuration
+# riverhog-ftp-adapter: Configuration Documents
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Policies](../../../policies/index.md)
 
 Contract elements: **2** · Extent decisions: **23**
-
-| Family | Count |
-|---|---:|
-| <a id="f-33ea702762"></a>`documents` | 2 |
 
 | Policy | Count |
 |---|---:|
@@ -16,7 +12,7 @@ Contract elements: **2** · Extent decisions: **23**
 
 ## Semantic dossiers
 
-| Dossier | Family | Extent decisions |
-|---|---|---:|
-| [riverhog-ftp-adapter:configuration:ftp-adapter-config configuration](riverhog-ftp-adapter-configuration-ftp-adapter-config-configuration.md) | `documents` | 15 |
-| [riverhog-ftp-adapter:configuration:source-config configuration](riverhog-ftp-adapter-configuration-source-config-configuration.md) | `documents` | 8 |
+| Dossier | Extent decisions |
+|---|---:|
+| [riverhog-ftp-adapter:configuration:ftp-adapter-config configuration](riverhog-ftp-adapter-configuration-ftp-adapter-config-configuration.md) | 15 |
+| [riverhog-ftp-adapter:configuration:source-config configuration](riverhog-ftp-adapter-configuration-source-config-configuration.md) | 8 |

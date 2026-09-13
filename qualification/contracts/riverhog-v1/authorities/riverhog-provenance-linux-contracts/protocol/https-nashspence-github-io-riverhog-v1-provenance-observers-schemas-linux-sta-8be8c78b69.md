@@ -9,8 +9,7 @@ Exact externally visible contract owned by this semantic dossier.
 | Audit field | Value |
 |---|---|
 | Authority | [riverhog-provenance-linux-contracts](../index.md) |
-| Interface | [protocol](index.md) |
-| Family | [schemas](index.md#f-496badc04b) |
+| Interface | [Protocols](index.md) |
 | Contract elements | 1 |
 | Extent decisions | 2 |
 

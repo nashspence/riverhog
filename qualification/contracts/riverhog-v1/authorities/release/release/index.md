@@ -1,13 +1,8 @@
-# release: release
+# release: Release
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Policies](../../../policies/index.md)
 
 Contract elements: **12** · Extent decisions: **0**
-
-| Family | Count |
-|---|---:|
-| <a id="f-6df58a8f93"></a>`compatibility` | 7 |
-| <a id="f-6cd3d52e18"></a>`release-contract` | 5 |
 
 | Policy | Count |
 |---|---:|
@@ -21,17 +16,17 @@ Contract elements: **12** · Extent decisions: **0**
 
 ## Semantic dossiers
 
-| Dossier | Family | Extent decisions |
-|---|---|---:|
-| [Compatibility: archive](compatibility-archive.md) | `compatibility` | 0 |
-| [Compatibility: cli](compatibility-cli.md) | `compatibility` | 0 |
-| [Compatibility: components](compatibility-components.md) | `compatibility` | 0 |
-| [Compatibility: configuration](compatibility-configuration.md) | `compatibility` | 0 |
-| [Compatibility: http api](compatibility-http-api.md) | `compatibility` | 0 |
-| [Compatibility: python api](compatibility-python-api.md) | `compatibility` | 0 |
-| [Compatibility: recovery](compatibility-recovery.md) | `compatibility` | 0 |
-| [Release artifacts](release-artifacts.md) | `release-contract` | 0 |
-| [Release installation](release-installation.md) | `release-contract` | 0 |
-| [Release platforms](release-platforms.md) | `release-contract` | 0 |
-| [Release tag template](release-tag-template.md) | `release-contract` | 0 |
-| [Release version policy](release-version-policy.md) | `release-contract` | 0 |
+| Dossier | Extent decisions |
+|---|---:|
+| [Compatibility: archive](compatibility-archive.md) | 0 |
+| [Compatibility: cli](compatibility-cli.md) | 0 |
+| [Compatibility: components](compatibility-components.md) | 0 |
+| [Compatibility: configuration](compatibility-configuration.md) | 0 |
+| [Compatibility: http api](compatibility-http-api.md) | 0 |
+| [Compatibility: python api](compatibility-python-api.md) | 0 |
+| [Compatibility: recovery](compatibility-recovery.md) | 0 |
+| [Release artifacts](release-artifacts.md) | 0 |
+| [Release installation](release-installation.md) | 0 |
+| [Release platforms](release-platforms.md) | 0 |
+| [Release tag template](release-tag-template.md) | 0 |
+| [Release version policy](release-version-policy.md) | 0 |

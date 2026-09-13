@@ -9,8 +9,7 @@ Exact externally visible contract owned by this semantic dossier.
 | Audit field | Value |
 |---|---|
 | Authority | [riverhog-server](../index.md) |
-| Interface | [configuration-environment](index.md) |
-| Family | [patterns](families/patterns/index.md) |
+| Interface | [Configuration Environment](index.md) |
 | Contract elements | 1 |
 | Extent decisions | 4 |
 

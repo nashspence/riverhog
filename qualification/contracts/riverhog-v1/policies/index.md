@@ -9,10 +9,10 @@ Policies are defined once here and referenced from every dossier where they are 
 | Policy | Applications |
 |---|---:|
 | [compatibility/archive/v1](#p-915b8756ae) | 1 |
-| [compatibility/cli/v1](#p-48a89776de) | 315 |
-| [compatibility/components/v1](#p-95e9a12259) | 239 |
+| [compatibility/cli/v1](#p-48a89776de) | 168 |
+| [compatibility/components/v1](#p-95e9a12259) | 92 |
 | [compatibility/configuration/v1](#p-8dc08bb461) | 260 |
-| [compatibility/http-api/v1](#p-5bc717c2c0) | 692 |
+| [compatibility/http-api/v1](#p-5bc717c2c0) | 547 |
 | [compatibility/python-api/v1](#p-e574772ba5) | 63 |
 | [compatibility/recovery/v1](#p-04aa4508f1) | 1 |
 
@@ -55,10 +55,9 @@ Command names, options, exit status, and structured output remain backward compa
   - [cli:stove0-target-conformance](../evidence/sources.md#src-7a44eec01b)
   - [cli:stove0-target-schemas](../evidence/sources.md#src-71d64b87b5)
   - [generator:contract-projection](../evidence/sources.md#src-47381a6c4f)
-  - [operations:operation-matrix](../evidence/sources.md#src-b032bdc56b)
   - [release:release.toml](../evidence/sources.md#src-c5380dbe5f)
 
-Applications: **315**
+Applications: **168**
 <a id="p-95e9a12259"></a>
 #### `compatibility/components/v1`
 
@@ -68,7 +67,6 @@ A supported deployment runs components from one coordinated product version.
 - Observable result or violation: `{"conforming_result": "the observable surface satisfies the stated meaning", "violation": "the observable surface contradicts the stated meaning"}`
 - Executable authorities:
   - [generator:contract-projection](../evidence/sources.md#src-47381a6c4f)
-  - [operations:operation-matrix](../evidence/sources.md#src-b032bdc56b)
   - [protocol:generated:riverhog-storage-adapter](../evidence/sources.md#src-ef281f2471)
   - [protocol:generated:stove0-observer](../evidence/sources.md#src-dcc0b5485b)
   - [protocol:generated:stove0-review-sampler](../evidence/sources.md#src-b47f3f4d7b)
@@ -114,7 +112,7 @@ A supported deployment runs components from one coordinated product version.
   - [state:stove0-control](../evidence/sources.md#src-45e44b17fd)
   - [state:stove0-target-jobs](../evidence/sources.md#src-7b4138829a)
 
-Applications: **239**
+Applications: **92**
 <a id="p-8dc08bb461"></a>
 #### `compatibility/configuration/v1`
 
@@ -401,7 +399,7 @@ Published v1 HTTP and CloudEvents contracts remain backward compatible throughou
   - [operations:operation-matrix](../evidence/sources.md#src-b032bdc56b)
   - [release:release.toml](../evidence/sources.md#src-c5380dbe5f)
 
-Applications: **692**
+Applications: **547**
 <a id="p-e574772ba5"></a>
 #### `compatibility/python-api/v1`
 
@@ -760,6 +758,7 @@ Applications: **17**
   - [openapi:riverhog](../evidence/sources.md#src-c42f268fc9)
   - [openapi:riverhog-ftp-adapter](../evidence/sources.md#src-c3a51ac29a)
   - [openapi:stove0](../evidence/sources.md#src-52e6e32124)
+  - [operations:operation-matrix](../evidence/sources.md#src-b032bdc56b)
   - [protocol:generated:riverhog-storage-adapter](../evidence/sources.md#src-ef281f2471)
   - [protocol:generated:stove0-observer](../evidence/sources.md#src-dcc0b5485b)
   - [protocol:generated:stove0-review-sampler](../evidence/sources.md#src-b47f3f4d7b)
@@ -791,6 +790,7 @@ Applications: **166**
   - [openapi:riverhog](../evidence/sources.md#src-c42f268fc9)
   - [openapi:riverhog-ftp-adapter](../evidence/sources.md#src-c3a51ac29a)
   - [openapi:stove0](../evidence/sources.md#src-52e6e32124)
+  - [operations:operation-matrix](../evidence/sources.md#src-b032bdc56b)
 
 Applications: **67**
 <a id="p-c0db822fc0"></a>
@@ -830,6 +830,7 @@ Applications: **67**
   - [openapi:riverhog](../evidence/sources.md#src-c42f268fc9)
   - [openapi:riverhog-ftp-adapter](../evidence/sources.md#src-c3a51ac29a)
   - [openapi:stove0](../evidence/sources.md#src-52e6e32124)
+  - [operations:operation-matrix](../evidence/sources.md#src-b032bdc56b)
   - [protocol:generated:riverhog-storage-adapter](../evidence/sources.md#src-ef281f2471)
   - [protocol:generated:stove0-observer](../evidence/sources.md#src-dcc0b5485b)
   - [protocol:generated:stove0-review-sampler](../evidence/sources.md#src-b47f3f4d7b)

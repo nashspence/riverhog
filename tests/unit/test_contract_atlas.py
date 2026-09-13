@@ -185,6 +185,70 @@ def test_human_entrypoint_exposes_closure_exclusions_and_relationships() -> None
     assert not any(path.startswith("riverhog-v1/relationships/") for path in checked.files)
 
 
+def test_contract_map_routes_every_interface_and_extension_without_duplicate_semantics() -> None:
+    checked = atlas.load_atlas(ARTIFACT)
+    root = checked.root
+    root_path = root["atlas"]["root"]
+    root_page = checked.files[root_path].decode()
+    elements = root["elements"]
+    relationship = root["atlas"]["relationships"]
+    interface_counts: dict[tuple[str, str], int] = {}
+    for item in elements:
+        key = (item["authority"], item["interface"])
+        interface_counts[key] = interface_counts.get(key, 0) + 1
+
+    for (authority, interface), count in interface_counts.items():
+        target = atlas._interface_index_path(authority, interface)
+        assert f"]({atlas._relative_link(root_path, target)}) ({count})" in root_page
+
+    extension_nodes = [
+        item
+        for item in relationship["nodes"]
+        if item["kind"] in {"extension-point", "process-protocol"}
+    ]
+    assert extension_nodes
+    assert all(item["contract_elements"] == 0 for item in extension_nodes)
+    assert all(item["semantic_interfaces"] for item in extension_nodes)
+    for node in extension_nodes:
+        assert f"`{node['name']}`" in root_page
+        for interface in node["semantic_interfaces"]:
+            key = (interface["authority"], interface["interface"])
+            assert interface["contract_elements"] == interface_counts[key]
+
+
+def test_http_semantics_are_owned_once_and_operation_parity_remains_exact_evidence() -> None:
+    checked = atlas.load_atlas(ARTIFACT)
+    root = checked.root
+    elements = root["elements"]
+    records = root["trace"]["operation_qualification"]["records"]
+    http_operations = [item for item in elements if item["interface"] == "http-operations"]
+    qualified = {tuple(item["details"]["qualification_key"]): item for item in http_operations}
+
+    assert len(records) == len(http_operations) == len(qualified) == 147
+    assert not any(item["interface"] == "operation" for item in elements)
+    assert root["counts"]["by_authority"]["riverhog"] == 364
+    assert (
+        sum(
+            item["authority"] == "riverhog" and item["interface"] == "http-operations"
+            for item in elements
+        )
+        == 109
+    )
+    assert (
+        sum(
+            item["authority"] == "riverhog" and item["interface"] == "http-schemas"
+            for item in elements
+        )
+        == 253
+    )
+    assert len(root["projection"]["external_contract"]["http_route_supplements"]) == 2
+    assert set(qualified) == {(item["application"], item["operation_id"]) for item in records}
+    for record in records:
+        item = qualified[(record["application"], record["operation_id"])]
+        page = checked.files[item["dossier"]].decode()
+        assert atlas._pretty_json(record) in page
+
+
 def test_every_frozen_component_has_an_exact_boundary_audit_result() -> None:
     checked = atlas.load_atlas(ARTIFACT)
     projection = checked.root["projection"]
@@ -246,7 +310,7 @@ def test_every_dossier_is_lossless_and_representative_contract_classes_are_seman
             assert exact in page
 
     representative_interfaces = {
-        "http",
+        "http-operations",
         "cli",
         "configuration",
         "protocol",
@@ -265,19 +329,20 @@ def test_every_dossier_is_lossless_and_representative_contract_classes_are_seman
         assert page.index("## Governing policies") < page.index("## Evidence")
 
 
-def test_large_interfaces_route_through_semantic_families_and_local_references() -> None:
+def test_interfaces_are_flat_exact_inventories_with_local_references() -> None:
     checked = atlas.load_atlas(ARTIFACT)
     documents = checked.root["atlas"]["documents"]
-    family_documents = [item for item in documents if item["kind"] == "family-index"]
 
-    assert family_documents
-    assert all(item["counts"]["contract_elements"] > 0 for item in family_documents)
+    assert not any(item["kind"] == "family-index" for item in documents)
+    assert not any("family" in item for item in checked.root["elements"])
+    assert not any("/families/" in item["path"] for item in documents)
     retrieval_cache = checked.files[
-        "riverhog-v1/authorities/riverhog/http/get-v1-retrieval-cache.md"
+        "riverhog-v1/authorities/riverhog/http-operations/get-v1-retrieval-cache.md"
     ].decode()
     assert "## Referenced contract dossiers" in retrieval_cache
     assert (
-        "[schemas: RetrievalCacheStatusOut](schemas-retrievalcachestatusout.md)" in retrieval_cache
+        "[schemas: RetrievalCacheStatusOut](../http-schemas/schemas-retrievalcachestatusout.md)"
+        in retrieval_cache
     )
 
 
@@ -336,7 +401,7 @@ def test_every_extent_fact_names_and_links_its_exact_subject() -> None:
             assert page.count(f'id="{anchor}"') == 1
             assert f"](#{anchor})" in section or (f'id="{anchor}"' in section and "](#" in section)
 
-        if element["interface"] == "http":
+        if element["interface"].startswith("http-"):
             assert not re.search(r"\bparameter \d+\b", section)
 
 

@@ -9,8 +9,7 @@ Stable positive evidence returned after the complete check set passes.
 | Audit field | Value |
 |---|---|
 | Authority | [riverhog-storage-adapter-support](../index.md) |
-| Interface | [protocol](index.md) |
-| Family | [schemas](families/schemas/index.md) |
+| Interface | [Protocols](index.md) |
 | Contract elements | 1 |
 | Extent decisions | 2 |
 

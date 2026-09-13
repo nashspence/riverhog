@@ -9,8 +9,7 @@ Exact externally visible contract owned by this semantic dossier.
 | Audit field | Value |
 |---|---|
 | Authority | [stove0-observer-support](../index.md) |
-| Interface | [cli](index.md) |
-| Family | [root](index.md#f-0cb3b316cf) |
+| Interface | [CLI](index.md) |
 | Contract elements | 1 |
 | Extent decisions | 1 |
 

@@ -1,12 +1,8 @@
-# riverhog-archive-contracts: python
+# riverhog-archive-contracts: Python
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Policies](../../../policies/index.md)
 
 Contract elements: **1** · Extent decisions: **0**
-
-| Family | Count |
-|---|---:|
-| <a id="f-156699e2ff"></a>`modules` | 1 |
 
 | Policy | Count |
 |---|---:|
@@ -14,6 +10,6 @@ Contract elements: **1** · Extent decisions: **0**
 
 ## Semantic dossiers
 
-| Dossier | Family | Extent decisions |
-|---|---|---:|
-| [riverhog_archive_contracts](riverhog-archive-contracts.md) | `modules` | 0 |
+| Dossier | Extent decisions |
+|---|---:|
+| [riverhog_archive_contracts](riverhog-archive-contracts.md) | 0 |

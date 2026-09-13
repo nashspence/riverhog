@@ -9,8 +9,7 @@ Exact externally visible contract owned by this semantic dossier.
 | Audit field | Value |
 |---|---|
 | Authority | [stove0-client](../index.md) |
-| Interface | [cli](index.md) |
-| Family | [admission](families/admission/index.md) |
+| Interface | [CLI](index.md) |
 | Contract elements | 1 |
 | Extent decisions | 0 |
 
@@ -22,7 +21,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [Operation parity: list_admission_policies](../../stove0/operation/operation-parity-list-admission-policies.md)
+- [GET /v1/admission-policies](../../stove0/http-operations/get-v1-admission-policies.md)
 
 ## Governing policies
 

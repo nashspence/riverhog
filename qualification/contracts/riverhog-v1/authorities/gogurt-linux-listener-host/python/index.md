@@ -1,12 +1,8 @@
-# gogurt-linux-listener-host: python
+# gogurt-linux-listener-host: Python
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Policies](../../../policies/index.md)
 
 Contract elements: **1** · Extent decisions: **0**
-
-| Family | Count |
-|---|---:|
-| <a id="f-24169d71c2"></a>`modules` | 1 |
 
 | Policy | Count |
 |---|---:|
@@ -14,6 +10,6 @@ Contract elements: **1** · Extent decisions: **0**
 
 ## Semantic dossiers
 
-| Dossier | Family | Extent decisions |
-|---|---|---:|
-| [gogurt_linux_listener_host](gogurt-linux-listener-host.md) | `modules` | 0 |
+| Dossier | Extent decisions |
+|---|---:|
+| [gogurt_linux_listener_host](gogurt-linux-listener-host.md) | 0 |

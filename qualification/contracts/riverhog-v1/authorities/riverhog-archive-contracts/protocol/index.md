@@ -1,12 +1,8 @@
-# riverhog-archive-contracts: protocol
+# riverhog-archive-contracts: Protocols
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Policies](../../../policies/index.md)
 
 Contract elements: **4** · Extent decisions: **23**
-
-| Family | Count |
-|---|---:|
-| <a id="f-66d562e63c"></a>`schemas` | 4 |
 
 | Policy | Count |
 |---|---:|
@@ -17,9 +13,9 @@ Contract elements: **4** · Extent decisions: **23**
 
 ## Semantic dossiers
 
-| Dossier | Family | Extent decisions |
-|---|---|---:|
-| [Riverhog v1 authenticated archive-volume terminator](riverhog-v1-authenticated-archive-volume-terminator.md) | `schemas` | 2 |
-| [Riverhog v1 bounded immutable archive-volume metadata](riverhog-v1-bounded-immutable-archive-volume-metadata.md) | `schemas` | 14 |
-| [Riverhog v1 immutable collection archive root](riverhog-v1-immutable-collection-archive-root.md) | `schemas` | 5 |
-| [Riverhog v1 recovery descriptor](riverhog-v1-recovery-descriptor.md) | `schemas` | 2 |
+| Dossier | Extent decisions |
+|---|---:|
+| [Riverhog v1 authenticated archive-volume terminator](riverhog-v1-authenticated-archive-volume-terminator.md) | 2 |
+| [Riverhog v1 bounded immutable archive-volume metadata](riverhog-v1-bounded-immutable-archive-volume-metadata.md) | 14 |
+| [Riverhog v1 immutable collection archive root](riverhog-v1-immutable-collection-archive-root.md) | 5 |
+| [Riverhog v1 recovery descriptor](riverhog-v1-recovery-descriptor.md) | 2 |

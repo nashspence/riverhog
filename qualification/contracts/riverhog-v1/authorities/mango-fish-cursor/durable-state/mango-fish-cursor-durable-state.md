@@ -9,8 +9,7 @@ Exact externally visible contract owned by this semantic dossier.
 | Audit field | Value |
 |---|---|
 | Authority | [mango-fish-cursor](../index.md) |
-| Interface | [durable-state](index.md) |
-| Family | [owners](index.md#f-ffc7e6b5c3) |
+| Interface | [Durable State](index.md) |
 | Contract elements | 1 |
 | Extent decisions | 0 |
 

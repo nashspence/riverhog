@@ -1,12 +1,8 @@
-# stove0-exiftool-observer: python
+# stove0-exiftool-observer: Python
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Policies](../../../policies/index.md)
 
 Contract elements: **1** · Extent decisions: **0**
-
-| Family | Count |
-|---|---:|
-| <a id="f-bb4088b403"></a>`modules` | 1 |
 
 | Policy | Count |
 |---|---:|
@@ -14,6 +10,6 @@ Contract elements: **1** · Extent decisions: **0**
 
 ## Semantic dossiers
 
-| Dossier | Family | Extent decisions |
-|---|---|---:|
-| [stove0_exiftool_observer](stove0-exiftool-observer.md) | `modules` | 0 |
+| Dossier | Extent decisions |
+|---|---:|
+| [stove0_exiftool_observer](stove0-exiftool-observer.md) | 0 |

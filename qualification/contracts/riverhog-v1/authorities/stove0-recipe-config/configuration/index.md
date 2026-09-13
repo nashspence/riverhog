@@ -1,12 +1,8 @@
-# stove0-recipe-config: configuration
+# stove0-recipe-config: Configuration Documents
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Policies](../../../policies/index.md)
 
 Contract elements: **1** · Extent decisions: **39**
-
-| Family | Count |
-|---|---:|
-| <a id="f-14fef104e2"></a>`documents` | 1 |
 
 | Policy | Count |
 |---|---:|
@@ -16,6 +12,6 @@ Contract elements: **1** · Extent decisions: **39**
 
 ## Semantic dossiers
 
-| Dossier | Family | Extent decisions |
-|---|---|---:|
-| [stove0-recipe-config:configuration:recipe-catalog configuration](stove0-recipe-config-configuration-recipe-catalog-configuration.md) | `documents` | 39 |
+| Dossier | Extent decisions |
+|---|---:|
+| [stove0-recipe-config:configuration:recipe-catalog configuration](stove0-recipe-config-configuration-recipe-catalog-configuration.md) | 39 |

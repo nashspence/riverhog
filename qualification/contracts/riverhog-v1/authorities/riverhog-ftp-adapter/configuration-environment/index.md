@@ -1,12 +1,8 @@
-# riverhog-ftp-adapter: configuration-environment
+# riverhog-ftp-adapter: Configuration Environment
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Policies](../../../policies/index.md)
 
 Contract elements: **3** · Extent decisions: **0**
-
-| Family | Count |
-|---|---:|
-| <a id="f-fbe482a5e7"></a>`settings` | 3 |
 
 | Policy | Count |
 |---|---:|
@@ -14,8 +10,8 @@ Contract elements: **3** · Extent decisions: **0**
 
 ## Semantic dossiers
 
-| Dossier | Family | Extent decisions |
-|---|---|---:|
-| [RIVERHOG_ALLOW_INSECURE_HTTP](riverhog-allow-insecure-http.md) | `settings` | 0 |
-| [RIVERHOG_BASE_URL](riverhog-base-url.md) | `settings` | 0 |
-| [RIVERHOG_FTP_ADAPTER_CONFIG](riverhog-ftp-adapter-config.md) | `settings` | 0 |
+| Dossier | Extent decisions |
+|---|---:|
+| [RIVERHOG_ALLOW_INSECURE_HTTP](riverhog-allow-insecure-http.md) | 0 |
+| [RIVERHOG_BASE_URL](riverhog-base-url.md) | 0 |
+| [RIVERHOG_FTP_ADAPTER_CONFIG](riverhog-ftp-adapter-config.md) | 0 |

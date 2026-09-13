@@ -9,11 +9,11 @@ This page is proof routing, not contract navigation. Every dossier names its loc
 | Qualification route | Count |
 |---|---:|
 | <a id="q-d1121e35fa"></a>`make build` | 152 |
-| <a id="q-413b0b241b"></a>`make compose-smoke` | 803 |
+| <a id="q-413b0b241b"></a>`make compose-smoke` | 805 |
 | <a id="q-8c74349e71"></a>`make contract-freeze` | 12 |
 | <a id="q-27f281b51e"></a>`make database-qualification` | 8 |
 | <a id="q-0ba2578a3e"></a>`make dist-smoke` | 307 |
-| <a id="q-dd95e4459f"></a>`make operation-qualification` | 870 |
+| <a id="q-dd95e4459f"></a>`make operation-qualification` | 725 |
 | <a id="q-8d8d22d6a6"></a>`make release-check` | 20 |
 | <a id="q-ce47068f50"></a>`make unit` | 259 |
 
@@ -300,8 +300,8 @@ Source authorities: **410**
 | <a id="src-28686050a7"></a>`configuration:stove0-recipe-config:configuration:recipe-catalog` | 1 | `reference/stove0/packages/recipe-config/src/stove0_recipe_config/models.py::RecipeCatalog` |
 | <a id="src-cca9387ce6"></a>`configuration:stove0-review-target-support:configuration:review-target-config` | 1 | `reference/stove0/targets/review/support/src/stove0_review_target_support/app.py::ReviewTargetConfig` |
 | <a id="src-5ac94d0a12"></a>`extent:extent-contract` | 12 | `scripts/extent_contract.py::extent_projection` |
-| <a id="src-47381a6c4f"></a>`generator:contract-projection` | 1289 | `scripts/contract_freeze.py::contract_projection` |
-| <a id="src-c42f268fc9"></a>`openapi:riverhog` | 362 | `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI` |
+| <a id="src-47381a6c4f"></a>`generator:contract-projection` | 1144 | `scripts/contract_freeze.py::contract_projection` |
+| <a id="src-c42f268fc9"></a>`openapi:riverhog` | 364 | `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI` |
 | <a id="src-c3a51ac29a"></a>`openapi:riverhog-ftp-adapter` | 12 | `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI` |
 | <a id="src-52e6e32124"></a>`openapi:stove0` | 170 | `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI` |
 | <a id="src-b032bdc56b"></a>`operations:operation-matrix` | 147 | `scripts/operation_qualification.py::operation_matrix` |

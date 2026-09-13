@@ -9,8 +9,7 @@ Exact externally visible contract owned by this semantic dossier.
 | Audit field | Value |
 |---|---|
 | Authority | [stove0-client](../index.md) |
-| Interface | [cli](index.md) |
-| Family | [health](families/health/index.md) |
+| Interface | [CLI](index.md) |
 | Contract elements | 1 |
 | Extent decisions | 1 |
 
@@ -38,8 +37,8 @@ Shared facts for every subject below: maximum=1; minimum=1; reason="fixed-comman
 
 ### Related interface records
 
-- [Operation parity: health_live](../../stove0/operation/operation-parity-health-live.md)
-- [Operation parity: health_ready](../../stove0/operation/operation-parity-health-ready.md)
+- [GET /health/live](../../stove0/http-operations/get-health-live.md)
+- [GET /health/ready](../../stove0/http-operations/get-health-ready.md)
 
 ## Governing policies
 

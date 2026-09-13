@@ -9,8 +9,7 @@ Exact externally visible contract owned by this semantic dossier.
 | Audit field | Value |
 |---|---|
 | Authority | [piggity](../index.md) |
-| Interface | [cli](index.md) |
-| Family | [collection](families/collection/index.md) |
+| Interface | [CLI](index.md) |
 | Contract elements | 1 |
 | Extent decisions | 11 |
 
@@ -64,15 +63,15 @@ Shared facts for every subject below: maximum=1; minimum=1; reason="fixed-comman
 
 ### Related interface records
 
-- [Operation parity: create_or_resume_collection_upload_session](../../riverhog/operation/operation-parity-create-or-resume-collection-upload-session.md)
-- [Operation parity: get_collection_upload_session](../../riverhog/operation/operation-parity-get-collection-upload-session.md)
-- [Operation parity: complete_collection_upload_session](../../riverhog/operation/operation-parity-complete-collection-upload-session.md)
-- [Operation parity: register_collection_upload_session_files](../../riverhog/operation/operation-parity-register-collection-upload-session-files.md)
-- [Operation parity: register_collection_upload_session_raw_part_digests](../../riverhog/operation/operation-parity-register-collection-upload-session-raw-part-digests.md)
-- [Operation parity: add_collection_upload_session_tags](../../riverhog/operation/operation-parity-add-collection-upload-session-tags.md)
-- [Operation parity: get_collection_upload_session_unit](../../riverhog/operation/operation-parity-get-collection-upload-session-unit.md)
-- [Operation parity: put_collection_upload_session_unit](../../riverhog/operation/operation-parity-put-collection-upload-session-unit.md)
-- [Operation parity: acquire_collection_upload_session_work](../../riverhog/operation/operation-parity-acquire-collection-upload-session-work.md)
+- [GET /v1/collection-upload-sessions/{collection_id}/volumes/{volume_id}/units/{unit}](../../riverhog/http-operations/get-v1-collection-upload-sessions-collection-id-volumes-volume-id-units-unit.md)
+- [GET /v1/collection-upload-sessions/{collection_id}/work](../../riverhog/http-operations/get-v1-collection-upload-sessions-collection-id-work.md)
+- [GET /v1/collection-upload-sessions/{collection_id}](../../riverhog/http-operations/get-v1-collection-upload-sessions-collection-id.md)
+- [POST /v1/collection-upload-sessions/{collection_id}/files](../../riverhog/http-operations/post-v1-collection-upload-sessions-collection-id-files.md)
+- [POST /v1/collection-upload-sessions/{collection_id}/tags](../../riverhog/http-operations/post-v1-collection-upload-sessions-collection-id-tags.md)
+- [POST /v1/collection-upload-sessions/{collection_id}/complete](../../riverhog/http-operations/post-v1-collection-upload-sessions-collection-id-complete.md)
+- [POST /v1/collection-upload-sessions/{collection_id}/raw-part-digests](../../riverhog/http-operations/post-v1-collection-upload-sessions-collection-id-raw-part-digests.md)
+- [POST /v1/collection-upload-sessions](../../riverhog/http-operations/post-v1-collection-upload-sessions.md)
+- [PUT /v1/collection-upload-sessions/{collection_id}/volumes/{volume_id}/units/{unit}](../../riverhog/http-operations/put-v1-collection-upload-sessions-collection-id-volumes-volume-id-units-unit.md)
 
 ## Governing policies
 

@@ -4,10 +4,6 @@
 
 Contract elements: **37** · Extent decisions: **67**
 
-| Interface | Count |
-|---|---:|
-| `cli` | 37 |
-
 ## Interfaces
 
-- [cli](cli/index.md) — 37 elements
+- [CLI](cli/index.md) (37)

@@ -9,8 +9,7 @@ Exact externally visible contract owned by this semantic dossier.
 | Audit field | Value |
 |---|---|
 | Authority | [gogurt-core](../index.md) |
-| Interface | [configuration](index.md) |
-| Family | [documents](index.md#f-88a338520d) |
+| Interface | [Configuration Documents](index.md) |
 | Contract elements | 1 |
 | Extent decisions | 2 |
 

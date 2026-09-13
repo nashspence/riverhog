@@ -1,12 +1,8 @@
-# gogurt-listener: durable-state
+# gogurt-listener: Durable State
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Policies](../../../policies/index.md)
 
 Contract elements: **1** · Extent decisions: **0**
-
-| Family | Count |
-|---|---:|
-| <a id="f-0b118dc18f"></a>`owners` | 1 |
 
 | Policy | Count |
 |---|---:|
@@ -14,6 +10,6 @@ Contract elements: **1** · Extent decisions: **0**
 
 ## Semantic dossiers
 
-| Dossier | Family | Extent decisions |
-|---|---|---:|
-| [gogurt-listener durable state](gogurt-listener-durable-state.md) | `owners` | 0 |
+| Dossier | Extent decisions |
+|---|---:|
+| [gogurt-listener durable state](gogurt-listener-durable-state.md) | 0 |

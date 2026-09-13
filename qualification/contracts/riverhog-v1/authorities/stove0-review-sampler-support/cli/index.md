@@ -1,12 +1,8 @@
-# stove0-review-sampler-support: cli
+# stove0-review-sampler-support: CLI
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Policies](../../../policies/index.md)
 
 Contract elements: **2** · Extent decisions: **3**
-
-| Family | Count |
-|---|---:|
-| <a id="f-a77fbe9ea1"></a>`root` | 2 |
 
 | Policy | Count |
 |---|---:|
@@ -15,7 +11,7 @@ Contract elements: **2** · Extent decisions: **3**
 
 ## Semantic dossiers
 
-| Dossier | Family | Extent decisions |
-|---|---|---:|
-| [stove0-review-sampler-conformance](stove0-review-sampler-conformance.md) | `root` | 2 |
-| [stove0-review-sampler-schemas](stove0-review-sampler-schemas.md) | `root` | 1 |
+| Dossier | Extent decisions |
+|---|---:|
+| [stove0-review-sampler-conformance](stove0-review-sampler-conformance.md) | 2 |
+| [stove0-review-sampler-schemas](stove0-review-sampler-schemas.md) | 1 |

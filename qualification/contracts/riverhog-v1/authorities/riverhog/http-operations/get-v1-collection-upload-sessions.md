@@ -1,0 +1,308 @@
+# GET /v1/collection-upload-sessions
+
+[Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
+
+<!-- contract-element: http-operations:riverhog:get-v1-collection-upload-sessions:e5f6d0a6a4 -->
+
+List Collection Upload Sessions
+
+| Audit field | Value |
+|---|---|
+| Authority | [riverhog](../index.md) |
+| Interface | [HTTP Operations](index.md) |
+| Contract elements | 1 |
+| Extent decisions | 2 |
+
+## External contract
+
+<a id="s-ba392907ec"></a>
+- <a id="s-42cb0f60af"></a>`operationId`: list_collection_upload_sessions
+- <a id="s-1b2bbe5162"></a>`summary`: List Collection Upload Sessions
+- <a id="s-86bef111fa"></a>`security`: `[{"HTTPBearer": []}]`
+
+### Parameters
+
+| Name | In | Required | Schema |
+|---|---|---:|---|
+| <a id="s-57bdf728e4"></a>`page_size` | query | no | type="integer"; minimum=1; maximum=100 |
+| <a id="s-9c486b7893"></a>`page_token` | query | no | anyOf=#/components/schemas/BrowsePageToken \| type="null" |
+| <a id="s-50209d923e"></a>`q` | query | no | anyOf=#/components/schemas/BrowseQuery \| type="null" |
+| <a id="s-737b6b222f"></a>`state` | query | no | anyOf=#/components/schemas/CollectionUploadState \| type="null" |
+| <a id="s-6766b6622b"></a>`sort` | query | no | $ref="#/components/schemas/CollectionUploadSort" |
+| <a id="s-4eea721e20"></a>`order` | query | no | $ref="#/components/schemas/SortOrder" |
+
+### Responses
+
+| Status | Description |
+|---|---|
+| <a id="s-a7095c3848"></a>`200` | Successful Response |
+| <a id="s-7b8a59b998"></a>`400` | Bad Request |
+| <a id="s-fe97da8695"></a>`401` | Unauthorized |
+| <a id="s-1c7228d07a"></a>`403` | Forbidden |
+| <a id="s-73719bc522"></a>`500` | Internal Server Error |
+
+### Progression, limits, and lifecycle
+
+#### [extent-rule/route-progression/v1](../../../policies/index.md#p-6b76b527cb)
+
+Shared facts for every subject below: progression={"default_page_size":25,"kind":"mutable-browse","maximum_page_size":100,"next_page_token_field":"next_page_token","page_size_parameter":"page_size","page_token_parameter":"page_token"}; reason="bounded-route-progression"
+
+| Applies to | Contract | Bounds or reason |
+|---|---|---|
+| [GET /v1/collection-upload-sessions](#s-ba392907ec) | `logical-result-cardinality · items · segmented_no_total_max` | shared above |
+
+#### [extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
+
+Shared facts for every subject below: maximum=100; minimum=1; reason="schema-maximum"
+
+| Applies to | Contract | Bounds or reason |
+|---|---|---|
+| <a id="s-c8bffd8ce8"></a>[parameter page_size](#s-57bdf728e4) | `value · schema-value · contract_max` | shared above |
+
+## Maintained corroboration
+
+### Related interface records
+
+- [piggity collection upload list](../../piggity/cli/piggity-collection-upload-list.md)
+
+### Referenced contract dossiers
+
+- [schemas: BrowsePageToken](../http-schemas/schemas-browsepagetoken.md)
+- [schemas: BrowseQuery](../http-schemas/schemas-browsequery.md)
+- [schemas: CollectionUploadSort](../http-schemas/schemas-collectionuploadsort.md)
+- [schemas: CollectionUploadState](../http-schemas/schemas-collectionuploadstate.md)
+- [schemas: ErrorResponse](../http-schemas/schemas-errorresponse.md)
+- [schemas: ListCollectionUploadSessionsResponse](../http-schemas/schemas-listcollectionuploadsessionsresponse.md)
+- [schemas: SortOrder](../http-schemas/schemas-sortorder.md)
+
+## Governing policies
+
+- <a id="pa-18a75df46a"></a>[compatibility/http-api/v1](../../../policies/index.md#p-5bc717c2c0)
+- <a id="pa-688354a668"></a>[extent-rule/route-progression/v1](../../../policies/index.md#p-6b76b527cb)
+- <a id="pa-59635e8f3e"></a>[extent-rule/schema-bound/v1](../../../policies/index.md#p-c0db822fc0)
+
+## Evidence
+
+### Qualification
+
+- [make operation-qualification](../../../evidence/sources.md#q-dd95e4459f)
+- [make compose-smoke](../../../evidence/sources.md#q-413b0b241b)
+
+### Executable sources
+
+- [generator:contract-projection](../../../evidence/sources.md#src-47381a6c4f) — `scripts/contract_freeze.py::contract_projection`
+- [openapi:riverhog](../../../evidence/sources.md#src-c42f268fc9) — `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI`
+- [operations:operation-matrix](../../../evidence/sources.md#src-b032bdc56b) — `scripts/operation_qualification.py::operation_matrix`
+
+### Operation qualification evidence
+
+This evidence proves maintained client, CLI, response-authority, and provider qualification without creating a second semantic operation.
+
+```json
+{
+  "application": "riverhog",
+  "classification": "human-cli+json",
+  "cli_commands": [
+    "collection upload list"
+  ],
+  "client": "ApiClient",
+  "method": "GET",
+  "operation_id": "list_collection_upload_sessions",
+  "path": "/v1/collection-upload-sessions",
+  "provider_evidence": "provider-qualification:#442",
+  "read_collection": {
+    "default_page_size": 25,
+    "kind": "mutable-browse",
+    "maximum_page_size": 100,
+    "next_page_token_field": "next_page_token",
+    "page_size_parameter": "page_size",
+    "page_token_parameter": "page_token"
+  },
+  "response_authority": "http-json"
+}
+```
+
+### Machine authority
+
+- `/external_contract/http_openapi/riverhog/paths/~1v1~1collection-upload-sessions/get`
+
+### Exact owned JSON
+
+The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
+
+<!-- exact-contract-value: c43989b590f0d743e7dec212a0546416c98cc7e4fd339ff14177c751ca196c17 -->
+
+```json
+{
+  "operationId": "list_collection_upload_sessions",
+  "parameters": [
+    {
+      "in": "query",
+      "name": "page_size",
+      "required": false,
+      "schema": {
+        "default": 25,
+        "maximum": 100,
+        "minimum": 1,
+        "title": "Page Size",
+        "type": "integer"
+      }
+    },
+    {
+      "in": "query",
+      "name": "page_token",
+      "required": false,
+      "schema": {
+        "anyOf": [
+          {
+            "$ref": "#/components/schemas/BrowsePageToken"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "title": "Page Token"
+      }
+    },
+    {
+      "in": "query",
+      "name": "q",
+      "required": false,
+      "schema": {
+        "anyOf": [
+          {
+            "$ref": "#/components/schemas/BrowseQuery"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "title": "Q"
+      }
+    },
+    {
+      "in": "query",
+      "name": "state",
+      "required": false,
+      "schema": {
+        "anyOf": [
+          {
+            "$ref": "#/components/schemas/CollectionUploadState"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "title": "State"
+      }
+    },
+    {
+      "in": "query",
+      "name": "sort",
+      "required": false,
+      "schema": {
+        "$ref": "#/components/schemas/CollectionUploadSort",
+        "default": "created_at"
+      }
+    },
+    {
+      "in": "query",
+      "name": "order",
+      "required": false,
+      "schema": {
+        "$ref": "#/components/schemas/SortOrder",
+        "default": "desc"
+      }
+    }
+  ],
+  "responses": {
+    "200": {
+      "content": {
+        "application/json": {
+          "schema": {
+            "$ref": "#/components/schemas/ListCollectionUploadSessionsResponse"
+          }
+        }
+      },
+      "description": "Successful Response"
+    },
+    "400": {
+      "content": {
+        "application/json": {
+          "schema": {
+            "$ref": "#/components/schemas/ErrorResponse"
+          }
+        }
+      },
+      "description": "Bad Request",
+      "x-riverhog-error-codes": [
+        "bad_request"
+      ]
+    },
+    "401": {
+      "content": {
+        "application/json": {
+          "schema": {
+            "$ref": "#/components/schemas/ErrorResponse"
+          }
+        }
+      },
+      "description": "Unauthorized",
+      "x-riverhog-error-codes": [
+        "unauthorized"
+      ]
+    },
+    "403": {
+      "content": {
+        "application/json": {
+          "schema": {
+            "$ref": "#/components/schemas/ErrorResponse"
+          }
+        }
+      },
+      "description": "Forbidden",
+      "x-riverhog-error-codes": [
+        "forbidden"
+      ]
+    },
+    "500": {
+      "content": {
+        "application/json": {
+          "schema": {
+            "$ref": "#/components/schemas/ErrorResponse"
+          }
+        }
+      },
+      "description": "Internal Server Error",
+      "x-riverhog-error-codes": [
+        "internal_error"
+      ]
+    }
+  },
+  "security": [
+    {
+      "HTTPBearer": []
+    }
+  ],
+  "summary": "List Collection Upload Sessions",
+  "tags": [
+    "collections"
+  ],
+  "x-riverhog-permission-requirements": [
+    {
+      "any_of": [
+        "collections:create",
+        "collections:delete"
+      ]
+    }
+  ],
+  "x-riverhog-read-collection": {
+    "default_page_size": 25,
+    "kind": "mutable-browse",
+    "maximum_page_size": 100,
+    "next_page_token_field": "next_page_token",
+    "page_size_parameter": "page_size",
+    "page_token_parameter": "page_token"
+  }
+}
+```

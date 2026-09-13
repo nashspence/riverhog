@@ -1,12 +1,8 @@
-# stove0-operator-contracts: python
+# stove0-operator-contracts: Python
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Policies](../../../policies/index.md)
 
 Contract elements: **1** · Extent decisions: **0**
-
-| Family | Count |
-|---|---:|
-| <a id="f-51f3ead2ad"></a>`modules` | 1 |
 
 | Policy | Count |
 |---|---:|
@@ -14,6 +10,6 @@ Contract elements: **1** · Extent decisions: **0**
 
 ## Semantic dossiers
 
-| Dossier | Family | Extent decisions |
-|---|---|---:|
-| [stove0_operator_contracts](stove0-operator-contracts.md) | `modules` | 0 |
+| Dossier | Extent decisions |
+|---|---:|
+| [stove0_operator_contracts](stove0-operator-contracts.md) | 0 |

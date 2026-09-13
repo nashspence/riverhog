@@ -9,8 +9,7 @@ Exact externally visible contract owned by this semantic dossier.
 | Audit field | Value |
 |---|---|
 | Authority | [gogurt-windows-listener-host](../index.md) |
-| Interface | [configuration-environment](index.md) |
-| Family | [settings](index.md#f-0a399f4eb3) |
+| Interface | [Configuration Environment](index.md) |
 | Contract elements | 1 |
 | Extent decisions | 0 |
 

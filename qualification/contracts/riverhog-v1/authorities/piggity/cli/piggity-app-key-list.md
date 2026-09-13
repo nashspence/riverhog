@@ -9,8 +9,7 @@ Exact externally visible contract owned by this semantic dossier.
 | Audit field | Value |
 |---|---|
 | Authority | [piggity](../index.md) |
-| Interface | [cli](index.md) |
-| Family | [app](families/app/index.md) |
+| Interface | [CLI](index.md) |
 | Contract elements | 1 |
 | Extent decisions | 10 |
 
@@ -55,7 +54,7 @@ Shared facts for every subject below: minimum=1
 
 ### Related interface records
 
-- [Operation parity: list_app_keys](../../riverhog/operation/operation-parity-list-app-keys.md)
+- [GET /v1/apps/{app}/keys](../../riverhog/http-operations/get-v1-apps-app-keys.md)
 
 ## Governing policies
 

@@ -4,10 +4,6 @@
 
 Contract elements: **20** · Extent decisions: **5**
 
-| Interface | Count |
-|---|---:|
-| `configuration-environment` | 20 |
-
 ## Interfaces
 
-- [configuration-environment](configuration-environment/index.md) — 20 elements
+- [Configuration Environment](configuration-environment/index.md) (20)

@@ -9,8 +9,7 @@ Exact externally visible contract owned by this semantic dossier.
 | Audit field | Value |
 |---|---|
 | Authority | [stove0-client](../index.md) |
-| Interface | [cli](index.md) |
-| Family | [scheduler](families/scheduler/index.md) |
+| Interface | [CLI](index.md) |
 | Contract elements | 1 |
 | Extent decisions | 0 |
 
@@ -22,7 +21,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 ### Related interface records
 
-- [Operation parity: scheduler_status](../../stove0/operation/operation-parity-scheduler-status.md)
+- [GET /v1/admin/scheduler](../../stove0/http-operations/get-v1-admin-scheduler.md)
 
 ## Governing policies
 

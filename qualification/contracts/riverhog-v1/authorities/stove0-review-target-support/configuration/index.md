@@ -1,12 +1,8 @@
-# stove0-review-target-support: configuration
+# stove0-review-target-support: Configuration Documents
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Policies](../../../policies/index.md)
 
 Contract elements: **1** · Extent decisions: **4**
-
-| Family | Count |
-|---|---:|
-| <a id="f-95b48814a9"></a>`documents` | 1 |
 
 | Policy | Count |
 |---|---:|
@@ -16,6 +12,6 @@ Contract elements: **1** · Extent decisions: **4**
 
 ## Semantic dossiers
 
-| Dossier | Family | Extent decisions |
-|---|---|---:|
-| [stove0-review-target-support:configuration:review-target-config configuration](stove0-review-target-support-configuration-review-target-config-configuration.md) | `documents` | 4 |
+| Dossier | Extent decisions |
+|---|---:|
+| [stove0-review-target-support:configuration:review-target-config configuration](stove0-review-target-support-configuration-review-target-config-configuration.md) | 4 |

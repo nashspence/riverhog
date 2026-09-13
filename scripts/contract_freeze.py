@@ -1086,6 +1086,39 @@ def _openapi_surfaces() -> dict[str, object]:
     }
 
 
+def _http_route_supplements(
+    documents: Mapping[str, object],
+    operations: Sequence[operation_qualification.Operation],
+) -> list[dict[str, object]]:
+    """Return semantic HTTP routes deliberately absent from OpenAPI."""
+
+    documented: set[tuple[str, str, str]] = set()
+    for application, document in documents.items():
+        paths = cast(Mapping[str, object], cast(Mapping[str, object], document).get("paths", {}))
+        for path, path_item in paths.items():
+            for method in cast(Mapping[str, object], path_item):
+                if str(method).casefold() in operation_qualification.SUPPORTED_ROUTE_METHODS:
+                    documented.add((application, str(method).upper(), path))
+    semantic_fields = (
+        "application",
+        "operation_id",
+        "method",
+        "path",
+        "classification",
+        "response_authority",
+        "read_collection",
+    )
+    return [
+        {
+            key: getattr(operation, key)
+            for key in semantic_fields
+            if getattr(operation, key) is not None
+        }
+        for operation in operations
+        if (operation.application, operation.method, operation.path) not in documented
+    ]
+
+
 def _source_ref(value: object) -> dict[str, str]:
     module: str
     candidate: object
@@ -1569,6 +1602,9 @@ def trace_projection(projection: Mapping[str, object]) -> dict[str, object]:
     python_registry = surface_registries["python_packages"]
     console_script_registry = surface_registries["console_scripts"]
     authority_registry = _authority_registry(projects, projection)
+    operation_records = [
+        asdict(operation) for operation in operation_qualification.operation_matrix()
+    ]
     exception_source = (
         CONTRACT_FREEZE_EXCEPTIONS.relative_to(ROOT).as_posix()
         if CONTRACT_FREEZE_EXCEPTIONS.is_relative_to(ROOT)
@@ -1643,11 +1679,16 @@ def trace_projection(projection: Mapping[str, object]) -> dict[str, object]:
         "configuration_document_registry": configuration_document_registry,
         "python_registry": python_registry,
         "console_script_registry": console_script_registry,
+        "operation_qualification": {
+            "schema": operation_qualification.SCHEMA,
+            "records": operation_records,
+        },
         "coverage": {
             "source_authorities": len(sources),
             "source_kinds": source_kinds,
             "extent_decisions": len(decisions),
             "extent_source_links": len(decisions),
+            "operation_qualification_records": len(operation_records),
             "segmented_decisions": len(segmented_links),
             "segmented_extent_witness_links": segmented_extent_witness_link_count,
             "segmented_extent_witnesses": len(segmented_extent_witnesses),
@@ -1660,6 +1701,8 @@ def contract_projection() -> dict[str, object]:
     config = _project_config(ROOT / "release.toml")
     components = _component_boundaries(projects)
     python_surfaces = _python_surfaces(projects)
+    http_openapi = _openapi_surfaces()
+    operations = operation_qualification.operation_matrix()
     external_contract: dict[str, object] = {
         "release": {
             "installation": config["installation"],
@@ -1669,10 +1712,8 @@ def contract_projection() -> dict[str, object]:
             "tag_template": config["tag_template"],
             "version_policy": config["version_policy"],
         },
-        "http_openapi": _openapi_surfaces(),
-        "operations": [
-            asdict(operation) for operation in operation_qualification.operation_matrix()
-        ],
+        "http_openapi": http_openapi,
+        "http_route_supplements": _http_route_supplements(http_openapi, operations),
         "cli": _cli_surfaces(),
         "configuration_environment": _environment_names(projects),
         "configuration_environment_patterns": _configuration_environment_patterns(projects),

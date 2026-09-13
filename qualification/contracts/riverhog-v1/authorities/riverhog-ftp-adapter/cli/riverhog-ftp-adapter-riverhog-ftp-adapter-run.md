@@ -9,14 +9,19 @@ Exact externally visible contract owned by this semantic dossier.
 | Audit field | Value |
 |---|---|
 | Authority | [riverhog-ftp-adapter](../index.md) |
-| Interface | [cli](index.md) |
-| Family | [riverhog-ftp-adapter run](index.md#f-0521af0bcd) |
+| Interface | [CLI](index.md) |
 | Contract elements | 1 |
 | Extent decisions | 0 |
 
 ## External contract
 
 - <a id="s-cda0da140d"></a>Parser name: `riverhog-ftp-adapter run`
+
+## Maintained corroboration
+
+### Related interface records
+
+- [POST /v1/run](../http-operations/post-v1-run.md)
 
 ## Governing policies
 

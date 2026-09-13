@@ -9,8 +9,7 @@ Exact externally visible contract owned by this semantic dossier.
 | Audit field | Value |
 |---|---|
 | Authority | [stove0-client](../index.md) |
-| Interface | [cli](index.md) |
-| Family | [work](families/work/index.md) |
+| Interface | [CLI](index.md) |
 | Contract elements | 1 |
 | Extent decisions | 4 |
 
@@ -45,7 +44,7 @@ Shared facts for every subject below: maximum=1; minimum=1; reason="fixed-comman
 
 ### Related interface records
 
-- [Operation parity: create_work](../../stove0/operation/operation-parity-create-work.md)
+- [POST /v1/work](../../stove0/http-operations/post-v1-work.md)
 
 ## Governing policies
 

@@ -1,12 +1,8 @@
-# http-api-contracts: python
+# http-api-contracts: Python
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Policies](../../../policies/index.md)
 
 Contract elements: **1** · Extent decisions: **0**
-
-| Family | Count |
-|---|---:|
-| <a id="f-f18ce1367c"></a>`modules` | 1 |
 
 | Policy | Count |
 |---|---:|
@@ -14,6 +10,6 @@ Contract elements: **1** · Extent decisions: **0**
 
 ## Semantic dossiers
 
-| Dossier | Family | Extent decisions |
-|---|---|---:|
-| [http_api_contracts](http-api-contracts.md) | `modules` | 0 |
+| Dossier | Extent decisions |
+|---|---:|
+| [http_api_contracts](http-api-contracts.md) | 0 |

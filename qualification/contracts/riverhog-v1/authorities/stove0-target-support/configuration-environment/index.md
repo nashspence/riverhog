@@ -1,12 +1,8 @@
-# stove0-target-support: configuration-environment
+# stove0-target-support: Configuration Environment
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Policies](../../../policies/index.md)
 
 Contract elements: **1** · Extent decisions: **1**
-
-| Family | Count |
-|---|---:|
-| <a id="f-9bf40b3a0f"></a>`settings` | 1 |
 
 | Policy | Count |
 |---|---:|
@@ -15,6 +11,6 @@ Contract elements: **1** · Extent decisions: **1**
 
 ## Semantic dossiers
 
-| Dossier | Family | Extent decisions |
-|---|---|---:|
-| [STOVE0_TARGET_TERMINAL_STATE_RETENTION_SECONDS](stove0-target-terminal-state-retention-seconds.md) | `settings` | 1 |
+| Dossier | Extent decisions |
+|---|---:|
+| [STOVE0_TARGET_TERMINAL_STATE_RETENTION_SECONDS](stove0-target-terminal-state-retention-seconds.md) | 1 |

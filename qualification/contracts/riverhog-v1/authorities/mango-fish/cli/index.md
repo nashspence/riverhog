@@ -1,13 +1,8 @@
-# mango-fish: cli
+# mango-fish: CLI
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Policies](../../../policies/index.md)
 
 Contract elements: **5** · Extent decisions: **6**
-
-| Family | Count |
-|---|---:|
-| <a id="f-baa3c102f7"></a>`mango-fish state` | 4 |
-| <a id="f-e95e81e4dd"></a>`root` | 1 |
 
 | Policy | Count |
 |---|---:|
@@ -16,10 +11,10 @@ Contract elements: **5** · Extent decisions: **6**
 
 ## Semantic dossiers
 
-| Dossier | Family | Extent decisions |
-|---|---|---:|
-| [mango-fish mango-fish state](mango-fish-mango-fish-state.md) | `mango-fish state` | 0 |
-| [mango-fish mango-fish state mango-fish state status](mango-fish-mango-fish-state-mango-fish-state-status.md) | `mango-fish state` | 1 |
-| [mango-fish mango-fish state mango-fish state upgrade](mango-fish-mango-fish-state-mango-fish-state-upgrade.md) | `mango-fish state` | 1 |
-| [mango-fish mango-fish state mango-fish state verify](mango-fish-mango-fish-state-mango-fish-state-verify.md) | `mango-fish state` | 1 |
-| [mango-fish](mango-fish.md) | `root` | 3 |
+| Dossier | Extent decisions |
+|---|---:|
+| [mango-fish](mango-fish.md) | 3 |
+| [mango-fish mango-fish state](mango-fish-mango-fish-state.md) | 0 |
+| [mango-fish mango-fish state mango-fish state status](mango-fish-mango-fish-state-mango-fish-state-status.md) | 1 |
+| [mango-fish mango-fish state mango-fish state upgrade](mango-fish-mango-fish-state-mango-fish-state-upgrade.md) | 1 |
+| [mango-fish mango-fish state mango-fish state verify](mango-fish-mango-fish-state-mango-fish-state-verify.md) | 1 |

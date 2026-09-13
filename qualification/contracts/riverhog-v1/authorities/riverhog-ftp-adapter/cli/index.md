@@ -1,18 +1,8 @@
-# riverhog-ftp-adapter: cli
+# riverhog-ftp-adapter: CLI
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Policies](../../../policies/index.md)
 
 Contract elements: **7** · Extent decisions: **3**
-
-| Family | Count |
-|---|---:|
-| <a id="f-04f25df008"></a>`riverhog-ftp-adapter check-config` | 1 |
-| <a id="f-52f20f17cd"></a>`riverhog-ftp-adapter flush` | 1 |
-| <a id="f-56671c01da"></a>`riverhog-ftp-adapter listen` | 1 |
-| <a id="f-0521af0bcd"></a>`riverhog-ftp-adapter run` | 1 |
-| <a id="f-6d617fe38b"></a>`riverhog-ftp-adapter serve` | 1 |
-| <a id="f-ca752dc011"></a>`riverhog-ftp-adapter status` | 1 |
-| <a id="f-925a0d0b0d"></a>`root` | 1 |
 
 | Policy | Count |
 |---|---:|
@@ -21,12 +11,12 @@ Contract elements: **7** · Extent decisions: **3**
 
 ## Semantic dossiers
 
-| Dossier | Family | Extent decisions |
-|---|---|---:|
-| [riverhog-ftp-adapter riverhog-ftp-adapter check-config](riverhog-ftp-adapter-riverhog-ftp-adapter-check-config.md) | `riverhog-ftp-adapter check-config` | 0 |
-| [riverhog-ftp-adapter riverhog-ftp-adapter flush](riverhog-ftp-adapter-riverhog-ftp-adapter-flush.md) | `riverhog-ftp-adapter flush` | 0 |
-| [riverhog-ftp-adapter riverhog-ftp-adapter listen](riverhog-ftp-adapter-riverhog-ftp-adapter-listen.md) | `riverhog-ftp-adapter listen` | 0 |
-| [riverhog-ftp-adapter riverhog-ftp-adapter run](riverhog-ftp-adapter-riverhog-ftp-adapter-run.md) | `riverhog-ftp-adapter run` | 0 |
-| [riverhog-ftp-adapter riverhog-ftp-adapter serve](riverhog-ftp-adapter-riverhog-ftp-adapter-serve.md) | `riverhog-ftp-adapter serve` | 0 |
-| [riverhog-ftp-adapter riverhog-ftp-adapter status](riverhog-ftp-adapter-riverhog-ftp-adapter-status.md) | `riverhog-ftp-adapter status` | 0 |
-| [riverhog-ftp-adapter](riverhog-ftp-adapter.md) | `root` | 3 |
+| Dossier | Extent decisions |
+|---|---:|
+| [riverhog-ftp-adapter](riverhog-ftp-adapter.md) | 3 |
+| [riverhog-ftp-adapter riverhog-ftp-adapter check-config](riverhog-ftp-adapter-riverhog-ftp-adapter-check-config.md) | 0 |
+| [riverhog-ftp-adapter riverhog-ftp-adapter flush](riverhog-ftp-adapter-riverhog-ftp-adapter-flush.md) | 0 |
+| [riverhog-ftp-adapter riverhog-ftp-adapter listen](riverhog-ftp-adapter-riverhog-ftp-adapter-listen.md) | 0 |
+| [riverhog-ftp-adapter riverhog-ftp-adapter run](riverhog-ftp-adapter-riverhog-ftp-adapter-run.md) | 0 |
+| [riverhog-ftp-adapter riverhog-ftp-adapter serve](riverhog-ftp-adapter-riverhog-ftp-adapter-serve.md) | 0 |
+| [riverhog-ftp-adapter riverhog-ftp-adapter status](riverhog-ftp-adapter-riverhog-ftp-adapter-status.md) | 0 |

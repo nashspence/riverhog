@@ -1,12 +1,8 @@
-# stove0-review-sampler-protocol: python
+# stove0-review-sampler-protocol: Python
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Policies](../../../policies/index.md)
 
 Contract elements: **1** · Extent decisions: **0**
-
-| Family | Count |
-|---|---:|
-| <a id="f-2ea71995b3"></a>`modules` | 1 |
 
 | Policy | Count |
 |---|---:|
@@ -14,6 +10,6 @@ Contract elements: **1** · Extent decisions: **0**
 
 ## Semantic dossiers
 
-| Dossier | Family | Extent decisions |
-|---|---|---:|
-| [stove0_review_sampler_protocol](stove0-review-sampler-protocol.md) | `modules` | 0 |
+| Dossier | Extent decisions |
+|---|---:|
+| [stove0_review_sampler_protocol](stove0-review-sampler-protocol.md) | 0 |

@@ -16,5 +16,5 @@ Authorities: **2** · Contract elements: **24**
 
 | Exact authority | Contract elements | Interfaces | Maintained purpose |
 |---|---:|---|---|
-| [extent-contract](../authorities/extent-contract/index.md) | 12 | extent | Cross-cutting generated authority. |
-| [release](../authorities/release/index.md) | 12 | release | Cross-cutting generated authority. |
+| [extent-contract](../authorities/extent-contract/index.md) | 12 | Extent Contract | Cross-cutting generated authority. |
+| [release](../authorities/release/index.md) | 12 | Release | Cross-cutting generated authority. |

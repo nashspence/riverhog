@@ -4,12 +4,7 @@
 
 Contract elements: **2** · Extent decisions: **2**
 
-| Interface | Count |
-|---|---:|
-| `configuration` | 1 |
-| `python` | 1 |
-
 ## Interfaces
 
-- [configuration](configuration/index.md) — 1 elements
-- [python](python/index.md) — 1 elements
+- [Configuration Documents](configuration/index.md) (1)
+- [Python](python/index.md) (1)

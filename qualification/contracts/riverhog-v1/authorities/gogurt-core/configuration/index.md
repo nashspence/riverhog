@@ -1,12 +1,8 @@
-# gogurt-core: configuration
+# gogurt-core: Configuration Documents
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Policies](../../../policies/index.md)
 
 Contract elements: **1** · Extent decisions: **2**
-
-| Family | Count |
-|---|---:|
-| <a id="f-88a338520d"></a>`documents` | 1 |
 
 | Policy | Count |
 |---|---:|
@@ -15,6 +11,6 @@ Contract elements: **1** · Extent decisions: **2**
 
 ## Semantic dossiers
 
-| Dossier | Family | Extent decisions |
-|---|---|---:|
-| [gogurt-core:configuration:gogurt-routes-schema configuration](gogurt-core-configuration-gogurt-routes-schema-configuration.md) | `documents` | 2 |
+| Dossier | Extent decisions |
+|---|---:|
+| [gogurt-core:configuration:gogurt-routes-schema configuration](gogurt-core-configuration-gogurt-routes-schema-configuration.md) | 2 |

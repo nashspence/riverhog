@@ -13,8 +13,10 @@ This page is intentionally an alphabetical reconciliation inventory, not another
 | `configuration-environment` | 252 |
 | `durable-state` | 8 |
 | `extent` | 12 |
-| `http` | 544 |
-| `operation` | 147 |
+| `http-operations` | 147 |
+| `http-schemas` | 394 |
+| `http-security-schemes` | 2 |
+| `http-service-declaration` | 3 |
 | `protocol` | 78 |
 | `python` | 62 |
 | `release` | 12 |
@@ -65,13 +67,13 @@ These values remain in the exact machine projection for validation, but do not o
 | [piggity](../authorities/piggity/index.md) | 93 | cli, configuration-environment |
 | [piggity-local](../authorities/piggity-local/index.md) | 1 | durable-state |
 | [release](../authorities/release/index.md) | 12 | release |
-| [riverhog](../authorities/riverhog/index.md) | 471 | http, operation |
+| [riverhog](../authorities/riverhog/index.md) | 364 | http-operations, http-schemas, http-security-schemes, http-service-declaration |
 | [riverhog-age](../authorities/riverhog-age/index.md) | 1 | python |
 | [riverhog-application-access](../authorities/riverhog-application-access/index.md) | 1 | python |
 | [riverhog-archive-contracts](../authorities/riverhog-archive-contracts/index.md) | 5 | protocol, python |
 | [riverhog-catalog](../authorities/riverhog-catalog/index.md) | 1 | durable-state |
 | [riverhog-client](../authorities/riverhog-client/index.md) | 14 | configuration-environment, python |
-| [riverhog-ftp-adapter](../authorities/riverhog-ftp-adapter/index.md) | 30 | cli, configuration, configuration-environment, http, operation, python |
+| [riverhog-ftp-adapter](../authorities/riverhog-ftp-adapter/index.md) | 25 | cli, configuration, configuration-environment, http-operations, http-schemas, http-security-schemes, http-service-declaration, python |
 | [riverhog-ftp-adapter-api-client](../authorities/riverhog-ftp-adapter-api-client/index.md) | 6 | configuration-environment, python |
 | [riverhog-ftp-custody](../authorities/riverhog-ftp-custody/index.md) | 1 | durable-state |
 | [riverhog-protocol](../authorities/riverhog-protocol/index.md) | 2 | protocol, python |
@@ -91,7 +93,7 @@ These values remain in the exact machine projection for validation, but do not o
 | [riverhog-storage-adapter-s3-support](../authorities/riverhog-storage-adapter-s3-support/index.md) | 1 | python |
 | [riverhog-storage-adapter-support](../authorities/riverhog-storage-adapter-support/index.md) | 27 | cli, protocol, python |
 | [state-schema](../authorities/state-schema/index.md) | 1 | python |
-| [stove0](../authorities/stove0/index.md) | 203 | http, operation |
+| [stove0](../authorities/stove0/index.md) | 170 | http-operations, http-schemas, http-service-declaration |
 | [stove0-api-client](../authorities/stove0-api-client/index.md) | 6 | configuration-environment, python |
 | [stove0-client](../authorities/stove0-client/index.md) | 37 | cli |
 | [stove0-control](../authorities/stove0-control/index.md) | 1 | durable-state |

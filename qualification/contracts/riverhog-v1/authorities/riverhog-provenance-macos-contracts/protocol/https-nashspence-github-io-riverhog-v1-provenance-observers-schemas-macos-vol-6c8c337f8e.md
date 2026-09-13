@@ -9,8 +9,7 @@ Exact externally visible contract owned by this semantic dossier.
 | Audit field | Value |
 |---|---|
 | Authority | [riverhog-provenance-macos-contracts](../index.md) |
-| Interface | [protocol](index.md) |
-| Family | [schemas](index.md#f-24cb3a4081) |
+| Interface | [Protocols](index.md) |
 | Contract elements | 1 |
 | Extent decisions | 7 |
 

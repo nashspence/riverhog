@@ -9,8 +9,7 @@ Exact externally visible contract owned by this semantic dossier.
 | Audit field | Value |
 |---|---|
 | Authority | [lifecycle-events](../index.md) |
-| Interface | [python](index.md) |
-| Family | [modules](index.md#f-b6f5a432e0) |
+| Interface | [Python](index.md) |
 | Contract elements | 1 |
 | Extent decisions | 0 |
 

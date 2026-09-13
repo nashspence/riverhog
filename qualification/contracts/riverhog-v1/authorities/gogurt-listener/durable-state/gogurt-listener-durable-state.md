@@ -9,8 +9,7 @@ Exact externally visible contract owned by this semantic dossier.
 | Audit field | Value |
 |---|---|
 | Authority | [gogurt-listener](../index.md) |
-| Interface | [durable-state](index.md) |
-| Family | [owners](index.md#f-0b118dc18f) |
+| Interface | [Durable State](index.md) |
 | Contract elements | 1 |
 | Extent decisions | 0 |
 

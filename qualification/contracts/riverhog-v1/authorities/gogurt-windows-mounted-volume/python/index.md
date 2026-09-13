@@ -1,12 +1,8 @@
-# gogurt-windows-mounted-volume: python
+# gogurt-windows-mounted-volume: Python
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Policies](../../../policies/index.md)
 
 Contract elements: **1** · Extent decisions: **0**
-
-| Family | Count |
-|---|---:|
-| <a id="f-ad913a8f1b"></a>`modules` | 1 |
 
 | Policy | Count |
 |---|---:|
@@ -14,6 +10,6 @@ Contract elements: **1** · Extent decisions: **0**
 
 ## Semantic dossiers
 
-| Dossier | Family | Extent decisions |
-|---|---|---:|
-| [gogurt_windows_mounted_volume](gogurt-windows-mounted-volume.md) | `modules` | 0 |
+| Dossier | Extent decisions |
+|---|---:|
+| [gogurt_windows_mounted_volume](gogurt-windows-mounted-volume.md) | 0 |

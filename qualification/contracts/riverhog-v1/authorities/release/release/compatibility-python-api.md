@@ -9,8 +9,7 @@ Exact externally visible contract owned by this semantic dossier.
 | Audit field | Value |
 |---|---|
 | Authority | [release](../index.md) |
-| Interface | [release](index.md) |
-| Family | [compatibility](index.md#f-6df58a8f93) |
+| Interface | [Release](index.md) |
 | Contract elements | 1 |
 | Extent decisions | 0 |
 
