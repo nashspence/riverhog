@@ -185,6 +185,7 @@ def test_checked_contract_freeze_matches_every_executable_authority() -> None:
         "boundary-projection",
         "durable-state-registry-envelope",
         "extent-projection-envelope",
+        "release-publication-envelope",
     }
     sources = {item["id"]: item for item in trace["sources"]}
     assert sources["cli:stove0"]["owner"] == "stove0-client"

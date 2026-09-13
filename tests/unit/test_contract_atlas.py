@@ -4,6 +4,7 @@ import hashlib
 import json
 import re
 import sys
+from collections import Counter
 from functools import cache
 from pathlib import Path
 
@@ -87,6 +88,7 @@ def test_every_machine_terminal_and_extent_decision_has_one_human_owner() -> Non
     }
     coverage = discovery["projection_coverage"]
     assert coverage["projection_terminals"] > coverage["semantic_terminals"]
+    assert coverage["policy_terminals"] == 3
     assert coverage["extent_decisions"] == 1991
     assert coverage["missing"] == 0
     assert coverage["multiply_represented"] == 0
@@ -193,17 +195,56 @@ def test_human_entrypoint_exposes_closure_exclusions_and_relationships() -> None
     )
     assert not any(path.startswith("riverhog-v1/relationships/") for path in checked.files)
 
-    release_page = checked.files["riverhog-v1/authorities/release/release/index.md"].decode()
-    release_elements = [item for item in root["elements"] if item["interface"] == "release"]
-    assert "Supported Platforms" not in release_page
-    assert len(release_elements) == 121
-    assert all(item["details"]["publication_group"] for item in release_elements)
-    assert all(
-        release_page.index(group) < release_page.index("Python distribution: config-validation")
-        for group in ("| Publication group |", "### Riverhog product publication")
+    release_elements = [item for item in root["elements"] if item["authority"] == "release"]
+    expected_interfaces = {
+        "artifact-verification": 3,
+        "compatibility-guarantees": 7,
+        "installation-roots": 4,
+        "publication-locations": 2,
+        "python-distributions": 71,
+        "release-artifacts": 12,
+        "runtime-images": 13,
+        "versioning-tags": 5,
+    }
+    assert len(release_elements) == 117
+    assert Counter(item["interface"] for item in release_elements) == expected_interfaces
+    assert "release" not in {item["interface"] for item in release_elements}
+    assert "riverhog-v1/authorities/release/release/index.md" not in checked.files
+    for interface, count in expected_interfaces.items():
+        interface_path = f"riverhog-v1/authorities/release/{interface}/index.md"
+        interface_page = checked.files[interface_path].decode()
+        interface_elements = [item for item in release_elements if item["interface"] == interface]
+        assert len(interface_elements) == count
+        assert "| Exact unit | Classification |" in interface_page
+        assert "\n### " not in interface_page
+        assert all(
+            interface_page.count(f"]({atlas._relative_link(interface_path, str(item['dossier']))})")
+            == 1
+            for item in interface_elements
+        )
+    runtime_page = checked.files["riverhog-v1/authorities/release/runtime-images/index.md"].decode()
+    assert "`product`" in runtime_page
+    assert "`reference_application`" in runtime_page
+    assert "`reference_component`" in runtime_page
+
+    publication_policies = {item["id"]: item for item in root["policies"]["publication"]}
+    assert {key: len(value["applies_to"]) for key, value in publication_policies.items()} == {
+        "publication/image-digest-scope/v1": 13,
+        "publication/platform-scope/v1": 17,
+        "publication/role-retention/v1": 88,
+    }
+    policy_counts = Counter(
+        policy
+        for item in release_elements
+        for policy in item["policy_ids"]
+        if policy.startswith("publication/")
     )
-    assert "### Nonnormative reference-application publication" in release_page
-    assert "### Nonnormative reference-component publication" in release_page
+    assert policy_counts == {
+        "publication/image-digest-scope/v1": 13,
+        "publication/platform-scope/v1": 17,
+        "publication/role-retention/v1": 88,
+    }
+    assert "`release-publication-envelope`" in authority_inventory
 
 
 def test_contract_map_routes_every_interface_and_extension_without_duplicate_semantics() -> None:
@@ -379,7 +420,7 @@ def test_every_dossier_is_lossless_and_representative_contract_classes_are_seman
         "process-protocol-schemas",
         "schema",
         "durable-state",
-        "release",
+        "runtime-images",
     }
     representatives = {
         interface: next(item for item in elements if item["interface"] == interface)
