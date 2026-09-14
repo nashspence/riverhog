@@ -27,7 +27,6 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-071f2c7276"></a>
-- <a id="s-f3f3895318"></a>`title`: TransformCapabilityDocument
 - <a id="s-f0a90a2c3d"></a>`type`: object
 
 ### Fields
@@ -83,7 +82,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: ee128d8f17ec4e3d7b6bbefe5e565e113d30fd826a9b41ca04d6a8be83d48547 -->
+<!-- exact-contract-value: 3c21fdc91dd382badc27dc1a5476b3153c9d3e511f0faeae42e333ef53689aa0 -->
 
 ```json
 {
@@ -107,7 +106,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             },
             "count": {
               "minimum": 0,
-              "title": "Count",
               "type": "integer"
             },
             "state": {
@@ -115,12 +113,10 @@ The following JSON is the complete value owned at each machine-authority pointer
                 "receiving",
                 "sealed"
               ],
-              "title": "State",
               "type": "string"
             },
             "total_bytes": {
               "minimum": 0,
-              "title": "Total Bytes",
               "type": "integer"
             }
           },
@@ -129,7 +125,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             "count",
             "total_bytes"
           ],
-          "title": "ArtifactReceivingSetDocument",
           "type": "object"
         },
         "ArtifactSetAuthorityDocument": {
@@ -137,17 +132,14 @@ The following JSON is the complete value owned at each machine-authority pointer
           "properties": {
             "count": {
               "minimum": 1,
-              "title": "Count",
               "type": "integer"
             },
             "sha256": {
               "pattern": "^[0-9a-f]{64}$",
-              "title": "Sha256",
               "type": "string"
             },
             "total_bytes": {
               "minimum": 0,
-              "title": "Total Bytes",
               "type": "integer"
             }
           },
@@ -156,7 +148,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             "sha256",
             "total_bytes"
           ],
-          "title": "ArtifactSetAuthorityDocument",
           "type": "object"
         }
       },
@@ -184,7 +175,6 @@ The following JSON is the complete value owned at each machine-authority pointer
               ]
             }
           ],
-          "title": "Actions",
           "type": "array"
         },
         "artifacts": {
@@ -192,40 +182,33 @@ The following JSON is the complete value owned at each machine-authority pointer
         },
         "audience": {
           "pattern": "^[a-z0-9][a-z0-9._:/-]{0,299}$",
-          "title": "Audience",
           "type": "string"
         },
         "claim_id": {
           "pattern": "^[0-9a-f]{64}$",
-          "title": "Claim Id",
           "type": "string"
         },
         "expires_at": {
           "maxLength": 64,
           "minLength": 1,
-          "title": "Expires At",
           "type": "string"
         },
         "fence": {
           "minimum": 1,
-          "title": "Fence",
           "type": "integer"
         },
         "format": {
           "const": "riverhog-transform-capability/v1",
-          "title": "Format",
           "type": "string"
         },
         "id": {
           "maxLength": 160,
           "minLength": 1,
-          "title": "Id",
           "type": "string"
         },
         "principal_app": {
           "maxLength": 300,
           "minLength": 1,
-          "title": "Principal App",
           "type": "string"
         },
         "state": {
@@ -233,12 +216,10 @@ The following JSON is the complete value owned at each machine-authority pointer
             "receiving",
             "active"
           ],
-          "title": "State",
           "type": "string"
         },
         "token": {
           "pattern": "^rhc_[A-Za-z0-9_-]+$",
-          "title": "Token",
           "type": "string"
         }
       },
@@ -255,7 +236,6 @@ The following JSON is the complete value owned at each machine-authority pointer
         "artifacts",
         "token"
       ],
-      "title": "TransformCapabilityDocument",
       "type": "object"
     },
     "signature": "\"(*, format: Literal['riverhog-transform-capability/v1'], id: Annotated[str, MinLen(min_length=1), MaxLen(max_length=160)], claim_id: Annotated[str, _PydanticGeneralMetadata(pattern='^[0-9a-f]{64}$')], fence: Annotated[int, Ge(ge=1)], audience: Annotated[str, _PydanticGeneralMetadata(pattern='^[a-z0-9][a-z0-9._:/-]{0,299}$')], actions: Annotated[list[Literal['read-inputs', 'write-output']], MinLen(min_length=1)], state: Literal['receiving', 'active'], principal_app: Annotated[str, MinLen(min_length=1), MaxLen(max_length=300)], expires_at: Annotated[str, MinLen(min_length=1), MaxLen(max_length=64)], artifacts: riverhog_protocol.collection_workflow_transport.ArtifactReceivingSetDocument, token: Annotated[str, _PydanticGeneralMetadata(pattern='^rhc_[A-Za-z0-9_-]+$')]) -> None\""

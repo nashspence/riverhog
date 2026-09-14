@@ -46,14 +46,14 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Identity | Selected by | Exit status | stdout | stderr |
 |---|---|---|---|---|
-| <a id="s-3bc0a4f047"></a>`completed` | <a id="s-9cce345353"></a>`{"kind":"command-completed"}` | <a id="s-8e15726b00"></a>`0` | <a id="s-1d455cd5dc"></a>`human: noncontractual-presentation-of-command-result; json: HTTP list_app_keys — #/components/schemas/AppKeyListOut` | <a id="s-6b8b61b073"></a>`all: empty` |
+| <a id="s-3bc0a4f047"></a>`completed` | <a id="s-9cce345353"></a>`{"kind":"command-completed"}` | <a id="s-8e15726b00"></a>`0` | <a id="s-1d455cd5dc"></a>human: `noncontractual-presentation-of-command-result`; json: [HTTP list_app_keys response 200](../../riverhog/http-operations/get-v1-apps-app-keys.md#s-3688cb2c40) | <a id="s-6b8b61b073"></a>all: `empty` |
 
 #### Failure outcomes
 
 | Identity | Selected by | Exit status | stdout | stderr |
 |---|---|---|---|---|
-| <a id="s-95ab9efd64"></a>`usage` | <a id="s-9925cdd647"></a>`{"kind":"parser-rejected-invocation"}` | <a id="s-0d2e552f9d"></a>`2` | <a id="s-114e678a38"></a>`all: empty` | <a id="s-45d8ffd6a8"></a>`all: noncontractual-usage-diagnostic` |
-| <a id="s-09b4265c3d"></a>`operational` | <a id="s-29ad6d9db4"></a>`{"kind":"application-error"}` | <a id="s-95f5e35be6"></a>`1` | <a id="s-9bd55d801d"></a>`human: empty; json: http-api-contracts.ErrorResponse` | <a id="s-b28dc6f627"></a>`human: noncontractual-diagnostic; json: empty` |
+| <a id="s-95ab9efd64"></a>`usage` | <a id="s-9925cdd647"></a>`{"kind":"parser-rejected-invocation"}` | <a id="s-0d2e552f9d"></a>`2` | <a id="s-114e678a38"></a>all: `empty` | <a id="s-45d8ffd6a8"></a>all: `noncontractual-usage-diagnostic` |
+| <a id="s-09b4265c3d"></a>`operational` | <a id="s-29ad6d9db4"></a>`{"kind":"application-error"}` | <a id="s-95f5e35be6"></a>`1` | <a id="s-9bd55d801d"></a>human: `empty`; json: [http-api-contracts.ErrorResponse](../../http-api-contracts/python/http-api-contracts-errorresponse.md) | <a id="s-b28dc6f627"></a>human: `noncontractual-diagnostic`; json: `empty` |
 
 ### Progression, limits, and lifecycle
 

@@ -51,14 +51,14 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Identity | Selected by | Exit status | stdout | stderr |
 |---|---|---|---|---|
-| <a id="s-4d450e2673"></a>`completed` | <a id="s-342336639c"></a>`{"kind":"command-completed"}` | <a id="s-d7a0e6c1e2"></a>`0` | <a id="s-dfcd93e0b4"></a>`human: noncontractual-presentation-of-command-result; json: HTTP list_retrieval_cache_objects — #/components/schemas/RetrievalCacheObjectListOut` | <a id="s-da8a898431"></a>`all: empty` |
+| <a id="s-4d450e2673"></a>`completed` | <a id="s-342336639c"></a>`{"kind":"command-completed"}` | <a id="s-d7a0e6c1e2"></a>`0` | <a id="s-dfcd93e0b4"></a>human: `noncontractual-presentation-of-command-result`; json: [HTTP list_retrieval_cache_objects response 200](../../riverhog/http-operations/get-v1-retrieval-cache-objects.md#s-5f7e7e3a7a) | <a id="s-da8a898431"></a>all: `empty` |
 
 #### Failure outcomes
 
 | Identity | Selected by | Exit status | stdout | stderr |
 |---|---|---|---|---|
-| <a id="s-0110a83f35"></a>`usage` | <a id="s-81ac3392ec"></a>`{"kind":"parser-rejected-invocation"}` | <a id="s-e49e283d15"></a>`2` | <a id="s-deda7c628a"></a>`all: empty` | <a id="s-2a29f1b471"></a>`all: noncontractual-usage-diagnostic` |
-| <a id="s-a1d6144deb"></a>`operational` | <a id="s-30a291623e"></a>`{"kind":"application-error"}` | <a id="s-f31724d20f"></a>`1` | <a id="s-a3705b64a9"></a>`human: empty; json: http-api-contracts.ErrorResponse` | <a id="s-59137b7a09"></a>`human: noncontractual-diagnostic; json: empty` |
+| <a id="s-0110a83f35"></a>`usage` | <a id="s-81ac3392ec"></a>`{"kind":"parser-rejected-invocation"}` | <a id="s-e49e283d15"></a>`2` | <a id="s-deda7c628a"></a>all: `empty` | <a id="s-2a29f1b471"></a>all: `noncontractual-usage-diagnostic` |
+| <a id="s-a1d6144deb"></a>`operational` | <a id="s-30a291623e"></a>`{"kind":"application-error"}` | <a id="s-f31724d20f"></a>`1` | <a id="s-a3705b64a9"></a>human: `empty`; json: [http-api-contracts.ErrorResponse](../../http-api-contracts/python/http-api-contracts-errorresponse.md) | <a id="s-59137b7a09"></a>human: `noncontractual-diagnostic`; json: `empty` |
 
 ### Progression, limits, and lifecycle
 

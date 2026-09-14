@@ -44,16 +44,16 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Identity | Selected by | Exit status | stdout | stderr |
 |---|---|---|---|---|
-| <a id="s-e6ffcd91df"></a>`archive-recovered` | <a id="s-b3f25cf921"></a>`{"kind":"options-absent","parameters":["description_only","tags_only"]}` | <a id="s-cc80a4f4a0"></a>`0` | <a id="s-82103433e9"></a>`human: noncontractual-recovery-summary` | <a id="s-1b310db431"></a>`all: empty` |
-| <a id="s-1cd6f69133"></a>`description-recovered` | <a id="s-228b200272"></a>`{"kind":"option-equals","parameter":"description_only","value":true}` | <a id="s-e8bbbcc49c"></a>`0` | <a id="s-bdf9e5feff"></a>`json: schema-authority` | <a id="s-018043ff9a"></a>`all: empty` |
-| <a id="s-b4a66c971c"></a>`tags-recovered` | <a id="s-191ff5ecba"></a>`{"kind":"option-equals","parameter":"tags_only","value":true}` | <a id="s-70c0bd4c11"></a>`0` | <a id="s-d382d2c367"></a>`json: riverhog-recovered-collection-tags/v1-json-sequence` | <a id="s-cb2e774c6f"></a>`all: empty` |
+| <a id="s-e6ffcd91df"></a>`archive-recovered` | <a id="s-b3f25cf921"></a>`{"kind":"options-absent","parameters":["description_only","tags_only"]}` | <a id="s-cc80a4f4a0"></a>`0` | <a id="s-82103433e9"></a>human: `noncontractual-recovery-summary` | <a id="s-1b310db431"></a>all: `empty` |
+| <a id="s-1cd6f69133"></a>`description-recovered` | <a id="s-228b200272"></a>`{"kind":"option-equals","parameter":"description_only","value":true}` | <a id="s-e8bbbcc49c"></a>`0` | <a id="s-bdf9e5feff"></a>json: [Riverhog collection description document v1](../../riverhog-protocol/schema/riverhog-collection-description-document-v1.md) | <a id="s-018043ff9a"></a>all: `empty` |
+| <a id="s-b4a66c971c"></a>`tags-recovered` | <a id="s-191ff5ecba"></a>`{"kind":"option-equals","parameter":"tags_only","value":true}` | <a id="s-70c0bd4c11"></a>`0` | <a id="s-d382d2c367"></a>json: [riverhog-recovered-collection-tags/v1-json-sequence](#s-d382d2c367) | <a id="s-cb2e774c6f"></a>all: `empty` |
 
 #### Failure outcomes
 
 | Identity | Selected by | Exit status | stdout | stderr |
 |---|---|---|---|---|
-| <a id="s-f02faf7dad"></a>`usage` | <a id="s-140eafc026"></a>`{"kind":"parser-rejected-invocation"}` | <a id="s-33edb1b1ec"></a>`2` | <a id="s-19f9334bbd"></a>`all: empty` | <a id="s-2dfd45a472"></a>`all: noncontractual-usage-diagnostic` |
-| <a id="s-4b8e5acd9d"></a>`recovery` | <a id="s-7253334adc"></a>`{"kind":"recovery-error"}` | <a id="s-3c2553c1f0"></a>`1` | <a id="s-664d5b2d56"></a>`all: empty` | <a id="s-8ca9ad09a8"></a>`all: noncontractual-diagnostic` |
+| <a id="s-f02faf7dad"></a>`usage` | <a id="s-140eafc026"></a>`{"kind":"parser-rejected-invocation"}` | <a id="s-33edb1b1ec"></a>`2` | <a id="s-19f9334bbd"></a>all: `empty` | <a id="s-2dfd45a472"></a>all: `noncontractual-usage-diagnostic` |
+| <a id="s-4b8e5acd9d"></a>`recovery` | <a id="s-7253334adc"></a>`{"kind":"recovery-error"}` | <a id="s-3c2553c1f0"></a>`1` | <a id="s-664d5b2d56"></a>all: `empty` | <a id="s-8ca9ad09a8"></a>all: `noncontractual-diagnostic` |
 
 ### Progression, limits, and lifecycle
 

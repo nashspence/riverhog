@@ -27,8 +27,6 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-81572973e4"></a>
-- <a id="s-bcefea3c05"></a>`title`: ArchiveCopyStoreSelectionDocument
-- <a id="s-611a5338c9"></a>`description`: Canonical logical stores participating in one Riverhog archive copy.
 - <a id="s-ceffc5fb57"></a>`type`: object
 
 ### Fields
@@ -74,7 +72,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 1d3c8cfea962ebbcc10e2d9a549c10a43baaf76b2dfa3d822969b8d1a94cb660 -->
+<!-- exact-contract-value: 98aa99e0d864d6a4d186dbe953f394f2543dd2d7e4dccdbc8a70e69f477ced3b -->
 
 ```json
 {
@@ -88,7 +86,6 @@ The following JSON is the complete value owned at each machine-authority pointer
         }
       },
       "additionalProperties": false,
-      "description": "Canonical logical stores participating in one Riverhog archive copy.",
       "properties": {
         "destination_store": {
           "$ref": "#/$defs/ArchiveStoreName"
@@ -108,7 +105,6 @@ The following JSON is the complete value owned at each machine-authority pointer
       "required": [
         "destination_store"
       ],
-      "title": "ArchiveCopyStoreSelectionDocument",
       "type": "object"
     },
     "signature": "'(*, destination_store: ArchiveStoreName, source_store: ArchiveStoreName | None = None) -> None'"

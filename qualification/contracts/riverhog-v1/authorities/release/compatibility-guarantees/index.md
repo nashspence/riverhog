@@ -8,11 +8,12 @@ Coordinated v1 compatibility promises.
 
 | Exact unit | Classification |
 |---|---|
-| [Compatibility: archive](compatibility-archive.md) | — |
-| [Compatibility: cli](compatibility-cli.md) | — |
-| [Compatibility: components](compatibility-components.md) | — |
-| [Compatibility: configuration](compatibility-configuration.md) | — |
-| [Compatibility: durable state](compatibility-durable-state.md) | — |
-| [Compatibility: http api](compatibility-http-api.md) | — |
-| [Compatibility: python api](compatibility-python-api.md) | — |
-| [Compatibility: recovery](compatibility-recovery.md) | — |
+| [archive](compatibility-archive.md) | — |
+| [cli](compatibility-cli.md) | — |
+| [components](compatibility-components.md) | — |
+| [configuration](compatibility-configuration.md) | — |
+| [durable state](compatibility-durable-state.md) | — |
+| [http api](compatibility-http-api.md) | — |
+| [licensing](compatibility-licensing.md) | — |
+| [python api](compatibility-python-api.md) | — |
+| [recovery](compatibility-recovery.md) | — |

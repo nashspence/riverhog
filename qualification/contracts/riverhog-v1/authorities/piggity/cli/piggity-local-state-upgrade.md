@@ -38,14 +38,14 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Identity | Selected by | Exit status | stdout | stderr |
 |---|---|---|---|---|
-| <a id="s-bfa86c8e3d"></a>`completed` | <a id="s-d98861536d"></a>`{"kind":"command-completed"}` | <a id="s-7cd3cfb0ef"></a>`0` | <a id="s-ecd561968b"></a>`human: noncontractual-presentation-of-command-result; json: state-schema-status/v1` | <a id="s-643eb44d07"></a>`all: empty` |
+| <a id="s-bfa86c8e3d"></a>`completed` | <a id="s-d98861536d"></a>`{"kind":"command-completed"}` | <a id="s-7cd3cfb0ef"></a>`0` | <a id="s-ecd561968b"></a>human: `noncontractual-presentation-of-command-result`; json: [state-schema-status/v1](#s-ecd561968b) | <a id="s-643eb44d07"></a>all: `empty` |
 
 #### Failure outcomes
 
 | Identity | Selected by | Exit status | stdout | stderr |
 |---|---|---|---|---|
-| <a id="s-909b7682b5"></a>`usage` | <a id="s-0d85a756be"></a>`{"kind":"parser-rejected-invocation"}` | <a id="s-f28452bff2"></a>`2` | <a id="s-65268670d3"></a>`all: empty` | <a id="s-b8b0ebed46"></a>`all: noncontractual-usage-diagnostic` |
-| <a id="s-ed5d0c67ce"></a>`operational` | <a id="s-c4e7057791"></a>`{"kind":"application-error"}` | <a id="s-74a21eda29"></a>`1` | <a id="s-ee326a54ea"></a>`human: empty; json: http-api-contracts.ErrorResponse` | <a id="s-cd01b6d2f3"></a>`human: noncontractual-diagnostic; json: empty` |
+| <a id="s-909b7682b5"></a>`usage` | <a id="s-0d85a756be"></a>`{"kind":"parser-rejected-invocation"}` | <a id="s-f28452bff2"></a>`2` | <a id="s-65268670d3"></a>all: `empty` | <a id="s-b8b0ebed46"></a>all: `noncontractual-usage-diagnostic` |
+| <a id="s-ed5d0c67ce"></a>`operational` | <a id="s-c4e7057791"></a>`{"kind":"application-error"}` | <a id="s-74a21eda29"></a>`1` | <a id="s-ee326a54ea"></a>human: `empty`; json: [http-api-contracts.ErrorResponse](../../http-api-contracts/python/http-api-contracts-errorresponse.md) | <a id="s-cd01b6d2f3"></a>human: `noncontractual-diagnostic`; json: `empty` |
 
 ### Progression, limits, and lifecycle
 

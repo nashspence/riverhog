@@ -19,6 +19,9 @@ Optional nonnormative sampler support for Stove0 review references.
 | <a id="s-70cf4fedae"></a>`artifacts` | [{"coordinate": "dist/stove0_review_sampler_support-{version}-py3-none-any.whl", "format": "wheel"}, {"coordinate": "dist/stove0_review_sampler_support-{version}.tar.gz", "format": "sdist"}] |
 | <a id="s-6e0266620f"></a>`channel` | github-release |
 | <a id="s-0a462634c1"></a>`description` | Optional nonnormative sampler support for Stove0 review references. |
+| <a id="s-d63b0459f9"></a>`license_baseline` | first-v1-publication |
+| <a id="s-5589a34bd9"></a>`license_expression` | Apache-2.0 |
+| <a id="s-8d36f3c01e"></a>`publication_identity` | {"coordinate": "stove0-review-sampler-support", "kind": "python-distribution"} |
 | <a id="s-90ac97800a"></a>`requires_python` | >=3.12 |
 | <a id="s-d808f64d98"></a>`role` | reference_component |
 | <a id="s-65bead379d"></a>`source` | reference/stove0/targets/review/sampler/support/pyproject.toml |
@@ -57,7 +60,7 @@ Publication preserves these existing component authorities; it does not reclassi
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: b1433a0b0317cc766841c033fc19870f416f6ac6f1ed3e12d5bed10ba16e47c3 -->
+<!-- exact-contract-value: cc5ffc860abe96e9d69286942ef5078437db1af6f8c35d243627a1203460de42 -->
 
 ```json
 {
@@ -73,6 +76,12 @@ The following JSON is the complete value owned at each machine-authority pointer
   ],
   "channel": "github-release",
   "description": "Optional nonnormative sampler support for Stove0 review references.",
+  "license_baseline": "first-v1-publication",
+  "license_expression": "Apache-2.0",
+  "publication_identity": {
+    "coordinate": "stove0-review-sampler-support",
+    "kind": "python-distribution"
+  },
   "requires_python": ">=3.12",
   "role": "reference_component",
   "source": "reference/stove0/targets/review/sampler/support/pyproject.toml"

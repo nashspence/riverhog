@@ -8,6 +8,6 @@ External verification mechanisms for published artifacts.
 
 | Exact unit | Classification |
 |---|---|
-| [Trust: checksums](trust-checksums.md) | — |
-| [Trust: maintainer_signature](trust-maintainer-signature.md) | — |
-| [Trust: workflow_attestation](trust-workflow-attestation.md) | — |
+| [checksums](trust-checksums.md) | — |
+| [maintainer_signature](trust-maintainer-signature.md) | — |
+| [workflow_attestation](trust-workflow-attestation.md) | — |

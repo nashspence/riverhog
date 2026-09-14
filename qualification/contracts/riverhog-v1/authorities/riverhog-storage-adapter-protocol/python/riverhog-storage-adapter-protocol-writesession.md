@@ -27,16 +27,15 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-e98562805e"></a>
-- <a id="s-bfb844a3c6"></a>`title`: WriteSession
 - <a id="s-aeb525a1a5"></a>`type`: object
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-a3bee6e0ec"></a>`expected_bytes` | yes | type="integer"; minimum=1 | Exact immutable-object byte length admitted by this write session. The value remains fixed until the write becomes terminal. |
+| <a id="s-a3bee6e0ec"></a>`expected_bytes` | yes | type="integer"; minimum=1 |  |
 | <a id="s-7927a255de"></a>`object_path` | yes | type="string"; minLength=1; maxLength=4096 |  |
-| <a id="s-7803618695"></a>`write_token` | yes | type="string"; minLength=1; maxLength=4000 | Opaque adapter-owned persistable continuation handle. For the same configured adapter it remains replayable across client, transport, Riverhog, and adapter process restarts until completion, explicit abort, or caller-authorized incomplete-write reclamation makes the write terminal. |
+| <a id="s-7803618695"></a>`write_token` | yes | type="string"; minLength=1; maxLength=4000 |  |
 
 ## Maintained corroboration
 
@@ -68,7 +67,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: ad19ebe26d930e906e94995542970576791bb4726104d007596b80d7b691fbdd -->
+<!-- exact-contract-value: f29f434fd4ae533b6a6bb3c116d60389005413aecf9ac665e72cbf197cb4ece8 -->
 
 ```json
 {
@@ -78,22 +77,17 @@ The following JSON is the complete value owned at each machine-authority pointer
       "additionalProperties": false,
       "properties": {
         "expected_bytes": {
-          "description": "Exact immutable-object byte length admitted by this write session. The value remains fixed until the write becomes terminal.",
           "minimum": 1,
-          "title": "Expected Bytes",
           "type": "integer"
         },
         "object_path": {
           "maxLength": 4096,
           "minLength": 1,
-          "title": "Object Path",
           "type": "string"
         },
         "write_token": {
-          "description": "Opaque adapter-owned persistable continuation handle. For the same configured adapter it remains replayable across client, transport, Riverhog, and adapter process restarts until completion, explicit abort, or caller-authorized incomplete-write reclamation makes the write terminal.",
           "maxLength": 4000,
           "minLength": 1,
-          "title": "Write Token",
           "type": "string"
         }
       },
@@ -102,7 +96,6 @@ The following JSON is the complete value owned at each machine-authority pointer
         "expected_bytes",
         "write_token"
       ],
-      "title": "WriteSession",
       "type": "object"
     },
     "signature": "'(*, object_path: Annotated[str, MinLen(min_length=1), MaxLen(max_length=4096)], expected_bytes: Annotated[int, Ge(ge=1)], write_token: Annotated[str, MinLen(min_length=1), MaxLen(max_length=4000)]) -> None'"

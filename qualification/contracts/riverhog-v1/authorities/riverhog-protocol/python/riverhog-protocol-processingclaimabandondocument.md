@@ -27,7 +27,6 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-dcd71186ec"></a>
-- <a id="s-a2b2eb9be5"></a>`title`: ProcessingClaimAbandonDocument
 - <a id="s-46ae7b32f3"></a>`type`: object
 
 ### Fields
@@ -61,7 +60,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: f6a2d48b9ca1bffb051f88f6bfdcd2623f41785d82ba14a4a45ef43c292648a0 -->
+<!-- exact-contract-value: ed8e8424e76221eee47aa6d0053cdb3ed95288c4b34384ee5125b42395503ffd -->
 
 ```json
 {
@@ -72,13 +71,11 @@ The following JSON is the complete value owned at each machine-authority pointer
       "properties": {
         "fence": {
           "minimum": 1,
-          "title": "Fence",
           "type": "integer"
         },
         "reason": {
           "maxLength": 1000,
           "minLength": 1,
-          "title": "Reason",
           "type": "string"
         }
       },
@@ -86,7 +83,6 @@ The following JSON is the complete value owned at each machine-authority pointer
         "fence",
         "reason"
       ],
-      "title": "ProcessingClaimAbandonDocument",
       "type": "object"
     },
     "signature": "'(*, fence: Annotated[int, Ge(ge=1)], reason: Annotated[str, MinLen(min_length=1), MaxLen(max_length=1000)]) -> None'"

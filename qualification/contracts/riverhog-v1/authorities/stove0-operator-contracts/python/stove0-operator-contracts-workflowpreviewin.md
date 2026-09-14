@@ -27,7 +27,6 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-d04d5dab91"></a>
-- <a id="s-aff25da1ca"></a>`title`: WorkflowPreviewIn
 - <a id="s-3caace8cca"></a>`type`: object
 
 ### Fields
@@ -77,7 +76,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 9568f50c91c076701589bace9234ff6e6e50f1f18feaf0ce2725c46057ad79ab -->
+<!-- exact-contract-value: ad894a835d2bdd709341f26febabfdd3c23ff8ee3b6dcddf550cc1f9862b002e -->
 
 ```json
 {
@@ -94,7 +93,6 @@ The following JSON is the complete value owned at each machine-authority pointer
           "properties": {
             "archive_root_sha256": {
               "pattern": "^[0-9a-f]{64}$",
-              "title": "Archive Root Sha256",
               "type": "string"
             },
             "collection_id": {
@@ -102,7 +100,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             },
             "content_identity": {
               "pattern": "^[0-9a-f]{64}$",
-              "title": "Content Identity",
               "type": "string"
             }
           },
@@ -111,7 +108,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             "archive_root_sha256",
             "content_identity"
           ],
-          "title": "CollectionRootRef",
           "type": "object"
         },
         "JsonValue": {}
@@ -122,7 +118,6 @@ The following JSON is the complete value owned at each machine-authority pointer
           "additionalProperties": {
             "$ref": "#/$defs/JsonValue"
           },
-          "title": "Effective Intent",
           "type": "object"
         },
         "inputs": {
@@ -130,13 +125,11 @@ The following JSON is the complete value owned at each machine-authority pointer
             "$ref": "#/$defs/CollectionRootRef"
           },
           "minItems": 1,
-          "title": "Inputs",
           "type": "array"
         },
         "recipe_id": {
           "maxLength": 160,
           "minLength": 1,
-          "title": "Recipe Id",
           "type": "string"
         },
         "recipe_revision": {
@@ -149,15 +142,13 @@ The following JSON is the complete value owned at each machine-authority pointer
               "type": "null"
             }
           ],
-          "default": null,
-          "title": "Recipe Revision"
+          "default": null
         }
       },
       "required": [
         "recipe_id",
         "inputs"
       ],
-      "title": "WorkflowPreviewIn",
       "type": "object"
     },
     "signature": "'(*, recipe_id: Annotated[str, MinLen(min_length=1), MaxLen(max_length=160)], recipe_revision: Annotated[int | None, Ge(ge=1)] = None, inputs: Annotated[tuple[stove0_protocol.models.CollectionRootRef, ...], MinLen(min_length=1)], effective_intent: dict[str, JsonValue] = <factory>) -> None'"

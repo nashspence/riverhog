@@ -27,7 +27,6 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-79de46c8fb"></a>
-- <a id="s-ae669fe636"></a>`title`: CatalogSyncDelete
 - <a id="s-2a14510f0c"></a>`type`: object
 
 ### Fields
@@ -68,7 +67,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 872bc9c9c399500bd4d1d17900b48eb31a5d44130cfff6664735d752602dc50d -->
+<!-- exact-contract-value: 1be74cb632dd9638fe5780dfae0c3d6b42737e44d1c53cae72c3ba130a0a6568 -->
 
 ```json
 {
@@ -89,14 +88,12 @@ The following JSON is the complete value owned at each machine-authority pointer
         "operation": {
           "const": "delete",
           "default": "delete",
-          "title": "Operation",
           "type": "string"
         },
         "revision": {
           "maxLength": 19,
           "minLength": 1,
           "pattern": "^(?:[1-9][0-9]{0,17}|[1-8][0-9]{18})$",
-          "title": "Revision",
           "type": "string"
         }
       },
@@ -104,7 +101,6 @@ The following JSON is the complete value owned at each machine-authority pointer
         "collection_id",
         "revision"
       ],
-      "title": "CatalogSyncDelete",
       "type": "object"
     },
     "signature": "\"(*, operation: Literal['delete'] = 'delete', collection_id: CollectionId, revision: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=1, max_length=19, pattern='^(?:[1-9][0-9]{0,17}|[1-8][0-9]{18})$', ascii_only=None)]) -> None\""

@@ -27,7 +27,6 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-4878de70d1"></a>
-- <a id="s-9a5eceb063"></a>`title`: SemanticFactsConformanceVectors
 - <a id="s-81d0487e81"></a>`type`: object
 
 ### Fields
@@ -80,7 +79,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 76427113db8d3b8e3d57866417459bd6962fee43886afb475c209d487c07ee10 -->
+<!-- exact-contract-value: 65b5d5d13916db1cc0b96f60552f4a559c21df90d0ec264645a00238e9e768fb -->
 
 ```json
 {
@@ -93,7 +92,6 @@ The following JSON is the complete value owned at each machine-authority pointer
           "properties": {
             "bytes": {
               "minimum": 0,
-              "title": "Bytes",
               "type": "integer"
             },
             "collection": {
@@ -101,7 +99,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             },
             "id": {
               "pattern": "^[A-Za-z0-9]\u0028?:[A-Za-z0-9._-]{0,158}[A-Za-z0-9])?$",
-              "title": "Id",
               "type": "string"
             },
             "media_type": {
@@ -115,23 +112,19 @@ The following JSON is the complete value owned at each machine-authority pointer
                   "type": "null"
                 }
               ],
-              "default": null,
-              "title": "Media Type"
+              "default": null
             },
             "path": {
               "maxLength": 4096,
               "minLength": 1,
-              "title": "Path",
               "type": "string"
             },
             "role": {
               "pattern": "^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$",
-              "title": "Role",
               "type": "string"
             },
             "sha256": {
               "pattern": "^[0-9a-f]{64}$",
-              "title": "Sha256",
               "type": "string"
             }
           },
@@ -143,7 +136,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             "bytes",
             "sha256"
           ],
-          "title": "ArtifactSubject",
           "type": "object"
         },
         "CollectionId": {
@@ -155,7 +147,6 @@ The following JSON is the complete value owned at each machine-authority pointer
           "properties": {
             "archive_root_sha256": {
               "pattern": "^[0-9a-f]{64}$",
-              "title": "Archive Root Sha256",
               "type": "string"
             },
             "collection_id": {
@@ -163,7 +154,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             },
             "content_identity": {
               "pattern": "^[0-9a-f]{64}$",
-              "title": "Content Identity",
               "type": "string"
             }
           },
@@ -172,7 +162,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             "archive_root_sha256",
             "content_identity"
           ],
-          "title": "CollectionRootRef",
           "type": "object"
         },
         "JsonValue": {},
@@ -180,26 +169,22 @@ The following JSON is the complete value owned at each machine-authority pointer
           "additionalProperties": false,
           "properties": {
             "accepted": {
-              "title": "Accepted",
               "type": "boolean"
             },
             "facts": {
               "additionalProperties": {
                 "$ref": "#/$defs/JsonValue"
               },
-              "title": "Facts",
               "type": "object"
             },
             "id": {
               "pattern": "^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$",
-              "title": "Id",
               "type": "string"
             },
             "options": {
               "additionalProperties": {
                 "$ref": "#/$defs/JsonValue"
               },
-              "title": "Options",
               "type": "object"
             },
             "subjects": {
@@ -207,7 +192,6 @@ The following JSON is the complete value owned at each machine-authority pointer
                 "$ref": "#/$defs/ArtifactSubject"
               },
               "minItems": 1,
-              "title": "Subjects",
               "type": "array"
             }
           },
@@ -217,7 +201,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             "subjects",
             "facts"
           ],
-          "title": "SemanticFactsConformanceVector",
           "type": "object"
         }
       },
@@ -226,12 +209,10 @@ The following JSON is the complete value owned at each machine-authority pointer
         "format": {
           "const": "stove0-semantic-facts-conformance/v1",
           "default": "stove0-semantic-facts-conformance/v1",
-          "title": "Format",
           "type": "string"
         },
         "profile_id": {
           "pattern": "^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$",
-          "title": "Profile Id",
           "type": "string"
         },
         "vectors": {
@@ -239,7 +220,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             "$ref": "#/$defs/SemanticFactsConformanceVector"
           },
           "minItems": 2,
-          "title": "Vectors",
           "type": "array"
         }
       },
@@ -247,7 +227,6 @@ The following JSON is the complete value owned at each machine-authority pointer
         "profile_id",
         "vectors"
       ],
-      "title": "SemanticFactsConformanceVectors",
       "type": "object"
     },
     "signature": "\"(*, format: Literal['stove0-semantic-facts-conformance/v1'] = 'stove0-semantic-facts-conformance/v1', profile_id: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$', ascii_only=None)], vectors: Annotated[tuple[stove0_observer_protocol.conformance.SemanticFactsConformanceVector, ...], MinLen(min_length=2)]) -> None\""

@@ -20,7 +20,10 @@ Optional nonnormative CloudEvents reference application for Riverhog.
 | <a id="s-dd1674b6ff"></a>`description` | Optional nonnormative CloudEvents reference application for Riverhog. |
 | <a id="s-8f4dce0db3"></a>`distribution_roots` | ["mango-fish"] |
 | <a id="s-c131e3d0f1"></a>`format` | oci-image |
+| <a id="s-b9601b6fad"></a>`license_baseline` | first-v1-publication |
+| <a id="s-dee9ac5a1b"></a>`license_expression` | Apache-2.0 |
 | <a id="s-8ce94d6fbc"></a>`platforms` | ["linux/amd64"] |
+| <a id="s-992c81a6da"></a>`publication_identity` | {"coordinate": "ghcr.io/nashspence/riverhog-mango-fish", "kind": "oci-repository"} |
 | <a id="s-62b24a5072"></a>`repository` | ghcr.io/nashspence/riverhog-mango-fish |
 | <a id="s-0453acaaea"></a>`role` | reference |
 | <a id="s-0c5f1f0ff3"></a>`tag_templates` | ["ghcr.io/nashspence/riverhog-mango-fish:{version}", "ghcr.io/nashspence/riverhog-mango-fish:sha-{source_sha}"] |
@@ -61,7 +64,7 @@ Publication preserves these existing component authorities; it does not reclassi
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 14bedf6f00b7aa39432b98070919d0a68766e2394f8fef3b85fdee52e577a527 -->
+<!-- exact-contract-value: 13e9b1214d609ac72d4e61fda500cf51f30ef459901a322a81a519c70531ec22 -->
 
 ```json
 {
@@ -71,9 +74,15 @@ The following JSON is the complete value owned at each machine-authority pointer
     "mango-fish"
   ],
   "format": "oci-image",
+  "license_baseline": "first-v1-publication",
+  "license_expression": "Apache-2.0",
   "platforms": [
     "linux/amd64"
   ],
+  "publication_identity": {
+    "coordinate": "ghcr.io/nashspence/riverhog-mango-fish",
+    "kind": "oci-repository"
+  },
   "repository": "ghcr.io/nashspence/riverhog-mango-fish",
   "role": "reference",
   "tag_templates": [

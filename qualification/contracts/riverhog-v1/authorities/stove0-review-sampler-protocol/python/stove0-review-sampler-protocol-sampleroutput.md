@@ -27,7 +27,6 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-d01a821efc"></a>
-- <a id="s-3a9ea0ac9f"></a>`title`: SamplerOutput
 - <a id="s-ff5d956d3d"></a>`type`: object
 
 ### Fields
@@ -72,7 +71,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: c01c8a6883c645ae163ae66fbc9cbbc533d99685b1a40bab012fc05cee779d85 -->
+<!-- exact-contract-value: bf8ca0efbeed3b4b6984aa48a77563a0ddb55afff33611f2d32b6dcb2e9367c1 -->
 
 ```json
 {
@@ -83,7 +82,6 @@ The following JSON is the complete value owned at each machine-authority pointer
       "properties": {
         "bytes": {
           "minimum": 0,
-          "title": "Bytes",
           "type": "integer"
         },
         "derived_from": {
@@ -91,29 +89,24 @@ The following JSON is the complete value owned at each machine-authority pointer
             "type": "string"
           },
           "minItems": 1,
-          "title": "Derived From",
           "type": "array"
         },
         "id": {
           "pattern": "^[A-Za-z0-9]\u0028?:[A-Za-z0-9._-]{0,158}[A-Za-z0-9])?$",
-          "title": "Id",
           "type": "string"
         },
         "media_type": {
           "maxLength": 255,
           "minLength": 1,
-          "title": "Media Type",
           "type": "string"
         },
         "path": {
           "maxLength": 4096,
           "minLength": 1,
-          "title": "Path",
           "type": "string"
         },
         "sha256": {
           "pattern": "^[0-9a-f]{64}$",
-          "title": "Sha256",
           "type": "string"
         }
       },
@@ -125,7 +118,6 @@ The following JSON is the complete value owned at each machine-authority pointer
         "media_type",
         "derived_from"
       ],
-      "title": "SamplerOutput",
       "type": "object"
     },
     "signature": "\"(*, id: Annotated[str, _PydanticGeneralMetadata(pattern='^[A-Za-z0-9]\u0028?:[A-Za-z0-9._-]{0,158}[A-Za-z0-9])?$')], path: Annotated[str, MinLen(min_length=1), MaxLen(max_length=4096)], bytes: Annotated[int, Ge(ge=0)], sha256: Annotated[str, _PydanticGeneralMetadata(pattern='^[0-9a-f]{64}$')], media_type: Annotated[str, MinLen(min_length=1), MaxLen(max_length=255)], derived_from: Annotated[tuple[str, ...], MinLen(min_length=1)]) -> None\""

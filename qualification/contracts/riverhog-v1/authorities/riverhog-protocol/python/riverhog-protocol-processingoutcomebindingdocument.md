@@ -27,7 +27,6 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-a5785b1757"></a>
-- <a id="s-6d4fb8493a"></a>`title`: ProcessingOutcomeBindingDocument
 - <a id="s-20e2ed49f4"></a>`type`: object
 
 ### Fields
@@ -62,7 +61,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 1c23a06dd4710266059d756ac0c48c512aa2dd2cb5d3994bff410c999f52958f -->
+<!-- exact-contract-value: cbf23809f969641092ddd78420b8992484827653a053d36ca5c72e7b8e572745 -->
 
 ```json
 {
@@ -73,17 +72,14 @@ The following JSON is the complete value owned at each machine-authority pointer
       "properties": {
         "claim_id": {
           "pattern": "^[0-9a-f]{64}$",
-          "title": "Claim Id",
           "type": "string"
         },
         "fence": {
           "minimum": 1,
-          "title": "Fence",
           "type": "integer"
         },
         "outcome_id": {
           "pattern": "^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$",
-          "title": "Outcome Id",
           "type": "string"
         }
       },
@@ -92,7 +88,6 @@ The following JSON is the complete value owned at each machine-authority pointer
         "fence",
         "outcome_id"
       ],
-      "title": "ProcessingOutcomeBindingDocument",
       "type": "object"
     },
     "signature": "\"(*, claim_id: Annotated[str, _PydanticGeneralMetadata(pattern='^[0-9a-f]{64}$')], fence: Annotated[int, Ge(ge=1)], outcome_id: Annotated[str, _PydanticGeneralMetadata(pattern='^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$')]) -> None\""

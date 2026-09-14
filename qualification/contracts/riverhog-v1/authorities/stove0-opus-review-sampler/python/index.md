@@ -8,6 +8,6 @@ Declared public imports and their selected exact structural contracts.
 
 ### `stove0_opus_review_sampler`
 
-- [stove0_opus_review_sampler.OpusReviewSampler](stove0-opus-review-sampler-opusreviewsampler.md)
-  - [stove0_opus_review_sampler.OpusReviewSampler.descriptor](stove0-opus-review-sampler-opusreviewsampler-descriptor.md)
-  - [stove0_opus_review_sampler.OpusReviewSampler.sample](stove0-opus-review-sampler-opusreviewsampler-sample.md)
+- [OpusReviewSampler](stove0-opus-review-sampler-opusreviewsampler.md)
+  - [descriptor](stove0-opus-review-sampler-opusreviewsampler-descriptor.md)
+  - [sample](stove0-opus-review-sampler-opusreviewsampler-sample.md)

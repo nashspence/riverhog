@@ -27,7 +27,6 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-287de05b75"></a>
-- <a id="s-89ce26f526"></a>`title`: SchedulerFailure
 - <a id="s-90de1d8807"></a>`type`: object
 
 ### Fields
@@ -68,7 +67,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 0dc252d94120b278e0d190635196470515354015714dcf79cdc9ac0117350efb -->
+<!-- exact-contract-value: 9d015af60d952241fd7286848e47c6df3f35c98da8abec5208782939e1347de4 -->
 
 ```json
 {
@@ -80,7 +79,6 @@ The following JSON is the complete value owned at each machine-authority pointer
         "error": {
           "maxLength": 1000,
           "minLength": 1,
-          "title": "Error",
           "type": "string"
         },
         "event_id": {
@@ -92,8 +90,7 @@ The following JSON is the complete value owned at each machine-authority pointer
               "type": "null"
             }
           ],
-          "default": null,
-          "title": "Event Id"
+          "default": null
         },
         "work_id": {
           "anyOf": [
@@ -105,14 +102,12 @@ The following JSON is the complete value owned at each machine-authority pointer
               "type": "null"
             }
           ],
-          "default": null,
-          "title": "Work Id"
+          "default": null
         }
       },
       "required": [
         "error"
       ],
-      "title": "SchedulerFailure",
       "type": "object"
     },
     "signature": "\"(*, event_id: str | None = None, work_id: Optional[Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)]] = None, error: Annotated[str, MinLen(min_length=1), MaxLen(max_length=1000)]) -> None\""

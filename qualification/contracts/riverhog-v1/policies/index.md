@@ -14,6 +14,7 @@ Policies are defined once here and referenced from every dossier where they are 
 | [compatibility/configuration/v1](#p-8dc08bb461) | 260 |
 | [compatibility/durable-state/v1](#p-214a49c2de) | 138 |
 | [compatibility/http-api/v1](#p-5bc717c2c0) | 547 |
+| [compatibility/licensing/v1](#p-c6988e244a) | 1 |
 | [compatibility/python-api/v1](#p-e574772ba5) | 2641 |
 | [compatibility/recovery/v1](#p-04aa4508f1) | 1 |
 
@@ -487,6 +488,18 @@ Published v1 HTTP and CloudEvents contracts remain backward compatible throughou
   - [release:release.toml](../evidence/sources.md#src-c5380dbe5f)
 
 Applications: **547**
+<a id="p-c6988e244a"></a>
+#### `compatibility/licensing/v1`
+
+Each continuing first-party Python distribution and OCI repository published in v1 retains every SPDX license alternative granted when that coordinate first shipped in v1; withdrawing a baseline grant requires a new major version.
+
+- Applicability: `["/external_contract/release/compatibility/licensing"]`
+- Observable result or violation: `{"conforming_result": "the observable surface satisfies the stated meaning", "violation": "the observable surface contradicts the stated meaning"}`
+- Executable authorities:
+  - [generator:contract-projection](../evidence/sources.md#src-47381a6c4f)
+  - [release:release.toml](../evidence/sources.md#src-c5380dbe5f)
+
+Applications: **1**
 <a id="p-e574772ba5"></a>
 #### `compatibility/python-api/v1`
 

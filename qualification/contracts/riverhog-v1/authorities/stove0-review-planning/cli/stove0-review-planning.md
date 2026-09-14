@@ -32,13 +32,13 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Identity | Selected by | Exit status | stdout | stderr |
 |---|---|---|---|---|
-| <a id="s-0e1a4ad46c"></a>`reported` | <a id="s-5464cc7104"></a>`{"kind":"contract-report-completed"}` | <a id="s-030349a6ea"></a>`0` | <a id="s-eeb2270368"></a>`json: stove0-review-contract-report/v1` | <a id="s-412d1eb2d2"></a>`all: empty` |
+| <a id="s-0e1a4ad46c"></a>`reported` | <a id="s-5464cc7104"></a>`{"kind":"contract-report-completed"}` | <a id="s-030349a6ea"></a>`0` | <a id="s-eeb2270368"></a>json: [stove0-review-contract-report/v1](#s-eeb2270368) | <a id="s-412d1eb2d2"></a>all: `empty` |
 
 #### Failure outcomes
 
 | Identity | Selected by | Exit status | stdout | stderr |
 |---|---|---|---|---|
-| <a id="s-5fb3bb619b"></a>`usage` | <a id="s-8e15c1c4d7"></a>`{"kind":"parser-rejected-invocation"}` | <a id="s-6549be7b49"></a>`2` | <a id="s-2e941bb0af"></a>`all: empty` | <a id="s-69d9fcf861"></a>`all: noncontractual-usage-diagnostic` |
+| <a id="s-5fb3bb619b"></a>`usage` | <a id="s-8e15c1c4d7"></a>`{"kind":"parser-rejected-invocation"}` | <a id="s-6549be7b49"></a>`2` | <a id="s-2e941bb0af"></a>all: `empty` | <a id="s-69d9fcf861"></a>all: `noncontractual-usage-diagnostic` |
 
 ## Governing policies
 

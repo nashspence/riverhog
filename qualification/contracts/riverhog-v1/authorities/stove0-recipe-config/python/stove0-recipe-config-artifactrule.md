@@ -27,8 +27,6 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-2b974c363c"></a>
-- <a id="s-8617f0f769"></a>`title`: ArtifactRule
-- <a id="s-0097cc3cbf"></a>`description`: Classify one path; first matching rule wins.
 - <a id="s-302aa07d6c"></a>`type`: object
 
 ### Fields
@@ -63,7 +61,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: c6aa2e2fdc17854b14bc6b8602ccae524aec4a62b502a7b741f72bf350646262 -->
+<!-- exact-contract-value: 48d29334966a68d1adc386bfb4f91462b446dc67df6a9c885268574e9df2acc2 -->
 
 ```json
 {
@@ -71,11 +69,9 @@ The following JSON is the complete value owned at each machine-authority pointer
     "kind": "class",
     "schema": {
       "additionalProperties": false,
-      "description": "Classify one path; first matching rule wins.",
       "properties": {
         "glob": {
           "default": "*",
-          "title": "Glob",
           "type": "string"
         },
         "media_type": {
@@ -87,17 +83,14 @@ The following JSON is the complete value owned at each machine-authority pointer
               "type": "null"
             }
           ],
-          "default": null,
-          "title": "Media Type"
+          "default": null
         },
         "role": {
           "default": "stove0.source/v1",
           "pattern": "^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$",
-          "title": "Role",
           "type": "string"
         }
       },
-      "title": "ArtifactRule",
       "type": "object"
     },
     "signature": "\"(*, glob: str = '*', role: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$', ascii_only=None)] = 'stove0.source/v1', media_type: str | None = None) -> None\""

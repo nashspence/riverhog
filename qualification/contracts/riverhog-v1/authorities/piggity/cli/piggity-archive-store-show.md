@@ -39,14 +39,14 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Identity | Selected by | Exit status | stdout | stderr |
 |---|---|---|---|---|
-| <a id="s-346a2d783e"></a>`completed` | <a id="s-4cb80675f6"></a>`{"kind":"command-completed"}` | <a id="s-d3b9442edc"></a>`0` | <a id="s-7090a866e2"></a>`human: noncontractual-presentation-of-command-result; json: HTTP get_archive_store — #/components/schemas/ArchiveStoreOut` | <a id="s-3e8c10bb8d"></a>`all: empty` |
+| <a id="s-346a2d783e"></a>`completed` | <a id="s-4cb80675f6"></a>`{"kind":"command-completed"}` | <a id="s-d3b9442edc"></a>`0` | <a id="s-7090a866e2"></a>human: `noncontractual-presentation-of-command-result`; json: [HTTP get_archive_store response 200](../../riverhog/http-operations/get-v1-archive-stores-store.md#s-0c14d5abd4) | <a id="s-3e8c10bb8d"></a>all: `empty` |
 
 #### Failure outcomes
 
 | Identity | Selected by | Exit status | stdout | stderr |
 |---|---|---|---|---|
-| <a id="s-f0b6769b0d"></a>`usage` | <a id="s-49fff30e5e"></a>`{"kind":"parser-rejected-invocation"}` | <a id="s-7d12c510b1"></a>`2` | <a id="s-e2bc3309a2"></a>`all: empty` | <a id="s-13d528ea71"></a>`all: noncontractual-usage-diagnostic` |
-| <a id="s-a491f1557a"></a>`operational` | <a id="s-c7d8d17d47"></a>`{"kind":"application-error"}` | <a id="s-72e8b34232"></a>`1` | <a id="s-2040db8bb8"></a>`human: empty; json: http-api-contracts.ErrorResponse` | <a id="s-3b43216784"></a>`human: noncontractual-diagnostic; json: empty` |
+| <a id="s-f0b6769b0d"></a>`usage` | <a id="s-49fff30e5e"></a>`{"kind":"parser-rejected-invocation"}` | <a id="s-7d12c510b1"></a>`2` | <a id="s-e2bc3309a2"></a>all: `empty` | <a id="s-13d528ea71"></a>all: `noncontractual-usage-diagnostic` |
+| <a id="s-a491f1557a"></a>`operational` | <a id="s-c7d8d17d47"></a>`{"kind":"application-error"}` | <a id="s-72e8b34232"></a>`1` | <a id="s-2040db8bb8"></a>human: `empty`; json: [http-api-contracts.ErrorResponse](../../http-api-contracts/python/http-api-contracts-errorresponse.md) | <a id="s-3b43216784"></a>human: `noncontractual-diagnostic`; json: `empty` |
 
 ### Progression, limits, and lifecycle
 

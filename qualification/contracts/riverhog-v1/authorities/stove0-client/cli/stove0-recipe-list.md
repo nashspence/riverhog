@@ -32,14 +32,14 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Identity | Selected by | Exit status | stdout | stderr |
 |---|---|---|---|---|
-| <a id="s-f0457c88f9"></a>`completed` | <a id="s-12cadb7e1a"></a>`{"kind":"command-completed"}` | <a id="s-f2feb057f0"></a>`0` | <a id="s-f1349e7de6"></a>`human: noncontractual-presentation-of-command-result; json: HTTP list_recipes — #/components/schemas/RecipeCatalogView` | <a id="s-2c2fbdadc0"></a>`all: empty` |
+| <a id="s-f0457c88f9"></a>`completed` | <a id="s-12cadb7e1a"></a>`{"kind":"command-completed"}` | <a id="s-f2feb057f0"></a>`0` | <a id="s-f1349e7de6"></a>human: `noncontractual-presentation-of-command-result`; json: [HTTP list_recipes response 200](../../stove0/http-operations/get-v1-recipes.md#s-a3267f057b) | <a id="s-2c2fbdadc0"></a>all: `empty` |
 
 #### Failure outcomes
 
 | Identity | Selected by | Exit status | stdout | stderr |
 |---|---|---|---|---|
-| <a id="s-079f1d376b"></a>`usage` | <a id="s-f89324a614"></a>`{"kind":"parser-rejected-invocation"}` | <a id="s-bd2686ceae"></a>`2` | <a id="s-a19663b429"></a>`all: empty` | <a id="s-7b0d2f8785"></a>`all: noncontractual-usage-diagnostic` |
-| <a id="s-83d7dc4cdb"></a>`operational` | <a id="s-c459c68121"></a>`{"kind":"application-error"}` | <a id="s-68040b2c9d"></a>`1` | <a id="s-fc51d3932e"></a>`all: empty` | <a id="s-911ecf6d08"></a>`all: noncontractual-diagnostic` |
+| <a id="s-079f1d376b"></a>`usage` | <a id="s-f89324a614"></a>`{"kind":"parser-rejected-invocation"}` | <a id="s-bd2686ceae"></a>`2` | <a id="s-a19663b429"></a>all: `empty` | <a id="s-7b0d2f8785"></a>all: `noncontractual-usage-diagnostic` |
+| <a id="s-83d7dc4cdb"></a>`operational` | <a id="s-c459c68121"></a>`{"kind":"application-error"}` | <a id="s-68040b2c9d"></a>`1` | <a id="s-fc51d3932e"></a>all: `empty` | <a id="s-911ecf6d08"></a>all: `noncontractual-diagnostic` |
 
 ## Maintained corroboration
 

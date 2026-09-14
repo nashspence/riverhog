@@ -27,8 +27,6 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-0916434e96"></a>
-- <a id="s-aa6328eeb8"></a>`title`: CollectionUploadRawDigestBatchDocument
-- <a id="s-808c4ce74d"></a>`description`: One append-only bounded slice of a registered raw source digest sequence.
 - <a id="s-c7c5a50ae9"></a>`type`: object
 
 ### Fields
@@ -69,7 +67,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: b5b943e5aa6e155a0070302d55a38aff936627c6219fc4da41eeaae7305b3e0a -->
+<!-- exact-contract-value: dca8ecf0b63cfd5d88fa14f4d8032d9c1f4d45c97167339d6daf7d343c974608 -->
 
 ```json
 {
@@ -77,15 +75,12 @@ The following JSON is the complete value owned at each machine-authority pointer
     "kind": "class",
     "schema": {
       "additionalProperties": false,
-      "description": "One append-only bounded slice of a registered raw source digest sequence.",
       "properties": {
         "first_part": {
           "minimum": 0,
-          "title": "First Part",
           "type": "integer"
         },
         "path": {
-          "title": "Path",
           "type": "string"
         },
         "sha256s": {
@@ -95,7 +90,6 @@ The following JSON is the complete value owned at each machine-authority pointer
           },
           "maxItems": 1024,
           "minItems": 1,
-          "title": "Sha256S",
           "type": "array",
           "x-riverhog-extent": {
             "policy": "segmented_no_total_max",
@@ -109,7 +103,6 @@ The following JSON is the complete value owned at each machine-authority pointer
         "first_part",
         "sha256s"
       ],
-      "title": "CollectionUploadRawDigestBatchDocument",
       "type": "object"
     },
     "signature": "\"(*, path: str, first_part: Annotated[int, Strict(strict=True), Ge(ge=0)], sha256s: Annotated[list[Annotated[str, FieldInfo(annotation=NoneType, required=True, metadata=[_PydanticGeneralMetadata(pattern='^[0-9a-f]{64}$')])]], MinLen(min_length=1), MaxLen(max_length=1024)]) -> None\""

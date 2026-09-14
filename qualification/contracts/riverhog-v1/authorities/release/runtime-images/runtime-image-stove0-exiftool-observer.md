@@ -20,7 +20,10 @@ Optional nonnormative ExifTool observer reference for Stove0.
 | <a id="s-c15e6a8b1f"></a>`description` | Optional nonnormative ExifTool observer reference for Stove0. |
 | <a id="s-7f03ad7fc5"></a>`distribution_roots` | ["stove0-exiftool-observer"] |
 | <a id="s-0f99045a79"></a>`format` | oci-image |
+| <a id="s-b3ecc14f40"></a>`license_baseline` | first-v1-publication |
+| <a id="s-e83958b067"></a>`license_expression` | CAL-1.0 |
 | <a id="s-c5d3857e90"></a>`platforms` | ["linux/amd64"] |
+| <a id="s-0e09df7f8e"></a>`publication_identity` | {"coordinate": "ghcr.io/nashspence/riverhog-stove0-exiftool-observer", "kind": "oci-repository"} |
 | <a id="s-3e1e7448e3"></a>`repository` | ghcr.io/nashspence/riverhog-stove0-exiftool-observer |
 | <a id="s-54002ba5c8"></a>`role` | reference |
 | <a id="s-234f712d78"></a>`tag_templates` | ["ghcr.io/nashspence/riverhog-stove0-exiftool-observer:{version}", "ghcr.io/nashspence/riverhog-stove0-exiftool-observer:sha-{source_sha}"] |
@@ -61,7 +64,7 @@ Publication preserves these existing component authorities; it does not reclassi
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 9c5bcc76485c5976cf8733c2325d4b50449e1ce65be8bc61e9aa7aa479723095 -->
+<!-- exact-contract-value: d01e0920f86bce436213ed1dc569baf1a73443ff8e4020055cd782f85484d6af -->
 
 ```json
 {
@@ -71,9 +74,15 @@ The following JSON is the complete value owned at each machine-authority pointer
     "stove0-exiftool-observer"
   ],
   "format": "oci-image",
+  "license_baseline": "first-v1-publication",
+  "license_expression": "CAL-1.0",
   "platforms": [
     "linux/amd64"
   ],
+  "publication_identity": {
+    "coordinate": "ghcr.io/nashspence/riverhog-stove0-exiftool-observer",
+    "kind": "oci-repository"
+  },
   "repository": "ghcr.io/nashspence/riverhog-stove0-exiftool-observer",
   "role": "reference",
   "tag_templates": [

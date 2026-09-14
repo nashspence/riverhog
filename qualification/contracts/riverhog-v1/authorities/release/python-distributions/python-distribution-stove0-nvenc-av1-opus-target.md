@@ -19,6 +19,9 @@ Optional nonnormative NVENC AV1 and Opus target reference for Stove0.
 | <a id="s-8ffaa10b18"></a>`artifacts` | [{"coordinate": "dist/stove0_nvenc_av1_opus_target-{version}-py3-none-any.whl", "format": "wheel"}, {"coordinate": "dist/stove0_nvenc_av1_opus_target-{version}.tar.gz", "format": "sdist"}] |
 | <a id="s-a9871665f4"></a>`channel` | github-release |
 | <a id="s-dd614b41da"></a>`description` | Optional nonnormative NVENC AV1 and Opus target reference for Stove0. |
+| <a id="s-32933c4491"></a>`license_baseline` | first-v1-publication |
+| <a id="s-aed7f2e4f6"></a>`license_expression` | CAL-1.0 |
+| <a id="s-152e8bfc4a"></a>`publication_identity` | {"coordinate": "stove0-nvenc-av1-opus-target", "kind": "python-distribution"} |
 | <a id="s-8bb3a7af50"></a>`requires_python` | >=3.12 |
 | <a id="s-1f2fd4387d"></a>`role` | reference_component |
 | <a id="s-0a45edb9f8"></a>`source` | reference/stove0/targets/nvenc-av1-opus/target/pyproject.toml |
@@ -57,7 +60,7 @@ Publication preserves these existing component authorities; it does not reclassi
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: af92c0325edae91ed3368b43ccf57341c541a17f3261c0aabf7ea65fcc69b4d7 -->
+<!-- exact-contract-value: 886863e8e0f5846fe06fe31d7768dda235dc6f335869caf1acdd05a4a098b8f6 -->
 
 ```json
 {
@@ -73,6 +76,12 @@ The following JSON is the complete value owned at each machine-authority pointer
   ],
   "channel": "github-release",
   "description": "Optional nonnormative NVENC AV1 and Opus target reference for Stove0.",
+  "license_baseline": "first-v1-publication",
+  "license_expression": "CAL-1.0",
+  "publication_identity": {
+    "coordinate": "stove0-nvenc-av1-opus-target",
+    "kind": "python-distribution"
+  },
   "requires_python": ">=3.12",
   "role": "reference_component",
   "source": "reference/stove0/targets/nvenc-av1-opus/target/pyproject.toml"

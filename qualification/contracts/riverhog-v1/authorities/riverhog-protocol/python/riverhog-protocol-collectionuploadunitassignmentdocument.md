@@ -27,8 +27,6 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-c091031172"></a>
-- <a id="s-36c9b0b2df"></a>`title`: CollectionUploadUnitAssignmentDocument
-- <a id="s-e804181aa7"></a>`description`: One bounded, immutable unit offered by an exact upload session.
 - <a id="s-09667644eb"></a>`type`: object
 
 ### Fields
@@ -71,7 +69,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: e5dd30a2e3454c2afcb72f54c9678d5959d657b0df823a3b3f20799ab4d6db85 -->
+<!-- exact-contract-value: a14e3571948be190f2d7a5448688a15bd37fe871339d537a4aae652ef6dc9f71 -->
 
 ```json
 {
@@ -81,25 +79,20 @@ The following JSON is the complete value owned at each machine-authority pointer
       "$defs": {
         "CollectionUploadUnitSourceDocument": {
           "additionalProperties": false,
-          "description": "One exact source range supplied in a server-planned upload unit.",
           "properties": {
             "artifact_sha256": {
               "pattern": "^[0-9a-f]{64}$",
-              "title": "Artifact Sha256",
               "type": "string"
             },
             "bytes": {
               "minimum": 0,
-              "title": "Bytes",
               "type": "integer"
             },
             "offset": {
               "minimum": 0,
-              "title": "Offset",
               "type": "integer"
             },
             "path": {
-              "title": "Path",
               "type": "string"
             }
           },
@@ -109,21 +102,17 @@ The following JSON is the complete value owned at each machine-authority pointer
             "bytes",
             "artifact_sha256"
           ],
-          "title": "CollectionUploadUnitSourceDocument",
           "type": "object"
         },
         "CollectionUploadUnitWorkDocument": {
           "additionalProperties": false,
-          "description": "One exact unit and its durable upload checkpoint state.",
           "properties": {
             "payload_bytes": {
               "minimum": 0,
-              "title": "Payload Bytes",
               "type": "integer"
             },
             "plaintext_bytes": {
               "minimum": 0,
-              "title": "Plaintext Bytes",
               "type": "integer"
             },
             "sources": {
@@ -131,7 +120,6 @@ The following JSON is the complete value owned at each machine-authority pointer
                 "$ref": "#/$defs/CollectionUploadUnitSourceDocument"
               },
               "maxItems": 1000,
-              "title": "Sources",
               "type": "array",
               "x-riverhog-extent": {
                 "policy": "segmented_no_total_max",
@@ -144,12 +132,10 @@ The following JSON is the complete value owned at each machine-authority pointer
                 "pending",
                 "committed"
               ],
-              "title": "State",
               "type": "string"
             },
             "unit": {
               "minimum": 0,
-              "title": "Unit",
               "type": "integer"
             }
           },
@@ -160,29 +146,24 @@ The following JSON is the complete value owned at each machine-authority pointer
             "sources",
             "state"
           ],
-          "title": "CollectionUploadUnitWorkDocument",
           "type": "object"
         },
         "CollectionUploadVolumeSummaryDocument": {
           "additionalProperties": false,
-          "description": "Protocol-owned identity of one immutable collection archive volume.",
           "properties": {
             "kind": {
               "enum": [
                 "pack",
                 "segment"
               ],
-              "title": "Kind",
               "type": "string"
             },
             "sequence": {
               "minimum": 0,
-              "title": "Sequence",
               "type": "integer"
             },
             "volume_id": {
               "pattern": "^(?:pack|segment)-[0-9a-f]{64}$",
-              "title": "Volume Id",
               "type": "string"
             }
           },
@@ -191,16 +172,13 @@ The following JSON is the complete value owned at each machine-authority pointer
             "sequence",
             "kind"
           ],
-          "title": "CollectionUploadVolumeSummaryDocument",
           "type": "object"
         }
       },
       "additionalProperties": false,
-      "description": "One bounded, immutable unit offered by an exact upload session.",
       "properties": {
         "plan_sha256": {
           "pattern": "^[0-9a-f]{64}$",
-          "title": "Plan Sha256",
           "type": "string"
         },
         "unit": {
@@ -215,7 +193,6 @@ The following JSON is the complete value owned at each machine-authority pointer
         "plan_sha256",
         "unit"
       ],
-      "title": "CollectionUploadUnitAssignmentDocument",
       "type": "object"
     },
     "signature": "\"(*, volume: riverhog_protocol.collection_upload_transport.CollectionUploadVolumeSummaryDocument, plan_sha256: Annotated[str, _PydanticGeneralMetadata(pattern='^[0-9a-f]{64}$')], unit: riverhog_protocol.collection_upload_transport.CollectionUploadUnitWorkDocument) -> None\""

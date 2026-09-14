@@ -19,6 +19,9 @@ Optional nonnormative shared review-target support reference for Stove0.
 | <a id="s-dd013e2bf2"></a>`artifacts` | [{"coordinate": "dist/stove0_review_target_support-{version}-py3-none-any.whl", "format": "wheel"}, {"coordinate": "dist/stove0_review_target_support-{version}.tar.gz", "format": "sdist"}] |
 | <a id="s-28d660939d"></a>`channel` | github-release |
 | <a id="s-fd55cdcda9"></a>`description` | Optional nonnormative shared review-target support reference for Stove0. |
+| <a id="s-93c660a3c4"></a>`license_baseline` | first-v1-publication |
+| <a id="s-1d7a6deaa6"></a>`license_expression` | CAL-1.0 |
+| <a id="s-798464cf01"></a>`publication_identity` | {"coordinate": "stove0-review-target-support", "kind": "python-distribution"} |
 | <a id="s-21962f95ab"></a>`requires_python` | >=3.12 |
 | <a id="s-9dab1fe0d1"></a>`role` | reference_component |
 | <a id="s-301fb2b00f"></a>`source` | reference/stove0/targets/review/support/pyproject.toml |
@@ -57,7 +60,7 @@ Publication preserves these existing component authorities; it does not reclassi
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 6d00311933f19ce9e07e8f7ef26f2f724ad0e92ae0257079c6444ea5f0fc99d0 -->
+<!-- exact-contract-value: 4f3f87819f18e2a2e516fb8a3a77f3fa696d9d78ecb27711e221451bfc7811e0 -->
 
 ```json
 {
@@ -73,6 +76,12 @@ The following JSON is the complete value owned at each machine-authority pointer
   ],
   "channel": "github-release",
   "description": "Optional nonnormative shared review-target support reference for Stove0.",
+  "license_baseline": "first-v1-publication",
+  "license_expression": "CAL-1.0",
+  "publication_identity": {
+    "coordinate": "stove0-review-target-support",
+    "kind": "python-distribution"
+  },
   "requires_python": ">=3.12",
   "role": "reference_component",
   "source": "reference/stove0/targets/review/support/pyproject.toml"

@@ -27,7 +27,6 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-35f66ae3e4"></a>
-- <a id="s-71aa6dc289"></a>`title`: FtpAdapterConfig
 - <a id="s-302a807ffd"></a>`type`: object
 
 ### Fields
@@ -88,7 +87,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 5b7352d2df94995c6bbd7105dcdb980ce868c3d9499d7f6908f3063ff3547f45 -->
+<!-- exact-contract-value: b303f265fc70c0636f8c2452c21be67eabe8d5b79b5b7644d771b1b3e8fda41f -->
 
 ```json
 {
@@ -120,7 +119,6 @@ The following JSON is the complete value owned at each machine-authority pointer
         },
         "SourceConfig": {
           "additionalProperties": false,
-          "description": "One deployment-owned, content-opaque intake source.",
           "properties": {
             "archive_store": {
               "anyOf": [
@@ -133,8 +131,7 @@ The following JSON is the complete value owned at each machine-authority pointer
                   "type": "null"
                 }
               ],
-              "default": null,
-              "title": "Archive Store"
+              "default": null
             },
             "close_mode": {
               "default": "stable",
@@ -142,7 +139,6 @@ The following JSON is the complete value owned at each machine-authority pointer
                 "stable",
                 "explicit-flush"
               ],
-              "title": "Close Mode",
               "type": "string"
             },
             "description": {
@@ -158,25 +154,21 @@ The following JSON is the complete value owned at each machine-authority pointer
             },
             "id": {
               "pattern": "^[a-z0-9]\u0028?:[a-z0-9._-]{0,118}[a-z0-9])?$",
-              "title": "Id",
               "type": "string"
             },
             "ingest_source": {
               "maxLength": 512,
               "minLength": 1,
-              "title": "Ingest Source",
               "type": "string"
             },
             "max_bytes": {
               "default": 107374182400,
               "minimum": 1,
-              "title": "Max Bytes",
               "type": "integer"
             },
             "max_files": {
               "default": 1000,
               "minimum": 1,
-              "title": "Max Files",
               "type": "integer"
             },
             "provenance": {
@@ -185,7 +177,6 @@ The following JSON is the complete value owned at each machine-authority pointer
                 "capture",
                 "omit"
               ],
-              "title": "Provenance",
               "type": "string"
             },
             "provenance_omission_reason": {
@@ -198,12 +189,10 @@ The following JSON is the complete value owned at each machine-authority pointer
                   "type": "null"
                 }
               ],
-              "default": null,
-              "title": "Provenance Omission Reason"
+              "default": null
             },
             "root": {
               "format": "path",
-              "title": "Root",
               "type": "string"
             },
             "tags": {
@@ -211,7 +200,6 @@ The following JSON is the complete value owned at each machine-authority pointer
               "items": {
                 "$ref": "#/$defs/CollectionTag"
               },
-              "title": "Tags",
               "type": "array"
             }
           },
@@ -220,7 +208,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             "root",
             "ingest_source"
           ],
-          "title": "SourceConfig",
           "type": "object"
         }
       },
@@ -228,56 +215,47 @@ The following JSON is the complete value owned at each machine-authority pointer
       "properties": {
         "allow_insecure_http": {
           "default": false,
-          "title": "Allow Insecure Http",
           "type": "boolean"
         },
         "api_token": {
           "maxLength": 4096,
           "minLength": 1,
-          "title": "Api Token",
           "type": "string"
         },
         "claim_attempt_budget": {
           "default": 8,
           "minimum": 2,
-          "title": "Claim Attempt Budget",
           "type": "integer"
         },
         "completion_failure_attempt_budget": {
           "default": 8,
           "minimum": 1,
-          "title": "Completion Failure Attempt Budget",
           "type": "integer"
         },
         "completion_failure_capacity": {
           "default": 128,
           "minimum": 1,
-          "title": "Completion Failure Capacity",
           "type": "integer"
         },
         "discovery_entry_budget": {
           "default": 4096,
           "minimum": 1,
-          "title": "Discovery Entry Budget",
           "type": "integer"
         },
         "host_id": {
           "maxLength": 255,
           "minLength": 1,
-          "title": "Host Id",
           "type": "string"
         },
         "pending_claim_capacity": {
           "default": 128,
           "minimum": 1,
-          "title": "Pending Claim Capacity",
           "type": "integer"
         },
         "poll_seconds": {
           "default": 5,
           "maximum": 3600,
           "minimum": 0.1,
-          "title": "Poll Seconds",
           "type": "number"
         },
         "provenance_observer": {
@@ -291,19 +269,16 @@ The following JSON is the complete value owned at each machine-authority pointer
               "type": "null"
             }
           ],
-          "default": null,
-          "title": "Provenance Observer"
+          "default": null
         },
         "riverhog_base_url": {
           "maxLength": 2048,
           "minLength": 1,
-          "title": "Riverhog Base Url",
           "type": "string"
         },
         "riverhog_token": {
           "maxLength": 4096,
           "minLength": 1,
-          "title": "Riverhog Token",
           "type": "string"
         },
         "sources": {
@@ -311,7 +286,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             "$ref": "#/$defs/SourceConfig"
           },
           "minItems": 1,
-          "title": "Sources",
           "type": "array"
         }
       },
@@ -322,7 +296,6 @@ The following JSON is the complete value owned at each machine-authority pointer
         "api_token",
         "sources"
       ],
-      "title": "FtpAdapterConfig",
       "type": "object"
     },
     "signature": "'(*, host_id: Annotated[str, MinLen(min_length=1), MaxLen(max_length=255)], riverhog_base_url: Annotated[str, MinLen(min_length=1), MaxLen(max_length=2048)], riverhog_token: Annotated[str, MinLen(min_length=1), MaxLen(max_length=4096)], allow_insecure_http: bool = False, api_token: Annotated[str, MinLen(min_length=1), MaxLen(max_length=4096)], provenance_observer: Annotated[str | None, MinLen(min_length=1), MaxLen(max_length=255)] = None, sources: Annotated[tuple[riverhog_ftp_adapter.config.SourceConfig, ...], MinLen(min_length=1)], poll_seconds: Annotated[float, Ge(ge=0.1), Le(le=3600)] = 5.0, pending_claim_capacity: Annotated[int, Ge(ge=1)] = 128, claim_attempt_budget: Annotated[int, Ge(ge=2)] = 8, discovery_entry_budget: Annotated[int, Ge(ge=1)] = 4096, completion_failure_capacity: Annotated[int, Ge(ge=1)] = 128, completion_failure_attempt_budget: Annotated[int, Ge(ge=1)] = 8) -> None'"

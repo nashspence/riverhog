@@ -40,14 +40,14 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Identity | Selected by | Exit status | stdout | stderr |
 |---|---|---|---|---|
-| <a id="s-0ffe86b917"></a>`completed` | <a id="s-594fe34616"></a>`{"kind":"command-completed"}` | <a id="s-8cf164c617"></a>`0` | <a id="s-72ed83cf52"></a>`human: noncontractual-presentation-of-command-result; json: piggity-local-evict-result/v1` | <a id="s-041d8bdc42"></a>`all: empty` |
+| <a id="s-0ffe86b917"></a>`completed` | <a id="s-594fe34616"></a>`{"kind":"command-completed"}` | <a id="s-8cf164c617"></a>`0` | <a id="s-72ed83cf52"></a>human: `noncontractual-presentation-of-command-result`; json: [piggity-local-evict-result/v1](#s-72ed83cf52) | <a id="s-041d8bdc42"></a>all: `empty` |
 
 #### Failure outcomes
 
 | Identity | Selected by | Exit status | stdout | stderr |
 |---|---|---|---|---|
-| <a id="s-49515a8026"></a>`usage` | <a id="s-f757e6a059"></a>`{"kind":"parser-rejected-invocation"}` | <a id="s-42cfa40fe3"></a>`2` | <a id="s-73db70dd4e"></a>`all: empty` | <a id="s-dd6c35f28e"></a>`all: noncontractual-usage-diagnostic` |
-| <a id="s-6158fc1c90"></a>`operational` | <a id="s-1eec0b6c9d"></a>`{"kind":"application-error"}` | <a id="s-001d3e29c9"></a>`1` | <a id="s-9e8fba785e"></a>`human: empty; json: http-api-contracts.ErrorResponse` | <a id="s-892b6e4ba8"></a>`human: noncontractual-diagnostic; json: empty` |
+| <a id="s-49515a8026"></a>`usage` | <a id="s-f757e6a059"></a>`{"kind":"parser-rejected-invocation"}` | <a id="s-42cfa40fe3"></a>`2` | <a id="s-73db70dd4e"></a>all: `empty` | <a id="s-dd6c35f28e"></a>all: `noncontractual-usage-diagnostic` |
+| <a id="s-6158fc1c90"></a>`operational` | <a id="s-1eec0b6c9d"></a>`{"kind":"application-error"}` | <a id="s-001d3e29c9"></a>`1` | <a id="s-9e8fba785e"></a>human: `empty`; json: [http-api-contracts.ErrorResponse](../../http-api-contracts/python/http-api-contracts-errorresponse.md) | <a id="s-892b6e4ba8"></a>human: `noncontractual-diagnostic`; json: `empty` |
 
 ### Progression, limits, and lifecycle
 

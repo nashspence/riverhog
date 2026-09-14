@@ -27,8 +27,6 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-4352af8c5c"></a>
-- <a id="s-ecb9ff2ea7"></a>`title`: TargetPlanBinding
-- <a id="s-759c553679"></a>`description`: Opaque binding to a target-owned preflight plan.  The target protocol owns the plan schema and canonicalization algorithm. stove0 retains the complete validated plan document and its target-issued digest, but deliberately does not reinterpret or re-hash the plan with stove0's canonical JSON rules. This prevents two authorities from disagreeing about target plan identity while preserving the full document in the execution envelope.
 - <a id="s-c5ec6c6787"></a>`type`: object
 
 ### Fields
@@ -78,7 +76,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 06978b6e68bbecc02e36befb36778b27d94e215fd6d3343c53e415c4b062865c -->
+<!-- exact-contract-value: f77ebce52d1384a0568525e573cb8d3c41542f82621b7954a39b7c3d18927c43 -->
 
 ```json
 {
@@ -89,38 +87,31 @@ The following JSON is the complete value owned at each machine-authority pointer
         "JsonValue": {}
       },
       "additionalProperties": false,
-      "description": "Opaque binding to a target-owned preflight plan.\n\nThe target protocol owns the plan schema and canonicalization algorithm. stove0\nretains the complete validated plan document and its target-issued digest, but\ndeliberately does not reinterpret or re-hash the plan with stove0's canonical\nJSON rules. This prevents two authorities from disagreeing about target plan\nidentity while preserving the full document in the execution envelope.",
       "properties": {
         "operation_contract_sha256": {
           "pattern": "^[0-9a-f]{64}$",
-          "title": "Operation Contract Sha256",
           "type": "string"
         },
         "plan": {
           "additionalProperties": {
             "$ref": "#/$defs/JsonValue"
           },
-          "title": "Plan",
           "type": "object"
         },
         "plan_sha256": {
           "pattern": "^[0-9a-f]{64}$",
-          "title": "Plan Sha256",
           "type": "string"
         },
         "protocol": {
           "pattern": "^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$",
-          "title": "Protocol",
           "type": "string"
         },
         "target_contract_sha256": {
           "pattern": "^[0-9a-f]{64}$",
-          "title": "Target Contract Sha256",
           "type": "string"
         },
         "target_implementation_id": {
           "pattern": "^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$",
-          "title": "Target Implementation Id",
           "type": "string"
         }
       },
@@ -132,7 +123,6 @@ The following JSON is the complete value owned at each machine-authority pointer
         "plan",
         "plan_sha256"
       ],
-      "title": "TargetPlanBinding",
       "type": "object"
     },
     "signature": "\"(*, protocol: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$', ascii_only=None)], target_implementation_id: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$', ascii_only=None)], target_contract_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)], operation_contract_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)], plan: dict[str, JsonValue], plan_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)]) -> None\""

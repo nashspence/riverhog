@@ -27,7 +27,6 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-58dccf3714"></a>
-- <a id="s-83ad51b9c9"></a>`title`: Stove0CloudEvent
 - <a id="s-7bfc9452ca"></a>`type`: object
 
 ### Fields
@@ -73,7 +72,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: f06b51e0549956ab9dcd3149fe5d14e75b951c880ee6b8163a2696125a95428a -->
+<!-- exact-contract-value: 08ba5fa09e14aa6f6130d74d1f4b1ec321bebe73184662eb20955a1faa4e666c -->
 
 ```json
 {
@@ -82,43 +81,34 @@ The following JSON is the complete value owned at each machine-authority pointer
     "schema": {
       "additionalProperties": false,
       "properties": {
-        "data": {
-          "title": "Data"
-        },
+        "data": {},
         "datacontenttype": {
           "const": "application/json",
           "default": "application/json",
-          "title": "Datacontenttype",
           "type": "string"
         },
         "id": {
           "minLength": 1,
-          "title": "Id",
           "type": "string"
         },
         "source": {
           "const": "urn:riverhog:stove0",
-          "title": "Source",
           "type": "string"
         },
         "specversion": {
           "const": "1.0",
           "default": "1.0",
-          "title": "Specversion",
           "type": "string"
         },
         "subject": {
           "minLength": 1,
-          "title": "Subject",
           "type": "string"
         },
         "time": {
-          "title": "Time",
           "type": "string"
         },
         "type": {
           "minLength": 1,
-          "title": "Type",
           "type": "string"
         }
       },
@@ -130,7 +120,6 @@ The following JSON is the complete value owned at each machine-authority pointer
         "time",
         "data"
       ],
-      "title": "Stove0CloudEvent",
       "type": "object"
     },
     "signature": "\"(*, specversion: Literal['1.0'] = '1.0', id: Annotated[str, MinLen(min_length=1)], source: Literal['urn:riverhog:stove0'], type: Annotated[str, MinLen(min_length=1)], subject: Annotated[str, MinLen(min_length=1)], time: str, datacontenttype: Literal['application/json'] = 'application/json', data: Any) -> None\""

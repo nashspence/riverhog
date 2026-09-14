@@ -27,8 +27,6 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-3abecbca66"></a>
-- <a id="s-ac2d5743ff"></a>`title`: SourceConfig
-- <a id="s-e31373e40f"></a>`description`: One deployment-owned, content-opaque intake source.
 - <a id="s-e0685f4790"></a>`type`: object
 
 ### Fields
@@ -85,7 +83,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 4cdc55640376f7950fd0780a135b6f4b8c97282e53505be6196a461b4c0f2d3f -->
+<!-- exact-contract-value: 1e720c3915b712da371cd9ea3372fd2a3b83010ad8ff082944a2a570bfa38238 -->
 
 ```json
 {
@@ -117,7 +115,6 @@ The following JSON is the complete value owned at each machine-authority pointer
         }
       },
       "additionalProperties": false,
-      "description": "One deployment-owned, content-opaque intake source.",
       "properties": {
         "archive_store": {
           "anyOf": [
@@ -130,8 +127,7 @@ The following JSON is the complete value owned at each machine-authority pointer
               "type": "null"
             }
           ],
-          "default": null,
-          "title": "Archive Store"
+          "default": null
         },
         "close_mode": {
           "default": "stable",
@@ -139,7 +135,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             "stable",
             "explicit-flush"
           ],
-          "title": "Close Mode",
           "type": "string"
         },
         "description": {
@@ -155,25 +150,21 @@ The following JSON is the complete value owned at each machine-authority pointer
         },
         "id": {
           "pattern": "^[a-z0-9]\u0028?:[a-z0-9._-]{0,118}[a-z0-9])?$",
-          "title": "Id",
           "type": "string"
         },
         "ingest_source": {
           "maxLength": 512,
           "minLength": 1,
-          "title": "Ingest Source",
           "type": "string"
         },
         "max_bytes": {
           "default": 107374182400,
           "minimum": 1,
-          "title": "Max Bytes",
           "type": "integer"
         },
         "max_files": {
           "default": 1000,
           "minimum": 1,
-          "title": "Max Files",
           "type": "integer"
         },
         "provenance": {
@@ -182,7 +173,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             "capture",
             "omit"
           ],
-          "title": "Provenance",
           "type": "string"
         },
         "provenance_omission_reason": {
@@ -195,12 +185,10 @@ The following JSON is the complete value owned at each machine-authority pointer
               "type": "null"
             }
           ],
-          "default": null,
-          "title": "Provenance Omission Reason"
+          "default": null
         },
         "root": {
           "format": "path",
-          "title": "Root",
           "type": "string"
         },
         "tags": {
@@ -208,7 +196,6 @@ The following JSON is the complete value owned at each machine-authority pointer
           "items": {
             "$ref": "#/$defs/CollectionTag"
           },
-          "title": "Tags",
           "type": "array"
         }
       },
@@ -217,7 +204,6 @@ The following JSON is the complete value owned at each machine-authority pointer
         "root",
         "ingest_source"
       ],
-      "title": "SourceConfig",
       "type": "object"
     },
     "signature": "\"(*, id: Annotated[str, _PydanticGeneralMetadata(pattern='^[a-z0-9]\u0028?:[a-z0-9._-]{0,118}[a-z0-9])?$')], root: pathlib.Path, ingest_source: Annotated[str, MinLen(min_length=1), MaxLen(max_length=512)], archive_store: Annotated[str | None, MinLen(min_length=1), MaxLen(max_length=160)] = None, description: CollectionDescription | None = None, tags: tuple[CollectionTag, ...] = (), close_mode: Literal['stable', 'explicit-flush'] = 'stable', max_files: Annotated[int, Ge(ge=1)] = 1000, max_bytes: Annotated[int, Ge(ge=1)] = 107374182400, provenance: Literal['capture', 'omit'] = 'capture', provenance_omission_reason: Annotated[str | None, MaxLen(max_length=1000)] = None) -> None\""

@@ -39,14 +39,14 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Identity | Selected by | Exit status | stdout | stderr |
 |---|---|---|---|---|
-| <a id="s-219c164e2e"></a>`completed` | <a id="s-19bdde062c"></a>`{"kind":"command-completed"}` | <a id="s-6509e27eca"></a>`0` | <a id="s-080b505264"></a>`human: noncontractual-presentation-of-command-result; json: HTTP cancel_archive_copy_job — #/components/schemas/ArchiveCopyJobOut` | <a id="s-cbf3bee2aa"></a>`all: empty` |
+| <a id="s-219c164e2e"></a>`completed` | <a id="s-19bdde062c"></a>`{"kind":"command-completed"}` | <a id="s-6509e27eca"></a>`0` | <a id="s-080b505264"></a>human: `noncontractual-presentation-of-command-result`; json: [HTTP cancel_archive_copy_job response 200](../../riverhog/http-operations/delete-v1-archive-copies-collection-id-destination-store.md#s-a26bbed67a) | <a id="s-cbf3bee2aa"></a>all: `empty` |
 
 #### Failure outcomes
 
 | Identity | Selected by | Exit status | stdout | stderr |
 |---|---|---|---|---|
-| <a id="s-f147579986"></a>`usage` | <a id="s-7e6192791e"></a>`{"kind":"parser-rejected-invocation"}` | <a id="s-fb9a71625f"></a>`2` | <a id="s-4b3cbdea23"></a>`all: empty` | <a id="s-6e6154b385"></a>`all: noncontractual-usage-diagnostic` |
-| <a id="s-44757edf01"></a>`operational` | <a id="s-c5eba1c2f5"></a>`{"kind":"application-error"}` | <a id="s-7082e8af4c"></a>`1` | <a id="s-93564acfe0"></a>`human: empty; json: http-api-contracts.ErrorResponse` | <a id="s-09ffc4b077"></a>`human: noncontractual-diagnostic; json: empty` |
+| <a id="s-f147579986"></a>`usage` | <a id="s-7e6192791e"></a>`{"kind":"parser-rejected-invocation"}` | <a id="s-fb9a71625f"></a>`2` | <a id="s-4b3cbdea23"></a>all: `empty` | <a id="s-6e6154b385"></a>all: `noncontractual-usage-diagnostic` |
+| <a id="s-44757edf01"></a>`operational` | <a id="s-c5eba1c2f5"></a>`{"kind":"application-error"}` | <a id="s-7082e8af4c"></a>`1` | <a id="s-93564acfe0"></a>human: `empty`; json: [http-api-contracts.ErrorResponse](../../http-api-contracts/python/http-api-contracts-errorresponse.md) | <a id="s-09ffc4b077"></a>human: `noncontractual-diagnostic`; json: `empty` |
 
 ### Progression, limits, and lifecycle
 

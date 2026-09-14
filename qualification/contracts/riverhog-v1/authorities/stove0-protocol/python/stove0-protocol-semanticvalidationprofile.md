@@ -27,7 +27,6 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-c10519c451"></a>
-- <a id="s-4997c564df"></a>`title`: SemanticValidationProfile
 - <a id="s-646dd5f3db"></a>`type`: object
 
 ### Fields
@@ -70,7 +69,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 4fe377e071af88ac9e1eeee5026772d02df969e25361aa8bd840338dcac51187 -->
+<!-- exact-contract-value: 24e6778ced569db5ec72ed6a9b6abb361e533e712ad860e03b89414c1c21c27e -->
 
 ```json
 {
@@ -89,17 +88,14 @@ The following JSON is the complete value owned at each machine-authority pointer
               "type": "null"
             }
           ],
-          "default": null,
-          "title": "Conformance Vectors Sha256"
+          "default": null
         },
         "id": {
           "pattern": "^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$",
-          "title": "Id",
           "type": "string"
         },
         "profile_sha256": {
           "pattern": "^[0-9a-f]{64}$",
-          "title": "Profile Sha256",
           "type": "string"
         },
         "rules": {
@@ -108,7 +104,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             "type": "string"
           },
           "minItems": 1,
-          "title": "Rules",
           "type": "array"
         }
       },
@@ -117,7 +112,6 @@ The following JSON is the complete value owned at each machine-authority pointer
         "rules",
         "profile_sha256"
       ],
-      "title": "SemanticValidationProfile",
       "type": "object"
     },
     "signature": "\"(*, id: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$', ascii_only=None)], rules: Annotated[tuple[Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$', ascii_only=None)], ...], MinLen(min_length=1)], conformance_vectors_sha256: Optional[Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)]] = None, profile_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)]) -> None\""

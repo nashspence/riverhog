@@ -8,7 +8,7 @@ Declared public imports and their selected exact structural contracts.
 
 ### `stove0_exiftool_observer`
 
-- [stove0_exiftool_observer.ExiftoolObserver](stove0-exiftool-observer-exiftoolobserver.md)
-  - [stove0_exiftool_observer.ExiftoolObserver.descriptor](stove0-exiftool-observer-exiftoolobserver-descriptor.md)
-  - [stove0_exiftool_observer.ExiftoolObserver.execution_evidence](stove0-exiftool-observer-exiftoolobserver-execution-evidence.md)
-  - [stove0_exiftool_observer.ExiftoolObserver.observe](stove0-exiftool-observer-exiftoolobserver-observe.md)
+- [ExiftoolObserver](stove0-exiftool-observer-exiftoolobserver.md)
+  - [descriptor](stove0-exiftool-observer-exiftoolobserver-descriptor.md)
+  - [execution_evidence](stove0-exiftool-observer-exiftoolobserver-execution-evidence.md)
+  - [observe](stove0-exiftool-observer-exiftoolobserver-observe.md)

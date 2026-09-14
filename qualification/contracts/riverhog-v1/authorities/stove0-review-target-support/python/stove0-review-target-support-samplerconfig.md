@@ -27,7 +27,6 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-9bc151343f"></a>
-- <a id="s-3d3d03abb8"></a>`title`: SamplerConfig
 - <a id="s-971ab32c45"></a>`type`: object
 
 ### Fields
@@ -71,7 +70,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: ba9abb5229f383d9fd45a7128a64af2c10ceeedb64e35eb467416f1bbb4d70b0 -->
+<!-- exact-contract-value: 91bf018bfe5c27d4874200e423f6cef80f0055c237d7eea2ad8f2940fcd8e68e -->
 
 ```json
 {
@@ -82,33 +81,27 @@ The following JSON is the complete value owned at each machine-authority pointer
       "properties": {
         "allow_insecure_http": {
           "default": false,
-          "title": "Allow Insecure Http",
           "type": "boolean"
         },
         "base_url": {
           "maxLength": 2048,
           "minLength": 1,
-          "title": "Base Url",
           "type": "string"
         },
         "descriptor_sha256": {
           "pattern": "^[0-9a-f]{64}$",
-          "title": "Descriptor Sha256",
           "type": "string"
         },
         "id": {
           "pattern": "^[a-z0-9]\u0028?:[a-z0-9._-]{0,118}[a-z0-9])?$",
-          "title": "Id",
           "type": "string"
         },
         "image_digest": {
           "pattern": "^[0-9a-f]{64}$",
-          "title": "Image Digest",
           "type": "string"
         },
         "token_file": {
           "format": "path",
-          "title": "Token File",
           "type": "string"
         }
       },
@@ -119,7 +112,6 @@ The following JSON is the complete value owned at each machine-authority pointer
         "descriptor_sha256",
         "image_digest"
       ],
-      "title": "SamplerConfig",
       "type": "object"
     },
     "signature": "\"(*, id: Annotated[str, _PydanticGeneralMetadata(pattern='^[a-z0-9]\u0028?:[a-z0-9._-]{0,118}[a-z0-9])?$')], base_url: Annotated[str, MinLen(min_length=1), MaxLen(max_length=2048)], token_file: pathlib.Path, allow_insecure_http: bool = False, descriptor_sha256: Annotated[str, _PydanticGeneralMetadata(pattern='^[0-9a-f]{64}$')], image_digest: Annotated[str, _PydanticGeneralMetadata(pattern='^[0-9a-f]{64}$')]) -> None\""

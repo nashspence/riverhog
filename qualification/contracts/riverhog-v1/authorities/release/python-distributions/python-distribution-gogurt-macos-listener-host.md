@@ -19,6 +19,9 @@ Optional nonnormative macOS launchd listener-host reference for Gogurt.
 | <a id="s-e5c7287337"></a>`artifacts` | [{"coordinate": "dist/gogurt_macos_listener_host-{version}-py3-none-any.whl", "format": "wheel"}, {"coordinate": "dist/gogurt_macos_listener_host-{version}.tar.gz", "format": "sdist"}] |
 | <a id="s-11eb6b40d0"></a>`channel` | github-release |
 | <a id="s-57438fbcf4"></a>`description` | Optional nonnormative macOS launchd listener-host reference for Gogurt. |
+| <a id="s-933251baa1"></a>`license_baseline` | first-v1-publication |
+| <a id="s-286cc8b885"></a>`license_expression` | Apache-2.0 |
+| <a id="s-7dc3642ceb"></a>`publication_identity` | {"coordinate": "gogurt-macos-listener-host", "kind": "python-distribution"} |
 | <a id="s-d999540960"></a>`requires_python` | >=3.12 |
 | <a id="s-7ec8e97577"></a>`role` | reference_component |
 | <a id="s-96901c782c"></a>`source` | reference/gogurt/listener-host/macos/pyproject.toml |
@@ -57,7 +60,7 @@ Publication preserves these existing component authorities; it does not reclassi
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 1d7823f4a985bdc960bdddada091871280e556ccfefc67ad475686f75047ae68 -->
+<!-- exact-contract-value: a81dc6a2dcac63627628712ad0ab1a5c94ec389479b1239e4f836109e68e22cd -->
 
 ```json
 {
@@ -73,6 +76,12 @@ The following JSON is the complete value owned at each machine-authority pointer
   ],
   "channel": "github-release",
   "description": "Optional nonnormative macOS launchd listener-host reference for Gogurt.",
+  "license_baseline": "first-v1-publication",
+  "license_expression": "Apache-2.0",
+  "publication_identity": {
+    "coordinate": "gogurt-macos-listener-host",
+    "kind": "python-distribution"
+  },
   "requires_python": ">=3.12",
   "role": "reference_component",
   "source": "reference/gogurt/listener-host/macos/pyproject.toml"

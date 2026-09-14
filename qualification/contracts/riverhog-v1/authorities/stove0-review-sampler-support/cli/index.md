@@ -10,5 +10,5 @@ Executable commands: **2** · Command groups: **0**
 
 ### Executable commands
 
-- [stove0-review-sampler-conformance](stove0-review-sampler-conformance.md) — `stove0-review-sampler-conformance-cli/v1`
-- [stove0-review-sampler-schemas](stove0-review-sampler-schemas.md) — `stove0-review-sampler-schemas-cli/v1`
+- [stove0-review-sampler-conformance](stove0-review-sampler-conformance.md)
+- [stove0-review-sampler-schemas](stove0-review-sampler-schemas.md)

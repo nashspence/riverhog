@@ -27,8 +27,6 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-c31550b92b"></a>
-- <a id="s-246c565cba"></a>`title`: BranchWorkBinding
-- <a id="s-0efc9b6951"></a>`description`: Stable parent/branch lineage for one ordinary child work identity.
 - <a id="s-4b881d95e3"></a>`type`: object
 
 ### Fields
@@ -65,7 +63,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: f3906dd5a40e370488a2c821b115a53084b1e97693a799aa14f43f4a2a21e571 -->
+<!-- exact-contract-value: c9fcaa68808f6fa576a59ede1599d49702eecf9238c1a9735eb34b607d007534 -->
 
 ```json
 {
@@ -73,32 +71,26 @@ The following JSON is the complete value owned at each machine-authority pointer
     "kind": "class",
     "schema": {
       "additionalProperties": false,
-      "description": "Stable parent/branch lineage for one ordinary child work identity.",
       "properties": {
         "artifact_selection_sha256": {
           "pattern": "^[0-9a-f]{64}$",
-          "title": "Artifact Selection Sha256",
           "type": "string"
         },
         "branch_id": {
           "pattern": "^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$",
-          "title": "Branch Id",
           "type": "string"
         },
         "decision_sha256": {
           "pattern": "^[0-9a-f]{64}$",
-          "title": "Decision Sha256",
           "type": "string"
         },
         "kind": {
           "const": "branch",
           "default": "branch",
-          "title": "Kind",
           "type": "string"
         },
         "parent_work_id": {
           "pattern": "^[0-9a-f]{64}$",
-          "title": "Parent Work Id",
           "type": "string"
         }
       },
@@ -108,7 +100,6 @@ The following JSON is the complete value owned at each machine-authority pointer
         "decision_sha256",
         "artifact_selection_sha256"
       ],
-      "title": "BranchWorkBinding",
       "type": "object"
     },
     "signature": "\"(*, kind: Literal['branch'] = 'branch', parent_work_id: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)], branch_id: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$', ascii_only=None)], decision_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)], artifact_selection_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)]) -> None\""

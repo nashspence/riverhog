@@ -40,15 +40,15 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Identity | Selected by | Exit status | stdout | stderr |
 |---|---|---|---|---|
-| <a id="s-ad41e45553"></a>`completed` | <a id="s-68d8597cf2"></a>`{"kind":"command-completed"}` | <a id="s-6778b37f32"></a>`0` | <a id="s-264091cc9f"></a>`human: noncontractual-presentation-of-command-result; json: HTTP get_archive_copy_job — #/components/schemas/ArchiveCopyJobOut` | <a id="s-6e0e616a5a"></a>`all: empty` |
+| <a id="s-ad41e45553"></a>`completed` | <a id="s-68d8597cf2"></a>`{"kind":"command-completed"}` | <a id="s-6778b37f32"></a>`0` | <a id="s-264091cc9f"></a>human: `noncontractual-presentation-of-command-result`; json: [HTTP get_archive_copy_job response 200](../../riverhog/http-operations/get-v1-archive-copies-collection-id-destination-store.md#s-7ffcd84564) | <a id="s-6e0e616a5a"></a>all: `empty` |
 
 #### Failure outcomes
 
 | Identity | Selected by | Exit status | stdout | stderr |
 |---|---|---|---|---|
-| <a id="s-5964ecb969"></a>`usage` | <a id="s-4dec2a6bde"></a>`{"kind":"parser-rejected-invocation"}` | <a id="s-8d34e74b97"></a>`2` | <a id="s-d7e4ddcaa7"></a>`all: empty` | <a id="s-d2a97b1ef8"></a>`all: noncontractual-usage-diagnostic` |
-| <a id="s-a21748acac"></a>`operational` | <a id="s-d774e5049d"></a>`{"kind":"application-error"}` | <a id="s-9e31f9a4b3"></a>`1` | <a id="s-bb537a5b68"></a>`human: empty; json: http-api-contracts.ErrorResponse` | <a id="s-32dc682159"></a>`human: noncontractual-diagnostic; json: empty` |
-| <a id="s-4272e15497"></a>`terminal-job-failure` | <a id="s-ffcfd47173"></a>`{"kind":"archive-copy-state","state":"failed"}` | <a id="s-6bde8974f5"></a>`1` | <a id="s-d2e75d2ac8"></a>`human: noncontractual-presentation-of-command-result; json: HTTP get_archive_copy_job — #/components/schemas/ArchiveCopyJobOut` | <a id="s-d5dd66039c"></a>`all: empty` |
+| <a id="s-5964ecb969"></a>`usage` | <a id="s-4dec2a6bde"></a>`{"kind":"parser-rejected-invocation"}` | <a id="s-8d34e74b97"></a>`2` | <a id="s-d7e4ddcaa7"></a>all: `empty` | <a id="s-d2a97b1ef8"></a>all: `noncontractual-usage-diagnostic` |
+| <a id="s-a21748acac"></a>`operational` | <a id="s-d774e5049d"></a>`{"kind":"application-error"}` | <a id="s-9e31f9a4b3"></a>`1` | <a id="s-bb537a5b68"></a>human: `empty`; json: [http-api-contracts.ErrorResponse](../../http-api-contracts/python/http-api-contracts-errorresponse.md) | <a id="s-32dc682159"></a>human: `noncontractual-diagnostic`; json: `empty` |
+| <a id="s-4272e15497"></a>`terminal-job-failure` | <a id="s-ffcfd47173"></a>`{"kind":"archive-copy-state","state":"failed"}` | <a id="s-6bde8974f5"></a>`1` | <a id="s-d2e75d2ac8"></a>human: `noncontractual-presentation-of-command-result`; json: [HTTP get_archive_copy_job response 200](../../riverhog/http-operations/get-v1-archive-copies-collection-id-destination-store.md#s-7ffcd84564) | <a id="s-d5dd66039c"></a>all: `empty` |
 
 ### Progression, limits, and lifecycle
 

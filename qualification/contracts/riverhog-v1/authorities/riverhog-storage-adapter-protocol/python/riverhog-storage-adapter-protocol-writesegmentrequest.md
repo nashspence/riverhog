@@ -27,7 +27,6 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-af6898c92c"></a>
-- <a id="s-c1cc93a30b"></a>`title`: WriteSegmentRequest
 - <a id="s-8b119c136e"></a>`type`: object
 
 ### Fields
@@ -68,7 +67,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 7c95b8415a4b28e2e19e5657774b951a6bbaf863b44b64e44cb451d57c6c0189 -->
+<!-- exact-contract-value: cc8ae42250ef44a512468a9dc62c2c71a6a839e43fae790c28223acfd2a8dee0 -->
 
 ```json
 {
@@ -80,22 +79,17 @@ The following JSON is the complete value owned at each machine-authority pointer
           "additionalProperties": false,
           "properties": {
             "expected_bytes": {
-              "description": "Exact immutable-object byte length admitted by this write session. The value remains fixed until the write becomes terminal.",
               "minimum": 1,
-              "title": "Expected Bytes",
               "type": "integer"
             },
             "object_path": {
               "maxLength": 4096,
               "minLength": 1,
-              "title": "Object Path",
               "type": "string"
             },
             "write_token": {
-              "description": "Opaque adapter-owned persistable continuation handle. For the same configured adapter it remains replayable across client, transport, Riverhog, and adapter process restarts until completion, explicit abort, or caller-authorized incomplete-write reclamation makes the write terminal.",
               "maxLength": 4000,
               "minLength": 1,
-              "title": "Write Token",
               "type": "string"
             }
           },
@@ -104,7 +98,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             "expected_bytes",
             "write_token"
           ],
-          "title": "WriteSession",
           "type": "object"
         }
       },
@@ -112,7 +105,6 @@ The following JSON is the complete value owned at each machine-authority pointer
       "properties": {
         "number": {
           "minimum": 1,
-          "title": "Number",
           "type": "integer"
         },
         "session": {
@@ -120,7 +112,6 @@ The following JSON is the complete value owned at each machine-authority pointer
         },
         "stored_bytes": {
           "minimum": 1,
-          "title": "Stored Bytes",
           "type": "integer"
         }
       },
@@ -129,7 +120,6 @@ The following JSON is the complete value owned at each machine-authority pointer
         "number",
         "stored_bytes"
       ],
-      "title": "WriteSegmentRequest",
       "type": "object"
     },
     "signature": "'(*, session: riverhog_storage_adapter_protocol.protocol.WriteSession, number: Annotated[int, Ge(ge=1)], stored_bytes: Annotated[int, Ge(ge=1)]) -> None'"

@@ -19,6 +19,9 @@ Optional nonnormative independent recovery reference application for Riverhog ar
 | <a id="s-aae98b1c04"></a>`artifacts` | [{"coordinate": "dist/riverhog_recover-{version}-py3-none-any.whl", "format": "wheel"}, {"coordinate": "dist/riverhog_recover-{version}.tar.gz", "format": "sdist"}] |
 | <a id="s-cf1f08603c"></a>`channel` | github-release |
 | <a id="s-52c6490cac"></a>`description` | Optional nonnormative independent recovery reference application for Riverhog archives. |
+| <a id="s-827530076d"></a>`license_baseline` | first-v1-publication |
+| <a id="s-e554dc159c"></a>`license_expression` | Apache-2.0 |
+| <a id="s-bae245f510"></a>`publication_identity` | {"coordinate": "riverhog-recover", "kind": "python-distribution"} |
 | <a id="s-7e5bc2c17e"></a>`requires_python` | >=3.12 |
 | <a id="s-f11df5134b"></a>`role` | reference_application |
 | <a id="s-426e309e01"></a>`source` | reference/riverhog/recovery/pyproject.toml |
@@ -57,7 +60,7 @@ Publication preserves these existing component authorities; it does not reclassi
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 3981f1f39c8cb104a1870ba4976d5ca3b4611aef81aff57f7e2e3fbe91af20bc -->
+<!-- exact-contract-value: 86b8bb5426086ded476949a1edd2c64f6c32fad8d0420d42de5ed375a730fe11 -->
 
 ```json
 {
@@ -73,6 +76,12 @@ The following JSON is the complete value owned at each machine-authority pointer
   ],
   "channel": "github-release",
   "description": "Optional nonnormative independent recovery reference application for Riverhog archives.",
+  "license_baseline": "first-v1-publication",
+  "license_expression": "Apache-2.0",
+  "publication_identity": {
+    "coordinate": "riverhog-recover",
+    "kind": "python-distribution"
+  },
   "requires_python": ">=3.12",
   "role": "reference_application",
   "source": "reference/riverhog/recovery/pyproject.toml"

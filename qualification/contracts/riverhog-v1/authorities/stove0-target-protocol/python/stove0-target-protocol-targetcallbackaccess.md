@@ -27,8 +27,6 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-0909029cad"></a>
-- <a id="s-2be21a0dd3"></a>`title`: TargetCallbackAccess
-- <a id="s-6e5b9d69f6"></a>`description`: Secret-bearing execution callback authority excluded from plan identity.
 - <a id="s-d47353300f"></a>`type`: object
 
 ### Fields
@@ -63,7 +61,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 1fa9f7073b986495e3ceebd20c8df8a8aecab46e7e536882b062e72334dc5432 -->
+<!-- exact-contract-value: d9069d7e01d11613f48b7581806caa4e0147755ad41ec9757224a84bc2ecf405 -->
 
 ```json
 {
@@ -71,23 +69,19 @@ The following JSON is the complete value owned at each machine-authority pointer
     "kind": "class",
     "schema": {
       "additionalProperties": false,
-      "description": "Secret-bearing execution callback authority excluded from plan identity.",
       "properties": {
         "allow_insecure_http": {
           "default": false,
-          "title": "Allow Insecure Http",
           "type": "boolean"
         },
         "stove0_base_url": {
           "maxLength": 2048,
           "minLength": 1,
-          "title": "Stove0 Base Url",
           "type": "string"
         },
         "token": {
           "maxLength": 4096,
           "minLength": 1,
-          "title": "Token",
           "type": "string"
         }
       },
@@ -95,7 +89,6 @@ The following JSON is the complete value owned at each machine-authority pointer
         "stove0_base_url",
         "token"
       ],
-      "title": "TargetCallbackAccess",
       "type": "object"
     },
     "signature": "'(*, stove0_base_url: Annotated[str, MinLen(min_length=1), MaxLen(max_length=2048)], token: Annotated[str, MinLen(min_length=1), MaxLen(max_length=4096)], allow_insecure_http: bool = False) -> None'"

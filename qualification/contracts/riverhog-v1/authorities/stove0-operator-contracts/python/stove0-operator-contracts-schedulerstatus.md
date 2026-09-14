@@ -27,7 +27,6 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-cf090b61a4"></a>
-- <a id="s-15cb55d163"></a>`title`: SchedulerStatus
 - <a id="s-0684c55048"></a>`type`: object
 
 ### Fields
@@ -62,7 +61,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: e9596a28250c4c1025dc5342bcc2cccc75450386d6ae49d43371ea6f2b9d5843 -->
+<!-- exact-contract-value: 4fcad434f3fdb1df17b6fd1a817409065f130f3563b8b609c7b4d4e1745b01e7 -->
 
 ```json
 {
@@ -73,7 +72,6 @@ The following JSON is the complete value owned at each machine-authority pointer
       "properties": {
         "interval_seconds": {
           "exclusiveMinimum": 0,
-          "title": "Interval Seconds",
           "type": "number"
         },
         "roles": {
@@ -85,11 +83,9 @@ The following JSON is the complete value owned at each machine-authority pointer
             ],
             "type": "string"
           },
-          "title": "Roles",
           "type": "array"
         },
         "running": {
-          "title": "Running",
           "type": "boolean"
         }
       },
@@ -98,7 +94,6 @@ The following JSON is the complete value owned at each machine-authority pointer
         "interval_seconds",
         "roles"
       ],
-      "title": "SchedulerStatus",
       "type": "object"
     },
     "signature": "\"(*, running: bool, interval_seconds: Annotated[float, Gt(gt=0)], roles: tuple[typing.Literal['controller', 'worker', 'combined'], ...]) -> None\""

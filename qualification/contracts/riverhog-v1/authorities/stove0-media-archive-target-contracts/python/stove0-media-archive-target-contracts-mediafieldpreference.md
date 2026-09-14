@@ -27,7 +27,6 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-e045631091"></a>
-- <a id="s-2396937152"></a>`title`: MediaFieldPreference
 - <a id="s-334b43331b"></a>`type`: object
 
 ### Fields
@@ -67,7 +66,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 245906dfb3c1b7adcc60407363862c60077dfaf5bb4086fd5f3d03dfafe9a837 -->
+<!-- exact-contract-value: 909414ab62984e54488adb69e158090f814ff0f21c954001b5ceb5cf743a107a -->
 
 ```json
 {
@@ -81,7 +80,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             "type": "string"
           },
           "minItems": 1,
-          "title": "Fields",
           "type": "array"
         },
         "name": {
@@ -93,7 +91,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             "gps-latitude",
             "gps-longitude"
           ],
-          "title": "Name",
           "type": "string"
         }
       },
@@ -101,7 +98,6 @@ The following JSON is the complete value owned at each machine-authority pointer
         "name",
         "fields"
       ],
-      "title": "MediaFieldPreference",
       "type": "object"
     },
     "signature": "\"(*, name: Literal['capture-time', 'creator', 'device-make', 'device-model', 'gps-latitude', 'gps-longitude'], fields: Annotated[tuple[str, ...], MinLen(min_length=1)]) -> None\""

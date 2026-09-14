@@ -8,7 +8,7 @@ Declared public imports and their selected exact structural contracts.
 
 ### `riverhog_provenance_windows_contracts`
 
-- [riverhog_provenance_windows_contracts.CONTRACT_BINDING](riverhog-provenance-windows-contracts-contract-binding.md)
-- [riverhog_provenance_windows_contracts.CONTRACT_ID](riverhog-provenance-windows-contracts-contract-id.md)
-- [riverhog_provenance_windows_contracts.PLATFORM_FAMILY](riverhog-provenance-windows-contracts-platform-family.md)
-- [riverhog_provenance_windows_contracts.load_schemas](riverhog-provenance-windows-contracts-load-schemas.md)
+- [CONTRACT_BINDING](riverhog-provenance-windows-contracts-contract-binding.md)
+- [CONTRACT_ID](riverhog-provenance-windows-contracts-contract-id.md)
+- [PLATFORM_FAMILY](riverhog-provenance-windows-contracts-platform-family.md)
+- [load_schemas](riverhog-provenance-windows-contracts-load-schemas.md)

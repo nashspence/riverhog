@@ -27,7 +27,6 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-0f42bb2ef8"></a>
-- <a id="s-bc8522451b"></a>`title`: ProcessingOutcomeIdentityDocument
 - <a id="s-7f84618032"></a>`type`: object
 
 ### Fields
@@ -76,7 +75,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: e254d00ce00237ee90f6c7100bd7fabb5722e13fb3459ad40a3a064c81bbbf89 -->
+<!-- exact-contract-value: 2a3829064aaeee18225864d4caad9aa114641223634a72ecc20fa14c954bccbd -->
 
 ```json
 {
@@ -93,7 +92,6 @@ The following JSON is the complete value owned at each machine-authority pointer
           "properties": {
             "archive_root_sha256": {
               "pattern": "^[0-9a-f]{64}$",
-              "title": "Archive Root Sha256",
               "type": "string"
             },
             "collection_id": {
@@ -101,7 +99,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             },
             "content_identity": {
               "pattern": "^[0-9a-f]{64}$",
-              "title": "Content Identity",
               "type": "string"
             }
           },
@@ -110,7 +107,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             "archive_root_sha256",
             "content_identity"
           ],
-          "title": "CollectionRootIdentityDocument",
           "type": "object"
         }
       },
@@ -118,12 +114,10 @@ The following JSON is the complete value owned at each machine-authority pointer
       "properties": {
         "derivation_sha256": {
           "pattern": "^[0-9a-f]{64}$",
-          "title": "Derivation Sha256",
           "type": "string"
         },
         "outcome_id": {
           "pattern": "^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$",
-          "title": "Outcome Id",
           "type": "string"
         },
         "output_collection": {
@@ -131,7 +125,6 @@ The following JSON is the complete value owned at each machine-authority pointer
         },
         "source_claim_id": {
           "pattern": "^[0-9a-f]{64}$",
-          "title": "Source Claim Id",
           "type": "string"
         }
       },
@@ -141,7 +134,6 @@ The following JSON is the complete value owned at each machine-authority pointer
         "output_collection",
         "derivation_sha256"
       ],
-      "title": "ProcessingOutcomeIdentityDocument",
       "type": "object"
     },
     "signature": "\"(*, outcome_id: Annotated[str, _PydanticGeneralMetadata(pattern='^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$')], source_claim_id: Annotated[str, _PydanticGeneralMetadata(pattern='^[0-9a-f]{64}$')], output_collection: riverhog_protocol.collection_workflow_transport.CollectionRootIdentityDocument, derivation_sha256: Annotated[str, _PydanticGeneralMetadata(pattern='^[0-9a-f]{64}$')]) -> None\""

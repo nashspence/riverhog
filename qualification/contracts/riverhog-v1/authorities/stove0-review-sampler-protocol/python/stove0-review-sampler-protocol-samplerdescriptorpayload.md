@@ -27,7 +27,6 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-c0efceaa62"></a>
-- <a id="s-b3d7ef1e34"></a>`title`: SamplerDescriptorPayload
 - <a id="s-3a57a2f7fc"></a>`type`: object
 
 ### Fields
@@ -75,7 +74,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 43778e487d42b65bd402570bba6020bd2e690ccf467199edbc4952f71a7d3dc2 -->
+<!-- exact-contract-value: ed68fc39401cb5c72faa8eef884c2c1bfd36d4593c5912c3bcacb548636cbe72 -->
 
 ```json
 {
@@ -89,30 +88,25 @@ The following JSON is the complete value owned at each machine-authority pointer
             "dialect": {
               "const": "https://json-schema.org/draft/2020-12/schema",
               "default": "https://json-schema.org/draft/2020-12/schema",
-              "title": "Dialect",
               "type": "string"
             },
             "format_policy": {
               "const": "annotation-only",
               "default": "annotation-only",
-              "title": "Format Policy",
               "type": "string"
             },
             "id": {
               "pattern": "^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$",
-              "title": "Id",
               "type": "string"
             },
             "schema": {
               "additionalProperties": {
                 "$ref": "#/$defs/JsonValue"
               },
-              "title": "Schema",
               "type": "object"
             },
             "sha256": {
               "pattern": "^[0-9a-f]{64}$",
-              "title": "Sha256",
               "type": "string"
             }
           },
@@ -121,7 +115,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             "sha256",
             "schema"
           ],
-          "title": "JsonSchemaDocument",
           "type": "object"
         },
         "JsonValue": {}
@@ -130,23 +123,19 @@ The following JSON is the complete value owned at each machine-authority pointer
       "properties": {
         "image_digest": {
           "pattern": "^[0-9a-f]{64}$",
-          "title": "Image Digest",
           "type": "string"
         },
         "implementation_id": {
           "pattern": "^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$",
-          "title": "Implementation Id",
           "type": "string"
         },
         "implementation_version": {
           "maxLength": 120,
           "minLength": 1,
-          "title": "Implementation Version",
           "type": "string"
         },
         "output_role": {
           "pattern": "^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$",
-          "title": "Output Role",
           "type": "string"
         },
         "portable_intent_schema": {
@@ -154,24 +143,20 @@ The following JSON is the complete value owned at each machine-authority pointer
         },
         "primary_operation_contract_sha256": {
           "pattern": "^[0-9a-f]{64}$",
-          "title": "Primary Operation Contract Sha256",
           "type": "string"
         },
         "primary_operation_id": {
           "pattern": "^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$",
-          "title": "Primary Operation Id",
           "type": "string"
         },
         "protocol": {
           "const": "stove0-review-sampler/v1",
           "default": "stove0-review-sampler/v1",
-          "title": "Protocol",
           "type": "string"
         },
         "source_revision": {
           "maxLength": 200,
           "minLength": 1,
-          "title": "Source Revision",
           "type": "string"
         }
       },
@@ -185,7 +170,6 @@ The following JSON is the complete value owned at each machine-authority pointer
         "portable_intent_schema",
         "output_role"
       ],
-      "title": "SamplerDescriptorPayload",
       "type": "object"
     },
     "signature": "\"(*, protocol: Literal['stove0-review-sampler/v1'] = 'stove0-review-sampler/v1', implementation_id: Annotated[str, _PydanticGeneralMetadata(pattern='^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$')], implementation_version: Annotated[str, MinLen(min_length=1), MaxLen(max_length=120)], source_revision: Annotated[str, MinLen(min_length=1), MaxLen(max_length=200)], image_digest: Annotated[str, _PydanticGeneralMetadata(pattern='^[0-9a-f]{64}$')], primary_operation_id: Annotated[str, _PydanticGeneralMetadata(pattern='^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$')], primary_operation_contract_sha256: Annotated[str, _PydanticGeneralMetadata(pattern='^[0-9a-f]{64}$')], portable_intent_schema: stove0_protocol.models.JsonSchemaDocument, output_role: Annotated[str, _PydanticGeneralMetadata(pattern='^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$')]) -> None\""

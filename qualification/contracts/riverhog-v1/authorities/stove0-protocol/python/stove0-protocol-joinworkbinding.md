@@ -27,8 +27,6 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-3564faa66a"></a>
-- <a id="s-8868a02bb9"></a>`title`: JoinWorkBinding
-- <a id="s-bf94557811"></a>`description`: Stable branch-set lineage for one ordinary join work identity.
 - <a id="s-b758093e43"></a>`type`: object
 
 ### Fields
@@ -76,7 +74,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: cfa1618e5bc257003884c91b08f8a7a2f6482727277b1a90c079c5a83fc79549 -->
+<!-- exact-contract-value: 15f2e1459b1bb11ec28649cd399395b0d56ff8901b75b6bcbecce6de51e773a6 -->
 
 ```json
 {
@@ -86,16 +84,13 @@ The following JSON is the complete value owned at each machine-authority pointer
       "$defs": {
         "JoinWorkMemberBinding": {
           "additionalProperties": false,
-          "description": "Exact successful branch result used to derive one join work identity.",
           "properties": {
             "artifact_selection_sha256": {
               "pattern": "^[0-9a-f]{64}$",
-              "title": "Artifact Selection Sha256",
               "type": "string"
             },
             "branch_id": {
               "pattern": "^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$",
-              "title": "Branch Id",
               "type": "string"
             },
             "producer_settlement_sha256": {
@@ -108,12 +103,10 @@ The following JSON is the complete value owned at each machine-authority pointer
                   "type": "null"
                 }
               ],
-              "default": null,
-              "title": "Producer Settlement Sha256"
+              "default": null
             },
             "settlement_sha256": {
               "pattern": "^[0-9a-f]{64}$",
-              "title": "Settlement Sha256",
               "type": "string"
             }
           },
@@ -122,22 +115,18 @@ The following JSON is the complete value owned at each machine-authority pointer
             "settlement_sha256",
             "artifact_selection_sha256"
           ],
-          "title": "JoinWorkMemberBinding",
           "type": "object"
         }
       },
       "additionalProperties": false,
-      "description": "Stable branch-set lineage for one ordinary join work identity.",
       "properties": {
         "branch_set_sha256": {
           "pattern": "^[0-9a-f]{64}$",
-          "title": "Branch Set Sha256",
           "type": "string"
         },
         "kind": {
           "const": "join",
           "default": "join",
-          "title": "Kind",
           "type": "string"
         },
         "members": {
@@ -145,12 +134,10 @@ The following JSON is the complete value owned at each machine-authority pointer
             "$ref": "#/$defs/JoinWorkMemberBinding"
           },
           "minItems": 2,
-          "title": "Members",
           "type": "array"
         },
         "parent_work_id": {
           "pattern": "^[0-9a-f]{64}$",
-          "title": "Parent Work Id",
           "type": "string"
         }
       },
@@ -159,7 +146,6 @@ The following JSON is the complete value owned at each machine-authority pointer
         "branch_set_sha256",
         "members"
       ],
-      "title": "JoinWorkBinding",
       "type": "object"
     },
     "signature": "\"(*, kind: Literal['join'] = 'join', parent_work_id: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)], branch_set_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)], members: Annotated[tuple[stove0_protocol.models.JoinWorkMemberBinding, ...], MinLen(min_length=2)]) -> None\""

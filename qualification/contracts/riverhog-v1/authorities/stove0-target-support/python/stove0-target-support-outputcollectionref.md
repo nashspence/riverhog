@@ -27,7 +27,6 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-42e4d3717e"></a>
-- <a id="s-18d912ccda"></a>`title`: OutputCollectionRef
 - <a id="s-c2f9425249"></a>`type`: object
 
 ### Fields
@@ -69,7 +68,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 7ed6aa01a326743bf1dc9de91f6203b43da71d9763519432e312228240f703f5 -->
+<!-- exact-contract-value: 328f64ea8e4d440441f7b5283422e557e10b26efa3dfd95d4656e3ea2bbedfe6 -->
 
 ```json
 {
@@ -86,7 +85,6 @@ The following JSON is the complete value owned at each machine-authority pointer
       "properties": {
         "archive_root_sha256": {
           "pattern": "^[0-9a-f]{64}$",
-          "title": "Archive Root Sha256",
           "type": "string"
         },
         "collection_id": {
@@ -94,12 +92,10 @@ The following JSON is the complete value owned at each machine-authority pointer
         },
         "content_identity": {
           "pattern": "^[0-9a-f]{64}$",
-          "title": "Content Identity",
           "type": "string"
         },
         "derivation_sha256": {
           "pattern": "^[0-9a-f]{64}$",
-          "title": "Derivation Sha256",
           "type": "string"
         }
       },
@@ -109,7 +105,6 @@ The following JSON is the complete value owned at each machine-authority pointer
         "content_identity",
         "derivation_sha256"
       ],
-      "title": "OutputCollectionRef",
       "type": "object"
     },
     "signature": "\"(*, collection_id: CollectionId, archive_root_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)], content_identity: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)], derivation_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)]) -> None\""

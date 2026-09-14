@@ -27,7 +27,6 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-1ea8c031f9"></a>
-- <a id="s-2948062346"></a>`title`: MediaMetadataFact
 - <a id="s-c50044e3ec"></a>`type`: object
 
 ### Fields
@@ -69,7 +68,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 645b51cd0393ba7d404be5a816c94a3653211e7393b39211f479ea3e5d5638cd -->
+<!-- exact-contract-value: 2056851604846f2fbd9d334a108b9506a96bab0bb1890861db981f53ad3548a8 -->
 
 ```json
 {
@@ -80,18 +79,15 @@ The following JSON is the complete value owned at each machine-authority pointer
         "JsonValue": {},
         "MediaFactEvidence": {
           "additionalProperties": false,
-          "description": "Exact artifact and ExifTool field from which one value was read.",
           "properties": {
             "artifact_id": {
               "maxLength": 160,
               "minLength": 1,
-              "title": "Artifact Id",
               "type": "string"
             },
             "field": {
               "maxLength": 240,
               "minLength": 1,
-              "title": "Field",
               "type": "string"
             }
           },
@@ -99,7 +95,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             "artifact_id",
             "field"
           ],
-          "title": "MediaFactEvidence",
           "type": "object"
         }
       },
@@ -118,7 +113,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             "gps-latitude",
             "gps-longitude"
           ],
-          "title": "Name",
           "type": "string"
         },
         "value": {
@@ -130,7 +124,6 @@ The following JSON is the complete value owned at each machine-authority pointer
         "value",
         "evidence"
       ],
-      "title": "MediaMetadataFact",
       "type": "object"
     },
     "signature": "\"(*, name: Literal['capture-time', 'container-format', 'creator', 'device-make', 'device-model', 'gps-latitude', 'gps-longitude'], value: JsonValue, evidence: stove0_media_metadata_observer_contracts.contracts.MediaFactEvidence) -> None\""

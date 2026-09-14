@@ -27,7 +27,6 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-379ee065cb"></a>
-- <a id="s-107276300f"></a>`title`: RetrievalFileReferenceSetDocument
 - <a id="s-b3278f72da"></a>`type`: object
 
 ### Fields
@@ -74,7 +73,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: d13ccba69aabacc6c2ab59be40adf6bb3bb453e42a05f36127eef9c60b298bd5 -->
+<!-- exact-contract-value: ed752464729da81d4bcc05498ffc10cfedbc605619158518b4b066406941c645 -->
 
 ```json
 {
@@ -120,7 +119,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             "collection_id",
             "path"
           ],
-          "title": "RetrievalFileReferenceDocument",
           "type": "object"
         }
       },
@@ -132,7 +130,6 @@ The following JSON is the complete value owned at each machine-authority pointer
           },
           "maxItems": 10000,
           "minItems": 1,
-          "title": "Files",
           "type": "array",
           "x-riverhog-extent": {
             "policy": "segmented_no_total_max",
@@ -144,7 +141,6 @@ The following JSON is the complete value owned at each machine-authority pointer
       "required": [
         "files"
       ],
-      "title": "RetrievalFileReferenceSetDocument",
       "type": "object"
     },
     "signature": "'(*, files: Annotated[list[riverhog_protocol.retrieval_transport.RetrievalFileReferenceDocument], MinLen(min_length=1), MaxLen(max_length=10000)]) -> None'"

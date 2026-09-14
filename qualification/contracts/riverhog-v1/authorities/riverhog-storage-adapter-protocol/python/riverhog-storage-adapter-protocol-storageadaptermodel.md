@@ -27,7 +27,6 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-3f891dda28"></a>
-- <a id="s-b14fc11247"></a>`title`: StorageAdapterModel
 - <a id="s-d1f89cdd95"></a>`type`: object
 
 ### Fields
@@ -59,7 +58,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 95dcabf55e17ee11084e9ee43d9de30f3b993f54e8b81ea99d7e6ebf6baca510 -->
+<!-- exact-contract-value: c47a9bd6f30c857ad84d0fb5cc23829053502c379dc8ce5607b2a9f18e68c5d5 -->
 
 ```json
 {
@@ -68,7 +67,6 @@ The following JSON is the complete value owned at each machine-authority pointer
     "schema": {
       "additionalProperties": false,
       "properties": {},
-      "title": "StorageAdapterModel",
       "type": "object"
     },
     "signature": "'() -> None'"

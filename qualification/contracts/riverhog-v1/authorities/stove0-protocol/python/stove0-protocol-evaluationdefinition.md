@@ -27,7 +27,6 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-a80ac8a32a"></a>
-- <a id="s-ef39558857"></a>`title`: EvaluationDefinition
 - <a id="s-9ca6faacf7"></a>`type`: object
 
 ### Fields
@@ -86,7 +85,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 3f144e8c7771d7d28ba3c5a3b68b72414d4b83840224e3609fa8681033643942 -->
+<!-- exact-contract-value: c5fd4da79ad9ee9fe590c36483d78cbad1087a8c76330c2ca63b2ad37cc5421e -->
 
 ```json
 {
@@ -103,7 +102,6 @@ The following JSON is the complete value owned at each machine-authority pointer
           "properties": {
             "archive_root_sha256": {
               "pattern": "^[0-9a-f]{64}$",
-              "title": "Archive Root Sha256",
               "type": "string"
             },
             "collection_id": {
@@ -111,7 +109,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             },
             "content_identity": {
               "pattern": "^[0-9a-f]{64}$",
-              "title": "Content Identity",
               "type": "string"
             }
           },
@@ -120,7 +117,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             "archive_root_sha256",
             "content_identity"
           ],
-          "title": "CollectionRootRef",
           "type": "object"
         },
         "EvaluationMatrix": {
@@ -129,12 +125,10 @@ The following JSON is the complete value owned at each machine-authority pointer
             "format": {
               "const": "stove0-evaluation-matrix/v1",
               "default": "stove0-evaluation-matrix/v1",
-              "title": "Format",
               "type": "string"
             },
             "matrix_sha256": {
               "pattern": "^[0-9a-f]{64}$",
-              "title": "Matrix Sha256",
               "type": "string"
             },
             "variants": {
@@ -142,7 +136,6 @@ The following JSON is the complete value owned at each machine-authority pointer
                 "$ref": "#/$defs/EvaluationVariant"
               },
               "minItems": 1,
-              "title": "Variants",
               "type": "array"
             }
           },
@@ -150,7 +143,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             "variants",
             "matrix_sha256"
           ],
-          "title": "EvaluationMatrix",
           "type": "object"
         },
         "EvaluationVariant": {
@@ -158,21 +150,18 @@ The following JSON is the complete value owned at each machine-authority pointer
           "properties": {
             "id": {
               "pattern": "^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$",
-              "title": "Id",
               "type": "string"
             },
             "parameters": {
               "additionalProperties": {
                 "$ref": "#/$defs/JsonValue"
               },
-              "title": "Parameters",
               "type": "object"
             }
           },
           "required": [
             "id"
           ],
-          "title": "EvaluationVariant",
           "type": "object"
         },
         "JsonValue": {},
@@ -181,17 +170,14 @@ The following JSON is the complete value owned at each machine-authority pointer
           "properties": {
             "id": {
               "pattern": "^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$",
-              "title": "Id",
               "type": "string"
             },
             "revision": {
               "minimum": 1,
-              "title": "Revision",
               "type": "integer"
             },
             "sha256": {
               "pattern": "^[0-9a-f]{64}$",
-              "title": "Sha256",
               "type": "string"
             }
           },
@@ -200,7 +186,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             "revision",
             "sha256"
           ],
-          "title": "RecipeRef",
           "type": "object"
         }
       },
@@ -210,18 +195,15 @@ The following JSON is the complete value owned at each machine-authority pointer
           "additionalProperties": {
             "$ref": "#/$defs/JsonValue"
           },
-          "title": "Common Intent",
           "type": "object"
         },
         "evaluation_id": {
           "pattern": "^[0-9a-f]{64}$",
-          "title": "Evaluation Id",
           "type": "string"
         },
         "format": {
           "const": "stove0-evaluation-definition/v1",
           "default": "stove0-evaluation-definition/v1",
-          "title": "Format",
           "type": "string"
         },
         "inputs": {
@@ -229,7 +211,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             "$ref": "#/$defs/CollectionRootRef"
           },
           "minItems": 1,
-          "title": "Inputs",
           "type": "array"
         },
         "matrix": {
@@ -241,7 +222,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             "trial",
             "evaluation"
           ],
-          "title": "Purpose",
           "type": "string"
         },
         "recipe": {
@@ -254,7 +234,6 @@ The following JSON is the complete value owned at each machine-authority pointer
         "matrix",
         "evaluation_id"
       ],
-      "title": "EvaluationDefinition",
       "type": "object"
     },
     "signature": "\"(*, format: Literal['stove0-evaluation-definition/v1'] = 'stove0-evaluation-definition/v1', purpose: Literal['trial', 'evaluation'] = 'evaluation', recipe: stove0_protocol.models.RecipeRef, inputs: Annotated[tuple[stove0_protocol.models.CollectionRootRef, ...], MinLen(min_length=1)], common_intent: dict[str, JsonValue] = <factory>, matrix: stove0_protocol.models.EvaluationMatrix, evaluation_id: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)]) -> None\""

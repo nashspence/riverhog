@@ -27,8 +27,6 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-de0ced1246"></a>
-- <a id="s-0570ee0437"></a>`title`: CollectionDescriptionDocument
-- <a id="s-dd99bdb72a"></a>`description`: Canonical independently recoverable description state beside an archive copy.
 - <a id="s-75427a3086"></a>`type`: object
 
 ### Fields
@@ -80,7 +78,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: a656daa4483a0965d17441629dba55d6a39d49cabb9988050c2818605230eaec -->
+<!-- exact-contract-value: 0d53a8f2a27378e4e05257d238e8add31f11819a71de68c62ffeca29b81ad18a -->
 
 ```json
 {
@@ -101,11 +99,9 @@ The following JSON is the complete value owned at each machine-authority pointer
         }
       },
       "additionalProperties": false,
-      "description": "Canonical independently recoverable description state beside an archive copy.",
       "properties": {
         "archive_root_sha256": {
           "pattern": "^[0-9a-f]{64}$",
-          "title": "Archive Root Sha256",
           "type": "string"
         },
         "description": {
@@ -120,19 +116,16 @@ The following JSON is the complete value owned at each machine-authority pointer
         },
         "description_identity": {
           "pattern": "^[0-9a-f]{64}$",
-          "title": "Description Identity",
           "type": "string"
         },
         "format": {
           "const": "riverhog-collection-description/v1",
           "default": "riverhog-collection-description/v1",
-          "title": "Format",
           "type": "string"
         },
         "revision": {
           "maximum": 9007199254740991,
           "minimum": 1,
-          "title": "Revision",
           "type": "integer",
           "x-riverhog-extent": {
             "policy": "fixed",
@@ -146,7 +139,6 @@ The following JSON is the complete value owned at each machine-authority pointer
         "description",
         "description_identity"
       ],
-      "title": "CollectionDescriptionDocument",
       "type": "object"
     },
     "signature": "\"(*, format: Literal['riverhog-collection-description/v1'] = 'riverhog-collection-description/v1', archive_root_sha256: Annotated[str, _PydanticGeneralMetadata(pattern='^[0-9a-f]{64}$')], revision: Annotated[int, Strict(strict=True), Ge(ge=1), Le(le=9007199254740991)], description: CollectionDescription | None, description_identity: Annotated[str, _PydanticGeneralMetadata(pattern='^[0-9a-f]{64}$')]) -> None\""

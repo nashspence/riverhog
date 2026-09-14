@@ -27,8 +27,6 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-1247f2a421"></a>
-- <a id="s-903688c0e3"></a>`title`: WriteSegmentPage
-- <a id="s-2e1bde2946"></a>`description`: One bounded page under an adapter-owned immutable traversal view.
 - <a id="s-4fd02c051b"></a>`type`: object
 
 ### Fields
@@ -80,7 +78,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 4ce4d67358554a16eda82ff4c964463c61a5475529e88f812658acc6b2066157 -->
+<!-- exact-contract-value: dc907e3ab5e960db95c573aa18b1cb8a99006d44782b4226127a9a87cb1c7b22 -->
 
 ```json
 {
@@ -90,23 +88,18 @@ The following JSON is the complete value owned at each machine-authority pointer
       "$defs": {
         "WriteCompletionAuthority": {
           "additionalProperties": false,
-          "description": "Adapter-issued terminal authority for one exact active-write state.\n\nConsumers echo the opaque token unchanged. It is neither a credential nor a\nbearer capability; completion remains independently authorized. Once an exact\nimmutable object is published, its completed-object identity supersedes this\ntransport authority for terminal reconciliation.",
           "properties": {
             "authority_token": {
-              "description": "Bounded opaque adapter-issued authority for the exact accepted state of an active write. The token grants no authority and must be echoed unchanged.",
               "maxLength": 4000,
               "minLength": 1,
-              "title": "Authority Token",
               "type": "string"
             },
             "segment_count": {
               "minimum": 0,
-              "title": "Segment Count",
               "type": "integer"
             },
             "stored_bytes": {
               "minimum": 0,
-              "title": "Stored Bytes",
               "type": "integer"
             }
           },
@@ -115,7 +108,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             "stored_bytes",
             "authority_token"
           ],
-          "title": "WriteCompletionAuthority",
           "type": "object"
         },
         "WriteSegmentReceipt": {
@@ -123,18 +115,15 @@ The following JSON is the complete value owned at each machine-authority pointer
           "properties": {
             "number": {
               "minimum": 1,
-              "title": "Number",
               "type": "integer"
             },
             "segment_token": {
               "maxLength": 4000,
               "minLength": 1,
-              "title": "Segment Token",
               "type": "string"
             },
             "stored_bytes": {
               "minimum": 1,
-              "title": "Stored Bytes",
               "type": "integer"
             },
             "stored_sha256": {
@@ -147,8 +136,7 @@ The following JSON is the complete value owned at each machine-authority pointer
                   "type": "null"
                 }
               ],
-              "default": null,
-              "title": "Stored Sha256"
+              "default": null
             }
           },
           "required": [
@@ -156,29 +144,23 @@ The following JSON is the complete value owned at each machine-authority pointer
             "segment_token",
             "stored_bytes"
           ],
-          "title": "WriteSegmentReceipt",
           "type": "object"
         },
         "WriteSession": {
           "additionalProperties": false,
           "properties": {
             "expected_bytes": {
-              "description": "Exact immutable-object byte length admitted by this write session. The value remains fixed until the write becomes terminal.",
               "minimum": 1,
-              "title": "Expected Bytes",
               "type": "integer"
             },
             "object_path": {
               "maxLength": 4096,
               "minLength": 1,
-              "title": "Object Path",
               "type": "string"
             },
             "write_token": {
-              "description": "Opaque adapter-owned persistable continuation handle. For the same configured adapter it remains replayable across client, transport, Riverhog, and adapter process restarts until completion, explicit abort, or caller-authorized incomplete-write reclamation makes the write terminal.",
               "maxLength": 4000,
               "minLength": 1,
-              "title": "Write Token",
               "type": "string"
             }
           },
@@ -187,12 +169,10 @@ The following JSON is the complete value owned at each machine-authority pointer
             "expected_bytes",
             "write_token"
           ],
-          "title": "WriteSession",
           "type": "object"
         }
       },
       "additionalProperties": false,
-      "description": "One bounded page under an adapter-owned immutable traversal view.",
       "properties": {
         "completion": {
           "anyOf": [
@@ -215,8 +195,7 @@ The following JSON is the complete value owned at each machine-authority pointer
               "type": "null"
             }
           ],
-          "default": null,
-          "title": "Next After Number"
+          "default": null
         },
         "segments": {
           "default": [],
@@ -224,7 +203,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             "$ref": "#/$defs/WriteSegmentReceipt"
           },
           "maxItems": 128,
-          "title": "Segments",
           "type": "array",
           "x-riverhog-extent": {
             "policy": "segmented_no_total_max",
@@ -238,7 +216,6 @@ The following JSON is the complete value owned at each machine-authority pointer
         "traversal_token": {
           "maxLength": 4000,
           "minLength": 1,
-          "title": "Traversal Token",
           "type": "string"
         }
       },
@@ -246,7 +223,6 @@ The following JSON is the complete value owned at each machine-authority pointer
         "session",
         "traversal_token"
       ],
-      "title": "WriteSegmentPage",
       "type": "object"
     },
     "signature": "'(*, session: riverhog_storage_adapter_protocol.protocol.WriteSession, traversal_token: Annotated[str, MinLen(min_length=1), MaxLen(max_length=4000)], segments: Annotated[tuple[riverhog_storage_adapter_protocol.protocol.WriteSegmentReceipt, ...], MaxLen(max_length=128)] = (), next_after_number: Annotated[int | None, Ge(ge=1)] = None, completion: riverhog_storage_adapter_protocol.protocol.WriteCompletionAuthority | None = None) -> None'"

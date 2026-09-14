@@ -27,7 +27,6 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-ac3087e8e5"></a>
-- <a id="s-7ffb7d72cd"></a>`title`: CollectionUploadFileIn
 - <a id="s-431c1cf8c3"></a>`type`: object
 
 ### Fields
@@ -75,7 +74,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: e2c8208d009e273563d84f55a5358c5c764d4639bca5d532a53ccab8ddc77ddf -->
+<!-- exact-contract-value: 3664ca7a6914a0b33af38ab7513047cd77d2920878a23e08fff5544fa8252679 -->
 
 ```json
 {
@@ -114,7 +113,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             },
             "status": {
               "const": "captured",
-              "title": "Status",
               "type": "string"
             }
           },
@@ -123,7 +121,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             "current_state_id",
             "status"
           ],
-          "title": "CapturedFileProvenanceBinding",
           "type": "object"
         },
         "CollectionUploadRawPartsIn": {
@@ -131,17 +128,14 @@ The following JSON is the complete value owned at each machine-authority pointer
           "properties": {
             "ordered_sha256": {
               "pattern": "^[0-9a-f]{64}$",
-              "title": "Ordered Sha256",
               "type": "string"
             },
             "part_count": {
               "minimum": 1,
-              "title": "Part Count",
               "type": "integer"
             },
             "part_plaintext_bytes": {
               "minimum": 65536,
-              "title": "Part Plaintext Bytes",
               "type": "integer"
             }
           },
@@ -150,7 +144,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             "part_count",
             "ordered_sha256"
           ],
-          "title": "CollectionUploadRawPartsIn",
           "type": "object"
         },
         "OmittedFileProvenanceBinding": {
@@ -159,12 +152,10 @@ The following JSON is the complete value owned at each machine-authority pointer
             "omission_reason": {
               "minLength": 1,
               "pattern": "^\\S(?:[\\s\\S]*\\S)?$",
-              "title": "Omission Reason",
               "type": "string"
             },
             "status": {
               "const": "omitted",
-              "title": "Status",
               "type": "string"
             }
           },
@@ -172,7 +163,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             "status",
             "omission_reason"
           ],
-          "title": "OmittedFileProvenanceBinding",
           "type": "object"
         },
         "ProvenanceJournalId": {
@@ -188,7 +178,6 @@ The following JSON is the complete value owned at each machine-authority pointer
       "properties": {
         "bytes": {
           "minimum": 0,
-          "title": "Bytes",
           "type": "integer"
         },
         "path": {
@@ -217,8 +206,7 @@ The following JSON is the complete value owned at each machine-authority pointer
               "type": "null"
             }
           ],
-          "default": null,
-          "title": "Provenance"
+          "default": null
         },
         "raw_parts": {
           "anyOf": [
@@ -233,7 +221,6 @@ The following JSON is the complete value owned at each machine-authority pointer
         },
         "sha256": {
           "pattern": "^[0-9a-f]{64}$",
-          "title": "Sha256",
           "type": "string"
         }
       },
@@ -242,7 +229,6 @@ The following JSON is the complete value owned at each machine-authority pointer
         "bytes",
         "sha256"
       ],
-      "title": "CollectionUploadFileIn",
       "type": "object"
     },
     "signature": "\"(*, path: CanonicalRelPath, bytes: Annotated[int, Ge(ge=0)], sha256: Annotated[str, _PydanticGeneralMetadata(pattern='^[0-9a-f]{64}$')], raw_parts: riverhog_protocol.collection_upload_transport.CollectionUploadRawPartsIn | None = None, provenance: Optional[Annotated[riverhog_protocol.collection_upload_transport.CapturedFileProvenanceBinding | riverhog_protocol.collection_upload_transport.OmittedFileProvenanceBinding, FieldInfo(annotation=NoneType, required=True, discriminator='status')]] = None) -> None\""

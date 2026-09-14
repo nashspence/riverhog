@@ -27,7 +27,6 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-ac14e0db41"></a>
-- <a id="s-fe3e1f5f94"></a>`title`: MaintenanceResult
 - <a id="s-8724fd62cc"></a>`type`: object
 
 ### Fields
@@ -60,7 +59,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 776624a3bfe8bd2c9c60c3b08998977705a5409d75890277a598676f2454185f -->
+<!-- exact-contract-value: eaf7831ba5eaba4a661a454da40f041581b20b172e89061b11a02f3ef2b9c24f -->
 
 ```json
 {
@@ -71,14 +70,12 @@ The following JSON is the complete value owned at each machine-authority pointer
       "properties": {
         "affected": {
           "minimum": 0,
-          "title": "Affected",
           "type": "integer"
         }
       },
       "required": [
         "affected"
       ],
-      "title": "MaintenanceResult",
       "type": "object"
     },
     "signature": "'(*, affected: Annotated[int, Ge(ge=0)]) -> None'"

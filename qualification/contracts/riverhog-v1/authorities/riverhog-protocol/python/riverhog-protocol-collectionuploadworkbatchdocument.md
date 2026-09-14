@@ -27,8 +27,6 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-d72207d86e"></a>
-- <a id="s-b423895cbd"></a>`title`: CollectionUploadWorkBatchDocument
-- <a id="s-8cda6ecabd"></a>`description`: A bounded acquisition step over currently actionable upload units.
 - <a id="s-89745f6d35"></a>`type`: object
 
 ### Fields
@@ -82,7 +80,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 7c1fc358885efd1b8835b9b7e705f3ab5d51060544edb741413d5f64fca0a16b -->
+<!-- exact-contract-value: 240a104d2de5d4a68b3edc4dd4a2f0dcafd0ac1aa50b2fd82ad23f12b0a9d325 -->
 
 ```json
 {
@@ -96,11 +94,9 @@ The following JSON is the complete value owned at each machine-authority pointer
         },
         "CollectionUploadUnitAssignmentDocument": {
           "additionalProperties": false,
-          "description": "One bounded, immutable unit offered by an exact upload session.",
           "properties": {
             "plan_sha256": {
               "pattern": "^[0-9a-f]{64}$",
-              "title": "Plan Sha256",
               "type": "string"
             },
             "unit": {
@@ -115,30 +111,24 @@ The following JSON is the complete value owned at each machine-authority pointer
             "plan_sha256",
             "unit"
           ],
-          "title": "CollectionUploadUnitAssignmentDocument",
           "type": "object"
         },
         "CollectionUploadUnitSourceDocument": {
           "additionalProperties": false,
-          "description": "One exact source range supplied in a server-planned upload unit.",
           "properties": {
             "artifact_sha256": {
               "pattern": "^[0-9a-f]{64}$",
-              "title": "Artifact Sha256",
               "type": "string"
             },
             "bytes": {
               "minimum": 0,
-              "title": "Bytes",
               "type": "integer"
             },
             "offset": {
               "minimum": 0,
-              "title": "Offset",
               "type": "integer"
             },
             "path": {
-              "title": "Path",
               "type": "string"
             }
           },
@@ -148,21 +138,17 @@ The following JSON is the complete value owned at each machine-authority pointer
             "bytes",
             "artifact_sha256"
           ],
-          "title": "CollectionUploadUnitSourceDocument",
           "type": "object"
         },
         "CollectionUploadUnitWorkDocument": {
           "additionalProperties": false,
-          "description": "One exact unit and its durable upload checkpoint state.",
           "properties": {
             "payload_bytes": {
               "minimum": 0,
-              "title": "Payload Bytes",
               "type": "integer"
             },
             "plaintext_bytes": {
               "minimum": 0,
-              "title": "Plaintext Bytes",
               "type": "integer"
             },
             "sources": {
@@ -170,7 +156,6 @@ The following JSON is the complete value owned at each machine-authority pointer
                 "$ref": "#/$defs/CollectionUploadUnitSourceDocument"
               },
               "maxItems": 1000,
-              "title": "Sources",
               "type": "array",
               "x-riverhog-extent": {
                 "policy": "segmented_no_total_max",
@@ -183,12 +168,10 @@ The following JSON is the complete value owned at each machine-authority pointer
                 "pending",
                 "committed"
               ],
-              "title": "State",
               "type": "string"
             },
             "unit": {
               "minimum": 0,
-              "title": "Unit",
               "type": "integer"
             }
           },
@@ -199,29 +182,24 @@ The following JSON is the complete value owned at each machine-authority pointer
             "sources",
             "state"
           ],
-          "title": "CollectionUploadUnitWorkDocument",
           "type": "object"
         },
         "CollectionUploadVolumeSummaryDocument": {
           "additionalProperties": false,
-          "description": "Protocol-owned identity of one immutable collection archive volume.",
           "properties": {
             "kind": {
               "enum": [
                 "pack",
                 "segment"
               ],
-              "title": "Kind",
               "type": "string"
             },
             "sequence": {
               "minimum": 0,
-              "title": "Sequence",
               "type": "integer"
             },
             "volume_id": {
               "pattern": "^(?:pack|segment)-[0-9a-f]{64}$",
-              "title": "Volume Id",
               "type": "string"
             }
           },
@@ -230,27 +208,22 @@ The following JSON is the complete value owned at each machine-authority pointer
             "sequence",
             "kind"
           ],
-          "title": "CollectionUploadVolumeSummaryDocument",
           "type": "object"
         }
       },
       "additionalProperties": false,
-      "description": "A bounded acquisition step over currently actionable upload units.",
       "properties": {
         "collection_id": {
           "$ref": "#/$defs/CollectionId"
         },
         "committed_payload_bytes": {
           "minimum": 0,
-          "title": "Committed Payload Bytes",
           "type": "integer"
         },
         "complete": {
-          "title": "Complete",
           "type": "boolean"
         },
         "planning_complete": {
-          "title": "Planning Complete",
           "type": "boolean"
         },
         "work": {
@@ -258,7 +231,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             "$ref": "#/$defs/CollectionUploadUnitAssignmentDocument"
           },
           "maxItems": 64,
-          "title": "Work",
           "type": "array",
           "x-riverhog-extent": {
             "policy": "segmented_no_total_max",
@@ -274,7 +246,6 @@ The following JSON is the complete value owned at each machine-authority pointer
         "committed_payload_bytes",
         "work"
       ],
-      "title": "CollectionUploadWorkBatchDocument",
       "type": "object"
     },
     "signature": "'(*, collection_id: CollectionId, planning_complete: bool, complete: bool, committed_payload_bytes: Annotated[int, Strict(strict=True), Ge(ge=0)], work: Annotated[list[riverhog_protocol.collection_upload_transport.CollectionUploadUnitAssignmentDocument], MaxLen(max_length=64)]) -> None'"

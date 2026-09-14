@@ -20,7 +20,10 @@ Riverhog archive service.
 | <a id="s-9ea71fa0fc"></a>`description` | Riverhog archive service. |
 | <a id="s-192ec51a07"></a>`distribution_roots` | ["riverhog-server"] |
 | <a id="s-49a516eccb"></a>`format` | oci-image |
+| <a id="s-6f9a9d224b"></a>`license_baseline` | first-v1-publication |
+| <a id="s-e9ce023134"></a>`license_expression` | CAL-1.0 |
 | <a id="s-6be1951258"></a>`platforms` | ["linux/amd64"] |
+| <a id="s-2356f94695"></a>`publication_identity` | {"coordinate": "ghcr.io/nashspence/riverhog", "kind": "oci-repository"} |
 | <a id="s-7e50a61d7f"></a>`repository` | ghcr.io/nashspence/riverhog |
 | <a id="s-69132026d3"></a>`role` | product |
 | <a id="s-aae0d7766d"></a>`tag_templates` | ["ghcr.io/nashspence/riverhog:{version}", "ghcr.io/nashspence/riverhog:sha-{source_sha}"] |
@@ -61,7 +64,7 @@ Publication preserves these existing component authorities; it does not reclassi
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: fae33fcbd03b767abdb24e262834c57b4e25f73269ae244a2ef1e4b24ca87502 -->
+<!-- exact-contract-value: f47076225f65b55347f4b047edf574f283bb08cbc4697526d53bc26c2b68e2a9 -->
 
 ```json
 {
@@ -71,9 +74,15 @@ The following JSON is the complete value owned at each machine-authority pointer
     "riverhog-server"
   ],
   "format": "oci-image",
+  "license_baseline": "first-v1-publication",
+  "license_expression": "CAL-1.0",
   "platforms": [
     "linux/amd64"
   ],
+  "publication_identity": {
+    "coordinate": "ghcr.io/nashspence/riverhog",
+    "kind": "oci-repository"
+  },
   "repository": "ghcr.io/nashspence/riverhog",
   "role": "product",
   "tag_templates": [

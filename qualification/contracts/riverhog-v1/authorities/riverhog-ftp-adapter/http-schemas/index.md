@@ -6,8 +6,8 @@ Supporting HTTP data definitions; these are not callable operations.
 
 ## Semantic dossiers
 
-- [schemas: ErrorBody](schemas-errorbody.md)
-- [schemas: ErrorResponse](schemas-errorresponse.md)
-- [schemas: HTTPValidationError](schemas-httpvalidationerror.md)
-- [schemas: HealthResponse](schemas-healthresponse.md)
-- [schemas: ValidationError](schemas-validationerror.md)
+- [ErrorBody](schemas-errorbody.md)
+- [ErrorResponse](schemas-errorresponse.md)
+- [HTTPValidationError](schemas-httpvalidationerror.md)
+- [HealthResponse](schemas-healthresponse.md)
+- [ValidationError](schemas-validationerror.md)

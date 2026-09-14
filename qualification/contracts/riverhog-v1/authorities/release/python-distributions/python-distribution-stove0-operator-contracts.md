@@ -19,6 +19,9 @@ Canonical public state contracts for the Stove0 v1 operator surface.
 | <a id="s-d107c8c8b6"></a>`artifacts` | [{"coordinate": "dist/stove0_operator_contracts-{version}-py3-none-any.whl", "format": "wheel"}, {"coordinate": "dist/stove0_operator_contracts-{version}.tar.gz", "format": "sdist"}] |
 | <a id="s-eef338aff1"></a>`channel` | github-release |
 | <a id="s-3acedf1295"></a>`description` | Canonical public state contracts for the Stove0 v1 operator surface. |
+| <a id="s-66e94c7a8a"></a>`license_baseline` | first-v1-publication |
+| <a id="s-9e893f9dc4"></a>`license_expression` | Apache-2.0 |
+| <a id="s-2f3336bfc9"></a>`publication_identity` | {"coordinate": "stove0-operator-contracts", "kind": "python-distribution"} |
 | <a id="s-dcfe4d710a"></a>`requires_python` | >=3.12 |
 | <a id="s-e09f9568be"></a>`role` | reusable_library |
 | <a id="s-d71c83df6a"></a>`source` | reference/stove0/packages/operator-contracts/pyproject.toml |
@@ -57,7 +60,7 @@ Publication preserves these existing component authorities; it does not reclassi
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 06ce51470e8874aa847e56baf90ca6181083dbf042a711d8c60f89b102fcf0e2 -->
+<!-- exact-contract-value: 79a48d70babff3f189712aff1c094b5b2c90130d03cee1aa20f119fac2f09377 -->
 
 ```json
 {
@@ -73,6 +76,12 @@ The following JSON is the complete value owned at each machine-authority pointer
   ],
   "channel": "github-release",
   "description": "Canonical public state contracts for the Stove0 v1 operator surface.",
+  "license_baseline": "first-v1-publication",
+  "license_expression": "Apache-2.0",
+  "publication_identity": {
+    "coordinate": "stove0-operator-contracts",
+    "kind": "python-distribution"
+  },
   "requires_python": ">=3.12",
   "role": "reusable_library",
   "source": "reference/stove0/packages/operator-contracts/pyproject.toml"

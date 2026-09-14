@@ -27,7 +27,6 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-48cb2e213f"></a>
-- <a id="s-b3d9c4526b"></a>`title`: EvaluationDefinitionPayload
 - <a id="s-aca9784d9c"></a>`type`: object
 
 ### Fields
@@ -83,7 +82,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 1ed785bc6bfa185b4df14a207b2be91c53a3041c8a19bc1489b3e449b7bbff54 -->
+<!-- exact-contract-value: aaa7e0a5e83c7a8f52b9ea4bd1602ed84908b5360af21b2d34b6be016e3cfe98 -->
 
 ```json
 {
@@ -100,7 +99,6 @@ The following JSON is the complete value owned at each machine-authority pointer
           "properties": {
             "archive_root_sha256": {
               "pattern": "^[0-9a-f]{64}$",
-              "title": "Archive Root Sha256",
               "type": "string"
             },
             "collection_id": {
@@ -108,7 +106,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             },
             "content_identity": {
               "pattern": "^[0-9a-f]{64}$",
-              "title": "Content Identity",
               "type": "string"
             }
           },
@@ -117,7 +114,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             "archive_root_sha256",
             "content_identity"
           ],
-          "title": "CollectionRootRef",
           "type": "object"
         },
         "EvaluationMatrix": {
@@ -126,12 +122,10 @@ The following JSON is the complete value owned at each machine-authority pointer
             "format": {
               "const": "stove0-evaluation-matrix/v1",
               "default": "stove0-evaluation-matrix/v1",
-              "title": "Format",
               "type": "string"
             },
             "matrix_sha256": {
               "pattern": "^[0-9a-f]{64}$",
-              "title": "Matrix Sha256",
               "type": "string"
             },
             "variants": {
@@ -139,7 +133,6 @@ The following JSON is the complete value owned at each machine-authority pointer
                 "$ref": "#/$defs/EvaluationVariant"
               },
               "minItems": 1,
-              "title": "Variants",
               "type": "array"
             }
           },
@@ -147,7 +140,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             "variants",
             "matrix_sha256"
           ],
-          "title": "EvaluationMatrix",
           "type": "object"
         },
         "EvaluationVariant": {
@@ -155,21 +147,18 @@ The following JSON is the complete value owned at each machine-authority pointer
           "properties": {
             "id": {
               "pattern": "^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$",
-              "title": "Id",
               "type": "string"
             },
             "parameters": {
               "additionalProperties": {
                 "$ref": "#/$defs/JsonValue"
               },
-              "title": "Parameters",
               "type": "object"
             }
           },
           "required": [
             "id"
           ],
-          "title": "EvaluationVariant",
           "type": "object"
         },
         "JsonValue": {},
@@ -178,17 +167,14 @@ The following JSON is the complete value owned at each machine-authority pointer
           "properties": {
             "id": {
               "pattern": "^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$",
-              "title": "Id",
               "type": "string"
             },
             "revision": {
               "minimum": 1,
-              "title": "Revision",
               "type": "integer"
             },
             "sha256": {
               "pattern": "^[0-9a-f]{64}$",
-              "title": "Sha256",
               "type": "string"
             }
           },
@@ -197,7 +183,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             "revision",
             "sha256"
           ],
-          "title": "RecipeRef",
           "type": "object"
         }
       },
@@ -207,13 +192,11 @@ The following JSON is the complete value owned at each machine-authority pointer
           "additionalProperties": {
             "$ref": "#/$defs/JsonValue"
           },
-          "title": "Common Intent",
           "type": "object"
         },
         "format": {
           "const": "stove0-evaluation-definition/v1",
           "default": "stove0-evaluation-definition/v1",
-          "title": "Format",
           "type": "string"
         },
         "inputs": {
@@ -221,7 +204,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             "$ref": "#/$defs/CollectionRootRef"
           },
           "minItems": 1,
-          "title": "Inputs",
           "type": "array"
         },
         "matrix": {
@@ -233,7 +215,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             "trial",
             "evaluation"
           ],
-          "title": "Purpose",
           "type": "string"
         },
         "recipe": {
@@ -245,7 +226,6 @@ The following JSON is the complete value owned at each machine-authority pointer
         "inputs",
         "matrix"
       ],
-      "title": "EvaluationDefinitionPayload",
       "type": "object"
     },
     "signature": "\"(*, format: Literal['stove0-evaluation-definition/v1'] = 'stove0-evaluation-definition/v1', purpose: Literal['trial', 'evaluation'] = 'evaluation', recipe: stove0_protocol.models.RecipeRef, inputs: Annotated[tuple[stove0_protocol.models.CollectionRootRef, ...], MinLen(min_length=1)], common_intent: dict[str, JsonValue] = <factory>, matrix: stove0_protocol.models.EvaluationMatrix) -> None\""

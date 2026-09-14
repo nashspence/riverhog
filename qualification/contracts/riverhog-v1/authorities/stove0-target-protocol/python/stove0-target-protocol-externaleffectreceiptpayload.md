@@ -27,7 +27,6 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-ef6c1dadef"></a>
-- <a id="s-477e6eff82"></a>`title`: ExternalEffectReceiptPayload
 - <a id="s-b2306808b3"></a>`type`: object
 
 ### Fields
@@ -79,7 +78,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 3bd724c983ed3bf3e5edd24dd12748241c4a321fb6af6cbfa1dd4b376758a393 -->
+<!-- exact-contract-value: dc039ed31f6d31bc1a4cef10c268f28fe15ce50e96eea4fee6228aaef4ccba68 -->
 
 ```json
 {
@@ -93,40 +92,33 @@ The following JSON is the complete value owned at each machine-authority pointer
       "properties": {
         "execution_sha256": {
           "pattern": "^[0-9a-f]{64}$",
-          "title": "Execution Sha256",
           "type": "string"
         },
         "format": {
           "const": "stove0-external-effect-receipt/v1",
           "default": "stove0-external-effect-receipt/v1",
-          "title": "Format",
           "type": "string"
         },
         "job_id": {
           "pattern": "^[0-9a-f]{64}$",
-          "title": "Job Id",
           "type": "string"
         },
         "operation_contract_sha256": {
           "pattern": "^[0-9a-f]{64}$",
-          "title": "Operation Contract Sha256",
           "type": "string"
         },
         "plan_sha256": {
           "pattern": "^[0-9a-f]{64}$",
-          "title": "Plan Sha256",
           "type": "string"
         },
         "request_sha256": {
           "pattern": "^[0-9a-f]{64}$",
-          "title": "Request Sha256",
           "type": "string"
         },
         "result": {
           "additionalProperties": {
             "$ref": "#/$defs/JsonValue"
           },
-          "title": "Result",
           "type": "object",
           "x-riverhog-encoded-bytes-max": 65536,
           "x-riverhog-extent": {
@@ -136,7 +128,6 @@ The following JSON is the complete value owned at each machine-authority pointer
         },
         "target_contract_sha256": {
           "pattern": "^[0-9a-f]{64}$",
-          "title": "Target Contract Sha256",
           "type": "string"
         }
       },
@@ -149,7 +140,6 @@ The following JSON is the complete value owned at each machine-authority pointer
         "execution_sha256",
         "result"
       ],
-      "title": "ExternalEffectReceiptPayload",
       "type": "object"
     },
     "signature": "\"(*, format: Literal['stove0-external-effect-receipt/v1'] = 'stove0-external-effect-receipt/v1', job_id: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)], request_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)], target_contract_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)], operation_contract_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)], plan_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)], execution_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)], result: dict[str, JsonValue]) -> None\""

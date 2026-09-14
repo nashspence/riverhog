@@ -27,7 +27,6 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-7b6db1bda1"></a>
-- <a id="s-29e9c86d21"></a>`title`: CollectionUploadRawDigestProgressDocument
 - <a id="s-cd26ee3d7e"></a>`type`: object
 
 ### Fields
@@ -70,7 +69,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: c4eb863cb3b7a07ccbf354c011da05c82ccd16e0a02df450e77a4c59bbb73fac -->
+<!-- exact-contract-value: 26018243cefc6529cf62fb094dda274575ee193bf0e27dab6f5b442eebaca3a4 -->
 
 ```json
 {
@@ -81,20 +80,16 @@ The following JSON is the complete value owned at each machine-authority pointer
       "properties": {
         "accepted_parts": {
           "minimum": 0,
-          "title": "Accepted Parts",
           "type": "integer"
         },
         "complete": {
-          "title": "Complete",
           "type": "boolean"
         },
         "expected_parts": {
           "minimum": 1,
-          "title": "Expected Parts",
           "type": "integer"
         },
         "path": {
-          "title": "Path",
           "type": "string"
         }
       },
@@ -104,7 +99,6 @@ The following JSON is the complete value owned at each machine-authority pointer
         "expected_parts",
         "complete"
       ],
-      "title": "CollectionUploadRawDigestProgressDocument",
       "type": "object"
     },
     "signature": "'(*, path: str, accepted_parts: Annotated[int, Strict(strict=True), Ge(ge=0)], expected_parts: Annotated[int, Strict(strict=True), Ge(ge=1)], complete: bool) -> None'"

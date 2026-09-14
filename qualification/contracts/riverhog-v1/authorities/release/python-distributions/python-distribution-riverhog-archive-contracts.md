@@ -19,6 +19,9 @@ Dependency-light immutable Riverhog archive recovery contracts.
 | <a id="s-17f3d8f95c"></a>`artifacts` | [{"coordinate": "dist/riverhog_archive_contracts-{version}-py3-none-any.whl", "format": "wheel"}, {"coordinate": "dist/riverhog_archive_contracts-{version}.tar.gz", "format": "sdist"}] |
 | <a id="s-378cb2b77a"></a>`channel` | github-release |
 | <a id="s-2f281fd71a"></a>`description` | Dependency-light immutable Riverhog archive recovery contracts. |
+| <a id="s-52126ee826"></a>`license_baseline` | first-v1-publication |
+| <a id="s-2ee4305e45"></a>`license_expression` | Apache-2.0 |
+| <a id="s-fd0558a629"></a>`publication_identity` | {"coordinate": "riverhog-archive-contracts", "kind": "python-distribution"} |
 | <a id="s-c6c6acde15"></a>`requires_python` | >=3.12 |
 | <a id="s-1e476313d3"></a>`role` | reusable_library |
 | <a id="s-19475f5c7c"></a>`source` | packages/riverhog-archive-contracts/pyproject.toml |
@@ -57,7 +60,7 @@ Publication preserves these existing component authorities; it does not reclassi
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: a1fc17777385c9153e72305afe880bf80264d44385ebee20c2e568e2239542d5 -->
+<!-- exact-contract-value: d9a554ebb83a0686849584dd4b27618f1ef06dd14003ba41c25545691cffc05d -->
 
 ```json
 {
@@ -73,6 +76,12 @@ The following JSON is the complete value owned at each machine-authority pointer
   ],
   "channel": "github-release",
   "description": "Dependency-light immutable Riverhog archive recovery contracts.",
+  "license_baseline": "first-v1-publication",
+  "license_expression": "Apache-2.0",
+  "publication_identity": {
+    "coordinate": "riverhog-archive-contracts",
+    "kind": "python-distribution"
+  },
   "requires_python": ">=3.12",
   "role": "reusable_library",
   "source": "packages/riverhog-archive-contracts/pyproject.toml"

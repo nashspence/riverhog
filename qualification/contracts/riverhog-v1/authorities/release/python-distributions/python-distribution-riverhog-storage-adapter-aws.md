@@ -19,6 +19,9 @@ Optional nonnormative AWS storage reference for Riverhog.
 | <a id="s-cc65c34eb4"></a>`artifacts` | [{"coordinate": "dist/riverhog_storage_adapter_aws-{version}-py3-none-any.whl", "format": "wheel"}, {"coordinate": "dist/riverhog_storage_adapter_aws-{version}.tar.gz", "format": "sdist"}] |
 | <a id="s-2d9cb18522"></a>`channel` | github-release |
 | <a id="s-38ce21d607"></a>`description` | Optional nonnormative AWS storage reference for Riverhog. |
+| <a id="s-d1c178b7ba"></a>`license_baseline` | first-v1-publication |
+| <a id="s-a0aa1d00bd"></a>`license_expression` | CAL-1.0 |
+| <a id="s-969d1d44b1"></a>`publication_identity` | {"coordinate": "riverhog-storage-adapter-aws", "kind": "python-distribution"} |
 | <a id="s-ba98c971ef"></a>`requires_python` | >=3.12 |
 | <a id="s-6c226a6ffc"></a>`role` | reference_component |
 | <a id="s-b2c1a6cf70"></a>`source` | reference/riverhog/storage/aws/pyproject.toml |
@@ -57,7 +60,7 @@ Publication preserves these existing component authorities; it does not reclassi
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: ffce3ab8476a3d50f540d2417fcab41b8779153748b3d1cc02704451d751eaf5 -->
+<!-- exact-contract-value: 08c87fcbb5ba06dba8579cff2bd24a2b33c3e04b27bfaa6c75a796decad14eed -->
 
 ```json
 {
@@ -73,6 +76,12 @@ The following JSON is the complete value owned at each machine-authority pointer
   ],
   "channel": "github-release",
   "description": "Optional nonnormative AWS storage reference for Riverhog.",
+  "license_baseline": "first-v1-publication",
+  "license_expression": "CAL-1.0",
+  "publication_identity": {
+    "coordinate": "riverhog-storage-adapter-aws",
+    "kind": "python-distribution"
+  },
   "requires_python": ">=3.12",
   "role": "reference_component",
   "source": "reference/riverhog/storage/aws/pyproject.toml"

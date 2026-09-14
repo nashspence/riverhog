@@ -20,7 +20,10 @@ Optional nonnormative review materialization target reference for Stove0.
 | <a id="s-d8a98ea2e9"></a>`description` | Optional nonnormative review materialization target reference for Stove0. |
 | <a id="s-d2b0aeac6c"></a>`distribution_roots` | ["stove0-review-materialize-target"] |
 | <a id="s-4bffbf8ede"></a>`format` | oci-image |
+| <a id="s-42d3ef7d72"></a>`license_baseline` | first-v1-publication |
+| <a id="s-3800157d58"></a>`license_expression` | CAL-1.0 |
 | <a id="s-db50faa7bd"></a>`platforms` | ["linux/amd64"] |
+| <a id="s-f9cac31d43"></a>`publication_identity` | {"coordinate": "ghcr.io/nashspence/riverhog-stove0-review-materialize-target", "kind": "oci-repository"} |
 | <a id="s-a595fd7a97"></a>`repository` | ghcr.io/nashspence/riverhog-stove0-review-materialize-target |
 | <a id="s-28bbf4cfa9"></a>`role` | reference |
 | <a id="s-81159459cd"></a>`tag_templates` | ["ghcr.io/nashspence/riverhog-stove0-review-materialize-target:{version}", "ghcr.io/nashspence/riverhog-stove0-review-materialize-target:sha-{source_sha}"] |
@@ -61,7 +64,7 @@ Publication preserves these existing component authorities; it does not reclassi
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: ce7d9fec2bb5b9e2034eec6dd6a489b4b2819976838271222fec8da130ec5980 -->
+<!-- exact-contract-value: ce6116a965888b389fa41031b18db7a9b878259a414f49d0fe2997807018f969 -->
 
 ```json
 {
@@ -71,9 +74,15 @@ The following JSON is the complete value owned at each machine-authority pointer
     "stove0-review-materialize-target"
   ],
   "format": "oci-image",
+  "license_baseline": "first-v1-publication",
+  "license_expression": "CAL-1.0",
   "platforms": [
     "linux/amd64"
   ],
+  "publication_identity": {
+    "coordinate": "ghcr.io/nashspence/riverhog-stove0-review-materialize-target",
+    "kind": "oci-repository"
+  },
   "repository": "ghcr.io/nashspence/riverhog-stove0-review-materialize-target",
   "role": "reference",
   "tag_templates": [

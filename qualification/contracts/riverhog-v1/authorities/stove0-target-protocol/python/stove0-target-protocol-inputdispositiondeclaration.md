@@ -27,7 +27,6 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-f7679a5222"></a>
-- <a id="s-3cdb6938b6"></a>`title`: InputDispositionDeclaration
 - <a id="s-b12ac75dd7"></a>`type`: object
 
 ### Fields
@@ -61,7 +60,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 385006afdad7840ae531df0643948d640c366eaa377cd0549626a0c5fc2ac1f0 -->
+<!-- exact-contract-value: 67e2785d0850caf42cd33c6873317f5656efe750000f4d0f7e765defb135607b -->
 
 ```json
 {
@@ -72,7 +71,6 @@ The following JSON is the complete value owned at each machine-authority pointer
       "properties": {
         "input_id": {
           "pattern": "^[A-Za-z0-9]\u0028?:[A-Za-z0-9._-]{0,158}[A-Za-z0-9])?$",
-          "title": "Input Id",
           "type": "string"
         },
         "status": {
@@ -82,7 +80,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             "omitted",
             "rejected"
           ],
-          "title": "Status",
           "type": "string"
         }
       },
@@ -90,7 +87,6 @@ The following JSON is the complete value owned at each machine-authority pointer
         "input_id",
         "status"
       ],
-      "title": "InputDispositionDeclaration",
       "type": "object"
     },
     "signature": "\"(*, input_id: Annotated[str, _PydanticGeneralMetadata(pattern='^[A-Za-z0-9]\u0028?:[A-Za-z0-9._-]{0,158}[A-Za-z0-9])?$')], status: Literal['transformed', 'preserved', 'omitted', 'rejected']) -> None\""

@@ -27,7 +27,6 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-16d95d7ac2"></a>
-- <a id="s-6b04c07349"></a>`title`: OmittedFileProvenanceBinding
 - <a id="s-d7df20c576"></a>`type`: object
 
 ### Fields
@@ -61,7 +60,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 450319e61dfb7e3a99fc20400f2694428a92669a1d9179bc86687dfe4bf48415 -->
+<!-- exact-contract-value: 5b6ababf1ea0a70149bf140b285bb7554b7b8561ec80f7324750d78068e72bca -->
 
 ```json
 {
@@ -73,12 +72,10 @@ The following JSON is the complete value owned at each machine-authority pointer
         "omission_reason": {
           "minLength": 1,
           "pattern": "^\\S(?:[\\s\\S]*\\S)?$",
-          "title": "Omission Reason",
           "type": "string"
         },
         "status": {
           "const": "omitted",
-          "title": "Status",
           "type": "string"
         }
       },
@@ -86,7 +83,6 @@ The following JSON is the complete value owned at each machine-authority pointer
         "status",
         "omission_reason"
       ],
-      "title": "OmittedFileProvenanceBinding",
       "type": "object"
     },
     "signature": "\"(*, status: Literal['omitted'], omission_reason: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=1, max_length=None, pattern='^\\\\\\\\S(?:[\\\\\\\\s\\\\\\\\S]*\\\\\\\\S)?$', ascii_only=None)]) -> None\""

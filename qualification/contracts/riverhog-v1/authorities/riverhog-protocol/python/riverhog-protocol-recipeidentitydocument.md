@@ -27,7 +27,6 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-5dfde0eb69"></a>
-- <a id="s-4e7c87fa49"></a>`title`: RecipeIdentityDocument
 - <a id="s-a85062cc06"></a>`type`: object
 
 ### Fields
@@ -68,7 +67,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: bac66e99775bc49ac5a255db6ba38e97e9852a4eab178f8d4d77da51d08f3c36 -->
+<!-- exact-contract-value: de6a1276a15b7ba0af2cf34d27e1f7d9ab1f553417a6c37c152bd18a922bebee -->
 
 ```json
 {
@@ -79,17 +78,14 @@ The following JSON is the complete value owned at each machine-authority pointer
       "properties": {
         "id": {
           "pattern": "^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$",
-          "title": "Id",
           "type": "string"
         },
         "revision": {
           "minimum": 1,
-          "title": "Revision",
           "type": "integer"
         },
         "sha256": {
           "pattern": "^[0-9a-f]{64}$",
-          "title": "Sha256",
           "type": "string"
         }
       },
@@ -98,7 +94,6 @@ The following JSON is the complete value owned at each machine-authority pointer
         "revision",
         "sha256"
       ],
-      "title": "RecipeIdentityDocument",
       "type": "object"
     },
     "signature": "\"(*, id: Annotated[str, _PydanticGeneralMetadata(pattern='^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$')], revision: Annotated[int, Ge(ge=1)], sha256: Annotated[str, _PydanticGeneralMetadata(pattern='^[0-9a-f]{64}$')]) -> None\""

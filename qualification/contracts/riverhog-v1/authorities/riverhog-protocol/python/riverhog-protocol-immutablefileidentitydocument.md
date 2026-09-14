@@ -27,8 +27,6 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-6c90ef496b"></a>
-- <a id="s-d121f80187"></a>`title`: ImmutableFileIdentityDocument
-- <a id="s-dabb65cc14"></a>`description`: The exact path, length, and plaintext digest shared by file projections.
 - <a id="s-a26b9a0466"></a>`type`: object
 
 ### Fields
@@ -69,7 +67,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 9d8036d1e5eb576dce0e5f1847701a9773c7c9ba161379c0b634ebbe7334385c -->
+<!-- exact-contract-value: c1169b38591d8c577cd48939e6b914907aa1e2f07eb0a4e3e22ca447cc3813a6 -->
 
 ```json
 {
@@ -99,11 +97,9 @@ The following JSON is the complete value owned at each machine-authority pointer
         }
       },
       "additionalProperties": false,
-      "description": "The exact path, length, and plaintext digest shared by file projections.",
       "properties": {
         "bytes": {
           "minimum": 0,
-          "title": "Bytes",
           "type": "integer"
         },
         "path": {
@@ -111,7 +107,6 @@ The following JSON is the complete value owned at each machine-authority pointer
         },
         "sha256": {
           "pattern": "^[0-9a-f]{64}$",
-          "title": "Sha256",
           "type": "string"
         }
       },
@@ -120,7 +115,6 @@ The following JSON is the complete value owned at each machine-authority pointer
         "bytes",
         "sha256"
       ],
-      "title": "ImmutableFileIdentityDocument",
       "type": "object"
     },
     "signature": "\"(*, path: CanonicalRelPath, bytes: Annotated[int, Ge(ge=0)], sha256: Annotated[str, _PydanticGeneralMetadata(pattern='^[0-9a-f]{64}$')]) -> None\""

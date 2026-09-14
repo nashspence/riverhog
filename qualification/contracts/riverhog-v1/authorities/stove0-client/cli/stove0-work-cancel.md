@@ -38,14 +38,14 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Identity | Selected by | Exit status | stdout | stderr |
 |---|---|---|---|---|
-| <a id="s-d9c8b3c193"></a>`completed` | <a id="s-8fffcce507"></a>`{"kind":"command-completed"}` | <a id="s-41d6e8872c"></a>`0` | <a id="s-9a645fda84"></a>`human: noncontractual-presentation-of-command-result; json: HTTP cancel_work — #/components/schemas/WorkView` | <a id="s-87f57052a2"></a>`all: empty` |
+| <a id="s-d9c8b3c193"></a>`completed` | <a id="s-8fffcce507"></a>`{"kind":"command-completed"}` | <a id="s-41d6e8872c"></a>`0` | <a id="s-9a645fda84"></a>human: `noncontractual-presentation-of-command-result`; json: [HTTP cancel_work response 200](../../stove0/http-operations/post-v1-work-work-id-cancel.md#s-efcda5be1d) | <a id="s-87f57052a2"></a>all: `empty` |
 
 #### Failure outcomes
 
 | Identity | Selected by | Exit status | stdout | stderr |
 |---|---|---|---|---|
-| <a id="s-54b75e53f3"></a>`usage` | <a id="s-0fae4291c2"></a>`{"kind":"parser-rejected-invocation"}` | <a id="s-03a876a2c8"></a>`2` | <a id="s-d056f44cca"></a>`all: empty` | <a id="s-752959be23"></a>`all: noncontractual-usage-diagnostic` |
-| <a id="s-86498a591f"></a>`operational` | <a id="s-5bb24c858b"></a>`{"kind":"application-error"}` | <a id="s-d7ef2d885b"></a>`1` | <a id="s-7789755aa0"></a>`all: empty` | <a id="s-3a6f6e7a13"></a>`all: noncontractual-diagnostic` |
+| <a id="s-54b75e53f3"></a>`usage` | <a id="s-0fae4291c2"></a>`{"kind":"parser-rejected-invocation"}` | <a id="s-03a876a2c8"></a>`2` | <a id="s-d056f44cca"></a>all: `empty` | <a id="s-752959be23"></a>all: `noncontractual-usage-diagnostic` |
+| <a id="s-86498a591f"></a>`operational` | <a id="s-5bb24c858b"></a>`{"kind":"application-error"}` | <a id="s-d7ef2d885b"></a>`1` | <a id="s-7789755aa0"></a>all: `empty` | <a id="s-3a6f6e7a13"></a>all: `noncontractual-diagnostic` |
 
 ### Progression, limits, and lifecycle
 

@@ -19,6 +19,9 @@ Optional nonnormative FTP ingress reference for Riverhog.
 | <a id="s-6b26928f53"></a>`artifacts` | [{"coordinate": "dist/riverhog_ftp_adapter-{version}-py3-none-any.whl", "format": "wheel"}, {"coordinate": "dist/riverhog_ftp_adapter-{version}.tar.gz", "format": "sdist"}] |
 | <a id="s-dec2428ab7"></a>`channel` | github-release |
 | <a id="s-66a2aeffc7"></a>`description` | Optional nonnormative FTP ingress reference for Riverhog. |
+| <a id="s-7afd832f5c"></a>`license_baseline` | first-v1-publication |
+| <a id="s-f94f0e3bb0"></a>`license_expression` | Apache-2.0 |
+| <a id="s-1e0772566b"></a>`publication_identity` | {"coordinate": "riverhog-ftp-adapter", "kind": "python-distribution"} |
 | <a id="s-ceaae5ffc7"></a>`requires_python` | >=3.12 |
 | <a id="s-fc6830a1aa"></a>`role` | reference_component |
 | <a id="s-35cbf8b739"></a>`source` | reference/riverhog/ingress/ftp/pyproject.toml |
@@ -57,7 +60,7 @@ Publication preserves these existing component authorities; it does not reclassi
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: bf58fbea4d468f046def867aa2a0a2fcb7748b37db244f3eec27dc7c1001f498 -->
+<!-- exact-contract-value: 08f79ea6819071fa37732a09dfd123442da46c96e2bd4937bc61e0b37e0cd5d0 -->
 
 ```json
 {
@@ -73,6 +76,12 @@ The following JSON is the complete value owned at each machine-authority pointer
   ],
   "channel": "github-release",
   "description": "Optional nonnormative FTP ingress reference for Riverhog.",
+  "license_baseline": "first-v1-publication",
+  "license_expression": "Apache-2.0",
+  "publication_identity": {
+    "coordinate": "riverhog-ftp-adapter",
+    "kind": "python-distribution"
+  },
   "requires_python": ">=3.12",
   "role": "reference_component",
   "source": "reference/riverhog/ingress/ftp/pyproject.toml"

@@ -27,7 +27,6 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-ada9063bbc"></a>
-- <a id="s-a0d11006d7"></a>`title`: TargetInputRoleCount
 - <a id="s-863caef276"></a>`type`: object
 
 ### Fields
@@ -61,7 +60,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 184477d4c5a3d3f448edf797a7301f067927d00cc2105b44f2e4b02868a22b20 -->
+<!-- exact-contract-value: 41037a106c375376d0ccd5204b737813ad10a84aa4f0cd42d751a103dc58910f -->
 
 ```json
 {
@@ -72,12 +71,10 @@ The following JSON is the complete value owned at each machine-authority pointer
       "properties": {
         "count": {
           "minimum": 1,
-          "title": "Count",
           "type": "integer"
         },
         "role": {
           "pattern": "^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$",
-          "title": "Role",
           "type": "string"
         }
       },
@@ -85,7 +82,6 @@ The following JSON is the complete value owned at each machine-authority pointer
         "role",
         "count"
       ],
-      "title": "TargetInputRoleCount",
       "type": "object"
     },
     "signature": "\"(*, role: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$', ascii_only=None)], count: Annotated[int, Ge(ge=1)]) -> None\""

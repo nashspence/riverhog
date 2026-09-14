@@ -27,7 +27,6 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-5887f8d888"></a>
-- <a id="s-dfb5755b79"></a>`title`: ErrorBody
 - <a id="s-a088576b95"></a>`type`: object
 
 ### Fields
@@ -62,7 +61,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 1ab2f605ea4e543d54568d9b3aba4f5c7a0b60139b8119b380c30d79e917a215 -->
+<!-- exact-contract-value: ded772624a4463a116a3a9b0eb5ba8c12998dc5973a306923ff0e872c41789fc -->
 
 ```json
 {
@@ -73,7 +72,6 @@ The following JSON is the complete value owned at each machine-authority pointer
       "properties": {
         "code": {
           "minLength": 1,
-          "title": "Code",
           "type": "string"
         },
         "details": {
@@ -86,12 +84,10 @@ The following JSON is the complete value owned at each machine-authority pointer
               "type": "null"
             }
           ],
-          "default": null,
-          "title": "Details"
+          "default": null
         },
         "message": {
           "minLength": 1,
-          "title": "Message",
           "type": "string"
         }
       },
@@ -99,7 +95,6 @@ The following JSON is the complete value owned at each machine-authority pointer
         "code",
         "message"
       ],
-      "title": "ErrorBody",
       "type": "object"
     },
     "signature": "'(*, code: Annotated[str, MinLen(min_length=1)], message: Annotated[str, MinLen(min_length=1)], details: dict[str, typing.Any] | None = None) -> None'"

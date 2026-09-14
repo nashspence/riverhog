@@ -27,7 +27,6 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-4c50fedfd8"></a>
-- <a id="s-84a06a1dee"></a>`title`: TargetProductionSealResponse
 - <a id="s-f4259f2c23"></a>`type`: object
 
 ### Fields
@@ -76,7 +75,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 83e9893e37b912892286e629c7e41882f5817f07f3a37ab42b0fb3edcc276bc0 -->
+<!-- exact-contract-value: 444a64c664e5a861cd93e047565d34ed48e9e966f73a37277cf3b9e20159768e -->
 
 ```json
 {
@@ -85,22 +84,17 @@ The following JSON is the complete value owned at each machine-authority pointer
     "schema": {
       "$defs": {
         "ArtifactDispositionSetIdentity": {
-          "description": "Small identity for one sealed claim-scoped relational disposition set.",
           "properties": {
             "disposition_count": {
-              "title": "Disposition Count",
               "type": "integer"
             },
             "output_artifact_count": {
-              "title": "Output Artifact Count",
               "type": "integer"
             },
             "output_edge_count": {
-              "title": "Output Edge Count",
               "type": "integer"
             },
             "sha256": {
-              "title": "Sha256",
               "type": "string"
             }
           },
@@ -110,7 +104,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             "output_artifact_count",
             "sha256"
           ],
-          "title": "ArtifactDispositionSetIdentity",
           "type": "object"
         },
         "OutputArtifactRoleCount": {
@@ -118,12 +111,10 @@ The following JSON is the complete value owned at each machine-authority pointer
           "properties": {
             "count": {
               "minimum": 1,
-              "title": "Count",
               "type": "integer"
             },
             "role": {
               "pattern": "^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$",
-              "title": "Role",
               "type": "string"
             }
           },
@@ -131,16 +122,13 @@ The following JSON is the complete value owned at each machine-authority pointer
             "role",
             "count"
           ],
-          "title": "OutputArtifactRoleCount",
           "type": "object"
         },
         "OutputArtifactSetIdentity": {
           "additionalProperties": false,
-          "description": "Small identity for target outputs already registered with Riverhog.",
           "properties": {
             "artifact_count": {
               "minimum": 1,
-              "title": "Artifact Count",
               "type": "integer"
             },
             "roles": {
@@ -148,17 +136,14 @@ The following JSON is the complete value owned at each machine-authority pointer
                 "$ref": "#/$defs/OutputArtifactRoleCount"
               },
               "minItems": 1,
-              "title": "Roles",
               "type": "array"
             },
             "sha256": {
               "pattern": "^[0-9a-f]{64}$",
-              "title": "Sha256",
               "type": "string"
             },
             "total_bytes": {
               "minimum": 0,
-              "title": "Total Bytes",
               "type": "integer"
             }
           },
@@ -168,7 +153,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             "roles",
             "sha256"
           ],
-          "title": "OutputArtifactSetIdentity",
           "type": "object"
         },
         "TargetProductionAuthority": {
@@ -176,23 +160,19 @@ The following JSON is the complete value owned at each machine-authority pointer
           "properties": {
             "disposition_count": {
               "minimum": 1,
-              "title": "Disposition Count",
               "type": "integer"
             },
             "disposition_sha256": {
               "pattern": "^[0-9a-f]{64}$",
-              "title": "Disposition Sha256",
               "type": "string"
             },
             "format": {
               "const": "stove0-target-production/v1",
               "default": "stove0-target-production/v1",
-              "title": "Format",
               "type": "string"
             },
             "job_id": {
               "pattern": "^[0-9a-f]{64}$",
-              "title": "Job Id",
               "type": "string"
             },
             "outputs": {
@@ -200,12 +180,10 @@ The following JSON is the complete value owned at each machine-authority pointer
             },
             "plan_sha256": {
               "pattern": "^[0-9a-f]{64}$",
-              "title": "Plan Sha256",
               "type": "string"
             },
             "production_sha256": {
               "pattern": "^[0-9a-f]{64}$",
-              "title": "Production Sha256",
               "type": "string"
             },
             "riverhog_disposition_set": {
@@ -213,12 +191,10 @@ The following JSON is the complete value owned at each machine-authority pointer
             },
             "source_edge_count": {
               "minimum": 1,
-              "title": "Source Edge Count",
               "type": "integer"
             },
             "source_edge_sha256": {
               "pattern": "^[0-9a-f]{64}$",
-              "title": "Source Edge Sha256",
               "type": "string"
             }
           },
@@ -233,7 +209,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             "riverhog_disposition_set",
             "production_sha256"
           ],
-          "title": "TargetProductionAuthority",
           "type": "object"
         }
       },
@@ -255,14 +230,12 @@ The following JSON is the complete value owned at each machine-authority pointer
             "sealing",
             "sealed"
           ],
-          "title": "State",
           "type": "string"
         }
       },
       "required": [
         "state"
       ],
-      "title": "TargetProductionSealResponse",
       "type": "object"
     },
     "signature": "\"(*, state: Literal['sealing', 'sealed'], production: stove0_target_protocol.protocol.TargetProductionAuthority | None = None) -> None\""

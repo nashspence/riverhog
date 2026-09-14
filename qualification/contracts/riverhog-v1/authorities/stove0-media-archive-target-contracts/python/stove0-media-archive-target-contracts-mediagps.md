@@ -27,7 +27,6 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-378fb1755f"></a>
-- <a id="s-aed7a27703"></a>`title`: MediaGps
 - <a id="s-4b21b9e118"></a>`type`: object
 
 ### Fields
@@ -67,7 +66,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: a09c846588ccd30be4724e1171e4887bb6e36d0fb4bf238cab00de43bbc99b25 -->
+<!-- exact-contract-value: 1c5f7319e80b49b296bdebbc4b3a913c5f15e1792694e57e26006f9de4cd055a -->
 
 ```json
 {
@@ -77,11 +76,9 @@ The following JSON is the complete value owned at each machine-authority pointer
       "additionalProperties": false,
       "properties": {
         "latitude": {
-          "title": "Latitude",
           "type": "number"
         },
         "longitude": {
-          "title": "Longitude",
           "type": "number"
         }
       },
@@ -89,7 +86,6 @@ The following JSON is the complete value owned at each machine-authority pointer
         "latitude",
         "longitude"
       ],
-      "title": "MediaGps",
       "type": "object"
     },
     "signature": "'(*, latitude: float, longitude: float) -> None'"

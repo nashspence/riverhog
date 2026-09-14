@@ -19,6 +19,9 @@ Optional nonnormative Piggity reference client for Riverhog.
 | <a id="s-5d7e2b6578"></a>`artifacts` | [{"coordinate": "dist/piggity-{version}-py3-none-any.whl", "format": "wheel"}, {"coordinate": "dist/piggity-{version}.tar.gz", "format": "sdist"}] |
 | <a id="s-636a1abf06"></a>`channel` | github-release |
 | <a id="s-038ee865b8"></a>`description` | Optional nonnormative Piggity reference client for Riverhog. |
+| <a id="s-3c99dd37ba"></a>`license_baseline` | first-v1-publication |
+| <a id="s-b663621de1"></a>`license_expression` | Apache-2.0 |
+| <a id="s-36f6316d1a"></a>`publication_identity` | {"coordinate": "piggity", "kind": "python-distribution"} |
 | <a id="s-fa961fb715"></a>`requires_python` | >=3.12 |
 | <a id="s-c0be743c48"></a>`role` | reference_application |
 | <a id="s-b5bd5257fc"></a>`source` | reference/riverhog/applications/piggity/pyproject.toml |
@@ -57,7 +60,7 @@ Publication preserves these existing component authorities; it does not reclassi
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 885f31b015ff1eed6c8ba33ef0e796758618150ab98baf2c3772e61426b19250 -->
+<!-- exact-contract-value: 8cf571e07f19991c506c0fcfc4d7c65a13173a9d40975a5dea2bdcabd822192e -->
 
 ```json
 {
@@ -73,6 +76,12 @@ The following JSON is the complete value owned at each machine-authority pointer
   ],
   "channel": "github-release",
   "description": "Optional nonnormative Piggity reference client for Riverhog.",
+  "license_baseline": "first-v1-publication",
+  "license_expression": "Apache-2.0",
+  "publication_identity": {
+    "coordinate": "piggity",
+    "kind": "python-distribution"
+  },
   "requires_python": ">=3.12",
   "role": "reference_application",
   "source": "reference/riverhog/applications/piggity/pyproject.toml"

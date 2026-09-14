@@ -27,7 +27,6 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-6d0b0279c0"></a>
-- <a id="s-8788562e34"></a>`title`: CatalogSyncDescriptor
 - <a id="s-36a77fb506"></a>`type`: object
 
 ### Fields
@@ -75,7 +74,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 76dee9acac9c8f8992a733ebbb1fcdcd46a894bbfcf10c925494cbff94d4b31b -->
+<!-- exact-contract-value: 56ac87b11d976aacacb42ca478f9f8328d1721ce3c268d6f829413353b72aeab -->
 
 ```json
 {
@@ -105,7 +104,6 @@ The following JSON is the complete value owned at each machine-authority pointer
           "maxLength": 64,
           "minLength": 64,
           "pattern": "^[0-9a-f]{64}$",
-          "title": "Archive Root Sha256",
           "type": "string"
         },
         "collection_id": {
@@ -115,7 +113,6 @@ The following JSON is the complete value owned at each machine-authority pointer
           "maxLength": 64,
           "minLength": 64,
           "pattern": "^[0-9a-f]{64}$",
-          "title": "Content Identity",
           "type": "string"
         },
         "description": {
@@ -132,33 +129,28 @@ The following JSON is the complete value owned at each machine-authority pointer
           "maxLength": 64,
           "minLength": 64,
           "pattern": "^[0-9a-f]{64}$",
-          "title": "Description Identity",
           "type": "string"
         },
         "description_revision": {
           "maximum": 9007199254740991,
           "minimum": 0,
-          "title": "Description Revision",
           "type": "integer"
         },
         "revision": {
           "maxLength": 19,
           "minLength": 1,
           "pattern": "^(?:[1-9][0-9]{0,17}|[1-8][0-9]{18})$",
-          "title": "Revision",
           "type": "string"
         },
         "tag_revision": {
           "maximum": 9007199254740991,
           "minimum": 1,
-          "title": "Tag Revision",
           "type": "integer"
         },
         "tag_set_identity": {
           "maxLength": 64,
           "minLength": 64,
           "pattern": "^[0-9a-f]{64}$",
-          "title": "Tag Set Identity",
           "type": "string"
         }
       },
@@ -173,7 +165,6 @@ The following JSON is the complete value owned at each machine-authority pointer
         "tag_set_identity",
         "revision"
       ],
-      "title": "CatalogSyncDescriptor",
       "type": "object"
     },
     "signature": "\"(*, collection_id: CollectionId, archive_root_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=64, max_length=64, pattern='^[0-9a-f]{64}$', ascii_only=None)], content_identity: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=64, max_length=64, pattern='^[0-9a-f]{64}$', ascii_only=None)], description: CollectionDescription | None, description_revision: Annotated[int, Strict(strict=True), Ge(ge=0), Le(le=9007199254740991)], description_identity: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=64, max_length=64, pattern='^[0-9a-f]{64}$', ascii_only=None)], tag_revision: Annotated[int, Strict(strict=True), Ge(ge=1), Le(le=9007199254740991)], tag_set_identity: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=64, max_length=64, pattern='^[0-9a-f]{64}$', ascii_only=None)], revision: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=1, max_length=19, pattern='^(?:[1-9][0-9]{0,17}|[1-8][0-9]{18})$', ascii_only=None)]) -> None\""

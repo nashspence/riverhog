@@ -27,7 +27,6 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-0dc1dc3116"></a>
-- <a id="s-164d75006e"></a>`title`: CollectionUploadFileBatchDocument
 - <a id="s-91c8e59943"></a>`type`: object
 
 ### Fields
@@ -78,7 +77,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 1949c444dbdff0f4a5984e6596ba73ae059e80df8f1271f4274774fd00329b36 -->
+<!-- exact-contract-value: 04ae8b54bf12ed225355d0ccb742c4728d2c4bbfa00a0a16c3e01d420264770f -->
 
 ```json
 {
@@ -117,7 +116,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             },
             "status": {
               "const": "captured",
-              "title": "Status",
               "type": "string"
             }
           },
@@ -126,7 +124,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             "current_state_id",
             "status"
           ],
-          "title": "CapturedFileProvenanceBinding",
           "type": "object"
         },
         "CollectionUploadFileIn": {
@@ -134,7 +131,6 @@ The following JSON is the complete value owned at each machine-authority pointer
           "properties": {
             "bytes": {
               "minimum": 0,
-              "title": "Bytes",
               "type": "integer"
             },
             "path": {
@@ -163,8 +159,7 @@ The following JSON is the complete value owned at each machine-authority pointer
                   "type": "null"
                 }
               ],
-              "default": null,
-              "title": "Provenance"
+              "default": null
             },
             "raw_parts": {
               "anyOf": [
@@ -179,7 +174,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             },
             "sha256": {
               "pattern": "^[0-9a-f]{64}$",
-              "title": "Sha256",
               "type": "string"
             }
           },
@@ -188,7 +182,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             "bytes",
             "sha256"
           ],
-          "title": "CollectionUploadFileIn",
           "type": "object"
         },
         "CollectionUploadRawPartsIn": {
@@ -196,17 +189,14 @@ The following JSON is the complete value owned at each machine-authority pointer
           "properties": {
             "ordered_sha256": {
               "pattern": "^[0-9a-f]{64}$",
-              "title": "Ordered Sha256",
               "type": "string"
             },
             "part_count": {
               "minimum": 1,
-              "title": "Part Count",
               "type": "integer"
             },
             "part_plaintext_bytes": {
               "minimum": 65536,
-              "title": "Part Plaintext Bytes",
               "type": "integer"
             }
           },
@@ -215,7 +205,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             "part_count",
             "ordered_sha256"
           ],
-          "title": "CollectionUploadRawPartsIn",
           "type": "object"
         },
         "OmittedFileProvenanceBinding": {
@@ -224,12 +213,10 @@ The following JSON is the complete value owned at each machine-authority pointer
             "omission_reason": {
               "minLength": 1,
               "pattern": "^\\S(?:[\\s\\S]*\\S)?$",
-              "title": "Omission Reason",
               "type": "string"
             },
             "status": {
               "const": "omitted",
-              "title": "Status",
               "type": "string"
             }
           },
@@ -237,7 +224,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             "status",
             "omission_reason"
           ],
-          "title": "OmittedFileProvenanceBinding",
           "type": "object"
         },
         "ProvenanceJournalId": {
@@ -257,7 +243,6 @@ The following JSON is the complete value owned at each machine-authority pointer
           },
           "maxItems": 100,
           "minItems": 1,
-          "title": "Files",
           "type": "array",
           "x-riverhog-extent": {
             "policy": "segmented_no_total_max",
@@ -269,7 +254,6 @@ The following JSON is the complete value owned at each machine-authority pointer
       "required": [
         "files"
       ],
-      "title": "CollectionUploadFileBatchDocument",
       "type": "object"
     },
     "signature": "'(*, files: Annotated[list[riverhog_protocol.collection_upload_transport.CollectionUploadFileIn], MinLen(min_length=1), MaxLen(max_length=100)]) -> None'"

@@ -19,6 +19,9 @@ Optional nonnormative media-sampling contract reference for Stove0 observers.
 | <a id="s-eb0f414944"></a>`artifacts` | [{"coordinate": "dist/stove0_media_sampling_observer_contracts-{version}-py3-none-any.whl", "format": "wheel"}, {"coordinate": "dist/stove0_media_sampling_observer_contracts-{version}.tar.gz", "format": "sdist"}] |
 | <a id="s-746731254e"></a>`channel` | github-release |
 | <a id="s-86f06d9fa2"></a>`description` | Optional nonnormative media-sampling contract reference for Stove0 observers. |
+| <a id="s-5120a00b37"></a>`license_baseline` | first-v1-publication |
+| <a id="s-b99d46021e"></a>`license_expression` | Apache-2.0 |
+| <a id="s-4c84c5b198"></a>`publication_identity` | {"coordinate": "stove0-media-sampling-observer-contracts", "kind": "python-distribution"} |
 | <a id="s-d12d732533"></a>`requires_python` | >=3.12 |
 | <a id="s-405f29c76f"></a>`role` | reference_component |
 | <a id="s-6e9d31eb75"></a>`source` | reference/stove0/observers/contracts/media-sampling/pyproject.toml |
@@ -57,7 +60,7 @@ Publication preserves these existing component authorities; it does not reclassi
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 78eddbe1783d1be7c37b709675c6f81e7e6b0eb4982e274fe5ab2b2c8caa4b5b -->
+<!-- exact-contract-value: 3894318136e4e040b9ab07aac9bfed1895f7db9c031f54ea4841e23143e0174e -->
 
 ```json
 {
@@ -73,6 +76,12 @@ The following JSON is the complete value owned at each machine-authority pointer
   ],
   "channel": "github-release",
   "description": "Optional nonnormative media-sampling contract reference for Stove0 observers.",
+  "license_baseline": "first-v1-publication",
+  "license_expression": "Apache-2.0",
+  "publication_identity": {
+    "coordinate": "stove0-media-sampling-observer-contracts",
+    "kind": "python-distribution"
+  },
   "requires_python": ">=3.12",
   "role": "reference_component",
   "source": "reference/stove0/observers/contracts/media-sampling/pyproject.toml"

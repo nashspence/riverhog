@@ -27,7 +27,6 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-a4aaaab6d9"></a>
-- <a id="s-cf0c7ddf0d"></a>`title`: EvaluationReview
 - <a id="s-486af52e6d"></a>`type`: object
 
 ### Fields
@@ -70,7 +69,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 999f887fb9380d4cb7fd9ea154b929019def3483bc7c2ec485091cf4b447013a -->
+<!-- exact-contract-value: 2b209d05bca137e3412e3fcd009811f303db2117343f5913167b271e1db93137 -->
 
 ```json
 {
@@ -89,8 +88,7 @@ The following JSON is the complete value owned at each machine-authority pointer
               "type": "null"
             }
           ],
-          "default": null,
-          "title": "Note"
+          "default": null
         },
         "rating": {
           "anyOf": [
@@ -103,25 +101,21 @@ The following JSON is the complete value owned at each machine-authority pointer
               "type": "null"
             }
           ],
-          "default": null,
-          "title": "Rating"
+          "default": null
         },
         "updated_at": {
           "maxLength": 40,
           "minLength": 1,
-          "title": "Updated At",
           "type": "string"
         },
         "updated_by": {
           "maxLength": 160,
           "minLength": 1,
-          "title": "Updated By",
           "type": "string"
         },
         "variant_id": {
           "maxLength": 160,
           "minLength": 1,
-          "title": "Variant Id",
           "type": "string"
         }
       },
@@ -130,7 +124,6 @@ The following JSON is the complete value owned at each machine-authority pointer
         "updated_by",
         "updated_at"
       ],
-      "title": "EvaluationReview",
       "type": "object"
     },
     "signature": "'(*, variant_id: Annotated[str, MinLen(min_length=1), MaxLen(max_length=160)], rating: Annotated[int | None, Ge(ge=1), Le(le=5)] = None, note: Annotated[str | None, MaxLen(max_length=4000)] = None, updated_by: Annotated[str, MinLen(min_length=1), MaxLen(max_length=160)], updated_at: Annotated[str, MinLen(min_length=1), MaxLen(max_length=40)]) -> None'"

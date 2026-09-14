@@ -27,7 +27,6 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-3b6f9d97c5"></a>
-- <a id="s-0af49cbd9e"></a>`title`: ExternalEffectReceipt
 - <a id="s-2ca5c903b0"></a>`type`: object
 
 ### Fields
@@ -81,7 +80,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 371bc7a8987c9c9bf7599bd846118b8c4392b8c8ba8939a915928864ee852b58 -->
+<!-- exact-contract-value: 1778121cd83a489ab3cd68d4098574717fc5e6be5a2a4d4a2e4f1ec8552d9a6e -->
 
 ```json
 {
@@ -95,45 +94,37 @@ The following JSON is the complete value owned at each machine-authority pointer
       "properties": {
         "execution_sha256": {
           "pattern": "^[0-9a-f]{64}$",
-          "title": "Execution Sha256",
           "type": "string"
         },
         "format": {
           "const": "stove0-external-effect-receipt/v1",
           "default": "stove0-external-effect-receipt/v1",
-          "title": "Format",
           "type": "string"
         },
         "job_id": {
           "pattern": "^[0-9a-f]{64}$",
-          "title": "Job Id",
           "type": "string"
         },
         "operation_contract_sha256": {
           "pattern": "^[0-9a-f]{64}$",
-          "title": "Operation Contract Sha256",
           "type": "string"
         },
         "plan_sha256": {
           "pattern": "^[0-9a-f]{64}$",
-          "title": "Plan Sha256",
           "type": "string"
         },
         "receipt_sha256": {
           "pattern": "^[0-9a-f]{64}$",
-          "title": "Receipt Sha256",
           "type": "string"
         },
         "request_sha256": {
           "pattern": "^[0-9a-f]{64}$",
-          "title": "Request Sha256",
           "type": "string"
         },
         "result": {
           "additionalProperties": {
             "$ref": "#/$defs/JsonValue"
           },
-          "title": "Result",
           "type": "object",
           "x-riverhog-encoded-bytes-max": 65536,
           "x-riverhog-extent": {
@@ -143,7 +134,6 @@ The following JSON is the complete value owned at each machine-authority pointer
         },
         "target_contract_sha256": {
           "pattern": "^[0-9a-f]{64}$",
-          "title": "Target Contract Sha256",
           "type": "string"
         }
       },
@@ -157,7 +147,6 @@ The following JSON is the complete value owned at each machine-authority pointer
         "result",
         "receipt_sha256"
       ],
-      "title": "ExternalEffectReceipt",
       "type": "object"
     },
     "signature": "\"(*, format: Literal['stove0-external-effect-receipt/v1'] = 'stove0-external-effect-receipt/v1', job_id: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)], request_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)], target_contract_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)], operation_contract_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)], plan_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)], execution_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)], result: dict[str, JsonValue], receipt_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)]) -> None\""

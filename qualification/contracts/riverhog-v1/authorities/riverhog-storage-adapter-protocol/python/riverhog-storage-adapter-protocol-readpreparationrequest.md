@@ -27,7 +27,6 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-f734e423ba"></a>
-- <a id="s-87f70f8c5e"></a>`title`: ReadPreparationRequest
 - <a id="s-6cdd10672d"></a>`type`: object
 
 ### Fields
@@ -72,7 +71,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 415984950044c9b81ffbe6bb8ab8d0656d62d8381703f413b580fa9952164630 -->
+<!-- exact-contract-value: 2d8360227feef6d98e7ab91f9bdebff8f352ab35cb585fa3c2917cc51860890d -->
 
 ```json
 {
@@ -86,7 +85,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             "object_path": {
               "maxLength": 4096,
               "minLength": 1,
-              "title": "Object Path",
               "type": "string"
             },
             "revision": {
@@ -100,14 +98,12 @@ The following JSON is the complete value owned at each machine-authority pointer
                   "type": "null"
                 }
               ],
-              "default": null,
-              "title": "Revision"
+              "default": null
             }
           },
           "required": [
             "object_path"
           ],
-          "title": "ObjectLocator",
           "type": "object"
         }
       },
@@ -118,14 +114,12 @@ The following JSON is the complete value owned at each machine-authority pointer
             "$ref": "#/$defs/ObjectLocator"
           },
           "minItems": 1,
-          "title": "Objects",
           "type": "array"
         }
       },
       "required": [
         "objects"
       ],
-      "title": "ReadPreparationRequest",
       "type": "object"
     },
     "signature": "'(*, objects: Annotated[tuple[riverhog_storage_adapter_protocol.protocol.ObjectLocator, ...], MinLen(min_length=1)]) -> None'"

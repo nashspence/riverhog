@@ -423,6 +423,68 @@ def test_python_class_surface_preserves_selected_enum_model_and_dataclass_struct
     ]
 
 
+def test_python_model_schema_ignores_only_schema_prose_annotations() -> None:
+    module = load_script()
+
+    class First(BaseModel):
+        """First documentation-only model description."""
+
+        value: str = Field(description="First documentation-only field description.")
+
+    class Second(BaseModel):
+        """Second documentation-only model description."""
+
+        value: str = Field(description="Second documentation-only field description.")
+
+    assert module._class_surface(First)["schema"] == module._class_surface(Second)["schema"]
+
+    raw = {
+        "title": "Presentation only",
+        "description": "Presentation only",
+        "type": "object",
+        "properties": {
+            "title": {
+                "title": "Generated field title",
+                "description": "Generated field prose",
+                "type": "string",
+                "default": "kept",
+            },
+            "description": {
+                "title": "Generated field title",
+                "type": "integer",
+                "minimum": 1,
+            },
+        },
+        "default": {"title": "literal value", "description": "literal value"},
+    }
+    normalized = module.structural_json_schema(raw)
+
+    assert set(normalized["properties"]) == {"title", "description"}
+    assert normalized["properties"]["title"] == {"type": "string", "default": "kept"}
+    assert normalized["properties"]["description"] == {"type": "integer", "minimum": 1}
+    assert normalized["default"] == {
+        "title": "literal value",
+        "description": "literal value",
+    }
+
+
+def test_python_model_schema_retains_defaults_and_validation_structure() -> None:
+    module = load_script()
+
+    class Baseline(BaseModel):
+        value: int = Field(default=1, ge=1)
+
+    class ChangedDefault(BaseModel):
+        value: int = Field(default=2, ge=1)
+
+    class ChangedConstraint(BaseModel):
+        value: int = Field(default=1, ge=2)
+
+    baseline = module._class_surface(Baseline)["schema"]
+    assert baseline != module._class_surface(ChangedDefault)["schema"]
+    assert baseline != module._class_surface(ChangedConstraint)["schema"]
+
+
 def test_python_public_import_paths_and_special_methods_are_exact_units() -> None:
     module = load_script()
     projects = module.release_contract.validate_release_contract(REPO_ROOT)

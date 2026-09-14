@@ -27,7 +27,6 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-d0016e645b"></a>
-- <a id="s-923637117b"></a>`title`: WorkUpdatedEvent
 - <a id="s-2580168585"></a>`type`: object
 
 ### Fields
@@ -73,7 +72,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 359de8d058c5664ff7ee5b7854c655ee81de3c2b7d54d8134a2af038235f3e7a -->
+<!-- exact-contract-value: 22577fefce7bce3bb2f88de6855409a4e8dc4e412da74f47cee30011fc78b596 -->
 
 ```json
 {
@@ -104,17 +103,14 @@ The following JSON is the complete value owned at each machine-authority pointer
                 "failed",
                 "canceled"
               ],
-              "title": "Phase",
               "type": "string"
             },
             "revision": {
               "minimum": 2,
-              "title": "Revision",
               "type": "integer"
             },
             "work_id": {
               "pattern": "^[0-9a-f]{64}$",
-              "title": "Work Id",
               "type": "string"
             }
           },
@@ -123,7 +119,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             "phase",
             "revision"
           ],
-          "title": "WorkUpdatedEventData",
           "type": "object"
         }
       },
@@ -135,37 +130,30 @@ The following JSON is the complete value owned at each machine-authority pointer
         "datacontenttype": {
           "const": "application/json",
           "default": "application/json",
-          "title": "Datacontenttype",
           "type": "string"
         },
         "id": {
           "minLength": 1,
-          "title": "Id",
           "type": "string"
         },
         "source": {
           "const": "urn:riverhog:stove0",
-          "title": "Source",
           "type": "string"
         },
         "specversion": {
           "const": "1.0",
           "default": "1.0",
-          "title": "Specversion",
           "type": "string"
         },
         "subject": {
           "minLength": 1,
-          "title": "Subject",
           "type": "string"
         },
         "time": {
-          "title": "Time",
           "type": "string"
         },
         "type": {
           "const": "io.riverhog.stove0.work.updated",
-          "title": "Type",
           "type": "string"
         }
       },
@@ -177,7 +165,6 @@ The following JSON is the complete value owned at each machine-authority pointer
         "time",
         "data"
       ],
-      "title": "WorkUpdatedEvent",
       "type": "object"
     },
     "signature": "\"(*, specversion: Literal['1.0'] = '1.0', id: Annotated[str, MinLen(min_length=1)], source: Literal['urn:riverhog:stove0'], type: Literal['io.riverhog.stove0.work.updated'], subject: Annotated[str, MinLen(min_length=1)], time: str, datacontenttype: Literal['application/json'] = 'application/json', data: stove0_operator_contracts.WorkUpdatedEventData) -> None\""

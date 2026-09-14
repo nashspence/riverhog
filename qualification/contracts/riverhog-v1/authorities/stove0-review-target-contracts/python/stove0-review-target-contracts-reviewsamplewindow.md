@@ -27,7 +27,6 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-0aad1ea5a6"></a>
-- <a id="s-cc98c238d4"></a>`title`: ReviewSampleWindow
 - <a id="s-6fcab1fdf3"></a>`type`: object
 
 ### Fields
@@ -62,7 +61,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: d88136eb684025e685770f08285b79eb9ff80015ab21806c30ea30758b1df343 -->
+<!-- exact-contract-value: 089be775187822a6308869a5170ce55a7390fdb9a5c8f6f1acd8fe5ef4a85824 -->
 
 ```json
 {
@@ -74,17 +73,14 @@ The following JSON is the complete value owned at each machine-authority pointer
         "artifact_id": {
           "maxLength": 160,
           "minLength": 1,
-          "title": "Artifact Id",
           "type": "string"
         },
         "duration_ms": {
           "minimum": 1,
-          "title": "Duration Ms",
           "type": "integer"
         },
         "start_ms": {
           "minimum": 0,
-          "title": "Start Ms",
           "type": "integer"
         }
       },
@@ -93,7 +89,6 @@ The following JSON is the complete value owned at each machine-authority pointer
         "start_ms",
         "duration_ms"
       ],
-      "title": "ReviewSampleWindow",
       "type": "object"
     },
     "signature": "'(*, artifact_id: Annotated[str, MinLen(min_length=1), MaxLen(max_length=160)], start_ms: Annotated[int, Ge(ge=0)], duration_ms: Annotated[int, Ge(ge=1)]) -> None'"

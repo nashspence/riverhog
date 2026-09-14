@@ -27,8 +27,6 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-efa050e563"></a>
-- <a id="s-89836dd228"></a>`title`: TargetCallbackAcknowledgement
-- <a id="s-43b4c25a1e"></a>`description`: Idempotent acceptance of one execution-scoped declaration.
 - <a id="s-869849d3f0"></a>`type`: object
 
 ### Fields
@@ -61,7 +59,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: a44381871442c8de9bbd3be8bf45fa7a85bdd958cf90b154211b08e40952e13a -->
+<!-- exact-contract-value: d733225942e278290bd807dd6400782af70c97dfc4cda7993e6d78c1715e574c -->
 
 ```json
 {
@@ -69,16 +67,13 @@ The following JSON is the complete value owned at each machine-authority pointer
     "kind": "class",
     "schema": {
       "additionalProperties": false,
-      "description": "Idempotent acceptance of one execution-scoped declaration.",
       "properties": {
         "accepted": {
           "const": true,
           "default": true,
-          "title": "Accepted",
           "type": "boolean"
         }
       },
-      "title": "TargetCallbackAcknowledgement",
       "type": "object"
     },
     "signature": "'(*, accepted: Literal[True] = True) -> None'"

@@ -27,8 +27,6 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-a247abab03"></a>
-- <a id="s-da8db0a73a"></a>`title`: BranchOutcome
-- <a id="s-71fa819601"></a>`description`: Current non-success projection for a leaf or coordination branch.
 - <a id="s-53c1393412"></a>`type`: object
 
 ### Fields
@@ -72,7 +70,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 29a7d4ad8de2fb7a47add75c241f9ae2ebda361db9cc8c5fb67dbe227b71e343 -->
+<!-- exact-contract-value: 4ec2a1d1a8aab9994ad1e04ae1f0adf3e36f0c8a4f9a6c2d5ab862745f7212c7 -->
 
 ```json
 {
@@ -80,11 +78,9 @@ The following JSON is the complete value owned at each machine-authority pointer
     "kind": "class",
     "schema": {
       "additionalProperties": false,
-      "description": "Current non-success projection for a leaf or coordination branch.",
       "properties": {
         "branch_id": {
           "pattern": "^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$",
-          "title": "Branch Id",
           "type": "string"
         },
         "branch_set_sha256": {
@@ -97,13 +93,11 @@ The following JSON is the complete value owned at each machine-authority pointer
               "type": "null"
             }
           ],
-          "default": null,
-          "title": "Branch Set Sha256"
+          "default": null
         },
         "format": {
           "const": "stove0-branch-outcome/v1",
           "default": "stove0-branch-outcome/v1",
-          "title": "Format",
           "type": "string"
         },
         "state": {
@@ -113,12 +107,10 @@ The following JSON is the complete value owned at each machine-authority pointer
             "interrupted",
             "canceled"
           ],
-          "title": "State",
           "type": "string"
         },
         "work_id": {
           "pattern": "^[0-9a-f]{64}$",
-          "title": "Work Id",
           "type": "string"
         },
         "workflow_plan_sha256": {
@@ -131,8 +123,7 @@ The following JSON is the complete value owned at each machine-authority pointer
               "type": "null"
             }
           ],
-          "default": null,
-          "title": "Workflow Plan Sha256"
+          "default": null
         }
       },
       "required": [
@@ -140,7 +131,6 @@ The following JSON is the complete value owned at each machine-authority pointer
         "work_id",
         "state"
       ],
-      "title": "BranchOutcome",
       "type": "object"
     },
     "signature": "\"(*, format: Literal['stove0-branch-outcome/v1'] = 'stove0-branch-outcome/v1', branch_id: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$', ascii_only=None)], work_id: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)], workflow_plan_sha256: Optional[Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)]] = None, branch_set_sha256: Optional[Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)]] = None, state: Literal['failed', 'inapplicable', 'interrupted', 'canceled']) -> None\""

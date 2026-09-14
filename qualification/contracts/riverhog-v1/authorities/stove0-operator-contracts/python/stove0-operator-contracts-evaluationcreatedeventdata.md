@@ -27,7 +27,6 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-2a88a0c022"></a>
-- <a id="s-4f93413fa0"></a>`title`: EvaluationCreatedEventData
 - <a id="s-1013824684"></a>`type`: object
 
 ### Fields
@@ -61,7 +60,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: b1f50f2f7bf9a086d20b5cc5b0249c4b1235147ae531aa3440b89f9466e98133 -->
+<!-- exact-contract-value: 5288e1279d542dd7f230edd11d2762e942d1e99a12ef181ea4a1246d707b4668 -->
 
 ```json
 {
@@ -72,7 +71,6 @@ The following JSON is the complete value owned at each machine-authority pointer
       "properties": {
         "evaluation_id": {
           "pattern": "^[0-9a-f]{64}$",
-          "title": "Evaluation Id",
           "type": "string"
         },
         "phase": {
@@ -84,7 +82,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             "failed",
             "canceled"
           ],
-          "title": "Phase",
           "type": "string"
         }
       },
@@ -92,7 +89,6 @@ The following JSON is the complete value owned at each machine-authority pointer
         "evaluation_id",
         "phase"
       ],
-      "title": "EvaluationCreatedEventData",
       "type": "object"
     },
     "signature": "\"(*, evaluation_id: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)], phase: Literal['planning', 'running', 'partially_complete', 'complete', 'failed', 'canceled']) -> None\""

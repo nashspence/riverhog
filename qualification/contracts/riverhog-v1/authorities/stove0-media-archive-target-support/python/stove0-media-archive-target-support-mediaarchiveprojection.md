@@ -27,7 +27,6 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-72887283f3"></a>
-- <a id="s-1b856518c8"></a>`title`: MediaArchiveProjection
 - <a id="s-e457100582"></a>`type`: object
 
 ### Fields
@@ -84,7 +83,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 35bb1aa76b51ef234294c3edcf5be4500faa97fd67c5c3528bd341296d7f442d -->
+<!-- exact-contract-value: f02ebdec3db7d3f5da2faaa55e774aa0d6c3a913fc192f8d0b83365304acd048 -->
 
 ```json
 {
@@ -95,18 +94,15 @@ The following JSON is the complete value owned at each machine-authority pointer
         "JsonValue": {},
         "MediaFactEvidence": {
           "additionalProperties": false,
-          "description": "Exact artifact and ExifTool field from which one value was read.",
           "properties": {
             "artifact_id": {
               "maxLength": 160,
               "minLength": 1,
-              "title": "Artifact Id",
               "type": "string"
             },
             "field": {
               "maxLength": 240,
               "minLength": 1,
-              "title": "Field",
               "type": "string"
             }
           },
@@ -114,7 +110,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             "artifact_id",
             "field"
           ],
-          "title": "MediaFactEvidence",
           "type": "object"
         },
         "MediaMetadataFact": {
@@ -133,7 +128,6 @@ The following JSON is the complete value owned at each machine-authority pointer
                 "gps-latitude",
                 "gps-longitude"
               ],
-              "title": "Name",
               "type": "string"
             },
             "value": {
@@ -145,7 +139,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             "value",
             "evidence"
           ],
-          "title": "MediaMetadataFact",
           "type": "object"
         },
         "MediaProjectedValue": {
@@ -156,7 +149,6 @@ The following JSON is the complete value owned at each machine-authority pointer
               "items": {
                 "$ref": "#/$defs/MediaFactEvidence"
               },
-              "title": "Evidence",
               "type": "array"
             },
             "name": {
@@ -168,7 +160,6 @@ The following JSON is the complete value owned at each machine-authority pointer
                 "gps-latitude",
                 "gps-longitude"
               ],
-              "title": "Name",
               "type": "string"
             },
             "source": {
@@ -176,7 +167,6 @@ The following JSON is the complete value owned at each machine-authority pointer
                 "observation",
                 "recipe"
               ],
-              "title": "Source",
               "type": "string"
             },
             "value": {
@@ -188,14 +178,12 @@ The following JSON is the complete value owned at each machine-authority pointer
             "value",
             "source"
           ],
-          "title": "MediaProjectedValue",
           "type": "object"
         },
         "MediaProjectionItem": {
           "additionalProperties": false,
           "properties": {
             "archive_path": {
-              "title": "Archive Path",
               "type": "string"
             },
             "assertions": {
@@ -203,7 +191,6 @@ The following JSON is the complete value owned at each machine-authority pointer
               "items": {
                 "$ref": "#/$defs/MediaMetadataFact"
               },
-              "title": "Assertions",
               "type": "array"
             },
             "associated_sidecar_artifact_ids": {
@@ -211,11 +198,9 @@ The following JSON is the complete value owned at each machine-authority pointer
               "items": {
                 "type": "string"
               },
-              "title": "Associated Sidecar Artifact Ids",
               "type": "array"
             },
             "input_artifact_id": {
-              "title": "Input Artifact Id",
               "type": "string"
             },
             "selected": {
@@ -223,11 +208,9 @@ The following JSON is the complete value owned at each machine-authority pointer
               "items": {
                 "$ref": "#/$defs/MediaProjectedValue"
               },
-              "title": "Selected",
               "type": "array"
             },
             "xmp_path": {
-              "title": "Xmp Path",
               "type": "string"
             }
           },
@@ -236,18 +219,15 @@ The following JSON is the complete value owned at each machine-authority pointer
             "archive_path",
             "xmp_path"
           ],
-          "title": "MediaProjectionItem",
           "type": "object"
         },
         "RetainedXmpSidecar": {
           "additionalProperties": false,
           "properties": {
             "input_artifact_id": {
-              "title": "Input Artifact Id",
               "type": "string"
             },
             "output_path": {
-              "title": "Output Path",
               "type": "string"
             }
           },
@@ -255,7 +235,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             "input_artifact_id",
             "output_path"
           ],
-          "title": "RetainedXmpSidecar",
           "type": "object"
         }
       },
@@ -264,7 +243,6 @@ The following JSON is the complete value owned at each machine-authority pointer
         "format": {
           "const": "stove0-media-archive-projection/v1",
           "default": "stove0-media-archive-projection/v1",
-          "title": "Format",
           "type": "string"
         },
         "items": {
@@ -272,19 +250,16 @@ The following JSON is the complete value owned at each machine-authority pointer
             "$ref": "#/$defs/MediaProjectionItem"
           },
           "minItems": 1,
-          "title": "Items",
           "type": "array"
         },
         "observation_result_sha256s": {
           "items": {
             "type": "string"
           },
-          "title": "Observation Result Sha256S",
           "type": "array"
         },
         "projection_sha256": {
           "pattern": "^[0-9a-f]{64}$",
-          "title": "Projection Sha256",
           "type": "string"
         },
         "retained_xmp_sidecars": {
@@ -292,7 +267,6 @@ The following JSON is the complete value owned at each machine-authority pointer
           "items": {
             "$ref": "#/$defs/RetainedXmpSidecar"
           },
-          "title": "Retained Xmp Sidecars",
           "type": "array"
         }
       },
@@ -301,7 +275,6 @@ The following JSON is the complete value owned at each machine-authority pointer
         "items",
         "projection_sha256"
       ],
-      "title": "MediaArchiveProjection",
       "type": "object"
     },
     "signature": "\"(*, format: Literal['stove0-media-archive-projection/v1'] = 'stove0-media-archive-projection/v1', observation_result_sha256s: tuple[str, ...], items: Annotated[tuple[stove0_media_archive_target_support.projection.MediaProjectionItem, ...], MinLen(min_length=1)], retained_xmp_sidecars: tuple[stove0_media_archive_target_support.projection.RetainedXmpSidecar, ...] = (), projection_sha256: Annotated[str, _PydanticGeneralMetadata(pattern='^[0-9a-f]{64}$')]) -> None\""

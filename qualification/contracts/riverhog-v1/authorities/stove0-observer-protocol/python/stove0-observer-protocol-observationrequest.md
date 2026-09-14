@@ -27,7 +27,6 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-568e09dd9d"></a>
-- <a id="s-0fcacade22"></a>`title`: ObservationRequest
 - <a id="s-562246eac4"></a>`type`: object
 
 ### Fields
@@ -87,7 +86,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 1624488edbe3b02ac204d71dafc585a48b09579404e0c9f3f2a2fc86b98ba92c -->
+<!-- exact-contract-value: 529c4544b60992715ae76e85ae1b4519c2a9a89c7199fa2ef973ee78cb37acd1 -->
 
 ```json
 {
@@ -100,7 +99,6 @@ The following JSON is the complete value owned at each machine-authority pointer
           "properties": {
             "bytes": {
               "minimum": 0,
-              "title": "Bytes",
               "type": "integer"
             },
             "collection": {
@@ -108,7 +106,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             },
             "id": {
               "pattern": "^[A-Za-z0-9]\u0028?:[A-Za-z0-9._-]{0,158}[A-Za-z0-9])?$",
-              "title": "Id",
               "type": "string"
             },
             "media_type": {
@@ -122,23 +119,19 @@ The following JSON is the complete value owned at each machine-authority pointer
                   "type": "null"
                 }
               ],
-              "default": null,
-              "title": "Media Type"
+              "default": null
             },
             "path": {
               "maxLength": 4096,
               "minLength": 1,
-              "title": "Path",
               "type": "string"
             },
             "role": {
               "pattern": "^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$",
-              "title": "Role",
               "type": "string"
             },
             "sha256": {
               "pattern": "^[0-9a-f]{64}$",
-              "title": "Sha256",
               "type": "string"
             }
           },
@@ -150,7 +143,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             "bytes",
             "sha256"
           ],
-          "title": "ArtifactSubject",
           "type": "object"
         },
         "CollectionId": {
@@ -162,7 +154,6 @@ The following JSON is the complete value owned at each machine-authority pointer
           "properties": {
             "archive_root_sha256": {
               "pattern": "^[0-9a-f]{64}$",
-              "title": "Archive Root Sha256",
               "type": "string"
             },
             "collection_id": {
@@ -170,7 +161,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             },
             "content_identity": {
               "pattern": "^[0-9a-f]{64}$",
-              "title": "Content Identity",
               "type": "string"
             }
           },
@@ -179,7 +169,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             "archive_root_sha256",
             "content_identity"
           ],
-          "title": "CollectionRootRef",
           "type": "object"
         },
         "JsonValue": {}
@@ -189,46 +178,38 @@ The following JSON is the complete value owned at each machine-authority pointer
         "format": {
           "const": "stove0-observation-request/v1",
           "default": "stove0-observation-request/v1",
-          "title": "Format",
           "type": "string"
         },
         "maximum_result_bytes": {
           "default": 1048576,
           "maximum": 67108864,
           "minimum": 1,
-          "title": "Maximum Result Bytes",
           "type": "integer"
         },
         "observer_contract_id": {
           "pattern": "^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$",
-          "title": "Observer Contract Id",
           "type": "string"
         },
         "observer_contract_sha256": {
           "pattern": "^[0-9a-f]{64}$",
-          "title": "Observer Contract Sha256",
           "type": "string"
         },
         "observer_descriptor_sha256": {
           "pattern": "^[0-9a-f]{64}$",
-          "title": "Observer Descriptor Sha256",
           "type": "string"
         },
         "observer_registration_id": {
           "pattern": "^[a-z0-9]\u0028?:[a-z0-9.-]{0,118}[a-z0-9])?$",
-          "title": "Observer Registration Id",
           "type": "string"
         },
         "options": {
           "additionalProperties": {
             "$ref": "#/$defs/JsonValue"
           },
-          "title": "Options",
           "type": "object"
         },
         "request_id": {
           "pattern": "^[0-9a-f]{64}$",
-          "title": "Request Id",
           "type": "string"
         },
         "retrieval_policy": {
@@ -237,7 +218,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             "available-only",
             "allow"
           ],
-          "title": "Retrieval Policy",
           "type": "string"
         },
         "subjects": {
@@ -245,19 +225,16 @@ The following JSON is the complete value owned at each machine-authority pointer
             "$ref": "#/$defs/ArtifactSubject"
           },
           "minItems": 1,
-          "title": "Subjects",
           "type": "array"
         },
         "timeout_seconds": {
           "default": 300,
           "maximum": 86400,
           "minimum": 1,
-          "title": "Timeout Seconds",
           "type": "integer"
         },
         "work_id": {
           "pattern": "^[0-9a-f]{64}$",
-          "title": "Work Id",
           "type": "string"
         }
       },
@@ -270,7 +247,6 @@ The following JSON is the complete value owned at each machine-authority pointer
         "subjects",
         "request_id"
       ],
-      "title": "ObservationRequest",
       "type": "object"
     },
     "signature": "\"(*, format: Literal['stove0-observation-request/v1'] = 'stove0-observation-request/v1', work_id: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)], observer_registration_id: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[a-z0-9]\u0028?:[a-z0-9.-]{0,118}[a-z0-9])?$', ascii_only=None)], observer_descriptor_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)], observer_contract_id: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$', ascii_only=None)], observer_contract_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)], subjects: Annotated[tuple[stove0_protocol.models.ArtifactSubject, ...], MinLen(min_length=1)], options: dict[str, JsonValue] = <factory>, timeout_seconds: Annotated[int, Ge(ge=1), Le(le=86400)] = 300, maximum_result_bytes: Annotated[int, Ge(ge=1), Le(le=67108864)] = 1048576, retrieval_policy: Literal['available-only', 'allow'] = 'available-only', request_id: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)]) -> None\""

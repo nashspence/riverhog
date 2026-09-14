@@ -38,13 +38,13 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Identity | Selected by | Exit status | stdout | stderr |
 |---|---|---|---|---|
-| <a id="s-edfcdca2eb"></a>`completed` | <a id="s-c71b82840b"></a>`{"kind":"command-completed"}` | <a id="s-f72133d8af"></a>`0` | <a id="s-3470129f43"></a>`human: noncontractual-presentation-of-command-result; json: HTTP flush_ftp_adapter_source — type="object"; additional keys=`additionalProperties`` | <a id="s-4efd12c773"></a>`all: empty` |
+| <a id="s-edfcdca2eb"></a>`completed` | <a id="s-c71b82840b"></a>`{"kind":"command-completed"}` | <a id="s-f72133d8af"></a>`0` | <a id="s-3470129f43"></a>human: `noncontractual-presentation-of-command-result`; json: [HTTP flush_ftp_adapter_source response 200](../http-operations/post-v1-sources-source-id-flush.md#s-010c427b4f) | <a id="s-4efd12c773"></a>all: `empty` |
 
 #### Failure outcomes
 
 | Identity | Selected by | Exit status | stdout | stderr |
 |---|---|---|---|---|
-| <a id="s-bcc74c7169"></a>`usage` | <a id="s-61b75a97ff"></a>`{"kind":"parser-rejected-invocation"}` | <a id="s-892dc37171"></a>`2` | <a id="s-72f6faf0e3"></a>`all: empty` | <a id="s-3b2ab6a91b"></a>`all: noncontractual-usage-diagnostic` |
+| <a id="s-bcc74c7169"></a>`usage` | <a id="s-61b75a97ff"></a>`{"kind":"parser-rejected-invocation"}` | <a id="s-892dc37171"></a>`2` | <a id="s-72f6faf0e3"></a>all: `empty` | <a id="s-3b2ab6a91b"></a>all: `noncontractual-usage-diagnostic` |
 
 ## Maintained corroboration
 

@@ -27,8 +27,6 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-c8e742d9c0"></a>
-- <a id="s-3fff309abc"></a>`title`: OutputArtifactSetIdentity
-- <a id="s-752d5f4a1d"></a>`description`: Small identity for target outputs already registered with Riverhog.
 - <a id="s-96f0d14a68"></a>`type`: object
 
 ### Fields
@@ -78,7 +76,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 9b810b5053558016e3f21ba9d162e19849de169dd3c2ed89da2e32ea3d74612a -->
+<!-- exact-contract-value: 77d3a4a1f13442259afac19e5e46a0a226d9008c44830f0c18e745bd9ae8417f -->
 
 ```json
 {
@@ -91,12 +89,10 @@ The following JSON is the complete value owned at each machine-authority pointer
           "properties": {
             "count": {
               "minimum": 1,
-              "title": "Count",
               "type": "integer"
             },
             "role": {
               "pattern": "^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$",
-              "title": "Role",
               "type": "string"
             }
           },
@@ -104,16 +100,13 @@ The following JSON is the complete value owned at each machine-authority pointer
             "role",
             "count"
           ],
-          "title": "OutputArtifactRoleCount",
           "type": "object"
         }
       },
       "additionalProperties": false,
-      "description": "Small identity for target outputs already registered with Riverhog.",
       "properties": {
         "artifact_count": {
           "minimum": 1,
-          "title": "Artifact Count",
           "type": "integer"
         },
         "roles": {
@@ -121,17 +114,14 @@ The following JSON is the complete value owned at each machine-authority pointer
             "$ref": "#/$defs/OutputArtifactRoleCount"
           },
           "minItems": 1,
-          "title": "Roles",
           "type": "array"
         },
         "sha256": {
           "pattern": "^[0-9a-f]{64}$",
-          "title": "Sha256",
           "type": "string"
         },
         "total_bytes": {
           "minimum": 0,
-          "title": "Total Bytes",
           "type": "integer"
         }
       },
@@ -141,7 +131,6 @@ The following JSON is the complete value owned at each machine-authority pointer
         "roles",
         "sha256"
       ],
-      "title": "OutputArtifactSetIdentity",
       "type": "object"
     },
     "signature": "\"(*, artifact_count: Annotated[int, Ge(ge=1)], total_bytes: Annotated[int, Ge(ge=0)], roles: Annotated[tuple[stove0_target_protocol.protocol.OutputArtifactRoleCount, ...], MinLen(min_length=1)], sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)]) -> None\""

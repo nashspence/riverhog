@@ -27,8 +27,6 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-59622a48b3"></a>
-- <a id="s-4ad552733b"></a>`title`: JoinOutcome
-- <a id="s-109b14c389"></a>`description`: Current non-success projection for one resolved join work record.
 - <a id="s-fd8fc72ccd"></a>`type`: object
 
 ### Fields
@@ -65,7 +63,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 58b29d0707fe00a77d841482e0934e87863b02f2dc681057d600f8ea463d0aaa -->
+<!-- exact-contract-value: 00882631c86499dcb8f442b82e6eb0fb7aa537d3c1fc60c552e7ea468d1dbf13 -->
 
 ```json
 {
@@ -73,17 +71,14 @@ The following JSON is the complete value owned at each machine-authority pointer
     "kind": "class",
     "schema": {
       "additionalProperties": false,
-      "description": "Current non-success projection for one resolved join work record.",
       "properties": {
         "format": {
           "const": "stove0-join-outcome/v1",
           "default": "stove0-join-outcome/v1",
-          "title": "Format",
           "type": "string"
         },
         "join_plan_sha256": {
           "pattern": "^[0-9a-f]{64}$",
-          "title": "Join Plan Sha256",
           "type": "string"
         },
         "state": {
@@ -93,17 +88,14 @@ The following JSON is the complete value owned at each machine-authority pointer
             "interrupted",
             "canceled"
           ],
-          "title": "State",
           "type": "string"
         },
         "work_id": {
           "pattern": "^[0-9a-f]{64}$",
-          "title": "Work Id",
           "type": "string"
         },
         "workflow_plan_sha256": {
           "pattern": "^[0-9a-f]{64}$",
-          "title": "Workflow Plan Sha256",
           "type": "string"
         }
       },
@@ -113,7 +105,6 @@ The following JSON is the complete value owned at each machine-authority pointer
         "join_plan_sha256",
         "state"
       ],
-      "title": "JoinOutcome",
       "type": "object"
     },
     "signature": "\"(*, format: Literal['stove0-join-outcome/v1'] = 'stove0-join-outcome/v1', work_id: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)], workflow_plan_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)], join_plan_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)], state: Literal['failed', 'inapplicable', 'interrupted', 'canceled']) -> None\""

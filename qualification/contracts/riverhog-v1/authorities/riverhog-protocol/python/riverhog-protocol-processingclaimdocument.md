@@ -27,7 +27,6 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-75d5c675f7"></a>
-- <a id="s-ea69d118e0"></a>`title`: ProcessingClaimDocument
 - <a id="s-adb9d9f057"></a>`type`: object
 
 ### Fields
@@ -100,7 +99,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 2dafd08bbb236f131be3156a6a0a10356f03b1673ff45c9e0b9c427f2838be4d -->
+<!-- exact-contract-value: ce933f60e39e3c6d2114bd5835a9ac2e04c77240bfae2d434503349bfedbb70c -->
 
 ```json
 {
@@ -113,17 +112,14 @@ The following JSON is the complete value owned at each machine-authority pointer
           "properties": {
             "count": {
               "minimum": 1,
-              "title": "Count",
               "type": "integer"
             },
             "sha256": {
               "pattern": "^[0-9a-f]{64}$",
-              "title": "Sha256",
               "type": "string"
             },
             "total_bytes": {
               "minimum": 0,
-              "title": "Total Bytes",
               "type": "integer"
             }
           },
@@ -132,7 +128,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             "sha256",
             "total_bytes"
           ],
-          "title": "ArtifactSetAuthorityDocument",
           "type": "object"
         },
         "CollectionId": {
@@ -141,16 +136,13 @@ The following JSON is the complete value owned at each machine-authority pointer
         },
         "ExactSetAuthorityDocument": {
           "additionalProperties": false,
-          "description": "Small immutable identity for an exact canonically ordered logical set.",
           "properties": {
             "count": {
               "minimum": 1,
-              "title": "Count",
               "type": "integer"
             },
             "sha256": {
               "pattern": "^[0-9a-f]{64}$",
-              "title": "Sha256",
               "type": "string"
             }
           },
@@ -158,7 +150,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             "count",
             "sha256"
           ],
-          "title": "ExactSetAuthorityDocument",
           "type": "object"
         },
         "OperationIdentityDocument": {
@@ -166,12 +157,10 @@ The following JSON is the complete value owned at each machine-authority pointer
           "properties": {
             "id": {
               "pattern": "^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$",
-              "title": "Id",
               "type": "string"
             },
             "sha256": {
               "pattern": "^[0-9a-f]{64}$",
-              "title": "Sha256",
               "type": "string"
             }
           },
@@ -179,7 +168,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             "id",
             "sha256"
           ],
-          "title": "OperationIdentityDocument",
           "type": "object"
         },
         "OutcomeSetDocument": {
@@ -198,7 +186,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             },
             "count": {
               "minimum": 0,
-              "title": "Count",
               "type": "integer"
             },
             "failure": {
@@ -212,8 +199,7 @@ The following JSON is the complete value owned at each machine-authority pointer
                   "type": "null"
                 }
               ],
-              "default": null,
-              "title": "Failure"
+              "default": null
             },
             "state": {
               "enum": [
@@ -222,7 +208,6 @@ The following JSON is the complete value owned at each machine-authority pointer
                 "sealed",
                 "failed"
               ],
-              "title": "State",
               "type": "string"
             }
           },
@@ -230,7 +215,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             "state",
             "count"
           ],
-          "title": "OutcomeSetDocument",
           "type": "object"
         },
         "ProcessingClaimConsumerDocument": {
@@ -238,7 +222,6 @@ The following JSON is the complete value owned at each machine-authority pointer
           "properties": {
             "app": {
               "pattern": "^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$",
-              "title": "App",
               "type": "string"
             },
             "key_id": {
@@ -252,14 +235,12 @@ The following JSON is the complete value owned at each machine-authority pointer
                   "type": "null"
                 }
               ],
-              "default": null,
-              "title": "Key Id"
+              "default": null
             }
           },
           "required": [
             "app"
           ],
-          "title": "ProcessingClaimConsumerDocument",
           "type": "object"
         },
         "ProcessingClaimOutcomeSettlementDocument": {
@@ -277,7 +258,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             },
             "retirement_grace_seconds": {
               "minimum": 0,
-              "title": "Retirement Grace Seconds",
               "type": "integer"
             },
             "retirement_policy": {
@@ -285,7 +265,6 @@ The following JSON is the complete value owned at each machine-authority pointer
                 "retain",
                 "retire-after-verified-output"
               ],
-              "title": "Retirement Policy",
               "type": "string"
             }
           },
@@ -301,7 +280,6 @@ The following JSON is the complete value owned at each machine-authority pointer
               }
             }
           },
-          "title": "ProcessingClaimOutcomeSettlementDocument",
           "type": "object"
         },
         "ProcessingClaimPlanDocument": {
@@ -319,7 +297,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             },
             "controller_evidence": {
               "additionalProperties": true,
-              "title": "Controller Evidence",
               "type": "object",
               "x-riverhog-encoded-bytes-max": 16777216,
               "x-riverhog-extent": {
@@ -329,12 +306,10 @@ The following JSON is the complete value owned at each machine-authority pointer
             },
             "controller_evidence_sha256": {
               "pattern": "^[0-9a-f]{64}$",
-              "title": "Controller Evidence Sha256",
               "type": "string"
             },
             "execution_id": {
               "pattern": "^[0-9a-f]{64}$",
-              "title": "Execution Id",
               "type": "string"
             },
             "inputs": {
@@ -345,7 +320,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             },
             "retirement_grace_seconds": {
               "minimum": 0,
-              "title": "Retirement Grace Seconds",
               "type": "integer"
             },
             "retirement_policy": {
@@ -353,13 +327,11 @@ The following JSON is the complete value owned at each machine-authority pointer
                 "retain",
                 "retire-after-verified-output"
               ],
-              "title": "Retirement Policy",
               "type": "string"
             },
             "sealed_at": {
               "maxLength": 64,
               "minLength": 1,
-              "title": "Sealed At",
               "type": "string"
             }
           },
@@ -381,7 +353,6 @@ The following JSON is the complete value owned at each machine-authority pointer
               }
             }
           },
-          "title": "ProcessingClaimPlanDocument",
           "type": "object"
         },
         "ReceivingSetDocument": {
@@ -400,7 +371,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             },
             "count": {
               "minimum": 0,
-              "title": "Count",
               "type": "integer"
             },
             "state": {
@@ -408,7 +378,6 @@ The following JSON is the complete value owned at each machine-authority pointer
                 "receiving",
                 "sealed"
               ],
-              "title": "State",
               "type": "string"
             }
           },
@@ -416,7 +385,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             "state",
             "count"
           ],
-          "title": "ReceivingSetDocument",
           "type": "object"
         }
       },
@@ -524,8 +492,7 @@ The following JSON is the complete value owned at each machine-authority pointer
               "type": "null"
             }
           ],
-          "default": null,
-          "title": "Abandoned At"
+          "default": null
         },
         "abandonment_reason": {
           "anyOf": [
@@ -538,8 +505,7 @@ The following JSON is the complete value owned at each machine-authority pointer
               "type": "null"
             }
           ],
-          "default": null,
-          "title": "Abandonment Reason"
+          "default": null
         },
         "consumer": {
           "$ref": "#/$defs/ProcessingClaimConsumerDocument"
@@ -547,28 +513,23 @@ The following JSON is the complete value owned at each machine-authority pointer
         "created_at": {
           "maxLength": 64,
           "minLength": 1,
-          "title": "Created At",
           "type": "string"
         },
         "expires_at": {
           "maxLength": 64,
           "minLength": 1,
-          "title": "Expires At",
           "type": "string"
         },
         "fence": {
           "minimum": 1,
-          "title": "Fence",
           "type": "integer"
         },
         "format": {
           "const": "riverhog-processing-claim/v1",
-          "title": "Format",
           "type": "string"
         },
         "id": {
           "pattern": "^[0-9a-f]{64}$",
-          "title": "Id",
           "type": "string"
         },
         "inputs": {
@@ -613,7 +574,6 @@ The following JSON is the complete value owned at each machine-authority pointer
         "purpose": {
           "maxLength": 160,
           "minLength": 1,
-          "title": "Purpose",
           "type": "string"
         },
         "released_at": {
@@ -627,8 +587,7 @@ The following JSON is the complete value owned at each machine-authority pointer
               "type": "null"
             }
           ],
-          "default": null,
-          "title": "Released At"
+          "default": null
         },
         "settled_at": {
           "anyOf": [
@@ -641,8 +600,7 @@ The following JSON is the complete value owned at each machine-authority pointer
               "type": "null"
             }
           ],
-          "default": null,
-          "title": "Settled At"
+          "default": null
         },
         "state": {
           "enum": [
@@ -652,18 +610,15 @@ The following JSON is the complete value owned at each machine-authority pointer
             "abandoned",
             "released"
           ],
-          "title": "State",
           "type": "string"
         },
         "updated_at": {
           "maxLength": 64,
           "minLength": 1,
-          "title": "Updated At",
           "type": "string"
         },
         "work_document": {
           "additionalProperties": true,
-          "title": "Work Document",
           "type": "object",
           "x-riverhog-encoded-bytes-max": 4194304,
           "x-riverhog-extent": {
@@ -673,12 +628,10 @@ The following JSON is the complete value owned at each machine-authority pointer
         },
         "work_document_sha256": {
           "pattern": "^[0-9a-f]{64}$",
-          "title": "Work Document Sha256",
           "type": "string"
         },
         "work_id": {
           "pattern": "^[0-9a-f]{64}$",
-          "title": "Work Id",
           "type": "string"
         }
       },
@@ -698,7 +651,6 @@ The following JSON is the complete value owned at each machine-authority pointer
         "inputs",
         "outcomes"
       ],
-      "title": "ProcessingClaimDocument",
       "type": "object"
     },
     "signature": "\"(*, format: Literal['riverhog-processing-claim/v1'], id: Annotated[str, _PydanticGeneralMetadata(pattern='^[0-9a-f]{64}$')], work_id: Annotated[str, _PydanticGeneralMetadata(pattern='^[0-9a-f]{64}$')], consumer: riverhog_protocol.collection_workflow_transport.ProcessingClaimConsumerDocument, purpose: Annotated[str, MinLen(min_length=1), MaxLen(max_length=160)], state: Literal['active', 'settled', 'retiring', 'abandoned', 'released'], fence: Annotated[int, Ge(ge=1)], expires_at: Annotated[str, MinLen(min_length=1), MaxLen(max_length=64)], created_at: Annotated[str, MinLen(min_length=1), MaxLen(max_length=64)], updated_at: Annotated[str, MinLen(min_length=1), MaxLen(max_length=64)], settled_at: Optional[Annotated[str, FieldInfo(annotation=NoneType, required=True, metadata=[MinLen(min_length=1), MaxLen(max_length=64)])]] = None, abandoned_at: Optional[Annotated[str, FieldInfo(annotation=NoneType, required=True, metadata=[MinLen(min_length=1), MaxLen(max_length=64)])]] = None, abandonment_reason: Annotated[str | None, MinLen(min_length=1), MaxLen(max_length=1000)] = None, released_at: Optional[Annotated[str, FieldInfo(annotation=NoneType, required=True, metadata=[MinLen(min_length=1), MaxLen(max_length=64)])]] = None, output_collection_id: CollectionId | None = None, work_document: dict[str, typing.Any], work_document_sha256: Annotated[str, _PydanticGeneralMetadata(pattern='^[0-9a-f]{64}$')], inputs: riverhog_protocol.collection_workflow_transport.ReceivingSetDocument, plan: riverhog_protocol.collection_workflow_transport.ProcessingClaimPlanDocument | None = None, outcomes: riverhog_protocol.collection_workflow_transport.OutcomeSetDocument, outcome_settlement: riverhog_protocol.collection_workflow_transport.ProcessingClaimOutcomeSettlementDocument | None = None) -> None\""

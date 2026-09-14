@@ -19,6 +19,9 @@ Optional nonnormative rclone review-effect target reference for Stove0.
 | <a id="s-cf29c5755e"></a>`artifacts` | [{"coordinate": "dist/stove0_review_rclone_effect_target-{version}-py3-none-any.whl", "format": "wheel"}, {"coordinate": "dist/stove0_review_rclone_effect_target-{version}.tar.gz", "format": "sdist"}] |
 | <a id="s-8a9146ed4a"></a>`channel` | github-release |
 | <a id="s-9bb07dd164"></a>`description` | Optional nonnormative rclone review-effect target reference for Stove0. |
+| <a id="s-c52627562c"></a>`license_baseline` | first-v1-publication |
+| <a id="s-8b41642661"></a>`license_expression` | CAL-1.0 |
+| <a id="s-7b1d7fbf49"></a>`publication_identity` | {"coordinate": "stove0-review-rclone-effect-target", "kind": "python-distribution"} |
 | <a id="s-9fca961eac"></a>`requires_python` | >=3.12 |
 | <a id="s-eea589affd"></a>`role` | reference_component |
 | <a id="s-7a71b4ede4"></a>`source` | reference/stove0/targets/review/rclone-effect-target/pyproject.toml |
@@ -57,7 +60,7 @@ Publication preserves these existing component authorities; it does not reclassi
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: f57ca387400dfa433fe1502501c637695d09339f94949dec90ab4c7cc861f295 -->
+<!-- exact-contract-value: 9770e71fd7e527cb5b4c41d621dea39b293f8fe73013acfa700687df4255aace -->
 
 ```json
 {
@@ -73,6 +76,12 @@ The following JSON is the complete value owned at each machine-authority pointer
   ],
   "channel": "github-release",
   "description": "Optional nonnormative rclone review-effect target reference for Stove0.",
+  "license_baseline": "first-v1-publication",
+  "license_expression": "CAL-1.0",
+  "publication_identity": {
+    "coordinate": "stove0-review-rclone-effect-target",
+    "kind": "python-distribution"
+  },
   "requires_python": ">=3.12",
   "role": "reference_component",
   "source": "reference/stove0/targets/review/rclone-effect-target/pyproject.toml"

@@ -19,6 +19,9 @@ UTC timestamp and operator duration formats.
 | <a id="s-4db1498251"></a>`artifacts` | [{"coordinate": "dist/time_formats-{version}-py3-none-any.whl", "format": "wheel"}, {"coordinate": "dist/time_formats-{version}.tar.gz", "format": "sdist"}] |
 | <a id="s-a4ec0f4512"></a>`channel` | github-release |
 | <a id="s-367dc032fd"></a>`description` | UTC timestamp and operator duration formats. |
+| <a id="s-ad31416e60"></a>`license_baseline` | first-v1-publication |
+| <a id="s-c619177636"></a>`license_expression` | Apache-2.0 |
+| <a id="s-91fa562265"></a>`publication_identity` | {"coordinate": "time-formats", "kind": "python-distribution"} |
 | <a id="s-1ba15713c9"></a>`requires_python` | >=3.12 |
 | <a id="s-80ca4b9dcc"></a>`role` | internal_build_unit |
 | <a id="s-c68c08fafe"></a>`source` | packages/time-formats/pyproject.toml |
@@ -57,7 +60,7 @@ Publication preserves these existing component authorities; it does not reclassi
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: cbd4f554e8ce4ce9f5ddc1c8bfdbd4b3a97b0b4c8d08818bab6bea15bb132f5b -->
+<!-- exact-contract-value: 54ecfaa95bddcdf6888738345c304b629c197e6301e2b8f70313c76630ff180a -->
 
 ```json
 {
@@ -73,6 +76,12 @@ The following JSON is the complete value owned at each machine-authority pointer
   ],
   "channel": "github-release",
   "description": "UTC timestamp and operator duration formats.",
+  "license_baseline": "first-v1-publication",
+  "license_expression": "Apache-2.0",
+  "publication_identity": {
+    "coordinate": "time-formats",
+    "kind": "python-distribution"
+  },
   "requires_python": ">=3.12",
   "role": "internal_build_unit",
   "source": "packages/time-formats/pyproject.toml"

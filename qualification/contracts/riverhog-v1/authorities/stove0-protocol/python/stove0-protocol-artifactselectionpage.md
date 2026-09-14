@@ -27,8 +27,6 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-73808f3317"></a>
-- <a id="s-9b7dd68f2c"></a>`title`: ArtifactSelectionPage
-- <a id="s-703f7031f4"></a>`description`: One bounded continuation step through an immutable artifact selection.
 - <a id="s-cb61981483"></a>`type`: object
 
 ### Fields
@@ -80,7 +78,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: f24283c105fe985d40e8aff24902b7a6848010644a33654200f77fc502a66cb5 -->
+<!-- exact-contract-value: c1a9bffa4bc9f7c27bf097f7be440d5de60f0d0c70d1045ef9c38bc2529e5370 -->
 
 ```json
 {
@@ -90,21 +88,17 @@ The following JSON is the complete value owned at each machine-authority pointer
       "$defs": {
         "ArtifactSelectionRef": {
           "additionalProperties": false,
-          "description": "Closed reference to a separately retained selection document.",
           "properties": {
             "artifact_count": {
               "minimum": 1,
-              "title": "Artifact Count",
               "type": "integer"
             },
             "selection_sha256": {
               "pattern": "^[0-9a-f]{64}$",
-              "title": "Selection Sha256",
               "type": "string"
             },
             "total_bytes": {
               "minimum": 0,
-              "title": "Total Bytes",
               "type": "integer"
             }
           },
@@ -113,7 +107,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             "artifact_count",
             "total_bytes"
           ],
-          "title": "ArtifactSelectionRef",
           "type": "object"
         },
         "ArtifactSubject": {
@@ -121,7 +114,6 @@ The following JSON is the complete value owned at each machine-authority pointer
           "properties": {
             "bytes": {
               "minimum": 0,
-              "title": "Bytes",
               "type": "integer"
             },
             "collection": {
@@ -129,7 +121,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             },
             "id": {
               "pattern": "^[A-Za-z0-9]\u0028?:[A-Za-z0-9._-]{0,158}[A-Za-z0-9])?$",
-              "title": "Id",
               "type": "string"
             },
             "media_type": {
@@ -143,23 +134,19 @@ The following JSON is the complete value owned at each machine-authority pointer
                   "type": "null"
                 }
               ],
-              "default": null,
-              "title": "Media Type"
+              "default": null
             },
             "path": {
               "maxLength": 4096,
               "minLength": 1,
-              "title": "Path",
               "type": "string"
             },
             "role": {
               "pattern": "^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$",
-              "title": "Role",
               "type": "string"
             },
             "sha256": {
               "pattern": "^[0-9a-f]{64}$",
-              "title": "Sha256",
               "type": "string"
             }
           },
@@ -171,7 +158,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             "bytes",
             "sha256"
           ],
-          "title": "ArtifactSubject",
           "type": "object"
         },
         "CollectionId": {
@@ -183,7 +169,6 @@ The following JSON is the complete value owned at each machine-authority pointer
           "properties": {
             "archive_root_sha256": {
               "pattern": "^[0-9a-f]{64}$",
-              "title": "Archive Root Sha256",
               "type": "string"
             },
             "collection_id": {
@@ -191,7 +176,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             },
             "content_identity": {
               "pattern": "^[0-9a-f]{64}$",
-              "title": "Content Identity",
               "type": "string"
             }
           },
@@ -200,19 +184,16 @@ The following JSON is the complete value owned at each machine-authority pointer
             "archive_root_sha256",
             "content_identity"
           ],
-          "title": "CollectionRootRef",
           "type": "object"
         }
       },
       "additionalProperties": false,
-      "description": "One bounded continuation step through an immutable artifact selection.",
       "properties": {
         "artifacts": {
           "items": {
             "$ref": "#/$defs/ArtifactSubject"
           },
           "maxItems": 256,
-          "title": "Artifacts",
           "type": "array",
           "x-riverhog-extent": {
             "policy": "segmented_no_total_max",
@@ -224,7 +205,6 @@ The following JSON is the complete value owned at each machine-authority pointer
           "$ref": "#/$defs/ArtifactSelectionRef"
         },
         "complete": {
-          "title": "Complete",
           "type": "boolean"
         },
         "continuation": {
@@ -237,8 +217,7 @@ The following JSON is the complete value owned at each machine-authority pointer
               "type": "null"
             }
           ],
-          "default": null,
-          "title": "Continuation"
+          "default": null
         },
         "next_continuation": {
           "anyOf": [
@@ -250,8 +229,7 @@ The following JSON is the complete value owned at each machine-authority pointer
               "type": "null"
             }
           ],
-          "default": null,
-          "title": "Next Continuation"
+          "default": null
         }
       },
       "required": [
@@ -259,7 +237,6 @@ The following JSON is the complete value owned at each machine-authority pointer
         "complete",
         "artifacts"
       ],
-      "title": "ArtifactSelectionPage",
       "type": "object"
     },
     "signature": "\"(*, authority: stove0_protocol.fork_join.ArtifactSelectionRef, continuation: Optional[Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)]] = None, next_continuation: Optional[Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)]] = None, complete: bool, artifacts: Annotated[tuple[stove0_protocol.models.ArtifactSubject, ...], MaxLen(max_length=256)]) -> None\""

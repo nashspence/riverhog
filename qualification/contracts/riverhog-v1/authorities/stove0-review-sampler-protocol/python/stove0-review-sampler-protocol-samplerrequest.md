@@ -27,7 +27,6 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-e958c04ed7"></a>
-- <a id="s-449f439d46"></a>`title`: SamplerRequest
 - <a id="s-031b8e7636"></a>`type`: object
 
 ### Fields
@@ -84,7 +83,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 90ceb5dfee66f59f4177f42a4264caf28606cd5df389cc6460d265771a61710d -->
+<!-- exact-contract-value: 758eb57d97340ca4a9f5436b771405d808c414d2e5988527679d26cb05b1cf95 -->
 
 ```json
 {
@@ -98,12 +97,10 @@ The following JSON is the complete value owned at each machine-authority pointer
           "properties": {
             "bytes": {
               "minimum": 0,
-              "title": "Bytes",
               "type": "integer"
             },
             "id": {
               "pattern": "^[A-Za-z0-9]\u0028?:[A-Za-z0-9._-]{0,158}[A-Za-z0-9])?$",
-              "title": "Id",
               "type": "string"
             },
             "media_type": {
@@ -117,18 +114,15 @@ The following JSON is the complete value owned at each machine-authority pointer
                   "type": "null"
                 }
               ],
-              "default": null,
-              "title": "Media Type"
+              "default": null
             },
             "path": {
               "maxLength": 4096,
               "minLength": 1,
-              "title": "Path",
               "type": "string"
             },
             "sha256": {
               "pattern": "^[0-9a-f]{64}$",
-              "title": "Sha256",
               "type": "string"
             }
           },
@@ -138,7 +132,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             "bytes",
             "sha256"
           ],
-          "title": "SamplerInput",
           "type": "object"
         },
         "SamplerWindow": {
@@ -146,28 +139,23 @@ The following JSON is the complete value owned at each machine-authority pointer
           "properties": {
             "duration_ms": {
               "minimum": 1,
-              "title": "Duration Ms",
               "type": "integer"
             },
             "id": {
               "pattern": "^[A-Za-z0-9]\u0028?:[A-Za-z0-9._-]{0,158}[A-Za-z0-9])?$",
-              "title": "Id",
               "type": "string"
             },
             "input_id": {
               "pattern": "^[A-Za-z0-9]\u0028?:[A-Za-z0-9._-]{0,158}[A-Za-z0-9])?$",
-              "title": "Input Id",
               "type": "string"
             },
             "output_path": {
               "maxLength": 4096,
               "minLength": 1,
-              "title": "Output Path",
               "type": "string"
             },
             "start_ms": {
               "minimum": 0,
-              "title": "Start Ms",
               "type": "integer"
             }
           },
@@ -178,7 +166,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             "duration_ms",
             "output_path"
           ],
-          "title": "SamplerWindow",
           "type": "object"
         }
       },
@@ -187,13 +174,11 @@ The following JSON is the complete value owned at each machine-authority pointer
         "cancellation_path": {
           "maxLength": 4096,
           "minLength": 1,
-          "title": "Cancellation Path",
           "type": "string"
         },
         "format": {
           "const": "stove0-review-sampler-request/v1",
           "default": "stove0-review-sampler-request/v1",
-          "title": "Format",
           "type": "string"
         },
         "inputs": {
@@ -201,36 +186,30 @@ The following JSON is the complete value owned at each machine-authority pointer
             "$ref": "#/$defs/SamplerInput"
           },
           "minItems": 1,
-          "title": "Inputs",
           "type": "array"
         },
         "maximum_output_bytes": {
           "maximum": 1099511627776,
           "minimum": 1,
-          "title": "Maximum Output Bytes",
           "type": "integer"
         },
         "portable_intent": {
           "additionalProperties": {
             "$ref": "#/$defs/JsonValue"
           },
-          "title": "Portable Intent",
           "type": "object"
         },
         "request_sha256": {
           "pattern": "^[0-9a-f]{64}$",
-          "title": "Request Sha256",
           "type": "string"
         },
         "sampler_descriptor_sha256": {
           "pattern": "^[0-9a-f]{64}$",
-          "title": "Sampler Descriptor Sha256",
           "type": "string"
         },
         "timeout_seconds": {
           "maximum": 86400,
           "minimum": 1,
-          "title": "Timeout Seconds",
           "type": "integer"
         },
         "windows": {
@@ -238,12 +217,10 @@ The following JSON is the complete value owned at each machine-authority pointer
             "$ref": "#/$defs/SamplerWindow"
           },
           "minItems": 1,
-          "title": "Windows",
           "type": "array"
         },
         "workspace_id": {
           "pattern": "^[0-9a-f]{64}$",
-          "title": "Workspace Id",
           "type": "string"
         }
       },
@@ -258,7 +235,6 @@ The following JSON is the complete value owned at each machine-authority pointer
         "cancellation_path",
         "request_sha256"
       ],
-      "title": "SamplerRequest",
       "type": "object"
     },
     "signature": "\"(*, format: Literal['stove0-review-sampler-request/v1'] = 'stove0-review-sampler-request/v1', sampler_descriptor_sha256: Annotated[str, _PydanticGeneralMetadata(pattern='^[0-9a-f]{64}$')], workspace_id: Annotated[str, _PydanticGeneralMetadata(pattern='^[0-9a-f]{64}$')], inputs: Annotated[tuple[stove0_review_sampler_protocol.SamplerInput, ...], MinLen(min_length=1)], windows: Annotated[tuple[stove0_review_sampler_protocol.SamplerWindow, ...], MinLen(min_length=1)], portable_intent: dict[str, JsonValue], maximum_output_bytes: Annotated[int, Ge(ge=1), Le(le=1099511627776)], timeout_seconds: Annotated[int, Ge(ge=1), Le(le=86400)], cancellation_path: Annotated[str, MinLen(min_length=1), MaxLen(max_length=4096)], request_sha256: Annotated[str, _PydanticGeneralMetadata(pattern='^[0-9a-f]{64}$')]) -> None\""

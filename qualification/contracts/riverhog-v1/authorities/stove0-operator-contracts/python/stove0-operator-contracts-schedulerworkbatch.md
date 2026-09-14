@@ -27,7 +27,6 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-32572a0437"></a>
-- <a id="s-41eeab2448"></a>`title`: SchedulerWorkBatch
 - <a id="s-4bc9da636a"></a>`type`: object
 
 ### Fields
@@ -70,7 +69,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: ea474537a3c065a082b54dfe38a87217abb0cdd73e04a5c168fc79b1816ff911 -->
+<!-- exact-contract-value: c73f9fe3afc50cdfa5f2dc6f1eed2e9e61d022624622c55ed166d87b7cf19550 -->
 
 ```json
 {
@@ -84,7 +83,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             "error": {
               "maxLength": 1000,
               "minLength": 1,
-              "title": "Error",
               "type": "string"
             },
             "event_id": {
@@ -96,8 +94,7 @@ The following JSON is the complete value owned at each machine-authority pointer
                   "type": "null"
                 }
               ],
-              "default": null,
-              "title": "Event Id"
+              "default": null
             },
             "work_id": {
               "anyOf": [
@@ -109,32 +106,27 @@ The following JSON is the complete value owned at each machine-authority pointer
                   "type": "null"
                 }
               ],
-              "default": null,
-              "title": "Work Id"
+              "default": null
             }
           },
           "required": [
             "error"
           ],
-          "title": "SchedulerFailure",
           "type": "object"
         }
       },
       "additionalProperties": false,
       "properties": {
         "cursor": {
-          "title": "Cursor",
           "type": "string"
         },
         "failures": {
           "items": {
             "$ref": "#/$defs/SchedulerFailure"
           },
-          "title": "Failures",
           "type": "array"
         },
         "next_cursor": {
-          "title": "Next Cursor",
           "type": "string"
         },
         "progressed": {
@@ -142,7 +134,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             "pattern": "^[0-9a-f]{64}$",
             "type": "string"
           },
-          "title": "Progressed",
           "type": "array"
         },
         "role": {
@@ -151,7 +142,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             "worker",
             "combined"
           ],
-          "title": "Role",
           "type": "string"
         }
       },
@@ -162,7 +152,6 @@ The following JSON is the complete value owned at each machine-authority pointer
         "progressed",
         "failures"
       ],
-      "title": "SchedulerWorkBatch",
       "type": "object"
     },
     "signature": "\"(*, role: Literal['controller', 'worker', 'combined'], cursor: str, next_cursor: str, progressed: tuple[typing.Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)], ...], failures: tuple[stove0_operator_contracts.SchedulerFailure, ...]) -> None\""

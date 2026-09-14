@@ -27,7 +27,6 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-1deff4c44c"></a>
-- <a id="s-cb06f1de45"></a>`title`: ProcessingClaimOutcomesSettleDocument
 - <a id="s-da4e21848d"></a>`type`: object
 
 ### Fields
@@ -68,7 +67,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 53ffd2f8f09630600e370f3968bd36b8f9a546996e8a2c688bf92df5fb7da037 -->
+<!-- exact-contract-value: 2ef9c253ca9a7cb7769a3e2d62198195c4844981bcc240a2d2f36119ac1a66fc -->
 
 ```json
 {
@@ -86,13 +85,11 @@ The following JSON is the complete value owned at each machine-authority pointer
       "properties": {
         "fence": {
           "minimum": 1,
-          "title": "Fence",
           "type": "integer"
         },
         "retirement_grace_seconds": {
           "default": 0,
           "minimum": 0,
-          "title": "Retirement Grace Seconds",
           "type": "integer"
         },
         "retirement_policy": {
@@ -101,7 +98,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             "retain",
             "retire-after-verified-output"
           ],
-          "title": "Retirement Policy",
           "type": "string"
         }
       },
@@ -115,7 +111,6 @@ The following JSON is the complete value owned at each machine-authority pointer
           }
         }
       },
-      "title": "ProcessingClaimOutcomesSettleDocument",
       "type": "object"
     },
     "signature": "\"(*, fence: Annotated[int, Ge(ge=1)], retirement_policy: Literal['retain', 'retire-after-verified-output'] = 'retain', retirement_grace_seconds: Annotated[int, Ge(ge=0)] = 0) -> None\""

@@ -27,7 +27,6 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-ad894bceda"></a>
-- <a id="s-6bd6682f3d"></a>`title`: EvaluationChildView
 - <a id="s-e7f9c347b6"></a>`type`: object
 
 ### Fields
@@ -76,7 +75,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 55c2dde903f57c83818b23a48822183ee248b1faf8d4c27558bcc69e65cc6fbd -->
+<!-- exact-contract-value: 855f989d032be19465dbb468094bcd46253be7c05ef1758dd37c8af9a27a1377 -->
 
 ```json
 {
@@ -93,7 +92,6 @@ The following JSON is the complete value owned at each machine-authority pointer
           "properties": {
             "archive_root_sha256": {
               "pattern": "^[0-9a-f]{64}$",
-              "title": "Archive Root Sha256",
               "type": "string"
             },
             "collection_id": {
@@ -101,12 +99,10 @@ The following JSON is the complete value owned at each machine-authority pointer
             },
             "content_identity": {
               "pattern": "^[0-9a-f]{64}$",
-              "title": "Content Identity",
               "type": "string"
             },
             "derivation_sha256": {
               "pattern": "^[0-9a-f]{64}$",
-              "title": "Derivation Sha256",
               "type": "string"
             }
           },
@@ -116,7 +112,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             "content_identity",
             "derivation_sha256"
           ],
-          "title": "OutputCollectionRef",
           "type": "object"
         }
       },
@@ -142,18 +137,15 @@ The following JSON is the complete value owned at each machine-authority pointer
             "failed",
             "canceled"
           ],
-          "title": "State",
           "type": "string"
         },
         "variant_id": {
           "maxLength": 160,
           "minLength": 1,
-          "title": "Variant Id",
           "type": "string"
         },
         "work_id": {
           "pattern": "^[0-9a-f]{64}$",
-          "title": "Work Id",
           "type": "string"
         }
       },
@@ -162,7 +154,6 @@ The following JSON is the complete value owned at each machine-authority pointer
         "work_id",
         "state"
       ],
-      "title": "EvaluationChildView",
       "type": "object"
     },
     "signature": "\"(*, variant_id: Annotated[str, MinLen(min_length=1), MaxLen(max_length=160)], work_id: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)], state: Literal['pending', 'active', 'complete', 'inapplicable', 'failed', 'canceled'], output: stove0_target_protocol.protocol.OutputCollectionRef | None = None) -> None\""

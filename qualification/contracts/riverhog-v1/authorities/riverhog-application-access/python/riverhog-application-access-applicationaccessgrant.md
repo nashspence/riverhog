@@ -27,8 +27,6 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-2f97f3665f"></a>
-- <a id="s-f90cbefa14"></a>`title`: ApplicationAccessGrant
-- <a id="s-241714f192"></a>`description`: One canonical public application-access request or response grant.
 - <a id="s-2bc5cade12"></a>`type`: object
 
 ### Fields
@@ -76,7 +74,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 41115c446c549121cfa8bb627234156538a8cdb9ba411a5a6553ce5c32e56fda -->
+<!-- exact-contract-value: 1d824cf0c37fde02c090eabd05e06ada64c2a3946bfa09e5bbb31e0611439719 -->
 
 ```json
 {
@@ -189,7 +187,6 @@ The following JSON is the complete value owned at each machine-authority pointer
           ]
         }
       ],
-      "description": "One canonical public application-access request or response grant.",
       "properties": {
         "permission": {
           "$ref": "#/$defs/ApplicationPermission"
@@ -202,7 +199,6 @@ The following JSON is the complete value owned at each machine-authority pointer
       "required": [
         "permission"
       ],
-      "title": "ApplicationAccessGrant",
       "type": "object"
     },
     "signature": "\"(*, permission: ApplicationPermission, resource: ApplicationResource = '*') -> None\""

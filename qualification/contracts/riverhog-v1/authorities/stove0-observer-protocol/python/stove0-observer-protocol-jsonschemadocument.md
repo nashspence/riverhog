@@ -27,7 +27,6 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-770f88fa45"></a>
-- <a id="s-6b0d9c726c"></a>`title`: JsonSchemaDocument
 - <a id="s-60a4f94c9b"></a>`type`: object
 
 ### Fields
@@ -77,7 +76,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 6452f7799a4d36ee30c5e423f59c75c634ca58414422b6a9d9ff149d84143f00 -->
+<!-- exact-contract-value: 6ae8ec0b60fbecb8e12bf3bbe31d154549ea2ecdc23d463da64929a0c004404f -->
 
 ```json
 {
@@ -92,30 +91,25 @@ The following JSON is the complete value owned at each machine-authority pointer
         "dialect": {
           "const": "https://json-schema.org/draft/2020-12/schema",
           "default": "https://json-schema.org/draft/2020-12/schema",
-          "title": "Dialect",
           "type": "string"
         },
         "format_policy": {
           "const": "annotation-only",
           "default": "annotation-only",
-          "title": "Format Policy",
           "type": "string"
         },
         "id": {
           "pattern": "^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$",
-          "title": "Id",
           "type": "string"
         },
         "schema": {
           "additionalProperties": {
             "$ref": "#/$defs/JsonValue"
           },
-          "title": "Schema",
           "type": "object"
         },
         "sha256": {
           "pattern": "^[0-9a-f]{64}$",
-          "title": "Sha256",
           "type": "string"
         }
       },
@@ -124,7 +118,6 @@ The following JSON is the complete value owned at each machine-authority pointer
         "sha256",
         "schema"
       ],
-      "title": "JsonSchemaDocument",
       "type": "object"
     },
     "signature": "\"(*, id: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$', ascii_only=None)], sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)], dialect: Literal['https://json-schema.org/draft/2020-12/schema'] = 'https://json-schema.org/draft/2020-12/schema', format_policy: Literal['annotation-only'] = 'annotation-only', schema: dict[str, JsonValue]) -> None\""

@@ -27,7 +27,6 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-41e3ad29a6"></a>
-- <a id="s-fbbe2f9f5c"></a>`title`: CatalogSyncChangePage
 - <a id="s-af3d3bf176"></a>`type`: object
 
 ### Fields
@@ -75,7 +74,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 02adeb32420be216240759ad9ddb024ca34d5c0a2f338a0340b867656c60e76c -->
+<!-- exact-contract-value: 963b6552744388a2c22a5dac28688748dc2df89a9ca44324f6d3d307b7779601 -->
 
 ```json
 {
@@ -92,14 +91,12 @@ The following JSON is the complete value owned at each machine-authority pointer
             "operation": {
               "const": "delete",
               "default": "delete",
-              "title": "Operation",
               "type": "string"
             },
             "revision": {
               "maxLength": 19,
               "minLength": 1,
               "pattern": "^(?:[1-9][0-9]{0,17}|[1-8][0-9]{18})$",
-              "title": "Revision",
               "type": "string"
             }
           },
@@ -107,7 +104,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             "collection_id",
             "revision"
           ],
-          "title": "CatalogSyncDelete",
           "type": "object"
         },
         "CatalogSyncUpsert": {
@@ -117,7 +113,6 @@ The following JSON is the complete value owned at each machine-authority pointer
               "maxLength": 64,
               "minLength": 64,
               "pattern": "^[0-9a-f]{64}$",
-              "title": "Archive Root Sha256",
               "type": "string"
             },
             "collection_id": {
@@ -127,7 +122,6 @@ The following JSON is the complete value owned at each machine-authority pointer
               "maxLength": 64,
               "minLength": 64,
               "pattern": "^[0-9a-f]{64}$",
-              "title": "Content Identity",
               "type": "string"
             },
             "description": {
@@ -144,39 +138,33 @@ The following JSON is the complete value owned at each machine-authority pointer
               "maxLength": 64,
               "minLength": 64,
               "pattern": "^[0-9a-f]{64}$",
-              "title": "Description Identity",
               "type": "string"
             },
             "description_revision": {
               "maximum": 9007199254740991,
               "minimum": 0,
-              "title": "Description Revision",
               "type": "integer"
             },
             "operation": {
               "const": "upsert",
               "default": "upsert",
-              "title": "Operation",
               "type": "string"
             },
             "revision": {
               "maxLength": 19,
               "minLength": 1,
               "pattern": "^(?:[1-9][0-9]{0,17}|[1-8][0-9]{18})$",
-              "title": "Revision",
               "type": "string"
             },
             "tag_revision": {
               "maximum": 9007199254740991,
               "minimum": 1,
-              "title": "Tag Revision",
               "type": "integer"
             },
             "tag_set_identity": {
               "maxLength": 64,
               "minLength": 64,
               "pattern": "^[0-9a-f]{64}$",
-              "title": "Tag Set Identity",
               "type": "string"
             }
           },
@@ -191,7 +179,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             "tag_set_identity",
             "revision"
           ],
-          "title": "CatalogSyncUpsert",
           "type": "object"
         },
         "CollectionDescription": {
@@ -216,11 +203,9 @@ The following JSON is the complete value owned at each machine-authority pointer
           "maxLength": 64,
           "minLength": 64,
           "pattern": "^[0-9a-f]{64}$",
-          "title": "Authorization View Identity",
           "type": "string"
         },
         "caught_up": {
-          "title": "Caught Up",
           "type": "boolean"
         },
         "changes": {
@@ -242,33 +227,28 @@ The following JSON is the complete value owned at each machine-authority pointer
             ]
           },
           "maxItems": 100,
-          "title": "Changes",
           "type": "array"
         },
         "format": {
           "const": "riverhog-catalog-sync/v1",
           "default": "riverhog-catalog-sync/v1",
-          "title": "Format",
           "type": "string"
         },
         "next_cursor": {
           "maxLength": 4096,
           "minLength": 1,
-          "title": "Next Cursor",
           "type": "string"
         },
         "source_identity": {
           "maxLength": 64,
           "minLength": 64,
           "pattern": "^[0-9a-f]{64}$",
-          "title": "Source Identity",
           "type": "string"
         },
         "through_revision": {
           "maxLength": 19,
           "minLength": 1,
           "pattern": "^(?:0|[1-9][0-9]{0,17}|[1-8][0-9]{18})$",
-          "title": "Through Revision",
           "type": "string"
         }
       },
@@ -280,7 +260,6 @@ The following JSON is the complete value owned at each machine-authority pointer
         "caught_up",
         "through_revision"
       ],
-      "title": "CatalogSyncChangePage",
       "type": "object"
     },
     "signature": "\"(*, format: Literal['riverhog-catalog-sync/v1'] = 'riverhog-catalog-sync/v1', source_identity: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=64, max_length=64, pattern='^[0-9a-f]{64}$', ascii_only=None)], authorization_view_identity: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=64, max_length=64, pattern='^[0-9a-f]{64}$', ascii_only=None)], changes: Annotated[list[Annotated[riverhog_protocol.catalog_sync.CatalogSyncUpsert | riverhog_protocol.catalog_sync.CatalogSyncDelete, FieldInfo(annotation=NoneType, required=True, discriminator='operation')]], MaxLen(max_length=100)], next_cursor: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=1, max_length=4096, pattern=None, ascii_only=None)], caught_up: bool, through_revision: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=1, max_length=19, pattern='^(?:0|[1-9][0-9]{0,17}|[1-8][0-9]{18})$', ascii_only=None)]) -> None\""

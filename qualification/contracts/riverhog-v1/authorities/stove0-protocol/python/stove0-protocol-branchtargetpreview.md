@@ -27,8 +27,6 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-56fcbdd6a7"></a>
-- <a id="s-96205307f9"></a>`title`: BranchTargetPreview
-- <a id="s-a3ce0d15c4"></a>`description`: Target-owned preflight evidence for one exact previewed branch.
 - <a id="s-a49f976953"></a>`type`: object
 
 ### Fields
@@ -71,7 +69,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 445e2b7417997330ad9e5a230e3dc45d6700e698f6a1b56fcbb70323ae1cd3d5 -->
+<!-- exact-contract-value: 527c472d22455e623a28203026d44d0c6704adb812aa2a018eb7a72f5f1ff9fe -->
 
 ```json
 {
@@ -82,38 +80,31 @@ The following JSON is the complete value owned at each machine-authority pointer
         "JsonValue": {},
         "TargetPlanBinding": {
           "additionalProperties": false,
-          "description": "Opaque binding to a target-owned preflight plan.\n\nThe target protocol owns the plan schema and canonicalization algorithm. stove0\nretains the complete validated plan document and its target-issued digest, but\ndeliberately does not reinterpret or re-hash the plan with stove0's canonical\nJSON rules. This prevents two authorities from disagreeing about target plan\nidentity while preserving the full document in the execution envelope.",
           "properties": {
             "operation_contract_sha256": {
               "pattern": "^[0-9a-f]{64}$",
-              "title": "Operation Contract Sha256",
               "type": "string"
             },
             "plan": {
               "additionalProperties": {
                 "$ref": "#/$defs/JsonValue"
               },
-              "title": "Plan",
               "type": "object"
             },
             "plan_sha256": {
               "pattern": "^[0-9a-f]{64}$",
-              "title": "Plan Sha256",
               "type": "string"
             },
             "protocol": {
               "pattern": "^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$",
-              "title": "Protocol",
               "type": "string"
             },
             "target_contract_sha256": {
               "pattern": "^[0-9a-f]{64}$",
-              "title": "Target Contract Sha256",
               "type": "string"
             },
             "target_implementation_id": {
               "pattern": "^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$",
-              "title": "Target Implementation Id",
               "type": "string"
             }
           },
@@ -125,16 +116,13 @@ The following JSON is the complete value owned at each machine-authority pointer
             "plan",
             "plan_sha256"
           ],
-          "title": "TargetPlanBinding",
           "type": "object"
         }
       },
       "additionalProperties": false,
-      "description": "Target-owned preflight evidence for one exact previewed branch.",
       "properties": {
         "branch_id": {
           "pattern": "^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$",
-          "title": "Branch Id",
           "type": "string"
         },
         "target_plan": {
@@ -142,12 +130,10 @@ The following JSON is the complete value owned at each machine-authority pointer
         },
         "work_id": {
           "pattern": "^[0-9a-f]{64}$",
-          "title": "Work Id",
           "type": "string"
         },
         "workflow_plan_sha256": {
           "pattern": "^[0-9a-f]{64}$",
-          "title": "Workflow Plan Sha256",
           "type": "string"
         }
       },
@@ -157,7 +143,6 @@ The following JSON is the complete value owned at each machine-authority pointer
         "workflow_plan_sha256",
         "target_plan"
       ],
-      "title": "BranchTargetPreview",
       "type": "object"
     },
     "signature": "\"(*, branch_id: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$', ascii_only=None)], work_id: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)], workflow_plan_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)], target_plan: stove0_protocol.models.TargetPlanBinding) -> None\""

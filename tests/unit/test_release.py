@@ -142,6 +142,7 @@ def test_release_contract_classifies_every_coordinated_distribution() -> None:
     assert release["compatibility"]["python_api"].startswith(
         "Freeze-protected declared public-module exports"
     )
+    assert "first shipped in v1" in release["compatibility"]["licensing"]
     assert {owner["id"] for owner in release["state"]["owners"]} == {
         "gogurt-listener",
         "mango-fish-cursor",
@@ -460,7 +461,7 @@ def test_dry_run_can_write_the_same_sha_bound_summary_it_prints(
 ) -> None:
     module = load_script()
     payload = {"source_sha": "1" * 40, "published": False}
-    monkeypatch.setattr(module, "dry_run", lambda _root, _version: payload)
+    monkeypatch.setattr(module, "dry_run", lambda _root, _version, **_kwargs: payload)
     summary = tmp_path / "qualification" / "release.json"
 
     assert module.main(["dry-run", "--version", "1.0.0", "--summary", str(summary)]) == 0
@@ -483,12 +484,16 @@ def test_release_plan_is_exact_sha_bound_and_excludes_the_test_image() -> None:
     assert plan["publication"] == publication
     assert {image["target"] for image in plan["images"]} == set(publication["runtime_images"])
     assert all(project["requires_python"] == ">=3.12" for project in plan["python"])
+    assert all(project["license_expression"] for project in plan["python"])
+    assert all(project["publication_identity"] for project in plan["python"])
     assert plan["reference_policy"] == module.REFERENCE_POLICY
     assert {image["role"] for image in plan["images"]} == {"product", "reference"}
     assert {image["target"] for image in plan["images"] if image["role"] == "product"} == {
         "riverhog"
     }
     assert all(image["description"] for image in plan["images"])
+    assert all(image["license_expression"] for image in plan["images"])
+    assert all(image["publication_identity"] for image in plan["images"])
     assert next(image for image in plan["images"] if image["target"] == "stove0")[
         "distributions"
     ] == ["stove0-server"]
@@ -556,8 +561,245 @@ def test_release_plan_is_exact_sha_bound_and_excludes_the_test_image() -> None:
     assert f"Source: `{plan['source_sha']}`" in markdown
     assert "## First-party reference policy" in markdown
     assert module.REFERENCE_POLICY in markdown
-    assert "— reference: Optional nonnormative" in markdown
+    assert "Optional nonnormative" in markdown
     assert "Initial v1 release; there is no previous release tag." in markdown
+
+
+@pytest.mark.parametrize(
+    ("baseline", "candidate", "preserved"),
+    [
+        ("Apache-2.0 OR MIT", "MIT OR Apache-2.0", True),
+        ("Apache-2.0 OR MIT", "BSD-3-Clause OR Apache-2.0 OR MIT", True),
+        (
+            "(Apache-2.0 AND MIT) OR BSD-3-Clause",
+            "BSD-3-Clause OR (MIT AND Apache-2.0) OR CAL-1.0",
+            True,
+        ),
+        ("Apache-2.0 OR MIT", "Apache-2.0", False),
+        ("Apache-2.0", "Apache-2.0 AND MIT", False),
+        (
+            "Apache-2.0 WITH LLVM-exception",
+            "Apache-2.0 OR LLVM-exception",
+            False,
+        ),
+    ],
+)
+def test_v1_license_grants_use_only_structural_spdx_disjunct_inclusion(
+    baseline: str, candidate: str, preserved: bool
+) -> None:
+    module = load_script()
+
+    assert module._license_grant_preserved(baseline, candidate) is preserved
+
+
+def _history_manifest(
+    module: ModuleType,
+    version: str,
+    licenses: dict[tuple[str, str], str],
+    previous: tuple[str, str] | None,
+) -> dict[str, object]:
+    return {
+        "schema": module.RELEASE_SCHEMA,
+        "version": version,
+        "tag": f"v{version}",
+        "v1_history": (
+            {"kind": "genesis"}
+            if previous is None
+            else {
+                "kind": "continuation",
+                "previous_tag": previous[0],
+                "previous_manifest_sha256": previous[1],
+            }
+        ),
+        "publication_licenses": [
+            {
+                "publication_identity": {"kind": kind, "coordinate": coordinate},
+                "license_expression": expression,
+            }
+            for (kind, coordinate), expression in sorted(licenses.items())
+        ],
+    }
+
+
+def _write_history_manifest(module: ModuleType, path: Path, value: dict[str, object]) -> str:
+    payload = module._canonical_release_manifest_bytes(value)
+    path.write_bytes(payload)
+    return module.hashlib.sha256(payload).hexdigest()
+
+
+def test_v1_release_manifest_history_is_offline_exact_and_coordinate_scoped(
+    tmp_path: Path,
+) -> None:
+    module = load_script()
+    distribution = ("python-distribution", "riverhog-client")
+    image = ("oci-repository", "ghcr.io/nashspence/riverhog")
+    v1 = _history_manifest(module, "1.0.0", {distribution: "Apache-2.0"}, None)
+    v1_path = tmp_path / "v1.0.0.json"
+    v1_digest = _write_history_manifest(module, v1_path, v1)
+    v1_1 = _history_manifest(
+        module,
+        "1.1.0",
+        {distribution: "MIT OR Apache-2.0", image: "CAL-1.0"},
+        ("v1.0.0", v1_digest),
+    )
+    v1_1_path = tmp_path / "v1.1.0.json"
+    v1_1_digest = _write_history_manifest(module, v1_1_path, v1_1)
+    candidate = _history_manifest(
+        module,
+        "1.2.0",
+        {distribution: "Apache-2.0 OR MIT", image: "CAL-1.0 OR Apache-2.0"},
+        ("v1.1.0", v1_1_digest),
+    )
+    expected = {"tag": "v1.1.0", "manifest_sha256": v1_1_digest}
+
+    result = module._verify_v1_manifest_history(
+        candidate,
+        expected_previous=expected,
+        historical_manifest_paths=[v1_1_path, v1_path],
+    )
+
+    assert result["manifests"] == 3
+    assert result["coordinates"] == 2
+    assert result["baselines"]["python-distribution:riverhog-client"] == {
+        "tag": "v1.0.0",
+        "license_expression": "Apache-2.0",
+    }
+    assert result["baselines"]["oci-repository:ghcr.io/nashspence/riverhog"] == {
+        "tag": "v1.1.0",
+        "license_expression": "CAL-1.0",
+    }
+
+    with pytest.raises(module.ReleaseError, match="reordered, forked, or extraneous"):
+        module._verify_v1_manifest_history(
+            candidate,
+            expected_previous=expected,
+            historical_manifest_paths=[v1_path, v1_1_path],
+        )
+    with pytest.raises(module.ReleaseError, match="incomplete"):
+        module._verify_v1_manifest_history(
+            candidate,
+            expected_previous=expected,
+            historical_manifest_paths=[v1_1_path],
+        )
+
+    withdrawn = _history_manifest(
+        module,
+        "1.2.0",
+        {distribution: "MIT", image: "CAL-1.0"},
+        ("v1.1.0", v1_1_digest),
+    )
+    with pytest.raises(module.ReleaseError, match="license grant was withdrawn"):
+        module._verify_v1_manifest_history(
+            withdrawn,
+            expected_previous=expected,
+            historical_manifest_paths=[v1_1_path, v1_path],
+        )
+
+
+def test_v1_release_manifest_history_rejects_wrong_heads_duplicates_and_cycles(
+    tmp_path: Path,
+) -> None:
+    module = load_script()
+    coordinate = {("python-distribution", "riverhog-client"): "Apache-2.0"}
+    v1 = _history_manifest(module, "1.0.0", coordinate, None)
+    v1_path = tmp_path / "v1.json"
+    v1_digest = _write_history_manifest(module, v1_path, v1)
+    candidate = _history_manifest(module, "1.1.0", coordinate, ("v1.0.0", v1_digest))
+
+    with pytest.raises(module.ReleaseError, match="another predecessor"):
+        module._verify_v1_manifest_history(
+            candidate,
+            expected_previous={"tag": "v1.0.0", "manifest_sha256": "0" * 64},
+            historical_manifest_paths=[v1_path],
+        )
+    with pytest.raises(module.ReleaseError, match="duplicated"):
+        module._verify_v1_manifest_history(
+            candidate,
+            expected_previous={"tag": "v1.0.0", "manifest_sha256": v1_digest},
+            historical_manifest_paths=[v1_path, v1_path],
+        )
+
+    cyclic = _history_manifest(module, "1.0.1", coordinate, ("v1.0.1", "0" * 64))
+    cyclic_path = tmp_path / "cycle.json"
+    cyclic_digest = _write_history_manifest(module, cyclic_path, cyclic)
+    cycle_candidate = _history_manifest(module, "1.1.0", coordinate, ("v1.0.1", cyclic_digest))
+    with pytest.raises(module.ReleaseError, match="cycle"):
+        module._verify_v1_manifest_history(
+            cycle_candidate,
+            expected_previous={"tag": "v1.0.1", "manifest_sha256": cyclic_digest},
+            historical_manifest_paths=[cyclic_path],
+        )
+
+
+def test_v1_release_manifest_history_rejects_digest_drift_and_coordinate_omission(
+    tmp_path: Path,
+) -> None:
+    module = load_script()
+    coordinate = ("python-distribution", "riverhog-client")
+    baseline = _history_manifest(module, "1.0.0", {coordinate: "Apache-2.0"}, None)
+    baseline_path = tmp_path / "v1.0.0.json"
+    baseline_digest = _write_history_manifest(module, baseline_path, baseline)
+    candidate = _history_manifest(module, "1.1.0", {coordinate: "Apache-2.0"}, ("v1.0.0", "0" * 64))
+    with pytest.raises(module.ReleaseError, match="digest differs"):
+        module._verify_v1_manifest_history(
+            candidate,
+            expected_previous={"tag": "v1.0.0", "manifest_sha256": "0" * 64},
+            historical_manifest_paths=[baseline_path],
+        )
+
+    omitted = _history_manifest(module, "1.1.0", {}, ("v1.0.0", baseline_digest))
+    with pytest.raises(module.ReleaseError, match="omits a previously published"):
+        module._verify_v1_manifest_history(
+            omitted,
+            expected_previous={"tag": "v1.0.0", "manifest_sha256": baseline_digest},
+            historical_manifest_paths=[baseline_path],
+        )
+
+
+def test_built_publication_license_evidence_is_exact_and_complete() -> None:
+    module = load_script()
+    inventory = [
+        {
+            "publication_identity": {
+                "kind": "python-distribution",
+                "coordinate": "riverhog-client",
+            },
+            "license_expression": "Apache-2.0",
+        },
+        {
+            "publication_identity": {
+                "kind": "oci-repository",
+                "coordinate": "ghcr.io/nashspence/riverhog",
+            },
+            "license_expression": "CAL-1.0",
+        },
+    ]
+    subjects = [
+        {
+            "kind": "wheel",
+            "distribution": "riverhog-client",
+            "license": "Apache-2.0",
+        },
+        {
+            "kind": "sdist",
+            "distribution": "riverhog-client",
+            "license": "Apache-2.0",
+        },
+        {
+            "kind": "image",
+            "name": "ghcr.io/nashspence/riverhog",
+            "license": "CAL-1.0",
+        },
+    ]
+
+    module._verify_built_publication_licenses(subjects, inventory)
+
+    with pytest.raises(module.ReleaseError, match="incomplete"):
+        module._verify_built_publication_licenses(subjects[:1] + subjects[2:], inventory)
+    changed = [dict(item) for item in subjects]
+    changed[0]["license"] = "MIT"
+    with pytest.raises(module.ReleaseError, match="differs from its authority"):
+        module._verify_built_publication_licenses(changed, inventory)
 
 
 def test_coordinated_version_application_updates_all_internal_ranges(tmp_path: Path) -> None:
@@ -754,6 +996,8 @@ def test_release_evidence_is_complete_and_minisign_verified(
     output.mkdir()
     payload = output / "artifact.whl"
     payload.write_bytes(b"release artifact\n")
+    source_payload = output / "artifact.tar.gz"
+    source_payload.write_bytes(b"release source artifact\n")
     keys = tmp_path / "keys"
     keys.mkdir()
     public_key = keys / "release.pub"
@@ -803,8 +1047,31 @@ def test_release_evidence_is_complete_and_minisign_verified(
                     ],
                 }
             ],
-        }
+        },
+        {
+            "kind": "sdist",
+            "name": "artifact.tar.gz",
+            "sha256": module._sha256_file(source_payload),
+            "size": source_payload.stat().st_size,
+            "distribution": "riverhog-client",
+            "version": "1.0.0",
+            "license": "CAL-1.0",
+            "dependencies": [],
+            "_components": [],
+        },
     ]
+    publication = {
+        "distributions": {
+            "riverhog-client": {
+                "publication_identity": {
+                    "kind": "python-distribution",
+                    "coordinate": "riverhog-client",
+                },
+                "license_expression": "CAL-1.0",
+            }
+        },
+        "runtime_images": {},
+    }
     install_manifest = {"schema": "riverhog-installation/v1"}
     (output / "install-manifest.json").write_text(
         module.json.dumps(install_manifest), encoding="utf-8"
@@ -826,17 +1093,24 @@ def test_release_evidence_is_complete_and_minisign_verified(
         install_manifest=install_manifest,
         signing_key=signing_key,
         public_key=public_key,
+        publication=publication,
     )
 
-    assert verification["subjects"] == 1
+    assert verification["subjects"] == 2
     assert verification["notice_components"] == 1
+    assert verification["license_coordinates"] == 1
+    assert verification["release_history_manifests"] == 1
     assert verification["signature_verified"] is True
     assert (output / "SHA256SUMS.minisig").is_file()
     assert (output / records[0]["sbom"]).is_file()
     assert (output / records[0]["notices"]).is_file()
     manifest = module.json.loads((output / "release-manifest.json").read_text(encoding="utf-8"))
     assert manifest["published"] is False
-    assert manifest["subjects"] == records
+    assert manifest["subjects"] == sorted(
+        records, key=lambda item: (str(item["kind"]), str(item["name"]))
+    )
+    assert manifest["v1_history"] == {"kind": "genesis"}
+    assert manifest["publication_licenses"] == module._publication_license_inventory(publication)
     assert manifest["contract"] == {
         "file": "riverhog-v1-contract.tar.gz",
         "sha256": module._sha256_file(output / "riverhog-v1-contract.tar.gz"),

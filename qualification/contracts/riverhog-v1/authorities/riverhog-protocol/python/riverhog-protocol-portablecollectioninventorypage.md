@@ -27,8 +27,6 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-d7dbb6340d"></a>
-- <a id="s-84bdcafeb0"></a>`title`: PortableCollectionInventoryPage
-- <a id="s-37913469f0"></a>`description`: One bounded, canonically ordered slice of an immutable inventory.
 - <a id="s-6f91f83dce"></a>`type`: object
 
 ### Fields
@@ -81,7 +79,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: dddf74e2fa3824121b299890929fd2fd1d2edd7f226844878d02aab9716124d0 -->
+<!-- exact-contract-value: 2cfad62b1e57a4b3781eb4338941550f960a122d23a4dcceb2a2e5ee180ba2c3 -->
 
 ```json
 {
@@ -115,11 +113,9 @@ The following JSON is the complete value owned at each machine-authority pointer
         },
         "ImmutableFileIdentityDocument": {
           "additionalProperties": false,
-          "description": "The exact path, length, and plaintext digest shared by file projections.",
           "properties": {
             "bytes": {
               "minimum": 0,
-              "title": "Bytes",
               "type": "integer"
             },
             "path": {
@@ -127,7 +123,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             },
             "sha256": {
               "pattern": "^[0-9a-f]{64}$",
-              "title": "Sha256",
               "type": "string"
             }
           },
@@ -136,35 +131,29 @@ The following JSON is the complete value owned at each machine-authority pointer
             "bytes",
             "sha256"
           ],
-          "title": "ImmutableFileIdentityDocument",
           "type": "object"
         },
         "PortableCollectionHeader": {
           "additionalProperties": false,
-          "description": "Bounded immutable metadata that owns one portable file inventory.",
           "properties": {
             "collection": {
               "$ref": "#/$defs/CollectionId"
             },
             "content_identity": {
               "pattern": "^[0-9a-f]{64}$",
-              "title": "Content Identity",
               "type": "string"
             },
             "encryption_format": {
               "minLength": 1,
-              "title": "Encryption Format",
               "type": "string"
             },
             "format": {
               "const": "riverhog-collection/v1",
               "default": "riverhog-collection/v1",
-              "title": "Format",
               "type": "string"
             },
             "passphrase_id": {
               "pattern": "^[A-Za-z0-9_-]{16,128}$",
-              "title": "Passphrase Id",
               "type": "string"
             },
             "provenance_identity": {
@@ -177,8 +166,7 @@ The following JSON is the complete value owned at each machine-authority pointer
                   "type": "null"
                 }
               ],
-              "default": null,
-              "title": "Provenance Identity"
+              "default": null
             },
             "provenance_mode": {
               "enum": [
@@ -186,7 +174,6 @@ The following JSON is the complete value owned at each machine-authority pointer
                 "mixed",
                 "omitted"
               ],
-              "title": "Provenance Mode",
               "type": "string"
             }
           },
@@ -197,21 +184,17 @@ The following JSON is the complete value owned at each machine-authority pointer
             "passphrase_id",
             "provenance_mode"
           ],
-          "title": "PortableCollectionHeader",
           "type": "object"
         },
         "PortableCollectionInventoryAuthority": {
           "additionalProperties": false,
-          "description": "The immutable authority shared by every bounded inventory page.",
           "properties": {
             "file_bytes": {
               "minimum": 0,
-              "title": "File Bytes",
               "type": "integer"
             },
             "file_count": {
               "minimum": 1,
-              "title": "File Count",
               "type": "integer"
             },
             "header": {
@@ -219,7 +202,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             },
             "inventory_identity": {
               "pattern": "^[0-9a-f]{64}$",
-              "title": "Inventory Identity",
               "type": "string"
             }
           },
@@ -229,18 +211,15 @@ The following JSON is the complete value owned at each machine-authority pointer
             "file_count",
             "file_bytes"
           ],
-          "title": "PortableCollectionInventoryAuthority",
           "type": "object"
         }
       },
       "additionalProperties": false,
-      "description": "One bounded, canonically ordered slice of an immutable inventory.",
       "properties": {
         "authority": {
           "$ref": "#/$defs/PortableCollectionInventoryAuthority"
         },
         "complete": {
-          "title": "Complete",
           "type": "boolean"
         },
         "files": {
@@ -248,7 +227,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             "$ref": "#/$defs/ImmutableFileIdentityDocument"
           },
           "maxItems": 1000,
-          "title": "Files",
           "type": "array",
           "x-riverhog-extent": {
             "policy": "segmented_no_total_max",
@@ -259,7 +237,6 @@ The following JSON is the complete value owned at each machine-authority pointer
         "format": {
           "const": "riverhog-collection-inventory-page/v1",
           "default": "riverhog-collection-inventory-page/v1",
-          "title": "Format",
           "type": "string"
         },
         "next_cursor": {
@@ -273,8 +250,7 @@ The following JSON is the complete value owned at each machine-authority pointer
               "type": "null"
             }
           ],
-          "default": null,
-          "title": "Next Cursor"
+          "default": null
         }
       },
       "required": [
@@ -282,7 +258,6 @@ The following JSON is the complete value owned at each machine-authority pointer
         "files",
         "complete"
       ],
-      "title": "PortableCollectionInventoryPage",
       "type": "object"
     },
     "signature": "\"(*, format: Literal['riverhog-collection-inventory-page/v1'] = 'riverhog-collection-inventory-page/v1', authority: riverhog_protocol.portable_collection.PortableCollectionInventoryAuthority, files: Annotated[list[riverhog_protocol.file_identity.ImmutableFileIdentityDocument], MaxLen(max_length=1000)], next_cursor: Annotated[str | None, MinLen(min_length=1), MaxLen(max_length=8192)] = None, complete: bool) -> None\""

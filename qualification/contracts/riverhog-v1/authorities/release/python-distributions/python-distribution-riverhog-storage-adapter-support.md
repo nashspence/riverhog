@@ -19,6 +19,9 @@ HTTP binding and conformance support for Riverhog storage adapters.
 | <a id="s-0071f98da8"></a>`artifacts` | [{"coordinate": "dist/riverhog_storage_adapter_support-{version}-py3-none-any.whl", "format": "wheel"}, {"coordinate": "dist/riverhog_storage_adapter_support-{version}.tar.gz", "format": "sdist"}] |
 | <a id="s-82d50ec7a0"></a>`channel` | github-release |
 | <a id="s-308ee021f4"></a>`description` | HTTP binding and conformance support for Riverhog storage adapters. |
+| <a id="s-ad86bba8de"></a>`license_baseline` | first-v1-publication |
+| <a id="s-b6f3c9aa64"></a>`license_expression` | Apache-2.0 |
+| <a id="s-25f054a1d0"></a>`publication_identity` | {"coordinate": "riverhog-storage-adapter-support", "kind": "python-distribution"} |
 | <a id="s-cd8c7cb430"></a>`requires_python` | >=3.12 |
 | <a id="s-1796668523"></a>`role` | reusable_library |
 | <a id="s-1a9dc4c79f"></a>`source` | packages/riverhog-storage-adapter-support/pyproject.toml |
@@ -57,7 +60,7 @@ Publication preserves these existing component authorities; it does not reclassi
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: d65252db4a7b28127c50498777179540468e162cf6cf1c8388ea84819ae091d5 -->
+<!-- exact-contract-value: 2dba59f1cc3c9f53c8eec7d3dc0d8619433fc91406994ceac010ac8cea573854 -->
 
 ```json
 {
@@ -73,6 +76,12 @@ The following JSON is the complete value owned at each machine-authority pointer
   ],
   "channel": "github-release",
   "description": "HTTP binding and conformance support for Riverhog storage adapters.",
+  "license_baseline": "first-v1-publication",
+  "license_expression": "Apache-2.0",
+  "publication_identity": {
+    "coordinate": "riverhog-storage-adapter-support",
+    "kind": "python-distribution"
+  },
   "requires_python": ">=3.12",
   "role": "reusable_library",
   "source": "packages/riverhog-storage-adapter-support/pyproject.toml"

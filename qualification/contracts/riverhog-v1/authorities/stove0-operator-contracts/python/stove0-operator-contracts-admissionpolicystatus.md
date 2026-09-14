@@ -27,7 +27,6 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-3203bf160f"></a>
-- <a id="s-ba3bd9a772"></a>`title`: AdmissionPolicyStatus
 - <a id="s-7c331f0fe3"></a>`type`: object
 
 ### Fields
@@ -81,7 +80,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 80e84112a284eba2985a88c3dc95efcfe2362373ff96797a19b4ca6bb5b2dba5 -->
+<!-- exact-contract-value: 41281c582e714c92834389590bfc5df77bd7f1f33df57b739ac99fbedcf7a484 -->
 
 ```json
 {
@@ -91,46 +90,38 @@ The following JSON is the complete value owned at each machine-authority pointer
       "$defs": {
         "AdmissionPolicy": {
           "additionalProperties": false,
-          "description": "One bounded, exact all-of classification admission rule.",
           "properties": {
             "automatic_preview": {
               "const": "accept-ready",
               "default": "accept-ready",
-              "title": "Automatic Preview",
               "type": "string"
             },
             "effective_intent": {
               "additionalProperties": {
                 "$ref": "#/$defs/JsonValue"
               },
-              "title": "Effective Intent",
               "type": "object"
             },
             "format": {
               "const": "stove0-admission-policy/v1",
               "default": "stove0-admission-policy/v1",
-              "title": "Format",
               "type": "string"
             },
             "id": {
               "pattern": "^[a-z0-9]\u0028?:[a-z0-9._-]{0,158}[a-z0-9])?$",
-              "title": "Id",
               "type": "string"
             },
             "recipe_id": {
               "maxLength": 160,
               "minLength": 1,
-              "title": "Recipe Id",
               "type": "string"
             },
             "recipe_revision": {
               "minimum": 1,
-              "title": "Recipe Revision",
               "type": "integer"
             },
             "recipe_sha256": {
               "pattern": "^[0-9a-f]{64}$",
-              "title": "Recipe Sha256",
               "type": "string"
             },
             "required_tags": {
@@ -139,7 +130,6 @@ The following JSON is the complete value owned at each machine-authority pointer
               },
               "maxItems": 100,
               "minItems": 1,
-              "title": "Required Tags",
               "type": "array",
               "x-riverhog-extent": {
                 "policy": "contract_max",
@@ -148,7 +138,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             },
             "revision": {
               "minimum": 1,
-              "title": "Revision",
               "type": "integer"
             }
           },
@@ -160,7 +149,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             "recipe_revision",
             "recipe_sha256"
           ],
-          "title": "AdmissionPolicy",
           "type": "object"
         },
         "CollectionTag": {
@@ -188,15 +176,13 @@ The following JSON is the complete value owned at each machine-authority pointer
               "type": "null"
             }
           ],
-          "default": null,
-          "title": "Authorization View Identity"
+          "default": null
         },
         "baseline_mode": {
           "enum": [
             "observe",
             "backfill"
           ],
-          "title": "Baseline Mode",
           "type": "string"
         },
         "phase": {
@@ -206,7 +192,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             "following",
             "reset_required"
           ],
-          "title": "Phase",
           "type": "string"
         },
         "policy": {
@@ -214,7 +199,6 @@ The following JSON is the complete value owned at each machine-authority pointer
         },
         "policy_sha256": {
           "pattern": "^[0-9a-f]{64}$",
-          "title": "Policy Sha256",
           "type": "string"
         },
         "source_identity": {
@@ -227,18 +211,15 @@ The following JSON is the complete value owned at each machine-authority pointer
               "type": "null"
             }
           ],
-          "default": null,
-          "title": "Source Identity"
+          "default": null
         },
         "through_revision": {
           "pattern": "^(?:0|[1-9][0-9]*)$",
-          "title": "Through Revision",
           "type": "string"
         },
         "updated_at": {
           "maxLength": 40,
           "minLength": 1,
-          "title": "Updated At",
           "type": "string"
         }
       },
@@ -250,7 +231,6 @@ The following JSON is the complete value owned at each machine-authority pointer
         "through_revision",
         "updated_at"
       ],
-      "title": "AdmissionPolicyStatus",
       "type": "object"
     },
     "signature": "\"(*, policy: stove0_operator_contracts.AdmissionPolicy, policy_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)], phase: Literal['new', 'baseline', 'following', 'reset_required'], source_identity: Optional[Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)]] = None, authorization_view_identity: Optional[Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)]] = None, baseline_mode: Literal['observe', 'backfill'], through_revision: Annotated[str, _PydanticGeneralMetadata(pattern='^(?:0|[1-9][0-9]*)$')], updated_at: Annotated[str, MinLen(min_length=1), MaxLen(max_length=40)]) -> None\""

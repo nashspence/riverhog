@@ -27,7 +27,6 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-51b7355edb"></a>
-- <a id="s-0da53eba4f"></a>`title`: TargetExecutionEvidence
 - <a id="s-90f5d3922e"></a>`type`: object
 
 ### Fields
@@ -70,7 +69,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 539e828285aef6ae6a26783e30e79ed628534552b368f79577a7558fa70e3da3 -->
+<!-- exact-contract-value: 8f45bcfb82080a177715e5368fbe57cfe2fec7873738829fabdb05a8c476bb1e -->
 
 ```json
 {
@@ -84,29 +83,24 @@ The following JSON is the complete value owned at each machine-authority pointer
       "properties": {
         "execution_sha256": {
           "pattern": "^[0-9a-f]{64}$",
-          "title": "Execution Sha256",
           "type": "string"
         },
         "operation_contract_sha256": {
           "pattern": "^[0-9a-f]{64}$",
-          "title": "Operation Contract Sha256",
           "type": "string"
         },
         "plan_sha256": {
           "pattern": "^[0-9a-f]{64}$",
-          "title": "Plan Sha256",
           "type": "string"
         },
         "runtime": {
           "additionalProperties": {
             "$ref": "#/$defs/JsonValue"
           },
-          "title": "Runtime",
           "type": "object"
         },
         "target_contract_sha256": {
           "pattern": "^[0-9a-f]{64}$",
-          "title": "Target Contract Sha256",
           "type": "string"
         }
       },
@@ -116,7 +110,6 @@ The following JSON is the complete value owned at each machine-authority pointer
         "plan_sha256",
         "execution_sha256"
       ],
-      "title": "TargetExecutionEvidence",
       "type": "object"
     },
     "signature": "\"(*, target_contract_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)], operation_contract_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)], plan_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)], execution_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)], runtime: dict[str, JsonValue] = <factory>) -> None\""

@@ -19,6 +19,9 @@ Optional nonnormative Windows observation-contract reference for Riverhog proven
 | <a id="s-5eaa626d71"></a>`artifacts` | [{"coordinate": "dist/riverhog_provenance_windows_contracts-{version}-py3-none-any.whl", "format": "wheel"}, {"coordinate": "dist/riverhog_provenance_windows_contracts-{version}.tar.gz", "format": "sdist"}] |
 | <a id="s-3ddbd0f699"></a>`channel` | github-release |
 | <a id="s-13f8325b0d"></a>`description` | Optional nonnormative Windows observation-contract reference for Riverhog provenance. |
+| <a id="s-5bef294fde"></a>`license_baseline` | first-v1-publication |
+| <a id="s-6b1e645586"></a>`license_expression` | Apache-2.0 |
+| <a id="s-0bf821b9c6"></a>`publication_identity` | {"coordinate": "riverhog-provenance-windows-contracts", "kind": "python-distribution"} |
 | <a id="s-05f81446c0"></a>`requires_python` | >=3.12 |
 | <a id="s-bd17ea25af"></a>`role` | reference_component |
 | <a id="s-109bded2bc"></a>`source` | reference/riverhog/provenance/contracts/windows/pyproject.toml |
@@ -57,7 +60,7 @@ Publication preserves these existing component authorities; it does not reclassi
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: fd94061373b9ae44350ef398340afc1b3a4ece1300745bec08ce94d55acb3496 -->
+<!-- exact-contract-value: 33fabad5d09f56f140a1a09041ab47c5582bd86c97d875997f1651bab0b9c003 -->
 
 ```json
 {
@@ -73,6 +76,12 @@ The following JSON is the complete value owned at each machine-authority pointer
   ],
   "channel": "github-release",
   "description": "Optional nonnormative Windows observation-contract reference for Riverhog provenance.",
+  "license_baseline": "first-v1-publication",
+  "license_expression": "Apache-2.0",
+  "publication_identity": {
+    "coordinate": "riverhog-provenance-windows-contracts",
+    "kind": "python-distribution"
+  },
   "requires_python": ">=3.12",
   "role": "reference_component",
   "source": "reference/riverhog/provenance/contracts/windows/pyproject.toml"

@@ -27,7 +27,6 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-f3de5ccbcb"></a>
-- <a id="s-26cdb234cb"></a>`title`: SamplerWindow
 - <a id="s-2c05f7dc67"></a>`type`: object
 
 ### Fields
@@ -70,7 +69,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 1190ad46919343be467db3b44a6bb2602d9a99d738c280e130fb7c1d9a2f4ace -->
+<!-- exact-contract-value: 66152fd7c8a5a0f17ef78cc51fca7daae1bac2c03e69732cc0217fd0a7b9b935 -->
 
 ```json
 {
@@ -81,28 +80,23 @@ The following JSON is the complete value owned at each machine-authority pointer
       "properties": {
         "duration_ms": {
           "minimum": 1,
-          "title": "Duration Ms",
           "type": "integer"
         },
         "id": {
           "pattern": "^[A-Za-z0-9]\u0028?:[A-Za-z0-9._-]{0,158}[A-Za-z0-9])?$",
-          "title": "Id",
           "type": "string"
         },
         "input_id": {
           "pattern": "^[A-Za-z0-9]\u0028?:[A-Za-z0-9._-]{0,158}[A-Za-z0-9])?$",
-          "title": "Input Id",
           "type": "string"
         },
         "output_path": {
           "maxLength": 4096,
           "minLength": 1,
-          "title": "Output Path",
           "type": "string"
         },
         "start_ms": {
           "minimum": 0,
-          "title": "Start Ms",
           "type": "integer"
         }
       },
@@ -113,7 +107,6 @@ The following JSON is the complete value owned at each machine-authority pointer
         "duration_ms",
         "output_path"
       ],
-      "title": "SamplerWindow",
       "type": "object"
     },
     "signature": "\"(*, id: Annotated[str, _PydanticGeneralMetadata(pattern='^[A-Za-z0-9]\u0028?:[A-Za-z0-9._-]{0,158}[A-Za-z0-9])?$')], input_id: Annotated[str, _PydanticGeneralMetadata(pattern='^[A-Za-z0-9]\u0028?:[A-Za-z0-9._-]{0,158}[A-Za-z0-9])?$')], start_ms: Annotated[int, Ge(ge=0)], duration_ms: Annotated[int, Ge(ge=1)], output_path: Annotated[str, MinLen(min_length=1), MaxLen(max_length=4096)]) -> None\""

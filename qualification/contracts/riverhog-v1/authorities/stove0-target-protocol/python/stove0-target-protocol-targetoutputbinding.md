@@ -27,8 +27,6 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-92b21ab292"></a>
-- <a id="s-c08f2da649"></a>`title`: TargetOutputBinding
-- <a id="s-9e88534583"></a>`description`: One post-root binding of a declared semantic output to Riverhog custody.
 - <a id="s-b125606fc3"></a>`type`: object
 
 ### Fields
@@ -74,7 +72,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 27258f3b7738464bf17a48dad57e13bd17bb1a12bae402c221cecf09655dda80 -->
+<!-- exact-contract-value: 06f82d30cc285c93d2a7f4f00ab9cb8d8acddceee5b9e36dfd1d2b98a3d07584 -->
 
 ```json
 {
@@ -91,7 +89,6 @@ The following JSON is the complete value owned at each machine-authority pointer
           "properties": {
             "archive_root_sha256": {
               "pattern": "^[0-9a-f]{64}$",
-              "title": "Archive Root Sha256",
               "type": "string"
             },
             "collection_id": {
@@ -99,12 +96,10 @@ The following JSON is the complete value owned at each machine-authority pointer
             },
             "content_identity": {
               "pattern": "^[0-9a-f]{64}$",
-              "title": "Content Identity",
               "type": "string"
             },
             "derivation_sha256": {
               "pattern": "^[0-9a-f]{64}$",
-              "title": "Derivation Sha256",
               "type": "string"
             }
           },
@@ -114,16 +109,13 @@ The following JSON is the complete value owned at each machine-authority pointer
             "content_identity",
             "derivation_sha256"
           ],
-          "title": "OutputCollectionRef",
           "type": "object"
         }
       },
       "additionalProperties": false,
-      "description": "One post-root binding of a declared semantic output to Riverhog custody.",
       "properties": {
         "bytes": {
           "minimum": 0,
-          "title": "Bytes",
           "type": "integer"
         },
         "collection": {
@@ -140,28 +132,23 @@ The following JSON is the complete value owned at each machine-authority pointer
               "type": "null"
             }
           ],
-          "default": null,
-          "title": "Media Type"
+          "default": null
         },
         "output_id": {
           "pattern": "^[A-Za-z0-9]\u0028?:[A-Za-z0-9._-]{0,158}[A-Za-z0-9])?$",
-          "title": "Output Id",
           "type": "string"
         },
         "path": {
           "maxLength": 4096,
           "minLength": 1,
-          "title": "Path",
           "type": "string"
         },
         "role": {
           "pattern": "^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$",
-          "title": "Role",
           "type": "string"
         },
         "sha256": {
           "pattern": "^[0-9a-f]{64}$",
-          "title": "Sha256",
           "type": "string"
         }
       },
@@ -173,7 +160,6 @@ The following JSON is the complete value owned at each machine-authority pointer
         "bytes",
         "sha256"
       ],
-      "title": "TargetOutputBinding",
       "type": "object"
     },
     "signature": "\"(*, output_id: Annotated[str, _PydanticGeneralMetadata(pattern='^[A-Za-z0-9]\u0028?:[A-Za-z0-9._-]{0,158}[A-Za-z0-9])?$')], role: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$', ascii_only=None)], collection: stove0_target_protocol.protocol.OutputCollectionRef, path: Annotated[str, MinLen(min_length=1), MaxLen(max_length=4096)], bytes: Annotated[int, Ge(ge=0)], sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)], media_type: Annotated[str | None, MinLen(min_length=1), MaxLen(max_length=255)] = None) -> None\""

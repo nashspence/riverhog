@@ -27,7 +27,6 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-c37b1ced56"></a>
-- <a id="s-f069dcfa1e"></a>`title`: JoinAdmittedEventData
 - <a id="s-0d04820f3d"></a>`type`: object
 
 ### Fields
@@ -65,7 +64,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: c282f5342857b881fa73505406043a5188d7fb6f6a9b7b7358b5259562193ee3 -->
+<!-- exact-contract-value: 3667ed64e93ac4a26ddc5c99e4bc5214ed080d16d22059ebed02ee3f38408791 -->
 
 ```json
 {
@@ -76,32 +75,26 @@ The following JSON is the complete value owned at each machine-authority pointer
       "properties": {
         "branch_set_sha256": {
           "pattern": "^[0-9a-f]{64}$",
-          "title": "Branch Set Sha256",
           "type": "string"
         },
         "join_plan_sha256": {
           "pattern": "^[0-9a-f]{64}$",
-          "title": "Join Plan Sha256",
           "type": "string"
         },
         "join_work_id": {
           "pattern": "^[0-9a-f]{64}$",
-          "title": "Join Work Id",
           "type": "string"
         },
         "phase": {
           "const": "coordinating",
-          "title": "Phase",
           "type": "string"
         },
         "revision": {
           "minimum": 2,
-          "title": "Revision",
           "type": "integer"
         },
         "work_id": {
           "pattern": "^[0-9a-f]{64}$",
-          "title": "Work Id",
           "type": "string"
         }
       },
@@ -113,7 +106,6 @@ The following JSON is the complete value owned at each machine-authority pointer
         "join_plan_sha256",
         "join_work_id"
       ],
-      "title": "JoinAdmittedEventData",
       "type": "object"
     },
     "signature": "\"(*, work_id: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)], phase: Literal['coordinating'], revision: Annotated[int, Ge(ge=2)], branch_set_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)], join_plan_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)], join_work_id: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)]) -> None\""

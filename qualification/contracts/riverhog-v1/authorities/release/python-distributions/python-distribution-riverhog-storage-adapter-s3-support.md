@@ -19,6 +19,9 @@ Optional nonnormative S3 support for Riverhog storage references.
 | <a id="s-7337e031a5"></a>`artifacts` | [{"coordinate": "dist/riverhog_storage_adapter_s3_support-{version}-py3-none-any.whl", "format": "wheel"}, {"coordinate": "dist/riverhog_storage_adapter_s3_support-{version}.tar.gz", "format": "sdist"}] |
 | <a id="s-393df901d7"></a>`channel` | github-release |
 | <a id="s-f1ef4ba7d6"></a>`description` | Optional nonnormative S3 support for Riverhog storage references. |
+| <a id="s-4c4d48d853"></a>`license_baseline` | first-v1-publication |
+| <a id="s-3b45bb169b"></a>`license_expression` | Apache-2.0 |
+| <a id="s-e9e990ed16"></a>`publication_identity` | {"coordinate": "riverhog-storage-adapter-s3-support", "kind": "python-distribution"} |
 | <a id="s-3b38665c1d"></a>`requires_python` | >=3.12 |
 | <a id="s-aeb8841285"></a>`role` | reference_component |
 | <a id="s-ec61750d2b"></a>`source` | reference/riverhog/storage/s3-support/pyproject.toml |
@@ -57,7 +60,7 @@ Publication preserves these existing component authorities; it does not reclassi
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 688418b00b15cd321694e18287b5a3a21a9764bc1fdc2f538991c2d9cf906b50 -->
+<!-- exact-contract-value: c8acd4d7ac4cc961d5b278eb4ffd000d852769d132f2826094e844a64621e50e -->
 
 ```json
 {
@@ -73,6 +76,12 @@ The following JSON is the complete value owned at each machine-authority pointer
   ],
   "channel": "github-release",
   "description": "Optional nonnormative S3 support for Riverhog storage references.",
+  "license_baseline": "first-v1-publication",
+  "license_expression": "Apache-2.0",
+  "publication_identity": {
+    "coordinate": "riverhog-storage-adapter-s3-support",
+    "kind": "python-distribution"
+  },
   "requires_python": ">=3.12",
   "role": "reference_component",
   "source": "reference/riverhog/storage/s3-support/pyproject.toml"

@@ -8,13 +8,13 @@ This page is proof routing, not contract navigation. Every dossier names its loc
 
 | Qualification route | Count |
 |---|---:|
-| <a id="q-d1121e35fa"></a>`make build` | 2860 |
+| <a id="q-d1121e35fa"></a>`make build` | 2861 |
 | <a id="q-413b0b241b"></a>`make compose-smoke` | 805 |
 | <a id="q-8c74349e71"></a>`make contract-freeze` | 12 |
 | <a id="q-27f281b51e"></a>`make database-qualification` | 137 |
-| <a id="q-0ba2578a3e"></a>`make dist-smoke` | 3027 |
+| <a id="q-0ba2578a3e"></a>`make dist-smoke` | 3028 |
 | <a id="q-dd95e4459f"></a>`make operation-qualification` | 725 |
-| <a id="q-8d8d22d6a6"></a>`make release-check` | 255 |
+| <a id="q-8d8d22d6a6"></a>`make release-check` | 256 |
 | <a id="q-ce47068f50"></a>`make unit` | 259 |
 
 ## Source authorities
@@ -300,7 +300,7 @@ Source authorities: **484**
 | <a id="src-28686050a7"></a>`configuration:stove0-recipe-config:configuration:recipe-catalog` | 1 | `reference/stove0/packages/recipe-config/src/stove0_recipe_config/models.py::RecipeCatalog` |
 | <a id="src-cca9387ce6"></a>`configuration:stove0-review-target-support:configuration:review-target-config` | 1 | `reference/stove0/targets/review/support/src/stove0_review_target_support/app.py::ReviewTargetConfig` |
 | <a id="src-5ac94d0a12"></a>`extent:extent-contract` | 12 | `scripts/extent_contract.py::extent_projection` |
-| <a id="src-47381a6c4f"></a>`generator:contract-projection` | 3981 | `scripts/contract_freeze.py::contract_projection` |
+| <a id="src-47381a6c4f"></a>`generator:contract-projection` | 3982 | `scripts/contract_freeze.py::contract_projection` |
 | <a id="src-c42f268fc9"></a>`openapi:riverhog` | 364 | `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI` |
 | <a id="src-c3a51ac29a"></a>`openapi:riverhog-ftp-adapter` | 12 | `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI` |
 | <a id="src-52e6e32124"></a>`openapi:stove0` | 170 | `.venv/lib/python3.12/site-packages/fastapi/applications.py::FastAPI` |
@@ -498,7 +498,7 @@ Source authorities: **484**
 | <a id="src-8d3f4df21c"></a>`release-images:docker-bake` | 13 | `docker-bake.hcl` |
 | <a id="src-d1a927fc4b"></a>`release-installation:planner` | 4 | `scripts/release_installation.py::INSTALLATION_POLICY` |
 | <a id="src-03a2f48338"></a>`release-publication:planner` | 110 | `scripts/release.py::publication_contract` |
-| <a id="src-c5380dbe5f"></a>`release:release.toml` | 131 | `release.toml` |
+| <a id="src-c5380dbe5f"></a>`release:release.toml` | 132 | `release.toml` |
 | <a id="src-6b3ecfced3"></a>`state:gogurt-listener` | 4 | `reference/gogurt/packages/listener-runtime/src/gogurt_listener_runtime/listener.py` |
 | <a id="src-b1cc215b8d"></a>`state:mango-fish-cursor` | 2 | `reference/riverhog/applications/mango-fish/src/mango_fish/state_migrations/v1_ddl.py` |
 | <a id="src-f6a1289f67"></a>`state:piggity-local` | 7 | `reference/riverhog/applications/piggity/src/piggity/state_migrations/v1_ddl.py` |

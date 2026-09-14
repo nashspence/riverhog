@@ -27,7 +27,6 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-e98b5f0d86"></a>
-- <a id="s-26ed804d1c"></a>`title`: CollectionUploadRawPartsIn
 - <a id="s-42c55b9d54"></a>`type`: object
 
 ### Fields
@@ -62,7 +61,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 52591dbea8ff567066fe22efbf56ae7ae662de131bcd7ad652c33890a60072d9 -->
+<!-- exact-contract-value: 31b0c3ed207451ba099846f1a88a9bb22c35aa9c4c108db1207f7094298bb7ac -->
 
 ```json
 {
@@ -73,17 +72,14 @@ The following JSON is the complete value owned at each machine-authority pointer
       "properties": {
         "ordered_sha256": {
           "pattern": "^[0-9a-f]{64}$",
-          "title": "Ordered Sha256",
           "type": "string"
         },
         "part_count": {
           "minimum": 1,
-          "title": "Part Count",
           "type": "integer"
         },
         "part_plaintext_bytes": {
           "minimum": 65536,
-          "title": "Part Plaintext Bytes",
           "type": "integer"
         }
       },
@@ -92,7 +88,6 @@ The following JSON is the complete value owned at each machine-authority pointer
         "part_count",
         "ordered_sha256"
       ],
-      "title": "CollectionUploadRawPartsIn",
       "type": "object"
     },
     "signature": "\"(*, part_plaintext_bytes: Annotated[int, Ge(ge=65536)], part_count: Annotated[int, Strict(strict=True), Ge(ge=1)], ordered_sha256: Annotated[str, _PydanticGeneralMetadata(pattern='^[0-9a-f]{64}$')]) -> None\""

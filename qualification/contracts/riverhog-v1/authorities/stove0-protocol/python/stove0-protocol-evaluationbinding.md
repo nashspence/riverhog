@@ -27,8 +27,6 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-58bd82e15d"></a>
-- <a id="s-a94adbbb93"></a>`title`: EvaluationBinding
-- <a id="s-c4eb81c0b1"></a>`description`: Immutable membership of one work item in a trial/evaluation matrix.
 - <a id="s-fcda911618"></a>`type`: object
 
 ### Fields
@@ -70,7 +68,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 682781e16dbfdbb06a700b90e7cb0382a80b11aa671171d450bc9210da1c38b9 -->
+<!-- exact-contract-value: 3d353ec0ecb585666e5d495ef0727b09977848468f83f13012b6d72f14d84f71 -->
 
 ```json
 {
@@ -81,28 +79,23 @@ The following JSON is the complete value owned at each machine-authority pointer
         "JsonValue": {}
       },
       "additionalProperties": false,
-      "description": "Immutable membership of one work item in a trial/evaluation matrix.",
       "properties": {
         "evaluation_id": {
           "pattern": "^[0-9a-f]{64}$",
-          "title": "Evaluation Id",
           "type": "string"
         },
         "matrix_sha256": {
           "pattern": "^[0-9a-f]{64}$",
-          "title": "Matrix Sha256",
           "type": "string"
         },
         "parameters": {
           "additionalProperties": {
             "$ref": "#/$defs/JsonValue"
           },
-          "title": "Parameters",
           "type": "object"
         },
         "variant_id": {
           "pattern": "^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$",
-          "title": "Variant Id",
           "type": "string"
         }
       },
@@ -111,7 +104,6 @@ The following JSON is the complete value owned at each machine-authority pointer
         "matrix_sha256",
         "variant_id"
       ],
-      "title": "EvaluationBinding",
       "type": "object"
     },
     "signature": "\"(*, evaluation_id: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)], matrix_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)], variant_id: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$', ascii_only=None)], parameters: dict[str, JsonValue] = <factory>) -> None\""

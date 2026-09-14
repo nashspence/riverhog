@@ -8,6 +8,6 @@ Declared public imports and their selected exact structural contracts.
 
 ### `stove0_review_rclone_effect_target`
 
-- [stove0_review_rclone_effect_target.RcloneReviewDestination](stove0-review-rclone-effect-target-rclonereviewdestination.md)
-  - [stove0_review_rclone_effect_target.RcloneReviewDestination.commit](stove0-review-rclone-effect-target-rclonereviewdestination-commit.md)
-- [stove0_review_rclone_effect_target.ReviewRcloneEffectTargetService](stove0-review-rclone-effect-target-reviewrcloneeffecttargetservice.md)
+- [RcloneReviewDestination](stove0-review-rclone-effect-target-rclonereviewdestination.md)
+  - [commit](stove0-review-rclone-effect-target-rclonereviewdestination-commit.md)
+- [ReviewRcloneEffectTargetService](stove0-review-rclone-effect-target-reviewrcloneeffecttargetservice.md)

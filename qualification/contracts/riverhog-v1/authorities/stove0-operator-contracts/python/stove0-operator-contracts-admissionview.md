@@ -27,7 +27,6 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-bebd933f68"></a>
-- <a id="s-4ac3392872"></a>`title`: AdmissionView
 - <a id="s-a19015f9c4"></a>`type`: object
 
 ### Fields
@@ -85,7 +84,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 2273407f3b19d3f2d39fe0a0678944a11ede7c1b283201229911fcb0b7bfd5e6 -->
+<!-- exact-contract-value: 237bed88eece97e9f6453ea273027629d7c677bbb45c8b367c76a4c26334f8fa -->
 
 ```json
 {
@@ -98,7 +97,6 @@ The following JSON is the complete value owned at each machine-authority pointer
           "properties": {
             "admission_id": {
               "pattern": "^[0-9a-f]{64}$",
-              "title": "Admission Id",
               "type": "string"
             },
             "collection": {
@@ -108,52 +106,43 @@ The following JSON is the complete value owned at each machine-authority pointer
               "additionalProperties": {
                 "$ref": "#/$defs/JsonValue"
               },
-              "title": "Effective Intent",
               "type": "object"
             },
             "format": {
               "const": "stove0-admission-intent/v1",
               "default": "stove0-admission-intent/v1",
-              "title": "Format",
               "type": "string"
             },
             "policy_id": {
               "maxLength": 160,
               "minLength": 1,
-              "title": "Policy Id",
               "type": "string"
             },
             "policy_revision": {
               "minimum": 1,
-              "title": "Policy Revision",
               "type": "integer"
             },
             "policy_sha256": {
               "pattern": "^[0-9a-f]{64}$",
-              "title": "Policy Sha256",
               "type": "string"
             },
             "recipe_id": {
               "maxLength": 160,
               "minLength": 1,
-              "title": "Recipe Id",
               "type": "string"
             },
             "recipe_revision": {
               "minimum": 1,
-              "title": "Recipe Revision",
               "type": "integer"
             },
             "recipe_sha256": {
               "pattern": "^[0-9a-f]{64}$",
-              "title": "Recipe Sha256",
               "type": "string"
             },
             "required_tags": {
               "items": {
                 "$ref": "#/$defs/CollectionTag"
               },
-              "title": "Required Tags",
               "type": "array"
             }
           },
@@ -169,7 +158,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             "recipe_sha256",
             "effective_intent"
           ],
-          "title": "AdmissionIntent",
           "type": "object"
         },
         "CatalogSyncDescriptor": {
@@ -179,7 +167,6 @@ The following JSON is the complete value owned at each machine-authority pointer
               "maxLength": 64,
               "minLength": 64,
               "pattern": "^[0-9a-f]{64}$",
-              "title": "Archive Root Sha256",
               "type": "string"
             },
             "collection_id": {
@@ -189,7 +176,6 @@ The following JSON is the complete value owned at each machine-authority pointer
               "maxLength": 64,
               "minLength": 64,
               "pattern": "^[0-9a-f]{64}$",
-              "title": "Content Identity",
               "type": "string"
             },
             "description": {
@@ -206,33 +192,28 @@ The following JSON is the complete value owned at each machine-authority pointer
               "maxLength": 64,
               "minLength": 64,
               "pattern": "^[0-9a-f]{64}$",
-              "title": "Description Identity",
               "type": "string"
             },
             "description_revision": {
               "maximum": 9007199254740991,
               "minimum": 0,
-              "title": "Description Revision",
               "type": "integer"
             },
             "revision": {
               "maxLength": 19,
               "minLength": 1,
               "pattern": "^(?:[1-9][0-9]{0,17}|[1-8][0-9]{18})$",
-              "title": "Revision",
               "type": "string"
             },
             "tag_revision": {
               "maximum": 9007199254740991,
               "minimum": 1,
-              "title": "Tag Revision",
               "type": "integer"
             },
             "tag_set_identity": {
               "maxLength": 64,
               "minLength": 64,
               "pattern": "^[0-9a-f]{64}$",
-              "title": "Tag Set Identity",
               "type": "string"
             }
           },
@@ -247,7 +228,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             "tag_set_identity",
             "revision"
           ],
-          "title": "CatalogSyncDescriptor",
           "type": "object"
         },
         "CollectionDescription": {
@@ -282,13 +262,11 @@ The following JSON is the complete value owned at each machine-authority pointer
       "properties": {
         "attempt_count": {
           "minimum": 0,
-          "title": "Attempt Count",
           "type": "integer"
         },
         "created_at": {
           "maxLength": 40,
           "minLength": 1,
-          "title": "Created At",
           "type": "string"
         },
         "failure": {
@@ -302,8 +280,7 @@ The following JSON is the complete value owned at each machine-authority pointer
               "type": "null"
             }
           ],
-          "default": null,
-          "title": "Failure"
+          "default": null
         },
         "intent": {
           "$ref": "#/$defs/AdmissionIntent"
@@ -319,8 +296,7 @@ The following JSON is the complete value owned at each machine-authority pointer
               "type": "null"
             }
           ],
-          "default": null,
-          "title": "Next Attempt At"
+          "default": null
         },
         "preview_sha256": {
           "anyOf": [
@@ -332,8 +308,7 @@ The following JSON is the complete value owned at each machine-authority pointer
               "type": "null"
             }
           ],
-          "default": null,
-          "title": "Preview Sha256"
+          "default": null
         },
         "state": {
           "enum": [
@@ -341,13 +316,11 @@ The following JSON is the complete value owned at each machine-authority pointer
             "previewed",
             "work_bound"
           ],
-          "title": "State",
           "type": "string"
         },
         "updated_at": {
           "maxLength": 40,
           "minLength": 1,
-          "title": "Updated At",
           "type": "string"
         },
         "work_id": {
@@ -360,8 +333,7 @@ The following JSON is the complete value owned at each machine-authority pointer
               "type": "null"
             }
           ],
-          "default": null,
-          "title": "Work Id"
+          "default": null
         }
       },
       "required": [
@@ -371,7 +343,6 @@ The following JSON is the complete value owned at each machine-authority pointer
         "created_at",
         "updated_at"
       ],
-      "title": "AdmissionView",
       "type": "object"
     },
     "signature": "\"(*, intent: stove0_operator_contracts.AdmissionIntent, state: Literal['intent', 'previewed', 'work_bound'], preview_sha256: Optional[Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)]] = None, work_id: Optional[Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)]] = None, attempt_count: Annotated[int, Ge(ge=0)], next_attempt_at: Annotated[str | None, MinLen(min_length=1), MaxLen(max_length=40)] = None, failure: Annotated[str | None, MinLen(min_length=1), MaxLen(max_length=1000)] = None, created_at: Annotated[str, MinLen(min_length=1), MaxLen(max_length=40)], updated_at: Annotated[str, MinLen(min_length=1), MaxLen(max_length=40)]) -> None\""

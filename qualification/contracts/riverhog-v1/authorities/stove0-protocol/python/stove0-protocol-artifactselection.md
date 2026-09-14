@@ -27,8 +27,6 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-906dd2a2dd"></a>
-- <a id="s-f9e512d993"></a>`title`: ArtifactSelection
-- <a id="s-f69ee5b950"></a>`description`: One exact, content-addressed selection of immutable artifacts.
 - <a id="s-adafd05867"></a>`type`: object
 
 ### Fields
@@ -84,7 +82,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 541e0c835496ee436a26fa13d9f068de488f355ef4e050232c28f8be62001c5c -->
+<!-- exact-contract-value: 70f4d67e2aacc10655c33b8988110d54952c4c4b99058369a867117dc3def602 -->
 
 ```json
 {
@@ -97,7 +95,6 @@ The following JSON is the complete value owned at each machine-authority pointer
           "properties": {
             "bytes": {
               "minimum": 0,
-              "title": "Bytes",
               "type": "integer"
             },
             "collection": {
@@ -105,7 +102,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             },
             "id": {
               "pattern": "^[A-Za-z0-9]\u0028?:[A-Za-z0-9._-]{0,158}[A-Za-z0-9])?$",
-              "title": "Id",
               "type": "string"
             },
             "media_type": {
@@ -119,23 +115,19 @@ The following JSON is the complete value owned at each machine-authority pointer
                   "type": "null"
                 }
               ],
-              "default": null,
-              "title": "Media Type"
+              "default": null
             },
             "path": {
               "maxLength": 4096,
               "minLength": 1,
-              "title": "Path",
               "type": "string"
             },
             "role": {
               "pattern": "^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$",
-              "title": "Role",
               "type": "string"
             },
             "sha256": {
               "pattern": "^[0-9a-f]{64}$",
-              "title": "Sha256",
               "type": "string"
             }
           },
@@ -147,7 +139,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             "bytes",
             "sha256"
           ],
-          "title": "ArtifactSubject",
           "type": "object"
         },
         "CollectionId": {
@@ -159,7 +150,6 @@ The following JSON is the complete value owned at each machine-authority pointer
           "properties": {
             "archive_root_sha256": {
               "pattern": "^[0-9a-f]{64}$",
-              "title": "Archive Root Sha256",
               "type": "string"
             },
             "collection_id": {
@@ -167,7 +157,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             },
             "content_identity": {
               "pattern": "^[0-9a-f]{64}$",
-              "title": "Content Identity",
               "type": "string"
             }
           },
@@ -176,16 +165,13 @@ The following JSON is the complete value owned at each machine-authority pointer
             "archive_root_sha256",
             "content_identity"
           ],
-          "title": "CollectionRootRef",
           "type": "object"
         }
       },
       "additionalProperties": false,
-      "description": "One exact, content-addressed selection of immutable artifacts.",
       "properties": {
         "artifact_count": {
           "minimum": 1,
-          "title": "Artifact Count",
           "type": "integer"
         },
         "artifacts": {
@@ -193,23 +179,19 @@ The following JSON is the complete value owned at each machine-authority pointer
             "$ref": "#/$defs/ArtifactSubject"
           },
           "minItems": 1,
-          "title": "Artifacts",
           "type": "array"
         },
         "format": {
           "const": "stove0-artifact-selection/v1",
           "default": "stove0-artifact-selection/v1",
-          "title": "Format",
           "type": "string"
         },
         "selection_sha256": {
           "pattern": "^[0-9a-f]{64}$",
-          "title": "Selection Sha256",
           "type": "string"
         },
         "total_bytes": {
           "minimum": 0,
-          "title": "Total Bytes",
           "type": "integer"
         }
       },
@@ -219,7 +201,6 @@ The following JSON is the complete value owned at each machine-authority pointer
         "total_bytes",
         "selection_sha256"
       ],
-      "title": "ArtifactSelection",
       "type": "object"
     },
     "signature": "\"(*, format: Literal['stove0-artifact-selection/v1'] = 'stove0-artifact-selection/v1', artifacts: Annotated[tuple[stove0_protocol.models.ArtifactSubject, ...], MinLen(min_length=1)], artifact_count: Annotated[int, Ge(ge=1)], total_bytes: Annotated[int, Ge(ge=0)], selection_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)]) -> None\""

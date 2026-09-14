@@ -8,5 +8,5 @@ Declared public imports and their selected exact structural contracts.
 
 ### `stove0_nvenc_av1_opus_target`
 
-- [stove0_nvenc_av1_opus_target.NvencAv1OpusTargetService](stove0-nvenc-av1-opus-target-nvencav1opustargetservice.md)
-  - [stove0_nvenc_av1_opus_target.NvencAv1OpusTargetService.preflight](stove0-nvenc-av1-opus-target-nvencav1opustargetservice-preflight.md)
+- [NvencAv1OpusTargetService](stove0-nvenc-av1-opus-target-nvencav1opustargetservice.md)
+  - [preflight](stove0-nvenc-av1-opus-target-nvencav1opustargetservice-preflight.md)

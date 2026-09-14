@@ -39,14 +39,14 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Identity | Selected by | Exit status | stdout | stderr |
 |---|---|---|---|---|
-| <a id="s-00a3f402c0"></a>`completed` | <a id="s-a2d1a3fccd"></a>`{"kind":"command-completed"}` | <a id="s-5890ba2bbd"></a>`0` | <a id="s-c57f9c0623"></a>`human: noncontractual-presentation-of-command-result; json: gogurt-mounted-root-list/v1` | <a id="s-133e8dfafd"></a>`all: empty` |
+| <a id="s-00a3f402c0"></a>`completed` | <a id="s-a2d1a3fccd"></a>`{"kind":"command-completed"}` | <a id="s-5890ba2bbd"></a>`0` | <a id="s-c57f9c0623"></a>human: `noncontractual-presentation-of-command-result`; json: [gogurt-mounted-root-list/v1](#s-c57f9c0623) | <a id="s-133e8dfafd"></a>all: `empty` |
 
 #### Failure outcomes
 
 | Identity | Selected by | Exit status | stdout | stderr |
 |---|---|---|---|---|
-| <a id="s-c4c1416683"></a>`usage` | <a id="s-8709452a47"></a>`{"kind":"parser-rejected-invocation"}` | <a id="s-22a8a7f9c0"></a>`2` | <a id="s-b934d81bab"></a>`all: empty` | <a id="s-50d61a0459"></a>`all: noncontractual-usage-diagnostic` |
-| <a id="s-39d0526896"></a>`operational` | <a id="s-edfe26e800"></a>`{"kind":"application-error"}` | <a id="s-dd58a8cb2b"></a>`1` | <a id="s-0f8b9a0013"></a>`human: empty; json: gogurt-cli-error/v1` | <a id="s-2f5f6ba1dc"></a>`human: noncontractual-diagnostic; json: empty` |
+| <a id="s-c4c1416683"></a>`usage` | <a id="s-8709452a47"></a>`{"kind":"parser-rejected-invocation"}` | <a id="s-22a8a7f9c0"></a>`2` | <a id="s-b934d81bab"></a>all: `empty` | <a id="s-50d61a0459"></a>all: `noncontractual-usage-diagnostic` |
+| <a id="s-39d0526896"></a>`operational` | <a id="s-edfe26e800"></a>`{"kind":"application-error"}` | <a id="s-dd58a8cb2b"></a>`1` | <a id="s-0f8b9a0013"></a>human: `empty`; json: [gogurt-cli-error/v1](#s-0f8b9a0013) | <a id="s-2f5f6ba1dc"></a>human: `noncontractual-diagnostic`; json: `empty` |
 
 ### Progression, limits, and lifecycle
 

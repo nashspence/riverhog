@@ -27,7 +27,6 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-bfb36d5ba0"></a>
-- <a id="s-42dba9bd30"></a>`title`: Av1OpusArchiveIntent
 - <a id="s-e538c4d645"></a>`type`: object
 
 ### Fields
@@ -74,7 +73,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 219beadb7f78819b54dad0f04ceefad9d4dec62f433145b8dc088548f7b24cd0 -->
+<!-- exact-contract-value: c77dbb5ff502d165d8c42a314df7ffbb080495bf60c01284f03adf24980dd585 -->
 
 ```json
 {
@@ -90,7 +89,6 @@ The following JSON is the complete value owned at each machine-authority pointer
                 "type": "string"
               },
               "minItems": 1,
-              "title": "Fields",
               "type": "array"
             },
             "name": {
@@ -102,7 +100,6 @@ The following JSON is the complete value owned at each machine-authority pointer
                 "gps-latitude",
                 "gps-longitude"
               ],
-              "title": "Name",
               "type": "string"
             }
           },
@@ -110,18 +107,15 @@ The following JSON is the complete value owned at each machine-authority pointer
             "name",
             "fields"
           ],
-          "title": "MediaFieldPreference",
           "type": "object"
         },
         "MediaGps": {
           "additionalProperties": false,
           "properties": {
             "latitude": {
-              "title": "Latitude",
               "type": "number"
             },
             "longitude": {
-              "title": "Longitude",
               "type": "number"
             }
           },
@@ -129,19 +123,16 @@ The following JSON is the complete value owned at each machine-authority pointer
             "latitude",
             "longitude"
           ],
-          "title": "MediaGps",
           "type": "object"
         },
         "MediaProjectionPolicy": {
           "additionalProperties": false,
-          "description": "Portable recipe-owned choices; omitted values are never manufactured.",
           "properties": {
             "creators": {
               "default": [],
               "items": {
                 "type": "string"
               },
-              "title": "Creators",
               "type": "array"
             },
             "device_make": {
@@ -153,8 +144,7 @@ The following JSON is the complete value owned at each machine-authority pointer
                   "type": "null"
                 }
               ],
-              "default": null,
-              "title": "Device Make"
+              "default": null
             },
             "device_model": {
               "anyOf": [
@@ -165,21 +155,18 @@ The following JSON is the complete value owned at each machine-authority pointer
                   "type": "null"
                 }
               ],
-              "default": null,
-              "title": "Device Model"
+              "default": null
             },
             "field_preferences": {
               "default": [],
               "items": {
                 "$ref": "#/$defs/MediaFieldPreference"
               },
-              "title": "Field Preferences",
               "type": "array"
             },
             "format": {
               "const": "stove0-media-projection-policy/v1",
               "default": "stove0-media-projection-policy/v1",
-              "title": "Format",
               "type": "string"
             },
             "gps": {
@@ -198,11 +185,9 @@ The following JSON is the complete value owned at each machine-authority pointer
               "items": {
                 "type": "string"
               },
-              "title": "Tags",
               "type": "array"
             }
           },
-          "title": "MediaProjectionPolicy",
           "type": "object"
         }
       },
@@ -212,19 +197,16 @@ The following JSON is the complete value owned at each machine-authority pointer
           "default": 128,
           "maximum": 512,
           "minimum": 16,
-          "title": "Audio Bitrate Kbps",
           "type": "integer"
         },
         "codec": {
           "const": "av1",
           "default": "av1",
-          "title": "Codec",
           "type": "string"
         },
         "container": {
           "const": "mkv",
           "default": "mkv",
-          "title": "Container",
           "type": "string"
         },
         "max_height": {
@@ -238,8 +220,7 @@ The following JSON is the complete value owned at each machine-authority pointer
               "type": "null"
             }
           ],
-          "default": null,
-          "title": "Max Height"
+          "default": null
         },
         "metadata_projection": {
           "$ref": "#/$defs/MediaProjectionPolicy"
@@ -248,7 +229,6 @@ The following JSON is the complete value owned at each machine-authority pointer
           "default": 23,
           "maximum": 63,
           "minimum": 0,
-          "title": "Quality",
           "type": "integer"
         },
         "salvage": {
@@ -257,11 +237,9 @@ The following JSON is the complete value owned at each machine-authority pointer
             "off",
             "safe-remux"
           ],
-          "title": "Salvage",
           "type": "string"
         }
       },
-      "title": "Av1OpusArchiveIntent",
       "type": "object"
     },
     "signature": "\"(*, codec: Literal['av1'] = 'av1', container: Literal['mkv'] = 'mkv', quality: Annotated[int, Ge(ge=0), Le(le=63)] = 23, max_height: Annotated[int | None, Ge(ge=144), Le(le=8640)] = None, audio_bitrate_kbps: Annotated[int, Ge(ge=16), Le(le=512)] = 128, salvage: Literal['off', 'safe-remux'] = 'safe-remux', metadata_projection: stove0_media_archive_target_contracts.projection_policy.MediaProjectionPolicy = <factory>) -> None\""

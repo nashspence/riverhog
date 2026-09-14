@@ -27,8 +27,6 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-a547b4b86b"></a>
-- <a id="s-2df68ba161"></a>`title`: CollectionUploadVolumeSummaryDocument
-- <a id="s-dbf32b8d83"></a>`description`: Protocol-owned identity of one immutable collection archive volume.
 - <a id="s-39556d1024"></a>`type`: object
 
 ### Fields
@@ -69,7 +67,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: f98466950307a79ce73cddf101c4820fd82a15fea49652e6f36d14a2c93fcd1a -->
+<!-- exact-contract-value: b89be7030f55536ebab8348edc08f3081b61af588bb0f23a2a054ada4bc8fd6a -->
 
 ```json
 {
@@ -77,24 +75,20 @@ The following JSON is the complete value owned at each machine-authority pointer
     "kind": "class",
     "schema": {
       "additionalProperties": false,
-      "description": "Protocol-owned identity of one immutable collection archive volume.",
       "properties": {
         "kind": {
           "enum": [
             "pack",
             "segment"
           ],
-          "title": "Kind",
           "type": "string"
         },
         "sequence": {
           "minimum": 0,
-          "title": "Sequence",
           "type": "integer"
         },
         "volume_id": {
           "pattern": "^(?:pack|segment)-[0-9a-f]{64}$",
-          "title": "Volume Id",
           "type": "string"
         }
       },
@@ -103,7 +97,6 @@ The following JSON is the complete value owned at each machine-authority pointer
         "sequence",
         "kind"
       ],
-      "title": "CollectionUploadVolumeSummaryDocument",
       "type": "object"
     },
     "signature": "\"(*, volume_id: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^(?:pack|segment)-[0-9a-f]{64}$', ascii_only=None)], sequence: Annotated[int, Strict(strict=True), Ge(ge=0)], kind: Literal['pack', 'segment']) -> None\""

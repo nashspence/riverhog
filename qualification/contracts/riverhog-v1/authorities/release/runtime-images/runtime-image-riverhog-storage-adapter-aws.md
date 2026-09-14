@@ -20,7 +20,10 @@ Optional nonnormative AWS storage reference for Riverhog.
 | <a id="s-2be3a6ebff"></a>`description` | Optional nonnormative AWS storage reference for Riverhog. |
 | <a id="s-471d6d0a25"></a>`distribution_roots` | ["riverhog-storage-adapter-aws"] |
 | <a id="s-37c9a8f589"></a>`format` | oci-image |
+| <a id="s-1c54fc1207"></a>`license_baseline` | first-v1-publication |
+| <a id="s-2679404553"></a>`license_expression` | CAL-1.0 |
 | <a id="s-6c4435dc28"></a>`platforms` | ["linux/amd64"] |
+| <a id="s-739600f34c"></a>`publication_identity` | {"coordinate": "ghcr.io/nashspence/riverhog-storage-adapter-aws", "kind": "oci-repository"} |
 | <a id="s-2d2af6f16d"></a>`repository` | ghcr.io/nashspence/riverhog-storage-adapter-aws |
 | <a id="s-5558a4421f"></a>`role` | reference |
 | <a id="s-3342698ea1"></a>`tag_templates` | ["ghcr.io/nashspence/riverhog-storage-adapter-aws:{version}", "ghcr.io/nashspence/riverhog-storage-adapter-aws:sha-{source_sha}"] |
@@ -61,7 +64,7 @@ Publication preserves these existing component authorities; it does not reclassi
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 4f9125ecb73b3532aa202f2f028ceb4090e89d60254d215d5f71f0c531183261 -->
+<!-- exact-contract-value: 7028d517bc0fc2eeba32f947604dbe25162e6936a2482b4b87957f90e321a46f -->
 
 ```json
 {
@@ -71,9 +74,15 @@ The following JSON is the complete value owned at each machine-authority pointer
     "riverhog-storage-adapter-aws"
   ],
   "format": "oci-image",
+  "license_baseline": "first-v1-publication",
+  "license_expression": "CAL-1.0",
   "platforms": [
     "linux/amd64"
   ],
+  "publication_identity": {
+    "coordinate": "ghcr.io/nashspence/riverhog-storage-adapter-aws",
+    "kind": "oci-repository"
+  },
   "repository": "ghcr.io/nashspence/riverhog-storage-adapter-aws",
   "role": "reference",
   "tag_templates": [

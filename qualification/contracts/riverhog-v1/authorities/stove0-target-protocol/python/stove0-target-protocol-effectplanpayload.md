@@ -27,7 +27,6 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-38296276db"></a>
-- <a id="s-c7edf5f7a8"></a>`title`: EffectPlanPayload
 - <a id="s-cd748841f0"></a>`type`: object
 
 ### Fields
@@ -83,7 +82,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 84cd68f1e58daebb699c4214298f7d8008e6dd88ae290652d1a32785bfd5abd4 -->
+<!-- exact-contract-value: 15980a0a064d26d5661a744b5add785213edcc54f444e10df13b73343ce7485f -->
 
 ```json
 {
@@ -93,21 +92,17 @@ The following JSON is the complete value owned at each machine-authority pointer
       "$defs": {
         "ArtifactSelectionRef": {
           "additionalProperties": false,
-          "description": "Closed reference to a separately retained selection document.",
           "properties": {
             "artifact_count": {
               "minimum": 1,
-              "title": "Artifact Count",
               "type": "integer"
             },
             "selection_sha256": {
               "pattern": "^[0-9a-f]{64}$",
-              "title": "Selection Sha256",
               "type": "string"
             },
             "total_bytes": {
               "minimum": 0,
-              "title": "Total Bytes",
               "type": "integer"
             }
           },
@@ -116,20 +111,17 @@ The following JSON is the complete value owned at each machine-authority pointer
             "artifact_count",
             "total_bytes"
           ],
-          "title": "ArtifactSelectionRef",
           "type": "object"
         },
         "JsonValue": {},
         "TargetInputAuthority": {
           "additionalProperties": false,
-          "description": "Small exact input authority retained by Stove0 and traversed in bounded pages.",
           "properties": {
             "roles": {
               "items": {
                 "$ref": "#/$defs/TargetInputRoleCount"
               },
               "minItems": 1,
-              "title": "Roles",
               "type": "array"
             },
             "selection": {
@@ -140,7 +132,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             "selection",
             "roles"
           ],
-          "title": "TargetInputAuthority",
           "type": "object"
         },
         "TargetInputRoleCount": {
@@ -148,12 +139,10 @@ The following JSON is the complete value owned at each machine-authority pointer
           "properties": {
             "count": {
               "minimum": 1,
-              "title": "Count",
               "type": "integer"
             },
             "role": {
               "pattern": "^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$",
-              "title": "Role",
               "type": "string"
             }
           },
@@ -161,7 +150,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             "role",
             "count"
           ],
-          "title": "TargetInputRoleCount",
           "type": "object"
         }
       },
@@ -174,7 +162,6 @@ The following JSON is the complete value owned at each machine-authority pointer
           "additionalProperties": {
             "$ref": "#/$defs/JsonValue"
           },
-          "title": "Intent",
           "type": "object"
         },
         "observation_result_sha256s": {
@@ -183,40 +170,33 @@ The following JSON is the complete value owned at each machine-authority pointer
             "pattern": "^[0-9a-f]{64}$",
             "type": "string"
           },
-          "title": "Observation Result Sha256S",
           "type": "array"
         },
         "operation_contract_sha256": {
           "pattern": "^[0-9a-f]{64}$",
-          "title": "Operation Contract Sha256",
           "type": "string"
         },
         "operation_id": {
           "pattern": "^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$",
-          "title": "Operation Id",
           "type": "string"
         },
         "protocol": {
           "const": "stove0-effect-target/v1",
           "default": "stove0-effect-target/v1",
-          "title": "Protocol",
           "type": "string"
         },
         "target_contract_sha256": {
           "pattern": "^[0-9a-f]{64}$",
-          "title": "Target Contract Sha256",
           "type": "string"
         },
         "target_implementation_id": {
           "pattern": "^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$",
-          "title": "Target Implementation Id",
           "type": "string"
         },
         "target_options": {
           "additionalProperties": {
             "$ref": "#/$defs/JsonValue"
           },
-          "title": "Target Options",
           "type": "object"
         }
       },
@@ -228,7 +208,6 @@ The following JSON is the complete value owned at each machine-authority pointer
         "target_implementation_id",
         "target_contract_sha256"
       ],
-      "title": "EffectPlanPayload",
       "type": "object"
     },
     "signature": "\"(*, operation_id: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$', ascii_only=None)], operation_contract_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)], inputs: stove0_target_protocol.protocol.TargetInputAuthority, intent: dict[str, JsonValue], target_options: dict[str, JsonValue] = <factory>, protocol: Literal['stove0-effect-target/v1'] = 'stove0-effect-target/v1', target_implementation_id: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$', ascii_only=None)], target_contract_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)], observation_result_sha256s: tuple[typing.Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)], ...] = ()) -> None\""

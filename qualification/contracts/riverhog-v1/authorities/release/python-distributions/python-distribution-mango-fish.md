@@ -19,6 +19,9 @@ Optional nonnormative CloudEvents reference application for Riverhog.
 | <a id="s-b82f4b2ef0"></a>`artifacts` | [{"coordinate": "dist/mango_fish-{version}-py3-none-any.whl", "format": "wheel"}, {"coordinate": "dist/mango_fish-{version}.tar.gz", "format": "sdist"}] |
 | <a id="s-b1ae085e1c"></a>`channel` | github-release |
 | <a id="s-53714ce8a6"></a>`description` | Optional nonnormative CloudEvents reference application for Riverhog. |
+| <a id="s-3ff9aed727"></a>`license_baseline` | first-v1-publication |
+| <a id="s-cc859238cb"></a>`license_expression` | Apache-2.0 |
+| <a id="s-bf939f4de2"></a>`publication_identity` | {"coordinate": "mango-fish", "kind": "python-distribution"} |
 | <a id="s-d09208ca8a"></a>`requires_python` | >=3.12 |
 | <a id="s-963c86a994"></a>`role` | reference_application |
 | <a id="s-f10f589664"></a>`source` | reference/riverhog/applications/mango-fish/pyproject.toml |
@@ -57,7 +60,7 @@ Publication preserves these existing component authorities; it does not reclassi
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 19bd3f90f82f74a2c740733814bde6f3f5017d8fa0213e900d595b6a9d728b87 -->
+<!-- exact-contract-value: 0a018d333738ed4a4d34e903fe777d8256bbd8c9d1df35e214e6573fbfb4726a -->
 
 ```json
 {
@@ -73,6 +76,12 @@ The following JSON is the complete value owned at each machine-authority pointer
   ],
   "channel": "github-release",
   "description": "Optional nonnormative CloudEvents reference application for Riverhog.",
+  "license_baseline": "first-v1-publication",
+  "license_expression": "Apache-2.0",
+  "publication_identity": {
+    "coordinate": "mango-fish",
+    "kind": "python-distribution"
+  },
   "requires_python": ">=3.12",
   "role": "reference_application",
   "source": "reference/riverhog/applications/mango-fish/pyproject.toml"

@@ -27,7 +27,6 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-4af80adaa0"></a>
-- <a id="s-3457bf0d8d"></a>`title`: DeletePrefixRequest
 - <a id="s-f3aad3559f"></a>`type`: object
 
 ### Fields
@@ -67,7 +66,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 995d8db3b0e81641553113660118501ef99e34883df8d32464d0213c759316a9 -->
+<!-- exact-contract-value: 9a4e2f492b96fece0701d874ea46e49d98d327dab237c6e3f0a788c0d826f5c7 -->
 
 ```json
 {
@@ -79,20 +78,17 @@ The following JSON is the complete value owned at each machine-authority pointer
         "mode": {
           "const": "all_versions",
           "default": "all_versions",
-          "title": "Mode",
           "type": "string"
         },
         "object_prefix": {
           "maxLength": 4096,
           "minLength": 1,
-          "title": "Object Prefix",
           "type": "string"
         }
       },
       "required": [
         "object_prefix"
       ],
-      "title": "DeletePrefixRequest",
       "type": "object"
     },
     "signature": "\"(*, object_prefix: Annotated[str, MinLen(min_length=1), MaxLen(max_length=4096)], mode: Literal['all_versions'] = 'all_versions') -> None\""

@@ -27,7 +27,6 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-6c92a201ba"></a>
-- <a id="s-b76f7c543b"></a>`title`: EvaluationMatrixPayload
 - <a id="s-0193dc5767"></a>`type`: object
 
 ### Fields
@@ -74,7 +73,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 60a30caaca0f07e1755366e9eb6d94365a5a6a5624d12ef57af706618d4a30cd -->
+<!-- exact-contract-value: 71ae8db72c4fac4497ea043ab081c4b6a86fa16f8b97410c1cc0d9df47eb8bf7 -->
 
 ```json
 {
@@ -87,21 +86,18 @@ The following JSON is the complete value owned at each machine-authority pointer
           "properties": {
             "id": {
               "pattern": "^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$",
-              "title": "Id",
               "type": "string"
             },
             "parameters": {
               "additionalProperties": {
                 "$ref": "#/$defs/JsonValue"
               },
-              "title": "Parameters",
               "type": "object"
             }
           },
           "required": [
             "id"
           ],
-          "title": "EvaluationVariant",
           "type": "object"
         },
         "JsonValue": {}
@@ -111,7 +107,6 @@ The following JSON is the complete value owned at each machine-authority pointer
         "format": {
           "const": "stove0-evaluation-matrix/v1",
           "default": "stove0-evaluation-matrix/v1",
-          "title": "Format",
           "type": "string"
         },
         "variants": {
@@ -119,14 +114,12 @@ The following JSON is the complete value owned at each machine-authority pointer
             "$ref": "#/$defs/EvaluationVariant"
           },
           "minItems": 1,
-          "title": "Variants",
           "type": "array"
         }
       },
       "required": [
         "variants"
       ],
-      "title": "EvaluationMatrixPayload",
       "type": "object"
     },
     "signature": "\"(*, format: Literal['stove0-evaluation-matrix/v1'] = 'stove0-evaluation-matrix/v1', variants: Annotated[tuple[stove0_protocol.models.EvaluationVariant, ...], MinLen(min_length=1)]) -> None\""

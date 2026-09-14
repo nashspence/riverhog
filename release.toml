@@ -96,6 +96,7 @@ durable_state = "Every later v1 release applies each durable-state authority's d
 archive = "A valid v1 archive remains independently recoverable throughout the supported v1 lifetime. Pack construction, ingress checkpointing, and resumable-write strategies are not archive-format compatibility promises."
 recovery = "Every later v1 recovery release reads every valid earlier v1 archive and provenance set."
 configuration = "Accepted v1 configuration remains valid throughout v1 unless an unsafe value must be rejected."
+licensing = "Each continuing first-party Python distribution and OCI repository published in v1 retains every SPDX license alternative granted when that coordinate first shipped in v1; withdrawing a baseline grant requires a new major version."
 
 [state]
 schema = "riverhog-durable-state-inventory/v1"

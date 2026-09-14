@@ -27,7 +27,6 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-12db0e5e34"></a>
-- <a id="s-a227a4f590"></a>`title`: EvaluationMatrix
 - <a id="s-33e6ff0eac"></a>`type`: object
 
 ### Fields
@@ -76,7 +75,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 7e9e31eb72b1dca45a0ddf357340b6dec1ce9a2d7d8078a67a88a69caf8e2697 -->
+<!-- exact-contract-value: 356f113eee6ca0d6955b97c96b83f8b26cc7b83da7d1752fbedf8b8d52d411d0 -->
 
 ```json
 {
@@ -89,21 +88,18 @@ The following JSON is the complete value owned at each machine-authority pointer
           "properties": {
             "id": {
               "pattern": "^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$",
-              "title": "Id",
               "type": "string"
             },
             "parameters": {
               "additionalProperties": {
                 "$ref": "#/$defs/JsonValue"
               },
-              "title": "Parameters",
               "type": "object"
             }
           },
           "required": [
             "id"
           ],
-          "title": "EvaluationVariant",
           "type": "object"
         },
         "JsonValue": {}
@@ -113,12 +109,10 @@ The following JSON is the complete value owned at each machine-authority pointer
         "format": {
           "const": "stove0-evaluation-matrix/v1",
           "default": "stove0-evaluation-matrix/v1",
-          "title": "Format",
           "type": "string"
         },
         "matrix_sha256": {
           "pattern": "^[0-9a-f]{64}$",
-          "title": "Matrix Sha256",
           "type": "string"
         },
         "variants": {
@@ -126,7 +120,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             "$ref": "#/$defs/EvaluationVariant"
           },
           "minItems": 1,
-          "title": "Variants",
           "type": "array"
         }
       },
@@ -134,7 +127,6 @@ The following JSON is the complete value owned at each machine-authority pointer
         "variants",
         "matrix_sha256"
       ],
-      "title": "EvaluationMatrix",
       "type": "object"
     },
     "signature": "\"(*, format: Literal['stove0-evaluation-matrix/v1'] = 'stove0-evaluation-matrix/v1', variants: Annotated[tuple[stove0_protocol.models.EvaluationVariant, ...], MinLen(min_length=1)], matrix_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)]) -> None\""

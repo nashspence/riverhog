@@ -10,7 +10,7 @@ This page is intentionally an alphabetical reconciliation inventory, not another
 |---|---:|
 | `artifact-verification` | 3 |
 | `cli` | 167 |
-| `compatibility-guarantees` | 8 |
+| `compatibility-guarantees` | 9 |
 | `configuration` | 7 |
 | `configuration-environment` | 252 |
 | `durable-state` | 137 |
@@ -77,7 +77,7 @@ These values remain in the exact machine projection for validation, but do not o
 | [mango-fish-cursor](../authorities/mango-fish-cursor/index.md) | 2 | durable-state |
 | [piggity](../authorities/piggity/index.md) | 93 | cli, configuration-environment |
 | [piggity-local](../authorities/piggity-local/index.md) | 7 | durable-state |
-| [release](../authorities/release/index.md) | 118 | artifact-verification, compatibility-guarantees, installation-roots, publication-locations, python-distributions, release-artifacts, runtime-images, versioning-tags |
+| [release](../authorities/release/index.md) | 119 | artifact-verification, compatibility-guarantees, installation-roots, publication-locations, python-distributions, release-artifacts, runtime-images, versioning-tags |
 | [riverhog](../authorities/riverhog/index.md) | 364 | http-operations, http-schemas, http-security-schemes, http-service-declaration |
 | [riverhog-age](../authorities/riverhog-age/index.md) | 34 | python |
 | [riverhog-application-access](../authorities/riverhog-application-access/index.md) | 47 | python |

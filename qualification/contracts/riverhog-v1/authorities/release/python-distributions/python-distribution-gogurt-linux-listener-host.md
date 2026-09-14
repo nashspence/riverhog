@@ -19,6 +19,9 @@ Optional nonnormative Linux systemd-user listener-host reference for Gogurt.
 | <a id="s-5fd75f8ffd"></a>`artifacts` | [{"coordinate": "dist/gogurt_linux_listener_host-{version}-py3-none-any.whl", "format": "wheel"}, {"coordinate": "dist/gogurt_linux_listener_host-{version}.tar.gz", "format": "sdist"}] |
 | <a id="s-b3cf83c6b2"></a>`channel` | github-release |
 | <a id="s-1c10b36f4a"></a>`description` | Optional nonnormative Linux systemd-user listener-host reference for Gogurt. |
+| <a id="s-9d63ac6fc0"></a>`license_baseline` | first-v1-publication |
+| <a id="s-c9ed10d8c5"></a>`license_expression` | Apache-2.0 |
+| <a id="s-86a58caafe"></a>`publication_identity` | {"coordinate": "gogurt-linux-listener-host", "kind": "python-distribution"} |
 | <a id="s-32ac65e075"></a>`requires_python` | >=3.12 |
 | <a id="s-87a0da3533"></a>`role` | reference_component |
 | <a id="s-f9fd72a63e"></a>`source` | reference/gogurt/listener-host/linux/pyproject.toml |
@@ -57,7 +60,7 @@ Publication preserves these existing component authorities; it does not reclassi
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 6953a9918524d73807b5ae66cf628776bea1b6aff38a14b420d5a47ab4bbcfd0 -->
+<!-- exact-contract-value: a01b2c9d1ed0ad3ac36f1471280aaa5292182f6cc314b39e1e05265a3e3e91c4 -->
 
 ```json
 {
@@ -73,6 +76,12 @@ The following JSON is the complete value owned at each machine-authority pointer
   ],
   "channel": "github-release",
   "description": "Optional nonnormative Linux systemd-user listener-host reference for Gogurt.",
+  "license_baseline": "first-v1-publication",
+  "license_expression": "Apache-2.0",
+  "publication_identity": {
+    "coordinate": "gogurt-linux-listener-host",
+    "kind": "python-distribution"
+  },
   "requires_python": ">=3.12",
   "role": "reference_component",
   "source": "reference/gogurt/listener-host/linux/pyproject.toml"

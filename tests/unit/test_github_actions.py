@@ -277,6 +277,18 @@ def test_release_qualification_reuses_ci_and_publishes_only_sha_bound_summaries(
     assert "OPERATIONS_SUMMARY" in locate_evidence["run"]
     assert "OPERATIONS_TIMINGS" in locate_evidence["run"]
     assert "DATABASE_SUMMARY" in locate_evidence["run"]
+    assert "RELEASE_HISTORY_DIR" in locate_evidence["run"]
+    stage_history = next(
+        step
+        for step in audit["steps"]
+        if step["name"] == "Stage immutable v1 release-manifest history"
+    )
+    assert "gh api --paginate" in stage_history["run"]
+    assert 'test("^v1\\\\.[0-9]+\\\\.[0-9]+$")' in stage_history["run"]
+    assert "release-manifest.json" in stage_history["run"]
+    assert "Accept: application/octet-stream" in stage_history["run"]
+    assert "RELEASE_PREVIOUS_TAG" in stage_history["run"]
+    assert "RELEASE_PREVIOUS_MANIFEST_SHA256" in stage_history["run"]
     lifecycle_evidence = next(
         step
         for step in audit["steps"]
@@ -348,10 +360,19 @@ def test_release_qualification_reuses_ci_and_publishes_only_sha_bound_summaries(
         step for step in audit["steps"] if step["name"] == "Verify live release governance"
     )
     assert "RELEASE_GOVERNANCE_SCOPE=actions-observable" in governance["run"]
+    release_evidence = next(
+        step for step in audit["steps"] if step["name"] == "Build and verify release evidence"
+    )
+    assert "--previous-tag" in release_evidence["run"]
+    assert "--previous-manifest-sha256" in release_evidence["run"]
+    assert "--history-manifest" in release_evidence["run"]
+    assert "sort -Vr" in release_evidence["run"]
     verify_summary = next(
         step for step in audit["steps"] if step["name"] == "Verify exact-SHA nonpublication summary"
     )
     assert 'immutable_releases == "operator-preflight-required"' in verify_summary["run"]
+    assert ".license_coordinates > 0" in verify_summary["run"]
+    assert ".release_history_manifests > 0" in verify_summary["run"]
     resolve_source = next(
         step
         for step in workflow["jobs"]["resolve"]["steps"]

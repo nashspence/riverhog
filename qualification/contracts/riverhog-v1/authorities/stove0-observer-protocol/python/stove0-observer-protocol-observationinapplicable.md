@@ -27,7 +27,6 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-edba156db3"></a>
-- <a id="s-dc842dd14c"></a>`title`: ObservationInapplicable
 - <a id="s-8a4f8c00cd"></a>`type`: object
 
 ### Fields
@@ -61,7 +60,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 57836a2a9cad8ebf38644ee12fb50d11e7835171dd55c0faed34e56b4b6da700 -->
+<!-- exact-contract-value: 435cdcf034bf66ab33236653f25a045c59f93f9d9eb9f4b8c8c35da23c9132fd -->
 
 ```json
 {
@@ -72,13 +71,11 @@ The following JSON is the complete value owned at each machine-authority pointer
       "properties": {
         "code": {
           "pattern": "^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$",
-          "title": "Code",
           "type": "string"
         },
         "message": {
           "maxLength": 1000,
           "minLength": 1,
-          "title": "Message",
           "type": "string"
         }
       },
@@ -86,7 +83,6 @@ The following JSON is the complete value owned at each machine-authority pointer
         "code",
         "message"
       ],
-      "title": "ObservationInapplicable",
       "type": "object"
     },
     "signature": "\"(*, code: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$', ascii_only=None)], message: Annotated[str, MinLen(min_length=1), MaxLen(max_length=1000)]) -> None\""

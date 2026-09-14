@@ -27,7 +27,6 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-690e044295"></a>
-- <a id="s-ed0b14e4eb"></a>`title`: ArtifactSubject
 - <a id="s-7fbff6939b"></a>`type`: object
 
 ### Fields
@@ -79,7 +78,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 08900063134d8589d1387b4d49dfbac0465c2811bd375b3a4b0e6e164849ed27 -->
+<!-- exact-contract-value: 4f6398d932d208b05b5167898d6a742433c355ed600239e93e1934ee662e6635 -->
 
 ```json
 {
@@ -96,7 +95,6 @@ The following JSON is the complete value owned at each machine-authority pointer
           "properties": {
             "archive_root_sha256": {
               "pattern": "^[0-9a-f]{64}$",
-              "title": "Archive Root Sha256",
               "type": "string"
             },
             "collection_id": {
@@ -104,7 +102,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             },
             "content_identity": {
               "pattern": "^[0-9a-f]{64}$",
-              "title": "Content Identity",
               "type": "string"
             }
           },
@@ -113,7 +110,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             "archive_root_sha256",
             "content_identity"
           ],
-          "title": "CollectionRootRef",
           "type": "object"
         }
       },
@@ -121,7 +117,6 @@ The following JSON is the complete value owned at each machine-authority pointer
       "properties": {
         "bytes": {
           "minimum": 0,
-          "title": "Bytes",
           "type": "integer"
         },
         "collection": {
@@ -129,7 +124,6 @@ The following JSON is the complete value owned at each machine-authority pointer
         },
         "id": {
           "pattern": "^[A-Za-z0-9]\u0028?:[A-Za-z0-9._-]{0,158}[A-Za-z0-9])?$",
-          "title": "Id",
           "type": "string"
         },
         "media_type": {
@@ -143,23 +137,19 @@ The following JSON is the complete value owned at each machine-authority pointer
               "type": "null"
             }
           ],
-          "default": null,
-          "title": "Media Type"
+          "default": null
         },
         "path": {
           "maxLength": 4096,
           "minLength": 1,
-          "title": "Path",
           "type": "string"
         },
         "role": {
           "pattern": "^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$",
-          "title": "Role",
           "type": "string"
         },
         "sha256": {
           "pattern": "^[0-9a-f]{64}$",
-          "title": "Sha256",
           "type": "string"
         }
       },
@@ -171,7 +161,6 @@ The following JSON is the complete value owned at each machine-authority pointer
         "bytes",
         "sha256"
       ],
-      "title": "ArtifactSubject",
       "type": "object"
     },
     "signature": "\"(*, id: Annotated[str, _PydanticGeneralMetadata(pattern='^[A-Za-z0-9]\u0028?:[A-Za-z0-9._-]{0,158}[A-Za-z0-9])?$')], role: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$', ascii_only=None)], collection: stove0_protocol.models.CollectionRootRef, path: Annotated[str, MinLen(min_length=1), MaxLen(max_length=4096)], bytes: Annotated[int, Ge(ge=0)], sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)], media_type: Annotated[str | None, MinLen(min_length=1), MaxLen(max_length=255)] = None) -> None\""

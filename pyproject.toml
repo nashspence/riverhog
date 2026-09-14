@@ -82,6 +82,7 @@ time-formats = { workspace = true }
 dev = [
   "boto3-stubs[s3]>=1.43.59,<2.0",
   "httpx2>=2,<3",
+  "license-expression>=30.4,<31",
   "mypy>=2.3.0,<3.0",
   "packaging>=26,<27",
   "psycopg[binary]>=3.3.4,<4.0",

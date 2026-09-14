@@ -42,14 +42,14 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Identity | Selected by | Exit status | stdout | stderr |
 |---|---|---|---|---|
-| <a id="s-63bd56bc35"></a>`completed` | <a id="s-104c33a7c5"></a>`{"kind":"command-completed"}` | <a id="s-39e8e5dc3d"></a>`0` | <a id="s-05c47a8389"></a>`human: noncontractual-presentation-of-command-result; json: HTTP trace_collection_file_provenance — #/components/schemas/CollectionFileProvenanceTraceOut` | <a id="s-a8c5762a09"></a>`all: empty` |
+| <a id="s-63bd56bc35"></a>`completed` | <a id="s-104c33a7c5"></a>`{"kind":"command-completed"}` | <a id="s-39e8e5dc3d"></a>`0` | <a id="s-05c47a8389"></a>human: `noncontractual-presentation-of-command-result`; json: [HTTP trace_collection_file_provenance response 200](../../riverhog/http-operations/get-v1-collections-collection-id-provenance-trace-path.md#s-88d1d82fa6) | <a id="s-a8c5762a09"></a>all: `empty` |
 
 #### Failure outcomes
 
 | Identity | Selected by | Exit status | stdout | stderr |
 |---|---|---|---|---|
-| <a id="s-ae6b94dc3b"></a>`usage` | <a id="s-1731e3af7f"></a>`{"kind":"parser-rejected-invocation"}` | <a id="s-6c03461b49"></a>`2` | <a id="s-36ea324ac9"></a>`all: empty` | <a id="s-558e907617"></a>`all: noncontractual-usage-diagnostic` |
-| <a id="s-72abffcff4"></a>`operational` | <a id="s-003d7854fe"></a>`{"kind":"application-error"}` | <a id="s-2a64c41928"></a>`1` | <a id="s-cf40e99a6b"></a>`human: empty; json: http-api-contracts.ErrorResponse` | <a id="s-7a71cc7d0d"></a>`human: noncontractual-diagnostic; json: empty` |
+| <a id="s-ae6b94dc3b"></a>`usage` | <a id="s-1731e3af7f"></a>`{"kind":"parser-rejected-invocation"}` | <a id="s-6c03461b49"></a>`2` | <a id="s-36ea324ac9"></a>all: `empty` | <a id="s-558e907617"></a>all: `noncontractual-usage-diagnostic` |
+| <a id="s-72abffcff4"></a>`operational` | <a id="s-003d7854fe"></a>`{"kind":"application-error"}` | <a id="s-2a64c41928"></a>`1` | <a id="s-cf40e99a6b"></a>human: `empty`; json: [http-api-contracts.ErrorResponse](../../http-api-contracts/python/http-api-contracts-errorresponse.md) | <a id="s-7a71cc7d0d"></a>human: `noncontractual-diagnostic`; json: `empty` |
 
 ### Progression, limits, and lifecycle
 

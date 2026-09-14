@@ -10,4 +10,4 @@ Executable commands: **1** · Command groups: **0**
 
 ### Executable commands
 
-- [riverhog-recover](riverhog-recover.md) — `riverhog-recover-cli/v1`
+- [riverhog-recover](riverhog-recover.md)

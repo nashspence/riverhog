@@ -27,7 +27,6 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-772b957e5e"></a>
-- <a id="s-59ca22420d"></a>`title`: ReviewMaterializeIntent
 - <a id="s-fa9a048ade"></a>`type`: object
 
 ### Fields
@@ -70,7 +69,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 4db5b43b71d6a0ca99f1ab9e18481375b53617f69dba1b3a3c85c58b7bf9dbbe -->
+<!-- exact-contract-value: 3cee3d6a854410497f8333a8ba9325d097ec06b22f3b42e7d60dec86112f1497 -->
 
 ```json
 {
@@ -85,28 +84,23 @@ The following JSON is the complete value owned at each machine-authority pointer
             "format": {
               "const": "stove0-review-sample-plan/v1",
               "default": "stove0-review-sample-plan/v1",
-              "title": "Format",
               "type": "string"
             },
             "sample_plan_sha256": {
               "pattern": "^[0-9a-f]{64}$",
-              "title": "Sample Plan Sha256",
               "type": "string"
             },
             "samples_per_artifact": {
               "minimum": 1,
-              "title": "Samples Per Artifact",
               "type": "integer"
             },
             "selection_method": {
               "const": "evenly-spaced/v1",
               "default": "evenly-spaced/v1",
-              "title": "Selection Method",
               "type": "string"
             },
             "window_duration_ms": {
               "minimum": 1,
-              "title": "Window Duration Ms",
               "type": "integer"
             },
             "windows": {
@@ -114,7 +108,6 @@ The following JSON is the complete value owned at each machine-authority pointer
                 "$ref": "#/$defs/ReviewSampleWindow"
               },
               "minItems": 1,
-              "title": "Windows",
               "type": "array"
             }
           },
@@ -124,7 +117,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             "windows",
             "sample_plan_sha256"
           ],
-          "title": "ReviewSamplePlan",
           "type": "object"
         },
         "ReviewSampleWindow": {
@@ -133,17 +125,14 @@ The following JSON is the complete value owned at each machine-authority pointer
             "artifact_id": {
               "maxLength": 160,
               "minLength": 1,
-              "title": "Artifact Id",
               "type": "string"
             },
             "duration_ms": {
               "minimum": 1,
-              "title": "Duration Ms",
               "type": "integer"
             },
             "start_ms": {
               "minimum": 0,
-              "title": "Start Ms",
               "type": "integer"
             }
           },
@@ -152,7 +141,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             "start_ms",
             "duration_ms"
           ],
-          "title": "ReviewSampleWindow",
           "type": "object"
         },
         "ReviewVariantIntent": {
@@ -160,14 +148,12 @@ The following JSON is the complete value owned at each machine-authority pointer
           "properties": {
             "id": {
               "pattern": "^[a-z0-9]\u0028?:[a-z0-9._-]{0,158}[a-z0-9])?$",
-              "title": "Id",
               "type": "string"
             },
             "portable_intent": {
               "additionalProperties": {
                 "$ref": "#/$defs/JsonValue"
               },
-              "title": "Portable Intent",
               "type": "object"
             }
           },
@@ -175,7 +161,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             "id",
             "portable_intent"
           ],
-          "title": "ReviewVariantIntent",
           "type": "object"
         }
       },
@@ -192,7 +177,6 @@ The following JSON is the complete value owned at each machine-authority pointer
         "sample_plan",
         "variant"
       ],
-      "title": "ReviewMaterializeIntent",
       "type": "object"
     },
     "signature": "'(*, sample_plan: stove0_review_target_contracts.models.ReviewSamplePlan, variant: stove0_review_target_contracts.models.ReviewVariantIntent) -> None'"

@@ -20,7 +20,10 @@ Optional nonnormative Riverhog FTP ingress reference.
 | <a id="s-b5e0b20481"></a>`description` | Optional nonnormative Riverhog FTP ingress reference. |
 | <a id="s-2905fb3f67"></a>`distribution_roots` | ["riverhog-ftp-adapter", "riverhog-provenance-linux-observer"] |
 | <a id="s-1c6d8f7dd2"></a>`format` | oci-image |
+| <a id="s-443c6b6071"></a>`license_baseline` | first-v1-publication |
+| <a id="s-690d7b18b5"></a>`license_expression` | Apache-2.0 |
 | <a id="s-7a70bd1ec1"></a>`platforms` | ["linux/amd64"] |
+| <a id="s-e98db28937"></a>`publication_identity` | {"coordinate": "ghcr.io/nashspence/riverhog-ftp-adapter", "kind": "oci-repository"} |
 | <a id="s-205d0879b6"></a>`repository` | ghcr.io/nashspence/riverhog-ftp-adapter |
 | <a id="s-f309b94d3f"></a>`role` | reference |
 | <a id="s-2741f48ff4"></a>`tag_templates` | ["ghcr.io/nashspence/riverhog-ftp-adapter:{version}", "ghcr.io/nashspence/riverhog-ftp-adapter:sha-{source_sha}"] |
@@ -62,7 +65,7 @@ Publication preserves these existing component authorities; it does not reclassi
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: bb8eb206dab9696bdb758b7638e52996847f110739e30ca53f0f75c0aa822974 -->
+<!-- exact-contract-value: 8ac4af69995113ccde19577f7f4dbbc072d6afdd120ca31f8ac0bc3826341cc1 -->
 
 ```json
 {
@@ -73,9 +76,15 @@ The following JSON is the complete value owned at each machine-authority pointer
     "riverhog-provenance-linux-observer"
   ],
   "format": "oci-image",
+  "license_baseline": "first-v1-publication",
+  "license_expression": "Apache-2.0",
   "platforms": [
     "linux/amd64"
   ],
+  "publication_identity": {
+    "coordinate": "ghcr.io/nashspence/riverhog-ftp-adapter",
+    "kind": "oci-repository"
+  },
   "repository": "ghcr.io/nashspence/riverhog-ftp-adapter",
   "role": "reference",
   "tag_templates": [

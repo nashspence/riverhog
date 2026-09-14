@@ -27,7 +27,6 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-877f26a17d"></a>
-- <a id="s-828466b830"></a>`title`: EvaluationReviewView
 - <a id="s-8e628a747d"></a>`type`: object
 
 ### Fields
@@ -70,7 +69,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 508b3258d2c98fb7fafc3458236161e3db5e1353bc77ab3e14456e6746870f18 -->
+<!-- exact-contract-value: bdbfffc20db204bf014ae3242734bf57d49115178b016a153d9c5f9497c263c7 -->
 
 ```json
 {
@@ -91,8 +90,7 @@ The following JSON is the complete value owned at each machine-authority pointer
               "type": "null"
             }
           ],
-          "default": null,
-          "title": "Note"
+          "default": null
         },
         "rating": {
           "anyOf": [
@@ -105,25 +103,21 @@ The following JSON is the complete value owned at each machine-authority pointer
               "type": "null"
             }
           ],
-          "default": null,
-          "title": "Rating"
+          "default": null
         },
         "updated_at": {
           "maxLength": 40,
           "minLength": 1,
-          "title": "Updated At",
           "type": "string"
         },
         "updated_by": {
           "maxLength": 160,
           "minLength": 1,
-          "title": "Updated By",
           "type": "string"
         },
         "variant_id": {
           "maxLength": 160,
           "minLength": 1,
-          "title": "Variant Id",
           "type": "string"
         }
       },
@@ -132,7 +126,6 @@ The following JSON is the complete value owned at each machine-authority pointer
         "updated_by",
         "updated_at"
       ],
-      "title": "EvaluationReviewView",
       "type": "object"
     },
     "signature": "\"(*, variant_id: Annotated[str, MinLen(min_length=1), MaxLen(max_length=160)], rating: Annotated[int | None, Ge(ge=1), Le(le=5)] = None, note: Annotated[Optional[Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=1, max_length=None, pattern='^\\\\\\\\S(?:[\\\\\\\\s\\\\\\\\S]*\\\\\\\\S)?$', ascii_only=None)]], MaxLen(max_length=4000)] = None, updated_by: Annotated[str, MinLen(min_length=1), MaxLen(max_length=160)], updated_at: Annotated[str, MinLen(min_length=1), MaxLen(max_length=40)]) -> None\""

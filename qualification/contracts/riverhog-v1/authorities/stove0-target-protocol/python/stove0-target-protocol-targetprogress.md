@@ -27,7 +27,6 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-7c961d08d3"></a>
-- <a id="s-31dafbc397"></a>`title`: TargetProgress
 - <a id="s-e911b0aa60"></a>`type`: object
 
 ### Fields
@@ -69,7 +68,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 63e4f0daaea24cf7d6d3ac5fbbbf1b9810cdd3088b7f779e427d57b0a2ab4519 -->
+<!-- exact-contract-value: 9a956bb30e27d912484b3826e49aece84d1c41084e9c3d9c5722a8657943241b -->
 
 ```json
 {
@@ -80,13 +79,11 @@ The following JSON is the complete value owned at each machine-authority pointer
       "properties": {
         "completed": {
           "minimum": 0,
-          "title": "Completed",
           "type": "integer"
         },
         "phase": {
           "maxLength": 120,
           "minLength": 1,
-          "title": "Phase",
           "type": "string"
         },
         "total": {
@@ -99,8 +96,7 @@ The following JSON is the complete value owned at each machine-authority pointer
               "type": "null"
             }
           ],
-          "default": null,
-          "title": "Total"
+          "default": null
         },
         "unit": {
           "anyOf": [
@@ -113,15 +109,13 @@ The following JSON is the complete value owned at each machine-authority pointer
               "type": "null"
             }
           ],
-          "default": null,
-          "title": "Unit"
+          "default": null
         }
       },
       "required": [
         "phase",
         "completed"
       ],
-      "title": "TargetProgress",
       "type": "object"
     },
     "signature": "'(*, phase: Annotated[str, MinLen(min_length=1), MaxLen(max_length=120)], completed: Annotated[int, Ge(ge=0)], total: Annotated[int | None, Ge(ge=0)] = None, unit: Annotated[str | None, MinLen(min_length=1), MaxLen(max_length=40)] = None) -> None'"

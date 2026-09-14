@@ -27,7 +27,6 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-a6afa45f9c"></a>
-- <a id="s-8d37fe39be"></a>`title`: MediaProjectedValue
 - <a id="s-dcd28f60ec"></a>`type`: object
 
 ### Fields
@@ -77,7 +76,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 50990d0449e0c744428c7e1724b2255687f2f322c0f11089aa923502890a2fea -->
+<!-- exact-contract-value: dde6e0aeaded7433550a2bab59c6274c950557aa80cbe5bc8ba7ac86f994154c -->
 
 ```json
 {
@@ -88,18 +87,15 @@ The following JSON is the complete value owned at each machine-authority pointer
         "JsonValue": {},
         "MediaFactEvidence": {
           "additionalProperties": false,
-          "description": "Exact artifact and ExifTool field from which one value was read.",
           "properties": {
             "artifact_id": {
               "maxLength": 160,
               "minLength": 1,
-              "title": "Artifact Id",
               "type": "string"
             },
             "field": {
               "maxLength": 240,
               "minLength": 1,
-              "title": "Field",
               "type": "string"
             }
           },
@@ -107,7 +103,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             "artifact_id",
             "field"
           ],
-          "title": "MediaFactEvidence",
           "type": "object"
         }
       },
@@ -118,7 +113,6 @@ The following JSON is the complete value owned at each machine-authority pointer
           "items": {
             "$ref": "#/$defs/MediaFactEvidence"
           },
-          "title": "Evidence",
           "type": "array"
         },
         "name": {
@@ -130,7 +124,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             "gps-latitude",
             "gps-longitude"
           ],
-          "title": "Name",
           "type": "string"
         },
         "source": {
@@ -138,7 +131,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             "observation",
             "recipe"
           ],
-          "title": "Source",
           "type": "string"
         },
         "value": {
@@ -150,7 +142,6 @@ The following JSON is the complete value owned at each machine-authority pointer
         "value",
         "source"
       ],
-      "title": "MediaProjectedValue",
       "type": "object"
     },
     "signature": "\"(*, name: Literal['capture-time', 'creator', 'device-make', 'device-model', 'gps-latitude', 'gps-longitude'], value: JsonValue, source: Literal['observation', 'recipe'], evidence: tuple[stove0_media_metadata_observer_contracts.contracts.MediaFactEvidence, ...] = ()) -> None\""

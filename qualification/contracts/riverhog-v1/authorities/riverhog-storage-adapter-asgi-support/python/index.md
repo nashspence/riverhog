@@ -8,4 +8,4 @@ Declared public imports and their selected exact structural contracts.
 
 ### `riverhog_storage_adapter_asgi_support`
 
-- [riverhog_storage_adapter_asgi_support.create_storage_adapter_app](riverhog-storage-adapter-asgi-support-create-storage-adapter-app.md)
+- [create_storage_adapter_app](riverhog-storage-adapter-asgi-support-create-storage-adapter-app.md)

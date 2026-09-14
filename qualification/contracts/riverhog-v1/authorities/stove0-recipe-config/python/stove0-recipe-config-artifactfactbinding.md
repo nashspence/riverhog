@@ -27,8 +27,6 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-6a7298d114"></a>
-- <a id="s-9f36602a95"></a>`title`: ArtifactFactBinding
-- <a id="s-0cd1e84e3f"></a>`description`: Locate subject-keyed records inside one observer's declared facts schema.
 - <a id="s-3ad3a18495"></a>`type`: object
 
 ### Fields
@@ -62,7 +60,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 2f42e4f192ac97e1a3e15f9298d67b2a24a0174dcfe125d0383536db57679554 -->
+<!-- exact-contract-value: 3e8be6f8d2a6fd05753b8c9e0729166a31b3d8a9359d1f44b84a7f41f2b03ae4 -->
 
 ```json
 {
@@ -70,24 +68,20 @@ The following JSON is the complete value owned at each machine-authority pointer
     "kind": "class",
     "schema": {
       "additionalProperties": false,
-      "description": "Locate subject-keyed records inside one observer's declared facts schema.",
       "properties": {
         "artifact_id_pointer": {
           "default": "/artifact_id",
           "pattern": "^(?:|/(?:[^~/]|~[01])*(?:/(?:[^~/]|~[01])*)*)$",
-          "title": "Artifact Id Pointer",
           "type": "string"
         },
         "records_pointer": {
           "pattern": "^(?:|/(?:[^~/]|~[01])*(?:/(?:[^~/]|~[01])*)*)$",
-          "title": "Records Pointer",
           "type": "string"
         }
       },
       "required": [
         "records_pointer"
       ],
-      "title": "ArtifactFactBinding",
       "type": "object"
     },
     "signature": "\"(*, records_pointer: Annotated[str, _PydanticGeneralMetadata(pattern='^(?:|/(?:[^~/]|~[01])*(?:/(?:[^~/]|~[01])*)*)$')], artifact_id_pointer: Annotated[str, _PydanticGeneralMetadata(pattern='^(?:|/(?:[^~/]|~[01])*(?:/(?:[^~/]|~[01])*)*)$')] = '/artifact_id') -> None\""

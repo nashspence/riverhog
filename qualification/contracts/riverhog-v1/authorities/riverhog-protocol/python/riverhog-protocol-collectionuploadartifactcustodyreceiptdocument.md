@@ -27,8 +27,6 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-e4009535b1"></a>
-- <a id="s-5466c819a5"></a>`title`: CollectionUploadArtifactCustodyReceiptDocument
-- <a id="s-ee696f5ce1"></a>`description`: Exact safe-release evidence for one artifact in construction state.
 - <a id="s-5af6e0eda3"></a>`type`: object
 
 ### Fields
@@ -83,7 +81,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 7397631fbe6af7c3afeecec2bdea8dfe931c9dbd9dbe31308a6481957e19e356 -->
+<!-- exact-contract-value: 5b6ed5bbc78387e6b186ea77306873dad4b81831bc3d5455eb088ca2cc18b45a -->
 
 ```json
 {
@@ -97,21 +95,17 @@ The following JSON is the complete value owned at each machine-authority pointer
         }
       },
       "additionalProperties": false,
-      "description": "Exact safe-release evidence for one artifact in construction state.",
       "properties": {
         "archive_object_count": {
           "minimum": 1,
-          "title": "Archive Object Count",
           "type": "integer"
         },
         "archive_object_set_sha256": {
           "pattern": "^[0-9a-f]{64}$",
-          "title": "Archive Object Set Sha256",
           "type": "string"
         },
         "bytes": {
           "minimum": 0,
-          "title": "Bytes",
           "type": "integer"
         },
         "collection_id": {
@@ -120,21 +114,17 @@ The following JSON is the complete value owned at each machine-authority pointer
         "format": {
           "const": "riverhog-artifact-custody-receipt/v1",
           "default": "riverhog-artifact-custody-receipt/v1",
-          "title": "Format",
           "type": "string"
         },
         "path": {
-          "title": "Path",
           "type": "string"
         },
         "receipt_sha256": {
           "pattern": "^[0-9a-f]{64}$",
-          "title": "Receipt Sha256",
           "type": "string"
         },
         "sha256": {
           "pattern": "^[0-9a-f]{64}$",
-          "title": "Sha256",
           "type": "string"
         }
       },
@@ -147,7 +137,6 @@ The following JSON is the complete value owned at each machine-authority pointer
         "archive_object_set_sha256",
         "receipt_sha256"
       ],
-      "title": "CollectionUploadArtifactCustodyReceiptDocument",
       "type": "object"
     },
     "signature": "\"(*, format: Literal['riverhog-artifact-custody-receipt/v1'] = 'riverhog-artifact-custody-receipt/v1', collection_id: CollectionId, path: str, bytes: Annotated[int, Strict(strict=True), Ge(ge=0)], sha256: Annotated[str, _PydanticGeneralMetadata(pattern='^[0-9a-f]{64}$')], archive_object_count: Annotated[int, Strict(strict=True), Ge(ge=1)], archive_object_set_sha256: Annotated[str, _PydanticGeneralMetadata(pattern='^[0-9a-f]{64}$')], receipt_sha256: Annotated[str, _PydanticGeneralMetadata(pattern='^[0-9a-f]{64}$')]) -> None\""

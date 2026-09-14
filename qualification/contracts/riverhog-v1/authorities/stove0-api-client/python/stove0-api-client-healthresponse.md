@@ -27,7 +27,6 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-d70ecaecc6"></a>
-- <a id="s-8911550203"></a>`title`: HealthResponse
 - <a id="s-1dcc028803"></a>`type`: object
 
 ### Fields
@@ -61,7 +60,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 9a9fc9ddf3fd90f7038ca4a266dd9f096582a20b498a27d2f6b9aba450c42e65 -->
+<!-- exact-contract-value: 9b3119f67413721e4b6e2bc51cc76144e515376f29419056a9ad30aa71b423b6 -->
 
 ```json
 {
@@ -72,12 +71,10 @@ The following JSON is the complete value owned at each machine-authority pointer
       "properties": {
         "service": {
           "minLength": 1,
-          "title": "Service",
           "type": "string"
         },
         "status": {
           "const": "ok",
-          "title": "Status",
           "type": "string"
         }
       },
@@ -85,7 +82,6 @@ The following JSON is the complete value owned at each machine-authority pointer
         "service",
         "status"
       ],
-      "title": "HealthResponse",
       "type": "object"
     },
     "signature": "\"(*, service: Annotated[str, MinLen(min_length=1)], status: Literal['ok']) -> None\""

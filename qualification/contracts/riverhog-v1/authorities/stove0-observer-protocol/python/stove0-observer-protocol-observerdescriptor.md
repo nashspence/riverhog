@@ -27,7 +27,6 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-76460c69d0"></a>
-- <a id="s-a458128a85"></a>`title`: ObserverDescriptor
 - <a id="s-7fd1a8986b"></a>`type`: object
 
 ### Fields
@@ -83,7 +82,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 6260b43cc7b6215d1c8588e5fec62b305da7fce2757d67e91e5c494dd60ad9b1 -->
+<!-- exact-contract-value: 6f029a4bc4c0ae8967babd01822679076dbe2d178df9b92a7e5dda6ab5d8f5ce -->
 
 ```json
 {
@@ -97,30 +96,25 @@ The following JSON is the complete value owned at each machine-authority pointer
             "dialect": {
               "const": "https://json-schema.org/draft/2020-12/schema",
               "default": "https://json-schema.org/draft/2020-12/schema",
-              "title": "Dialect",
               "type": "string"
             },
             "format_policy": {
               "const": "annotation-only",
               "default": "annotation-only",
-              "title": "Format Policy",
               "type": "string"
             },
             "id": {
               "pattern": "^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$",
-              "title": "Id",
               "type": "string"
             },
             "schema": {
               "additionalProperties": {
                 "$ref": "#/$defs/JsonValue"
               },
-              "title": "Schema",
               "type": "object"
             },
             "sha256": {
               "pattern": "^[0-9a-f]{64}$",
-              "title": "Sha256",
               "type": "string"
             }
           },
@@ -129,7 +123,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             "sha256",
             "schema"
           ],
-          "title": "JsonSchemaDocument",
           "type": "object"
         },
         "JsonValue": {},
@@ -138,12 +131,10 @@ The following JSON is the complete value owned at each machine-authority pointer
           "properties": {
             "contract_id": {
               "pattern": "^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$",
-              "title": "Contract Id",
               "type": "string"
             },
             "contract_sha256": {
               "pattern": "^[0-9a-f]{64}$",
-              "title": "Contract Sha256",
               "type": "string"
             },
             "facts_schema": {
@@ -155,7 +146,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             "maximum_result_bytes": {
               "maximum": 67108864,
               "minimum": 1,
-              "title": "Maximum Result Bytes",
               "type": "integer"
             },
             "options_schema": {
@@ -164,7 +154,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             "preferred_subject_batch_size": {
               "default": 128,
               "minimum": 1,
-              "title": "Preferred Subject Batch Size",
               "type": "integer"
             }
           },
@@ -176,7 +165,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             "facts_semantics",
             "maximum_result_bytes"
           ],
-          "title": "ObserverContractSupport",
           "type": "object"
         },
         "SemanticValidationProfile": {
@@ -192,17 +180,14 @@ The following JSON is the complete value owned at each machine-authority pointer
                   "type": "null"
                 }
               ],
-              "default": null,
-              "title": "Conformance Vectors Sha256"
+              "default": null
             },
             "id": {
               "pattern": "^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$",
-              "title": "Id",
               "type": "string"
             },
             "profile_sha256": {
               "pattern": "^[0-9a-f]{64}$",
-              "title": "Profile Sha256",
               "type": "string"
             },
             "rules": {
@@ -211,7 +196,6 @@ The following JSON is the complete value owned at each machine-authority pointer
                 "type": "string"
               },
               "minItems": 1,
-              "title": "Rules",
               "type": "array"
             }
           },
@@ -220,7 +204,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             "rules",
             "profile_sha256"
           ],
-          "title": "SemanticValidationProfile",
           "type": "object"
         }
       },
@@ -231,40 +214,33 @@ The following JSON is the complete value owned at each machine-authority pointer
             "$ref": "#/$defs/ObserverContractSupport"
           },
           "minItems": 1,
-          "title": "Contracts",
           "type": "array"
         },
         "descriptor_sha256": {
           "pattern": "^[0-9a-f]{64}$",
-          "title": "Descriptor Sha256",
           "type": "string"
         },
         "image_digest": {
           "pattern": "^[0-9a-f]{64}$",
-          "title": "Image Digest",
           "type": "string"
         },
         "implementation_id": {
           "pattern": "^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$",
-          "title": "Implementation Id",
           "type": "string"
         },
         "implementation_version": {
           "maxLength": 120,
           "minLength": 1,
-          "title": "Implementation Version",
           "type": "string"
         },
         "protocol": {
           "const": "stove0-content-observer/v1",
           "default": "stove0-content-observer/v1",
-          "title": "Protocol",
           "type": "string"
         },
         "source_revision": {
           "maxLength": 200,
           "minLength": 1,
-          "title": "Source Revision",
           "type": "string"
         }
       },
@@ -276,7 +252,6 @@ The following JSON is the complete value owned at each machine-authority pointer
         "contracts",
         "descriptor_sha256"
       ],
-      "title": "ObserverDescriptor",
       "type": "object"
     },
     "signature": "\"(*, protocol: Literal['stove0-content-observer/v1'] = 'stove0-content-observer/v1', implementation_id: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$', ascii_only=None)], implementation_version: Annotated[str, MinLen(min_length=1), MaxLen(max_length=120)], source_revision: Annotated[str, MinLen(min_length=1), MaxLen(max_length=200)], image_digest: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)], contracts: Annotated[tuple[stove0_protocol.models.ObserverContractSupport, ...], MinLen(min_length=1)], descriptor_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)]) -> None\""

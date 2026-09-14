@@ -27,8 +27,6 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-17b24caaf5"></a>
-- <a id="s-6cc412cd8c"></a>`title`: ProvenanceJournalStateReference
-- <a id="s-b720ebb81d"></a>`description`: One exact current state in one Riverhog provenance journal.
 - <a id="s-65e243e3dc"></a>`type`: object
 
 ### Fields
@@ -69,7 +67,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: fef453646b85e55c8606a1597ed6ee3bc3d8a2747d7fa2bb6e024ad254610d3d -->
+<!-- exact-contract-value: f44e58b988a432d0c51548f71b251c072dc6d0f164492238db92e2ec0fd5c1bf -->
 
 ```json
 {
@@ -87,7 +85,6 @@ The following JSON is the complete value owned at each machine-authority pointer
         }
       },
       "additionalProperties": false,
-      "description": "One exact current state in one Riverhog provenance journal.",
       "properties": {
         "current_state_id": {
           "$ref": "#/$defs/ProvenanceStateId"
@@ -100,7 +97,6 @@ The following JSON is the complete value owned at each machine-authority pointer
         "journal_id",
         "current_state_id"
       ],
-      "title": "ProvenanceJournalStateReference",
       "type": "object"
     },
     "signature": "'(*, journal_id: ProvenanceJournalId, current_state_id: ProvenanceStateId) -> None'"

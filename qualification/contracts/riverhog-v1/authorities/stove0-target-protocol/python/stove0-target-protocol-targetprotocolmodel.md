@@ -27,7 +27,6 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-17ef776d55"></a>
-- <a id="s-028dfff3be"></a>`title`: TargetProtocolModel
 - <a id="s-fd946aa206"></a>`type`: object
 
 ### Fields
@@ -59,7 +58,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 7b28e8377e155bdd5af7bbd3b9af35e9e98bb2471382966f4b44be2ff3be0c33 -->
+<!-- exact-contract-value: 39d861f2d9837d8c2ef446a25f084774bbc2ea5a4e51aa8f888a960b5cf56ee3 -->
 
 ```json
 {
@@ -68,7 +67,6 @@ The following JSON is the complete value owned at each machine-authority pointer
     "schema": {
       "additionalProperties": false,
       "properties": {},
-      "title": "TargetProtocolModel",
       "type": "object"
     },
     "signature": "'() -> None'"

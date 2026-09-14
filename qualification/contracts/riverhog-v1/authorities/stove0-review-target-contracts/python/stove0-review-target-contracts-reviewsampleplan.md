@@ -27,7 +27,6 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-4ca26ad7c9"></a>
-- <a id="s-4806eb51a4"></a>`title`: ReviewSamplePlan
 - <a id="s-baf248ccc8"></a>`type`: object
 
 ### Fields
@@ -78,7 +77,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: bb27bd97642e2bf22ff77843d5a1f41d1d19988ef842c0c9ff15335c231612c8 -->
+<!-- exact-contract-value: 0ef4175979805d4744d01555e8bd6b452701c9dcbab2db5edbab1175c004fda9 -->
 
 ```json
 {
@@ -92,17 +91,14 @@ The following JSON is the complete value owned at each machine-authority pointer
             "artifact_id": {
               "maxLength": 160,
               "minLength": 1,
-              "title": "Artifact Id",
               "type": "string"
             },
             "duration_ms": {
               "minimum": 1,
-              "title": "Duration Ms",
               "type": "integer"
             },
             "start_ms": {
               "minimum": 0,
-              "title": "Start Ms",
               "type": "integer"
             }
           },
@@ -111,7 +107,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             "start_ms",
             "duration_ms"
           ],
-          "title": "ReviewSampleWindow",
           "type": "object"
         }
       },
@@ -120,28 +115,23 @@ The following JSON is the complete value owned at each machine-authority pointer
         "format": {
           "const": "stove0-review-sample-plan/v1",
           "default": "stove0-review-sample-plan/v1",
-          "title": "Format",
           "type": "string"
         },
         "sample_plan_sha256": {
           "pattern": "^[0-9a-f]{64}$",
-          "title": "Sample Plan Sha256",
           "type": "string"
         },
         "samples_per_artifact": {
           "minimum": 1,
-          "title": "Samples Per Artifact",
           "type": "integer"
         },
         "selection_method": {
           "const": "evenly-spaced/v1",
           "default": "evenly-spaced/v1",
-          "title": "Selection Method",
           "type": "string"
         },
         "window_duration_ms": {
           "minimum": 1,
-          "title": "Window Duration Ms",
           "type": "integer"
         },
         "windows": {
@@ -149,7 +139,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             "$ref": "#/$defs/ReviewSampleWindow"
           },
           "minItems": 1,
-          "title": "Windows",
           "type": "array"
         }
       },
@@ -159,7 +148,6 @@ The following JSON is the complete value owned at each machine-authority pointer
         "windows",
         "sample_plan_sha256"
       ],
-      "title": "ReviewSamplePlan",
       "type": "object"
     },
     "signature": "\"(*, format: Literal['stove0-review-sample-plan/v1'] = 'stove0-review-sample-plan/v1', selection_method: Literal['evenly-spaced/v1'] = 'evenly-spaced/v1', samples_per_artifact: Annotated[int, Ge(ge=1)], window_duration_ms: Annotated[int, Ge(ge=1)], windows: Annotated[tuple[stove0_review_target_contracts.models.ReviewSampleWindow, ...], MinLen(min_length=1)], sample_plan_sha256: Annotated[str, _PydanticGeneralMetadata(pattern='^[0-9a-f]{64}$')]) -> None\""

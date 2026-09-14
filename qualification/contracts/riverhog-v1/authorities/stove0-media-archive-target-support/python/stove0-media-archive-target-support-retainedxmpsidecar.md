@@ -27,7 +27,6 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-94200ecc6c"></a>
-- <a id="s-c804423644"></a>`title`: RetainedXmpSidecar
 - <a id="s-aace336fbf"></a>`type`: object
 
 ### Fields
@@ -67,7 +66,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 6c2fe90dbd4fe3d69bdc6b51f402963f064121a6b475b23c288c6caf3ec69dfb -->
+<!-- exact-contract-value: 7e8aafcad501679856339b49064058a683aaf79a2aeb950dc5f83e5fb1346304 -->
 
 ```json
 {
@@ -77,11 +76,9 @@ The following JSON is the complete value owned at each machine-authority pointer
       "additionalProperties": false,
       "properties": {
         "input_artifact_id": {
-          "title": "Input Artifact Id",
           "type": "string"
         },
         "output_path": {
-          "title": "Output Path",
           "type": "string"
         }
       },
@@ -89,7 +86,6 @@ The following JSON is the complete value owned at each machine-authority pointer
         "input_artifact_id",
         "output_path"
       ],
-      "title": "RetainedXmpSidecar",
       "type": "object"
     },
     "signature": "'(*, input_artifact_id: str, output_path: str) -> None'"

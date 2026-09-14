@@ -27,7 +27,6 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-1db9d030a4"></a>
-- <a id="s-a0b240086f"></a>`title`: SampleableRange
 - <a id="s-78c3c2776f"></a>`type`: object
 
 ### Fields
@@ -61,7 +60,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 9d2a74811235f9621ae1a3e948e9d418d9e117e6f90b1082e65835a16eb88200 -->
+<!-- exact-contract-value: c50e2aa2d9ab21cbd26b674fe5821c45b45cea9d809568e48c8994ce75ca8251 -->
 
 ```json
 {
@@ -72,12 +71,10 @@ The following JSON is the complete value owned at each machine-authority pointer
       "properties": {
         "duration_ms": {
           "minimum": 1,
-          "title": "Duration Ms",
           "type": "integer"
         },
         "start_ms": {
           "minimum": 0,
-          "title": "Start Ms",
           "type": "integer"
         }
       },
@@ -85,7 +82,6 @@ The following JSON is the complete value owned at each machine-authority pointer
         "start_ms",
         "duration_ms"
       ],
-      "title": "SampleableRange",
       "type": "object"
     },
     "signature": "'(*, start_ms: Annotated[int, Ge(ge=0)], duration_ms: Annotated[int, Ge(ge=1)]) -> None'"

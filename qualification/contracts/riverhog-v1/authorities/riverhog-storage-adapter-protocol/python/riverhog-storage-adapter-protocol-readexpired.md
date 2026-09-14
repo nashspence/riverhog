@@ -27,7 +27,6 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-9d8f3b8f83"></a>
-- <a id="s-866a59bc2e"></a>`title`: ReadExpired
 - <a id="s-4b7db32ec7"></a>`type`: object
 
 ### Fields
@@ -60,7 +59,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: d0860963a73527837000174e7f6938d980e35c5de704f38cc887d7df6256509e -->
+<!-- exact-contract-value: 872a514885f61badd66cba8b2cc2337f85a04bf807d5950445e3dff33f830a42 -->
 
 ```json
 {
@@ -72,11 +71,9 @@ The following JSON is the complete value owned at each machine-authority pointer
         "state": {
           "const": "expired",
           "default": "expired",
-          "title": "State",
           "type": "string"
         }
       },
-      "title": "ReadExpired",
       "type": "object"
     },
     "signature": "\"(*, state: Literal['expired'] = 'expired') -> None\""

@@ -32,13 +32,13 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Identity | Selected by | Exit status | stdout | stderr |
 |---|---|---|---|---|
-| <a id="s-99a6e5ad36"></a>`completed` | <a id="s-5bd8803a71"></a>`{"kind":"command-completed"}` | <a id="s-081524bb41"></a>`0` | <a id="s-cb8aa96d78"></a>`human: noncontractual-presentation-of-command-result; json: riverhog-ftp-adapter-config-check/v1` | <a id="s-c556170d4f"></a>`all: empty` |
+| <a id="s-99a6e5ad36"></a>`completed` | <a id="s-5bd8803a71"></a>`{"kind":"command-completed"}` | <a id="s-081524bb41"></a>`0` | <a id="s-cb8aa96d78"></a>human: `noncontractual-presentation-of-command-result`; json: [riverhog-ftp-adapter-config-check/v1](#s-cb8aa96d78) | <a id="s-c556170d4f"></a>all: `empty` |
 
 #### Failure outcomes
 
 | Identity | Selected by | Exit status | stdout | stderr |
 |---|---|---|---|---|
-| <a id="s-fd0313879a"></a>`usage` | <a id="s-fc1bc234a3"></a>`{"kind":"parser-rejected-invocation"}` | <a id="s-9b6f49f57d"></a>`2` | <a id="s-a9fddab3b9"></a>`all: empty` | <a id="s-e5ab4560d5"></a>`all: noncontractual-usage-diagnostic` |
+| <a id="s-fd0313879a"></a>`usage` | <a id="s-fc1bc234a3"></a>`{"kind":"parser-rejected-invocation"}` | <a id="s-9b6f49f57d"></a>`2` | <a id="s-a9fddab3b9"></a>all: `empty` | <a id="s-e5ab4560d5"></a>all: `noncontractual-usage-diagnostic` |
 
 ## Governing policies
 

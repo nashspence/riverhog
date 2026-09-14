@@ -27,8 +27,6 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-67495a11aa"></a>
-- <a id="s-6da8243c52"></a>`title`: JoinWorkMemberBinding
-- <a id="s-5bef6373eb"></a>`description`: Exact successful branch result used to derive one join work identity.
 - <a id="s-e860510ec8"></a>`type`: object
 
 ### Fields
@@ -64,7 +62,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: b1cc326cb78b739916b8e397e61565c53578fc24a0f6efc3e6ae94eff432688f -->
+<!-- exact-contract-value: 2e2af7a5362ca2441351139a5420f584a76eb917d61b163fbc29c0df56e7e08b -->
 
 ```json
 {
@@ -72,16 +70,13 @@ The following JSON is the complete value owned at each machine-authority pointer
     "kind": "class",
     "schema": {
       "additionalProperties": false,
-      "description": "Exact successful branch result used to derive one join work identity.",
       "properties": {
         "artifact_selection_sha256": {
           "pattern": "^[0-9a-f]{64}$",
-          "title": "Artifact Selection Sha256",
           "type": "string"
         },
         "branch_id": {
           "pattern": "^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$",
-          "title": "Branch Id",
           "type": "string"
         },
         "producer_settlement_sha256": {
@@ -94,12 +89,10 @@ The following JSON is the complete value owned at each machine-authority pointer
               "type": "null"
             }
           ],
-          "default": null,
-          "title": "Producer Settlement Sha256"
+          "default": null
         },
         "settlement_sha256": {
           "pattern": "^[0-9a-f]{64}$",
-          "title": "Settlement Sha256",
           "type": "string"
         }
       },
@@ -108,7 +101,6 @@ The following JSON is the complete value owned at each machine-authority pointer
         "settlement_sha256",
         "artifact_selection_sha256"
       ],
-      "title": "JoinWorkMemberBinding",
       "type": "object"
     },
     "signature": "\"(*, branch_id: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$', ascii_only=None)], settlement_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)], producer_settlement_sha256: Optional[Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)]] = None, artifact_selection_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)]) -> None\""

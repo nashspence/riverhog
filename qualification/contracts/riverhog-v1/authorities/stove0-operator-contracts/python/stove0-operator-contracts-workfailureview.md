@@ -27,7 +27,6 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-93ce130c25"></a>
-- <a id="s-198c7731d4"></a>`title`: WorkFailureView
 - <a id="s-ee10dfebec"></a>`type`: object
 
 ### Fields
@@ -62,7 +61,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 7c6f725f3d14254e074b3b33558e0b959564a09e8daaadc67f0366bda1e1ea4a -->
+<!-- exact-contract-value: fdc955c4506e8790ac6cb4df6592591756e12f564574e13e901c6fb21dd23ccf -->
 
 ```json
 {
@@ -74,17 +73,14 @@ The following JSON is the complete value owned at each machine-authority pointer
         "code": {
           "maxLength": 160,
           "minLength": 1,
-          "title": "Code",
           "type": "string"
         },
         "message": {
           "maxLength": 1000,
           "minLength": 1,
-          "title": "Message",
           "type": "string"
         },
         "retryable": {
-          "title": "Retryable",
           "type": "boolean"
         }
       },
@@ -93,7 +89,6 @@ The following JSON is the complete value owned at each machine-authority pointer
         "message",
         "retryable"
       ],
-      "title": "WorkFailureView",
       "type": "object"
     },
     "signature": "'(*, code: Annotated[str, MinLen(min_length=1), MaxLen(max_length=160)], message: Annotated[str, MinLen(min_length=1), MaxLen(max_length=1000)], retryable: bool) -> None'"

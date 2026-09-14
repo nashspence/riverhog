@@ -27,7 +27,6 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-e6c95c09cc"></a>
-- <a id="s-f94f49cbe2"></a>`title`: ObservationResult
 - <a id="s-73daf263c5"></a>`type`: object
 
 ### Fields
@@ -93,7 +92,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 7cdb06153844c61603a40370d36747a9bcdb1eb5d596a931625cbd7883cb10cd -->
+<!-- exact-contract-value: f46e73d1ba18a84356e3962af81b71b629f0c403fd5bfeb3d37fd7f7e2d36c21 -->
 
 ```json
 {
@@ -106,7 +105,6 @@ The following JSON is the complete value owned at each machine-authority pointer
           "properties": {
             "bytes": {
               "minimum": 0,
-              "title": "Bytes",
               "type": "integer"
             },
             "collection": {
@@ -114,7 +112,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             },
             "id": {
               "pattern": "^[A-Za-z0-9]\u0028?:[A-Za-z0-9._-]{0,158}[A-Za-z0-9])?$",
-              "title": "Id",
               "type": "string"
             },
             "media_type": {
@@ -128,23 +125,19 @@ The following JSON is the complete value owned at each machine-authority pointer
                   "type": "null"
                 }
               ],
-              "default": null,
-              "title": "Media Type"
+              "default": null
             },
             "path": {
               "maxLength": 4096,
               "minLength": 1,
-              "title": "Path",
               "type": "string"
             },
             "role": {
               "pattern": "^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$",
-              "title": "Role",
               "type": "string"
             },
             "sha256": {
               "pattern": "^[0-9a-f]{64}$",
-              "title": "Sha256",
               "type": "string"
             }
           },
@@ -156,7 +149,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             "bytes",
             "sha256"
           ],
-          "title": "ArtifactSubject",
           "type": "object"
         },
         "CollectionId": {
@@ -168,7 +160,6 @@ The following JSON is the complete value owned at each machine-authority pointer
           "properties": {
             "archive_root_sha256": {
               "pattern": "^[0-9a-f]{64}$",
-              "title": "Archive Root Sha256",
               "type": "string"
             },
             "collection_id": {
@@ -176,7 +167,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             },
             "content_identity": {
               "pattern": "^[0-9a-f]{64}$",
-              "title": "Content Identity",
               "type": "string"
             }
           },
@@ -185,7 +175,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             "archive_root_sha256",
             "content_identity"
           ],
-          "title": "CollectionRootRef",
           "type": "object"
         },
         "JsonSchemaDocument": {
@@ -194,30 +183,25 @@ The following JSON is the complete value owned at each machine-authority pointer
             "dialect": {
               "const": "https://json-schema.org/draft/2020-12/schema",
               "default": "https://json-schema.org/draft/2020-12/schema",
-              "title": "Dialect",
               "type": "string"
             },
             "format_policy": {
               "const": "annotation-only",
               "default": "annotation-only",
-              "title": "Format Policy",
               "type": "string"
             },
             "id": {
               "pattern": "^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$",
-              "title": "Id",
               "type": "string"
             },
             "schema": {
               "additionalProperties": {
                 "$ref": "#/$defs/JsonValue"
               },
-              "title": "Schema",
               "type": "object"
             },
             "sha256": {
               "pattern": "^[0-9a-f]{64}$",
-              "title": "Sha256",
               "type": "string"
             }
           },
@@ -226,7 +210,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             "sha256",
             "schema"
           ],
-          "title": "JsonSchemaDocument",
           "type": "object"
         },
         "JsonValue": {},
@@ -235,17 +218,14 @@ The following JSON is the complete value owned at each machine-authority pointer
           "properties": {
             "code": {
               "pattern": "^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$",
-              "title": "Code",
               "type": "string"
             },
             "message": {
               "maxLength": 1000,
               "minLength": 1,
-              "title": "Message",
               "type": "string"
             },
             "retryable": {
-              "title": "Retryable",
               "type": "boolean"
             }
           },
@@ -254,7 +234,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             "message",
             "retryable"
           ],
-          "title": "ObservationFailure",
           "type": "object"
         },
         "ObservationInapplicable": {
@@ -262,13 +241,11 @@ The following JSON is the complete value owned at each machine-authority pointer
           "properties": {
             "code": {
               "pattern": "^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$",
-              "title": "Code",
               "type": "string"
             },
             "message": {
               "maxLength": 1000,
               "minLength": 1,
-              "title": "Message",
               "type": "string"
             }
           },
@@ -276,7 +253,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             "code",
             "message"
           ],
-          "title": "ObservationInapplicable",
           "type": "object"
         },
         "ObserverImplementation": {
@@ -284,30 +260,25 @@ The following JSON is the complete value owned at each machine-authority pointer
           "properties": {
             "descriptor_sha256": {
               "pattern": "^[0-9a-f]{64}$",
-              "title": "Descriptor Sha256",
               "type": "string"
             },
             "id": {
               "pattern": "^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$",
-              "title": "Id",
               "type": "string"
             },
             "protocol": {
               "const": "stove0-content-observer/v1",
               "default": "stove0-content-observer/v1",
-              "title": "Protocol",
               "type": "string"
             },
             "source_revision": {
               "maxLength": 200,
               "minLength": 1,
-              "title": "Source Revision",
               "type": "string"
             },
             "version": {
               "maxLength": 120,
               "minLength": 1,
-              "title": "Version",
               "type": "string"
             }
           },
@@ -317,7 +288,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             "source_revision",
             "descriptor_sha256"
           ],
-          "title": "ObserverImplementation",
           "type": "object"
         }
       },
@@ -327,7 +297,6 @@ The following JSON is the complete value owned at each machine-authority pointer
           "additionalProperties": {
             "$ref": "#/$defs/JsonValue"
           },
-          "title": "Execution Evidence",
           "type": "object"
         },
         "facts": {
@@ -342,8 +311,7 @@ The following JSON is the complete value owned at each machine-authority pointer
               "type": "null"
             }
           ],
-          "default": null,
-          "title": "Facts"
+          "default": null
         },
         "facts_schema": {
           "anyOf": [
@@ -366,8 +334,7 @@ The following JSON is the complete value owned at each machine-authority pointer
               "type": "null"
             }
           ],
-          "default": null,
-          "title": "Facts Sha256"
+          "default": null
         },
         "failure": {
           "anyOf": [
@@ -383,7 +350,6 @@ The following JSON is the complete value owned at each machine-authority pointer
         "format": {
           "const": "stove0-observation-result/v1",
           "default": "stove0-observation-result/v1",
-          "title": "Format",
           "type": "string"
         },
         "inapplicable": {
@@ -402,22 +368,18 @@ The following JSON is the complete value owned at each machine-authority pointer
         },
         "observer_contract_id": {
           "pattern": "^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$",
-          "title": "Observer Contract Id",
           "type": "string"
         },
         "observer_contract_sha256": {
           "pattern": "^[0-9a-f]{64}$",
-          "title": "Observer Contract Sha256",
           "type": "string"
         },
         "request_id": {
           "pattern": "^[0-9a-f]{64}$",
-          "title": "Request Id",
           "type": "string"
         },
         "result_sha256": {
           "pattern": "^[0-9a-f]{64}$",
-          "title": "Result Sha256",
           "type": "string"
         },
         "state": {
@@ -427,7 +389,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             "failed",
             "canceled"
           ],
-          "title": "State",
           "type": "string"
         },
         "subjects": {
@@ -435,7 +396,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             "$ref": "#/$defs/ArtifactSubject"
           },
           "minItems": 1,
-          "title": "Subjects",
           "type": "array"
         }
       },
@@ -448,7 +408,6 @@ The following JSON is the complete value owned at each machine-authority pointer
         "subjects",
         "result_sha256"
       ],
-      "title": "ObservationResult",
       "type": "object"
     },
     "signature": "\"(*, format: Literal['stove0-observation-result/v1'] = 'stove0-observation-result/v1', request_id: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)], state: Literal['observed', 'inapplicable', 'failed', 'canceled'], observer: stove0_protocol.models.ObserverImplementation, observer_contract_id: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$', ascii_only=None)], observer_contract_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)], subjects: Annotated[tuple[stove0_protocol.models.ArtifactSubject, ...], MinLen(min_length=1)], facts_schema: stove0_protocol.models.JsonSchemaDocument | None = None, facts: dict[str, JsonValue] | None = None, facts_sha256: Optional[Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)]] = None, execution_evidence: dict[str, JsonValue] = <factory>, inapplicable: stove0_protocol.models.ObservationInapplicable | None = None, failure: stove0_protocol.models.ObservationFailure | None = None, result_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)]) -> None\""

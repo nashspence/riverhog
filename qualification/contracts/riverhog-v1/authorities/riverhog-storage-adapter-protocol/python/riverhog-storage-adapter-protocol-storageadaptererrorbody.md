@@ -27,7 +27,6 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-1a5d69d0bf"></a>
-- <a id="s-c3598a96c2"></a>`title`: StorageAdapterErrorBody
 - <a id="s-d1d501532c"></a>`type`: object
 
 ### Fields
@@ -61,7 +60,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 0b5ba47ad973361f7698389c5e2c1014ad04353dd3464c146f79684a9dbd062e -->
+<!-- exact-contract-value: c9cf5805f09d160b603220a9595fce86e482df3ab8d3f6ffed8145d83c76c53c -->
 
 ```json
 {
@@ -89,13 +88,11 @@ The following JSON is the complete value owned at each machine-authority pointer
             "provider_unavailable",
             "internal_failure"
           ],
-          "title": "Code",
           "type": "string"
         },
         "message": {
           "maxLength": 2000,
           "minLength": 1,
-          "title": "Message",
           "type": "string"
         }
       },
@@ -103,7 +100,6 @@ The following JSON is the complete value owned at each machine-authority pointer
         "code",
         "message"
       ],
-      "title": "StorageAdapterErrorBody",
       "type": "object"
     },
     "signature": "\"(*, code: Literal['unauthorized', 'invalid_request', 'not_found', 'method_not_allowed', 'length_required', 'request_too_large', 'insufficient_storage', 'identity_conflict', 'traversal_invalidated', 'invalid_path', 'invalid_range', 'read_not_ready', 'read_expired', 'integrity_failure', 'provider_unavailable', 'internal_failure'], message: Annotated[str, MinLen(min_length=1), MaxLen(max_length=2000)]) -> None\""

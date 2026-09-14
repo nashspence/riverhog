@@ -27,8 +27,6 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-4557e503c3"></a>
-- <a id="s-aa9b43fca9"></a>`title`: JoinMemberDeclaration
-- <a id="s-536e8ce651"></a>`description`: Exact named branch and opaque output roles required by the join.
 - <a id="s-d1058aa570"></a>`type`: object
 
 ### Fields
@@ -68,7 +66,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 5622eea53c6abd6726aa377664d9493db9b30be923746ce896ea9130fd83796f -->
+<!-- exact-contract-value: 9604e9152c6632696565e9e8f15ab27ddc86b256d52b325b892c69929bc4ccbc -->
 
 ```json
 {
@@ -76,11 +74,9 @@ The following JSON is the complete value owned at each machine-authority pointer
     "kind": "class",
     "schema": {
       "additionalProperties": false,
-      "description": "Exact named branch and opaque output roles required by the join.",
       "properties": {
         "branch_id": {
           "pattern": "^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$",
-          "title": "Branch Id",
           "type": "string"
         },
         "output_roles": {
@@ -89,7 +85,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             "type": "string"
           },
           "minItems": 1,
-          "title": "Output Roles",
           "type": "array"
         }
       },
@@ -97,7 +92,6 @@ The following JSON is the complete value owned at each machine-authority pointer
         "branch_id",
         "output_roles"
       ],
-      "title": "JoinMemberDeclaration",
       "type": "object"
     },
     "signature": "\"(*, branch_id: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$', ascii_only=None)], output_roles: Annotated[tuple[Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$', ascii_only=None)], ...], MinLen(min_length=1)]) -> None\""

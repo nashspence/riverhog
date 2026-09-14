@@ -27,8 +27,6 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-bd69fedff3"></a>
-- <a id="s-b855166675"></a>`title`: PreviewAcceptance
-- <a id="s-c40bbfa62b"></a>`description`: Exact preview identities accepted when operator work is initiated.
 - <a id="s-848c16a168"></a>`type`: object
 
 ### Fields
@@ -76,7 +74,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 5766525002508f53e087997d3b088eaaf73e9f090817bad686d7306157a4140d -->
+<!-- exact-contract-value: 637cc78c95c55eab91608a81b4e38fdfdfeb3f80c362fa39800c60784b684056 -->
 
 ```json
 {
@@ -86,22 +84,18 @@ The following JSON is the complete value owned at each machine-authority pointer
       "$defs": {
         "PreviewTargetExpectation": {
           "additionalProperties": false,
-          "description": "Compact target-plan identity approved by one workflow preview.",
           "properties": {
             "branch_id": {
               "maxLength": 160,
               "minLength": 1,
-              "title": "Branch Id",
               "type": "string"
             },
             "plan_sha256": {
               "pattern": "^[0-9a-f]{64}$",
-              "title": "Plan Sha256",
               "type": "string"
             },
             "work_id": {
               "pattern": "^[0-9a-f]{64}$",
-              "title": "Work Id",
               "type": "string"
             }
           },
@@ -110,28 +104,23 @@ The following JSON is the complete value owned at each machine-authority pointer
             "work_id",
             "plan_sha256"
           ],
-          "title": "PreviewTargetExpectation",
           "type": "object"
         }
       },
       "additionalProperties": false,
-      "description": "Exact preview identities accepted when operator work is initiated.",
       "properties": {
         "branch_set_sha256": {
           "pattern": "^[0-9a-f]{64}$",
-          "title": "Branch Set Sha256",
           "type": "string"
         },
         "preview_sha256": {
           "pattern": "^[0-9a-f]{64}$",
-          "title": "Preview Sha256",
           "type": "string"
         },
         "target_plans": {
           "items": {
             "$ref": "#/$defs/PreviewTargetExpectation"
           },
-          "title": "Target Plans",
           "type": "array"
         }
       },
@@ -140,7 +129,6 @@ The following JSON is the complete value owned at each machine-authority pointer
         "branch_set_sha256",
         "target_plans"
       ],
-      "title": "PreviewAcceptance",
       "type": "object"
     },
     "signature": "\"(*, preview_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)], branch_set_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)], target_plans: tuple[stove0_core.work_state.PreviewTargetExpectation, ...]) -> None\""

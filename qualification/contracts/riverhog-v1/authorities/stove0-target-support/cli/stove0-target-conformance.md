@@ -39,13 +39,13 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Identity | Selected by | Exit status | stdout | stderr |
 |---|---|---|---|---|
-| <a id="s-0b0fd48900"></a>`conformant` | <a id="s-93ffbe4e74"></a>`{"kind":"conformance-completed"}` | <a id="s-c13ae47cfe"></a>`0` | <a id="s-4ef2ecd06f"></a>`json: schema-authority` | <a id="s-dac23286c0"></a>`all: empty` |
+| <a id="s-0b0fd48900"></a>`conformant` | <a id="s-93ffbe4e74"></a>`{"kind":"conformance-completed"}` | <a id="s-c13ae47cfe"></a>`0` | <a id="s-4ef2ecd06f"></a>json: [generated:stove0-target: TargetConformanceResult](../process-protocol-schemas/generated-stove0-target-targetconformanceresult.md) | <a id="s-dac23286c0"></a>all: `empty` |
 
 #### Failure outcomes
 
 | Identity | Selected by | Exit status | stdout | stderr |
 |---|---|---|---|---|
-| <a id="s-e8837d64c5"></a>`usage` | <a id="s-d202e41e20"></a>`{"kind":"parser-rejected-invocation"}` | <a id="s-93ddbb5b98"></a>`2` | <a id="s-b09afd9389"></a>`all: empty` | <a id="s-abd1bb4830"></a>`all: noncontractual-usage-diagnostic` |
+| <a id="s-e8837d64c5"></a>`usage` | <a id="s-d202e41e20"></a>`{"kind":"parser-rejected-invocation"}` | <a id="s-93ddbb5b98"></a>`2` | <a id="s-b09afd9389"></a>all: `empty` | <a id="s-abd1bb4830"></a>all: `noncontractual-usage-diagnostic` |
 
 ## Governing policies
 

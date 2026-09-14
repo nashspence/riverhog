@@ -27,7 +27,6 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-8273a3b582"></a>
-- <a id="s-0995432c5d"></a>`title`: StorageAdapterError
 - <a id="s-60f4870d95"></a>`type`: object
 
 ### Fields
@@ -66,7 +65,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 5f8401df24b68a7b7eb412fa030ee60ce425eb6fc8bf0a4aedb132be4508b262 -->
+<!-- exact-contract-value: 85cc62a4f5dd88041a543de42537414b3043c0c8dd6e4e79305947d5c7475823 -->
 
 ```json
 {
@@ -96,13 +95,11 @@ The following JSON is the complete value owned at each machine-authority pointer
                 "provider_unavailable",
                 "internal_failure"
               ],
-              "title": "Code",
               "type": "string"
             },
             "message": {
               "maxLength": 2000,
               "minLength": 1,
-              "title": "Message",
               "type": "string"
             }
           },
@@ -110,7 +107,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             "code",
             "message"
           ],
-          "title": "StorageAdapterErrorBody",
           "type": "object"
         }
       },
@@ -123,7 +119,6 @@ The following JSON is the complete value owned at each machine-authority pointer
       "required": [
         "error"
       ],
-      "title": "StorageAdapterError",
       "type": "object"
     },
     "signature": "'(*, error: riverhog_storage_adapter_protocol.protocol.StorageAdapterErrorBody) -> None'"

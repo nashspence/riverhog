@@ -27,7 +27,6 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-70d5e9eea3"></a>
-- <a id="s-5ac43c1bb0"></a>`title`: ObjectHeadRequest
 - <a id="s-e0ac15e6f5"></a>`type`: object
 
 ### Fields
@@ -67,7 +66,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: f3fb475d766d79bfc2f5c3bef5563680618f0157fd9a56b2b738e279eecde064 -->
+<!-- exact-contract-value: 620f7a9e3aeb13b966599512ed96907754da14748a771d250a87a7a7b21dd595 -->
 
 ```json
 {
@@ -81,7 +80,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             "object_path": {
               "maxLength": 4096,
               "minLength": 1,
-              "title": "Object Path",
               "type": "string"
             },
             "revision": {
@@ -95,14 +93,12 @@ The following JSON is the complete value owned at each machine-authority pointer
                   "type": "null"
                 }
               ],
-              "default": null,
-              "title": "Revision"
+              "default": null
             }
           },
           "required": [
             "object_path"
           ],
-          "title": "ObjectLocator",
           "type": "object"
         }
       },
@@ -113,7 +109,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             "archive",
             "immediate"
           ],
-          "title": "Expected Placement",
           "type": "string"
         },
         "object": {
@@ -124,7 +119,6 @@ The following JSON is the complete value owned at each machine-authority pointer
         "object",
         "expected_placement"
       ],
-      "title": "ObjectHeadRequest",
       "type": "object"
     },
     "signature": "\"(*, object: riverhog_storage_adapter_protocol.protocol.ObjectLocator, expected_placement: Literal['archive', 'immediate']) -> None\""

@@ -27,8 +27,6 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-bab12140ce"></a>
-- <a id="s-15400d7e49"></a>`title`: PortableCollectionHeader
-- <a id="s-11a83c3356"></a>`description`: Bounded immutable metadata that owns one portable file inventory.
 - <a id="s-563ffec762"></a>`type`: object
 
 ### Fields
@@ -79,7 +77,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 05e65310ae8861a8788c32a24bab6aeef580afd0acec77d26489583c5f53593f -->
+<!-- exact-contract-value: 89cfa7020ef1668a0e5416c1563ad3a9f27f8e6c59f1f3810273caeb0a8074f2 -->
 
 ```json
 {
@@ -93,30 +91,25 @@ The following JSON is the complete value owned at each machine-authority pointer
         }
       },
       "additionalProperties": false,
-      "description": "Bounded immutable metadata that owns one portable file inventory.",
       "properties": {
         "collection": {
           "$ref": "#/$defs/CollectionId"
         },
         "content_identity": {
           "pattern": "^[0-9a-f]{64}$",
-          "title": "Content Identity",
           "type": "string"
         },
         "encryption_format": {
           "minLength": 1,
-          "title": "Encryption Format",
           "type": "string"
         },
         "format": {
           "const": "riverhog-collection/v1",
           "default": "riverhog-collection/v1",
-          "title": "Format",
           "type": "string"
         },
         "passphrase_id": {
           "pattern": "^[A-Za-z0-9_-]{16,128}$",
-          "title": "Passphrase Id",
           "type": "string"
         },
         "provenance_identity": {
@@ -129,8 +122,7 @@ The following JSON is the complete value owned at each machine-authority pointer
               "type": "null"
             }
           ],
-          "default": null,
-          "title": "Provenance Identity"
+          "default": null
         },
         "provenance_mode": {
           "enum": [
@@ -138,7 +130,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             "mixed",
             "omitted"
           ],
-          "title": "Provenance Mode",
           "type": "string"
         }
       },
@@ -149,7 +140,6 @@ The following JSON is the complete value owned at each machine-authority pointer
         "passphrase_id",
         "provenance_mode"
       ],
-      "title": "PortableCollectionHeader",
       "type": "object"
     },
     "signature": "\"(*, format: Literal['riverhog-collection/v1'] = 'riverhog-collection/v1', collection: CollectionId, content_identity: Annotated[str, _PydanticGeneralMetadata(pattern='^[0-9a-f]{64}$')], encryption_format: Annotated[str, MinLen(min_length=1)], passphrase_id: Annotated[str, _PydanticGeneralMetadata(pattern='^[A-Za-z0-9_-]{16,128}$')], provenance_mode: Literal['captured', 'mixed', 'omitted'], provenance_identity: Annotated[str | None, _PydanticGeneralMetadata(pattern='^[0-9a-f]{64}$')] = None) -> None\""

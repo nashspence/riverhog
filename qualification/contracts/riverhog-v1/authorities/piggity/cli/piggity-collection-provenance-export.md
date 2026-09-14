@@ -41,14 +41,14 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Identity | Selected by | Exit status | stdout | stderr |
 |---|---|---|---|---|
-| <a id="s-54c365a877"></a>`completed` | <a id="s-9eb5f8121b"></a>`{"kind":"command-completed"}` | <a id="s-3c77526821"></a>`0` | <a id="s-a3a0a70fd5"></a>`human: noncontractual-presentation-of-command-result; json: piggity-provenance-journal-export/v1` | <a id="s-e9d03a6eb5"></a>`all: empty` |
+| <a id="s-54c365a877"></a>`completed` | <a id="s-9eb5f8121b"></a>`{"kind":"command-completed"}` | <a id="s-3c77526821"></a>`0` | <a id="s-a3a0a70fd5"></a>human: `noncontractual-presentation-of-command-result`; json: [piggity-provenance-journal-export/v1](#s-a3a0a70fd5) | <a id="s-e9d03a6eb5"></a>all: `empty` |
 
 #### Failure outcomes
 
 | Identity | Selected by | Exit status | stdout | stderr |
 |---|---|---|---|---|
-| <a id="s-d77f6a8f47"></a>`usage` | <a id="s-57925c97aa"></a>`{"kind":"parser-rejected-invocation"}` | <a id="s-9dc652abf3"></a>`2` | <a id="s-b2d941374b"></a>`all: empty` | <a id="s-d0e0ed8df9"></a>`all: noncontractual-usage-diagnostic` |
-| <a id="s-cb2d3355cc"></a>`operational` | <a id="s-810fd80b39"></a>`{"kind":"application-error"}` | <a id="s-4bbf5dc3b2"></a>`1` | <a id="s-c9f2314d7e"></a>`human: empty; json: http-api-contracts.ErrorResponse` | <a id="s-b55e01adc5"></a>`human: noncontractual-diagnostic; json: empty` |
+| <a id="s-d77f6a8f47"></a>`usage` | <a id="s-57925c97aa"></a>`{"kind":"parser-rejected-invocation"}` | <a id="s-9dc652abf3"></a>`2` | <a id="s-b2d941374b"></a>all: `empty` | <a id="s-d0e0ed8df9"></a>all: `noncontractual-usage-diagnostic` |
+| <a id="s-cb2d3355cc"></a>`operational` | <a id="s-810fd80b39"></a>`{"kind":"application-error"}` | <a id="s-4bbf5dc3b2"></a>`1` | <a id="s-c9f2314d7e"></a>human: `empty`; json: [http-api-contracts.ErrorResponse](../../http-api-contracts/python/http-api-contracts-errorresponse.md) | <a id="s-b55e01adc5"></a>human: `noncontractual-diagnostic`; json: `empty` |
 
 ### Progression, limits, and lifecycle
 

@@ -27,8 +27,6 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-2718db9f9d"></a>
-- <a id="s-8451e2e8ba"></a>`title`: CollectionUploadUnitDocument
-- <a id="s-0b9b4c4860"></a>`description`: Protocol-owned identity of one server-planned plaintext upload unit.
 - <a id="s-b2ba19c19e"></a>`type`: object
 
 ### Fields
@@ -76,7 +74,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: e47c40e4cca17f3a666c02e77cbd746b10a4fba21eeef08496cfb6375e5e72ce -->
+<!-- exact-contract-value: 2d1a45bee31f97d004368c6aa2cb0232298bd0744a762b7a9391ca321f20f41e -->
 
 ```json
 {
@@ -86,25 +84,20 @@ The following JSON is the complete value owned at each machine-authority pointer
       "$defs": {
         "CollectionUploadUnitSourceDocument": {
           "additionalProperties": false,
-          "description": "One exact source range supplied in a server-planned upload unit.",
           "properties": {
             "artifact_sha256": {
               "pattern": "^[0-9a-f]{64}$",
-              "title": "Artifact Sha256",
               "type": "string"
             },
             "bytes": {
               "minimum": 0,
-              "title": "Bytes",
               "type": "integer"
             },
             "offset": {
               "minimum": 0,
-              "title": "Offset",
               "type": "integer"
             },
             "path": {
-              "title": "Path",
               "type": "string"
             }
           },
@@ -114,21 +107,17 @@ The following JSON is the complete value owned at each machine-authority pointer
             "bytes",
             "artifact_sha256"
           ],
-          "title": "CollectionUploadUnitSourceDocument",
           "type": "object"
         }
       },
       "additionalProperties": false,
-      "description": "Protocol-owned identity of one server-planned plaintext upload unit.",
       "properties": {
         "payload_bytes": {
           "minimum": 0,
-          "title": "Payload Bytes",
           "type": "integer"
         },
         "plaintext_bytes": {
           "minimum": 0,
-          "title": "Plaintext Bytes",
           "type": "integer"
         },
         "sources": {
@@ -136,7 +125,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             "$ref": "#/$defs/CollectionUploadUnitSourceDocument"
           },
           "maxItems": 1000,
-          "title": "Sources",
           "type": "array",
           "x-riverhog-extent": {
             "policy": "segmented_no_total_max",
@@ -146,7 +134,6 @@ The following JSON is the complete value owned at each machine-authority pointer
         },
         "unit": {
           "minimum": 0,
-          "title": "Unit",
           "type": "integer"
         }
       },
@@ -156,7 +143,6 @@ The following JSON is the complete value owned at each machine-authority pointer
         "plaintext_bytes",
         "sources"
       ],
-      "title": "CollectionUploadUnitDocument",
       "type": "object"
     },
     "signature": "'(*, unit: Annotated[int, Ge(ge=0)], payload_bytes: Annotated[int, Strict(strict=True), Ge(ge=0)], plaintext_bytes: Annotated[int, Strict(strict=True), Ge(ge=0)], sources: Annotated[list[riverhog_protocol.collection_upload_transport.CollectionUploadUnitSourceDocument], MaxLen(max_length=1000)]) -> None'"

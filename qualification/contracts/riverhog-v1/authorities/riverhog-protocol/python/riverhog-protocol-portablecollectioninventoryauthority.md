@@ -27,8 +27,6 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-3faf3f53b8"></a>
-- <a id="s-2a6f0f0cd5"></a>`title`: PortableCollectionInventoryAuthority
-- <a id="s-97bd6d81f8"></a>`description`: The immutable authority shared by every bounded inventory page.
 - <a id="s-6068f9ef62"></a>`type`: object
 
 ### Fields
@@ -71,7 +69,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: eee16cd1c47654c43434b2738368fc0f541fa8bc669328d98ff6b8fb6637f1be -->
+<!-- exact-contract-value: 18da01b0153d422d85133d0802e30fb8732e0e1f2956d9de13b8fa9a273f6b18 -->
 
 ```json
 {
@@ -85,30 +83,25 @@ The following JSON is the complete value owned at each machine-authority pointer
         },
         "PortableCollectionHeader": {
           "additionalProperties": false,
-          "description": "Bounded immutable metadata that owns one portable file inventory.",
           "properties": {
             "collection": {
               "$ref": "#/$defs/CollectionId"
             },
             "content_identity": {
               "pattern": "^[0-9a-f]{64}$",
-              "title": "Content Identity",
               "type": "string"
             },
             "encryption_format": {
               "minLength": 1,
-              "title": "Encryption Format",
               "type": "string"
             },
             "format": {
               "const": "riverhog-collection/v1",
               "default": "riverhog-collection/v1",
-              "title": "Format",
               "type": "string"
             },
             "passphrase_id": {
               "pattern": "^[A-Za-z0-9_-]{16,128}$",
-              "title": "Passphrase Id",
               "type": "string"
             },
             "provenance_identity": {
@@ -121,8 +114,7 @@ The following JSON is the complete value owned at each machine-authority pointer
                   "type": "null"
                 }
               ],
-              "default": null,
-              "title": "Provenance Identity"
+              "default": null
             },
             "provenance_mode": {
               "enum": [
@@ -130,7 +122,6 @@ The following JSON is the complete value owned at each machine-authority pointer
                 "mixed",
                 "omitted"
               ],
-              "title": "Provenance Mode",
               "type": "string"
             }
           },
@@ -141,21 +132,17 @@ The following JSON is the complete value owned at each machine-authority pointer
             "passphrase_id",
             "provenance_mode"
           ],
-          "title": "PortableCollectionHeader",
           "type": "object"
         }
       },
       "additionalProperties": false,
-      "description": "The immutable authority shared by every bounded inventory page.",
       "properties": {
         "file_bytes": {
           "minimum": 0,
-          "title": "File Bytes",
           "type": "integer"
         },
         "file_count": {
           "minimum": 1,
-          "title": "File Count",
           "type": "integer"
         },
         "header": {
@@ -163,7 +150,6 @@ The following JSON is the complete value owned at each machine-authority pointer
         },
         "inventory_identity": {
           "pattern": "^[0-9a-f]{64}$",
-          "title": "Inventory Identity",
           "type": "string"
         }
       },
@@ -173,7 +159,6 @@ The following JSON is the complete value owned at each machine-authority pointer
         "file_count",
         "file_bytes"
       ],
-      "title": "PortableCollectionInventoryAuthority",
       "type": "object"
     },
     "signature": "\"(*, header: riverhog_protocol.portable_collection.PortableCollectionHeader, inventory_identity: Annotated[str, _PydanticGeneralMetadata(pattern='^[0-9a-f]{64}$')], file_count: Annotated[int, Ge(ge=1)], file_bytes: Annotated[int, Ge(ge=0)]) -> None\""

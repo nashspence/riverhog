@@ -27,7 +27,6 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-825ec0fc90"></a>
-- <a id="s-762bcd7f72"></a>`title`: AdmissionIntent
 - <a id="s-41c6814b9d"></a>`type`: object
 
 ### Fields
@@ -87,7 +86,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 5ce6adda0208c36b2aae02b26d7647c78ef2efc864f6e7bab56f1be9890af4a0 -->
+<!-- exact-contract-value: 916f1bbd590e404f7eb1bf62c6d0c89bff89872966c52dfaa5674b6801725aa0 -->
 
 ```json
 {
@@ -102,7 +101,6 @@ The following JSON is the complete value owned at each machine-authority pointer
               "maxLength": 64,
               "minLength": 64,
               "pattern": "^[0-9a-f]{64}$",
-              "title": "Archive Root Sha256",
               "type": "string"
             },
             "collection_id": {
@@ -112,7 +110,6 @@ The following JSON is the complete value owned at each machine-authority pointer
               "maxLength": 64,
               "minLength": 64,
               "pattern": "^[0-9a-f]{64}$",
-              "title": "Content Identity",
               "type": "string"
             },
             "description": {
@@ -129,33 +126,28 @@ The following JSON is the complete value owned at each machine-authority pointer
               "maxLength": 64,
               "minLength": 64,
               "pattern": "^[0-9a-f]{64}$",
-              "title": "Description Identity",
               "type": "string"
             },
             "description_revision": {
               "maximum": 9007199254740991,
               "minimum": 0,
-              "title": "Description Revision",
               "type": "integer"
             },
             "revision": {
               "maxLength": 19,
               "minLength": 1,
               "pattern": "^(?:[1-9][0-9]{0,17}|[1-8][0-9]{18})$",
-              "title": "Revision",
               "type": "string"
             },
             "tag_revision": {
               "maximum": 9007199254740991,
               "minimum": 1,
-              "title": "Tag Revision",
               "type": "integer"
             },
             "tag_set_identity": {
               "maxLength": 64,
               "minLength": 64,
               "pattern": "^[0-9a-f]{64}$",
-              "title": "Tag Set Identity",
               "type": "string"
             }
           },
@@ -170,7 +162,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             "tag_set_identity",
             "revision"
           ],
-          "title": "CatalogSyncDescriptor",
           "type": "object"
         },
         "CollectionDescription": {
@@ -205,7 +196,6 @@ The following JSON is the complete value owned at each machine-authority pointer
       "properties": {
         "admission_id": {
           "pattern": "^[0-9a-f]{64}$",
-          "title": "Admission Id",
           "type": "string"
         },
         "collection": {
@@ -215,52 +205,43 @@ The following JSON is the complete value owned at each machine-authority pointer
           "additionalProperties": {
             "$ref": "#/$defs/JsonValue"
           },
-          "title": "Effective Intent",
           "type": "object"
         },
         "format": {
           "const": "stove0-admission-intent/v1",
           "default": "stove0-admission-intent/v1",
-          "title": "Format",
           "type": "string"
         },
         "policy_id": {
           "maxLength": 160,
           "minLength": 1,
-          "title": "Policy Id",
           "type": "string"
         },
         "policy_revision": {
           "minimum": 1,
-          "title": "Policy Revision",
           "type": "integer"
         },
         "policy_sha256": {
           "pattern": "^[0-9a-f]{64}$",
-          "title": "Policy Sha256",
           "type": "string"
         },
         "recipe_id": {
           "maxLength": 160,
           "minLength": 1,
-          "title": "Recipe Id",
           "type": "string"
         },
         "recipe_revision": {
           "minimum": 1,
-          "title": "Recipe Revision",
           "type": "integer"
         },
         "recipe_sha256": {
           "pattern": "^[0-9a-f]{64}$",
-          "title": "Recipe Sha256",
           "type": "string"
         },
         "required_tags": {
           "items": {
             "$ref": "#/$defs/CollectionTag"
           },
-          "title": "Required Tags",
           "type": "array"
         }
       },
@@ -276,7 +257,6 @@ The following JSON is the complete value owned at each machine-authority pointer
         "recipe_sha256",
         "effective_intent"
       ],
-      "title": "AdmissionIntent",
       "type": "object"
     },
     "signature": "\"(*, format: Literal['stove0-admission-intent/v1'] = 'stove0-admission-intent/v1', admission_id: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)], policy_id: Annotated[str, MinLen(min_length=1), MaxLen(max_length=160)], policy_revision: Annotated[int, Ge(ge=1)], policy_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)], required_tags: tuple[CollectionTag, ...], collection: riverhog_protocol.catalog_sync.CatalogSyncDescriptor, recipe_id: Annotated[str, MinLen(min_length=1), MaxLen(max_length=160)], recipe_revision: Annotated[int, Ge(ge=1)], recipe_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)], effective_intent: dict[str, JsonValue]) -> None\""

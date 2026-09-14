@@ -27,7 +27,6 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-56e80101a3"></a>
-- <a id="s-80deb9d265"></a>`title`: OperationContractPayload
 - <a id="s-fdf737d145"></a>`type`: object
 
 ### Fields
@@ -84,7 +83,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 0c2f5bdbfdb748f468b0a39981843e512c26450543996250d5078a03260b2ed6 -->
+<!-- exact-contract-value: 0bb49d241906419a399717584b7a12cf7659dddb59228dac3572b029b6ffb281 -->
 
 ```json
 {
@@ -113,8 +112,7 @@ The following JSON is the complete value owned at each machine-authority pointer
                   "type": "null"
                 }
               ],
-              "default": null,
-              "title": "Allowed Dispositions"
+              "default": null
             },
             "maximum": {
               "anyOf": [
@@ -126,25 +124,21 @@ The following JSON is the complete value owned at each machine-authority pointer
                   "type": "null"
                 }
               ],
-              "default": null,
-              "title": "Maximum"
+              "default": null
             },
             "minimum": {
               "default": 1,
               "minimum": 0,
-              "title": "Minimum",
               "type": "integer"
             },
             "role": {
               "pattern": "^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$",
-              "title": "Role",
               "type": "string"
             }
           },
           "required": [
             "role"
           ],
-          "title": "InputArtifactContract",
           "type": "object"
         },
         "JsonSchemaDocument": {
@@ -153,30 +147,25 @@ The following JSON is the complete value owned at each machine-authority pointer
             "dialect": {
               "const": "https://json-schema.org/draft/2020-12/schema",
               "default": "https://json-schema.org/draft/2020-12/schema",
-              "title": "Dialect",
               "type": "string"
             },
             "format_policy": {
               "const": "annotation-only",
               "default": "annotation-only",
-              "title": "Format Policy",
               "type": "string"
             },
             "id": {
               "pattern": "^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$",
-              "title": "Id",
               "type": "string"
             },
             "schema": {
               "additionalProperties": {
                 "$ref": "#/$defs/JsonValue"
               },
-              "title": "Schema",
               "type": "object"
             },
             "sha256": {
               "pattern": "^[0-9a-f]{64}$",
-              "title": "Sha256",
               "type": "string"
             }
           },
@@ -185,7 +174,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             "sha256",
             "schema"
           ],
-          "title": "JsonSchemaDocument",
           "type": "object"
         },
         "JsonValue": {},
@@ -198,7 +186,6 @@ The following JSON is the complete value owned at each machine-authority pointer
                 "type": "string"
               },
               "minItems": 1,
-              "title": "Derived From Roles",
               "type": "array"
             },
             "maximum": {
@@ -211,18 +198,15 @@ The following JSON is the complete value owned at each machine-authority pointer
                   "type": "null"
                 }
               ],
-              "default": null,
-              "title": "Maximum"
+              "default": null
             },
             "minimum": {
               "default": 1,
               "minimum": 0,
-              "title": "Minimum",
               "type": "integer"
             },
             "role": {
               "pattern": "^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$",
-              "title": "Role",
               "type": "string"
             }
           },
@@ -230,7 +214,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             "role",
             "derived_from_roles"
           ],
-          "title": "OutputArtifactContract",
           "type": "object"
         },
         "SemanticValidationProfile": {
@@ -246,17 +229,14 @@ The following JSON is the complete value owned at each machine-authority pointer
                   "type": "null"
                 }
               ],
-              "default": null,
-              "title": "Conformance Vectors Sha256"
+              "default": null
             },
             "id": {
               "pattern": "^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$",
-              "title": "Id",
               "type": "string"
             },
             "profile_sha256": {
               "pattern": "^[0-9a-f]{64}$",
-              "title": "Profile Sha256",
               "type": "string"
             },
             "rules": {
@@ -265,7 +245,6 @@ The following JSON is the complete value owned at each machine-authority pointer
                 "type": "string"
               },
               "minItems": 1,
-              "title": "Rules",
               "type": "array"
             }
           },
@@ -274,7 +253,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             "rules",
             "profile_sha256"
           ],
-          "title": "SemanticValidationProfile",
           "type": "object"
         }
       },
@@ -293,7 +271,6 @@ The following JSON is the complete value owned at each machine-authority pointer
         },
         "id": {
           "pattern": "^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$",
-          "title": "Id",
           "type": "string"
         },
         "inputs": {
@@ -301,7 +278,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             "$ref": "#/$defs/InputArtifactContract"
           },
           "minItems": 1,
-          "title": "Inputs",
           "type": "array"
         },
         "intent_schema": {
@@ -315,7 +291,6 @@ The following JSON is the complete value owned at each machine-authority pointer
           "items": {
             "$ref": "#/$defs/OutputArtifactContract"
           },
-          "title": "Outputs",
           "type": "array"
         },
         "result_kind": {
@@ -324,12 +299,10 @@ The following JSON is the complete value owned at each machine-authority pointer
             "collection",
             "external-effect"
           ],
-          "title": "Result Kind",
           "type": "string"
         },
         "source_retirement_permitted": {
           "default": false,
-          "title": "Source Retirement Permitted",
           "type": "boolean"
         }
       },
@@ -339,7 +312,6 @@ The following JSON is the complete value owned at each machine-authority pointer
         "intent_semantics",
         "inputs"
       ],
-      "title": "OperationContractPayload",
       "type": "object"
     },
     "signature": "\"(*, id: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$', ascii_only=None)], result_kind: Literal['collection', 'external-effect'] = 'collection', intent_schema: stove0_protocol.models.JsonSchemaDocument, intent_semantics: stove0_protocol.models.SemanticValidationProfile, inputs: Annotated[tuple[stove0_target_protocol.protocol.InputArtifactContract, ...], MinLen(min_length=1)], outputs: tuple[stove0_target_protocol.protocol.OutputArtifactContract, ...] = (), effect_receipt_schema: stove0_protocol.models.JsonSchemaDocument | None = None, source_retirement_permitted: bool = False) -> None\""

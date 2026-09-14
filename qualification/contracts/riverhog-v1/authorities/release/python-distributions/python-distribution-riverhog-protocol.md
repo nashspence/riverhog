@@ -19,6 +19,9 @@ Canonical Riverhog wire and identity contracts.
 | <a id="s-9d441f9d70"></a>`artifacts` | [{"coordinate": "dist/riverhog_protocol-{version}-py3-none-any.whl", "format": "wheel"}, {"coordinate": "dist/riverhog_protocol-{version}.tar.gz", "format": "sdist"}] |
 | <a id="s-ebd2940fb5"></a>`channel` | github-release |
 | <a id="s-0f222c026a"></a>`description` | Canonical Riverhog wire and identity contracts. |
+| <a id="s-6695d21858"></a>`license_baseline` | first-v1-publication |
+| <a id="s-0a152cff8b"></a>`license_expression` | Apache-2.0 |
+| <a id="s-f232b42c56"></a>`publication_identity` | {"coordinate": "riverhog-protocol", "kind": "python-distribution"} |
 | <a id="s-09cd13996c"></a>`requires_python` | >=3.12 |
 | <a id="s-6aedf80100"></a>`role` | reusable_library |
 | <a id="s-fba5b34eda"></a>`source` | packages/riverhog-protocol/pyproject.toml |
@@ -57,7 +60,7 @@ Publication preserves these existing component authorities; it does not reclassi
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 75a81e8ff102dff823ccdf8170a05e9418a5e2838fb649e366cdc7ea13afc1fe -->
+<!-- exact-contract-value: 0f9d1907d35ec3860447ed9cc100742bede075e20741cce1ce4d18fe130eef8e -->
 
 ```json
 {
@@ -73,6 +76,12 @@ The following JSON is the complete value owned at each machine-authority pointer
   ],
   "channel": "github-release",
   "description": "Canonical Riverhog wire and identity contracts.",
+  "license_baseline": "first-v1-publication",
+  "license_expression": "Apache-2.0",
+  "publication_identity": {
+    "coordinate": "riverhog-protocol",
+    "kind": "python-distribution"
+  },
   "requires_python": ">=3.12",
   "role": "reusable_library",
   "source": "packages/riverhog-protocol/pyproject.toml"

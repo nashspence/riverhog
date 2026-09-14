@@ -19,6 +19,9 @@ Optional nonnormative client for the Riverhog FTP ingress reference.
 | <a id="s-ffe3255b10"></a>`artifacts` | [{"coordinate": "dist/riverhog_ftp_adapter_api_client-{version}-py3-none-any.whl", "format": "wheel"}, {"coordinate": "dist/riverhog_ftp_adapter_api_client-{version}.tar.gz", "format": "sdist"}] |
 | <a id="s-f28ef68e25"></a>`channel` | github-release |
 | <a id="s-075d805e40"></a>`description` | Optional nonnormative client for the Riverhog FTP ingress reference. |
+| <a id="s-d0acdf17f0"></a>`license_baseline` | first-v1-publication |
+| <a id="s-cafb1942b6"></a>`license_expression` | Apache-2.0 |
+| <a id="s-04f9fd8092"></a>`publication_identity` | {"coordinate": "riverhog-ftp-adapter-api-client", "kind": "python-distribution"} |
 | <a id="s-f1f2c566f2"></a>`requires_python` | >=3.12 |
 | <a id="s-2110d96cc1"></a>`role` | reference_component |
 | <a id="s-76d81eaf74"></a>`source` | reference/riverhog/ingress/ftp-api-client/pyproject.toml |
@@ -57,7 +60,7 @@ Publication preserves these existing component authorities; it does not reclassi
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 5aa8ad488fa7e59ac76d10b92dae7b1a0a996e4bfd4d0e191dce3c37d1e5295a -->
+<!-- exact-contract-value: 9af103331afe83e2d351e1285f86c307c85e407a52810ebb03b6bdf083f9d304 -->
 
 ```json
 {
@@ -73,6 +76,12 @@ The following JSON is the complete value owned at each machine-authority pointer
   ],
   "channel": "github-release",
   "description": "Optional nonnormative client for the Riverhog FTP ingress reference.",
+  "license_baseline": "first-v1-publication",
+  "license_expression": "Apache-2.0",
+  "publication_identity": {
+    "coordinate": "riverhog-ftp-adapter-api-client",
+    "kind": "python-distribution"
+  },
   "requires_python": ">=3.12",
   "role": "reference_component",
   "source": "reference/riverhog/ingress/ftp-api-client/pyproject.toml"

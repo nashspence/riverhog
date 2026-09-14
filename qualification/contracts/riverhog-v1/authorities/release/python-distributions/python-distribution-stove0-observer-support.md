@@ -19,6 +19,9 @@ External-author protocol, runtime, and conformance support for stove0 content ob
 | <a id="s-3b04c26417"></a>`artifacts` | [{"coordinate": "dist/stove0_observer_support-{version}-py3-none-any.whl", "format": "wheel"}, {"coordinate": "dist/stove0_observer_support-{version}.tar.gz", "format": "sdist"}] |
 | <a id="s-80217009cc"></a>`channel` | github-release |
 | <a id="s-9341b4b5e3"></a>`description` | External-author protocol, runtime, and conformance support for stove0 content observers. |
+| <a id="s-7cdfc39d96"></a>`license_baseline` | first-v1-publication |
+| <a id="s-37004ebfc6"></a>`license_expression` | Apache-2.0 |
+| <a id="s-a285ba5e82"></a>`publication_identity` | {"coordinate": "stove0-observer-support", "kind": "python-distribution"} |
 | <a id="s-f71635f80b"></a>`requires_python` | >=3.12 |
 | <a id="s-a58ce03ca5"></a>`role` | reusable_library |
 | <a id="s-8945f9bd59"></a>`source` | reference/stove0/packages/observer-support/pyproject.toml |
@@ -57,7 +60,7 @@ Publication preserves these existing component authorities; it does not reclassi
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: e9094b43c132a0babb5ee46ef8f1e7cdcd0467048ca3d7934e276f333ac9756d -->
+<!-- exact-contract-value: 532e319541dcfbbc52c212ebd56d8898b028e5ba62a019d0fdc17924ad969b44 -->
 
 ```json
 {
@@ -73,6 +76,12 @@ The following JSON is the complete value owned at each machine-authority pointer
   ],
   "channel": "github-release",
   "description": "External-author protocol, runtime, and conformance support for stove0 content observers.",
+  "license_baseline": "first-v1-publication",
+  "license_expression": "Apache-2.0",
+  "publication_identity": {
+    "coordinate": "stove0-observer-support",
+    "kind": "python-distribution"
+  },
   "requires_python": ">=3.12",
   "role": "reusable_library",
   "source": "reference/stove0/packages/observer-support/pyproject.toml"

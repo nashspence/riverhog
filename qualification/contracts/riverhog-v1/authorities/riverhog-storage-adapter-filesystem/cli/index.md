@@ -10,4 +10,4 @@ Executable commands: **1** · Command groups: **0**
 
 ### Executable commands
 
-- [riverhog-storage-adapter-filesystem-materialize](riverhog-storage-adapter-filesystem-materialize.md) — `riverhog-storage-adapter-filesystem-materialize-cli/v1`
+- [riverhog-storage-adapter-filesystem-materialize](riverhog-storage-adapter-filesystem-materialize.md)

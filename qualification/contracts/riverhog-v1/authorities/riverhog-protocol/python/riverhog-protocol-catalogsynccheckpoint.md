@@ -27,7 +27,6 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-013e1b52c8"></a>
-- <a id="s-513db9ab80"></a>`title`: CatalogSyncCheckpoint
 - <a id="s-64033b90ee"></a>`type`: object
 
 ### Fields
@@ -63,7 +62,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 3702119200b432cb2ed133439a4a3b8cecc346d57b541d01c2d7595953a9ec47 -->
+<!-- exact-contract-value: c325bb30d3dd96cb9b34c2de05f871600e0c91478783083a642a852e92055412 -->
 
 ```json
 {
@@ -76,26 +75,22 @@ The following JSON is the complete value owned at each machine-authority pointer
           "maxLength": 64,
           "minLength": 64,
           "pattern": "^[0-9a-f]{64}$",
-          "title": "Authorization View Identity",
           "type": "string"
         },
         "catalog_cursor": {
           "maxLength": 4096,
           "minLength": 1,
-          "title": "Catalog Cursor",
           "type": "string"
         },
         "format": {
           "const": "riverhog-catalog-sync/v1",
           "default": "riverhog-catalog-sync/v1",
-          "title": "Format",
           "type": "string"
         },
         "source_identity": {
           "maxLength": 64,
           "minLength": 64,
           "pattern": "^[0-9a-f]{64}$",
-          "title": "Source Identity",
           "type": "string"
         }
       },
@@ -104,7 +99,6 @@ The following JSON is the complete value owned at each machine-authority pointer
         "authorization_view_identity",
         "catalog_cursor"
       ],
-      "title": "CatalogSyncCheckpoint",
       "type": "object"
     },
     "signature": "\"(*, format: Literal['riverhog-catalog-sync/v1'] = 'riverhog-catalog-sync/v1', source_identity: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=64, max_length=64, pattern='^[0-9a-f]{64}$', ascii_only=None)], authorization_view_identity: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=64, max_length=64, pattern='^[0-9a-f]{64}$', ascii_only=None)], catalog_cursor: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=1, max_length=4096, pattern=None, ascii_only=None)]) -> None\""

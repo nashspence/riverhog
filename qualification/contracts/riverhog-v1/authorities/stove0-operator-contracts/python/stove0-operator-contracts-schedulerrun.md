@@ -27,7 +27,6 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-bea95f16ce"></a>
-- <a id="s-47790f2c8c"></a>`title`: SchedulerRun
 - <a id="s-c7db1dc77d"></a>`type`: object
 
 ### Fields
@@ -71,7 +70,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 7fcd8daa28494be595dd7fe039a603601804413de3aebe4974bbafd7130aaac3 -->
+<!-- exact-contract-value: 7871590768273f2167839930d35587f3bce0f42c659838b422c6e9c1cd7e06e0 -->
 
 ```json
 {
@@ -87,21 +86,18 @@ The following JSON is the complete value owned at each machine-authority pointer
               "items": {
                 "$ref": "#/$defs/SchedulerFailure"
               },
-              "title": "Failures",
               "type": "array"
             },
             "progressed": {
               "items": {
                 "type": "string"
               },
-              "title": "Progressed",
               "type": "array"
             }
           },
           "required": [
             "progressed"
           ],
-          "title": "AdmissionRun",
           "type": "object"
         },
         "SchedulerFailure": {
@@ -110,7 +106,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             "error": {
               "maxLength": 1000,
               "minLength": 1,
-              "title": "Error",
               "type": "string"
             },
             "event_id": {
@@ -122,8 +117,7 @@ The following JSON is the complete value owned at each machine-authority pointer
                   "type": "null"
                 }
               ],
-              "default": null,
-              "title": "Event Id"
+              "default": null
             },
             "work_id": {
               "anyOf": [
@@ -135,14 +129,12 @@ The following JSON is the complete value owned at each machine-authority pointer
                   "type": "null"
                 }
               ],
-              "default": null,
-              "title": "Work Id"
+              "default": null
             }
           },
           "required": [
             "error"
           ],
-          "title": "SchedulerFailure",
           "type": "object"
         },
         "SchedulerPruning": {
@@ -150,42 +142,34 @@ The following JSON is the complete value owned at each machine-authority pointer
           "properties": {
             "evaluation_bytes": {
               "minimum": 0,
-              "title": "Evaluation Bytes",
               "type": "integer"
             },
             "evaluations": {
               "minimum": 0,
-              "title": "Evaluations",
               "type": "integer"
             },
             "event_bytes": {
               "minimum": 0,
-              "title": "Event Bytes",
               "type": "integer"
             },
             "events": {
               "minimum": 0,
-              "title": "Events",
               "type": "integer"
             },
             "selection_bytes": {
               "minimum": 0,
-              "title": "Selection Bytes",
               "type": "integer"
             },
             "selections": {
               "minimum": 0,
-              "title": "Selections",
               "type": "integer"
             },
             "work": {
               "minimum": 0,
-              "title": "Work",
               "type": "integer"
             },
             "work_bytes": {
               "minimum": 0,
-              "title": "Work Bytes",
               "type": "integer"
             }
           },
@@ -199,25 +183,21 @@ The following JSON is the complete value owned at each machine-authority pointer
             "events",
             "event_bytes"
           ],
-          "title": "SchedulerPruning",
           "type": "object"
         },
         "SchedulerWorkBatch": {
           "additionalProperties": false,
           "properties": {
             "cursor": {
-              "title": "Cursor",
               "type": "string"
             },
             "failures": {
               "items": {
                 "$ref": "#/$defs/SchedulerFailure"
               },
-              "title": "Failures",
               "type": "array"
             },
             "next_cursor": {
-              "title": "Next Cursor",
               "type": "string"
             },
             "progressed": {
@@ -225,7 +205,6 @@ The following JSON is the complete value owned at each machine-authority pointer
                 "pattern": "^[0-9a-f]{64}$",
                 "type": "string"
               },
-              "title": "Progressed",
               "type": "array"
             },
             "role": {
@@ -234,7 +213,6 @@ The following JSON is the complete value owned at each machine-authority pointer
                 "worker",
                 "combined"
               ],
-              "title": "Role",
               "type": "string"
             }
           },
@@ -245,7 +223,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             "progressed",
             "failures"
           ],
-          "title": "SchedulerWorkBatch",
           "type": "object"
         }
       },
@@ -280,7 +257,6 @@ The following JSON is the complete value owned at each machine-authority pointer
         "pruning",
         "work"
       ],
-      "title": "SchedulerRun",
       "type": "object"
     },
     "signature": "'(*, pruning: stove0_operator_contracts.SchedulerPruning | None, admission: stove0_operator_contracts.AdmissionRun | None = None, work: stove0_operator_contracts.SchedulerWorkBatch) -> None'"

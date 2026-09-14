@@ -44,14 +44,14 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Identity | Selected by | Exit status | stdout | stderr |
 |---|---|---|---|---|
-| <a id="s-9b1da451fc"></a>`completed` | <a id="s-ea4999f1a0"></a>`{"kind":"command-completed"}` | <a id="s-3f1ca5510e"></a>`0` | <a id="s-7f482a4113"></a>`human: noncontractual-presentation-of-command-result; json: HTTP list_admissions — #/components/schemas/AdmissionPage` | <a id="s-b62f9d36f0"></a>`all: empty` |
+| <a id="s-9b1da451fc"></a>`completed` | <a id="s-ea4999f1a0"></a>`{"kind":"command-completed"}` | <a id="s-3f1ca5510e"></a>`0` | <a id="s-7f482a4113"></a>human: `noncontractual-presentation-of-command-result`; json: [HTTP list_admissions response 200](../../stove0/http-operations/get-v1-admissions.md#s-7778dfac1e) | <a id="s-b62f9d36f0"></a>all: `empty` |
 
 #### Failure outcomes
 
 | Identity | Selected by | Exit status | stdout | stderr |
 |---|---|---|---|---|
-| <a id="s-6b977617c2"></a>`usage` | <a id="s-f073de919f"></a>`{"kind":"parser-rejected-invocation"}` | <a id="s-542792ac2b"></a>`2` | <a id="s-0a08b18460"></a>`all: empty` | <a id="s-b9a626706a"></a>`all: noncontractual-usage-diagnostic` |
-| <a id="s-38dd72adab"></a>`operational` | <a id="s-dc65060ea3"></a>`{"kind":"application-error"}` | <a id="s-807b0c5322"></a>`1` | <a id="s-0fedc66b8d"></a>`all: empty` | <a id="s-0a89eaab77"></a>`all: noncontractual-diagnostic` |
+| <a id="s-6b977617c2"></a>`usage` | <a id="s-f073de919f"></a>`{"kind":"parser-rejected-invocation"}` | <a id="s-542792ac2b"></a>`2` | <a id="s-0a08b18460"></a>all: `empty` | <a id="s-b9a626706a"></a>all: `noncontractual-usage-diagnostic` |
+| <a id="s-38dd72adab"></a>`operational` | <a id="s-dc65060ea3"></a>`{"kind":"application-error"}` | <a id="s-807b0c5322"></a>`1` | <a id="s-0fedc66b8d"></a>all: `empty` | <a id="s-0a89eaab77"></a>all: `noncontractual-diagnostic` |
 
 ### Progression, limits, and lifecycle
 

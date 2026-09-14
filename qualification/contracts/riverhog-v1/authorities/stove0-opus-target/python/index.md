@@ -8,5 +8,5 @@ Declared public imports and their selected exact structural contracts.
 
 ### `stove0_opus_target`
 
-- [stove0_opus_target.OpusTargetService](stove0-opus-target-opustargetservice.md)
-  - [stove0_opus_target.OpusTargetService.preflight](stove0-opus-target-opustargetservice-preflight.md)
+- [OpusTargetService](stove0-opus-target-opustargetservice.md)
+  - [preflight](stove0-opus-target-opustargetservice-preflight.md)

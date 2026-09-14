@@ -19,6 +19,9 @@ Public Riverhog application-access contracts and canonical grant grammar.
 | <a id="s-d2555c9436"></a>`artifacts` | [{"coordinate": "dist/riverhog_application_access-{version}-py3-none-any.whl", "format": "wheel"}, {"coordinate": "dist/riverhog_application_access-{version}.tar.gz", "format": "sdist"}] |
 | <a id="s-8ba886f13a"></a>`channel` | github-release |
 | <a id="s-ee2bc70ad6"></a>`description` | Public Riverhog application-access contracts and canonical grant grammar. |
+| <a id="s-a098e7a06a"></a>`license_baseline` | first-v1-publication |
+| <a id="s-ec857c1b66"></a>`license_expression` | Apache-2.0 |
+| <a id="s-e211778d8f"></a>`publication_identity` | {"coordinate": "riverhog-application-access", "kind": "python-distribution"} |
 | <a id="s-ed5dcfde56"></a>`requires_python` | >=3.12 |
 | <a id="s-60c1d554ee"></a>`role` | reusable_library |
 | <a id="s-c1c491a3e6"></a>`source` | packages/riverhog-application-access/pyproject.toml |
@@ -57,7 +60,7 @@ Publication preserves these existing component authorities; it does not reclassi
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 244cc2bcbc6f0b21151c002f5b1f679be06d39768148c438b50611b697e5a8fb -->
+<!-- exact-contract-value: d07fa6d9931e47e7625068f1f20940a635a14df651e3f36c619b1afb040953ca -->
 
 ```json
 {
@@ -73,6 +76,12 @@ The following JSON is the complete value owned at each machine-authority pointer
   ],
   "channel": "github-release",
   "description": "Public Riverhog application-access contracts and canonical grant grammar.",
+  "license_baseline": "first-v1-publication",
+  "license_expression": "Apache-2.0",
+  "publication_identity": {
+    "coordinate": "riverhog-application-access",
+    "kind": "python-distribution"
+  },
   "requires_python": ">=3.12",
   "role": "reusable_library",
   "source": "packages/riverhog-application-access/pyproject.toml"

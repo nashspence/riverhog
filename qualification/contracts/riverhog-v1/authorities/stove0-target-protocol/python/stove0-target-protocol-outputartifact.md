@@ -27,7 +27,6 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-17e4dfe1fc"></a>
-- <a id="s-5fbae1dd44"></a>`title`: OutputArtifact
 - <a id="s-3990df3d2e"></a>`type`: object
 
 ### Fields
@@ -71,7 +70,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: a33b16156b125a86f9b73b2b3279ae1dd77f374f37d454474404cbfa6af4d35d -->
+<!-- exact-contract-value: 69e319b61ba4911184fd8c20c26162a5f748ae380d9cb7aae592de19d3210e78 -->
 
 ```json
 {
@@ -82,12 +81,10 @@ The following JSON is the complete value owned at each machine-authority pointer
       "properties": {
         "bytes": {
           "minimum": 0,
-          "title": "Bytes",
           "type": "integer"
         },
         "id": {
           "pattern": "^[A-Za-z0-9]\u0028?:[A-Za-z0-9._-]{0,158}[A-Za-z0-9])?$",
-          "title": "Id",
           "type": "string"
         },
         "media_type": {
@@ -101,23 +98,19 @@ The following JSON is the complete value owned at each machine-authority pointer
               "type": "null"
             }
           ],
-          "default": null,
-          "title": "Media Type"
+          "default": null
         },
         "path": {
           "maxLength": 4096,
           "minLength": 1,
-          "title": "Path",
           "type": "string"
         },
         "role": {
           "pattern": "^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$",
-          "title": "Role",
           "type": "string"
         },
         "sha256": {
           "pattern": "^[0-9a-f]{64}$",
-          "title": "Sha256",
           "type": "string"
         }
       },
@@ -128,7 +121,6 @@ The following JSON is the complete value owned at each machine-authority pointer
         "bytes",
         "sha256"
       ],
-      "title": "OutputArtifact",
       "type": "object"
     },
     "signature": "\"(*, id: Annotated[str, _PydanticGeneralMetadata(pattern='^[A-Za-z0-9]\u0028?:[A-Za-z0-9._-]{0,158}[A-Za-z0-9])?$')], role: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$', ascii_only=None)], path: Annotated[str, MinLen(min_length=1), MaxLen(max_length=4096)], bytes: Annotated[int, Ge(ge=0)], sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)], media_type: Annotated[str | None, MinLen(min_length=1), MaxLen(max_length=255)] = None) -> None\""

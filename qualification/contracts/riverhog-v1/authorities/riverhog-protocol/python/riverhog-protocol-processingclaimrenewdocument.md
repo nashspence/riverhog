@@ -27,7 +27,6 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-0e65013f90"></a>
-- <a id="s-0e82ed8776"></a>`title`: ProcessingClaimRenewDocument
 - <a id="s-0095a52f9f"></a>`type`: object
 
 ### Fields
@@ -61,7 +60,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 177bc1190f39d0af46ba59e71e8bee6b2706bd9b6a863b893b2ebf0a899c9f33 -->
+<!-- exact-contract-value: f95d5d1c79dee54bb810e22fa18dbe846f3e41e00f2ade7b4308079d44381507 -->
 
 ```json
 {
@@ -72,21 +71,18 @@ The following JSON is the complete value owned at each machine-authority pointer
       "properties": {
         "fence": {
           "minimum": 1,
-          "title": "Fence",
           "type": "integer"
         },
         "lease_seconds": {
           "default": 1800,
           "maximum": 86400,
           "minimum": 30,
-          "title": "Lease Seconds",
           "type": "integer"
         }
       },
       "required": [
         "fence"
       ],
-      "title": "ProcessingClaimRenewDocument",
       "type": "object"
     },
     "signature": "'(*, fence: Annotated[int, Ge(ge=1)], lease_seconds: Annotated[int, Ge(ge=30), Le(le=86400)] = 1800) -> None'"

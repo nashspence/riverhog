@@ -27,8 +27,6 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-9fe1c6a09c"></a>
-- <a id="s-6b6181b8cb"></a>`title`: CollectionUploadUnitSourceDocument
-- <a id="s-688c70f247"></a>`description`: One exact source range supplied in a server-planned upload unit.
 - <a id="s-8c1af34a92"></a>`type`: object
 
 ### Fields
@@ -70,7 +68,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: d12a694f52f58d1959a4b32c3711c133aaf2b486bc340e7236bc171faf8957f5 -->
+<!-- exact-contract-value: 6c3b23f5d656a74142da55815050b1f3429869705e501fe8863f71b910f80adf -->
 
 ```json
 {
@@ -78,25 +76,20 @@ The following JSON is the complete value owned at each machine-authority pointer
     "kind": "class",
     "schema": {
       "additionalProperties": false,
-      "description": "One exact source range supplied in a server-planned upload unit.",
       "properties": {
         "artifact_sha256": {
           "pattern": "^[0-9a-f]{64}$",
-          "title": "Artifact Sha256",
           "type": "string"
         },
         "bytes": {
           "minimum": 0,
-          "title": "Bytes",
           "type": "integer"
         },
         "offset": {
           "minimum": 0,
-          "title": "Offset",
           "type": "integer"
         },
         "path": {
-          "title": "Path",
           "type": "string"
         }
       },
@@ -106,7 +99,6 @@ The following JSON is the complete value owned at each machine-authority pointer
         "bytes",
         "artifact_sha256"
       ],
-      "title": "CollectionUploadUnitSourceDocument",
       "type": "object"
     },
     "signature": "\"(*, path: str, offset: Annotated[int, Strict(strict=True), Ge(ge=0)], bytes: Annotated[int, Strict(strict=True), Ge(ge=0)], artifact_sha256: Annotated[str, _PydanticGeneralMetadata(pattern='^[0-9a-f]{64}$')]) -> None\""

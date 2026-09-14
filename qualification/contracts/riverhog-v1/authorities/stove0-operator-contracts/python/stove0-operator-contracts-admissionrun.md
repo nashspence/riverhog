@@ -27,7 +27,6 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-4205c86be7"></a>
-- <a id="s-6b7d234131"></a>`title`: AdmissionRun
 - <a id="s-121f3b37ec"></a>`type`: object
 
 ### Fields
@@ -67,7 +66,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 16bc1b364a34e2812a4c8f8f2d71223e7cb90d5d3b9ac4a6bc2bbd9df33289ef -->
+<!-- exact-contract-value: 5abc96c6ec9ef5b27994b3d8d969a8db555952b6ac7305c3ba9b5821a3521b3e -->
 
 ```json
 {
@@ -81,7 +80,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             "error": {
               "maxLength": 1000,
               "minLength": 1,
-              "title": "Error",
               "type": "string"
             },
             "event_id": {
@@ -93,8 +91,7 @@ The following JSON is the complete value owned at each machine-authority pointer
                   "type": "null"
                 }
               ],
-              "default": null,
-              "title": "Event Id"
+              "default": null
             },
             "work_id": {
               "anyOf": [
@@ -106,14 +103,12 @@ The following JSON is the complete value owned at each machine-authority pointer
                   "type": "null"
                 }
               ],
-              "default": null,
-              "title": "Work Id"
+              "default": null
             }
           },
           "required": [
             "error"
           ],
-          "title": "SchedulerFailure",
           "type": "object"
         }
       },
@@ -124,21 +119,18 @@ The following JSON is the complete value owned at each machine-authority pointer
           "items": {
             "$ref": "#/$defs/SchedulerFailure"
           },
-          "title": "Failures",
           "type": "array"
         },
         "progressed": {
           "items": {
             "type": "string"
           },
-          "title": "Progressed",
           "type": "array"
         }
       },
       "required": [
         "progressed"
       ],
-      "title": "AdmissionRun",
       "type": "object"
     },
     "signature": "'(*, progressed: tuple[str, ...], failures: tuple[stove0_operator_contracts.SchedulerFailure, ...] = ()) -> None'"

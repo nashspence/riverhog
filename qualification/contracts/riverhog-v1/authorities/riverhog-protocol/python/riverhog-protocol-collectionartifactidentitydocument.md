@@ -27,7 +27,6 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-ab068bfb41"></a>
-- <a id="s-7ee921ba41"></a>`title`: CollectionArtifactIdentityDocument
 - <a id="s-8bc12bb18d"></a>`type`: object
 
 ### Fields
@@ -77,7 +76,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: cfc427688a78aa64b64fb3dc2a6f2a8f30ae2f113de81c513c57584f77830d0a -->
+<!-- exact-contract-value: 0e93476172ab2132154f6795f00f535f628c7c46f8b12251a739c86dabde5a27 -->
 
 ```json
 {
@@ -114,7 +113,6 @@ The following JSON is the complete value owned at each machine-authority pointer
           "properties": {
             "archive_root_sha256": {
               "pattern": "^[0-9a-f]{64}$",
-              "title": "Archive Root Sha256",
               "type": "string"
             },
             "collection_id": {
@@ -122,7 +120,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             },
             "content_identity": {
               "pattern": "^[0-9a-f]{64}$",
-              "title": "Content Identity",
               "type": "string"
             }
           },
@@ -131,7 +128,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             "archive_root_sha256",
             "content_identity"
           ],
-          "title": "CollectionRootIdentityDocument",
           "type": "object"
         }
       },
@@ -139,7 +135,6 @@ The following JSON is the complete value owned at each machine-authority pointer
       "properties": {
         "bytes": {
           "minimum": 0,
-          "title": "Bytes",
           "type": "integer"
         },
         "collection": {
@@ -150,7 +145,6 @@ The following JSON is the complete value owned at each machine-authority pointer
         },
         "sha256": {
           "pattern": "^[0-9a-f]{64}$",
-          "title": "Sha256",
           "type": "string"
         }
       },
@@ -160,7 +154,6 @@ The following JSON is the complete value owned at each machine-authority pointer
         "bytes",
         "sha256"
       ],
-      "title": "CollectionArtifactIdentityDocument",
       "type": "object"
     },
     "signature": "\"(*, collection: riverhog_protocol.collection_workflow_transport.CollectionRootIdentityDocument, path: CanonicalRelPath, bytes: Annotated[int, Ge(ge=0)], sha256: Annotated[str, _PydanticGeneralMetadata(pattern='^[0-9a-f]{64}$')]) -> None\""

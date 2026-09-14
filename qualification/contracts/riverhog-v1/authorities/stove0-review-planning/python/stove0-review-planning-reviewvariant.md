@@ -27,7 +27,6 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-119f275b32"></a>
-- <a id="s-0f1a7c4977"></a>`title`: ReviewVariant
 - <a id="s-fa72432407"></a>`type`: object
 
 ### Fields
@@ -68,7 +67,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: efc258067c7dc3441dd308000b78138df908acf3c7c73e5ee88d692cbf5b3dfa -->
+<!-- exact-contract-value: 11fd565b05755a5ce3e954e9e8f12839c1684e426a3b5b55d3d0cb659d7fbab0 -->
 
 ```json
 {
@@ -82,28 +81,24 @@ The following JSON is the complete value owned at each machine-authority pointer
       "properties": {
         "id": {
           "pattern": "^[a-z0-9]\u0028?:[a-z0-9._-]{0,158}[a-z0-9])?$",
-          "title": "Id",
           "type": "string"
         },
         "portable_intent": {
           "additionalProperties": {
             "$ref": "#/$defs/JsonValue"
           },
-          "title": "Portable Intent",
           "type": "object"
         },
         "target_options": {
           "additionalProperties": {
             "$ref": "#/$defs/JsonValue"
           },
-          "title": "Target Options",
           "type": "object"
         }
       },
       "required": [
         "id"
       ],
-      "title": "ReviewVariant",
       "type": "object"
     },
     "signature": "\"(*, id: Annotated[str, _PydanticGeneralMetadata(pattern='^[a-z0-9]\u0028?:[a-z0-9._-]{0,158}[a-z0-9])?$')], portable_intent: dict[str, JsonValue] = <factory>, target_options: dict[str, JsonValue] = <factory>) -> None\""

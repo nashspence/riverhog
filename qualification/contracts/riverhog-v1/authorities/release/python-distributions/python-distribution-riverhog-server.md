@@ -19,6 +19,9 @@ Encrypted archive management, catalog, and retrieval.
 | <a id="s-f7cb7def60"></a>`artifacts` | [{"coordinate": "dist/riverhog_server-{version}-py3-none-any.whl", "format": "wheel"}, {"coordinate": "dist/riverhog_server-{version}.tar.gz", "format": "sdist"}] |
 | <a id="s-1c39439628"></a>`channel` | github-release |
 | <a id="s-0106c03018"></a>`description` | Encrypted archive management, catalog, and retrieval. |
+| <a id="s-a492af8c5d"></a>`license_baseline` | first-v1-publication |
+| <a id="s-9042380386"></a>`license_expression` | CAL-1.0 |
+| <a id="s-7657fcc355"></a>`publication_identity` | {"coordinate": "riverhog-server", "kind": "python-distribution"} |
 | <a id="s-8b9f2217af"></a>`requires_python` | >=3.12 |
 | <a id="s-91a9c07764"></a>`role` | deployed_implementation |
 | <a id="s-2f3bc56f46"></a>`source` | riverhog/pyproject.toml |
@@ -57,7 +60,7 @@ Publication preserves these existing component authorities; it does not reclassi
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 2845e2f98f64924236b226fd31bd9927cfbc085f1599ba530f4f39480228f24f -->
+<!-- exact-contract-value: d1e23edb70fec21e84c6e0eb0fe7ed32492f1d950d7df5d0da69acc0c6ef3bb3 -->
 
 ```json
 {
@@ -73,6 +76,12 @@ The following JSON is the complete value owned at each machine-authority pointer
   ],
   "channel": "github-release",
   "description": "Encrypted archive management, catalog, and retrieval.",
+  "license_baseline": "first-v1-publication",
+  "license_expression": "CAL-1.0",
+  "publication_identity": {
+    "coordinate": "riverhog-server",
+    "kind": "python-distribution"
+  },
   "requires_python": ">=3.12",
   "role": "deployed_implementation",
   "source": "riverhog/pyproject.toml"

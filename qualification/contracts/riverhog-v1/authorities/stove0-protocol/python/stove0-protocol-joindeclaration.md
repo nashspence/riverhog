@@ -27,8 +27,6 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-5fb9c36efa"></a>
-- <a id="s-8c8072430d"></a>`title`: JoinDeclaration
-- <a id="s-36f8c0a5e4"></a>`description`: One optional exact named-subset join declaration.
 - <a id="s-97c387fe33"></a>`type`: object
 
 ### Fields
@@ -84,7 +82,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 35be2fccb2145f98ead5e3f4ff33798254065241c819b71ce4ab8c6099a7294e -->
+<!-- exact-contract-value: a14c938ac61b53cbbedc670936912fa7e28068f934bd1578a7faef982a33b597 -->
 
 ```json
 {
@@ -94,11 +92,9 @@ The following JSON is the complete value owned at each machine-authority pointer
       "$defs": {
         "JoinMemberDeclaration": {
           "additionalProperties": false,
-          "description": "Exact named branch and opaque output roles required by the join.",
           "properties": {
             "branch_id": {
               "pattern": "^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$",
-              "title": "Branch Id",
               "type": "string"
             },
             "output_roles": {
@@ -107,7 +103,6 @@ The following JSON is the complete value owned at each machine-authority pointer
                 "type": "string"
               },
               "minItems": 1,
-              "title": "Output Roles",
               "type": "array"
             }
           },
@@ -115,7 +110,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             "branch_id",
             "output_roles"
           ],
-          "title": "JoinMemberDeclaration",
           "type": "object"
         },
         "JsonValue": {},
@@ -124,12 +118,10 @@ The following JSON is the complete value owned at each machine-authority pointer
           "properties": {
             "id": {
               "pattern": "^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$",
-              "title": "Id",
               "type": "string"
             },
             "sha256": {
               "pattern": "^[0-9a-f]{64}$",
-              "title": "Sha256",
               "type": "string"
             }
           },
@@ -137,7 +129,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             "id",
             "sha256"
           ],
-          "title": "OperationRef",
           "type": "object"
         },
         "RecipeRef": {
@@ -145,17 +136,14 @@ The following JSON is the complete value owned at each machine-authority pointer
           "properties": {
             "id": {
               "pattern": "^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$",
-              "title": "Id",
               "type": "string"
             },
             "revision": {
               "minimum": 1,
-              "title": "Revision",
               "type": "integer"
             },
             "sha256": {
               "pattern": "^[0-9a-f]{64}$",
-              "title": "Sha256",
               "type": "string"
             }
           },
@@ -164,12 +152,10 @@ The following JSON is the complete value owned at each machine-authority pointer
             "revision",
             "sha256"
           ],
-          "title": "RecipeRef",
           "type": "object"
         },
         "WorkflowPlanIntent": {
           "additionalProperties": false,
-          "description": "Work-independent fields that deterministically materialize a workflow plan.",
           "properties": {
             "input_retrieval_policy": {
               "default": "available-only",
@@ -177,7 +163,6 @@ The following JSON is the complete value owned at each machine-authority pointer
                 "available-only",
                 "allow"
               ],
-              "title": "Input Retrieval Policy",
               "type": "string"
             },
             "operation": {
@@ -187,14 +172,12 @@ The following JSON is the complete value owned at each machine-authority pointer
               "additionalProperties": {
                 "$ref": "#/$defs/JsonValue"
               },
-              "title": "Output Policy",
               "type": "object"
             },
             "requested_target_options": {
               "additionalProperties": {
                 "$ref": "#/$defs/JsonValue"
               },
-              "title": "Requested Target Options",
               "type": "object"
             },
             "result_kind": {
@@ -203,13 +186,11 @@ The following JSON is the complete value owned at each machine-authority pointer
                 "collection",
                 "external-effect"
               ],
-              "title": "Result Kind",
               "type": "string"
             },
             "retirement_grace_seconds": {
               "default": 0,
               "minimum": 0,
-              "title": "Retirement Grace Seconds",
               "type": "integer"
             },
             "retirement_policy": {
@@ -218,17 +199,14 @@ The following JSON is the complete value owned at each machine-authority pointer
                 "retain",
                 "retire-after-verified-output"
               ],
-              "title": "Retirement Policy",
               "type": "string"
             },
             "target_contract_sha256": {
               "pattern": "^[0-9a-f]{64}$",
-              "title": "Target Contract Sha256",
               "type": "string"
             },
             "target_registration_id": {
               "pattern": "^[a-z0-9]\u0028?:[a-z0-9.-]{0,118}[a-z0-9])?$",
-              "title": "Target Registration Id",
               "type": "string"
             }
           },
@@ -237,29 +215,24 @@ The following JSON is the complete value owned at each machine-authority pointer
             "target_registration_id",
             "target_contract_sha256"
           ],
-          "title": "WorkflowPlanIntent",
           "type": "object"
         }
       },
       "additionalProperties": false,
-      "description": "One optional exact named-subset join declaration.",
       "properties": {
         "effective_intent": {
           "additionalProperties": {
             "$ref": "#/$defs/JsonValue"
           },
-          "title": "Effective Intent",
           "type": "object"
         },
         "format": {
           "const": "stove0-join-declaration/v1",
           "default": "stove0-join-declaration/v1",
-          "title": "Format",
           "type": "string"
         },
         "join_declaration_sha256": {
           "pattern": "^[0-9a-f]{64}$",
-          "title": "Join Declaration Sha256",
           "type": "string"
         },
         "members": {
@@ -267,7 +240,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             "$ref": "#/$defs/JoinMemberDeclaration"
           },
           "minItems": 2,
-          "title": "Members",
           "type": "array"
         },
         "recipe": {
@@ -283,7 +255,6 @@ The following JSON is the complete value owned at each machine-authority pointer
         "workflow_intent",
         "join_declaration_sha256"
       ],
-      "title": "JoinDeclaration",
       "type": "object"
     },
     "signature": "\"(*, format: Literal['stove0-join-declaration/v1'] = 'stove0-join-declaration/v1', members: Annotated[tuple[stove0_protocol.fork_join.JoinMemberDeclaration, ...], MinLen(min_length=2)], recipe: stove0_protocol.models.RecipeRef, effective_intent: dict[str, JsonValue] = <factory>, workflow_intent: stove0_protocol.models.WorkflowPlanIntent, join_declaration_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)]) -> None\""

@@ -19,6 +19,9 @@ Strict YAML and JSON Schema configuration validation.
 | <a id="s-1ef889f0ab"></a>`artifacts` | [{"coordinate": "dist/config_validation-{version}-py3-none-any.whl", "format": "wheel"}, {"coordinate": "dist/config_validation-{version}.tar.gz", "format": "sdist"}] |
 | <a id="s-b7635a3241"></a>`channel` | github-release |
 | <a id="s-ddf484653b"></a>`description` | Strict YAML and JSON Schema configuration validation. |
+| <a id="s-328f8175a9"></a>`license_baseline` | first-v1-publication |
+| <a id="s-ae9090d303"></a>`license_expression` | Apache-2.0 |
+| <a id="s-f759eff5de"></a>`publication_identity` | {"coordinate": "config-validation", "kind": "python-distribution"} |
 | <a id="s-9980af7c67"></a>`requires_python` | >=3.12 |
 | <a id="s-d4cc64f222"></a>`role` | internal_build_unit |
 | <a id="s-257971f953"></a>`source` | packages/config-validation/pyproject.toml |
@@ -57,7 +60,7 @@ Publication preserves these existing component authorities; it does not reclassi
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 3aadd7c550fd0a17357fcc4bcf42fbefd35096f2eb3a2241a327a9ddc89f8321 -->
+<!-- exact-contract-value: a3e4f3534163dec0597599694fa4122ad033ebf639e7df82eea77b879f807297 -->
 
 ```json
 {
@@ -73,6 +76,12 @@ The following JSON is the complete value owned at each machine-authority pointer
   ],
   "channel": "github-release",
   "description": "Strict YAML and JSON Schema configuration validation.",
+  "license_baseline": "first-v1-publication",
+  "license_expression": "Apache-2.0",
+  "publication_identity": {
+    "coordinate": "config-validation",
+    "kind": "python-distribution"
+  },
   "requires_python": ">=3.12",
   "role": "internal_build_unit",
   "source": "packages/config-validation/pyproject.toml"

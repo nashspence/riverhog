@@ -27,7 +27,6 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-9e39aea4c3"></a>
-- <a id="s-c325881515"></a>`title`: CollectionRootRef
 - <a id="s-6a9c1d36d4"></a>`type`: object
 
 ### Fields
@@ -75,7 +74,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 85dbf3e0443132db66e2a0ea4bbbdee3d7c83b1c958437fdbee79e6094578a9b -->
+<!-- exact-contract-value: 103a61dcbfc6a28ec9ef3e4871d0ee2cac7f04b4abb250ccc0ea5c3f08fc8d42 -->
 
 ```json
 {
@@ -92,7 +91,6 @@ The following JSON is the complete value owned at each machine-authority pointer
       "properties": {
         "archive_root_sha256": {
           "pattern": "^[0-9a-f]{64}$",
-          "title": "Archive Root Sha256",
           "type": "string"
         },
         "collection_id": {
@@ -100,7 +98,6 @@ The following JSON is the complete value owned at each machine-authority pointer
         },
         "content_identity": {
           "pattern": "^[0-9a-f]{64}$",
-          "title": "Content Identity",
           "type": "string"
         }
       },
@@ -109,7 +106,6 @@ The following JSON is the complete value owned at each machine-authority pointer
         "archive_root_sha256",
         "content_identity"
       ],
-      "title": "CollectionRootRef",
       "type": "object"
     },
     "signature": "\"(*, collection_id: CollectionId, archive_root_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)], content_identity: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)]) -> None\""

@@ -27,7 +27,6 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-c3c9c96bae"></a>
-- <a id="s-180af637df"></a>`title`: EvaluationReviewIn
 - <a id="s-d3100af1b2"></a>`type`: object
 
 ### Fields
@@ -67,7 +66,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: ceff4a715a8b619a949fa7b0b097574b4c4b5141605720c3f38fa1994751da97 -->
+<!-- exact-contract-value: 1bd4e709433c9d07c8a989ca98e730b748e5e8e4ff2451ab93aa34562ccfaaf9 -->
 
 ```json
 {
@@ -110,8 +109,7 @@ The following JSON is the complete value owned at each machine-authority pointer
               "type": "null"
             }
           ],
-          "default": null,
-          "title": "Note"
+          "default": null
         },
         "rating": {
           "anyOf": [
@@ -124,11 +122,9 @@ The following JSON is the complete value owned at each machine-authority pointer
               "type": "null"
             }
           ],
-          "default": null,
-          "title": "Rating"
+          "default": null
         }
       },
-      "title": "EvaluationReviewIn",
       "type": "object"
     },
     "signature": "\"(*, rating: Annotated[int | None, Ge(ge=1), Le(le=5)] = None, note: Annotated[Optional[Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=1, max_length=None, pattern='^\\\\\\\\S(?:[\\\\\\\\s\\\\\\\\S]*\\\\\\\\S)?$', ascii_only=None)]], MaxLen(max_length=4000)] = None) -> None\""

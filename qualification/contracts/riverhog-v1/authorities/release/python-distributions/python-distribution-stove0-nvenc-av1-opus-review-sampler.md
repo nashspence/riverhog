@@ -19,6 +19,9 @@ Optional nonnormative NVENC AV1 and Opus review-sampler reference for Stove0.
 | <a id="s-a2aec6cc8c"></a>`artifacts` | [{"coordinate": "dist/stove0_nvenc_av1_opus_review_sampler-{version}-py3-none-any.whl", "format": "wheel"}, {"coordinate": "dist/stove0_nvenc_av1_opus_review_sampler-{version}.tar.gz", "format": "sdist"}] |
 | <a id="s-71ce441847"></a>`channel` | github-release |
 | <a id="s-373137b7a2"></a>`description` | Optional nonnormative NVENC AV1 and Opus review-sampler reference for Stove0. |
+| <a id="s-ef3420f188"></a>`license_baseline` | first-v1-publication |
+| <a id="s-a6ef1627dd"></a>`license_expression` | CAL-1.0 |
+| <a id="s-3f8c30599a"></a>`publication_identity` | {"coordinate": "stove0-nvenc-av1-opus-review-sampler", "kind": "python-distribution"} |
 | <a id="s-3fb2173d5b"></a>`requires_python` | >=3.12 |
 | <a id="s-ef92a3aee9"></a>`role` | reference_component |
 | <a id="s-c8d541ffb0"></a>`source` | reference/stove0/targets/nvenc-av1-opus/review-sampler/pyproject.toml |
@@ -57,7 +60,7 @@ Publication preserves these existing component authorities; it does not reclassi
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 9a1a96bfc97c51942f68e3c480ca21b7d670145191f8d3b768432d25770f2c4a -->
+<!-- exact-contract-value: 3f3b24895afbe6e53be808259632aaa1bc90ab53aac3e83bb181973e5a9817d0 -->
 
 ```json
 {
@@ -73,6 +76,12 @@ The following JSON is the complete value owned at each machine-authority pointer
   ],
   "channel": "github-release",
   "description": "Optional nonnormative NVENC AV1 and Opus review-sampler reference for Stove0.",
+  "license_baseline": "first-v1-publication",
+  "license_expression": "CAL-1.0",
+  "publication_identity": {
+    "coordinate": "stove0-nvenc-av1-opus-review-sampler",
+    "kind": "python-distribution"
+  },
   "requires_python": ">=3.12",
   "role": "reference_component",
   "source": "reference/stove0/targets/nvenc-av1-opus/review-sampler/pyproject.toml"

@@ -27,8 +27,6 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-c16e390dee"></a>
-- <a id="s-ff91145b49"></a>`title`: BranchSettlement
-- <a id="s-c16adcbecd"></a>`description`: Success-only, Riverhog-verified result of one branch workflow plan.
 - <a id="s-8e5090f602"></a>`type`: object
 
 ### Fields
@@ -84,7 +82,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 779edbf2a8f5903e4867b6c5a1b021225cbc40040a01090068050185bf8e4695 -->
+<!-- exact-contract-value: eae72e1efdbc0c7741f3b79f1a7d04a4ee917dbc01d1a51269ee5e362ac6e7e9 -->
 
 ```json
 {
@@ -94,21 +92,17 @@ The following JSON is the complete value owned at each machine-authority pointer
       "$defs": {
         "ArtifactSelectionRef": {
           "additionalProperties": false,
-          "description": "Closed reference to a separately retained selection document.",
           "properties": {
             "artifact_count": {
               "minimum": 1,
-              "title": "Artifact Count",
               "type": "integer"
             },
             "selection_sha256": {
               "pattern": "^[0-9a-f]{64}$",
-              "title": "Selection Sha256",
               "type": "string"
             },
             "total_bytes": {
               "minimum": 0,
-              "title": "Total Bytes",
               "type": "integer"
             }
           },
@@ -117,7 +111,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             "artifact_count",
             "total_bytes"
           ],
-          "title": "ArtifactSelectionRef",
           "type": "object"
         },
         "CollectionId": {
@@ -129,7 +122,6 @@ The following JSON is the complete value owned at each machine-authority pointer
           "properties": {
             "archive_root_sha256": {
               "pattern": "^[0-9a-f]{64}$",
-              "title": "Archive Root Sha256",
               "type": "string"
             },
             "collection_id": {
@@ -137,7 +129,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             },
             "content_identity": {
               "pattern": "^[0-9a-f]{64}$",
-              "title": "Content Identity",
               "type": "string"
             }
           },
@@ -146,27 +137,22 @@ The following JSON is the complete value owned at each machine-authority pointer
             "archive_root_sha256",
             "content_identity"
           ],
-          "title": "CollectionRootRef",
           "type": "object"
         }
       },
       "additionalProperties": false,
-      "description": "Success-only, Riverhog-verified result of one branch workflow plan.",
       "properties": {
         "branch_id": {
           "pattern": "^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$",
-          "title": "Branch Id",
           "type": "string"
         },
         "derivation_sha256": {
           "pattern": "^[0-9a-f]{64}$",
-          "title": "Derivation Sha256",
           "type": "string"
         },
         "format": {
           "const": "stove0-branch-settlement/v1",
           "default": "stove0-branch-settlement/v1",
-          "title": "Format",
           "type": "string"
         },
         "output_collection": {
@@ -177,22 +163,18 @@ The following JSON is the complete value owned at each machine-authority pointer
         },
         "producer_settlement_sha256": {
           "pattern": "^[0-9a-f]{64}$",
-          "title": "Producer Settlement Sha256",
           "type": "string"
         },
         "settlement_sha256": {
           "pattern": "^[0-9a-f]{64}$",
-          "title": "Settlement Sha256",
           "type": "string"
         },
         "work_id": {
           "pattern": "^[0-9a-f]{64}$",
-          "title": "Work Id",
           "type": "string"
         },
         "workflow_plan_sha256": {
           "pattern": "^[0-9a-f]{64}$",
-          "title": "Workflow Plan Sha256",
           "type": "string"
         }
       },
@@ -206,7 +188,6 @@ The following JSON is the complete value owned at each machine-authority pointer
         "output_selection",
         "settlement_sha256"
       ],
-      "title": "BranchSettlement",
       "type": "object"
     },
     "signature": "\"(*, format: Literal['stove0-branch-settlement/v1'] = 'stove0-branch-settlement/v1', branch_id: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$', ascii_only=None)], work_id: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)], workflow_plan_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)], derivation_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)], producer_settlement_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)], output_collection: stove0_protocol.models.CollectionRootRef, output_selection: stove0_protocol.fork_join.ArtifactSelectionRef, settlement_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)]) -> None\""

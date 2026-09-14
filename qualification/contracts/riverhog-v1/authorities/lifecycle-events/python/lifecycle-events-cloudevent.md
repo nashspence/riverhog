@@ -27,7 +27,6 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-1b227bba88"></a>
-- <a id="s-2eadbd8a20"></a>`title`: CloudEvent
 - <a id="s-a1faf51260"></a>`type`: object
 
 ### Fields
@@ -73,7 +72,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: a4a21a82491aa7e28e6a0e8851d616e5448e25a5548a98967fca53a30e038270 -->
+<!-- exact-contract-value: ccbd62dc77c4b42d31bb62e5c5630c3203ee2aba228af4a43261274b62d8292f -->
 
 ```json
 {
@@ -84,29 +83,24 @@ The following JSON is the complete value owned at each machine-authority pointer
       "properties": {
         "data": {
           "additionalProperties": true,
-          "title": "Data",
           "type": "object"
         },
         "datacontenttype": {
           "const": "application/json",
           "default": "application/json",
-          "title": "Datacontenttype",
           "type": "string"
         },
         "id": {
           "minLength": 1,
-          "title": "Id",
           "type": "string"
         },
         "source": {
           "minLength": 1,
-          "title": "Source",
           "type": "string"
         },
         "specversion": {
           "const": "1.0",
           "default": "1.0",
-          "title": "Specversion",
           "type": "string"
         },
         "subject": {
@@ -119,16 +113,13 @@ The following JSON is the complete value owned at each machine-authority pointer
               "type": "null"
             }
           ],
-          "default": null,
-          "title": "Subject"
+          "default": null
         },
         "time": {
-          "title": "Time",
           "type": "string"
         },
         "type": {
           "minLength": 1,
-          "title": "Type",
           "type": "string"
         }
       },
@@ -138,7 +129,6 @@ The following JSON is the complete value owned at each machine-authority pointer
         "type",
         "time"
       ],
-      "title": "CloudEvent",
       "type": "object"
     },
     "signature": "\"(*, specversion: Literal['1.0'] = '1.0', id: Annotated[str, MinLen(min_length=1)], source: Annotated[str, MinLen(min_length=1)], type: Annotated[str, MinLen(min_length=1)], subject: Annotated[str | None, MinLen(min_length=1)] = None, time: str, datacontenttype: Literal['application/json'] = 'application/json', data: dict[str, typing.Any] = <factory>) -> None\""

@@ -27,8 +27,6 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-3bb007e3e4"></a>
-- <a id="s-bdd2ef89c4"></a>`title`: CoordinationChildSettlementRef
-- <a id="s-922593b247"></a>`description`: Exact direct-child success included in a coordination settlement.
 - <a id="s-9720e0599d"></a>`type`: object
 
 ### Fields
@@ -63,7 +61,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 53254c79dcca66d23081f1d2912719d17775ac354d71f8037b2413ded1d265de -->
+<!-- exact-contract-value: f09ddf2f6fe4948b6bfc70d5d3ee1ecb1c81b5f119857a731c3f60f112773945 -->
 
 ```json
 {
@@ -71,11 +69,9 @@ The following JSON is the complete value owned at each machine-authority pointer
     "kind": "class",
     "schema": {
       "additionalProperties": false,
-      "description": "Exact direct-child success included in a coordination settlement.",
       "properties": {
         "branch_id": {
           "pattern": "^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$",
-          "title": "Branch Id",
           "type": "string"
         },
         "kind": {
@@ -84,12 +80,10 @@ The following JSON is the complete value owned at each machine-authority pointer
             "external-effect",
             "coordination"
           ],
-          "title": "Kind",
           "type": "string"
         },
         "settlement_sha256": {
           "pattern": "^[0-9a-f]{64}$",
-          "title": "Settlement Sha256",
           "type": "string"
         }
       },
@@ -98,7 +92,6 @@ The following JSON is the complete value owned at each machine-authority pointer
         "kind",
         "settlement_sha256"
       ],
-      "title": "CoordinationChildSettlementRef",
       "type": "object"
     },
     "signature": "\"(*, branch_id: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$', ascii_only=None)], kind: Literal['collection', 'external-effect', 'coordination'], settlement_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)]) -> None\""

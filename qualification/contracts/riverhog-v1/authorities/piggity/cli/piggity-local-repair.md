@@ -40,14 +40,14 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Identity | Selected by | Exit status | stdout | stderr |
 |---|---|---|---|---|
-| <a id="s-c2a4696f90"></a>`completed` | <a id="s-cc4087774a"></a>`{"kind":"command-completed"}` | <a id="s-0abf81dd95"></a>`0` | <a id="s-8a2ea1a7af"></a>`human: noncontractual-presentation-of-command-result; json: piggity-local-sync-result/v1` | <a id="s-b10b69cf5d"></a>`all: empty` |
+| <a id="s-c2a4696f90"></a>`completed` | <a id="s-cc4087774a"></a>`{"kind":"command-completed"}` | <a id="s-0abf81dd95"></a>`0` | <a id="s-8a2ea1a7af"></a>human: `noncontractual-presentation-of-command-result`; json: [piggity-local-sync-result/v1](#s-8a2ea1a7af) | <a id="s-b10b69cf5d"></a>all: `empty` |
 
 #### Failure outcomes
 
 | Identity | Selected by | Exit status | stdout | stderr |
 |---|---|---|---|---|
-| <a id="s-ccbd7d400f"></a>`usage` | <a id="s-64c558bfbf"></a>`{"kind":"parser-rejected-invocation"}` | <a id="s-d2e3b3df79"></a>`2` | <a id="s-40048b3000"></a>`all: empty` | <a id="s-980e6431d2"></a>`all: noncontractual-usage-diagnostic` |
-| <a id="s-ba175b28a9"></a>`operational` | <a id="s-50bee4e9e8"></a>`{"kind":"application-error"}` | <a id="s-e565dbd9b2"></a>`1` | <a id="s-e0292c6f7f"></a>`human: empty; json: http-api-contracts.ErrorResponse` | <a id="s-226b03afee"></a>`human: noncontractual-diagnostic; json: empty` |
+| <a id="s-ccbd7d400f"></a>`usage` | <a id="s-64c558bfbf"></a>`{"kind":"parser-rejected-invocation"}` | <a id="s-d2e3b3df79"></a>`2` | <a id="s-40048b3000"></a>all: `empty` | <a id="s-980e6431d2"></a>all: `noncontractual-usage-diagnostic` |
+| <a id="s-ba175b28a9"></a>`operational` | <a id="s-50bee4e9e8"></a>`{"kind":"application-error"}` | <a id="s-e565dbd9b2"></a>`1` | <a id="s-e0292c6f7f"></a>human: `empty`; json: [http-api-contracts.ErrorResponse](../../http-api-contracts/python/http-api-contracts-errorresponse.md) | <a id="s-226b03afee"></a>human: `noncontractual-diagnostic`; json: `empty` |
 
 ### Progression, limits, and lifecycle
 

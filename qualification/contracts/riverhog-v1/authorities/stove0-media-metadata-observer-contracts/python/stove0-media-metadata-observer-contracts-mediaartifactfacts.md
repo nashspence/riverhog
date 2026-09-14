@@ -27,7 +27,6 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-bfe04bf52f"></a>
-- <a id="s-0dc8c85ce3"></a>`title`: MediaArtifactFacts
 - <a id="s-69659dd347"></a>`type`: object
 
 ### Fields
@@ -76,7 +75,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 48b2357443bd75ebd5176a5a00dea746285d5dd320eb82c3f38489aaeb21b85f -->
+<!-- exact-contract-value: 17faf89cec86223fe34c98c8e979eb53d6de5a01d0cdc43ee9344c36389c753a -->
 
 ```json
 {
@@ -87,18 +86,15 @@ The following JSON is the complete value owned at each machine-authority pointer
         "JsonValue": {},
         "MediaFactEvidence": {
           "additionalProperties": false,
-          "description": "Exact artifact and ExifTool field from which one value was read.",
           "properties": {
             "artifact_id": {
               "maxLength": 160,
               "minLength": 1,
-              "title": "Artifact Id",
               "type": "string"
             },
             "field": {
               "maxLength": 240,
               "minLength": 1,
-              "title": "Field",
               "type": "string"
             }
           },
@@ -106,7 +102,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             "artifact_id",
             "field"
           ],
-          "title": "MediaFactEvidence",
           "type": "object"
         },
         "MediaMetadataFact": {
@@ -125,7 +120,6 @@ The following JSON is the complete value owned at each machine-authority pointer
                 "gps-latitude",
                 "gps-longitude"
               ],
-              "title": "Name",
               "type": "string"
             },
             "value": {
@@ -137,7 +131,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             "value",
             "evidence"
           ],
-          "title": "MediaMetadataFact",
           "type": "object"
         }
       },
@@ -167,7 +160,6 @@ The following JSON is the complete value owned at each machine-authority pointer
         "artifact_id": {
           "maxLength": 160,
           "minLength": 1,
-          "title": "Artifact Id",
           "type": "string"
         },
         "facts": {
@@ -175,7 +167,6 @@ The following JSON is the complete value owned at each machine-authority pointer
           "items": {
             "$ref": "#/$defs/MediaMetadataFact"
           },
-          "title": "Facts",
           "type": "array"
         },
         "state": {
@@ -183,7 +174,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             "observed",
             "unsupported"
           ],
-          "title": "State",
           "type": "string"
         }
       },
@@ -191,7 +181,6 @@ The following JSON is the complete value owned at each machine-authority pointer
         "artifact_id",
         "state"
       ],
-      "title": "MediaArtifactFacts",
       "type": "object"
     },
     "signature": "\"(*, artifact_id: Annotated[str, MinLen(min_length=1), MaxLen(max_length=160)], state: Literal['observed', 'unsupported'], facts: tuple[stove0_media_metadata_observer_contracts.contracts.MediaMetadataFact, ...] = ()) -> None\""

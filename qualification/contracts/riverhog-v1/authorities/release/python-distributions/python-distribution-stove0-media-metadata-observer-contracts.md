@@ -19,6 +19,9 @@ Optional nonnormative media-metadata contract reference for Stove0 observers.
 | <a id="s-82660dc5c2"></a>`artifacts` | [{"coordinate": "dist/stove0_media_metadata_observer_contracts-{version}-py3-none-any.whl", "format": "wheel"}, {"coordinate": "dist/stove0_media_metadata_observer_contracts-{version}.tar.gz", "format": "sdist"}] |
 | <a id="s-0271c0e593"></a>`channel` | github-release |
 | <a id="s-1ac349891e"></a>`description` | Optional nonnormative media-metadata contract reference for Stove0 observers. |
+| <a id="s-a4eaebb538"></a>`license_baseline` | first-v1-publication |
+| <a id="s-af8bb4a4c0"></a>`license_expression` | Apache-2.0 |
+| <a id="s-ca72f4d9a5"></a>`publication_identity` | {"coordinate": "stove0-media-metadata-observer-contracts", "kind": "python-distribution"} |
 | <a id="s-9cf4565a3f"></a>`requires_python` | >=3.12 |
 | <a id="s-555d457b4d"></a>`role` | reference_component |
 | <a id="s-cc4111ec82"></a>`source` | reference/stove0/observers/contracts/media-metadata/pyproject.toml |
@@ -57,7 +60,7 @@ Publication preserves these existing component authorities; it does not reclassi
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: c15df305e7aa4beb43b0e1430122b4ff47e2cf6afc5bbddfcbf1fb5b2d701f87 -->
+<!-- exact-contract-value: 6b7715f7ea436a9711175af8f544d8a5bf9e26625e6cc86bbee016e67690da41 -->
 
 ```json
 {
@@ -73,6 +76,12 @@ The following JSON is the complete value owned at each machine-authority pointer
   ],
   "channel": "github-release",
   "description": "Optional nonnormative media-metadata contract reference for Stove0 observers.",
+  "license_baseline": "first-v1-publication",
+  "license_expression": "Apache-2.0",
+  "publication_identity": {
+    "coordinate": "stove0-media-metadata-observer-contracts",
+    "kind": "python-distribution"
+  },
   "requires_python": ">=3.12",
   "role": "reference_component",
   "source": "reference/stove0/observers/contracts/media-metadata/pyproject.toml"

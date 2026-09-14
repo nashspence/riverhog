@@ -41,17 +41,17 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Identity | Selected by | Exit status | stdout | stderr |
 |---|---|---|---|---|
-| <a id="s-8e890f9515"></a>`planned` | <a id="s-7807825178"></a>`{"kind":"option-equals","parameter":"dry_run","value":true}` | <a id="s-ba00c57c4d"></a>`0` | <a id="s-1efaef072b"></a>`human: noncontractual-presentation-of-command-result; json: HTTP plan_collection_upload_discard — #/components/schemas/CollectionUploadDiscardPlanOut` | <a id="s-cf43b55869"></a>`all: empty` |
-| <a id="s-775613b61e"></a>`executed` | <a id="s-5d91af2ea7"></a>`{"kind":"option-equals","parameter":"dry_run","value":false}` | <a id="s-a9abf5e803"></a>`0` | <a id="s-2a4cd02a62"></a>`human: noncontractual-presentation-of-command-result; json: HTTP discard_collection_upload — #/components/schemas/CollectionUploadDiscardResultOut` | <a id="s-ef4bfadd01"></a>`all: empty` |
+| <a id="s-8e890f9515"></a>`planned` | <a id="s-7807825178"></a>`{"kind":"option-equals","parameter":"dry_run","value":true}` | <a id="s-ba00c57c4d"></a>`0` | <a id="s-1efaef072b"></a>human: `noncontractual-presentation-of-command-result`; json: [HTTP plan_collection_upload_discard response 200](../../riverhog/http-operations/post-v1-collection-upload-sessions-collection-id-discard-plan.md#s-ee09029c45) | <a id="s-cf43b55869"></a>all: `empty` |
+| <a id="s-775613b61e"></a>`executed` | <a id="s-5d91af2ea7"></a>`{"kind":"option-equals","parameter":"dry_run","value":false}` | <a id="s-a9abf5e803"></a>`0` | <a id="s-2a4cd02a62"></a>human: `noncontractual-presentation-of-command-result`; json: [HTTP discard_collection_upload response 200](../../riverhog/http-operations/post-v1-collection-upload-sessions-collection-id-discard.md#s-e5b9c9f0dc) | <a id="s-ef4bfadd01"></a>all: `empty` |
 
 #### Failure outcomes
 
 | Identity | Selected by | Exit status | stdout | stderr |
 |---|---|---|---|---|
-| <a id="s-13699ddc9d"></a>`usage` | <a id="s-0b4f49a657"></a>`{"kind":"parser-rejected-invocation"}` | <a id="s-e991784d56"></a>`2` | <a id="s-48f1160a92"></a>`all: empty` | <a id="s-e94088cf0a"></a>`all: noncontractual-usage-diagnostic` |
-| <a id="s-df72a4715c"></a>`operational` | <a id="s-6bc7e75094"></a>`{"kind":"application-error"}` | <a id="s-8eff56bb8d"></a>`1` | <a id="s-d38fcc4ce7"></a>`human: empty; json: http-api-contracts.ErrorResponse` | <a id="s-029d5235e1"></a>`human: noncontractual-diagnostic; json: empty` |
-| <a id="s-8e6fdb3179"></a>`blocked` | <a id="s-5231b96fcc"></a>`{"kind":"plan-reported-blockers"}` | <a id="s-64e3bd7a99"></a>`1` | <a id="s-5404debe72"></a>`human: noncontractual-presentation-of-command-result` | <a id="s-e12b23c3b3"></a>`human: empty` |
-| <a id="s-4e3f96da41"></a>`confirmation-declined` | <a id="s-a22f20c789"></a>`{"kind":"interactive-confirmation-mismatch"}` | <a id="s-6cdc9343f1"></a>`1` | <a id="s-46e349a5db"></a>`human: noncontractual-presentation-of-command-result` | <a id="s-c77ebaac47"></a>`human: noncontractual-diagnostic` |
+| <a id="s-13699ddc9d"></a>`usage` | <a id="s-0b4f49a657"></a>`{"kind":"parser-rejected-invocation"}` | <a id="s-e991784d56"></a>`2` | <a id="s-48f1160a92"></a>all: `empty` | <a id="s-e94088cf0a"></a>all: `noncontractual-usage-diagnostic` |
+| <a id="s-df72a4715c"></a>`operational` | <a id="s-6bc7e75094"></a>`{"kind":"application-error"}` | <a id="s-8eff56bb8d"></a>`1` | <a id="s-d38fcc4ce7"></a>human: `empty`; json: [http-api-contracts.ErrorResponse](../../http-api-contracts/python/http-api-contracts-errorresponse.md) | <a id="s-029d5235e1"></a>human: `noncontractual-diagnostic`; json: `empty` |
+| <a id="s-8e6fdb3179"></a>`blocked` | <a id="s-5231b96fcc"></a>`{"kind":"plan-reported-blockers"}` | <a id="s-64e3bd7a99"></a>`1` | <a id="s-5404debe72"></a>human: `noncontractual-presentation-of-command-result` | <a id="s-e12b23c3b3"></a>human: `empty` |
+| <a id="s-4e3f96da41"></a>`confirmation-declined` | <a id="s-a22f20c789"></a>`{"kind":"interactive-confirmation-mismatch"}` | <a id="s-6cdc9343f1"></a>`1` | <a id="s-46e349a5db"></a>human: `noncontractual-presentation-of-command-result` | <a id="s-c77ebaac47"></a>human: `noncontractual-diagnostic` |
 
 ### Progression, limits, and lifecycle
 

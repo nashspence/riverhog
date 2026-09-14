@@ -27,7 +27,6 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-d4ba1e9ed8"></a>
-- <a id="s-d323fec92c"></a>`title`: CatalogSyncCollectionPage
 - <a id="s-41ab9bc9c1"></a>`type`: object
 
 ### Fields
@@ -79,7 +78,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 043cba73d68cb7c25e8c985d254283c3eeca5af7c45f4b5eb520227ef2f03902 -->
+<!-- exact-contract-value: ca946cbd63e78d60262f1f63879f7e855459ccb8a092d20f42eda9cc6427ae6f -->
 
 ```json
 {
@@ -94,7 +93,6 @@ The following JSON is the complete value owned at each machine-authority pointer
               "maxLength": 64,
               "minLength": 64,
               "pattern": "^[0-9a-f]{64}$",
-              "title": "Archive Root Sha256",
               "type": "string"
             },
             "collection_id": {
@@ -104,7 +102,6 @@ The following JSON is the complete value owned at each machine-authority pointer
               "maxLength": 64,
               "minLength": 64,
               "pattern": "^[0-9a-f]{64}$",
-              "title": "Content Identity",
               "type": "string"
             },
             "description": {
@@ -121,33 +118,28 @@ The following JSON is the complete value owned at each machine-authority pointer
               "maxLength": 64,
               "minLength": 64,
               "pattern": "^[0-9a-f]{64}$",
-              "title": "Description Identity",
               "type": "string"
             },
             "description_revision": {
               "maximum": 9007199254740991,
               "minimum": 0,
-              "title": "Description Revision",
               "type": "integer"
             },
             "revision": {
               "maxLength": 19,
               "minLength": 1,
               "pattern": "^(?:[1-9][0-9]{0,17}|[1-8][0-9]{18})$",
-              "title": "Revision",
               "type": "string"
             },
             "tag_revision": {
               "maximum": 9007199254740991,
               "minimum": 1,
-              "title": "Tag Revision",
               "type": "integer"
             },
             "tag_set_identity": {
               "maxLength": 64,
               "minLength": 64,
               "pattern": "^[0-9a-f]{64}$",
-              "title": "Tag Set Identity",
               "type": "string"
             }
           },
@@ -162,7 +154,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             "tag_set_identity",
             "revision"
           ],
-          "title": "CatalogSyncDescriptor",
           "type": "object"
         },
         "CollectionDescription": {
@@ -187,7 +178,6 @@ The following JSON is the complete value owned at each machine-authority pointer
           "maxLength": 64,
           "minLength": 64,
           "pattern": "^[0-9a-f]{64}$",
-          "title": "Authorization View Identity",
           "type": "string"
         },
         "changes_cursor": {
@@ -201,21 +191,18 @@ The following JSON is the complete value owned at each machine-authority pointer
               "type": "null"
             }
           ],
-          "default": null,
-          "title": "Changes Cursor"
+          "default": null
         },
         "collections": {
           "items": {
             "$ref": "#/$defs/CatalogSyncDescriptor"
           },
           "maxItems": 100,
-          "title": "Collections",
           "type": "array"
         },
         "format": {
           "const": "riverhog-catalog-sync/v1",
           "default": "riverhog-catalog-sync/v1",
-          "title": "Format",
           "type": "string"
         },
         "next_cursor": {
@@ -229,14 +216,12 @@ The following JSON is the complete value owned at each machine-authority pointer
               "type": "null"
             }
           ],
-          "default": null,
-          "title": "Next Cursor"
+          "default": null
         },
         "source_identity": {
           "maxLength": 64,
           "minLength": 64,
           "pattern": "^[0-9a-f]{64}$",
-          "title": "Source Identity",
           "type": "string"
         }
       },
@@ -245,7 +230,6 @@ The following JSON is the complete value owned at each machine-authority pointer
         "authorization_view_identity",
         "collections"
       ],
-      "title": "CatalogSyncCollectionPage",
       "type": "object"
     },
     "signature": "\"(*, format: Literal['riverhog-catalog-sync/v1'] = 'riverhog-catalog-sync/v1', source_identity: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=64, max_length=64, pattern='^[0-9a-f]{64}$', ascii_only=None)], authorization_view_identity: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=64, max_length=64, pattern='^[0-9a-f]{64}$', ascii_only=None)], collections: Annotated[list[riverhog_protocol.catalog_sync.CatalogSyncDescriptor], MaxLen(max_length=100)], next_cursor: Optional[Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=1, max_length=4096, pattern=None, ascii_only=None)]] = None, changes_cursor: Optional[Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=1, max_length=4096, pattern=None, ascii_only=None)]] = None) -> None\""

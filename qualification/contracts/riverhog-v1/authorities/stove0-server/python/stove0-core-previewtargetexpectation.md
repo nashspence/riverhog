@@ -27,8 +27,6 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-f54796f926"></a>
-- <a id="s-98d7479240"></a>`title`: PreviewTargetExpectation
-- <a id="s-b944a38b0c"></a>`description`: Compact target-plan identity approved by one workflow preview.
 - <a id="s-7a176a771b"></a>`type`: object
 
 ### Fields
@@ -63,7 +61,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 30f8bd5d81dad9c1c4654e7fbd66cfa48c643e152565c53bc2f81e05adc863fc -->
+<!-- exact-contract-value: 5a45ec694281e48a53397ea725779689d3daf5530930015730ef504e67ab9fdc -->
 
 ```json
 {
@@ -71,22 +69,18 @@ The following JSON is the complete value owned at each machine-authority pointer
     "kind": "class",
     "schema": {
       "additionalProperties": false,
-      "description": "Compact target-plan identity approved by one workflow preview.",
       "properties": {
         "branch_id": {
           "maxLength": 160,
           "minLength": 1,
-          "title": "Branch Id",
           "type": "string"
         },
         "plan_sha256": {
           "pattern": "^[0-9a-f]{64}$",
-          "title": "Plan Sha256",
           "type": "string"
         },
         "work_id": {
           "pattern": "^[0-9a-f]{64}$",
-          "title": "Work Id",
           "type": "string"
         }
       },
@@ -95,7 +89,6 @@ The following JSON is the complete value owned at each machine-authority pointer
         "work_id",
         "plan_sha256"
       ],
-      "title": "PreviewTargetExpectation",
       "type": "object"
     },
     "signature": "\"(*, branch_id: Annotated[str, MinLen(min_length=1), MaxLen(max_length=160)], work_id: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)], plan_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)]) -> None\""

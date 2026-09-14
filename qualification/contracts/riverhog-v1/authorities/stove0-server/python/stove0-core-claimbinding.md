@@ -27,7 +27,6 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-577bfcf6b0"></a>
-- <a id="s-ec33b82180"></a>`title`: ClaimBinding
 - <a id="s-5177d009da"></a>`type`: object
 
 ### Fields
@@ -61,7 +60,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 35a78a2ecae184c142377f4ebf2fb20991e0280bd14e5b3355891c2b7e34683b -->
+<!-- exact-contract-value: e83032fcebf4494d10ec2060f3a5ac13a4345c30339ddc3f6211179eb5a41b8c -->
 
 ```json
 {
@@ -73,12 +72,10 @@ The following JSON is the complete value owned at each machine-authority pointer
         "claim_id": {
           "maxLength": 160,
           "minLength": 1,
-          "title": "Claim Id",
           "type": "string"
         },
         "fence": {
           "minimum": 1,
-          "title": "Fence",
           "type": "integer"
         }
       },
@@ -86,7 +83,6 @@ The following JSON is the complete value owned at each machine-authority pointer
         "claim_id",
         "fence"
       ],
-      "title": "ClaimBinding",
       "type": "object"
     },
     "signature": "'(*, claim_id: Annotated[str, MinLen(min_length=1), MaxLen(max_length=160)], fence: Annotated[int, Ge(ge=1)]) -> None'"

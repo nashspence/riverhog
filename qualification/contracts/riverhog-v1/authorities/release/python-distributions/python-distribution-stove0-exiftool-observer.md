@@ -19,6 +19,9 @@ Optional nonnormative ExifTool observer reference for Stove0.
 | <a id="s-490c248e51"></a>`artifacts` | [{"coordinate": "dist/stove0_exiftool_observer-{version}-py3-none-any.whl", "format": "wheel"}, {"coordinate": "dist/stove0_exiftool_observer-{version}.tar.gz", "format": "sdist"}] |
 | <a id="s-1a5d77a541"></a>`channel` | github-release |
 | <a id="s-53ad5cc3ef"></a>`description` | Optional nonnormative ExifTool observer reference for Stove0. |
+| <a id="s-7b63bed6ba"></a>`license_baseline` | first-v1-publication |
+| <a id="s-3185b1215d"></a>`license_expression` | CAL-1.0 |
+| <a id="s-3504cf307e"></a>`publication_identity` | {"coordinate": "stove0-exiftool-observer", "kind": "python-distribution"} |
 | <a id="s-05f220f577"></a>`requires_python` | >=3.12 |
 | <a id="s-b2656ca437"></a>`role` | reference_component |
 | <a id="s-55ff83b6a8"></a>`source` | reference/stove0/observers/exiftool/pyproject.toml |
@@ -57,7 +60,7 @@ Publication preserves these existing component authorities; it does not reclassi
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: eae4e848bd3c14e0521deb32f49134227257629002bda57d1e7e074f49650ed4 -->
+<!-- exact-contract-value: aa5c4e3135cf295974b0cde5ec4f887f16c5c59304d95bb6394461d81d901e3c -->
 
 ```json
 {
@@ -73,6 +76,12 @@ The following JSON is the complete value owned at each machine-authority pointer
   ],
   "channel": "github-release",
   "description": "Optional nonnormative ExifTool observer reference for Stove0.",
+  "license_baseline": "first-v1-publication",
+  "license_expression": "CAL-1.0",
+  "publication_identity": {
+    "coordinate": "stove0-exiftool-observer",
+    "kind": "python-distribution"
+  },
   "requires_python": ">=3.12",
   "role": "reference_component",
   "source": "reference/stove0/observers/exiftool/pyproject.toml"

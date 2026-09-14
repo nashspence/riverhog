@@ -27,7 +27,6 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-066637d859"></a>
-- <a id="s-67a93840df"></a>`title`: ProcessingClaimCreateDocument
 - <a id="s-85e8f017f0"></a>`type`: object
 
 ### Fields
@@ -70,7 +69,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: f5206d5f0fb13f78a89cf2841bd5ef418e13f6236caf314a934400a4e6a0fe50 -->
+<!-- exact-contract-value: 34961f32bfc097767ce043a17d1ba3b9462310c2ab3e356f25e586c39e3fc0f9 -->
 
 ```json
 {
@@ -83,19 +82,16 @@ The following JSON is the complete value owned at each machine-authority pointer
           "default": 1800,
           "maximum": 86400,
           "minimum": 30,
-          "title": "Lease Seconds",
           "type": "integer"
         },
         "purpose": {
           "default": "collection-work/v1",
           "maxLength": 160,
           "minLength": 1,
-          "title": "Purpose",
           "type": "string"
         },
         "work_document": {
           "additionalProperties": true,
-          "title": "Work Document",
           "type": "object",
           "x-riverhog-encoded-bytes-max": 4194304,
           "x-riverhog-extent": {
@@ -105,12 +101,10 @@ The following JSON is the complete value owned at each machine-authority pointer
         },
         "work_document_sha256": {
           "pattern": "^[0-9a-f]{64}$",
-          "title": "Work Document Sha256",
           "type": "string"
         },
         "work_id": {
           "pattern": "^[0-9a-f]{64}$",
-          "title": "Work Id",
           "type": "string"
         }
       },
@@ -119,7 +113,6 @@ The following JSON is the complete value owned at each machine-authority pointer
         "work_document",
         "work_document_sha256"
       ],
-      "title": "ProcessingClaimCreateDocument",
       "type": "object"
     },
     "signature": "\"(*, work_id: Annotated[str, _PydanticGeneralMetadata(pattern='^[0-9a-f]{64}$')], work_document: dict[str, typing.Any], work_document_sha256: Annotated[str, _PydanticGeneralMetadata(pattern='^[0-9a-f]{64}$')], lease_seconds: Annotated[int, Ge(ge=30), Le(le=86400)] = 1800, purpose: Annotated[str, MinLen(min_length=1), MaxLen(max_length=160)] = 'collection-work/v1') -> None\""

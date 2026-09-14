@@ -43,13 +43,13 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Identity | Selected by | Exit status | stdout | stderr |
 |---|---|---|---|---|
-| <a id="s-68b0044fae"></a>`stopped` | <a id="s-bf5a263ec7"></a>`{"kind":"service-runtime-returned"}` | <a id="s-ad2cb002db"></a>`0` | <a id="s-c629e04d01"></a>`all: no-command-result` | <a id="s-6b065c9d2c"></a>`all: noncontractual-runtime-log` |
+| <a id="s-68b0044fae"></a>`stopped` | <a id="s-bf5a263ec7"></a>`{"kind":"service-runtime-returned"}` | <a id="s-ad2cb002db"></a>`0` | <a id="s-c629e04d01"></a>all: `no-command-result` | <a id="s-6b065c9d2c"></a>all: `noncontractual-runtime-log` |
 
 #### Failure outcomes
 
 | Identity | Selected by | Exit status | stdout | stderr |
 |---|---|---|---|---|
-| <a id="s-00d5a3870f"></a>`usage` | <a id="s-e82b3868f9"></a>`{"kind":"parser-rejected-invocation"}` | <a id="s-5a3bbd4aa5"></a>`2` | <a id="s-1c0794da17"></a>`all: empty` | <a id="s-caa1bea57f"></a>`all: noncontractual-usage-diagnostic` |
+| <a id="s-00d5a3870f"></a>`usage` | <a id="s-e82b3868f9"></a>`{"kind":"parser-rejected-invocation"}` | <a id="s-5a3bbd4aa5"></a>`2` | <a id="s-1c0794da17"></a>all: `empty` | <a id="s-caa1bea57f"></a>all: `noncontractual-usage-diagnostic` |
 
 ### Progression, limits, and lifecycle
 

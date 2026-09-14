@@ -20,7 +20,10 @@ Optional nonnormative Opus target reference for Stove0.
 | <a id="s-d92b0b7680"></a>`description` | Optional nonnormative Opus target reference for Stove0. |
 | <a id="s-6f67b15332"></a>`distribution_roots` | ["stove0-opus-target", "stove0-opus-review-sampler"] |
 | <a id="s-627b5e2cdc"></a>`format` | oci-image |
+| <a id="s-5313035ce0"></a>`license_baseline` | first-v1-publication |
+| <a id="s-682eda2978"></a>`license_expression` | CAL-1.0 |
 | <a id="s-ea76c70402"></a>`platforms` | ["linux/amd64"] |
+| <a id="s-63616d3996"></a>`publication_identity` | {"coordinate": "ghcr.io/nashspence/riverhog-stove0-opus-target", "kind": "oci-repository"} |
 | <a id="s-65067a059b"></a>`repository` | ghcr.io/nashspence/riverhog-stove0-opus-target |
 | <a id="s-6b9062690b"></a>`role` | reference |
 | <a id="s-20860bcd0d"></a>`tag_templates` | ["ghcr.io/nashspence/riverhog-stove0-opus-target:{version}", "ghcr.io/nashspence/riverhog-stove0-opus-target:sha-{source_sha}"] |
@@ -62,7 +65,7 @@ Publication preserves these existing component authorities; it does not reclassi
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 5dbe2c187f72105aa4d332978d609396be7f48bea2ba8197acd98da0920c2d43 -->
+<!-- exact-contract-value: 2a82ecccf8bca519d07442bdc83c18e3b120581bf972c95d380cdcbc5fc7effd -->
 
 ```json
 {
@@ -73,9 +76,15 @@ The following JSON is the complete value owned at each machine-authority pointer
     "stove0-opus-review-sampler"
   ],
   "format": "oci-image",
+  "license_baseline": "first-v1-publication",
+  "license_expression": "CAL-1.0",
   "platforms": [
     "linux/amd64"
   ],
+  "publication_identity": {
+    "coordinate": "ghcr.io/nashspence/riverhog-stove0-opus-target",
+    "kind": "oci-repository"
+  },
   "repository": "ghcr.io/nashspence/riverhog-stove0-opus-target",
   "role": "reference",
   "tag_templates": [

@@ -27,7 +27,6 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-907553dbff"></a>
-- <a id="s-258d63d0b7"></a>`title`: ObserverImplementation
 - <a id="s-d1aad8e833"></a>`type`: object
 
 ### Fields
@@ -64,7 +63,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: c78181a2bb66caacf6065cf711cb0350dd9bf56bce5d933d7b3b21ca31141473 -->
+<!-- exact-contract-value: 6b22b1d0c68f193ede507d3eb7a04c759a12c88c4429a1a7e6f35bdaa7d16e82 -->
 
 ```json
 {
@@ -75,30 +74,25 @@ The following JSON is the complete value owned at each machine-authority pointer
       "properties": {
         "descriptor_sha256": {
           "pattern": "^[0-9a-f]{64}$",
-          "title": "Descriptor Sha256",
           "type": "string"
         },
         "id": {
           "pattern": "^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$",
-          "title": "Id",
           "type": "string"
         },
         "protocol": {
           "const": "stove0-content-observer/v1",
           "default": "stove0-content-observer/v1",
-          "title": "Protocol",
           "type": "string"
         },
         "source_revision": {
           "maxLength": 200,
           "minLength": 1,
-          "title": "Source Revision",
           "type": "string"
         },
         "version": {
           "maxLength": 120,
           "minLength": 1,
-          "title": "Version",
           "type": "string"
         }
       },
@@ -108,7 +102,6 @@ The following JSON is the complete value owned at each machine-authority pointer
         "source_revision",
         "descriptor_sha256"
       ],
-      "title": "ObserverImplementation",
       "type": "object"
     },
     "signature": "\"(*, protocol: Literal['stove0-content-observer/v1'] = 'stove0-content-observer/v1', id: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$', ascii_only=None)], version: Annotated[str, MinLen(min_length=1), MaxLen(max_length=120)], source_revision: Annotated[str, MinLen(min_length=1), MaxLen(max_length=200)], descriptor_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)]) -> None\""

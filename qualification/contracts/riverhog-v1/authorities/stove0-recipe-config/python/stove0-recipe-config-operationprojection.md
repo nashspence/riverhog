@@ -27,8 +27,6 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-5c52b4089d"></a>
-- <a id="s-5ecc719c8e"></a>`title`: OperationProjection
-- <a id="s-a30b86f268"></a>`description`: One declarative JSON-pointer copy into an operation request.
 - <a id="s-786b75a7f2"></a>`type`: object
 
 ### Fields
@@ -64,7 +62,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 31be4abad0ddc9c6fe983b7166e37664b6c1c1e41a4a0e90484075400e7b669f -->
+<!-- exact-contract-value: 27a4759fb2dcb8bbc9c772246b01130e283d7887035eb74e12556239cd0998c6 -->
 
 ```json
 {
@@ -72,19 +70,16 @@ The following JSON is the complete value owned at each machine-authority pointer
     "kind": "class",
     "schema": {
       "additionalProperties": false,
-      "description": "One declarative JSON-pointer copy into an operation request.",
       "properties": {
         "destination": {
           "enum": [
             "intent",
             "target-options"
           ],
-          "title": "Destination",
           "type": "string"
         },
         "destination_pointer": {
           "pattern": "^(?:|/(?:[^~/]|~[01])*(?:/(?:[^~/]|~[01])*)*)$",
-          "title": "Destination Pointer",
           "type": "string"
         },
         "source": {
@@ -92,12 +87,10 @@ The following JSON is the complete value owned at each machine-authority pointer
             "work-effective-intent",
             "work-evaluation"
           ],
-          "title": "Source",
           "type": "string"
         },
         "source_pointer": {
           "pattern": "^(?:|/(?:[^~/]|~[01])*(?:/(?:[^~/]|~[01])*)*)$",
-          "title": "Source Pointer",
           "type": "string"
         }
       },
@@ -107,7 +100,6 @@ The following JSON is the complete value owned at each machine-authority pointer
         "destination",
         "destination_pointer"
       ],
-      "title": "OperationProjection",
       "type": "object"
     },
     "signature": "\"(*, source: Literal['work-effective-intent', 'work-evaluation'], source_pointer: Annotated[str, _PydanticGeneralMetadata(pattern='^(?:|/(?:[^~/]|~[01])*(?:/(?:[^~/]|~[01])*)*)$')], destination: Literal['intent', 'target-options'], destination_pointer: Annotated[str, _PydanticGeneralMetadata(pattern='^(?:|/(?:[^~/]|~[01])*(?:/(?:[^~/]|~[01])*)*)$')]) -> None\""

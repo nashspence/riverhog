@@ -19,6 +19,9 @@ Portable durable listener runtime and native-platform port for Gogurt.
 | <a id="s-e6233d3b53"></a>`artifacts` | [{"coordinate": "dist/gogurt_listener_runtime-{version}-py3-none-any.whl", "format": "wheel"}, {"coordinate": "dist/gogurt_listener_runtime-{version}.tar.gz", "format": "sdist"}] |
 | <a id="s-3150381b0f"></a>`channel` | github-release |
 | <a id="s-fc32147bcb"></a>`description` | Portable durable listener runtime and native-platform port for Gogurt. |
+| <a id="s-c2b91c0691"></a>`license_baseline` | first-v1-publication |
+| <a id="s-feac3ceff4"></a>`license_expression` | Apache-2.0 |
+| <a id="s-2ff9d99d6f"></a>`publication_identity` | {"coordinate": "gogurt-listener-runtime", "kind": "python-distribution"} |
 | <a id="s-6cdafa600f"></a>`requires_python` | >=3.12 |
 | <a id="s-30723da06a"></a>`role` | reusable_library |
 | <a id="s-786d10abd4"></a>`source` | reference/gogurt/packages/listener-runtime/pyproject.toml |
@@ -57,7 +60,7 @@ Publication preserves these existing component authorities; it does not reclassi
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: ad382999491b93fe58fc20503ffdd143e69c373eacf3796b9dc88eee27a2b52d -->
+<!-- exact-contract-value: 14895bb9895fa4cda46648493ecb27da2b5d3b628bb611ef5cd836bc6b1fd4c1 -->
 
 ```json
 {
@@ -73,6 +76,12 @@ The following JSON is the complete value owned at each machine-authority pointer
   ],
   "channel": "github-release",
   "description": "Portable durable listener runtime and native-platform port for Gogurt.",
+  "license_baseline": "first-v1-publication",
+  "license_expression": "Apache-2.0",
+  "publication_identity": {
+    "coordinate": "gogurt-listener-runtime",
+    "kind": "python-distribution"
+  },
   "requires_python": ">=3.12",
   "role": "reusable_library",
   "source": "reference/gogurt/packages/listener-runtime/pyproject.toml"

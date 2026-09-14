@@ -2,7 +2,7 @@
 
 [Atlas](../../index.md) · [Policies](../../policies/index.md)
 
-Contract elements: **118** · Extent decisions: **0**
+Contract elements: **119** · Extent decisions: **0**
 
 ## Interfaces
 
@@ -13,4 +13,4 @@ Contract elements: **118** · Extent decisions: **0**
 - [Publication Locations](publication-locations/index.md) (2)
 - [Artifact Verification](artifact-verification/index.md) (3)
 - [Versioning and Tags](versioning-tags/index.md) (5)
-- [Compatibility Guarantees](compatibility-guarantees/index.md) (8)
+- [Compatibility Guarantees](compatibility-guarantees/index.md) (9)

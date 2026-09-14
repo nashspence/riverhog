@@ -27,7 +27,6 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-c51483f666"></a>
-- <a id="s-b00b5898f2"></a>`title`: CollectionUploadProvenanceJournalCreateDocument
 - <a id="s-c4f786fc96"></a>`type`: object
 
 ### Fields
@@ -61,7 +60,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: e2239aeeeca9f1b8a47a1a569e5c08d081b9eb8ae18a1ce68d377a217ceff9c7 -->
+<!-- exact-contract-value: b78e0310b90834fca31c7f3ab90d5d9c8180aa2f5d904266eed9f06c20faa381 -->
 
 ```json
 {
@@ -72,12 +71,10 @@ The following JSON is the complete value owned at each machine-authority pointer
       "properties": {
         "bytes": {
           "minimum": 1,
-          "title": "Bytes",
           "type": "integer"
         },
         "sha256": {
           "pattern": "^[0-9a-f]{64}$",
-          "title": "Sha256",
           "type": "string"
         }
       },
@@ -85,7 +82,6 @@ The following JSON is the complete value owned at each machine-authority pointer
         "bytes",
         "sha256"
       ],
-      "title": "CollectionUploadProvenanceJournalCreateDocument",
       "type": "object"
     },
     "signature": "\"(*, bytes: Annotated[int, Strict(strict=True), Ge(ge=1)], sha256: Annotated[str, _PydanticGeneralMetadata(pattern='^[0-9a-f]{64}$')]) -> None\""

@@ -47,15 +47,15 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Identity | Selected by | Exit status | stdout | stderr |
 |---|---|---|---|---|
-| <a id="s-d730df7a18"></a>`completed` | <a id="s-116a05c58c"></a>`{"kind":"command-completed"}` | <a id="s-8da7d6d337"></a>`0` | <a id="s-96b0ecc121"></a>`human: noncontractual-presentation-of-command-result; json: HTTP get_collection_upload_session — #/components/schemas/CollectionUploadSessionOut` | <a id="s-cd10769912"></a>`all: noncontractual-progress` |
+| <a id="s-d730df7a18"></a>`completed` | <a id="s-116a05c58c"></a>`{"kind":"command-completed"}` | <a id="s-8da7d6d337"></a>`0` | <a id="s-96b0ecc121"></a>human: `noncontractual-presentation-of-command-result`; json: [HTTP get_collection_upload_session response 200](../../riverhog/http-operations/get-v1-collection-upload-sessions-collection-id.md#s-3478a57d08) | <a id="s-cd10769912"></a>all: `noncontractual-progress` |
 
 #### Failure outcomes
 
 | Identity | Selected by | Exit status | stdout | stderr |
 |---|---|---|---|---|
-| <a id="s-bf21d6c0bd"></a>`usage` | <a id="s-89b791cd8a"></a>`{"kind":"parser-rejected-invocation"}` | <a id="s-0b9cafeddc"></a>`2` | <a id="s-af0f020720"></a>`all: empty` | <a id="s-dc49d5195d"></a>`all: noncontractual-usage-diagnostic` |
-| <a id="s-50758df80a"></a>`operational` | <a id="s-8c078b501e"></a>`{"kind":"application-error"}` | <a id="s-647a0f71e3"></a>`1` | <a id="s-6843025be0"></a>`human: empty; json: http-api-contracts.ErrorResponse` | <a id="s-a441211ad2"></a>`human: noncontractual-diagnostic-or-progress; json: noncontractual-progress` |
-| <a id="s-701a9ab0d7"></a>`custody-timeout` | <a id="s-537a092cd6"></a>`{"kind":"custody-deadline-expired","state":"not-finalized"}` | <a id="s-b595a7afb5"></a>`124` | <a id="s-79cbfef294"></a>`all: empty` | <a id="s-ef4c7379fd"></a>`all: noncontractual-progress` |
+| <a id="s-bf21d6c0bd"></a>`usage` | <a id="s-89b791cd8a"></a>`{"kind":"parser-rejected-invocation"}` | <a id="s-0b9cafeddc"></a>`2` | <a id="s-af0f020720"></a>all: `empty` | <a id="s-dc49d5195d"></a>all: `noncontractual-usage-diagnostic` |
+| <a id="s-50758df80a"></a>`operational` | <a id="s-8c078b501e"></a>`{"kind":"application-error"}` | <a id="s-647a0f71e3"></a>`1` | <a id="s-6843025be0"></a>human: `empty`; json: [http-api-contracts.ErrorResponse](../../http-api-contracts/python/http-api-contracts-errorresponse.md) | <a id="s-a441211ad2"></a>human: `noncontractual-diagnostic-or-progress`; json: `noncontractual-progress` |
+| <a id="s-701a9ab0d7"></a>`custody-timeout` | <a id="s-537a092cd6"></a>`{"kind":"custody-deadline-expired","state":"not-finalized"}` | <a id="s-b595a7afb5"></a>`124` | <a id="s-79cbfef294"></a>all: `empty` | <a id="s-ef4c7379fd"></a>all: `noncontractual-progress` |
 
 ### Progression, limits, and lifecycle
 

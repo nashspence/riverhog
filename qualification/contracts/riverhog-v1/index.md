@@ -16,7 +16,7 @@
   - [Publication Locations](authorities/release/publication-locations/index.md) (2)
   - [Artifact Verification](authorities/release/artifact-verification/index.md) (3)
   - [Versioning and Tags](authorities/release/versioning-tags/index.md) (5)
-  - [Compatibility Guarantees](authorities/release/compatibility-guarantees/index.md) (8)
+  - [Compatibility Guarantees](authorities/release/compatibility-guarantees/index.md) (9)
 
 ### Riverhog product
 

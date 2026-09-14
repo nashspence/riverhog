@@ -27,7 +27,6 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-d77634b583"></a>
-- <a id="s-89f38001be"></a>`title`: WorkRecord
 - <a id="s-6f2c845e27"></a>`type`: object
 
 ### Fields
@@ -153,7 +152,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: e957c303f5688fa402763798e95ae56a6ee08bbbebef2eb0b0f1b01e494cd7c5 -->
+<!-- exact-contract-value: 149443a9d125efee1eb1cdf50ea5abf8864ebcd7f9d3c063c61cf6213efda19c -->
 
 ```json
 {
@@ -163,14 +162,12 @@ The following JSON is the complete value owned at each machine-authority pointer
       "$defs": {
         "AcceptedTargetJob": {
           "additionalProperties": false,
-          "description": "Durable, non-secret identity of one accepted target job request.",
           "properties": {
             "declaration": {
               "$ref": "#/$defs/TargetJobDeclaration"
             },
             "request_sha256": {
               "pattern": "^[0-9a-f]{64}$",
-              "title": "Request Sha256",
               "type": "string"
             }
           },
@@ -178,26 +175,20 @@ The following JSON is the complete value owned at each machine-authority pointer
             "declaration",
             "request_sha256"
           ],
-          "title": "AcceptedTargetJob",
           "type": "object"
         },
         "ArtifactDispositionSetIdentity": {
-          "description": "Small identity for one sealed claim-scoped relational disposition set.",
           "properties": {
             "disposition_count": {
-              "title": "Disposition Count",
               "type": "integer"
             },
             "output_artifact_count": {
-              "title": "Output Artifact Count",
               "type": "integer"
             },
             "output_edge_count": {
-              "title": "Output Edge Count",
               "type": "integer"
             },
             "sha256": {
-              "title": "Sha256",
               "type": "string"
             }
           },
@@ -207,26 +198,21 @@ The following JSON is the complete value owned at each machine-authority pointer
             "output_artifact_count",
             "sha256"
           ],
-          "title": "ArtifactDispositionSetIdentity",
           "type": "object"
         },
         "ArtifactSelectionRef": {
           "additionalProperties": false,
-          "description": "Closed reference to a separately retained selection document.",
           "properties": {
             "artifact_count": {
               "minimum": 1,
-              "title": "Artifact Count",
               "type": "integer"
             },
             "selection_sha256": {
               "pattern": "^[0-9a-f]{64}$",
-              "title": "Selection Sha256",
               "type": "string"
             },
             "total_bytes": {
               "minimum": 0,
-              "title": "Total Bytes",
               "type": "integer"
             }
           },
@@ -235,7 +221,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             "artifact_count",
             "total_bytes"
           ],
-          "title": "ArtifactSelectionRef",
           "type": "object"
         },
         "ArtifactSubject": {
@@ -243,7 +228,6 @@ The following JSON is the complete value owned at each machine-authority pointer
           "properties": {
             "bytes": {
               "minimum": 0,
-              "title": "Bytes",
               "type": "integer"
             },
             "collection": {
@@ -251,7 +235,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             },
             "id": {
               "pattern": "^[A-Za-z0-9]\u0028?:[A-Za-z0-9._-]{0,158}[A-Za-z0-9])?$",
-              "title": "Id",
               "type": "string"
             },
             "media_type": {
@@ -265,23 +248,19 @@ The following JSON is the complete value owned at each machine-authority pointer
                   "type": "null"
                 }
               ],
-              "default": null,
-              "title": "Media Type"
+              "default": null
             },
             "path": {
               "maxLength": 4096,
               "minLength": 1,
-              "title": "Path",
               "type": "string"
             },
             "role": {
               "pattern": "^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$",
-              "title": "Role",
               "type": "string"
             },
             "sha256": {
               "pattern": "^[0-9a-f]{64}$",
-              "title": "Sha256",
               "type": "string"
             }
           },
@@ -293,25 +272,21 @@ The following JSON is the complete value owned at each machine-authority pointer
             "bytes",
             "sha256"
           ],
-          "title": "ArtifactSubject",
           "type": "object"
         },
         "BranchPlan": {
           "additionalProperties": false,
-          "description": "One named required child work using the ordinary WorkflowPlan contract.",
           "properties": {
             "artifact_selection": {
               "$ref": "#/$defs/ArtifactSelectionRef"
             },
             "branch_id": {
               "pattern": "^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$",
-              "title": "Branch Id",
               "type": "string"
             },
             "kind": {
               "const": "leaf",
               "default": "leaf",
-              "title": "Kind",
               "type": "string"
             },
             "workflow_plan": {
@@ -323,16 +298,13 @@ The following JSON is the complete value owned at each machine-authority pointer
             "artifact_selection",
             "workflow_plan"
           ],
-          "title": "BranchPlan",
           "type": "object"
         },
         "BranchSetPlan": {
           "additionalProperties": false,
-          "description": "One immutable set of required branches and one optional exact join.",
           "properties": {
             "branch_set_sha256": {
               "pattern": "^[0-9a-f]{64}$",
-              "title": "Branch Set Sha256",
               "type": "string"
             },
             "branches": {
@@ -354,12 +326,10 @@ The following JSON is the complete value owned at each machine-authority pointer
                 ]
               },
               "minItems": 1,
-              "title": "Branches",
               "type": "array"
             },
             "decision_sha256": {
               "pattern": "^[0-9a-f]{64}$",
-              "title": "Decision Sha256",
               "type": "string"
             },
             "evidence_sha256s": {
@@ -368,13 +338,11 @@ The following JSON is the complete value owned at each machine-authority pointer
                 "pattern": "^[0-9a-f]{64}$",
                 "type": "string"
               },
-              "title": "Evidence Sha256S",
               "type": "array"
             },
             "format": {
               "const": "stove0-branch-set/v1",
               "default": "stove0-branch-set/v1",
-              "title": "Format",
               "type": "string"
             },
             "join": {
@@ -394,7 +362,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             "retirement_grace_seconds": {
               "default": 0,
               "minimum": 0,
-              "title": "Retirement Grace Seconds",
               "type": "integer"
             },
             "retirement_policy": {
@@ -403,7 +370,6 @@ The following JSON is the complete value owned at each machine-authority pointer
                 "retain",
                 "retire-after-verified-output"
               ],
-              "title": "Retirement Policy",
               "type": "string"
             }
           },
@@ -413,37 +379,30 @@ The following JSON is the complete value owned at each machine-authority pointer
             "branches",
             "branch_set_sha256"
           ],
-          "title": "BranchSetPlan",
           "type": "object"
         },
         "BranchWorkBinding": {
           "additionalProperties": false,
-          "description": "Stable parent/branch lineage for one ordinary child work identity.",
           "properties": {
             "artifact_selection_sha256": {
               "pattern": "^[0-9a-f]{64}$",
-              "title": "Artifact Selection Sha256",
               "type": "string"
             },
             "branch_id": {
               "pattern": "^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$",
-              "title": "Branch Id",
               "type": "string"
             },
             "decision_sha256": {
               "pattern": "^[0-9a-f]{64}$",
-              "title": "Decision Sha256",
               "type": "string"
             },
             "kind": {
               "const": "branch",
               "default": "branch",
-              "title": "Kind",
               "type": "string"
             },
             "parent_work_id": {
               "pattern": "^[0-9a-f]{64}$",
-              "title": "Parent Work Id",
               "type": "string"
             }
           },
@@ -453,7 +412,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             "decision_sha256",
             "artifact_selection_sha256"
           ],
-          "title": "BranchWorkBinding",
           "type": "object"
         },
         "ClaimBinding": {
@@ -462,12 +420,10 @@ The following JSON is the complete value owned at each machine-authority pointer
             "claim_id": {
               "maxLength": 160,
               "minLength": 1,
-              "title": "Claim Id",
               "type": "string"
             },
             "fence": {
               "minimum": 1,
-              "title": "Fence",
               "type": "integer"
             }
           },
@@ -475,7 +431,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             "claim_id",
             "fence"
           ],
-          "title": "ClaimBinding",
           "type": "object"
         },
         "CollectionId": {
@@ -487,7 +442,6 @@ The following JSON is the complete value owned at each machine-authority pointer
           "properties": {
             "archive_root_sha256": {
               "pattern": "^[0-9a-f]{64}$",
-              "title": "Archive Root Sha256",
               "type": "string"
             },
             "collection_id": {
@@ -495,7 +449,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             },
             "content_identity": {
               "pattern": "^[0-9a-f]{64}$",
-              "title": "Content Identity",
               "type": "string"
             }
           },
@@ -504,7 +457,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             "archive_root_sha256",
             "content_identity"
           ],
-          "title": "CollectionRootRef",
           "type": "object"
         },
         "ControllerEvidence": {
@@ -512,7 +464,6 @@ The following JSON is the complete value owned at each machine-authority pointer
           "properties": {
             "controller_evidence_sha256": {
               "pattern": "^[0-9a-f]{64}$",
-              "title": "Controller Evidence Sha256",
               "type": "string"
             },
             "execution_envelope": {
@@ -521,7 +472,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             "format": {
               "const": "stove0-controller-evidence/v1",
               "default": "stove0-controller-evidence/v1",
-              "title": "Format",
               "type": "string"
             }
           },
@@ -529,30 +479,25 @@ The following JSON is the complete value owned at each machine-authority pointer
             "execution_envelope",
             "controller_evidence_sha256"
           ],
-          "title": "ControllerEvidence",
           "type": "object"
         },
         "CoordinationBranchPlan": {
           "additionalProperties": false,
-          "description": "One named required branch-bound child coordinator.",
           "properties": {
             "artifact_selection": {
               "$ref": "#/$defs/ArtifactSelectionRef"
             },
             "branch_id": {
               "pattern": "^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$",
-              "title": "Branch Id",
               "type": "string"
             },
             "branch_set_sha256": {
               "pattern": "^[0-9a-f]{64}$",
-              "title": "Branch Set Sha256",
               "type": "string"
             },
             "kind": {
               "const": "coordination",
               "default": "coordination",
-              "title": "Kind",
               "type": "string"
             },
             "work": {
@@ -565,16 +510,13 @@ The following JSON is the complete value owned at each machine-authority pointer
             "work",
             "branch_set_sha256"
           ],
-          "title": "CoordinationBranchPlan",
           "type": "object"
         },
         "CoordinationChildSettlementRef": {
           "additionalProperties": false,
-          "description": "Exact direct-child success included in a coordination settlement.",
           "properties": {
             "branch_id": {
               "pattern": "^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$",
-              "title": "Branch Id",
               "type": "string"
             },
             "kind": {
@@ -583,12 +525,10 @@ The following JSON is the complete value owned at each machine-authority pointer
                 "external-effect",
                 "coordination"
               ],
-              "title": "Kind",
               "type": "string"
             },
             "settlement_sha256": {
               "pattern": "^[0-9a-f]{64}$",
-              "title": "Settlement Sha256",
               "type": "string"
             }
           },
@@ -597,21 +537,17 @@ The following JSON is the complete value owned at each machine-authority pointer
             "kind",
             "settlement_sha256"
           ],
-          "title": "CoordinationChildSettlementRef",
           "type": "object"
         },
         "CoordinationCollectionResult": {
           "additionalProperties": false,
-          "description": "Parent-visible collection produced by the coordinator's actual join leaf.",
           "properties": {
             "derivation_sha256": {
               "pattern": "^[0-9a-f]{64}$",
-              "title": "Derivation Sha256",
               "type": "string"
             },
             "join_settlement_sha256": {
               "pattern": "^[0-9a-f]{64}$",
-              "title": "Join Settlement Sha256",
               "type": "string"
             },
             "output_collection": {
@@ -622,7 +558,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             },
             "producer_work_id": {
               "pattern": "^[0-9a-f]{64}$",
-              "title": "Producer Work Id",
               "type": "string"
             }
           },
@@ -633,23 +568,19 @@ The following JSON is the complete value owned at each machine-authority pointer
             "output_collection",
             "output_selection"
           ],
-          "title": "CoordinationCollectionResult",
           "type": "object"
         },
         "CoordinationSettlement": {
           "additionalProperties": false,
-          "description": "Success-only exact completion of one root or branch-bound coordinator.",
           "properties": {
             "branch_set_sha256": {
               "pattern": "^[0-9a-f]{64}$",
-              "title": "Branch Set Sha256",
               "type": "string"
             },
             "children": {
               "items": {
                 "$ref": "#/$defs/CoordinationChildSettlementRef"
               },
-              "title": "Children",
               "type": "array"
             },
             "collection_result": {
@@ -664,7 +595,6 @@ The following JSON is the complete value owned at each machine-authority pointer
               "default": null
             },
             "contains_external_effects": {
-              "title": "Contains External Effects",
               "type": "boolean"
             },
             "final_join_settlement_sha256": {
@@ -677,18 +607,15 @@ The following JSON is the complete value owned at each machine-authority pointer
                   "type": "null"
                 }
               ],
-              "default": null,
-              "title": "Final Join Settlement Sha256"
+              "default": null
             },
             "format": {
               "const": "stove0-coordination-settlement/v1",
               "default": "stove0-coordination-settlement/v1",
-              "title": "Format",
               "type": "string"
             },
             "settlement_sha256": {
               "pattern": "^[0-9a-f]{64}$",
-              "title": "Settlement Sha256",
               "type": "string"
             },
             "work": {
@@ -702,7 +629,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             "contains_external_effects",
             "settlement_sha256"
           ],
-          "title": "CoordinationSettlement",
           "type": "object"
         },
         "EffectPlan": {
@@ -715,7 +641,6 @@ The following JSON is the complete value owned at each machine-authority pointer
               "additionalProperties": {
                 "$ref": "#/$defs/JsonValue"
               },
-              "title": "Intent",
               "type": "object"
             },
             "observation_result_sha256s": {
@@ -724,45 +649,37 @@ The following JSON is the complete value owned at each machine-authority pointer
                 "pattern": "^[0-9a-f]{64}$",
                 "type": "string"
               },
-              "title": "Observation Result Sha256S",
               "type": "array"
             },
             "operation_contract_sha256": {
               "pattern": "^[0-9a-f]{64}$",
-              "title": "Operation Contract Sha256",
               "type": "string"
             },
             "operation_id": {
               "pattern": "^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$",
-              "title": "Operation Id",
               "type": "string"
             },
             "plan_sha256": {
               "pattern": "^[0-9a-f]{64}$",
-              "title": "Plan Sha256",
               "type": "string"
             },
             "protocol": {
               "const": "stove0-effect-target/v1",
               "default": "stove0-effect-target/v1",
-              "title": "Protocol",
               "type": "string"
             },
             "target_contract_sha256": {
               "pattern": "^[0-9a-f]{64}$",
-              "title": "Target Contract Sha256",
               "type": "string"
             },
             "target_implementation_id": {
               "pattern": "^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$",
-              "title": "Target Implementation Id",
               "type": "string"
             },
             "target_options": {
               "additionalProperties": {
                 "$ref": "#/$defs/JsonValue"
               },
-              "title": "Target Options",
               "type": "object"
             }
           },
@@ -775,33 +692,27 @@ The following JSON is the complete value owned at each machine-authority pointer
             "target_contract_sha256",
             "plan_sha256"
           ],
-          "title": "EffectPlan",
           "type": "object"
         },
         "EvaluationBinding": {
           "additionalProperties": false,
-          "description": "Immutable membership of one work item in a trial/evaluation matrix.",
           "properties": {
             "evaluation_id": {
               "pattern": "^[0-9a-f]{64}$",
-              "title": "Evaluation Id",
               "type": "string"
             },
             "matrix_sha256": {
               "pattern": "^[0-9a-f]{64}$",
-              "title": "Matrix Sha256",
               "type": "string"
             },
             "parameters": {
               "additionalProperties": {
                 "$ref": "#/$defs/JsonValue"
               },
-              "title": "Parameters",
               "type": "object"
             },
             "variant_id": {
               "pattern": "^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$",
-              "title": "Variant Id",
               "type": "string"
             }
           },
@@ -810,7 +721,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             "matrix_sha256",
             "variant_id"
           ],
-          "title": "EvaluationBinding",
           "type": "object"
         },
         "ExecutionEnvelope": {
@@ -819,23 +729,19 @@ The following JSON is the complete value owned at each machine-authority pointer
             "claim_id": {
               "maxLength": 160,
               "minLength": 1,
-              "title": "Claim Id",
               "type": "string"
             },
             "execution_envelope_sha256": {
               "pattern": "^[0-9a-f]{64}$",
-              "title": "Execution Envelope Sha256",
               "type": "string"
             },
             "fence": {
               "minimum": 1,
-              "title": "Fence",
               "type": "integer"
             },
             "format": {
               "const": "stove0-execution-envelope/v1",
               "default": "stove0-execution-envelope/v1",
-              "title": "Format",
               "type": "string"
             },
             "target_plan": {
@@ -852,7 +758,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             "target_plan",
             "execution_envelope_sha256"
           ],
-          "title": "ExecutionEnvelope",
           "type": "object"
         },
         "ExternalEffectReceipt": {
@@ -860,45 +765,37 @@ The following JSON is the complete value owned at each machine-authority pointer
           "properties": {
             "execution_sha256": {
               "pattern": "^[0-9a-f]{64}$",
-              "title": "Execution Sha256",
               "type": "string"
             },
             "format": {
               "const": "stove0-external-effect-receipt/v1",
               "default": "stove0-external-effect-receipt/v1",
-              "title": "Format",
               "type": "string"
             },
             "job_id": {
               "pattern": "^[0-9a-f]{64}$",
-              "title": "Job Id",
               "type": "string"
             },
             "operation_contract_sha256": {
               "pattern": "^[0-9a-f]{64}$",
-              "title": "Operation Contract Sha256",
               "type": "string"
             },
             "plan_sha256": {
               "pattern": "^[0-9a-f]{64}$",
-              "title": "Plan Sha256",
               "type": "string"
             },
             "receipt_sha256": {
               "pattern": "^[0-9a-f]{64}$",
-              "title": "Receipt Sha256",
               "type": "string"
             },
             "request_sha256": {
               "pattern": "^[0-9a-f]{64}$",
-              "title": "Request Sha256",
               "type": "string"
             },
             "result": {
               "additionalProperties": {
                 "$ref": "#/$defs/JsonValue"
               },
-              "title": "Result",
               "type": "object",
               "x-riverhog-encoded-bytes-max": 65536,
               "x-riverhog-extent": {
@@ -908,7 +805,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             },
             "target_contract_sha256": {
               "pattern": "^[0-9a-f]{64}$",
-              "title": "Target Contract Sha256",
               "type": "string"
             }
           },
@@ -922,29 +818,24 @@ The following JSON is the complete value owned at each machine-authority pointer
             "result",
             "receipt_sha256"
           ],
-          "title": "ExternalEffectReceipt",
           "type": "object"
         },
         "JoinDeclaration": {
           "additionalProperties": false,
-          "description": "One optional exact named-subset join declaration.",
           "properties": {
             "effective_intent": {
               "additionalProperties": {
                 "$ref": "#/$defs/JsonValue"
               },
-              "title": "Effective Intent",
               "type": "object"
             },
             "format": {
               "const": "stove0-join-declaration/v1",
               "default": "stove0-join-declaration/v1",
-              "title": "Format",
               "type": "string"
             },
             "join_declaration_sha256": {
               "pattern": "^[0-9a-f]{64}$",
-              "title": "Join Declaration Sha256",
               "type": "string"
             },
             "members": {
@@ -952,7 +843,6 @@ The following JSON is the complete value owned at each machine-authority pointer
                 "$ref": "#/$defs/JoinMemberDeclaration"
               },
               "minItems": 2,
-              "title": "Members",
               "type": "array"
             },
             "recipe": {
@@ -968,7 +858,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             "workflow_intent",
             "join_declaration_sha256"
           ],
-          "title": "JoinDeclaration",
           "type": "object"
         },
         "JoinInputPlan": {
@@ -979,12 +868,10 @@ The following JSON is the complete value owned at each machine-authority pointer
             },
             "branch_id": {
               "pattern": "^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$",
-              "title": "Branch Id",
               "type": "string"
             },
             "derivation_sha256": {
               "pattern": "^[0-9a-f]{64}$",
-              "title": "Derivation Sha256",
               "type": "string"
             },
             "output_collection": {
@@ -1000,12 +887,10 @@ The following JSON is the complete value owned at each machine-authority pointer
                   "type": "null"
                 }
               ],
-              "default": null,
-              "title": "Producer Settlement Sha256"
+              "default": null
             },
             "settlement_sha256": {
               "pattern": "^[0-9a-f]{64}$",
-              "title": "Settlement Sha256",
               "type": "string"
             }
           },
@@ -1016,16 +901,13 @@ The following JSON is the complete value owned at each machine-authority pointer
             "output_collection",
             "artifact_selection"
           ],
-          "title": "JoinInputPlan",
           "type": "object"
         },
         "JoinMemberDeclaration": {
           "additionalProperties": false,
-          "description": "Exact named branch and opaque output roles required by the join.",
           "properties": {
             "branch_id": {
               "pattern": "^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$",
-              "title": "Branch Id",
               "type": "string"
             },
             "output_roles": {
@@ -1034,7 +916,6 @@ The following JSON is the complete value owned at each machine-authority pointer
                 "type": "string"
               },
               "minItems": 1,
-              "title": "Output Roles",
               "type": "array"
             }
           },
@@ -1042,16 +923,13 @@ The following JSON is the complete value owned at each machine-authority pointer
             "branch_id",
             "output_roles"
           ],
-          "title": "JoinMemberDeclaration",
           "type": "object"
         },
         "JoinPlan": {
           "additionalProperties": false,
-          "description": "Resolved ordinary join work over exact successful branch outputs.",
           "properties": {
             "branch_set_sha256": {
               "pattern": "^[0-9a-f]{64}$",
-              "title": "Branch Set Sha256",
               "type": "string"
             },
             "declaration": {
@@ -1060,7 +938,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             "format": {
               "const": "stove0-join-plan/v1",
               "default": "stove0-join-plan/v1",
-              "title": "Format",
               "type": "string"
             },
             "inputs": {
@@ -1068,17 +945,14 @@ The following JSON is the complete value owned at each machine-authority pointer
                 "$ref": "#/$defs/JoinInputPlan"
               },
               "minItems": 2,
-              "title": "Inputs",
               "type": "array"
             },
             "join_plan_sha256": {
               "pattern": "^[0-9a-f]{64}$",
-              "title": "Join Plan Sha256",
               "type": "string"
             },
             "parent_work_id": {
               "pattern": "^[0-9a-f]{64}$",
-              "title": "Parent Work Id",
               "type": "string"
             },
             "work": {
@@ -1097,22 +971,18 @@ The following JSON is the complete value owned at each machine-authority pointer
             "workflow_plan",
             "join_plan_sha256"
           ],
-          "title": "JoinPlan",
           "type": "object"
         },
         "JoinWorkBinding": {
           "additionalProperties": false,
-          "description": "Stable branch-set lineage for one ordinary join work identity.",
           "properties": {
             "branch_set_sha256": {
               "pattern": "^[0-9a-f]{64}$",
-              "title": "Branch Set Sha256",
               "type": "string"
             },
             "kind": {
               "const": "join",
               "default": "join",
-              "title": "Kind",
               "type": "string"
             },
             "members": {
@@ -1120,12 +990,10 @@ The following JSON is the complete value owned at each machine-authority pointer
                 "$ref": "#/$defs/JoinWorkMemberBinding"
               },
               "minItems": 2,
-              "title": "Members",
               "type": "array"
             },
             "parent_work_id": {
               "pattern": "^[0-9a-f]{64}$",
-              "title": "Parent Work Id",
               "type": "string"
             }
           },
@@ -1134,21 +1002,17 @@ The following JSON is the complete value owned at each machine-authority pointer
             "branch_set_sha256",
             "members"
           ],
-          "title": "JoinWorkBinding",
           "type": "object"
         },
         "JoinWorkMemberBinding": {
           "additionalProperties": false,
-          "description": "Exact successful branch result used to derive one join work identity.",
           "properties": {
             "artifact_selection_sha256": {
               "pattern": "^[0-9a-f]{64}$",
-              "title": "Artifact Selection Sha256",
               "type": "string"
             },
             "branch_id": {
               "pattern": "^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$",
-              "title": "Branch Id",
               "type": "string"
             },
             "producer_settlement_sha256": {
@@ -1161,12 +1025,10 @@ The following JSON is the complete value owned at each machine-authority pointer
                   "type": "null"
                 }
               ],
-              "default": null,
-              "title": "Producer Settlement Sha256"
+              "default": null
             },
             "settlement_sha256": {
               "pattern": "^[0-9a-f]{64}$",
-              "title": "Settlement Sha256",
               "type": "string"
             }
           },
@@ -1175,7 +1037,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             "settlement_sha256",
             "artifact_selection_sha256"
           ],
-          "title": "JoinWorkMemberBinding",
           "type": "object"
         },
         "JsonSchemaDocument": {
@@ -1184,30 +1045,25 @@ The following JSON is the complete value owned at each machine-authority pointer
             "dialect": {
               "const": "https://json-schema.org/draft/2020-12/schema",
               "default": "https://json-schema.org/draft/2020-12/schema",
-              "title": "Dialect",
               "type": "string"
             },
             "format_policy": {
               "const": "annotation-only",
               "default": "annotation-only",
-              "title": "Format Policy",
               "type": "string"
             },
             "id": {
               "pattern": "^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$",
-              "title": "Id",
               "type": "string"
             },
             "schema": {
               "additionalProperties": {
                 "$ref": "#/$defs/JsonValue"
               },
-              "title": "Schema",
               "type": "object"
             },
             "sha256": {
               "pattern": "^[0-9a-f]{64}$",
-              "title": "Sha256",
               "type": "string"
             }
           },
@@ -1216,13 +1072,11 @@ The following JSON is the complete value owned at each machine-authority pointer
             "sha256",
             "schema"
           ],
-          "title": "JsonSchemaDocument",
           "type": "object"
         },
         "JsonValue": {},
         "ObservationEvidence": {
           "additionalProperties": false,
-          "description": "Complete routing evidence: immutable request plus accepted result.",
           "properties": {
             "request": {
               "$ref": "#/$defs/ObservationRequest"
@@ -1235,7 +1089,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             "request",
             "result"
           ],
-          "title": "ObservationEvidence",
           "type": "object"
         },
         "ObservationFailure": {
@@ -1243,17 +1096,14 @@ The following JSON is the complete value owned at each machine-authority pointer
           "properties": {
             "code": {
               "pattern": "^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$",
-              "title": "Code",
               "type": "string"
             },
             "message": {
               "maxLength": 1000,
               "minLength": 1,
-              "title": "Message",
               "type": "string"
             },
             "retryable": {
-              "title": "Retryable",
               "type": "boolean"
             }
           },
@@ -1262,7 +1112,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             "message",
             "retryable"
           ],
-          "title": "ObservationFailure",
           "type": "object"
         },
         "ObservationInapplicable": {
@@ -1270,13 +1119,11 @@ The following JSON is the complete value owned at each machine-authority pointer
           "properties": {
             "code": {
               "pattern": "^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$",
-              "title": "Code",
               "type": "string"
             },
             "message": {
               "maxLength": 1000,
               "minLength": 1,
-              "title": "Message",
               "type": "string"
             }
           },
@@ -1284,7 +1131,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             "code",
             "message"
           ],
-          "title": "ObservationInapplicable",
           "type": "object"
         },
         "ObservationRequest": {
@@ -1293,46 +1139,38 @@ The following JSON is the complete value owned at each machine-authority pointer
             "format": {
               "const": "stove0-observation-request/v1",
               "default": "stove0-observation-request/v1",
-              "title": "Format",
               "type": "string"
             },
             "maximum_result_bytes": {
               "default": 1048576,
               "maximum": 67108864,
               "minimum": 1,
-              "title": "Maximum Result Bytes",
               "type": "integer"
             },
             "observer_contract_id": {
               "pattern": "^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$",
-              "title": "Observer Contract Id",
               "type": "string"
             },
             "observer_contract_sha256": {
               "pattern": "^[0-9a-f]{64}$",
-              "title": "Observer Contract Sha256",
               "type": "string"
             },
             "observer_descriptor_sha256": {
               "pattern": "^[0-9a-f]{64}$",
-              "title": "Observer Descriptor Sha256",
               "type": "string"
             },
             "observer_registration_id": {
               "pattern": "^[a-z0-9]\u0028?:[a-z0-9.-]{0,118}[a-z0-9])?$",
-              "title": "Observer Registration Id",
               "type": "string"
             },
             "options": {
               "additionalProperties": {
                 "$ref": "#/$defs/JsonValue"
               },
-              "title": "Options",
               "type": "object"
             },
             "request_id": {
               "pattern": "^[0-9a-f]{64}$",
-              "title": "Request Id",
               "type": "string"
             },
             "retrieval_policy": {
@@ -1341,7 +1179,6 @@ The following JSON is the complete value owned at each machine-authority pointer
                 "available-only",
                 "allow"
               ],
-              "title": "Retrieval Policy",
               "type": "string"
             },
             "subjects": {
@@ -1349,19 +1186,16 @@ The following JSON is the complete value owned at each machine-authority pointer
                 "$ref": "#/$defs/ArtifactSubject"
               },
               "minItems": 1,
-              "title": "Subjects",
               "type": "array"
             },
             "timeout_seconds": {
               "default": 300,
               "maximum": 86400,
               "minimum": 1,
-              "title": "Timeout Seconds",
               "type": "integer"
             },
             "work_id": {
               "pattern": "^[0-9a-f]{64}$",
-              "title": "Work Id",
               "type": "string"
             }
           },
@@ -1374,7 +1208,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             "subjects",
             "request_id"
           ],
-          "title": "ObservationRequest",
           "type": "object"
         },
         "ObservationResult": {
@@ -1384,7 +1217,6 @@ The following JSON is the complete value owned at each machine-authority pointer
               "additionalProperties": {
                 "$ref": "#/$defs/JsonValue"
               },
-              "title": "Execution Evidence",
               "type": "object"
             },
             "facts": {
@@ -1399,8 +1231,7 @@ The following JSON is the complete value owned at each machine-authority pointer
                   "type": "null"
                 }
               ],
-              "default": null,
-              "title": "Facts"
+              "default": null
             },
             "facts_schema": {
               "anyOf": [
@@ -1423,8 +1254,7 @@ The following JSON is the complete value owned at each machine-authority pointer
                   "type": "null"
                 }
               ],
-              "default": null,
-              "title": "Facts Sha256"
+              "default": null
             },
             "failure": {
               "anyOf": [
@@ -1440,7 +1270,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             "format": {
               "const": "stove0-observation-result/v1",
               "default": "stove0-observation-result/v1",
-              "title": "Format",
               "type": "string"
             },
             "inapplicable": {
@@ -1459,22 +1288,18 @@ The following JSON is the complete value owned at each machine-authority pointer
             },
             "observer_contract_id": {
               "pattern": "^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$",
-              "title": "Observer Contract Id",
               "type": "string"
             },
             "observer_contract_sha256": {
               "pattern": "^[0-9a-f]{64}$",
-              "title": "Observer Contract Sha256",
               "type": "string"
             },
             "request_id": {
               "pattern": "^[0-9a-f]{64}$",
-              "title": "Request Id",
               "type": "string"
             },
             "result_sha256": {
               "pattern": "^[0-9a-f]{64}$",
-              "title": "Result Sha256",
               "type": "string"
             },
             "state": {
@@ -1484,7 +1309,6 @@ The following JSON is the complete value owned at each machine-authority pointer
                 "failed",
                 "canceled"
               ],
-              "title": "State",
               "type": "string"
             },
             "subjects": {
@@ -1492,7 +1316,6 @@ The following JSON is the complete value owned at each machine-authority pointer
                 "$ref": "#/$defs/ArtifactSubject"
               },
               "minItems": 1,
-              "title": "Subjects",
               "type": "array"
             }
           },
@@ -1505,7 +1328,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             "subjects",
             "result_sha256"
           ],
-          "title": "ObservationResult",
           "type": "object"
         },
         "ObserverImplementation": {
@@ -1513,30 +1335,25 @@ The following JSON is the complete value owned at each machine-authority pointer
           "properties": {
             "descriptor_sha256": {
               "pattern": "^[0-9a-f]{64}$",
-              "title": "Descriptor Sha256",
               "type": "string"
             },
             "id": {
               "pattern": "^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$",
-              "title": "Id",
               "type": "string"
             },
             "protocol": {
               "const": "stove0-content-observer/v1",
               "default": "stove0-content-observer/v1",
-              "title": "Protocol",
               "type": "string"
             },
             "source_revision": {
               "maxLength": 200,
               "minLength": 1,
-              "title": "Source Revision",
               "type": "string"
             },
             "version": {
               "maxLength": 120,
               "minLength": 1,
-              "title": "Version",
               "type": "string"
             }
           },
@@ -1546,7 +1363,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             "source_revision",
             "descriptor_sha256"
           ],
-          "title": "ObserverImplementation",
           "type": "object"
         },
         "OperationRef": {
@@ -1554,12 +1370,10 @@ The following JSON is the complete value owned at each machine-authority pointer
           "properties": {
             "id": {
               "pattern": "^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$",
-              "title": "Id",
               "type": "string"
             },
             "sha256": {
               "pattern": "^[0-9a-f]{64}$",
-              "title": "Sha256",
               "type": "string"
             }
           },
@@ -1567,7 +1381,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             "id",
             "sha256"
           ],
-          "title": "OperationRef",
           "type": "object"
         },
         "OutputArtifactRoleCount": {
@@ -1575,12 +1388,10 @@ The following JSON is the complete value owned at each machine-authority pointer
           "properties": {
             "count": {
               "minimum": 1,
-              "title": "Count",
               "type": "integer"
             },
             "role": {
               "pattern": "^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$",
-              "title": "Role",
               "type": "string"
             }
           },
@@ -1588,16 +1399,13 @@ The following JSON is the complete value owned at each machine-authority pointer
             "role",
             "count"
           ],
-          "title": "OutputArtifactRoleCount",
           "type": "object"
         },
         "OutputArtifactSetIdentity": {
           "additionalProperties": false,
-          "description": "Small identity for target outputs already registered with Riverhog.",
           "properties": {
             "artifact_count": {
               "minimum": 1,
-              "title": "Artifact Count",
               "type": "integer"
             },
             "roles": {
@@ -1605,17 +1413,14 @@ The following JSON is the complete value owned at each machine-authority pointer
                 "$ref": "#/$defs/OutputArtifactRoleCount"
               },
               "minItems": 1,
-              "title": "Roles",
               "type": "array"
             },
             "sha256": {
               "pattern": "^[0-9a-f]{64}$",
-              "title": "Sha256",
               "type": "string"
             },
             "total_bytes": {
               "minimum": 0,
-              "title": "Total Bytes",
               "type": "integer"
             }
           },
@@ -1625,7 +1430,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             "roles",
             "sha256"
           ],
-          "title": "OutputArtifactSetIdentity",
           "type": "object"
         },
         "OutputCollectionRef": {
@@ -1633,7 +1437,6 @@ The following JSON is the complete value owned at each machine-authority pointer
           "properties": {
             "archive_root_sha256": {
               "pattern": "^[0-9a-f]{64}$",
-              "title": "Archive Root Sha256",
               "type": "string"
             },
             "collection_id": {
@@ -1641,12 +1444,10 @@ The following JSON is the complete value owned at each machine-authority pointer
             },
             "content_identity": {
               "pattern": "^[0-9a-f]{64}$",
-              "title": "Content Identity",
               "type": "string"
             },
             "derivation_sha256": {
               "pattern": "^[0-9a-f]{64}$",
-              "title": "Derivation Sha256",
               "type": "string"
             }
           },
@@ -1656,28 +1457,23 @@ The following JSON is the complete value owned at each machine-authority pointer
             "content_identity",
             "derivation_sha256"
           ],
-          "title": "OutputCollectionRef",
           "type": "object"
         },
         "PreviewAcceptance": {
           "additionalProperties": false,
-          "description": "Exact preview identities accepted when operator work is initiated.",
           "properties": {
             "branch_set_sha256": {
               "pattern": "^[0-9a-f]{64}$",
-              "title": "Branch Set Sha256",
               "type": "string"
             },
             "preview_sha256": {
               "pattern": "^[0-9a-f]{64}$",
-              "title": "Preview Sha256",
               "type": "string"
             },
             "target_plans": {
               "items": {
                 "$ref": "#/$defs/PreviewTargetExpectation"
               },
-              "title": "Target Plans",
               "type": "array"
             }
           },
@@ -1686,27 +1482,22 @@ The following JSON is the complete value owned at each machine-authority pointer
             "branch_set_sha256",
             "target_plans"
           ],
-          "title": "PreviewAcceptance",
           "type": "object"
         },
         "PreviewTargetExpectation": {
           "additionalProperties": false,
-          "description": "Compact target-plan identity approved by one workflow preview.",
           "properties": {
             "branch_id": {
               "maxLength": 160,
               "minLength": 1,
-              "title": "Branch Id",
               "type": "string"
             },
             "plan_sha256": {
               "pattern": "^[0-9a-f]{64}$",
-              "title": "Plan Sha256",
               "type": "string"
             },
             "work_id": {
               "pattern": "^[0-9a-f]{64}$",
-              "title": "Work Id",
               "type": "string"
             }
           },
@@ -1715,7 +1506,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             "work_id",
             "plan_sha256"
           ],
-          "title": "PreviewTargetExpectation",
           "type": "object"
         },
         "RecipeRef": {
@@ -1723,17 +1513,14 @@ The following JSON is the complete value owned at each machine-authority pointer
           "properties": {
             "id": {
               "pattern": "^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$",
-              "title": "Id",
               "type": "string"
             },
             "revision": {
               "minimum": 1,
-              "title": "Revision",
               "type": "integer"
             },
             "sha256": {
               "pattern": "^[0-9a-f]{64}$",
-              "title": "Sha256",
               "type": "string"
             }
           },
@@ -1742,7 +1529,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             "revision",
             "sha256"
           ],
-          "title": "RecipeRef",
           "type": "object"
         },
         "TargetExecutionEvidence": {
@@ -1750,29 +1536,24 @@ The following JSON is the complete value owned at each machine-authority pointer
           "properties": {
             "execution_sha256": {
               "pattern": "^[0-9a-f]{64}$",
-              "title": "Execution Sha256",
               "type": "string"
             },
             "operation_contract_sha256": {
               "pattern": "^[0-9a-f]{64}$",
-              "title": "Operation Contract Sha256",
               "type": "string"
             },
             "plan_sha256": {
               "pattern": "^[0-9a-f]{64}$",
-              "title": "Plan Sha256",
               "type": "string"
             },
             "runtime": {
               "additionalProperties": {
                 "$ref": "#/$defs/JsonValue"
               },
-              "title": "Runtime",
               "type": "object"
             },
             "target_contract_sha256": {
               "pattern": "^[0-9a-f]{64}$",
-              "title": "Target Contract Sha256",
               "type": "string"
             }
           },
@@ -1782,7 +1563,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             "plan_sha256",
             "execution_sha256"
           ],
-          "title": "TargetExecutionEvidence",
           "type": "object"
         },
         "TargetFailure": {
@@ -1790,17 +1570,14 @@ The following JSON is the complete value owned at each machine-authority pointer
           "properties": {
             "code": {
               "pattern": "^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$",
-              "title": "Code",
               "type": "string"
             },
             "message": {
               "maxLength": 1000,
               "minLength": 1,
-              "title": "Message",
               "type": "string"
             },
             "retryable": {
-              "title": "Retryable",
               "type": "boolean"
             }
           },
@@ -1809,7 +1586,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             "message",
             "retryable"
           ],
-          "title": "TargetFailure",
           "type": "object"
         },
         "TargetInapplicable": {
@@ -1817,13 +1593,11 @@ The following JSON is the complete value owned at each machine-authority pointer
           "properties": {
             "code": {
               "pattern": "^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$",
-              "title": "Code",
               "type": "string"
             },
             "message": {
               "maxLength": 1000,
               "minLength": 1,
-              "title": "Message",
               "type": "string"
             }
           },
@@ -1831,19 +1605,16 @@ The following JSON is the complete value owned at each machine-authority pointer
             "code",
             "message"
           ],
-          "title": "TargetInapplicable",
           "type": "object"
         },
         "TargetInputAuthority": {
           "additionalProperties": false,
-          "description": "Small exact input authority retained by Stove0 and traversed in bounded pages.",
           "properties": {
             "roles": {
               "items": {
                 "$ref": "#/$defs/TargetInputRoleCount"
               },
               "minItems": 1,
-              "title": "Roles",
               "type": "array"
             },
             "selection": {
@@ -1854,7 +1625,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             "selection",
             "roles"
           ],
-          "title": "TargetInputAuthority",
           "type": "object"
         },
         "TargetInputRoleCount": {
@@ -1862,12 +1632,10 @@ The following JSON is the complete value owned at each machine-authority pointer
           "properties": {
             "count": {
               "minimum": 1,
-              "title": "Count",
               "type": "integer"
             },
             "role": {
               "pattern": "^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$",
-              "title": "Role",
               "type": "string"
             }
           },
@@ -1875,7 +1643,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             "role",
             "count"
           ],
-          "title": "TargetInputRoleCount",
           "type": "object"
         },
         "TargetJobDeclaration": {
@@ -1884,7 +1651,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             "claim_id": {
               "maxLength": 160,
               "minLength": 1,
-              "title": "Claim Id",
               "type": "string"
             },
             "controller_evidence": {
@@ -1892,12 +1658,10 @@ The following JSON is the complete value owned at each machine-authority pointer
             },
             "fence": {
               "minimum": 1,
-              "title": "Fence",
               "type": "integer"
             },
             "job_id": {
               "pattern": "^[0-9a-f]{64}$",
-              "title": "Job Id",
               "type": "string"
             },
             "plan": {
@@ -1915,15 +1679,13 @@ The following JSON is the complete value owned at each machine-authority pointer
                 {
                   "$ref": "#/$defs/EffectPlan"
                 }
-              ],
-              "title": "Plan"
+              ]
             },
             "workspace_assurance": {
               "enum": [
                 "encrypted",
                 "ephemeral"
               ],
-              "title": "Workspace Assurance",
               "type": "string"
             }
           },
@@ -1935,7 +1697,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             "plan",
             "workspace_assurance"
           ],
-          "title": "TargetJobDeclaration",
           "type": "object"
         },
         "TargetJobStatus": {
@@ -1971,7 +1732,6 @@ The following JSON is the complete value owned at each machine-authority pointer
           "properties": {
             "attempt": {
               "minimum": 1,
-              "title": "Attempt",
               "type": "integer"
             },
             "derivation": {
@@ -1984,8 +1744,7 @@ The following JSON is the complete value owned at each machine-authority pointer
                   "type": "null"
                 }
               ],
-              "default": null,
-              "title": "Derivation"
+              "default": null
             },
             "effect_receipt": {
               "anyOf": [
@@ -2033,7 +1792,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             },
             "job_id": {
               "pattern": "^[0-9a-f]{64}$",
-              "title": "Job Id",
               "type": "string"
             },
             "output_collection": {
@@ -2049,7 +1807,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             },
             "plan_sha256": {
               "pattern": "^[0-9a-f]{64}$",
-              "title": "Plan Sha256",
               "type": "string"
             },
             "production": {
@@ -2072,12 +1829,10 @@ The following JSON is the complete value owned at each machine-authority pointer
                 "stove0-transform-target/v1",
                 "stove0-effect-target/v1"
               ],
-              "title": "Protocol",
               "type": "string"
             },
             "request_sha256": {
               "pattern": "^[0-9a-f]{64}$",
-              "title": "Request Sha256",
               "type": "string"
             },
             "state": {
@@ -2091,7 +1846,6 @@ The following JSON is the complete value owned at each machine-authority pointer
                 "failed",
                 "canceled"
               ],
-              "title": "State",
               "type": "string"
             }
           },
@@ -2103,7 +1857,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             "plan_sha256",
             "progress"
           ],
-          "title": "TargetJobStatus",
           "type": "object"
         },
         "TargetOutputBindingSetIdentity": {
@@ -2111,17 +1864,14 @@ The following JSON is the complete value owned at each machine-authority pointer
           "properties": {
             "artifact_count": {
               "minimum": 1,
-              "title": "Artifact Count",
               "type": "integer"
             },
             "sha256": {
               "pattern": "^[0-9a-f]{64}$",
-              "title": "Sha256",
               "type": "string"
             },
             "total_bytes": {
               "minimum": 0,
-              "title": "Total Bytes",
               "type": "integer"
             }
           },
@@ -2130,43 +1880,35 @@ The following JSON is the complete value owned at each machine-authority pointer
             "total_bytes",
             "sha256"
           ],
-          "title": "TargetOutputBindingSetIdentity",
           "type": "object"
         },
         "TargetPlanBinding": {
           "additionalProperties": false,
-          "description": "Opaque binding to a target-owned preflight plan.\n\nThe target protocol owns the plan schema and canonicalization algorithm. stove0\nretains the complete validated plan document and its target-issued digest, but\ndeliberately does not reinterpret or re-hash the plan with stove0's canonical\nJSON rules. This prevents two authorities from disagreeing about target plan\nidentity while preserving the full document in the execution envelope.",
           "properties": {
             "operation_contract_sha256": {
               "pattern": "^[0-9a-f]{64}$",
-              "title": "Operation Contract Sha256",
               "type": "string"
             },
             "plan": {
               "additionalProperties": {
                 "$ref": "#/$defs/JsonValue"
               },
-              "title": "Plan",
               "type": "object"
             },
             "plan_sha256": {
               "pattern": "^[0-9a-f]{64}$",
-              "title": "Plan Sha256",
               "type": "string"
             },
             "protocol": {
               "pattern": "^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$",
-              "title": "Protocol",
               "type": "string"
             },
             "target_contract_sha256": {
               "pattern": "^[0-9a-f]{64}$",
-              "title": "Target Contract Sha256",
               "type": "string"
             },
             "target_implementation_id": {
               "pattern": "^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$",
-              "title": "Target Implementation Id",
               "type": "string"
             }
           },
@@ -2178,7 +1920,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             "plan",
             "plan_sha256"
           ],
-          "title": "TargetPlanBinding",
           "type": "object"
         },
         "TargetProductionAuthority": {
@@ -2186,23 +1927,19 @@ The following JSON is the complete value owned at each machine-authority pointer
           "properties": {
             "disposition_count": {
               "minimum": 1,
-              "title": "Disposition Count",
               "type": "integer"
             },
             "disposition_sha256": {
               "pattern": "^[0-9a-f]{64}$",
-              "title": "Disposition Sha256",
               "type": "string"
             },
             "format": {
               "const": "stove0-target-production/v1",
               "default": "stove0-target-production/v1",
-              "title": "Format",
               "type": "string"
             },
             "job_id": {
               "pattern": "^[0-9a-f]{64}$",
-              "title": "Job Id",
               "type": "string"
             },
             "outputs": {
@@ -2210,12 +1947,10 @@ The following JSON is the complete value owned at each machine-authority pointer
             },
             "plan_sha256": {
               "pattern": "^[0-9a-f]{64}$",
-              "title": "Plan Sha256",
               "type": "string"
             },
             "production_sha256": {
               "pattern": "^[0-9a-f]{64}$",
-              "title": "Production Sha256",
               "type": "string"
             },
             "riverhog_disposition_set": {
@@ -2223,12 +1958,10 @@ The following JSON is the complete value owned at each machine-authority pointer
             },
             "source_edge_count": {
               "minimum": 1,
-              "title": "Source Edge Count",
               "type": "integer"
             },
             "source_edge_sha256": {
               "pattern": "^[0-9a-f]{64}$",
-              "title": "Source Edge Sha256",
               "type": "string"
             }
           },
@@ -2243,7 +1976,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             "riverhog_disposition_set",
             "production_sha256"
           ],
-          "title": "TargetProductionAuthority",
           "type": "object"
         },
         "TargetProgress": {
@@ -2251,13 +1983,11 @@ The following JSON is the complete value owned at each machine-authority pointer
           "properties": {
             "completed": {
               "minimum": 0,
-              "title": "Completed",
               "type": "integer"
             },
             "phase": {
               "maxLength": 120,
               "minLength": 1,
-              "title": "Phase",
               "type": "string"
             },
             "total": {
@@ -2270,8 +2000,7 @@ The following JSON is the complete value owned at each machine-authority pointer
                   "type": "null"
                 }
               ],
-              "default": null,
-              "title": "Total"
+              "default": null
             },
             "unit": {
               "anyOf": [
@@ -2284,15 +2013,13 @@ The following JSON is the complete value owned at each machine-authority pointer
                   "type": "null"
                 }
               ],
-              "default": null,
-              "title": "Unit"
+              "default": null
             }
           },
           "required": [
             "phase",
             "completed"
           ],
-          "title": "TargetProgress",
           "type": "object"
         },
         "TargetSettlementAuthority": {
@@ -2301,12 +2028,10 @@ The following JSON is the complete value owned at each machine-authority pointer
             "format": {
               "const": "stove0-target-settlement/v1",
               "default": "stove0-target-settlement/v1",
-              "title": "Format",
               "type": "string"
             },
             "job_id": {
               "pattern": "^[0-9a-f]{64}$",
-              "title": "Job Id",
               "type": "string"
             },
             "output_bindings": {
@@ -2317,12 +2042,10 @@ The following JSON is the complete value owned at each machine-authority pointer
             },
             "production_sha256": {
               "pattern": "^[0-9a-f]{64}$",
-              "title": "Production Sha256",
               "type": "string"
             },
             "settlement_sha256": {
               "pattern": "^[0-9a-f]{64}$",
-              "title": "Settlement Sha256",
               "type": "string"
             }
           },
@@ -2333,7 +2056,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             "output_bindings",
             "settlement_sha256"
           ],
-          "title": "TargetSettlementAuthority",
           "type": "object"
         },
         "TransformPlan": {
@@ -2346,7 +2068,6 @@ The following JSON is the complete value owned at each machine-authority pointer
               "additionalProperties": {
                 "$ref": "#/$defs/JsonValue"
               },
-              "title": "Intent",
               "type": "object"
             },
             "observation_result_sha256s": {
@@ -2355,45 +2076,37 @@ The following JSON is the complete value owned at each machine-authority pointer
                 "pattern": "^[0-9a-f]{64}$",
                 "type": "string"
               },
-              "title": "Observation Result Sha256S",
               "type": "array"
             },
             "operation_contract_sha256": {
               "pattern": "^[0-9a-f]{64}$",
-              "title": "Operation Contract Sha256",
               "type": "string"
             },
             "operation_id": {
               "pattern": "^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$",
-              "title": "Operation Id",
               "type": "string"
             },
             "plan_sha256": {
               "pattern": "^[0-9a-f]{64}$",
-              "title": "Plan Sha256",
               "type": "string"
             },
             "protocol": {
               "const": "stove0-transform-target/v1",
               "default": "stove0-transform-target/v1",
-              "title": "Protocol",
               "type": "string"
             },
             "target_contract_sha256": {
               "pattern": "^[0-9a-f]{64}$",
-              "title": "Target Contract Sha256",
               "type": "string"
             },
             "target_implementation_id": {
               "pattern": "^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$",
-              "title": "Target Implementation Id",
               "type": "string"
             },
             "target_options": {
               "additionalProperties": {
                 "$ref": "#/$defs/JsonValue"
               },
-              "title": "Target Options",
               "type": "object"
             }
           },
@@ -2406,7 +2119,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             "target_contract_sha256",
             "plan_sha256"
           ],
-          "title": "TransformPlan",
           "type": "object"
         },
         "WorkFailure": {
@@ -2415,17 +2127,14 @@ The following JSON is the complete value owned at each machine-authority pointer
             "code": {
               "maxLength": 160,
               "minLength": 1,
-              "title": "Code",
               "type": "string"
             },
             "message": {
               "maxLength": 1000,
               "minLength": 1,
-              "title": "Message",
               "type": "string"
             },
             "retryable": {
-              "title": "Retryable",
               "type": "boolean"
             }
           },
@@ -2434,7 +2143,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             "message",
             "retryable"
           ],
-          "title": "WorkFailure",
           "type": "object"
         },
         "WorkIdentity": {
@@ -2444,7 +2152,6 @@ The following JSON is the complete value owned at each machine-authority pointer
               "additionalProperties": {
                 "$ref": "#/$defs/JsonValue"
               },
-              "title": "Effective Intent",
               "type": "object"
             },
             "evaluation": {
@@ -2481,13 +2188,11 @@ The following JSON is the complete value owned at each machine-authority pointer
                   "type": "null"
                 }
               ],
-              "default": null,
-              "title": "Fork Join"
+              "default": null
             },
             "format": {
               "const": "stove0-work/v1",
               "default": "stove0-work/v1",
-              "title": "Format",
               "type": "string"
             },
             "inputs": {
@@ -2495,7 +2200,6 @@ The following JSON is the complete value owned at each machine-authority pointer
                 "$ref": "#/$defs/CollectionRootRef"
               },
               "minItems": 1,
-              "title": "Inputs",
               "type": "array"
             },
             "recipe": {
@@ -2503,7 +2207,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             },
             "work_id": {
               "pattern": "^[0-9a-f]{64}$",
-              "title": "Work Id",
               "type": "string"
             }
           },
@@ -2512,7 +2215,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             "inputs",
             "work_id"
           ],
-          "title": "WorkIdentity",
           "type": "object"
         },
         "WorkInapplicable": {
@@ -2521,13 +2223,11 @@ The following JSON is the complete value owned at each machine-authority pointer
             "code": {
               "maxLength": 160,
               "minLength": 1,
-              "title": "Code",
               "type": "string"
             },
             "message": {
               "maxLength": 1000,
               "minLength": 1,
-              "title": "Message",
               "type": "string"
             }
           },
@@ -2535,7 +2235,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             "code",
             "message"
           ],
-          "title": "WorkInapplicable",
           "type": "object"
         },
         "WorkflowPlan": {
@@ -2544,7 +2243,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             "format": {
               "const": "stove0-workflow-plan/v1",
               "default": "stove0-workflow-plan/v1",
-              "title": "Format",
               "type": "string"
             },
             "input_retrieval_policy": {
@@ -2553,7 +2251,6 @@ The following JSON is the complete value owned at each machine-authority pointer
                 "available-only",
                 "allow"
               ],
-              "title": "Input Retrieval Policy",
               "type": "string"
             },
             "observations": {
@@ -2561,7 +2258,6 @@ The following JSON is the complete value owned at each machine-authority pointer
               "items": {
                 "$ref": "#/$defs/ObservationEvidence"
               },
-              "title": "Observations",
               "type": "array"
             },
             "operation": {
@@ -2571,14 +2267,12 @@ The following JSON is the complete value owned at each machine-authority pointer
               "additionalProperties": {
                 "$ref": "#/$defs/JsonValue"
               },
-              "title": "Output Policy",
               "type": "object"
             },
             "requested_target_options": {
               "additionalProperties": {
                 "$ref": "#/$defs/JsonValue"
               },
-              "title": "Requested Target Options",
               "type": "object"
             },
             "result_kind": {
@@ -2587,13 +2281,11 @@ The following JSON is the complete value owned at each machine-authority pointer
                 "collection",
                 "external-effect"
               ],
-              "title": "Result Kind",
               "type": "string"
             },
             "retirement_grace_seconds": {
               "default": 0,
               "minimum": 0,
-              "title": "Retirement Grace Seconds",
               "type": "integer"
             },
             "retirement_policy": {
@@ -2602,17 +2294,14 @@ The following JSON is the complete value owned at each machine-authority pointer
                 "retain",
                 "retire-after-verified-output"
               ],
-              "title": "Retirement Policy",
               "type": "string"
             },
             "target_contract_sha256": {
               "pattern": "^[0-9a-f]{64}$",
-              "title": "Target Contract Sha256",
               "type": "string"
             },
             "target_registration_id": {
               "pattern": "^[a-z0-9]\u0028?:[a-z0-9.-]{0,118}[a-z0-9])?$",
-              "title": "Target Registration Id",
               "type": "string"
             },
             "work": {
@@ -2620,7 +2309,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             },
             "workflow_plan_sha256": {
               "pattern": "^[0-9a-f]{64}$",
-              "title": "Workflow Plan Sha256",
               "type": "string"
             }
           },
@@ -2631,12 +2319,10 @@ The following JSON is the complete value owned at each machine-authority pointer
             "target_contract_sha256",
             "workflow_plan_sha256"
           ],
-          "title": "WorkflowPlan",
           "type": "object"
         },
         "WorkflowPlanIntent": {
           "additionalProperties": false,
-          "description": "Work-independent fields that deterministically materialize a workflow plan.",
           "properties": {
             "input_retrieval_policy": {
               "default": "available-only",
@@ -2644,7 +2330,6 @@ The following JSON is the complete value owned at each machine-authority pointer
                 "available-only",
                 "allow"
               ],
-              "title": "Input Retrieval Policy",
               "type": "string"
             },
             "operation": {
@@ -2654,14 +2339,12 @@ The following JSON is the complete value owned at each machine-authority pointer
               "additionalProperties": {
                 "$ref": "#/$defs/JsonValue"
               },
-              "title": "Output Policy",
               "type": "object"
             },
             "requested_target_options": {
               "additionalProperties": {
                 "$ref": "#/$defs/JsonValue"
               },
-              "title": "Requested Target Options",
               "type": "object"
             },
             "result_kind": {
@@ -2670,13 +2353,11 @@ The following JSON is the complete value owned at each machine-authority pointer
                 "collection",
                 "external-effect"
               ],
-              "title": "Result Kind",
               "type": "string"
             },
             "retirement_grace_seconds": {
               "default": 0,
               "minimum": 0,
-              "title": "Retirement Grace Seconds",
               "type": "integer"
             },
             "retirement_policy": {
@@ -2685,17 +2366,14 @@ The following JSON is the complete value owned at each machine-authority pointer
                 "retain",
                 "retire-after-verified-output"
               ],
-              "title": "Retirement Policy",
               "type": "string"
             },
             "target_contract_sha256": {
               "pattern": "^[0-9a-f]{64}$",
-              "title": "Target Contract Sha256",
               "type": "string"
             },
             "target_registration_id": {
               "pattern": "^[a-z0-9]\u0028?:[a-z0-9.-]{0,118}[a-z0-9])?$",
-              "title": "Target Registration Id",
               "type": "string"
             }
           },
@@ -2704,7 +2382,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             "target_registration_id",
             "target_contract_sha256"
           ],
-          "title": "WorkflowPlanIntent",
           "type": "object"
         }
       },
@@ -2724,8 +2401,7 @@ The following JSON is the complete value owned at each machine-authority pointer
               "type": "null"
             }
           ],
-          "default": null,
-          "title": "Abandon Outcome"
+          "default": null
         },
         "branch_set_plan": {
           "anyOf": [
@@ -2762,7 +2438,6 @@ The following JSON is the complete value owned at each machine-authority pointer
         },
         "coordination_cancel_requested": {
           "default": false,
-          "title": "Coordination Cancel Requested",
           "type": "boolean"
         },
         "coordination_settlement": {
@@ -2786,8 +2461,7 @@ The following JSON is the complete value owned at each machine-authority pointer
               "type": "null"
             }
           ],
-          "default": null,
-          "title": "Expected Target Plan Sha256"
+          "default": null
         },
         "failure": {
           "anyOf": [
@@ -2803,7 +2477,6 @@ The following JSON is the complete value owned at each machine-authority pointer
         "format": {
           "const": "stove0-work-record/v1",
           "default": "stove0-work-record/v1",
-          "title": "Format",
           "type": "string"
         },
         "inapplicable": {
@@ -2833,7 +2506,6 @@ The following JSON is the complete value owned at each machine-authority pointer
           "items": {
             "$ref": "#/$defs/ObservationRequest"
           },
-          "title": "Observation Requests",
           "type": "array"
         },
         "observation_results": {
@@ -2841,7 +2513,6 @@ The following JSON is the complete value owned at each machine-authority pointer
           "items": {
             "$ref": "#/$defs/ObservationResult"
           },
-          "title": "Observation Results",
           "type": "array"
         },
         "output": {
@@ -2876,7 +2547,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             "failed",
             "canceled"
           ],
-          "title": "Phase",
           "type": "string"
         },
         "preview_acceptance": {
@@ -2895,13 +2565,11 @@ The following JSON is the complete value owned at each machine-authority pointer
           "items": {
             "type": "integer"
           },
-          "title": "Retirement Remaining",
           "type": "array"
         },
         "revision": {
           "default": 1,
           "minimum": 1,
-          "title": "Revision",
           "type": "integer"
         },
         "target_plan": {
@@ -2927,8 +2595,7 @@ The following JSON is the complete value owned at each machine-authority pointer
               "type": "null"
             }
           ],
-          "default": null,
-          "title": "Target Plan"
+          "default": null
         },
         "target_request": {
           "anyOf": [
@@ -2981,7 +2648,6 @@ The following JSON is the complete value owned at each machine-authority pointer
       "required": [
         "work"
       ],
-      "title": "WorkRecord",
       "type": "object"
     },
     "signature": "\"(*, format: Literal['stove0-work-record/v1'] = 'stove0-work-record/v1', work: stove0_protocol.models.WorkIdentity, phase: Literal['eligible', 'claimed', 'observing', 'planning', 'target_preflight', 'queued', 'executing', 'output_finalizing', 'verifying', 'settled', 'retirement_pending', 'coordinating', 'abandon_pending', 'complete', 'inapplicable', 'failed', 'canceled'] = 'eligible', revision: Annotated[int, Ge(ge=1)] = 1, claim: stove0_core.work_state.ClaimBinding | None = None, preview_acceptance: stove0_core.work_state.PreviewAcceptance | None = None, expected_target_plan_sha256: Optional[Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)]] = None, observation_requests: tuple[stove0_protocol.models.ObservationRequest, ...] = (), observation_results: tuple[stove0_protocol.models.ObservationResult, ...] = (), branch_set_plan: stove0_protocol.fork_join.BranchSetPlan | None = None, coordination_settlement: stove0_protocol.fork_join.CoordinationSettlement | None = None, join_plan: stove0_protocol.fork_join.JoinPlan | None = None, coordination_cancel_requested: bool = False, workflow_plan: stove0_protocol.models.WorkflowPlan | None = None, target_plan: Optional[Annotated[stove0_target_protocol.protocol.TransformPlan | stove0_target_protocol.protocol.EffectPlan, FieldInfo(annotation=NoneType, required=True, discriminator='protocol')]] = None, controller_evidence: stove0_protocol.models.ControllerEvidence | None = None, target_request: stove0_target_protocol.protocol.AcceptedTargetJob | None = None, target_status: stove0_target_protocol.protocol.TargetJobStatus | None = None, output: stove0_target_protocol.protocol.OutputCollectionRef | None = None, target_settlement: stove0_target_protocol.protocol.TargetSettlementAuthority | None = None, retirement_remaining: tuple[int, ...] = (), failure: stove0_core.work_state.WorkFailure | None = None, inapplicable: stove0_core.work_state.WorkInapplicable | None = None, abandon_outcome: Optional[Literal['inapplicable', 'failed', 'canceled']] = None) -> None\""

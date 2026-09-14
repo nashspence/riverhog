@@ -27,7 +27,6 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-1f52d7e70c"></a>
-- <a id="s-42d5bb21fe"></a>`title`: TargetRuntimeAuthority
 - <a id="s-66673791c9"></a>`type`: object
 
 ### Fields
@@ -63,7 +62,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: b196a837c99002e5bb5651e433cb93a465eee190ae12093e604ed12d978198be -->
+<!-- exact-contract-value: ff4ca3a38e6dc6fd9dc2b1ca7c62cda33509c6096d4f1b3ef4f6856a8f6abe68 -->
 
 ```json
 {
@@ -74,25 +73,21 @@ The following JSON is the complete value owned at each machine-authority pointer
       "properties": {
         "allow_insecure_http": {
           "default": false,
-          "title": "Allow Insecure Http",
           "type": "boolean"
         },
         "capability_token": {
           "maxLength": 4096,
           "minLength": 1,
-          "title": "Capability Token",
           "type": "string"
         },
         "riverhog_base_url": {
           "maxLength": 2048,
           "minLength": 1,
-          "title": "Riverhog Base Url",
           "type": "string"
         },
         "transport": {
           "const": "riverhog-capability/v1",
           "default": "riverhog-capability/v1",
-          "title": "Transport",
           "type": "string"
         }
       },
@@ -100,7 +95,6 @@ The following JSON is the complete value owned at each machine-authority pointer
         "riverhog_base_url",
         "capability_token"
       ],
-      "title": "TargetRuntimeAuthority",
       "type": "object"
     },
     "signature": "\"(*, transport: Literal['riverhog-capability/v1'] = 'riverhog-capability/v1', riverhog_base_url: Annotated[str, MinLen(min_length=1), MaxLen(max_length=2048)], capability_token: Annotated[str, MinLen(min_length=1), MaxLen(max_length=4096)], allow_insecure_http: bool = False) -> None\""

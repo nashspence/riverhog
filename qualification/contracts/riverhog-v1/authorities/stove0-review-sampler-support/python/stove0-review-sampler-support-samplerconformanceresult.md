@@ -27,7 +27,6 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-ef0a3cc4f2"></a>
-- <a id="s-fbafec2da7"></a>`title`: SamplerConformanceResult
 - <a id="s-c76ee58308"></a>`type`: object
 
 ### Fields
@@ -88,7 +87,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 2d52846c4a19c5f7cd75edb2a881e1e97a70147bf18432d789ef7b2d2bb7e704 -->
+<!-- exact-contract-value: c8c76f15bbdf9eb3f6b1709d7506ece6c1d6b134f04833ac43c744d8483130e4 -->
 
 ```json
 {
@@ -102,30 +101,25 @@ The following JSON is the complete value owned at each machine-authority pointer
             "dialect": {
               "const": "https://json-schema.org/draft/2020-12/schema",
               "default": "https://json-schema.org/draft/2020-12/schema",
-              "title": "Dialect",
               "type": "string"
             },
             "format_policy": {
               "const": "annotation-only",
               "default": "annotation-only",
-              "title": "Format Policy",
               "type": "string"
             },
             "id": {
               "pattern": "^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$",
-              "title": "Id",
               "type": "string"
             },
             "schema": {
               "additionalProperties": {
                 "$ref": "#/$defs/JsonValue"
               },
-              "title": "Schema",
               "type": "object"
             },
             "sha256": {
               "pattern": "^[0-9a-f]{64}$",
-              "title": "Sha256",
               "type": "string"
             }
           },
@@ -134,7 +128,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             "sha256",
             "schema"
           ],
-          "title": "JsonSchemaDocument",
           "type": "object"
         },
         "JsonValue": {},
@@ -144,17 +137,14 @@ The following JSON is the complete value owned at each machine-authority pointer
             "advertised": {
               "const": 1,
               "default": 1,
-              "title": "Advertised",
               "type": "integer"
             },
             "complete": {
-              "title": "Complete",
               "type": "boolean"
             },
             "exercised": {
               "maximum": 1,
               "minimum": 0,
-              "title": "Exercised",
               "type": "integer"
             }
           },
@@ -162,7 +152,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             "exercised",
             "complete"
           ],
-          "title": "SamplerConformanceCoverage",
           "type": "object"
         },
         "SamplerDescriptor": {
@@ -170,28 +159,23 @@ The following JSON is the complete value owned at each machine-authority pointer
           "properties": {
             "descriptor_sha256": {
               "pattern": "^[0-9a-f]{64}$",
-              "title": "Descriptor Sha256",
               "type": "string"
             },
             "image_digest": {
               "pattern": "^[0-9a-f]{64}$",
-              "title": "Image Digest",
               "type": "string"
             },
             "implementation_id": {
               "pattern": "^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$",
-              "title": "Implementation Id",
               "type": "string"
             },
             "implementation_version": {
               "maxLength": 120,
               "minLength": 1,
-              "title": "Implementation Version",
               "type": "string"
             },
             "output_role": {
               "pattern": "^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$",
-              "title": "Output Role",
               "type": "string"
             },
             "portable_intent_schema": {
@@ -199,24 +183,20 @@ The following JSON is the complete value owned at each machine-authority pointer
             },
             "primary_operation_contract_sha256": {
               "pattern": "^[0-9a-f]{64}$",
-              "title": "Primary Operation Contract Sha256",
               "type": "string"
             },
             "primary_operation_id": {
               "pattern": "^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$",
-              "title": "Primary Operation Id",
               "type": "string"
             },
             "protocol": {
               "const": "stove0-review-sampler/v1",
               "default": "stove0-review-sampler/v1",
-              "title": "Protocol",
               "type": "string"
             },
             "source_revision": {
               "maxLength": 200,
               "minLength": 1,
-              "title": "Source Revision",
               "type": "string"
             }
           },
@@ -231,7 +211,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             "output_role",
             "descriptor_sha256"
           ],
-          "title": "SamplerDescriptor",
           "type": "object"
         },
         "SamplerFailure": {
@@ -239,17 +218,14 @@ The following JSON is the complete value owned at each machine-authority pointer
           "properties": {
             "code": {
               "pattern": "^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$",
-              "title": "Code",
               "type": "string"
             },
             "message": {
               "maxLength": 1000,
               "minLength": 1,
-              "title": "Message",
               "type": "string"
             },
             "retryable": {
-              "title": "Retryable",
               "type": "boolean"
             }
           },
@@ -258,7 +234,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             "message",
             "retryable"
           ],
-          "title": "SamplerFailure",
           "type": "object"
         },
         "SamplerInapplicable": {
@@ -266,13 +241,11 @@ The following JSON is the complete value owned at each machine-authority pointer
           "properties": {
             "code": {
               "pattern": "^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$",
-              "title": "Code",
               "type": "string"
             },
             "message": {
               "maxLength": 1000,
               "minLength": 1,
-              "title": "Message",
               "type": "string"
             }
           },
@@ -280,7 +253,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             "code",
             "message"
           ],
-          "title": "SamplerInapplicable",
           "type": "object"
         },
         "SamplerInput": {
@@ -288,12 +260,10 @@ The following JSON is the complete value owned at each machine-authority pointer
           "properties": {
             "bytes": {
               "minimum": 0,
-              "title": "Bytes",
               "type": "integer"
             },
             "id": {
               "pattern": "^[A-Za-z0-9]\u0028?:[A-Za-z0-9._-]{0,158}[A-Za-z0-9])?$",
-              "title": "Id",
               "type": "string"
             },
             "media_type": {
@@ -307,18 +277,15 @@ The following JSON is the complete value owned at each machine-authority pointer
                   "type": "null"
                 }
               ],
-              "default": null,
-              "title": "Media Type"
+              "default": null
             },
             "path": {
               "maxLength": 4096,
               "minLength": 1,
-              "title": "Path",
               "type": "string"
             },
             "sha256": {
               "pattern": "^[0-9a-f]{64}$",
-              "title": "Sha256",
               "type": "string"
             }
           },
@@ -328,7 +295,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             "bytes",
             "sha256"
           ],
-          "title": "SamplerInput",
           "type": "object"
         },
         "SamplerOutput": {
@@ -336,7 +302,6 @@ The following JSON is the complete value owned at each machine-authority pointer
           "properties": {
             "bytes": {
               "minimum": 0,
-              "title": "Bytes",
               "type": "integer"
             },
             "derived_from": {
@@ -344,29 +309,24 @@ The following JSON is the complete value owned at each machine-authority pointer
                 "type": "string"
               },
               "minItems": 1,
-              "title": "Derived From",
               "type": "array"
             },
             "id": {
               "pattern": "^[A-Za-z0-9]\u0028?:[A-Za-z0-9._-]{0,158}[A-Za-z0-9])?$",
-              "title": "Id",
               "type": "string"
             },
             "media_type": {
               "maxLength": 255,
               "minLength": 1,
-              "title": "Media Type",
               "type": "string"
             },
             "path": {
               "maxLength": 4096,
               "minLength": 1,
-              "title": "Path",
               "type": "string"
             },
             "sha256": {
               "pattern": "^[0-9a-f]{64}$",
-              "title": "Sha256",
               "type": "string"
             }
           },
@@ -378,7 +338,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             "media_type",
             "derived_from"
           ],
-          "title": "SamplerOutput",
           "type": "object"
         },
         "SamplerRequest": {
@@ -387,13 +346,11 @@ The following JSON is the complete value owned at each machine-authority pointer
             "cancellation_path": {
               "maxLength": 4096,
               "minLength": 1,
-              "title": "Cancellation Path",
               "type": "string"
             },
             "format": {
               "const": "stove0-review-sampler-request/v1",
               "default": "stove0-review-sampler-request/v1",
-              "title": "Format",
               "type": "string"
             },
             "inputs": {
@@ -401,36 +358,30 @@ The following JSON is the complete value owned at each machine-authority pointer
                 "$ref": "#/$defs/SamplerInput"
               },
               "minItems": 1,
-              "title": "Inputs",
               "type": "array"
             },
             "maximum_output_bytes": {
               "maximum": 1099511627776,
               "minimum": 1,
-              "title": "Maximum Output Bytes",
               "type": "integer"
             },
             "portable_intent": {
               "additionalProperties": {
                 "$ref": "#/$defs/JsonValue"
               },
-              "title": "Portable Intent",
               "type": "object"
             },
             "request_sha256": {
               "pattern": "^[0-9a-f]{64}$",
-              "title": "Request Sha256",
               "type": "string"
             },
             "sampler_descriptor_sha256": {
               "pattern": "^[0-9a-f]{64}$",
-              "title": "Sampler Descriptor Sha256",
               "type": "string"
             },
             "timeout_seconds": {
               "maximum": 86400,
               "minimum": 1,
-              "title": "Timeout Seconds",
               "type": "integer"
             },
             "windows": {
@@ -438,12 +389,10 @@ The following JSON is the complete value owned at each machine-authority pointer
                 "$ref": "#/$defs/SamplerWindow"
               },
               "minItems": 1,
-              "title": "Windows",
               "type": "array"
             },
             "workspace_id": {
               "pattern": "^[0-9a-f]{64}$",
-              "title": "Workspace Id",
               "type": "string"
             }
           },
@@ -458,7 +407,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             "cancellation_path",
             "request_sha256"
           ],
-          "title": "SamplerRequest",
           "type": "object"
         },
         "SamplerResult": {
@@ -468,7 +416,6 @@ The following JSON is the complete value owned at each machine-authority pointer
               "additionalProperties": {
                 "$ref": "#/$defs/JsonValue"
               },
-              "title": "Execution Evidence",
               "type": "object"
             },
             "failure": {
@@ -485,7 +432,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             "format": {
               "const": "stove0-review-sampler-result/v1",
               "default": "stove0-review-sampler-result/v1",
-              "title": "Format",
               "type": "string"
             },
             "inapplicable": {
@@ -504,22 +450,18 @@ The following JSON is the complete value owned at each machine-authority pointer
               "items": {
                 "$ref": "#/$defs/SamplerOutput"
               },
-              "title": "Outputs",
               "type": "array"
             },
             "request_sha256": {
               "pattern": "^[0-9a-f]{64}$",
-              "title": "Request Sha256",
               "type": "string"
             },
             "result_sha256": {
               "pattern": "^[0-9a-f]{64}$",
-              "title": "Result Sha256",
               "type": "string"
             },
             "sampler_descriptor_sha256": {
               "pattern": "^[0-9a-f]{64}$",
-              "title": "Sampler Descriptor Sha256",
               "type": "string"
             },
             "state": {
@@ -529,7 +471,6 @@ The following JSON is the complete value owned at each machine-authority pointer
                 "failed",
                 "canceled"
               ],
-              "title": "State",
               "type": "string"
             }
           },
@@ -539,7 +480,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             "state",
             "result_sha256"
           ],
-          "title": "SamplerResult",
           "type": "object"
         },
         "SamplerWindow": {
@@ -547,28 +487,23 @@ The following JSON is the complete value owned at each machine-authority pointer
           "properties": {
             "duration_ms": {
               "minimum": 1,
-              "title": "Duration Ms",
               "type": "integer"
             },
             "id": {
               "pattern": "^[A-Za-z0-9]\u0028?:[A-Za-z0-9._-]{0,158}[A-Za-z0-9])?$",
-              "title": "Id",
               "type": "string"
             },
             "input_id": {
               "pattern": "^[A-Za-z0-9]\u0028?:[A-Za-z0-9._-]{0,158}[A-Za-z0-9])?$",
-              "title": "Input Id",
               "type": "string"
             },
             "output_path": {
               "maxLength": 4096,
               "minLength": 1,
-              "title": "Output Path",
               "type": "string"
             },
             "start_ms": {
               "minimum": 0,
-              "title": "Start Ms",
               "type": "integer"
             }
           },
@@ -579,7 +514,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             "duration_ms",
             "output_path"
           ],
-          "title": "SamplerWindow",
           "type": "object"
         }
       },
@@ -591,7 +525,6 @@ The following JSON is the complete value owned at each machine-authority pointer
         "format": {
           "const": "stove0-review-sampler-conformance-result/v1",
           "default": "stove0-review-sampler-conformance-result/v1",
-          "title": "Format",
           "type": "string"
         },
         "request": {
@@ -624,7 +557,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             "exercised",
             "not-exercised"
           ],
-          "title": "Sampling",
           "type": "string"
         },
         "status": {
@@ -632,7 +564,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             "conformant",
             "inspected"
           ],
-          "title": "Status",
           "type": "string"
         }
       },
@@ -642,7 +573,6 @@ The following JSON is the complete value owned at each machine-authority pointer
         "coverage",
         "sampling"
       ],
-      "title": "SamplerConformanceResult",
       "type": "object"
     },
     "signature": "\"(*, format: Literal['stove0-review-sampler-conformance-result/v1'] = 'stove0-review-sampler-conformance-result/v1', status: Literal['conformant', 'inspected'], sampler: stove0_review_sampler_protocol.SamplerDescriptor, coverage: stove0_review_sampler_support.conformance.SamplerConformanceCoverage, sampling: Literal['exercised', 'not-exercised'], request: stove0_review_sampler_protocol.SamplerRequest | None = None, sample: stove0_review_sampler_protocol.SamplerResult | None = None) -> None\""

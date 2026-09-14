@@ -27,7 +27,6 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-dffb976f63"></a>
-- <a id="s-83270f0b47"></a>`title`: TargetFailure
 - <a id="s-25c95c2144"></a>`type`: object
 
 ### Fields
@@ -62,7 +61,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: dd5aa500143d861bbd03568ac85bcfcb4c3377c5c137e01b11bef3f67d99b748 -->
+<!-- exact-contract-value: e0b9659d707b5fd74c4989e8c0742049a9f114fc8a42fcd3e342073a9a29c1b4 -->
 
 ```json
 {
@@ -73,17 +72,14 @@ The following JSON is the complete value owned at each machine-authority pointer
       "properties": {
         "code": {
           "pattern": "^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$",
-          "title": "Code",
           "type": "string"
         },
         "message": {
           "maxLength": 1000,
           "minLength": 1,
-          "title": "Message",
           "type": "string"
         },
         "retryable": {
-          "title": "Retryable",
           "type": "boolean"
         }
       },
@@ -92,7 +88,6 @@ The following JSON is the complete value owned at each machine-authority pointer
         "message",
         "retryable"
       ],
-      "title": "TargetFailure",
       "type": "object"
     },
     "signature": "\"(*, code: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$', ascii_only=None)], message: Annotated[str, MinLen(min_length=1), MaxLen(max_length=1000)], retryable: bool) -> None\""

@@ -27,7 +27,6 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-6b6311c3b3"></a>
-- <a id="s-725e511fa9"></a>`title`: TransformCapabilityCreateDocument
 - <a id="s-8c8dc28740"></a>`type`: object
 
 ### Fields
@@ -69,7 +68,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 1c2246839c70de4b98eccf8240bcfbb3768f1977dc0a7aa73fc31f9ee1ab5d72 -->
+<!-- exact-contract-value: c6fa98c8d2a33a89d363f029347940eae45976cd3f7a6f8d4ba81b25366eeac3 -->
 
 ```json
 {
@@ -100,24 +99,20 @@ The following JSON is the complete value owned at each machine-authority pointer
               ]
             }
           ],
-          "title": "Actions",
           "type": "array"
         },
         "audience": {
           "pattern": "^[a-z0-9][a-z0-9._:/-]{0,299}$",
-          "title": "Audience",
           "type": "string"
         },
         "fence": {
           "minimum": 1,
-          "title": "Fence",
           "type": "integer"
         },
         "ttl_seconds": {
           "default": 900,
           "maximum": 86400,
           "minimum": 30,
-          "title": "Ttl Seconds",
           "type": "integer"
         }
       },
@@ -125,7 +120,6 @@ The following JSON is the complete value owned at each machine-authority pointer
         "fence",
         "audience"
       ],
-      "title": "TransformCapabilityCreateDocument",
       "type": "object"
     },
     "signature": "\"(*, fence: Annotated[int, Ge(ge=1)], audience: Annotated[str, _PydanticGeneralMetadata(pattern='^[a-z0-9][a-z0-9._:/-]{0,299}$')], actions: Annotated[list[Literal['read-inputs', 'write-output']], MinLen(min_length=1)] = <factory>, ttl_seconds: Annotated[int, Ge(ge=30), Le(le=86400)] = 900) -> None\""

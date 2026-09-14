@@ -27,7 +27,6 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-50699efa8d"></a>
-- <a id="s-9fc39b9d05"></a>`title`: WorkInapplicableView
 - <a id="s-f8d3e81982"></a>`type`: object
 
 ### Fields
@@ -61,7 +60,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 28bdbff9d9db9036373fd140313013fcfa2ad0468868ec6729ef3fd530aa6c6e -->
+<!-- exact-contract-value: 92833e1bf8484b16b3a53e44deeccc901219090115b8e740b976ac155d752307 -->
 
 ```json
 {
@@ -73,13 +72,11 @@ The following JSON is the complete value owned at each machine-authority pointer
         "code": {
           "maxLength": 160,
           "minLength": 1,
-          "title": "Code",
           "type": "string"
         },
         "message": {
           "maxLength": 1000,
           "minLength": 1,
-          "title": "Message",
           "type": "string"
         }
       },
@@ -87,7 +84,6 @@ The following JSON is the complete value owned at each machine-authority pointer
         "code",
         "message"
       ],
-      "title": "WorkInapplicableView",
       "type": "object"
     },
     "signature": "'(*, code: Annotated[str, MinLen(min_length=1), MaxLen(max_length=160)], message: Annotated[str, MinLen(min_length=1), MaxLen(max_length=1000)]) -> None'"

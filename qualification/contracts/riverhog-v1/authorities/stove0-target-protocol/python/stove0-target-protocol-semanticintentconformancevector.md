@@ -27,7 +27,6 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-732070400a"></a>
-- <a id="s-52c4565951"></a>`title`: SemanticIntentConformanceVector
 - <a id="s-7425697313"></a>`type`: object
 
 ### Fields
@@ -68,7 +67,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 27a809547c1c9cffc760b4051df5e289561013d85358eca39eba5172c4df0963 -->
+<!-- exact-contract-value: b2872060f69b078064170fd6876c74e909aa6d17c6c93d31a8cbb8dc544d9a5a -->
 
 ```json
 {
@@ -81,19 +80,16 @@ The following JSON is the complete value owned at each machine-authority pointer
       "additionalProperties": false,
       "properties": {
         "accepted": {
-          "title": "Accepted",
           "type": "boolean"
         },
         "id": {
           "pattern": "^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$",
-          "title": "Id",
           "type": "string"
         },
         "intent": {
           "additionalProperties": {
             "$ref": "#/$defs/JsonValue"
           },
-          "title": "Intent",
           "type": "object"
         }
       },
@@ -102,7 +98,6 @@ The following JSON is the complete value owned at each machine-authority pointer
         "accepted",
         "intent"
       ],
-      "title": "SemanticIntentConformanceVector",
       "type": "object"
     },
     "signature": "\"(*, id: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$', ascii_only=None)], accepted: bool, intent: dict[str, JsonValue]) -> None\""

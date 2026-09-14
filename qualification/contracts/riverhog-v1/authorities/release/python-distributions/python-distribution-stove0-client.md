@@ -19,6 +19,9 @@ Optional nonnormative command-line client for the Stove0 reference application.
 | <a id="s-d715afb344"></a>`artifacts` | [{"coordinate": "dist/stove0_client-{version}-py3-none-any.whl", "format": "wheel"}, {"coordinate": "dist/stove0_client-{version}.tar.gz", "format": "sdist"}] |
 | <a id="s-d12b239d97"></a>`channel` | github-release |
 | <a id="s-d6f56f0fcd"></a>`description` | Optional nonnormative command-line client for the Stove0 reference application. |
+| <a id="s-785271ebbc"></a>`license_baseline` | first-v1-publication |
+| <a id="s-730e0fa40a"></a>`license_expression` | Apache-2.0 |
+| <a id="s-897981ecff"></a>`publication_identity` | {"coordinate": "stove0-client", "kind": "python-distribution"} |
 | <a id="s-61c47b3b27"></a>`requires_python` | >=3.12 |
 | <a id="s-c564c8dc04"></a>`role` | reference_application |
 | <a id="s-a99438e70e"></a>`source` | reference/stove0/application/client/pyproject.toml |
@@ -57,7 +60,7 @@ Publication preserves these existing component authorities; it does not reclassi
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 16457464d481f4385d9f684a8f198d19870139820a55e0f394f00bfe5ab42221 -->
+<!-- exact-contract-value: 3371c87c26e7698020451803ce0ae48a2c73a86dee75d815c0dfbd2ff2fe2037 -->
 
 ```json
 {
@@ -73,6 +76,12 @@ The following JSON is the complete value owned at each machine-authority pointer
   ],
   "channel": "github-release",
   "description": "Optional nonnormative command-line client for the Stove0 reference application.",
+  "license_baseline": "first-v1-publication",
+  "license_expression": "Apache-2.0",
+  "publication_identity": {
+    "coordinate": "stove0-client",
+    "kind": "python-distribution"
+  },
   "requires_python": ">=3.12",
   "role": "reference_application",
   "source": "reference/stove0/application/client/pyproject.toml"

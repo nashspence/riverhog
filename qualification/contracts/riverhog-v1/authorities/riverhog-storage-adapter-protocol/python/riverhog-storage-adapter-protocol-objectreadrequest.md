@@ -27,7 +27,6 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-6c33cc42f3"></a>
-- <a id="s-36748f888b"></a>`title`: ObjectReadRequest
 - <a id="s-3aa6510c5a"></a>`type`: object
 
 ### Fields
@@ -75,7 +74,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 8efa3a004fad0adfff475b3f3c8a7c36599ad2144d4eaf19d062c416edfd4628 -->
+<!-- exact-contract-value: 2a5a454d62e4183bea7cbc2a9c6eee49c9368a7abdc25a962f0fa84e857ce9e2 -->
 
 ```json
 {
@@ -89,7 +88,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             "object_path": {
               "maxLength": 4096,
               "minLength": 1,
-              "title": "Object Path",
               "type": "string"
             },
             "revision": {
@@ -103,14 +101,12 @@ The following JSON is the complete value owned at each machine-authority pointer
                   "type": "null"
                 }
               ],
-              "default": null,
-              "title": "Revision"
+              "default": null
             }
           },
           "required": [
             "object_path"
           ],
-          "title": "ObjectLocator",
           "type": "object"
         }
       },
@@ -118,7 +114,6 @@ The following JSON is the complete value owned at each machine-authority pointer
       "properties": {
         "expected_bytes": {
           "minimum": 0,
-          "title": "Expected Bytes",
           "type": "integer"
         },
         "object": {
@@ -134,8 +129,7 @@ The following JSON is the complete value owned at each machine-authority pointer
               "type": "null"
             }
           ],
-          "default": null,
-          "title": "Offset"
+          "default": null
         },
         "size": {
           "anyOf": [
@@ -147,15 +141,13 @@ The following JSON is the complete value owned at each machine-authority pointer
               "type": "null"
             }
           ],
-          "default": null,
-          "title": "Size"
+          "default": null
         }
       },
       "required": [
         "object",
         "expected_bytes"
       ],
-      "title": "ObjectReadRequest",
       "type": "object"
     },
     "signature": "'(*, object: riverhog_storage_adapter_protocol.protocol.ObjectLocator, expected_bytes: Annotated[int, Ge(ge=0)], offset: Annotated[int | None, Ge(ge=0)] = None, size: Annotated[int | None, Ge(ge=0)] = None) -> None'"

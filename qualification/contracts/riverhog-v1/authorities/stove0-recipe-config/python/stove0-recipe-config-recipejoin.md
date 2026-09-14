@@ -27,7 +27,6 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-d16a3c32cf"></a>
-- <a id="s-0dabf96a8d"></a>`title`: RecipeJoin
 - <a id="s-1f48fb4fb8"></a>`type`: object
 
 ### Fields
@@ -81,7 +80,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 01769477ba6fc8eb3d9e5396aa4721034fb4a26e35ccb96e764f97b76400842d -->
+<!-- exact-contract-value: c36eb1c60380a9d68538ce9554d45b7e8fe036dae82ba81f2672d2c7488e6885 -->
 
 ```json
 {
@@ -92,19 +91,16 @@ The following JSON is the complete value owned at each machine-authority pointer
         "JsonValue": {},
         "OperationProjection": {
           "additionalProperties": false,
-          "description": "One declarative JSON-pointer copy into an operation request.",
           "properties": {
             "destination": {
               "enum": [
                 "intent",
                 "target-options"
               ],
-              "title": "Destination",
               "type": "string"
             },
             "destination_pointer": {
               "pattern": "^(?:|/(?:[^~/]|~[01])*(?:/(?:[^~/]|~[01])*)*)$",
-              "title": "Destination Pointer",
               "type": "string"
             },
             "source": {
@@ -112,12 +108,10 @@ The following JSON is the complete value owned at each machine-authority pointer
                 "work-effective-intent",
                 "work-evaluation"
               ],
-              "title": "Source",
               "type": "string"
             },
             "source_pointer": {
               "pattern": "^(?:|/(?:[^~/]|~[01])*(?:/(?:[^~/]|~[01])*)*)$",
-              "title": "Source Pointer",
               "type": "string"
             }
           },
@@ -127,7 +121,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             "destination",
             "destination_pointer"
           ],
-          "title": "OperationProjection",
           "type": "object"
         },
         "RecipeJoinMember": {
@@ -135,7 +128,6 @@ The following JSON is the complete value owned at each machine-authority pointer
           "properties": {
             "branch_id": {
               "pattern": "^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$",
-              "title": "Branch Id",
               "type": "string"
             },
             "output_roles": {
@@ -144,7 +136,6 @@ The following JSON is the complete value owned at each machine-authority pointer
                 "type": "string"
               },
               "minItems": 1,
-              "title": "Output Roles",
               "type": "array"
             }
           },
@@ -152,7 +143,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             "branch_id",
             "output_roles"
           ],
-          "title": "RecipeJoinMember",
           "type": "object"
         }
       },
@@ -160,7 +150,6 @@ The following JSON is the complete value owned at each machine-authority pointer
       "properties": {
         "id": {
           "pattern": "^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$",
-          "title": "Id",
           "type": "string"
         },
         "input_retrieval_policy": {
@@ -169,14 +158,12 @@ The following JSON is the complete value owned at each machine-authority pointer
             "available-only",
             "allow"
           ],
-          "title": "Input Retrieval Policy",
           "type": "string"
         },
         "intent": {
           "additionalProperties": {
             "$ref": "#/$defs/JsonValue"
           },
-          "title": "Intent",
           "type": "object"
         },
         "members": {
@@ -184,12 +171,10 @@ The following JSON is the complete value owned at each machine-authority pointer
             "$ref": "#/$defs/RecipeJoinMember"
           },
           "minItems": 2,
-          "title": "Members",
           "type": "array"
         },
         "operation_id": {
           "pattern": "^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$",
-          "title": "Operation Id",
           "type": "string"
         },
         "projections": {
@@ -197,18 +182,15 @@ The following JSON is the complete value owned at each machine-authority pointer
           "items": {
             "$ref": "#/$defs/OperationProjection"
           },
-          "title": "Projections",
           "type": "array"
         },
         "target_options": {
           "additionalProperties": {
             "$ref": "#/$defs/JsonValue"
           },
-          "title": "Target Options",
           "type": "object"
         },
         "target_registration_id": {
-          "title": "Target Registration Id",
           "type": "string"
         }
       },
@@ -218,7 +200,6 @@ The following JSON is the complete value owned at each machine-authority pointer
         "operation_id",
         "target_registration_id"
       ],
-      "title": "RecipeJoin",
       "type": "object"
     },
     "signature": "\"(*, id: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$', ascii_only=None)], members: Annotated[tuple[stove0_recipe_config.models.RecipeJoinMember, ...], MinLen(min_length=2)], operation_id: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$', ascii_only=None)], target_registration_id: str, intent: dict[str, JsonValue] = <factory>, target_options: dict[str, JsonValue] = <factory>, projections: tuple[stove0_recipe_config.models.OperationProjection, ...] = (), input_retrieval_policy: Literal['available-only', 'allow'] = 'available-only') -> None\""

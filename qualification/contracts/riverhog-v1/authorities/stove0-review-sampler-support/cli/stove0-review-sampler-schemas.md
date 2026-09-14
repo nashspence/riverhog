@@ -33,13 +33,13 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Identity | Selected by | Exit status | stdout | stderr |
 |---|---|---|---|---|
-| <a id="s-a6da464362"></a>`emitted` | <a id="s-37a58d85d0"></a>`{"kind":"schema-bundle-emitted"}` | <a id="s-9c0954e1dc"></a>`0` | <a id="s-fc7431ee35"></a>`json: document-authority` | <a id="s-089e853279"></a>`all: empty` |
+| <a id="s-a6da464362"></a>`emitted` | <a id="s-37a58d85d0"></a>`{"kind":"schema-bundle-emitted"}` | <a id="s-9c0954e1dc"></a>`0` | <a id="s-fc7431ee35"></a>json: [generated:stove0-review-sampler protocol](../process-protocol/generated-stove0-review-sampler-protocol.md) | <a id="s-089e853279"></a>all: `empty` |
 
 #### Failure outcomes
 
 | Identity | Selected by | Exit status | stdout | stderr |
 |---|---|---|---|---|
-| <a id="s-f8dd902aa6"></a>`usage` | <a id="s-a67815c66f"></a>`{"kind":"parser-rejected-invocation"}` | <a id="s-14846d56db"></a>`2` | <a id="s-682c9abb41"></a>`all: empty` | <a id="s-5f0da7803b"></a>`all: noncontractual-usage-diagnostic` |
+| <a id="s-f8dd902aa6"></a>`usage` | <a id="s-a67815c66f"></a>`{"kind":"parser-rejected-invocation"}` | <a id="s-14846d56db"></a>`2` | <a id="s-682c9abb41"></a>all: `empty` | <a id="s-5f0da7803b"></a>all: `noncontractual-usage-diagnostic` |
 
 ## Governing policies
 

@@ -27,7 +27,6 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-48d89948a0"></a>
-- <a id="s-d740926987"></a>`title`: CollectionUploadProvenanceJournalStatusDocument
 - <a id="s-e104228c65"></a>`type`: object
 
 ### Fields
@@ -82,7 +81,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 3101722f1678caf712dfaa6d13f429328cb1b5f186b21564e62bfc03614cb683 -->
+<!-- exact-contract-value: 38ec67178c1f9d556b73b32bd2a754c200eeb7aec8e4a3b287a25173326fb995 -->
 
 ```json
 {
@@ -103,12 +102,10 @@ The following JSON is the complete value owned at each machine-authority pointer
       "properties": {
         "accepted_bytes": {
           "minimum": 0,
-          "title": "Accepted Bytes",
           "type": "integer"
         },
         "bytes": {
           "minimum": 1,
-          "title": "Bytes",
           "type": "integer"
         },
         "current_bytes": {
@@ -121,8 +118,7 @@ The following JSON is the complete value owned at each machine-authority pointer
               "type": "null"
             }
           ],
-          "default": null,
-          "title": "Current Bytes"
+          "default": null
         },
         "current_path": {
           "anyOf": [
@@ -133,8 +129,7 @@ The following JSON is the complete value owned at each machine-authority pointer
               "type": "null"
             }
           ],
-          "default": null,
-          "title": "Current Path"
+          "default": null
         },
         "current_sha256": {
           "anyOf": [
@@ -146,8 +141,7 @@ The following JSON is the complete value owned at each machine-authority pointer
               "type": "null"
             }
           ],
-          "default": null,
-          "title": "Current Sha256"
+          "default": null
         },
         "current_state_id": {
           "anyOf": [
@@ -169,15 +163,13 @@ The following JSON is the complete value owned at each machine-authority pointer
               "type": "null"
             }
           ],
-          "default": null,
-          "title": "Failure"
+          "default": null
         },
         "journal_id": {
           "$ref": "#/$defs/ProvenanceJournalId"
         },
         "sha256": {
           "pattern": "^[0-9a-f]{64}$",
-          "title": "Sha256",
           "type": "string"
         },
         "state": {
@@ -187,7 +179,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             "sealed",
             "failed"
           ],
-          "title": "State",
           "type": "string"
         }
       },
@@ -198,7 +189,6 @@ The following JSON is the complete value owned at each machine-authority pointer
         "sha256",
         "accepted_bytes"
       ],
-      "title": "CollectionUploadProvenanceJournalStatusDocument",
       "type": "object"
     },
     "signature": "\"(*, journal_id: ProvenanceJournalId, state: Literal['accepting', 'validating', 'sealed', 'failed'], bytes: Annotated[int, Strict(strict=True), Ge(ge=1)], sha256: Annotated[str, _PydanticGeneralMetadata(pattern='^[0-9a-f]{64}$')], accepted_bytes: Annotated[int, Strict(strict=True), Ge(ge=0)], failure: str | None = None, current_state_id: ProvenanceStateId | None = None, current_path: str | None = None, current_bytes: Annotated[int | None, Strict(strict=True), Ge(ge=0)] = None, current_sha256: Optional[Annotated[str, FieldInfo(annotation=NoneType, required=True, metadata=[_PydanticGeneralMetadata(pattern='^[0-9a-f]{64}$')])]] = None) -> None\""

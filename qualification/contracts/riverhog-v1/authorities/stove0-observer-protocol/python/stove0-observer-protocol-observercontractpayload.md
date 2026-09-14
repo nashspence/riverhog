@@ -27,7 +27,6 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-833ddab43b"></a>
-- <a id="s-2f7017d679"></a>`title`: ObserverContractPayload
 - <a id="s-0dbe5b82a0"></a>`type`: object
 
 ### Fields
@@ -78,7 +77,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 6d78083510c676851e9217a54a981e967411306857b05b272f9c370783ac5436 -->
+<!-- exact-contract-value: 1d4a4d332c1a2f66051fc8259595d61b3ca7cd1ee0815da4224e7a5eae191f05 -->
 
 ```json
 {
@@ -92,30 +91,25 @@ The following JSON is the complete value owned at each machine-authority pointer
             "dialect": {
               "const": "https://json-schema.org/draft/2020-12/schema",
               "default": "https://json-schema.org/draft/2020-12/schema",
-              "title": "Dialect",
               "type": "string"
             },
             "format_policy": {
               "const": "annotation-only",
               "default": "annotation-only",
-              "title": "Format Policy",
               "type": "string"
             },
             "id": {
               "pattern": "^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$",
-              "title": "Id",
               "type": "string"
             },
             "schema": {
               "additionalProperties": {
                 "$ref": "#/$defs/JsonValue"
               },
-              "title": "Schema",
               "type": "object"
             },
             "sha256": {
               "pattern": "^[0-9a-f]{64}$",
-              "title": "Sha256",
               "type": "string"
             }
           },
@@ -124,7 +118,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             "sha256",
             "schema"
           ],
-          "title": "JsonSchemaDocument",
           "type": "object"
         },
         "JsonValue": {},
@@ -141,17 +134,14 @@ The following JSON is the complete value owned at each machine-authority pointer
                   "type": "null"
                 }
               ],
-              "default": null,
-              "title": "Conformance Vectors Sha256"
+              "default": null
             },
             "id": {
               "pattern": "^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$",
-              "title": "Id",
               "type": "string"
             },
             "profile_sha256": {
               "pattern": "^[0-9a-f]{64}$",
-              "title": "Profile Sha256",
               "type": "string"
             },
             "rules": {
@@ -160,7 +150,6 @@ The following JSON is the complete value owned at each machine-authority pointer
                 "type": "string"
               },
               "minItems": 1,
-              "title": "Rules",
               "type": "array"
             }
           },
@@ -169,7 +158,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             "rules",
             "profile_sha256"
           ],
-          "title": "SemanticValidationProfile",
           "type": "object"
         }
       },
@@ -183,14 +171,12 @@ The following JSON is the complete value owned at each machine-authority pointer
         },
         "id": {
           "pattern": "^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$",
-          "title": "Id",
           "type": "string"
         },
         "maximum_result_bytes": {
           "default": 1048576,
           "maximum": 67108864,
           "minimum": 1,
-          "title": "Maximum Result Bytes",
           "type": "integer"
         },
         "options_schema": {
@@ -203,7 +189,6 @@ The following JSON is the complete value owned at each machine-authority pointer
         "facts_schema",
         "facts_semantics"
       ],
-      "title": "ObserverContractPayload",
       "type": "object"
     },
     "signature": "\"(*, id: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$', ascii_only=None)], options_schema: stove0_protocol.models.JsonSchemaDocument, facts_schema: stove0_protocol.models.JsonSchemaDocument, facts_semantics: stove0_protocol.models.SemanticValidationProfile, maximum_result_bytes: Annotated[int, Ge(ge=1), Le(le=67108864)] = 1048576) -> None\""

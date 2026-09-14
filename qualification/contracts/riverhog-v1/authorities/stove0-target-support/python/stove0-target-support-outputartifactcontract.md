@@ -27,7 +27,6 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-37bafc7f25"></a>
-- <a id="s-f8722b9541"></a>`title`: OutputArtifactContract
 - <a id="s-fc94cff2cc"></a>`type`: object
 
 ### Fields
@@ -70,7 +69,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 1792a3b2a2aef1154f3a5cbc2641e5244200914521e2df2d85feda281111e7a8 -->
+<!-- exact-contract-value: d10ba68f493b8612d3e5cb5c00da180445f7cdbfab3fcc202ac8fd6d95136331 -->
 
 ```json
 {
@@ -85,7 +84,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             "type": "string"
           },
           "minItems": 1,
-          "title": "Derived From Roles",
           "type": "array"
         },
         "maximum": {
@@ -98,18 +96,15 @@ The following JSON is the complete value owned at each machine-authority pointer
               "type": "null"
             }
           ],
-          "default": null,
-          "title": "Maximum"
+          "default": null
         },
         "minimum": {
           "default": 1,
           "minimum": 0,
-          "title": "Minimum",
           "type": "integer"
         },
         "role": {
           "pattern": "^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$",
-          "title": "Role",
           "type": "string"
         }
       },
@@ -117,7 +112,6 @@ The following JSON is the complete value owned at each machine-authority pointer
         "role",
         "derived_from_roles"
       ],
-      "title": "OutputArtifactContract",
       "type": "object"
     },
     "signature": "\"(*, role: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$', ascii_only=None)], minimum: Annotated[int, Ge(ge=0)] = 1, maximum: Annotated[int | None, Ge(ge=1)] = None, derived_from_roles: Annotated[tuple[Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$', ascii_only=None)], ...], MinLen(min_length=1)]) -> None\""

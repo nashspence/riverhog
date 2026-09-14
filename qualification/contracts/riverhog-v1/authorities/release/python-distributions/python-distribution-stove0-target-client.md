@@ -19,6 +19,9 @@ Narrow HTTP client for Stove0 transform targets.
 | <a id="s-9e27a2563a"></a>`artifacts` | [{"coordinate": "dist/stove0_target_client-{version}-py3-none-any.whl", "format": "wheel"}, {"coordinate": "dist/stove0_target_client-{version}.tar.gz", "format": "sdist"}] |
 | <a id="s-7fd919475a"></a>`channel` | github-release |
 | <a id="s-8c88c6b4af"></a>`description` | Narrow HTTP client for Stove0 transform targets. |
+| <a id="s-6d143f7f47"></a>`license_baseline` | first-v1-publication |
+| <a id="s-0b75e39474"></a>`license_expression` | Apache-2.0 |
+| <a id="s-5874aefd83"></a>`publication_identity` | {"coordinate": "stove0-target-client", "kind": "python-distribution"} |
 | <a id="s-cb102729fa"></a>`requires_python` | >=3.12 |
 | <a id="s-f66a0dc4a7"></a>`role` | reusable_library |
 | <a id="s-b4c91f375a"></a>`source` | reference/stove0/packages/target-client/pyproject.toml |
@@ -57,7 +60,7 @@ Publication preserves these existing component authorities; it does not reclassi
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 7fb0f1a4f2c41220fdf71775a01f51faec2ea4ce8eb798daad444e3787517b3d -->
+<!-- exact-contract-value: a075e44d4b49933da14ca1abf787bdf80104cca58eb1d1e52994753c9e351517 -->
 
 ```json
 {
@@ -73,6 +76,12 @@ The following JSON is the complete value owned at each machine-authority pointer
   ],
   "channel": "github-release",
   "description": "Narrow HTTP client for Stove0 transform targets.",
+  "license_baseline": "first-v1-publication",
+  "license_expression": "Apache-2.0",
+  "publication_identity": {
+    "coordinate": "stove0-target-client",
+    "kind": "python-distribution"
+  },
   "requires_python": ">=3.12",
   "role": "reusable_library",
   "source": "reference/stove0/packages/target-client/pyproject.toml"

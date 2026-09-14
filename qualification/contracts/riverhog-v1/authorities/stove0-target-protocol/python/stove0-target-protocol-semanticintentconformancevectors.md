@@ -27,7 +27,6 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-4d6e331430"></a>
-- <a id="s-70a4caa90c"></a>`title`: SemanticIntentConformanceVectors
 - <a id="s-58735656dd"></a>`type`: object
 
 ### Fields
@@ -77,7 +76,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: afebd0c4e5388f6da915e19e0da0a8239eef81125b366e5113a18c4eea927371 -->
+<!-- exact-contract-value: 5a1a794e33d99fc8709fec906dbce731bd43c593df3a6d5ec878bfefd3fce13c -->
 
 ```json
 {
@@ -90,19 +89,16 @@ The following JSON is the complete value owned at each machine-authority pointer
           "additionalProperties": false,
           "properties": {
             "accepted": {
-              "title": "Accepted",
               "type": "boolean"
             },
             "id": {
               "pattern": "^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$",
-              "title": "Id",
               "type": "string"
             },
             "intent": {
               "additionalProperties": {
                 "$ref": "#/$defs/JsonValue"
               },
-              "title": "Intent",
               "type": "object"
             }
           },
@@ -111,7 +107,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             "accepted",
             "intent"
           ],
-          "title": "SemanticIntentConformanceVector",
           "type": "object"
         }
       },
@@ -120,12 +115,10 @@ The following JSON is the complete value owned at each machine-authority pointer
         "format": {
           "const": "stove0-semantic-intent-conformance/v1",
           "default": "stove0-semantic-intent-conformance/v1",
-          "title": "Format",
           "type": "string"
         },
         "profile_id": {
           "pattern": "^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$",
-          "title": "Profile Id",
           "type": "string"
         },
         "vectors": {
@@ -133,7 +126,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             "$ref": "#/$defs/SemanticIntentConformanceVector"
           },
           "minItems": 2,
-          "title": "Vectors",
           "type": "array"
         }
       },
@@ -141,7 +133,6 @@ The following JSON is the complete value owned at each machine-authority pointer
         "profile_id",
         "vectors"
       ],
-      "title": "SemanticIntentConformanceVectors",
       "type": "object"
     },
     "signature": "\"(*, format: Literal['stove0-semantic-intent-conformance/v1'] = 'stove0-semantic-intent-conformance/v1', profile_id: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$', ascii_only=None)], vectors: Annotated[tuple[stove0_target_protocol.conformance.SemanticIntentConformanceVector, ...], MinLen(min_length=2)]) -> None\""

@@ -19,6 +19,9 @@ Resumable age encryption used by the Riverhog protocol.
 | <a id="s-a58da95517"></a>`artifacts` | [{"coordinate": "dist/riverhog_age-{version}-py3-none-any.whl", "format": "wheel"}, {"coordinate": "dist/riverhog_age-{version}.tar.gz", "format": "sdist"}] |
 | <a id="s-945c8f35d5"></a>`channel` | github-release |
 | <a id="s-c2f401a636"></a>`description` | Resumable age encryption used by the Riverhog protocol. |
+| <a id="s-531de12b58"></a>`license_baseline` | first-v1-publication |
+| <a id="s-77f7a99fc3"></a>`license_expression` | Apache-2.0 |
+| <a id="s-8e481a5ab0"></a>`publication_identity` | {"coordinate": "riverhog-age", "kind": "python-distribution"} |
 | <a id="s-7c6d7f6f04"></a>`requires_python` | >=3.12 |
 | <a id="s-cd5997ed2c"></a>`role` | reusable_library |
 | <a id="s-8a440f3e60"></a>`source` | packages/riverhog-age/pyproject.toml |
@@ -57,7 +60,7 @@ Publication preserves these existing component authorities; it does not reclassi
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 42c4d37c042b55c152240330778e5b970e5a67ca186accf2c85cabddf84f752d -->
+<!-- exact-contract-value: 91a9918c001b34b23e6a1cf3caaf36fa35dfdcb1391fbc8484ed7feb7d57d549 -->
 
 ```json
 {
@@ -73,6 +76,12 @@ The following JSON is the complete value owned at each machine-authority pointer
   ],
   "channel": "github-release",
   "description": "Resumable age encryption used by the Riverhog protocol.",
+  "license_baseline": "first-v1-publication",
+  "license_expression": "Apache-2.0",
+  "publication_identity": {
+    "coordinate": "riverhog-age",
+    "kind": "python-distribution"
+  },
   "requires_python": ">=3.12",
   "role": "reusable_library",
   "source": "packages/riverhog-age/pyproject.toml"

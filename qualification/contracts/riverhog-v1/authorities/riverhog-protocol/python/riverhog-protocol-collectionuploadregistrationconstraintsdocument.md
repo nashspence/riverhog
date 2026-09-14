@@ -27,8 +27,6 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-3b16f56a5a"></a>
-- <a id="s-9c54cf2c41"></a>`title`: CollectionUploadRegistrationConstraintsDocument
-- <a id="s-723e0bfce2"></a>`description`: Producer constraints issued by Riverhog for one upload session.
 - <a id="s-274884b062"></a>`type`: object
 
 ### Fields
@@ -62,7 +60,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: aa038536786bc8d06fc315502dddb05fcb8cd9a9b2a5379e4b33a318d8528b75 -->
+<!-- exact-contract-value: 339097ad6f51bd455551fe62b08149583fe5d65612a9d1f2a5d013009bb5854b -->
 
 ```json
 {
@@ -70,17 +68,14 @@ The following JSON is the complete value owned at each machine-authority pointer
     "kind": "class",
     "schema": {
       "additionalProperties": false,
-      "description": "Producer constraints issued by Riverhog for one upload session.",
       "properties": {
         "pack_member_bytes": {
           "minimum": 1,
-          "title": "Pack Member Bytes",
           "type": "integer"
         },
         "raw_part_plaintext_bytes": {
           "minimum": 65536,
           "multipleOf": 65536,
-          "title": "Raw Part Plaintext Bytes",
           "type": "integer"
         }
       },
@@ -88,7 +83,6 @@ The following JSON is the complete value owned at each machine-authority pointer
         "pack_member_bytes",
         "raw_part_plaintext_bytes"
       ],
-      "title": "CollectionUploadRegistrationConstraintsDocument",
       "type": "object"
     },
     "signature": "'(*, pack_member_bytes: Annotated[int, Ge(ge=1)], raw_part_plaintext_bytes: Annotated[int, Ge(ge=65536), MultipleOf(multiple_of=65536)]) -> None'"

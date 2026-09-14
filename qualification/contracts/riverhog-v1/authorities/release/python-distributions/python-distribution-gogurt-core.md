@@ -19,6 +19,9 @@ Portable Gogurt marker, routing, action, and watch semantics.
 | <a id="s-4ea058acac"></a>`artifacts` | [{"coordinate": "dist/gogurt_core-{version}-py3-none-any.whl", "format": "wheel"}, {"coordinate": "dist/gogurt_core-{version}.tar.gz", "format": "sdist"}] |
 | <a id="s-c6752b84c5"></a>`channel` | github-release |
 | <a id="s-90f8392ab0"></a>`description` | Portable Gogurt marker, routing, action, and watch semantics. |
+| <a id="s-01fc8a4450"></a>`license_baseline` | first-v1-publication |
+| <a id="s-402e491a5b"></a>`license_expression` | Apache-2.0 |
+| <a id="s-7396d330e7"></a>`publication_identity` | {"coordinate": "gogurt-core", "kind": "python-distribution"} |
 | <a id="s-1a41c5d00c"></a>`requires_python` | >=3.12 |
 | <a id="s-01b66a1a3a"></a>`role` | reusable_library |
 | <a id="s-7f695858d5"></a>`source` | reference/gogurt/packages/core/pyproject.toml |
@@ -57,7 +60,7 @@ Publication preserves these existing component authorities; it does not reclassi
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 09d2a32b679b743b571ba142898e0bd984ddc8b27b1317a561fcf709b007b719 -->
+<!-- exact-contract-value: fd96ab5e76adbb11e3cab4255a5acebccd5405ead67acbd7b562832f2f37ea35 -->
 
 ```json
 {
@@ -73,6 +76,12 @@ The following JSON is the complete value owned at each machine-authority pointer
   ],
   "channel": "github-release",
   "description": "Portable Gogurt marker, routing, action, and watch semantics.",
+  "license_baseline": "first-v1-publication",
+  "license_expression": "Apache-2.0",
+  "publication_identity": {
+    "coordinate": "gogurt-core",
+    "kind": "python-distribution"
+  },
   "requires_python": ">=3.12",
   "role": "reusable_library",
   "source": "reference/gogurt/packages/core/pyproject.toml"

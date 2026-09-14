@@ -19,6 +19,9 @@ Optional nonnormative Opus target reference for Stove0.
 | <a id="s-ba92f7074a"></a>`artifacts` | [{"coordinate": "dist/stove0_opus_target-{version}-py3-none-any.whl", "format": "wheel"}, {"coordinate": "dist/stove0_opus_target-{version}.tar.gz", "format": "sdist"}] |
 | <a id="s-37117d817d"></a>`channel` | github-release |
 | <a id="s-134300db62"></a>`description` | Optional nonnormative Opus target reference for Stove0. |
+| <a id="s-da63babcdb"></a>`license_baseline` | first-v1-publication |
+| <a id="s-175f1b91cb"></a>`license_expression` | CAL-1.0 |
+| <a id="s-e3ec53241d"></a>`publication_identity` | {"coordinate": "stove0-opus-target", "kind": "python-distribution"} |
 | <a id="s-1f2d72f1aa"></a>`requires_python` | >=3.12 |
 | <a id="s-6854ea60ff"></a>`role` | reference_component |
 | <a id="s-05fdc3293d"></a>`source` | reference/stove0/targets/opus/target/pyproject.toml |
@@ -57,7 +60,7 @@ Publication preserves these existing component authorities; it does not reclassi
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: fba51a91e038051799101c3295d0e2be4b2656a955ba98885389cc92a380af28 -->
+<!-- exact-contract-value: 32e38c994f96bda04981564a7a7e804af72668724496ca895a81bae3279717a1 -->
 
 ```json
 {
@@ -73,6 +76,12 @@ The following JSON is the complete value owned at each machine-authority pointer
   ],
   "channel": "github-release",
   "description": "Optional nonnormative Opus target reference for Stove0.",
+  "license_baseline": "first-v1-publication",
+  "license_expression": "CAL-1.0",
+  "publication_identity": {
+    "coordinate": "stove0-opus-target",
+    "kind": "python-distribution"
+  },
   "requires_python": ">=3.12",
   "role": "reference_component",
   "source": "reference/stove0/targets/opus/target/pyproject.toml"

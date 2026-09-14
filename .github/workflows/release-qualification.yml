@@ -144,6 +144,49 @@ jobs:
           printf 'OPERATIONS_SUMMARY=%s/operations.json\n' "$qualification_dir" >> "$GITHUB_ENV"
           printf 'OPERATIONS_TIMINGS=%s/operation-timings.json\n' "$qualification_dir" >> "$GITHUB_ENV"
           printf 'DATABASE_SUMMARY=%s/database.json\n' "$qualification_dir" >> "$GITHUB_ENV"
+          printf 'RELEASE_HISTORY_DIR=%s/v1-release-history\n' "$qualification_dir" >> "$GITHUB_ENV"
+      - name: Stage immutable v1 release-manifest history
+        run: |
+          mkdir -p "$RELEASE_HISTORY_DIR"
+          candidate_tag="v$RELEASE_VERSION"
+          previous_tag=
+          mapfile -t published_tags < <(
+            gh api --paginate "repos/${{ github.repository }}/releases?per_page=100" \
+              --jq '.[] | select(.draft == false and (.tag_name | test("^v1\\.[0-9]+\\.[0-9]+$"))) | .tag_name' \
+              | sort -V
+          )
+          for tag in "${published_tags[@]}"; do
+            first="$(printf '%s\n%s\n' "$tag" "$candidate_tag" | sort -V | sed -n '1p')"
+            if [[ "$tag" == "$candidate_tag" || "$first" != "$tag" ]]; then
+              continue
+            fi
+            release="$(gh api "repos/${{ github.repository }}/releases/tags/$tag")"
+            mapfile -t asset_ids < <(
+              jq -r '.assets[] | select(.name == "release-manifest.json") | .id' <<< "$release"
+            )
+            if [[ "${#asset_ids[@]}" -ne 1 ]]; then
+              printf 'Release %s lacks one immutable release-manifest.json asset.\n' "$tag" >&2
+              exit 2
+            fi
+            manifest="$RELEASE_HISTORY_DIR/$tag.json"
+            gh api \
+              -H 'Accept: application/octet-stream' \
+              "repos/${{ github.repository }}/releases/assets/${asset_ids[0]}" > "$manifest"
+            jq --exit-status --arg tag "$tag" \
+              '.schema == "riverhog-release/v1" and .tag == $tag' "$manifest" >/dev/null
+            previous_tag="$tag"
+          done
+          if [[ "$RELEASE_VERSION" == "1.0.0" ]]; then
+            test -z "$previous_tag"
+          elif [[ -z "$previous_tag" ]]; then
+            printf 'No immutable predecessor exists for %s.\n' "$candidate_tag" >&2
+            exit 2
+          else
+            previous_manifest="$RELEASE_HISTORY_DIR/$previous_tag.json"
+            printf 'RELEASE_PREVIOUS_TAG=%s\n' "$previous_tag" >> "$GITHUB_ENV"
+            printf 'RELEASE_PREVIOUS_MANIFEST_SHA256=%s\n' \
+              "$(sha256sum "$previous_manifest" | cut -d ' ' -f 1)" >> "$GITHUB_ENV"
+          fi
       - name: Exercise disposable operation lifecycles and record timings
         env:
           RIVERHOG_OPERATION_SOURCE_SHA: ${{ env.SOURCE_SHA }}
@@ -262,14 +305,30 @@ jobs:
           RELEASE_GOVERNANCE_SCOPE=actions-observable
           RELEASE_SUMMARY="$GOVERNANCE_SUMMARY"
       - name: Build and verify release evidence
-        run: >-
-          make release-dry-run
-          RELEASE_VERSION="$RELEASE_VERSION"
-          RELEASE_SUMMARY="$RELEASE_SUMMARY"
+        run: |
+          history_args=()
+          if [[ -n "$RELEASE_PREVIOUS_TAG" ]]; then
+            history_args+=(
+              --previous-tag "$RELEASE_PREVIOUS_TAG"
+              --previous-manifest-sha256 "$RELEASE_PREVIOUS_MANIFEST_SHA256"
+            )
+            while IFS= read -r manifest; do
+              history_args+=(--history-manifest "$manifest")
+            done < <(find "$RELEASE_HISTORY_DIR" -maxdepth 1 -type f -name 'v1.*.json' | sort -Vr)
+          fi
+          mise x -- uv run --locked --all-packages --group dev \
+            python scripts/release.py dry-run \
+            --version "$RELEASE_VERSION" \
+            --summary "$RELEASE_SUMMARY" \
+            "${history_args[@]}"
       - name: Verify exact-SHA nonpublication summary
         run: |
           jq --exit-status --arg sha "$SOURCE_SHA" \
-            '.source_sha == $sha and .published == false and .signature_verified == true' \
+            '.source_sha == $sha
+              and .published == false
+              and .signature_verified == true
+              and .license_coordinates > 0
+              and .release_history_manifests > 0' \
             "$RELEASE_SUMMARY"
           jq --exit-status --arg sha "$SOURCE_SHA" \
             '.source_sha == $sha

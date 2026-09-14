@@ -27,8 +27,6 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-e926c97cb4"></a>
-- <a id="s-0597b4898f"></a>`title`: RecipeCoordinationRoute
-- <a id="s-ea5e9d6bc9"></a>`description`: One exact subrecipe selected as a branch-bound coordinator.
 - <a id="s-97dd5346cf"></a>`type`: object
 
 ### Fields
@@ -86,7 +84,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 6b10930c1d8c293735c5572ade3f87af0b24d5a58944368dbeb617a1a6512026 -->
+<!-- exact-contract-value: 96e2cf72f346347ef16d74ce2a01d02bb36d488dadca170ca85f4d69b08c96c6 -->
 
 ```json
 {
@@ -96,33 +94,27 @@ The following JSON is the complete value owned at each machine-authority pointer
       "$defs": {
         "ArtifactFactBinding": {
           "additionalProperties": false,
-          "description": "Locate subject-keyed records inside one observer's declared facts schema.",
           "properties": {
             "artifact_id_pointer": {
               "default": "/artifact_id",
               "pattern": "^(?:|/(?:[^~/]|~[01])*(?:/(?:[^~/]|~[01])*)*)$",
-              "title": "Artifact Id Pointer",
               "type": "string"
             },
             "records_pointer": {
               "pattern": "^(?:|/(?:[^~/]|~[01])*(?:/(?:[^~/]|~[01])*)*)$",
-              "title": "Records Pointer",
               "type": "string"
             }
           },
           "required": [
             "records_pointer"
           ],
-          "title": "ArtifactFactBinding",
           "type": "object"
         },
         "ArtifactRule": {
           "additionalProperties": false,
-          "description": "Classify one path; first matching rule wins.",
           "properties": {
             "glob": {
               "default": "*",
-              "title": "Glob",
               "type": "string"
             },
             "media_type": {
@@ -134,17 +126,14 @@ The following JSON is the complete value owned at each machine-authority pointer
                   "type": "null"
                 }
               ],
-              "default": null,
-              "title": "Media Type"
+              "default": null
             },
             "role": {
               "default": "stove0.source/v1",
               "pattern": "^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$",
-              "title": "Role",
               "type": "string"
             }
           },
-          "title": "ArtifactRule",
           "type": "object"
         },
         "FactPredicate": {
@@ -167,12 +156,10 @@ The following JSON is the complete value owned at each machine-authority pointer
                 "pattern": "^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$",
                 "type": "string"
               },
-              "title": "Artifact Roles",
               "type": "array"
             },
             "observation_contract_id": {
               "pattern": "^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$",
-              "title": "Observation Contract Id",
               "type": "string"
             },
             "operator": {
@@ -183,12 +170,10 @@ The following JSON is the complete value owned at each machine-authority pointer
                 "contains",
                 "exists"
               ],
-              "title": "Operator",
               "type": "string"
             },
             "pointer": {
               "pattern": "^(?:|/(?:[^~/]|~[01])*(?:/(?:[^~/]|~[01])*)*)$",
-              "title": "Pointer",
               "type": "string"
             },
             "value": {
@@ -200,25 +185,21 @@ The following JSON is the complete value owned at each machine-authority pointer
             "observation_contract_id",
             "pointer"
           ],
-          "title": "FactPredicate",
           "type": "object"
         },
         "JsonValue": {},
         "OperationProjection": {
           "additionalProperties": false,
-          "description": "One declarative JSON-pointer copy into an operation request.",
           "properties": {
             "destination": {
               "enum": [
                 "intent",
                 "target-options"
               ],
-              "title": "Destination",
               "type": "string"
             },
             "destination_pointer": {
               "pattern": "^(?:|/(?:[^~/]|~[01])*(?:/(?:[^~/]|~[01])*)*)$",
-              "title": "Destination Pointer",
               "type": "string"
             },
             "source": {
@@ -226,12 +207,10 @@ The following JSON is the complete value owned at each machine-authority pointer
                 "work-effective-intent",
                 "work-evaluation"
               ],
-              "title": "Source",
               "type": "string"
             },
             "source_pointer": {
               "pattern": "^(?:|/(?:[^~/]|~[01])*(?:/(?:[^~/]|~[01])*)*)$",
-              "title": "Source Pointer",
               "type": "string"
             }
           },
@@ -241,7 +220,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             "destination",
             "destination_pointer"
           ],
-          "title": "OperationProjection",
           "type": "object"
         },
         "RecipeRef": {
@@ -249,17 +227,14 @@ The following JSON is the complete value owned at each machine-authority pointer
           "properties": {
             "id": {
               "pattern": "^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$",
-              "title": "Id",
               "type": "string"
             },
             "revision": {
               "minimum": 1,
-              "title": "Revision",
               "type": "integer"
             },
             "sha256": {
               "pattern": "^[0-9a-f]{64}$",
-              "title": "Sha256",
               "type": "string"
             }
           },
@@ -268,12 +243,10 @@ The following JSON is the complete value owned at each machine-authority pointer
             "revision",
             "sha256"
           ],
-          "title": "RecipeRef",
           "type": "object"
         }
       },
       "additionalProperties": false,
-      "description": "One exact subrecipe selected as a branch-bound coordinator.",
       "properties": {
         "artifact_rules": {
           "default": [
@@ -286,7 +259,6 @@ The following JSON is the complete value owned at each machine-authority pointer
           "items": {
             "$ref": "#/$defs/ArtifactRule"
           },
-          "title": "Artifact Rules",
           "type": "array"
         },
         "associated_roles": {
@@ -295,25 +267,21 @@ The following JSON is the complete value owned at each machine-authority pointer
             "pattern": "^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$",
             "type": "string"
           },
-          "title": "Associated Roles",
           "type": "array"
         },
         "id": {
           "pattern": "^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$",
-          "title": "Id",
           "type": "string"
         },
         "intent": {
           "additionalProperties": {
             "$ref": "#/$defs/JsonValue"
           },
-          "title": "Intent",
           "type": "object"
         },
         "kind": {
           "const": "coordination",
           "default": "coordination",
-          "title": "Kind",
           "type": "string"
         },
         "primary_role": {
@@ -326,15 +294,13 @@ The following JSON is the complete value owned at each machine-authority pointer
               "type": "null"
             }
           ],
-          "default": null,
-          "title": "Primary Role"
+          "default": null
         },
         "projections": {
           "default": [],
           "items": {
             "$ref": "#/$defs/OperationProjection"
           },
-          "title": "Projections",
           "type": "array"
         },
         "recipe": {
@@ -345,7 +311,6 @@ The following JSON is the complete value owned at each machine-authority pointer
           "items": {
             "$ref": "#/$defs/FactPredicate"
           },
-          "title": "When",
           "type": "array"
         }
       },
@@ -353,7 +318,6 @@ The following JSON is the complete value owned at each machine-authority pointer
         "id",
         "recipe"
       ],
-      "title": "RecipeCoordinationRoute",
       "type": "object"
     },
     "signature": "\"(*, id: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$', ascii_only=None)], when: tuple[stove0_recipe_config.models.FactPredicate, ...] = (), artifact_rules: tuple[stove0_recipe_config.models.ArtifactRule, ...] = (ArtifactRule(glob='*', role='stove0.source/v1', media_type=None),), primary_role: Optional[Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$', ascii_only=None)]] = None, associated_roles: tuple[typing.Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$', ascii_only=None)], ...] = (), intent: dict[str, JsonValue] = <factory>, projections: tuple[stove0_recipe_config.models.OperationProjection, ...] = (), kind: Literal['coordination'] = 'coordination', recipe: stove0_protocol.models.RecipeRef) -> None\""

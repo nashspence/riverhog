@@ -27,7 +27,6 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-2ab0e0d052"></a>
-- <a id="s-5e5d3e7fe9"></a>`title`: Stove0EventPage
 - <a id="s-2f2701364f"></a>`type`: object
 
 ### Fields
@@ -86,7 +85,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: db94b2f236e4524532881cdfc8c0cacdf15bec47ba03e9dc6714f72bcf222a48 -->
+<!-- exact-contract-value: a166d7747cc25a404cfc9dd9df76af4fb0cc90e6efcbf0ec023fe1299867953c -->
 
 ```json
 {
@@ -103,37 +102,30 @@ The following JSON is the complete value owned at each machine-authority pointer
             "datacontenttype": {
               "const": "application/json",
               "default": "application/json",
-              "title": "Datacontenttype",
               "type": "string"
             },
             "id": {
               "minLength": 1,
-              "title": "Id",
               "type": "string"
             },
             "source": {
               "const": "urn:riverhog:stove0",
-              "title": "Source",
               "type": "string"
             },
             "specversion": {
               "const": "1.0",
               "default": "1.0",
-              "title": "Specversion",
               "type": "string"
             },
             "subject": {
               "minLength": 1,
-              "title": "Subject",
               "type": "string"
             },
             "time": {
-              "title": "Time",
               "type": "string"
             },
             "type": {
               "const": "io.riverhog.stove0.branch-set.admitted",
-              "title": "Type",
               "type": "string"
             }
           },
@@ -145,7 +137,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             "time",
             "data"
           ],
-          "title": "BranchSetAdmittedEvent",
           "type": "object"
         },
         "BranchSetAdmittedEventData": {
@@ -153,32 +144,26 @@ The following JSON is the complete value owned at each machine-authority pointer
           "properties": {
             "admitted_work_count": {
               "minimum": 1,
-              "title": "Admitted Work Count",
               "type": "integer"
             },
             "branch_count": {
               "minimum": 1,
-              "title": "Branch Count",
               "type": "integer"
             },
             "branch_set_sha256": {
               "pattern": "^[0-9a-f]{64}$",
-              "title": "Branch Set Sha256",
               "type": "string"
             },
             "phase": {
               "const": "coordinating",
-              "title": "Phase",
               "type": "string"
             },
             "revision": {
               "minimum": 2,
-              "title": "Revision",
               "type": "integer"
             },
             "work_id": {
               "pattern": "^[0-9a-f]{64}$",
-              "title": "Work Id",
               "type": "string"
             }
           },
@@ -190,7 +175,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             "branch_count",
             "admitted_work_count"
           ],
-          "title": "BranchSetAdmittedEventData",
           "type": "object"
         },
         "EvaluationCreatedEvent": {
@@ -202,37 +186,30 @@ The following JSON is the complete value owned at each machine-authority pointer
             "datacontenttype": {
               "const": "application/json",
               "default": "application/json",
-              "title": "Datacontenttype",
               "type": "string"
             },
             "id": {
               "minLength": 1,
-              "title": "Id",
               "type": "string"
             },
             "source": {
               "const": "urn:riverhog:stove0",
-              "title": "Source",
               "type": "string"
             },
             "specversion": {
               "const": "1.0",
               "default": "1.0",
-              "title": "Specversion",
               "type": "string"
             },
             "subject": {
               "minLength": 1,
-              "title": "Subject",
               "type": "string"
             },
             "time": {
-              "title": "Time",
               "type": "string"
             },
             "type": {
               "const": "io.riverhog.stove0.evaluation.created",
-              "title": "Type",
               "type": "string"
             }
           },
@@ -244,7 +221,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             "time",
             "data"
           ],
-          "title": "EvaluationCreatedEvent",
           "type": "object"
         },
         "EvaluationCreatedEventData": {
@@ -252,7 +228,6 @@ The following JSON is the complete value owned at each machine-authority pointer
           "properties": {
             "evaluation_id": {
               "pattern": "^[0-9a-f]{64}$",
-              "title": "Evaluation Id",
               "type": "string"
             },
             "phase": {
@@ -264,7 +239,6 @@ The following JSON is the complete value owned at each machine-authority pointer
                 "failed",
                 "canceled"
               ],
-              "title": "Phase",
               "type": "string"
             }
           },
@@ -272,7 +246,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             "evaluation_id",
             "phase"
           ],
-          "title": "EvaluationCreatedEventData",
           "type": "object"
         },
         "EvaluationUpdatedEvent": {
@@ -284,37 +257,30 @@ The following JSON is the complete value owned at each machine-authority pointer
             "datacontenttype": {
               "const": "application/json",
               "default": "application/json",
-              "title": "Datacontenttype",
               "type": "string"
             },
             "id": {
               "minLength": 1,
-              "title": "Id",
               "type": "string"
             },
             "source": {
               "const": "urn:riverhog:stove0",
-              "title": "Source",
               "type": "string"
             },
             "specversion": {
               "const": "1.0",
               "default": "1.0",
-              "title": "Specversion",
               "type": "string"
             },
             "subject": {
               "minLength": 1,
-              "title": "Subject",
               "type": "string"
             },
             "time": {
-              "title": "Time",
               "type": "string"
             },
             "type": {
               "const": "io.riverhog.stove0.evaluation.updated",
-              "title": "Type",
               "type": "string"
             }
           },
@@ -326,7 +292,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             "time",
             "data"
           ],
-          "title": "EvaluationUpdatedEvent",
           "type": "object"
         },
         "EvaluationUpdatedEventData": {
@@ -334,7 +299,6 @@ The following JSON is the complete value owned at each machine-authority pointer
           "properties": {
             "evaluation_id": {
               "pattern": "^[0-9a-f]{64}$",
-              "title": "Evaluation Id",
               "type": "string"
             },
             "phase": {
@@ -346,12 +310,10 @@ The following JSON is the complete value owned at each machine-authority pointer
                 "failed",
                 "canceled"
               ],
-              "title": "Phase",
               "type": "string"
             },
             "revision": {
               "minimum": 2,
-              "title": "Revision",
               "type": "integer"
             }
           },
@@ -360,7 +322,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             "phase",
             "revision"
           ],
-          "title": "EvaluationUpdatedEventData",
           "type": "object"
         },
         "JoinAdmittedEvent": {
@@ -372,37 +333,30 @@ The following JSON is the complete value owned at each machine-authority pointer
             "datacontenttype": {
               "const": "application/json",
               "default": "application/json",
-              "title": "Datacontenttype",
               "type": "string"
             },
             "id": {
               "minLength": 1,
-              "title": "Id",
               "type": "string"
             },
             "source": {
               "const": "urn:riverhog:stove0",
-              "title": "Source",
               "type": "string"
             },
             "specversion": {
               "const": "1.0",
               "default": "1.0",
-              "title": "Specversion",
               "type": "string"
             },
             "subject": {
               "minLength": 1,
-              "title": "Subject",
               "type": "string"
             },
             "time": {
-              "title": "Time",
               "type": "string"
             },
             "type": {
               "const": "io.riverhog.stove0.join.admitted",
-              "title": "Type",
               "type": "string"
             }
           },
@@ -414,7 +368,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             "time",
             "data"
           ],
-          "title": "JoinAdmittedEvent",
           "type": "object"
         },
         "JoinAdmittedEventData": {
@@ -422,32 +375,26 @@ The following JSON is the complete value owned at each machine-authority pointer
           "properties": {
             "branch_set_sha256": {
               "pattern": "^[0-9a-f]{64}$",
-              "title": "Branch Set Sha256",
               "type": "string"
             },
             "join_plan_sha256": {
               "pattern": "^[0-9a-f]{64}$",
-              "title": "Join Plan Sha256",
               "type": "string"
             },
             "join_work_id": {
               "pattern": "^[0-9a-f]{64}$",
-              "title": "Join Work Id",
               "type": "string"
             },
             "phase": {
               "const": "coordinating",
-              "title": "Phase",
               "type": "string"
             },
             "revision": {
               "minimum": 2,
-              "title": "Revision",
               "type": "integer"
             },
             "work_id": {
               "pattern": "^[0-9a-f]{64}$",
-              "title": "Work Id",
               "type": "string"
             }
           },
@@ -459,7 +406,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             "join_plan_sha256",
             "join_work_id"
           ],
-          "title": "JoinAdmittedEventData",
           "type": "object"
         },
         "Stove0LifecycleEvent": {
@@ -504,37 +450,30 @@ The following JSON is the complete value owned at each machine-authority pointer
             "datacontenttype": {
               "const": "application/json",
               "default": "application/json",
-              "title": "Datacontenttype",
               "type": "string"
             },
             "id": {
               "minLength": 1,
-              "title": "Id",
               "type": "string"
             },
             "source": {
               "const": "urn:riverhog:stove0",
-              "title": "Source",
               "type": "string"
             },
             "specversion": {
               "const": "1.0",
               "default": "1.0",
-              "title": "Specversion",
               "type": "string"
             },
             "subject": {
               "minLength": 1,
-              "title": "Subject",
               "type": "string"
             },
             "time": {
-              "title": "Time",
               "type": "string"
             },
             "type": {
               "const": "io.riverhog.stove0.work.created",
-              "title": "Type",
               "type": "string"
             }
           },
@@ -546,7 +485,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             "time",
             "data"
           ],
-          "title": "WorkCreatedEvent",
           "type": "object"
         },
         "WorkCreatedEventData": {
@@ -562,8 +500,7 @@ The following JSON is the complete value owned at each machine-authority pointer
                   "type": "null"
                 }
               ],
-              "default": null,
-              "title": "Branch Set Sha256"
+              "default": null
             },
             "join_plan_sha256": {
               "anyOf": [
@@ -575,8 +512,7 @@ The following JSON is the complete value owned at each machine-authority pointer
                   "type": "null"
                 }
               ],
-              "default": null,
-              "title": "Join Plan Sha256"
+              "default": null
             },
             "parent_work_id": {
               "anyOf": [
@@ -588,8 +524,7 @@ The following JSON is the complete value owned at each machine-authority pointer
                   "type": "null"
                 }
               ],
-              "default": null,
-              "title": "Parent Work Id"
+              "default": null
             },
             "phase": {
               "enum": [
@@ -611,12 +546,10 @@ The following JSON is the complete value owned at each machine-authority pointer
                 "failed",
                 "canceled"
               ],
-              "title": "Phase",
               "type": "string"
             },
             "work_id": {
               "pattern": "^[0-9a-f]{64}$",
-              "title": "Work Id",
               "type": "string"
             }
           },
@@ -624,7 +557,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             "work_id",
             "phase"
           ],
-          "title": "WorkCreatedEventData",
           "type": "object"
         },
         "WorkUpdatedEvent": {
@@ -636,37 +568,30 @@ The following JSON is the complete value owned at each machine-authority pointer
             "datacontenttype": {
               "const": "application/json",
               "default": "application/json",
-              "title": "Datacontenttype",
               "type": "string"
             },
             "id": {
               "minLength": 1,
-              "title": "Id",
               "type": "string"
             },
             "source": {
               "const": "urn:riverhog:stove0",
-              "title": "Source",
               "type": "string"
             },
             "specversion": {
               "const": "1.0",
               "default": "1.0",
-              "title": "Specversion",
               "type": "string"
             },
             "subject": {
               "minLength": 1,
-              "title": "Subject",
               "type": "string"
             },
             "time": {
-              "title": "Time",
               "type": "string"
             },
             "type": {
               "const": "io.riverhog.stove0.work.updated",
-              "title": "Type",
               "type": "string"
             }
           },
@@ -678,7 +603,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             "time",
             "data"
           ],
-          "title": "WorkUpdatedEvent",
           "type": "object"
         },
         "WorkUpdatedEventData": {
@@ -704,17 +628,14 @@ The following JSON is the complete value owned at each machine-authority pointer
                 "failed",
                 "canceled"
               ],
-              "title": "Phase",
               "type": "string"
             },
             "revision": {
               "minimum": 2,
-              "title": "Revision",
               "type": "integer"
             },
             "work_id": {
               "pattern": "^[0-9a-f]{64}$",
-              "title": "Work Id",
               "type": "string"
             }
           },
@@ -723,7 +644,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             "phase",
             "revision"
           ],
-          "title": "WorkUpdatedEventData",
           "type": "object"
         }
       },
@@ -733,15 +653,12 @@ The following JSON is the complete value owned at each machine-authority pointer
           "items": {
             "$ref": "#/$defs/Stove0LifecycleEvent"
           },
-          "title": "Events",
           "type": "array"
         },
         "has_more": {
-          "title": "Has More",
           "type": "boolean"
         },
         "next_cursor": {
-          "title": "Next Cursor",
           "type": "string"
         }
       },
@@ -750,7 +667,6 @@ The following JSON is the complete value owned at each machine-authority pointer
         "next_cursor",
         "has_more"
       ],
-      "title": "Stove0EventPage",
       "type": "object"
     },
     "signature": "'(*, events: list[Stove0LifecycleEvent], next_cursor: str, has_more: bool) -> None'"

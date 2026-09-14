@@ -27,7 +27,6 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-8b430ee967"></a>
-- <a id="s-58b4601db4"></a>`title`: AdapterDescriptor
 - <a id="s-b14721e05d"></a>`type`: object
 
 ### Fields
@@ -72,7 +71,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 4a4e070d516182d2a736450ab1375729f4d71c6ce06df4311ea0d3a4072ab60b -->
+<!-- exact-contract-value: 597ab4ef522c7f0615a9c10b04b26cb57367ae59a058fcd0528e35d0ec4d1604 -->
 
 ```json
 {
@@ -83,13 +82,11 @@ The following JSON is the complete value owned at each machine-authority pointer
       "properties": {
         "implementation_id": {
           "pattern": "^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$",
-          "title": "Implementation Id",
           "type": "string"
         },
         "implementation_version": {
           "maxLength": 120,
           "minLength": 1,
-          "title": "Implementation Version",
           "type": "string"
         },
         "maximum_segment_bytes": {
@@ -102,8 +99,7 @@ The following JSON is the complete value owned at each machine-authority pointer
               "type": "null"
             }
           ],
-          "default": null,
-          "title": "Maximum Segment Bytes"
+          "default": null
         },
         "maximum_segment_count": {
           "anyOf": [
@@ -115,18 +111,15 @@ The following JSON is the complete value owned at each machine-authority pointer
               "type": "null"
             }
           ],
-          "default": null,
-          "title": "Maximum Segment Count"
+          "default": null
         },
         "minimum_nonfinal_segment_bytes": {
           "minimum": 1,
-          "title": "Minimum Nonfinal Segment Bytes",
           "type": "integer"
         },
         "protocol": {
           "const": "riverhog-storage-adapter/v1",
           "default": "riverhog-storage-adapter/v1",
-          "title": "Protocol",
           "type": "string"
         },
         "read_mode": {
@@ -134,7 +127,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             "immediate",
             "restore_required"
           ],
-          "title": "Read Mode",
           "type": "string"
         }
       },
@@ -144,7 +136,6 @@ The following JSON is the complete value owned at each machine-authority pointer
         "read_mode",
         "minimum_nonfinal_segment_bytes"
       ],
-      "title": "AdapterDescriptor",
       "type": "object"
     },
     "signature": "\"(*, protocol: Literal['riverhog-storage-adapter/v1'] = 'riverhog-storage-adapter/v1', implementation_id: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$', ascii_only=None)], implementation_version: Annotated[str, MinLen(min_length=1), MaxLen(max_length=120)], read_mode: Literal['immediate', 'restore_required'], minimum_nonfinal_segment_bytes: Annotated[int, Ge(ge=1)], maximum_segment_bytes: Annotated[int | None, Ge(ge=1)] = None, maximum_segment_count: Annotated[int | None, Ge(ge=1)] = None) -> None\""

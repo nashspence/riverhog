@@ -27,7 +27,6 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-8371a97cbe"></a>
-- <a id="s-13141b831f"></a>`title`: WorkCreatedEvent
 - <a id="s-c2445c347d"></a>`type`: object
 
 ### Fields
@@ -73,7 +72,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: d23252ca36df232c82068279f076641bacdd8d551700252ee4c2ebdc5fc008c6 -->
+<!-- exact-contract-value: 04231be558c2017ed9b9740f2b1ea2d9038ab286c126d0125cd5a4437fad4333 -->
 
 ```json
 {
@@ -94,8 +93,7 @@ The following JSON is the complete value owned at each machine-authority pointer
                   "type": "null"
                 }
               ],
-              "default": null,
-              "title": "Branch Set Sha256"
+              "default": null
             },
             "join_plan_sha256": {
               "anyOf": [
@@ -107,8 +105,7 @@ The following JSON is the complete value owned at each machine-authority pointer
                   "type": "null"
                 }
               ],
-              "default": null,
-              "title": "Join Plan Sha256"
+              "default": null
             },
             "parent_work_id": {
               "anyOf": [
@@ -120,8 +117,7 @@ The following JSON is the complete value owned at each machine-authority pointer
                   "type": "null"
                 }
               ],
-              "default": null,
-              "title": "Parent Work Id"
+              "default": null
             },
             "phase": {
               "enum": [
@@ -143,12 +139,10 @@ The following JSON is the complete value owned at each machine-authority pointer
                 "failed",
                 "canceled"
               ],
-              "title": "Phase",
               "type": "string"
             },
             "work_id": {
               "pattern": "^[0-9a-f]{64}$",
-              "title": "Work Id",
               "type": "string"
             }
           },
@@ -156,7 +150,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             "work_id",
             "phase"
           ],
-          "title": "WorkCreatedEventData",
           "type": "object"
         }
       },
@@ -168,37 +161,30 @@ The following JSON is the complete value owned at each machine-authority pointer
         "datacontenttype": {
           "const": "application/json",
           "default": "application/json",
-          "title": "Datacontenttype",
           "type": "string"
         },
         "id": {
           "minLength": 1,
-          "title": "Id",
           "type": "string"
         },
         "source": {
           "const": "urn:riverhog:stove0",
-          "title": "Source",
           "type": "string"
         },
         "specversion": {
           "const": "1.0",
           "default": "1.0",
-          "title": "Specversion",
           "type": "string"
         },
         "subject": {
           "minLength": 1,
-          "title": "Subject",
           "type": "string"
         },
         "time": {
-          "title": "Time",
           "type": "string"
         },
         "type": {
           "const": "io.riverhog.stove0.work.created",
-          "title": "Type",
           "type": "string"
         }
       },
@@ -210,7 +196,6 @@ The following JSON is the complete value owned at each machine-authority pointer
         "time",
         "data"
       ],
-      "title": "WorkCreatedEvent",
       "type": "object"
     },
     "signature": "\"(*, specversion: Literal['1.0'] = '1.0', id: Annotated[str, MinLen(min_length=1)], source: Literal['urn:riverhog:stove0'], type: Literal['io.riverhog.stove0.work.created'], subject: Annotated[str, MinLen(min_length=1)], time: str, datacontenttype: Literal['application/json'] = 'application/json', data: stove0_operator_contracts.WorkCreatedEventData) -> None\""

@@ -27,8 +27,6 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-677a856b0a"></a>
-- <a id="s-019aa62894"></a>`title`: SemanticValidationProfilePayload
-- <a id="s-c71aba7357"></a>`description`: Portable identity for semantic rules not expressible by JSON Schema.
 - <a id="s-e4de1b9669"></a>`type`: object
 
 ### Fields
@@ -69,7 +67,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 7346e1cf5f9f04986c4dfb98726fdc08d62828193cb3e9e50b27a49cddb54b80 -->
+<!-- exact-contract-value: 375d13010f113f53867637c22d5fc5642c60a98ff98c01a4477808828b4bdf20 -->
 
 ```json
 {
@@ -77,7 +75,6 @@ The following JSON is the complete value owned at each machine-authority pointer
     "kind": "class",
     "schema": {
       "additionalProperties": false,
-      "description": "Portable identity for semantic rules not expressible by JSON Schema.",
       "properties": {
         "conformance_vectors_sha256": {
           "anyOf": [
@@ -89,12 +86,10 @@ The following JSON is the complete value owned at each machine-authority pointer
               "type": "null"
             }
           ],
-          "default": null,
-          "title": "Conformance Vectors Sha256"
+          "default": null
         },
         "id": {
           "pattern": "^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$",
-          "title": "Id",
           "type": "string"
         },
         "rules": {
@@ -103,7 +98,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             "type": "string"
           },
           "minItems": 1,
-          "title": "Rules",
           "type": "array"
         }
       },
@@ -111,7 +105,6 @@ The following JSON is the complete value owned at each machine-authority pointer
         "id",
         "rules"
       ],
-      "title": "SemanticValidationProfilePayload",
       "type": "object"
     },
     "signature": "\"(*, id: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$', ascii_only=None)], rules: Annotated[tuple[Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$', ascii_only=None)], ...], MinLen(min_length=1)], conformance_vectors_sha256: Optional[Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)]] = None) -> None\""

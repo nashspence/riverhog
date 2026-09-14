@@ -19,6 +19,9 @@ Optional nonnormative macOS observation-contract reference for Riverhog provenan
 | <a id="s-a17e8139b2"></a>`artifacts` | [{"coordinate": "dist/riverhog_provenance_macos_contracts-{version}-py3-none-any.whl", "format": "wheel"}, {"coordinate": "dist/riverhog_provenance_macos_contracts-{version}.tar.gz", "format": "sdist"}] |
 | <a id="s-76df453bbb"></a>`channel` | github-release |
 | <a id="s-32ee5ce9e0"></a>`description` | Optional nonnormative macOS observation-contract reference for Riverhog provenance. |
+| <a id="s-f425b5ddfa"></a>`license_baseline` | first-v1-publication |
+| <a id="s-654864b538"></a>`license_expression` | Apache-2.0 |
+| <a id="s-0e7f9d1092"></a>`publication_identity` | {"coordinate": "riverhog-provenance-macos-contracts", "kind": "python-distribution"} |
 | <a id="s-5b5806894c"></a>`requires_python` | >=3.12 |
 | <a id="s-117a30aed3"></a>`role` | reference_component |
 | <a id="s-478e1401b2"></a>`source` | reference/riverhog/provenance/contracts/macos/pyproject.toml |
@@ -57,7 +60,7 @@ Publication preserves these existing component authorities; it does not reclassi
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 7ea3d2c604704a790bb44353d49d3efa2f42790c9303d88d2be11fa6a0aa8222 -->
+<!-- exact-contract-value: 15766c9bb9447340ccbf950ad06a8196125bf2f39e336d500f42c8b1c9266587 -->
 
 ```json
 {
@@ -73,6 +76,12 @@ The following JSON is the complete value owned at each machine-authority pointer
   ],
   "channel": "github-release",
   "description": "Optional nonnormative macOS observation-contract reference for Riverhog provenance.",
+  "license_baseline": "first-v1-publication",
+  "license_expression": "Apache-2.0",
+  "publication_identity": {
+    "coordinate": "riverhog-provenance-macos-contracts",
+    "kind": "python-distribution"
+  },
   "requires_python": ">=3.12",
   "role": "reference_component",
   "source": "reference/riverhog/provenance/contracts/macos/pyproject.toml"

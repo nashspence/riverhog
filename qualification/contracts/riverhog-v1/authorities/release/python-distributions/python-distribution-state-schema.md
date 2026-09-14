@@ -19,6 +19,9 @@ Forward-only relational state schema and migration contracts.
 | <a id="s-e95d6d962d"></a>`artifacts` | [{"coordinate": "dist/state_schema-{version}-py3-none-any.whl", "format": "wheel"}, {"coordinate": "dist/state_schema-{version}.tar.gz", "format": "sdist"}] |
 | <a id="s-98abc23196"></a>`channel` | github-release |
 | <a id="s-32e3fa588f"></a>`description` | Forward-only relational state schema and migration contracts. |
+| <a id="s-3bbb63e7ee"></a>`license_baseline` | first-v1-publication |
+| <a id="s-d41b2869c4"></a>`license_expression` | Apache-2.0 |
+| <a id="s-2011303347"></a>`publication_identity` | {"coordinate": "state-schema", "kind": "python-distribution"} |
 | <a id="s-3751fd2332"></a>`requires_python` | >=3.12 |
 | <a id="s-0e4d139f72"></a>`role` | internal_build_unit |
 | <a id="s-6594deda87"></a>`source` | packages/state-schema/pyproject.toml |
@@ -57,7 +60,7 @@ Publication preserves these existing component authorities; it does not reclassi
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 05dc7de790b4f1ea3769c24fc62d734b18ae27b1c6901c5423c6cfe4bf4b780d -->
+<!-- exact-contract-value: 5b3c862feb80db2b11d99b7b41626643b1bc3873147b30dd1ee055df4d1ea556 -->
 
 ```json
 {
@@ -73,6 +76,12 @@ The following JSON is the complete value owned at each machine-authority pointer
   ],
   "channel": "github-release",
   "description": "Forward-only relational state schema and migration contracts.",
+  "license_baseline": "first-v1-publication",
+  "license_expression": "Apache-2.0",
+  "publication_identity": {
+    "coordinate": "state-schema",
+    "kind": "python-distribution"
+  },
   "requires_python": ">=3.12",
   "role": "internal_build_unit",
   "source": "packages/state-schema/pyproject.toml"

@@ -42,14 +42,14 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Identity | Selected by | Exit status | stdout | stderr |
 |---|---|---|---|---|
-| <a id="s-deca0ef10a"></a>`completed` | <a id="s-178e17ec73"></a>`{"kind":"command-completed"}` | <a id="s-6b3f2ec4a3"></a>`0` | <a id="s-56838a419f"></a>`human: noncontractual-presentation-of-command-result; json: HTTP list_collection_provenance_journal_agents — #/components/schemas/ListProvenanceJournalAgentsResponse` | <a id="s-366b9450c4"></a>`all: empty` |
+| <a id="s-deca0ef10a"></a>`completed` | <a id="s-178e17ec73"></a>`{"kind":"command-completed"}` | <a id="s-6b3f2ec4a3"></a>`0` | <a id="s-56838a419f"></a>human: `noncontractual-presentation-of-command-result`; json: [HTTP list_collection_provenance_journal_agents response 200](../../riverhog/http-operations/get-v1-collections-collection-id-provenance-journals-journal-id-agents.md#s-6a06a8f5f7) | <a id="s-366b9450c4"></a>all: `empty` |
 
 #### Failure outcomes
 
 | Identity | Selected by | Exit status | stdout | stderr |
 |---|---|---|---|---|
-| <a id="s-49726318bb"></a>`usage` | <a id="s-ca6569ecaf"></a>`{"kind":"parser-rejected-invocation"}` | <a id="s-af5bdbdcac"></a>`2` | <a id="s-85a8ec126f"></a>`all: empty` | <a id="s-d96ed4e75d"></a>`all: noncontractual-usage-diagnostic` |
-| <a id="s-f51dee5561"></a>`operational` | <a id="s-629bf4d25e"></a>`{"kind":"application-error"}` | <a id="s-0d297a895c"></a>`1` | <a id="s-2f6c02ccd2"></a>`human: empty; json: http-api-contracts.ErrorResponse` | <a id="s-e681a1a493"></a>`human: noncontractual-diagnostic; json: empty` |
+| <a id="s-49726318bb"></a>`usage` | <a id="s-ca6569ecaf"></a>`{"kind":"parser-rejected-invocation"}` | <a id="s-af5bdbdcac"></a>`2` | <a id="s-85a8ec126f"></a>all: `empty` | <a id="s-d96ed4e75d"></a>all: `noncontractual-usage-diagnostic` |
+| <a id="s-f51dee5561"></a>`operational` | <a id="s-629bf4d25e"></a>`{"kind":"application-error"}` | <a id="s-0d297a895c"></a>`1` | <a id="s-2f6c02ccd2"></a>human: `empty`; json: [http-api-contracts.ErrorResponse](../../http-api-contracts/python/http-api-contracts-errorresponse.md) | <a id="s-e681a1a493"></a>human: `noncontractual-diagnostic`; json: `empty` |
 
 ### Progression, limits, and lifecycle
 

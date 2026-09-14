@@ -27,8 +27,6 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-1ef0b6d911"></a>
-- <a id="s-c8eed6f6e7"></a>`title`: MediaProjectionPolicy
-- <a id="s-515829c2ba"></a>`description`: Portable recipe-owned choices; omitted values are never manufactured.
 - <a id="s-3a66fe7954"></a>`type`: object
 
 ### Fields
@@ -83,7 +81,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: a82d121e7d9709cc9844ef64d7fbffc019780056a31e59e6cb86320f5f376b25 -->
+<!-- exact-contract-value: 60ce5add8be41e573cfbc0cbdc3dec931648239b003a1d568ed229e0f245c25a -->
 
 ```json
 {
@@ -99,7 +97,6 @@ The following JSON is the complete value owned at each machine-authority pointer
                 "type": "string"
               },
               "minItems": 1,
-              "title": "Fields",
               "type": "array"
             },
             "name": {
@@ -111,7 +108,6 @@ The following JSON is the complete value owned at each machine-authority pointer
                 "gps-latitude",
                 "gps-longitude"
               ],
-              "title": "Name",
               "type": "string"
             }
           },
@@ -119,18 +115,15 @@ The following JSON is the complete value owned at each machine-authority pointer
             "name",
             "fields"
           ],
-          "title": "MediaFieldPreference",
           "type": "object"
         },
         "MediaGps": {
           "additionalProperties": false,
           "properties": {
             "latitude": {
-              "title": "Latitude",
               "type": "number"
             },
             "longitude": {
-              "title": "Longitude",
               "type": "number"
             }
           },
@@ -138,19 +131,16 @@ The following JSON is the complete value owned at each machine-authority pointer
             "latitude",
             "longitude"
           ],
-          "title": "MediaGps",
           "type": "object"
         }
       },
       "additionalProperties": false,
-      "description": "Portable recipe-owned choices; omitted values are never manufactured.",
       "properties": {
         "creators": {
           "default": [],
           "items": {
             "type": "string"
           },
-          "title": "Creators",
           "type": "array"
         },
         "device_make": {
@@ -162,8 +152,7 @@ The following JSON is the complete value owned at each machine-authority pointer
               "type": "null"
             }
           ],
-          "default": null,
-          "title": "Device Make"
+          "default": null
         },
         "device_model": {
           "anyOf": [
@@ -174,21 +163,18 @@ The following JSON is the complete value owned at each machine-authority pointer
               "type": "null"
             }
           ],
-          "default": null,
-          "title": "Device Model"
+          "default": null
         },
         "field_preferences": {
           "default": [],
           "items": {
             "$ref": "#/$defs/MediaFieldPreference"
           },
-          "title": "Field Preferences",
           "type": "array"
         },
         "format": {
           "const": "stove0-media-projection-policy/v1",
           "default": "stove0-media-projection-policy/v1",
-          "title": "Format",
           "type": "string"
         },
         "gps": {
@@ -207,11 +193,9 @@ The following JSON is the complete value owned at each machine-authority pointer
           "items": {
             "type": "string"
           },
-          "title": "Tags",
           "type": "array"
         }
       },
-      "title": "MediaProjectionPolicy",
       "type": "object"
     },
     "signature": "\"(*, format: Literal['stove0-media-projection-policy/v1'] = 'stove0-media-projection-policy/v1', device_make: str | None = None, device_model: str | None = None, gps: stove0_media_archive_target_contracts.projection_policy.MediaGps | None = None, creators: tuple[str, ...] = (), tags: tuple[str, ...] = (), field_preferences: tuple[stove0_media_archive_target_contracts.projection_policy.MediaFieldPreference, ...] = ()) -> None\""

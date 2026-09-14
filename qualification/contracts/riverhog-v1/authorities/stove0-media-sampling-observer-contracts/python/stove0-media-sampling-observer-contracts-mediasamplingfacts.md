@@ -27,7 +27,6 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-7f78559b40"></a>
-- <a id="s-89a4637d2f"></a>`title`: MediaSamplingFacts
 - <a id="s-bceebe10e7"></a>`type`: object
 
 ### Fields
@@ -73,7 +72,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 9137b3c698d3833e1156b502a81cc92529afaa492181f7b8f4b8c584a44703c5 -->
+<!-- exact-contract-value: aab2731b1e1a0fd33f0b0d6e1c328313be15442354d877cbdb449fcbcf801ebb -->
 
 ```json
 {
@@ -87,12 +86,10 @@ The following JSON is the complete value owned at each machine-authority pointer
             "artifact_id": {
               "maxLength": 160,
               "minLength": 1,
-              "title": "Artifact Id",
               "type": "string"
             },
             "duration_ms": {
               "minimum": 1,
-              "title": "Duration Ms",
               "type": "integer"
             },
             "sampleable_ranges": {
@@ -100,7 +97,6 @@ The following JSON is the complete value owned at each machine-authority pointer
                 "$ref": "#/$defs/SampleableRange"
               },
               "minItems": 1,
-              "title": "Sampleable Ranges",
               "type": "array"
             }
           },
@@ -109,7 +105,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             "duration_ms",
             "sampleable_ranges"
           ],
-          "title": "MediaSamplingArtifactFacts",
           "type": "object"
         },
         "SampleableRange": {
@@ -117,12 +112,10 @@ The following JSON is the complete value owned at each machine-authority pointer
           "properties": {
             "duration_ms": {
               "minimum": 1,
-              "title": "Duration Ms",
               "type": "integer"
             },
             "start_ms": {
               "minimum": 0,
-              "title": "Start Ms",
               "type": "integer"
             }
           },
@@ -130,7 +123,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             "start_ms",
             "duration_ms"
           ],
-          "title": "SampleableRange",
           "type": "object"
         }
       },
@@ -141,14 +133,12 @@ The following JSON is the complete value owned at each machine-authority pointer
             "$ref": "#/$defs/MediaSamplingArtifactFacts"
           },
           "minItems": 1,
-          "title": "Artifacts",
           "type": "array"
         }
       },
       "required": [
         "artifacts"
       ],
-      "title": "MediaSamplingFacts",
       "type": "object"
     },
     "signature": "'(*, artifacts: Annotated[tuple[stove0_media_sampling_observer_contracts.contracts.MediaSamplingArtifactFacts, ...], MinLen(min_length=1)]) -> None'"

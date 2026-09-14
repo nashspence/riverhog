@@ -27,8 +27,6 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-b010b6408b"></a>
-- <a id="s-7e9f4d8e66"></a>`title`: ArtifactSelectionRef
-- <a id="s-e0ea483e48"></a>`description`: Closed reference to a separately retained selection document.
 - <a id="s-bfa6214ab2"></a>`type`: object
 
 ### Fields
@@ -69,7 +67,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: c5b1dbb798889d147d61975c6a792b123257a78749fec7a69d42ec6ca873247a -->
+<!-- exact-contract-value: 6e601d5078ba6434fefadd7e205ba1205cfc59d2cb76a95628615a88a2d04b72 -->
 
 ```json
 {
@@ -77,21 +75,17 @@ The following JSON is the complete value owned at each machine-authority pointer
     "kind": "class",
     "schema": {
       "additionalProperties": false,
-      "description": "Closed reference to a separately retained selection document.",
       "properties": {
         "artifact_count": {
           "minimum": 1,
-          "title": "Artifact Count",
           "type": "integer"
         },
         "selection_sha256": {
           "pattern": "^[0-9a-f]{64}$",
-          "title": "Selection Sha256",
           "type": "string"
         },
         "total_bytes": {
           "minimum": 0,
-          "title": "Total Bytes",
           "type": "integer"
         }
       },
@@ -100,7 +94,6 @@ The following JSON is the complete value owned at each machine-authority pointer
         "artifact_count",
         "total_bytes"
       ],
-      "title": "ArtifactSelectionRef",
       "type": "object"
     },
     "signature": "\"(*, selection_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)], artifact_count: Annotated[int, Ge(ge=1)], total_bytes: Annotated[int, Ge(ge=0)]) -> None\""

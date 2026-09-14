@@ -27,8 +27,6 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-275dff45e9"></a>
-- <a id="s-7986f72e0a"></a>`title`: ObserverRuntimeAuthority
-- <a id="s-8b823ba8ff"></a>`description`: Secret-bearing invocation material excluded from durable request identity.
 - <a id="s-5bffbb9ea1"></a>`type`: object
 
 ### Fields
@@ -65,7 +63,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 91cf4de711f6812e79d7fb88ce76f7180953d9da7c93327c37420b75080a4ee3 -->
+<!-- exact-contract-value: 3297c571aab2e07b9e7ee968589ba6bd437be3a4d0770d93e1a12fe2ce59893d -->
 
 ```json
 {
@@ -73,29 +71,24 @@ The following JSON is the complete value owned at each machine-authority pointer
     "kind": "class",
     "schema": {
       "additionalProperties": false,
-      "description": "Secret-bearing invocation material excluded from durable request identity.",
       "properties": {
         "allow_insecure_http": {
           "default": false,
-          "title": "Allow Insecure Http",
           "type": "boolean"
         },
         "capability_token": {
           "maxLength": 4096,
           "minLength": 1,
-          "title": "Capability Token",
           "type": "string"
         },
         "riverhog_base_url": {
           "maxLength": 2048,
           "minLength": 1,
-          "title": "Riverhog Base Url",
           "type": "string"
         },
         "transport": {
           "const": "riverhog-capability/v1",
           "default": "riverhog-capability/v1",
-          "title": "Transport",
           "type": "string"
         },
         "workspace_assurance": {
@@ -103,7 +96,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             "encrypted",
             "ephemeral"
           ],
-          "title": "Workspace Assurance",
           "type": "string"
         }
       },
@@ -112,7 +104,6 @@ The following JSON is the complete value owned at each machine-authority pointer
         "capability_token",
         "workspace_assurance"
       ],
-      "title": "ObserverRuntimeAuthority",
       "type": "object"
     },
     "signature": "\"(*, transport: Literal['riverhog-capability/v1'] = 'riverhog-capability/v1', riverhog_base_url: Annotated[str, MinLen(min_length=1), MaxLen(max_length=2048)], capability_token: Annotated[str, MinLen(min_length=1), MaxLen(max_length=4096)], allow_insecure_http: bool = False, workspace_assurance: Literal['encrypted', 'ephemeral']) -> None\""

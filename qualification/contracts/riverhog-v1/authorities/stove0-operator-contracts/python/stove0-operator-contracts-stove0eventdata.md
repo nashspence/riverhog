@@ -27,7 +27,6 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-ec14158fcc"></a>
-- <a id="s-b931e61d4d"></a>`title`: Stove0EventData
 - <a id="s-f13c4e108a"></a>`type`: object
 
 ### Fields
@@ -66,7 +65,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 3be614c2ebedf625631bfa1451f92e1352386a0bd23353b252b900cd9454e478 -->
+<!-- exact-contract-value: 3b755914bb9985cfd2ff84e8af58b6a916f92dd8c187d7f726768b195db59f69 -->
 
 ```json
 {
@@ -75,7 +74,6 @@ The following JSON is the complete value owned at each machine-authority pointer
     "schema": {
       "additionalProperties": false,
       "properties": {},
-      "title": "Stove0EventData",
       "type": "object"
     },
     "signature": "'() -> None'"

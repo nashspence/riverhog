@@ -27,8 +27,6 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-2b4e9c5bd7"></a>
-- <a id="s-3af90170d6"></a>`title`: ObjectReadReceipt
-- <a id="s-c3482d5308"></a>`description`: Adapter-observed identity and range for one single-pass read.
 - <a id="s-63f5762c25"></a>`type`: object
 
 ### Fields
@@ -76,7 +74,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: bfb5914a650a8bf38c41b6253b6983b8c4dff5ed5d871829f62360091f7249fe -->
+<!-- exact-contract-value: f87d936730c11d2d83e10b7ee800519af927d0cd228db5945e0eecef367e1b29 -->
 
 ```json
 {
@@ -90,7 +88,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             "object_path": {
               "maxLength": 4096,
               "minLength": 1,
-              "title": "Object Path",
               "type": "string"
             },
             "revision": {
@@ -104,36 +101,30 @@ The following JSON is the complete value owned at each machine-authority pointer
                   "type": "null"
                 }
               ],
-              "default": null,
-              "title": "Revision"
+              "default": null
             }
           },
           "required": [
             "object_path"
           ],
-          "title": "ObjectLocator",
           "type": "object"
         }
       },
       "additionalProperties": false,
-      "description": "Adapter-observed identity and range for one single-pass read.",
       "properties": {
         "object": {
           "$ref": "#/$defs/ObjectLocator"
         },
         "offset": {
           "minimum": 0,
-          "title": "Offset",
           "type": "integer"
         },
         "read_bytes": {
           "minimum": 0,
-          "title": "Read Bytes",
           "type": "integer"
         },
         "total_bytes": {
           "minimum": 0,
-          "title": "Total Bytes",
           "type": "integer"
         }
       },
@@ -143,7 +134,6 @@ The following JSON is the complete value owned at each machine-authority pointer
         "offset",
         "read_bytes"
       ],
-      "title": "ObjectReadReceipt",
       "type": "object"
     },
     "signature": "'(*, object: riverhog_storage_adapter_protocol.protocol.ObjectLocator, total_bytes: Annotated[int, Ge(ge=0)], offset: Annotated[int, Ge(ge=0)], read_bytes: Annotated[int, Ge(ge=0)]) -> None'"

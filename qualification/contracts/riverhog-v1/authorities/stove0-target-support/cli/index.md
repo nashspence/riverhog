@@ -10,5 +10,5 @@ Executable commands: **2** · Command groups: **0**
 
 ### Executable commands
 
-- [stove0-target-conformance](stove0-target-conformance.md) — `stove0-target-conformance-cli/v1`
-- [stove0-target-schemas](stove0-target-schemas.md) — `stove0-target-schemas-cli/v1`
+- [stove0-target-conformance](stove0-target-conformance.md)
+- [stove0-target-schemas](stove0-target-schemas.md)

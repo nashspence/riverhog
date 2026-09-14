@@ -27,7 +27,6 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-5166053768"></a>
-- <a id="s-cbeb352a5d"></a>`title`: ProcessingClaimPlanSealDocument
 - <a id="s-2cf7e6847f"></a>`type`: object
 
 ### Fields
@@ -78,7 +77,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: db923612286d40e422909a44f3aa8c689a5a1fa35a864284054adf4506c2df3c -->
+<!-- exact-contract-value: e1761f489d43d41758fbc6172a0c5784ddb3e3864f5f7a7b813147b127197a52 -->
 
 ```json
 {
@@ -91,12 +90,10 @@ The following JSON is the complete value owned at each machine-authority pointer
           "properties": {
             "id": {
               "pattern": "^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$",
-              "title": "Id",
               "type": "string"
             },
             "sha256": {
               "pattern": "^[0-9a-f]{64}$",
-              "title": "Sha256",
               "type": "string"
             }
           },
@@ -104,7 +101,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             "id",
             "sha256"
           ],
-          "title": "OperationIdentityDocument",
           "type": "object"
         }
       },
@@ -119,7 +115,6 @@ The following JSON is the complete value owned at each machine-authority pointer
       "properties": {
         "controller_evidence": {
           "additionalProperties": true,
-          "title": "Controller Evidence",
           "type": "object",
           "x-riverhog-encoded-bytes-max": 16777216,
           "x-riverhog-extent": {
@@ -129,17 +124,14 @@ The following JSON is the complete value owned at each machine-authority pointer
         },
         "controller_evidence_sha256": {
           "pattern": "^[0-9a-f]{64}$",
-          "title": "Controller Evidence Sha256",
           "type": "string"
         },
         "execution_id": {
           "pattern": "^[0-9a-f]{64}$",
-          "title": "Execution Id",
           "type": "string"
         },
         "fence": {
           "minimum": 1,
-          "title": "Fence",
           "type": "integer"
         },
         "operation": {
@@ -148,7 +140,6 @@ The following JSON is the complete value owned at each machine-authority pointer
         "retirement_grace_seconds": {
           "default": 0,
           "minimum": 0,
-          "title": "Retirement Grace Seconds",
           "type": "integer"
         },
         "retirement_policy": {
@@ -157,7 +148,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             "retain",
             "retire-after-verified-output"
           ],
-          "title": "Retirement Policy",
           "type": "string"
         }
       },
@@ -175,7 +165,6 @@ The following JSON is the complete value owned at each machine-authority pointer
           }
         }
       },
-      "title": "ProcessingClaimPlanSealDocument",
       "type": "object"
     },
     "signature": "\"(*, fence: Annotated[int, Ge(ge=1)], execution_id: Annotated[str, _PydanticGeneralMetadata(pattern='^[0-9a-f]{64}$')], controller_evidence: dict[str, typing.Any], controller_evidence_sha256: Annotated[str, _PydanticGeneralMetadata(pattern='^[0-9a-f]{64}$')], operation: riverhog_protocol.collection_workflow_transport.OperationIdentityDocument, retirement_policy: Literal['retain', 'retire-after-verified-output'] = 'retain', retirement_grace_seconds: Annotated[int, Ge(ge=0)] = 0) -> None\""

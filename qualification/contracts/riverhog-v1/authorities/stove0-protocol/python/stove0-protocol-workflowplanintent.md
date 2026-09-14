@@ -27,8 +27,6 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-5c455d3d8b"></a>
-- <a id="s-93196d8d34"></a>`title`: WorkflowPlanIntent
-- <a id="s-d7f9b6eabb"></a>`description`: Work-independent fields that deterministically materialize a workflow plan.
 - <a id="s-e4f76395f2"></a>`type`: object
 
 ### Fields
@@ -84,7 +82,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 79bbb3f969d4ff508f7619298466abe92f1b4ada45c9a65253d4cd39afb0b2b0 -->
+<!-- exact-contract-value: db00d9b311b0379dfae608f0d6d79d69194631460fd5db802419ccc1eb8e453f -->
 
 ```json
 {
@@ -98,12 +96,10 @@ The following JSON is the complete value owned at each machine-authority pointer
           "properties": {
             "id": {
               "pattern": "^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$",
-              "title": "Id",
               "type": "string"
             },
             "sha256": {
               "pattern": "^[0-9a-f]{64}$",
-              "title": "Sha256",
               "type": "string"
             }
           },
@@ -111,12 +107,10 @@ The following JSON is the complete value owned at each machine-authority pointer
             "id",
             "sha256"
           ],
-          "title": "OperationRef",
           "type": "object"
         }
       },
       "additionalProperties": false,
-      "description": "Work-independent fields that deterministically materialize a workflow plan.",
       "properties": {
         "input_retrieval_policy": {
           "default": "available-only",
@@ -124,7 +118,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             "available-only",
             "allow"
           ],
-          "title": "Input Retrieval Policy",
           "type": "string"
         },
         "operation": {
@@ -134,14 +127,12 @@ The following JSON is the complete value owned at each machine-authority pointer
           "additionalProperties": {
             "$ref": "#/$defs/JsonValue"
           },
-          "title": "Output Policy",
           "type": "object"
         },
         "requested_target_options": {
           "additionalProperties": {
             "$ref": "#/$defs/JsonValue"
           },
-          "title": "Requested Target Options",
           "type": "object"
         },
         "result_kind": {
@@ -150,13 +141,11 @@ The following JSON is the complete value owned at each machine-authority pointer
             "collection",
             "external-effect"
           ],
-          "title": "Result Kind",
           "type": "string"
         },
         "retirement_grace_seconds": {
           "default": 0,
           "minimum": 0,
-          "title": "Retirement Grace Seconds",
           "type": "integer"
         },
         "retirement_policy": {
@@ -165,17 +154,14 @@ The following JSON is the complete value owned at each machine-authority pointer
             "retain",
             "retire-after-verified-output"
           ],
-          "title": "Retirement Policy",
           "type": "string"
         },
         "target_contract_sha256": {
           "pattern": "^[0-9a-f]{64}$",
-          "title": "Target Contract Sha256",
           "type": "string"
         },
         "target_registration_id": {
           "pattern": "^[a-z0-9]\u0028?:[a-z0-9.-]{0,118}[a-z0-9])?$",
-          "title": "Target Registration Id",
           "type": "string"
         }
       },
@@ -184,7 +170,6 @@ The following JSON is the complete value owned at each machine-authority pointer
         "target_registration_id",
         "target_contract_sha256"
       ],
-      "title": "WorkflowPlanIntent",
       "type": "object"
     },
     "signature": "\"(*, operation: stove0_protocol.models.OperationRef, result_kind: Literal['collection', 'external-effect'] = 'collection', target_registration_id: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[a-z0-9]\u0028?:[a-z0-9.-]{0,118}[a-z0-9])?$', ascii_only=None)], target_contract_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)], requested_target_options: dict[str, JsonValue] = <factory>, input_retrieval_policy: Literal['available-only', 'allow'] = 'available-only', retirement_policy: Literal['retain', 'retire-after-verified-output'] = 'retain', retirement_grace_seconds: Annotated[int, Ge(ge=0)] = 0, output_policy: dict[str, JsonValue] = <factory>) -> None\""

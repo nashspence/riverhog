@@ -27,8 +27,6 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-83a11ebd8e"></a>
-- <a id="s-e49aabcc20"></a>`title`: RetirementClaimReferenceDocument
-- <a id="s-74c1c1211a"></a>`description`: Exact claim evidence authorizing one retirement deletion plan.
 - <a id="s-42858d1624"></a>`type`: object
 
 ### Fields
@@ -79,7 +77,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 87c12bcabf2671e184c03887bafec6c61284287d9bc5bb83908e2893b1067ac9 -->
+<!-- exact-contract-value: 402d10557aa0805be306f8b741c817a76bc988f589f30f486006a9c5b8400c4d -->
 
 ```json
 {
@@ -93,16 +91,13 @@ The following JSON is the complete value owned at each machine-authority pointer
         },
         "ExactSetAuthorityDocument": {
           "additionalProperties": false,
-          "description": "Small immutable identity for an exact canonically ordered logical set.",
           "properties": {
             "count": {
               "minimum": 1,
-              "title": "Count",
               "type": "integer"
             },
             "sha256": {
               "pattern": "^[0-9a-f]{64}$",
-              "title": "Sha256",
               "type": "string"
             }
           },
@@ -110,12 +105,10 @@ The following JSON is the complete value owned at each machine-authority pointer
             "count",
             "sha256"
           ],
-          "title": "ExactSetAuthorityDocument",
           "type": "object"
         }
       },
       "additionalProperties": false,
-      "description": "Exact claim evidence authorizing one retirement deletion plan.",
       "oneOf": [
         {
           "properties": {
@@ -154,7 +147,6 @@ The following JSON is the complete value owned at each machine-authority pointer
       "properties": {
         "claim_id": {
           "pattern": "^[0-9a-f]{64}$",
-          "title": "Claim Id",
           "type": "string"
         },
         "execution_id": {
@@ -167,12 +159,10 @@ The following JSON is the complete value owned at each machine-authority pointer
               "type": "null"
             }
           ],
-          "default": null,
-          "title": "Execution Id"
+          "default": null
         },
         "fence": {
           "minimum": 1,
-          "title": "Fence",
           "type": "integer"
         },
         "outcomes": {
@@ -199,7 +189,6 @@ The following JSON is the complete value owned at each machine-authority pointer
         },
         "work_id": {
           "pattern": "^[0-9a-f]{64}$",
-          "title": "Work Id",
           "type": "string"
         }
       },
@@ -208,7 +197,6 @@ The following JSON is the complete value owned at each machine-authority pointer
         "fence",
         "work_id"
       ],
-      "title": "RetirementClaimReferenceDocument",
       "type": "object"
     },
     "signature": "\"(*, claim_id: Annotated[str, _PydanticGeneralMetadata(pattern='^[0-9a-f]{64}$')], fence: Annotated[int, Ge(ge=1)], work_id: Annotated[str, _PydanticGeneralMetadata(pattern='^[0-9a-f]{64}$')], execution_id: Optional[Annotated[str, FieldInfo(annotation=NoneType, required=True, metadata=[_PydanticGeneralMetadata(pattern='^[0-9a-f]{64}$')])]] = None, output_collection_id: CollectionId | None = None, outcomes: riverhog_protocol.collection_workflow_transport.ExactSetAuthorityDocument | None = None) -> None\""

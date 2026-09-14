@@ -27,7 +27,6 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-1f52414858"></a>
-- <a id="s-e34ba1ffce"></a>`title`: ImmutableObjectReceipt
 - <a id="s-4a5c7d34d2"></a>`type`: object
 
 ### Fields
@@ -41,7 +40,7 @@ Exact externally visible contract owned by this semantic dossier.
 | <a id="s-bcb23637a5"></a>`stored_bytes` | yes | type="integer"; minimum=0 |  |
 | <a id="s-a6191dde3e"></a>`stored_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 | <a id="s-1f0efb195e"></a>`verified_content_type` | yes | type="string"; minLength=1; maxLength=255 |  |
-| <a id="s-ebdea37c08"></a>`verified_identity_assertions` | yes | type="object"; additional keys=`additionalProperties`, `maxProperties`, `x-riverhog-encoded-bytes-max`, `x-riverhog-extent` | Inert caller-owned facts used only to identify and reconcile an exact stored object. Adapters canonicalize, persist, return, and compare these assertions; they must not interpret them as routing, retrieval, retention, credentials, placement, or provider-control instructions. Adapters may retain additional adapter-private assertions. |
+| <a id="s-ebdea37c08"></a>`verified_identity_assertions` | yes | type="object"; additional keys=`additionalProperties`, `maxProperties`, `x-riverhog-encoded-bytes-max`, `x-riverhog-extent` |  |
 | <a id="s-d850b34b34"></a>`verified_placement` | yes | type="string"; enum=["archive","immediate"] |  |
 
 ## Maintained corroboration
@@ -76,7 +75,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: a99b43ed32473c9edbecf5bcd8deab52d6d62d0a56c06e7bd4e4534d9ba0456d -->
+<!-- exact-contract-value: ff2afe2b35054334865ce03d0052d2e2f4c2bb10b466029d147ccfccf15882e3 -->
 
 ```json
 {
@@ -88,7 +87,6 @@ The following JSON is the complete value owned at each machine-authority pointer
         "completed_at": {
           "maxLength": 100,
           "minLength": 1,
-          "title": "Completed At",
           "type": "string"
         },
         "entity_token": {
@@ -102,13 +100,11 @@ The following JSON is the complete value owned at each machine-authority pointer
               "type": "null"
             }
           ],
-          "default": null,
-          "title": "Entity Token"
+          "default": null
         },
         "object_path": {
           "maxLength": 4096,
           "minLength": 1,
-          "title": "Object Path",
           "type": "string"
         },
         "revision": {
@@ -122,32 +118,26 @@ The following JSON is the complete value owned at each machine-authority pointer
               "type": "null"
             }
           ],
-          "default": null,
-          "title": "Revision"
+          "default": null
         },
         "stored_bytes": {
           "minimum": 0,
-          "title": "Stored Bytes",
           "type": "integer"
         },
         "stored_sha256": {
           "pattern": "^[0-9a-f]{64}$",
-          "title": "Stored Sha256",
           "type": "string"
         },
         "verified_content_type": {
           "maxLength": 255,
           "minLength": 1,
-          "title": "Verified Content Type",
           "type": "string"
         },
         "verified_identity_assertions": {
           "additionalProperties": {
             "type": "string"
           },
-          "description": "Inert caller-owned facts used only to identify and reconcile an exact stored object. Adapters canonicalize, persist, return, and compare these assertions; they must not interpret them as routing, retrieval, retention, credentials, placement, or provider-control instructions. Adapters may retain additional adapter-private assertions.",
           "maxProperties": 64,
-          "title": "Verified Identity Assertions",
           "type": "object",
           "x-riverhog-encoded-bytes-max": 16384,
           "x-riverhog-extent": {
@@ -160,7 +150,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             "archive",
             "immediate"
           ],
-          "title": "Verified Placement",
           "type": "string"
         }
       },
@@ -173,7 +162,6 @@ The following JSON is the complete value owned at each machine-authority pointer
         "verified_placement",
         "completed_at"
       ],
-      "title": "ImmutableObjectReceipt",
       "type": "object"
     },
     "signature": "\"(*, object_path: Annotated[str, MinLen(min_length=1), MaxLen(max_length=4096)], revision: Annotated[str | None, MinLen(min_length=1), MaxLen(max_length=2000)] = None, entity_token: Annotated[str | None, MinLen(min_length=1), MaxLen(max_length=4000)] = None, stored_bytes: Annotated[int, Ge(ge=0)], stored_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)], verified_content_type: Annotated[str, MinLen(min_length=1), MaxLen(max_length=255)], verified_identity_assertions: Annotated[dict[str, str], MaxLen(max_length=64)], verified_placement: Literal['archive', 'immediate'], completed_at: Annotated[str, MinLen(min_length=1), MaxLen(max_length=100)]) -> None\""

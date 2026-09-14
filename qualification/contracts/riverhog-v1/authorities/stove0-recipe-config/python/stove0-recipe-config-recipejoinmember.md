@@ -27,7 +27,6 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-b3976bdc31"></a>
-- <a id="s-a353b7b8df"></a>`title`: RecipeJoinMember
 - <a id="s-74dbfb34bf"></a>`type`: object
 
 ### Fields
@@ -67,7 +66,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 5c23b0d3f89c1f60e7b5e0e47b96c4167e36a0abaebb28b9494c56610b382ed0 -->
+<!-- exact-contract-value: 9ce8c5cdceeb4489fa7c9735980a1ee74592327abd5da1df1c46d42e22abeb82 -->
 
 ```json
 {
@@ -78,7 +77,6 @@ The following JSON is the complete value owned at each machine-authority pointer
       "properties": {
         "branch_id": {
           "pattern": "^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$",
-          "title": "Branch Id",
           "type": "string"
         },
         "output_roles": {
@@ -87,7 +85,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             "type": "string"
           },
           "minItems": 1,
-          "title": "Output Roles",
           "type": "array"
         }
       },
@@ -95,7 +92,6 @@ The following JSON is the complete value owned at each machine-authority pointer
         "branch_id",
         "output_roles"
       ],
-      "title": "RecipeJoinMember",
       "type": "object"
     },
     "signature": "\"(*, branch_id: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$', ascii_only=None)], output_roles: Annotated[tuple[Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$', ascii_only=None)], ...], MinLen(min_length=1)]) -> None\""

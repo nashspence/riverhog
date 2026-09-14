@@ -41,17 +41,17 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Identity | Selected by | Exit status | stdout | stderr |
 |---|---|---|---|---|
-| <a id="s-a3853a44a8"></a>`planned` | <a id="s-04c5097556"></a>`{"kind":"option-equals","parameter":"dry_run","value":true}` | <a id="s-88a93d4afa"></a>`0` | <a id="s-ccf18d3d82"></a>`human: noncontractual-presentation-of-command-result; json: HTTP plan_collection_deletion — #/components/schemas/CollectionDeletionPlanOut` | <a id="s-c2db8e784e"></a>`all: empty` |
-| <a id="s-147fd57fd4"></a>`executed` | <a id="s-e36a4a5930"></a>`{"kind":"option-equals","parameter":"dry_run","value":false}` | <a id="s-dd198b4019"></a>`0` | <a id="s-902f93111d"></a>`human: noncontractual-presentation-of-command-result; json: HTTP delete_collection — #/components/schemas/CollectionDeletionResultOut` | <a id="s-081438477c"></a>`all: empty` |
+| <a id="s-a3853a44a8"></a>`planned` | <a id="s-04c5097556"></a>`{"kind":"option-equals","parameter":"dry_run","value":true}` | <a id="s-88a93d4afa"></a>`0` | <a id="s-ccf18d3d82"></a>human: `noncontractual-presentation-of-command-result`; json: [HTTP plan_collection_deletion response 200](../../riverhog/http-operations/post-v1-collections-collection-id-deletion-plan.md#s-c1c9816298) | <a id="s-c2db8e784e"></a>all: `empty` |
+| <a id="s-147fd57fd4"></a>`executed` | <a id="s-e36a4a5930"></a>`{"kind":"option-equals","parameter":"dry_run","value":false}` | <a id="s-dd198b4019"></a>`0` | <a id="s-902f93111d"></a>human: `noncontractual-presentation-of-command-result`; json: [HTTP delete_collection response 200](../../riverhog/http-operations/post-v1-collections-collection-id-delete.md#s-257294134c) | <a id="s-081438477c"></a>all: `empty` |
 
 #### Failure outcomes
 
 | Identity | Selected by | Exit status | stdout | stderr |
 |---|---|---|---|---|
-| <a id="s-f5da864260"></a>`usage` | <a id="s-dd23f76561"></a>`{"kind":"parser-rejected-invocation"}` | <a id="s-82187dd7f7"></a>`2` | <a id="s-33e0e19560"></a>`all: empty` | <a id="s-50bc038faf"></a>`all: noncontractual-usage-diagnostic` |
-| <a id="s-ded7ed275f"></a>`operational` | <a id="s-782b3de2a1"></a>`{"kind":"application-error"}` | <a id="s-d4e64b1c68"></a>`1` | <a id="s-47e6b6df91"></a>`human: empty; json: http-api-contracts.ErrorResponse` | <a id="s-651a9a011d"></a>`human: noncontractual-diagnostic; json: empty` |
-| <a id="s-3e686b6e9b"></a>`blocked` | <a id="s-d937144599"></a>`{"kind":"plan-reported-blockers"}` | <a id="s-e9870664eb"></a>`1` | <a id="s-12f27115d1"></a>`human: noncontractual-presentation-of-command-result` | <a id="s-4e8913613a"></a>`human: empty` |
-| <a id="s-7f6714b433"></a>`confirmation-declined` | <a id="s-c410f09696"></a>`{"kind":"interactive-confirmation-mismatch"}` | <a id="s-c5a8fbb6f5"></a>`1` | <a id="s-affc944b60"></a>`human: noncontractual-presentation-of-command-result` | <a id="s-d10a6cff56"></a>`human: noncontractual-diagnostic` |
+| <a id="s-f5da864260"></a>`usage` | <a id="s-dd23f76561"></a>`{"kind":"parser-rejected-invocation"}` | <a id="s-82187dd7f7"></a>`2` | <a id="s-33e0e19560"></a>all: `empty` | <a id="s-50bc038faf"></a>all: `noncontractual-usage-diagnostic` |
+| <a id="s-ded7ed275f"></a>`operational` | <a id="s-782b3de2a1"></a>`{"kind":"application-error"}` | <a id="s-d4e64b1c68"></a>`1` | <a id="s-47e6b6df91"></a>human: `empty`; json: [http-api-contracts.ErrorResponse](../../http-api-contracts/python/http-api-contracts-errorresponse.md) | <a id="s-651a9a011d"></a>human: `noncontractual-diagnostic`; json: `empty` |
+| <a id="s-3e686b6e9b"></a>`blocked` | <a id="s-d937144599"></a>`{"kind":"plan-reported-blockers"}` | <a id="s-e9870664eb"></a>`1` | <a id="s-12f27115d1"></a>human: `noncontractual-presentation-of-command-result` | <a id="s-4e8913613a"></a>human: `empty` |
+| <a id="s-7f6714b433"></a>`confirmation-declined` | <a id="s-c410f09696"></a>`{"kind":"interactive-confirmation-mismatch"}` | <a id="s-c5a8fbb6f5"></a>`1` | <a id="s-affc944b60"></a>human: `noncontractual-presentation-of-command-result` | <a id="s-d10a6cff56"></a>human: `noncontractual-diagnostic` |
 
 ### Progression, limits, and lifecycle
 

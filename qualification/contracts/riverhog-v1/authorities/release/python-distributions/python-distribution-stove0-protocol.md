@@ -19,6 +19,9 @@ Canonical content-opaque collection orchestration contracts for stove0.
 | <a id="s-a1b4ed2273"></a>`artifacts` | [{"coordinate": "dist/stove0_protocol-{version}-py3-none-any.whl", "format": "wheel"}, {"coordinate": "dist/stove0_protocol-{version}.tar.gz", "format": "sdist"}] |
 | <a id="s-93af748a18"></a>`channel` | github-release |
 | <a id="s-a3cca36246"></a>`description` | Canonical content-opaque collection orchestration contracts for stove0. |
+| <a id="s-d24cd65ed6"></a>`license_baseline` | first-v1-publication |
+| <a id="s-364b5d7f5d"></a>`license_expression` | Apache-2.0 |
+| <a id="s-ee9ee04f1d"></a>`publication_identity` | {"coordinate": "stove0-protocol", "kind": "python-distribution"} |
 | <a id="s-f6af3c6655"></a>`requires_python` | >=3.12 |
 | <a id="s-7da1529b8a"></a>`role` | reusable_library |
 | <a id="s-69e1df2c1a"></a>`source` | reference/stove0/packages/protocol/pyproject.toml |
@@ -57,7 +60,7 @@ Publication preserves these existing component authorities; it does not reclassi
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 4509483ec6c9fcc69d1d34ecc90d4316c177822b3f64e30f4c33c56e330e3e91 -->
+<!-- exact-contract-value: bbad744fc142c49d5840e2242d3eeeb015b47161de22ea39a69ab8e8f4e92c1b -->
 
 ```json
 {
@@ -73,6 +76,12 @@ The following JSON is the complete value owned at each machine-authority pointer
   ],
   "channel": "github-release",
   "description": "Canonical content-opaque collection orchestration contracts for stove0.",
+  "license_baseline": "first-v1-publication",
+  "license_expression": "Apache-2.0",
+  "publication_identity": {
+    "coordinate": "stove0-protocol",
+    "kind": "python-distribution"
+  },
   "requires_python": ">=3.12",
   "role": "reusable_library",
   "source": "reference/stove0/packages/protocol/pyproject.toml"

@@ -27,8 +27,6 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-6bccd1f0d0"></a>
-- <a id="s-07727ea055"></a>`title`: TargetInputAuthority
-- <a id="s-f8fa8f0988"></a>`description`: Small exact input authority retained by Stove0 and traversed in bounded pages.
 - <a id="s-748fbaccba"></a>`type`: object
 
 ### Fields
@@ -76,7 +74,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 1326bd288bf4405c010c53c7de90b80aadff4361d215d292f60e568c3e64e61b -->
+<!-- exact-contract-value: bb35e2ac1a6cff851b887443ddd48df408598268b93467d162df61e39426df41 -->
 
 ```json
 {
@@ -86,21 +84,17 @@ The following JSON is the complete value owned at each machine-authority pointer
       "$defs": {
         "ArtifactSelectionRef": {
           "additionalProperties": false,
-          "description": "Closed reference to a separately retained selection document.",
           "properties": {
             "artifact_count": {
               "minimum": 1,
-              "title": "Artifact Count",
               "type": "integer"
             },
             "selection_sha256": {
               "pattern": "^[0-9a-f]{64}$",
-              "title": "Selection Sha256",
               "type": "string"
             },
             "total_bytes": {
               "minimum": 0,
-              "title": "Total Bytes",
               "type": "integer"
             }
           },
@@ -109,7 +103,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             "artifact_count",
             "total_bytes"
           ],
-          "title": "ArtifactSelectionRef",
           "type": "object"
         },
         "TargetInputRoleCount": {
@@ -117,12 +110,10 @@ The following JSON is the complete value owned at each machine-authority pointer
           "properties": {
             "count": {
               "minimum": 1,
-              "title": "Count",
               "type": "integer"
             },
             "role": {
               "pattern": "^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$",
-              "title": "Role",
               "type": "string"
             }
           },
@@ -130,19 +121,16 @@ The following JSON is the complete value owned at each machine-authority pointer
             "role",
             "count"
           ],
-          "title": "TargetInputRoleCount",
           "type": "object"
         }
       },
       "additionalProperties": false,
-      "description": "Small exact input authority retained by Stove0 and traversed in bounded pages.",
       "properties": {
         "roles": {
           "items": {
             "$ref": "#/$defs/TargetInputRoleCount"
           },
           "minItems": 1,
-          "title": "Roles",
           "type": "array"
         },
         "selection": {
@@ -153,7 +141,6 @@ The following JSON is the complete value owned at each machine-authority pointer
         "selection",
         "roles"
       ],
-      "title": "TargetInputAuthority",
       "type": "object"
     },
     "signature": "'(*, selection: stove0_protocol.fork_join.ArtifactSelectionRef, roles: Annotated[tuple[stove0_target_protocol.protocol.TargetInputRoleCount, ...], MinLen(min_length=1)]) -> None'"

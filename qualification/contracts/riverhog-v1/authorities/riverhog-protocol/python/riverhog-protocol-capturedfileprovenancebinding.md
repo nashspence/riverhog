@@ -27,7 +27,6 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-9d3f69681b"></a>
-- <a id="s-e42d0b169f"></a>`title`: CapturedFileProvenanceBinding
 - <a id="s-065b635651"></a>`type`: object
 
 ### Fields
@@ -69,7 +68,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 4b0b394124da2b47860fd563322116126382baab8f642046611991418957646e -->
+<!-- exact-contract-value: 6c844305adad4aeed2309e84c62fbb237ade989960982a8dcf5ae8e5a8674c4e -->
 
 ```json
 {
@@ -96,7 +95,6 @@ The following JSON is the complete value owned at each machine-authority pointer
         },
         "status": {
           "const": "captured",
-          "title": "Status",
           "type": "string"
         }
       },
@@ -105,7 +103,6 @@ The following JSON is the complete value owned at each machine-authority pointer
         "current_state_id",
         "status"
       ],
-      "title": "CapturedFileProvenanceBinding",
       "type": "object"
     },
     "signature": "\"(*, journal_id: ProvenanceJournalId, current_state_id: ProvenanceStateId, status: Literal['captured']) -> None\""

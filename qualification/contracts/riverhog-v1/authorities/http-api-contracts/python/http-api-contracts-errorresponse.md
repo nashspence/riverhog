@@ -27,7 +27,6 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-5b3e1a093f"></a>
-- <a id="s-422e6a11d7"></a>`title`: ErrorResponse
 - <a id="s-e6222fce40"></a>`type`: object
 
 ### Fields
@@ -66,7 +65,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 8a8d3a4316aad3edceefbbaf4bb74d7650843d8a12cbb43cd7eab76065d2af3f -->
+<!-- exact-contract-value: f2473c9aeac6bd3592aabbba6b45f603d27be053426ba891ef601a2ae120a7bd -->
 
 ```json
 {
@@ -79,7 +78,6 @@ The following JSON is the complete value owned at each machine-authority pointer
           "properties": {
             "code": {
               "minLength": 1,
-              "title": "Code",
               "type": "string"
             },
             "details": {
@@ -92,12 +90,10 @@ The following JSON is the complete value owned at each machine-authority pointer
                   "type": "null"
                 }
               ],
-              "default": null,
-              "title": "Details"
+              "default": null
             },
             "message": {
               "minLength": 1,
-              "title": "Message",
               "type": "string"
             }
           },
@@ -105,7 +101,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             "code",
             "message"
           ],
-          "title": "ErrorBody",
           "type": "object"
         }
       },
@@ -118,7 +113,6 @@ The following JSON is the complete value owned at each machine-authority pointer
       "required": [
         "error"
       ],
-      "title": "ErrorResponse",
       "type": "object"
     },
     "signature": "'(*, error: http_api_contracts.ErrorBody) -> None'"

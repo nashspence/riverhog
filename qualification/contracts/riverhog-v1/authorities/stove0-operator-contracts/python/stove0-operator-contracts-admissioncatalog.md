@@ -27,7 +27,6 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-e70a4b1460"></a>
-- <a id="s-c8a7712950"></a>`title`: AdmissionCatalog
 - <a id="s-42d5ab1a2b"></a>`type`: object
 
 ### Fields
@@ -76,7 +75,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 66f163828e9360d6975e5268d9fbb6ba66b353331ce89ba40c5d09a95619c3ee -->
+<!-- exact-contract-value: 401c080d68cad2f5e4adddcbf4198e2a14bb2ee9153dcc5bc587b1f7876ded0b -->
 
 ```json
 {
@@ -86,46 +85,38 @@ The following JSON is the complete value owned at each machine-authority pointer
       "$defs": {
         "AdmissionPolicy": {
           "additionalProperties": false,
-          "description": "One bounded, exact all-of classification admission rule.",
           "properties": {
             "automatic_preview": {
               "const": "accept-ready",
               "default": "accept-ready",
-              "title": "Automatic Preview",
               "type": "string"
             },
             "effective_intent": {
               "additionalProperties": {
                 "$ref": "#/$defs/JsonValue"
               },
-              "title": "Effective Intent",
               "type": "object"
             },
             "format": {
               "const": "stove0-admission-policy/v1",
               "default": "stove0-admission-policy/v1",
-              "title": "Format",
               "type": "string"
             },
             "id": {
               "pattern": "^[a-z0-9]\u0028?:[a-z0-9._-]{0,158}[a-z0-9])?$",
-              "title": "Id",
               "type": "string"
             },
             "recipe_id": {
               "maxLength": 160,
               "minLength": 1,
-              "title": "Recipe Id",
               "type": "string"
             },
             "recipe_revision": {
               "minimum": 1,
-              "title": "Recipe Revision",
               "type": "integer"
             },
             "recipe_sha256": {
               "pattern": "^[0-9a-f]{64}$",
-              "title": "Recipe Sha256",
               "type": "string"
             },
             "required_tags": {
@@ -134,7 +125,6 @@ The following JSON is the complete value owned at each machine-authority pointer
               },
               "maxItems": 100,
               "minItems": 1,
-              "title": "Required Tags",
               "type": "array",
               "x-riverhog-extent": {
                 "policy": "contract_max",
@@ -143,7 +133,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             },
             "revision": {
               "minimum": 1,
-              "title": "Revision",
               "type": "integer"
             }
           },
@@ -155,7 +144,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             "recipe_revision",
             "recipe_sha256"
           ],
-          "title": "AdmissionPolicy",
           "type": "object"
         },
         "CollectionTag": {
@@ -176,7 +164,6 @@ The following JSON is the complete value owned at each machine-authority pointer
         "format": {
           "const": "stove0-admissions/v1",
           "default": "stove0-admissions/v1",
-          "title": "Format",
           "type": "string"
         },
         "policies": {
@@ -185,7 +172,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             "$ref": "#/$defs/AdmissionPolicy"
           },
           "maxItems": 100,
-          "title": "Policies",
           "type": "array",
           "x-riverhog-extent": {
             "policy": "contract_max",
@@ -193,7 +179,6 @@ The following JSON is the complete value owned at each machine-authority pointer
           }
         }
       },
-      "title": "AdmissionCatalog",
       "type": "object"
     },
     "signature": "\"(*, format: Literal['stove0-admissions/v1'] = 'stove0-admissions/v1', policies: Annotated[tuple[stove0_operator_contracts.AdmissionPolicy, ...], MaxLen(max_length=100)] = ()) -> None\""

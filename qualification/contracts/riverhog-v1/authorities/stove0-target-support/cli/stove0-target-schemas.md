@@ -39,14 +39,14 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Identity | Selected by | Exit status | stdout | stderr |
 |---|---|---|---|---|
-| <a id="s-d2d10ff9e4"></a>`emitted` | <a id="s-64c1848d52"></a>`{"kind":"option-absent","parameter":"output"}` | <a id="s-9b9753b7e5"></a>`0` | <a id="s-a76f53c364"></a>`json: document-authority` | <a id="s-64a9479089"></a>`all: empty` |
-| <a id="s-58777f49d4"></a>`written` | <a id="s-3f753cac11"></a>`{"kind":"option-present","parameter":"output"}` | <a id="s-e6dc9fa4fc"></a>`0` | <a id="s-5183a46fc8"></a>`all: empty` | <a id="s-442860db44"></a>`all: empty` |
+| <a id="s-d2d10ff9e4"></a>`emitted` | <a id="s-64c1848d52"></a>`{"kind":"option-absent","parameter":"output"}` | <a id="s-9b9753b7e5"></a>`0` | <a id="s-a76f53c364"></a>json: [generated:stove0-target protocol](../process-protocol/generated-stove0-target-protocol.md) | <a id="s-64a9479089"></a>all: `empty` |
+| <a id="s-58777f49d4"></a>`written` | <a id="s-3f753cac11"></a>`{"kind":"option-present","parameter":"output"}` | <a id="s-e6dc9fa4fc"></a>`0` | <a id="s-5183a46fc8"></a>all: `empty` | <a id="s-442860db44"></a>all: `empty` |
 
 #### Failure outcomes
 
 | Identity | Selected by | Exit status | stdout | stderr |
 |---|---|---|---|---|
-| <a id="s-49d7facace"></a>`usage` | <a id="s-b16257bdc6"></a>`{"kind":"parser-rejected-invocation"}` | <a id="s-d4bb46238f"></a>`2` | <a id="s-e7f36b4908"></a>`all: empty` | <a id="s-b9965c0f7e"></a>`all: noncontractual-usage-diagnostic` |
+| <a id="s-49d7facace"></a>`usage` | <a id="s-b16257bdc6"></a>`{"kind":"parser-rejected-invocation"}` | <a id="s-d4bb46238f"></a>`2` | <a id="s-e7f36b4908"></a>all: `empty` | <a id="s-b9965c0f7e"></a>all: `noncontractual-usage-diagnostic` |
 
 ### Progression, limits, and lifecycle
 

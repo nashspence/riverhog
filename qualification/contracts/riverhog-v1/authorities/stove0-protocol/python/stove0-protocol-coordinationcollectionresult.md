@@ -27,8 +27,6 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-34b10d7254"></a>
-- <a id="s-ea11bbd5ae"></a>`title`: CoordinationCollectionResult
-- <a id="s-c0db0f5a56"></a>`description`: Parent-visible collection produced by the coordinator's actual join leaf.
 - <a id="s-11c104ce99"></a>`type`: object
 
 ### Fields
@@ -73,7 +71,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 72e7b54891b84c95f9b2b2171293ea1ba8feea609b98ef573740f2d6c3695091 -->
+<!-- exact-contract-value: 1811a832461226c2583e982c0d97c1cb77d80a6d9c6eedf55c7323158f4a2877 -->
 
 ```json
 {
@@ -83,21 +81,17 @@ The following JSON is the complete value owned at each machine-authority pointer
       "$defs": {
         "ArtifactSelectionRef": {
           "additionalProperties": false,
-          "description": "Closed reference to a separately retained selection document.",
           "properties": {
             "artifact_count": {
               "minimum": 1,
-              "title": "Artifact Count",
               "type": "integer"
             },
             "selection_sha256": {
               "pattern": "^[0-9a-f]{64}$",
-              "title": "Selection Sha256",
               "type": "string"
             },
             "total_bytes": {
               "minimum": 0,
-              "title": "Total Bytes",
               "type": "integer"
             }
           },
@@ -106,7 +100,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             "artifact_count",
             "total_bytes"
           ],
-          "title": "ArtifactSelectionRef",
           "type": "object"
         },
         "CollectionId": {
@@ -118,7 +111,6 @@ The following JSON is the complete value owned at each machine-authority pointer
           "properties": {
             "archive_root_sha256": {
               "pattern": "^[0-9a-f]{64}$",
-              "title": "Archive Root Sha256",
               "type": "string"
             },
             "collection_id": {
@@ -126,7 +118,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             },
             "content_identity": {
               "pattern": "^[0-9a-f]{64}$",
-              "title": "Content Identity",
               "type": "string"
             }
           },
@@ -135,21 +126,17 @@ The following JSON is the complete value owned at each machine-authority pointer
             "archive_root_sha256",
             "content_identity"
           ],
-          "title": "CollectionRootRef",
           "type": "object"
         }
       },
       "additionalProperties": false,
-      "description": "Parent-visible collection produced by the coordinator's actual join leaf.",
       "properties": {
         "derivation_sha256": {
           "pattern": "^[0-9a-f]{64}$",
-          "title": "Derivation Sha256",
           "type": "string"
         },
         "join_settlement_sha256": {
           "pattern": "^[0-9a-f]{64}$",
-          "title": "Join Settlement Sha256",
           "type": "string"
         },
         "output_collection": {
@@ -160,7 +147,6 @@ The following JSON is the complete value owned at each machine-authority pointer
         },
         "producer_work_id": {
           "pattern": "^[0-9a-f]{64}$",
-          "title": "Producer Work Id",
           "type": "string"
         }
       },
@@ -171,7 +157,6 @@ The following JSON is the complete value owned at each machine-authority pointer
         "output_collection",
         "output_selection"
       ],
-      "title": "CoordinationCollectionResult",
       "type": "object"
     },
     "signature": "\"(*, producer_work_id: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)], join_settlement_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)], derivation_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)], output_collection: stove0_protocol.models.CollectionRootRef, output_selection: stove0_protocol.fork_join.ArtifactSelectionRef) -> None\""

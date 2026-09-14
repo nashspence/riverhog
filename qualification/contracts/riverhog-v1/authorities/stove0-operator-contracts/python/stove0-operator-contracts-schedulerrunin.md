@@ -27,7 +27,6 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-650df8a463"></a>
-- <a id="s-b7a0b3d779"></a>`title`: SchedulerRunIn
 - <a id="s-29eab23810"></a>`type`: object
 
 ### Fields
@@ -61,7 +60,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 673b7f010eb6c00232c5429dfb26f3351656dee5268915bb29d08c4cb06e9812 -->
+<!-- exact-contract-value: 7cdece75f4b1297ea50e602aec77c1579a6d2e2dce16b1bebda4716bed8c3d2b -->
 
 ```json
 {
@@ -77,18 +76,15 @@ The following JSON is the complete value owned at each machine-authority pointer
             "worker",
             "combined"
           ],
-          "title": "Role",
           "type": "string"
         },
         "work_limit": {
           "default": 25,
           "maximum": 100,
           "minimum": 1,
-          "title": "Work Limit",
           "type": "integer"
         }
       },
-      "title": "SchedulerRunIn",
       "type": "object"
     },
     "signature": "\"(*, role: Literal['controller', 'worker', 'combined'] = 'combined', work_limit: Annotated[int, Ge(ge=1), Le(le=100)] = 25) -> None\""

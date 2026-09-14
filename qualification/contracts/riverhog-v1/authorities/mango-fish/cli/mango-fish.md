@@ -41,15 +41,15 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Identity | Selected by | Exit status | stdout | stderr |
 |---|---|---|---|---|
-| <a id="s-c5c84fd8e9"></a>`configuration-check` | <a id="s-962fda80ff"></a>`{"kind":"option-equals","parameter":"check","value":true}` | <a id="s-a0dd530aa6"></a>`0` | <a id="s-1c5b2334bf"></a>`all: mango-fish-configuration-summary/v1` | <a id="s-0d4de0c37a"></a>`all: noncontractual-runtime-log-or-empty` |
-| <a id="s-e4784b90bb"></a>`relay-completed` | <a id="s-50e91c7b08"></a>`{"kind":"option-equals","parameter":"check","value":false}` | <a id="s-22cd70bc63"></a>`0` | <a id="s-09536f2b2c"></a>`all: no-command-result` | <a id="s-9bfa84e578"></a>`all: noncontractual-runtime-log-or-empty` |
+| <a id="s-c5c84fd8e9"></a>`configuration-check` | <a id="s-962fda80ff"></a>`{"kind":"option-equals","parameter":"check","value":true}` | <a id="s-a0dd530aa6"></a>`0` | <a id="s-1c5b2334bf"></a>all: `mango-fish-configuration-summary/v1` | <a id="s-0d4de0c37a"></a>all: `noncontractual-runtime-log-or-empty` |
+| <a id="s-e4784b90bb"></a>`relay-completed` | <a id="s-50e91c7b08"></a>`{"kind":"option-equals","parameter":"check","value":false}` | <a id="s-22cd70bc63"></a>`0` | <a id="s-09536f2b2c"></a>all: `no-command-result` | <a id="s-9bfa84e578"></a>all: `noncontractual-runtime-log-or-empty` |
 
 #### Failure outcomes
 
 | Identity | Selected by | Exit status | stdout | stderr |
 |---|---|---|---|---|
-| <a id="s-cdbaee25f6"></a>`usage` | <a id="s-f10753be16"></a>`{"kind":"parser-rejected-invocation"}` | <a id="s-c4a4f0a60b"></a>`2` | <a id="s-beb6fde10b"></a>`all: empty` | <a id="s-dcf9ebe4b8"></a>`all: noncontractual-usage-diagnostic` |
-| <a id="s-e215ef5c5f"></a>`relay-pass-failed` | <a id="s-0f5436649c"></a>`{"kind":"relay-pass-reported-failures"}` | <a id="s-aef55108b0"></a>`1` | <a id="s-33ac94278e"></a>`all: no-command-result` | <a id="s-0469ca77fd"></a>`all: noncontractual-runtime-log` |
+| <a id="s-cdbaee25f6"></a>`usage` | <a id="s-f10753be16"></a>`{"kind":"parser-rejected-invocation"}` | <a id="s-c4a4f0a60b"></a>`2` | <a id="s-beb6fde10b"></a>all: `empty` | <a id="s-dcf9ebe4b8"></a>all: `noncontractual-usage-diagnostic` |
+| <a id="s-e215ef5c5f"></a>`relay-pass-failed` | <a id="s-0f5436649c"></a>`{"kind":"relay-pass-reported-failures"}` | <a id="s-aef55108b0"></a>`1` | <a id="s-33ac94278e"></a>all: `no-command-result` | <a id="s-0469ca77fd"></a>all: `noncontractual-runtime-log` |
 
 ### Progression, limits, and lifecycle
 

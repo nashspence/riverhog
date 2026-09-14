@@ -27,7 +27,6 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-bac1e80528"></a>
-- <a id="s-c5ed972d66"></a>`title`: JoinAdmittedEvent
 - <a id="s-931ec71f9e"></a>`type`: object
 
 ### Fields
@@ -73,7 +72,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: ceeb7bbfd14cde8bf37ccefbc63953df6b66ef121c730dc73ca49f3b683d4dbf -->
+<!-- exact-contract-value: f46947138207ed8ba496963c4a1c4bbb2c766b9438cf7a865af30e1e4048101c -->
 
 ```json
 {
@@ -86,32 +85,26 @@ The following JSON is the complete value owned at each machine-authority pointer
           "properties": {
             "branch_set_sha256": {
               "pattern": "^[0-9a-f]{64}$",
-              "title": "Branch Set Sha256",
               "type": "string"
             },
             "join_plan_sha256": {
               "pattern": "^[0-9a-f]{64}$",
-              "title": "Join Plan Sha256",
               "type": "string"
             },
             "join_work_id": {
               "pattern": "^[0-9a-f]{64}$",
-              "title": "Join Work Id",
               "type": "string"
             },
             "phase": {
               "const": "coordinating",
-              "title": "Phase",
               "type": "string"
             },
             "revision": {
               "minimum": 2,
-              "title": "Revision",
               "type": "integer"
             },
             "work_id": {
               "pattern": "^[0-9a-f]{64}$",
-              "title": "Work Id",
               "type": "string"
             }
           },
@@ -123,7 +116,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             "join_plan_sha256",
             "join_work_id"
           ],
-          "title": "JoinAdmittedEventData",
           "type": "object"
         }
       },
@@ -135,37 +127,30 @@ The following JSON is the complete value owned at each machine-authority pointer
         "datacontenttype": {
           "const": "application/json",
           "default": "application/json",
-          "title": "Datacontenttype",
           "type": "string"
         },
         "id": {
           "minLength": 1,
-          "title": "Id",
           "type": "string"
         },
         "source": {
           "const": "urn:riverhog:stove0",
-          "title": "Source",
           "type": "string"
         },
         "specversion": {
           "const": "1.0",
           "default": "1.0",
-          "title": "Specversion",
           "type": "string"
         },
         "subject": {
           "minLength": 1,
-          "title": "Subject",
           "type": "string"
         },
         "time": {
-          "title": "Time",
           "type": "string"
         },
         "type": {
           "const": "io.riverhog.stove0.join.admitted",
-          "title": "Type",
           "type": "string"
         }
       },
@@ -177,7 +162,6 @@ The following JSON is the complete value owned at each machine-authority pointer
         "time",
         "data"
       ],
-      "title": "JoinAdmittedEvent",
       "type": "object"
     },
     "signature": "\"(*, specversion: Literal['1.0'] = '1.0', id: Annotated[str, MinLen(min_length=1)], source: Literal['urn:riverhog:stove0'], type: Literal['io.riverhog.stove0.join.admitted'], subject: Annotated[str, MinLen(min_length=1)], time: str, datacontenttype: Literal['application/json'] = 'application/json', data: stove0_operator_contracts.JoinAdmittedEventData) -> None\""

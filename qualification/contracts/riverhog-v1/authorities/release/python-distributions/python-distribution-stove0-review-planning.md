@@ -19,6 +19,9 @@ Optional nonnormative planning bridge for maintained Stove0 review references.
 | <a id="s-30ac634e87"></a>`artifacts` | [{"coordinate": "dist/stove0_review_planning-{version}-py3-none-any.whl", "format": "wheel"}, {"coordinate": "dist/stove0_review_planning-{version}.tar.gz", "format": "sdist"}] |
 | <a id="s-d351ec69fd"></a>`channel` | github-release |
 | <a id="s-cba7731cc5"></a>`description` | Optional nonnormative planning bridge for maintained Stove0 review references. |
+| <a id="s-ec9b009600"></a>`license_baseline` | first-v1-publication |
+| <a id="s-8b988459f4"></a>`license_expression` | Apache-2.0 |
+| <a id="s-dada31f521"></a>`publication_identity` | {"coordinate": "stove0-review-planning", "kind": "python-distribution"} |
 | <a id="s-b9d1c72f24"></a>`requires_python` | >=3.12 |
 | <a id="s-9f59f5c0b8"></a>`role` | reference_component |
 | <a id="s-71fba89045"></a>`source` | reference/stove0/targets/review/planning/pyproject.toml |
@@ -57,7 +60,7 @@ Publication preserves these existing component authorities; it does not reclassi
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 5d14bceab513fd5b9c364eb0f3d1c2f07e02feeffdc4047e75ebf96aea7dc816 -->
+<!-- exact-contract-value: 412b0e78ba647c60d48beceab89fbce8983eef7820a927f8195f2180af75e893 -->
 
 ```json
 {
@@ -73,6 +76,12 @@ The following JSON is the complete value owned at each machine-authority pointer
   ],
   "channel": "github-release",
   "description": "Optional nonnormative planning bridge for maintained Stove0 review references.",
+  "license_baseline": "first-v1-publication",
+  "license_expression": "Apache-2.0",
+  "publication_identity": {
+    "coordinate": "stove0-review-planning",
+    "kind": "python-distribution"
+  },
   "requires_python": ">=3.12",
   "role": "reference_component",
   "source": "reference/stove0/targets/review/planning/pyproject.toml"

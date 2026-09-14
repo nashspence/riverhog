@@ -20,7 +20,10 @@ Optional nonnormative FFprobe sampling-observer reference for Stove0.
 | <a id="s-986e2cc516"></a>`description` | Optional nonnormative FFprobe sampling-observer reference for Stove0. |
 | <a id="s-d8eba62227"></a>`distribution_roots` | ["stove0-ffprobe-sampling-observer"] |
 | <a id="s-568cdf41aa"></a>`format` | oci-image |
+| <a id="s-1ae576c36b"></a>`license_baseline` | first-v1-publication |
+| <a id="s-708a727dc3"></a>`license_expression` | CAL-1.0 |
 | <a id="s-ef0ea0a137"></a>`platforms` | ["linux/amd64"] |
+| <a id="s-ed11ca8b91"></a>`publication_identity` | {"coordinate": "ghcr.io/nashspence/riverhog-stove0-ffprobe-sampling-observer", "kind": "oci-repository"} |
 | <a id="s-a2225ac56b"></a>`repository` | ghcr.io/nashspence/riverhog-stove0-ffprobe-sampling-observer |
 | <a id="s-29252224bb"></a>`role` | reference |
 | <a id="s-4788e659fb"></a>`tag_templates` | ["ghcr.io/nashspence/riverhog-stove0-ffprobe-sampling-observer:{version}", "ghcr.io/nashspence/riverhog-stove0-ffprobe-sampling-observer:sha-{source_sha}"] |
@@ -61,7 +64,7 @@ Publication preserves these existing component authorities; it does not reclassi
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: c5387ce9bf9630e598bec1f101e8242a1faf3ef30c3936820f75c13554beca3a -->
+<!-- exact-contract-value: 995397f3ab7ab426ca7aede917844c694db1145a64109ca06c05f7a4c81675fc -->
 
 ```json
 {
@@ -71,9 +74,15 @@ The following JSON is the complete value owned at each machine-authority pointer
     "stove0-ffprobe-sampling-observer"
   ],
   "format": "oci-image",
+  "license_baseline": "first-v1-publication",
+  "license_expression": "CAL-1.0",
   "platforms": [
     "linux/amd64"
   ],
+  "publication_identity": {
+    "coordinate": "ghcr.io/nashspence/riverhog-stove0-ffprobe-sampling-observer",
+    "kind": "oci-repository"
+  },
   "repository": "ghcr.io/nashspence/riverhog-stove0-ffprobe-sampling-observer",
   "role": "reference",
   "tag_templates": [

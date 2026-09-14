@@ -19,6 +19,9 @@ Optional nonnormative FFprobe sampling-observer reference for Stove0.
 | <a id="s-8187bb8eed"></a>`artifacts` | [{"coordinate": "dist/stove0_ffprobe_sampling_observer-{version}-py3-none-any.whl", "format": "wheel"}, {"coordinate": "dist/stove0_ffprobe_sampling_observer-{version}.tar.gz", "format": "sdist"}] |
 | <a id="s-0c6913c2d1"></a>`channel` | github-release |
 | <a id="s-690ff01e16"></a>`description` | Optional nonnormative FFprobe sampling-observer reference for Stove0. |
+| <a id="s-5db5aaa0bd"></a>`license_baseline` | first-v1-publication |
+| <a id="s-a563234fca"></a>`license_expression` | CAL-1.0 |
+| <a id="s-1e859158ec"></a>`publication_identity` | {"coordinate": "stove0-ffprobe-sampling-observer", "kind": "python-distribution"} |
 | <a id="s-204b24b0b3"></a>`requires_python` | >=3.12 |
 | <a id="s-f98baf5fda"></a>`role` | reference_component |
 | <a id="s-9277253bc1"></a>`source` | reference/stove0/observers/ffprobe-sampling/pyproject.toml |
@@ -57,7 +60,7 @@ Publication preserves these existing component authorities; it does not reclassi
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 3d8d598de202520f4b7a39bef46e96173089be2b4e16ef810ad2f802c4a44bd6 -->
+<!-- exact-contract-value: 4c4df3c636ec8201e9efad30d4664fa9237f4b9a18d8a6486b2c8143cf58a74b -->
 
 ```json
 {
@@ -73,6 +76,12 @@ The following JSON is the complete value owned at each machine-authority pointer
   ],
   "channel": "github-release",
   "description": "Optional nonnormative FFprobe sampling-observer reference for Stove0.",
+  "license_baseline": "first-v1-publication",
+  "license_expression": "CAL-1.0",
+  "publication_identity": {
+    "coordinate": "stove0-ffprobe-sampling-observer",
+    "kind": "python-distribution"
+  },
   "requires_python": ">=3.12",
   "role": "reference_component",
   "source": "reference/stove0/observers/ffprobe-sampling/pyproject.toml"

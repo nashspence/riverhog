@@ -27,7 +27,6 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-2c6445ace7"></a>
-- <a id="s-8cd0245eaf"></a>`title`: EvaluationVariant
 - <a id="s-d9d597beb4"></a>`type`: object
 
 ### Fields
@@ -67,7 +66,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 731626169128da20eb009f5fc25041e4d01a489891cd1092f59d412b34590427 -->
+<!-- exact-contract-value: fece0dee2d4ace72df48b197d10181c460d9b529d3f142b4071959fad457480e -->
 
 ```json
 {
@@ -81,21 +80,18 @@ The following JSON is the complete value owned at each machine-authority pointer
       "properties": {
         "id": {
           "pattern": "^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$",
-          "title": "Id",
           "type": "string"
         },
         "parameters": {
           "additionalProperties": {
             "$ref": "#/$defs/JsonValue"
           },
-          "title": "Parameters",
           "type": "object"
         }
       },
       "required": [
         "id"
       ],
-      "title": "EvaluationVariant",
       "type": "object"
     },
     "signature": "\"(*, id: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$', ascii_only=None)], parameters: dict[str, JsonValue] = <factory>) -> None\""

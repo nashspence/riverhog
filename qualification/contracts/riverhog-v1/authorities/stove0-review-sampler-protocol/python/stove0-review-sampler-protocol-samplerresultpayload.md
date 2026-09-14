@@ -27,7 +27,6 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-d4ec280a21"></a>
-- <a id="s-654625a86f"></a>`title`: SamplerResultPayload
 - <a id="s-d610b6e916"></a>`type`: object
 
 ### Fields
@@ -83,7 +82,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: f19e83b571eab7c4dac6d8e293b7abb46edc799bce49ba87eb523c16f7aabcee -->
+<!-- exact-contract-value: a52999bfdf70a4df1b953386d83f93477c470c15ba8a89f67ccd04770838295d -->
 
 ```json
 {
@@ -97,17 +96,14 @@ The following JSON is the complete value owned at each machine-authority pointer
           "properties": {
             "code": {
               "pattern": "^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$",
-              "title": "Code",
               "type": "string"
             },
             "message": {
               "maxLength": 1000,
               "minLength": 1,
-              "title": "Message",
               "type": "string"
             },
             "retryable": {
-              "title": "Retryable",
               "type": "boolean"
             }
           },
@@ -116,7 +112,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             "message",
             "retryable"
           ],
-          "title": "SamplerFailure",
           "type": "object"
         },
         "SamplerInapplicable": {
@@ -124,13 +119,11 @@ The following JSON is the complete value owned at each machine-authority pointer
           "properties": {
             "code": {
               "pattern": "^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$",
-              "title": "Code",
               "type": "string"
             },
             "message": {
               "maxLength": 1000,
               "minLength": 1,
-              "title": "Message",
               "type": "string"
             }
           },
@@ -138,7 +131,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             "code",
             "message"
           ],
-          "title": "SamplerInapplicable",
           "type": "object"
         },
         "SamplerOutput": {
@@ -146,7 +138,6 @@ The following JSON is the complete value owned at each machine-authority pointer
           "properties": {
             "bytes": {
               "minimum": 0,
-              "title": "Bytes",
               "type": "integer"
             },
             "derived_from": {
@@ -154,29 +145,24 @@ The following JSON is the complete value owned at each machine-authority pointer
                 "type": "string"
               },
               "minItems": 1,
-              "title": "Derived From",
               "type": "array"
             },
             "id": {
               "pattern": "^[A-Za-z0-9]\u0028?:[A-Za-z0-9._-]{0,158}[A-Za-z0-9])?$",
-              "title": "Id",
               "type": "string"
             },
             "media_type": {
               "maxLength": 255,
               "minLength": 1,
-              "title": "Media Type",
               "type": "string"
             },
             "path": {
               "maxLength": 4096,
               "minLength": 1,
-              "title": "Path",
               "type": "string"
             },
             "sha256": {
               "pattern": "^[0-9a-f]{64}$",
-              "title": "Sha256",
               "type": "string"
             }
           },
@@ -188,7 +174,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             "media_type",
             "derived_from"
           ],
-          "title": "SamplerOutput",
           "type": "object"
         }
       },
@@ -198,7 +183,6 @@ The following JSON is the complete value owned at each machine-authority pointer
           "additionalProperties": {
             "$ref": "#/$defs/JsonValue"
           },
-          "title": "Execution Evidence",
           "type": "object"
         },
         "failure": {
@@ -215,7 +199,6 @@ The following JSON is the complete value owned at each machine-authority pointer
         "format": {
           "const": "stove0-review-sampler-result/v1",
           "default": "stove0-review-sampler-result/v1",
-          "title": "Format",
           "type": "string"
         },
         "inapplicable": {
@@ -234,17 +217,14 @@ The following JSON is the complete value owned at each machine-authority pointer
           "items": {
             "$ref": "#/$defs/SamplerOutput"
           },
-          "title": "Outputs",
           "type": "array"
         },
         "request_sha256": {
           "pattern": "^[0-9a-f]{64}$",
-          "title": "Request Sha256",
           "type": "string"
         },
         "sampler_descriptor_sha256": {
           "pattern": "^[0-9a-f]{64}$",
-          "title": "Sampler Descriptor Sha256",
           "type": "string"
         },
         "state": {
@@ -254,7 +234,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             "failed",
             "canceled"
           ],
-          "title": "State",
           "type": "string"
         }
       },
@@ -263,7 +242,6 @@ The following JSON is the complete value owned at each machine-authority pointer
         "sampler_descriptor_sha256",
         "state"
       ],
-      "title": "SamplerResultPayload",
       "type": "object"
     },
     "signature": "\"(*, format: Literal['stove0-review-sampler-result/v1'] = 'stove0-review-sampler-result/v1', request_sha256: Annotated[str, _PydanticGeneralMetadata(pattern='^[0-9a-f]{64}$')], sampler_descriptor_sha256: Annotated[str, _PydanticGeneralMetadata(pattern='^[0-9a-f]{64}$')], state: Literal['succeeded', 'inapplicable', 'failed', 'canceled'], outputs: tuple[stove0_review_sampler_protocol.SamplerOutput, ...] = (), execution_evidence: dict[str, JsonValue] = <factory>, failure: stove0_review_sampler_protocol.SamplerFailure | None = None, inapplicable: stove0_review_sampler_protocol.SamplerInapplicable | None = None) -> None\""

@@ -19,6 +19,9 @@ Optional nonnormative macOS mounted-volume reference for Gogurt.
 | <a id="s-bd8eb6ba21"></a>`artifacts` | [{"coordinate": "dist/gogurt_macos_mounted_volume-{version}-py3-none-any.whl", "format": "wheel"}, {"coordinate": "dist/gogurt_macos_mounted_volume-{version}.tar.gz", "format": "sdist"}] |
 | <a id="s-4127876bfb"></a>`channel` | github-release |
 | <a id="s-daac4b9373"></a>`description` | Optional nonnormative macOS mounted-volume reference for Gogurt. |
+| <a id="s-fb021f2e0b"></a>`license_baseline` | first-v1-publication |
+| <a id="s-bcbce45519"></a>`license_expression` | Apache-2.0 |
+| <a id="s-11187df849"></a>`publication_identity` | {"coordinate": "gogurt-macos-mounted-volume", "kind": "python-distribution"} |
 | <a id="s-6101c9b7b3"></a>`requires_python` | >=3.12 |
 | <a id="s-edfbc33440"></a>`role` | reference_component |
 | <a id="s-bceb97ae45"></a>`source` | reference/gogurt/mounted-volume/macos/pyproject.toml |
@@ -57,7 +60,7 @@ Publication preserves these existing component authorities; it does not reclassi
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: b6b8b02f00cac5c610fe9a55fbe05b0dccb42a1ddf6865dce3b2a6c5f412234c -->
+<!-- exact-contract-value: a7ab8f4c141be6fbbea2d6948faff60b94067dad07154a7f5b3f1d4a3bfb0d22 -->
 
 ```json
 {
@@ -73,6 +76,12 @@ The following JSON is the complete value owned at each machine-authority pointer
   ],
   "channel": "github-release",
   "description": "Optional nonnormative macOS mounted-volume reference for Gogurt.",
+  "license_baseline": "first-v1-publication",
+  "license_expression": "Apache-2.0",
+  "publication_identity": {
+    "coordinate": "gogurt-macos-mounted-volume",
+    "kind": "python-distribution"
+  },
   "requires_python": ">=3.12",
   "role": "reference_component",
   "source": "reference/gogurt/mounted-volume/macos/pyproject.toml"

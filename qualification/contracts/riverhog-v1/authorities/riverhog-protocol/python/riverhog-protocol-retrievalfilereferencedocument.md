@@ -27,7 +27,6 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-ae554c5d48"></a>
-- <a id="s-af6a5277b0"></a>`title`: RetrievalFileReferenceDocument
 - <a id="s-b897be87c8"></a>`type`: object
 
 ### Fields
@@ -68,7 +67,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 688daf5d3fd321d531eb0060a3b3321d15164989c99fd6374ab5dcb53661c273 -->
+<!-- exact-contract-value: 5f43d9352a1b1c98a32b53183e13020fecb8d4f508ac6fd61ff83ba78b280377 -->
 
 ```json
 {
@@ -114,7 +113,6 @@ The following JSON is the complete value owned at each machine-authority pointer
         "collection_id",
         "path"
       ],
-      "title": "RetrievalFileReferenceDocument",
       "type": "object"
     },
     "signature": "'(*, collection_id: CollectionId, path: CanonicalRelPath) -> None'"

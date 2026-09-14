@@ -27,8 +27,6 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-4421aea33c"></a>
-- <a id="s-8581130a3d"></a>`title`: ApplicationAccessGrantSet
-- <a id="s-9a8d3b8d52"></a>`description`: A nonempty, duplicate-free public grant set with canonical wildcard use.
 - <a id="s-a4e482d604"></a>`type`: array
 
 ### Definitions
@@ -69,7 +67,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 63f75a662991a546383b7685d17451b34b05265efd7b1c4929c6874fdca7c27f -->
+<!-- exact-contract-value: e6c340fc5015cb3a969ef453f95ca210ff51f7e0755d7018ac298b661a1bc809 -->
 
 ```json
 {
@@ -156,7 +154,6 @@ The following JSON is the complete value owned at each machine-authority pointer
               ]
             }
           ],
-          "description": "One canonical public application-access request or response grant.",
           "properties": {
             "permission": {
               "$ref": "#/$defs/ApplicationPermission"
@@ -169,7 +166,6 @@ The following JSON is the complete value owned at each machine-authority pointer
           "required": [
             "permission"
           ],
-          "title": "ApplicationAccessGrant",
           "type": "object"
         },
         "ApplicationPermission": {
@@ -223,12 +219,10 @@ The following JSON is the complete value owned at each machine-authority pointer
           }
         }
       ],
-      "description": "A nonempty, duplicate-free public grant set with canonical wildcard use.",
       "items": {
         "$ref": "#/$defs/ApplicationAccessGrant"
       },
       "minItems": 1,
-      "title": "ApplicationAccessGrantSet",
       "type": "array",
       "uniqueItems": true
     },

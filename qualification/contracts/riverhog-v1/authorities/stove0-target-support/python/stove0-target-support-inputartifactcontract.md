@@ -27,7 +27,6 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-ab73500dd1"></a>
-- <a id="s-eca25113e0"></a>`title`: InputArtifactContract
 - <a id="s-e3c0e25b64"></a>`type`: object
 
 ### Fields
@@ -70,7 +69,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 475ba6b8e012fc3dccd2cbe4efdc6f47da54234bc9e3e5d50ea840c848f8d188 -->
+<!-- exact-contract-value: 972dbb50eeac476eaa40ed46b60d5594b728e040fe27fa419bb60de5c041e864 -->
 
 ```json
 {
@@ -97,8 +96,7 @@ The following JSON is the complete value owned at each machine-authority pointer
               "type": "null"
             }
           ],
-          "default": null,
-          "title": "Allowed Dispositions"
+          "default": null
         },
         "maximum": {
           "anyOf": [
@@ -110,25 +108,21 @@ The following JSON is the complete value owned at each machine-authority pointer
               "type": "null"
             }
           ],
-          "default": null,
-          "title": "Maximum"
+          "default": null
         },
         "minimum": {
           "default": 1,
           "minimum": 0,
-          "title": "Minimum",
           "type": "integer"
         },
         "role": {
           "pattern": "^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$",
-          "title": "Role",
           "type": "string"
         }
       },
       "required": [
         "role"
       ],
-      "title": "InputArtifactContract",
       "type": "object"
     },
     "signature": "\"(*, role: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$', ascii_only=None)], minimum: Annotated[int, Ge(ge=0)] = 1, maximum: Annotated[int | None, Ge(ge=1)] = None, allowed_dispositions: tuple[typing.Literal['transformed', 'preserved', 'omitted', 'rejected'], ...] | None = None) -> None\""

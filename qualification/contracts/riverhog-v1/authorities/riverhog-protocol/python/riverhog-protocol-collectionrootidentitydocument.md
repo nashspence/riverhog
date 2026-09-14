@@ -27,7 +27,6 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-a52bb9ed6b"></a>
-- <a id="s-8bf61192c9"></a>`title`: CollectionRootIdentityDocument
 - <a id="s-40e688420a"></a>`type`: object
 
 ### Fields
@@ -74,7 +73,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 8fe280f3a4ed3bfa2f8ccd8927b02431a44391b0a4fcbc812fe7dff63845e4bc -->
+<!-- exact-contract-value: 60ba15e6d58c45d5f1b2c364652c41ec5b4c6bee31d571d9abc546d05c5e884f -->
 
 ```json
 {
@@ -91,7 +90,6 @@ The following JSON is the complete value owned at each machine-authority pointer
       "properties": {
         "archive_root_sha256": {
           "pattern": "^[0-9a-f]{64}$",
-          "title": "Archive Root Sha256",
           "type": "string"
         },
         "collection_id": {
@@ -99,7 +97,6 @@ The following JSON is the complete value owned at each machine-authority pointer
         },
         "content_identity": {
           "pattern": "^[0-9a-f]{64}$",
-          "title": "Content Identity",
           "type": "string"
         }
       },
@@ -108,7 +105,6 @@ The following JSON is the complete value owned at each machine-authority pointer
         "archive_root_sha256",
         "content_identity"
       ],
-      "title": "CollectionRootIdentityDocument",
       "type": "object"
     },
     "signature": "\"(*, collection_id: CollectionId, archive_root_sha256: Annotated[str, _PydanticGeneralMetadata(pattern='^[0-9a-f]{64}$')], content_identity: Annotated[str, _PydanticGeneralMetadata(pattern='^[0-9a-f]{64}$')]) -> None\""

@@ -27,8 +27,6 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-7e447d5c6b"></a>
-- <a id="s-df44d05f00"></a>`title`: StorageAdapterConformanceResult
-- <a id="s-4bdda5ff5e"></a>`description`: Stable positive evidence returned after the complete check set passes.
 - <a id="s-fcac4589b9"></a>`type`: object
 
 ### Fields
@@ -78,7 +76,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: b76cdafa86a79afb954dab586f3da40422d291ba2233785d623a6256e5b3b913 -->
+<!-- exact-contract-value: 0ef963706ebfa15ea243c44de0f4710eb73283c24d9fe51ca96df7649537a1d5 -->
 
 ```json
 {
@@ -91,13 +89,11 @@ The following JSON is the complete value owned at each machine-authority pointer
           "properties": {
             "implementation_id": {
               "pattern": "^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$",
-              "title": "Implementation Id",
               "type": "string"
             },
             "implementation_version": {
               "maxLength": 120,
               "minLength": 1,
-              "title": "Implementation Version",
               "type": "string"
             },
             "maximum_segment_bytes": {
@@ -110,8 +106,7 @@ The following JSON is the complete value owned at each machine-authority pointer
                   "type": "null"
                 }
               ],
-              "default": null,
-              "title": "Maximum Segment Bytes"
+              "default": null
             },
             "maximum_segment_count": {
               "anyOf": [
@@ -123,18 +118,15 @@ The following JSON is the complete value owned at each machine-authority pointer
                   "type": "null"
                 }
               ],
-              "default": null,
-              "title": "Maximum Segment Count"
+              "default": null
             },
             "minimum_nonfinal_segment_bytes": {
               "minimum": 1,
-              "title": "Minimum Nonfinal Segment Bytes",
               "type": "integer"
             },
             "protocol": {
               "const": "riverhog-storage-adapter/v1",
               "default": "riverhog-storage-adapter/v1",
-              "title": "Protocol",
               "type": "string"
             },
             "read_mode": {
@@ -142,7 +134,6 @@ The following JSON is the complete value owned at each machine-authority pointer
                 "immediate",
                 "restore_required"
               ],
-              "title": "Read Mode",
               "type": "string"
             }
           },
@@ -152,24 +143,20 @@ The following JSON is the complete value owned at each machine-authority pointer
             "read_mode",
             "minimum_nonfinal_segment_bytes"
           ],
-          "title": "AdapterDescriptor",
           "type": "object"
         }
       },
       "additionalProperties": false,
-      "description": "Stable positive evidence returned after the complete check set passes.",
       "properties": {
         "checks": {
           "items": {
             "type": "string"
           },
-          "title": "Checks",
           "type": "array"
         },
         "coverage": {
           "const": "complete",
           "default": "complete",
-          "title": "Coverage",
           "type": "string"
         },
         "descriptor": {
@@ -178,19 +165,16 @@ The following JSON is the complete value owned at each machine-authority pointer
         "format": {
           "const": "riverhog-storage-adapter-conformance-result/v1",
           "default": "riverhog-storage-adapter-conformance-result/v1",
-          "title": "Format",
           "type": "string"
         },
         "protocol": {
           "const": "riverhog-storage-adapter/v1",
           "default": "riverhog-storage-adapter/v1",
-          "title": "Protocol",
           "type": "string"
         },
         "status": {
           "const": "conformant",
           "default": "conformant",
-          "title": "Status",
           "type": "string"
         }
       },
@@ -198,7 +182,6 @@ The following JSON is the complete value owned at each machine-authority pointer
         "descriptor",
         "checks"
       ],
-      "title": "StorageAdapterConformanceResult",
       "type": "object"
     },
     "signature": "\"(*, format: Literal['riverhog-storage-adapter-conformance-result/v1'] = 'riverhog-storage-adapter-conformance-result/v1', protocol: Literal['riverhog-storage-adapter/v1'] = 'riverhog-storage-adapter/v1', status: Literal['conformant'] = 'conformant', coverage: Literal['complete'] = 'complete', descriptor: riverhog_storage_adapter_protocol.protocol.AdapterDescriptor, checks: tuple[str, ...]) -> None\""

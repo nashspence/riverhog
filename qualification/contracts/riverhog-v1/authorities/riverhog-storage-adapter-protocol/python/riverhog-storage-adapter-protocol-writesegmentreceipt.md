@@ -27,7 +27,6 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-50b14a6c22"></a>
-- <a id="s-1e3b5c9add"></a>`title`: WriteSegmentReceipt
 - <a id="s-875bd83b21"></a>`type`: object
 
 ### Fields
@@ -63,7 +62,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: c461951433cf2e8eb3b039f4d6cd313eebe0ba7499a56c80d9e1a4d4fd3c58d6 -->
+<!-- exact-contract-value: c1d481fd51eb44770f0deb3d5c419abf4f89f4db6e0d8749705ec34cb748254d -->
 
 ```json
 {
@@ -74,18 +73,15 @@ The following JSON is the complete value owned at each machine-authority pointer
       "properties": {
         "number": {
           "minimum": 1,
-          "title": "Number",
           "type": "integer"
         },
         "segment_token": {
           "maxLength": 4000,
           "minLength": 1,
-          "title": "Segment Token",
           "type": "string"
         },
         "stored_bytes": {
           "minimum": 1,
-          "title": "Stored Bytes",
           "type": "integer"
         },
         "stored_sha256": {
@@ -98,8 +94,7 @@ The following JSON is the complete value owned at each machine-authority pointer
               "type": "null"
             }
           ],
-          "default": null,
-          "title": "Stored Sha256"
+          "default": null
         }
       },
       "required": [
@@ -107,7 +102,6 @@ The following JSON is the complete value owned at each machine-authority pointer
         "segment_token",
         "stored_bytes"
       ],
-      "title": "WriteSegmentReceipt",
       "type": "object"
     },
     "signature": "\"(*, number: Annotated[int, Ge(ge=1)], segment_token: Annotated[str, MinLen(min_length=1), MaxLen(max_length=4000)], stored_bytes: Annotated[int, Ge(ge=1)], stored_sha256: Optional[Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)]] = None) -> None\""

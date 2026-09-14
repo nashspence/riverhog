@@ -27,7 +27,6 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-0d4a6f7d8e"></a>
-- <a id="s-aaa4901933"></a>`title`: EventPage
 - <a id="s-fcff02be4e"></a>`type`: object
 
 ### Fields
@@ -74,7 +73,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: e00ab568de1db4278d9c28f682a4463ffc8701730ca0057adabb83ea8b33b758 -->
+<!-- exact-contract-value: 7b19ed6d9d85c8f889a4c2d44b56f95afa99c46d21ba3585950d233d72dcb0d2 -->
 
 ```json
 {
@@ -87,29 +86,24 @@ The following JSON is the complete value owned at each machine-authority pointer
           "properties": {
             "data": {
               "additionalProperties": true,
-              "title": "Data",
               "type": "object"
             },
             "datacontenttype": {
               "const": "application/json",
               "default": "application/json",
-              "title": "Datacontenttype",
               "type": "string"
             },
             "id": {
               "minLength": 1,
-              "title": "Id",
               "type": "string"
             },
             "source": {
               "minLength": 1,
-              "title": "Source",
               "type": "string"
             },
             "specversion": {
               "const": "1.0",
               "default": "1.0",
-              "title": "Specversion",
               "type": "string"
             },
             "subject": {
@@ -122,16 +116,13 @@ The following JSON is the complete value owned at each machine-authority pointer
                   "type": "null"
                 }
               ],
-              "default": null,
-              "title": "Subject"
+              "default": null
             },
             "time": {
-              "title": "Time",
               "type": "string"
             },
             "type": {
               "minLength": 1,
-              "title": "Type",
               "type": "string"
             }
           },
@@ -141,7 +132,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             "type",
             "time"
           ],
-          "title": "CloudEvent",
           "type": "object"
         }
       },
@@ -151,15 +141,12 @@ The following JSON is the complete value owned at each machine-authority pointer
           "items": {
             "$ref": "#/$defs/CloudEvent"
           },
-          "title": "Events",
           "type": "array"
         },
         "has_more": {
-          "title": "Has More",
           "type": "boolean"
         },
         "next_cursor": {
-          "title": "Next Cursor",
           "type": "string"
         }
       },
@@ -168,7 +155,6 @@ The following JSON is the complete value owned at each machine-authority pointer
         "next_cursor",
         "has_more"
       ],
-      "title": "EventPage",
       "type": "object"
     },
     "signature": "'(*, events: list[lifecycle_events.models.CloudEvent], next_cursor: str, has_more: bool) -> None'"

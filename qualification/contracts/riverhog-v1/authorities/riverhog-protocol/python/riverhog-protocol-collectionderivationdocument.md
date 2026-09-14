@@ -27,7 +27,6 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-cb6dc849b6"></a>
-- <a id="s-26c683f5ab"></a>`title`: CollectionDerivationDocument
 - <a id="s-3b39327faa"></a>`type`: object
 
 ### Fields
@@ -86,7 +85,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 37a198924bbff717484dbafa58893ae472886ef796c5caea53830a8a0e3e39b1 -->
+<!-- exact-contract-value: 67c34cffa63818732a0c702f0f622b2b53aa27a56588b90db47864398093c961 -->
 
 ```json
 {
@@ -99,22 +98,18 @@ The following JSON is the complete value owned at each machine-authority pointer
           "properties": {
             "disposition_count": {
               "minimum": 1,
-              "title": "Disposition Count",
               "type": "integer"
             },
             "output_artifact_count": {
               "minimum": 1,
-              "title": "Output Artifact Count",
               "type": "integer"
             },
             "output_edge_count": {
               "minimum": 1,
-              "title": "Output Edge Count",
               "type": "integer"
             },
             "sha256": {
               "pattern": "^[0-9a-f]{64}$",
-              "title": "Sha256",
               "type": "string"
             }
           },
@@ -124,7 +119,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             "output_artifact_count",
             "sha256"
           ],
-          "title": "ArtifactDispositionSetIdentityDocument",
           "type": "object"
         },
         "ClaimFenceDocument": {
@@ -132,12 +126,10 @@ The following JSON is the complete value owned at each machine-authority pointer
           "properties": {
             "fence": {
               "minimum": 1,
-              "title": "Fence",
               "type": "integer"
             },
             "id": {
               "pattern": "^[0-9a-f]{64}$",
-              "title": "Id",
               "type": "string"
             }
           },
@@ -145,7 +137,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             "id",
             "fence"
           ],
-          "title": "ClaimFenceDocument",
           "type": "object"
         },
         "OperationIdentityDocument": {
@@ -153,12 +144,10 @@ The following JSON is the complete value owned at each machine-authority pointer
           "properties": {
             "id": {
               "pattern": "^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$",
-              "title": "Id",
               "type": "string"
             },
             "sha256": {
               "pattern": "^[0-9a-f]{64}$",
-              "title": "Sha256",
               "type": "string"
             }
           },
@@ -166,7 +155,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             "id",
             "sha256"
           ],
-          "title": "OperationIdentityDocument",
           "type": "object"
         },
         "RecipeIdentityDocument": {
@@ -174,17 +162,14 @@ The following JSON is the complete value owned at each machine-authority pointer
           "properties": {
             "id": {
               "pattern": "^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$",
-              "title": "Id",
               "type": "string"
             },
             "revision": {
               "minimum": 1,
-              "title": "Revision",
               "type": "integer"
             },
             "sha256": {
               "pattern": "^[0-9a-f]{64}$",
-              "title": "Sha256",
               "type": "string"
             }
           },
@@ -193,7 +178,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             "revision",
             "sha256"
           ],
-          "title": "RecipeIdentityDocument",
           "type": "object"
         }
       },
@@ -201,7 +185,6 @@ The following JSON is the complete value owned at each machine-authority pointer
       "properties": {
         "artifact_set_sha256": {
           "pattern": "^[0-9a-f]{64}$",
-          "title": "Artifact Set Sha256",
           "type": "string"
         },
         "claim": {
@@ -209,7 +192,6 @@ The following JSON is the complete value owned at each machine-authority pointer
         },
         "controller_evidence": {
           "additionalProperties": true,
-          "title": "Controller Evidence",
           "type": "object",
           "x-riverhog-encoded-bytes-max": 16777216,
           "x-riverhog-extent": {
@@ -219,7 +201,6 @@ The following JSON is the complete value owned at each machine-authority pointer
         },
         "controller_evidence_sha256": {
           "pattern": "^[0-9a-f]{64}$",
-          "title": "Controller Evidence Sha256",
           "type": "string"
         },
         "disposition_set": {
@@ -227,27 +208,22 @@ The following JSON is the complete value owned at each machine-authority pointer
         },
         "execution_envelope_sha256": {
           "pattern": "^[0-9a-f]{64}$",
-          "title": "Execution Envelope Sha256",
           "type": "string"
         },
         "execution_id": {
           "pattern": "^[0-9a-f]{64}$",
-          "title": "Execution Id",
           "type": "string"
         },
         "execution_sha256": {
           "pattern": "^[0-9a-f]{64}$",
-          "title": "Execution Sha256",
           "type": "string"
         },
         "format": {
           "const": "riverhog-collection-derivation/v1",
-          "title": "Format",
           "type": "string"
         },
         "input_set_sha256": {
           "pattern": "^[0-9a-f]{64}$",
-          "title": "Input Set Sha256",
           "type": "string"
         },
         "operation": {
@@ -271,7 +247,6 @@ The following JSON is the complete value owned at each machine-authority pointer
         "controller_evidence_sha256",
         "disposition_set"
       ],
-      "title": "CollectionDerivationDocument",
       "type": "object"
     },
     "signature": "\"(*, format: Literal['riverhog-collection-derivation/v1'], execution_id: Annotated[str, _PydanticGeneralMetadata(pattern='^[0-9a-f]{64}$')], claim: riverhog_protocol.collection_workflow_transport.ClaimFenceDocument, recipe: riverhog_protocol.collection_workflow_transport.RecipeIdentityDocument, operation: riverhog_protocol.collection_workflow_transport.OperationIdentityDocument, input_set_sha256: Annotated[str, _PydanticGeneralMetadata(pattern='^[0-9a-f]{64}$')], artifact_set_sha256: Annotated[str, _PydanticGeneralMetadata(pattern='^[0-9a-f]{64}$')], execution_envelope_sha256: Annotated[str, _PydanticGeneralMetadata(pattern='^[0-9a-f]{64}$')], execution_sha256: Annotated[str, _PydanticGeneralMetadata(pattern='^[0-9a-f]{64}$')], controller_evidence: dict[str, typing.Any], controller_evidence_sha256: Annotated[str, _PydanticGeneralMetadata(pattern='^[0-9a-f]{64}$')], disposition_set: riverhog_protocol.collection_workflow_transport.ArtifactDispositionSetIdentityDocument) -> None\""

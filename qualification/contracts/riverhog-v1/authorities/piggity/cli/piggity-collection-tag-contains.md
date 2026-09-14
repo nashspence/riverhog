@@ -42,14 +42,14 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Identity | Selected by | Exit status | stdout | stderr |
 |---|---|---|---|---|
-| <a id="s-cb1e96f23c"></a>`completed` | <a id="s-e15078e80e"></a>`{"kind":"command-completed"}` | <a id="s-cce5a8053c"></a>`0` | <a id="s-642d4e9f5f"></a>`human: noncontractual-presentation-of-command-result; json: HTTP collection_contains_tag — #/components/schemas/CollectionTagMembershipOut` | <a id="s-addc816fa3"></a>`all: empty` |
+| <a id="s-cb1e96f23c"></a>`completed` | <a id="s-e15078e80e"></a>`{"kind":"command-completed"}` | <a id="s-cce5a8053c"></a>`0` | <a id="s-642d4e9f5f"></a>human: `noncontractual-presentation-of-command-result`; json: [HTTP collection_contains_tag response 200](../../riverhog/http-operations/get-v1-collections-collection-id-tags-contains.md#s-02989a39c4) | <a id="s-addc816fa3"></a>all: `empty` |
 
 #### Failure outcomes
 
 | Identity | Selected by | Exit status | stdout | stderr |
 |---|---|---|---|---|
-| <a id="s-5ce775ed08"></a>`usage` | <a id="s-b4495bb2a2"></a>`{"kind":"parser-rejected-invocation"}` | <a id="s-8ce329d0b4"></a>`2` | <a id="s-56f2161c4c"></a>`all: empty` | <a id="s-eacb26b0b9"></a>`all: noncontractual-usage-diagnostic` |
-| <a id="s-af1778233a"></a>`operational` | <a id="s-bbd1de1f49"></a>`{"kind":"application-error"}` | <a id="s-92a6d9d9e1"></a>`1` | <a id="s-8c0219d819"></a>`human: empty; json: http-api-contracts.ErrorResponse` | <a id="s-17e7c8e235"></a>`human: noncontractual-diagnostic; json: empty` |
+| <a id="s-5ce775ed08"></a>`usage` | <a id="s-b4495bb2a2"></a>`{"kind":"parser-rejected-invocation"}` | <a id="s-8ce329d0b4"></a>`2` | <a id="s-56f2161c4c"></a>all: `empty` | <a id="s-eacb26b0b9"></a>all: `noncontractual-usage-diagnostic` |
+| <a id="s-af1778233a"></a>`operational` | <a id="s-bbd1de1f49"></a>`{"kind":"application-error"}` | <a id="s-92a6d9d9e1"></a>`1` | <a id="s-8c0219d819"></a>human: `empty`; json: [http-api-contracts.ErrorResponse](../../http-api-contracts/python/http-api-contracts-errorresponse.md) | <a id="s-17e7c8e235"></a>human: `noncontractual-diagnostic`; json: `empty` |
 
 ### Progression, limits, and lifecycle
 

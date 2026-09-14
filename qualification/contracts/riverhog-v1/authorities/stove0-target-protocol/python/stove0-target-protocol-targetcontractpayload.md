@@ -27,7 +27,6 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-fe971f71c7"></a>
-- <a id="s-d8b35faa16"></a>`title`: TargetContractPayload
 - <a id="s-ecff2ede8b"></a>`type`: object
 
 ### Fields
@@ -81,7 +80,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: ecc21ee9d6d7303e4e6bd3a8596f2acec8b4d9ca780953b09dabcf238fcc8e80 -->
+<!-- exact-contract-value: d03fc70b3c0db13bbd275d74313a34917e55e9ec15eabed70aca8d284631ed34 -->
 
 ```json
 {
@@ -95,30 +94,25 @@ The following JSON is the complete value owned at each machine-authority pointer
             "dialect": {
               "const": "https://json-schema.org/draft/2020-12/schema",
               "default": "https://json-schema.org/draft/2020-12/schema",
-              "title": "Dialect",
               "type": "string"
             },
             "format_policy": {
               "const": "annotation-only",
               "default": "annotation-only",
-              "title": "Format Policy",
               "type": "string"
             },
             "id": {
               "pattern": "^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$",
-              "title": "Id",
               "type": "string"
             },
             "schema": {
               "additionalProperties": {
                 "$ref": "#/$defs/JsonValue"
               },
-              "title": "Schema",
               "type": "object"
             },
             "sha256": {
               "pattern": "^[0-9a-f]{64}$",
-              "title": "Sha256",
               "type": "string"
             }
           },
@@ -127,7 +121,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             "sha256",
             "schema"
           ],
-          "title": "JsonSchemaDocument",
           "type": "object"
         },
         "JsonValue": {},
@@ -136,12 +129,10 @@ The following JSON is the complete value owned at each machine-authority pointer
           "properties": {
             "operation_contract_sha256": {
               "pattern": "^[0-9a-f]{64}$",
-              "title": "Operation Contract Sha256",
               "type": "string"
             },
             "operation_id": {
               "pattern": "^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$",
-              "title": "Operation Id",
               "type": "string"
             },
             "options_schema": {
@@ -153,7 +144,6 @@ The following JSON is the complete value owned at each machine-authority pointer
                 "collection",
                 "external-effect"
               ],
-              "title": "Result Kind",
               "type": "string"
             }
           },
@@ -162,7 +152,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             "operation_contract_sha256",
             "options_schema"
           ],
-          "title": "TargetOperationSupport",
           "type": "object"
         }
       },
@@ -170,18 +159,15 @@ The following JSON is the complete value owned at each machine-authority pointer
       "properties": {
         "image_digest": {
           "pattern": "^[0-9a-f]{64}$",
-          "title": "Image Digest",
           "type": "string"
         },
         "implementation_id": {
           "pattern": "^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$",
-          "title": "Implementation Id",
           "type": "string"
         },
         "implementation_version": {
           "maxLength": 120,
           "minLength": 1,
-          "title": "Implementation Version",
           "type": "string"
         },
         "operations": {
@@ -189,7 +175,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             "$ref": "#/$defs/TargetOperationSupport"
           },
           "minItems": 1,
-          "title": "Operations",
           "type": "array"
         },
         "protocol": {
@@ -198,19 +183,16 @@ The following JSON is the complete value owned at each machine-authority pointer
             "stove0-transform-target/v1",
             "stove0-effect-target/v1"
           ],
-          "title": "Protocol",
           "type": "string"
         },
         "source_revision": {
           "maxLength": 200,
           "minLength": 1,
-          "title": "Source Revision",
           "type": "string"
         },
         "transport": {
           "const": "riverhog-capability/v1",
           "default": "riverhog-capability/v1",
-          "title": "Transport",
           "type": "string"
         }
       },
@@ -221,7 +203,6 @@ The following JSON is the complete value owned at each machine-authority pointer
         "image_digest",
         "operations"
       ],
-      "title": "TargetContractPayload",
       "type": "object"
     },
     "signature": "\"(*, protocol: Literal['stove0-transform-target/v1', 'stove0-effect-target/v1'] = 'stove0-transform-target/v1', implementation_id: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$', ascii_only=None)], implementation_version: Annotated[str, MinLen(min_length=1), MaxLen(max_length=120)], source_revision: Annotated[str, MinLen(min_length=1), MaxLen(max_length=200)], image_digest: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)], transport: Literal['riverhog-capability/v1'] = 'riverhog-capability/v1', operations: Annotated[tuple[stove0_target_protocol.protocol.TargetOperationSupport, ...], MinLen(min_length=1)]) -> None\""

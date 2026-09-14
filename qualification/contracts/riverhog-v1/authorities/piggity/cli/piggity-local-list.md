@@ -44,14 +44,14 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Identity | Selected by | Exit status | stdout | stderr |
 |---|---|---|---|---|
-| <a id="s-b40ede78f3"></a>`completed` | <a id="s-a79553386e"></a>`{"kind":"command-completed"}` | <a id="s-e624bc94a7"></a>`0` | <a id="s-e8ebb0f401"></a>`human: noncontractual-presentation-of-command-result; json: piggity-local-collection-list/v1` | <a id="s-a173379636"></a>`all: empty` |
+| <a id="s-b40ede78f3"></a>`completed` | <a id="s-a79553386e"></a>`{"kind":"command-completed"}` | <a id="s-e624bc94a7"></a>`0` | <a id="s-e8ebb0f401"></a>human: `noncontractual-presentation-of-command-result`; json: [piggity-local-collection-list/v1](#s-e8ebb0f401) | <a id="s-a173379636"></a>all: `empty` |
 
 #### Failure outcomes
 
 | Identity | Selected by | Exit status | stdout | stderr |
 |---|---|---|---|---|
-| <a id="s-53a4388e21"></a>`usage` | <a id="s-52e88b1a8f"></a>`{"kind":"parser-rejected-invocation"}` | <a id="s-00c8e54d75"></a>`2` | <a id="s-be36d857ec"></a>`all: empty` | <a id="s-c937018d8c"></a>`all: noncontractual-usage-diagnostic` |
-| <a id="s-d3e9f15cc0"></a>`operational` | <a id="s-4f43a96878"></a>`{"kind":"application-error"}` | <a id="s-60cec51350"></a>`1` | <a id="s-8a82f1b3f2"></a>`human: empty; json: http-api-contracts.ErrorResponse` | <a id="s-d1d2a276e7"></a>`human: noncontractual-diagnostic; json: empty` |
+| <a id="s-53a4388e21"></a>`usage` | <a id="s-52e88b1a8f"></a>`{"kind":"parser-rejected-invocation"}` | <a id="s-00c8e54d75"></a>`2` | <a id="s-be36d857ec"></a>all: `empty` | <a id="s-c937018d8c"></a>all: `noncontractual-usage-diagnostic` |
+| <a id="s-d3e9f15cc0"></a>`operational` | <a id="s-4f43a96878"></a>`{"kind":"application-error"}` | <a id="s-60cec51350"></a>`1` | <a id="s-8a82f1b3f2"></a>human: `empty`; json: [http-api-contracts.ErrorResponse](../../http-api-contracts/python/http-api-contracts-errorresponse.md) | <a id="s-d1d2a276e7"></a>human: `noncontractual-diagnostic`; json: `empty` |
 
 ### Progression, limits, and lifecycle
 

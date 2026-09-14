@@ -27,7 +27,6 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-d5b5deaef9"></a>
-- <a id="s-b10586a4cf"></a>`title`: ObjectLocator
 - <a id="s-7c1e8986f2"></a>`type`: object
 
 ### Fields
@@ -67,7 +66,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 7c8bbff5706bc3880c2a6d8877f75b9616ca8e68aa146614f3067b9f7af92136 -->
+<!-- exact-contract-value: 42e4374de048bfd72fa0f1ffa830ec85ddd1ac6adec81fccde6e4d26b955bc6d -->
 
 ```json
 {
@@ -79,7 +78,6 @@ The following JSON is the complete value owned at each machine-authority pointer
         "object_path": {
           "maxLength": 4096,
           "minLength": 1,
-          "title": "Object Path",
           "type": "string"
         },
         "revision": {
@@ -93,14 +91,12 @@ The following JSON is the complete value owned at each machine-authority pointer
               "type": "null"
             }
           ],
-          "default": null,
-          "title": "Revision"
+          "default": null
         }
       },
       "required": [
         "object_path"
       ],
-      "title": "ObjectLocator",
       "type": "object"
     },
     "signature": "'(*, object_path: Annotated[str, MinLen(min_length=1), MaxLen(max_length=4096)], revision: Annotated[str | None, MinLen(min_length=1), MaxLen(max_length=2000)] = None) -> None'"

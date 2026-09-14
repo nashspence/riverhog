@@ -8,7 +8,7 @@ Declared public imports and their selected exact structural contracts.
 
 ### `stove0_review_planning`
 
-- [stove0_review_planning.ReviewVariant](stove0-review-planning-reviewvariant.md)
-- [stove0_review_planning.contract_report](stove0-review-planning-contract-report.md)
-- [stove0_review_planning.evenly_spaced_sample_plan](stove0-review-planning-evenly-spaced-sample-plan.md)
-- [stove0_review_planning.review_evaluation_definition](stove0-review-planning-review-evaluation-definition.md)
+- [ReviewVariant](stove0-review-planning-reviewvariant.md)
+- [contract_report](stove0-review-planning-contract-report.md)
+- [evenly_spaced_sample_plan](stove0-review-planning-evenly-spaced-sample-plan.md)
+- [review_evaluation_definition](stove0-review-planning-review-evaluation-definition.md)

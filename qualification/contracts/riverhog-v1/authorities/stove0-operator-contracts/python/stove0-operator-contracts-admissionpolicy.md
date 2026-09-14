@@ -27,8 +27,6 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-886f287521"></a>
-- <a id="s-9505a2f04d"></a>`title`: AdmissionPolicy
-- <a id="s-a086692f6e"></a>`description`: One bounded, exact all-of classification admission rule.
 - <a id="s-845b3374ea"></a>`type`: object
 
 ### Fields
@@ -83,7 +81,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 720921e353ccb16f9e94fe0712e6c3e4be008b189227bc9c762042560d3274fa -->
+<!-- exact-contract-value: 928d50b603d08dcc50bd6f49dd0f3335fa583e7094fddf0f3dbaa03f85902c1d -->
 
 ```json
 {
@@ -105,46 +103,38 @@ The following JSON is the complete value owned at each machine-authority pointer
         "JsonValue": {}
       },
       "additionalProperties": false,
-      "description": "One bounded, exact all-of classification admission rule.",
       "properties": {
         "automatic_preview": {
           "const": "accept-ready",
           "default": "accept-ready",
-          "title": "Automatic Preview",
           "type": "string"
         },
         "effective_intent": {
           "additionalProperties": {
             "$ref": "#/$defs/JsonValue"
           },
-          "title": "Effective Intent",
           "type": "object"
         },
         "format": {
           "const": "stove0-admission-policy/v1",
           "default": "stove0-admission-policy/v1",
-          "title": "Format",
           "type": "string"
         },
         "id": {
           "pattern": "^[a-z0-9]\u0028?:[a-z0-9._-]{0,158}[a-z0-9])?$",
-          "title": "Id",
           "type": "string"
         },
         "recipe_id": {
           "maxLength": 160,
           "minLength": 1,
-          "title": "Recipe Id",
           "type": "string"
         },
         "recipe_revision": {
           "minimum": 1,
-          "title": "Recipe Revision",
           "type": "integer"
         },
         "recipe_sha256": {
           "pattern": "^[0-9a-f]{64}$",
-          "title": "Recipe Sha256",
           "type": "string"
         },
         "required_tags": {
@@ -153,7 +143,6 @@ The following JSON is the complete value owned at each machine-authority pointer
           },
           "maxItems": 100,
           "minItems": 1,
-          "title": "Required Tags",
           "type": "array",
           "x-riverhog-extent": {
             "policy": "contract_max",
@@ -162,7 +151,6 @@ The following JSON is the complete value owned at each machine-authority pointer
         },
         "revision": {
           "minimum": 1,
-          "title": "Revision",
           "type": "integer"
         }
       },
@@ -174,7 +162,6 @@ The following JSON is the complete value owned at each machine-authority pointer
         "recipe_revision",
         "recipe_sha256"
       ],
-      "title": "AdmissionPolicy",
       "type": "object"
     },
     "signature": "\"(*, format: Literal['stove0-admission-policy/v1'] = 'stove0-admission-policy/v1', id: Annotated[str, _PydanticGeneralMetadata(pattern='^[a-z0-9]\u0028?:[a-z0-9._-]{0,158}[a-z0-9])?$')], revision: Annotated[int, Ge(ge=1)], required_tags: Annotated[tuple[CollectionTag, ...], MinLen(min_length=1), MaxLen(max_length=100)], recipe_id: Annotated[str, MinLen(min_length=1), MaxLen(max_length=160)], recipe_revision: Annotated[int, Ge(ge=1)], recipe_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)], effective_intent: dict[str, JsonValue] = <factory>, automatic_preview: Literal['accept-ready'] = 'accept-ready') -> None\""

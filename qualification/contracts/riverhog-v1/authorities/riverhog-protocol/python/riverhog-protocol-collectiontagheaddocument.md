@@ -27,8 +27,6 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-ce4ab1a01c"></a>
-- <a id="s-e2cb62eb00"></a>`title`: CollectionTagHeadDocument
-- <a id="s-6b15665534"></a>`description`: Canonical mutable head for one recoverable collection tag authority.
 - <a id="s-6ca05613b3"></a>`type`: object
 
 ### Fields
@@ -75,7 +73,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: f859b6e0ad55a64e002dcd0e7da486cc82becd1ff1ac0eca986666a2f8917f0a -->
+<!-- exact-contract-value: f2cc77ada412a915f7cfae31cf738dfdc026c5423bc466ef78878b5e899d3227 -->
 
 ```json
 {
@@ -83,28 +81,23 @@ The following JSON is the complete value owned at each machine-authority pointer
     "kind": "class",
     "schema": {
       "additionalProperties": false,
-      "description": "Canonical mutable head for one recoverable collection tag authority.",
       "properties": {
         "archive_root_sha256": {
           "pattern": "^[0-9a-f]{64}$",
-          "title": "Archive Root Sha256",
           "type": "string"
         },
         "format": {
           "const": "riverhog-collection-tag-head/v1",
           "default": "riverhog-collection-tag-head/v1",
-          "title": "Format",
           "type": "string"
         },
         "head_identity": {
           "pattern": "^[0-9a-f]{64}$",
-          "title": "Head Identity",
           "type": "string"
         },
         "revision": {
           "maximum": 9007199254740991,
           "minimum": 1,
-          "title": "Revision",
           "type": "integer"
         },
         "root_sha256": {
@@ -117,12 +110,10 @@ The following JSON is the complete value owned at each machine-authority pointer
               "type": "null"
             }
           ],
-          "default": null,
-          "title": "Root Sha256"
+          "default": null
         },
         "tag_set_identity": {
           "pattern": "^[0-9a-f]{64}$",
-          "title": "Tag Set Identity",
           "type": "string"
         }
       },
@@ -132,7 +123,6 @@ The following JSON is the complete value owned at each machine-authority pointer
         "tag_set_identity",
         "head_identity"
       ],
-      "title": "CollectionTagHeadDocument",
       "type": "object"
     },
     "signature": "\"(*, format: Literal['riverhog-collection-tag-head/v1'] = 'riverhog-collection-tag-head/v1', archive_root_sha256: Annotated[str, _PydanticGeneralMetadata(pattern='^[0-9a-f]{64}$')], revision: Annotated[int, Strict(strict=True), Ge(ge=1), Le(le=9007199254740991)], root_sha256: Annotated[str | None, _PydanticGeneralMetadata(pattern='^[0-9a-f]{64}$')] = None, tag_set_identity: Annotated[str, _PydanticGeneralMetadata(pattern='^[0-9a-f]{64}$')], head_identity: Annotated[str, _PydanticGeneralMetadata(pattern='^[0-9a-f]{64}$')]) -> None\""

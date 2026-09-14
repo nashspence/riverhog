@@ -8,8 +8,8 @@ Coordinated version and immutable-tag semantics.
 
 | Exact unit | Classification |
 |---|---|
-| [Versioning: distribution version](versioning-distribution-version.md) | — |
-| [Versioning: policy](versioning-policy.md) | — |
-| [Versioning: series](versioning-series.md) | — |
-| [Versioning: tag immutability](versioning-tag-immutability.md) | — |
-| [Versioning: tag template](versioning-tag-template.md) | — |
+| [distribution version](versioning-distribution-version.md) | — |
+| [policy](versioning-policy.md) | — |
+| [series](versioning-series.md) | — |
+| [tag immutability](versioning-tag-immutability.md) | — |
+| [tag template](versioning-tag-template.md) | — |

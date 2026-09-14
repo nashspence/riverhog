@@ -27,8 +27,6 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-874c7f4608"></a>
-- <a id="s-8264798fc4"></a>`title`: TargetSettlementAuthorityPayload
-- <a id="s-0f5d1f42e6"></a>`description`: Stove0-owned post-root settlement over one immutable production authority.
 - <a id="s-155bb0da2e"></a>`type`: object
 
 ### Fields
@@ -73,7 +71,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: c1fb0efc5698b0ac545e7de3d2c7fb7a94f20728745f4e153e28b2fb21852786 -->
+<!-- exact-contract-value: 4378d5cb48a0170095dfaad94c7f906c34e5abbbb607aca8f84fcfa28781baf2 -->
 
 ```json
 {
@@ -90,7 +88,6 @@ The following JSON is the complete value owned at each machine-authority pointer
           "properties": {
             "archive_root_sha256": {
               "pattern": "^[0-9a-f]{64}$",
-              "title": "Archive Root Sha256",
               "type": "string"
             },
             "collection_id": {
@@ -98,12 +95,10 @@ The following JSON is the complete value owned at each machine-authority pointer
             },
             "content_identity": {
               "pattern": "^[0-9a-f]{64}$",
-              "title": "Content Identity",
               "type": "string"
             },
             "derivation_sha256": {
               "pattern": "^[0-9a-f]{64}$",
-              "title": "Derivation Sha256",
               "type": "string"
             }
           },
@@ -113,7 +108,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             "content_identity",
             "derivation_sha256"
           ],
-          "title": "OutputCollectionRef",
           "type": "object"
         },
         "TargetOutputBindingSetIdentity": {
@@ -121,17 +115,14 @@ The following JSON is the complete value owned at each machine-authority pointer
           "properties": {
             "artifact_count": {
               "minimum": 1,
-              "title": "Artifact Count",
               "type": "integer"
             },
             "sha256": {
               "pattern": "^[0-9a-f]{64}$",
-              "title": "Sha256",
               "type": "string"
             },
             "total_bytes": {
               "minimum": 0,
-              "title": "Total Bytes",
               "type": "integer"
             }
           },
@@ -140,22 +131,18 @@ The following JSON is the complete value owned at each machine-authority pointer
             "total_bytes",
             "sha256"
           ],
-          "title": "TargetOutputBindingSetIdentity",
           "type": "object"
         }
       },
       "additionalProperties": false,
-      "description": "Stove0-owned post-root settlement over one immutable production authority.",
       "properties": {
         "format": {
           "const": "stove0-target-settlement/v1",
           "default": "stove0-target-settlement/v1",
-          "title": "Format",
           "type": "string"
         },
         "job_id": {
           "pattern": "^[0-9a-f]{64}$",
-          "title": "Job Id",
           "type": "string"
         },
         "output_bindings": {
@@ -166,7 +153,6 @@ The following JSON is the complete value owned at each machine-authority pointer
         },
         "production_sha256": {
           "pattern": "^[0-9a-f]{64}$",
-          "title": "Production Sha256",
           "type": "string"
         }
       },
@@ -176,7 +162,6 @@ The following JSON is the complete value owned at each machine-authority pointer
         "output_collection",
         "output_bindings"
       ],
-      "title": "TargetSettlementAuthorityPayload",
       "type": "object"
     },
     "signature": "\"(*, format: Literal['stove0-target-settlement/v1'] = 'stove0-target-settlement/v1', job_id: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)], production_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)], output_collection: stove0_target_protocol.protocol.OutputCollectionRef, output_bindings: stove0_target_protocol.protocol.TargetOutputBindingSetIdentity) -> None\""

@@ -20,7 +20,10 @@ Optional nonnormative Backblaze B2 storage reference for Riverhog.
 | <a id="s-d7d3447989"></a>`description` | Optional nonnormative Backblaze B2 storage reference for Riverhog. |
 | <a id="s-2760bc934b"></a>`distribution_roots` | ["riverhog-storage-adapter-backblaze"] |
 | <a id="s-2e2dba66bd"></a>`format` | oci-image |
+| <a id="s-6665e8a59c"></a>`license_baseline` | first-v1-publication |
+| <a id="s-5b76337e31"></a>`license_expression` | CAL-1.0 |
 | <a id="s-d84f7a1e41"></a>`platforms` | ["linux/amd64"] |
+| <a id="s-340dbd6cc9"></a>`publication_identity` | {"coordinate": "ghcr.io/nashspence/riverhog-storage-adapter-backblaze", "kind": "oci-repository"} |
 | <a id="s-cf5084e717"></a>`repository` | ghcr.io/nashspence/riverhog-storage-adapter-backblaze |
 | <a id="s-f37fe9c223"></a>`role` | reference |
 | <a id="s-97ee88894f"></a>`tag_templates` | ["ghcr.io/nashspence/riverhog-storage-adapter-backblaze:{version}", "ghcr.io/nashspence/riverhog-storage-adapter-backblaze:sha-{source_sha}"] |
@@ -61,7 +64,7 @@ Publication preserves these existing component authorities; it does not reclassi
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 6314b30c5133c534973fe356bbabea8ba70d3cacf575030d07812a7223174c2b -->
+<!-- exact-contract-value: 723a3b646a523cff970915c24dd7b1defcc92e3b05efcd290eea0efa983f1a66 -->
 
 ```json
 {
@@ -71,9 +74,15 @@ The following JSON is the complete value owned at each machine-authority pointer
     "riverhog-storage-adapter-backblaze"
   ],
   "format": "oci-image",
+  "license_baseline": "first-v1-publication",
+  "license_expression": "CAL-1.0",
   "platforms": [
     "linux/amd64"
   ],
+  "publication_identity": {
+    "coordinate": "ghcr.io/nashspence/riverhog-storage-adapter-backblaze",
+    "kind": "oci-repository"
+  },
   "repository": "ghcr.io/nashspence/riverhog-storage-adapter-backblaze",
   "role": "reference",
   "tag_templates": [

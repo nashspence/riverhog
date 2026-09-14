@@ -8,5 +8,5 @@ Stable externally used publication locations.
 
 | Exact unit | Classification |
 |---|---|
-| [Coordinates: documentation](coordinates-documentation.md) | — |
-| [Coordinates: source](coordinates-source.md) | — |
+| [documentation](coordinates-documentation.md) | — |
+| [source](coordinates-source.md) | — |

@@ -27,7 +27,6 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-5e92215fe7"></a>
-- <a id="s-9412086252"></a>`title`: ReadRequested
 - <a id="s-2974f2d622"></a>`type`: object
 
 ### Fields
@@ -67,7 +66,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: a9cde6473fa04ad3677f5c005fc0cd5a3a21fddcb9ddb77fcdcfdb01173a993e -->
+<!-- exact-contract-value: 1da6894c05c85076dc3ad7927863e2959374f2bc975543a0c52e45d8ba89b190 -->
 
 ```json
 {
@@ -87,17 +86,14 @@ The following JSON is the complete value owned at each machine-authority pointer
               "type": "null"
             }
           ],
-          "default": null,
-          "title": "Estimated Ready At"
+          "default": null
         },
         "state": {
           "const": "requested",
           "default": "requested",
-          "title": "State",
           "type": "string"
         }
       },
-      "title": "ReadRequested",
       "type": "object"
     },
     "signature": "\"(*, state: Literal['requested'] = 'requested', estimated_ready_at: Annotated[str | None, MinLen(min_length=1), MaxLen(max_length=100)] = None) -> None\""

@@ -27,8 +27,6 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-bb9487fbdc"></a>
-- <a id="s-bce0c4ce47"></a>`title`: WriteSegmentListRequest
-- <a id="s-024ba13bf4"></a>`description`: Request one bounded page from an exact accepted-segment view.
 - <a id="s-d723c95cd1"></a>`type`: object
 
 ### Fields
@@ -70,7 +68,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: e88766324ada0a773b711d7070983cb8a4a9de677f12c15e35d18200f446f614 -->
+<!-- exact-contract-value: 38d2066d4c3df24f5f02710309604796e3cbf5ccab8e90e1fbf1955141f7f8b4 -->
 
 ```json
 {
@@ -82,22 +80,17 @@ The following JSON is the complete value owned at each machine-authority pointer
           "additionalProperties": false,
           "properties": {
             "expected_bytes": {
-              "description": "Exact immutable-object byte length admitted by this write session. The value remains fixed until the write becomes terminal.",
               "minimum": 1,
-              "title": "Expected Bytes",
               "type": "integer"
             },
             "object_path": {
               "maxLength": 4096,
               "minLength": 1,
-              "title": "Object Path",
               "type": "string"
             },
             "write_token": {
-              "description": "Opaque adapter-owned persistable continuation handle. For the same configured adapter it remains replayable across client, transport, Riverhog, and adapter process restarts until completion, explicit abort, or caller-authorized incomplete-write reclamation makes the write terminal.",
               "maxLength": 4000,
               "minLength": 1,
-              "title": "Write Token",
               "type": "string"
             }
           },
@@ -106,17 +99,14 @@ The following JSON is the complete value owned at each machine-authority pointer
             "expected_bytes",
             "write_token"
           ],
-          "title": "WriteSession",
           "type": "object"
         }
       },
       "additionalProperties": false,
-      "description": "Request one bounded page from an exact accepted-segment view.",
       "properties": {
         "after_number": {
           "default": 0,
           "minimum": 0,
-          "title": "After Number",
           "type": "integer",
           "x-riverhog-extent": {
             "policy": "segmented_no_total_max",
@@ -127,7 +117,6 @@ The following JSON is the complete value owned at each machine-authority pointer
           "default": 128,
           "maximum": 128,
           "minimum": 1,
-          "title": "Maximum Items",
           "type": "integer"
         },
         "session": {
@@ -144,14 +133,12 @@ The following JSON is the complete value owned at each machine-authority pointer
               "type": "null"
             }
           ],
-          "default": null,
-          "title": "Traversal Token"
+          "default": null
         }
       },
       "required": [
         "session"
       ],
-      "title": "WriteSegmentListRequest",
       "type": "object"
     },
     "signature": "'(*, session: riverhog_storage_adapter_protocol.protocol.WriteSession, after_number: Annotated[int, Ge(ge=0)] = 0, traversal_token: Annotated[str | None, MinLen(min_length=1), MaxLen(max_length=4000)] = None, maximum_items: Annotated[int, Ge(ge=1), Le(le=128)] = 128) -> None'"

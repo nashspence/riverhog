@@ -27,7 +27,6 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-1e0a8aa4fc"></a>
-- <a id="s-f3fdecf5b7"></a>`title`: RiverhogEventPage
 - <a id="s-424e2b5528"></a>`type`: object
 
 ### Fields
@@ -107,7 +106,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: b87219ec551e73ffbb568e8a324ed98ddc89e5b193e414fbef4a551b54fa9e30 -->
+<!-- exact-contract-value: 709d47d5a37072527779c24717803b28a6dcf6f0e71a6a5a444475fa2191affa -->
 
 ```json
 {
@@ -135,7 +134,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             "collection_created_at": {
               "maxLength": 64,
               "minLength": 1,
-              "title": "Collection Created At",
               "type": "string"
             },
             "collection_id": {
@@ -156,8 +154,7 @@ The following JSON is the complete value owned at each machine-authority pointer
                   "type": "null"
                 }
               ],
-              "default": null,
-              "title": "Context"
+              "default": null
             },
             "destination_store": {
               "$ref": "#/$defs/ArchiveStoreName"
@@ -170,7 +167,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             },
             "state": {
               "const": "canceled",
-              "title": "State",
               "type": "string"
             }
           },
@@ -183,7 +179,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             "destination_store",
             "state"
           ],
-          "title": "ArchiveCopyCanceledData",
           "type": "object"
         },
         "ArchiveCopyCanceledEvent": {
@@ -195,23 +190,19 @@ The following JSON is the complete value owned at each machine-authority pointer
             "datacontenttype": {
               "const": "application/json",
               "default": "application/json",
-              "title": "Datacontenttype",
               "type": "string"
             },
             "id": {
               "minLength": 1,
-              "title": "Id",
               "type": "string"
             },
             "source": {
               "minLength": 1,
-              "title": "Source",
               "type": "string"
             },
             "specversion": {
               "const": "1.0",
               "default": "1.0",
-              "title": "Specversion",
               "type": "string"
             },
             "subject": {
@@ -224,16 +215,13 @@ The following JSON is the complete value owned at each machine-authority pointer
                   "type": "null"
                 }
               ],
-              "default": null,
-              "title": "Subject"
+              "default": null
             },
             "time": {
-              "title": "Time",
               "type": "string"
             },
             "type": {
               "const": "io.riverhog.riverhog.archive_copy.canceled",
-              "title": "Type",
               "type": "string"
             }
           },
@@ -244,7 +232,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             "time",
             "data"
           ],
-          "title": "ArchiveCopyCanceledEvent",
           "type": "object"
         },
         "ArchiveCopyCompletedData": {
@@ -267,7 +254,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             "collection_created_at": {
               "maxLength": 64,
               "minLength": 1,
-              "title": "Collection Created At",
               "type": "string"
             },
             "collection_id": {
@@ -288,8 +274,7 @@ The following JSON is the complete value owned at each machine-authority pointer
                   "type": "null"
                 }
               ],
-              "default": null,
-              "title": "Context"
+              "default": null
             },
             "destination_store": {
               "$ref": "#/$defs/ArchiveStoreName"
@@ -302,7 +287,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             },
             "state": {
               "const": "completed",
-              "title": "State",
               "type": "string"
             }
           },
@@ -315,7 +299,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             "destination_store",
             "state"
           ],
-          "title": "ArchiveCopyCompletedData",
           "type": "object"
         },
         "ArchiveCopyCompletedEvent": {
@@ -327,23 +310,19 @@ The following JSON is the complete value owned at each machine-authority pointer
             "datacontenttype": {
               "const": "application/json",
               "default": "application/json",
-              "title": "Datacontenttype",
               "type": "string"
             },
             "id": {
               "minLength": 1,
-              "title": "Id",
               "type": "string"
             },
             "source": {
               "minLength": 1,
-              "title": "Source",
               "type": "string"
             },
             "specversion": {
               "const": "1.0",
               "default": "1.0",
-              "title": "Specversion",
               "type": "string"
             },
             "subject": {
@@ -356,16 +335,13 @@ The following JSON is the complete value owned at each machine-authority pointer
                   "type": "null"
                 }
               ],
-              "default": null,
-              "title": "Subject"
+              "default": null
             },
             "time": {
-              "title": "Time",
               "type": "string"
             },
             "type": {
               "const": "io.riverhog.riverhog.archive_copy.completed",
-              "title": "Type",
               "type": "string"
             }
           },
@@ -376,7 +352,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             "time",
             "data"
           ],
-          "title": "ArchiveCopyCompletedEvent",
           "type": "object"
         },
         "ArchiveCopyIssueData": {
@@ -399,7 +374,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             "collection_created_at": {
               "maxLength": 64,
               "minLength": 1,
-              "title": "Collection Created At",
               "type": "string"
             },
             "collection_id": {
@@ -420,8 +394,7 @@ The following JSON is the complete value owned at each machine-authority pointer
                   "type": "null"
                 }
               ],
-              "default": null,
-              "title": "Context"
+              "default": null
             },
             "destination_store": {
               "$ref": "#/$defs/ArchiveStoreName"
@@ -429,7 +402,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             "error": {
               "maxLength": 16384,
               "minLength": 1,
-              "title": "Error",
               "type": "string"
             },
             "initiator": {
@@ -440,7 +412,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             },
             "state": {
               "const": "failed",
-              "title": "State",
               "type": "string"
             }
           },
@@ -454,7 +425,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             "state",
             "error"
           ],
-          "title": "ArchiveCopyIssueData",
           "type": "object"
         },
         "ArchiveCopyIssueEvent": {
@@ -466,23 +436,19 @@ The following JSON is the complete value owned at each machine-authority pointer
             "datacontenttype": {
               "const": "application/json",
               "default": "application/json",
-              "title": "Datacontenttype",
               "type": "string"
             },
             "id": {
               "minLength": 1,
-              "title": "Id",
               "type": "string"
             },
             "source": {
               "minLength": 1,
-              "title": "Source",
               "type": "string"
             },
             "specversion": {
               "const": "1.0",
               "default": "1.0",
-              "title": "Specversion",
               "type": "string"
             },
             "subject": {
@@ -495,16 +461,13 @@ The following JSON is the complete value owned at each machine-authority pointer
                   "type": "null"
                 }
               ],
-              "default": null,
-              "title": "Subject"
+              "default": null
             },
             "time": {
-              "title": "Time",
               "type": "string"
             },
             "type": {
               "const": "io.riverhog.riverhog.archive_copy.issue",
-              "title": "Type",
               "type": "string"
             }
           },
@@ -515,7 +478,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             "time",
             "data"
           ],
-          "title": "ArchiveCopyIssueEvent",
           "type": "object"
         },
         "ArchiveCopyRequestedData": {
@@ -538,7 +500,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             "collection_created_at": {
               "maxLength": 64,
               "minLength": 1,
-              "title": "Collection Created At",
               "type": "string"
             },
             "collection_id": {
@@ -559,8 +520,7 @@ The following JSON is the complete value owned at each machine-authority pointer
                   "type": "null"
                 }
               ],
-              "default": null,
-              "title": "Context"
+              "default": null
             },
             "destination_store": {
               "$ref": "#/$defs/ArchiveStoreName"
@@ -573,7 +533,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             },
             "state": {
               "const": "requested",
-              "title": "State",
               "type": "string"
             }
           },
@@ -586,7 +545,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             "destination_store",
             "state"
           ],
-          "title": "ArchiveCopyRequestedData",
           "type": "object"
         },
         "ArchiveCopyRequestedEvent": {
@@ -598,23 +556,19 @@ The following JSON is the complete value owned at each machine-authority pointer
             "datacontenttype": {
               "const": "application/json",
               "default": "application/json",
-              "title": "Datacontenttype",
               "type": "string"
             },
             "id": {
               "minLength": 1,
-              "title": "Id",
               "type": "string"
             },
             "source": {
               "minLength": 1,
-              "title": "Source",
               "type": "string"
             },
             "specversion": {
               "const": "1.0",
               "default": "1.0",
-              "title": "Specversion",
               "type": "string"
             },
             "subject": {
@@ -627,16 +581,13 @@ The following JSON is the complete value owned at each machine-authority pointer
                   "type": "null"
                 }
               ],
-              "default": null,
-              "title": "Subject"
+              "default": null
             },
             "time": {
-              "title": "Time",
               "type": "string"
             },
             "type": {
               "const": "io.riverhog.riverhog.archive_copy.requested",
-              "title": "Type",
               "type": "string"
             }
           },
@@ -647,7 +598,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             "time",
             "data"
           ],
-          "title": "ArchiveCopyRequestedEvent",
           "type": "object"
         },
         "ArchiveStoreName": {
@@ -662,7 +612,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             },
             "bytes": {
               "minimum": 0,
-              "title": "Bytes",
               "type": "integer"
             },
             "cause": {
@@ -679,7 +628,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             "collection_created_at": {
               "maxLength": 64,
               "minLength": 1,
-              "title": "Collection Created At",
               "type": "string"
             },
             "collection_id": {
@@ -700,12 +648,10 @@ The following JSON is the complete value owned at each machine-authority pointer
                   "type": "null"
                 }
               ],
-              "default": null,
-              "title": "Context"
+              "default": null
             },
             "files": {
               "minimum": 0,
-              "title": "Files",
               "type": "integer"
             },
             "initiator": {
@@ -713,7 +659,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             },
             "remote_storage_bytes": {
               "minimum": 0,
-              "title": "Remote Storage Bytes",
               "type": "integer"
             }
           },
@@ -726,7 +671,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             "bytes",
             "remote_storage_bytes"
           ],
-          "title": "CollectionDeletedData",
           "type": "object"
         },
         "CollectionDeletedEvent": {
@@ -738,23 +682,19 @@ The following JSON is the complete value owned at each machine-authority pointer
             "datacontenttype": {
               "const": "application/json",
               "default": "application/json",
-              "title": "Datacontenttype",
               "type": "string"
             },
             "id": {
               "minLength": 1,
-              "title": "Id",
               "type": "string"
             },
             "source": {
               "minLength": 1,
-              "title": "Source",
               "type": "string"
             },
             "specversion": {
               "const": "1.0",
               "default": "1.0",
-              "title": "Specversion",
               "type": "string"
             },
             "subject": {
@@ -767,16 +707,13 @@ The following JSON is the complete value owned at each machine-authority pointer
                   "type": "null"
                 }
               ],
-              "default": null,
-              "title": "Subject"
+              "default": null
             },
             "time": {
-              "title": "Time",
               "type": "string"
             },
             "type": {
               "const": "io.riverhog.riverhog.collection.deleted",
-              "title": "Type",
               "type": "string"
             }
           },
@@ -787,7 +724,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             "time",
             "data"
           ],
-          "title": "CollectionDeletedEvent",
           "type": "object"
         },
         "CollectionFinalizedData": {
@@ -798,12 +734,10 @@ The following JSON is the complete value owned at each machine-authority pointer
             },
             "archive_root_sha256": {
               "pattern": "^[0-9a-f]{64}$",
-              "title": "Archive Root Sha256",
               "type": "string"
             },
             "bytes_total": {
               "minimum": 0,
-              "title": "Bytes Total",
               "type": "integer"
             },
             "cause": {
@@ -820,7 +754,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             "collection_created_at": {
               "maxLength": 64,
               "minLength": 1,
-              "title": "Collection Created At",
               "type": "string"
             },
             "collection_id": {
@@ -841,12 +774,10 @@ The following JSON is the complete value owned at each machine-authority pointer
                   "type": "null"
                 }
               ],
-              "default": null,
-              "title": "Context"
+              "default": null
             },
             "files_total": {
               "minimum": 0,
-              "title": "Files Total",
               "type": "integer"
             },
             "initiator": {
@@ -862,7 +793,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             "bytes_total",
             "archive_root_sha256"
           ],
-          "title": "CollectionFinalizedData",
           "type": "object"
         },
         "CollectionFinalizedEvent": {
@@ -874,23 +804,19 @@ The following JSON is the complete value owned at each machine-authority pointer
             "datacontenttype": {
               "const": "application/json",
               "default": "application/json",
-              "title": "Datacontenttype",
               "type": "string"
             },
             "id": {
               "minLength": 1,
-              "title": "Id",
               "type": "string"
             },
             "source": {
               "minLength": 1,
-              "title": "Source",
               "type": "string"
             },
             "specversion": {
               "const": "1.0",
               "default": "1.0",
-              "title": "Specversion",
               "type": "string"
             },
             "subject": {
@@ -903,16 +829,13 @@ The following JSON is the complete value owned at each machine-authority pointer
                   "type": "null"
                 }
               ],
-              "default": null,
-              "title": "Subject"
+              "default": null
             },
             "time": {
-              "title": "Time",
               "type": "string"
             },
             "type": {
               "const": "io.riverhog.riverhog.collection.finalized",
-              "title": "Type",
               "type": "string"
             }
           },
@@ -923,7 +846,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             "time",
             "data"
           ],
-          "title": "CollectionFinalizedEvent",
           "type": "object"
         },
         "CollectionId": {
@@ -964,8 +886,7 @@ The following JSON is the complete value owned at each machine-authority pointer
                   "type": "null"
                 }
               ],
-              "default": null,
-              "title": "Collection Created At"
+              "default": null
             },
             "collection_id": {
               "anyOf": [
@@ -983,7 +904,6 @@ The following JSON is the complete value owned at each machine-authority pointer
                 "$ref": "#/$defs/CollectionId"
               },
               "minItems": 1,
-              "title": "Collection Ids",
               "type": "array"
             },
             "context": {
@@ -1001,8 +921,7 @@ The following JSON is the complete value owned at each machine-authority pointer
                   "type": "null"
                 }
               ],
-              "default": null,
-              "title": "Context"
+              "default": null
             },
             "initiator": {
               "$ref": "#/$defs/RiverhogActor"
@@ -1018,18 +937,15 @@ The following JSON is the complete value owned at each machine-authority pointer
                   "type": "null"
                 }
               ],
-              "default": null,
-              "title": "Reason"
+              "default": null
             },
             "retrieval_id": {
               "maxLength": 300,
               "minLength": 1,
-              "title": "Retrieval Id",
               "type": "string"
             },
             "state": {
               "const": "canceled",
-              "title": "State",
               "type": "string"
             }
           },
@@ -1040,7 +956,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             "collection_ids",
             "state"
           ],
-          "title": "RetrievalCanceledData",
           "type": "object"
         },
         "RetrievalCanceledEvent": {
@@ -1052,23 +967,19 @@ The following JSON is the complete value owned at each machine-authority pointer
             "datacontenttype": {
               "const": "application/json",
               "default": "application/json",
-              "title": "Datacontenttype",
               "type": "string"
             },
             "id": {
               "minLength": 1,
-              "title": "Id",
               "type": "string"
             },
             "source": {
               "minLength": 1,
-              "title": "Source",
               "type": "string"
             },
             "specversion": {
               "const": "1.0",
               "default": "1.0",
-              "title": "Specversion",
               "type": "string"
             },
             "subject": {
@@ -1081,16 +992,13 @@ The following JSON is the complete value owned at each machine-authority pointer
                   "type": "null"
                 }
               ],
-              "default": null,
-              "title": "Subject"
+              "default": null
             },
             "time": {
-              "title": "Time",
               "type": "string"
             },
             "type": {
               "const": "io.riverhog.riverhog.retrieval.canceled",
-              "title": "Type",
               "type": "string"
             }
           },
@@ -1101,7 +1009,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             "time",
             "data"
           ],
-          "title": "RetrievalCanceledEvent",
           "type": "object"
         },
         "RetrievalCompletedData": {
@@ -1132,8 +1039,7 @@ The following JSON is the complete value owned at each machine-authority pointer
                   "type": "null"
                 }
               ],
-              "default": null,
-              "title": "Collection Created At"
+              "default": null
             },
             "collection_id": {
               "anyOf": [
@@ -1151,7 +1057,6 @@ The following JSON is the complete value owned at each machine-authority pointer
                 "$ref": "#/$defs/CollectionId"
               },
               "minItems": 1,
-              "title": "Collection Ids",
               "type": "array"
             },
             "context": {
@@ -1169,8 +1074,7 @@ The following JSON is the complete value owned at each machine-authority pointer
                   "type": "null"
                 }
               ],
-              "default": null,
-              "title": "Context"
+              "default": null
             },
             "initiator": {
               "$ref": "#/$defs/RiverhogActor"
@@ -1178,12 +1082,10 @@ The following JSON is the complete value owned at each machine-authority pointer
             "retrieval_id": {
               "maxLength": 300,
               "minLength": 1,
-              "title": "Retrieval Id",
               "type": "string"
             },
             "state": {
               "const": "completed",
-              "title": "State",
               "type": "string"
             }
           },
@@ -1194,7 +1096,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             "collection_ids",
             "state"
           ],
-          "title": "RetrievalCompletedData",
           "type": "object"
         },
         "RetrievalCompletedEvent": {
@@ -1206,23 +1107,19 @@ The following JSON is the complete value owned at each machine-authority pointer
             "datacontenttype": {
               "const": "application/json",
               "default": "application/json",
-              "title": "Datacontenttype",
               "type": "string"
             },
             "id": {
               "minLength": 1,
-              "title": "Id",
               "type": "string"
             },
             "source": {
               "minLength": 1,
-              "title": "Source",
               "type": "string"
             },
             "specversion": {
               "const": "1.0",
               "default": "1.0",
-              "title": "Specversion",
               "type": "string"
             },
             "subject": {
@@ -1235,16 +1132,13 @@ The following JSON is the complete value owned at each machine-authority pointer
                   "type": "null"
                 }
               ],
-              "default": null,
-              "title": "Subject"
+              "default": null
             },
             "time": {
-              "title": "Time",
               "type": "string"
             },
             "type": {
               "const": "io.riverhog.riverhog.retrieval.completed",
-              "title": "Type",
               "type": "string"
             }
           },
@@ -1255,7 +1149,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             "time",
             "data"
           ],
-          "title": "RetrievalCompletedEvent",
           "type": "object"
         },
         "RetrievalExpiredData": {
@@ -1286,8 +1179,7 @@ The following JSON is the complete value owned at each machine-authority pointer
                   "type": "null"
                 }
               ],
-              "default": null,
-              "title": "Collection Created At"
+              "default": null
             },
             "collection_id": {
               "anyOf": [
@@ -1305,7 +1197,6 @@ The following JSON is the complete value owned at each machine-authority pointer
                 "$ref": "#/$defs/CollectionId"
               },
               "minItems": 1,
-              "title": "Collection Ids",
               "type": "array"
             },
             "context": {
@@ -1323,8 +1214,7 @@ The following JSON is the complete value owned at each machine-authority pointer
                   "type": "null"
                 }
               ],
-              "default": null,
-              "title": "Context"
+              "default": null
             },
             "initiator": {
               "$ref": "#/$defs/RiverhogActor"
@@ -1332,12 +1222,10 @@ The following JSON is the complete value owned at each machine-authority pointer
             "retrieval_id": {
               "maxLength": 300,
               "minLength": 1,
-              "title": "Retrieval Id",
               "type": "string"
             },
             "state": {
               "const": "expired",
-              "title": "State",
               "type": "string"
             }
           },
@@ -1348,7 +1236,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             "collection_ids",
             "state"
           ],
-          "title": "RetrievalExpiredData",
           "type": "object"
         },
         "RetrievalExpiredEvent": {
@@ -1360,23 +1247,19 @@ The following JSON is the complete value owned at each machine-authority pointer
             "datacontenttype": {
               "const": "application/json",
               "default": "application/json",
-              "title": "Datacontenttype",
               "type": "string"
             },
             "id": {
               "minLength": 1,
-              "title": "Id",
               "type": "string"
             },
             "source": {
               "minLength": 1,
-              "title": "Source",
               "type": "string"
             },
             "specversion": {
               "const": "1.0",
               "default": "1.0",
-              "title": "Specversion",
               "type": "string"
             },
             "subject": {
@@ -1389,16 +1272,13 @@ The following JSON is the complete value owned at each machine-authority pointer
                   "type": "null"
                 }
               ],
-              "default": null,
-              "title": "Subject"
+              "default": null
             },
             "time": {
-              "title": "Time",
               "type": "string"
             },
             "type": {
               "const": "io.riverhog.riverhog.retrieval.expired",
-              "title": "Type",
               "type": "string"
             }
           },
@@ -1409,7 +1289,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             "time",
             "data"
           ],
-          "title": "RetrievalExpiredEvent",
           "type": "object"
         },
         "RetrievalFailedData": {
@@ -1440,8 +1319,7 @@ The following JSON is the complete value owned at each machine-authority pointer
                   "type": "null"
                 }
               ],
-              "default": null,
-              "title": "Collection Created At"
+              "default": null
             },
             "collection_id": {
               "anyOf": [
@@ -1459,7 +1337,6 @@ The following JSON is the complete value owned at each machine-authority pointer
                 "$ref": "#/$defs/CollectionId"
               },
               "minItems": 1,
-              "title": "Collection Ids",
               "type": "array"
             },
             "context": {
@@ -1477,13 +1354,11 @@ The following JSON is the complete value owned at each machine-authority pointer
                   "type": "null"
                 }
               ],
-              "default": null,
-              "title": "Context"
+              "default": null
             },
             "error": {
               "maxLength": 16384,
               "minLength": 1,
-              "title": "Error",
               "type": "string"
             },
             "initiator": {
@@ -1492,12 +1367,10 @@ The following JSON is the complete value owned at each machine-authority pointer
             "retrieval_id": {
               "maxLength": 300,
               "minLength": 1,
-              "title": "Retrieval Id",
               "type": "string"
             },
             "state": {
               "const": "failed",
-              "title": "State",
               "type": "string"
             }
           },
@@ -1509,7 +1382,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             "state",
             "error"
           ],
-          "title": "RetrievalFailedData",
           "type": "object"
         },
         "RetrievalFailedEvent": {
@@ -1521,23 +1393,19 @@ The following JSON is the complete value owned at each machine-authority pointer
             "datacontenttype": {
               "const": "application/json",
               "default": "application/json",
-              "title": "Datacontenttype",
               "type": "string"
             },
             "id": {
               "minLength": 1,
-              "title": "Id",
               "type": "string"
             },
             "source": {
               "minLength": 1,
-              "title": "Source",
               "type": "string"
             },
             "specversion": {
               "const": "1.0",
               "default": "1.0",
-              "title": "Specversion",
               "type": "string"
             },
             "subject": {
@@ -1550,16 +1418,13 @@ The following JSON is the complete value owned at each machine-authority pointer
                   "type": "null"
                 }
               ],
-              "default": null,
-              "title": "Subject"
+              "default": null
             },
             "time": {
-              "title": "Time",
               "type": "string"
             },
             "type": {
               "const": "io.riverhog.riverhog.retrieval.failed",
-              "title": "Type",
               "type": "string"
             }
           },
@@ -1570,7 +1435,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             "time",
             "data"
           ],
-          "title": "RetrievalFailedEvent",
           "type": "object"
         },
         "RetrievalIssueData": {
@@ -1601,8 +1465,7 @@ The following JSON is the complete value owned at each machine-authority pointer
                   "type": "null"
                 }
               ],
-              "default": null,
-              "title": "Collection Created At"
+              "default": null
             },
             "collection_id": {
               "anyOf": [
@@ -1620,7 +1483,6 @@ The following JSON is the complete value owned at each machine-authority pointer
                 "$ref": "#/$defs/CollectionId"
               },
               "minItems": 1,
-              "title": "Collection Ids",
               "type": "array"
             },
             "context": {
@@ -1638,13 +1500,11 @@ The following JSON is the complete value owned at each machine-authority pointer
                   "type": "null"
                 }
               ],
-              "default": null,
-              "title": "Context"
+              "default": null
             },
             "error": {
               "maxLength": 16384,
               "minLength": 1,
-              "title": "Error",
               "type": "string"
             },
             "initiator": {
@@ -1653,12 +1513,10 @@ The following JSON is the complete value owned at each machine-authority pointer
             "retrieval_id": {
               "maxLength": 300,
               "minLength": 1,
-              "title": "Retrieval Id",
               "type": "string"
             },
             "state": {
               "const": "requested",
-              "title": "State",
               "type": "string"
             }
           },
@@ -1670,7 +1528,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             "state",
             "error"
           ],
-          "title": "RetrievalIssueData",
           "type": "object"
         },
         "RetrievalIssueEvent": {
@@ -1682,23 +1539,19 @@ The following JSON is the complete value owned at each machine-authority pointer
             "datacontenttype": {
               "const": "application/json",
               "default": "application/json",
-              "title": "Datacontenttype",
               "type": "string"
             },
             "id": {
               "minLength": 1,
-              "title": "Id",
               "type": "string"
             },
             "source": {
               "minLength": 1,
-              "title": "Source",
               "type": "string"
             },
             "specversion": {
               "const": "1.0",
               "default": "1.0",
-              "title": "Specversion",
               "type": "string"
             },
             "subject": {
@@ -1711,16 +1564,13 @@ The following JSON is the complete value owned at each machine-authority pointer
                   "type": "null"
                 }
               ],
-              "default": null,
-              "title": "Subject"
+              "default": null
             },
             "time": {
-              "title": "Time",
               "type": "string"
             },
             "type": {
               "const": "io.riverhog.riverhog.retrieval.issue",
-              "title": "Type",
               "type": "string"
             }
           },
@@ -1731,7 +1581,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             "time",
             "data"
           ],
-          "title": "RetrievalIssueEvent",
           "type": "object"
         },
         "RetrievalReadyData": {
@@ -1762,8 +1611,7 @@ The following JSON is the complete value owned at each machine-authority pointer
                   "type": "null"
                 }
               ],
-              "default": null,
-              "title": "Collection Created At"
+              "default": null
             },
             "collection_id": {
               "anyOf": [
@@ -1781,7 +1629,6 @@ The following JSON is the complete value owned at each machine-authority pointer
                 "$ref": "#/$defs/CollectionId"
               },
               "minItems": 1,
-              "title": "Collection Ids",
               "type": "array"
             },
             "context": {
@@ -1799,13 +1646,11 @@ The following JSON is the complete value owned at each machine-authority pointer
                   "type": "null"
                 }
               ],
-              "default": null,
-              "title": "Context"
+              "default": null
             },
             "expires_at": {
               "maxLength": 64,
               "minLength": 1,
-              "title": "Expires At",
               "type": "string"
             },
             "initiator": {
@@ -1814,12 +1659,10 @@ The following JSON is the complete value owned at each machine-authority pointer
             "retrieval_id": {
               "maxLength": 300,
               "minLength": 1,
-              "title": "Retrieval Id",
               "type": "string"
             },
             "state": {
               "const": "ready",
-              "title": "State",
               "type": "string"
             }
           },
@@ -1831,7 +1674,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             "state",
             "expires_at"
           ],
-          "title": "RetrievalReadyData",
           "type": "object"
         },
         "RetrievalReadyEvent": {
@@ -1843,23 +1685,19 @@ The following JSON is the complete value owned at each machine-authority pointer
             "datacontenttype": {
               "const": "application/json",
               "default": "application/json",
-              "title": "Datacontenttype",
               "type": "string"
             },
             "id": {
               "minLength": 1,
-              "title": "Id",
               "type": "string"
             },
             "source": {
               "minLength": 1,
-              "title": "Source",
               "type": "string"
             },
             "specversion": {
               "const": "1.0",
               "default": "1.0",
-              "title": "Specversion",
               "type": "string"
             },
             "subject": {
@@ -1872,16 +1710,13 @@ The following JSON is the complete value owned at each machine-authority pointer
                   "type": "null"
                 }
               ],
-              "default": null,
-              "title": "Subject"
+              "default": null
             },
             "time": {
-              "title": "Time",
               "type": "string"
             },
             "type": {
               "const": "io.riverhog.riverhog.retrieval.ready",
-              "title": "Type",
               "type": "string"
             }
           },
@@ -1892,7 +1727,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             "time",
             "data"
           ],
-          "title": "RetrievalReadyEvent",
           "type": "object"
         },
         "RetrievalRenewedData": {
@@ -1923,8 +1757,7 @@ The following JSON is the complete value owned at each machine-authority pointer
                   "type": "null"
                 }
               ],
-              "default": null,
-              "title": "Collection Created At"
+              "default": null
             },
             "collection_id": {
               "anyOf": [
@@ -1942,7 +1775,6 @@ The following JSON is the complete value owned at each machine-authority pointer
                 "$ref": "#/$defs/CollectionId"
               },
               "minItems": 1,
-              "title": "Collection Ids",
               "type": "array"
             },
             "context": {
@@ -1960,13 +1792,11 @@ The following JSON is the complete value owned at each machine-authority pointer
                   "type": "null"
                 }
               ],
-              "default": null,
-              "title": "Context"
+              "default": null
             },
             "expires_at": {
               "maxLength": 64,
               "minLength": 1,
-              "title": "Expires At",
               "type": "string"
             },
             "initiator": {
@@ -1975,12 +1805,10 @@ The following JSON is the complete value owned at each machine-authority pointer
             "retrieval_id": {
               "maxLength": 300,
               "minLength": 1,
-              "title": "Retrieval Id",
               "type": "string"
             },
             "state": {
               "const": "ready",
-              "title": "State",
               "type": "string"
             }
           },
@@ -1992,7 +1820,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             "state",
             "expires_at"
           ],
-          "title": "RetrievalRenewedData",
           "type": "object"
         },
         "RetrievalRenewedEvent": {
@@ -2004,23 +1831,19 @@ The following JSON is the complete value owned at each machine-authority pointer
             "datacontenttype": {
               "const": "application/json",
               "default": "application/json",
-              "title": "Datacontenttype",
               "type": "string"
             },
             "id": {
               "minLength": 1,
-              "title": "Id",
               "type": "string"
             },
             "source": {
               "minLength": 1,
-              "title": "Source",
               "type": "string"
             },
             "specversion": {
               "const": "1.0",
               "default": "1.0",
-              "title": "Specversion",
               "type": "string"
             },
             "subject": {
@@ -2033,16 +1856,13 @@ The following JSON is the complete value owned at each machine-authority pointer
                   "type": "null"
                 }
               ],
-              "default": null,
-              "title": "Subject"
+              "default": null
             },
             "time": {
-              "title": "Time",
               "type": "string"
             },
             "type": {
               "const": "io.riverhog.riverhog.retrieval.renewed",
-              "title": "Type",
               "type": "string"
             }
           },
@@ -2053,7 +1873,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             "time",
             "data"
           ],
-          "title": "RetrievalRenewedEvent",
           "type": "object"
         },
         "RetrievalRequestedData": {
@@ -2084,8 +1903,7 @@ The following JSON is the complete value owned at each machine-authority pointer
                   "type": "null"
                 }
               ],
-              "default": null,
-              "title": "Collection Created At"
+              "default": null
             },
             "collection_id": {
               "anyOf": [
@@ -2103,7 +1921,6 @@ The following JSON is the complete value owned at each machine-authority pointer
                 "$ref": "#/$defs/CollectionId"
               },
               "minItems": 1,
-              "title": "Collection Ids",
               "type": "array"
             },
             "context": {
@@ -2121,12 +1938,10 @@ The following JSON is the complete value owned at each machine-authority pointer
                   "type": "null"
                 }
               ],
-              "default": null,
-              "title": "Context"
+              "default": null
             },
             "files": {
               "minimum": 1,
-              "title": "Files",
               "type": "integer"
             },
             "initiator": {
@@ -2134,17 +1949,14 @@ The following JSON is the complete value owned at each machine-authority pointer
             },
             "objects": {
               "minimum": 1,
-              "title": "Objects",
               "type": "integer"
             },
             "restore_required": {
-              "title": "Restore Required",
               "type": "boolean"
             },
             "retrieval_id": {
               "maxLength": 300,
               "minLength": 1,
-              "title": "Retrieval Id",
               "type": "string"
             },
             "state": {
@@ -2152,7 +1964,6 @@ The following JSON is the complete value owned at each machine-authority pointer
                 "requested",
                 "ready"
               ],
-              "title": "State",
               "type": "string"
             }
           },
@@ -2166,7 +1977,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             "objects",
             "restore_required"
           ],
-          "title": "RetrievalRequestedData",
           "type": "object"
         },
         "RetrievalRequestedEvent": {
@@ -2178,23 +1988,19 @@ The following JSON is the complete value owned at each machine-authority pointer
             "datacontenttype": {
               "const": "application/json",
               "default": "application/json",
-              "title": "Datacontenttype",
               "type": "string"
             },
             "id": {
               "minLength": 1,
-              "title": "Id",
               "type": "string"
             },
             "source": {
               "minLength": 1,
-              "title": "Source",
               "type": "string"
             },
             "specversion": {
               "const": "1.0",
               "default": "1.0",
-              "title": "Specversion",
               "type": "string"
             },
             "subject": {
@@ -2207,16 +2013,13 @@ The following JSON is the complete value owned at each machine-authority pointer
                   "type": "null"
                 }
               ],
-              "default": null,
-              "title": "Subject"
+              "default": null
             },
             "time": {
-              "title": "Time",
               "type": "string"
             },
             "type": {
               "const": "io.riverhog.riverhog.retrieval.requested",
-              "title": "Type",
               "type": "string"
             }
           },
@@ -2227,7 +2030,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             "time",
             "data"
           ],
-          "title": "RetrievalRequestedEvent",
           "type": "object"
         },
         "RiverhogActor": {
@@ -2236,7 +2038,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             "app": {
               "maxLength": 160,
               "minLength": 1,
-              "title": "App",
               "type": "string"
             },
             "key_id": {
@@ -2250,14 +2051,12 @@ The following JSON is the complete value owned at each machine-authority pointer
                   "type": "null"
                 }
               ],
-              "default": null,
-              "title": "Key Id"
+              "default": null
             }
           },
           "required": [
             "app"
           ],
-          "title": "RiverhogActor",
           "type": "object"
         },
         "RiverhogEventCause": {
@@ -2266,13 +2065,11 @@ The following JSON is the complete value owned at each machine-authority pointer
             "id": {
               "maxLength": 300,
               "minLength": 1,
-              "title": "Id",
               "type": "string"
             },
             "source": {
               "maxLength": 1000,
               "minLength": 1,
-              "title": "Source",
               "type": "string"
             },
             "subject": {
@@ -2286,13 +2083,11 @@ The following JSON is the complete value owned at each machine-authority pointer
                   "type": "null"
                 }
               ],
-              "default": null,
-              "title": "Subject"
+              "default": null
             },
             "type": {
               "maxLength": 300,
               "minLength": 1,
-              "title": "Type",
               "type": "string"
             }
           },
@@ -2301,7 +2096,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             "source",
             "type"
           ],
-          "title": "RiverhogEventCause",
           "type": "object"
         },
         "RiverhogLifecycleEvent": {
@@ -2376,11 +2170,9 @@ The following JSON is the complete value owned at each machine-authority pointer
           "items": {
             "$ref": "#/$defs/RiverhogLifecycleEvent"
           },
-          "title": "Events",
           "type": "array"
         },
         "has_more": {
-          "title": "Has More",
           "type": "boolean"
         },
         "next_cursor": {
@@ -2392,7 +2184,6 @@ The following JSON is the complete value owned at each machine-authority pointer
         "next_cursor",
         "has_more"
       ],
-      "title": "RiverhogEventPage",
       "type": "object"
     },
     "signature": "'(*, events: list[RiverhogLifecycleEvent], next_cursor: LifecycleEventCursor, has_more: bool) -> None'"

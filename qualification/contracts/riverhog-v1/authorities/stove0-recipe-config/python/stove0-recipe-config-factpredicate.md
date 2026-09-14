@@ -27,7 +27,6 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-a5ac0fd8fb"></a>
-- <a id="s-fdf411e4c2"></a>`title`: FactPredicate
 - <a id="s-59f1afc9f5"></a>`type`: object
 
 ### Fields
@@ -78,7 +77,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: b4d99d9f35dccdafce7fbe76e7930b7a1c843b58b18102803d480a549cd754df -->
+<!-- exact-contract-value: d2a76b19b4bdac139debe0ba3d052906b216175397603af1aa4739e568a4e194 -->
 
 ```json
 {
@@ -88,24 +87,20 @@ The following JSON is the complete value owned at each machine-authority pointer
       "$defs": {
         "ArtifactFactBinding": {
           "additionalProperties": false,
-          "description": "Locate subject-keyed records inside one observer's declared facts schema.",
           "properties": {
             "artifact_id_pointer": {
               "default": "/artifact_id",
               "pattern": "^(?:|/(?:[^~/]|~[01])*(?:/(?:[^~/]|~[01])*)*)$",
-              "title": "Artifact Id Pointer",
               "type": "string"
             },
             "records_pointer": {
               "pattern": "^(?:|/(?:[^~/]|~[01])*(?:/(?:[^~/]|~[01])*)*)$",
-              "title": "Records Pointer",
               "type": "string"
             }
           },
           "required": [
             "records_pointer"
           ],
-          "title": "ArtifactFactBinding",
           "type": "object"
         },
         "JsonValue": {}
@@ -129,12 +124,10 @@ The following JSON is the complete value owned at each machine-authority pointer
             "pattern": "^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$",
             "type": "string"
           },
-          "title": "Artifact Roles",
           "type": "array"
         },
         "observation_contract_id": {
           "pattern": "^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$",
-          "title": "Observation Contract Id",
           "type": "string"
         },
         "operator": {
@@ -145,12 +138,10 @@ The following JSON is the complete value owned at each machine-authority pointer
             "contains",
             "exists"
           ],
-          "title": "Operator",
           "type": "string"
         },
         "pointer": {
           "pattern": "^(?:|/(?:[^~/]|~[01])*(?:/(?:[^~/]|~[01])*)*)$",
-          "title": "Pointer",
           "type": "string"
         },
         "value": {
@@ -162,7 +153,6 @@ The following JSON is the complete value owned at each machine-authority pointer
         "observation_contract_id",
         "pointer"
       ],
-      "title": "FactPredicate",
       "type": "object"
     },
     "signature": "\"(*, observation_contract_id: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$', ascii_only=None)], artifact_roles: tuple[typing.Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$', ascii_only=None)], ...] = (), artifact_facts: stove0_recipe_config.models.ArtifactFactBinding | None = None, pointer: Annotated[str, _PydanticGeneralMetadata(pattern='^(?:|/(?:[^~/]|~[01])*(?:/(?:[^~/]|~[01])*)*)$')], operator: Literal['equals', 'not-equals', 'contains', 'exists'] = 'equals', value: JsonValue = None) -> None\""

@@ -19,6 +19,9 @@ Optional nonnormative projection support for Stove0 media-archive references.
 | <a id="s-bd29910202"></a>`artifacts` | [{"coordinate": "dist/stove0_media_archive_target_support-{version}-py3-none-any.whl", "format": "wheel"}, {"coordinate": "dist/stove0_media_archive_target_support-{version}.tar.gz", "format": "sdist"}] |
 | <a id="s-22858dde60"></a>`channel` | github-release |
 | <a id="s-49b902ddc9"></a>`description` | Optional nonnormative projection support for Stove0 media-archive references. |
+| <a id="s-3242049ede"></a>`license_baseline` | first-v1-publication |
+| <a id="s-5e0238e823"></a>`license_expression` | Apache-2.0 |
+| <a id="s-2e4bca5189"></a>`publication_identity` | {"coordinate": "stove0-media-archive-target-support", "kind": "python-distribution"} |
 | <a id="s-3975191073"></a>`requires_python` | >=3.12 |
 | <a id="s-15914f1586"></a>`role` | reference_component |
 | <a id="s-f6fc831e11"></a>`source` | reference/stove0/targets/media-archive/support/pyproject.toml |
@@ -57,7 +60,7 @@ Publication preserves these existing component authorities; it does not reclassi
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 49a16cf01d2238fc745ac707367c024654825da3a7388b25116b62f842f69881 -->
+<!-- exact-contract-value: f5eeda825365fad193a8bc1499cef24371fee95c025cce90506e1f3c69e87c84 -->
 
 ```json
 {
@@ -73,6 +76,12 @@ The following JSON is the complete value owned at each machine-authority pointer
   ],
   "channel": "github-release",
   "description": "Optional nonnormative projection support for Stove0 media-archive references.",
+  "license_baseline": "first-v1-publication",
+  "license_expression": "Apache-2.0",
+  "publication_identity": {
+    "coordinate": "stove0-media-archive-target-support",
+    "kind": "python-distribution"
+  },
   "requires_python": ">=3.12",
   "role": "reference_component",
   "source": "reference/stove0/targets/media-archive/support/pyproject.toml"

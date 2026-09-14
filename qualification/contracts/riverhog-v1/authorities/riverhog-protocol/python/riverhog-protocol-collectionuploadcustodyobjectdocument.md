@@ -27,7 +27,6 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-dc86bf46a1"></a>
-- <a id="s-5ce7ee6e4a"></a>`title`: CollectionUploadCustodyObjectDocument
 - <a id="s-a190c457bb"></a>`type`: object
 
 ### Fields
@@ -61,7 +60,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: c17e3c5cede438a8330c84545889a4a07c4eeff29c01d912cae5ec023ee309d0 -->
+<!-- exact-contract-value: f4e67219ec687cf3c7d05cad5485fda578aecd0e6a49842097975f4fcef5a8fa -->
 
 ```json
 {
@@ -72,12 +71,10 @@ The following JSON is the complete value owned at each machine-authority pointer
       "properties": {
         "sealed_receipt_sha256": {
           "pattern": "^[0-9a-f]{64}$",
-          "title": "Sealed Receipt Sha256",
           "type": "string"
         },
         "volume_id": {
           "pattern": "^(?:pack|segment)-[0-9a-f]{64}$",
-          "title": "Volume Id",
           "type": "string"
         }
       },
@@ -85,7 +82,6 @@ The following JSON is the complete value owned at each machine-authority pointer
         "volume_id",
         "sealed_receipt_sha256"
       ],
-      "title": "CollectionUploadCustodyObjectDocument",
       "type": "object"
     },
     "signature": "\"(*, volume_id: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^(?:pack|segment)-[0-9a-f]{64}$', ascii_only=None)], sealed_receipt_sha256: Annotated[str, _PydanticGeneralMetadata(pattern='^[0-9a-f]{64}$')]) -> None\""

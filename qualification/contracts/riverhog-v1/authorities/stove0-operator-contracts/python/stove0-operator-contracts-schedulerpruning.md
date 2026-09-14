@@ -27,7 +27,6 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-2c6cccb853"></a>
-- <a id="s-738f9cfff5"></a>`title`: SchedulerPruning
 - <a id="s-ca46b77744"></a>`type`: object
 
 ### Fields
@@ -67,7 +66,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: e20ba9807979d5fbc2fd2dbf60215ee3436d9191d3a0cac5c5cf9b0a58e14246 -->
+<!-- exact-contract-value: 9dc7dbe99cc143c1e373feef0b018281ba7e0ff5fcce1c54bc39c6ab1de07965 -->
 
 ```json
 {
@@ -78,42 +77,34 @@ The following JSON is the complete value owned at each machine-authority pointer
       "properties": {
         "evaluation_bytes": {
           "minimum": 0,
-          "title": "Evaluation Bytes",
           "type": "integer"
         },
         "evaluations": {
           "minimum": 0,
-          "title": "Evaluations",
           "type": "integer"
         },
         "event_bytes": {
           "minimum": 0,
-          "title": "Event Bytes",
           "type": "integer"
         },
         "events": {
           "minimum": 0,
-          "title": "Events",
           "type": "integer"
         },
         "selection_bytes": {
           "minimum": 0,
-          "title": "Selection Bytes",
           "type": "integer"
         },
         "selections": {
           "minimum": 0,
-          "title": "Selections",
           "type": "integer"
         },
         "work": {
           "minimum": 0,
-          "title": "Work",
           "type": "integer"
         },
         "work_bytes": {
           "minimum": 0,
-          "title": "Work Bytes",
           "type": "integer"
         }
       },
@@ -127,7 +118,6 @@ The following JSON is the complete value owned at each machine-authority pointer
         "events",
         "event_bytes"
       ],
-      "title": "SchedulerPruning",
       "type": "object"
     },
     "signature": "'(*, work: Annotated[int, Ge(ge=0)], work_bytes: Annotated[int, Ge(ge=0)], evaluations: Annotated[int, Ge(ge=0)], evaluation_bytes: Annotated[int, Ge(ge=0)], selections: Annotated[int, Ge(ge=0)], selection_bytes: Annotated[int, Ge(ge=0)], events: Annotated[int, Ge(ge=0)], event_bytes: Annotated[int, Ge(ge=0)]) -> None'"

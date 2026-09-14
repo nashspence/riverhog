@@ -19,6 +19,9 @@ Optional nonnormative Linux mounted-volume reference for Gogurt.
 | <a id="s-b3311ea87c"></a>`artifacts` | [{"coordinate": "dist/gogurt_linux_mounted_volume-{version}-py3-none-any.whl", "format": "wheel"}, {"coordinate": "dist/gogurt_linux_mounted_volume-{version}.tar.gz", "format": "sdist"}] |
 | <a id="s-ef3758d02e"></a>`channel` | github-release |
 | <a id="s-59035f8d15"></a>`description` | Optional nonnormative Linux mounted-volume reference for Gogurt. |
+| <a id="s-83a0763441"></a>`license_baseline` | first-v1-publication |
+| <a id="s-901ec4b74c"></a>`license_expression` | Apache-2.0 |
+| <a id="s-e0d396f579"></a>`publication_identity` | {"coordinate": "gogurt-linux-mounted-volume", "kind": "python-distribution"} |
 | <a id="s-4ef7b003e5"></a>`requires_python` | >=3.12 |
 | <a id="s-2fb1b3aa21"></a>`role` | reference_component |
 | <a id="s-9c2ebd1b1a"></a>`source` | reference/gogurt/mounted-volume/linux/pyproject.toml |
@@ -57,7 +60,7 @@ Publication preserves these existing component authorities; it does not reclassi
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 14c54c724af14e55c07998893ae3f420c14b73c38237734bad6d4bae7bbb0747 -->
+<!-- exact-contract-value: 8a613175379a776c4467f544629357991edb0c7ab3913fee344609768db0293e -->
 
 ```json
 {
@@ -73,6 +76,12 @@ The following JSON is the complete value owned at each machine-authority pointer
   ],
   "channel": "github-release",
   "description": "Optional nonnormative Linux mounted-volume reference for Gogurt.",
+  "license_baseline": "first-v1-publication",
+  "license_expression": "Apache-2.0",
+  "publication_identity": {
+    "coordinate": "gogurt-linux-mounted-volume",
+    "kind": "python-distribution"
+  },
   "requires_python": ">=3.12",
   "role": "reference_component",
   "source": "reference/gogurt/mounted-volume/linux/pyproject.toml"

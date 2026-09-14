@@ -27,7 +27,6 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-b63bbb84b7"></a>
-- <a id="s-f9e7faea31"></a>`title`: WorkCreateIn
 - <a id="s-6195678c95"></a>`type`: object
 
 ### Fields
@@ -72,7 +71,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: cea36d6fe509d94fd41ad2115bf502bc873065c1a81a1a33352d9e858a4ec3f7 -->
+<!-- exact-contract-value: c38d745c2265f959f979e5252903f69740e1ae5a33f42a8e0d2ea4b01c720ada -->
 
 ```json
 {
@@ -89,7 +88,6 @@ The following JSON is the complete value owned at each machine-authority pointer
           "properties": {
             "archive_root_sha256": {
               "pattern": "^[0-9a-f]{64}$",
-              "title": "Archive Root Sha256",
               "type": "string"
             },
             "collection_id": {
@@ -97,7 +95,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             },
             "content_identity": {
               "pattern": "^[0-9a-f]{64}$",
-              "title": "Content Identity",
               "type": "string"
             }
           },
@@ -106,7 +103,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             "archive_root_sha256",
             "content_identity"
           ],
-          "title": "CollectionRootRef",
           "type": "object"
         },
         "JsonValue": {}
@@ -117,7 +113,6 @@ The following JSON is the complete value owned at each machine-authority pointer
           "additionalProperties": {
             "$ref": "#/$defs/JsonValue"
           },
-          "title": "Effective Intent",
           "type": "object"
         },
         "inputs": {
@@ -125,18 +120,15 @@ The following JSON is the complete value owned at each machine-authority pointer
             "$ref": "#/$defs/CollectionRootRef"
           },
           "minItems": 1,
-          "title": "Inputs",
           "type": "array"
         },
         "preview_sha256": {
           "pattern": "^[0-9a-f]{64}$",
-          "title": "Preview Sha256",
           "type": "string"
         },
         "recipe_id": {
           "maxLength": 160,
           "minLength": 1,
-          "title": "Recipe Id",
           "type": "string"
         },
         "recipe_revision": {
@@ -149,8 +141,7 @@ The following JSON is the complete value owned at each machine-authority pointer
               "type": "null"
             }
           ],
-          "default": null,
-          "title": "Recipe Revision"
+          "default": null
         }
       },
       "required": [
@@ -158,7 +149,6 @@ The following JSON is the complete value owned at each machine-authority pointer
         "inputs",
         "preview_sha256"
       ],
-      "title": "WorkCreateIn",
       "type": "object"
     },
     "signature": "\"(*, recipe_id: Annotated[str, MinLen(min_length=1), MaxLen(max_length=160)], recipe_revision: Annotated[int | None, Ge(ge=1)] = None, inputs: Annotated[tuple[stove0_protocol.models.CollectionRootRef, ...], MinLen(min_length=1)], effective_intent: dict[str, JsonValue] = <factory>, preview_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)]) -> None\""

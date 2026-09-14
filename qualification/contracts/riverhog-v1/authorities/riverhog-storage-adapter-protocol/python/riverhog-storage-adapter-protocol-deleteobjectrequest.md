@@ -27,7 +27,6 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-81352d3efa"></a>
-- <a id="s-87c6137cb9"></a>`title`: DeleteObjectRequest
 - <a id="s-16fcf7c43b"></a>`type`: object
 
 ### Fields
@@ -74,7 +73,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: d844b58f9d78fc9e59ab1d2019aae3664f37073aa25f1b5586d848e01604846f -->
+<!-- exact-contract-value: f463b4657c0052ea70acc4a7a0834ea42f5b81224e0f79387cc09ebd685d343c -->
 
 ```json
 {
@@ -88,7 +87,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             "object_path": {
               "maxLength": 4096,
               "minLength": 1,
-              "title": "Object Path",
               "type": "string"
             },
             "revision": {
@@ -102,14 +100,12 @@ The following JSON is the complete value owned at each machine-authority pointer
                   "type": "null"
                 }
               ],
-              "default": null,
-              "title": "Revision"
+              "default": null
             }
           },
           "required": [
             "object_path"
           ],
-          "title": "ObjectLocator",
           "type": "object"
         }
       },
@@ -125,8 +121,7 @@ The following JSON is the complete value owned at each machine-authority pointer
               "type": "null"
             }
           ],
-          "default": null,
-          "title": "Expected Current Stored Sha256"
+          "default": null
         },
         "mode": {
           "enum": [
@@ -134,7 +129,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             "exact_revision",
             "all_versions"
           ],
-          "title": "Mode",
           "type": "string"
         },
         "object": {
@@ -145,7 +139,6 @@ The following JSON is the complete value owned at each machine-authority pointer
         "object",
         "mode"
       ],
-      "title": "DeleteObjectRequest",
       "type": "object"
     },
     "signature": "\"(*, object: riverhog_storage_adapter_protocol.protocol.ObjectLocator, mode: Literal['current', 'exact_revision', 'all_versions'], expected_current_stored_sha256: Optional[Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)]] = None) -> None\""

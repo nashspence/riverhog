@@ -27,8 +27,6 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-3efc7d4cd1"></a>
-- <a id="s-ff0391d8c3"></a>`title`: MediaFactEvidence
-- <a id="s-f09961e17e"></a>`description`: Exact artifact and ExifTool field from which one value was read.
 - <a id="s-0eee201dc4"></a>`type`: object
 
 ### Fields
@@ -62,7 +60,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 9a4233c6db2a2b4a7701fc64b240e5c5260122b74b2156cca7f905ab9e5f3d69 -->
+<!-- exact-contract-value: 13d8a3b156c3a6cf3adea32cb7682a2a8c80c4b60d1ac71ca2e38b4f45d14c7f -->
 
 ```json
 {
@@ -70,18 +68,15 @@ The following JSON is the complete value owned at each machine-authority pointer
     "kind": "class",
     "schema": {
       "additionalProperties": false,
-      "description": "Exact artifact and ExifTool field from which one value was read.",
       "properties": {
         "artifact_id": {
           "maxLength": 160,
           "minLength": 1,
-          "title": "Artifact Id",
           "type": "string"
         },
         "field": {
           "maxLength": 240,
           "minLength": 1,
-          "title": "Field",
           "type": "string"
         }
       },
@@ -89,7 +84,6 @@ The following JSON is the complete value owned at each machine-authority pointer
         "artifact_id",
         "field"
       ],
-      "title": "MediaFactEvidence",
       "type": "object"
     },
     "signature": "'(*, artifact_id: Annotated[str, MinLen(min_length=1), MaxLen(max_length=160)], field: Annotated[str, MinLen(min_length=1), MaxLen(max_length=240)]) -> None'"

@@ -27,7 +27,6 @@ Exact externally visible contract owned by this semantic dossier.
 #### Validated model schema
 
 <a id="s-d40a7ea33e"></a>
-- <a id="s-6dab95ed54"></a>`title`: ReadStatus
 - <a id="s-b80a47717f"></a>`type`: object
 
 ### Fields
@@ -76,7 +75,7 @@ Exact externally visible contract owned by this semantic dossier.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: ce3f6a8a79b8b257dcb21887980c51702b946db63693656d5ca34003bb0f4eb5 -->
+<!-- exact-contract-value: 4801558f74f25e288cb663cab652684ce44fd72b4119a6e25e1c7be07bf3eacd -->
 
 ```json
 {
@@ -90,7 +89,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             "object_path": {
               "maxLength": 4096,
               "minLength": 1,
-              "title": "Object Path",
               "type": "string"
             },
             "revision": {
@@ -104,14 +102,12 @@ The following JSON is the complete value owned at each machine-authority pointer
                   "type": "null"
                 }
               ],
-              "default": null,
-              "title": "Revision"
+              "default": null
             }
           },
           "required": [
             "object_path"
           ],
-          "title": "ObjectLocator",
           "type": "object"
         },
         "ReadExpired": {
@@ -120,11 +116,9 @@ The following JSON is the complete value owned at each machine-authority pointer
             "state": {
               "const": "expired",
               "default": "expired",
-              "title": "State",
               "type": "string"
             }
           },
-          "title": "ReadExpired",
           "type": "object"
         },
         "ReadReady": {
@@ -141,17 +135,14 @@ The following JSON is the complete value owned at each machine-authority pointer
                   "type": "null"
                 }
               ],
-              "default": null,
-              "title": "Available Until"
+              "default": null
             },
             "state": {
               "const": "ready",
               "default": "ready",
-              "title": "State",
               "type": "string"
             }
           },
-          "title": "ReadReady",
           "type": "object"
         },
         "ReadRequested": {
@@ -168,17 +159,14 @@ The following JSON is the complete value owned at each machine-authority pointer
                   "type": "null"
                 }
               ],
-              "default": null,
-              "title": "Estimated Ready At"
+              "default": null
             },
             "state": {
               "const": "requested",
               "default": "requested",
-              "title": "State",
               "type": "string"
             }
           },
-          "title": "ReadRequested",
           "type": "object"
         }
       },
@@ -189,7 +177,6 @@ The following JSON is the complete value owned at each machine-authority pointer
             "$ref": "#/$defs/ObjectLocator"
           },
           "minItems": 1,
-          "title": "Objects",
           "type": "array"
         },
         "readiness": {
@@ -211,15 +198,13 @@ The following JSON is the complete value owned at each machine-authority pointer
             {
               "$ref": "#/$defs/ReadExpired"
             }
-          ],
-          "title": "Readiness"
+          ]
         }
       },
       "required": [
         "objects",
         "readiness"
       ],
-      "title": "ReadStatus",
       "type": "object"
     },
     "signature": "'(*, objects: Annotated[tuple[riverhog_storage_adapter_protocol.protocol.ObjectLocator, ...], MinLen(min_length=1)], readiness: riverhog_storage_adapter_protocol.protocol.ReadRequested | riverhog_storage_adapter_protocol.protocol.ReadReady | riverhog_storage_adapter_protocol.protocol.ReadExpired) -> None'"

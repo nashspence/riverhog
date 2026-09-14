@@ -44,15 +44,15 @@ Exact externally visible contract owned by this semantic dossier.
 
 | Identity | Selected by | Exit status | stdout | stderr |
 |---|---|---|---|---|
-| <a id="s-c5cc1a53c6"></a>`marker-preview` | <a id="s-6c131d3c1d"></a>`{"kind":"option-equals","parameter":"dry_run","value":true}` | <a id="s-f85e137cbe"></a>`0` | <a id="s-2a98a7b465"></a>`human: noncontractual-presentation-of-command-result; json: gogurt-marker-write-plan/v1` | <a id="s-d5c25e107a"></a>`all: empty` |
-| <a id="s-65376fa652"></a>`marker-published` | <a id="s-1ace6f4a30"></a>`{"kind":"option-equals","parameter":"dry_run","value":false}` | <a id="s-2bdaa45e78"></a>`0` | <a id="s-7ff22340dc"></a>`human: noncontractual-presentation-of-command-result; json: gogurt-marker-publication/v1` | <a id="s-258261044f"></a>`all: empty` |
+| <a id="s-c5cc1a53c6"></a>`marker-preview` | <a id="s-6c131d3c1d"></a>`{"kind":"option-equals","parameter":"dry_run","value":true}` | <a id="s-f85e137cbe"></a>`0` | <a id="s-2a98a7b465"></a>human: `noncontractual-presentation-of-command-result`; json: [gogurt-marker-write-plan/v1](#s-2a98a7b465) | <a id="s-d5c25e107a"></a>all: `empty` |
+| <a id="s-65376fa652"></a>`marker-published` | <a id="s-1ace6f4a30"></a>`{"kind":"option-equals","parameter":"dry_run","value":false}` | <a id="s-2bdaa45e78"></a>`0` | <a id="s-7ff22340dc"></a>human: `noncontractual-presentation-of-command-result`; json: [gogurt-marker-publication/v1](#s-7ff22340dc) | <a id="s-258261044f"></a>all: `empty` |
 
 #### Failure outcomes
 
 | Identity | Selected by | Exit status | stdout | stderr |
 |---|---|---|---|---|
-| <a id="s-a116aaabaf"></a>`usage` | <a id="s-7f4e752285"></a>`{"kind":"parser-rejected-invocation"}` | <a id="s-eee78944c6"></a>`2` | <a id="s-759246dcbb"></a>`all: empty` | <a id="s-1ad8401f8f"></a>`all: noncontractual-usage-diagnostic` |
-| <a id="s-d95fc38e29"></a>`operational` | <a id="s-36d3949039"></a>`{"kind":"application-error"}` | <a id="s-8821274e2c"></a>`1` | <a id="s-d2bc22b47c"></a>`human: empty; json: gogurt-cli-error/v1` | <a id="s-86733215f2"></a>`human: noncontractual-diagnostic; json: empty` |
+| <a id="s-a116aaabaf"></a>`usage` | <a id="s-7f4e752285"></a>`{"kind":"parser-rejected-invocation"}` | <a id="s-eee78944c6"></a>`2` | <a id="s-759246dcbb"></a>all: `empty` | <a id="s-1ad8401f8f"></a>all: `noncontractual-usage-diagnostic` |
+| <a id="s-d95fc38e29"></a>`operational` | <a id="s-36d3949039"></a>`{"kind":"application-error"}` | <a id="s-8821274e2c"></a>`1` | <a id="s-d2bc22b47c"></a>human: `empty`; json: [gogurt-cli-error/v1](#s-d2bc22b47c) | <a id="s-86733215f2"></a>human: `noncontractual-diagnostic`; json: `empty` |
 
 ### Progression, limits, and lifecycle
 
